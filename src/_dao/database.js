@@ -10,7 +10,16 @@ import {compareKarasChecksum, run as generateDB} from '../_services/generation';
 import DBMigrate from 'db-migrate';
 import {resolve} from 'path';
 import {asyncRename, asyncExists} from '../_utils/files';
+import {initPG} from '../_utils/postgresql';
+import {on} from '../_utils/pubsub';
+
 const sql = require('./sql/database');
+
+let shutdownInProgress = false;
+
+on('postgresShutdownInProgress', () => {
+	shutdownInProgress = true;
+});
 
 export function paramWords(filter) {
 	let params = {};
@@ -94,6 +103,7 @@ export async function connectDB(opts = {superuser: false, db: null}) {
 	const dbConfig = {
 		host: conf.db.prod.host,
 		user: conf.db.prod.user,
+		port: conf.db.prod.port,
 		password: conf.db.prod.password,
 		database: conf.db.prod.database
 	};
@@ -106,7 +116,7 @@ export async function connectDB(opts = {superuser: false, db: null}) {
 	try {
 		await database.connect();
 		database.on('error', err => {
-			logger.error(`[DB] Database error : ${err}`);
+			if (!shutdownInProgress) logger.error(`[DB] Database error : ${err}`);
 		});
 	} catch(err) {
 		logger.error(`[DB] Connection to database server failed : ${err}`);
@@ -129,7 +139,7 @@ export async function initDB() {
 	} catch(err) {
 		logger.debug('[DB] User already exists');
 	}
-	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.db.prod.database} to ${conf.db.prod.user};`);
+	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.db.prod.database} TO ${conf.db.prod.user};`);
 	// We need to reconnect to create the extension on our newly created database
 	closeDB();
 	await connectDB({superuser: true, db: conf.db.prod.database});
@@ -141,7 +151,7 @@ export async function initDB() {
 	closeDB();
 }
 
-function closeDB() {
+export function closeDB() {
 	database = null;
 }
 
@@ -177,10 +187,18 @@ export async function initDBSystem() {
 	const conf = getConfig();
 	if (conf.optGenerateDB) doGenerate = true;
 	// First login as super user to make sure user, database and extensions are created
-	logger.info('[DB] Initializing database connection');
-	await initDB();
-	await connectDB();
-	await migrateDB();
+	try {
+		if (conf.db.prod.bundledPostgresBinary) {
+			logger.info('[DB] Launching bundled PostgreSQL...');
+			await initPG();
+			await initDB();
+		}
+		logger.info('[DB] Initializing database connection');
+		await connectDB();
+		await migrateDB();
+	} catch(err) {
+		throw `Database initialization failed : ${err}`;
+	}
 	if (conf.optReset) await resetUserData();
 	await importFromSQLite();
 	logger.info('[DB] Checking data files...');

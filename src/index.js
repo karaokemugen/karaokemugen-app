@@ -103,6 +103,7 @@ async function main() {
 	 * Test if network ports are available
 	 */
 	verifyOpenPort(config.appFrontendPort);
+	verifyOpenPort(config.db.prod.port);
 
 	/**
 	 * Gentlemen, start your engines.
@@ -173,8 +174,9 @@ function verifyOpenPort(port) {
 	server.once('error', err => {
 		if (err.code === 'EADDRINUSE') {
 			logger.error(`[Launcher] Port ${port} is already in use.`);
-			logger.error('[Launcher] If another Karaoke Mugen instance is running, please kill it (process name is "node" or "KaraokeMugen")');
-			logger.error('[Launcher] Then restart the app.');
+			console.log('\nIf another Karaoke Mugen instance is running, please kill it (process name is "node" or "KaraokeMugen")');
+			console.log('Also verify that no postgreSQL server is running on said port');
+			console.log('Then restart the app.');
 			process.exit(1);
 		}
 	});

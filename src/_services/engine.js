@@ -4,11 +4,13 @@ import {profile} from '../_utils/logger';
 import readlineSync from 'readline-sync';
 import logger from 'winston';
 import {getState, setState} from '../_utils/state';
+import {checkPG, killPG} from '../_utils/postgresql';
+import {on} from '../_utils/pubsub';
 
 //KM Modules
 import {createPreviews} from '../_webapp/previews';
 import {initUserSystem} from './user';
-import {initDBSystem, getStats} from '../_dao/database';
+import {initDBSystem, closeDB, getStats} from '../_dao/database';
 import {initFrontend} from '../_webapp/frontend';
 import {initFavoritesSystem} from './favorites';
 import {initOnlineSystem} from '../_webapp/online';
@@ -16,7 +18,7 @@ import {initPlayer, quitmpv} from './player';
 import {initStats} from './stats';
 import {karaGenerationBatch} from './kara_creation';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
-import {runBaseUpdate} from '../_updater/karabase_updater.js';
+import {runBaseUpdate} from '../_updater/karabase_updater';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 
 export async function initEngine() {
@@ -88,9 +90,25 @@ export function exit(rc) {
 
 	if (getState().player.ready) {
 		quitmpv();
-		logger.info('[Engine] Player has shut down');
+		logger.info('[Engine] Player has shutdown');
 	}
+	closeDB();
+	if (checkPG()) {
+		killPG().then(() => {
+			logger.info('[Engine] PostgreSQL has shutdown');
+			on('postgresShutdown', () => {
+				mataNe(rc);
+			});
+		}).catch((err) => {
+			logger.error(`[Engine] Failed to shutdown PostgreSQL : ${err}`);
+			mataNe(1);
+		});
+	} else {
+		mataNe(rc);
+	}
+}
 
+function mataNe(rc) {
 	console.log('\nMata ne !\n');
 	if (process.platform !== 'win32' || !process.stdout.isTTY) process.exit(rc);
 	if (rc !== 0) readlineSync.question('Press enter to exit', {hideEchoBack: true});

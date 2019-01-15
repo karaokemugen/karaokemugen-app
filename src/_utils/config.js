@@ -150,8 +150,10 @@ async function loadConfigFiles(appPath) {
 	config.appPath = appPath;
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
 	if (await asyncExists(versionFile)) await loadConfig(versionFile);
-	const dbConfig = await loadDBConfig(databaseConfigFile);
-	config.db = merge(config.db, dbConfig);
+	if (await asyncExists(databaseConfigFile)) {
+		const dbConfig = await loadDBConfig(databaseConfigFile);
+		config.db = merge(config.db, dbConfig);
+	}
 }
 
 async function loadDBConfig(configFile) {
@@ -225,7 +227,7 @@ export async function backupConfig() {
 
 export async function updateConfig(newConfig) {
 	savingSettings = true;
-	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale', 'db'];
+	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinPostgresPath','BinPostgresCTLExe', 'BinPostgresExe','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale', 'db'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))
