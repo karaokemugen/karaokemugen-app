@@ -189,7 +189,6 @@ export async function initDBSystem() {
 	// First login as super user to make sure user, database and extensions are created
 	try {
 		if (conf.db.prod.bundledPostgresBinary) {
-			logger.info('[DB] Launching bundled PostgreSQL...');
 			await initPG();
 			await initDB();
 		}

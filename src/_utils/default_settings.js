@@ -92,7 +92,7 @@ export const defaults = {
 			database: 'karaokemugen_app',
 			schema: 'public',
 			superuser: 'postgres',
-			superuserPassword: 'musubi',
+			superuserPassword: null,
 			bundledPostgresBinary: true
 	  	}
 	}
