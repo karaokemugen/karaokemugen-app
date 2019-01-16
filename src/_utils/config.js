@@ -153,11 +153,12 @@ async function loadConfigFiles(appPath) {
 	if (await asyncExists(databaseConfigFile)) {
 		const dbConfig = await loadDBConfig(databaseConfigFile);
 		config.db = merge(config.db, dbConfig);
+	} else {
+		await asyncWriteFile(databaseConfigFile, JSON.stringify(config.db, null, 2), 'utf-8');
 	}
 }
 
 async function loadDBConfig(configFile) {
-	if (!await asyncExists(configFile)) throw 'Unable to find database.json!';
 	const configData = await asyncReadFile(configFile, 'utf-8');
 	if (!testJSON(configData)) {
 		logger.error('[Config] Database config file is not valid JSON');
@@ -227,7 +228,7 @@ export async function backupConfig() {
 
 export async function updateConfig(newConfig) {
 	savingSettings = true;
-	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinPostgresPath','BinPostgresCTLExe', 'BinPostgresExe','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale', 'db'];
+	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinPostgresPath','BinPostgresCTLExe', 'BinPostgresInitExe','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale', 'db'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))

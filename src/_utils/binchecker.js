@@ -14,7 +14,7 @@ export async function checkBinaries(config) {
 
 	let requiredBinariesChecks = [];
 	requiredBinariesChecks.push(asyncRequired(binariesPath.BinffmpegPath));
-	if (config.db.prod.bundledPostgresBinary) requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.BinPostgresPath, binariesPath.BinPostgresExe)));
+	if (config.db.prod.bundledPostgresBinary) requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.BinPostgresPath, binariesPath.BinPostgresCTLExe)));
 	if (!config.isTest && !config.isDemo) requiredBinariesChecks.push(asyncRequired(binariesPath.BinmpvPath));
 
 	try {
@@ -34,7 +34,6 @@ function configuredBinariesForSystem(config) {
 			BinffmpegPath: resolve(config.appPath, config.BinffmpegWindows),
 			BinmpvPath: resolve(config.appPath, config.BinPlayerWindows),
 			BinPostgresPath: resolve(config.appPath, config.BinPostgresWindows),
-			BinPostgresExe: 'postgres.exe',
 			BinPostgresCTLExe: 'pg_ctl.exe',
 			BinPostgresInitExe: 'initdb.exe'
 		};
@@ -43,7 +42,6 @@ function configuredBinariesForSystem(config) {
 			BinffmpegPath: resolve(config.appPath, config.BinffmpegOSX),
 			BinmpvPath: resolve(config.appPath, config.BinPlayerOSX),
 			BinPostgresPath: resolve(config.appPath, config.BinPostgresOSX),
-			BinPostgresExe: 'postgres',
 			BinPostgresCTLExe: 'pg_ctl',
 			BinPostgresInitExe: 'initdb'
 		};
@@ -52,7 +50,6 @@ function configuredBinariesForSystem(config) {
 			BinffmpegPath: resolve(config.appPath, config.BinffmpegLinux),
 			BinmpvPath: resolve(config.appPath, config.BinPlayerLinux),
 			BinPostgresPath: resolve(config.appPath, config.BinPostgresLinux),
-			BinPostgresExe: 'postgres',
 			BinPostgresCTLExe: 'pg_ctl',
 			BinPostgresInitExe: 'initdb'
 		};

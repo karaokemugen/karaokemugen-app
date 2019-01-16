@@ -65,7 +65,7 @@ async function main() {
 	logger.debug(`[Launcher] SysPath : ${appPath}`);
 	logger.debug(`[Launcher] Locale : ${config.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${config.os}`);
-	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
+	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, 2));
 
 	// Checking binaries
 	await configureBinaries(config);

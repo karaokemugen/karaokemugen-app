@@ -208,7 +208,6 @@ export async function initDBSystem() {
 	const settings = await getSettings();
 	if (!settings.lastGeneration) doGenerate = true;
 	if (doGenerate) await generateDatabase();
-	await db().query('VACUUM');
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
 	logger.info(`Songs        : ${stats.karas} (${duration(stats.duration)})`);

@@ -3,7 +3,7 @@
 import execa from 'execa';
 import {resolve} from 'path';
 import {watch} from 'chokidar';
-import {asyncExists, asyncReadFile} from './files';
+import {asyncExists, asyncWriteFile, asyncReadFile} from './files';
 import {getConfig} from './config';
 import {emit} from './pubsub';
 import logger from 'winston';
@@ -23,16 +23,37 @@ export async function killPG() {
 	});
 }
 
+export async function updatePGConfPort() {
+	// Editing port in postgresql.conf
+	const conf = getConfig();
+	const pgConfFile = resolve(conf.appPath, conf.PathDB, 'postgres/postgresql.conf');
+	const pgConf = await asyncReadFile(pgConfFile, 'utf-8');
+	//Parsing the ini file by hand since it can't be parsed well with ini package
+	const pgConfArr = pgConf.split('\n');
+	const portFound = pgConfArr.some(l => {
+		return l.startsWith('port=');
+	});
+	if (!portFound) {
+		pgConfArr.push(`port=${conf.db.prod.port}`);
+	} else {
+		for (const i in pgConfArr) {
+			if (pgConfArr[i].startsWith('port=')) pgConfArr[i] = `port=${conf.db.prod.port}`;
+		};
+	}
+	await asyncWriteFile(pgConfFile, pgConfArr.join('\n'), 'utf-8');
+}
+
 export async function initPG() {
 	// If no data dir is present, we're going to init one
 	const conf = getConfig();
 	const pgDataDir = resolve(conf.appPath, conf.PathDB, 'postgres');
-	if (!await asyncExists(resolve(pgDataDir, 'PG_VERSION'))) {
+	if (!await asyncExists(pgDataDir)) {
 		logger.info('[DB] Creating initial PostgreSQL data...');
 		await execa(resolve(conf.BinPostgresPath, conf.BinPostgresInitExe), [ '-U', conf.db.prod.superuser, '-E', 'UTF-8', '-D', pgDataDir ], {
 			cwd: resolve(conf.appPath, conf.BinPostgresPath)
 		});
 	}
+	await updatePGConfPort();
 	logger.info('[DB] Launching bundled PostgreSQL...');
 	return new Promise((OK, NOK) => {
 		try {
