@@ -202,11 +202,14 @@ export async function initDBSystem() {
 	await importFromSQLite();
 	logger.info('[DB] Checking data files...');
 	if (!await compareKarasChecksum()) {
-		logger.info('[DB] Kara files have changed: database generation triggered');
+		logger.info('[DB] Data files have changed: database generation triggered');
 		doGenerate = true;
 	}
 	const settings = await getSettings();
-	if (!settings.lastGeneration) doGenerate = true;
+	if (!settings.lastGeneration) {
+		logger.info('[DB] Database is brand new: database generation triggered');
+		doGenerate = true;
+	}
 	if (doGenerate) await generateDatabase();
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
@@ -217,8 +220,6 @@ export async function initDBSystem() {
 	logger.info(`Kara Authors : ${stats.authors}`);
 	logger.info(`Playlists    : ${stats.playlists}`);
 	logger.info(`Songs played : ${stats.played}`);
-	await dumpPG();
-	console.log('Dumped')
 	return true;
 }
 
