@@ -38,6 +38,18 @@ function setConfig(config, setting, value) {
 	return pgConfArr.join('\n');
 }
 
+export async function dumpPG() {
+	const conf = getConfig();
+	try {
+		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresDumpExe), [ '-U', conf.db.prod.user, '-p', conf.db.prod.port, '-f', resolve(conf.appPath, 'karaokemugen.pgdump') , conf.db.prod.database ], {
+			cwd: resolve(conf.appPath, conf.BinPostgresPath)
+		});
+	} catch(err) {
+		throw `Dump failed : ${err}`;
+	}
+
+}
+
 export async function updatePGConf() {
 	// Editing port in postgresql.conf
 	const conf = getConfig();
@@ -47,42 +59,48 @@ export async function updatePGConf() {
 	pgConf = setConfig(pgConf, 'port', conf.db.prod.port);
 	pgConf = setConfig(pgConf, 'logging_collector', 'on');
 	pgConf = setConfig(pgConf, 'log_directory', `'${resolve(conf.appPath, 'logs/').replace(/\\/g,'/')}'`);
-	pgConf = setConfig(pgConf, 'log_filename', '\'postgresql-%Y-%m-%d.log\'')
+	pgConf = setConfig(pgConf, 'log_filename', '\'postgresql-%Y-%m-%d.log\'');
 	await asyncWriteFile(pgConfFile, pgConf, 'utf-8');
+}
+
+async function checkPIDFile(pidFile) {
+	if (!await asyncExists(pidFile)) return false;
+	const pidData = await asyncReadFile(pidFile, 'utf-8');
+	const contents = pidData.split('\n');
+	if (contents[7] && contents[7].includes('ready')) {
+		started = true;
+		return true;
+	} else {
+		return false;
+	}
 }
 
 export async function initPG() {
 	// If no data dir is present, we're going to init one
 	const conf = getConfig();
 	const pgDataDir = resolve(conf.appPath, conf.PathDB, 'postgres');
-	if (!await asyncExists(pgDataDir)) {
-		logger.info('[DB] Creating initial PostgreSQL data...');
-		await execa(resolve(conf.BinPostgresPath, conf.BinPostgresInitExe), [ '-U', conf.db.prod.superuser, '-E', 'UTF-8', '-D', pgDataDir ], {
-			cwd: resolve(conf.appPath, conf.BinPostgresPath)
-		});
-	}
 	await updatePGConf();
+	const pidFile = resolve(pgDataDir, 'postmaster.pid');
+	const pidWatcher = watch(pidFile, {useFsEvents: false});
+	pidWatcher.on('unlink', () => {
+		emit('postgresShutdown');
+	});
+	if (await checkPIDFile(pidFile)) {
+		logger.info('[DB] Bundled PostgreSQL is already running');
+		return true;
+	}
 	logger.info('[DB] Launching bundled PostgreSQL...');
 	return new Promise((OK, NOK) => {
 		try {
-			const pidFile = resolve(pgDataDir, 'postmaster.pid');
-			const pidWatcher = watch(pidFile, {useFsEvents: false});
+			pidWatcher.on('change', () => {
+				checkPIDFile(pidFile).then(() => {
+					if (started) OK();
+				});
+			});
 			// 30 seconds timeout before aborting
 			setTimeout(() => {
 				if (!started) NOK('Bundled PostgreSQL startup failed : Timeout (check logs)');
 			}, 30000);
-			pidWatcher.on('change', () => {
-				asyncReadFile(pidFile, 'utf-8').then(pidData => {
-					const contents = pidData.split('\n');
-					if (contents[7] && contents[7].includes('ready')) {
-						if (!started) OK();
-						started = true;
-					}
-				});
-			});
-			pidWatcher.on('unlink', () => {
-				emit('postgresShutdown');
-			});
 			execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), ['start', '-D', pgDataDir ], {
 				cwd: resolve(conf.appPath, conf.BinPostgresPath)
 			});

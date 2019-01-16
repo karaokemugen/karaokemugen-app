@@ -172,7 +172,7 @@ async function checkPaths(config) {
 function verifyOpenPort(port) {
 	const server = createServer();
 	server.once('error', err => {
-		if (err.code === 'EADDRINUSE') {
+		if (err) {
 			logger.error(`[Launcher] Port ${port} is already in use.`);
 			console.log('\nIf another Karaoke Mugen instance is running, please kill it (process name is "node" or "KaraokeMugen")');
 			console.log('Also verify that no postgreSQL server is running on said port');

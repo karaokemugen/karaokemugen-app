@@ -10,7 +10,7 @@ import {compareKarasChecksum, run as generateDB} from '../_services/generation';
 import DBMigrate from 'db-migrate';
 import {resolve} from 'path';
 import {asyncRename, asyncExists} from '../_utils/files';
-import {initPG} from '../_utils/postgresql';
+import {dumpPG, initPG} from '../_utils/postgresql';
 import {on} from '../_utils/pubsub';
 
 const sql = require('./sql/database');
@@ -217,6 +217,8 @@ export async function initDBSystem() {
 	logger.info(`Kara Authors : ${stats.authors}`);
 	logger.info(`Playlists    : ${stats.playlists}`);
 	logger.info(`Songs played : ${stats.played}`);
+	await dumpPG();
+	console.log('Dumped')
 	return true;
 }
 

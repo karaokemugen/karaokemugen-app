@@ -13,6 +13,7 @@ import {resetViewcounts} from '../_dao/kara';
 import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
+import {dumpPG} from '../_utils/postgres';
 import logger from 'winston';
 
 export default function systemController(router) {
@@ -23,6 +24,14 @@ export default function systemController(router) {
 		res.json(getConfig());
 	});
 
+	router.post('/system/dump', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await dumpPG();
+			res.status(200).send('Database dumped to karaokemugen.pgdump');
+		} catch(err) {
+			res.status(500).send(`Error dumping database : ${err}`);
+		}
+	});
 	router.put('/system/config', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			const publicSettings = editSetting(req.body.setting, req.body.value);
