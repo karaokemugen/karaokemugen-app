@@ -115,15 +115,15 @@ class SeriesList extends Component {
 		key: 'i18n',
 		render: i18n_names => {
 			let names = [];
-			Object.keys(i18n_names).forEach((lang) => {
-				const isLongTag = i18n_names[lang].length > 40;
-				const i18n_name = `[${lang.toUpperCase()}] ${i18n_names[lang]}`;
+			i18n_names.forEach((i18n) => {
+				const isLongTag = i18n.name.length > 40;
+				const i18n_name = `[${i18n.lang.toUpperCase()}] ${i18n.name}`;
 				const tagElem = (
 					<Tag>
 						{isLongTag ? `${i18n_name.slice(0, 20)}...` : i18n_name}
 					</Tag>
 				);
-				names.push(isLongTag ? (<Tooltip title={i18n_name[lang]} key={i18n_name[lang]}>{tagElem}</Tooltip>) : tagElem);
+				names.push(isLongTag ? (<Tooltip title={i18n.name} key={i18n.lang}>{tagElem}</Tooltip>) : tagElem);
 				return true;
 			});
 			return names;

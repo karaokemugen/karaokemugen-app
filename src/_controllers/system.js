@@ -24,14 +24,6 @@ export default function systemController(router) {
 		res.json(getConfig());
 	});
 
-	router.post('/system/dump', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
-		try {
-			await dumpPG();
-			res.status(200).send('Database dumped to karaokemugen.pgdump');
-		} catch(err) {
-			res.status(500).send(`Error dumping database : ${err}`);
-		}
-	});
 	router.put('/system/config', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			const publicSettings = editSetting(req.body.setting, req.body.value);
@@ -82,7 +74,7 @@ export default function systemController(router) {
 	});
 
 	router.get('/system/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getKaras(req.query.filter, req.lang, 0, 99999999999999999, null, null, req.authToken)
+		getKaras(req.query.filter, req.lang, 0, 99999999999999, null, null, req.authToken)
 			.then(karas => res.json(karas))
 			.catch(err => {
 				res.status(500).send(`Error while fetching karas: ${err}`);
@@ -172,6 +164,15 @@ export default function systemController(router) {
 		deleteUserById(req.params.userId)
 			.then(() => res.status(200).send('User deleted'))
 			.catch(err => res.status(500).send(`Error deleting user: ${err}`));
+	});
+
+	router.post('/system/db/dump', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await dumpPG();
+			res.status(200).send('Database dumped to karaokemugen.pgdump');
+		} catch(err) {
+			res.status(500).send(`Error dumping database : ${err}`);
+		}
 	});
 
 	router.post('/system/db/resetviewcounts', requireAuth, requireValidUser, requireAdmin, (req, res) => {

@@ -24,7 +24,7 @@ class KaraList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/system/karas', { params: { filter: this.state.filter }})
+		axios.get('/api/system/karas', { params: { filter: this.state.filter,  }})
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data.content});
@@ -86,20 +86,36 @@ class KaraList extends Component {
 	}
 
 	columns = [{
-		title: 'Language',
-		dataIndex: 'language',
-		key: 'language',
-		render: language => (language.toUpperCase())
+		title: 'Language(s)',
+		dataIndex: 'languages',
+		key: 'languages',
+		render: languages => {
+			const ret = languages.map(e => {
+				return e.name;
+			});
+			return ret.join(', ').toUpperCase();
+		}
 	}, {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
 		key: 'serie',
-		render: (serie, record) => (serie || record.singer)
+		render: (serie, record) => {
+			const singers = record.singers.map(e => {
+				return e.name;
+			});
+			return serie || singers.join(', ');
+		}
 	}, {
 		title: 'Type',
 		dataIndex: 'songtype',
 		key: 'songtype',
-		render: (songtype, record) => (songtype.replace('TYPE_','') + ' ' + record.songorder)
+		render: (songtypes, record) => {
+			const types = songtypes.map(e => {
+				return e.name;
+			});
+			const songorder = record.songorder || '';
+			return types.join(', ').replace('TYPE_','') + ' ' + songorder;
+		}
 	}, {
 		title: 'Title',
 		dataIndex: 'title',

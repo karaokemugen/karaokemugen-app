@@ -107,6 +107,19 @@ class Database extends Component {
 			});
 	}
 
+	dbdump() {
+		this.props.loading(true);
+		axios.post('/api/system/db/dump')
+			.then(res => {
+				this.props.loading(false);
+				this.props.infoMessage(res.data);
+			})
+			.catch(err => {
+				this.props.loading(false);
+				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			});
+	}
+
 	dbresetviewcounts() {
 		this.props.loading(true);
 		axios.post('/api/system/db/resetviewcounts')
@@ -154,6 +167,15 @@ class Database extends Component {
 						active={!this.props.loadingActive}
 					>
 						Update your karaoke base files from Shelter
+					</Button>
+				</div>
+				<div>
+					<Button
+						type='primary'
+						onClick={this.dbdump.bind(this)}
+						active={!this.props.loadingActive}
+					>
+						Dump database to a file
 					</Button>
 				</div>
 				<div>

@@ -20,15 +20,15 @@ class KaraForm extends Component {
 			authorDS: [],
 			groupsDS: [],
 			tagDS: [],
-			singer: [],
-			author: null,
+			singers: [],
+			authors: null,
 			tags: ['TAG_ANIME', 'TAG_TVSHOW'],
 			series: [],
-			creator: [],
-			songwriter: [],
+			creators: [],
+			songwriters: [],
 			groups: [],
-			songtype: 'OP',
-			lang: ['jpn']
+			songtypes: 'OP',
+			langs: ['jpn']
 		};
 		timestamp.round = true;
 		// If kara is being edited (already has a dateadded) author won't be automatically filled if there's no author already.
@@ -38,15 +38,15 @@ class KaraForm extends Component {
 			localStorage.getItem('username') !== 'admin' ? this.state.author = [localStorage.getItem('username')] : this.state.author = [];
 		}
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
-		if (this.props.kara.singer && this.props.kara.singer !== 'NO_TAG') this.state.singer = this.props.kara.singer.split(',');
+		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singer.includes('NO_TAG')) this.state.singer = this.props.kara.singers;
 		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
-		if (this.props.kara.groups) this.state.groups = this.props.kara.groups.split(',');
-		if (this.props.kara.songwriter && this.props.kara.songwriter !== 'NO_TAG') this.state.songwriter = this.props.kara.songwriter.split(',');
-		if (this.props.kara.author && this.props.kara.author !== 'NO_TAG') this.state.author = this.props.kara.author.split(',');
-		if (this.props.kara.lang) this.state.lang = this.props.kara.lang.split(',');
-		if (this.props.kara.creator && this.props.kara.creator !== 'NO_TAG') this.state.creator = this.props.kara.creator.split(',');
-		if (this.props.kara.type) this.state.songtype =  this.props.kara.type.replace('TYPE_','');
-		if (this.props.kara.tags && this.props.kara.tags !== 'NO_TAG') this.state.tags = this.props.kara.tags.split(',');
+		if (this.props.kara.groups && this.props.kara.groups.length > 0 && !this.props.kara.groups.includes('NO_TAG')) this.state.groups = this.props.kara.groups;
+		if (this.props.kara.songwriters && this.props.kara.songwriters.length  > 0 && !this.props.kara.songwriters.includes('NO_TAG')) this.state.songwriters = this.props.kara.songwriters;
+		if (this.props.kara.authors && this.props.kara.authors.length > 0 && !this.props.kara.authors.includes('NO_TAG')) this.state.authors = this.props.kara.authors;
+		if (this.props.kara.langs && this.props.kara.langs.length > 0 && !this.props.kara.langs.includes('NO_TAG')) this.state.langs = this.props.kara.langs;
+		if (this.props.kara.creators && this.props.kara.creators.length > 0 && !this.props.kara.creators.includes('NO_TAG')) this.state.creators = this.props.kara.creators;
+		if (this.props.kara.types.length > 0) this.state.songtypes =  this.props.kara.types[0].replace('TYPE_','');
+		if (this.props.kara.tags && this.props.kara.tags.length > 0 && !this.props.kara.tags.includes('NO_TAG')) this.state.tags = this.props.kara.tags;
 		if (this.props.kara.mediafile_old) {
 			this.state.overwrite = true;
 			this.state.mediafileList = [{
@@ -236,7 +236,7 @@ class KaraForm extends Component {
 				>
 					{getFieldDecorator('type', {
 						rules: [{required: true}],
-						initialValue: this.state.songtype || 'OP'
+						initialValue: this.state.songtypes || 'OP'
 					})(<Select placeholder={'Song type'}
 						onChange={ this.onChangeType }
 					>
@@ -282,7 +282,7 @@ class KaraForm extends Component {
 				>
 					{getFieldDecorator('lang', {
 						rules: [{required: true}],
-						initialValue: this.state.lang
+						initialValue: this.state.langs
 					})(<EditableTagGroup
 						search={'lang'}
 						onChange={ (tags) => this.props.form.setFieldsValue({ lang: tags.join(',') }) }
@@ -315,7 +315,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('singer', {
-						initialValue: this.state.singer,
+						initialValue: this.state.singers,
 						rules: [{
 							required: !this.state.seriesRequired,
 							message: 'Singer is mandatory if song type is MV or LIVE'
@@ -338,7 +338,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('songwriter', {
-						initialValue: this.state.songwriter
+						initialValue: this.state.songwriters
 					})(<EditableTagGroup
 						tagType={8}
 						search={'tag'}
@@ -357,7 +357,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('creator', {
-						initialValue: this.state.creator
+						initialValue: this.state.creators
 					})(<EditableTagGroup
 						tagType={4}
 						search={'tag'}
@@ -376,7 +376,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('author', {
-						initialValue: this.state.author
+						initialValue: this.state.authors
 					})(<EditableTagGroup
 						tagType={6}
 						search={'tag'}
