@@ -23,24 +23,32 @@ export async function killPG() {
 	});
 }
 
-export async function updatePGConfPort() {
+function setConfig(config, setting, value) {
+	const pgConfArr = config.split('\n');
+	const found = pgConfArr.some(l => {
+		return l.startsWith(`${setting}=`);
+	});
+	if (!found) {
+		pgConfArr.push(`${setting}=${value}`);
+	} else {
+		for (const i in pgConfArr) {
+			if (pgConfArr[i].startsWith(`${setting}=`)) pgConfArr[i] = `${setting}=${value}`;
+		};
+	}
+	return pgConfArr.join('\n');
+}
+
+export async function updatePGConf() {
 	// Editing port in postgresql.conf
 	const conf = getConfig();
 	const pgConfFile = resolve(conf.appPath, conf.PathDB, 'postgres/postgresql.conf');
-	const pgConf = await asyncReadFile(pgConfFile, 'utf-8');
+	let pgConf = await asyncReadFile(pgConfFile, 'utf-8');
 	//Parsing the ini file by hand since it can't be parsed well with ini package
-	const pgConfArr = pgConf.split('\n');
-	const portFound = pgConfArr.some(l => {
-		return l.startsWith('port=');
-	});
-	if (!portFound) {
-		pgConfArr.push(`port=${conf.db.prod.port}`);
-	} else {
-		for (const i in pgConfArr) {
-			if (pgConfArr[i].startsWith('port=')) pgConfArr[i] = `port=${conf.db.prod.port}`;
-		};
-	}
-	await asyncWriteFile(pgConfFile, pgConfArr.join('\n'), 'utf-8');
+	pgConf = setConfig(pgConf, 'port', conf.db.prod.port);
+	pgConf = setConfig(pgConf, 'logging_collector', 'on');
+	pgConf = setConfig(pgConf, 'log_directory', `'${resolve(conf.appPath, 'logs/').replace(/\\/g,'/')}'`);
+	pgConf = setConfig(pgConf, 'log_filename', '\'postgresql-%Y-%m-%d.log\'')
+	await asyncWriteFile(pgConfFile, pgConf, 'utf-8');
 }
 
 export async function initPG() {
@@ -53,7 +61,7 @@ export async function initPG() {
 			cwd: resolve(conf.appPath, conf.BinPostgresPath)
 		});
 	}
-	await updatePGConfPort();
+	await updatePGConf();
 	logger.info('[DB] Launching bundled PostgreSQL...');
 	return new Promise((OK, NOK) => {
 		try {
@@ -67,19 +75,16 @@ export async function initPG() {
 				asyncReadFile(pidFile, 'utf-8').then(pidData => {
 					const contents = pidData.split('\n');
 					if (contents[7] && contents[7].includes('ready')) {
+						if (!started) OK();
 						started = true;
-						OK();
 					}
 				});
 			});
 			pidWatcher.on('unlink', () => {
 				emit('postgresShutdown');
 			});
-			const stream = execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), ['start', '-D', pgDataDir ], {
+			execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), ['start', '-D', pgDataDir ], {
 				cwd: resolve(conf.appPath, conf.BinPostgresPath)
-			}).stderr;
-			stream.on('data', data => {
-				logger.debug(`[Postgres] ${data.toString()}`);
 			});
 		} catch(err) {
 			NOK(`Bundled PostgreSQL startup failed : ${err}`);
