@@ -7541,3 +7541,360 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
+
+ 	/**
+ * @api {get} /public/favorites View own favorites
+ * @apiName GetFavorites
+ * @apiVersion 2.3.1
+ * @apiGroup Favorites
+ * @apiPermission own
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_serie_orig": "Dynasty Warriors 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": "NO_TAG",
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
+ *               "serie_altname": "DW3/DW 3",
+ *               "serie_orig": "Dynasty Warriors 3",
+ *               "singer": "NO_TAG",
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": "NO_TAG",
+ *               "title": "Circuit",
+ * 				 "username": "admin",
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError FAVORITES_VIEW_ERROR Unable to fetch list of karaokes in favorites
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+	/**
+ * @api {get} /favorites/export Export favorites
+ * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
+ * @apiName getFavoritesExport
+ * @apiVersion 2.2.0
+ * @apiGroup Favorites
+ * @apiPermission public
+ * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "Header": {
+ *           "description": "Karaoke Mugen Playlist File",
+ *           "version": 2
+ *       },
+ *       "PlaylistContents": [
+ *           {
+ *               "flag_playing": 1,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b"
+ *           },
+ *           {
+ *               "kid": "6da96a7d-7159-4ea7-a5ee-1d78a6eb44dd"
+ *           },
+ *           {
+ *               "kid": "5af7ba4c-2325-451d-a24f-e7fd7c2d3ba8"
+ *           },
+ *           {
+ *               "kid": "e0206f48-0f51-44e3-bf9a-b651916d0c05"
+ *           }
+ *       ],
+ *       "PlaylistInformation": {
+ *           "created_at": 1508936812,
+ *           "flag_visible": 0,
+ *           "modified_at": 1508936821,
+ *           "name": "Test",
+ *           "time_left": 0
+ *       }
+ *   }
+ * }
+ * @apiError FAVORITES_EXPORT_ERROR Unable to export favorites
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "FAVORITES_EXPORT_ERROR"
+ * }
+ */
+
+	/**
+ * @api {get} /public/users List users
+ * @apiName GetUsers
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccess {String} data/login User's login
+ * @apiSuccess {String} data/nickname User's nickname
+ * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
+ * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
+ * @apiSuccess {Number} data/flag_admin Is the user Admin ?
+ * @apiSuccess {Number} data/flag_online Is the user an online account ?
+ * @apiSuccess {Number} data/type Type of account (1 = user, 2 = guest)
+ * @apiSuccess {Number} data/last_login Last login time in UNIX timestamp.
+ * @apiSuccess {Number} data/user_id User's ID in the database
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "NORM_nickname": "Administrator",
+ *           "avatar_file": "",
+ *           "flag_admin": 1,
+ *           "flag_online": 0,
+ *           "type": 1,
+ *           "last_login": 0,
+ *           "login": "admin",
+ *           "nickname": "Administrator",
+ *           "user_id": 1
+ *       },
+ *       {
+ *           "NORM_nickname": "test",
+ *           "avatar_file": "user/3.jpg",
+ *           "flag_admin": 0,
+ *           "flag_online": 0,
+ *           "type": 1,
+ *           "last_login": 1511953198,
+ *           "login": "test",
+ *           "nickname": "test",
+ *           "user_id": 3
+ *       }
+ *   ]
+ * }
+ * @apiError USER_LIST_ERROR Unable to list users
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "USER_LIST_ERROR",
+ *   "message": null
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+	/**
+ * @api {get} public/songpoll Get current poll status
+ * @apiName GetPoll
+ * @apiVersion 2.1.0
+ * @apiGroup Song Poll
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+
+ * @apiSuccess {Array} data/poll Array of Playlistcontents objects (see `/public/playlist/current/karas` for sample)
+ * @apiSuccess {Number} data/poll/votes Number of votes this song has earned
+ * @apiSuccess {Boolean} data/flag_uservoted Has the user already voted for this poll?
+ * @apiSuccess {Number} data/timeLeft Miliseconds before vote ends
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "flag_uservoted": false,
+ *       "infos": {
+ *           "count": 4,
+ *           "from": 0,
+ *           "to": 999999
+ *       },
+ *       "poll": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": "MADHOUSE",
+ *               "NORM_pseudo_add": "Administrator",
+ *               "NORM_serie": "Death Parade",
+ *               "NORM_serie_altname": null,
+ *               "NORM_singer": "NoisyCell",
+ *               "NORM_songwriter": "Ryosuke,Ryo",
+ *               "NORM_title": "Last Theater",
+ *               "author": "NO_TAG",
+ *               "created_at": 1520026875.38,
+ *               "creator": "MADHOUSE",
+ *               "duration": 71,
+ *               "flag_blacklisted": 0,
+ *               "flag_dejavu": 0,
+ *               "flag_playing": 0,
+ *               "flag_whitelisted": 0,
+ *               "gain": -8.62,
+ *               "kara_id": 1452,
+ *               "kid": "75b80966-ac1e-42db-bf2f-b97e0d84fe1d",
+ *               "language": "eng",
+ *               "language_i18n": "Anglais",
+ *               "lastplayed_at": null,
+ *               "misc": "NO_TAG",
+ *               "misc_i18n": "No info",
+ *               "playlistcontent_id": 19,
+ *               "pos": 14,
+ *               "pseudo_add": "Administrator",
+ *               "serie": "Death Parade",
+ *               "serie_altname": null,
+ *               "singer": "NoisyCell",
+ *               "songorder": 1,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": "Ryosuke,Ryo",
+ *               "title": "Last Theater",
+ *               "username": "admin",
+ *               "videofile": "ANG - Death Parade - ED1 - Last Theater.avi",
+ *               "viewcount": 0,
+ *               "votes": 0,
+ *               "year": "2015"
+ *           },
+ *           ...
+ *       ],
+ * 		 "timeLeft": 25498
+ *   }
+ * }
+ * @apiError POLL_LIST_ERROR Unable to list current poll
+ * @apiError POLL_NOT_ACTIVE No poll is in progress
+ * @apiError POLL_ALREADY_VOTED This user has already voted
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "POLL_LIST_ERROR",
+ *   "message": null
+ * }
+ */
+
+ 	/**
+ * @api {post} public/songpoll Vote in a poll
+ * @apiName PostPoll
+ * @apiVersion 2.1.0
+ * @apiGroup Song Poll
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} [playlistcontent_id] PLC ID to vote for
+
+ * @apiSuccess {Array} data/poll Array of Playlistcontents objects (see `/public/playlist/current/karas` for sample)
+ * @apiSuccess {Number} data/poll/votes Number of votes this song has earned
+ * @apiSuccess {Boolean} data/flag_uservoted Has the user already voted for this poll?
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "flag_uservoted": false,
+ *       "infos": {
+ *           "count": 4,
+ *           "from": 0,
+ *           "to": 999999
+ *       },
+ *       "poll": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": "MADHOUSE",
+ *               "NORM_pseudo_add": "Administrator",
+ *               "NORM_serie": "Death Parade",
+ *               "NORM_serie_altname": null,
+ *               "NORM_singer": "NoisyCell",
+ *               "NORM_songwriter": "Ryosuke,Ryo",
+ *               "NORM_title": "Last Theater",
+ *               "author": "NO_TAG",
+ *               "created_at": 1520026875.38,
+ *               "creator": "MADHOUSE",
+ *               "duration": 71,
+ *               "flag_blacklisted": 0,
+ *               "flag_dejavu": 0,
+ *               "flag_playing": 0,
+ *               "flag_whitelisted": 0,
+ *               "gain": -8.62,
+ *               "kara_id": 1452,
+ *               "kid": "75b80966-ac1e-42db-bf2f-b97e0d84fe1d",
+ *               "language": "eng",
+ *               "language_i18n": "Anglais",
+ *               "lastplayed_at": null,
+ *               "misc": null,
+ *               "misc_i18n": null,
+ *               "playlistcontent_id": 19,
+ *               "pos": 14,
+ *               "pseudo_add": "Administrator",
+ *               "serie": "Death Parade",
+ *               "serie_altname": null,
+ *               "singer": "NoisyCell",
+ *               "songorder": 1,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": "Ryosuke,Ryo",
+ *               "title": "Last Theater",
+ *               "username": "admin",
+ *               "videofile": "ANG - Death Parade - ED1 - Last Theater.avi",
+ *               "viewcount": 0,
+ *               "votes": 0,
+ *               "year": "2015"
+ *           },
+ *           ...
+ *       ]
+ *   }
+ * }
+ * @apiError POLL_LIST_ERROR Unable to list current poll
+ * @apiError POLL_NOT_ACTIVE No poll is in progress
+ * @apiError POLL_ALREADY_VOTED This user has already voted
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "POLL_LIST_ERROR",
+ *   "message": null
+ * }
+ */
