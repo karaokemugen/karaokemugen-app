@@ -8,6 +8,7 @@ import { getRemoteToken } from '../_dao/user';
 import got from 'got';
 import { getKaraMini } from '../_dao/kara';
 import { now } from 'unix-timestamp';
+import {getConfig} from '../_common/utils/config';
 
 export async function fetchAndAddFavorites(instance, token, username, nickname) {
 	try {
@@ -66,6 +67,7 @@ export async function getFavorites(token, filter, lang, from, size) {
 export async function convertToRemoteFavorites(username) {
 	// This is called when converting a local account to a remote one
 	// We thus know no favorites exist remotely.
+	if (!getConfig().OnlineUsers) return true;
 	try {
 		const favorites = await getFavorites({username: username});
 		const addFavorites = [];
@@ -96,11 +98,13 @@ export async function addToFavorites(username, kara_id) {
 }
 
 async function manageFavoriteInInstance(action, username, kara_id) {
+	// If OnlineUsers is disabled, we return early and do not try to update favorites online.
+	if (!getConfig().OnlineUsers) return true;
 	const instance = username.split('@')[1];
 	const remoteToken = getRemoteToken(username);
 	const kara = await getKaraMini(kara_id);
 	try {
-		await got(`http://${instance}/api/favorites`, {
+		return await got(`http://${instance}/api/favorites`, {
 			method: action,
 			body: {
 				kid: kara.kid

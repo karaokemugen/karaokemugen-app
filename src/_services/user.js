@@ -107,42 +107,45 @@ export async function checkLogin(username, password) {
 	if (username.includes('@')) {
 		try {
 			// If username has a @, check its instance for existence
-			if (!conf.OnlineUsers) throw 'Online users are not allowed right now';
-			const instance = username.split('@')[1];
-			remoteUserID = await remoteLogin(username, password);
-			const remoteUser = await getRemoteUser(username, remoteUserID.token);
-			// Check if user exists. If it does not, create it.
-			user = await findUserByName(username);
-			if (!user) {
-				await createUser({
-					login: username,
+			// If OnlineUsers is disabled, accounts are connected with
+			// their local version if it exists already.
+			if (conf.OnlineUsers) {
+				const instance = username.split('@')[1];
+				remoteUserID = await remoteLogin(username, password);
+				const remoteUser = await getRemoteUser(username, remoteUserID.token);
+				// Check if user exists. If it does not, create it.
+				user = await findUserByName(username);
+				if (!user) {
+					await createUser({
+						login: username,
+						password: password
+					}, {
+						createRemote: false
+					});
+				}
+				// Update user with new data
+				let avatar_file = null;
+				if (remoteUser.avatar_file !== 'blank.png') {
+					avatar_file = {
+						path: await fetchRemoteAvatar(instance, remoteUser.avatar_file)
+					};
+				}
+				await editUser(username,{
+					bio: remoteUser.bio,
+					url: remoteUser.url,
+					email: remoteUser.email,
+					nickname: remoteUser.nickname,
 					password: password
-				}, {
-					createRemote: false
+				},
+				avatar_file,
+				'user',
+				{
+					editRemote: false
 				});
+				upsertRemoteToken(username, remoteUserID.token);
+				// Download and add all favorites
+				await fetchAndAddFavorites(instance, remoteUserID.token, username, remoteUser.nickname);
 			}
-			// Update user with new data
-			let avatar_file = null;
-			if (remoteUser.avatar_file !== 'blank.png') {
-				avatar_file = {
-					path: await fetchRemoteAvatar(instance, remoteUser.avatar_file)
-				};
-			}
-			await editUser(username,{
-				bio: remoteUser.bio,
-				url: remoteUser.url,
-				email: remoteUser.email,
-				nickname: remoteUser.nickname,
-				password: password
-			},
-			avatar_file,
-			'user',
-			{
-				editRemote: false
-			});
-			upsertRemoteToken(username, remoteUserID.token);
-			// Download and add all favorites
-			await fetchAndAddFavorites(instance, remoteUserID.token, username, remoteUser.nickname);
 		} catch(err) {
 			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${err}`);
 		}
@@ -247,7 +250,7 @@ export async function editUser(username, user, avatar, role, opts = {
 		}
 		await db.editUser(user);
 		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);
-		if (user.login.includes('@') && opts.editRemote) await editRemoteUser(user);
+		if (user.login.includes('@') && opts.editRemote && getConfig().OnlineUsers) await editRemoteUser(user);
 		// Modifying passwords is not allowed in demo mode
 		if (user.password && !getConfig().isDemo) {
 			user.password = hashPassword(user.password);
