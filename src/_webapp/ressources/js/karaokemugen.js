@@ -992,7 +992,7 @@ var settingsNotUpdated;
 		$('.profileConvert').click(function() {
 
 			displayModal('custom', i18n.__('PROFILE_CONVERT'),
-				'<input type="text"  name="modalLoginServ" value="' + onlineHost + '"//>'
+				'<input type="text"  name="modalLoginServ" value="' + settings.OnlineHost + '"//>'
                 + '<input type="password" placeholder="' + i18n.__('PROFILE_PASSWORD_AGAIN') + '" class="form-control" name="password">', function(data){
                                                                 
 					var msgData =  { instance: data.modalLoginServ, password : data.password };
@@ -2219,13 +2219,6 @@ var settingsNotUpdated;
 
 		showedLoginAfter401 = false;
 		
-		if(logInfos.onlineToken) {
-			$('.profileConvert').hide();
-		} else {
-			$('.profileConvert').show();
-		}
-
-
 		$.ajax({ url: 'public/stats' }).done(function (data) {
 			kmStats = data;
 			if(scope === 'public') {
@@ -2251,6 +2244,7 @@ var settingsNotUpdated;
 
 		if(settingsUpdating) {
 			settingsUpdating.done( function() {
+
 				if(scope === 'public' && settings.EngineSongPoll) {
 					ajx('GET', 'public/songpoll', {}, function(data) {
 						$('.showPoll').toggleClass('hidden');

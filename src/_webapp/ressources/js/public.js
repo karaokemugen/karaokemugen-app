@@ -113,7 +113,14 @@ getPublicSettings = function() {
 			window.location.reload();
 		}
 
-		playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
+        playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
+        
+        $('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
+        if(!data.OnlineUsers || logInfos.onlineToken) {
+            $('.profileConvert').hide();
+        } else {
+            $('.profileConvert').show();
+        }
 
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
 			playlistToAddId = data.playlist_id;
