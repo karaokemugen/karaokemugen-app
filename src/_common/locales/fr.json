@@ -535,7 +535,7 @@
 			"OUTRO": "Cet envoi a lieu à chaque démarrage puis à chaque heure d'utilisation. Vous pouvez consulter les informations envoyées dans le fichier log de Karaoke Mugen."
 		},
 		"CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
-		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?",
+		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?"
 	},
     "PROFILE_CONVERT": "Passer mon profil en ligne",
     "PROFILE_CONVERTED": "Votre profil a bien été mis en ligne"
