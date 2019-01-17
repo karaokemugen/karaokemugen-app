@@ -319,7 +319,7 @@ CREATE INDEX idx_ak_tags ON all_karas(tags);
 
 
 CREATE MATERIALIZED VIEW all_tags AS
-SELECT pk_id_tag AS tag_id, tagtype, name, slug,
+SELECT pk_id_tag AS tag_id, tagtype, name, slug, i18n,
  (SELECT COUNT(fk_id_kara) FROM kara_tag WHERE fk_id_tag = pk_id_tag) AS karacount
 FROM tag
 ORDER BY tagtype, name;

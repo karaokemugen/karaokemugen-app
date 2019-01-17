@@ -38,8 +38,8 @@ function filterTags(tags, filter, type) {
 	return tags;
 }
 
-export async function formatTagList(tagList, lang, from, count) {
-	tagList = await translateTags(tagList, lang);
+export async function formatTagList(tagList, from, count) {
+	tagList = await translateTags(tagList);
 	return {
 		infos: {
 			count: count,
@@ -50,12 +50,11 @@ export async function formatTagList(tagList, lang, from, count) {
 	};
 }
 
-export async function getTags(lang, filter, type, from, size) {
+export async function getTags(filter, type, from, size) {
 	profile('getTags');
 	let tags = await getAllTags();
-	tags = await translateTags(tags, lang);
 	tags = filterTags(tags, filter, type);
-	const ret = await formatTagList(tags.slice(from, from + size), lang, from, tags.length);
+	const ret = await formatTagList(tags.slice(from, from + size), from, tags.length);
 	profile('getTags');
 	return ret;
 }

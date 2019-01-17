@@ -6,7 +6,7 @@ import {getLang} from './middlewares/lang';
 //Utils
 import {getPublicState, getState} from '../_utils/state';
 import logger from 'winston';
-import {sanitizeConfig, mergeConfig, verifyConfig, getConfig} from '../_utils/config';
+import {sanitizeConfig, mergeConfig, verifyConfig, getPublicConfig, getConfig} from '../_utils/config';
 import {check, unescape} from '../_utils/validators';
 import {resolve} from 'path';
 import multer from 'multer';
@@ -90,8 +90,7 @@ export function APIControllerAdmin(router) {
 				res.json('Shutdown in progress');
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(err);
+				res.status(500).json(err);
 			}
 		});
 	router.route('/admin/automix')
@@ -138,19 +137,16 @@ export function APIControllerAdmin(router) {
 				try {
 					const new_playlist = await createAutoMix(req.body, req.authToken.username);
 					emitWS('playlistsUpdated');
-					res.statusCode = 201;
-					res.json(OKMessage(new_playlist,'AUTOMIX_CREATED',null));
+					res.status(201).json(OKMessage(new_playlist,'AUTOMIX_CREATED',null));
 
 				} catch(err) {
 					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('AUTOMIX_ERROR',err));
+					res.status(500).json(errMessage('AUTOMIX_ERROR',err));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(400).json(validationErrors);
 			}
 		});
 
@@ -187,8 +183,7 @@ export function APIControllerAdmin(router) {
 				res.json(OKMessage(playlists));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('PL_LIST_ERROR',err));
+				res.status(500).json(errMessage('PL_LIST_ERROR',err));
 			}
 		})
 	/**
@@ -240,18 +235,15 @@ export function APIControllerAdmin(router) {
 						public: req.body.flag_public
 					}, req.authToken.username);
 					emitWS('playlistsUpdated');
-					res.statusCode = 201;
-					res.json(OKMessage(new_playlist,'PL_CREATED',req.body.name));
+					res.status(201).json(OKMessage(new_playlist,'PL_CREATED',req.body.name));
 				} catch(err) {
 					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('PL_CREATE_ERROR',err,req.body.name));
+					res.status(500).json(errMessage('PL_CREATE_ERROR',err,req.body.name));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(400).json(validationErrors);
 			}
 
 		});
@@ -262,16 +254,16 @@ export function APIControllerAdmin(router) {
  * @apiName GetPlaylist
  * @apiGroup Playlists
  * @apiPermission admin
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  *
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiSuccess {Number} data/created_at Playlist creation date in Date() format
+ * @apiSuccess {Number} data/created_at Playlist creation date in `Date()` format
  * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
  * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
  * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
  * @apiSuccess {Number} data/duration Duration of playlist in seconds
- * @apiSuccess {Number} data/modified_at Playlist last edit date in Date() format
+ * @apiSuccess {Number} data/modified_at Playlist last edit date in `Date()` format
  * @apiSuccess {String} data/name Name of playlist
  * @apiSuccess {Number} data/karacount Number of karaoke songs in the playlist
  * @apiSuccess {Number} data/playlist_id Database's playlist ID
@@ -306,8 +298,7 @@ export function APIControllerAdmin(router) {
 				res.json(OKMessage(playlist));
 			} catch (err) {
 
-				res.statusCode = 500;
-				res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
+				res.status(500).json(errMessage('PL_VIEW_ERROR',err.message,err.data));
 
 			}
 		})
@@ -355,15 +346,12 @@ export function APIControllerAdmin(router) {
 					emitWS('playlistInfoUpdated',req.params.pl_id);
 					res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));
 				} catch(err) {
-
-					res.statusCode = 500;
-					res.json(errMessage('PL_UPDATE_ERROR',err.message,err.data));
+					res.status(500).json(errMessage('PL_UPDATE_ERROR',err.message,err.data));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(400).json(validationErrors);
 			}
 		})
 
@@ -398,9 +386,7 @@ export function APIControllerAdmin(router) {
 				emitWS('playlistsUpdated');
 				res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
 			} catch(err) {
-
-				res.statusCode = 500;
-				res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
+				res.status(500).json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 			}
 		});
 	router.route('/admin/users')
@@ -455,14 +441,12 @@ export function APIControllerAdmin(router) {
 					});
 					res.json(OKMessage(true,'USER_CREATED'));
 				} catch(err) {
-					res.statusCode = 500;
-					res.json(errMessage(err.code,err.message));
+					res.status(500).json(errMessage(err.code,err.message));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(400).json(validationErrors);
 			}
 		});
 
@@ -481,7 +465,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
  * @apiSuccess {Number} data/flag_online Is the user an online account ?
  * @apiSuccess {Number} data/type Type of account (0 = admin, 1 = user, 2 = guest)
- * @apiSuccess {Number} data/last_login Last login time in Date() format
+ * @apiSuccess {Number} data/last_login Last login time in `Date()` format
  * @apiSuccess {Number} data/user_id User's ID in the database
  * @apiSuccess {String} data/url User's URL in its profile
  * @apiSuccess {String} data/fingerprint User's fingerprint
@@ -522,8 +506,7 @@ export function APIControllerAdmin(router) {
 				res.json(OKMessage(userdata));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('USER_VIEW_ERROR',err));
+				res.status(500).json(errMessage('USER_VIEW_ERROR',err));
 			}
 		})
 	/**
@@ -556,8 +539,7 @@ export function APIControllerAdmin(router) {
 				emitWS('usersUpdated');
 				res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.username));
 			} catch(err) {
-				res.statusCode = 500;
-				res.json(errMessage('USER_DELETE_ERROR',err.message,err.data));
+				res.status(500).json(errMessage('USER_DELETE_ERROR',err.message,err.data));
 			}
 		});
 
@@ -594,8 +576,7 @@ export function APIControllerAdmin(router) {
 				res.json(OKMessage(req.params.pl_id,'PL_EMPTIED',req.params.pl_id));
 			} catch(err) {
 
-				res.statusCode = 500;
-				res.json(errMessage('PL_EMPTY_ERROR',err.message,err.data));
+				res.status(500).json(errMessage('PL_EMPTY_ERROR',err.message,err.data));
 				res.json(err);
 			}
 		});
@@ -629,8 +610,7 @@ export function APIControllerAdmin(router) {
 
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('WL_EMPTY_ERROR',err));
+				res.status(500).json(errMessage('WL_EMPTY_ERROR',err));
 			}
 		});
 	router.route('/admin/blacklist/criterias/empty')
@@ -663,8 +643,7 @@ export function APIControllerAdmin(router) {
 				res.json(OKMessage(null,'BLC_EMPTIED'));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('BLC_EMPTY_ERROR',err));
+				res.status(500).json(errMessage('BLC_EMPTY_ERROR',err));
 			}
 		});
 	router.route('/admin/playlists/:pl_id([0-9]+)/setCurrent')
@@ -700,9 +679,7 @@ export function APIControllerAdmin(router) {
 				res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
 
 			} catch(err) {
-
-				res.statusCode = 500;
-				res.json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
+				res.status(500).json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
 			}
 		});
 	router.route('/admin/playlists/:pl_id([0-9]+)/setPublic')
@@ -737,9 +714,7 @@ export function APIControllerAdmin(router) {
 				emitWS('playlistInfoUpdated',req.params.pl_id);
 				res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
 			} catch(err) {
-
-				res.statusCode = 500;
-				res.json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
+				res.status(500).json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
 			}
 		});
 	router.route('/admin/playlists/:pl_id([0-9]+)/karas')
@@ -784,8 +759,7 @@ export function APIControllerAdmin(router) {
 				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang, +req.query.from || 0, +req.query.size || 9999999);
 				res.json(OKMessage(playlist));
 			} catch(err) {
-				res.statusCode = 500;
-				res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
+				res.status(500).json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
 			}
 		})
 	/**
@@ -842,15 +816,12 @@ export function APIControllerAdmin(router) {
 					};
 					res.json(OKMessage(null,'PL_SONG_ADDED',args));
 				} catch(err) {
-
-					res.statusCode = 500;
-					res.json(errMessage('PL_ADD_SONG_ERROR',err.message,err.data));
+					res.status(500).json(errMessage('PL_ADD_SONG_ERROR',err.message,err.data));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(400).json(validationErrors);
 			}
 		})
 	/**
@@ -907,14 +878,12 @@ export function APIControllerAdmin(router) {
 					};
 					res.json(OKMessage(null,'PL_SONG_MOVED',args));
 				} catch(err) {
-					res.statusCode = 500;
-					res.json(errMessage('PL_MOVE_SONG_ERROR',err.message,err.data));
+					res.status(500).json(errMessage('PL_MOVE_SONG_ERROR',err.message,err.data));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(400).json(validationErrors);
 			}
 
 		})
@@ -960,17 +929,14 @@ export function APIControllerAdmin(router) {
 					const data = await deleteKaraFromPlaylist(req.body.plc_id,req.params.pl_id,req.authToken);
 					emitWS('playlistContentsUpdated',data.pl_id);
 					emitWS('playlistInfoUpdated',data.pl_id);
-					res.statusCode = 200;
 					res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
 				} catch(err) {
-					res.statusCode = 500;
-					res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
+					res.status(500).json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(400).json(validationErrors);
 			}
 		});
 
@@ -984,51 +950,1657 @@ export function APIControllerAdmin(router) {
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
  * @apiParam {Number} plc_id Playlist content ID.
- * @apiSuccess {Object[]} data/authors Karaoke authors' names
- * @apiSuccess {Number} data/kara_created_at In Date() format
- * @apiSuccess {Number} data/created_at In Date() format
- * @apiSuccess {Number} data/kara_modified_at In Date() format
- * @apiSuccess {Object[]} data/creators Show's creators names
- * @apiSuccess {Number} data/duration Song duration in seconds
+ * @apiSuccess {Object[]} data Array containing one playlist content object, which consists of a kara object + the following properties
+ * @apiSuccess {Number} data/kara_created_at In `Date()` format
+ * @apiSuccess {Number} data/created_at Karaoke added to playlist, in `Date()` format
+ * @apiSuccess {Number} data/kara_modified_at In `Date()` format
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
+ * @apiSuccess {Number} data/flag_free Wether the song has been marked as free or not
+ * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
+ * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
+ * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
+ * @apiSuccess {String} data/nickname Nickname of user who added/requested the song. this nickname can be changed (`username` cannot) hence why it is displayed here.
+ * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
+ * @apiSuccess {String} data/username Username who submitted this karaoke. Can be different from `nickname`.
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ * 			 <See public/karas/[kara_id] object>,
+ * 	         "created_at": "2019-01-01T10:01:01.000Z"
+ *           "flag_blacklisted": false,
+ *           "flag_free": false,
+ * 			 "flag_playing": true,
+ *           "flag_whitelisted": false,
+ * 	         "kara_created_at": "2019-01-01T10:01:01.000Z"
+ * 	         "kara_modified_at": "2019-01-01T10:01:01.000Z"
+ *           "nickname": "Axel",
+ *           "playlist_id": 2,
+ *           "playlistcontent_id": 24,
+ *           "pos": 2,
+ *           "time_before_play": 134,
+ *           "username": "Axel"
+ *         },
+ *   ]
+ * }
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_VIEW_CONTENT_ERROR",
+ *   "message": "PLCID unknown!"
+ * }
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
+				res.json(OKMessage(kara));
+			} catch(err) {
+				logger.error(err);
+				res.status(500).json(errMessage('PL_VIEW_CONTENT_ERROR',err));
+			}
+		})
+	/**
+ * @api {put} /admin/playlists/:pl_id([0-9]+)/karas/:plc_id Update song in a playlist
+ * @apiName PutPlaylistKara
+ * @apiVersion 2.3.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
+ * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
+ * @apiParam {Number} [pos] Position in target playlist where to move the song to.
+ * @apiParam {Number} [flag_playing] If set to 1, the selected song will become the currently playing song.
+ * @apiParam {Number} [flag_free] If set to 1, the selected song will be marked as free. Setting it to 0 has no effect.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data PLCID modified
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "PL_CONTENT_MODIFIED",
+ *   "data": "4962"
+ * }
+ * @apiError PL_MODIFY_CONTENT_ERROR Unable to modify content's position or playing status
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_MODIFY_CONTENT_ERROR",
+ *   "message": "PLCID unknown!"
+ * }
+ */
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			//Update playlist's karaoke song
+			//Params: position
+
+			const validationErrors = check(req.body, {
+				flag_playing: {boolIntValidator: true},
+				pos: {integerValidator: true},
+				flag_free: {boolIntValidator: true}
+			});
+			if (!validationErrors) {
+				try {
+					const data = await editPLC(req.params.plc_id,{
+						pos: +req.body.pos,
+						flag_playing: +req.body.flag_playing,
+						flag_free: +req.body.flag_free
+					},req.authToken);
+					emitWS('playlistContentsUpdated',data.pl_id);
+					emitWS('playlistInfoUpdated',data.pl_id);
+					res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
+				} catch(err) {
+					logger.error(err);
+					res.status(500).json(errMessage('PL_MODIFY_CONTENT_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+
+		});
+
+	router.route('/admin/settings')
+	/**
+ * @api {get} /admin/settings Get settings
+ * @apiName GetSettings
+ * @apiVersion 2.4.1
+ * @apiGroup Main
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "AdminPassword": "xxxx",
+ *       "BinPlayerLinux": "/usr/bin/mpv",
+ *       "BinPlayerOSX": "app/bin/mpv.app/Contents/MacOS/mpv",
+ *       "BinPlayerWindows": "app/bin/mpv.exe",
+ *       "BinffmpegLinux": "/usr/bin/ffmpeg",
+ *       "BinffmpegOSX": "app/bin/ffmpeg",
+ *       "BinffmpegPath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffmpeg.exe",
+ *       "BinffmpegWindows": "app/bin/ffmpeg.exe",
+ *       "BinffprobeLinux": "/usr/bin/ffprobe",
+ *       "BinffprobeOSX": "app/bin/ffprobe",
+ *       "BinffprobePath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffprobe.exe
+ *       "BinffprobeWindows": "app/bin/ffprobe.exe",
+ *       "BinmpvPath": "D:\\perso\\karaokemugen-app\\app\\bin\\mpv.exe",
+ *       "EngineAllowViewBlacklist": "1",
+ *       "EngineAllowViewBlacklistCriterias": "1",
+ *       "EngineAllowViewWhitelist": "1",
+ *       "EngineAutoPlay": "0",
+ *       "EngineDefaultLocale": "fr",
+ *       "EngineDisplayConnectionInfo": "1",
+ *       "EngineDisplayConnectionInfoHost": "",
+ *       "EngineDisplayConnectionInfoMessage": "",
+ *       "EngineDisplayConnectionInfoQRCode": "1",
+ *       "EngineDisplayNickname": "1",
+ * 		 "EngineFreeUpvotes": "1",
+ *       "EngineFreeUpvotesRequiredPercentage": "33",
+ *       "EngineFreeUpvotesRequiredMin": "4",
+ *       "EngineFreeAutoTime": "60",
+ *       "EngineJinglesInterval": "1",
+ *       "EnginePrivateMode": "1",
+ * 		 "EngineRemovePublicOnPlay": "1",
+ * 		 "EngineQuotaType": "1",
+ *       "EngineRepeatPlaylist": "0",
+ *       "EngineSmartInsert": "1",
+ * 		 "EngineSongPoll": "0",
+ * 		 "EngineSongPollChoices": "4",
+ * 		 "EngineSongPollTimeout": "30",
+ *       "EngineSongsPerUser": "10000",
+ * 		 "EngineTimePerUser": "10000",
+ *       "EngineCreatePreviews": "1",
+ * 		 "OnlineStats": "0",
+ *       "PathAltname": "../times/series_altnames.csv",
+ *       "PathBackgrounds": "app/backgrounds",
+ *       "PathBin": "app/bin",
+ *       "PathDB": "app/db",
+ *       "PathDBKarasFile": "karas.sqlite3",
+ *       "PathDBUserFile": "userdata.sqlite3",
+ *       "PathJingles": "app/jingles",
+ *       "PathKaras": "../times/karas",
+ *       "PathSubs": "../times/lyrics",
+ *       "PathTemp": "app/temp",
+ *       "PathMedias": "app/data/medias",
+ *       "PathMediasHTTP": "",
+ *       "PlayerBackground": "",
+ *       "PlayerFullscreen": "0",
+ *       "PlayerMonitor": "0",
+ *       "PlayerPIP": "1",
+ *       "PlayerPIPPositionX": "Left",
+ *       "PlayerPIPPositionY": "Bottom",
+ *       "PlayerPIPSize": "30",
+ *       "PlayerScreen": "0",
+ *       "PlayerStayOnTop": "1",
+ *       "VersionName": "Finé Fiévreuse",
+ *       "VersionNo": "v2.0 Release Candidate 1",
+ *       "appPath": "F:\\karaokemugen-app\\",
+ *       "isTest": false,
+ *       "mpvVideoOutput": "direct3d",
+ *       "os": "win32",
+ *       "osHost": "10.202.40.43",
+ * 		 "WebappMode": "2",
+ * 		 "WebappSongLanguageMode": "1"
+ *   }
+ * }
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			res.json(OKMessage(getConfig()));
+		})
+	/**
+ * @api {put} /admin/settings Update settings
+ * @apiName PutSettings
+ * @apiVersion 2.4.1
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiGroup Main
+ * @apiDescription **Note :** All settings must be sent at once in a single request.
+ * @apiParam {Boolean} EngineAllowViewBlacklist Allow/disallow users to view blacklist contents from the guest interface
+ * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
+ * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
+ * @apiParam {Boolean} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
+ * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message)
+ * @apiParam {String} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
+ * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
+ * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
+ * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
+ * @apiParam {Number} EngineFreeAutoTime Time in minutes before a song is automatically freed.
+ * @apiParam {Boolean} EngineFreeUpvotes Enable/disable Free Songs By Upvotes feature
+ * @apiParam {Number} EngineFreeUpvotesRequiredMin Minimum number of upvotes required to free a song
+ * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
+ * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
+ * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
+ * @apiParam {Boolean} EngineRemovePublicOnPlay Enable/disable auto removal of songs in public playlist if they've just been played
+ * @apiParam {Number} EngineQuotaType Type of quota for users when adding songs. `0` = no quota, `1` = limited by number of songs, `2` = limited by total song duration.
+ * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
+ * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
+ * @apiParam {Boolean} EngineSongPoll Enable/disable public song poll
+ * @apiParam {Number} EngineSongPollChoices Number of songs the public can choose from during a public poll
+ * @apiParam {Number} EngineSongPollTimeout Poll duration in seconds
+ * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
+ * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
+ * @apiParam {Boolean} OnlineStats Enable/Disable stats upload to Karaoke Mugen Online
+ * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
+ * @apiParam {Boolean} PlayerMonitor Enable/disable player's second screen (monitor)
+ * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
+ * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen
+ * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
+ * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
+ * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
+ * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
+ * @apiParam {Number} WebappSongLanguageMode How to display series : `0` = according to the original name, `1` = according to song's language, or defaults to the `series=` metadata, `2` = according to admin's language or fallbacks to english then original, `3` = according to user language or fallbacks to english then original
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ */
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
+			//Update settings
+			// Convert body to strings
+			try {
+				verifyConfig(req.body);
+				try {
+					req.body = sanitizeConfig(req.body);
+					const publicSettings = await mergeConfig(req.body);
+					emitWS('settingsUpdated',publicSettings);
+					res.json(OKMessage(req.body,'SETTINGS_UPDATED'));
+				} catch(err) {
+					logger.error(err);
+					res.status(500).json(errMessage('SETTINGS_UPDATE_ERROR',err));
+				}
+			} catch(err) {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(err);
+			}
+		});
+
+	router.route('/admin/player/message')
+	/**
+ * @api {post} /admin/player/message Send a message to screen or users' devices
+ * @apiName PostPlayerMessage
+ * @apiVersion 2.1.0
+ * @apiGroup Player
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} message Message to display
+ * @apiParam {Number} [duration=10000] Duration of message in miliseconds
+ * @apiParam {String="users","screen"} [destination="screen"] `users` for user's devices, or `screen` for the screen on which the karaoke is running. Default is `screen`.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data Data sent to the API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "MESSAGE_SENT",
+ *   "data": {
+ *       "destination": "screen",
+ *       "duration": 10000,
+ *       "message": "yolo"
+ *   }
+ * }
+ * @apiError MESSAGE_SEND_ERROR Message couldn't be sent
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "MESSAGE_SEND_ERROR"
+ * }
+ */
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			const validationErrors = check(req.body, {
+				duration: {integerValidator: true},
+				message: {presence: true},
+				destination: {inclusion: ['screen', 'users', 'all']}
+			});
+			if (!validationErrors) {
+				if (req.body.destination === 'users' ||
+				    req.body.destination === 'all') {
+					emitWS('adminMessage', req.body );
+					res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
+				}
+				if (req.body.destination === 'screen' ||
+				    req.body.destination === 'all') {
+					try {
+						await message(req.body.message,+req.body.duration);
+						res.json(OKMessage(req.body,'MESSAGE_SENT'));
+					} catch(err) {
+						logger.error(err);
+						res.status(500).json(errMessage('MESSAGE_SEND_ERROR',err));
+					}
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+		});
+
+	router.route('/admin/whitelist')
+	/**
+ * @api {get} /admin/whitelist Get whitelist
+ * @apiName GetWhitelist
+ * @apiVersion 2.5.0
+ * @apiGroup Whitelist
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Object[]} data/content List of karaoke objects
+ * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
+ * @apiSuccess {Number} data/infos/from Items listed are from this position
+ * @apiSuccess {Number} data/infos/size How many items listed.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ * 				<see Kara object>,
+ * 				 "reason": "No reason",
+ *               "whitelistcontent_id": 1,
+ * 				 "whitelisted_at": "2019-01-01T01:01:01.000Z"
+ *           }
+ *       ],
+ *       "infos": {
+ *           "count": 1,
+ *           "from": 0,
+ *           "to": 999999
+ *       }
+ *   }
+ * }
+ * @apiError WL_VIEW_ERROR Whitelist could not be viewed
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "WL_VIEW_ERROR"
+ * }
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				const karas = await getWhitelistContents(req.body.filter,req.lang,+req.body.from || 0,req.body.size || 99999999);
+				res.json(OKMessage(karas));
+			} catch(err) {
+				logger.error(err);
+				res.status(500).json(errMessage('WL_VIEW_ERROR',err));
+			}
+		})
+	/**
+ * @api {post} /admin/whitelist Add song to whitelist
+ * @apiName PostWhitelist
+ * @apiVersion 2.5.0
+ * @apiGroup Whitelist
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
+ * @apiParam {String} [reason] Reason the song was added
+ * @apiSuccess {Number} args Arguments associated with message
+ * @apiSuccess {Number} code Message to display
+ * @apiSuccess {Number[]} data/kara_id List of karaoke IDs separated by commas
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 201 Created
+ * {
+ *   "args": "2",
+ *   "code": "WL_SONG_ADDED",
+ *   "data": {
+ *       "kara_id": "2"
+ *   }
+ * }
+ * @apiError WL_ADD_SONG_ERROR Karaoke couldn't be added to whitelist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": [
+ *       "2"
+ *   ],
+ *   "code": "WL_ADD_SONG_ERROR",
+ *   "message": "No karaoke could be added, all are in whitelist already"
+ * }
+ */
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			const validationErrors = check(req.body, {
+				kara_id: {numbersArrayValidator: true}
+			});
+			if (!validationErrors) {
+				try {
+					await addKaraToWhitelist(req.body.kara_id,req.body.reason, req.authToken, req.lang);
+					emitWS('whitelistUpdated');
+					emitWS('blacklistUpdated');
+					res.status(201).json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));
+				} catch(err) {
+					res.status(500).json(errMessage('WL_ADD_SONG_ERROR',err.message,err.data));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+
+		})
+	/**
+ * @api {delete} /admin/whitelist Delete whitelist item
+ * @apiName DeleteWhitelist
+ * @apiVersion 2.1.0
+ * @apiGroup Whitelist
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number[]} wlc_id Whitelist content IDs to delete from whitelist, separated by commas
+ * @apiSuccess {Number} args Arguments associated with message
+ * @apiSuccess {Number} code Message to display
+ * @apiSuccess {Number[]} data List of Whitelist content IDs separated by commas
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "1",
+ *   "code": "WL_SONG_DELETED",
+ *   "data": "1"
+ * }
+ * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
+ *
+ */
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			//Delete kara from whitelist
+			// Deletion is through whitelist ID.
+			const validationErrors = check(req.body, {
+				wlc_id: {numbersArrayValidator: true}
+			});
+			if (!validationErrors) {
+				try {
+					await deleteKaraFromWhitelist(req.body.wlc_id);
+					emitWS('whitelistUpdated');
+					emitWS('blacklistUpdated');
+					res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));
+				} catch(err) {
+					res.status(500).json(errMessage('WL_DELETE_SONG_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+
+		});
+
+	router.route('/admin/blacklist')
+	/**
+ * @api {get} /admin/blacklist Get blacklist
+ * @apiName GetBlacklist
+ * @apiVersion 2.3.1
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiSuccess {Object[]} data/content List of karaoke objects
+ * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
+ * @apiSuccess {Number} data/infos/from Items listed are from this position
+ * @apiSuccess {Number} data/infos/size How many items listed.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ * 				<see public/karas/[id]>,
+ * 				"blacklisted_at": "2019-01-01T21:21:00.000Z",
+ * 				"reason": "Your waifu is shit"
+ *           }
+ *       ],
+ *       "infos": {
+ *           "count": 1,
+ *           "from": 0,
+ *           "to": 999999
+ *       }
+ *   }
+ * }
+ * @apiError BL_VIEW_ERROR Blacklist could not be viewed
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BL_VIEW_ERROR"
+ * }
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				const karas = await getBlacklist(req.body.filter,req.lang,+req.body.from || 0, +req.body.size || 99999999);
+				res.json(OKMessage(karas));
+			} catch(err) {
+				logger.error(err);
+				res.status(500).json(errMessage('BL_VIEW_ERROR',err));
+			}
+		});
+	router.route('/admin/blacklist/criterias')
+	/**
+ * @api {get} /admin/blacklist/criterias Get list of blacklist criterias
+ * @apiName GetBlacklistCriterias
+ * @apiVersion 2.1.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
+ * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
+ * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
+ * @apiSuccess {String} data/value_i18n Translated value to display on screen.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "blcriteria_id": 2,
+ *           "type": 6,
+ *           "value": "241",
+ *           "value_i18n": "Jean-Jacques Debout"
+ *       }
+ *   ]
+ * }
+ * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_VIEW_ERROR"
+ * }
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			//Get list of blacklist criterias
+			try {
+				const blc = await getBlacklistCriterias();
+				res.json(OKMessage(blc));
+			} catch(err) {
+				logger.error(err);
+				res.status(500).json(errMessage('BLC_VIEW_ERROR',err));
+			}
+		})
+	/**
+ * @api {post} /admin/blacklist/criterias Add a blacklist criteria
+ * @apiName PostBlacklistCriterias
+ * @apiVersion 2.1.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} blcriteria_type Blacklist criteria type (refer to docs)
+ * @apiParam {String} blcriteria_value Blacklist criteria value. Depending on type, can be number or string.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 201 Created
+ * {
+ *   "args": {
+ *       "blcriteria_type": "1000",
+ *       "blcriteria_value": "lol"
+ *   },
+ *   "code": "BLC_ADDED",
+ *   "data": {
+ *       "blcriteria_type": "1000",
+ *       "blcriteria_value": "lol"
+ *   }
+ * }
+ * @apiError BLC_ADD_ERROR Blacklist criteria could not be added
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_ADD_ERROR",
+ *   "message": {
+ *       "code": "SQLITE_ERROR",
+ *       "errno": 1
+ *   }
+ * }
+ */
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			//Add blacklist criteria
+			const validationErrors = check(req.body, {
+				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
+				blcriteria_value: {presence: true}
+			});
+			if (!validationErrors) {
+				try {
+					await addBlacklistCriteria(req.body.blcriteria_type,req.body.blcriteria_value);
+					emitWS('blacklistUpdated');
+					res.status(201).json(OKMessage(req.body,'BLC_ADDED',req.body));
+
+				} catch(err) {
+					logger.error(err);
+					res.status(500).json(errMessage('BLC_ADD_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+
+		});
+
+	router.route('/admin/blacklist/criterias/:blc_id([0-9]+)')
+	/**
+ * @api {delete} /admin/blacklist/criterias/:blc_id Delete a blacklist criteria
+ * @apiName DeleteBlacklistCriterias
+ * @apiVersion 2.1.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} blc_id Blacklist criteria's ID to delete
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "5",
+ *   "code": "BLC_DELETED",
+ *   "data": "5"
+ * }
+ * @apiError BLC_DELETE_ERROR Unable to delete Blacklist criteria
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_DELETE_ERROR",
+ *   "message": "BLCID 5 unknown"
+ * }
+ */
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				await deleteBlacklistCriteria(req.params.blc_id);
+				emitWS('blacklistUpdated');
+				res.json(OKMessage(req.params.blc_id,'BLC_DELETED',req.params.blc_id));
+			} catch(err) {
+				logger.error(err);
+				res.status(500).json(errMessage('BLC_DELETE_ERROR',err));
+			}
+		})
+	/**
+ * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
+ * @apiName PutBlacklistCriterias
+ * @apiVersion 2.1.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} blc_id Blacklist criteria's ID to delete
+ * @apiParam {Number} blcriteria_type New blacklist criteria's type
+ * @apiParam {String} blcriteria_value New blacklist criteria's value
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "6",
+ *   "code": "BLC_UPDATED",
+ *   "data": {
+ *       "blcriteria_type": "8",
+ *       "blcriteria_value": "750"
+ *   }
+ * }
+ * @apiError BLC_UPDATE_ERROR Unable to update Blacklist criteria
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_UPDATE_ERROR",
+ *   "message": "BLCID 12309 unknown"
+ * }
+ */
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			//Update BLC
+			const validationErrors = check(req.body, {
+				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
+				blcriteria_value: {presence: true}
+			});
+			if (!validationErrors) {
+				try {
+					await editBlacklistCriteria(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value);
+					emitWS('blacklistUpdated');
+					res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
+				} catch(err) {
+					logger.error(err);
+					res.status(500).json(errMessage('BLC_UPDATE_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+
+		});
+
+	router.route('/admin/player')
+	/**
+ * @api {put} /admin/player Send commands to player
+ * @apiName PutPlayerCommando
+ * @apiVersion 2.1.0
+ * @apiGroup Player
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String=play,pause,stopNow,stopAfter,skip,prev,toggleFullscreen,toggleAlwaysOnTop,seek,goTo,mute,unmute,setVolume,showSubs,hideSubs} command Command to send to player
+ * @apiParam {String} [option] Parameter for the command being sent
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "command": "stopNow"
+ *   },
+ *   "code": "COMMAND_SENT",
+ *   "data": {
+ *       "command": "stopNow"
+ *   }
+ * }
+ */
+
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			const commands = [
+				'play',
+				'pause',
+				'stopNow',
+				'stopAfter',
+				'skip',
+				'prev',
+				'toggleFullscreen',
+				'toggleAlwaysOnTop',
+				'seek',
+				'goTo',
+				'mute',
+				'unmute',
+				'setVolume',
+				'showSubs',
+				'hideSubs'
+			];
+			const validationErrors = check(req.body, {
+				command: {inclusion: commands}
+			});
+			if (!validationErrors) {
+				try {
+					await sendCommand(req.body.command,req.body.options);
+					res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
+				} catch(err) {
+					logger.error(err);
+					res.status(500).json(errMessage('COMMAND_SEND_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+		});
+	router.route('/admin/playlists/:pl_id([0-9]+)/export')
+	/**
+ * @api {get} /admin/playlists/:pl_id/export Export a playlist
+ * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
+ * @apiName getPlaylistExport
+ * @apiVersion 2.5.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Playlist ID to export
+ * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "Header": {
+ *           "description": "Karaoke Mugen Playlist File",
+ *           "version": 2
+ *       },
+ *       "PlaylistContents": [
+ *           {
+ *               "flag_playing": true,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b"
+ *           },
+ *           {
+ *               "kid": "6da96a7d-7159-4ea7-a5ee-1d78a6eb44dd"
+ *           },
+ *           {
+ *               "kid": "5af7ba4c-2325-451d-a24f-e7fd7c2d3ba8"
+ *           },
+ *           {
+ *               "kid": "e0206f48-0f51-44e3-bf9a-b651916d0c05"
+ *           }
+ *       ],
+ *       "PlaylistInformation": {
+ *           "created_at": "2019-01-01T02:01:11.000Z",
+ *           "flag_visible": true,
+ *           "modified_at": "2019-01-01T02:01:11.000Z",
+ *           "name": "Test",
+ *           "time_left": 0
+ *       }
+ *   }
+ * }
+ * @apiError PL_EXPORT_ERROR Unable to export playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "5",
+ *   "code": "PL_EXPORT_ERROR",
+ *   "message": "Playlist 5 unknown"
+ * }
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			// Returns the playlist and its contents in an exportable format (to save on disk)
+			try {
+				const playlist = await exportPlaylist(req.params.pl_id);
+				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				res.status(500).json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
+			}
+		});
+	router.route('/admin/playlists/import')
+	/**
+ * @api {post} /admin/playlists/import Import a playlist
+ * @apiName postPlaylistImport
+ * @apiVersion 2.1.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 4,
+ *   "code": "PL_IMPORTED",
+ *   "data": {
+ *       "message": "Playlist imported",
+ *       "playlist_id": 4,
+ *       "unknownKaras": []
+ *   }
+ * }
+ * @apiError PL_IMPORT_ERROR Unable to import playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_IMPORT_ERROR",
+ *   "message": "No header section"
+ * }
+ */
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			// Imports a playlist and its contents in an importable format (posted as JSON data)
+			const validationErrors = check(req.body, {
+				playlist: {isJSON: true}
+			});
+			if (!validationErrors) {
+				try {
+					const data = await importPlaylist(JSON.parse(req.body.playlist),req.authToken.username);
+					const response = {
+						message: 'Playlist imported',
+						playlist_id: data.playlist_id
+					};
+					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;
+					emitWS('playlistsUpdated');
+					res.json(OKMessage(response,'PL_IMPORTED',data.playlist_id));
+				} catch(err) {
+					res.status(500).json(errMessage('PL_IMPORT_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+
+		});
+
+
+	router.route('/admin/playlists/:pl_id([0-9]+)/shuffle')
+	/**
+ * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
+ * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
+ * @apiName putPlaylistShuffle
+ * @apiVersion 2.3.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Playlist ID to shuffle
+ * @apiParam {Number} smartShuffle Parameter to determine if we use, or not, an advanced algorithm to shuffle
+ * @apiSuccess {String} args ID of playlist shuffled
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist shuffled
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "5",
+ *   "code": "PL_SHUFFLED",
+ *   "data": "5"
+ * }
+ * @apiError PL_SHUFFLE_ERROR Unable to shuffle playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "10",
+ *   "code": "PL_SHUFFLE_ERROR",
+ *   "message": "Playlist 10 unknown"
+ * }
+ */
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
+				emitWS('playlistContentsUpdated',req.params.pl_id);
+				res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));
+			} catch(err) {
+				res.status(500).json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
+			}
+		});
+
+}
+
+export function APIControllerPublic(router) {
+	/*
+	router.use((req, res, next) => {
+		// do logging
+		//logger.info('API_LOG',req)
+		// Logging is disabled. Enable it if you need to trace some info
+		next(); // make sure we go to the next routes and don't stop here
+	});
+	*/
+	const conf = getConfig();
+	// Middleware for playlist and files import
+	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
+	// Public routes
+	router.route('/public/playlists')
+	/**
+ * @api {get} /public/playlists/ Get list of playlists (public)
+ * @apiName GetPlaylistsPublic
+ * @apiGroup Playlists
+ * @apiVersion 2.5.0
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
+ * @apiSuccess {Object[]} playlists Playlists information
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ * 			<See admin/playlists/[id]>
+ *   ]
+ * }
+ * @apiError PL_LIST_ERROR Unable to fetch a list of playlists
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			// Get list of playlists, only return the visible ones
+			try {
+				const playlists = await getPlaylists(req.authToken);
+				res.json(OKMessage(playlists));
+			} catch(err) {
+				res.status(500).json(errMessage('PL_LIST_ERROR',err));
+			}
+		});
+	router.route('/public/playlists/:pl_id([0-9]+)')
+	/**
+ * @api {get} /public/playlists/:pl_id Get playlist information (public)
+ * @apiName GetPlaylistPublic
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiVersion 2.5.0
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `false`.
+ * @apiParam {Number} pl_id Target playlist ID.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ * 		<See admin/playlists/[id] object>
+ *   }
+ * }
+ * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			// Get playlist, only if visible
+			//Access :pl_id by req.params.pl_id
+			// This get route gets infos from a playlist
+			try {
+				const playlist = await getPlaylistInfo(req.params.pl_id,req.authToken);
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				res.status(500).json(errMessage('PL_VIEW_ERROR',err.message,err.data));
+			}
+		});
+	router.route('/public/playlists/:pl_id([0-9]+)/karas')
+	/**
+ * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
+ * @apiName GetPlaylistKarasPublic
+ * @apiVersion 2.5.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `false`.
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ * 				<See admin/playlists/[id]/karas/[kara_id] object>
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError PL_VIEW_SONGS_ERROR Unable to fetch list of karaokes in a playlist
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			// Get playlist contents, only if visible
+			//Access :pl_id by req.params.pl_id
+			try {
+				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang,+req.body.from || 0,+req.body.size || 9999999);
+				if (!playlist) res.statusCode = 404;
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				res.status(500).json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
+			}
+		});
+
+	router.route('/public/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+	/**
+ * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
+ * @apiName GetPlaylistPLCPublic
+ * @apiVersion 2.3.1
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
+ * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
+ * @apiParam {Number} plc_id Playlist content ID.
+ * @apiSuccess {Object[]} data Array with one playlist content object
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *            <See admin/playlists/[id]/karas/[plc_id] object>
+ *       }
+ *   ]
+ * }
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_VIEW_CONTENT_ERROR",
+ *   "message": "PLCID unknown!"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
+				res.json(OKMessage(kara));
+			} catch(err) {
+				res.status(500).json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
+			}
+		});
+	router.route('/public/settings')
+	/**
+ * @api {get} /public/settings Get settings (public)
+ * @apiName GetSettingsPublic
+ * @apiVersion 2.2.0
+ * @apiGroup Main
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries and other internal settings.
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "EngineAllowNicknameChange": "1",
+ *       "EngineAllowViewBlacklist": "1",
+ *       "EngineAllowViewBlacklistCriterias": "1",
+ *       "EngineAllowViewWhitelist": "1",
+ *       "EngineAutoPlay": "0",
+ *       "EngineDefaultLocale": "fr",
+ *       "EngineDisplayConnectionInfo": "1",
+ *       "EngineDisplayConnectionInfoHost": "",
+ *       "EngineDisplayConnectionInfoMessage": "",
+ *       "EngineDisplayConnectionInfoQRCode": "1",
+ *       "EngineDisplayNickname": "1",
+ *       "EngineFreeAutoTime": "60",
+ * 		 "EngineFreeUpvotes": "1",
+ * 		 "EngineFreeUpvotesPercent": "33",
+ * 		 "EngineFreeUpvotesMin": "4",
+ *       "EngineJinglesInterval": "1",
+ *       "EnginePrivateMode": "1",
+ * 		 "EngineRemovePublicOnPlay": "1",
+ *       "EngineQuotaType": "1",
+ *       "EngineRepeatPlaylist": "0",
+ *       "EngineSmartInsert": "1",
+ * 		 "EngineSongPoll": "0",
+ * 		 "EngineSongPollChoices": "4",
+ * 		 "EngineSongPollTimeout": "30",
+ *       "EngineSongsPerUser": "10000",
+ *       "EngineTimePerUser": "10000",
+ *       "PlayerBackground": "",
+ *       "PlayerFullscreen": "0",
+ *       "PlayerMonitor": "0",
+ *       "PlayerPIP": "1",
+ *       "PlayerPIPPositionX": "Left",
+ *       "PlayerPIPPositionY": "Bottom",
+ *       "PlayerPIPSize": "30",
+ *       "PlayerScreen": "0",
+ *       "PlayerStayOnTop": "1",
+ *       "VersionName": "Finé Fiévreuse",
+ *       "VersionNo": "v2.0 Release Candidate 1",
+ *       "mpvVideoOutput": "direct3d",
+ * 		 "WebappMode": "2",
+ *       "WebappSongLanguageMode": "1"
+ *   }
+ * }
+ */
+		.get(async (req, res) => {
+			//We don't want to return all settings.
+			res.json(OKMessage(getPublicConfig()));
+		});
+	router.route('/public/stats')
+	/**
+ * @api {get} /public/stats Get statistics
+ * @apiName GetStats
+ * @apiVersion 2.1.0
+ * @apiGroup Main
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Returns various stats on the current Karaoke Mugen instance
+ * @apiSuccess {Number} totalartists Total number of artists in database
+ * @apiSuccess {Number} totalcount Total number of karaokes in database
+ * @apiSuccess {Number} totalduration Sum of all karaoke durations in seconds.
+ * @apiSuccess {Number} totallanguages Total number of different languages in database
+ * @apiSuccess {Number} totalplaylists Total number of playlists in database
+ * @apiSuccess {Number} totalseries Total number of series in database
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *    "data": {
+ *        "totalartists": 542,
+ *        "totalcount": 4924,
+ *        "totalduration": 0,
+ *        "totallanguages": 16,
+ *        "totalplaylists": 5,
+ *        "totalseries": 2525
+ *    }
+ * }
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const stats = await getKMStats();
+				const userData = await findUserByName(req.authToken.username);
+				updateSongsLeft(userData.id);
+				res.json(OKMessage(stats));
+			} catch(err) {
+				logger.error(err);
+				res.status(500).json(errMessage('STATS_ERROR',err));
+			}
+		});
+
+	router.route('/public/whitelist')
+	/**
+ * @api {get} /public/whitelist Get whitelist (public)
+ * @apiName GetWhitelistPublic
+ * @apiVersion 2.5.0
+ * @apiGroup Whitelist
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription If `EngineAllowViewWhitelist` is set to `0` in configuration, then returns an error message (see below)
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiSuccess {Object[]} data/content List of karaoke objects
+ * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
+ * @apiSuccess {Number} data/infos/from Items listed are from this position
+ * @apiSuccess {Number} data/infos/to Items listed end at this position
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ * 				 <See admin/whitelist object>
+ *           }
+ *       ],
+ *       "infos": {
+ *           "count": 1,
+ *           "from": 0,
+ *           "to": 999999
+ *       }
+ *   }
+ * }
+ * @apiError WL_VIEW_ERROR Whitelist could not be viewed
+ * @apiError WL_VIEW_FORBIDDEN Whitelist view is not allowed for users
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "WL_VIEW_FORBIDDEN"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			//Returns whitelist IF the settings allow public to see it
+			if (getConfig().EngineAllowViewWhitelist) {
+				try {
+					const karas = await	getWhitelistContents(req.query.filter,req.lang,+req.query.from || 0,+req.query.size || 99999999);
+					res.json(OKMessage(karas));
+				} catch(err) {
+					logger.error(err);
+					res.status(500).json(errMessage('WL_VIEW_ERROR',err));
+				}
+			} else {
+				res.status(403).json(errMessage('WL_VIEW_FORBIDDEN'));
+			}
+		});
+
+	router.route('/public/blacklist')
+	/**
+ * @api {get} /public/blacklist Get blacklist (public)
+ * @apiName GetBlacklistPublic
+ * @apiVersion 2.5.0
+ * @apiGroup Blacklist
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription If `EngineAllowViewBlacklist` is set to `0` in configuration, then returns an error message (see below)
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiSuccess {Object[]} data/content List of karaoke objects
+ * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
+ * @apiSuccess {Number} data/infos/from Items listed are from this position
+ * @apiSuccess {Number} data/infos/size How many items listed.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *              <See admin/blacklist object>
+ *           }
+ *       ],
+ *       "infos": {
+ *           "count": 1,
+ *           "from": 0,
+ *           "to": 999999
+ *       }
+ *   }
+ * }
+ * @apiError BL_VIEW_ERROR Blacklist could not be viewed
+ * @apiError BL_VIEW_FORBIDDEN Blacklist view is not allowed for users
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BL_VIEW_FORBIDDEN"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			//Get list of blacklisted karas IF the settings allow public to see it
+			if (getConfig().EngineAllowViewBlacklist) {
+				try {
+					const karas = await getBlacklist(req.query.filter,req.lang,+req.query.from || 0,+req.query.size || 999999);
+					res.json(OKMessage(karas));
+				} catch(err) {
+					logger.error(err);
+					res.status(500).json(errMessage('BL_VIEW_ERROR',err));
+				}
+			} else {
+				res.status(403).json(errMessage('BL_VIEW_FORBIDDEN'));
+			}
+		});
+
+	router.route('/public/blacklist/criterias')
+	/**
+ * @api {get} /public/blacklist/criterias Get list of blacklist criterias (public)
+ * @apiName GetBlacklistCriteriasPublic
+ * @apiVersion 2.1.0
+ * @apiGroup Blacklist
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
+ * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
+ * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
+ * @apiSuccess {String} data/value_i18n Translated value to display on screen.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "blcriteria_id": 2,
+ *           "type": 6,
+ *           "value": "241",
+ *           "value_i18n": "Jean-Jacques Debout"
+ *       }
+ *   ]
+ * }
+ * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
+ * @apiError BLC_VIEW_FORBIDDEN Blacklist criterias are not viewable by users.
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_VIEW_FORBIDDEN"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			//Get list of blacklist criterias IF the settings allow public to see it
+			if (getConfig().EngineAllowViewBlacklistCriterias) {
+				try {
+					const blc = await getBlacklist();
+					res.json(OKMessage(blc));
+				} catch(err) {
+					logger.error(err);
+					res.status(500).json(errMessage('BLC_VIEW_ERROR',err));
+				}
+			} else {
+				res.status(403).json(errMessage('BLC_VIEW_FORBIDDEN'));
+			}
+		});
+
+	router.route('/public/player')
+	/**
+ * @api {get} /public/player Get player status
+ * @apiName GetPlayer
+ * @apiVersion 2.1.0
+ * @apiGroup Player
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Player info is updated very frequently. You can poll it to get precise information from player and engine altogether.
+ * @apiSuccess {Number} data/currentlyPlaying Karaoke ID of song being played
+ * @apiSuccess {Number} data/duration Current's song duration in seconds
+ * @apiSuccess {Boolean} data/fullscreen Player's fullscreen status
+ * @apiSuccess {Boolean} data/muteStatus Player's volume mute status
+ * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
+ * @apiSuccess {String=pause,stop,play} data/playerStatus Player's status (not to mistake with engine's status, see below). Player status is `pause` if displaying a background.
+ * @apiSuccess {Boolean} data/private Engine's public/private status
+ * @apiSuccess {Boolean} data/showSubs Player's showing subtitles or not
+ * @apiSuccess {String=pause,play,stop} data/status Engine's status
+ * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
+ * @apiSuccess {String} data/subText Text/lyrics being displayed on screen
+ * @apiSuccess {Number} data/timePosition Player's current position in the song.
+ * @apiSuccess {Number} data/volume Volume (from `0` to `100`)
+ * Example Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "currentlyPlaying": 1020,
+ *       "duration": 0,
+ *       "fullscreen": false,
+ *       "muteStatus": false,
+ *       "onTop": true,
+ *       "playerStatus": "pause",
+ *       "private": true,
+ *       "showSubs": true,
+ *       "status": "stop",
+ *       "subText": null,
+ *       "timePosition": 0,
+ *       "volume": 100
+ *   }
+ * }
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PLAYER_STATUS_ERROR"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			// Get player status
+			// What's playing, time in seconds, duration of song
+			res.json(OKMessage(getPublicState()));
+		});
+	router.route('/public/karas')
+	/**
+ * @api {get} /public/karas Get complete list of karaokes
+ * @apiName GetKaras
+ * @apiVersion 2.3.1
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiParam {String} [searchType] Can be `serie`, `year`, `popular`, `recent` or `tag`
+ * @apiParam {String} [searchValue] Value to search for. For `series` or `tag` it's an ID, for `year` it's a 4-digit year.
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ * 				 "NORM_groups": null,
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_serie_orig": "Dynasty Warriors 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": "NO_TAG",
+ *               "created_at": 1508423806,
+ *               "modified_at": 1508423806,
+ *               "creator": "NO_TAG",
+ *               "duration": 0,
+ * 	             "flag_dejavu": 0,
+ * 				 "flag_favorites": 1,
+ *               "gain": 0,
+ * 				 "groups": null,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ * 				 "requested": 20
+ *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
+ *               "serie_altname": "DW3/DW 3",
+ *               "serie_orig": "Dynasty Warriors 3",
+ *               "singer": "NO_TAG",
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": "NO_TAG",
+ *               "title": "Circuit",
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError SONG_LIST_ERROR Unable to fetch list of karaokes
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+			// if the query has a &filter=xxx
+			// then the playlist returned gets filtered with the text.
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);
+			if (from < 0) from = 0;
+			try {
+				const karas = await getKaras(req.query.filter,req.lang,from,size,req.query.searchType, req.query.searchValue, req.authToken);
+				res.json(OKMessage(karas));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('SONG_LIST_ERROR',err));
+			}
+		});
+	router.route('/public/karas/random')
+	/**
+ * @api {get} /public/karas/random Get a random karaoke ID
+ * @apiName GetKarasRandom
+ * @apiVersion 2.1.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription This selects a random karaoke from the database. What you will do with it depends entirely on you.
+ * @apiSuccess {Number} data Random Karaoke ID
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": 4550
+ * }
+ * @apiError GET_UNLUCKY Unable to find a random karaoke
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const kara_id = await getRandomKara(req.authToken, req.query.filter);
+				if (!kara_id) {
+					res.statusCode = 500;
+					res.json(errMessage('GET_UNLUCKY'));
+				} else {
+					res.json(OKMessage(kara_id));
+				}
+
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('GET_LUCKY_ERROR',err));
+			}
+		});
+	router.route('/public/karas/:kara_id([0-9]+)')
+	/**
+ * @api {get} /public/karas/:kara_id Get song info from database
+ * @apiName GetKaraInfo
+ * @apiVersion 2.5.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
+ * @apiSuccess {Object[]} data/authors Karaoke authors' names
+ * @apiSuccess {Number} data/created_at In `Date()` format
+ * @apiSuccess {Object[]} data/creators Show's creators names
+ * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
  * @apiSuccess {Number} data/flag_favorites `true` if the song is in the user's favorites, `false`if not.
- * @apiSuccess {Number} data/flag_free Wether the song has been marked as free or not
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {Object[]} data/languages Song's languages in ISO639-2B format
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
- * @apiSuccess {Number} data/lastplayed_at When the song has been played last, in unix timestamp
+ * @apiSuccess {Number} data/lastplayed_at When the song has been played last, in `Date()` format
  * @apiSuccess {Object[]} data/misc_tags Internal tag list (`TAG_VIDEOGAME`, etc.)
- * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
- * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
- * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
  * @apiSuccess {String} data/previewfile Filename of the preview file associated with the karaoke. Can be undefined if the preview hasn't been generated yet by the server.
- * @apiSuccess {String} data/nickname Nickname of user who added/requested the song. this nickname can be changed (`username` cannot) hence why it is displayed here.
  * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {Object[][]} data/serie_i18n array of array of JSON objects with series' names depending on their language.
  * @apiSuccess {String[]} data/serie_altname Alternative name(s) of series/show this song belongs to
  * @apiSuccess {String} data/serie_orig Original name for the series
- * @apiSuccess {String} data/singer Singer's name, if known.
+ * @apiSuccess {Object[]} data/singers Singers' names, if known.
  * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
- * @apiSuccess {String} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
- * @apiSuccess {String} data/songtype_i18n Translated song's type (`Opening`, `Ending`, `Insert Song`...)
- * @apiSuccess {String} data/songtype_i18n_short Short translated version of the song's type (`OP`, `ED`, `IN`, ...)
- * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
+ * @apiSuccess {Object[]} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
  * @apiSuccess {String} data/title Song's title
- * @apiSuccess {String} data/username Username who submitted this karaoke. Can be different from `pseudo_add`.
  * @apiSuccess {String} data/mediafile Media's filename
- * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
+ * @apiSuccess {Number} data/played Counts how many times the song has been played
  * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
- * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
  *   "data": [
- *           {
+ *       {
  *           "authors": [
  *               {
  *                   "i18n": {},
@@ -1185,2077 +2757,6 @@ export function APIControllerAdmin(router) {
  *           "subfile": "ENG - Dokidoki! PreCure - OP - Glitter Force Doki Doki Theme Song.ass",
  *           "title": "Glitter Force Doki Doki Theme Song",
  *           "year": 2017
- *         },
-*   ]
- * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "PL_VIEW_CONTENT_ERROR",
- *   "message": "PLCID unknown!"
- * }
- */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			try {
-				const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
-				res.json(OKMessage(kara));
-
-			} catch(err) {
-				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('PL_VIEW_CONTENT_ERROR',err));
-			}
-		})
-	/**
- * @api {put} /admin/playlists/:pl_id([0-9]+)/karas/:plc_id Update song in a playlist
- * @apiName PutPlaylistKara
- * @apiVersion 2.3.0
- * @apiGroup Playlists
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
- * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
- * @apiParam {Number} [pos] Position in target playlist where to move the song to.
- * @apiParam {Number} [flag_playing] If set to 1, the selected song will become the currently playing song.
- * @apiParam {Number} [flag_free] If set to 1, the selected song will be marked as free. Setting it to 0 has no effect.
- * @apiSuccess {String} code Message to display
- * @apiSuccess {String} data PLCID modified
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "code": "PL_CONTENT_MODIFIED",
- *   "data": "4962"
- * }
- * @apiError PL_MODIFY_CONTENT_ERROR Unable to modify content's position or playing status
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "PL_MODIFY_CONTENT_ERROR",
- *   "message": "PLCID unknown!"
- * }
- */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			//Update playlist's karaoke song
-			//Params: position
-
-			const validationErrors = check(req.body, {
-				flag_playing: {boolIntValidator: true},
-				pos: {integerValidator: true},
-				flag_free: {boolIntValidator: true}
-			});
-			if (!validationErrors) {
-				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
-				if (req.body.flag_playing) req.body.flag_playing = parseInt(req.body.flag_playing, 10);
-				try {
-					const data = await editPLC(req.params.plc_id,{
-						pos: req.body.pos,
-						flag_playing: req.body.flag_playing,
-						flag_free: req.body.flag_free
-					},req.authToken);
-					emitWS('playlistContentsUpdated',data.pl_id);
-					emitWS('playlistInfoUpdated',data.pl_id);
-					res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
-				} catch(err) {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('PL_MODIFY_CONTENT_ERROR',err));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
-			}
-
-		});
-
-	router.route('/admin/settings')
-	/**
- * @api {get} /admin/settings Get settings
- * @apiName GetSettings
- * @apiVersion 2.4.1
- * @apiGroup Main
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "AdminPassword": "xxxx",
- *       "BinPlayerLinux": "/usr/bin/mpv",
- *       "BinPlayerOSX": "app/bin/mpv.app/Contents/MacOS/mpv",
- *       "BinPlayerWindows": "app/bin/mpv.exe",
- *       "BinffmpegLinux": "/usr/bin/ffmpeg",
- *       "BinffmpegOSX": "app/bin/ffmpeg",
- *       "BinffmpegPath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffmpeg.exe",
- *       "BinffmpegWindows": "app/bin/ffmpeg.exe",
- *       "BinffprobeLinux": "/usr/bin/ffprobe",
- *       "BinffprobeOSX": "app/bin/ffprobe",
- *       "BinffprobePath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffprobe.exe
- *       "BinffprobeWindows": "app/bin/ffprobe.exe",
- *       "BinmpvPath": "D:\\perso\\karaokemugen-app\\app\\bin\\mpv.exe",
- *       "EngineAllowViewBlacklist": "1",
- *       "EngineAllowViewBlacklistCriterias": "1",
- *       "EngineAllowViewWhitelist": "1",
- *       "EngineAutoPlay": "0",
- *       "EngineDefaultLocale": "fr",
- *       "EngineDisplayConnectionInfo": "1",
- *       "EngineDisplayConnectionInfoHost": "",
- *       "EngineDisplayConnectionInfoMessage": "",
- *       "EngineDisplayConnectionInfoQRCode": "1",
- *       "EngineDisplayNickname": "1",
- * 		 "EngineFreeUpvotes": "1",
- *       "EngineFreeUpvotesRequiredPercentage": "33",
- *       "EngineFreeUpvotesRequiredMin": "4",
- *       "EngineFreeAutoTime": "60",
- *       "EngineJinglesInterval": "1",
- *       "EnginePrivateMode": "1",
- * 		 "EngineRemovePublicOnPlay": "1",
- * 		 "EngineQuotaType": "1",
- *       "EngineRepeatPlaylist": "0",
- *       "EngineSmartInsert": "1",
- * 		 "EngineSongPoll": "0",
- * 		 "EngineSongPollChoices": "4",
- * 		 "EngineSongPollTimeout": "30",
- *       "EngineSongsPerUser": "10000",
- * 		 "EngineTimePerUser": "10000",
- *       "EngineCreatePreviews": "1",
- * 		 "OnlineStats": "0",
- *       "PathAltname": "../times/series_altnames.csv",
- *       "PathBackgrounds": "app/backgrounds",
- *       "PathBin": "app/bin",
- *       "PathDB": "app/db",
- *       "PathDBKarasFile": "karas.sqlite3",
- *       "PathDBUserFile": "userdata.sqlite3",
- *       "PathJingles": "app/jingles",
- *       "PathKaras": "../times/karas",
- *       "PathSubs": "../times/lyrics",
- *       "PathTemp": "app/temp",
- *       "PathMedias": "app/data/medias",
- *       "PathMediasHTTP": "",
- *       "PlayerBackground": "",
- *       "PlayerFullscreen": "0",
- *       "PlayerMonitor": "0",
- *       "PlayerPIP": "1",
- *       "PlayerPIPPositionX": "Left",
- *       "PlayerPIPPositionY": "Bottom",
- *       "PlayerPIPSize": "30",
- *       "PlayerScreen": "0",
- *       "PlayerStayOnTop": "1",
- *       "VersionName": "Finé Fiévreuse",
- *       "VersionNo": "v2.0 Release Candidate 1",
- *       "appPath": "F:\\karaokemugen-app\\",
- *       "isTest": false,
- *       "mpvVideoOutput": "direct3d",
- *       "os": "win32",
- *       "osHost": "10.202.40.43",
- * 		 "WebappMode": "2",
- * 		 "WebappSongLanguageMode": "1"
- *   }
- * }
- */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			res.json(OKMessage(getConfig()));
-		})
-	/**
- * @api {put} /admin/settings Update settings
- * @apiName PutSettings
- * @apiVersion 2.4.1
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiGroup Main
- * @apiDescription **Note :** All settings must be sent at once in a single request.
- * @apiParam {Boolean} EngineAllowViewBlacklist Allow/disallow users to view blacklist contents from the guest interface
- * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
- * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
- * @apiParam {Boolean} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
- * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message)
- * @apiParam {String} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
- * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
- * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
- * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
- * @apiParam {Number} EngineFreeAutoTime Time in minutes before a song is automatically freed.
- * @apiParam {Boolean} EngineFreeUpvotes Enable/disable Free Songs By Upvotes feature
- * @apiParam {Number} EngineFreeUpvotesRequiredMin Minimum number of upvotes required to free a song
- * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
- * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
- * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
- * @apiParam {Boolean} EngineRemovePublicOnPlay Enable/disable auto removal of songs in public playlist if they've just been played
- * @apiParam {Number} EngineQuotaType Type of quota for users when adding songs. `0` = no quota, `1` = limited by number of songs, `2` = limited by total song duration.
- * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
- * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
- * @apiParam {Boolean} EngineSongPoll Enable/disable public song poll
- * @apiParam {Number} EngineSongPollChoices Number of songs the public can choose from during a public poll
- * @apiParam {Number} EngineSongPollTimeout Poll duration in seconds
- * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
- * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
- * @apiParam {Boolean} OnlineStats Enable/Disable stats upload to Karaoke Mugen Online
- * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
- * @apiParam {Boolean} PlayerMonitor Enable/disable player's second screen (monitor)
- * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
- * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen
- * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
- * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
- * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
- * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
- * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
- * @apiParam {Number} WebappSongLanguageMode How to display series : `0` = according to the original name, `1` = according to song's language, or defaults to the `series=` metadata, `2` = according to admin's language or fallbacks to english then original, `3` = according to user language or fallbacks to english then original
- * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
- * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
-			//Update settings
-			// Convert body to strings
-			try {
-				verifyConfig(req.body);
-				try {
-					req.body = sanitizeConfig(req.body);
-					const publicSettings = await mergeConfig(req.body);
-					emitWS('settingsUpdated',publicSettings);
-					res.json(OKMessage(req.body,'SETTINGS_UPDATED'));
-				} catch(err) {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('SETTINGS_UPDATE_ERROR',err));
-				}
-			} catch(err) {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(err);
-			}
-		});
-
-	router.route('/admin/player/message')
-	/**
- * @api {post} /admin/player/message Send a message to screen or users' devices
- * @apiName PostPlayerMessage
- * @apiVersion 2.1.0
- * @apiGroup Player
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {String} message Message to display
- * @apiParam {Number} [duration=10000] Duration of message in miliseconds
- * @apiParam {String="users","screen"} [destination="screen"] `users` for user's devices, or `screen` for the screen on which the karaoke is running. Default is `screen`.
- * @apiSuccess {String} code Message to display
- * @apiSuccess {String} data Data sent to the API
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "code": "MESSAGE_SENT",
- *   "data": {
- *       "destination": "screen",
- *       "duration": 10000,
- *       "message": "yolo"
- *   }
- * }
- * @apiError MESSAGE_SEND_ERROR Message couldn't be sent
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "MESSAGE_SEND_ERROR"
- * }
- */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			const validationErrors = check(req.body, {
-				duration: {integerValidator: true},
-				message: {presence: true},
-				destination: {inclusion: ['screen', 'users', 'all']}
-			});
-			if (!validationErrors) {
-				if (req.body.duration) req.body.duration = parseInt(req.body.duration, 10);
-				if (req.body.destination === 'users' ||
-				    req.body.destination === 'all') {
-					emitWS('adminMessage', req.body );
-					res.statusCode = 200;
-					res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
-				}
-				if (req.body.destination === 'screen' ||
-				    req.body.destination === 'all') {
-					try {
-						await message(req.body.message,req.body.duration);
-						res.statusCode = 200;
-						res.json(OKMessage(req.body,'MESSAGE_SENT'));
-					} catch(err) {
-						logger.error(err);
-						res.statusCode = 500;
-						res.json(errMessage('MESSAGE_SEND_ERROR',err));
-					}
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
-			}
-		});
-
-	router.route('/admin/whitelist')
-	/**
- * @api {get} /admin/whitelist Get whitelist
- * @apiName GetWhitelist
- * @apiVersion 2.3.1
- * @apiGroup Whitelist
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * @apiSuccess {String} code Message to display
- * @apiSuccess {Object[]} data/content List of karaoke objects
- * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
- * @apiSuccess {Number} data/infos/from Items listed are from this position
- * @apiSuccess {Number} data/infos/size How many items listed.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "content": [
- *           {
- *               "NORM_author": null,
- *               "NORM_creator": "Eurovision",
- *               "NORM_serie": null,
- *               "NORM_serie_altname": null,
- * 				 "NORM_serie_orig": null,
- *               "NORM_singer": "Dschinghis Khan",
- *               "NORM_songwriter": "Ralph Siegel",
- *               "NORM_title": "Moskau",
- *               "author": "NO_TAG",
- *               "created_at": 1508921852,
- *               "creator": "Eurovision",
- *               "duration": 0,
- *               "kara_id": 1,
- *               "kid": "d9bb6a76-2b7d-469e-ba44-6acfc463202e",
- *               "language": "ger",
- *               "language_i18n": "Allemand",
- *               "misc": "TAG_CONCERT,TAG_REAL",
- *               "misc_i18n": "Concert,Non-anime",
- * 				 "requested": 20,
- *               "serie": null,
- * 				 "serie_i18n": {
- * 								"fre":"Guerriers de la Dynastie"
- * 								}
- *               "serie_altname": null,
- * 				 "serie_orig": null,
- *               "singer": "Dschinghis Khan",
- *               "songorder": 0,
- *               "songtype": "TYPE_MUSIC",
- *               "songtype_i18n": "Music Video",
- *               "songtype_i18n_short": "MV",
- *               "songwriter": "Ralph Siegel",
- *               "title": "Moskau",
- *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
- *               "viewcount": 0,
- *               "whitelist_id": 1,
- *               "year": "1980"
- *           }
- *       ],
- *       "infos": {
- *           "count": 1,
- *           "from": 0,
- *           "to": 999999
- *       }
- *   }
- * }
- * @apiError WL_VIEW_ERROR Whitelist could not be viewed
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "WL_VIEW_ERROR"
- * }
- */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			let size = req.query.size || 999999;
-			size = parseInt(size, 10);
-			let from = req.query.from || 0;
-			from = parseInt(from, 10);
-			try {
-				const karas = await getWhitelistContents(req.body.filter,req.lang,from,size);
-				res.json(OKMessage(karas));
-			} catch(err) {
-				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('WL_VIEW_ERROR',err));
-			}
-		})
-	/**
- * @api {post} /admin/whitelist Add song to whitelist
- * @apiName PostWhitelist
- * @apiVersion 2.5.0
- * @apiGroup Whitelist
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
- * @apiParam {String} [reason] Reason the song was added
- * @apiSuccess {Number} args Arguments associated with message
- * @apiSuccess {Number} code Message to display
- * @apiSuccess {Number[]} data/kara_id List of karaoke IDs separated by commas
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 201 Created
- * {
- *   "args": "2",
- *   "code": "WL_SONG_ADDED",
- *   "data": {
- *       "kara_id": "2"
- *   }
- * }
- * @apiError WL_ADD_SONG_ERROR Karaoke couldn't be added to whitelist
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "args": [
- *       "2"
- *   ],
- *   "code": "WL_ADD_SONG_ERROR",
- *   "message": "No karaoke could be added, all are in whitelist already"
- * }
- */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			const validationErrors = check(req.body, {
-				kara_id: {numbersArrayValidator: true}
-			});
-			if (!validationErrors) {
-				try {
-					await addKaraToWhitelist(req.body.kara_id,req.body.reason, req.authToken, req.lang);
-					emitWS('whitelistUpdated');
-					emitWS('blacklistUpdated');
-					res.statusCode = 201;
-					res.json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));
-				} catch(err) {
-
-					res.statusCode = 500;
-					res.json(errMessage('WL_ADD_SONG_ERROR',err.message,err.data));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
-			}
-
-		})
-	/**
- * @api {delete} /admin/whitelist Delete whitelist item
- * @apiName DeleteWhitelist
- * @apiVersion 2.1.0
- * @apiGroup Whitelist
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number[]} wlc_id Whitelist content IDs to delete from whitelist, separated by commas
- * @apiSuccess {Number} args Arguments associated with message
- * @apiSuccess {Number} code Message to display
- * @apiSuccess {Number[]} data List of Whitelist content IDs separated by commas
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "args": "1",
- *   "code": "WL_SONG_DELETED",
- *   "data": "1"
- * }
- * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
- *
- */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			//Delete kara from whitelist
-			// Deletion is through whitelist ID.
-			const validationErrors = check(req.body, {
-				wlc_id: {numbersArrayValidator: true}
-			});
-			if (!validationErrors) {
-				try {
-					await deleteKaraFromWhitelist(req.body.wlc_id);
-					emitWS('whitelistUpdated');
-					emitWS('blacklistUpdated');
-					res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));
-				} catch(err) {
-					res.statusCode = 500;
-					res.json(errMessage('WL_DELETE_SONG_ERROR',err));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
-			}
-
-		});
-
-	router.route('/admin/blacklist')
-	/**
- * @api {get} /admin/blacklist Get blacklist
- * @apiName GetBlacklist
- * @apiVersion 2.3.1
- * @apiGroup Blacklist
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
- * @apiSuccess {Object[]} data/content List of karaoke objects
- * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
- * @apiSuccess {Number} data/infos/from Items listed are from this position
- * @apiSuccess {Number} data/infos/size How many items listed.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "content": [
- *           {
- *               "NORM_author": "Jean-Jacques Debout",
- *               "NORM_creator": null,
- *               "NORM_serie": "Capitaine Flam",
- *               "NORM_serie_orig": "Captain Future",
- *               "NORM_serie_altname": "Kyaputen Fyucha",
- *               "NORM_singer": "Richard Simon",
- *               "NORM_songwriter": "Roger Dumas",
- *               "NORM_title": "",
- *               "author": "Jean-Jacques Debout",
- *               "created_at": 1508924354,
- *               "creator": "NO_TAG",
- *               "duration": 0,
- *               "kara_id": 217,
- *               "kid": "1b8bca21-4d26-41bd-90b7-2afba74381ee",
- *               "language": "fre",
- *               "language_i18n": "Français",
- *               "misc": "NO_TAG",
- *               "misc_i18n": "No info",
- *               "reason_add": "Blacklisted Tag : Jean-Jacques Debout (type 6)",
- * 				 "requested": 20
- *               "serie": "Capitaine Flam",
- * 				 "serie_orig": "Captain Future",
- *               "serie_altname": "Kyaputen Fyucha",
- * 				 "serie_i18n": {
- * 					"fre":"Guerriers de la Dynastie"
- * 				 },
- *               "singer": "Richard Simon",
- *               "songorder": 0,
- *               "songtype": "TYPE_OP",
- *               "songtype_i18n": "Opening",
- *               "songtype_i18n_short": "OP",
- *               "songwriter": "Roger Dumas",
- *               "title": "",
- *               "mediafile": "FR - Capitaine Flam - OP.avi",
- *               "viewcount": 0,
- *               "year": "1981"
- *           }
- *       ],
- *       "infos": {
- *           "count": 1,
- *           "from": 0,
- *           "to": 999999
- *       }
- *   }
- * }
- * @apiError BL_VIEW_ERROR Blacklist could not be viewed
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "BL_VIEW_ERROR"
- * }
- */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			let size = req.query.size || 999999;
-			size = parseInt(size, 10);
-			let from = req.query.from || 0;
-			from = parseInt(from, 10);
-			try {
-				const karas = await getBlacklist(req.body.filter,req.lang,from,size);
-				res.json(OKMessage(karas));
-			} catch(err) {
-				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('BL_VIEW_ERROR',err));
-			}
-		});
-	router.route('/admin/blacklist/criterias')
-	/**
- * @api {get} /admin/blacklist/criterias Get list of blacklist criterias
- * @apiName GetBlacklistCriterias
- * @apiVersion 2.1.0
- * @apiGroup Blacklist
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
- * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
- * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
- * @apiSuccess {String} data/value_i18n Translated value to display on screen.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": [
- *       {
- *           "blcriteria_id": 2,
- *           "type": 6,
- *           "value": "241",
- *           "value_i18n": "Jean-Jacques Debout"
- *       }
- *   ]
- * }
- * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "BLC_VIEW_ERROR"
- * }
- */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			//Get list of blacklist criterias
-			try {
-				const blc = await getBlacklistCriterias();
-				res.json(OKMessage(blc));
-			} catch(err) {
-				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('BLC_VIEW_ERROR',err));
-			}
-		})
-	/**
- * @api {post} /admin/blacklist/criterias Add a blacklist criteria
- * @apiName PostBlacklistCriterias
- * @apiVersion 2.1.0
- * @apiGroup Blacklist
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} blcriteria_type Blacklist criteria type (refer to docs)
- * @apiParam {String} blcriteria_value Blacklist criteria value. Depending on type, can be number or string.
- * @apiSuccess {String} code Message to display
- * @apiSuccess {String} args arguments for the message
- * @apiSuccess {String} data Data returned from API
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 201 Created
- * {
- *   "args": {
- *       "blcriteria_type": "1000",
- *       "blcriteria_value": "lol"
- *   },
- *   "code": "BLC_ADDED",
- *   "data": {
- *       "blcriteria_type": "1000",
- *       "blcriteria_value": "lol"
- *   }
- * }
- * @apiError BLC_ADD_ERROR Blacklist criteria could not be added
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "BLC_ADD_ERROR",
- *   "message": {
- *       "code": "SQLITE_ERROR",
- *       "errno": 1
- *   }
- * }
- */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			//Add blacklist criteria
-			const validationErrors = check(req.body, {
-				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
-				blcriteria_value: {presence: true}
-			});
-			if (!validationErrors) {
-				try {
-					await addBlacklistCriteria(req.body.blcriteria_type,req.body.blcriteria_value);
-
-					emitWS('blacklistUpdated');
-					res.statusCode = 201;
-					res.json(OKMessage(req.body,'BLC_ADDED',req.body));
-
-				} catch(err) {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('BLC_ADD_ERROR',err));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
-			}
-
-		});
-
-	router.route('/admin/blacklist/criterias/:blc_id([0-9]+)')
-	/**
- * @api {delete} /admin/blacklist/criterias/:blc_id Delete a blacklist criteria
- * @apiName DeleteBlacklistCriterias
- * @apiVersion 2.1.0
- * @apiGroup Blacklist
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} blc_id Blacklist criteria's ID to delete
- * @apiSuccess {String} code Message to display
- * @apiSuccess {String} args arguments for the message
- * @apiSuccess {String} data Data returned from API
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "args": "5",
- *   "code": "BLC_DELETED",
- *   "data": "5"
- * }
- * @apiError BLC_DELETE_ERROR Unable to delete Blacklist criteria
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "BLC_DELETE_ERROR",
- *   "message": "BLCID 5 unknown"
- * }
- */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			try {
-				await deleteBlacklistCriteria(req.params.blc_id);
-				emitWS('blacklistUpdated');
-				res.json(OKMessage(req.params.blc_id,'BLC_DELETED',req.params.blc_id));
-			} catch(err) {
-				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('BLC_DELETE_ERROR',err));
-			}
-		})
-	/**
- * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
- * @apiName PutBlacklistCriterias
- * @apiVersion 2.1.0
- * @apiGroup Blacklist
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} blc_id Blacklist criteria's ID to delete
- * @apiParam {Number} blcriteria_type New blacklist criteria's type
- * @apiParam {String} blcriteria_value New blacklist criteria's value
- * @apiSuccess {String} code Message to display
- * @apiSuccess {String} args arguments for the message
- * @apiSuccess {String} data Data returned from API
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "args": "6",
- *   "code": "BLC_UPDATED",
- *   "data": {
- *       "blcriteria_type": "8",
- *       "blcriteria_value": "750"
- *   }
- * }
- * @apiError BLC_UPDATE_ERROR Unable to update Blacklist criteria
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "BLC_UPDATE_ERROR",
- *   "message": "BLCID 12309 unknown"
- * }
- */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			//Update BLC
-			const validationErrors = check(req.body, {
-				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
-				blcriteria_value: {presence: true}
-			});
-			if (!validationErrors) {
-				try {
-					await editBlacklistCriteria(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value);
-					emitWS('blacklistUpdated');
-					res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
-				} catch(err) {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('BLC_UPDATE_ERROR',err));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
-			}
-
-		});
-
-	router.route('/admin/player')
-	/**
- * @api {put} /admin/player Send commands to player
- * @apiName PutPlayerCommando
- * @apiVersion 2.1.0
- * @apiGroup Player
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {String=play,pause,stopNow,stopAfter,skip,prev,toggleFullscreen,toggleAlwaysOnTop,seek,goTo,mute,unmute,setVolume,showSubs,hideSubs} command Command to send to player
- * @apiParam {String} [option] Parameter for the command being sent
- * @apiSuccess {String} code Message to display
- * @apiSuccess {String} args arguments for the message
- * @apiSuccess {String} data Data returned from API
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "args": {
- *       "command": "stopNow"
- *   },
- *   "code": "COMMAND_SENT",
- *   "data": {
- *       "command": "stopNow"
- *   }
- * }
- */
-
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			const commands = [
-				'play',
-				'pause',
-				'stopNow',
-				'stopAfter',
-				'skip',
-				'prev',
-				'toggleFullscreen',
-				'toggleAlwaysOnTop',
-				'seek',
-				'goTo',
-				'mute',
-				'unmute',
-				'setVolume',
-				'showSubs',
-				'hideSubs'
-			];
-			const validationErrors = check(req.body, {
-				command: {inclusion: commands}
-			});
-			if (!validationErrors) {
-				try {
-					await sendCommand(req.body.command,req.body.options);
-					res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
-				} catch(err) {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('COMMAND_SEND_ERROR',err));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
-			}
-		});
-	router.route('/admin/playlists/:pl_id([0-9]+)/export')
-	/**
- * @api {get} /admin/playlists/:pl_id/export Export a playlist
- * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
- * @apiName getPlaylistExport
- * @apiVersion 2.1.0
- * @apiGroup Playlists
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} pl_id Playlist ID to export
- * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "Header": {
- *           "description": "Karaoke Mugen Playlist File",
- *           "version": 2
- *       },
- *       "PlaylistContents": [
- *           {
- *               "flag_playing": 1,
- *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b"
- *           },
- *           {
- *               "kid": "6da96a7d-7159-4ea7-a5ee-1d78a6eb44dd"
- *           },
- *           {
- *               "kid": "5af7ba4c-2325-451d-a24f-e7fd7c2d3ba8"
- *           },
- *           {
- *               "kid": "e0206f48-0f51-44e3-bf9a-b651916d0c05"
- *           }
- *       ],
- *       "PlaylistInformation": {
- *           "created_at": 1508936812,
- *           "flag_visible": 0,
- *           "modified_at": 1508936821,
- *           "name": "Test",
- *           "time_left": 0
- *       }
- *   }
- * }
- * @apiError PL_EXPORT_ERROR Unable to export playlist
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "args": "5",
- *   "code": "PL_EXPORT_ERROR",
- *   "message": "Playlist 5 unknown"
- * }
- */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			// Returns the playlist and its contents in an exportable format (to save on disk)
-			try {
-				const playlist = await exportPlaylist(req.params.pl_id);
-				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
-				res.json(OKMessage(playlist));
-			} catch(err) {
-
-				res.statusCode = 500;
-				res.json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
-			}
-		});
-	router.route('/admin/playlists/import')
-	/**
- * @api {post} /admin/playlists/import Import a playlist
- * @apiName postPlaylistImport
- * @apiVersion 2.1.0
- * @apiGroup Playlists
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "args": 4,
- *   "code": "PL_IMPORTED",
- *   "data": {
- *       "message": "Playlist imported",
- *       "playlist_id": 4,
- *       "unknownKaras": []
- *   }
- * }
- * @apiError PL_IMPORT_ERROR Unable to import playlist
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "PL_IMPORT_ERROR",
- *   "message": "No header section"
- * }
- */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			// Imports a playlist and its contents in an importable format (posted as JSON data)
-			const validationErrors = check(req.body, {
-				playlist: {isJSON: true}
-			});
-			if (!validationErrors) {
-				try {
-					const data = await importPlaylist(JSON.parse(req.body.playlist),req.authToken.username);
-					const response = {
-						message: 'Playlist imported',
-						playlist_id: data.playlist_id
-					};
-					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;
-					emitWS('playlistsUpdated');
-					res.json(OKMessage(response,'PL_IMPORTED',data.playlist_id));
-				} catch(err) {
-					res.statusCode = 500;
-					res.json(errMessage('PL_IMPORT_ERROR',err));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
-			}
-
-		});
-
-
-	router.route('/admin/playlists/:pl_id([0-9]+)/shuffle')
-	/**
- * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
- * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
- * @apiName putPlaylistShuffle
- * @apiVersion 2.3.0
- * @apiGroup Playlists
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} pl_id Playlist ID to shuffle
- * @apiParam {Number} smartShuffle Parameter to determine if we use, or not, an advanced algorithm to shuffle
- * @apiSuccess {String} args ID of playlist shuffled
- * @apiSuccess {String} code Message to display
- * @apiSuccess {Number} data ID of playlist shuffled
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "args": "5",
- *   "code": "PL_SHUFFLED",
- *   "data": "5"
- * }
- * @apiError PL_SHUFFLE_ERROR Unable to shuffle playlist
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "args": "10",
- *   "code": "PL_SHUFFLE_ERROR",
- *   "message": "Playlist 10 unknown"
- * }
- */
-
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			try {
-
-				await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
-				emitWS('playlistContentsUpdated',req.params.pl_id);
-				res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));
-			} catch(err) {
-				res.statusCode = 500;
-				res.json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
-			}
-		});
-
-}
-
-export function APIControllerPublic(router) {
-
-	/*
-	router.use((req, res, next) => {
-		// do logging
-		//logger.info('API_LOG',req)
-		// Logging is disabled. Enable it if you need to trace some info
-		next(); // make sure we go to the next routes and don't stop here
-	});
-	*/
-
-	const conf = getConfig();
-	// Middleware for playlist and files import
-	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
-
-
-	// Public routes
-
-
-	router.route('/public/playlists')
-	/**
- * @api {get} /public/playlists/ Get list of playlists (public)
- * @apiName GetPlaylistsPublic
- * @apiGroup Playlists
- * @apiVersion 2.1.0
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
- * @apiSuccess {Object[]} playlists Playlists information
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- * {
- *   "data": [
- *       {
- *           "created_at": 1508313440,
- *           "flag_current": 1,
- *           "flag_public": 0,
- *           "flag_visible": 1,
- * 			 "flag_favorites": 0,
- *           "length": 0,
- *           "modified_at": 1508408078,
- *           "name": "Liste de lecture courante",
- *           "num_karas": 6,
- *           "playlist_id": 1,
- *           "time_left": 0,
- * 			 "username": 'admin'
- *       }
- *   ]
- * }
- * @apiError PL_LIST_ERROR Unable to fetch a list of playlists
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			// Get list of playlists, only return the visible ones
-			try {
-				const playlists = await getPlaylists(req.authToken);
-				res.json(OKMessage(playlists));
-			} catch(err) {
-				res.statusCode = 500;
-				res.json(errMessage('PL_LIST_ERROR',err));
-			}
-		});
-	router.route('/public/playlists/:pl_id([0-9]+)')
-	/**
- * @api {get} /public/playlists/:pl_id Get playlist information (public)
- * @apiName GetPlaylistPublic
- * @apiGroup Playlists
- * @apiPermission public
- * @apiVersion 2.1.0
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
- * @apiParam {Number} pl_id Target playlist ID.
- * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
- * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
- * @apiSuccess {Number} data/flag_favorites Is playlist a favorites playlist? if displayed by a regular user, he'll only get to see his own favorites playlist.
- * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
- * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
- * @apiSuccess {Number} data/length Duration of playlist in seconds
- * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
- * @apiSuccess {String} data/name Name of playlist
- * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
- * @apiSuccess {Number} data/playlist_id Database's playlist ID
- * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
- * @apiSuccess {Number} data/username User who created the playlist
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "created_at": 1508313440,
- *       "flag_current": 1,
- * 		 "flag_favorites": 0,
- *       "flag_public": 0,
- *       "flag_visible": 1,
- *       "length": 0,
- *       "modified_at": 1508408078,
- *       "name": "Liste de lecture courante",
- *       "num_karas": 6,
- *       "playlist_id": 1,
- *       "time_left": 0,
- * 		 "username": admin
- *   }
- *}
- * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			// Get playlist, only if visible
-			//Access :pl_id by req.params.pl_id
-			// This get route gets infos from a playlist
-			try {
-				const playlist = await getPlaylistInfo(req.params.pl_id,req.authToken);
-				res.json(OKMessage(playlist));
-			} catch(err) {
-
-				res.statusCode = 500;
-				res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
-			}
-		});
-	router.route('/public/playlists/:pl_id([0-9]+)/karas')
-	/**
- * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
- * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.3.1
- * @apiGroup Playlists
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
- * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- *
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
- * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
- * @apiSuccess {Number} data/infos/from Starting position of listing
- * @apiSuccess {Number} data/infos/to End position of listing
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "content": [
- *           {
- *               "NORM_author": null,
- *               "NORM_creator": null,
- *               "NORM_pseudo_add": "Administrateur",
- *               "NORM_serie": "Dynasty Warriors 3",
- *               "NORM_serie_altname": "DW3/DW 3",
- *               "NORM_serie_orig": "Dynasty Warriors 3",
- *               "NORM_singer": null,
- *               "NORM_songwriter": null,
- *               "NORM_title": "Circuit",
- *               "author": "NO_TAG",
- *               "created_at": 1508423806,
- *               "kara_created_at": 1508423806,
- *               "kara_modified_at": 1508423806,
- *               "creator": null,
- *               "duration": 0,
- *               "flag_blacklisted": 0,
- *               "flag_playing": 1,
- *               "flag_whitelisted": 0,
- * 	             "flag_dejavu": 0,
- *               "gain": 0,
- *               "kara_id": 176,
- *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
- *               "language": "chi",
- *               "language_i18n": "Chinois",
- * 				 "lastplayed_at": null,
- *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
- *               "misc": "TAG_VIDEOGAME",
- *               "misc_i18n": "Jeu vidéo",
- *               "playlistcontent_id": 4946,
- *               "pos": 1,
- *               "pseudo_add": "Administrateur",
- * 				 "requested": 20,
- *               "serie": "Dynasty Warriors 3",
- * 				 "serie_i18n": {
- *					"fre":"Guerriers de la Dynastie"
- * 				}
- *               "serie_altname": "DW3/DW 3",
- *               "serie_orig": "Dynasty Warriors 3",
- *               "singer": "NO_TAG",
- *               "songorder": 0,
- *               "songtype": "TYPE_ED",
- *               "songtype_i18n": "Ending",
- *               "songtype_i18n_short": "ED",
- *               "songwriter": "NO_TAG",
- *               "title": "Circuit",
- * 				 "username": "admin",
- *               "viewcount": 0,
- *               "year": ""
- *           },
- *           ...
- *       ],
- *       "infos": {
- *           "count": 3,
- * 			 "from": 0,
- * 			 "to": 120
- *       }
- *   }
- * }
- * @apiError PL_VIEW_SONGS_ERROR Unable to fetch list of karaokes in a playlist
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			// Get playlist contents, only if visible
-			//Access :pl_id by req.params.pl_id
-			let size = req.query.size || 999999;
-			size = parseInt(size, 10);
-			let from = req.query.from || 0;
-			from = parseInt(from, 10);
-			try {
-				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang,from,size);
-				if (playlist == null) res.statusCode = 404;
-				res.json(OKMessage(playlist));
-			} catch(err) {
-
-				res.statusCode = 500;
-				res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
-			}
-		});
-
-	router.route('/public/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
-	/**
- * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
- * @apiName GetPlaylistPLCPublic
- * @apiVersion 2.3.1
- * @apiGroup Playlists
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
- * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
- * @apiParam {Number} plc_id Playlist content ID.
- * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
- * @apiSuccess {String} data/NORM_creator Normalized creator's name
- * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
- * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
- * @apiSuccess {String} data/NORM_serie_orig Normalized name of series the karaoke is from
- * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
- * @apiSuccess {String} data/NORM_singer Normalized name of singer.
- * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
- * @apiSuccess {String} data/NORM_title Normalized song title
- * @apiSuccess {String} data/author Karaoke author's name
- * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's addition in the playlist
- * @apiSuccess {Number} data/kara_modified_at UNIX timestamp of the karaoke's last modification date in the base
- * @apiSuccess {Number} data/kara_created_at UNIX timestamp of the karaoke's creation date in the base
- * @apiSuccess {String} data/creator Show's creator name
- * @apiSuccess {Number} data/duration Song duration in seconds
- * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
- * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
- * @apiSuccess {Number} data/flag_free Wether the song has been freed or not
- * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
- * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
- * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default, `EngineMaxDejaVuTime` is at 60 minutes)
- * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
- * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
- * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
- * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
- * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
- * @apiSuccess {Number} data/lastplayed_at Time when the song was last played at in UNIX timestamp. `null` if never played before.
- * @apiSuccess {String} data/mediafile Video's filename
- * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
- * @apiSuccess {String} data/misc_i18n Translated tag list
- * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
- * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
- * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
- * @apiSuccess {String} data/pseudo_add Nickname of user who added this song
- * @apiSuccess {String} data/requested Number of times the song has been requested.
- * @apiSuccess {String} data/serie Name of series/show the song belongs to
- * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
- * @apiSuccess {String} data/serie_orig Serie's original name
- * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
- * @apiSuccess {String} data/singer Singer's name, if known.
- * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
- * @apiSuccess {String} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
- * @apiSuccess {String} data/songtype_i18n Translated song's type (`Opening`, `Ending`, `Insert Song`...)
- * @apiSuccess {String} data/songtype_i18n_short Short translated version of the song's type (`OP`, `ED`, `IN`, ...)
- * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
- * @apiSuccess {String} data/title Song's title
- * @apiSuccess {String} data/username Username who added that song
- * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
- * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": [
- *       {
- *           "NORM_author": null,
- *           "NORM_creator": null,
- *           "NORM_pseudo_add": "Axel",
- *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
- *           "NORM_serie_altname": "C-Cube/CxCxC",
- * 			 "NORM_serie_orig": "C3 ~ Cube X Cursed X Curious"
- *           "NORM_singer": null,
- *           "NORM_songwriter": null,
- *           "NORM_title": "Hana",
- *           "author": "NO_TAG",
- *           "created_at": 1508427958,
- *           "kara_created_at": 1508427958,
- *           "kara_modified_at": 1508427958,
- *           "creator": null,
- *           "duration": 0,
- *           "flag_blacklisted": 0,
- *           "flag_playing": 0,
- * 			 "flag_favorites": 0,
- *           "flag_whitelisted": 0,
- * 	         "flag_dejavu": 0,
- *           "flag_free": 0,
- *           "gain": 0,
- *           "kara_id": 1007,
- *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
- *           "language": "jpn",
- *           "language_i18n": "Japonais",
- * 			 "lastplayed_at": null,
- *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
- *           "misc": "NO_TAG",
- *           "misc_i18n": "No info",
- *           "playlist_id": 2,
- *           "playlistcontent_id": 4961,
- *           "pos": 12,
- *           "pseudo_add": "Axel",
- * 			 "requested": 20,
- *           "serie": "C3 ~ Cube X Cursed X Curious",
- *           "serie_altname": "C-Cube/CxCxC",
- * 			 "serie_i18n": {
- * 				"fre":"Guerriers de la Dynastie"
- *  			}
- * 			 "serie_orig": "C3 ~ Cube X Cursed X Curious",
- *           "singer": "NO_TAG",
- *           "songorder": 1,
- *           "songtype": "TYPE_ED",
- *           "songtype_i18n": "Ending",
- *           "songtype_i18n_short": "ED",
- *           "songwriter": "NO_TAG",
- *           "time_before_play": 0,
- *           "title": "Hana",
- * 			 "username": "axelterizaki",
- *           "viewcount": 0,
- *           "year": ""
- *       }
- *   ]
- * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "PL_VIEW_CONTENT_ERROR",
- *   "message": "PLCID unknown!"
- * }
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			try {
-
-				const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
-				res.json(OKMessage(kara));
-			} catch(err) {
-
-				res.statusCode = 500;
-				res.json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
-			}
-		});
-	router.route('/public/settings')
-	/**
- * @api {get} /public/settings Get settings (public)
- * @apiName GetSettingsPublic
- * @apiVersion 2.2.0
- * @apiGroup Main
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries and other internal settings.
- * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "EngineAllowNicknameChange": "1",
- *       "EngineAllowViewBlacklist": "1",
- *       "EngineAllowViewBlacklistCriterias": "1",
- *       "EngineAllowViewWhitelist": "1",
- *       "EngineAutoPlay": "0",
- *       "EngineDefaultLocale": "fr",
- *       "EngineDisplayConnectionInfo": "1",
- *       "EngineDisplayConnectionInfoHost": "",
- *       "EngineDisplayConnectionInfoMessage": "",
- *       "EngineDisplayConnectionInfoQRCode": "1",
- *       "EngineDisplayNickname": "1",
- *       "EngineFreeAutoTime": "60",
- * 		 "EngineFreeUpvotes": "1",
- * 		 "EngineFreeUpvotesPercent": "33",
- * 		 "EngineFreeUpvotesMin": "4",
- *       "EngineJinglesInterval": "1",
- *       "EnginePrivateMode": "1",
- * 		 "EngineRemovePublicOnPlay": "1",
- *       "EngineQuotaType": "1",
- *       "EngineRepeatPlaylist": "0",
- *       "EngineSmartInsert": "1",
- * 		 "EngineSongPoll": "0",
- * 		 "EngineSongPollChoices": "4",
- * 		 "EngineSongPollTimeout": "30",
- *       "EngineSongsPerUser": "10000",
- *       "EngineTimePerUser": "10000",
- *       "PlayerBackground": "",
- *       "PlayerFullscreen": "0",
- *       "PlayerMonitor": "0",
- *       "PlayerPIP": "1",
- *       "PlayerPIPPositionX": "Left",
- *       "PlayerPIPPositionY": "Bottom",
- *       "PlayerPIPSize": "30",
- *       "PlayerScreen": "0",
- *       "PlayerStayOnTop": "1",
- *       "VersionName": "Finé Fiévreuse",
- *       "VersionNo": "v2.0 Release Candidate 1",
- *       "mpvVideoOutput": "direct3d",
- * 		 "WebappMode": "2",
- *       "WebappSongLanguageMode": "1"
- *   }
- * }
- */
-		.get(async (req, res) => {
-			//We don't want to return all settings.
-			let settings = {};
-			const conf = getConfig();
-			for (var key in conf) {
-				if (conf.hasOwnProperty(key)) {
-					if (!key.startsWith('Path') &&
-						!key.startsWith('Bin') &&
-						!key.startsWith('appPath') &&
-						!key.startsWith('Jwt') &&
-						!key.startsWith('is') &&
-						!key.startsWith('mpv') &&
-						!key.startsWith('os')
-					) {
-						settings[key] = conf[key];
-					}
-				}
-			}
-			res.json(OKMessage(settings));
-		});
-	router.route('/public/stats')
-	/**
- * @api {get} /public/stats Get statistics
- * @apiName GetStats
- * @apiVersion 2.1.0
- * @apiGroup Main
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription Returns various stats on the current Karaoke Mugen instance
- * @apiSuccess {Number} totalartists Total number of artists in database
- * @apiSuccess {Number} totalcount Total number of karaokes in database
- * @apiSuccess {Number} totalduration Sum of all karaoke durations in seconds.
- * @apiSuccess {Number} totallanguages Total number of different languages in database
- * @apiSuccess {Number} totalplaylists Total number of playlists in database
- * @apiSuccess {Number} totalseries Total number of series in database
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *    "data": {
- *        "totalartists": 542,
- *        "totalcount": 4924,
- *        "totalduration": 0,
- *        "totallanguages": 16,
- *        "totalplaylists": 5,
- *        "totalseries": 2525
- *    }
- * }
- */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
-			try {
-				const stats = await getKMStats();
-				const userData = await findUserByName(req.authToken.username);
-				updateSongsLeft(userData.id);
-				res.json(OKMessage(stats));
-			} catch(err) {
-				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('STATS_ERROR',err));
-			}
-		});
-
-	router.route('/public/whitelist')
-	/**
- * @api {get} /public/whitelist Get whitelist (public)
- * @apiName GetWhitelistPublic
- * @apiVersion 2.2.0
- * @apiGroup Whitelist
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription If `EngineAllowViewWhitelist` is set to `0` in configuration, then returns an error message (see below)
- * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
- * @apiSuccess {Object[]} data/content List of karaoke objects
- * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
- * @apiSuccess {Number} data/infos/from Items listed are from this position
- * @apiSuccess {Number} data/infos/to Items listed end at this position
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "content": [
- *           {
- *               "NORM_author": null,
- *               "NORM_creator": "Eurovision",
- *               "NORM_serie": null,
- *               "NORM_serie_altname": null,
- *               "NORM_singer": "Dschinghis Khan",
- *               "NORM_songwriter": "Ralph Siegel",
- *               "NORM_title": "Moskau",
- *               "author": "NO_TAG",
- *               "created_at": 1508921852,
- *               "creator": "Eurovision",
- *               "duration": 0,
- *               "kara_id": 1,
- *               "kid": "d9bb6a76-2b7d-469e-ba44-6acfc463202e",
- *               "language": "ger",
- *               "language_i18n": "Allemand",
- *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
- *               "misc": "TAG_CONCERT,TAG_REAL",
- *               "misc_i18n": "Concert,Non-anime",
- * 				 "requested": 20,
- *               "serie": null,
- *               "serie_altname": null,
- *               "singer": "Dschinghis Khan",
- *               "songorder": 0,
- *               "songtype": "TYPE_MUSIC",
- *               "songtype_i18n": "Music Video",
- *               "songtype_i18n_short": "MV",
- *               "songwriter": "Ralph Siegel",
- *               "title": "Moskau",
- *               "viewcount": 0,
- *               "whitelist_id": 1,
- *               "year": "1980"
- *           }
- *       ],
- *       "infos": {
- *           "count": 1,
- *           "from": 0,
- *           "to": 999999
- *       }
- *   }
- * }
- * @apiError WL_VIEW_ERROR Whitelist could not be viewed
- * @apiError WL_VIEW_FORBIDDEN Whitelist view is not allowed for users
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "WL_VIEW_FORBIDDEN"
- * }
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			//Returns whitelist IF the settings allow public to see it
-			if (getConfig().EngineAllowViewWhitelist === 1) {
-				let size = req.query.size || 999999;
-				size = parseInt(size, 10);
-				let from = req.query.from || 0;
-				from = parseInt(from, 10);
-				try {
-					const karas = await	getWhitelistContents(req.query.filter,req.lang,from,size);
-					res.json(OKMessage(karas));
-				} catch(err) {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('WL_VIEW_ERROR',err));
-				}
-			} else {
-				res.StatusCode = 403;
-				res.json(errMessage('WL_VIEW_FORBIDDEN'));
-			}
-		});
-
-	router.route('/public/blacklist')
-	/**
- * @api {get} /public/blacklist Get blacklist (public)
- * @apiName GetBlacklistPublic
- * @apiVersion 2.2.0
- * @apiGroup Blacklist
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription If `EngineAllowViewBlacklist` is set to `0` in configuration, then returns an error message (see below)
- * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
- * @apiSuccess {Object[]} data/content List of karaoke objects
- * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
- * @apiSuccess {Number} data/infos/from Items listed are from this position
- * @apiSuccess {Number} data/infos/size How many items listed.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "content": [
- *           {
- *               "NORM_author": null,
- *               "NORM_creator": "Eurovision",
- *               "NORM_serie": null,
- *               "NORM_serie_altname": null,
- *               "NORM_singer": "Dschinghis Khan",
- *               "NORM_songwriter": "Ralph Siegel",
- *               "NORM_title": "Moskau",
- *               "author": "NO_TAG",
- *               "created_at": 1508921852,
- *               "creator": "Eurovision",
- *               "duration": 0,
- *               "kara_id": 1,
- *               "kid": "d9bb6a76-2b7d-469e-ba44-6acfc463202e",
- *               "language": "ger",
- *               "language_i18n": "Allemand",
- *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
- *               "misc": "TAG_CONCERT,TAG_REAL",
- *               "misc_i18n": "Concert,Non-anime",
- * 				 "requested": 20,
- *               "serie": null,
- *               "serie_altname": null,
- *               "singer": "Dschinghis Khan",
- *               "songorder": 0,
- *               "songtype": "TYPE_MUSIC",
- *               "songtype_i18n": "Music Video",
- *               "songtype_i18n_short": "MV",
- *               "songwriter": "Ralph Siegel",
- *               "title": "Moskau",
- *               "viewcount": 0,
- *               "whitelist_id": 1,
- *               "year": "1980"
- *           }
- *       ],
- *       "infos": {
- *           "count": 1,
- *           "from": 0,
- *           "to": 999999
- *       }
- *   }
- * }
- * @apiError BL_VIEW_ERROR Blacklist could not be viewed
- * @apiError BL_VIEW_FORBIDDEN Blacklist view is not allowed for users
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "BL_VIEW_FORBIDDEN"
- * }
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			//Get list of blacklisted karas IF the settings allow public to see it
-			if (getConfig().EngineAllowViewBlacklist === 1) {
-				let size = req.query.size || 999999;
-				size = parseInt(size, 10);
-				let from = req.query.from || 0;
-				from = parseInt(from, 10);
-				try {
-					const karas = await getBlacklist(req.query.filter,req.lang,from,size);
-					res.json(OKMessage(karas));
-				} catch(err) {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('BL_VIEW_ERROR',err));
-				}
-			} else {
-				res.StatusCode = 403;
-				res.json(errMessage('BL_VIEW_FORBIDDEN'));
-			}
-		});
-
-	router.route('/public/blacklist/criterias')
-	/**
- * @api {get} /public/blacklist/criterias Get list of blacklist criterias (public)
- * @apiName GetBlacklistCriteriasPublic
- * @apiVersion 2.1.0
- * @apiGroup Blacklist
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
- * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
- * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
- * @apiSuccess {String} data/value_i18n Translated value to display on screen.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": [
- *       {
- *           "blcriteria_id": 2,
- *           "type": 6,
- *           "value": "241",
- *           "value_i18n": "Jean-Jacques Debout"
- *       }
- *   ]
- * }
- * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
- * @apiError BLC_VIEW_FORBIDDEN Blacklist criterias are not viewable by users.
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "BLC_VIEW_FORBIDDEN"
- * }
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			//Get list of blacklist criterias IF the settings allow public to see it
-			if (getConfig().EngineAllowViewBlacklistCriterias === 1) {
-				try {
-					const blc = await getBlacklist();
-					res.json(OKMessage(blc));
-				} catch(err) {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('BLC_VIEW_ERROR',err));
-				}
-			} else {
-				res.StatusCode = 403;
-				res.json(errMessage('BLC_VIEW_FORBIDDEN'));
-			}
-		});
-
-	router.route('/public/player')
-	/**
- * @api {get} /public/player Get player status
- * @apiName GetPlayer
- * @apiVersion 2.1.0
- * @apiGroup Player
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription Player info is updated very frequently. You can poll it to get precise information from player and engine altogether.
- * @apiSuccess {Number} data/currentlyPlaying Karaoke ID of song being played
- * @apiSuccess {Number} data/duration Current's song duration in seconds
- * @apiSuccess {Boolean} data/fullscreen Player's fullscreen status
- * @apiSuccess {Boolean} data/muteStatus Player's volume mute status
- * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
- * @apiSuccess {String=pause,stop,play} data/playerStatus Player's status (not to mistake with engine's status, see below). Player status is `pause` if displaying a background.
- * @apiSuccess {Boolean} data/private Engine's public/private status
- * @apiSuccess {Boolean} data/showSubs Player's showing subtitles or not
- * @apiSuccess {String=pause,play,stop} data/status Engine's status
- * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
- * @apiSuccess {String} data/subText Text/lyrics being displayed on screen
- * @apiSuccess {Number} data/timePosition Player's current position in the song.
- * @apiSuccess {Number} data/volume Volume (from `0` to `100`)
- * Example Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "currentlyPlaying": 1020,
- *       "duration": 0,
- *       "fullscreen": false,
- *       "muteStatus": false,
- *       "onTop": true,
- *       "playerStatus": "pause",
- *       "private": true,
- *       "showSubs": true,
- *       "status": "stop",
- *       "subText": null,
- *       "timePosition": 0,
- *       "volume": 100
- *   }
- * }
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "PLAYER_STATUS_ERROR"
- * }
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			// Get player status
-			// What's playing, time in seconds, duration of song
-
-			//return status of the player
-
-			res.json(OKMessage(getPublicState()));
-		});
-	router.route('/public/karas')
-	/**
- * @api {get} /public/karas Get complete list of karaokes
- * @apiName GetKaras
- * @apiVersion 2.3.1
- * @apiGroup Karaokes
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * @apiParam {String} [searchType] Can be `serie`, `year`, `popular`, `recent` or `tag`
- * @apiParam {String} [searchValue] Value to search for. For `series` or `tag` it's an ID, for `year` it's a 4-digit year.
- *
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
- * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
- * @apiSuccess {Number} data/infos/from Starting position of listing
- * @apiSuccess {Number} data/infos/to End position of listing
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "content": [
- *           {
- *               "NORM_author": null,
- *               "NORM_creator": null,
- * 				 "NORM_groups": null,
- *               "NORM_serie": "Dynasty Warriors 3",
- *               "NORM_serie_altname": "DW3/DW 3",
- *               "NORM_serie_orig": "Dynasty Warriors 3",
- *               "NORM_singer": null,
- *               "NORM_songwriter": null,
- *               "NORM_title": "Circuit",
- *               "author": "NO_TAG",
- *               "created_at": 1508423806,
- *               "modified_at": 1508423806,
- *               "creator": "NO_TAG",
- *               "duration": 0,
- * 	             "flag_dejavu": 0,
- * 				 "flag_favorites": 1,
- *               "gain": 0,
- * 				 "groups": null,
- *               "kara_id": 176,
- *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
- *               "language": "chi",
- *               "language_i18n": "Chinois",
- * 				 "lastplayed_at": null,
- *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
- *               "misc": "TAG_VIDEOGAME",
- *               "misc_i18n": "Jeu vidéo",
- * 				 "requested": 20
- *               "serie": "Dynasty Warriors 3",
- * 				 "serie_i18n": {
- * 								"fre":"Guerriers de la Dynastie"
- * 								}
- *               "serie_altname": "DW3/DW 3",
- *               "serie_orig": "Dynasty Warriors 3",
- *               "singer": "NO_TAG",
- *               "songorder": 0,
- *               "songtype": "TYPE_ED",
- *               "songtype_i18n": "Ending",
- *               "songtype_i18n_short": "ED",
- *               "songwriter": "NO_TAG",
- *               "title": "Circuit",
- *               "viewcount": 0,
- *               "year": ""
- *           },
- *           ...
- *       ],
- *       "infos": {
- *           "count": 3,
- * 			 "from": 0,
- * 			 "to": 120
- *       }
- *   }
- * }
- * @apiError SONG_LIST_ERROR Unable to fetch list of karaokes
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
-			// if the query has a &filter=xxx
-			// then the playlist returned gets filtered with the text.
-			let size = req.query.size || 999999;
-			size = parseInt(size, 10);
-			let from = req.query.from || 0;
-			from = parseInt(from, 10);
-			if (from < 0) from = 0;
-			try {
-				const karas = await getKaras(req.query.filter,req.lang,from,size,req.query.searchType, req.query.searchValue, req.authToken);
-				res.json(OKMessage(karas));
-			} catch(err) {
-				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('SONG_LIST_ERROR',err));
-			}
-		});
-	router.route('/public/karas/random')
-	/**
- * @api {get} /public/karas/random Get a random karaoke ID
- * @apiName GetKarasRandom
- * @apiVersion 2.1.0
- * @apiGroup Karaokes
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription This selects a random karaoke from the database. What you will do with it depends entirely on you.
- * @apiSuccess {Number} data Random Karaoke ID
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": 4550
- * }
- * @apiError GET_UNLUCKY Unable to find a random karaoke
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-
-		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
-			try {
-				const kara_id = await getRandomKara(req.authToken, req.query.filter);
-				if (!kara_id) {
-					res.statusCode = 500;
-					res.json(errMessage('GET_UNLUCKY'));
-				} else {
-					res.json(OKMessage(kara_id));
-				}
-
-			} catch(err) {
-				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('GET_LUCKY_ERROR',err));
-			}
-		});
-	router.route('/public/karas/:kara_id([0-9]+)')
-	/**
- * @api {get} /public/karas/:kara_id Get song info from database
- * @apiName GetKaraInfo
- * @apiVersion 2.3.0
- * @apiGroup Karaokes
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
- * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
- * @apiSuccess {String} data/NORM_creator Normalized creator's name
- * @apiSuccess {String} data/NORM_groups Normalized groups names
- * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
- * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
- * @apiSuccess {String} data/NORM_singer Normalized name of singer.
- * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
- * @apiSuccess {String} data/NORM_title Normalized song title
- * @apiSuccess {String} data/author Karaoke author's name
- * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
- * @apiSuccess {Number} data/modified_at UNIX timestamp of the karaoke's last modification date in the base
- * @apiSuccess {String} data/creator Show's creator name
- * @apiSuccess {Number} data/duration Song duration in seconds
- * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default `EngineMaxDejaVuTime` is at 60 minutes)
- * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
- * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
- * @apiSuccess {String} data/groups List of groups this karaoke song belongs to
- * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
- * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
- * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
- * @apiSuccess {Number} data/lastplayed_at Last time the song has been played in UNIX timestamp. `null` if never played before
- * @apiSuccess {String} data/mediafile Media's filename
- * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
- * @apiSuccess {String} data/misc_i18n Translated tag list
- * @apiSuccess {String} data/requested Number of times the song has been requested.
- * @apiSuccess {String} data/serie Name of series/show the song belongs to
- * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
- * @apiSuccess {String} data/singer Singer's name, if known.
- * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
- * @apiSuccess {String} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
- * @apiSuccess {String} data/songtype_i18n Translated song's type (`Opening`, `Ending`, `Insert Song`...)
- * @apiSuccess {String} data/songtype_i18n_short Short translated version of the song's type (`OP`, `ED`, `IN`, ...)
- * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
- * @apiSuccess {String} data/title Song's title
- * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
- * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": [
- *       {
- *           "NORM_author": null,
- *           "NORM_creator": null,
- *           "NORM_groups": null,
- *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
- *           "NORM_serie_altname": "C-Cube/CxCxC",
- *           "NORM_singer": null,
- *           "NORM_songwriter": null,
- *           "NORM_title": "Hana",
- *           "author": "NO_TAG",
- *           "created_at": 1508427958,
- *           "modified_at": 1508427958,
- *           "creator": "NO_TAG",
- *           "duration": 0,
- * 	         "flag_dejavu": 0,
- * 		     "flag_favorites": 0,
- *           "gain": 0,
- *           "groups": null,
- *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
- *           "language": "jpn",
- *           "language_i18n": "Japonais",
- * 			 "lastplayed_at": null,
- *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
- *           "misc": "NO_TAG",
- *           "misc_i18n": "No info",
- * 			 "requested": 20,
- *           "serie": "C3 ~ Cube X Cursed X Curious",
- *           "serie_altname": "C-Cube/CxCxC",
- *           "singer": "NO_TAG",
- *           "songorder": 1,
- *           "songtype": "TYPE_ED",
- *           "songtype_i18n": "Ending",
- *           "songtype_i18n_short": "ED",
- *           "songwriter": "NO_TAG",
- *           "time_before_play": 0,
- *           "title": "Hana",
- *           "viewcount": 0,
- *           "year": ""
  *       }
  *   ]
  * }
@@ -3276,8 +2777,7 @@ export function APIControllerPublic(router) {
 				res.json(OKMessage(kara));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('SONG_VIEW_ERROR',err));
+				res.status(500).json(errMessage('SONG_VIEW_ERROR',err));
 			}
 		})
 	/**
@@ -3339,11 +2839,9 @@ export function APIControllerPublic(router) {
 				const data = await addKaraToPlaylist(req.params.kara_id, req.authToken.username);
 				emitWS('playlistContentsUpdated',data.playlist_id);
 				emitWS('playlistInfoUpdated',data.playlist_id);
-				res.statusCode = 201;
-				res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
+				res.status(201).json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
 			} catch(err) {
-				res.statusCode = 500;
-				res.json(errMessage(err.code,err.message,err.data));
+				res.status(500).json(errMessage(err.code,err.message,err.data));
 			}
 
 		});
@@ -3378,9 +2876,7 @@ export function APIControllerPublic(router) {
 				const kara = await getKaraLyrics(req.params.kara_id);
 				res.json(OKMessage(kara));
 			} catch(err) {
-
-				res.statusCode = 500;
-				res.json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
+				res.status(500).json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
 			}
 		});
 	router.route('/public/playlists/current')
@@ -3389,34 +2885,16 @@ export function APIControllerPublic(router) {
  * @apiName GetPlaylistCurrent
  * @apiGroup Playlists
  * @apiPermission public
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiHeader authorization Auth token received from logging in
  * @apiDescription This route allows to check basic information about the current playlist, no matter which ID it has (and without you having to know it)
- * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
- * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
- * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
- * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
- * @apiSuccess {Number} data/length Duration of playlist in seconds
- * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
- * @apiSuccess {String} data/name Name of playlist
- * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
- * @apiSuccess {Number} data/playlist_id Database's playlist ID
- * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
+ * @apiSuccess {Object} Playlist object of the current playlist
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
  *   "data": {
- *       "created_at": 1508313440,
- *       "flag_current": 1,
- *       "flag_public": 0,
- *       "flag_visible": 1,
- *       "length": 0,
- *       "modified_at": 1508408078,
- *       "name": "Liste de lecture courante",
- *       "num_karas": 6,
- *       "playlist_id": 1,
- *       "time_left": 0
+ *      <See admin/playlist/[id] object>
  *   }
  *}
  * @apiError PL_VIEW_CURRENT_ERROR Unable to fetch info from current playlist
@@ -3433,8 +2911,7 @@ export function APIControllerPublic(router) {
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('PL_VIEW_CURRENT_ERROR',err));
+				res.status(500).json(errMessage('PL_VIEW_CURRENT_ERROR',err));
 			}
 		});
 
@@ -3442,7 +2919,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
- * @apiVersion 2.3.1
+ * @apiVersion 2.5.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -3451,7 +2928,7 @@ export function APIControllerPublic(router) {
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
+ * @apiSuccess {Object[]} data/content/karas Array of `playlistcontent` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -3462,56 +2939,8 @@ export function APIControllerPublic(router) {
  *   "data": {
  *       "content": [
  *           {
- *               "NORM_author": null,
- *               "NORM_creator": null,
- *               "NORM_pseudo_add": "Administrateur",
- *               "NORM_serie": "Dynasty Warriors 3",
- *               "NORM_serie_altname": "DW3/DW 3",
- *               "NORM_serie_orig": "Dynasty Warriors 3",
- *               "NORM_singer": null,
- *               "NORM_songwriter": null,
- *               "NORM_title": "Circuit",
- *               "author": "NO_TAG",
- *               "created_at": 1508423806,
- *               "kara_modified_at": 1508423806,
- *               "kara_created_at": 1508423806,
- *               "creator": null,
- *               "duration": 0,
- *               "flag_blacklisted": 0,
- *               "flag_playing": 1,
- *               "flag_whitelisted": 0,
- * 	             "flag_dejavu": 0,
- *               "gain": 0,
- *               "kara_id": 176,
- *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
- *               "language": "chi",
- *               "language_i18n": "Chinois",
- * 				 "lastplayed_at": null,
- *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
- *               "misc": "TAG_VIDEOGAME",
- *               "misc_i18n": "Jeu vidéo",
- *               "playlistcontent_id": 4946,
- *               "pos": 1,
- *               "pseudo_add": "Administrateur",
- * 				 "requested": 20,
- *               "serie": "Dynasty Warriors 3",
- * 				 "serie_i18n": {
- * 								"fre":"Guerriers de la Dynastie"
- * 								}
- *               "serie_altname": "DW3/DW 3",
- *               "serie_orig": "Dynasty Warriors 3",
- *               "singer": "NO_TAG",
- *               "songorder": 0,
- *               "songtype": "TYPE_ED",
- *               "songtype_i18n": "Ending",
- *               "songtype_i18n_short": "ED",
- *               "songwriter": "NO_TAG",
- *               "title": "Circuit",*
- * 				 "username": "admin",
- *               "viewcount": 0,
- *               "year": ""
- *           },
- *           ...
+ *                <See admin/playlists/[id]/karas/[plc_id] object>
+ *           }
  *       ],
  *       "infos": {
  *           "count": 3,
@@ -3530,12 +2959,8 @@ export function APIControllerPublic(router) {
 
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get current Playlist
-			let size = req.query.size || 999999;
-			size = parseInt(size, 10);
-			let from = req.query.from || 0;
-			from = parseInt(from, 10);
 			try {
-				const playlist = await getPlaylistContents(getState().currentPlaylistID, req.authToken, req.query.filter, req.lang, from, size);
+				const playlist = await getPlaylistContents(getState().currentPlaylistID, req.authToken, req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 999999);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3550,36 +2975,17 @@ export function APIControllerPublic(router) {
  * @apiName GetPlaylistPublic
  * @apiGroup Playlists
  * @apiPermission public
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiHeader authorization Auth token received from logging in
  * @apiDescription This route allows to check basic information about the public playlist, no matter which ID it has (and without you having to know it)
- * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
- * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
- * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
- * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
- * @apiSuccess {Number} data/length Duration of playlist in seconds
- * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
- * @apiSuccess {String} data/name Name of playlist
- * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
- * @apiSuccess {Number} data/playlist_id Database's playlist ID
- * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
- *
+ * @apiSuccess {Object} data Playlist object
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
  *   "data": {
- *       "created_at": 1508313440,
- *       "flag_current": 1,
- *       "flag_public": 0,
- *       "flag_visible": 1,
- *       "length": 0,
- *       "modified_at": 1508408078,
- *       "name": "Liste de lecture courante",
- *       "num_karas": 6,
- *       "playlist_id": 1,
- *       "time_left": 0
+ * 		<See /admin/playlist/[id] object>
  *   }
- *}
+ * }
  * @apiError PL_VIEW_PUBLIC_ERROR Unable to fetch info from public playlist
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 
@@ -3596,8 +3002,7 @@ export function APIControllerPublic(router) {
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('PL_VIEW_PUBLIC_ERROR',err));
+				res.status(500).json(errMessage('PL_VIEW_PUBLIC_ERROR',err));
 			}
 		});
 
@@ -3614,10 +3019,7 @@ export function APIControllerPublic(router) {
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
- * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
- * @apiSuccess {Number} data/infos/from Starting position of listing
- * @apiSuccess {Number} data/infos/to End position of listing
+ * @apiSuccess {Object[]} data/content Array of `Playlist` objects
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -3625,54 +3027,7 @@ export function APIControllerPublic(router) {
  *   "data": {
  *       "content": [
  *           {
- *               "NORM_author": null,
- *               "NORM_creator": null,
- *               "NORM_pseudo_add": "Administrateur",
- *               "NORM_serie": "Dynasty Warriors 3",
- *               "NORM_serie_altname": "DW3/DW 3",
- *               "NORM_serie_orig": "Dynasty Warriors 3",
- *               "NORM_singer": null,
- *               "NORM_songwriter": null,
- *               "NORM_title": "Circuit",
- *               "author": "NO_TAG",
- *               "created_at": 1508423806,
- *               "kara_modified_at": 1508423806,
- *               "kara_created_at": 1508423806,
- *               "creator": null,
- *               "duration": 0,
- *               "flag_blacklisted": 0,
- *               "flag_playing": 1,
- *               "flag_whitelisted": 0,
- * 	             "flag_dejavu": 0,
- *               "gain": 0,
- *               "kara_id": 176,
- *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
- *               "language": "chi",
- *               "language_i18n": "Chinois",
- * 				 "lastplayed_at": null,
- *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
- *               "misc": "TAG_VIDEOGAME",
- *               "misc_i18n": "Jeu vidéo",
- *               "playlistcontent_id": 4946,
- *               "pos": 1,
- *               "pseudo_add": "Administrateur",
- * 				 "requested": 20
- *               "serie": "Dynasty Warriors 3",
- * 				 "serie_i18n": {
- * 								"fre":"Guerriers de la Dynastie"
- * 								}
- *               "serie_altname": "DW3/DW 3",
- *               "serie_orig": "Dynasty Warriors 3",
- *               "singer": "NO_TAG",
- *               "songorder": 0,
- *               "songtype": "TYPE_ED",
- *               "songtype_i18n": "Ending",
- *               "songtype_i18n_short": "ED",
- *               "songwriter": "NO_TAG",
- *               "title": "Circuit",
- * 				 "username": "admin",
- *               "viewcount": 0,
- *               "year": ""
+ * 				<See /admin/playlists/[id]/karas/[plc_id] object>
  *           },
  *           ...
  *       ],
@@ -3693,17 +3048,12 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get public Playlist
-			let size = req.query.size || 999999;
-			size = parseInt(size, 10);
-			let from = req.query.from || 0;
-			from = parseInt(from, 10);
 			try {
-				const playlist = await getPlaylistContents(getState().publicPlaylistID, req.authToken, req.query.filter, req.lang, from, size);
+				const playlist = await getPlaylistContents(getState().publicPlaylistID, req.authToken, req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 999999);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
+				res.status(500).json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 			}
 		});
 	router.route('/public/playlists/public/karas/:plc_id([0-9]+)/vote')
@@ -3738,13 +3088,11 @@ export function APIControllerPublic(router) {
 			// Post an upvote
 			try {
 				const kara = await vote(req.params.plc_id,req.authToken.username,req.body.downvote);
-
 				emitWS('playlistContentsUpdated', kara.playlist_id);
 				res.json(OKMessage(null, kara.code, kara));
 
 			} catch(err) {
-				res.statusCode = 500;
-				res.json(errMessage(err.code,err.message));
+				res.status(500).json(errMessage(err.code,err.message));
 			}
 		});
 	router.route('/public/playlists/public/karas/:plc_id([0-9]+)')
@@ -3782,12 +3130,9 @@ export function APIControllerPublic(router) {
 				const data = await deleteKaraFromPlaylist(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
 				emitWS('playlistInfoUpdated',data.pl_id);
-				res.statusCode = 200;
 				res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
 			} catch(err) {
-
-				res.statusCode = 500;
-				res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
+				res.status(500).json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
 			}
 		});
 	router.route('/public/playlists/current/karas/:plc_id([0-9]+)')
@@ -3825,19 +3170,16 @@ export function APIControllerPublic(router) {
 				const data = await deleteKaraFromPlaylist(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
 				emitWS('playlistInfoUpdated',data.pl_id);
-				res.statusCode = 200;
 				res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
 			} catch(err) {
-
-				res.statusCode = 500;
-				res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
+				res.status(500).json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
 			}
 		});
 	router.route('/public/tags')
 	/**
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
-	* @apiVersion 2.3.0
+	* @apiVersion 2.5.0
 	* @apiGroup Tags
 	* @apiPermission public
 	* @apiHeader authorization Auth token received from logging in
@@ -3846,9 +3188,10 @@ export function APIControllerPublic(router) {
 	* @apiParam {Number} [from] Where to start listing from
 	* @apiParam {Number} [size] How many records to get.
 	* @apiSuccess {String} data/name Name of tag
-	* @apiSuccess {String} data/name_i18n Translated name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
 	* @apiSuccess {Number} data/type Tag type number
+	* @apiSuccess {String} data/slug Slugified version of the tag
+	* @apiSuccess {Object} data/i18n Translations in case of misc, languages and song type tags
 	*
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
@@ -3856,23 +3199,15 @@ export function APIControllerPublic(router) {
 	*     "data": {
 	*		content: [
 	*        {
-	*          "name": "20th Century",
-	*          "name_i18n": "20th Century",
-	*          "tag_id": 371,
-	*          "type": 2
-	*        },
-	*        {
-	*		   "name": "TYPE_AMV",
-	*          "name_i18n": "Anime Music Video",
-	*          "tag_id": 15,
-	*          "type": 3
-	*        },
-	*        {
-	*          "name": "ita",
-	*          "name_i18n": "Italien",
-	*          "tag_id": 370,
-	*          "type": 5
-	*        }
+    *            "i18n": {
+	* 				"en": "TV Show",
+	*				"fr": "Série TV"
+	*			 },
+    *            "name": "TAG_TVSHOW",
+    *            "slug": "tag_tvshow",
+    *            "tag_id": 2090,
+    *            "type": 2
+    *        },
 	*		 ...
 	*   	],
 	*       "infos": {
@@ -3888,18 +3223,13 @@ export function APIControllerPublic(router) {
 	* @apiErrorExample Error-Response:
     * HTTP/1.1 403 Forbidden
 	*/
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				let size = req.query.size || 999999;
-				size = parseInt(size, 10);
-				let from = req.query.from || 0;
-				from = parseInt(from, 10);
-				const tags = await getTags(req.lang,req.query.filter,req.query.type, from, size);
+				const tags = await getTags(req.query.filter,req.query.type, +req.query.from || 0, +req.query.size || 999999);
 				res.json(OKMessage(tags));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('TAGS_LIST_ERROR',err));
+				res.status(500).json(errMessage('TAGS_LIST_ERROR',err));
 			}
 		});
 	router.route('/public/years')
@@ -3942,7 +3272,7 @@ export function APIControllerPublic(router) {
 		/**
 		* @api {get} /public/series Get series list
 		* @apiName GetSeries
-		* @apiVersion 2.3.0
+		* @apiVersion 2.5.0
 		* @apiGroup Karas
 		* @apiPermission public
 		* @apiHeader authorization Auth token received from logging in
@@ -3952,7 +3282,13 @@ export function APIControllerPublic(router) {
 		* @apiSuccess {Array} data Array of series
 		* @apiSuccess {Number} data/serie_id Serie ID in the database
 		* @apiSuccess {String} data/name Serie's original name
-		* @apiSuccess {String} data/i18n_name Serie's name according to language
+		* @apiSuccess {String} data/i18n_name Serie's name in the provided language (fallback to English)
+		* @apiSuccess {Number} data/karacount Number of karaokes for that series
+		* @apiSuccess {String} data/sid UUID of series
+		* @apiSuccess {String} data/seriefile Name of `series.json` file
+		* @apiSuccess {Object[]} data/i18n Array of i18n objects
+		* @apiSuccess {String} data/i18n/lang ISO639-2B Language code for the series' name
+		* @apiSuccess {String} data/i18n/name name Series' name in that language
 		* @apiSuccess {String[]} data/aliases Array of aliases
 		* @apiSuccess {Object} data/i18n JSON object for the series translations
 		* @apiSuccessExample Success-Response:
@@ -3961,16 +3297,26 @@ export function APIControllerPublic(router) {
 		*     "data": {
 		*        "contents": [
 		*        {
-		*			"name": "Hataraku Saibô",
-		*			"i18n_name": "Les Brigades Immunitaires",
-		*			"aliases": ["LBI"],
-		*			"i18n": {
-		*				"jpn": "Hataraku Saibô",
-		*				"eng": "Cells at Work",
-		*				"fre": "Les Brigades Immunitaires"
-		*			},
-		*			"serie_id": 2093
-		*		},
+        *        "aliases": [
+        *            "Tenshi no Nichou Kenjuu: Angelos Armas"
+        *        ],
+        *        "i18n": [
+        *            {
+        *                "lang": "eng",
+        *                "name": "Angelos Armas"
+        *            },
+        *            {
+        *                "lang": "jpn",
+        *                "name": "??????? -Angelos Armas-"
+        *            }
+        *        ],
+        *        "i18n_name": "Angelos Armas",
+        *        "karacount": 3,
+        *        "name": "Tenshi no Nichô Kenjû: Angelos Armas",
+        *        "serie_id": 2700,
+        *        "seriefile": "Tenshi no Nichou Kenjuu Angelos Armas.series.json",
+        *		 "sid": "c87a7f7b-20cf-4d7d-98fb-722910f4eec6"
+        *		},
 		*		...
 		*		],
 		*       "infos": {
@@ -3988,16 +3334,11 @@ export function APIControllerPublic(router) {
 		*/
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				let size = req.query.size || 999999;
-				size = parseInt(size, 10);
-				let from = req.query.from || 0;
-				from = parseInt(from, 10);
-				const series = await getSeries(req.query.filter, req.lang, from, size);
+				const series = await getSeries(req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 999999);
 				res.json(OKMessage(series));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('YEARS_LIST_ERROR',err));
+				res.status(500).json(errMessage('YEARS_LIST_ERROR',err));
 			}
 		});
 	router.route('/public/users/:username')
@@ -4013,10 +3354,9 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/nickname User's nickname
  * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
  * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
- * @apiSuccess {Number} data/flag_admin Is the user Admin ?
  * @apiSuccess {Number} data/flag_online Is the user an online account ?
- * @apiSuccess {Number} data/type Type of account (1 = user, 2 = guest)
- * @apiSuccess {Number} data/last_login Last login time in UNIX timestamp.
+ * @apiSuccess {Number} data/type Type of account (`0` = admin, `1` = user, `2` = guest)
+ * @apiSuccess {Number} data/last_login_at Last login time in `Date()` format
  * @apiSuccess {Number} data/user_id User's ID in the database
  * @apiSuccess {String} data/url User's URL in its profile
  * @apiSuccess {String} data/bio User's bio
@@ -4026,12 +3366,10 @@ export function APIControllerPublic(router) {
  * {
  *   "data": [
  *       {
- *           "NORM_nickname": "Administrator",
  *           "avatar_file": "",
- *           "flag_admin": 1,
- *           "flag_online": 0,
- *           "type": 1,
- *           "last_login": 0,
+ *           "flag_online": false,
+ *           "type": 0,
+ *           "last_login_at": null,
  *           "login": "admin",
  *           "nickname": "Administrator",
  *           "user_id": 1,
@@ -4057,14 +3395,13 @@ export function APIControllerPublic(router) {
 				res.json(OKMessage(userdata));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('USER_VIEW_ERROR',err));
+				res.status(500).json(errMessage('USER_VIEW_ERROR',err));
 			}
 		})
 	/**
  * @api {put} /public/users/:username Edit a user
  * @apiName EditUser
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Users
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -4075,7 +3412,6 @@ export function APIControllerPublic(router) {
  * @apiParam {String} bio User's bio info. Can be empty.
  * @apiParam {String} [email] User's mail. Can be empty.
  * @apiParam {String} [url] User's URL. Can be empty.
- * @apiParam {String} [admin] Is User admin or not
  * @apiSuccess {String} args ID of user deleted
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of user deleted
@@ -4086,7 +3422,6 @@ export function APIControllerPublic(router) {
  *   "args": "lol",
  *   "code": "USER_UPDATED",
  *   "data": {
- *       "NORM_nickname": "lol",
  *       "bio": "lol2",
  *       "email": "lol3@lol.fr",
  *       "id": "3",
@@ -4112,7 +3447,6 @@ export function APIControllerPublic(router) {
 				if (req.body.url) req.body.url = unescape(req.body.url.trim());
 				if (req.body.nickname) req.body.nickname = unescape(req.body.nickname.trim());
 				if (req.body.login) req.body.login = unescape(req.body.login.trim());
-				req.body.admin = +req.body.admin;
 				//Now we add user
 				let avatar;
 				if (req.file) avatar = req.file;
@@ -4121,208 +3455,28 @@ export function APIControllerPublic(router) {
 					emitWS('userUpdated',userdata.id);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));
 				} catch(err) {
-					res.statusCode = 500;
-					res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
+					res.status(500).json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(500).json(validationErrors);
 			}
-		});
-	router.route('/public/top50')
-	/**
- * @api {get} /public/top50 View Top 50 songs
- * @apiName GetTop50
- * @apiVersion 2.2.0
- * @apiGroup Karaokes
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- *
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
- * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
- * @apiSuccess {Number} data/infos/from Starting position of listing
- * @apiSuccess {Number} data/infos/to End position of listing
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": {
- *       "content": [
- *           {
- *               "NORM_author": null,
- *               "NORM_creator": null,
- *               "NORM_serie": "Dynasty Warriors 3",
- *               "NORM_serie_altname": "DW3/DW 3",
- *               "NORM_singer": null,
- *               "NORM_songwriter": null,
- *               "NORM_title": "Circuit",
- *               "author": null,
- *               "created_at": 1508423806,
- *               "creator": null,
- *               "duration": 0,
- * 	             "flag_dejavu": 0,
- *               "gain": 0,
- *               "kara_id": 176,
- *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
- *               "language": "chi",
- *               "language_i18n": "Chinois",
- * 				 "lastplayed_at": null,
- *               "misc": "TAG_VIDEOGAME",
- *               "misc_i18n": "Jeu vidéo",
- * 				 "requested": 20
- *               "serie": "Dynasty Warriors 3",
- * 				 "serie_i18n": {}
- *               "serie_altname": "DW3/DW 3",
- *               "singer": null,
- *               "songorder": 0,
- *               "songtype": "TYPE_ED",
- *               "songtype_i18n": "Ending",
- *               "songtype_i18n_short": "ED",
- *               "songwriter": null,
- *               "title": "Circuit",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
- *               "viewcount": 0,
- *               "year": ""
- *           },
- *           ...
- *       ],
- *       "infos": {
- *           "count": 3,
- * 			 "from": 0,
- * 			 "to": 120
- *       }
- *   }
- * }
- * @apiError TOP50_LIST_ERROR Unable to fetch list of karaokes
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
-			// if the query has a &filter=xxx
-			// then the playlist returned gets filtered with the text.
-			let size = req.query.size || 999999;
-			size = parseInt(size, 10);
-			let from = req.query.from || 0;
-			from = parseInt(from, 10);
-			if (from < 0) from = 0;
-			try {
-				const karas = await getTop50(req.body.filter,req.lang,from,size,req.authToken);
-				res.json(OKMessage(karas));
-			} catch(err) {
-				res.statusCode = 500;
-				res.json(errMessage('TOP50_LIST_ERROR',err));
-			}
-		});
-
-	router.route('/public/users/:username/requests')
-	/**
- * @api {get} public/users/:username/requests View user's most requested songs
- * @apiName GetUserRequestedKaras
- * @apiVersion 2.1.0
- * @apiGroup Users
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {String} username Username to check details for.
- * @apiSuccess {Object} data Kara object
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
-* {
- *   "data": {
- *       "content": [
- *           {
- *               "NORM_author": null,
- *               "NORM_creator": null,
- *               "NORM_pseudo_add": "Administrateur",
- *               "NORM_serie": "Dynasty Warriors 3",
- *               "NORM_serie_altname": "DW3/DW 3",
- *               "NORM_singer": null,
- *               "NORM_songwriter": null,
- *               "NORM_title": "Circuit",
- *               "author": null,
- *               "created_at": 1508423806,
- *               "creator": null,
- *               "duration": 0,
- *               "flag_blacklisted": 0,
- *               "flag_playing": 1,
- *               "flag_whitelisted": 0,
- * 	             "flag_dejavu": 0,
- *               "gain": 0,
- *               "kara_id": 176,
- *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
- *               "language": "chi",
- *               "language_i18n": "Chinois",
- * 				 "lastplayed_at": null,
- *               "misc": "TAG_VIDEOGAME",
- *               "misc_i18n": "Jeu vidéo",
- *               "playlistcontent_id": 4946,
- *               "pos": 1,
- *               "pseudo_add": "Administrateur",
- * 				 "requested": 20,
- *               "serie": "Dynasty Warriors 3",
- *               "serie_altname": "DW3/DW 3",
- *               "singer": null,
- *               "songorder": 0,
- *               "songtype": "TYPE_ED",
- *               "songtype_i18n": "Ending",
- *               "songtype_i18n_short": "ED",
- *               "songwriter": null,
- *               "title": "Circuit",*
- * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
- *               "viewcount": 0,
- *               "year": ""
- *           },
- *           ...
- *       ],
- *       "infos": {
- *           "count": 3,
- * 			 "from": 0,
- * 			 "to": 120
- *       }
- *   }
- * }
- * @apiError USER_REQUESTS_VIEW_ERROR Unable to view user requested karas
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "USER_REQUESTS_VIEW_ERROR",
- *   "message": null
- * }
- */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
-			getUserRequests(req.params.username, req.lang)
-				.then((requestdata) => {
-					res.json(OKMessage(requestdata));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('USER_REQUESTS_VIEW_ERROR',err));
-				});
 		});
 	router.route('/public/myaccount')
 	/**
  * @api {get} /public/myaccount View own user details
  * @apiName GetMyAccount
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Users
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
  * @apiSuccess {String} data/login User's login
  * @apiSuccess {String} data/nickname User's nickname
- * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
  * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
- * @apiSuccess {Number} data/flag_admin Is the user Admin ?
  * @apiSuccess {Number} data/flag_online Is the user an online account ?
- * @apiSuccess {Number} data/type Type of account (1 = user, 2 = guest)
- * @apiSuccess {Number} data/last_login Last login time in UNIX timestamp.
+ * @apiSuccess {Number} data/type Type of account (`0` = admin, `1` = user, `2` = guest)
+ * @apiSuccess {Number} data/last_login_at Last login time in UNIX timestamp.
  * @apiSuccess {Number} data/user_id User's ID in the database
  * @apiSuccess {String} data/url User's URL in its profile
  * @apiSuccess {String} data/fingerprint User's fingerprint
@@ -4334,12 +3488,10 @@ export function APIControllerPublic(router) {
  * {
  *   "data": [
  *       {
- *           "NORM_nickname": "Administrator",
  *           "avatar_file": "",
- *           "flag_admin": 1,
- *           "flag_online": 0,
- *           "type": 1,
- *           "last_login": 0,
+ *           "flag_online": false,
+ *           "type": 0,
+ *           "last_login_at": null,
  *           "login": "admin",
  *           "nickname": "Administrator",
  *           "user_id": 1,
@@ -4368,8 +3520,7 @@ export function APIControllerPublic(router) {
 				res.json(OKMessage(userData));
 			} catch(err) {
 				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('USER_VIEW_ERROR',err));
+				res.status(500).json(errMessage('USER_VIEW_ERROR',err));
 			}
 		})
 	/**
@@ -4430,14 +3581,12 @@ export function APIControllerPublic(router) {
 					emitWS('userUpdated',req.params.user_id);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));
 				} catch(err) {
-					res.statusCode = 500;
-					res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
+					res.status(500).json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(400).json(validationErrors);
 			}
 		});
 

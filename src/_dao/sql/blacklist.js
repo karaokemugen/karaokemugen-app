@@ -99,8 +99,8 @@ SELECT ak.kara_id AS kara_id,
   ak.duration AS duration,
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
-  bl.created_at AS created_at,
-  bl.reason AS reason_add
+  bl.created_at AS blacklisted_at,
+  bl.reason AS reason
   FROM all_karas AS ak
   INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.kara_id
   WHERE 1 = 1

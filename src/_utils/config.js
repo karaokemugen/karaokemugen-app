@@ -226,6 +226,27 @@ export async function backupConfig() {
 	);
 }
 
+export function getPublicConfig() {
+	let settings = {};
+	const conf = getConfig();
+
+	for (const key in conf) {
+		if (conf.hasOwnProperty(key)) {
+			if (!key.startsWith('Path') &&
+			!key.startsWith('Bin') &&
+			!key.startsWith('appPath') &&
+			!key.startsWith('Jwt') &&
+			!key.startsWith('is') &&
+			!key.startsWith('mpv') &&
+			!key.startsWith('os')
+			) {
+				settings[key] = conf[key];
+			}
+		}
+	}
+
+}
+
 export async function updateConfig(newConfig) {
 	savingSettings = true;
 	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinPostgresPath','BinPostgresDumpExe', 'BinPostgresCTLExe', 'BinPostgresInitExe','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale', 'db'];

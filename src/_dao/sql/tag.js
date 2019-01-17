@@ -7,13 +7,14 @@ WHERE pk_id_tag = $1
 `;
 
 export const getAllTags = `
-SELECT pk_id_tag AS tag_id,
+SELECT tag_id,
 	tagtype AS type,
 	name,
 	slug,
-	i18n
-FROM tag
-ORDER BY type, name
+	i18n,
+	karacount
+FROM all_tags
+ORDER BY tagtype, name
 `;
 
 export const getTagByNameAndType = `
