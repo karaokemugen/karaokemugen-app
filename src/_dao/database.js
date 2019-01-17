@@ -257,11 +257,6 @@ export function buildTypeClauses(mode, value) {
 	}
 	if (mode === 'kid') return ` AND kid = '${value}'`;
 	if (mode === 'kara') return ` AND kara_id = '${value}'`;
-	if (mode === 'requests') return `AND kara_id IN (
-		SELECT r.fk_id_kara
-		FROM request AS r
-		LEFT OUTER JOIN user AS u ON u.pk_id_user = r.fk_id_user
-		WHERE u.login = '${value}'`;
 	return '';
 }
 

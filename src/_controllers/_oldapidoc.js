@@ -7501,3 +7501,43 @@
  *   "message": null
  * }
  */
+
+	/**
+ * @api {put} /public/myaccount Edit your own account
+ * @apiName EditMyAccount
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission own
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} nickname New nickname for user
+ * @apiParam {String} [password] New password. Can be empty (password won't be changed then)
+ * @apiParam {String} [bio] User's bio info. Can be empty.
+ * @apiParam {String} [email] User's mail. Can be empty.
+ * @apiParam {String} [url] User's URL. Can be empty.
+ * @apiParam {ImageFile} [avatarfile] New avatar
+ * @apiSuccess {String} args ID of user deleted
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of user deleted
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "lol",
+ *   "code": "USER_UPDATED",
+ *   "data": {
+ *       "NORM_nickname": "lol",
+ *       "bio": "lol2",
+ *       "email": "lol3@lol.fr",
+ *       "id": "3",
+ *       "login": "test2",
+ *       "nickname": "lol",
+ *       "url": "http://lol4"
+ *   }
+ * }
+ * @apiError USER_UPDATE_ERROR Unable to edit user
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */

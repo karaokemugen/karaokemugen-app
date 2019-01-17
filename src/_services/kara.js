@@ -14,8 +14,6 @@ import {selectAllKaras,
 	isKara as isKaraDB,
 	addKara,
 	updateKara,
-	getKaraHistory as getKaraHistoryDB,
-	getKaraViewcounts as getKaraViewcountsDB,
 	addViewcount
 } from '../_dao/kara';
 import {updateKaraSeries} from '../_dao/series';
@@ -279,23 +277,16 @@ export function serieRequired(karaType) {
 	return karaType !== karaTypes.MV.type && karaType !== karaTypes.LIVE.type;
 }
 
-export async function getKaraHistory() {
-	return await getKaraHistoryDB();
+export async function getKaraHistory(token, lang, from, size) {
+	return await selectAllKaras(token.username, null, lang, 'history', null, from, size);
 }
 
 export async function getTop50(token, lang) {
-	let karas = await getAllKaras(token.username, null, lang);
-	karas = karas.filter(kara => kara.requested > 0);
-	karas.sort((a,b) => {
-		if (a.requested < b.requested) return -1;
-		if (a.requested > b.requested) return 1;
-		return 0;
-	});
-	return karas;
+	return await getAllKaras(token.username, null, lang, 'requested',null);
 }
 
-export async function getKaraViewcounts() {
-	return await getKaraViewcountsDB();
+export async function getKaraPlayed(token, lang, from, size) {
+	return await selectAllKaras(token.username, null, lang, 'played', null, from, size);
 }
 
 export async function addViewcountKara(kara_id, kid) {

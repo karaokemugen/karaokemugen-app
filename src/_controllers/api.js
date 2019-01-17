@@ -20,12 +20,12 @@ import {updateSongsLeft} from '../_services/user';
 import {message} from '../_player/player';
 import {addKaraToPlaylist, copyKaraToPlaylist, shufflePlaylist, getPlaylistContents, emptyPlaylist, setCurrentPlaylist, setPublicPlaylist, editPLC, editPlaylist, deleteKaraFromPlaylist, deletePlaylist, getPlaylistInfo, createPlaylist, getPlaylists, getKaraFromPlaylist, exportPlaylist, importPlaylist} from '../_services/playlist';
 import {getTags} from '../_services/tag';
-import {getYears, getRandomKara, getKaraLyrics, getTop50, getKaras, getKara} from '../_services/kara';
+import {getYears, getRandomKara, getKaraLyrics, getKaras, getKara} from '../_services/kara';
 import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelistContents} from '../_services/whitelist';
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, addToFavorites, deleteFavorite, exportFavorites, importFavorites} from '../_services/favorites';
 import {vote} from '../_services/upvote';
-import {createUser, findUserByName, deleteUser, editUser, getUserRequests, listUsers} from '../_services/user';
+import {createUser, findUserByName, deleteUser, editUser, listUsers} from '../_services/user';
 import {getPoll, addPollVote} from '../_services/poll';
 import {getSeries} from '../_services/series';
 
@@ -3526,7 +3526,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {put} /public/myaccount Edit your own account
  * @apiName EditMyAccount
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Users
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -3546,7 +3546,6 @@ export function APIControllerPublic(router) {
  *   "args": "lol",
  *   "code": "USER_UPDATED",
  *   "data": {
- *       "NORM_nickname": "lol",
  *       "bio": "lol2",
  *       "email": "lol3@lol.fr",
  *       "id": "3",

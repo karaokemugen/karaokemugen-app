@@ -90,9 +90,16 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	let limitClause = '';
 	let offsetClause = '';
 	if (mode === 'recent') orderClauses = 'created_at DESC, ';
-	if (mode === 'popular') orderClauses = 'requested DESC, ';
 	if (mode === 'history') orderClauses = 'lastplayed_at DESC, ';
-	if (mode === 'requested') orderClauses = 'requested DESC, ';
+	if (mode === 'requested') {
+		orderClauses = 'requested DESC, ';
+		filterClauses = {
+			sql: ['requested > :requested'],
+			params: {
+				requested: 1
+			}
+		};
+	}
 	if (mode === 'played') {
 		orderClauses = 'played DESC, ';
 		filterClauses = {
@@ -126,14 +133,6 @@ export async function getKaraMini(id) {
 
 export async function getKaraByKID(kid) {
 	return await selectAllKaras('admin', null, 'eng', 'kid', kid);
-}
-
-export async function getKaraHistory(lang, from, size) {
-	return await selectAllKaras('admin', null, lang, 'history', null, from, size);
-}
-
-export async function getKaraViewcounts(lang, from, size) {
-	return await selectAllKaras('admin', null, lang, 'played', null, from, size);
 }
 
 export async function getASS(sub) {

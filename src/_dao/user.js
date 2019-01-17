@@ -1,6 +1,5 @@
 import {db} from './database';
 import {pg as yesql} from 'yesql';
-import {selectAllKaras} from './kara';
 const sql = require('./sql/user');
 
 export async function getUserByName(username) {
@@ -29,11 +28,6 @@ export async function listUsers() {
 
 export async function listGuests() {
 	const res = await db().query(sql.selectGuests);
-	return res.rows;
-}
-
-export async function getUserRequests(username, lang, from, size) {
-	const res = await selectAllKaras('admin', null, lang, 'requests', username, from, size);
 	return res.rows;
 }
 

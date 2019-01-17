@@ -6,7 +6,7 @@ import {requireAuth, requireValidUser, requireAdmin} from './middlewares/auth';
 import {requireNotDemo} from './middlewares/demo';
 import {getLang} from './middlewares/lang';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
-import {getKaras, getKara, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
+import {getKaras, getKara, getTop50, getKaraPlayed, getKaraHistory} from '../_services/kara';
 import {getTags} from '../_services/tag';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara';
@@ -124,19 +124,19 @@ export default function systemController(router) {
 	});
 
 	router.get('/system/karas/history', requireAuth, requireValidUser, requireAdmin, (req, res) =>{
-		getKaraHistory()
+		getKaraHistory(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas: ${err}`));
 	});
 
 	router.get('/system/karas/ranking', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) =>{
-		getTop50(req.authToken, req.lang)
+		getTop50(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas: ${err}`));
 	});
 
 	router.get('/system/karas/viewcounts', requireAuth, requireValidUser, requireAdmin, (req, res) =>{
-		getKaraViewcounts()
+		getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas: ${err}`));
 	});
