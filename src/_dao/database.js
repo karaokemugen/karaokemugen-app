@@ -2,7 +2,7 @@ import logger from 'winston/lib/winston';
 import {open} from 'sqlite';
 import {getConfig} from '../_utils/config';
 import {Pool} from 'pg';
-import {exit} from '../_services/engine';
+import {exit, shutdown} from '../_services/engine';
 import {duration} from '../_utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
@@ -46,6 +46,7 @@ export function buildClauses(words) {
 		lower(unaccent(ak.title)) LIKE :word${i} OR
 		lower(unaccent(ak.serie)) LIKE :word${i} OR
 		lower(unaccent(ak.serie_altname::varchar)) LIKE :word${i}
+		lower(unaccent(ak.serie_names)) LIKE :word${i}
 		`);
 	}
 	return {
@@ -95,6 +96,7 @@ export async function transaction(queries) {
 let database;
 
 export function db() {
+	if (shutdownInProgress || !database) throw 'Database is not ready';
 	return database;
 }
 

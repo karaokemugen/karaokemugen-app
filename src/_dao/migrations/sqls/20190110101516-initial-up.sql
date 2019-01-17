@@ -268,6 +268,7 @@ SELECT
   k.karafile,
   k.mediasize,
   jsonb_agg(DISTINCT(s.seriefile)) AS seriefiles,
+  jsonb_agg(DISTINCT(s.name)) AS serie_orig,
   jsonb_agg(DISTINCT(s.sid)) AS sid,
   jsonb_agg(DISTINCT(s18.serie_langs)::jsonb) as serie_i18n,
   string_agg(DISTINCT(s.name),',') AS serie,
@@ -285,10 +286,12 @@ SELECT
   songwriter.songwriters AS songwriters,
   group_tags.groups AS groups,
   array_agg(DISTINCT(kt.fk_id_tag)) AS all_tags_id,
-  string_agg(DISTINCT(t.name),' ') AS tags
+  string_agg(DISTINCT(t.name),' ') AS tags,
+  string_agg(DISTINCT(sl.name),' ') AS serie_names
 FROM kara k
 LEFT JOIN kara_serie ks ON k.pk_id_kara = ks.fk_id_kara
 LEFT JOIN serie s ON ks.fk_id_serie = s.pk_id_serie
+LEFT JOIN serie_lang sl ON sl.fk_id_serie = s.pk_id_serie
 LEFT JOIN series_i18n s18 ON s18.serie_id = ks.fk_id_serie
 LEFT JOIN kara_tag kt ON k.pk_id_kara = kt.fk_id_kara
 LEFT JOIN tag t ON kt.fk_id_tag = t.pk_id_tag
