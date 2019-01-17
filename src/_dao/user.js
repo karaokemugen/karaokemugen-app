@@ -3,8 +3,6 @@ import {pg as yesql} from 'yesql';
 import {selectAllKaras} from './kara';
 const sql = require('./sql/user');
 
-let databaseBusy = false;
-
 export async function getUserByName(username) {
 	const res = await db().query(yesql(sql.selectUserByName)({username: username}));
 	return res.rows[0];

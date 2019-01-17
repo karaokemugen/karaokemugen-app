@@ -2,7 +2,7 @@ import logger from 'winston/lib/winston';
 import {open} from 'sqlite';
 import {getConfig} from '../_utils/config';
 import {Pool} from 'pg';
-import {exit, shutdown} from '../_services/engine';
+import {exit} from '../_services/engine';
 import {duration} from '../_utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
@@ -10,16 +10,9 @@ import {compareKarasChecksum, run as generateDB} from '../_services/generation';
 import DBMigrate from 'db-migrate';
 import {resolve} from 'path';
 import {asyncRename, asyncExists} from '../_utils/files';
-import {dumpPG, initPG} from '../_utils/postgresql';
-import {on} from '../_utils/pubsub';
+import {checkPG, initPG} from '../_utils/postgresql';
 
 const sql = require('./sql/database');
-
-let shutdownInProgress = false;
-
-on('postgresShutdownInProgress', () => {
-	shutdownInProgress = true;
-});
 
 export function paramWords(filter) {
 	let params = {};
@@ -96,7 +89,7 @@ export async function transaction(queries) {
 let database;
 
 export function db() {
-	if (shutdownInProgress || !database) throw 'Database is not ready';
+	if (!checkPG()) throw 'Database is not ready';
 	return database;
 }
 
@@ -118,7 +111,7 @@ export async function connectDB(opts = {superuser: false, db: null}) {
 	try {
 		await database.connect();
 		database.on('error', err => {
-			if (!shutdownInProgress) logger.error(`[DB] Database error : ${err}`);
+			if (checkPG()) logger.error(`[DB] Database error : ${err}`);
 		});
 	} catch(err) {
 		logger.error(`[DB] Connection to database server failed : ${err}`);

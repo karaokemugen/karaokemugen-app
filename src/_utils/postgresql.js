@@ -9,15 +9,22 @@ import {emit} from './pubsub';
 import logger from 'winston';
 
 let started = false;
+let shutdownInProgress = false;
+
+function shutdownPG() {
+	shutdownInProgress = true;
+	emit('postgresShutdown');
+}
 
 export function checkPG() {
-	return started;
+	if (!started || shutdownInProgress) return false;
+	return true;
 }
 
 export async function killPG() {
 	const conf = getConfig();
 	const pgDataDir = resolve(resolve(conf.appPath, conf.PathDB, 'postgres'));
-	emit('postgresShutdownInProgress');
+	shutdownPG();
 	return await execa(resolve(conf.BinPostgresPath, conf.BinPostgresCTLExe), ['-D', pgDataDir,'stop'], {
 		cwd: resolve(conf.appPath, conf.BinPostgresPath)
 	});
@@ -83,7 +90,7 @@ export async function initPG() {
 	const pidFile = resolve(pgDataDir, 'postmaster.pid');
 	const pidWatcher = watch(pidFile, {useFsEvents: false});
 	pidWatcher.on('unlink', () => {
-		emit('postgresShutdown');
+		shutdownPG();
 	});
 	if (await checkPIDFile(pidFile)) {
 		logger.info('[DB] Bundled PostgreSQL is already running');
