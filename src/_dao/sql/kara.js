@@ -68,6 +68,7 @@ export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, limi
 	  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),
 	  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
 	  ak.serie) AS serie,
+  ak.serie AS serie_orig,
   ak.serie_altname AS serie_altname,
   ak.serie_i18n AS serie_i18n,
   ak.serie_id AS serie_id,
