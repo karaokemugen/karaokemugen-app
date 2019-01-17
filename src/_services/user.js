@@ -290,6 +290,7 @@ export async function initUserSystem() {
 		login: 'admin',
 		password: randomstring.generate(8)
 	}, {
+		createFavoritePlaylist: true,
 		admin: true
 	});
 
@@ -299,6 +300,7 @@ export async function initUserSystem() {
 				login: 'adminTest',
 				password: 'ceciestuntest'
 			}, {
+				createFavoritePlaylist: true,
 				admin: true
 			});
 		}
