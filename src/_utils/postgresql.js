@@ -48,7 +48,18 @@ function setConfig(config, setting, value) {
 export async function dumpPG() {
 	const conf = getConfig();
 	try {
-		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresDumpExe), [ '-U', conf.db.prod.user, '-p', conf.db.prod.port, '-f', resolve(conf.appPath, 'karaokemugen.pgdump') , conf.db.prod.database ], {
+		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresDumpExe), [
+			'-c',
+			'-E',
+			'UTF8',
+			'--if-exists',
+			'-U',
+			conf.db.prod.user,
+			'-p',
+			conf.db.prod.port,
+			'-f',
+			resolve(conf.appPath, 'karaokemugen.pgdump') ,
+			conf.db.prod.database ], {
 			cwd: resolve(conf.appPath, conf.BinPostgresPath)
 		});
 	} catch(err) {
