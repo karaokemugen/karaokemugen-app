@@ -69,6 +69,48 @@ Then launch `yarn` to install dependencies and build the React frontend.
 yarn setup
 ```
 
+### Database setup
+
+Karaoke Mugen needs a PostgreSQL database to work.
+
+Use the supplied `database.sample.json` file and copy it to `database.json`. Edit it and fill in the blanks (username, password, port, host and database name of your choosing.) and switch `bundledPostgresBinary` to `false`. Leave `superuser` and `superuserPassword` blank. It should look like this :
+
+```JSON
+{
+  "sql-file": true,
+  "defaultEnv": "prod",
+  "prod": {
+    "driver": "pg",
+    "user": "karaokemugen_app",
+    "password": "musubi",
+    "host": "localhost",
+    "port": 5432,
+    "database": "karaokemugen_app",
+    "schema": "public",
+    "superuser": null,
+    "superuserPassword": null,
+    "bundledPostgresBinary": false
+  }
+}
+```
+
+As a superuser on PostgreSQL, you need to create the database properly. Example with the `database.json` above :
+
+```SQL
+CREATE DATABASE karaokemugen_app ENCODING 'UTF8';
+CREATE USER karaokemugen_app WITH ENCRYPTED PASSWORD 'musubi';
+GRANT ALL PRIVILEGES ON DATABASE karaokemugen_app TO karaokemugen_app;
+```
+
+Switch to the newly created database and enable the `unaccent` extension.
+
+```SQL
+\c karaokemugen_app
+CREATE EXTENSION unaccent;
+```
+
+All done!
+
 ### Launch
 
 To launch the app :
