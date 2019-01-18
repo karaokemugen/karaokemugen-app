@@ -4924,6 +4924,7 @@ export function APIControllerPublic(router) {
 					await createUser({...req.body, flag_admin: 0});
 					res.json(OKMessage(true,'USER_CREATED'));
 				} catch(err) {
+					console.log(err);
 					res.statusCode = 500;
 					res.json(errMessage(err.code,err.message));
 				}
