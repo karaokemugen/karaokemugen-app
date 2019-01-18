@@ -31,6 +31,15 @@ export function paramWords(filter) {
 	return params;
 }
 
+async function query(...args) {
+	console.log(args);
+}
+
+export function closeDB() {
+	database = {};
+	database.query = query;
+}
+
 export function buildClauses(words) {
 	const params = paramWords(words);
 	let sql = [];
@@ -89,7 +98,6 @@ export async function transaction(queries) {
 let database;
 
 export function db() {
-	if (!checkPG()) throw 'Database is not ready';
 	return database;
 }
 
@@ -136,18 +144,12 @@ export async function initDB() {
 	}
 	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.db.prod.database} TO ${conf.db.prod.user};`);
 	// We need to reconnect to create the extension on our newly created database
-	closeDB();
 	await connectDB({superuser: true, db: conf.db.prod.database});
 	try {
 		await db().query('CREATE EXTENSION unaccent;');
 	} catch(err) {
 		logger.debug('[DB] Extension unaccent already registered');
 	}
-	closeDB();
-}
-
-export function closeDB() {
-	database = null;
 }
 
 async function migrateDB() {
@@ -205,7 +207,13 @@ export async function initDBSystem() {
 		logger.info('[DB] Database is brand new: database generation triggered');
 		doGenerate = true;
 	}
-	if (doGenerate) await generateDatabase();
+	if (doGenerate) try {
+		await generateDatabase();
+		if (+conf.optGenerateDB) exit(0);
+	} catch(err) {
+		logger.error(`[DB] Generation failed : ${err}`);
+		if (+conf.optGenerateDB) exit(1);
+	}
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
 	logger.info(`Songs        : ${stats.karas} (${duration(stats.duration)})`);
