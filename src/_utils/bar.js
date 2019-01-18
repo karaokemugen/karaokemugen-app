@@ -8,7 +8,7 @@ export default class Bar {
 		this.total = total;
 		this.start = 0;
 		this.value = 0;
-		this.format = `${options.message} {bar} {percentage}% - ETA {eta_formatted}`;
+		this.format = `${options.message} {bar} {percentage}%`;
 		this.bar = new cliProgress.Bar({
 			format: this.format,
 			stopOnComplete: true

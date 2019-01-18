@@ -1,6 +1,5 @@
 import logger from 'winston';
 import {basename, join} from 'path';
-import deburr from 'lodash.deburr';
 import {profile} from '../_utils/logger';
 import {has as hasLang} from 'langs';
 import {asyncReadFile, checksum, asyncReadDirFilter} from '../_utils/files';
@@ -10,8 +9,7 @@ import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBlacklistKaras, selectBLCKaras,
 	selectBLCTags, selectKaras, selectPlaylistKaras,
 	selectTags, selectPlayedKaras, selectRequestKaras,
-	selectWhitelistKaras,
-	updateSeries
+	selectWhitelistKaras
 } from '../_dao/sql/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
@@ -37,20 +35,15 @@ function hash(string) {
 }
 
 async function emptyDatabase() {
-	await db().query('TRUNCATE kara_tag CASCADE;');
-	bar.incr();
-	await db().query('TRUNCATE kara_serie CASCADE;');
-	bar.incr();
-	await db().query('TRUNCATE tag RESTART IDENTITY CASCADE;');
-	bar.incr();
-	await db().query('TRUNCATE serie RESTART IDENTITY CASCADE;');
-	bar.incr();
-	await db().query('TRUNCATE serie_lang RESTART IDENTITY CASCADE;');
-	bar.incr();
-	await db().query('TRUNCATE kara RESTART IDENTITY CASCADE;');
-	bar.incr();
-	await db().query('VACUUM;');
-	bar.incr();
+	await db().query(`BEGIN;
+	TRUNCATE kara_tag CASCADE;
+	TRUNCATE kara_serie CASCADE;
+	TRUNCATE tag RESTART IDENTITY CASCADE;
+	TRUNCATE serie RESTART IDENTITY CASCADE;
+	TRUNCATE serie_lang RESTART IDENTITY CASCADE;
+	TRUNCATE kara RESTART IDENTITY CASCADE;
+	COMMIT;
+	`);
 }
 
 export async function extractAllKaraFiles() {
@@ -233,18 +226,22 @@ function getAllSeries(karas, seriesData) {
 	return map;
 }
 
-function prepareSerieInsertData(serie, index) {
+function prepareSerieInsertData(serie, index, data) {
 	return [
 		index,
-		serie
+		serie,
+		JSON.stringify(data.aliases || []),
+		data.sid,
+		data.seriefile
 	];
 }
 
-function prepareAllSeriesInsertData(mapSeries) {
+function prepareAllSeriesInsertData(mapSeries, seriesData) {
 	const data = [];
 	let index = 1;
 	for (const serie of mapSeries.keys()) {
-		data.push(prepareSerieInsertData(serie, index));
+		const serieData = seriesData.filter(e => e.name === serie);
+		data.push(prepareSerieInsertData(serie, index, serieData[0]));
 		index++;
 	}
 	return data;
@@ -270,26 +267,8 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 }
 
 async function prepareAltSeriesInsertData(seriesData, mapSeries) {
-
-	const data = [];
 	const i18nData = [];
-
 	for (const serie of seriesData) {
-		if (serie.aliases) {
-			data.push([
-				JSON.stringify(serie.aliases),
-				serie.name,
-				serie.seriefile,
-				serie.sid
-			]);
-		} else {
-			data.push([
-				null,
-				serie.name,
-				serie.seriefile,
-				serie.sid
-			]);
-		}
 		if (serie.i18n) {
 			for (const lang of Object.keys(serie.i18n)) {
 				i18nData.push([
@@ -307,21 +286,14 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
 			// In strict mode, it triggers an error
 			if (getConfig().optStrict) strictModeError(serie);
-			data.push({
-				$serie_name: serie
-			});
-			i18nData.push({
-				$lang: 'jpn',
-				$serie: serie,
-				$serienorm: deburr(serie).replace('\'', '').replace(',', ''),
-				$name: serie
-			});
+			i18nData.push([
+				'jpn',
+				serie,
+				serie
+			]);
 		}
 	}
-	return {
-		data: data,
-		i18nData: i18nData
-	};
+	return i18nData;
 }
 
 function getAllKaraTags(karas) {
@@ -502,11 +474,6 @@ function prepareTagsKaraInsertData(tagsByKara) {
 	return data;
 }
 
-async function doTransaction(query) {
-	await transaction([query]);
-	bar.incr();
-}
-
 export async function run() {
 	try {
 		emit('databaseBusy',true);
@@ -545,42 +512,36 @@ export async function run() {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 21);
-		await emptyDatabase();
-		bar.incr();
+		}, 6);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas, seriesData);
-		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
+		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap, seriesData);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
-		const seriesAltNamesData = await prepareAltSeriesInsertData(seriesData, seriesMap);
-		const sqlUpdateSeries = seriesAltNamesData.data;
-		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
+		const sqlSeriesi18nData = await prepareAltSeriesInsertData(seriesData, seriesMap);
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
-
+		await emptyDatabase();
+		bar.incr();
 		// Inserting data in a transaction
-		await Promise.all([
-			doTransaction({sql: insertKaras, params: sqlInsertKaras}),
-			doTransaction({sql: insertSeries, params: sqlInsertSeries}),
-			doTransaction({sql: insertTags, params: sqlInsertTags}),
+		await transaction([
+			{sql: insertKaras, params: sqlInsertKaras},
+			{sql: insertSeries, params: sqlInsertSeries},
+			{sql: insertTags, params: sqlInsertTags},
+			{sql: insertKaraTags, params: sqlInsertKarasTags},
+			{sql: insertKaraSeries, params: sqlInsertKarasSeries},
+			{sql: inserti18nSeries, params: sqlSeriesi18nData}
 		]);
-		await Promise.all([
-			doTransaction({sql: insertKaraTags, params: sqlInsertKarasTags}),
-			doTransaction({sql: insertKaraSeries, params: sqlInsertKarasSeries}),
-			doTransaction({sql: inserti18nSeries, params: sqlInserti18nSeries}),
-			doTransaction({sql: updateSeries, params: sqlUpdateSeries})
-		]);
-		refreshKaras();
 		bar.incr();
-		refreshSeries();
-		bar.incr();
-		refreshYears();
-		bar.incr();
-		refreshTags();
+		await db().query('VACUUM ANALYZE;');
 		bar.incr();
 		await checkUserdbIntegrity(null);
 		bar.stop();
+		refreshKaras();
+		refreshSeries();
+		refreshYears();
+		refreshTags();
+
 		await saveSetting('lastGeneration', new Date());
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
@@ -628,7 +589,6 @@ export async function checkUserdbIntegrity() {
 
 	// Listing existing KIDs
 	const karaKIDs = allKaras.rows.map(k => `'${k.kid}'`).join(',');
-
 	// Setting kara IDs to 0 when KIDs are absent
 	await Promise.all([
 		db().query(`UPDATE whitelist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
@@ -690,16 +650,13 @@ export async function checkUserdbIntegrity() {
 			logger.warn(`[Gen] Deleted Tag ${blcTag.tagname} from blacklist criteria (type ${blcTag.type})`);
 		}
 	});
-
 	if (sql) {
 		logger.debug( '[Gen] UPDATE SQL : ' + sql);
-		const beginSql = `
-			BEGIN TRANSACTION;
-		`;
-		const endSql = `
-			COMMIT;
-		`;
-		await db().query(beginSql + sql + endSql);
+		await db().query(`
+		BEGIN;
+		${sql}
+		COMMIT;
+		`);
 	}
 	if (bar) bar.incr();
 	logger.debug('[Gen] Integrity checks complete, database generated');
