@@ -4,6 +4,7 @@
 	"NO": "No",
 	"404_2": "Do not panic, we can help you.",
 	"404_3": "you are here",
+    "CHAR_NOT_ALLOWED": "Le caractère '%s' n'est pas autorisé",
 	"DETAILS_ADDED": "Added ",
 	"DETAILS_ADDED_2": "the %s",
 	"DETAILS_ADDED_3": "by %s",
@@ -284,7 +285,11 @@
 	"GOTO_BOTTOM": "Go to the end of the playlist",
 	"ERROR": "Error",
 	"LOG_ERROR": "Invalid credentials",
-	"LOG_SUCCESS": "Connected as %s",
+    "LOG_SUCCESS": "Connected as %s",
+    "LOG_OFFLINE": {
+        "TITLE" : "Instance offline",
+        "MESSAGE" : "Changes to your profile will not be registered"
+    },
 	"NO_MORE_GUESTS_AVAILABLE": "No more guest accounts available, please create your own account!",
 	"UNKNOWN_ERROR": "Something wrong happened. Here's the message : ",
 	"UNAUTHORIZED": "Access forbidden. Your role doesn't permit this action",

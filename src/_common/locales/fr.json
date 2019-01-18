@@ -3,7 +3,8 @@
 	"YES": "Oui",
 	"NO": "Non",
 	"404_2": "Pas de panique, on va vous aider",
-	"404_3": "vous êtes ici",
+    "404_3": "vous êtes ici",
+    "CHAR_NOT_ALLOWED": "Le caractère '%s' n'est pas autorisé",
 	"DETAILS_ADDED": "Ajouté ",
 	"DETAILS_ADDED_2": "le %s",
 	"DETAILS_ADDED_3": "par %s",
@@ -266,6 +267,10 @@
 	"ERROR": "Erreur",
 	"LOG_ERROR": "Identifiants invalides",
 	"LOG_SUCCESS": "Connecté en tant que %s",
+    "LOG_OFFLINE": {
+        "TITLE" : "Instance hors-ligne",
+        "MESSAGE" : "Les modifications de votre profil ne seront pas enregistrées"
+    },
 	"NO_MORE_GUESTS_AVAILABLE": "Il n'y a plus de comptes invité disponibles. Créez votre propre compte!",
 	"UNKNOWN_ERROR": "Une erreur fortuite s'est produite : ",
 	"UNAUTHORIZED": "Accès défendu. Votre rôle n'est pas suffisant pour cette action.",
