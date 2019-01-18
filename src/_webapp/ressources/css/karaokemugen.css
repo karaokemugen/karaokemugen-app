@@ -231,6 +231,12 @@ div.bootstrap-switch-large {
 	color: white;
 }
 
+.errorBackground {
+     background-color: rgba(169, 45, 45, 0.73) !important;
+}
+.errorBackground:focus {
+    background-color: hsla(0, 45%, 62%, 0.9) !important
+}
 select.form-control {
 	width: 100% !important;
 	background-color: #343434;

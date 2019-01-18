@@ -753,8 +753,17 @@ var settingsNotUpdated;
 			}
 		});
 		$('#nav-signup .login').click( () => {
-			var servername = $('#signupServ').val();
-			var username = $('#signupLogin').val() + (servername ? '@' + servername : '');
+            var servername = $('#signupServ').val();
+            var username = $('#signupLogin').val();
+            if(username.includes('@')) {
+                $('#signupLogin').addClass('errorBackground')
+                displayMessage('warning','', i18n.__('CHAR_NOT_ALLOWED', '@'));
+                $('#signupLogin').focus();
+                return;
+            } else {
+                $('#signupLogin').removeClass('errorBackground')
+            }
+			var username = username + (servername ? '@' + servername : '');
 			var password = $('#signupPassword').val();
 			var passwordConfirmation = $('#signupPasswordConfirmation').val();
 			if(password !== passwordConfirmation) {
@@ -2508,7 +2517,7 @@ var settingsNotUpdated;
 				createCookie('mugenToken',  response.token, -1);
 				if(response.onlineToken) {
 					createCookie('mugenTokenOnline',  response.onlineToken, -1);
-				} else {
+				} else if (!username.includes('@')) {
 					eraseCookie('mugenTokenOnline');
 				}
                 
