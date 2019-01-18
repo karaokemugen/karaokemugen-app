@@ -116,10 +116,16 @@ getPublicSettings = function() {
         playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
         
         $('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
-        if(!data.OnlineUsers || logInfos.onlineToken) {
+        if(!data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
             $('.profileConvert').hide();
         } else {
             $('.profileConvert').show();
+        }
+
+        if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
+            setTimeout(function() {
+                displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
+            }, 500)
         }
 
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
@@ -135,7 +141,7 @@ getPublicSettings = function() {
 			promise.resolve();
 		});
 
-		// Init with player infos, set the playlist's id where users can add their karas
+        // Init with player infos, set the playlist's id where users can add their karas
 		settings = data;
 			
 		$('#version').text(settings['VersionName'] + ' ' + settings['VersionNo']);
