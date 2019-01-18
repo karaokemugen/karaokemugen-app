@@ -238,12 +238,17 @@ WebappSongLanguageMode = 1
 appFirstRun = 1
 
 ; Host and port to Karaoke Mugen online server.
-OnlineMode = 0
 OnlineHost = "kara.moe"
 OnlinePort = 80
 
 ; Are we sending stats to Karaoke Mugen Server ?
 OnlineStats = 0
+
+; Are we using the URL shortener ?
+OnlineURL = 0
+
+; Are we allowing online users ?
+OnlineUsers = 0
 
 ; Port for frontend
 appFrontendPort = 1337

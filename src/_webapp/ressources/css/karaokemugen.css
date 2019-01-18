@@ -231,6 +231,12 @@ div.bootstrap-switch-large {
 	color: white;
 }
 
+.errorBackground {
+     background-color: rgba(169, 45, 45, 0.73) !important;
+}
+.errorBackground:focus {
+    background-color: hsla(0, 45%, 62%, 0.9) !important
+}
 select.form-control {
 	width: 100% !important;
 	background-color: #343434;
@@ -1098,7 +1104,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	padding-top: 1rem;
 }
 
-.favExport, .favImport {
+.favExport, .favImport, .profileConvert {
     line-height: 2.42;
 	font-family: inherit;
 }
@@ -1188,6 +1194,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	border: none;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.10), 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.1);
 }
+
 .modalPage .modal-message div {
 	height: 100%;
 }
@@ -1382,8 +1389,8 @@ input[type="text"], input[type="password"]:not([exclude="true"]) {
     outline: none;
     margin: 0;
     padding: 0;
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
 	transition: all 0.3s;
 	color: #ccc;
 }

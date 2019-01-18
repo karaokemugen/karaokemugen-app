@@ -255,7 +255,8 @@
                      {{i18n "OR"}}
                     </div>
                     <div class="modal-message loginRelated">
-                            <input type="text" class="form-control" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="text" class="" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="text" class="" id="loginServ" name="modalLoginServ" value="{{ onlineHost }}"/>
                             <input type="password" class="form-control" id="password" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
                     </div>
                     <div class="loginRelated"></div>
@@ -267,7 +268,8 @@
                 </div>
                 <div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
                     <div class="">
-                            <input type="text" class="form-control" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="text" class="" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="text" class="" id="signupServ" name="modalLoginServ" value="{{ onlineHost  }}"/>
                             <input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
                             <input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
                     </div>
@@ -334,6 +336,11 @@
                                     </label>
                                     <button type="button"  title='{{i18n "FAVORITES_EXPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6 favExport">
                                         <i class="glyphicon glyphicon-export"></i> {{i18n "EXPORT"}}
+                                    </button>
+                                </div>
+                                <div class="profileLine">
+                                    <button type="button"  title='{{i18n "PROFILE_CONVERT"}}' class="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert">
+                                        <i class="glyphicon glyphicon-retweet"></i> {{i18n "PROFILE_CONVERT"}}
                                     </button>
                                 </div>
                             </div>
