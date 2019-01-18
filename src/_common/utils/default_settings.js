@@ -69,7 +69,7 @@ export const defaults = {
 	AuthExpireTime: 15,
 	WebappMode: 2,
 	WebappSongLanguageMode: 2,
-	OnlineUsers: 0,
+	OnlineUsers: 1,
 	OnlineURL: 0,
 	OnlineHost: 'kara.moe',
 	OnlinePort: 80,

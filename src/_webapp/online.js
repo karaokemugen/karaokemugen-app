@@ -14,6 +14,7 @@ export async function publishURL() {
 			},
 			form: true
 		});
+		logger.debug('[ShortURL] Server accepted our publish');
 		configureHost();
 	} catch(err) {
 		throw `Failed publishing our IP to ${conf.OnlineHost} : ${err}`;
@@ -22,5 +23,6 @@ export async function publishURL() {
 
 export async function initOnlineSystem() {
 	// This is the only thing it does for now. Will be extended later.
+	logger.debug('[ShortURL] Publishing...');
 	return await publishURL();
 }
