@@ -14,7 +14,7 @@ export const updateUserLoginTime = (req, res, next) => {
 
 export async function checkValidUser(token, onlineToken) {
 	// If user is remote, see if we have a remote token ready.
-	if (token.username.includes('@')) {
+	if (token.username.includes('@') && +getConfig().OnlineUsers) {
 		const remoteToken = getRemoteToken(token.username);
 		if (remoteToken && remoteToken.token === onlineToken) {
 			// Remote token exists, no problem here
