@@ -10,11 +10,15 @@ import {getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager';
-import authController from '../_controllers/auth';
-import {APIControllerPublic, APIControllerAdmin} from '../_controllers/api';
 import {createServer} from 'http';
 import { initializationCatchphrases } from '../_services/constants';
 import sample from 'lodash.sample';
+
+// Api routes
+import systemController from '../_controllers/admin';
+import authController from '../_controllers/auth';
+import {APIControllerPublic, APIControllerAdmin} from '../_controllers/api';
+
 
 let ws;
 
@@ -22,6 +26,21 @@ export function emitWS(type,data) {
 	//logger.debug( '[WS] Sending message '+type+' : '+JSON.stringify(data));
 	if (ws) ws.sockets.emit(type,data);
 }
+
+function apiRouter() {
+	const apiRouter = express.Router();
+
+	// Add auth routes
+	authController(apiRouter);
+	// Add system route
+	systemController(apiRouter);
+	// Add public/admin routes
+	APIControllerPublic(apiRouter);
+	APIControllerAdmin(apiRouter);
+
+	return apiRouter;
+}
+
 
 export async function initFrontend(port) {
 	const app = express();
@@ -53,30 +72,7 @@ export async function initFrontend(port) {
 	app.use(i18n.init);
 	app.use(urlencoded({ extended: true, limit: '50mb' }));
 	app.use(json());
-	function routerAuth() {
-		const apiRouter = express.Router();
-		// Adding auth routes here.
-		authController(apiRouter);
-		return apiRouter;
-	}
-
-	function routerAPIPublic() {
-		const apiRouter = express.Router();
-		// Adding auth routes here.
-		APIControllerPublic(apiRouter);
-		return apiRouter;
-	}
-
-	function routerAPIAdmin() {
-		const apiRouter = express.Router();
-		// Adding auth routes here.
-		APIControllerAdmin(apiRouter);
-		return apiRouter;
-	}
-
-	app.use('/api/v1/auth', routerAuth());
-	app.use('/api/v1/public', routerAPIPublic());
-	app.use('/api/v1/admin', routerAPIAdmin());
+	app.use('/api', apiRouter());
 	// Add headers
 	app.use(function (req, res, next) {
 		// Website you wish to allow to connect
@@ -94,6 +90,13 @@ export async function initFrontend(port) {
 		}
 	});
 	app.use(express.static(__dirname + '/'));
+	//path for system control panel
+	if (!conf.isDemo) {
+		app.use('/system', express.static(resolve(__dirname, '../../react_client/build')));
+		app.get('/system/*', (req, res) => {
+			res.sendFile(resolve(__dirname, '../../react_client/build/index.html'));
+		});
+	}
 	//Path to locales for webapp
 	app.use('/locales',express.static(__dirname + '/../_common/locales/'));
 	//Path to video previews
@@ -155,7 +158,6 @@ export async function initFrontend(port) {
 		res.render('welcome', {
 			'catchphrases'	:	sample(initializationCatchphrases),
 			'clientAdress'	:	`http://${address()}`,
-			'appAdminPort'	:	conf.appAdminPort,
 			'query'			:	JSON.stringify(req.query),
 		});
 	});

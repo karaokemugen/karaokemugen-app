@@ -146,6 +146,10 @@ PlayerScreen = 0
 ; Enables/Disables the monitor window which replicates what's on the main screen.
 PlayerMonitor = 0
 
+; Player MP3 visualization effects: {boolean}
+; Enable/disable visualization effects
+PlayerVisualizationEffects = 1
+
 ; Full screen: {boolean}
 ; Set player to full screen .
 PlayerFullscreen = 0
@@ -246,9 +250,8 @@ OnlineURL = 0
 ; Are we allowing online users ?
 OnlineUsers = 0
 
-; Ports for KM modules
+; Port for frontend
 appFrontendPort = 1337
-appAdminPort = 1338
 
 ; Mail for suggestions to be sent to. This is the adress your users will send a mail to when making karaoke suggestions. Shelter's Karaoke Base by default
 karaSuggestionMail = "shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org"

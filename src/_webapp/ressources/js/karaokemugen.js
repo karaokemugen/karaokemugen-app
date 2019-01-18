@@ -213,7 +213,7 @@ var settingsNotUpdated;
 		var mugenToken = readCookie('mugenToken');
 		var mugenTokenOnline = readCookie('mugenTokenOnline');
 
-		if(welcomeScreen) { 
+		if(welcomeScreen) {
 			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
 			$('#wlcm_disconnect').hide();
 		}
@@ -246,7 +246,7 @@ var settingsNotUpdated;
 			}
 		} else {
 			$('#loginModal').modal('show');
-		
+
 		}
 
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
@@ -335,8 +335,13 @@ var settingsNotUpdated;
 			displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
 				var adress = 'mailto:' + settings.karaSuggestionMail;
 				var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
-				var body = i18n.__('KARA_SUGGESTION_BODY');
-				window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
+                var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
+                setTimeout(function() {
+                    displayMessage('info', i18n.__('KARA_SUGGESTION_INFO'),
+                    i18n.__('KARA_SUGGESTION_LINK', 'https://lab.shelter.moe/karaokemugen/karaokebase/issues/', 'console'), '30000');
+                }, 200);
+
+                window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
 			}, search);
 		});
 
@@ -463,8 +468,7 @@ var settingsNotUpdated;
 			}
 		});
 
-		/*****************/
-    
+    /*****************/
 		makeFav = function(idKara, make, $el) {
 			var type = make ? 'POST' : 'DELETE';
 			$.ajax({
@@ -997,21 +1001,21 @@ var settingsNotUpdated;
 				dlAnchorElem.click();
 			});
 		});
-        
+
 		$('.profileConvert').click(function() {
 
 			displayModal('custom', i18n.__('PROFILE_CONVERT'),
 				'<input type="text"  name="modalLoginServ" value="' + settings.OnlineHost + '"//>'
                 + '<input type="password" placeholder="' + i18n.__('PROFILE_PASSWORD_AGAIN') + '" class="form-control" name="password">', function(data){
-                                                                
+
 					var msgData =  { instance: data.modalLoginServ, password : data.password };
-                   
+
 					ajx('POST', 'public/myaccount/online', msgData, function(response) {
 						displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
 
 						createCookie('mugenToken',  response.token, -1);
 						createCookie('mugenTokenOnline',  response.onlineToken, -1);
-				
+
 						logInfos = parseJwt(response.token);
 						logInfos.token = response.token;
 						logInfos.onlineToken = response.onlineToken;
@@ -1019,7 +1023,7 @@ var settingsNotUpdated;
 					});
 				}
 			);
-        
+
 		});
 
 		/* profil stuff END */
@@ -1223,7 +1227,7 @@ var settingsNotUpdated;
 	/* simplify the ajax calls */
 	$.ajaxPrefilter(function (options) {
 		if (options.url.indexOf('http') === -1) {
-			options.url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/api/v1/' + options.url;
+			options.url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/api/' + options.url;
 		}
 	});
 
@@ -1244,17 +1248,16 @@ var settingsNotUpdated;
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
 		var url, html, canTransferKara, canAddKara, dragHandle, playKara;
-        
+
 		var $filter = $('#searchMenu' + side + ' li.active');
 		var searchType = $filter.attr('searchType');
-		var searchValue = $filter.attr('searchValue');
-        
-		/* getting all the info we need about range */
+        var searchValue = $filter.attr('searchValue');
+
+        /* getting all the info we need about range */
 		localStorage.setItem('search' + side, filter ? filter : '');
 		localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
 
 		var range = getPlaylistRange(idPlaylist);
-        
 		from = range.from;
 		to = range.to;
 
@@ -1323,7 +1326,7 @@ var settingsNotUpdated;
 
 							if(kara.misc) {
 								var tagArray = kara.misc.split(',');
-								tagArray.sort(function(a, b){  
+								tagArray.sort(function(a, b){
 									return flattenedTagsGroups.indexOf(a) - flattenedTagsGroups.indexOf(b);
 								  });
 								tagArray.forEach(function(tag) {
@@ -1893,7 +1896,7 @@ var settingsNotUpdated;
 			data.language = '';
 		}
 		var titleText = 'fillerTitle';
-		
+
 		var limit = isSmall ? 35 : 50;
 		var serieText =  data.serie ? data.serie : data.singer.replace(/,/g, ', ');
 		serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
@@ -1901,13 +1904,13 @@ var settingsNotUpdated;
 		var titleClean = titleArray.map(function (e, k) {
 			return titleArray[k] ? titleArray[k] : '';
 		});
-		
+
 		var separator = '';
 		if(data.title) {
 			separator = ' - ';
 			if (options.mode && options.mode === 'doubleline') {
 				separator = '<br/>';
-			} 
+			}
 		}
 		titleText = titleClean.join(' - ') + separator + data.title;
 
@@ -2050,9 +2053,9 @@ var settingsNotUpdated;
 		return infoKaraTemp;
 	};
 
-	
+
 	checkOnlineStats = function(settings) {
-	
+
 		if(settings.OnlineStats == -1) {
 			if($('#onlineStatsModal').length < 1) {
 				var top =		'<div class="modal modalPage fade" id="onlineStatsModal" role="dialog">'+
@@ -2070,7 +2073,7 @@ var settingsNotUpdated;
 								'<div class="tab-content" id="nav-stats-tab">'+
 								'   <div id="nav-stats" role="tabpanel" aria-labelledby="nav-stats-tab" class="modal-body tab-pane fade active in">'+
 								'       <div class="modal-message text">'+
-								'       	<p>' + i18n.__('ONLINE_STATS.INTRO') + '</p>'+									
+								'       	<p>' + i18n.__('ONLINE_STATS.INTRO') + '</p>'+
 								'       </div>'+
 								'<div class="accordion text" id="accordionDetails">'+
 								'  <div class="card">'+
@@ -2083,13 +2086,13 @@ var settingsNotUpdated;
 								'    </div>'+
 								'    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionDetails">'+
 								'      <div class="card-body">'+
-								
+
 											'- ' + i18n.__('ONLINE_STATS.DETAILS.1') +  '</br>'+
 											'- ' + i18n.__('ONLINE_STATS.DETAILS.2') +  '</br>'+
 											'- ' + i18n.__('ONLINE_STATS.DETAILS.3') +  '</br>'+
 											'- ' + i18n.__('ONLINE_STATS.DETAILS.4') +  '</br>'+
 											'- ' + i18n.__('ONLINE_STATS.DETAILS.5') +  '</br></br>'+
-							
+
 								'       <p>' + i18n.__('ONLINE_STATS.DETAILS.OUTRO') + '</p>'+
 								'      </div>'+
 								'    </div>'+
@@ -2111,7 +2114,7 @@ var settingsNotUpdated;
 								'	</div>'+
 								'</div>';
 				$('body').append($(top + content + bottom));
-			
+
 				$('#onlineStatsModal .onlineStatsBtn').click((e) => {
 					settings.OnlineStats = '' + $(e.target).attr('value');
 					ajx('PUT', 'admin/settings', settings, function(data) {
@@ -2122,7 +2125,7 @@ var settingsNotUpdated;
 			$('#onlineStatsModal').modal('show');
 		}
 	};
-			
+
 	/*
 	*	Build the modal pool from a kara list
 	*	data  {Object} : list of karas going in the poll
@@ -2227,7 +2230,7 @@ var settingsNotUpdated;
 		setupAjax();
 
 		showedLoginAfter401 = false;
-		
+
 		$.ajax({ url: 'public/stats' }).done(function (data) {
 			kmStats = data;
 			if(scope === 'public') {
@@ -2282,19 +2285,19 @@ var settingsNotUpdated;
 				$('.pseudoChange').hide();
 				$('#searchParent').css('width','100%');
 			}
-	
+
 			if(!introManager || !introManager._currentStep) initSwitchs();
-	
+
 			$('.bootstrap-switch').promise().then(function(){
 				$(this).each(function(){
 					$(this).attr('title', $(this).find('input').attr('title'));
 				});
 			});
-	
+
 			$.ajax({ url: 'public/tags', }).done(function (data) {
 				tags = data.content;
 				var serie, year;
-	
+
 				var tagList = tagsTypesList.map(function(val, ind){
 					if(val === 'DETAILS_SERIE') {
 						return {id: 'serie', text: i18n.__(val)}
@@ -2304,34 +2307,34 @@ var settingsNotUpdated;
 						return {id: val.replace('BLCTYPE_',''), text: i18n.__(val)}
 					}
 				});
-	
+
 				$('.tagsTypes').select2({ theme: 'bootstrap',
 					tags: false,
 					minimumResultsForSearch: 15,
 					data: tagList
 				});
 				$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
-	
+
 				forSelectTags = tags.map(function(val, ind){
 					return {id:val.tag_id, text: val.name_i18n, type: val.type};
 				});
-	
+
 				$.ajax({ url: 'public/series', }).done(function (data) {
-	
+
 					var series = data.content;
 					series = series.map(function(val, ind){
 						return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
 					});
 					forSelectTags.push.apply(forSelectTags, series);
-	
+
 					$.ajax({ url: 'public/years', }).done(function (data) {
-	
+
 						var years = data.content;
 						years = years.map(function(val, ind){
 							return {id:val.year, text: val.year, type: 'year'};
 						});
 						forSelectTags.push.apply(forSelectTags, years);
-	
+
 						$('.tags').select2({
 							theme: 'bootstrap tags',
 							placeholder: '',
@@ -2342,19 +2345,19 @@ var settingsNotUpdated;
 									var page = params.data.page;
 									var pageSize = 120;
 									var type = $('.tagsTypes').val();
-	
+
 									var items = forSelectTags.filter(function(item) {
 										return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
 									});
 									var totalLength = items.length;
-	
+
 									if(page) {
 										items = items.slice((page - 1) * pageSize, page * pageSize);
 									}  else {
 										items = items.slice(0, pageSize);
 										page = 1;
 									}
-	
+
 									var more = false;
 									if( page * pageSize + items.length < totalLength) {
 										more = true
@@ -2373,7 +2376,7 @@ var settingsNotUpdated;
 				// ['serie', 'year'].forEach(function(dataType) {
 				// 	$.ajax({ url: 'public/' + dataType, }).done(function (data) {
 				// 		data = data.content;
-	
+
 				// 		data = data.map(function(val, ind){
 				// 			var jsonLine;
 				// 			if(dataType === 'serie') jsonLine = {id:val.serie_id, text: val.i18n_name};
@@ -2387,14 +2390,14 @@ var settingsNotUpdated;
 				// 		});
 				// 		$('#' + dataType).parent().find('.select2-container').addClass('value');
 				// 	});
-	
+
 				// });
-	
+
 			});
-	
-	
+
+
 		}
-		
+
 	};
 
 	$(window).resize(function () {
@@ -2513,14 +2516,14 @@ var settingsNotUpdated;
 				var token;
 				$('#loginModal').modal('hide');
 				$('#password, #login').removeClass('redBorders');
-                
+
 				createCookie('mugenToken',  response.token, -1);
 				if(response.onlineToken) {
 					createCookie('mugenTokenOnline',  response.onlineToken, -1);
 				} else if (!username.includes('@')) {
 					eraseCookie('mugenTokenOnline');
 				}
-                
+
 				logInfos = response;
 				displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
 				initApp();
@@ -2557,14 +2560,14 @@ var settingsNotUpdated;
 	};
 
 	getPlaylistRange = function(idPl) {
-		
-		var side = sideOfPlaylist(idPl);
-		var search = $('#searchPlaylist' + side).val();
+
+        var side = sideOfPlaylist(idPl);
+        var search = $('#searchPlaylist' + side).val();
 		var $filter = $('#searchMenu' + side + ' li.active');
 		var searchType = $filter.attr('searchType');
 		var searchValue = $filter.attr('searchValue');
-		var key = [search, searchType, searchValue].join('_');
-        
+        var key = [search, searchType, searchValue].join('_');
+
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
 		return playlistRange[idPl][key] ? playlistRange[idPl][key] : { from : 0, to : pageSize };
 	};

@@ -233,7 +233,7 @@ export async function editUser(username, user, avatar, role, opts = {
 		if (!user.email) user.email = null;
 		if (!user.flag_admin) user.flag_admin = 0;
 		if (user.flag_admin && role !== 'admin') throw 'Admin flag permission denied';
-		if (user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
+		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
 		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname, user.NORM_nickname)) throw 'Nickname already exists';
 		user.NORM_nickname = deburr(user.nickname);
@@ -439,6 +439,7 @@ export async function createUser(user, opts) {
 	user.bio = user.bio || null;
 	user.url = user.url || null;
 	user.email = user.email || null;
+	if (user.type === 2) user.flag_online = 0;
 
 	await newUserIntegrityChecks(user);
 	if (user.login.includes('@') && opts.createRemote) {
