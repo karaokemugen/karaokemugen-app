@@ -1,5 +1,6 @@
 import {configureHost, getConfig} from '../_common/utils/config';
 import got from 'got';
+import logger from 'winston';
 
 export async function publishURL() {
 	configureHost();
