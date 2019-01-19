@@ -2433,8 +2433,8 @@ export function APIControllerPublic(router) {
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * @apiParam {String} [searchType] Can be `serie`, `year`, `popular`, `recent` or `tag`
- * @apiParam {String} [searchValue] Value to search for. For `series` or `tag` it's an ID, for `year` it's a 4-digit year.
+ * @apiParam {String} [searchType] Can be `search`, `kid`, `kara`, `requested`, 'history', `recent` or `played`
+ * @apiParam {String} [searchValue] Value to search for. For `kara` it's an ID. For `kid` it's a UUID, for `search` it's a string comprised of criterias separated by `!`. Criterias are `s:` for series, `y:` for year et `t:` for tag. Example, all songs with tags 53 and 1022 and year 1990 is `t:53,1022!y:1990`
  *
  * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
