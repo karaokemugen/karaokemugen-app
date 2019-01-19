@@ -147,7 +147,9 @@ export async function exportFavorites(token) {
 
 export async function importFavorites(favorites, token) {
 	const plInfo = await getFavoritesPlaylist(token.username);
-	return await importPlaylist(favorites, token.username, plInfo.playlist_id);
+	if (!plInfo) throw ('This user has no favorites playlist!');
+	await importPlaylist(favorites, token.username, plInfo.playlist_id);
+	reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
 }
 
 async function getAllFavorites(userList) {

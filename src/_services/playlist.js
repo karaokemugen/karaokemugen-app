@@ -282,7 +282,7 @@ export async function emptyPlaylist(playlist_id) {
 	if (!pl) throw 'Playlist unknown';
 	try {
 		profile('emptyPL');
-		logger.info(`[Playlist] Emptying playlist ${pl.name}`);
+		logger.debug(`[Playlist] Emptying playlist ${pl.name}`);
 		await emptyPL(playlist_id);
 		await Promise.all([
 			updatePlaylistKaraCount(playlist_id),
