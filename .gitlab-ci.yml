@@ -19,7 +19,7 @@ test:
     - postgres:10.6
   variables:
     POSTGRES_USER: karaokemugen_app
-    POSTGRES…PASSWORD: musubi
+    POSTGRES_PASSWORD: musubi
   script:
     - yarn install --check-files --force
     - touch mpv
