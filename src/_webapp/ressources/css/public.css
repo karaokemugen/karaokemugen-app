@@ -171,19 +171,6 @@ div.bootstrap-switch-large{
 	font-family: 'Glyphicons Halflings'; 
 }
 
-#loginModal .modal-body input[name="modalLoginServ"] {
-    background-color: hsla(225, 32%, 38%, 1) !important
-}
-#loginModal .modal-body input[name="modalLoginServ"] {
-    width: 130px;
-    color: #bbb;
-    /* padding-left: 2px; */
-}
-#loginModal .modal-body input[name="modalLogin"] {
-    width: calc(100% - 130px - 4px);
-    /* padding-right: 2px; */
-}
-
 
 .popup .panel-heading {
     display: flex;

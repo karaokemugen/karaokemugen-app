@@ -548,5 +548,7 @@
 		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?"
 	},
 	"PROFILE_CONVERT": "Passer mon profil en ligne",
-	"PROFILE_CONVERTED": "Votre profil a bien été mis en ligne"
+    "PROFILE_CONVERTED": "Votre profil a bien été mis en ligne",
+    "INSTANCE_NAME": "Nom du serveur",
+    "INSTANCE_NAME_SHORT": "Serveur"
 }

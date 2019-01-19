@@ -4,7 +4,7 @@
 	"NO": "No",
 	"404_2": "Do not panic, we can help you.",
 	"404_3": "you are here",
-    "CHAR_NOT_ALLOWED": "Le caractère '%s' n'est pas autorisé",
+	"CHAR_NOT_ALLOWED": "Le caractère '%s' n'est pas autorisé",
 	"DETAILS_ADDED": "Added ",
 	"DETAILS_ADDED_2": "the %s",
 	"DETAILS_ADDED_3": "by %s",
@@ -157,7 +157,7 @@
 	"TAG_HARDMODE_SHORT": "HRD",
 	"TAG_DUO": "Duo",
 	"TAG_DUO_SHORT": "DUO",
-	"TAG_CREDITLESS": "Creditless",
+	"TAG_CREDITLESS": "TAG_CREDITLESS",
 	"TAG_CREDITLESS_SHORT": "CRE",
 	"REQUESTED_BY": "Requested by",
 	"DAY": "day(s)",
@@ -216,8 +216,8 @@
 	"PLAYLIST_PUBLIC": "Public playlist",
 	"PLAYLIST_VISIBLE": "Visible playlist",
 	"PLAYERPIP": "Picture-in-Picture (Dev) mode",
-    "PLAYERMONITOR": "Second window (monitor)",
-    "PLAYERVISUALIZATIONEFFECTS": "Enable music visualization effects",
+	"PLAYERMONITOR": "Second window (monitor)",
+	"PLAYERVISUALIZATIONEFFECTS": "Enable music visualization effects",
 	"ENGINEALLOWNICKNAMECHANGE": "Allow nickname change",
 	"ENGINEALLOWVIEWBLACKLIST": "Allow users to view blacklist",
 	"ENGINEALLOWVIEWBLACKLISTCRITERIAS": "Allow users to view blacklist criterias",
@@ -288,11 +288,11 @@
 	"GOTO_BOTTOM": "Go to the end of the playlist",
 	"ERROR": "Error",
 	"LOG_ERROR": "Invalid credentials",
-    "LOG_SUCCESS": "Connected as %s",
-    "LOG_OFFLINE": {
-        "TITLE" : "Instance offline",
-        "MESSAGE" : "Changes to your profile will not be registered"
-    },
+	"LOG_SUCCESS": "Connected as %s",
+	"LOG_OFFLINE": {
+		"TITLE": "Instance offline",
+		"MESSAGE": "Changes to your profile will not be registered"
+	},
 	"NO_MORE_GUESTS_AVAILABLE": "No more guest accounts available, please create your own account!",
 	"UNKNOWN_ERROR": "Something wrong happened. Here's the message : ",
 	"UNAUTHORIZED": "Access forbidden. Your role doesn't permit this action",
@@ -526,9 +526,9 @@
 	"KARA_SUGGESTION_MAIL": "Can't find your favorite song? Click here",
 	"KARA_SUGGESTION_SUBJECT": "New Song Request: ",
 	"KARA_SUGGESTION_BODY": "Hello,%0D%0A Would you please add this song to your database?%0D%0A Thanks.%0D%0A (This is an automated message sent from a Karaoke Mugen App",
-    "KARA_SUGGESTION_NAME": "Name of the song",
-    "KARA_SUGGESTION_INFO" : "Thanks for your suggestion.",
-    "KARA_SUGGESTION_LINK" : "You will soon be able to see it at this address :  <a target='_blank' href='%s'>issues list</a>",
+	"KARA_SUGGESTION_NAME": "Name of the song",
+	"KARA_SUGGESTION_INFO": "Thanks for your suggestion.",
+	"KARA_SUGGESTION_LINK": "You will soon be able to see it at this address :  <a target='_blank' href='%s'>issues list</a>",
 	"BASE_UPDATE": "Database update",
 	"APP_UPDATE": "New version",
 	"ONLINE_STATS": {
@@ -548,5 +548,6 @@
 	},
 	"PROFILE_CONVERT": "Convert to online profile",
 	"PROFILE_CONVERTED": "Your profile was successfuly converted",
-	"TAG_CREDITLESS": "TAG_CREDITLESS"
+	"INSTANCE_NAME": "Server name",
+	"INSTANCE_NAME_SHORT": "Server"
 }
