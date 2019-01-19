@@ -231,7 +231,7 @@ export async function editUser(username, user, avatar, role, opts = {
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
-		if (!user.flag_admin) user.flag_admin = 0;
+		if (!user.flag_admin) user.flag_admin = currentUser.flag_admin;
 		if (user.flag_admin && role !== 'admin') throw 'Admin flag permission denied';
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
@@ -256,7 +256,6 @@ export async function editUser(username, user, avatar, role, opts = {
 		}
 		return user;
 	} catch (err) {
-		console.log(err);
 		logger.error(`[User] Failed to update ${username}'s profile : ${err}`);
 		throw {
 			message: err,
