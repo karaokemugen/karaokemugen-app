@@ -4426,7 +4426,7 @@ export function APIControllerPublic(router) {
 				res.json(validationErrors);
 			}
 		});
-	router.route('/myaccount/online')
+	router.route('/public/myaccount/online')
 		/**
 	 * @api {post} /public/myaccount/online Convert your account to an online one
 	 * @apiName ConvertToOnline
