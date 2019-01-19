@@ -119,6 +119,7 @@ export async function checkLogin(username, password) {
 					login: username,
 					password: password
 				}, {
+					createFavoritePlaylist: true,
 					createRemote: false
 				});
 			}

@@ -53,6 +53,7 @@ export async function getFavorites(token, filter, lang, from, size) {
 	try {
 		profile('getFavorites');
 		const plInfo = await getFavoritesPlaylist(token.username);
+		if (!plInfo) throw 'This user has no favorites playlist!';
 		return await getPlaylistContents(plInfo.playlist_id, token, filter, lang, from, size);
 	} catch(err) {
 		throw {
@@ -86,6 +87,7 @@ export async function addToFavorites(username, kara_id) {
 	try {
 		profile('addToFavorites');
 		const plInfo = await getFavoritesPlaylist(username);
+		if (!plInfo) throw 'This user has no favorites playlist!';
 		await addKaraToPlaylist(kara_id, username, plInfo.playlist_id);
 		await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
 		if (username.includes('@')) manageFavoriteInInstance('POST', username, kara_id);
