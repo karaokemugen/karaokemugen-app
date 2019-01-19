@@ -27,12 +27,14 @@ test:
     - sed -i 's/musubi/$PGPASSWORD/g' database.json
     - export LANG=en_US
     - node --version
+    - yarn dropDatabase
     - yarn start --debug --test &disown
     - bash test/run.sh
   only:
     - master
     - next
     - tags
+    - 379-postgresql
 
 build:
   stage: build
