@@ -5,12 +5,12 @@
 		"driver": "pg",
 		"user": "karaokemugen_app",
 		"password": "musubi",
-		"host": "localhost",
+		"host": "postgres",
 		"database": "karaokemugen_app",
 		"port": 5432,
 		"schema": "public",
-		"superuser": "postgres",
-		"superuserPassword": null,
+		"superuser": "karaokemugen_app",
+		"superuserPassword": "musubi",
 		"bundledPostgresBinary": false
 	  }
 }

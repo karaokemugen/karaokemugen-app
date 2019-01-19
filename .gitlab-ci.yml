@@ -15,6 +15,11 @@ stages:
 
 test:
   stage: test
+  services: 
+    - postgres:10.6
+  variables:
+    POSTGRES_USER: karaokemugen_app
+    POSTGRES…PASSWORD: musubi
   script:
     - yarn install --check-files --force
     - touch mpv
@@ -22,9 +27,6 @@ test:
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
     - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
     - cp -f database.CICD.json database.json
-    - sed -i "s/localhost/$PGHOST/g" database.json
-    - sed -i "s/karaokemugen_app/$PGUSERDB/g" database.json
-    - sed -i "s/musubi/$PGPASSWORD/g" database.json
     - export LANG=en_US
     - node --version
     - yarn dropDatabase
@@ -34,7 +36,7 @@ test:
     - master
     - next
     - tags
-#    - 379-postgresql
+    - 379-postgresql
 
 build:
   stage: build
