@@ -1003,27 +1003,31 @@ var settingsNotUpdated;
 		});
 
 		$('.profileConvert').click(function() {
+            if(settings) {
+                displayModal('custom', i18n.__('PROFILE_CONVERT'),
+                    '<label>' + i18n.__('INSTANCE_NAME') + '</label>'
+                    + '<input type="text"  name="modalLoginServ" value="' + settings.OnlineHost + '"//>'
+                    + '<label>' + i18n.__('PROFILE_PASSWORD_AGAIN') + '</label>'
+                    + '<input type="password" placeholder="' + i18n.__('PASSWORD') + '" class="form-control" name="password">', function(data){
 
-			displayModal('custom', i18n.__('PROFILE_CONVERT'),
-				'<input type="text"  name="modalLoginServ" value="' + settings.OnlineHost + '"//>'
-                + '<input type="password" placeholder="' + i18n.__('PROFILE_PASSWORD_AGAIN') + '" class="form-control" name="password">', function(data){
+                        var msgData =  { instance: data.modalLoginServ, password : data.password };
 
-					var msgData =  { instance: data.modalLoginServ, password : data.password };
+                        ajx('POST', 'public/myaccount/online', msgData, function(response) {
+                            displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
 
-					ajx('POST', 'public/myaccount/online', msgData, function(response) {
-						displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
+                            createCookie('mugenToken',  response.token, -1);
+                            createCookie('mugenTokenOnline',  response.onlineToken, -1);
 
-						createCookie('mugenToken',  response.token, -1);
-						createCookie('mugenTokenOnline',  response.onlineToken, -1);
-
-						logInfos = parseJwt(response.token);
-						logInfos.token = response.token;
-						logInfos.onlineToken = response.onlineToken;
-						initApp();
-					});
-				}
-			);
-
+                            logInfos = parseJwt(response.token);
+                            logInfos.token = response.token;
+                            logInfos.onlineToken = response.onlineToken;
+                            initApp();
+                        });
+                    }
+                );
+            } else {
+                getSettings();
+            }
 		});
 
 		/* profil stuff END */
@@ -2269,7 +2273,7 @@ var settingsNotUpdated;
 					refreshPlaylistDashboard(1);
 					refreshPlaylistDashboard(2);
 					playlistContentUpdating.done(() => {
-						console.log(locScroll1, locScroll2);
+						DEBUG && console.log(locScroll1, locScroll2);
 						if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
 						if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
 					});
@@ -2634,6 +2638,20 @@ var settingsNotUpdated;
 		});
 	};
 
+    manageOnlineUsersUI = function(data) {
+        $('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
+        if(!data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
+            $('.profileConvert').hide();
+        } else {
+            $('.profileConvert').show();
+        }
+
+        if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
+            setTimeout(function() {
+                displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
+            }, 500)
+        }
+    }
 
 	/* socket part */
 

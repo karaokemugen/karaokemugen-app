@@ -425,6 +425,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	getSettings = function (nameExclude) {
 		var promise = $.Deferred();
 		$.ajax({ url: 'admin/settings' }).done(function (data) {
+
+            manageOnlineUsersUI(data);
+     
 			settings = data;
 			
 			checkOnlineStats(settings);

@@ -115,19 +115,8 @@ getPublicSettings = function() {
 
         playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
         
-        $('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
-        if(!data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
-            $('.profileConvert').hide();
-        } else {
-            $('.profileConvert').show();
-        }
-
-        if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
-            setTimeout(function() {
-                displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
-            }, 500)
-        }
-
+        manageOnlineUsersUI(data);
+        
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
 			playlistToAddId = data.playlist_id;
 			playlistToAddName = data.name;
