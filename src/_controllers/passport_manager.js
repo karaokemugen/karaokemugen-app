@@ -1,8 +1,9 @@
 import passport from 'passport';
 import {decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
-import {findUserByName, updateLastLoginName, remoteCheckAuth} from '../_services/user';
+import {getRemoteUser, findUserByName, updateLastLoginName, remoteCheckAuth, fetchAndUpdateRemoteUser} from '../_services/user';
 import { getRemoteToken, upsertRemoteToken } from '../_dao/user';
+import { fetchAndAddFavorites } from '../_services/favorites';
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
 
@@ -14,21 +15,25 @@ export const updateUserLoginTime = (req, res, next) => {
 
 export async function checkValidUser(token, onlineToken) {
 	// If user is remote, see if we have a remote token ready.
-	if (token.username.includes('@') && +getConfig().OnlineUsers) {
-		const remoteToken = getRemoteToken(token.username);
-		if (remoteToken && remoteToken.token === onlineToken) {
-			// Remote token exists, no problem here
-		} else {
-			// Remote token does not exist, we're going to verify it and add it if it does work
-			try {
-				await remoteCheckAuth(token.username.split('@')[1], onlineToken);
-				upsertRemoteToken(token.username, onlineToken);
-			} catch(err) {
-				throw err;
+	if (await findUserByName(token.username)) {
+		if (token.username.includes('@') && +getConfig().OnlineUsers) {
+			const remoteToken = getRemoteToken(token.username);
+			if (remoteToken && remoteToken.token === onlineToken) {
+				// Remote token exists, no problem here
+				return true;
+			} else {
+				// Remote token does not exist, we're going to verify it and add it if it does work
+				try {
+					await remoteCheckAuth(token.username.split('@')[1], onlineToken);
+					upsertRemoteToken(token.username, onlineToken);
+					fetchAndAddFavorites(token.username.split('@')[1], onlineToken, token.username, token.username);
+					fetchAndUpdateRemoteUser(token.username, null, onlineToken);
+					return true;
+				} catch(err) {
+					throw err;
+				}
 			}
 		}
-	}
-	if (await findUserByName(token.username)) {
 		return true;
 	} else {
 		throw false;

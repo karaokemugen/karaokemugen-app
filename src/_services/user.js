@@ -32,6 +32,8 @@ on('databaseBusy', status => {
 	databaseBusy = status;
 });
 
+const onlineUsers = [];
+
 async function updateExpiredUsers() {
 	// Unflag connected accounts from database if they expired
 	try {
@@ -100,6 +102,41 @@ async function editRemoteUser(user) {
 	}
 }
 
+export async function fetchAndUpdateRemoteUser(username, password, onlineToken) {
+	if (!onlineToken) onlineToken = await remoteLogin(username, password);
+	const remoteUser = await getRemoteUser(username, onlineToken);
+	// Check if user exists. If it does not, create it.
+	const user = await findUserByName(username);
+	if (!user) {
+		await createUser({
+			login: username,
+			password: password
+		}, {
+			createFavoritePlaylist: true,
+			createRemote: false
+		});
+	}
+	// Update user with new data
+	let avatar_file = null;
+	if (remoteUser.avatar_file !== 'blank.png') {
+		avatar_file = {
+			path: await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file)
+		};
+	}
+	await editUser(username,{
+		bio: remoteUser.bio,
+		url: remoteUser.url,
+		email: remoteUser.email,
+		nickname: remoteUser.nickname,
+		password: password
+	},
+	avatar_file,
+	'admin',
+	{
+		editRemote: false
+	});
+}
+
 export async function checkLogin(username, password) {
 	const conf = getConfig();
 	let user;
@@ -110,38 +147,7 @@ export async function checkLogin(username, password) {
 			// If OnlineUsers is disabled, accounts are connected with
 			// their local version if it exists already.
 			const instance = username.split('@')[1];
-			remoteUserID = await remoteLogin(username, password);
-			const remoteUser = await getRemoteUser(username, remoteUserID.token);
-			// Check if user exists. If it does not, create it.
-			user = await findUserByName(username);
-			if (!user) {
-				await createUser({
-					login: username,
-					password: password
-				}, {
-					createFavoritePlaylist: true,
-					createRemote: false
-				});
-			}
-			// Update user with new data
-			let avatar_file = null;
-			if (remoteUser.avatar_file !== 'blank.png') {
-				avatar_file = {
-					path: await fetchRemoteAvatar(instance, remoteUser.avatar_file)
-				};
-			}
-			await editUser(username,{
-				bio: remoteUser.bio,
-				url: remoteUser.url,
-				email: remoteUser.email,
-				nickname: remoteUser.nickname,
-				password: password
-			},
-			avatar_file,
-			'admin',
-			{
-				editRemote: false
-			});
+			const remoteUser = await fetchAndUpdateRemoteUser(username, password);
 			upsertRemoteToken(username, remoteUserID.token);
 			// Download and add all favorites
 			fetchAndAddFavorites(instance, remoteUserID.token, username, remoteUser.nickname);
