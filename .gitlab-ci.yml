@@ -15,7 +15,7 @@ stages:
 
 test:
   stage: test
-  services: 
+  services:
     - postgres:10.6
   variables:
     POSTGRES_USER: karaokemugen_app
@@ -29,7 +29,6 @@ test:
     - cp -f database.CICD.json database.json
     - export LANG=en_US
     - node --version
-    - yarn dropDatabase
     - yarn start --debug --test &disown
     - bash test/run.sh
   only:

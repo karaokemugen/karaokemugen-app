@@ -18,7 +18,7 @@
     "migrate": "node node_modules/db-migrate/bin/db-migrate sync [all] --migrations-dir src/_dao/migrations",
     "migrateDown": "node node_modules/db-migrate/bin/db-migrate down --migrations-dir src/_dao/migrations",
 	"migrateUp": "node node_modules/db-migrate/bin/db-migrate up --migrations-dir src/_dao/migrations",
-	"dropDatabase": "node test/dropDatabase.js"
+	"dropDatabase": "node util/dropDatabase.js"
   },
   "homepage": "https://mugen.karaokes.moe/en",
   "repository": {
