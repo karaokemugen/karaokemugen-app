@@ -5,7 +5,7 @@ const fs = require('fs');
 const ini = require('ini');
 const extend = require('extend');
 
-var SETTINGS = ini.parse(fs.readFileSync('config.ini.sample', 'utf-8'));
+var SETTINGS = ini.parse(fs.readFileSync('config.sample.ini', 'utf-8'));
 if(fs.existsSync('config.ini')) {
 	// et surcharge via le contenu du fichier personnalisé si présent
 	var configCustom = ini.parse(fs.readFileSync('config.ini', 'utf-8'));
