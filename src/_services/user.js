@@ -137,7 +137,7 @@ export async function checkLogin(username, password) {
 				password: password
 			},
 			avatar_file,
-			'user',
+			'admin',
 			{
 				editRemote: false
 			});
@@ -214,7 +214,7 @@ export async function convertToRemoteUser(token, password, instance) {
 
 export async function editUser(username, user, avatar, role, opts = {
 	editRemote: true,
-	renameUser: false
+	renameUser: false,
 }) {
 	try {
 		let currentUser;
@@ -228,9 +228,9 @@ export async function editUser(username, user, avatar, role, opts = {
 		user.id = currentUser.id;
 		if (!opts.renameUser) user.login = username;
 		if (!user.type) user.type = currentUser.type;
-		if (!user.bio) user.bio = null;
-		if (!user.url) user.url = null;
-		if (!user.email) user.email = null;
+		if (!user.bio) user.bio = currentUser.bio;
+		if (!user.url) user.url = currentUser.url;
+		if (!user.email) user.email = currentUser.email;
 		if (!user.flag_admin) user.flag_admin = currentUser.flag_admin;
 		if (user.flag_admin && role !== 'admin') throw 'Admin flag permission denied';
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
