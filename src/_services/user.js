@@ -66,7 +66,7 @@ export async function fetchRemoteAvatar(instance, avatarFile) {
 			stream: true
 		});
 		const avatarPath = resolve(conf.appPath, conf.PathTemp, avatarFile);
-		await writeStreamToFile(res, avatarFile);
+		await writeStreamToFile(res, avatarPath);
 		return avatarPath;
 	} catch(err) {
 		throw err;
