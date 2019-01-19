@@ -25,6 +25,7 @@ test:
     - sed -i "s/localhost/$PGHOST/g" database.json
     - sed -i "s/karaokemugen_app/$PGUSERDB/g" database.json
     - sed -i "s/musubi/$PGPASSWORD/g" database.json
+    - cat database.json
     - export LANG=en_US
     - node --version
     - yarn dropDatabase
