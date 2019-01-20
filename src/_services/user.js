@@ -511,7 +511,7 @@ async function createDefaultGuests() {
 		if (!guests.find(g => g.login === guest)) guestsToCreate.push(guest);
 	}
 	let maxGuests = guestsToCreate.length;
-	if (getConfig().isTest) maxGuests = 3;
+	if (getConfig().isTest) maxGuests = 1;
 	logger.debug(`[User] Creating ${maxGuests} new guest accounts`);
 	for (let i = 0; i < maxGuests; i++) {
 		if (!await findUserByName(guestsToCreate[i])) await createUser({
