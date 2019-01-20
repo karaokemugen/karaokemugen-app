@@ -4593,9 +4593,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 200 OK
  * {
  *   "args": {
- * 		 "kara": "Les Nuls - MV - Vous me subirez",
- *       "playlist_id": 1,
- *       "kara_id": 4946
+ *       "playlist_id": 1
  *   },
  *   "code": "FAVORITES_ADDED",
  *   "data": null
