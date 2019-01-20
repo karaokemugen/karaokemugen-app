@@ -119,7 +119,7 @@ var settingsNotUpdated;
 			'-5' : {
 				name : 'Favorites',
 				url : 'public/favorites',
-				html : '',
+				html : addKaraHtml,
 				canTransferKara : true,
 				canAddKara : true,
 			},
@@ -1077,7 +1077,10 @@ var settingsNotUpdated;
 	oldState = {};
 	oldSearchVal = '';
 
-	addKaraHtml = '<button title="' + i18n.__('TOOLTIP_ADDKARA') + '" name="addKara" class="btn btn-sm btn-action"></button>';
+    addKaraHtml = '<button title="' + i18n.__('TOOLTIP_ADDKARA')
+                + (scope == 'admin' ? ' - ' + i18n.__('TOOLTIP_ADDKARA_ADMIN') : '')
+                + '" name="addKara" class="btn btn-sm btn-action"></button>';
+                
 	deleteKaraHtml = '<button title="' + i18n.__('TOOLTIP_DELETEKARA') + '" name="deleteKara" class="btn btn-sm btn-action"></button>';
 	deleteCriteriaHtml = '<button title="' + i18n.__('TOOLTIP_DELETECRITERIA') + '" name="deleteCriteria" class="btn btn-action deleteCriteria"></button>';
 	transferKaraHtml = '<button title="' + i18n.__('TOOLTIP_TRANSFERKARA') + '" name="transferKara" class="btn btn-sm btn-action"></button>';
@@ -2640,6 +2643,7 @@ var settingsNotUpdated;
 
     manageOnlineUsersUI = function(data) {
         $('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
+        DEBUG && console.log(logInfos);
         if(!data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
             $('.profileConvert').hide();
         } else {
