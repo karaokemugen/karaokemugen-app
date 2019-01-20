@@ -32,8 +32,6 @@ on('databaseBusy', status => {
 	databaseBusy = status;
 });
 
-const onlineUsers = [];
-
 async function updateExpiredUsers() {
 	// Unflag connected accounts from database if they expired
 	try {
@@ -49,8 +47,7 @@ async function updateExpiredUsers() {
 export async function updateLastLoginName(login) {
 	const currentUser = await findUserByName(login);
 	// To avoid flooding database UPDATEs, only update login time every minute for a user
-	if (!userLoginTimes[login]) userLoginTimes[login] = now();
-	if (userLoginTimes[login] < (now() - 60)) {
+	if (!userLoginTimes[login] || userLoginTimes[login] < (now() - 60)) {
 		userLoginTimes[login] = now();
 		return await db.updateUserLastLogin(currentUser.id,now());
 	}

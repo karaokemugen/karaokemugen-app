@@ -2945,7 +2945,7 @@ export function APIControllerPublic(router) {
 			//Get list of blacklist criterias IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklistCriterias === 1) {
 				try {
-					const blc = await getBlacklist();
+					const blc = await getBlacklistCriterias();
 					res.json(OKMessage(blc));
 				} catch(err) {
 					logger.error(err);
@@ -4593,9 +4593,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 200 OK
  * {
  *   "args": {
- * 		 "kara": "Les Nuls - MV - Vous me subirez",
- *       "playlist_id": 1,
- *       "kara_id": 4946
+ *       "playlist_id": 1
  *   },
  *   "code": "FAVORITES_ADDED",
  *   "data": null
@@ -4651,7 +4649,9 @@ export function APIControllerPublic(router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "args": null,
+ *   "args": {
+ *       "playlist_id": 1
+ *   },
  *   "code": "FAVORITES_DELETED",
  *   "data": null
  * }
@@ -4660,7 +4660,6 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
- *   "args": null,
  *   "code": "FAVORITES_DELETE_ERROR",
  *   "message": "Kara ID unknown"
  * }
@@ -4681,18 +4680,18 @@ export function APIControllerPublic(router) {
 					emitWS('playlistContentsUpdated',data.playlist_id);
 					emitWS('playlistInfoUpdated',data.playlist_id);
 					res.statusCode = 200;
-					res.json(OKMessage(null,'FAVORITE_DELETED',data));
+					res.json(OKMessage(null,'FAVORITES_DELETED',data));
 				} catch(err) {
 
 					res.statusCode = 500;
-					res.json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
+					res.json(errMessage('FAVORITES_DELETE_ERROR',err.message,err.data));
 				}
 			}
 
 		});
 	router.route('/public/favorites/export')
 	/**
- * @api {get} /favorites/export Export favorites
+ * @api {get} /public/favorites/export Export favorites
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getFavoritesExport
  * @apiVersion 2.2.0
@@ -4754,7 +4753,7 @@ export function APIControllerPublic(router) {
 		});
 	router.route('/public/favorites/import')
 	/**
- * @api {post} /favorites/import Import favorites
+ * @api {post} /public/favorites/import Import favorites
  * @apiName postFavoritesImport
  * @apiVersion 2.2.0
  * @apiGroup Favorites
@@ -4796,10 +4795,10 @@ export function APIControllerPublic(router) {
 					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;
 					emitWS('playlistContentsUpdated',data.playlist_id);
 					emitWS('playlistsUpdated');
-					res.json(OKMessage(response,'FAV_IMPORTED',data.playlist_id));
+					res.json(OKMessage(response,'FAVORITES_IMPORTED',data.playlist_id));
 				} catch(err) {
 					res.statusCode = 500;
-					res.json(errMessage('FAV_IMPORT_ERROR',err));
+					res.json(errMessage('FAVORITES_IMPORT_ERROR',err));
 				}
 			} else {
 				// Errors detected
