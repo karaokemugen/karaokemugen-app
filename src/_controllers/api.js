@@ -2945,7 +2945,7 @@ export function APIControllerPublic(router) {
 			//Get list of blacklist criterias IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklistCriterias === 1) {
 				try {
-					const blc = await getBlacklist();
+					const blc = await getBlacklistCriterias();
 					res.json(OKMessage(blc));
 				} catch(err) {
 					logger.error(err);
@@ -4649,7 +4649,9 @@ export function APIControllerPublic(router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "args": null,
+ *   "args": {
+ *       "playlist_id": 1
+ *   },
  *   "code": "FAVORITES_DELETED",
  *   "data": null
  * }
@@ -4658,7 +4660,6 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
- *   "args": null,
  *   "code": "FAVORITES_DELETE_ERROR",
  *   "message": "Kara ID unknown"
  * }
@@ -4690,7 +4691,7 @@ export function APIControllerPublic(router) {
 		});
 	router.route('/public/favorites/export')
 	/**
- * @api {get} /favorites/export Export favorites
+ * @api {get} /public/favorites/export Export favorites
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getFavoritesExport
  * @apiVersion 2.2.0
