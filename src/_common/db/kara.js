@@ -112,7 +112,7 @@ export const getAllKaras = (filterClauses, lang, orderClauses, typeClauses) => `
 							LEFT OUTER JOIN request AS rq ON rq.fk_id_kara = ak.kara_id
 							LEFT OUTER JOIN user AS cur_user ON cur_user.login = $username
 							LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl_fav.fk_id_user AND cur_user_pl_fav.flag_favorites = 1
-							LEFT OUTER JOIN playlist_content cur_user_fav ON cur_user_fav.fk_id_playlist = cur_user_pl_fav.fk_id_user AND cur_user_fav.fk_id_kara = ak.kara_id
+							LEFT OUTER JOIN playlist_content cur_user_fav ON cur_user_fav.fk_id_playlist = cur_user_pl_fav.pk_id_playlist AND cur_user_fav.fk_id_kara = ak.kara_id
 							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 							${typeClauses}
