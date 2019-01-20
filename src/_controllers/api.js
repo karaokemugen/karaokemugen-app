@@ -4681,11 +4681,11 @@ export function APIControllerPublic(router) {
 					emitWS('playlistContentsUpdated',data.playlist_id);
 					emitWS('playlistInfoUpdated',data.playlist_id);
 					res.statusCode = 200;
-					res.json(OKMessage(null,'FAVORITE_DELETED',data));
+					res.json(OKMessage(null,'FAVORITES_DELETED',data));
 				} catch(err) {
 
 					res.statusCode = 500;
-					res.json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
+					res.json(errMessage('FAVORITES_DELETE_ERROR',err.message,err.data));
 				}
 			}
 
