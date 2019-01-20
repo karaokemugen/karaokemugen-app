@@ -171,7 +171,7 @@ async function getAllFavorites(userList) {
 			});
 		}
 	}
-	return plcs;
+	return plcs.join();
 }
 
 export async function createAutoMix(params, username) {

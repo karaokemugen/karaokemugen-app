@@ -4753,7 +4753,7 @@ export function APIControllerPublic(router) {
 		});
 	router.route('/public/favorites/import')
 	/**
- * @api {post} /favorites/import Import favorites
+ * @api {post} /public/favorites/import Import favorites
  * @apiName postFavoritesImport
  * @apiVersion 2.2.0
  * @apiGroup Favorites
@@ -4795,10 +4795,10 @@ export function APIControllerPublic(router) {
 					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;
 					emitWS('playlistContentsUpdated',data.playlist_id);
 					emitWS('playlistsUpdated');
-					res.json(OKMessage(response,'FAV_IMPORTED',data.playlist_id));
+					res.json(OKMessage(response,'FAVORITES_IMPORTED',data.playlist_id));
 				} catch(err) {
 					res.statusCode = 500;
-					res.json(errMessage('FAV_IMPORT_ERROR',err));
+					res.json(errMessage('FAVORITES_IMPORT_ERROR',err));
 				}
 			} else {
 				// Errors detected
