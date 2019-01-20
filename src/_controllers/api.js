@@ -110,7 +110,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {String} data/playlist_name Name of playlist created
  *
  * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
+ *     HTTP/1.1 201 OK
  * {
  *   "code": "AUTOMIX_CREATED",
  *   "data": {
@@ -1424,7 +1424,7 @@ export function APIControllerAdmin(router) {
 
 	router.route('/admin/player/message')
 	/**
- * @api {post} /admin/player/message Send a message to screen or users' devices
+ * @api {post} /admin/player/message Send a message to screen or user's devices
  * @apiName PostPlayerMessage
  * @apiVersion 2.1.0
  * @apiGroup Player
@@ -3831,10 +3831,13 @@ export function APIControllerPublic(router) {
 	* @apiParam {String} [filter] Tag name to filter results
 	* @apiParam {Number} [from] Where to start listing from
 	* @apiParam {Number} [size] How many records to get.
-	* @apiSuccess {String} data/name Name of tag
-	* @apiSuccess {String} data/name_i18n Translated name of tag
-	* @apiSuccess {Number} data/tag_id Tag ID number
-	* @apiSuccess {Number} data/type Tag type number
+	* @apiSuccess {String} data/content/name Name of tag
+	* @apiSuccess {String} data/content/name_i18n Translated name of tag
+	* @apiSuccess {Number} data/content/tag_id Tag ID number
+	* @apiSuccess {Number} data/content/type Tag type number
+ 	* @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ 	* @apiSuccess {Number} data/infos/from Starting position of listing
+ 	* @apiSuccess {Number} data/infos/to End position of listing
 	*
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
@@ -4936,7 +4939,7 @@ export function APIControllerPublic(router) {
 		});
 	router.route('/public/newsfeed')
 		/**
-	 * @api {get} public/newsfeed Get latest KM news
+	 * @api {get} /public/newsfeed Get latest KM news
 	 * @apiName GetNews
 	 * @apiVersion 2.4.0
 	 * @apiGroup Misc
@@ -4953,7 +4956,7 @@ export function APIControllerPublic(router) {
 		});
 	router.route('/public/songpoll')
 	/**
- * @api {get} public/songpoll Get current poll status
+ * @api {get} /public/songpoll Get current poll status
  * @apiName GetPoll
  * @apiVersion 2.1.0
  * @apiGroup Song Poll
@@ -5050,7 +5053,7 @@ export function APIControllerPublic(router) {
 			};
 		})
 	/**
- * @api {post} public/songpoll Vote in a poll
+ * @api {post} /public/songpoll Vote in a poll
  * @apiName PostPoll
  * @apiVersion 2.1.0
  * @apiGroup Song Poll
