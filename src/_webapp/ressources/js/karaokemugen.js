@@ -53,6 +53,9 @@ var closeButtonBottom;
 var showFullTextButton;
 var showVideoButton;
 var makeFavButton;
+var makeFavButtonFav;
+var	makeFavButtonSmall;
+var	makeFavButtoSmallFav;
 var dragHandleHtml;
 var playKaraHtml;
 var serieMoreInfoButton;
@@ -387,7 +390,7 @@ var settingsNotUpdated;
 			}
 		});
 
-		if(mode != 'mobile' && !isTouchScreen) {
+		if(mode != 'mobile' && !(isTouchScreen && scope === 'public')) {
 			$('.playlist-main').on('click', '.infoDiv > button[name="infoKara"], .detailsKara > button.closeParent', function() {
 				toggleDetailsKara($(this));
 			});
@@ -1094,6 +1097,9 @@ var settingsNotUpdated;
 	showFullTextButton = '<button title="' + i18n.__('TOOLTIP_SHOWLYRICS') + '" class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	showVideoButton = '<button title="' + i18n.__('TOOLTIP_SHOWVIDEO') + '" class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	makeFavButton = '<button title="' + i18n.__('TOOLTIP_FAV') + '" class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	makeFavButtonFav = makeFavButton.replace('makeFav','makeFav currentFav');
+	makeFavButtonSmall = makeFavButton.replace('btn btn-action','btn btn-sm btn-action');
+	makeFavButtoSmallFav = makeFavButtonFav.replace('btn btn-action','btn btn-sm btn-action');
 	likeFreeButton = '<button title="' + i18n.__('TOOLTIP_UPVOTE') + '" class="likeFreeButton btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button title="' + i18n.__('TOOLTIP_PLAYKARA') + '" class="btn btn-sm btn-action playKara"></btn>';
@@ -1153,7 +1159,7 @@ var settingsNotUpdated;
 	}(Hammer.Manager.prototype.emit);
 
 
-	if (isTouchScreen || scope == 'public') {
+	if (isTouchScreen && scope === 'public') {
 
 		/* tap on full lyrics */
 
@@ -1349,14 +1355,16 @@ var settingsNotUpdated;
 								var likeKara = likeKaraHtml;
 								if (kara.flag_upvoted === 1) {
 									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
-								}
-
+                                }
+                                
+                                // TODO add fav button next to info for public pc interface
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
 								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   '<div class="infoDiv">'
-								+   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
+                                +   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
+                                +   (scope === 'public' && !isTouchScreen ? (  kara['flag_favorites'] ? makeFavButtonSmallFav : makeFavButtonSmall ) : '')
 								+	(scope === 'admin' ? playKara : '')
 								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
 								+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
@@ -2018,7 +2026,7 @@ var settingsNotUpdated;
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
 		var infoKaraTemp = 'no mode specified';
-		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButton.replace('makeFav','makeFav currentFav') : makeFavButton;
+		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButtonFav : makeFavButton;
 
 		if (htmlMode == 'list') {
 			var isPublic = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_public');
@@ -2028,7 +2036,7 @@ var settingsNotUpdated;
 			infoKaraTemp = '<div class="detailsKara alert alert-info">'
 				+ '<div class="topRightButtons">'
 				+ (isTouchScreen ? '' : closeButton)
-				+ makeFavButtonAdapt
+				+ (scope === 'public' && !isTouchScreen ? '' : makeFavButtonAdapt)
 				+ showFullTextButton
 				+ (data['previewfile'] ? showVideoButton : '')
 				+ (data['serie'] ? ' ' + serieMoreInfoButton : '')
