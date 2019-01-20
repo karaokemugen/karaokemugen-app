@@ -4,11 +4,56 @@ import {listUsers, findUserByName} from '../_services/user';
 import logger from 'winston';
 import {date} from '../_common/utils/date';
 import {profile} from '../_common/utils/logger';
+import { getRemoteToken } from '../_dao/user';
+import got from 'got';
+import { getKaraMini } from '../_dao/kara';
+import { now } from 'unix-timestamp';
+import {getConfig} from '../_common/utils/config';
 
+export async function fetchAndAddFavorites(instance, token, username, nickname) {
+	try {
+		const res = await got(`http://${instance}/api/favorites`, {
+			headers: {
+				authorization: token
+			},
+			json: true
+		});
+		const favorites = res.body;
+		const favoritesPlaylist = {
+			Header: {
+				version: 3,
+				description: 'Karaoke Mugen Playlist File'
+			},
+			PlaylistInformation: {
+				name: `Faves : ${username}`,
+				time_left: 0,
+				created_at: now(),
+				modified_at: now(),
+				flag_visible: 1
+			},
+			PlaylistContents: []
+		};
+		let index = 1;
+		for (const favorite of favorites) {
+			favoritesPlaylist.PlaylistContents.push({
+				kid: favorite.kid,
+				pseudo_add: nickname,
+				created_at: now(),
+				pos: index,
+				username: username
+			});
+			index++;
+		}
+		await importFavorites(favoritesPlaylist, {username: username});
+	} catch(err) {
+		throw err;
+	}
+}
 export async function getFavorites(token, filter, lang, from, size) {
 	try {
 		profile('getFavorites');
 		const plInfo = await getFavoritesPlaylist(token.username);
+		if (!plInfo) throw 'This user has no favorites playlist!';
 		return await getPlaylistContents(plInfo.playlist_id, token, filter, lang, from, size);
 	} catch(err) {
 		throw {
@@ -20,17 +65,59 @@ export async function getFavorites(token, filter, lang, from, size) {
 	}
 }
 
+export async function convertToRemoteFavorites(username) {
+	// This is called when converting a local account to a remote one
+	// We thus know no favorites exist remotely.
+	if (!+getConfig().OnlineUsers) return true;
+	try {
+		const favorites = await getFavorites({username: username});
+		const addFavorites = [];
+		if (favorites.content.length > 0) {
+			for (const favorite of favorites.content) {
+				addFavorites.push(manageFavoriteInInstance('POST', username, favorite.kara_id));
+			}
+			await Promise.all(addFavorites);
+		}
+	} catch(err) {
+		throw err;
+	}
+}
+
 export async function addToFavorites(username, kara_id) {
 	try {
 		profile('addToFavorites');
 		const plInfo = await getFavoritesPlaylist(username);
+		if (!plInfo) throw 'This user has no favorites playlist!';
 		await addKaraToPlaylist(kara_id, username, plInfo.playlist_id);
 		await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
+		if (username.includes('@')) manageFavoriteInInstance('POST', username, kara_id);
 		return plInfo;
 	} catch(err) {
 		throw {message: err};
 	} finally {
 		profile('addToFavorites');
+	}
+}
+
+async function manageFavoriteInInstance(action, username, kara_id) {
+	// If OnlineUsers is disabled, we return early and do not try to update favorites online.
+	if (!+getConfig().OnlineUsers) return true;
+	const instance = username.split('@')[1];
+	const remoteToken = getRemoteToken(username);
+	const kara = await getKaraMini(kara_id);
+	try {
+		return await got(`http://${instance}/api/favorites`, {
+			method: action,
+			body: {
+				kid: kara.kid
+			},
+			headers: {
+				authorization: remoteToken.token
+			},
+			form: true
+		});
+	} catch(err) {
+		logger.error(`[RemoteFavorites] Unable to ${action} favorite ${kara.kid} on ${username}'s online account : ${err}`);
 	}
 }
 
@@ -49,6 +136,7 @@ export async function deleteFavorite(username, kara_id) {
 	if (!isKaraInPL) throw 'Karaoke ID is not present in this favorites list';
 	await deleteKaraFromPlaylist(plc_id, plInfo.playlist_id, null, {sortBy: 'name'});
 	profile('deleteFavorites');
+	if (username.includes('@')) manageFavoriteInInstance('DELETE', username, kara_id);
 	return plInfo;
 }
 
@@ -59,7 +147,9 @@ export async function exportFavorites(token) {
 
 export async function importFavorites(favorites, token) {
 	const plInfo = await getFavoritesPlaylist(token.username);
-	return await importPlaylist(favorites, token.username, plInfo.playlist_id);
+	if (!plInfo) throw ('This user has no favorites playlist!');
+	await importPlaylist(favorites, token.username, plInfo.playlist_id);
+	reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
 }
 
 async function getAllFavorites(userList) {

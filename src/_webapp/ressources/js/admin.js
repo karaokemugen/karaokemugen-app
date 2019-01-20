@@ -1,5 +1,6 @@
 var mouseDown;          // Boolean : capture if the mouse is pressed
 
+
 (function (yourcode) {
 	yourcode(window.jQuery, window, document);
 }(function ($, window, document) {
@@ -393,7 +394,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	/* variables & ajax setup */
 
 	mouseDown = false;
-	scope = 'admin';
 	panel1Default = -1;
 
 	// dynamic creation of switchable settings 
@@ -425,6 +425,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	getSettings = function (nameExclude) {
 		var promise = $.Deferred();
 		$.ajax({ url: 'admin/settings' }).done(function (data) {
+
+            manageOnlineUsersUI(data);
+     
 			settings = data;
 			
 			checkOnlineStats(settings);

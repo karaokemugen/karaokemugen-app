@@ -1,6 +1,14 @@
 import {getUserDb} from './database';
 const sql = require('../_common/db/user');
 
+
+const remoteTokens = [];
+// Format:
+// {
+//   username: ...
+//   token: ...
+// }
+
 export async function getUserByName(username) {
 	return await getUserDb().get(sql.selectUserByName, { $username: username });
 }
@@ -109,5 +117,30 @@ export async function updateUserPassword(id,password) {
 	return await getUserDb().run(sql.editUserPassword, {
 		$id: id,
 		$password: password
+	});
+}
+
+export function getRemoteToken(username) {
+	const index = findRemoteToken(username);
+	if (index !== null) return remoteTokens[index];
+	return null;
+}
+
+function findRemoteToken(username) {
+	let remoteTokenIndex;
+	const remoteTokenFound = remoteTokens.some((rt, index) => {
+		remoteTokenIndex = index;
+		return rt.username === username;
+	});
+	if (remoteTokenFound) return remoteTokenIndex;
+	return null;
+}
+
+export function upsertRemoteToken(username, token) {
+	const index = findRemoteToken(username);
+	if (index) delete remoteTokens[index];
+	remoteTokens.push({
+		username: username,
+		token: token
 	});
 }

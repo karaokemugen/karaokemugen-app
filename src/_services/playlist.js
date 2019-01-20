@@ -282,7 +282,7 @@ export async function emptyPlaylist(playlist_id) {
 	if (!pl) throw 'Playlist unknown';
 	try {
 		profile('emptyPL');
-		logger.info(`[Playlist] Emptying playlist ${pl.name}`);
+		logger.debug(`[Playlist] Emptying playlist ${pl.name}`);
 		await emptyPL(playlist_id);
 		await Promise.all([
 			updatePlaylistKaraCount(playlist_id),
@@ -843,7 +843,7 @@ async function checkImportedKIDs(playlist) {
 			playlist[kara].kara_id = karaFromDB.kara_id;
 			karasToImport.push(playlist[kara]);
 		} else {
-			logger.warn(`[PLC] importPlaylist : KID ${kara.kid} unknown`);
+			logger.warn(`[PLC] importPlaylist : KID ${playlist[kara].kid} unknown`);
 			karasUnknown.push(kara.kid);
 		}
 	}

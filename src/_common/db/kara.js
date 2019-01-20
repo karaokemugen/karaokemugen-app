@@ -212,7 +212,8 @@ export const getKara = (lang) => `SELECT ak.kara_id AS kara_id,
 
 export const getKaraMini = `SELECT ak.title AS title,
       						ak.subfile AS subfile,
-							ak.duration AS duration
+							ak.duration AS duration,
+							ak.kid AS kid
  						FROM karasdb.all_karas AS ak
 						WHERE ak.kara_id = $kara_id
   						`;

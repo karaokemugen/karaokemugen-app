@@ -1,8 +1,10 @@
-{	"YES": "Oui",
-	"NO": "Non",
+{
 	"404": "Perdu sur le réseau local ?",
+	"YES": "Oui",
+	"NO": "Non",
 	"404_2": "Pas de panique, on va vous aider",
-	"404_3": "vous êtes ici",
+    "404_3": "vous êtes ici",
+    "CHAR_NOT_ALLOWED": "Le caractère '%s' n'est pas autorisé",
 	"DETAILS_ADDED": "Ajouté ",
 	"DETAILS_ADDED_2": "le %s",
 	"DETAILS_ADDED_3": "par %s",
@@ -268,6 +270,10 @@
 	"ERROR": "Erreur",
 	"LOG_ERROR": "Identifiants invalides",
 	"LOG_SUCCESS": "Connecté en tant que %s",
+    "LOG_OFFLINE": {
+        "TITLE" : "Instance hors-ligne",
+        "MESSAGE" : "Les modifications de votre profil ne seront pas enregistrées"
+    },
 	"NO_MORE_GUESTS_AVAILABLE": "Il n'y a plus de comptes invité disponibles. Créez votre propre compte!",
 	"UNKNOWN_ERROR": "Une erreur fortuite s'est produite : ",
 	"UNAUTHORIZED": "Accès défendu. Votre rôle n'est pas suffisant pour cette action.",
@@ -407,7 +413,9 @@
 	"PROFILE_URL": "Site web",
 	"PROFILE_BIO": "Biographie",
 	"PROFILE_PASSWORD": "Mot de passe",
-	"TOOLTIP_ADDKARA": "Ajouter ce kara à la liste - clique droit l'ajoute après le morceau en cours",
+	"PROFILE_PASSWORD_AGAIN": "Retapez votre mot de passe",
+	"TOOLTIP_ADDKARA": "Ajouter ce kara à la liste",
+	"TOOLTIP_ADDKARA_ADMIN": "clique droit l'ajoute après le morceau en cours",
 	"TOOLTIP_DELETEKARA": "Supprimer ce kara",
 	"TOOLTIP_DELETECRITERIA": "Supprimer ce critère de liste noire",
 	"TOOLTIP_TRANSFERKARA": "Transférer ce kara - clique droit le transfére après le morceau en cours",
@@ -507,7 +515,9 @@
 	"POLLTITLE": "À vous de voter !",
 	"POLLENDED": "%s remporte le vote avec %s voix !",
 	"PLAYERMONITOR": "Seconde fenêtre (moniteur)",
-	"ONLINEMODE": "Url d'accès courte (nécessite internet)",
+	"ONLINESETTINGS": "Options en ligne (nécessite internet)",
+	"ONLINEURL": "Url d'accès courte",
+	"ONLINEUSERS": "Autoriser l'inscription & login en ligne",
 	"ONLINESTATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Online",
 	"NO_EXT_INFO": "La recherche d'informations en ligne n'a pas abouti",
 	"FILTER": "Filtrer",
@@ -526,17 +536,20 @@
 	"ONLINE_STATS": {
 		"TITLE": "Statistiques",
 		"INTRO": "Karaoke Mugen peut envoyer des informations anonymisées sur votre instance à Karaoke Mugen Server afin d'établir des statistiques d'utilisation.",
-		"DETAILS" : {
-			"TITLE": "Détails des informations envoyées",
+		"DETAILS": {
 			"1": "Quels karaokés sont en favori (mais pas par qui)",
 			"2": "Quels karaokés ont été joués",
 			"3": "Quels karaokés ont été demandés (mais pas par qui)",
 			"4": "Des informations sur la machine (CPU, RAM disponible, nom et version de l'OS...)",
 			"5": "Votre configuration de l'application (sans aucun élément secret, type mot de passe)",
+			"TITLE": "Détails des informations envoyées",
 			"OUTRO": "Cet envoi a lieu à chaque démarrage puis à chaque heure d'utilisation. Vous pouvez consulter les informations envoyées dans le fichier log de Karaoke Mugen."
-
 		},
 		"CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
 		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?"
-	}
+	},
+	"PROFILE_CONVERT": "Passer mon profil en ligne",
+    "PROFILE_CONVERTED": "Votre profil a bien été mis en ligne",
+    "INSTANCE_NAME": "Nom du serveur",
+    "INSTANCE_NAME_SHORT": "Serveur"
 }
