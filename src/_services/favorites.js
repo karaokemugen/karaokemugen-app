@@ -90,7 +90,7 @@ export async function addToFavorites(username, kara_id) {
 		if (!plInfo) throw 'This user has no favorites playlist!';
 		await addKaraToPlaylist(kara_id, username, plInfo.playlist_id);
 		await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
-		if (username.includes('@') && +getConfig().OnlineUsers) manageFavoriteInInstance('POST', username, kara_id);
+		if (username.includes('@')) manageFavoriteInInstance('POST', username, kara_id);
 		return plInfo;
 	} catch(err) {
 		throw {message: err};
@@ -106,7 +106,7 @@ async function manageFavoriteInInstance(action, username, kara_id) {
 	const remoteToken = getRemoteToken(username);
 	const kara = await getKaraMini(kara_id);
 	try {
-		const res = await got(`http://${instance}/api/favorites`, {
+		return await got(`http://${instance}/api/favorites`, {
 			method: action,
 			body: {
 				kid: kara.kid
@@ -116,8 +116,6 @@ async function manageFavoriteInInstance(action, username, kara_id) {
 			},
 			form: true
 		});
-		logger.info('[RemoteFavorites] Updated favorite successfully');
-		return res;
 	} catch(err) {
 		logger.error(`[RemoteFavorites] Unable to ${action} favorite ${kara.kid} on ${username}'s online account : ${err}`);
 	}
