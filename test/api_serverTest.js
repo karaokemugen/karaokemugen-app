@@ -722,6 +722,7 @@ describe('Playlists', function() {
 			});
 	});
 
+	/*
 	it('Edit karaoke from playlist : flag_playing', function() {
 		var data = {
 			flag_playing: '1'
@@ -755,6 +756,7 @@ describe('Playlists', function() {
 				assert.strictEqual(response.body.data, current_plc_id);
 			});
 	});
+*/
 
 	it('Shuffle playlist 1', function() {
 		return request
