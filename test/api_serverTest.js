@@ -441,7 +441,7 @@ describe('Karas', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.strictEqual(response.body.data.content.length>=1, true);
-				assert.strictEqual(response.body.data.infos.count, 1);
+				assert.strictEqual(response.body.data.infos.count, 3);
 			});
 	});
 });
