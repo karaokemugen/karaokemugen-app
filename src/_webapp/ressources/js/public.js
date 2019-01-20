@@ -100,7 +100,6 @@ $(document).ready(function () {
 var datePlus10 = new Date();
 datePlus10.setFullYear(datePlus10.getFullYear() + 10);
 
-scope = 'public';
 var currentPanning;
 var settings = {};
 refreshTime = 2000;
@@ -116,7 +115,7 @@ getPublicSettings = function() {
         playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
         
         manageOnlineUsersUI(data);
-        
+
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
 			playlistToAddId = data.playlist_id;
 			playlistToAddName = data.name;
