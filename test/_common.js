@@ -3,7 +3,7 @@ import {join, parse} from 'path';
 
 const dir = join(__dirname, '_common');
 
-describe.only('Testing _common Unit Tests', () => {
+describe('Testing _common Unit Tests', () => {
 	readdirSync(dir)
 		.map((file) => ({
 			file,
