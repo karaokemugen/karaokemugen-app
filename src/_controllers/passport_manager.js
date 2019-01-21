@@ -1,7 +1,7 @@
 import passport from 'passport';
 import {decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
-import {getRemoteUser, findUserByName, updateLastLoginName, remoteCheckAuth, fetchAndUpdateRemoteUser} from '../_services/user';
+import {findUserByName, updateLastLoginName, remoteCheckAuth, fetchAndUpdateRemoteUser} from '../_services/user';
 import { getRemoteToken, upsertRemoteToken } from '../_dao/user';
 import { fetchAndAddFavorites } from '../_services/favorites';
 
@@ -24,12 +24,18 @@ export async function checkValidUser(token, onlineToken) {
 			} else {
 				// Remote token does not exist, we're going to verify it and add it if it does work
 				try {
-					await remoteCheckAuth(token.username.split('@')[1], onlineToken);
+					// Firing this first to avoid multiple triggers, will get canceled if auth is not OK.
 					upsertRemoteToken(token.username, onlineToken);
-					fetchAndAddFavorites(token.username.split('@')[1], onlineToken, token.username, token.username);
-					fetchAndUpdateRemoteUser(token.username, null, onlineToken);
-					return true;
+					if (await remoteCheckAuth(token.username.split('@')[1], onlineToken)){
+						fetchAndAddFavorites(token.username.split('@')[1], onlineToken, token.username, token.username);
+						fetchAndUpdateRemoteUser(token.username, null, onlineToken);
+						return true;
+					} else {
+						// Cancelling remote token.
+						upsertRemoteToken(token.username, null);
+					}
 				} catch(err) {
+					upsertRemoteToken(token.username, null);
 					throw err;
 				}
 			}

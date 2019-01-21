@@ -366,7 +366,8 @@ export async function remoteCheckAuth(instance, token) {
 				authorization: token
 			}
 		});
-		return JSON.parse(res.body);
+		if (res.statusCode === 401) return false;
+		return res.body;
 	} catch(err) {
 		throw err;
 	}
