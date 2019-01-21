@@ -666,21 +666,6 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('List contents from current playlist', function() {
-		return request
-			.get('/api/public/playlists/current/karas')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response) {
-				// We get the PLC_ID of our last karaoke, the one we just added
-				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id;
-				current_plc_id = plc_id.toString();
-				assert.strictEqual(response.body.data.content.length >= 1, true);
-			});
-	});
-
 	it('Delete a CURRENT playlist (should fail)', function() {
 		return request
 			.delete('/api/admin/playlists/'+new_playlist_current_id)
@@ -721,42 +706,6 @@ describe('Playlists', function() {
 				assert.strictEqual(response.body.code,'PL_SONG_DELETED');
 			});
 	});
-
-	/*
-	it('Edit karaoke from playlist : flag_playing', function() {
-		var data = {
-			flag_playing: '1'
-		};
-		return request
-			.put('/api/admin/playlists/'+new_playlist_current_id+'/karas/'+current_plc_id)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'PL_CONTENT_MODIFIED');
-				assert.strictEqual(response.body.data, current_plc_id);
-			});
-	});
-
-	it('Edit karaoke from playlist : position', function() {
-		var data = {
-			pos: '1'
-		};
-		return request
-			.put('/api/admin/playlists/'+new_playlist_current_id+'/karas/'+current_plc_id)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'PL_CONTENT_MODIFIED');
-				assert.strictEqual(response.body.data, current_plc_id);
-			});
-	});
-*/
 
 	it('Shuffle playlist 1', function() {
 		return request
@@ -847,6 +796,58 @@ describe('Playlists', function() {
 				current_playlist_id = response.body.data.playlist_id;
 			});
 	});
+
+	
+	it('List contents from current playlist', function() {
+		return request
+			.get('/api/public/playlists/current/karas')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				// We get the PLC_ID of our last karaoke, the one we just added
+				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id;
+				current_plc_id = plc_id.toString();
+				assert.strictEqual(response.body.data.content.length >= 1, true);
+			});
+	});
+
+	
+	it('Edit karaoke from playlist : flag_playing', function() {
+		var data = {
+			flag_playing: '1'
+		};
+		return request
+			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.strictEqual(response.body.code,'PL_CONTENT_MODIFIED');
+				assert.strictEqual(response.body.data, current_plc_id);
+			});
+	});
+
+	it('Edit karaoke from playlist : position', function() {
+		var data = {
+			pos: '1'
+		};
+		return request
+			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.strictEqual(response.body.code,'PL_CONTENT_MODIFIED');
+				assert.strictEqual(response.body.data, current_plc_id);
+			});
+	});
+
 
 	it('Get list of playlists (public)', function() {
 		return request
