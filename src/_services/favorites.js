@@ -9,9 +9,12 @@ import got from 'got';
 import { getKaraMini } from '../_dao/kara';
 import { now } from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
+import { emptyPlaylist } from '../_dao/playlist';
 
 export async function fetchAndAddFavorites(instance, token, username, nickname) {
 	try {
+		const playlist_id = await getFavoritesPlaylist(username);
+		if (!playlist_id) throw 'User has no favorites playlist';
 		const res = await got(`http://${instance}/api/favorites`, {
 			headers: {
 				authorization: token
@@ -44,6 +47,7 @@ export async function fetchAndAddFavorites(instance, token, username, nickname) 
 			});
 			index++;
 		}
+		await emptyPlaylist(playlist_id);
 		await importFavorites(favoritesPlaylist, {username: username});
 	} catch(err) {
 		throw err;
