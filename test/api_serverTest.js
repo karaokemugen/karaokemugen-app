@@ -319,23 +319,22 @@ describe('Favorites', function() {
 			});
 	});
 
-	/*
 	it('Import favorites', function() {
 		var data = {
-			playlist: toString(favoritesExport)
+			"playlist": "{\"Header\":{\"version\":3,\"description\":\"Karaoke Mugen Playlist File\"},\"PlaylistInformation\":{\"name\":\"Faves : adminTest\",\"created_at\":1548104672,\"modified_at\":1548104675,\"flag_visible\":0},\"PlaylistContents\":[{\"kid\":\"a07a32f7-63eb-46a6-8158-09bf4b06f1c7\",\"pseudo_add\":\"adminTest\",\"created_at\":1548104675,\"pos\":1,\"username\":\"adminTest\",\"serie\":\"Ken le Survivant\",\"title\":\"AVI + sous-titres\",\"flag_playing\":1}]}"
 		};
 		return request
 			.post('/api/public/favorites/import')
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.send(data)
-			.expect(500)
+			.expect(200)
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'FAVORITES_IMPORTED');
 				assert.strictEqual(response.body.data.message,'Favorites imported');
 				assert.strictEqual(response.body.data.unknownKaras.length, 0);
 			});
-	});*/
+	});
 
 	it('Import favorites Error 500', function() {
 		var data = {
@@ -402,19 +401,6 @@ describe('Karaokes', function() {
 			});
 	});
 
-	/*
-	it('View Top 50 songs', function() {
-		return request
-			.get('/api/public/top50')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response) {
-				assert.strictEqual(response.body.data.content.length>=1, true);
-				assert.strictEqual(response.body.data.infos.count, 4);
-			});
-	});*/
 });
 
 describe('Karas', function() {
@@ -446,7 +432,6 @@ describe('Karas', function() {
 	});
 });
 
-/*
 describe('Misc', function() {
 	it('Get latest KM news', function() {
 		return request
@@ -459,7 +444,7 @@ describe('Misc', function() {
 				assert.strictEqual(response.body.length>0,true);
 			});
 	});
-});*/
+});
 
 describe('Player', function() {
 	it('Get player status', function() {
@@ -730,27 +715,26 @@ describe('Playlists', function() {
 			.then(function(response) {
 				playlistExport = response.body.data;
 				assert.strictEqual(response.body.data.Header.description,'Karaoke Mugen Playlist File');
-				assert.strictEqual(response.body.data.PlaylistContents.length, 1);
+				assert.strictEqual(response.body.data.PlaylistContents.length, 2);
 			});
 	});
 
-	/*
 	it('Import a playlist', function() {
 		var data = {
-			playlist: toString(favoritesExport)
+			"playlist": "{\"Header\":{\"version\":3,\"description\":\"Karaoke Mugen Playlist File\"},\"PlaylistInformation\":{\"name\":\"Faves : adminTest\",\"created_at\":1548104672,\"modified_at\":1548104675,\"flag_visible\":0},\"PlaylistContents\":[{\"kid\":\"a07a32f7-63eb-46a6-8158-09bf4b06f1c7\",\"pseudo_add\":\"adminTest\",\"created_at\":1548104675,\"pos\":1,\"username\":\"adminTest\",\"serie\":\"Ken le Survivant\",\"title\":\"AVI + sous-titres\",\"flag_playing\":1}]}"
 		};
 		return request
 			.post('/api/admin/playlists/import')
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.send(data)
-			.expect(500)
+			.expect(200)
 			.then(function(response) {
-				assert.strictEqual(response.body.code,'FAVORITES_IMPORTED');
-				assert.strictEqual(response.body.data.message,'Favorites imported');
+				assert.strictEqual(response.body.code,'PL_IMPORTED');
+				assert.strictEqual(response.body.data.message,'Playlist imported');
 				assert.strictEqual(response.body.data.unknownKaras.length, 0);
 			});
-	});*/
+	});
 
 	it('Import a playlist Error 500', function() {
 		var data = {
@@ -927,18 +911,17 @@ describe('Playlists', function() {
 			});
 	});
 
-	/*
-	it('Up/downvote a song in public playlist', function() {
+	it('Up/downvote a song in public playlist Error 500', function() {
 		return request
-			.post('/api/public/playlists/public/karas'+plc_id+'/vote')
+			.post('/api/public/playlists/public/karas/'+current_plc_id+'/vote')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
-			.expect(200)
+			.expect(500)
 			.then(function(response) {
-				assert.strictEqual(response.body.data.code, 'UPVOTE_DONE');
+				assert.strictEqual(response.body.code, 'UPVOTE_NO_SELF');
 			});
-	});*/
+	});
 
 	it('Empty playlist', function() {
 		return request
@@ -1253,10 +1236,12 @@ describe('Main', function() {
 	});
 });
 
-describe('Error case', function() {
-	//TODO test error case with EngineAllowViewWhitelist
-	//TODO WEBAPPMODE_CLOSED_API_MESSAGE
+/*
+//TODO test error case with EngineAllowViewWhitelist
+//TODO WEBAPPMODE_CLOSED_API_MESSAGE
+describe('Error case', function() {	
 });
+*/
 
 describe('Main - Shutdown', function() {
 	it('Shutdown the entire application', function() {
