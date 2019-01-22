@@ -273,7 +273,7 @@ FROM kara k
 LEFT JOIN kara_serie ks ON k.pk_kid = ks.fk_kid
 LEFT JOIN serie s ON ks.fk_sid = s.pk_sid
 LEFT JOIN serie_lang sl ON sl.fk_sid = s.pk_sid
-LEFT JOIN series_i18n s18 ON s18.serie_id = ks.fk_sid
+LEFT JOIN series_i18n s18 ON s18.fk_sid = ks.fk_sid
 LEFT JOIN kara_tag kt ON k.pk_kid = kt.fk_kid
 LEFT JOIN tag t ON kt.fk_id_tag = t.pk_id_tag
 LEFT OUTER JOIN singer on k.pk_kid = singer.fk_kid
