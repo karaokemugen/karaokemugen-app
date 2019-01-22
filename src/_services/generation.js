@@ -6,10 +6,7 @@ import {asyncReadFile, checksum, asyncReadDirFilter} from '../_utils/files';
 import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
-	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBlacklistKaras, selectBLCKaras,
-	selectBLCTags, selectKaras, selectPlaylistKaras,
-	selectTags, selectPlayedKaras, selectRequestKaras,
-	selectWhitelistKaras
+	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBLCTags, selectTags
 } from '../_dao/sql/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
@@ -35,7 +32,8 @@ function hash(string) {
 }
 
 async function emptyDatabase() {
-	await db().query(`BEGIN;
+	await db().query(`
+	BEGIN;
 	TRUNCATE kara_tag CASCADE;
 	TRUNCATE kara_serie CASCADE;
 	TRUNCATE tag RESTART IDENTITY CASCADE;
@@ -211,22 +209,25 @@ function getSeries(kara) {
  * Returns a Map<String, Array>, linking a series to the karaoke indexes involved.
  */
 function getAllSeries(karas, seriesData) {
-	const map = new Map();
-	karas.forEach((kara, index) => {
-		const karaIndex = index + 1;
-		getSeries(kara).forEach(serie => {
-			map.has(serie) ? map.get(serie).push(karaIndex) : map.set(serie, [karaIndex]);
-		});
-	});
+	const series = {};
+	logger.profile('getAllSeries');
 	for (const serie of seriesData) {
-		if (!map.has(serie.name)) map.set(serie.name, [0]);
+		series[serie.name] = {
+			sid: serie.sid
+		};
+		for (const kara of karas) {
+			const karaSeries = kara.series.split(',');
+			if (!series[serie.name].kids) series[serie.name].kids = [];
+			if (karaSeries.includes(serie.name)) {
+				series[serie.name].kids.push(kara.KID);
+			}
+		}
 	}
-	return map;
+	return series;
 }
 
-function prepareSerieInsertData(serie, index, data) {
+function prepareSerieInsertData(serie, data) {
 	return [
-		index,
 		serie,
 		JSON.stringify(data.aliases || []),
 		data.sid,
@@ -236,11 +237,9 @@ function prepareSerieInsertData(serie, index, data) {
 
 function prepareAllSeriesInsertData(mapSeries, seriesData) {
 	const data = [];
-	let index = 1;
-	for (const serie of mapSeries.keys()) {
+	for (const serie of Object.keys(mapSeries)) {
 		const serieData = seriesData.filter(e => e.name === serie);
-		data.push(prepareSerieInsertData(serie, index, serieData[0]));
-		index++;
+		data.push(prepareSerieInsertData(serie, serieData[0]));
 	}
 	return data;
 }
@@ -250,17 +249,14 @@ function prepareAllSeriesInsertData(mapSeries, seriesData) {
  */
 function prepareAllKarasSeriesInsertData(mapSeries) {
 	const data = [];
-	let index = 1;
-	for (const serie of mapSeries.keys()) {
-		for (const karaIndex of mapSeries.get(serie)) {
+	for (const serie of Object.keys(mapSeries)) {
+		for (const kid of mapSeries[serie].kids) {
 			data.push([
-				index,
-				karaIndex
+				mapSeries[serie].sid,
+				kid
 			]);
 		}
-		index++;
 	}
-
 	return data;
 }
 
@@ -278,7 +274,7 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 		}
 	}
 	// Checking if some series present in .kara files are not present in the series files
-	for (const serie of mapSeries.keys()) {
+	for (const serie of Object.keys(mapSeries)) {
 		if (!findSeries(serie, seriesData)) {
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
@@ -510,7 +506,7 @@ export async function run() {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 6);
+		}, 5);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap, seriesData);
@@ -563,76 +559,18 @@ export async function checkUserdbIntegrity() {
 	logger.debug('[Gen] Running user database integrity checks');
 	const [
 		allTags,
-		allKaras,
 		blcTags,
-		whitelistKaras,
-		blacklistCriteriaKaras,
-		blacklistKaras,
-		viewcountKaras,
-		requestKaras,
-		playlistKaras
 	] = await Promise.all([
 		db().query(selectTags),
-		db().query(selectKaras),
 		db().query(selectBLCTags),
-		db().query(selectWhitelistKaras),
-		db().query(selectBLCKaras),
-		db().query(selectBlacklistKaras),
-		db().query(selectPlayedKaras),
-		db().query(selectRequestKaras),
-		db().query(selectPlaylistKaras)
 	]);
 
 	if (bar) bar.incr();
-
-	// Listing existing KIDs
-	const karaKIDs = allKaras.rows.map(k => `'${k.kid}'`).join(',');
-	// Setting kara IDs to 0 when KIDs are absent
-	await Promise.all([
-		db().query(`UPDATE whitelist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
-		db().query(`UPDATE blacklist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
-		db().query(`UPDATE played SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
-		db().query(`UPDATE requested SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
-		db().query(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
-	]);
-	if (bar) bar.incr();
-	const karaIdByKid = new Map();
-	allKaras.rows.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
 	let sql = '';
-	whitelistKaras.rows.forEach(wlk => {
-		if (karaIdByKid.has(wlk.kid) && karaIdByKid.get(wlk.kid) !== wlk.id_kara) {
-			sql += `UPDATE whitelist SET fk_id_kara = ${karaIdByKid.get(wlk.kid)} WHERE kid = '${wlk.kid}';`;
-		}
-	});
-	blacklistCriteriaKaras.rows.forEach(blck => {
-		if (karaIdByKid.has(blck.kid) && karaIdByKid.get(blck.kid) !== blck.id_kara) {
-			sql += `UPDATE blacklist_criteria SET value = ${karaIdByKid.get(blck.kid)} WHERE uniquevalue = '${blck.kid}';`;
-		}
-	});
-	blacklistKaras.rows.forEach(blk => {
-		if (karaIdByKid.has(blk.kid) && karaIdByKid.get(blk.kid) !== blk.id_kara) {
-			sql += `UPDATE blacklist SET fk_id_kara = ${karaIdByKid.get(blk.kid)} WHERE kid = '${blk.kid}';`;
-		}
-	});
-	viewcountKaras.rows.forEach(vck => {
-		if (karaIdByKid.has(vck.kid) && karaIdByKid.get(vck.kid) !== vck.id_kara) {
-			sql += `UPDATE played SET fk_id_kara = ${karaIdByKid.get(vck.kid)} WHERE kid = '${vck.kid}';`;
-		}
-	});
-	requestKaras.rows.forEach(rqk => {
-		if (karaIdByKid.has(rqk.kid) && karaIdByKid.get(rqk.kid) !== rqk.id_kara) {
-			sql += `UPDATE requested SET fk_id_kara = ${karaIdByKid.get(rqk.kid)} WHERE kid = '${rqk.kid}';`;
-		}
-	});
-	playlistKaras.rows.forEach(plck => {
-		if (karaIdByKid.has(plck.kid) && karaIdByKid.get(plck.kid) !== plck.id_kara) {
-			sql += `UPDATE playlist_content SET fk_id_kara = ${karaIdByKid.get(plck.kid)} WHERE kid = '${plck.kid}';`;
-		}
-	});
 
 	blcTags.rows.forEach(blcTag => {
 		let tagFound = false;
-		allTags.rows.forEach(function (tag) {
+		allTags.rows.forEach(tag => {
 			if (tag.name === blcTag.tagname && tag.tagtype === blcTag.type) {
 				// Found a matching Tagname, checking if id_tags are the same
 				if (tag.id_tag !== blcTag.id_tag) {

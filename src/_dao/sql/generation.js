@@ -15,5 +15,7 @@ export const insertKaraTags = 'INSERT INTO kara_tag(fk_id_tag, fk_kid) VALUES($1
 
 export const insertKaraSeries = 'INSERT INTO kara_serie(fk_sid, fk_kid) VALUES($1, $2);';
 
+export const selectTags = 'SELECT pk_id_tag as id_tag, tagtype, name FROM tag;';
+
 export const selectBLCTags = `SELECT type, value AS id_tag, uniquevalue AS tagname FROM blacklist_criteria
 	WHERE type > 0 AND type < 1000;`;

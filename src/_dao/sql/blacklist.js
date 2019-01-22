@@ -27,11 +27,11 @@ UNION
 	WHERE blc.type = 1000
 	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
 UNION
-	SELECT CAST(blc.value AS INTEGER), k.pk_kid, now() ,'Blacklisted Song manually'
+	SELECT k.pk_kid, now() ,'Blacklisted Song manually'
 	FROM blacklist_criteria blc
 	INNER JOIN kara k ON k.pk_kid = blc.value::uuid
 	WHERE blc.type = 1001
-	AND   blc_value::uuid NOT IN (select fk_kid from whitelist)
+	AND   blc.value::uuid NOT IN (select fk_kid from whitelist)
 UNION
 	SELECT k.pk_kid, now() ,'Blacklisted Song longer than ' || blc.value || ' seconds'
 	FROM blacklist_criteria blc

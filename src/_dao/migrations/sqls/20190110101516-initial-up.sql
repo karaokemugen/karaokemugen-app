@@ -88,7 +88,7 @@ CREATE TABLE users (
 CREATE UNIQUE INDEX idx_users_nickname ON users(nickname);
 
 CREATE TABLE whitelist (
-	kid	UUID NOT NULL UNIQUE,
+	fk_kid	UUID NOT NULL UNIQUE,
 	created_at TIMESTAMP NOT NULL,
 	reason CHARACTER VARYING
 );

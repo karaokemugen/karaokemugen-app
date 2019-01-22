@@ -20,4 +20,5 @@ DROP TABLE playlist_content;
 DROP TABLE playlist;
 DROP TABLE settings;
 DROP TABLE tag;
+DROP TABLE favorites;
 DROP TABLE users;
