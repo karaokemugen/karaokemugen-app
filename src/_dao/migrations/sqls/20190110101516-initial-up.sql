@@ -237,7 +237,7 @@ group_tags AS (SELECT kt.fk_kid, jsonb_agg(to_jsonb(t_group)) AS groups
 )
 
 SELECT
-  k.kid,
+  k.pk_kid AS kid,
   k.title,
   k.duration,
   k.gain,
@@ -251,7 +251,7 @@ SELECT
   k.mediasize,
   jsonb_agg(DISTINCT(s.seriefile)) AS seriefiles,
   jsonb_agg(DISTINCT(s.name)) AS serie_orig,
-  jsonb_agg(DISTINCT(s.sid)) AS sid,
+  jsonb_agg(DISTINCT(s.pk_sid)) AS sid,
   jsonb_agg(DISTINCT(s18.serie_langs)::jsonb) as serie_i18n,
   string_agg(DISTINCT(s.name),',') AS serie,
   jsonb_agg(DISTINCT(s.aliases)) AS serie_altname,
@@ -273,7 +273,7 @@ FROM kara k
 LEFT JOIN kara_serie ks ON k.pk_kid = ks.fk_kid
 LEFT JOIN serie s ON ks.fk_sid = s.pk_sid
 LEFT JOIN serie_lang sl ON sl.fk_sid = s.pk_sid
-LEFT JOIN series_i18n s18 ON s18.fk_sid = ks.fk_sid
+LEFT JOIN series_i18n s18 ON s18.sid = ks.fk_sid
 LEFT JOIN kara_tag kt ON k.pk_kid = kt.fk_kid
 LEFT JOIN tag t ON kt.fk_id_tag = t.pk_id_tag
 LEFT OUTER JOIN singer on k.pk_kid = singer.fk_kid
@@ -284,7 +284,7 @@ LEFT OUTER JOIN author on k.pk_kid = author.fk_kid
 LEFT OUTER JOIN misc on k.pk_kid = misc.fk_kid
 LEFT OUTER JOIN songwriter on k.pk_kid = songwriter.fk_kid
 LEFT OUTER JOIN group_tags on k.pk_kid = group_tags.fk_kid
-GROUP BY k.kid, languages_sortable, songtypes_sortable, singers_sortable, singers, songtypes, groups, songwriters, misc_tags, authors, languages, creators
+GROUP BY k.pk_kid, languages_sortable, songtypes_sortable, singers_sortable, singers, songtypes, groups, songwriters, misc_tags, authors, languages, creators
 ORDER BY languages_sortable, serie, singers_sortable, songtypes_sortable DESC, songorder;
 
 CREATE INDEX idx_ak_created ON all_karas(created_at DESC);
@@ -322,10 +322,10 @@ CREATE MATERIALIZED VIEW all_series AS
 SELECT
 	s.name AS name,
 	s.aliases AS aliases,
-	s.sid AS sid,
+	s.pk_sid AS sid,
 	array_to_json(array_agg(json_build_object('lang', sl.lang, 'name', sl.name))) as i18n,
 	string_agg(sl.name, ' ') as search,
-	string_agg(sl.aliases, ' ') as search_aliases,
+	string_agg(jsonb_agg(DISTINCT(s.aliases)), ' ') AS search_aliases,
 	s.seriefile AS seriefile,
 	(SELECT COUNT(ks.fk_kid) FROM kara_serie ks WHERE ks.fk_sid = s.pk_sid) AS karacount
 	FROM serie s

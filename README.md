@@ -133,10 +133,11 @@ It also requires mpv and ffmpeg binaries (see below).
 
 ### Binaries
 
-mpv (video player) and ffmpeg (video processing) are required by Karaoke Mugen
+mpv (video player), ffmpeg (video processing) and postgreSQL (database) are required by Karaoke Mugen
 
 * mpv 0.25 or up for Windows/Linux, 0.27 or up required for macOS ([mpv's website](http://mpv.io))
 * ffmpeg 3 or later ([ffmpeg's website](http://www.ffmpeg.org))
+* postgreSQL 10.6 ([postgreSQL's website](https://www.postgresql.org/))
 
 #### Windows/macOS
 
