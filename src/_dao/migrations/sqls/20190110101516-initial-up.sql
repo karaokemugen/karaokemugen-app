@@ -325,7 +325,7 @@ SELECT
 	s.pk_sid AS sid,
 	array_to_json(array_agg(json_build_object('lang', sl.lang, 'name', sl.name))) as i18n,
 	string_agg(sl.name, ' ') as search,
-	jsonb_array_elements_text(s.aliases) as search_aliases,search_aliases,
+	jsonb_array_elements_text(s.aliases) as search_aliases,
 	s.seriefile AS seriefile,
 	(SELECT COUNT(ks.fk_kid) FROM kara_serie ks WHERE ks.fk_sid = s.pk_sid) AS karacount
 	FROM serie s
