@@ -108,7 +108,6 @@ async function readAndCompleteKarafile(karafile) {
 
 function prepareKaraInsertData(kara, index) {
 	return [
-		index,
 		kara.KID,
 		kara.title,
 		kara.year || null,
@@ -125,8 +124,7 @@ function prepareKaraInsertData(kara, index) {
 }
 
 function prepareAllKarasInsertData(karas) {
-	// Remember JS indexes start at 0.
-	return karas.map((kara, index) => prepareKaraInsertData(kara, index + 1));
+	return karas.map(kara => prepareKaraInsertData(kara));
 }
 
 function checkDuplicateKIDs(karas) {
@@ -302,8 +300,8 @@ function getAllKaraTags(karas) {
 
 	const tagsByKara = new Map();
 
-	karas.forEach((kara, index) => {
-		const karaIndex = index + 1;
+	karas.forEach(kara => {
+		const karaIndex = kara.KID;
 		tagsByKara.set(karaIndex, getKaraTags(kara, allTags));
 	});
 
@@ -462,11 +460,11 @@ function prepareAllTagsInsertData(allTags) {
 function prepareTagsKaraInsertData(tagsByKara) {
 	const data = [];
 
-	tagsByKara.forEach((tags, karaIndex) => {
+	tagsByKara.forEach((tags, kid) => {
 		tags.forEach(tagId => {
 			data.push([
 				tagId,
-				karaIndex
+				kid
 			]);
 		});
 	});
