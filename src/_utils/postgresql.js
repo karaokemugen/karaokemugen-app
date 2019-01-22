@@ -65,8 +65,26 @@ export async function dumpPG() {
 	} catch(err) {
 		throw `Dump failed : ${err}`;
 	}
-
 }
+
+export async function initPGData() {
+	const conf = getConfig();
+	try {
+		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresInitExe), [
+			'-U',
+			conf.db.prod.superuser,
+			'-E',
+			'UTF8',
+			'-D',
+			resolve(conf.appPath, conf.PathDB, 'postgres/')
+		], {
+			cwd: resolve(conf.appPath, conf.BinPostgresPath)
+		});
+	} catch(err) {
+		throw `Init failed : ${err}`;
+	}
+}
+
 
 export async function updatePGConf() {
 	// Editing port in postgresql.conf
@@ -98,7 +116,7 @@ export async function initPG() {
 	// If no data dir is present, we're going to init one
 	const conf = getConfig();
 	const pgDataDir = resolve(conf.appPath, conf.PathDB, 'postgres');
-	await updatePGConf();
+	if (!await asyncExists(pgDataDir)) await initPGData();
 	const pidFile = resolve(pgDataDir, 'postmaster.pid');
 	const pidWatcher = watch(pidFile, {useFsEvents: false});
 	pidWatcher.on('unlink', () => {
@@ -109,6 +127,7 @@ export async function initPG() {
 		return true;
 	}
 	logger.info('[DB] Launching bundled PostgreSQL...');
+	await updatePGConf();
 	return new Promise((OK, NOK) => {
 		try {
 			pidWatcher.on('change', () => {
