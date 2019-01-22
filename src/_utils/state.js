@@ -1,7 +1,6 @@
 import {emitWS} from '../_webapp/frontend';
 import {emit} from './pubsub';
 import logger from 'winston';
-import {now} from 'unix-timestamp';
 
 // Internal settings
 let state = {
@@ -21,7 +20,7 @@ let state = {
 	frontendPort: null,
 	player: {},
 	ready: false,
-	sessionStart: now()
+	sessionStart: new Date()
 };
 let previousState = {...state};
 

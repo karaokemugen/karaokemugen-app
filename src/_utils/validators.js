@@ -1,7 +1,7 @@
 import validate from 'validate.js';
 import testJSON from 'is-valid-json';
 import {has as hasLang} from 'langs';
-import {karaTypes, tags} from '../_services/constants';
+import {uuidRegexp, karaTypes, tags} from '../_services/constants';
 
 // Validators
 
@@ -79,6 +79,19 @@ function isNumber(value) {
 	return !isNaN(value);
 }
 
+function uuidArrayValidator(value) {
+	if(!value) return ` '${value}' is invalid (empty)`;
+	value = value.toString();
+	if (value.includes(',')) {
+		const array = value.split(',');
+		if (array.every(new RegExp(uuidRegexp).test)) return null;
+		return ` '${value}' is invalid (not an array of UUIDs)`;
+	}
+	if (new RegExp(uuidRegexp).test(value)) return null;
+
+	return ` '${value}' is invalid (not a UUID)`;
+}
+
 function numbersArrayValidator(value) {
 	if(!value) return ` '${value}' is invalid (empty)`;
 	value = value.toString();
@@ -87,7 +100,6 @@ function numbersArrayValidator(value) {
 		if (array.every(isNumber)) return null;
 		return ` '${value}' is invalid (not an array of numbers)`;
 	}
-	console.log(value);
 	if (!isNaN(value)) return null;
 
 	return ` '${value}' is invalid (not a number)`;
@@ -105,7 +117,8 @@ const validatorsList = {
 	tagsValidator,
 	typeValidator,
 	seriesi18nValidator,
-	arrayNoCommaValidator
+	arrayNoCommaValidator,
+	uuidArrayValidator
 };
 
 // Sanitizers

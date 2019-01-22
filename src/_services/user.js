@@ -54,14 +54,9 @@ export async function getUserRequests(username) {
 export async function editUser(username,user,avatar,role) {
 	try {
 		let currentUser;
-		if (user.id) {
-			currentUser = await findUserByID(user.id);
-		} else {
-			currentUser = await findUserByName(username);
-		}
+		currentUser = await findUserByName(username);
 		if (!currentUser) throw 'User unknown';
 		if (currentUser.type === 2 && role !== 'admin') throw 'Guests are not allowed to edit their profiles';
-		user.id = currentUser.id;
 		user.login = username;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
@@ -146,17 +141,6 @@ export async function findUserByName(username, opt) {
 	return false;
 }
 
-export async function findUserByID(id) {
-	const userdata = await db.getUserByID(id);
-	if (userdata) {
-		if (!userdata.bio) userdata.bio = null;
-		if (!userdata.url) userdata.url = null;
-		if (!userdata.email) userdata.email = null;
-		return userdata;
-	}
-	return false;
-}
-
 export function hashPassword(password) {
 	const hash = createHash('sha256');
 	hash.update(password);
@@ -188,13 +172,8 @@ export async function updateUserFingerprint(username, fingerprint) {
 }
 
 export async function createUser(user, opts = {
-	createFavoritePlaylist: true,
 	admin: false
 }) {
-
-	if (!opts) opts = {
-		createFavoritePlaylist: true
-	};
 	user.type = user.type || 1;
 	if (opts.admin) user.type = 0;
 	user.nickname = user.nickname || user.login;
@@ -210,11 +189,8 @@ export async function createUser(user, opts = {
 	if (user.password) user.password = hashPassword(user.password);
 	try {
 		await db.addUser(user);
-		if (user.type <= 1 && opts.createFavoritePlaylist) {
-			await createPlaylist(`Faves : ${user.login}`, {favorites: true} , user.login);
-			logger.info(`[User] Created user ${user.login}`);
-			logger.debug(`[User] User data : ${JSON.stringify(user)}`);
-		}
+		logger.info(`[User] Created user ${user.login}`);
+		logger.debug(`[User] User data : ${JSON.stringify(user, null, 2)}`);
 		return true;
 	} catch (err) {
 		logger.error(`[User] Unable to create user ${user.login} : ${err}`);
@@ -235,28 +211,17 @@ async function newUserIntegrityChecks(user) {
 }
 
 export async function deleteUser(username) {
-	const user = await findUserByName(username);
-	if (!user) throw {code: 'USER_NOT_EXISTS'};
-	return await deleteUserById(user.id);
-}
-
-export async function deleteUserById(id) {
-
 	try {
-		const user = await findUserByID(id);
+		if (username === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is used for the Karaoke Instrumentality Project'};
+		const user = await findUserByName(username);
 		if (!user) throw {code: 'USER_NOT_EXISTS'};
-		if (user.login === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is used for the Karaoke Instrumentality Project'};
-		const playlist_id = await findFavoritesPlaylist(user.login);
-		if (playlist_id) {
-			await deletePlaylist(playlist_id);
-		}
 		//Reassign karas and playlists owned by the user to the admin user
-		await db.reassignToUser(user.id,1);
-		await db.deleteUser(user.id);
-		logger.debug(`[User] Deleted user ${user.login} (id ${user.id})`);
+		await db.reassignToUser(username,'admin');
+		await db.deleteUser(username);
+		logger.debug(`[User] Deleted user ${username}`);
 		return true;
 	} catch (err) {
-		logger.error(`[User] Unable to delete user ${id} : ${err}`);
+		logger.error(`[User] Unable to delete user ${username} : ${err}`);
 		throw ({code: 'USER_DELETE_ERROR', data: err});
 	}
 }
@@ -290,7 +255,6 @@ export async function initUserSystem() {
 		login: 'admin',
 		password: randomstring.generate(8)
 	}, {
-		createFavoritePlaylist: true,
 		admin: true
 	});
 
@@ -300,7 +264,6 @@ export async function initUserSystem() {
 				login: 'adminTest',
 				password: 'ceciestuntest'
 			}, {
-				createFavoritePlaylist: true,
 				admin: true
 			});
 		}
@@ -311,20 +274,20 @@ export async function initUserSystem() {
 	createDefaultGuests();
 }
 
-export async function updateSongsLeft(user_id,playlist_id) {
+export async function updateSongsLeft(username,playlist_id) {
 	const conf = getConfig();
-	const user = await findUserByID(user_id);
+	const user = await findUserByName(username);
 	let quotaLeft;
 	if (!playlist_id) playlist_id = getState().modePlaylistID;
 	if (user.type >= 1 && +conf.EngineQuotaType > 0) {
 		switch(+conf.EngineQuotaType) {
 		default:
 		case 1:
-			const count = await getSongCountForUser(playlist_id,user_id);
+			const count = await getSongCountForUser(playlist_id,username);
 			quotaLeft = +conf.EngineSongsPerUser - count.count;
 			break;
 		case 2:
-			const time = await getSongTimeSpentForUser(playlist_id,user_id);
+			const time = await getSongTimeSpentForUser(playlist_id,username);
 			quotaLeft = +conf.EngineTimePerUser - time.timeSpent;
 		}
 	} else {
@@ -342,13 +305,13 @@ export async function updateUserQuotas(kara) {
 	//If karaokes are present in the public playlist, we're marking it free.
 	//First find which KIDs are to be freed. All those before the currently playing kara
 	// are to be set free.
-	const internalState = getState();
+	const state = getState();
 	profile('updateUserQuotas');
-	await freePLCBeforePos(kara.pos, internalState.currentPlaylistID);
+	await freePLCBeforePos(kara.pos, state.currentPlaylistID);
 	// For every KID we check if it exists and add the PLC to a list
 	const [publicPlaylist, currentPlaylist] = await Promise.all([
-		getPlaylistContentsMini(internalState.publicPlaylistID),
-		getPlaylistContentsMini(internalState.currentPlaylistID)
+		getPlaylistContentsMini(state.publicPlaylistID),
+		getPlaylistContentsMini(state.currentPlaylistID)
 	]);
 	let freeTasks = [];
 	let usersNeedingUpdate = [];
@@ -356,15 +319,15 @@ export async function updateUserQuotas(kara) {
 		publicPlaylist.some(publicSong => {
 			if (publicSong.kid === currentSong.kid && currentSong.flag_free) {
 				freeTasks.push(freePLC(publicSong.playlistcontent_id));
-				if (!usersNeedingUpdate.includes(publicSong.user_id)) usersNeedingUpdate.push(publicSong.user_id);
+				if (!usersNeedingUpdate.includes(publicSong.username)) usersNeedingUpdate.push(publicSong.username);
 				return true;
 			}
 			return false;
 		});
 	}
 	await Promise.all(freeTasks);
-	usersNeedingUpdate.forEach(user_id => {
-		updateSongsLeft(user_id,internalState.modePlaylistID);
+	usersNeedingUpdate.forEach(username => {
+		updateSongsLeft(username,state.modePlaylistID);
 	});
 	profile('updateUserQuotas');
 }

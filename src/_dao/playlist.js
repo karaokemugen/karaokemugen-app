@@ -61,7 +61,7 @@ export async function updatePlaylistLastEditTime(id) {
 export async function getPLCByDate(playlist_id,date) {
 	const res = await db().query(yesql(sql.getPLCByDate)({
 		playlist_id: playlist_id,
-		date_added: new Date(date * 1000)
+		date_added: date
 	}));
 	return res.rows;
 }
@@ -79,13 +79,17 @@ export async function getMaxPosInPlaylist(id) {
 	return res.rows[0];
 }
 
-export async function reorderPlaylist(playlist) {
+export async function replacePlaylist(playlist) {
 	let newpos = 0;
 	const karaList = playlist.map((kara) => ([
 		++newpos,
 		kara.playlistcontent_id
 	]));
-	return await transaction([{params: karaList, sql: sql.updatePLCSetPos}]);
+	return await transaction([{sql: sql.updatePLCSetPos, params: karaList}]);
+}
+
+export async function reorderPlaylist(playlist_id) {
+	return await db().query(sql.reorderPos, [playlist_id]);
 }
 
 export async function setPos(plc_id,pos) {
@@ -161,12 +165,12 @@ export async function getPLCInfoMini(id) {
 	return res.rows[0];
 }
 
-export async function getPLCByKIDAndUserID(kid,user_id,playlist_id) {
-	const res = await db().query(yesql(sql.getPLCByKIDUserID)({
+export async function getPLCByKIDAndUser(kid,username,playlist_id) {
+	const res = await db().query(yesql(sql.getPLCByKIDUser)({
 		kid: kid,
 		playlist_id: playlist_id,
 		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60)) * 1000),
-		user_id: user_id
+		username: username
 	}));
 	return res.rows;
 }
@@ -238,10 +242,10 @@ export async function countPlaylistUsers(playlist_id){
 	return await db().query(sql.countPlaylistUsers, [playlist_id]);
 }
 
-export async function getMaxPosInPlaylistForUser(playlist_id,user_id){
+export async function getMaxPosInPlaylistForUser(playlist_id,username){
 	const res = await db().query(yesql(sql.getMaxPosInPlaylistForUser)({
 		playlist_id: playlist_id,
-		user_id: user_id
+		username: username
 	}));
 	return res.rows[0];
 }

@@ -5,11 +5,12 @@ import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_utils/files';
 import { getState } from '../_utils/state';
 import {pg as yesql} from 'yesql';
+import {refreshTags} from './tag';
 
 const sql = require('./sql/kara');
 
-export async function getSongCountForUser(playlist_id,user_id) {
-	const res = await db().query(sql.getSongCountPerUser, [playlist_id, user_id]);
+export async function getSongCountForUser(playlist_id,username) {
+	const res = await db().query(sql.getSongCountPerUser, [playlist_id, username]);
 	return res.rows[0];
 }
 
@@ -34,50 +35,50 @@ export async function updateKara(kara) {
 		subfile: kara.subfile,
 		title: kara.title,
 		year: kara.year,
-		songorder: kara.order || '',
+		songorder: kara.order || null,
 		duration: kara.mediaduration,
 		gain: kara.mediagain,
 		modified_at: new Date(kara.datemodif * 1000),
-		kara_id: kara.kara_id
+		kid: kara.KID
 	});
 	await Promise.all([
 		refreshKaras(),
-		refreshYears()
+		refreshYears(),
+		refreshTags()
 	]);
 }
 
 export async function addKara(kara) {
-	const res = await db().query(sql.insertKara, {
+	await db().query(sql.insertKara, {
 		karafile: kara.karafile,
 		mediafile: kara.mediafile,
 		subfile: kara.subfile,
 		title: kara.title,
 		year: kara.year,
-		songorder: kara.order || '',
+		songorder: kara.order || null,
 		duration: kara.mediaduration,
 		gain: kara.mediagain,
 		modified_at: new Date(kara.datemodif * 1000),
-		kara_id: kara.kara_id,
 		created_at: new Date(kara.dateadded * 1000),
 		kid: kara.KID
 	});
 	await Promise.all([
 		refreshKaras(),
-		refreshYears()
+		refreshYears(),
+		refreshTags()
 	]);
-	return res.rows[0].pk_id_kara;
 }
 
-export async function getSongTimeSpentForUser(playlist_id,user_id) {
+export async function getSongTimeSpentForUser(playlist_id,username) {
 	const res = await db().query(sql.getTimeSpentPerUser,[
 		playlist_id,
-		user_id
+		username
 	]);
 	return res.rows[0];
 }
 
 export async function getKara(kara_id, username, lang, role) {
-	const res = await selectAllKaras('admin', null, lang, 'kara', kara_id, role === 'admin');
+	const res = await selectAllKaras(username, null, lang, 'kara', kara_id, role === 'admin');
 	return res[0];
 }
 
@@ -85,7 +86,7 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	let filterClauses = filter ? buildClauses(filter) : {sql: [], params: {}};
 	let typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
 	// Hide blacklisted songs if not admin
-	if (!admin) typeClauses = typeClauses + ' AND ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)';
+	if (!admin) typeClauses = typeClauses + ' AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)';
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
@@ -126,13 +127,9 @@ export async function updateFreeOrphanedSongs(expireTime) {
 	return await db().query(sql.updateFreeOrphanedSongs, [new Date(expireTime * 1000)]);
 }
 
-export async function getKaraMini(id) {
-	const res = await db().query(sql.getKaraMini, [id]);
+export async function getKaraMini(kid) {
+	const res = await db().query(sql.getKaraMini, [kid]);
 	return res.rows[0];
-}
-
-export async function getKaraByKID(kid) {
-	return await selectAllKaras('admin', null, 'eng', 'kid', kid);
 }
 
 export async function getASS(sub) {
@@ -142,34 +139,33 @@ export async function getASS(sub) {
 	throw 'Subfile not found';
 }
 
-export async function isKara(id) {
-	const res = await db().query(sql.isKara, [id]);
+export async function isKara(kid) {
+	const res = await db().query(sql.isKara, [kid]);
 	return res.rows[0];
 }
 
-export async function isKaraInPlaylist(kara_id,playlist_id) {
+export async function isKaraInPlaylist(kid,playlist_id) {
 	const res = await db().query(yesql(sql.isKaraInPlaylist)({
-		kara_id: kara_id,
+		kara_id: kid,
 		playlist_id: playlist_id
 	}));
 	return res.rows.length > 0;
 }
 
-export async function addViewcount(kara_id,kid) {
+export async function addPlayed(kid) {
 	return await db().query(yesql(sql.addViewcount)({
-		kara_id: kara_id,
 		kid: kid,
 		played_at: new Date(),
-		started_at: new Date(getState().sessionStart * 1000)
+		started_at: getState().sessionStart
 	}));
 }
 
-export async function addKaraToRequests(user_id,karaList) {
+export async function addKaraToRequests(username,karaList) {
 	const karas = karaList.map((kara) => ([
-		user_id,
-		kara.kara_id,
+		username,
+		kara.kid,
 		new Date(),
-		new Date(getState().sessionStart * 1000)
+		getState().sessionStart
 	]));
 	return await transaction([{params: karas, sql: sql.addRequested}]);
 }
@@ -183,17 +179,13 @@ export async function addKaraToPlaylist(karaList) {
 		kara.playlist_id,
 		kara.username,
 		kara.nickname,
-		kara.kara_id,
-		new Date(kara.created_at * 1000),
+		kara.kid,
+		kara.created_at,
 		kara.pos
 	]));
 	return await transaction([{params: karas, sql: sql.addKaraToPlaylist}]);
 }
 
-export async function removeKaraFromPlaylist(karaList, playlist_id) {
-	for (const i in karaList) {
-		karaList[i] = +karaList[i];
-	}
-	const karas = karaList.join(',');
-	return await db().query(sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas), [playlist_id]);
+export async function removeKaraFromPlaylist(karas, playlist_id) {
+	return await db().query(sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')), [playlist_id]);
 }

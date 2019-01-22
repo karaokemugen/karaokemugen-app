@@ -4,7 +4,7 @@ import logger from 'winston';
 import {profile} from '../_utils/logger';
 import {promisify} from 'util';
 import {displayInfo, playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem} from '../_player/player';
-import {addViewcountKara} from './kara';
+import {addPlayed} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
 import {previousSong, nextSong, getCurrentSong} from './playlist';
@@ -30,8 +30,8 @@ async function getPlayingSong() {
 				gain: kara.gain,
 				infos: kara.infos
 			});
-			setState({currentlyPlayingKara: kara.kara_id});
-			addViewcountKara(kara.kara_id,kara.kid);
+			setState({currentlyPlayingKara: kara.kid});
+			addPlayed(kara.kid);
 			updateUserQuotas(kara);
 			if (+getConfig().EngineSongPoll) startPoll();
 		} catch(err) {

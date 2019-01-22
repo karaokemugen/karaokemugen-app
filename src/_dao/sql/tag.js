@@ -39,15 +39,15 @@ VALUES(
 ) RETURNING *
 `;
 
-export const deleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_id_kara = $1';
+export const deleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_kid = $1';
 
 export const insertKaraTags = `
 INSERT INTO kara_tag(
-	fk_id_kara,
+	fk_kid,
 	fk_id_tag
 )
 VALUES(
-	:kara_id,
+	:kid,
 	:tag_id
 );
 `;

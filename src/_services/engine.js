@@ -12,7 +12,6 @@ import {createPreviews} from '../_webapp/previews';
 import {initUserSystem} from './user';
 import {initDBSystem, closeDB, getStats} from '../_dao/database';
 import {initFrontend} from '../_webapp/frontend';
-import {initFavoritesSystem} from './favorites';
 import {initOnlineSystem} from '../_webapp/online';
 import {initPlayer, quitmpv} from './player';
 import {initStats} from './stats';
@@ -62,7 +61,6 @@ export async function initEngine() {
 	inits.push(initPlaylistSystem());
 	if (!conf.isDemo && !conf.isTest) inits.push(initPlayer());
 	inits.push(initFrontend(conf.appFrontendPort));
-	inits.push(initFavoritesSystem());
 	testPlaylists();
 	if (+conf.OnlineStats) inits.push(initStats());
 	//Initialize engine

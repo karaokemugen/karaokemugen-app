@@ -16,6 +16,7 @@ import {getConfig} from '../_utils/config';
 import {resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {formatKaraList} from './kara';
+import {uuidRegexp} from './constants';
 
 export async function getBlacklist(filter, lang, from, size) {
 	try {
@@ -74,14 +75,6 @@ async function BLCgetTagName(blcList) {
 	return blcList;
 }
 
-async function BLCGetKID(blcList) {
-	for (const index in blcList) {
-		const res = await getKara(blcList[index].blcvalue);
-		if (res) blcList[index].blcuniquevalue = res.kid;
-	}
-	return blcList;
-}
-
 export async function deleteBlacklistCriteria(blc_id) {
 	profile('delBLC');
 	logger.info(`[Blacklist] Deleting criteria ${blc_id}`);
@@ -106,7 +99,10 @@ export async function addBlacklistCriteria(blctype, blcvalue) {
 	try {
 		if (+blctype < 0 && +blctype > 1004) throw `Incorrect BLC type (${blctype})`;
 		if (+blctype > 0 && +blctype < 1000) blcList = await BLCgetTagName(blcList);
-		if (+blctype === 1001) blcList = await BLCGetKID(blcList);
+		if (+blctype === 1001) {
+			const re = new RegExp(uuidRegexp);
+			if (blcList.some(blc => !re.test(blc.blcvalue))) throw `Blacklist criteria value mismatch : type ${blctype} must have UUID values`;
+		}
 		if (((+blctype >= 1001 && +blctype <= 1003) || (+blctype > 0 && +blctype < 999)) && blcvalues.some(isNaN)) throw `Blacklist criteria type mismatch : type ${blctype} must have a numeric value!`;
 		await addBLC(blcList);
 		return await generateBlacklist();

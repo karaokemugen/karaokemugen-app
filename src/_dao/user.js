@@ -2,7 +2,7 @@ import {db} from './database';
 import {pg as yesql} from 'yesql';
 const sql = require('./sql/user');
 
-export async function getUserByName(username) {
+export async function getUser(username) {
 	const res = await db().query(yesql(sql.selectUserByName)({username: username}));
 	return res.rows[0];
 }
@@ -12,13 +12,8 @@ export async function checkNicknameExists(nickname) {
 	return res.rows[0];
 }
 
-export async function deleteUser(id) {
-	return await db().query(sql.deleteUser, [id]);
-}
-
-export async function getUserByID(id) {
-	const res = await db().query(sql.selectUserByID, [id]);
-	return res.rows[0];
+export async function deleteUser(username) {
+	return await db().query(sql.deleteUser, [username]);
 }
 
 export async function listUsers() {
@@ -43,27 +38,28 @@ export async function addUser(user) {
 }
 
 export async function editUser(user) {
+	if (!user.old_login) user.old_login = user.login;
 	return await db().query(yesql(sql.editUser)({
-		id: user.id,
 		nickname: user.nickname,
 		avatar_file: user.avatar_file,
 		login: user.login,
 		bio: user.bio,
 		url: user.url,
 		email: user.email,
-		type: user.type
+		type: user.type,
+		old_login: user.old_login
 	}));
 }
 
-export async function reassignToUser(old_id,id) {
+export async function reassignToUser(oldUsername,username) {
 	const updates = [
 		db().query(yesql(sql.reassignPlaylistToUser)({
-			id: id,
-			old_id: old_id
+			username: username,
+			old_username: oldUsername
 		})),
 		db().query(yesql(sql.reassignPlaylistContentToUser)({
-			id: id,
-			old_id: old_id
+			username: username,
+			old_username: oldUsername
 		}))
 	];
 	return await Promise.all(updates);
@@ -95,16 +91,16 @@ export async function resetGuestsPassword() {
 	return await db().query(sql.resetGuestsPassword);
 }
 
-export async function updateUserLastLogin(id) {
+export async function updateUserLastLogin(username) {
 	return await db().query(yesql(sql.updateLastLogin)({
-		id: id,
+		username: username,
 		now: new Date()
 	}));
 }
 
-export async function updateUserPassword(id,password) {
+export async function updateUserPassword(username,password) {
 	return await db().query(yesql(sql.editUserPassword)({
-		id: id,
+		username: username,
 		password: password
 	}));
 }

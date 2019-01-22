@@ -7898,3 +7898,293 @@
  *   "message": null
  * }
  */
+
+ /**
+ * @api {delete} /admin/users/:userID Delete an user
+ * @apiName DeleteUser
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} userID User ID to delete
+ * @apiSuccess {String} args ID of user deleted
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of user deleted
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 3,
+ *   "code": "USER_DELETED",
+ *   "data": 3
+ * }
+ * @apiError USER_DELETE_ERROR Unable to delete a user
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+/**
+ * @api {post} /admin/playlists/:pl_id/karas Add karaokes to playlist
+ * @apiName PatchPlaylistKaras
+ * @apiVersion 2.1.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {Number[]} kara_id List of `kara_id` separated by commas (`,`). Example : `1021,2209,44,872`
+ * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
+ * @apiSuccess {String[]} args/plc_ids IDs of playlist contents copied
+ * @apiSuccess {String} args/playlist_id ID of destinaton playlist
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "playlist": 2,
+ *       "plc_ids": [
+ * 			"4946",
+ * 			"639"
+ * 		 ]
+ *   },
+ *   "code": "PL_SONG_MOVED",
+ *   "data": null
+ * }
+ * @apiError PL_ADD_SONG_ERROR Unable to add songs to the playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "Liste de lecture publique",
+ *   "code": "PL_ADD_SONG_ERROR",
+ *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
+ * }
+ */
+/**
+ * @api {delete} /admin/whitelist Delete whitelist item
+ * @apiName DeleteWhitelist
+ * @apiVersion 2.1.0
+ * @apiGroup Whitelist
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number[]} wlc_id Whitelist content IDs to delete from whitelist, separated by commas
+ * @apiSuccess {Number} args Arguments associated with message
+ * @apiSuccess {Number} code Message to display
+ * @apiSuccess {Number[]} data List of Whitelist content IDs separated by commas
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "1",
+ *   "code": "WL_SONG_DELETED",
+ *   "data": "1"
+ * }
+ * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
+ *
+ */
+
+ /**
+ * @api {get} /public/karas/random Get a random karaoke ID
+ * @apiName GetKarasRandom
+ * @apiVersion 2.1.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription This selects a random karaoke from the database. What you will do with it depends entirely on you.
+ * @apiSuccess {Number} data Random Karaoke ID
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": 4550
+ * }
+ * @apiError GET_UNLUCKY Unable to find a random karaoke
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+	/**
+ * @api {post} /public/karas/:kara_id Add karaoke to current/public playlist
+ * @apiName PostKaras
+ * @apiVersion 2.1.2
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
+ * @apiParam {Number} kara_id Karaoke ID to add to current/public playlist
+ * @apiSuccess {String} args/kara Karaoke title added
+ * @apiSuccess {Number} args/kara_id Karaoke ID added.
+ * @apiSuccess {String} args/playlist Name of playlist the song was added to
+ * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data See `args` above.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "kara": "Dragon Screamer",
+ *       "kara_id": "1029",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   },
+ *   "code": "PLAYLIST_MODE_SONG_ADDED",
+ *   "data": {
+ *       "kara": "Dragon Screamer",
+ *       "kara_id": "1029",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   }
+ * }
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED All songs are already present in playlist
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED Song is blacklisted and cannot be added
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR General error while adding song
+* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+* @apiErrorExample Error-Response:
+* HTTP/1.1 500 Internal Server Error
+* {
+*   "args": {
+*       "kara": "1033",
+*       "playlist": 1,
+*       "user": "Axel"
+*   },
+*   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
+*   "message": "User quota reached"
+* }
+* @apiErrorExample Error-Response:
+* HTTP/1.1 403 Forbidden
+*/
+/**
+ * @api {post} /public/karas/:kara_id/lyrics Get song lyrics
+ * @apiName GetKarasLyrics
+ * @apiVersion 2.1.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} kara_id Karaoke ID to get lyrics from
+ * @apiSuccess {String[]} data Array of strings making the song's lyrics
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": "Lyrics for this song are not available"
+ * }
+ * @apiError LYRICS_VIEW_ERROR Unable to fetch lyrics data
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ * {
+ *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
+ * }
+ */
+
+/**
+ * @api {get} /public/favorites View own favorites
+ * @apiName GetFavorites
+ * @apiVersion 2.3.1
+ * @apiGroup Favorites
+ * @apiPermission own
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `playlistcontents` objects
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *            <See admin/playlists/[id]/karas/[plc_id] object>
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError FAVORITES_VIEW_ERROR Unable to fetch list of karaokes in favorites
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+/**
+ * @api {post} /public/favorites Add karaoke to your favorites
+ * @apiName PostFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission own
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} kara_id kara ID to add
+ * @apiSuccess {Number} args/kara_id ID of kara added
+ * @apiSuccess {Number} args/kara Name of kara added
+ * @apiSuccess {Number} args/playlist_id ID of destinaton playlist
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ * 		 "kara": "Les Nuls - MV - Vous me subirez",
+ *       "playlist_id": 1,
+ *       "kara_id": 4946
+ *   },
+ *   "code": "FAVORITES_ADDED",
+ *   "data": null
+ * }
+ * @apiError FAVORITES_ADD_SONG_ERROR Unable to add songs to the playlist
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_ADD_SONG_ERROR",
+ *   "message": "Karaoke unknown"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+	/**
+ * @api {delete} /public/favorites/ Delete karaoke from your favorites
+ * @apiName DeleteFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} kara_id Kara ID to delete
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_DELETED",
+ *   "data": null
+ * }
+ * @apiError FAVORITES_DELETE_ERROR Unable to delete the favorited song
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_DELETE_ERROR",
+ *   "message": "Kara ID unknown"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */

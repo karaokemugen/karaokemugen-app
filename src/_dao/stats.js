@@ -1,9 +1,9 @@
 import {db} from './database';
 const sql = require('./sql/stats');
 
-export async function exportViewcounts() {
-	const res = await db().query(sql.exportViewcounts);
-	return res.rows[0];
+export async function exportPlayed() {
+	const res = await db().query(sql.exportPlayed);
+	return res.rows;
 }
 
 export async function exportRequests() {

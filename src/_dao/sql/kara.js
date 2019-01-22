@@ -3,40 +3,32 @@
 export const addKaraToPlaylist = `
 INSERT INTO playlist_content(
 	fk_id_playlist,
-	fk_id_kara,
-	kid,
+	fk_kid,
 	created_at,
-	fk_id_user,
+	fk_login,
 	pos,
 	flag_playing,
 	flag_free,
 	nickname
-)
-	SELECT
-		$1,
-		$4,
-		k.kid,
-		$5,
-		u.pk_id_user,
-		$6,
-		FALSE,
-		FALSE,
-		$3
-	FROM kara AS k,
-	    users AS u
-	WHERE pk_id_kara = $4
-		AND u.login = $2;
+) VALUES(
+	$1,
+	$4,
+	$5,
+	$2,
+	$6,
+	FALSE,
+	FALSE,
+	$3
+);
 `;
 
 export const addViewcount = `
 INSERT INTO played(
-	fk_id_kara,
-	kid,
+	fk_kid,
 	played_at,
 	session_started_at
 )
 VALUES(
-	:kara_id,
 	:kid,
 	:played_at,
 	:started_at
@@ -45,33 +37,31 @@ VALUES(
 
 export const addRequested = `
 INSERT INTO requested(
-	fk_id_user,
-	fk_id_kara,
-	kid,
+	fk_login,
+	fk_kid,
 	requested_at,
 	session_started_at
 )
 VALUES(
 	$1,
 	$2,
-	(SELECT kid FROM all_karas WHERE kara_id = $2),
 	$3,
 	$4
 )
 `;
 
-export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, limitClause, offsetClause) => `SELECT ak.kara_id AS kara_id,
+export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, limitClause, offsetClause) => `SELECT
   ak.kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
   COALESCE(
-	  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),
-	  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
+	  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_sid = ks.fk_sid AND ks.fk_kid = kid AND sl.lang = ${lang.main}),
+	  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_sid = ks.fk_sid AND ks.fk_kid = kid AND sl.lang = ${lang.fallback}),
 	  ak.serie) AS serie,
   ak.serie AS serie_orig,
   ak.serie_altname AS serie_altname,
   ak.serie_i18n AS serie_i18n,
-  ak.serie_id AS serie_id,
+  ak.sid AS sid,
   ak.seriefiles AS seriefiles,
   ak.subfile AS subfile,
   ak.singers AS singers,
@@ -89,31 +79,29 @@ export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, limi
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
   ak.mediasize AS mediasize,
-  COUNT(p.pk_id_played) AS played,
-  COUNT(rq.pk_id_requested) AS requested,
+  COUNT(p.*) AS played,
+  COUNT(rq.*) AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
 		THEN TRUE
 		ELSE FALSE
   END) AS flag_dejavu,
   MAX(p.played_at) AS lastplayed_at,
-  (CASE WHEN cur_user_fav.fk_id_kara IS NULL
+  (CASE WHEN f.fk_kid IS NULL
 		THEN FALSE
 		ELSE TRUE
   END) as flag_favorites
 FROM all_karas AS ak
-LEFT OUTER JOIN kara_serie AS ks_main ON ks_main.fk_id_kara = ak.kara_id
-LEFT OUTER JOIN serie_lang AS sl_main ON sl_main.fk_id_serie = ks_main.fk_id_serie AND sl_main.lang = ${lang.main}
-LEFT OUTER JOIN kara_serie AS ks_fall ON ks_fall.fk_id_kara = ak.kara_id
-LEFT OUTER JOIN serie_lang AS sl_fall ON sl_fall.fk_id_serie = ks_fall.fk_id_serie AND sl_fall.lang = ${lang.fallback}
-LEFT OUTER JOIN played AS p ON p.fk_id_kara = ak.kara_id
-LEFT OUTER JOIN requested AS rq ON rq.fk_id_kara = ak.kara_id
-LEFT OUTER JOIN users AS cur_user ON cur_user.login = :username
-LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl_fav.fk_id_user AND cur_user_pl_fav.flag_favorites = TRUE
-LEFT OUTER JOIN playlist_content cur_user_fav ON cur_user_fav.fk_id_playlist = cur_user_pl_fav.fk_id_user AND cur_user_fav.fk_id_kara = ak.kara_id
+LEFT OUTER JOIN kara_serie AS ks_main ON ks_main.fk_kid = ak.kid
+LEFT OUTER JOIN serie_lang AS sl_main ON sl_main.fk_sid = ks_main.fk_sid AND sl_main.lang = ${lang.main}
+LEFT OUTER JOIN kara_serie AS ks_fall ON ks_fall.fk_sid = ak.kid
+LEFT OUTER JOIN serie_lang AS sl_fall ON sl_fall.fk_sid = ks_fall.fk_sid AND sl_fall.lang = ${lang.fallback}
+LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
+LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
+LEFT OUTER JOIN favorites AS f ON f.fk_login = :username
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ak.kara_id, ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname, ak.serie_i18n, ak.serie_id, ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, cur_user_fav.fk_id_kara, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable
+GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname, ak.serie_i18n, ak.sid, ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, cur_user_fav.fk_id_kara, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable
 ORDER BY ${orderClauses} ak.languages_sortable, ak.serie IS NULL, lower(unaccent(serie)), ak.songtypes_sortable DESC, ak.songorder, lower(unaccent(singers_sortable)), lower(unaccent(ak.title))
 ${limitClause}
 ${offsetClause}
@@ -124,20 +112,20 @@ SELECT ak.title AS title,
 	ak.subfile AS subfile,
 	ak.duration AS duration
 FROM all_karas AS ak
-WHERE ak.kara_id = $1
+WHERE ak.kid = $1
 `;
 
 export const isKara = `
-SELECT pk_id_kara
+SELECT pk_kid
 FROM kara
-WHERE pk_id_kara = $1;
+WHERE pk_kid = $1;
 `;
 
 export const isKaraInPlaylist = `
-SELECT fk_id_kara
+SELECT fk_kid
 FROM playlist_content
 WHERE fk_id_playlist = :playlist_id
-AND fk_id_kara = :kara_id;
+AND fk_kid = :kid;
 `;
 
 export const removeKaraFromPlaylist = `
@@ -149,20 +137,18 @@ WHERE pk_id_plcontent IN ($playlistcontent_id)
 export const getSongCountPerUser = `
 SELECT COUNT(1) AS count
 FROM playlist_content AS pc
-WHERE pc.fk_id_user = $2
+WHERE pc.fk_login = $2
 	AND pc.fk_id_playlist = $1
 	AND pc.flag_free = FALSE
-	AND pc.fk_id_kara != 0
 `;
 
 export const getTimeSpentPerUser = `
-SELECT SUM(ak.duration) AS timeSpent
-FROM all_karas AS ak
-INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
-WHERE pc.fk_id_user = $2
+SELECT SUM(k.duration) AS timeSpent
+FROM karas AS k
+INNER JOIN playlist_content AS pc ON pc.fk_kid = k.pk_kid
+WHERE pc.fk_login = $2
 	AND pc.fk_id_playlist = $1
 	AND pc.flag_free = FALSE
-	AND pc.fk_id_kara != 0
 `;
 
 
@@ -185,7 +171,7 @@ UPDATE kara SET
 	gain = :gain,
 	modified_at = :modified_at,
 	karafile = :karafile
-WHERE pk_id_kara = :kara_id
+WHERE pk_kid = :kid
 `;
 
 export const insertKara = `
@@ -200,7 +186,7 @@ INSERT INTO kara(
 	modified_at,
 	created_at,
 	karafile,
-	kid
+	pk_kid
 )
 VALUES(
 	:title,
@@ -214,7 +200,7 @@ VALUES(
 	:created_at,
 	:karafile,
 	:kid
-) RETURNING *;
+);
 `;
 
 export const getYears = 'SELECT DISTINCT year FROM all_karas ORDER BY year';

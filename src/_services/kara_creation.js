@@ -4,30 +4,26 @@
 
 import logger from 'winston';
 import {basename, extname, resolve} from 'path';
-import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias, getConfig} from '../_utils/config';
-import {sanitizeFile, asyncReadFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt, asyncWriteFile} from '../_utils/files';
+import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias,} from '../_utils/config';
+import {sanitizeFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {check} from '../_utils/validators';
-import {getOrAddSerieID} from '../_services/series';
+import {addSerie} from '../_services/series';
 import timestamp from 'unix-timestamp';
 import { compareKarasChecksum } from './generation';
-import { getAllKaras } from '../_dao/kara';
-import ini from 'ini';
 
-export async function editKara(kara_id,kara,opts = {compareChecksum: true}) {
+export async function editKara(kara,opts = {compareChecksum: true}) {
 	let newKara;
-	let kara_orig = {...kara};
 	try {
 		const mediaFile = resolve(resolvedPathMedias()[0],kara.mediafile);
 		let subFile;
 		kara.subfile && kara.subfile !== 'dummy.ass' ? subFile = resolve(resolvedPathSubs()[0],kara.subfile) : subFile = kara.subfile;
 		const karaFile = resolve(resolvedPathKaras()[0],kara.karafile);
 		// Removing useless data
-		delete kara.kara_id;
 		delete kara.karafile;
 		// Copying already present files in temp directory to be worked on with by generateKara
 		if (!kara.mediafile_orig) {
@@ -61,7 +57,6 @@ export async function editKara(kara_id,kara,opts = {compareChecksum: true}) {
 		throw err;
 	}
 	// Update in database
-	newKara.data.kara_id = kara_orig.kara_id;
 	newKara.data.karafile = basename(newKara.file);
 	try {
 		await editKaraInDB(newKara.data);
@@ -245,7 +240,7 @@ async function processSeries(kara) {
 			i18n: {}
 		};
 		serieObj.i18n[kara.lang[0]] = serie;
-		await getOrAddSerieID(serieObj);
+		await addSerie(serieObj);
 	}
 }
 
@@ -294,60 +289,6 @@ async function findSubFile(mediaPath, karaData, subFile) {
 	} else {
 		return 'dummy.ass';
 	}
-}
-
-export async function renameAllKaras() {
-	// Remove this code in 2.6. We'll consider everyone has moved on from the old
-	// naming convention then.
-	const karas = await getAllKaras('admin');
-	const conf = getConfig();
-	try {
-		for (const kara of karas) {
-			logger.info(`[KaraRename] Processing ${kara.karafile}`);
-			let k = {};
-			k.lang = kara.language.split(',');
-			k.lang.forEach((e,i) => k.lang[i] = e.trim());
-			kara.misc === 'NO_TAG' || !kara.misc ? k.tags = [] : k.tags = kara.misc.split(',');
-			k.tags.forEach((e,i) => k.tags[i] = e.trim());
-			if (kara.serie_orig) {
-				k.series = kara.serie_orig.split(',');
-				k.series.forEach((e,i) => k.series[i] = e.trim());
-			} else {
-				k.series = [];
-			}
-			k.order = kara.songorder;
-			k.type = kara.songtype.replace(/TYPE_/,'');
-			kara.singer === 'NO_TAG' || !kara.singer ? k.singer = [] : k.singer = kara.singer.split(',');
-			k.singer.forEach((e,i) => k.singer[i] = e.trim());
-			k.title = kara.title;
-			if (`${defineFilename(k)}.kara` !== kara.karafile) {
-				logger.info(`[KaraRename] Renaming to ${defineFilename(k)}`);
-				let karaText = await asyncReadFile(resolve(conf.appPath, conf.PathKaras,kara.karafile),'utf-8');
-				karaText = karaText.replace(/\r/g, '');
-				let karaData = ini.parse(karaText);
-				karaData.mediafile = `${defineFilename(k)}${extname(karaData.mediafile)}`;
-				if (karaData.subfile !== 'dummy.ass') {
-					karaData.subfile = `${defineFilename(k)}.ass`;
-				}
-				try {
-					asyncMove(
-						resolve(conf.appPath,conf.PathMedias,kara.mediafile),
-						resolve(conf.appPath,conf.PathMedias,`${defineFilename(k)}${extname(kara.mediafile)}`)
-					);
-				} catch(err) {
-					logger.warn(`[KaraRename] Unable to rename video : ${err}`);
-				}
-
-				asyncWriteFile(resolve(conf.appPath,conf.PathKaras,kara.karafile),ini.stringify(karaData),'utf-8');
-
-			} else {
-				logger.info('[KaraRename] Kara already named correctly, skipping.');
-			}
-		}
-	} catch(err) {
-		logger.error(`[KaraRename] Process aborted : ${err}`);
-	}
-	logger.info('[KaraRename] Renaming complete. Please update your karaoke base from Shelter now');
 }
 
 async function generateAndMoveFiles(mediaPath, subPath, karaData) {

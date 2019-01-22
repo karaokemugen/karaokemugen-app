@@ -3,22 +3,22 @@
 export const insertUpvote = `
 INSERT INTO upvote(
 	fk_id_plcontent,
-	fk_id_user
+	fk_login
 )
 VALUES(
 	:plc_id,
-	:user_id
+	:username
 );
 `;
 
 export const deleteUpvote = `
 DELETE FROM upvote
 WHERE fk_id_plcontent = :plc_id
-	AND fk_id_user = :user_id
+	AND fk_login = :username
 `;
 
 export const selectUpvoteByPLC = `
-SELECT fk_id_user AS user_id
+SELECT fk_login AS username
 FROM upvote
 WHERE fk_id_plcontent = $1;
 `;

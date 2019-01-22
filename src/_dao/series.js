@@ -12,6 +12,7 @@ export function buildClausesSeries(words) {
 	let sql = [];
 	for (const i in words.split(' ').filter(s => !('' === s))) {
 		sql.push(`lower(unaccent(as.search)) LIKE :word${i}`);
+		sql.push(`lower(unaccent(as.search_aliases)) LIKE :word${i}`);
 	}
 	return {
 		sql: sql,
@@ -32,71 +33,60 @@ export async function selectAllSeries(filter, lang, from, size) {
 	const series = await db().query(q);
 	for (const i in series.rows) {
 		delete series.rows[i].search;
+		delete series.rows[i].search_aliases;
 	}
 	return series.rows;
-}
-
-export async function selectSerieByName(name) {
-	return await db().query(yesql(sql.getSerieByName)({$name: name}));
 }
 
 export async function insertSerie(serieObj) {
 	let aliases;
 	Array.isArray(serieObj.aliases) ? aliases = serieObj.aliases.join(',') : aliases = null;
-	const res = await db().query(yesql(sql.insertSerie)({
+	await db().query(yesql(sql.insertSerie)({
 		name: serieObj.name,
 		aliases: aliases,
 		sid: serieObj.sid,
 		seriefile: serieObj.seriefile
 	}));
-	await refreshSeries();
-	return res.rows[0].pk_id_serie;
 }
 
-export async function insertSeriei18n(serie_id, serieObj) {
+export async function insertSeriei18n(serieObj) {
 	for (const lang of Object.keys(serieObj.i18n)) {
 		await db().query(yesql(sql.insertSeriei18n)({
-			id_serie: serie_id,
+			sid: serieObj.sid,
 			lang: lang,
 			name: serieObj.i18n[lang]
 		}));
 	}
-	await refreshSeries();
 }
 
-export async function updateSerie(serie_id, serie) {
+export async function updateSerie(serie) {
 	let aliases;
-	Array.isArray(serie.aliases) ? aliases = serie.aliases.join(',') : aliases = null;
 	await db().query(yesql(sql.updateSerie)({
-		serie_id: serie_id,
+		sid: serie.sid,
 		name: serie.name,
 		aliases: aliases,
 		seriefile: serie.seriefile
 	}));
-	await db().query(sql.deleteSeriesi18n, [serie_id]);
-	await refreshSeries();
-	return await insertSeriei18n(serie_id, serie);
+	await db().query(sql.deleteSeriesi18n, [serie.sid]);
+	await insertSeriei18n(serie);
 }
 
-export async function updateKaraSeries(kara_id, series) {
-	await db().query(sql.deleteSeriesByKara, [kara_id]);
-	for (const serie of series) {
+export async function updateKaraSeries(kid, sids) {
+	await db().query(sql.deleteSeriesByKara, [kid]);
+	for (const sid of sids) {
 		await db().query(yesql(sql.insertKaraSeries)({
-			kara_id: kara_id,
-			serie_id: serie
+			kid: kid,
+			sid: sid
 		}));
 	}
 }
 
-export async function selectSerie(serie_id, lang) {
+export async function selectSerie(sid, lang) {
 	const query = sql.getSerieByID(langSelector(lang));
-	const series = await db().query(query, [serie_id]);
+	const series = await db().query(query, [sid]);
 	return series.rows[0];
 }
 
-export async function removeSerie(serie_id) {
-	return await Promise.all([
-		db().query(sql.deleteSeries, [serie_id]),
-		db().query(sql.deleteSeriesi18n, [serie_id])
-	]);
+export async function removeSerie(sid) {
+	await db().query(sql.deleteSeries, [sid]);
 }

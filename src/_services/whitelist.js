@@ -5,9 +5,10 @@ import {generateBlacklist} from './blacklist';
 import {profile} from '../_utils/logger';
 import logger from 'winston';
 
-export async function addKaraToWhitelist(kara_id, reason, token, lang) {
-	let karas = [kara_id];
-	if (typeof kara_id === 'string') karas = kara_id.split(',');
+export async function addKaraToWhitelist(kid, reason, token, lang) {
+	let karas = [kid];
+	if (Array.isArray(kid)) karas = kid;
+	if (typeof kid === 'string') karas = kid.split(',');
 	const kara = await getKara(karas[0], token, lang);
 	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara[0].title}...`);
 	try {
@@ -41,12 +42,13 @@ export async function getWhitelistContents(filter, lang, from, size) {
 	}
 }
 
-export async function deleteKaraFromWhitelist(wlcs) {
-	let karas = [wlcs];
-	if (typeof wlcs === 'string') karas = wlcs.split(',');
+export async function deleteKaraFromWhitelist(kid) {
+	let karas = [kid];
+	if (Array.isArray(kid)) karas = kid;
+	if (typeof wlcs === 'string') karas = kid.split(',');
 	try {
 		profile('deleteWLC');
-		logger.info(`[Whitelist] Deleting karaokes from whitelist : ${wlcs}`);
+		logger.info(`[Whitelist] Deleting karaokes from whitelist : ${kid}`);
 		await removeKaraFromWhitelist(karas);
 		return await generateBlacklist();
 	} catch(err) {

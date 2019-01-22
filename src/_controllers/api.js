@@ -23,7 +23,7 @@ import {getTags} from '../_services/tag';
 import {getYears, getRandomKara, getKaraLyrics, getKaras, getKara} from '../_services/kara';
 import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelistContents} from '../_services/whitelist';
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
-import {createAutoMix, getFavorites, addToFavorites, deleteFavorite, exportFavorites, importFavorites} from '../_services/favorites';
+import {createAutoMix, getFavorites, emptyFavorites, addToFavorites, deleteFavorites, exportFavorites, importFavorites} from '../_services/favorites';
 import {vote} from '../_services/upvote';
 import {createUser, findUserByName, deleteUser, editUser, listUsers} from '../_services/user';
 import {getPoll, addPollVote} from '../_services/poll';
@@ -389,7 +389,185 @@ export function APIControllerAdmin(router) {
 				res.status(500).json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/admin/users')
+	router.route('/admin/favorites/:username/empty')
+	/**
+ * @api {put} /admin/favorites/:username/empty Empty favorites (as admin)
+ * @apiName PutEmptyFavoritesAdmin
+ * @apiVersion 2.5.0
+ * @apiGroup Favorites
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "FAV_EMPTIED"
+ * }
+ * @apiError FAV_EMPTY_ERROR Unable to empty favorites
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				await emptyFavorites(req.params.username);
+				emitWS('favoritesUpdated', req.params.username);
+				res.json(OKMessage(null,'FAV_EMPTIED'));
+			} catch(err) {
+				logger.error(err);
+				res.status(500).json(errMessage('FAV_EMPTY_ERROR',err));
+			}
+		});
+	router.route('/admin/favorites/:username')
+	/**
+ * @api {get} /admin/favorites Get favorites of any user (as admin)
+ * @apiName GetFavoritesAdmin
+ * @apiVersion 2.5.0
+ * @apiGroup Favorites
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ *
+ * @apiParam {String} username Username favorites
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Object[]} data/content List of karaoke objects
+ * @apiSuccess {Number} data/infos/count Number of items in favorites no matter which range was requested
+ * @apiSuccess {Number} data/infos/from Items listed are from this position
+ * @apiSuccess {Number} data/infos/size How many items listed.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ * 				<see Kara object>,
+ *           }
+ *       ],
+ *       "infos": {
+ *           "count": 1,
+ *           "from": 0,
+ *           "to": 999999
+ *       }
+ *   }
+ * }
+ * @apiError FAV_VIEW_ERROR Favorites could not be viewed
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "FAV_VIEW_ERROR"
+ * }
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				const karas = await getFavorites(req.params.username,req.body.filter,req.lang,+req.body.from || 0,req.body.size || 99999999);
+				res.json(OKMessage(karas));
+			} catch(err) {
+				logger.error(err);
+				res.status(500).json(errMessage('WL_VIEW_ERROR',err));
+			}
+		})
+	/**
+* @api {post} /admin/favorites/:username Add song to a user's favorites (as admin)
+* @apiName PostFavoritesAdmin
+* @apiVersion 2.5.0
+* @apiGroup Favorites
+* @apiPermission admin
+* @apiHeader authorization Auth token received from logging in
+* @apiParam {String} username Username to add favorites to
+* @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
+* @apiParam {String} [reason] Reason the song was added
+* @apiSuccess {Number} args Arguments associated with message
+* @apiSuccess {Number} code Message to display
+* @apiSuccess {Number[]} data/kara_id List of karaoke IDs separated by commas
+*
+* @apiSuccessExample Success-Response:
+* HTTP/1.1 201 Created
+* {
+*   "args": "2",
+*   "code": "FAV_SONG_ADDED",
+*   "data": [
+*       "kid"
+*   ]
+* }
+* @apiError FAV_ADD_SONG_ERROR Karaoke couldn't be added to favorites
+*
+* @apiErrorExample Error-Response:
+* HTTP/1.1 500 Internal Server Error
+* {
+*   "args": [
+*       "2"
+*   ],
+*   "code": "FAV_ADD_SONG_ERROR",
+*   "message": null
+* }
+*/
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			const validationErrors = check(req.body, {
+				kid: {uuidArrayValidator: true}
+			});
+			if (!validationErrors) {
+				try {
+					await addToFavorites(req.params.username, req.body.kid);
+					emitWS('favoritesUpdated', req.params.username);
+					res.status(201).json(OKMessage(req.body,'FAV_SONG_ADDED',req.body.kid));
+				} catch(err) {
+					res.status(500).json(errMessage('FAV_ADD_SONG_ERROR',err.message,err.data));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+		})
+	/**
+* @api {delete} /admin/favorites/:username Delete favorite items (as admin)
+* @apiName DeleteFavoritesAdmin
+* @apiVersion 2.5.0
+* @apiGroup Favorites
+* @apiPermission admin
+* @apiHeader authorization Auth token received from logging in
+* @apiParam {uuid[]} kid Karaoke IDs to delete from favorites, separated by commas
+* @apiSuccess {Number} args Arguments associated with message
+* @apiSuccess {Number} code Message to display
+* @apiSuccess {uuid[]} data List of favorites KIDs separated by commas
+*
+* @apiSuccessExample Success-Response:
+* HTTP/1.1 200 OK
+* {
+*   "args": "1",
+*   "code": "FAV_SONG_DELETED",
+*   "data": "uuid"
+* }
+* @apiError FAV_DELETE_SONG_ERROR Favorites item could not be deleted.
+*
+*/
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		//Delete kara from whitelist
+		// Deletion is through whitelist ID.
+			const validationErrors = check(req.body, {
+				kid: {uuidArrayValidator: true}
+			});
+			if (!validationErrors) {
+				try {
+					await deleteFavorites(req.params.username, req.body.kid);
+					emitWS('favoritesUpdated', req.params.username);
+					res.json(OKMessage(req.body.kid,'FAV_SONG_DELETED',req.body.kid));
+				} catch(err) {
+					res.status(500).json(errMessage('WL_DELETE_SONG_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+		});
+
+ 	router.route('/admin/users')
 	/**
  * @api {post} /admin/users Create new user (as admin)
  * @apiName PostUserAdmin
@@ -512,7 +690,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {delete} /admin/users/:username Delete an user
  * @apiName DeleteUser
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Users
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -537,7 +715,7 @@ export function APIControllerAdmin(router) {
 			try {
 				await deleteUser(req.params.username);
 				emitWS('usersUpdated');
-				res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.username));
+				res.json(OKMessage(req.params.username,'USER_DELETED',req.params.username));
 			} catch(err) {
 				res.status(500).json(errMessage('USER_DELETE_ERROR',err.message,err.data));
 			}
@@ -765,12 +943,12 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {post} /admin/playlists/:pl_id/karas Add karaokes to playlist
  * @apiName PatchPlaylistKaras
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {Number[]} kara_id List of `kara_id` separated by commas (`,`). Example : `1021,2209,44,872`
+ * @apiParam {uuid[]} kid List of `kid` separated by commas (`,`).
  * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
  * @apiSuccess {String[]} args/plc_ids IDs of playlist contents copied
  * @apiSuccess {String} args/playlist_id ID of destinaton playlist
@@ -802,12 +980,12 @@ export function APIControllerAdmin(router) {
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//add a kara to a playlist
 			const validationErrors = check(req.body, {
-				kara_id: {presence: true, numbersArrayValidator: true},
+				kid: {presence: true, uuidArrayValidator: true},
 				pos: {integerValidator: true}
 			});
 			if (!validationErrors) {
 				try {
-					const result = await addKaraToPlaylist(req.body.kara_id, req.authToken.username, req.params.pl_id, +req.body.pos);
+					const result = await addKaraToPlaylist(req.body.kid, req.authToken.username, req.params.pl_id, +req.body.pos);
 					emitWS('playlistInfoUpdated',req.params.pl_id);
 					emitWS('playlistContentsUpdated',req.params.pl_id);
 					res.statusCode = 201;
@@ -1311,7 +1489,6 @@ export function APIControllerAdmin(router) {
  *           {
  * 				<see Kara object>,
  * 				 "reason": "No reason",
- *               "whitelistcontent_id": 1,
  * 				 "whitelisted_at": "2019-01-01T01:01:01.000Z"
  *           }
  *       ],
@@ -1346,11 +1523,11 @@ export function APIControllerAdmin(router) {
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
+ * @apiParam {uuid[]} kid Karaoke song IDs, separated by commas
  * @apiParam {String} [reason] Reason the song was added
  * @apiSuccess {Number} args Arguments associated with message
  * @apiSuccess {Number} code Message to display
- * @apiSuccess {Number[]} data/kara_id List of karaoke IDs separated by commas
+ * @apiSuccess {uuid[]} data/kara_id List of karaoke IDs separated by commas
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 201 Created
@@ -1375,11 +1552,11 @@ export function APIControllerAdmin(router) {
  */
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			const validationErrors = check(req.body, {
-				kara_id: {numbersArrayValidator: true}
+				kid: {uuidArrayValidator: true}
 			});
 			if (!validationErrors) {
 				try {
-					await addKaraToWhitelist(req.body.kara_id,req.body.reason, req.authToken, req.lang);
+					await addKaraToWhitelist(req.body.kid,req.body.reason, req.authToken, req.lang);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.status(201).json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));
@@ -1396,11 +1573,11 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {delete} /admin/whitelist Delete whitelist item
  * @apiName DeleteWhitelist
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number[]} wlc_id Whitelist content IDs to delete from whitelist, separated by commas
+ * @apiParam {uuid[]} kid Kara IDs to delete from whitelist, separated by commas
  * @apiSuccess {Number} args Arguments associated with message
  * @apiSuccess {Number} code Message to display
  * @apiSuccess {Number[]} data List of Whitelist content IDs separated by commas
@@ -1419,11 +1596,11 @@ export function APIControllerAdmin(router) {
 			//Delete kara from whitelist
 			// Deletion is through whitelist ID.
 			const validationErrors = check(req.body, {
-				wlc_id: {numbersArrayValidator: true}
+				kid: {uuidArrayValidator: true}
 			});
 			if (!validationErrors) {
 				try {
-					await deleteKaraFromWhitelist(req.body.wlc_id);
+					await deleteKaraFromWhitelist(req.body.kid);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));
@@ -1769,7 +1946,7 @@ export function APIControllerAdmin(router) {
  *   "data": {
  *       "Header": {
  *           "description": "Karaoke Mugen Playlist File",
- *           "version": 2
+ *           "version": 4
  *       },
  *       "PlaylistContents": [
  *           {
@@ -2426,15 +2603,15 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
- * @apiVersion 2.3.1
+ * @apiVersion 2.5.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * @apiParam {String} [searchType] Can be `search`, `kid`, `kara`, `requested`, 'history', `recent` or `played`
- * @apiParam {String} [searchValue] Value to search for. For `kara` it's an ID. For `kid` it's a UUID, for `search` it's a string comprised of criterias separated by `!`. Criterias are `s:` for series, `y:` for year et `t:` for tag. Example, all songs with tags 53 and 1022 and year 1990 is `t:53,1022!y:1990`
+ * @apiParam {String} [searchType] Can be `search`, `kid`, `requested`, 'history', `recent` or `played`
+ * @apiParam {String} [searchValue] Value to search for. For `kid` it's a UUID, for `search` it's a string comprised of criterias separated by `!`. Criterias are `s:` for series, `y:` for year et `t:` for tag. Example, all songs with tags 53 and 1022 and year 1990 is `t:53,1022!y:1990`
  *
  * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
@@ -2447,48 +2624,7 @@ export function APIControllerPublic(router) {
  *   "data": {
  *       "content": [
  *           {
- *               "NORM_author": null,
- *               "NORM_creator": null,
- * 				 "NORM_groups": null,
- *               "NORM_serie": "Dynasty Warriors 3",
- *               "NORM_serie_altname": "DW3/DW 3",
- *               "NORM_serie_orig": "Dynasty Warriors 3",
- *               "NORM_singer": null,
- *               "NORM_songwriter": null,
- *               "NORM_title": "Circuit",
- *               "author": "NO_TAG",
- *               "created_at": 1508423806,
- *               "modified_at": 1508423806,
- *               "creator": "NO_TAG",
- *               "duration": 0,
- * 	             "flag_dejavu": 0,
- * 				 "flag_favorites": 1,
- *               "gain": 0,
- * 				 "groups": null,
- *               "kara_id": 176,
- *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
- *               "language": "chi",
- *               "language_i18n": "Chinois",
- * 				 "lastplayed_at": null,
- *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
- *               "misc": "TAG_VIDEOGAME",
- *               "misc_i18n": "Jeu vidéo",
- * 				 "requested": 20
- *               "serie": "Dynasty Warriors 3",
- * 				 "serie_i18n": {
- * 								"fre":"Guerriers de la Dynastie"
- * 								}
- *               "serie_altname": "DW3/DW 3",
- *               "serie_orig": "Dynasty Warriors 3",
- *               "singer": "NO_TAG",
- *               "songorder": 0,
- *               "songtype": "TYPE_ED",
- *               "songtype_i18n": "Ending",
- *               "songtype_i18n_short": "ED",
- *               "songwriter": "NO_TAG",
- *               "title": "Circuit",
- *               "viewcount": 0,
- *               "year": ""
+ *               <See public/karas/:id object>
  *           },
  *           ...
  *       ],
@@ -2509,13 +2645,8 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
-			let size = req.query.size || 999999;
-			size = parseInt(size, 10);
-			let from = req.query.from || 0;
-			from = parseInt(from, 10);
-			if (from < 0) from = 0;
 			try {
-				const karas = await getKaras(req.query.filter,req.lang,from,size,req.query.searchType, req.query.searchValue, req.authToken);
+				const karas = await getKaras(req.query.filter,req.lang,+req.query.from || 0, +req.query.size || 9999999,req.query.searchType, req.query.searchValue, req.authToken);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -2527,16 +2658,16 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/karas/random Get a random karaoke ID
  * @apiName GetKarasRandom
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  * @apiDescription This selects a random karaoke from the database. What you will do with it depends entirely on you.
- * @apiSuccess {Number} data Random Karaoke ID
+ * @apiSuccess {Number} data Random KID (uuid)
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "data": 4550
+ *   "data": "uuid"
  * }
  * @apiError GET_UNLUCKY Unable to find a random karaoke
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
@@ -2548,12 +2679,12 @@ export function APIControllerPublic(router) {
 
 		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara_id = await getRandomKara(req.authToken, req.query.filter);
-				if (!kara_id) {
+				const kid = await getRandomKara(req.authToken, req.query.filter);
+				if (!kid) {
 					res.statusCode = 500;
 					res.json(errMessage('GET_UNLUCKY'));
 				} else {
-					res.json(OKMessage(kara_id));
+					res.json(OKMessage(kid));
 				}
 
 			} catch(err) {
@@ -2562,15 +2693,15 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('GET_LUCKY_ERROR',err));
 			}
 		});
-	router.route('/public/karas/:kara_id([0-9]+)')
+	router.route('/public/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
 	/**
- * @api {get} /public/karas/:kara_id Get song info from database
+ * @api {get} /public/karas/:kid Get song info from database
  * @apiName GetKaraInfo
  * @apiVersion 2.5.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
+ * @apiParam {uuid} kid Karaoke ID you want to fetch information from
  * @apiSuccess {Object[]} data/authors Karaoke authors' names
  * @apiSuccess {Number} data/created_at In `Date()` format
  * @apiSuccess {Object[]} data/creators Show's creators names
@@ -2578,8 +2709,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
  * @apiSuccess {Number} data/flag_favorites `true` if the song is in the user's favorites, `false`if not.
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
- * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
- * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
+ * @apiSuccess {uuid} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {Object[]} data/languages Song's languages in ISO639-2B format
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
  * @apiSuccess {Number} data/lastplayed_at When the song has been played last, in `Date()` format
@@ -2631,7 +2761,6 @@ export function APIControllerPublic(router) {
  *           "flag_dejavu": false,
  *           "flag_favorites": false,
  *           "gain": 6.34,
- *           "kara_id": 55,
  *           "karafile": "ENG - Dokidoki! PreCure - OP - Glitter Force Doki Doki Theme Song.kara",
  *           "kid": "aa252a23-c5b5-43f3-978e-f960b6bb1ef1",
  *           "languages": [
@@ -2693,6 +2822,7 @@ export function APIControllerPublic(router) {
  *           ],
  *           "modified_at": "2018-11-14T21:31:36.000Z",
  *           "played": "0",
+ * 			 "previewfile": "abcdef.1023.mp4"
  *           "requested": "0",
  *           "serie": "Dokidoki! PreCure",
  *           "serie_altname": [
@@ -2773,7 +2903,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara = await getKara(req.params.kara_id,req.authToken,req.lang);
+				const kara = await getKara(req.params.kid,req.authToken,req.lang);
 				res.json(OKMessage(kara));
 			} catch(err) {
 				logger.error(err);
@@ -2781,7 +2911,7 @@ export function APIControllerPublic(router) {
 			}
 		})
 	/**
- * @api {post} /public/karas/:kara_id Add karaoke to current/public playlist
+ * @api {post} /public/karas/:kid Add karaoke to current/public playlist
  * @apiName PostKaras
  * @apiVersion 2.1.2
  * @apiGroup Playlists
@@ -2823,7 +2953,7 @@ export function APIControllerPublic(router) {
 * HTTP/1.1 500 Internal Server Error
 * {
 *   "args": {
-*       "kara": "1033",
+*       "kid": "uuid",
 *       "playlist": 1,
 *       "user": "Axel"
 *   },
@@ -2836,7 +2966,7 @@ export function APIControllerPublic(router) {
 		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
 			try {
-				const data = await addKaraToPlaylist(req.params.kara_id, req.authToken.username);
+				const data = await addKaraToPlaylist(req.params.kid, req.authToken.username);
 				emitWS('playlistContentsUpdated',data.playlist_id);
 				emitWS('playlistInfoUpdated',data.playlist_id);
 				res.status(201).json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
@@ -2846,15 +2976,15 @@ export function APIControllerPublic(router) {
 
 		});
 
-	router.route('/public/karas/:kara_id([0-9]+)/lyrics')
+	router.route('/public/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/lyrics')
 	/**
- * @api {post} /public/karas/:kara_id/lyrics Get song lyrics
+ * @api {post} /public/karas/:kid/lyrics Get song lyrics
  * @apiName GetKarasLyrics
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} kara_id Karaoke ID to get lyrics from
+ * @apiParam {uuid} kid Karaoke ID to get lyrics from
  * @apiSuccess {String[]} data Array of strings making the song's lyrics
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -2873,7 +3003,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara = await getKaraLyrics(req.params.kara_id);
+				const kara = await getKaraLyrics(req.params.kid);
 				res.json(OKMessage(kara));
 			} catch(err) {
 				res.status(500).json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
@@ -3313,7 +3443,6 @@ export function APIControllerPublic(router) {
         *        "i18n_name": "Angelos Armas",
         *        "karacount": 3,
         *        "name": "Tenshi no Nichô Kenjû: Angelos Armas",
-        *        "serie_id": 2700,
         *        "seriefile": "Tenshi no Nichou Kenjuu Angelos Armas.series.json",
         *		 "sid": "c87a7f7b-20cf-4d7d-98fb-722910f4eec6"
         *		},
@@ -3424,7 +3553,6 @@ export function APIControllerPublic(router) {
  *   "data": {
  *       "bio": "lol2",
  *       "email": "lol3@lol.fr",
- *       "id": "3",
  *       "login": "test2",
  *       "nickname": "lol",
  *       "url": "http://lol4"
@@ -3494,7 +3622,6 @@ export function APIControllerPublic(router) {
  *           "last_login_at": null,
  *           "login": "admin",
  *           "nickname": "Administrator",
- *           "user_id": 1,
  * 			 "url": null,
  * 			 "email": null,
  * 			 "bio": null,
@@ -3548,7 +3675,6 @@ export function APIControllerPublic(router) {
  *   "data": {
  *       "bio": "lol2",
  *       "email": "lol3@lol.fr",
- *       "id": "3",
  *       "login": "test2",
  *       "nickname": "lol",
  *       "url": "http://lol4"
@@ -3593,7 +3719,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/favorites View own favorites
  * @apiName GetFavorites
- * @apiVersion 2.3.1
+ * @apiVersion 2.5.0
  * @apiGroup Favorites
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -3601,7 +3727,7 @@ export function APIControllerPublic(router) {
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
- * @apiSuccess {Object[]} data/content/karas Array of `playlistcontents` objects
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -3612,7 +3738,7 @@ export function APIControllerPublic(router) {
  *   "data": {
  *       "content": [
  *           {
- *            <See admin/playlists/[id]/karas/[plc_id] object>
+ *            <See public/karas/[id] object>
  *           },
  *           ...
  *       ],
@@ -3631,13 +3757,8 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-
-			let size = req.query.size || 999999;
-			size = parseInt(size, 10);
-			let from = req.query.from || 0;
-			from = parseInt(from, 10);
 			try {
-				const karas = await getFavorites(req.authToken, req.query.filter, req.lang, from, size);
+				const karas = await getFavorites(req.authToken, req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 9999999);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -3647,12 +3768,12 @@ export function APIControllerPublic(router) {
 	/**
  * @api {post} /public/favorites Add karaoke to your favorites
  * @apiName PostFavorites
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Favorites
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} kara_id kara ID to add
- * @apiSuccess {Number} args/kara_id ID of kara added
+ * @apiParam {uuid} kid kara ID to add
+ * @apiSuccess {Number} args/kid ID of kara added
  * @apiSuccess {Number} args/kara Name of kara added
  * @apiSuccess {Number} args/playlist_id ID of destinaton playlist
  * @apiSuccess {String} code Message to display
@@ -3663,7 +3784,7 @@ export function APIControllerPublic(router) {
  *   "args": {
  * 		 "kara": "Les Nuls - MV - Vous me subirez",
  *       "playlist_id": 1,
- *       "kara_id": 4946
+ *       "kid": "uuid"
  *   },
  *   "code": "FAVORITES_ADDED",
  *   "data": null
@@ -3682,15 +3803,12 @@ export function APIControllerPublic(router) {
  */
 		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			const validationErrors = check(req.body, {
-				kara_id: {integerValidator: true}
+				kid: {uuidArrayValidator: true}
 			});
 			if (!validationErrors) {
-				req.body.kara_id = parseInt(req.body.kara_id, 10);
 				try {
-					const data = await addToFavorites(req.authToken.username,req.body.kara_id);
+					const data = await addToFavorites(req.authToken.username,req.body.kid);
 					emitWS('favoritesUpdated',req.authToken.username);
-					emitWS('playlistInfoUpdated',data.playlist_id);
-					emitWS('playlistContentsUpdated',data.playlist_id);
 					res.json(OKMessage(null,'FAVORITES_ADDED',data));
 				} catch(err) {
 					res.status(500).json(errMessage('FAVORITES_ADD_SONG_ERROR',err.message,err.data));
@@ -3707,11 +3825,11 @@ export function APIControllerPublic(router) {
 	/**
  * @api {delete} /public/favorites/ Delete karaoke from your favorites
  * @apiName DeleteFavorites
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Favorites
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} kara_id Kara ID to delete
+ * @apiParam {uuid} kid Kara ID to delete
  * @apiSuccess {String} code Message to display
  *
  * @apiSuccessExample Success-Response:
@@ -3737,15 +3855,12 @@ export function APIControllerPublic(router) {
 			// Delete kara from favorites
 			// Deletion is through kara ID.
 			const validationErrors = check(req.body, {
-				kara_id: {integerValidator: true}
+				kid: {uuidArrayValidator: true}
 			});
 			if (!validationErrors) {
-				req.body.kara_id = parseInt(req.body.kara_id, 10);
 				try {
-					const data = await deleteFavorite(req.authToken.username,req.body.kara_id);
+					const data = await deleteFavorites(req.authToken.username,req.body.kid);
 					emitWS('favoritesUpdated',req.authToken.username);
-					emitWS('playlistContentsUpdated',data.playlist_id);
-					emitWS('playlistInfoUpdated',data.playlist_id);
 					res.json(OKMessage(null,'FAVORITE_DELETED',data));
 				} catch(err) {
 					res.status(500).json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
@@ -4002,12 +4117,8 @@ export function APIControllerPublic(router) {
  * }
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
-			let size = req.query.size || 999999;
-			size = parseInt(size, 10);
-			let from = req.query.from || 0;
-			from = parseInt(from, 10);
 			try {
-				const pollResult = await getPoll(req.authToken,req.lang,from,size);
+				const pollResult = await getPoll(req.authToken,req.lang,+req.query.from || 0, +req.query.size || 9999999);
 				res.json(OKMessage(pollResult));
 			} catch(err) {
 				res.status(500).json(errMessage(err.code));

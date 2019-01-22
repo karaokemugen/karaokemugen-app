@@ -14,6 +14,7 @@ export async function getWhitelistContents(filter, lang, from = 0, size = 0) {
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }
+
 export async function emptyWhitelist() {
 	return await db().query(sql.emptyWhitelist);
 }

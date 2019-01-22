@@ -3,7 +3,6 @@ import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import logger from 'winston';
-import {getOrAddSerieID} from './series';
 import {ASSToLyrics} from '../_utils/ass';
 import {getPlaylistContentsMini} from './playlist';
 import {selectAllKaras,
@@ -14,7 +13,7 @@ import {selectAllKaras,
 	isKara as isKaraDB,
 	addKara,
 	updateKara,
-	addViewcount
+	addPlayed
 } from '../_dao/kara';
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
@@ -28,14 +27,14 @@ import {isPreviewAvailable} from '../_webapp/previews';
 
 export async function isAllKaras(karas) {
 	let allKarasOK = true;
-	for (const kara_id of karas) {
-		if (!await isKara(kara_id)) allKarasOK = false;
+	for (const kid of karas) {
+		if (!await isKara(kid)) allKarasOK = false;
 	}
 	return allKarasOK;
 }
 
-async function isKara(kara_id) {
-	return await isKaraDB(kara_id);
+async function isKara(kid) {
+	return await isKaraDB(kid);
 }
 
 export function translateKaraInfo(karas, lang) {
@@ -104,25 +103,16 @@ export async function getRandomKara(playlist_id, filter, username) {
 		getPlaylistContentsMini(playlist_id)
 	]);
 	// Strip list to just kara IDs
-	karas.forEach((elem,index) => {
-		karas[index] = elem.kara_id;
-	});
-	//Strip playlist to just kara IDs
-	pl.forEach((elem,index) => {
-		pl[index] = elem.kara_id;
-	});
-	let allKarasNotInCurrentPlaylist = [];
-	allKarasNotInCurrentPlaylist = karas.filter((el) => {
-		return pl.indexOf(el) < 0;
-	});
+	const allKIDs = karas.map(e => e.kid);
+	const plKIDs = pl.map(e => e.kid);
+	const allKarasNotInCurrentPlaylist = allKIDs.filter(e => plKIDs.indexOf(e) < 0);
 	return sample(allKarasNotInCurrentPlaylist);
 }
 
-export async function getKara(kara_id, token, lang) {
+export async function getKara(kid, token, lang) {
 	profile('getKaraInfo');
-
-	const kara = await getKaraDB(kara_id, token.username, lang, token.role);
-	if (!kara) throw `Kara ${kara_id} unknown`;
+	const kara = await getKaraDB(kid, token.username, lang, token.role);
+	if (!kara) throw `Kara ${kid} unknown`;
 	let output = translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].mediafile);
 	if (previewfile) output[0].previewfile = previewfile;
@@ -130,13 +120,13 @@ export async function getKara(kara_id, token, lang) {
 	return output;
 }
 
-export async function getKaraMini(kara_id) {
-	return await getKaraMiniDB(kara_id);
+export async function getKaraMini(kid) {
+	return await getKaraMiniDB(kid);
 }
 
-export async function getKaraLyrics(kara_id) {
-	const kara = await getKaraMini(kara_id);
-	if (!kara) throw `Kara ${kara_id} unknown`;
+export async function getKaraLyrics(kid) {
+	const kara = await getKaraMini(kid);
+	if (!kara) throw `Kara ${kid} unknown`;
 	if (kara.subfile === 'dummy.ass') return 'Lyrics not available for this song';
 	const ASS = await getASS(kara.subfile);
 	if (ASS) return ASSToLyrics(ASS);
@@ -147,7 +137,7 @@ async function updateSeries(kara) {
 	if (!kara.series) return true;
 	let lang = 'und';
 	if (kara.lang) lang = kara.lang.split(',')[0];
-	let series = [];
+	let sids = [];
 	for (const s of kara.series.split(',')) {
 		let langObj = {};
 		langObj[lang] = s;
@@ -155,9 +145,9 @@ async function updateSeries(kara) {
 			name: s
 		};
 		seriesObj.i18n = {...langObj};
-		series.push(await getOrAddSerieID(seriesObj));
+		sids.push(seriesObj.sid);
 	}
-	await updateKaraSeries(kara.kara_id,series);
+	await updateKaraSeries(kara.kid,sids);
 }
 
 async function updateTags(kara) {
@@ -178,11 +168,11 @@ async function updateTags(kara) {
 	for (const i in tags) {
 		tags[i].id = await checkOrCreateTag(tags[i]);
 	}
-	return await updateKaraTags(kara.kara_id, tags);
+	return await updateKaraTags(kara.kid, tags);
 }
 
 export async function createKaraInDB(kara) {
-	kara.kara_id = await addKara(kara);
+	await addKara(kara);
 	await Promise.all([
 		updateTags(kara),
 		updateSeries(kara)
@@ -278,6 +268,7 @@ export function serieRequired(karaType) {
 }
 
 export async function getKaraHistory(token, lang, from, size) {
+	// Called by system route
 	return await selectAllKaras(token.username, null, lang, 'history', null, from, size);
 }
 
@@ -286,13 +277,14 @@ export async function getTop50(token, lang) {
 }
 
 export async function getKaraPlayed(token, lang, from, size) {
+	// Called by system route
 	return await selectAllKaras(token.username, null, lang, 'played', null, from, size);
 }
 
-export async function addViewcountKara(kara_id, kid) {
-	profile('addViewcount');
-	const ret = await addViewcount(kara_id,kid);
-	profile('addViewcount');
+export async function addPlayedKara(kid) {
+	profile('addPlayed');
+	const ret = await addPlayed(kid);
+	profile('addPlayed');
 	return ret;
 }
 
