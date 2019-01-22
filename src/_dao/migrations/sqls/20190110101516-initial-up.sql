@@ -186,7 +186,7 @@ SELECT
 (SELECT COUNT(pk_id_tag) FROM tag WHERE tagtype=5) AS languages,
 (SELECT COUNT(pk_sid) FROM serie) AS series,
 (SELECT COUNT(*) FROM played) AS played,
-(SELECT COUNT(pk_id_playlist) FROM playlist WHERE flag_favorites = FALSE) AS playlists,
+(SELECT COUNT(pk_id_playlist) FROM playlist) AS playlists,
 (SELECT SUM(duration) FROM kara) AS duration;
 
 CREATE MATERIALIZED VIEW all_karas AS
