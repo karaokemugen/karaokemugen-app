@@ -15,9 +15,13 @@ const dbConfig = {
 async function main() {
 	const client = new Pool(dbConfig);
 	await client.connect();
-	await client.query(`
+	try {
+		await client.query(`
         CREATE EXTENSION unaccent;
-    `);
+	`);
+	} catch(err) {
+		// Do nothing here.
+	}
 }
 
 main().then(() => {
