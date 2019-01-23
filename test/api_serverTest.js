@@ -383,7 +383,7 @@ describe('Managing settings', function(){
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response){
-				assert.equal(response.body.data.isTest,'true');
+				assert.equal(response.body.data.isTest,true);
 			});
 	});
 });
