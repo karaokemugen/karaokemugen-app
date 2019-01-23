@@ -13,18 +13,6 @@ if(fs.existsSync('config.ini')) {
 
 }
 
-function toString(o) {
-	Object.keys(o).forEach(k => {
-		if (typeof o[k] === 'object') {
-			return toString(o[k]);
-		}
-
-		o[k] = '' + o[k];
-	});
-
-	return o;
-}
-
 const usernameAdmin = 'adminTest';
 const passwordAdmin = 'ceciestuntest';
 let token;
@@ -386,7 +374,7 @@ describe('Managing settings', function(){
 	});
 
 	it('Update settings', function() {
-		var data = toString(SETTINGS);
+		var data = JSON.stringify(SETTINGS);
 		return request
 			.put('/api/admin/settings')
 			.set('Accept', 'application/json')
