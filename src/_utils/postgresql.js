@@ -2,30 +2,21 @@
 
 import execa from 'execa';
 import {resolve} from 'path';
-import {watch} from 'chokidar';
 import {asyncExists, asyncWriteFile, asyncReadFile} from './files';
 import {getConfig} from './config';
-import {emit} from './pubsub';
 import logger from 'winston';
 
-let started = false;
 let shutdownInProgress = false;
 
-function shutdownPG() {
-	shutdownInProgress = true;
-	emit('postgresShutdown');
-}
-
-export function checkPG() {
-	if (!started || shutdownInProgress) return false;
-	return true;
+export function isShutdownPG() {
+	return shutdownInProgress;
 }
 
 export async function killPG() {
+	shutdownInProgress = true;
 	const conf = getConfig();
 	const pgDataDir = resolve(resolve(conf.appPath, conf.PathDB, 'postgres'));
-	shutdownPG();
-	return await execa(resolve(conf.BinPostgresPath, conf.BinPostgresCTLExe), ['-D', pgDataDir,'stop'], {
+	return await execa(resolve(conf.BinPostgresPath, conf.BinPostgresCTLExe), ['-D', pgDataDir, '-w', 'stop'], {
 		cwd: resolve(conf.appPath, conf.BinPostgresPath)
 	});
 }
@@ -48,18 +39,8 @@ function setConfig(config, setting, value) {
 export async function dumpPG() {
 	const conf = getConfig();
 	try {
-		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresDumpExe), [
-			'-c',
-			'-E',
-			'UTF8',
-			'--if-exists',
-			'-U',
-			conf.db.prod.user,
-			'-p',
-			conf.db.prod.port,
-			'-f',
-			resolve(conf.appPath, 'karaokemugen.pgdump') ,
-			conf.db.prod.database ], {
+		const options = `init -c -E UTF8 --if-exists -U ${conf.db.prod.user} -p ${conf.db.prod.port} -f ${resolve(conf.appPath, 'karaokemugen.pgdump')} ${conf.db.prod.database}`;
+		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresDumpExe), options.split(' '), {
 			cwd: resolve(conf.appPath, conf.BinPostgresPath)
 		});
 	} catch(err) {
@@ -71,15 +52,11 @@ export async function initPGData() {
 	const conf = getConfig();
 	logger.info('[DB] No database present, initializing a new one...');
 	try {
-		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresInitExe), [
-			'-U',
-			conf.db.prod.superuser,
-			'-E',
-			'UTF8',
-			'-D',
-			resolve(conf.appPath, conf.PathDB, 'postgres/')
-		], {
-			cwd: resolve(conf.appPath, conf.BinPostgresPath)
+		const options = `init -o "-U ${conf.db.prod.superuser} -E UTF8" -D ${resolve(conf.appPath, conf.PathDB, 'postgres/')}`;
+		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), options.split(' '), {
+			cwd: resolve(conf.appPath, conf.BinPostgresPath),
+			windowsVerbatimArguments: true,
+			stdio: 'inherit'
 		});
 	} catch(err) {
 		throw `Init failed : ${err}`;
@@ -101,51 +78,38 @@ export async function updatePGConf() {
 	await asyncWriteFile(pgConfFile, pgConf, 'utf-8');
 }
 
-async function checkPIDFile(pidFile) {
-	if (!await asyncExists(pidFile)) return false;
-	const pidData = await asyncReadFile(pidFile, 'utf-8');
-	const contents = pidData.split('\n');
-	if (contents[7] && contents[7].includes('ready')) {
-		started = true;
+export async function checkPG() {
+	const conf = getConfig();
+	if (!conf.db.prod.bundledPostgresBinary) return false;
+	// Status sends an exit code of 3 if postgresql is not running
+	// So it's thrown.
+	try {
+		const options = `status -D ${resolve(conf.appPath, conf.PathDB, 'postgres/')}`;
+		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), options.split(' '), {
+			cwd: resolve(conf.appPath, conf.BinPostgresPath)
+		});
 		return true;
-	} else {
+	} catch(err) {
 		return false;
 	}
 }
 
 export async function initPG() {
-	// If no data dir is present, we're going to init one
 	const conf = getConfig();
 	const pgDataDir = resolve(conf.appPath, conf.PathDB, 'postgres');
+	// If no data dir is present, we're going to init one
 	if (!await asyncExists(pgDataDir)) await initPGData();
-	const pidFile = resolve(pgDataDir, 'postmaster.pid');
-	const pidWatcher = watch(pidFile, {useFsEvents: false});
-	pidWatcher.on('unlink', () => {
-		shutdownPG();
-	});
-	if (await checkPIDFile(pidFile)) {
+	if (await checkPG()) {
 		logger.info('[DB] Bundled PostgreSQL is already running');
 		return true;
 	}
-	logger.info('[DB] Launching bundled PostgreSQL...');
+	logger.info('[DB] Launching bundled PostgreSQL');
 	await updatePGConf();
-	return new Promise((OK, NOK) => {
-		try {
-			pidWatcher.on('change', () => {
-				checkPIDFile(pidFile).then(() => {
-					if (started) OK();
-				});
-			});
-			// 30 seconds timeout before aborting
-			setTimeout(() => {
-				if (!started) NOK('Bundled PostgreSQL startup failed : Timeout (check logs)');
-			}, 30000);
-			execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), ['start', '-D', pgDataDir ], {
-				cwd: resolve(conf.appPath, conf.BinPostgresPath)
-			});
-		} catch(err) {
-			NOK(`Bundled PostgreSQL startup failed : ${err}`);
-		}
+	const options = `-w -D ${pgDataDir} start`;
+	// We set all stdios on ignore since pg_ctl requires a TTY terminal and will hang if we don't do that
+	await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), options.split(' '), {
+		cwd: resolve(conf.appPath, conf.BinPostgresPath),
+		stdio: ['ignore','ignore','ignore']
 	});
 }
 

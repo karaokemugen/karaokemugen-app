@@ -108,7 +108,12 @@ async function main() {
 	/**
 	 * Gentlemen, start your engines.
 	 */
-	initEngine();
+	try {
+		await initEngine();
+	} catch(err) {
+		logger.error(`[Launcher] Karaoke Mugen initialization failed :( : ${err}`)
+		exit(1);
+	}
 }
 
 /**

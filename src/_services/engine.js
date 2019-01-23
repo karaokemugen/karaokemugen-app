@@ -5,7 +5,6 @@ import readlineSync from 'readline-sync';
 import logger from 'winston';
 import {getState, setState} from '../_utils/state';
 import {checkPG, killPG} from '../_utils/postgresql';
-import {on} from '../_utils/pubsub';
 
 //KM Modules
 import {createPreviews} from '../_webapp/previews';
@@ -49,7 +48,11 @@ export async function initEngine() {
 		exit(1);
 	}
 	//Database system is the foundation of every other system
-	await initDBSystem();
+	try {
+		await initDBSystem();
+	} catch(err) {
+		throw err;
+	}
 	await initUserSystem();
 	if (+conf.OnlineMode) try {
 		await initOnlineSystem();
@@ -91,19 +94,22 @@ export function exit(rc) {
 		logger.info('[Engine] Player has shutdown');
 	}
 	closeDB();
-	if (checkPG()) {
-		killPG().then(() => {
-			logger.info('[Engine] PostgreSQL has shutdown');
-			on('postgresShutdown', () => {
+	checkPG().then(started => {
+		if (started) {
+			killPG().then(() => {
+				logger.info('[Engine] PostgreSQL has shutdown');
+				mataNe(rc);
+			}).catch(err => {
+				logger.error('[Engine] PostgreSQL could not be stopped!');
 				mataNe(rc);
 			});
-		}).catch((err) => {
-			logger.error(`[Engine] Failed to shutdown PostgreSQL : ${err}`);
-			mataNe(1);
-		});
-	} else {
-		mataNe(rc);
-	}
+		} else {
+			mataNe(rc);
+		}
+	}).catch((err) => {
+		logger.error(`[Engine] Failed to shutdown PostgreSQL : ${err}`);
+		mataNe(1);
+	});
 }
 
 function mataNe(rc) {

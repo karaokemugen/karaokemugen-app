@@ -1,4 +1,3 @@
-import {findFavoritesPlaylist} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_utils/files';
 import {getConfig} from '../_utils/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from '../_services/playlist';
@@ -129,7 +128,6 @@ export async function findUserByName(username, opt) {
 			userdata.fingerprint = null;
 			userdata.email = null;
 		}
-		if (userdata.type <= 1) userdata.favoritesPlaylistID = await findFavoritesPlaylist(username);
 		return userdata;
 	}
 	return false;
@@ -183,7 +181,7 @@ export async function createUser(user, opts = {
 	if (user.password) user.password = hashPassword(user.password);
 	try {
 		await db.addUser(user);
-		logger.info(`[User] Created user ${user.login}`);
+		if (user.type < 2) logger.info(`[User] Created user ${user.login}`);
 		logger.debug(`[User] User data : ${JSON.stringify(user, null, 2)}`);
 		return true;
 	} catch (err) {

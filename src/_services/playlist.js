@@ -31,7 +31,6 @@ import {
 	getPLCByKIDAndUserID,
 	getPLCInfoMini as getPLCInfoMiniDB,
 	getPLCInfo as getPLCInfoDB,
-	raisePosInPlaylist,
 	replacePlaylist,
 	reorderPlaylist as reorderPL,
 	setCurrentPlaylist as setCurrentPL,
@@ -366,7 +365,7 @@ export async function getPlaylistContents(playlist_id,token,filter,lang,from,siz
 	try {
 		profile('getPLC');
 		const plInfo = await getPlaylistInfo(playlist_id, token);
-		if (token.role === 'admin' || plInfo.flag_visible) throw `Playlist ${playlist_id} unknown`;
+		if (token.role !== 'admin' && !plInfo.flag_visible) throw `Playlist ${playlist_id} unknown`;
 		const pl = await getPLContents(playlist_id,token.username,filter,lang);
 		if (from === -1) {
 			const pos = getPlayingPos(pl);
@@ -432,7 +431,7 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 	}
 	let [pl, kara] = await Promise.all([
 		getPlaylistInfo(playlist_id),
-		getKaraMini(parseInt(karas[0], 10))
+		getKaraMini(karas[0])
 	]);
 	try {
 		profile('addKaraToPL');
@@ -455,19 +454,19 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 				throw 'Song is blacklisted';
 			}
 		}
-		let karaList = [];
 		const user = await findUserByName(requester);
 		if (!user) throw {code: 2, msg: 'User does not exist'};
 		const date_add = new Date();
-		karas.forEach((kid) => {
-			karaList.push({
+		let karaList = karas.map(kid => {
+			return {
 				kid: kid,
 				username: requester,
 				nickname: user.nickname,
 				playlist_id: +playlist_id,
-				created_at: date_add,
-			});
+				created_at: date_add
+			};
 		});
+
 		const [userMaxPosition,
 			numUsersInPlaylist,
 			playlistMaxPos
@@ -477,6 +476,7 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 				countPlaylistUsers(playlist_id),
 				getMaxPosInPlaylist(playlist_id),
 			]);
+
 		const plContents = await getPlaylistKaraIDs(playlist_id);
 		// Making a unique ID depending on if we're in public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not
@@ -686,6 +686,7 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,token) {
 	if (typeof plcs === 'string') karas = plcs.split(',');
 	//If we get a single song, it's a user deleting it (most probably)
 	const plcData = await getPLCInfoMini(karas[0]);
+	if (!plcData) throw 'At least one playlist content is unknown'	;
 	logger.info(`[Playlist] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);
 	try {
 		//If token is present, a user is trying to remove a karaoke
@@ -697,8 +698,10 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,token) {
 			updatePlaylistKaraCount(playlist_id),
 			reorderPlaylist(playlist_id)
 		]);
+		console.log('lol')
 		updatePlaylistLastEditTime(playlist_id);
 		profile('deleteKara');
+		console.log('lol2')
 		return {
 			pl_id: playlist_id,
 			pl_name: pl.name
@@ -721,7 +724,7 @@ export async function editPLC(plc_id,params,token) {
 	const plcData = await getPLCInfoMini(plc_id);
 	if (!plcData) throw 'PLC ID unknown';
 	const pl = await getPlaylistInfo(plcData.playlist_id);
-	if (token.role === 'admin' || pl.flag_visible) throw `Playlist ${plcData.playlist_id} unknown`;
+	if (token.role !== 'admin' && !pl.flag_visible) throw `Playlist ${plcData.playlist_id} unknown`;
 	if (params.flag_playing) {
 		await setPlaying(plc_id, pl.playlist_id);
 		if (pl.flag_current) playingUpdated();
@@ -731,7 +734,7 @@ export async function editPLC(plc_id,params,token) {
 		updateSongsLeft(plcData.user_id,pl.playlist_id);
 	}
 	if (params.pos) {
-		await raisePosInPlaylist(params.pos,pl.playlist_id);
+		await shiftPosInPlaylist(pl.playlist_id, params.pos, 1);
 		await setPos(plc_id,params.pos);
 		await reorderPlaylist(pl.playlist_id);
 	}

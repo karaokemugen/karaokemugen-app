@@ -35,7 +35,6 @@ function configuredBinariesForSystem(config) {
 			BinmpvPath: resolve(config.appPath, config.BinPlayerWindows),
 			BinPostgresPath: resolve(config.appPath, config.BinPostgresWindows),
 			BinPostgresCTLExe: 'pg_ctl.exe',
-			BinPostgresInitExe: 'initdb.exe',
 			BinPostgresDumpExe: 'pg_dump.exe'
 		};
 	case 'darwin':
@@ -44,7 +43,6 @@ function configuredBinariesForSystem(config) {
 			BinmpvPath: resolve(config.appPath, config.BinPlayerOSX),
 			BinPostgresPath: resolve(config.appPath, config.BinPostgresOSX),
 			BinPostgresCTLExe: 'pg_ctl',
-			BinPostgresInitExe: 'initdb',
 			BinPostgresDumpExe: 'pg_dump'
 		};
 	default:
@@ -53,7 +51,6 @@ function configuredBinariesForSystem(config) {
 			BinmpvPath: resolve(config.appPath, config.BinPlayerLinux),
 			BinPostgresPath: resolve(config.appPath, config.BinPostgresLinux),
 			BinPostgresCTLExe: 'pg_ctl',
-			BinPostgresInitExe: 'initdb',
 			BinPostgresDumpExe: 'pg_dump'
 		};
 	}

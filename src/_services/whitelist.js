@@ -14,12 +14,9 @@ export async function addKaraToWhitelist(kid, reason, token, lang) {
 	try {
 		profile('addKaraToWL');
 		if (!await isAllKaras(karas)) throw 'One of the karaokes does not exist.';
-		const karasInWhitelist = await getWhitelistContents();
-		const karaList = isAllKarasInPlaylist(karas,karasInWhitelist.content);
-		if (karaList.length === 0) throw 'No karaoke could be added, all are in whitelist already';
-		await addToWL(karaList, reason);
+		await addToWL(karas, reason);
 		generateBlacklist();
-		return karaList;
+		return karas;
 	} catch(err) {
 		throw {
 			message: err,

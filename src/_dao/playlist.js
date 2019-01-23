@@ -88,7 +88,7 @@ export async function replacePlaylist(playlist) {
 }
 
 export async function reorderPlaylist(playlist_id) {
-	return await db().query(sql.reorderPos, [playlist_id]);
+	return await db().query(sql.reorderPlaylist, [playlist_id]);
 }
 
 export async function setPos(plc_id,pos) {
@@ -197,14 +197,6 @@ export async function getPublicPlaylist() {
 	return res.rows[0];
 }
 
-export async function raisePosInPlaylist(pos,id) {
-	return await db().query(yesql(sql.raisePosInPlaylist)({
-		pos: pos,
-		playlist_id: id,
-		newpos: pos + 0.1
-	}));
-}
-
 export async function setCurrentPlaylist(id) {
 	return await db().query(sql.setCurrentPlaylist, [id]);
 }
@@ -238,7 +230,8 @@ export async function setPlaying(plc_id) {
 }
 
 export async function countPlaylistUsers(playlist_id){
-	return await db().query(sql.countPlaylistUsers, [playlist_id]);
+	const res = await db().query(sql.countPlaylistUsers, [playlist_id]);
+	return res.rows[0];
 }
 
 export async function getMaxPosInPlaylistForUser(playlist_id,username){

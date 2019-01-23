@@ -10,7 +10,7 @@ import {compareKarasChecksum, run as generateDB} from '../_services/generation';
 import DBMigrate from 'db-migrate';
 import {resolve} from 'path';
 import {asyncRename, asyncExists} from '../_utils/files';
-import {checkPG, initPG} from '../_utils/postgresql';
+import {isShutdownPG, checkPG, initPG} from '../_utils/postgresql';
 import { generateBlacklist } from '../_services/blacklist';
 
 const sql = require('./sql/database');
@@ -33,7 +33,7 @@ export function paramWords(filter) {
 }
 
 async function query(...args) {
-	console.log(args);
+	// Do nothing :)
 }
 
 export function closeDB() {
@@ -48,7 +48,7 @@ export function buildClauses(words) {
 		sql.push(`lower(unaccent(ak.tags)) LIKE :word${i} OR
 		lower(unaccent(ak.title)) LIKE :word${i} OR
 		lower(unaccent(ak.serie)) LIKE :word${i} OR
-		lower(unaccent(ak.serie_altname::varchar)) LIKE :word${i}
+		lower(unaccent(ak.serie_altname::varchar)) LIKE :word${i} OR
 		lower(unaccent(ak.serie_names)) LIKE :word${i}
 		`);
 	}
@@ -120,7 +120,8 @@ export async function connectDB(opts = {superuser: false, db: null}) {
 	try {
 		await database.connect();
 		database.on('error', err => {
-			if (checkPG()) logger.error(`[DB] Database error : ${err}`);
+			// If shutdown is in progress for PG binary, we won't catch errors. (or we'll get connection reset messages spamming console)
+			if (!isShutdownPG()) logger.error(`[DB] Database error : ${err}`);
 		});
 	} catch(err) {
 		logger.error(`[DB] Connection to database server failed : ${err}`);

@@ -57,7 +57,11 @@ export async function editBlacklistCriteria(blc_id, blctype, blcvalue) {
 	profile('editBLC');
 	logger.info(`[Blacklist] Editing criteria ${blc_id} : ${blctype} = ${blcvalue}`);
 	if (blctype < 0 && blctype > 1004) throw `Blacklist criteria type error : ${blctype} is incorrect`;
-	if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (isNaN(blcvalue))) throw `Blacklist criteria type mismatch : type ${blctype} must have a numeric value!`;
+	if (+blctype === 1001) {
+		const re = new RegExp(uuidRegexp);
+		if (!re.test(blcvalue)) throw `Blacklist criteria value mismatch : type ${blctype} must have UUID values`;
+	}
+	if (((blctype > 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (isNaN(blcvalue))) throw `Blacklist criteria type mismatch : type ${blctype} must have a numeric value!`;
 	await editBLC({
 		id: blc_id,
 		type: blctype,
@@ -89,12 +93,11 @@ export async function addBlacklistCriteria(blctype, blcvalue) {
 	let blcvalues;
 	typeof blcvalue === 'string' ? blcvalues = blcvalue.split(',') : blcvalues = [blcvalue];
 	logger.info(`[Blacklist] Adding criteria ${blctype} = ${blcvalues}`);
-	let blcList = [];
-	blcvalues.forEach(function(blcvalue){
-		blcList.push({
-			blcvalue: blcvalue,
-			blctype: parseInt(blctype, 10)
-		});
+	let blcList = blcvalues.map(e => {
+		return {
+			blcvalue: e,
+			blctype: +blctype
+		};
 	});
 	try {
 		if (+blctype < 0 && +blctype > 1004) throw `Incorrect BLC type (${blctype})`;
@@ -103,7 +106,7 @@ export async function addBlacklistCriteria(blctype, blcvalue) {
 			const re = new RegExp(uuidRegexp);
 			if (blcList.some(blc => !re.test(blc.blcvalue))) throw `Blacklist criteria value mismatch : type ${blctype} must have UUID values`;
 		}
-		if (((+blctype >= 1001 && +blctype <= 1003) || (+blctype > 0 && +blctype < 999)) && blcvalues.some(isNaN)) throw `Blacklist criteria type mismatch : type ${blctype} must have a numeric value!`;
+		if (((+blctype > 1001 && +blctype <= 1003) || (+blctype > 0 && +blctype < 999)) && blcvalues.some(isNaN)) throw `Blacklist criteria type mismatch : type ${blctype} must have a numeric value!`;
 		await addBLC(blcList);
 		return await generateBlacklist();
 	} catch(err) {

@@ -8,9 +8,11 @@ INSERT INTO whitelist(
 	created_at,
 	reason
 )
+VALUES (
 	$1,
 	$2,
 	$3
+) ON CONFLICT DO NOTHING;
 `;
 
 export const getWhitelistContents = (filterClauses, lang, limitClause, offsetClause) => `
@@ -38,8 +40,7 @@ SELECT
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
   wl.created_at AS whitelisted_at,
-  wl.reason AS reason,
-  wl.pk_id_whitelist AS whitelistcontent_id
+  wl.reason AS reason
   FROM all_karas AS ak
   INNER JOIN whitelist AS wl ON wl.fk_kid = ak.kid
   WHERE 1 = 1

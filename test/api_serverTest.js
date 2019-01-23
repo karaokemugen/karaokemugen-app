@@ -104,7 +104,7 @@ describe('Test public API', function() {
 
 	it('Get one karaoke song by ID', function() {
 		return request
-			.get('/api/public/karas/1')
+			.get('/api/public/karas/f4c8b1a5-f59a-4142-ae46-b43037a9d75b')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -116,7 +116,7 @@ describe('Test public API', function() {
 
 	it('Get one karaoke song\'s lyrics', function() {
 		return request
-			.get('/api/public/karas/1/lyrics')
+			.get('/api/public/karas/f4c8b1a5-f59a-4142-ae46-b43037a9d75b/lyrics')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -160,18 +160,17 @@ describe('Test public API', function() {
 
 	it('Add karaoke 6 to playlist depending on mode', function() {
 		return request
-			.post('/api/public/karas/6')
+			.post('/api/public/karas/c28c8739-da02-49b4-889e-b15d1e9b2139')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
 				assert.equal(response.body.code,'PLAYLIST_MODE_SONG_ADDED');
-				assert.equal(response.body.data.kara_id,6);
+				assert.equal(response.body.data.kid[0],'c28c8739-da02-49b4-889e-b15d1e9b2139');
 			});
 	});
 	var plc_id;
-
 	it('List contents from current playlist', function() {
 		return request
 			.get('/api/public/playlists/current/karas')
@@ -182,7 +181,6 @@ describe('Test public API', function() {
 			.then(function(response) {
 				// We get the PLC_ID of our last karaoke, the one we just added
 				plc_id = response.body.data.content[0].playlistcontent_id;
-				current_plc_id = plc_id;
 				var result = false;
 				if (response.body.data.content.length >= 1) result = true;
 				assert.equal(result, true);
@@ -222,7 +220,7 @@ describe('Managing karaokes in playlists', function() {
 	var playlist = 1;
 	it('Add karaoke 6 to playlist 1', function() {
 		var data = {
-			'kara_id': 6,
+			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'requestedby': 'Test'
 		};
 		return request
@@ -255,7 +253,7 @@ describe('Managing karaokes in playlists', function() {
 	});
 	it('Add karaoke 6 again to playlist 1 to see if it fails', function() {
 		var data = {
-			'kara_id': 6,
+			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'requestedby': 'Test'
 		};
 		return request
@@ -274,7 +272,7 @@ describe('Managing karaokes in playlists', function() {
 
 	it('Add an unknown karaoke to playlist 1 to see if it fails', function() {
 		var data = {
-			'kara_id': 10000,
+			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2132',
 			'requestedby': 'Test'
 		};
 		return request
@@ -292,7 +290,7 @@ describe('Managing karaokes in playlists', function() {
 
 	it('Add karaoke 6 to an unknown playlist to see if it fails', function() {
 		var data = {
-			'kara_id': 6,
+			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'requestedby': 'Test'
 		};
 		return request
@@ -405,7 +403,7 @@ describe('Managing settings', function(){
 describe('Managing whitelist', function() {
 	it('Add karaoke 1 to whitelist', function() {
 		var data = {
-			'kara_id': 1,
+			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'reason': 'Because reasons'
 		};
 		return request
@@ -417,12 +415,11 @@ describe('Managing whitelist', function() {
 			.expect(201)
 			.then(function(response) {
 				assert.equal(response.body.code,'WL_SONG_ADDED');
-				assert.equal(response.body.data.kara_id, data.kara_id);
+				assert.equal(response.body.data.kid, data.kid);
 				assert.equal(response.body.data.reason, data.reason);
 			});
 	});
 
-	var wlc_id;
 	it('List whitelist', function() {
 		return request
 			.get('/api/admin/whitelist')
@@ -430,14 +427,11 @@ describe('Managing whitelist', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
-				wlc_id = response.body.data.content[0].whitelistcontent_id;
-			});
 	});
 
 	it('Delete karaoke 1 from whitelist', function() {
 		var data = {
-			wlc_id: wlc_id
+			kid: 'c28c8739-da02-49b4-889e-b15d1e9b2139'
 		};
 		return request
 			.delete('/api/admin/whitelist/')
@@ -447,7 +441,6 @@ describe('Managing whitelist', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.equal(response.body.code,'WL_SONG_DELETED');
-				assert.equal(response.body.data, wlc_id);
 			});
 	});
 });
@@ -455,7 +448,7 @@ describe('Managing blacklist', function() {
 	it('Add a single karaoke to blacklist criterias', function() {
 		var data = {
 			'blcriteria_type': 1001,
-			'blcriteria_value': 1
+			'blcriteria_value': 'c28c8739-da02-49b4-889e-b15d1e9b2139'
 		};
 		return request
 			.post('/api/admin/blacklist/criterias')
@@ -490,7 +483,7 @@ describe('Managing blacklist', function() {
 	it('Edit blacklist criteria', function() {
 		var data = {
 			blcriteria_type: 1001,
-			blcriteria_value: 2
+			blcriteria_value: 'a9c17ee5-b0f1-43d7-a1e0-0babf5997bde'
 		};
 		return request
 			.put('/api/admin/blacklist/criterias/'+blc_id)
