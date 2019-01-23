@@ -85,8 +85,10 @@ async function listRemoteMedias() {
 	});
 	let webdavClient = webdav(
     	shelter.url,
-    	shelter.user,
-    	shelter.password
+    	{
+			username: shelter.user,
+			password: shelter.password
+		}
 	);
 	const contents = await webdavClient.getDirectoryContents('/');
 	webdavClient = null;
