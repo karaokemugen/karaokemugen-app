@@ -378,7 +378,6 @@ SELECT p.pk_id_playlist AS playlist_id,
 	p.flag_visible AS flag_visible,
 	p.flag_current AS flag_current,
 	p.flag_public AS flag_public,
-	p.flag_favorites AS flag_favorites,
 	p.fk_login AS username
 FROM playlist AS p
 WHERE pk_id_playlist = $1
@@ -395,7 +394,6 @@ SELECT p.pk_id_playlist AS playlist_id,
 	p.flag_visible AS flag_visible,
 	p.flag_current AS flag_current,
 	p.flag_public AS flag_public,
-	p.flag_favorites AS flag_favorites,
 	p.fk_login AS username
 FROM playlist AS p
 `;

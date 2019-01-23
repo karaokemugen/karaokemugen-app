@@ -22,7 +22,6 @@ export async function createPlaylist(pl) {
 		flag_visible: pl.flag_visible || false,
 		flag_current: pl.flag_current || false,
 		flag_public: pl.flag_public || false,
-		flag_favorites: pl.flag_favorites || false,
 		username: pl.username
 	}));
 	return res.rows[0].pk_id_playlist;
