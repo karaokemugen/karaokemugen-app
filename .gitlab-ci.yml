@@ -29,7 +29,6 @@ test:
     - cp -f database.CICD.json database.json
     - export LANG=en_US
     - node --version
-    - node test/extUnaccent.js
     - yarn start --debug --test &disown
     - bash test/run.sh
   only:
