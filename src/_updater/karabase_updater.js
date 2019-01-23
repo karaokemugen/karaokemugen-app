@@ -5,7 +5,7 @@ import decompress from 'decompress';
 import logger from 'winston';
 import {copy} from 'fs-extra';
 import prettyBytes from 'pretty-bytes';
-import webdav from 'webdav';
+import {createClient as webdav} from 'webdav';
 import Downloader from '../_utils/downloader';
 import {emitWS} from '../_webapp/frontend';
 

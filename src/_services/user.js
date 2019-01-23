@@ -1,8 +1,7 @@
-import {deletePlaylist} from '../_services/playlist';
 import {findFavoritesPlaylist} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_utils/files';
 import {getConfig} from '../_utils/config';
-import {freePLCBeforePos, getPlaylistContentsMini, freePLC, createPlaylist} from '../_services/playlist';
+import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from '../_services/playlist';
 import {createHash} from 'crypto';
 import {now} from 'unix-timestamp';
 import {resolve} from 'path';
@@ -44,11 +43,6 @@ export async function updateLastLoginName(login) {
 		userLoginTimes[login] = new Date();
 		return await db.updateUserLastLogin(currentUser.id);
 	}
-}
-
-export async function getUserRequests(username) {
-	if (!await findUserByName(username)) throw 'User unknown';
-	return await db.getUserRequests(username);
 }
 
 export async function editUser(username,user,avatar,role) {
@@ -124,7 +118,7 @@ async function replaceAvatar(oldImageFile,avatar) {
 export async function findUserByName(username, opt) {
 	//Check if user exists in db
 	if (!opt) opt = {};
-	const userdata = await db.getUserByName(username);
+	const userdata = await db.getUser(username);
 	if (userdata) {
 		if (!userdata.bio) userdata.bio = null;
 		if (!userdata.url) userdata.url = null;
@@ -204,7 +198,7 @@ async function newUserIntegrityChecks(user) {
 	if (user.type === 2 && user.password) throw { code: 'GUEST_WITH_PASSWORD'};
 
 	// Check if login already exists.
-	if (await db.getUserByName(user.login) || await db.checkNicknameExists(user.login)) {
+	if (await db.getUser(user.login) || await db.checkNicknameExists(user.login)) {
 		logger.error(`[User] User/nickname ${user.login} already exists, cannot create it`);
 		throw { code: 'USER_ALREADY_EXISTS', data: {username: user.login}};
 	}

@@ -69,6 +69,7 @@ export async function dumpPG() {
 
 export async function initPGData() {
 	const conf = getConfig();
+	logger.info('[DB] No database present, initializing a new one...');
 	try {
 		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresInitExe), [
 			'-U',
