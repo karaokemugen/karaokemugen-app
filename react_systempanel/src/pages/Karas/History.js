@@ -47,9 +47,9 @@ class KaraList extends Component {
 
 	columns = [{
 		title: 'Language',
-		dataIndex: 'language',
-		key: 'language',
-		render: language => (language.toUpperCase())
+		dataIndex: 'languages',
+		key: 'languages',
+		render: languages => (languages[0].name.toUpperCase())
 	}, {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
@@ -59,21 +59,21 @@ class KaraList extends Component {
 		title: 'Type',
 		dataIndex: 'songtype',
 		key: 'songtype',
-		render: (songtype, record) => (songtype.replace('TYPE_','') + ' ' + record.songorder)
+		render: (songtypes, record) => (songtypes[0].name.replace('TYPE_','') + ' ' + (record.songorder || ''))
 	}, {
 		title: 'Title',
 		dataIndex: 'title',
 		key: 'title'
 	}, {
 		title: 'View count',
-		dataIndex: 'viewcount',
-		key: 'viewcount',
-		render: viewcount => viewcount,
+		dataIndex: 'played',
+		key: 'played',
+		render: played => played,
 	}, {
 		title: 'Seen on',
 		dataIndex: 'viewed_at',
 		key: 'viewed_at',
-		render: (viewed_at) => (new Date(viewed_at*1000)).toLocaleString('en'),
+		render: viewed_at => (new Date(viewed_at)).toLocaleString('en'),
 		defaultSortOrder: 'descend',
 		sorter: (a,b) => a.viewed_at - b.viewed_at
 	}];

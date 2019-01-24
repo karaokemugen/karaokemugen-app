@@ -45,7 +45,7 @@ class KaraForm extends Component {
 		if (this.props.kara.authors && this.props.kara.authors.length > 0 && !this.props.kara.authors.includes('NO_TAG')) this.state.authors = this.props.kara.authors;
 		if (this.props.kara.langs && this.props.kara.langs.length > 0 && !this.props.kara.langs.includes('NO_TAG')) this.state.langs = this.props.kara.langs;
 		if (this.props.kara.creators && this.props.kara.creators.length > 0 && !this.props.kara.creators.includes('NO_TAG')) this.state.creators = this.props.kara.creators;
-		if (this.props.kara.types.length > 0) this.state.songtypes =  this.props.kara.types[0].replace('TYPE_','');
+		if (this.props.kara.types && this.props.kara.types.length > 0) this.state.songtypes =  this.props.kara.types[0].replace('TYPE_','');
 		if (this.props.kara.tags && this.props.kara.tags.length > 0 && !this.props.kara.tags.includes('NO_TAG')) this.state.tags = this.props.kara.tags;
 		if (this.props.kara.mediafile_old) {
 			this.state.overwrite = true;
@@ -467,11 +467,6 @@ class KaraForm extends Component {
 				<Form.Item>
 					{getFieldDecorator('karafile', {
 						initialValue: this.props.kara.karafile
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('kara_id', {
-						initialValue: this.props.kara.kara_id
 					})(<Input type="hidden" />)}
 				</Form.Item>
 				<Form.Item>

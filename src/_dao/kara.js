@@ -90,36 +90,31 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
+	let havingClause = '';
 	if (mode === 'recent') orderClauses = 'created_at DESC, ';
-	if (mode === 'history') orderClauses = 'lastplayed_at DESC, ';
 	if (mode === 'requested') {
 		orderClauses = 'requested DESC, ';
-		filterClauses = {
-			sql: ['requested > :requested'],
-			params: {
-				requested: 1
-			}
-		};
+		havingClause = 'HAVING COUNT(rq.*) > 1';
 	}
 	if (mode === 'played') {
 		orderClauses = 'played DESC, ';
-		filterClauses = {
-			sql: ['played > :played'],
-			params: {
-				played: 1
-			}
-		};
+		havingClause = 'HAVING COUNT(p.*) > 1';
 	}
 	//Disabled until we get the frontend to work around this.
 	//if (from > 0) offsetClause = `OFFSET ${from} `;
 	//if (size > 0) limitClause = `LIMIT ${size} `;
-	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, limitClause, offsetClause);
+	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
 	const params = {
 		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60)) * 1000),
 		username: username,
 		...filterClauses.params
 	};
 	const res = await db().query(yesql(query)(params));
+	return res.rows;
+}
+
+export async function getKaraHistory() {
+	const res = await db().query(sql.getKaraHistory);
 	return res.rows;
 }
 

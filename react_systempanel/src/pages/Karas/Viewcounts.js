@@ -47,19 +47,19 @@ class KaraList extends Component {
 
 	columns = [{
 		title: 'Language',
-		dataIndex: 'language',
-		key: 'language',
-		render: language => (language.toUpperCase())
+		dataIndex: 'languages',
+		key: 'languages',
+		render: languages => (languages[0].name.toUpperCase())
 	}, {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
 		key: 'serie',
-		render: (serie, record) => (serie || record.singer)
+		render: (serie, record) => (serie || record.singers[0].name)
 	}, {
 		title: 'Type',
 		dataIndex: 'songtype',
 		key: 'songtype',
-		render: (songtype, record) => (songtype.replace('TYPE_','') + ' ' + record.songorder)
+		render: (songtype, record) => (songtype[0].name.replace('TYPE_','') + ' ' + (record.songorder || ''))
 	}, {
 		title: 'Title',
 		dataIndex: 'title',

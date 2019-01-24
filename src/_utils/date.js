@@ -32,7 +32,7 @@ export function timeToSeconds(time) {
 	const a = time.split(':'); // split it at the colons
 
 	if(+a[1] >= 60 || +a[2] >= 60){
-		throw `The parameter ${time} is impossible, please follow the format "Hours:Minutes:Seconds.Milliseconds`;
+		throw `The parameter ${time} is invalid, please follow the format "Hours:Minutes:Seconds.Milliseconds`;
 	}
 
 	a[2] = Math.floor(a[2]); // Seconds can have miliseconds

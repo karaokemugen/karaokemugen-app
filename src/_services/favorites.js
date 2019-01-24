@@ -8,7 +8,7 @@ import {formatKaraList} from './kara';
 import { uuidRegexp } from './constants';
 import { getRemoteToken } from '../_dao/user';
 import got from 'got';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 
 export async function getFavorites(username, filter, lang, from, size) {
 	try {

@@ -14,7 +14,7 @@ class SerieForm extends Component {
 			selectVisible: false
 		};
 		langs.all().forEach(lang => this.state.languages.push({value: lang['2B'], text: lang.name}));
-		if (this.props.serie.i18n) {
+		if (Array.isArray(this.props.serie.i18n)) {
 			this.props.serie.i18n.forEach(i18n => {
 				this.state.i18n.push(i18n.lang);
 				this.state[`lang_${i18n.lang}`] = i18n.name;
@@ -194,11 +194,6 @@ class SerieForm extends Component {
 					<Button type='primary' htmlType='submit' className='series-form-button'>
 						Save series
 					</Button>
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('serie_id', {
-						initialValue: this.props.serie.serie_id
-					})(<Input type="hidden" />)}
 				</Form.Item>
 				<Form.Item>
 					{getFieldDecorator('i18n', {

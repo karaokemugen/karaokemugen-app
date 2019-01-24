@@ -49,7 +49,7 @@ class KaraEdit extends Component {
 	};
 
 	saveUpdate = (kara) => {
-		axios.put(`/api/system/karas/${kara.kara_id}`, kara)
+		axios.put(`/api/system/karas/${kara.kid}`, kara)
 			.then(() => {
 				this.props.infoMessage('Kara successfully edited');
 				this.props.push('/system/karas');
@@ -61,8 +61,8 @@ class KaraEdit extends Component {
 
 	loadKara = () => {
 		this.props.loading(true);
-		if (this.props.match && this.props.match.params.kara_id) {
-			axios.get(`/api/system/karas/${this.props.match.params.kara_id}`)
+		if (this.props.match && this.props.match.params.kid) {
+			axios.get(`/api/system/karas/${this.props.match.params.kid}`)
 				.then(res => {
 					const karaData = {
 						authors: res.data[0].authors.map(e => e.name),
@@ -84,8 +84,7 @@ class KaraEdit extends Component {
 						order: res.data[0].songorder,
 						types: res.data[0].songtypes.map(e => e.name),
 						dateadded: res.data[0].created_at,
-						datemodif: res.data[0].modified_at,
-						kara_id: this.props.match.params.kara_id
+						datemodif: res.data[0].modified_at
 					};
 					this.setState({kara: karaData, save: this.saveUpdate});
 					this.props.loading(false);

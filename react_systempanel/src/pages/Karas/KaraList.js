@@ -114,7 +114,7 @@ class KaraList extends Component {
 				return e.name;
 			});
 			const songorder = record.songorder || '';
-			return types.join(', ').replace('TYPE_','') + ' ' + songorder;
+			return types.join(', ').replace('TYPE_','') + ' ' + songorder || '';
 		}
 	}, {
 		title: 'Title',
@@ -124,7 +124,7 @@ class KaraList extends Component {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/karas/${record.kara_id}`}><Icon type='edit'/></Link>
+			<Link to={`/system/karas/${record.kid}`}><Icon type='edit'/></Link>
 		</span>)
 	}];
 }

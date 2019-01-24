@@ -7,12 +7,10 @@ import {push} from 'react-router-redux';
 import {errorMessage, infoMessage, loading} from '../../actions/navigation';
 
 const newUser = {
-	user_id: null,
 	type: 1,
 	login: null,
 	password: null,
-	nickname: null,
-	flag_admin: false
+	nickname: null
 };
 
 class UserEdit extends Component {
@@ -50,8 +48,8 @@ class UserEdit extends Component {
 
 	loadUser = () => {
 		this.props.loading(true);
-		if (this.props.match && this.props.match.params.userId) {
-			axios.get(`/api/system/users/${this.props.match.params.userId}`)
+		if (this.props.match && this.props.match.params.userLogin) {
+			axios.get(`/api/system/users/${this.props.match.params.userLogin}`)
 				.then(res => {
 					this.setState({user: res.data, save: this.saveUpdate});
 					this.props.loading(false);

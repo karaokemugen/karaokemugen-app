@@ -5,7 +5,7 @@ import {renameAllKaras, editKara, createKara, karaGenerationBatch} from '../_ser
 import {requireAuth, requireValidUser, requireAdmin} from './middlewares/auth';
 import {requireNotDemo} from './middlewares/demo';
 import {getLang} from './middlewares/lang';
-import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
+import {editUser, createUser, findUserByName, listUsers, deleteUser} from '../_services/user';
 import {getKaras, getKara, getTop50, getKaraPlayed, getKaraHistory} from '../_services/kara';
 import {getTags} from '../_services/tag';
 import {runBaseUpdate} from '../_updater/karabase_updater';
@@ -45,13 +45,13 @@ export default function systemController(router) {
 			.then(() => res.status(200).send('DB successfully regenerated'))
 			.catch(err => res.status(500).send(`Error while regenerating DB: ${err}`));
 	});
-	router.get('/system/karas/:kara_id([0-9]+)', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getKara(req.params.kara_id,req.authToken,req.lang)
+	router.get('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		getKara(req.params.kid,req.authToken,req.lang)
 			.then(kara => res.json(kara))
 			.catch(err => res.status(500).send('Error while loading kara: ' + err));
 	});
-	router.put('/system/karas/:kara_id([0-9]+)', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		editKara(req.params.kara_id,req.body)
+	router.put('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		editKara(req.params.kid,req.body)
 			.then(() => res.status(200).send('Karas successfully edited'))
 			.catch(err => res.status(500).send(`Error while editing kara: ${err}`));
 	});
@@ -93,20 +93,20 @@ export default function systemController(router) {
 			.catch(err => res.status(500).send(`Error while fetching series: ${err}`));
 	});
 
-	router.delete('/system/series/:serieId([0-9]+)', requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		deleteSerie(req.params.serieId)
+	router.delete('/system/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		deleteSerie(req.params.sid)
 			.then(() => res.status(200).send('Series deleted'))
 			.catch(err => res.status(500).send(`Error deleting series: ${err}`));
 	});
 
-	router.get('/system/series/:serieId([0-9]+)', requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getSerie(req.params.serieId)
+	router.get('/system/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		getSerie(req.params.sid)
 			.then((series) => res.json(series))
 			.catch(err => res.status(500).send(`Error deleting series: ${err}`));
 	});
 
-	router.put('/system/series/:serieId([0-9]+)', requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		editSerie(req.params.serieId,req.body)
+	router.put('/system/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		editSerie(req.params.sid,req.body)
 			.then((series) => res.json(series))
 			.catch(err => res.status(500).send(`Error editing series: ${err}`));
 	});
@@ -141,8 +141,8 @@ export default function systemController(router) {
 			.catch(err => res.status(500).send(`Error while fetching karas: ${err}`));
 	});
 
-	router.get('/system/users/:userId([0-9]+)', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		findUserByID(req.params.userId)
+	router.get('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		findUserByName(req.params.userLogin)
 			.then(user => res.json(user))
 			.catch(err => res.status(500).send(`Error while fetching user: ${err}`));
 
@@ -154,14 +154,14 @@ export default function systemController(router) {
 			.catch(err => res.status(500).send(`Error while creating user: ${err}`));
 	});
 
-	router.put('/system/users/:userId([0-9]+)', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.put('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role, { editRemote: false })
 			.then(() => res.status(200).send('User edited'))
 			.catch(err => res.status(500).send(`Error editing user: ${err}`));
 	});
 
-	router.delete('/system/users/:userId([0-9]+)', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		deleteUserById(req.params.userId)
+	router.delete('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		deleteUser(req.params.userLogin)
 			.then(() => res.status(200).send('User deleted'))
 			.catch(err => res.status(500).send(`Error deleting user: ${err}`));
 	});

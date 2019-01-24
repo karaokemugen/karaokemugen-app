@@ -1,26 +1,16 @@
 import React, {Component} from 'react';
-import {Button, Checkbox, Form, Icon, Input, Select} from 'antd';
+import {Button, Form, Icon, Input, Select} from 'antd';
 import PropTypes from 'prop-types';
 
 class UserForm extends Component {
-
-	componentDidMount() {
-		this.setState({ adminChecked: (this.props.user.flag_admin === 1)});
-	}
-
-	state = {
-		adminChecked: false
-	};
-
-	toggleAdmin = (e) => this.setState({adminChecked: e.target.checked});
 
 	passwordValidator = (rule, value, callback) => {
 		const form = this.props.form;
 		const type = form.getFieldValue('type');
 		const id = form.getFieldValue('id');
-		if (type === '2' && value) {
+		if (+type === 2 && value) {
 			callback('A guest cannot have a password');
-		} else if (type === '1' && !id && !value) {
+		} else if (+type < 2 && !id && !value) {
 			callback('A user must have a password');
 		} else {
 			callback();
@@ -41,16 +31,12 @@ class UserForm extends Component {
 
 		return (
 			<Form onSubmit={this.handleSubmit} className='login-form'>
-				<Form.Item>
-					{getFieldDecorator('id', {
-						initialValue: this.props.user.id
-					})(<Input type="hidden" />)}
-				</Form.Item>
 				<Form.Item hasFeedback>
 					{getFieldDecorator('type', {
 						rules: [{required: true}],
 						initialValue: `${this.props.user.type}`
 					})(<Select>
+						<Select.Option value='0'>Admin</Select.Option>
 						<Select.Option value='1'>User</Select.Option>
 						<Select.Option value='2'>Guest</Select.Option>
 					</Select>)}
@@ -108,19 +94,6 @@ class UserForm extends Component {
 						onPressEnter={this.handleSubmit}
 						placeholder='Website'
 					/>)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('flag_admin', {
-						valuePropName: 'flag_admin',
-						initialValue: (this.props.user.flag_admin === 1)
-					})(
-						<Checkbox
-							checked={this.state.adminChecked}
-							onChange={this.toggleAdmin}
-						>
-							Administrator
-						</Checkbox>
-					)}
 				</Form.Item>
 				<Form.Item>
 					<Button type='primary' htmlType='submit' className='login-form-button'>

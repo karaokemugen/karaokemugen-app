@@ -34,8 +34,8 @@ class UserList extends Component {
 			});
 	}
 
-	delete = (userId) => {
-		axios.delete(`/api/system/users/${userId}`)
+	delete = (userLogin) => {
+		axios.delete(`/api/system/users/${userLogin}`)
 			.then(() => {
 				this.props.warnMessage('User deleted.');
 				this.setState({deleteModal: false, user: {}});
@@ -59,7 +59,7 @@ class UserList extends Component {
 				<Modal
 					title='Confirm user delete'
 					visible={this.state.deleteModal}
-					onOk={() => this.delete(this.state.user.user_id)}
+					onOk={() => this.delete(this.state.user.login)}
 					onCancel={() => this.setState({deleteModal: false, user: {}})}
 					okText='yes'
 					cancelText='no'
@@ -72,21 +72,19 @@ class UserList extends Component {
 	}
 
 	columns = [{
-		title: 'ID',
-		dataIndex: 'user_id',
-		key: 'user_id',
-		render: user_id => <Link to={`/system/users/${user_id}`}>{user_id}</Link>,
-		defaultSortOrder: 'ascend',
-		sorter: (a, b) => a.user_id - b.user_id
-	}, {
 		title: 'Type',
 		dataIndex: 'type',
 		key: 'type',
 		filters: [
+			{ text: 'Admin', value: '0' },
 			{ text: 'User', value: '1' },
 			{ text: 'Guest', value: '2' },
 		],
-		render: text => text === 1 ? 'User' : 'Guest',
+		render: text => {
+			if (+text === 1) return 'User';
+			if (+text === 2) return 'Guest';
+			if (+text === 3) return 'Admin';
+		},
 		filterMultiple: false,
 		onFilter: (value, record) => `${record.type}` === value,
 	}, {
@@ -109,9 +107,9 @@ class UserList extends Component {
 		sorter: (a, b) => a.nickname.localeCompare(b.nickname)
 	}, {
 		title: 'Last seen on',
-		dataIndex: 'last_login',
-		key: 'last_login',
-		render: (date) => (new Date(+date*1000)).toLocaleString('en'),
+		dataIndex: 'last_login_at',
+		key: 'last_login_at',
+		render: (date) => (new Date(date)).toLocaleString('en'),
 		sorter: (a,b) => a.last_login - b.last_login
 	}, {
 		title: 'Logged in?',
@@ -125,21 +123,10 @@ class UserList extends Component {
 		filterMultiple: false,
 		onFilter: (value, record) => `${record.flag_online}` === value,
 	}, {
-		title: 'Admin?',
-		dataIndex: 'flag_admin',
-		key: 'flag_admin',
-		filters: [
-			{ text: 'Admin', value: '1' },
-			{ text: 'Standard', value: '0' },
-		],
-		render: text => <Checkbox disabled defaultChecked={text === 1} />,
-		filterMultiple: false,
-		onFilter: (value, record) => `${record.flag_admin}` === value,
-	}, {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/users/${record.user_id}`}><Icon type='edit'/></Link>
+			<Link to={`/system/users/${record.login}`}><Icon type='edit'/></Link>
 			<Divider type="vertical"/>
 			<Button type='danger' icon='delete' onClick={
 				() => this.setState({deleteModal: true, user: record})

@@ -218,7 +218,7 @@ export async function initDBSystem() {
 	}
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
-	logger.info(`Songs        : ${stats.karas} (${duration(stats.duration)})`);
+	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
 	logger.info(`Series       : ${stats.series}`);
 	logger.info(`Languages    : ${stats.languages}`);
 	logger.info(`Artists      : ${stats.singers} singers, ${stats.songwriters} songwriters, ${stats.creators} creators`);

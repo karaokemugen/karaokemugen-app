@@ -41,14 +41,14 @@ class App extends Component {
 							<Route path='/system/karas/history' component={AuthRequired(import('./pages/Karas/History'))}/>
 							<Route path='/system/karas/ranking' component={AuthRequired(import('./pages/Karas/Ranking'))}/>
 							<Route path='/system/karas/viewcounts' component={AuthRequired(import('./pages/Karas/Viewcounts'))}/>
-							<Route path='/system/karas/:kara_id' component={AuthRequired(import('./pages/Karas/KaraEdit'))}/>
+							<Route path='/system/karas/:kid' component={AuthRequired(import('./pages/Karas/KaraEdit'))}/>
 							<Route path='/system/karas' component={AuthRequired(import('./pages/Karas/KaraList'))}/>
 							<Route path='/system/series/new' component={AuthRequired(import('./pages/Series/SeriesEdit'))}/>
-							<Route path='/system/series/:serie_id' component={AuthRequired(import('./pages/Series/SeriesEdit'))}/>
+							<Route path='/system/series/:sid' component={AuthRequired(import('./pages/Series/SeriesEdit'))}/>
 							<Route path='/system/series' component={AuthRequired(import('./pages/Series/SeriesList'))}/>
 							<Route path='/system/db' component={AuthRequired(import('./pages/Database'))}/>
 							<Route path='/system/users/create' component={AuthRequired(import('./pages/Users/UserEdit'))}/>
-							<Route path='/system/users/:userId' component={AuthRequired(import('./pages/Users/UserEdit'))}/>
+							<Route path='/system/users/:userLogin' component={AuthRequired(import('./pages/Users/UserEdit'))}/>
 							<Route path='/system/users' component={AuthRequired(import('./pages/Users/UserList'))}/>
 						</Switch>
 					</Layout>

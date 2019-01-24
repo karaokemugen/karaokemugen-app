@@ -50,7 +50,7 @@ VALUES(
 )
 `;
 
-export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, limitClause, offsetClause) => `SELECT
+export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, havingClause, limitClause, offsetClause) => `SELECT
   ak.kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
@@ -102,6 +102,7 @@ WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
 GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname, ak.serie_i18n, ak.sid, ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid
+${havingClause}
 ORDER BY ${orderClauses} ak.languages_sortable, ak.serie IS NULL, lower(unaccent(serie)), ak.songtypes_sortable DESC, ak.songorder, lower(unaccent(singers_sortable)), lower(unaccent(ak.title))
 ${limitClause}
 ${offsetClause}
@@ -119,6 +120,20 @@ export const isKara = `
 SELECT pk_kid
 FROM kara
 WHERE pk_kid = $1;
+`;
+
+export const getKaraHistory = `
+SELECT ak.title AS title,
+	ak.songorder AS songorder,
+	ak.serie AS serie,
+	ak.singers AS singers,
+	ak.songtypes AS songtypes,
+    ak.languages AS languages,
+    (SELECT COUNT(fk_kid) AS played FROM played WHERE fk_kid = ak.kid) AS played,
+    p.played_at AS played_at
+FROM all_karas AS ak
+INNER JOIN played p ON p.fk_kid = ak.kid
+ORDER BY p.played_at DESC
 `;
 
 export const isKaraInPlaylist = `

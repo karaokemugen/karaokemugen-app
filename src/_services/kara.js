@@ -13,7 +13,8 @@ import {selectAllKaras,
 	isKara as isKaraDB,
 	addKara,
 	updateKara,
-	addPlayed
+	addPlayed,
+	getKaraHistory as getKaraHistoryDB
 } from '../_dao/kara';
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
@@ -267,13 +268,13 @@ export function serieRequired(karaType) {
 	return karaType !== karaTypes.MV.type && karaType !== karaTypes.LIVE.type;
 }
 
-export async function getKaraHistory(token, lang, from, size) {
+export async function getKaraHistory() {
 	// Called by system route
-	return await selectAllKaras(token.username, null, lang, 'history', null, from, size);
+	return await getKaraHistoryDB();
 }
 
 export async function getTop50(token, lang) {
-	return await getAllKaras(token.username, null, lang, 'requested',null);
+	return await getAllKaras(token.username, null, lang, 'requested', null);
 }
 
 export async function getKaraPlayed(token, lang, from, size) {

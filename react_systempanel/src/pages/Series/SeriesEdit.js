@@ -35,7 +35,7 @@ class SerieEdit extends Component {
 	};
 
 	saveUpdate = (serie) => {
-		axios.put(`/api/system/series/${serie.serie_id}`, serie)
+		axios.put(`/api/system/series/${serie.sid}`, serie)
 			.then(() => {
 				this.props.infoMessage('Series successfully edited');
 				this.props.push('/system/series');
@@ -47,11 +47,11 @@ class SerieEdit extends Component {
 
 	loadSerie = () => {
 		this.props.loading(true);
-		if (this.props.match && this.props.match.params.serie_id) {
-			axios.get(`/api/system/series/${this.props.match.params.serie_id}`)
+		if (this.props.match && this.props.match.params.sid) {
+			axios.get(`/api/system/series/${this.props.match.params.sid}`)
 				.then(res => {
 					const serieData = {...res.data};
-					serieData.serie_id = this.props.match.params.serie_id;
+					serieData.sid = this.props.match.params.sid;
 					this.setState({serie: serieData, save: this.saveUpdate});
 					this.props.loading(false);
 				})
