@@ -1,5 +1,4 @@
 import {formatKaraList, isAllKaras, getKara} from './kara';
-import {isAllKarasInPlaylist} from './playlist';
 import {removeKaraFromWhitelist, getWhitelistContents as getWLContents, emptyWhitelist as emptyWL, addKaraToWhitelist as addToWL} from '../_dao/whitelist';
 import {generateBlacklist} from './blacklist';
 import {profile} from '../_utils/logger';

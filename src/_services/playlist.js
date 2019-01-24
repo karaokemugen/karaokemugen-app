@@ -698,10 +698,8 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,token) {
 			updatePlaylistKaraCount(playlist_id),
 			reorderPlaylist(playlist_id)
 		]);
-		console.log('lol')
 		updatePlaylistLastEditTime(playlist_id);
 		profile('deleteKara');
-		console.log('lol2')
 		return {
 			pl_id: playlist_id,
 			pl_name: pl.name

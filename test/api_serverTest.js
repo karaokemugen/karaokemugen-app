@@ -374,17 +374,14 @@ describe('Managing settings', function(){
 	});
 
 	it('Update settings', function() {
-		var data = JSON.stringify(SETTINGS);
+		var data = SETTINGS;
 		return request
 			.put('/api/admin/settings')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data.data)
 			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response){
-				assert.equal(response.body.data.isTest,'true');
-			});
+			.expect(200);
 	});
 });
 
@@ -414,7 +411,7 @@ describe('Managing whitelist', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
-			.expect(200)
+			.expect(200);
 	});
 
 	it('Delete karaoke 1 from whitelist', function() {
