@@ -84,7 +84,7 @@ export async function mergeConfig(newConfig) {
 		}
 	}
 
-	if (newConfig.OnlineMode && getState().ready) publishURL();
+	if (newConfig.OnlineURL && getState().ready) publishURL();
 	setConfig(newConfig);
 	const conf = getConfig();
 	+conf.EngineSongPoll === 1 ? setSongPoll(true) : setSongPoll(false);
@@ -205,7 +205,7 @@ export function configureHost() {
 	let URLPort = `:${conf.appFrontendPort}`;
 	config = {...config, osHost: address()};
 	if (+conf.appFrontendPort === 80) URLPort = '';
-	if (+conf.OnlineMode) return config = {...config, osURL: `http://${config.OnlineHost}`};
+	if (+conf.OnlineURL) return config = {...config, osURL: `http://${config.OnlineHost}`};
 	if (conf.EngineDisplayConnectionInfoHost === '') return config = {...config, osURL: `http://${address()}${URLPort}`};
 	return config = {...config, osURL: `http://${conf.EngineDisplayConnectionInfoHost}${URLPort}`};
 }

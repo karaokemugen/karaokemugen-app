@@ -150,6 +150,11 @@
 										<input class="form-control passwordConfirmation" type="password" placeholder="{{{ i18n "PROFILE_PASSWORDCONF" }}}" style="margin-left: 3px;"/>
 									</div>
 								</div>
+                                <div class="profileLine">
+                                    <button type="button"  title='{{i18n "PROFILE_CONVERT"}}' class="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert">
+                                        <i class="glyphicon glyphicon-retweet"></i> {{i18n "PROFILE_CONVERT"}}
+                                    </button>
+                                </div>
 							</div>
 						</div>
 						<div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" class="modal-body tab-pane fade in">
@@ -197,7 +202,9 @@
                      {{i18n "OR"}}
                     </div>
                     <div class="modal-message loginRelated">
-                            <input type="text" class="form-control" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="text" class="" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="text" class="" id="loginServ" name="modalLoginServ" placeholder="{{i18n "INSTANCE_NAME_SHORT"}}" value="{{ onlineHost }}"/>
+                
                             <input type="password" class="form-control" id="password" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
                     </div>
                     <div class="loginRelated"></div>
@@ -209,9 +216,10 @@
                 </div>
                 <div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
                     <div class="">
-                            <input type="text" class="form-control" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
-                            <input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
-                            <input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
+                        <input type="text" class="" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                        <input type="text" class="" id="signupServ" name="modalLoginServ" placeholder="{{i18n "INSTANCE_NAME_SHORT"}}" value="{{ onlineHost  }}"/>                            
+                        <input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
+                        <input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
                     </div>
                     <div>
                         <button id="signup" type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">

@@ -1,4 +1,4 @@
-import {exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
+import {createWriteStream, exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
 import {remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
@@ -169,4 +169,13 @@ export async function compareDirs(dir1, dir2) {
 export async function asyncReadDirFilter(dir, ext) {
 	const dirListing = await asyncReadDir(dir);
 	return dirListing.filter(file => file.endsWith(ext) && !file.startsWith('.')).map(file => resolve(dir, file));
+}
+
+export function writeStreamToFile(stream, filePath) {
+	return new Promise((resolve, reject) => {
+		const file = createWriteStream(filePath);
+		stream.pipe(file);
+		stream.on('end', () => resolve());
+		stream.on('error', (err) => reject(err));
+	});
 }

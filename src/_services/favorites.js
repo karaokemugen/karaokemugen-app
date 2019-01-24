@@ -6,6 +6,9 @@ import {date} from '../_utils/date';
 import {profile} from '../_utils/logger';
 import {formatKaraList} from './kara';
 import { uuidRegexp } from './constants';
+import { getRemoteToken } from '../_dao/user';
+import got from 'got';
+import {getConfig} from '../_common/utils/config';
 
 export async function getFavorites(username, filter, lang, from, size) {
 	try {
@@ -13,12 +16,30 @@ export async function getFavorites(username, filter, lang, from, size) {
 		const favs = await selectFavorites(filter, lang, from, size, username);
 		return formatKaraList(favs.slice(from, from + size), lang, from, favs.length);
 	} catch(err) {
-		throw {
-			message: err,
-			data: username
-		};
+		throw err;
 	} finally {
 		profile('getFavorites');
+	}
+}
+
+export async function fetchAndAddFavorites(instance, token, username) {
+	try {
+		const res = await got(`http://${instance}/api/favorites`, {
+			headers: {
+				authorization: token
+			},
+			json: true
+		});
+		const favorites = {
+			Header: {
+				version: 1,
+				description: 'Karaoke Mugen Favorites List'
+			},
+			Favorites: res.body
+		};
+		await importFavorites(favorites, {username: username});
+	} catch(err) {
+		throw err;
 	}
 }
 
@@ -33,10 +54,29 @@ export async function addToFavorites(username, kid) {
 		if (Array.isArray(kid)) karas = kid;
 		if (typeof kid === 'string') karas = kid.split(',');
 		await insertFavorites(karas, username);
+		if (username.includes('@') && +getConfig().OnlineUsers) manageFavoriteInInstance('POST', username, kid);
 	} catch(err) {
-		throw {message: err};
+		throw err;
 	} finally {
 		profile('addToFavorites');
+	}
+}
+
+export async function convertToRemoteFavorites(username) {
+	// This is called when converting a local account to a remote one
+	// We thus know no favorites exist remotely.
+	if (!+getConfig().OnlineUsers) return true;
+	try {
+		const favorites = await getFavorites({username: username});
+		const addFavorites = [];
+		if (favorites.content.length > 0) {
+			for (const favorite of favorites) {
+				addFavorites.push(manageFavoriteInInstance('POST', username, favorite.kid));
+			}
+			await Promise.all(addFavorites);
+		}
+	} catch(err) {
+		throw err;
 	}
 }
 
@@ -47,10 +87,36 @@ export async function deleteFavorites(username, kid) {
 		if (Array.isArray(kid)) karas = kid;
 		if (typeof kid === 'string') karas = kid.split(',');
 		await removeFavorites(karas, username);
+		if (username.includes('@') && +getConfig().OnlineUsers) {
+			for (const kid of karas) {
+				manageFavoriteInInstance('DELETE', username, kid);
+			}
+		}
 	} catch(err) {
 		throw {message: err};
 	} finally {
 		profile('deleteFavorites');
+	}
+}
+
+async function manageFavoriteInInstance(action, username, kid) {
+	// If OnlineUsers is disabled, we return early and do not try to update favorites online.
+	if (!+getConfig().OnlineUsers) return true;
+	const instance = username.split('@')[1];
+	const remoteToken = getRemoteToken(username);
+	try {
+		return await got(`http://${instance}/api/favorites`, {
+			method: action,
+			body: {
+				kid: kid
+			},
+			headers: {
+				authorization: remoteToken.token
+			},
+			form: true
+		});
+	} catch(err) {
+		logger.error(`[RemoteFavorites] Unable to ${action} favorite ${kid} on ${username}'s online account : ${err}`);
 	}
 }
 

@@ -3685,7 +3685,7 @@
     * HTTP/1.1 403 Forbidden
 	*/
 
-	/**
+/**
  * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
  * @apiVersion 2.1.0
@@ -4067,7 +4067,6 @@
  * }
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
-<<<<<<< HEAD
  */
 
  	/**
@@ -4442,7 +4441,7 @@
 * }
 */
 
-	/**
+/**
  * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
  * @apiVersion 2.2.0
@@ -4526,7 +4525,7 @@
  * HTTP/1.1 500 Internal Server Error
  */
 
-	/**
+/**
  * @api {get} /admin/whitelist Get whitelist
  * @apiName GetWhitelist
  * @apiVersion 2.2.0
@@ -5352,7 +5351,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
- /**
+/**
  * @api {get} /admin/settings Get settings
  * @apiName GetSettings
  * @apiVersion 2.2.0
@@ -5438,7 +5437,7 @@
  * }
  */
 
- /**
+/**
  * @api {put} /admin/settings Update settings
  * @apiName PutSettings
  * @apiVersion 2.2.0
@@ -5557,7 +5556,7 @@
  * HTTP/1.1 500 Internal Server Error
  */
 
- /**
+/**
  * @api {get} /admin/playlists/:pl_id Get playlist information
  * @apiName GetPlaylist
  * @apiGroup Playlists
@@ -5599,7 +5598,7 @@
  * HTTP/1.1 500 Internal Server Error
  */
 
-	/**
+/**
  * @api {get} /admin/users/:username View user details (admin)
  * @apiName GetUserAdmin
  * @apiVersion 2.1.0
@@ -5653,7 +5652,7 @@
  * }
  */
 
-	/**
+/**
  * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
  * @apiVersion 2.3.1
@@ -6113,7 +6112,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} /public/playlists/:pl_id Get playlist information (public)
  * @apiName GetPlaylistPublic
  * @apiGroup Playlists
@@ -6251,7 +6250,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
  * @apiVersion 2.3.1
@@ -6383,7 +6382,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} /public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
  * @apiVersion 2.2.0
@@ -6531,7 +6530,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
  * @apiVersion 2.3.1
@@ -6614,7 +6613,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {get} /public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
  * @apiVersion 2.3.0
@@ -6715,7 +6714,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
  * @apiVersion 2.3.1
@@ -6804,7 +6803,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} /public/playlists/current Get current playlist information
  * @apiName GetPlaylistCurrent
  * @apiGroup Playlists
@@ -6891,7 +6890,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.3.1
@@ -6981,7 +6980,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
 	* @apiVersion 2.3.0
@@ -7041,7 +7040,7 @@
     * HTTP/1.1 403 Forbidden
 	*/
 
-		/**
+/**
 		* @api {get} /public/series Get series list
 		* @apiName GetSeries
 		* @apiVersion 2.3.0
@@ -7179,7 +7178,7 @@
  * HTTP/1.1 500 Internal Server Error
  */
 
-	/**
+/**
  * @api {get} /public/top50 View Top 50 songs
  * @apiName GetTop50
  * @apiVersion 2.2.0
@@ -7251,7 +7250,7 @@
  * HTTP/1.1 500 Internal Server Error
  */
 
-	/**
+/**
  * @api {get} /public/myaccount View own user details
  * @apiName GetMyAccount
  * @apiVersion 2.1.0
@@ -7388,7 +7387,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {put} /public/users/:username Edit a user
  * @apiName EditUser
  * @apiVersion 2.5.0
@@ -7426,7 +7425,7 @@
  * HTTP/1.1 500 Internal Server Error
  */
 
-	/**
+/**
  * @api {get} public/users/:username/requests View user's most requested songs
  * @apiName GetUserRequestedKaras
  * @apiVersion 2.1.0
@@ -7502,7 +7501,7 @@
  * }
  */
 
-	/**
+/**
  * @api {put} /public/myaccount Edit your own account
  * @apiName EditMyAccount
  * @apiVersion 2.1.0
@@ -7625,7 +7624,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} /favorites/export Export favorites
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getFavoritesExport
@@ -7675,7 +7674,7 @@
  * }
  */
 
-	/**
+/**
  * @api {get} /public/users List users
  * @apiName GetUsers
  * @apiVersion 2.1.0
@@ -7732,7 +7731,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} public/songpoll Get current poll status
  * @apiName GetPoll
  * @apiVersion 2.1.0
@@ -7899,7 +7898,7 @@
  * }
  */
 
- /**
+/**
  * @api {delete} /admin/users/:userID Delete an user
  * @apiName DeleteUser
  * @apiVersion 2.1.0
@@ -7984,7 +7983,7 @@
  *
  */
 
- /**
+/**
  * @api {get} /public/karas/random Get a random karaoke ID
  * @apiName GetKarasRandom
  * @apiVersion 2.1.0
@@ -8005,7 +8004,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {post} /public/karas/:kara_id Add karaoke to current/public playlist
  * @apiName PostKaras
  * @apiVersion 2.1.2
@@ -8159,7 +8158,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {delete} /public/favorites/ Delete karaoke from your favorites
  * @apiName DeleteFavorites
  * @apiVersion 2.1.0
@@ -8187,4 +8186,29 @@
  * }
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
+ */
+/*
+ * @api {post} /auth/login Login / Sign in
+ * @apiName AuthLogin
+ * @apiVersion 2.1.0
+ * @apiGroup Auth
+ * @apiPermission NoAuth
+ * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
+ * @apiHeader {String} charset Must be `UTF-8`
+ * @apiParam {String} username Login name for the user
+ * @apiParam {String} password Password for the user. Can be empty if user is a guest.
+ * @apiSuccess {String} token Identification token for this session
+ * @apiSuccess {String} username Username logged in
+ * @apiSuccess {String} role Role of this user (`user` or `admin`)
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE1MTMxNjAxMTEzMjMsInJvbGUiOiJ1c2VyIn0.UWgsc5XEfFtk34IpUAQid_IEWCj2ffNjQ--FJ9eAYd0",
+ *   "username": "Axel",
+ *   "role": "admin"
+ * }
+ * @apiError 401 Unauthorized
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 401 Unauthorized
  */

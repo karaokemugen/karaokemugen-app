@@ -90,11 +90,11 @@ async function generateKara(kara, opts) {
 		type = string (see karaTypes from constants)
 		year = number or empty
 		order = number or empty
-		singer = string (elements separated by ,) (see results from GET /api/v1/tags, type is 2)
-		songwriter = string (elements separated by ,) (see results from GET /api/v1/tags, type is 8)
+		singer = string (elements separated by ,) (see results from GET /api/tags, type is 2)
+		songwriter = string (elements separated by ,) (see results from GET /api/tags, type is 8)
 		tags = string (elements separated by ,) (see tags from constants)
-		creator = string (elements separated by ,) (see results from GET /api/v1/tags, type is 4)
-		author = string (elements separated by ,) (see results from GET /api/v1/tags, type is 6)
+		creator = string (elements separated by ,) (see results from GET /api/tags, type is 4)
+		author = string (elements separated by ,) (see results from GET /api/tags, type is 6)
 		lang = string (elements separated by ,) (get iso639-2B from langs.codes("2B") )
 		mediafile = mediafile name as uploaded
 		subfile = subfile name as uploaded

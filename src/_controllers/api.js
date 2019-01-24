@@ -25,7 +25,7 @@ import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelis
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, emptyFavorites, addToFavorites, deleteFavorites, exportFavorites, importFavorites} from '../_services/favorites';
 import {vote} from '../_services/upvote';
-import {createUser, findUserByName, deleteUser, editUser, listUsers} from '../_services/user';
+import {convertToRemoteUser, createUser, findUserByName, deleteUser, editUser, listUsers} from '../_services/user';
 import {getPoll, addPollVote} from '../_services/poll';
 import {getSeries} from '../_services/series';
 
@@ -109,7 +109,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {String} data/playlist_name Name of playlist created
  *
  * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
+ *     HTTP/1.1 201 OK
  * {
  *   "code": "AUTOMIX_CREATED",
  *   "data": {
@@ -1405,7 +1405,7 @@ export function APIControllerAdmin(router) {
 
 	router.route('/admin/player/message')
 	/**
- * @api {post} /admin/player/message Send a message to screen or users' devices
+ * @api {post} /admin/player/message Send a message to screen or user's devices
  * @apiName PostPlayerMessage
  * @apiVersion 2.1.0
  * @apiGroup Player
@@ -2534,7 +2534,7 @@ export function APIControllerPublic(router) {
 			//Get list of blacklist criterias IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklistCriterias) {
 				try {
-					const blc = await getBlacklist();
+					const blc = await getBlacklistCriterias();
 					res.json(OKMessage(blc));
 				} catch(err) {
 					logger.error(err);
@@ -3317,11 +3317,21 @@ export function APIControllerPublic(router) {
 	* @apiParam {String} [filter] Tag name to filter results
 	* @apiParam {Number} [from] Where to start listing from
 	* @apiParam {Number} [size] How many records to get.
+<<<<<<< HEAD
 	* @apiSuccess {String} data/name Name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
 	* @apiSuccess {Number} data/type Tag type number
 	* @apiSuccess {String} data/slug Slugified version of the tag
 	* @apiSuccess {Object} data/i18n Translations in case of misc, languages and song type tags
+=======
+	* @apiSuccess {String} data/content/name Name of tag
+	* @apiSuccess {String} data/content/name_i18n Translated name of tag
+	* @apiSuccess {Number} data/content/tag_id Tag ID number
+	* @apiSuccess {Number} data/content/type Tag type number
+ 	* @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ 	* @apiSuccess {Number} data/infos/from Starting position of listing
+ 	* @apiSuccess {Number} data/infos/to End position of listing
+>>>>>>> next
 	*
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
@@ -3663,9 +3673,9 @@ export function APIControllerPublic(router) {
  * @apiParam {String} [email] User's mail. Can be empty.
  * @apiParam {String} [url] User's URL. Can be empty.
  * @apiParam {ImageFile} [avatarfile] New avatar
- * @apiSuccess {String} args ID of user deleted
+ * @apiSuccess {String} args Username
  * @apiSuccess {String} code Message to display
- * @apiSuccess {Number} data ID of user deleted
+ * @apiSuccess {Number} user data edited
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -3712,6 +3722,57 @@ export function APIControllerPublic(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.status(400).json(validationErrors);
+			}
+		});
+	router.route('/public/myaccount/online')
+		/**
+	 * @api {post} /public/myaccount/online Convert your account to an online one
+	 * @apiName ConvertToOnline
+	 * @apiVersion 2.5.0
+	 * @apiGroup Users
+	 * @apiPermission own
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {String} instance Instance host name
+	 * @apiParam {String} password Password to confirm conversion (also needed to create online account)
+	 * @apiSuccess {String} data Object containing `token` and `onlineToken` properties. Use these to auth the new, converted user.
+	 * @apiSuccess {String} code Message to display
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": "USER_CONVERTED",
+	 *   "data": {
+	 * 		"token": "<local token>"
+	 * 		"onlineToken": "<online token>"
+	 * 	 }
+	 * }
+	 * @apiError USER_CONVERT_ERROR Unable to convert user to remote
+	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 403 Forbidden
+	 */
+		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			const validationErrors = check(req.body, {
+				instance: {presence: true},
+				password: {presence: true}
+			});
+			if (!validationErrors) {
+			// No errors detected
+				req.body.instance = unescape(req.body.instance.trim());
+				try {
+					const tokens = await convertToRemoteUser(req.authToken, req.body.password, req.body.instance);
+					emitWS('userUpdated',req.params.user_id);
+					res.json(OKMessage(tokens,'USER_CONVERTED'));
+				} catch(err) {
+					res.status(500).json(errMessage('USER_CONVERT_ERROR',err));
+				}
+			} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(validationErrors);
 			}
 		});
 
@@ -3782,9 +3843,13 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 200 OK
  * {
  *   "args": {
+<<<<<<< HEAD
  * 		 "kara": "Les Nuls - MV - Vous me subirez",
  *       "playlist_id": 1,
  *       "kid": "uuid"
+=======
+ *       "playlist_id": 1
+>>>>>>> next
  *   },
  *   "code": "FAVORITES_ADDED",
  *   "data": null
@@ -3835,7 +3900,9 @@ export function APIControllerPublic(router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "args": null,
+ *   "args": {
+ *       "playlist_id": 1
+ *   },
  *   "code": "FAVORITES_DELETED",
  *   "data": null
  * }
@@ -3844,7 +3911,6 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
- *   "args": null,
  *   "code": "FAVORITES_DELETE_ERROR",
  *   "message": "Kara ID unknown"
  * }
@@ -3870,7 +3936,7 @@ export function APIControllerPublic(router) {
 		});
 	router.route('/public/favorites/export')
 	/**
- * @api {get} /favorites/export Export favorites
+ * @api {get} /public/favorites/export Export favorites
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getFavoritesExport
  * @apiVersion 2.5.0
@@ -3905,7 +3971,7 @@ export function APIControllerPublic(router) {
 		});
 	router.route('/public/favorites/import')
 	/**
- * @api {post} /favorites/import Import favorites
+ * @api {post} /public/favorites/import Import favorites
  * @apiName postFavoritesImport
  * @apiVersion 2.2.0
  * @apiGroup Favorites
@@ -3947,9 +4013,9 @@ export function APIControllerPublic(router) {
 					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;
 					emitWS('playlistContentsUpdated',data.playlist_id);
 					emitWS('playlistsUpdated');
-					res.json(OKMessage(response,'FAV_IMPORTED',data.playlist_id));
+					res.json(OKMessage(response,'FAVORITES_IMPORTED',data.playlist_id));
 				} catch(err) {
-					res.status(500).json(errMessage('FAV_IMPORT_ERROR',err));
+					res.status(500).json(errMessage('FAVORITES_IMPORT_ERROR',err));
 				}
 			} else {
 				// Errors detected
@@ -4055,7 +4121,7 @@ export function APIControllerPublic(router) {
 		});
 	router.route('/public/newsfeed')
 		/**
-	 * @api {get} public/newsfeed Get latest KM news
+	 * @api {get} /public/newsfeed Get latest KM news
 	 * @apiName GetNews
 	 * @apiVersion 2.4.0
 	 * @apiGroup Misc
@@ -4072,7 +4138,7 @@ export function APIControllerPublic(router) {
 		});
 	router.route('/public/songpoll')
 	/**
- * @api {get} public/songpoll Get current poll status
+ * @api {get} /public/songpoll Get current poll status
  * @apiName GetPoll
  * @apiVersion 2.5.0
  * @apiGroup Song Poll
@@ -4125,7 +4191,7 @@ export function APIControllerPublic(router) {
 			};
 		})
 	/**
- * @api {post} public/songpoll Vote in a poll
+ * @api {post} /public/songpoll Vote in a poll
  * @apiName PostPoll
  * @apiVersion 2.5.0
  * @apiGroup Song Poll

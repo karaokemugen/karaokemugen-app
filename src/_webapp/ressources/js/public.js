@@ -100,7 +100,6 @@ $(document).ready(function () {
 var datePlus10 = new Date();
 datePlus10.setFullYear(datePlus10.getFullYear() + 10);
 
-scope = 'public';
 var currentPanning;
 var settings = {};
 refreshTime = 2000;
@@ -113,7 +112,9 @@ getPublicSettings = function() {
 			window.location.reload();
 		}
 
-		playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
+        playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
+        
+        manageOnlineUsersUI(data);
 
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
 			playlistToAddId = data.playlist_id;
@@ -128,7 +129,7 @@ getPublicSettings = function() {
 			promise.resolve();
 		});
 
-		// Init with player infos, set the playlist's id where users can add their karas
+        // Init with player infos, set the playlist's id where users can add their karas
 		settings = data;
 			
 		$('#version').text(settings['VersionName'] + ' ' + settings['VersionNo']);

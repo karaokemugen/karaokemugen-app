@@ -7,6 +7,13 @@ export async function getUser(username) {
 	return res.rows[0];
 }
 
+const remoteTokens = [];
+// Format:
+// {
+//   username: ...
+//   token: ...
+// }
+
 export async function checkNicknameExists(nickname) {
 	const res = await db().query(yesql(sql.testNickname)({nickname: nickname}));
 	return res.rows[0];
@@ -103,4 +110,29 @@ export async function updateUserPassword(username,password) {
 		username: username,
 		password: password
 	}));
+}
+
+export function getRemoteToken(username) {
+	const index = findRemoteToken(username);
+	if (index !== null) return remoteTokens[index];
+	return null;
+}
+
+function findRemoteToken(username) {
+	let remoteTokenIndex;
+	const remoteTokenFound = remoteTokens.some((rt, index) => {
+		remoteTokenIndex = index;
+		return rt.username === username;
+	});
+	if (remoteTokenFound) return remoteTokenIndex;
+	return null;
+}
+
+export function upsertRemoteToken(username, token) {
+	const index = findRemoteToken(username);
+	if (index) delete remoteTokens[index];
+	remoteTokens.push({
+		username: username,
+		token: token
+	});
 }

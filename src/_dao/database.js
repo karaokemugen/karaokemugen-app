@@ -10,7 +10,7 @@ import {compareKarasChecksum, run as generateDB} from '../_services/generation';
 import DBMigrate from 'db-migrate';
 import {resolve} from 'path';
 import {asyncRename, asyncExists} from '../_utils/files';
-import {isShutdownPG, checkPG, initPG} from '../_utils/postgresql';
+import {isShutdownPG, initPG} from '../_utils/postgresql';
 import { generateBlacklist } from '../_services/blacklist';
 
 const sql = require('./sql/database');

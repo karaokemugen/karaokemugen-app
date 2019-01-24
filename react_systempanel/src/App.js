@@ -19,8 +19,10 @@ class App extends Component {
 
 	componentWillMount() {
 		const token = localStorage.getItem('kmToken');
+		const onlineToken = localStorage.getItem('kmOnlineToken');
 		if (token) {
 			axios.defaults.headers.common['authorization'] = token;
+			axios.defaults.headers.common['onlineAuthorization'] = onlineToken;
 		}
 	}
 

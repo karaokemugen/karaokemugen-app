@@ -54,7 +54,7 @@ export async function initEngine() {
 		throw err;
 	}
 	await initUserSystem();
-	if (+conf.OnlineMode) try {
+	if (+conf.OnlineURL) try {
 		await initOnlineSystem();
 	} catch(err) {
 		logger.error(`[Engine] Failed to init online system : ${err}`);
