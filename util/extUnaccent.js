@@ -1,6 +1,5 @@
-// DO NOT RUN THIS ON PRODUCTION
-// This is used for CI/CD to drop the database contents and start anew.
-// DO NOT DO THIS AT HOME.
+// This script installs the unaccent extension in a database.
+// It requires superuser access.
 
 const dbConfigFile = require('../database.json');
 const {Pool} = require('pg');
