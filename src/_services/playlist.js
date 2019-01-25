@@ -909,6 +909,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 			});
 		}
 		// Validations done. First creating playlist.
+		console.log('Validations OK')
 		try {
 			if (!playlist_id) {
 				playlist_id = await createPlaylist(playlist.PlaylistInformation.name, {
@@ -922,6 +923,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 			playlist.PlaylistContents.forEach((kara,index) => {
 				playlist.PlaylistContents[index].playlist_id = playlist_id;
 			});
+			console.log(playlist);
 			await addKaraToPL(playlist.PlaylistContents);
 			if (playingKara.kid) {
 				const user = await findUserByName(playingKara.user);
@@ -930,6 +932,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 				const plcPlaying = await getPLCByKIDUserID(playingKara.kid,playingKara.user_id,playlist_id);
 				await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
 			}
+			console.log(playlist_id);
 			return {
 				playlist_id: playlist_id,
 				karasUnknown: ret.karasUnknown

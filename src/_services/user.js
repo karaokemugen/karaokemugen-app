@@ -197,7 +197,7 @@ export async function convertToRemoteUser(token, password, instance) {
 	try {
 		await createRemoteUser(user);
 	} catch(err) {
-		throw `Unable to create remote user : ${err}`;
+		throw err;
 	}
 	const remoteUser = await remoteLogin(user.login, password);
 	upsertRemoteToken(user.login, remoteUser.token);
@@ -392,12 +392,17 @@ export async function remoteLogin(username, password) {
 async function createRemoteUser(user) {
 	const instance = user.login.split('@')[1];
 	const login = user.login.split('@')[0];
+	let userExists = false;
 	try {
 		await getRemoteUser(user.login);
-		throw `User already exists on ${instance} or incorrect password`;
+		userExists = true;
 	} catch(err) {
 		// User unknown, we're good to create it
 	}
+	if (userExists) throw {
+		code: 'USER_ALREADY_EXISTS_ONLINE',
+		message: `User already exists on ${instance} or incorrect password`
+	};
 	try {
 		await got(`http://${instance}/api/users`, {
 			body: {
@@ -407,7 +412,10 @@ async function createRemoteUser(user) {
 			form: true
 		});
 	} catch(err) {
-		throw err;
+		throw {
+			code: 'USER_ONLINE_CREATION_ERROR',
+			message: err
+		};
 	}
 };
 
@@ -448,7 +456,11 @@ export async function createUser(user, opts) {
 	await newUserIntegrityChecks(user);
 	if (user.login.includes('@') && opts.createRemote) {
 		if (!+getConfig().OnlineUsers) throw 'Creating online accounts is not allowed on this instance';
-		await createRemoteUser(user);
+		try {
+			await createRemoteUser(user);
+		} catch(err) {
+			throw err;
+		}
 	}
 	if (user.password) user.password = hashPassword(user.password);
 	try {
@@ -461,7 +473,7 @@ export async function createUser(user, opts) {
 		return true;
 	} catch (err) {
 		logger.error(`[User] Unable to create user ${user.login} : ${err}`);
-		throw ({ code: 'USER_CREATION_ERROR', data: err});
+		throw { code: 'USER_CREATION_ERROR', data: err};
 	}
 }
 

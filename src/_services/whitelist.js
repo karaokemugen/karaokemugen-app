@@ -56,7 +56,6 @@ export async function deleteKaraFromWhitelist(wlcs) {
 		await removeKaraFromWhitelist(karaList);
 		return await generateBlacklist();
 	} catch(err) {
-		console.log(err);
 		logger.err(`${err}`);
 		throw err;
 	} finally {

@@ -9,7 +9,6 @@ import got from 'got';
 import { getKaraMini } from '../_dao/kara';
 import { now } from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
-import { emptyPlaylist } from './playlist';
 
 export async function fetchAndAddFavorites(instance, token, username, nickname) {
 	try {
@@ -47,9 +46,9 @@ export async function fetchAndAddFavorites(instance, token, username, nickname) 
 			});
 			index++;
 		}
-		await emptyPlaylist(pl.playlist_id);
 		logger.debug(`[Favorites] Favorites imported : ${JSON.stringify(favoritesPlaylist, null, 2)}`);
 		await importFavorites(favoritesPlaylist, {username: username});
+
 	} catch(err) {
 		throw err;
 	}
