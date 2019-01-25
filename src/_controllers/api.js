@@ -3484,19 +3484,17 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/users/:username View user details (public)
  * @apiName GetUser
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Users
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} username Username to check details for.
  * @apiSuccess {String} data/login User's login
  * @apiSuccess {String} data/nickname User's nickname
- * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
  * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
  * @apiSuccess {Number} data/flag_online Is the user an online account ?
  * @apiSuccess {Number} data/type Type of account (`0` = admin, `1` = user, `2` = guest)
  * @apiSuccess {Number} data/last_login_at Last login time in `Date()` format
- * @apiSuccess {Number} data/user_id User's ID in the database
  * @apiSuccess {String} data/url User's URL in its profile
  * @apiSuccess {String} data/bio User's bio
  *
@@ -3511,7 +3509,6 @@ export function APIControllerPublic(router) {
  *           "last_login_at": null,
  *           "login": "admin",
  *           "nickname": "Administrator",
- *           "user_id": 1,
  * 			 "url": null,
  * 			 "bio": null,
  *       },
