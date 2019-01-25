@@ -1364,7 +1364,7 @@ var settingsNotUpdated;
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   '<div class="infoDiv">'
                                 +   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
-                                +   (scope === 'public' && !isTouchScreen ? (  kara['flag_favorites'] ? makeFavButtonSmallFav : makeFavButtonSmall ) : '')
+                                +   (scope === 'public' && !isTouchScreen ? (  kara['flag_favorites'] || idPlaylist === -5 ? makeFavButtonSmallFav : makeFavButtonSmall ) : '')
 								+	(scope === 'admin' ? playKara : '')
 								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
 								+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
