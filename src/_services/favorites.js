@@ -13,8 +13,8 @@ import { emptyPlaylist } from './playlist';
 
 export async function fetchAndAddFavorites(instance, token, username, nickname) {
 	try {
-		const playlist_id = await getFavoritesPlaylist(username);
-		if (!playlist_id) throw 'User has no favorites playlist';
+		const pl = await getFavoritesPlaylist(username);
+		if (!pl) throw 'User has no favorites playlist';
 		const res = await got(`http://${instance}/api/favorites`, {
 			headers: {
 				authorization: token
@@ -47,7 +47,7 @@ export async function fetchAndAddFavorites(instance, token, username, nickname) 
 			});
 			index++;
 		}
-		await emptyPlaylist(playlist_id);
+		await emptyPlaylist(pl.playlist_id);
 		logger.debug(`[Favorites] Favorites imported : ${JSON.stringify(favoritesPlaylist, null, 2)}`);
 		await importFavorites(favoritesPlaylist, {username: username});
 	} catch(err) {
