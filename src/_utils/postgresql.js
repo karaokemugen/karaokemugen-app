@@ -74,6 +74,7 @@ export async function updatePGConf() {
 	pgConf = setConfig(pgConf, 'logging_collector', 'on');
 	pgConf = setConfig(pgConf, 'log_directory', `'${resolve(conf.appPath, 'logs/').replace(/\\/g,'/')}'`);
 	pgConf = setConfig(pgConf, 'log_filename', '\'postgresql-%Y-%m-%d.log\'');
+	pgConf = setConfig(pgConf, 'log_statement', '\'all\'');
 	pgConf = setConfig(pgConf, 'synchronous_commit', 'off');
 	await asyncWriteFile(pgConfFile, pgConf, 'utf-8');
 }
