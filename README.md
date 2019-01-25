@@ -11,26 +11,30 @@ Next branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemu
 
 [Visit Karaoke Mugen's homepage](http://karaokes.moe)
 
-Karaoke Mugen is a playlist manager and player for video karaoke. It's made of a webapp and an engine. The webapp allows users to add songs and admins to manage the karaoke session and playlists. The engine plays those songs on the computer used to display the video.
+Karaoke Mugen is a playlist manager and player for video and audio karaoke. It's made of a webapp and an engine. The webapp allows users to add songs and admins to manage the karaoke session and playlists. The engine plays those songs on the computer used to display the video.
 
-It works like a japanese karaoke where anyone can add songs one after another to a playlist with their smartphone, tablet or computer. Another mode allows users to add videos to a suggestion list the admin can then pick songs from.
+It works like a japanese karaoke where anyone can add songs one after another to a playlist with their smartphone, tablet or computer. Another mode allows users to add songs to a suggestion list the admin can then pick songs from.
 
-Karaoke Mugen works offline and does not require an Internet connection.
+Karaoke Mugen works offline and does not require an Internet connection, but a few of its features may need online access.
 
 ## Features
 
-* Can use single videos or videos + included subtitles.
-* Works with .ass subtitles
-* Skip, pause, play, stop, rewind playback from the webapp.
-* Manage playlists, shuffle them, order them, copy songs from one to another, etc.
+* Accepted formats :
+  * Video: AVI, MP4, MKV
+  * Subtitles: ASS
+  * Music: MP3, M4A, OGG
+* Complete player controls : Skip, pause, play, stop, rewind playback, hide/show lyrics, mute/unmute and volume control
+* Playlist management : Reorder, shuffle, copy and move songs around between playlists
+* Blacklist and whitelist system : Create criterias to ban songs on.
+* Complete metadata structure for songs : Singers, songwriters, creators, authors, languages, categorization tags...
+* Complete filter system based on the aforementionned metadata.
+* User profiles with access rights, favorites list, and other info
 * Web interface for smartphone/tablet/PC ~~IE6 compatible~~
-* Displays karaoke information at the beginning and end of song
-* Tag/metadata system for karaokes : year, studio, singer, songwriter, language, etc.
-* Keep track of who asked for this or that song.
+* Displays karaoke information during song playback
 * Public or private mode :
   * In private mode (default) songs added by users are directly played one after the other in the current playlist
   * In public mode, songs are added to a suggestion list. It's up to the admin to add songs from this list.
-* Export/import playlists
+* Export/import playlists and favorites
 * REST API so you can create custom clients or web interfaces.
 * And many other things! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
 
@@ -41,9 +45,9 @@ Karaoke Mugen works offline and does not require an Internet connection.
 * Launch the app (see the launch section below). It will open a browser on the welcome screen. Follow the guided tour for admins.
 * Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and have fun!
 
-In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's about 190Gb big once the videos have been downloaded.
+In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's over 200Gb big once the videos have been downloaded.
 
-For more information, check out the [documentation site!](http://mugen.karaokes.moe/docs/en/)
+For more information, check out the [documentation site!](http://mugen.karaokes.moe/docs/)
 
 ## Install
 
@@ -55,13 +59,7 @@ To install, git clone this repository or download a copy as ZIP.
 
 ### Yarn
 
-If you don't have `yarn`, install it first :
-
-```sh
-npm install -g yarn
-```
-
-or via your Linux distribution's package manager.
+If you don't have `yarn`, install it first from [Yarn's website](http://yarnpkg.com)
 
 ### Dependencies
 
@@ -96,7 +94,7 @@ Use the supplied `database.sample.json` file and copy it to `database.json`. Edi
 }
 ```
 
-As a superuser on PostgreSQL, you need to create the database properly. Example with the `database.json` above :
+As a superuser on PostgreSQL, you need to create the database properly. Use the `psql` command-line tool to connect to your PostgreSQL database. Example with the `database.json` above :
 
 ```SQL
 CREATE DATABASE karaokemugen_app ENCODING 'UTF8';
@@ -121,7 +119,7 @@ To launch the app :
 yarn start
 ```
 
-Generating a database ie required on first launch and is done automatically if the file `app/db/karas.sqlite3` is missing. You can trigger it manually later by connectiong to the admin panel from the welcome screen. Another way is to delete the `app/db/karas.sqlite3` and let the app regenerate it on startup or launch with the `--generate` command-line option.
+Generating a database ie required on first launch and is done automatically if the database specified in `database.json` is empty. You can trigger it manually later by connectiong to the admin panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
 
 On first run, the app will make you create an admin user and follow a guided tour of the control panel. You can trigger this tour/admin creation process again by adding `appFirstRun=1` to your config file.
 
@@ -137,19 +135,34 @@ It also requires mpv and ffmpeg binaries (see below).
 
 mpv (video player), ffmpeg (video processing) and postgreSQL (database) are required by Karaoke Mugen
 
-* mpv 0.25 or up for Windows/Linux, 0.27 or up required for macOS ([mpv's website](http://mpv.io))
-* ffmpeg 3 or later ([ffmpeg's website](http://www.ffmpeg.org))
-* postgreSQL 10.6 ([postgreSQL's website](https://www.postgresql.org/))
+#### mpv
 
-#### Windows/macOS
+mpv 0.25 or later for Windows/Linux, 0.27 or later is required for macOS ([mpv's website](http://mpv.io))
+
+#### ffmpeg
+
+ffmpeg 3 or later is required ([ffmpeg's website](http://www.ffmpeg.org))
+
+#### PostgreSQL
+
+PostgreSQL 10.6 or later is required ([postgreSQL's website](https://www.postgresql.org/))
+
+Karaoke Mugen can use PostgreSQL in two ways :
+
+* Connect to an existing PostgreSQL server (edit the `database.json` file to point out to the correct server and database)
+* If `bundledPostgresBinary` is set to `true` in `database.json` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
+
+### Binaries - Windows/macOS
 
 Binaries must be placed in the `app/bin` folder (create it if it doesn't exist already).
 
 You can also specify paths where to find those binaries in your `config.ini` file if you have them already installed elsewhere on your system and wish to use them.
 
-#### Linux
+### Bianries - Linux
 
 Make sure ffmpeg/mpv are available in `/usr/bin`. If that's not the case, modify those paths in `config.ini`
+
+Make sure postgresql is launched and ready for use.
 
 Linux distributions often package old versions of ffmpeg/mpv, update them first via their own websites' instructions.
 
@@ -161,8 +174,8 @@ Currently french and english are supported. Translators are welcome!
 
 Read the [dedicated section on the documentation website](http://mugen.karaokes.moe/docs/en/dev-guide/code/)
 
-Everything's there, and if you have questions, you can come to [our Discord](https://discord.gg/XFXCqzU) in the #karaoke_dev section!
+Everything's there, and if you have questions, you can come to [our Discord](https://discord.gg/XFXCqzU) in the #karaoke_dev channel!
 
 ## Credits
 
-"Nanamin", Karaoke Mugen's mascott, is designed by [Sedeto](http://www.sedeto.fr)
+"Nanamin", Karaoke Mugen's mascott as well as KaraokeMugen's logo are designed by [Sedeto](http://www.sedeto.fr)
