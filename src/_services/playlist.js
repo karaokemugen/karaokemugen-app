@@ -499,16 +499,23 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		const plContents = await getPlaylistKaraIDs(playlist_id);
 		// Making a unique ID depending on if we're in the favorites or public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not
+		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it wont count
+		// If no song is currently playing, plContentsBeforePlay returns all songs in playlist.
+		const playingObject = getPlayingPos(plContents);
+		const playingPos = playingObject ? playingObject.plc_id_pos : 0;
+		const plContentsBeforePlay = plContents.filter(plc => plc.pos > playingPos);
 		if (+conf.EngineAllowDuplicates) {
+			// Remove songs from plContents which have already been played
+
 			if (!playlistInfo.flag_public && !playlistInfo.flag_favorites) {
-				plContents.forEach(p => p.unique_id = `${p.kara_id}_${p.user_id}`);
+				plContentsBeforePlay.forEach(p => p.unique_id = `${p.kara_id}_${p.user_id}`);
 				karaList.forEach(k => k.unique_id = `${k.kara_id}_${user.id}`);
 			} else {
-				plContents.forEach(p => p.unique_id = `${p.kara_id}`);
+				plContentsBeforePlay.forEach(p => p.unique_id = `${p.kara_id}`);
 				karaList.forEach(k => k.unique_id = `${k.kara_id}`);
 			}
 		} else {
-			plContents.forEach(p => p.unique_id = `${p.kara_id}`);
+			plContentsBeforePlay.forEach(p => p.unique_id = `${p.kara_id}`);
 			karaList.forEach(k => k.unique_id = `${k.kara_id}`);
 		}
 		let removeDuplicates = false;
@@ -526,7 +533,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 			removeDuplicates = true;
 		}
 		if (removeDuplicates) {
-			karaList = isAllKarasInPlaylist(karaList, plContents);
+			karaList = isAllKarasInPlaylist(karaList, plContentsBeforePlay);
 			if (karaList.length === 0) throw {
 				code: 4,
 				msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`
@@ -543,8 +550,6 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		// If pos is not provided, we need to get the maximum position in the PL
 		// And use that +1 to set our playlist position.
 		// If pos is -1, we must add it after the currently flag_playing karaoke.
-		const playingObject = getPlayingPos(plContents);
-		const playingPos = playingObject ? playingObject.plc_id_pos : 0;
 		// Position management here :
 		if (+conf.EngineSmartInsert && !user.flag_admin) {
 			if (userMaxPosition === null) {
