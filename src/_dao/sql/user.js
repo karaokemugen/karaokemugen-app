@@ -105,7 +105,7 @@ WHERE pk_login = :username;
 export const findFingerprint = `
 SELECT pk_login
 FROM users
-WHERE fingerprint = :fingerprint;
+WHERE fingerprint = $1;
 `;
 
 export const resetGuestsPassword = `
