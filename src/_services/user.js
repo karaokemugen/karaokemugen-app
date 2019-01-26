@@ -101,9 +101,14 @@ async function editRemoteUser(user) {
 
 export async function fetchAndUpdateRemoteUser(username, password, onlineToken) {
 	if (!onlineToken) onlineToken = await remoteLogin(username, password);
-	const remoteUser = await getRemoteUser(username, onlineToken);
+	let remoteUser;
+	try {
+		remoteUser = await getRemoteUser(username, onlineToken.token);
+	} catch(err) {
+		throw err;
+	}
 	// Check if user exists. If it does not, create it.
-	const user = await findUserByName(username);
+	let user = await findUserByName(username);
 	if (!user) {
 		await createUser({
 			login: username,
@@ -120,7 +125,7 @@ export async function fetchAndUpdateRemoteUser(username, password, onlineToken) 
 			path: await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file)
 		};
 	}
-	await editUser(username,{
+	user = await editUser(username,{
 		bio: remoteUser.bio,
 		url: remoteUser.url,
 		email: remoteUser.email,
@@ -132,22 +137,23 @@ export async function fetchAndUpdateRemoteUser(username, password, onlineToken) 
 	{
 		editRemote: false
 	});
+	user.onlineToken = onlineToken.token;
+	return user;
 }
 
 export async function checkLogin(username, password) {
 	const conf = getConfig();
-	let user;
-	let remoteUserID = {};
+	let user = {};
 	if (username.includes('@') && +conf.OnlineUsers) {
 		try {
 			// If username has a @, check its instance for existence
 			// If OnlineUsers is disabled, accounts are connected with
 			// their local version if it exists already.
 			const instance = username.split('@')[1];
-			const remoteUser = await fetchAndUpdateRemoteUser(username, password);
-			upsertRemoteToken(username, remoteUserID.token);
+			user = await fetchAndUpdateRemoteUser(username, password);
+			upsertRemoteToken(username, user.onlineToken);
 			// Download and add all favorites
-			fetchAndAddFavorites(instance, remoteUserID.token, username, remoteUser.nickname);
+			fetchAndAddFavorites(instance, user.onlineToken, username, user.nickname);
 		} catch(err) {
 			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${err}`);
 		}
@@ -161,7 +167,7 @@ export async function checkLogin(username, password) {
 	updateLastLoginName(username);
 	return {
 		token: createJwtToken(username, role, conf),
-		onlineToken: remoteUserID.token,
+		onlineToken: user.onlineToken,
 		username: username,
 		role: role
 	};
@@ -389,13 +395,28 @@ export async function remoteLogin(username, password) {
 	}
 }
 
+async function getAllRemoteUsers(instance) {
+	try {
+		const users = await got(`http://${instance}/api/users`,
+			{
+				json: true
+			});
+		return users.body;
+	} catch(err) {
+		throw {
+			code: 'USER_ONLINE_CHECK_LOGIN_ERROR',
+			message: err
+		};
+	}
+}
+
 async function createRemoteUser(user) {
 	const instance = user.login.split('@')[1];
 	const login = user.login.split('@')[0];
 	let userExists = false;
 	try {
-		await getRemoteUser(user.login);
-		userExists = true;
+		const users = await getAllRemoteUsers(instance);
+		if (users.filter(u => u.login === user.login).length === 1) userExists = true;
 	} catch(err) {
 		// User unknown, we're good to create it
 	}
@@ -431,7 +452,7 @@ export async function getRemoteUser(username, token) {
 		});
 		return res.body;
 	} catch(err) {
-		throw err;
+		if (err.statusCode === 401) throw 'Unauthorized';		throw 'Unknown error';
 	}
 }
 
