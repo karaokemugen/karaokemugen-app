@@ -7,5 +7,5 @@ export const exportRequested = 'SELECT fk_kid, session_started_at, requested_at 
 export const exportFavorites = `
 SELECT f.fk_kid
 FROM favorites f
-WHERE f.login NOT LIKE '%@%';
+WHERE f.fk_login NOT LIKE '%@%';
 `;

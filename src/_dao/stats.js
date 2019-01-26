@@ -7,7 +7,7 @@ export async function exportPlayed() {
 }
 
 export async function exportRequests() {
-	const res = await db().query(sql.exportRequests);
+	const res = await db().query(sql.exportRequested);
 	return res.rows;
 }
 
