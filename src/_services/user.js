@@ -32,6 +32,35 @@ on('databaseBusy', status => {
 	databaseBusy = status;
 });
 
+export async function removeRemoteUser(token, password) {
+	const instance = token.username.split('@')[1];
+	const username = token.username.split('@')[0];
+	// Verify that password matches with online before proceeding
+	try {
+		await remoteLogin(token.username, password);
+		await got(`http://${instance}/api/users`, {
+			method: 'DELETE',
+			headers: {
+				authorization: token.onlineToken
+			}
+		});
+		// Renaming user locally
+		const user = await findUserByName(token.username);
+		// Verify that no local user exists with the name we're going to rename it to
+		if (await findUserByName(username)) throw 'User already exists locally, delete it first.';
+		user.login = username;
+		await editUser(token.username, user, null, 'admin', {
+			editRemote: false,
+			renameUser: false
+		});
+		return {
+			token: createJwtToken(user.login, token.role)
+		};
+	} catch(err) {
+		throw err;
+	}
+}
+
 async function updateExpiredUsers() {
 	// Unflag connected accounts from database if they expired
 	try {
@@ -391,7 +420,7 @@ export async function remoteLogin(username, password) {
 		});
 		return JSON.parse(res.body);
 	} catch(err) {
-		throw err;
+		throw { code: 'USER_ONLINE_LOGIN_ERROR', message: err };
 	}
 }
 
@@ -413,17 +442,15 @@ async function getAllRemoteUsers(instance) {
 async function createRemoteUser(user) {
 	const instance = user.login.split('@')[1];
 	const login = user.login.split('@')[0];
-	let userExists = false;
 	try {
 		const users = await getAllRemoteUsers(instance);
-		if (users.filter(u => u.login === user.login).length === 1) userExists = true;
+		if (users.filter(u => u.login === user.login).length === 1) throw {
+			code: 'USER_ALREADY_EXISTS_ONLINE',
+			message: `User already exists on ${instance} or incorrect password`
+		};
 	} catch(err) {
 		// User unknown, we're good to create it
 	}
-	if (userExists) throw {
-		code: 'USER_ALREADY_EXISTS_ONLINE',
-		message: `User already exists on ${instance} or incorrect password`
-	};
 	try {
 		await got(`http://${instance}/api/users`, {
 			body: {

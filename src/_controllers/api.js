@@ -25,7 +25,7 @@ import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelis
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, addToFavorites, deleteFavorite, exportFavorites, importFavorites} from '../_services/favorites';
 import {vote} from '../_services/upvote';
-import {convertToRemoteUser, createUser, findUserByName, deleteUser, editUser, getUserRequests, listUsers} from '../_services/user';
+import {deleteUserByID, removeRemoteUser, convertToRemoteUser, createUser, findUserByName, deleteUser, editUser, getUserRequests, listUsers} from '../_services/user';
 import {getPoll, addPollVote} from '../_services/poll';
 import {getSeries} from '../_services/series';
 
@@ -4364,6 +4364,37 @@ export function APIControllerPublic(router) {
 			}
 		})
 	/**
+	 * @api {delete} /public/myaccount Delete your local account
+	 * @apiName ConvertToLocal
+	 * @apiVersion 2.5.0
+	 * @apiGroup Users
+	 * @apiPermission own
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiSuccess {String} code Message to display
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": "USER_DELETED"
+	 * }
+	 * @apiError USER_DELETED_ERROR Unable to delete your user
+	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 403 Forbidden
+	 */
+		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const user = await findUserByName(req.authToken.username);
+				await deleteUserByID(user.id);
+				res.json(OKMessage(null,'USER_DELETED'));
+			} catch(err) {
+				res.status(500).json(errMessage('USER_DELETED_ERROR',err));
+			}
+		})
+
+	/**
  * @api {put} /public/myaccount Edit your own account
  * @apiName EditMyAccount
  * @apiVersion 2.1.0
@@ -4460,7 +4491,7 @@ export function APIControllerPublic(router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			const validationErrors = check(req.body, {
 				instance: {presence: true},
 				password: {presence: true}
@@ -4470,7 +4501,7 @@ export function APIControllerPublic(router) {
 				req.body.instance = unescape(req.body.instance.trim());
 				try {
 					const tokens = await convertToRemoteUser(req.authToken, req.body.password, req.body.instance);
-					emitWS('userUpdated',req.params.user_id);
+					emitWS('userUpdated',req.authToken.username);
 					res.json(OKMessage(tokens,'USER_CONVERTED'));
 				} catch(err) {
 					res.status(500).json(errMessage('USER_CONVERT_ERROR',err));
@@ -4481,8 +4512,51 @@ export function APIControllerPublic(router) {
 				res.statusCode = 400;
 				res.json(validationErrors);
 			}
+		})
+	/**
+	 * @api {delete} /public/myaccount/online Delete your online account
+	 * @apiName ConvertToLocal
+	 * @apiVersion 2.5.0
+	 * @apiGroup Users
+	 * @apiPermission own
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {String} password Password to confirm deletion
+	 * @apiSuccess {String} data Object containing `token` and `onlineToken` properties. Use these to auth the new, converted user.
+	 * @apiSuccess {String} code Message to display
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": "USER_ONLINE_DELETED",
+	 * 	 "data": { token: abcdef... }
+	 * }
+	 * @apiError USER_ONLINE_DELETED_ERROR Unable to convert user to local
+	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 403 Forbidden
+	 */
+		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			const validationErrors = check(req.body, {
+				password: {presence: true}
+			});
+			if (!validationErrors) {
+			// No errors detected
+				try {
+					const newToken = await removeRemoteUser(req.authToken, req.body.password);
+					emitWS('userUpdated', req.authToken.username);
+					res.json(OKMessage(newToken,'USER_ONLINE_DELETED'));
+				} catch(err) {
+					res.status(500).json(errMessage('USER_ONLINE_DELETED_ERROR',err));
+				}
+			} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(validationErrors);
+			}
 		});
-
 	router.route('/public/favorites')
 	/**
  * @api {get} /public/favorites View own favorites
