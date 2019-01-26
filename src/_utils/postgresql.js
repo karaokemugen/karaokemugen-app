@@ -52,8 +52,8 @@ export async function initPGData() {
 	const conf = getConfig();
 	logger.info('[DB] No database present, initializing a new one...');
 	try {
-		const options = `init -o "-U ${conf.db.prod.superuser} -E UTF8" -D ${resolve(conf.appPath, conf.PathDB, 'postgres/')}`;
-		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), options.split(' '), {
+		const options = [ 'init','-o', `-U ${conf.db.prod.superuser} -E UTF8`, '-D', resolve(conf.appPath, conf.PathDB, 'postgres/') ];
+		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), options, {
 			cwd: resolve(conf.appPath, conf.BinPostgresPath),
 			windowsVerbatimArguments: true,
 			stdio: 'inherit'
