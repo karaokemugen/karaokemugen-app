@@ -25,7 +25,7 @@ import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelis
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, emptyFavorites, addToFavorites, deleteFavorites, exportFavorites, importFavorites} from '../_services/favorites';
 import {vote} from '../_services/upvote';
-import {convertToRemoteUser, createUser, findUserByName, deleteUser, editUser, listUsers} from '../_services/user';
+import {convertToRemoteUser, removeRemoteUser, createUser, findUserByName, deleteUser, editUser, listUsers} from '../_services/user';
 import {getPoll, addPollVote} from '../_services/poll';
 import {getSeries} from '../_services/series';
 
@@ -590,6 +590,9 @@ export function APIControllerAdmin(router) {
  * }
  * @apiError USER_CREATE_ERROR Unable to create user
  * @apiError USER_ALREADY_EXISTS This username already exists
+ * @apiError USER_ALREADY_EXISTS_ONLINE This username already exists on that online instance
+ * @apiError USER_ONLINE_CREATION_ERROR Unable to create the online user
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -3317,21 +3320,11 @@ export function APIControllerPublic(router) {
 	* @apiParam {String} [filter] Tag name to filter results
 	* @apiParam {Number} [from] Where to start listing from
 	* @apiParam {Number} [size] How many records to get.
-<<<<<<< HEAD
 	* @apiSuccess {String} data/name Name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
 	* @apiSuccess {Number} data/type Tag type number
 	* @apiSuccess {String} data/slug Slugified version of the tag
 	* @apiSuccess {Object} data/i18n Translations in case of misc, languages and song type tags
-=======
-	* @apiSuccess {String} data/content/name Name of tag
-	* @apiSuccess {String} data/content/name_i18n Translated name of tag
-	* @apiSuccess {Number} data/content/tag_id Tag ID number
-	* @apiSuccess {Number} data/content/type Tag type number
- 	* @apiSuccess {Number} data/infos/count Number of karaokes in playlist
- 	* @apiSuccess {Number} data/infos/from Starting position of listing
- 	* @apiSuccess {Number} data/infos/to End position of listing
->>>>>>> next
 	*
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
@@ -3658,6 +3651,36 @@ export function APIControllerPublic(router) {
 			}
 		})
 	/**
+	 * @api {delete} /public/myaccount Delete your local account
+	 * @apiName ConvertToLocal
+	 * @apiVersion 2.5.0
+	 * @apiGroup Users
+	 * @apiPermission own
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiSuccess {String} code Message to display
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": "USER_DELETED"
+	 * }
+	 * @apiError USER_DELETED_ERROR Unable to delete your user
+	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 403 Forbidden
+	 */
+		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				await deleteUser(req.authToken.username);
+				res.json(OKMessage(null,'USER_DELETED'));
+			} catch(err) {
+				res.status(500).json(errMessage('USER_DELETED_ERROR',err));
+			}
+		})
+
+	/**
  * @api {put} /public/myaccount Edit your own account
  * @apiName EditMyAccount
  * @apiVersion 2.5.0
@@ -3750,7 +3773,7 @@ export function APIControllerPublic(router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			const validationErrors = check(req.body, {
 				instance: {presence: true},
 				password: {presence: true}
@@ -3760,7 +3783,7 @@ export function APIControllerPublic(router) {
 				req.body.instance = unescape(req.body.instance.trim());
 				try {
 					const tokens = await convertToRemoteUser(req.authToken, req.body.password, req.body.instance);
-					emitWS('userUpdated',req.params.user_id);
+					emitWS('userUpdated',req.authToken.username);
 					res.json(OKMessage(tokens,'USER_CONVERTED'));
 				} catch(err) {
 					res.status(500).json(errMessage('USER_CONVERT_ERROR',err));
@@ -3771,8 +3794,51 @@ export function APIControllerPublic(router) {
 				res.statusCode = 400;
 				res.json(validationErrors);
 			}
+		})
+	/**
+	 * @api {delete} /public/myaccount/online Delete your online account
+	 * @apiName ConvertToLocal
+	 * @apiVersion 2.5.0
+	 * @apiGroup Users
+	 * @apiPermission own
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {String} password Password to confirm deletion
+	 * @apiSuccess {String} data Object containing `token` and `onlineToken` properties. Use these to auth the new, converted user.
+	 * @apiSuccess {String} code Message to display
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": "USER_ONLINE_DELETED",
+	 * 	 "data": { token: abcdef... }
+	 * }
+	 * @apiError USER_ONLINE_DELETED_ERROR Unable to convert user to local
+	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 403 Forbidden
+	 */
+		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			const validationErrors = check(req.body, {
+				password: {presence: true}
+			});
+			if (!validationErrors) {
+			// No errors detected
+				try {
+					const newToken = await removeRemoteUser(req.authToken, req.body.password);
+					emitWS('userUpdated', req.authToken.username);
+					res.json(OKMessage(newToken,'USER_ONLINE_DELETED'));
+				} catch(err) {
+					res.status(500).json(errMessage('USER_ONLINE_DELETED_ERROR',err));
+				}
+			} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(validationErrors);
+			}
 		});
-
 	router.route('/public/favorites')
 	/**
  * @api {get} /public/favorites View own favorites
@@ -3833,20 +3899,14 @@ export function APIControllerPublic(router) {
  * @apiParam {uuid} kid kara ID to add
  * @apiSuccess {Number} args/kid ID of kara added
  * @apiSuccess {Number} args/kara Name of kara added
- * @apiSuccess {Number} args/playlist_id ID of destinaton playlist
  * @apiSuccess {String} code Message to display
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
  *   "args": {
-<<<<<<< HEAD
  * 		 "kara": "Les Nuls - MV - Vous me subirez",
- *       "playlist_id": 1,
  *       "kid": "uuid"
-=======
- *       "playlist_id": 1
->>>>>>> next
  *   },
  *   "code": "FAVORITES_ADDED",
  *   "data": null
@@ -4082,7 +4142,8 @@ export function APIControllerPublic(router) {
  * @apiError USER_CREATE_ERROR Unable to create user
  * @apiError USER_ALREADY_EXISTS This username already exists
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * @apiError USER_ALREADY_EXISTS This username already exists
+ * @apiError USER_ALREADY_EXISTS_ONLINE This username already exists on that online instance
+ * @apiError USER_ONLINE_CREATION_ERROR Unable to create the online user
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
