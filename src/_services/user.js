@@ -325,11 +325,11 @@ export async function checkPassword(user,password) {
 
 export async function findFingerprint(fingerprint) {
 	let guest = await db.findFingerprint(fingerprint);
-	if (guest) return guest.login;
+	if (guest) return guest.pk_login;
 	guest = await db.getRandomGuest();
 	if (!guest) return false;
-	await db.updateUserPassword(guest.login, hashPassword(fingerprint));
-	return guest.login;
+	await db.updateUserPassword(guest.pk_login, hashPassword(fingerprint));
+	return guest.pk_login;
 }
 
 export async function updateUserFingerprint(username, fingerprint) {
