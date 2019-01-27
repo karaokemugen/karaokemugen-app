@@ -23,7 +23,7 @@ SELECT
   ak.misc_tags AS misc_tags,
   ak.duration AS duration,
   ak.created_at AS created_at,
-  ak.modified_at AS modified_at,
+  ak.modified_at AS modified_at
   FROM all_karas AS ak
   INNER JOIN favorites AS f ON f.fk_kid = ak.kid
   WHERE fk_login = :username
