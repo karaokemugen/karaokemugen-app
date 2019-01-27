@@ -3984,9 +3984,9 @@ export function APIControllerPublic(router) {
 				try {
 					const data = await deleteFavorites(req.authToken.username,req.body.kid);
 					emitWS('favoritesUpdated',req.authToken.username);
-					res.json(OKMessage(null,'FAVORITE_DELETED',data));
+					res.json(OKMessage(null,'FAVORITES_DELETED',data));
 				} catch(err) {
-					res.status(500).json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
+					res.status(500).json(errMessage('FAVORITES_DELETE_ERROR',err.message,err.data));
 				}
 			}
 
