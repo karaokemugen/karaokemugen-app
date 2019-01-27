@@ -616,7 +616,7 @@ describe('Playlists', function() {
 			.expect(201)
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'PLAYLIST_MODE_SONG_ADDED');
-				assert.strictEqual(response.body.data.kid,'a9c17ee5-b0f1-43d7-a1e0-0babf5997bde');
+				assert.strictEqual(response.body.data.kid[0], 'a9c17ee5-b0f1-43d7-a1e0-0babf5997bde');
 			});
 	});
 
