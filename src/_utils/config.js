@@ -229,7 +229,6 @@ export async function backupConfig() {
 export function getPublicConfig() {
 	let settings = {};
 	const conf = getConfig();
-
 	for (const key in conf) {
 		if (conf.hasOwnProperty(key)) {
 			if (!key.startsWith('Path') &&
@@ -238,13 +237,16 @@ export function getPublicConfig() {
 			!key.startsWith('Jwt') &&
 			!key.startsWith('is') &&
 			!key.startsWith('mpv') &&
-			!key.startsWith('os')
+			!key.startsWith('os') &&
+			!key.startsWith('db') &&
+			!key.startsWith('karaSuggestionMail') &&
+			!key.startsWith('appInstanceID')
 			) {
 				settings[key] = conf[key];
 			}
 		}
 	}
-
+	return settings;
 }
 
 export async function updateConfig(newConfig) {

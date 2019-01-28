@@ -209,11 +209,10 @@ describe('Favorites', function() {
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'FAVORITES_ADDED');
 				assert.strictEqual(response.body.data, null);
-				assert.strictEqual(response.body.args.playlist_id, 1);
 			});
 	});
 
-	var favoritesExport;
+	let favoritesExport;
 	it('Export favorites', function() {
 		return request
 			.get('/api/public/favorites/export')
@@ -269,17 +268,13 @@ describe('Favorites', function() {
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'FAVORITES_DELETED');
 				assert.strictEqual(response.body.data, null);
-				assert.strictEqual(response.body.args.playlist_id, 1);
 			});
 	});
 
+
 	it('Import favorites', function() {
 		var data = {
-			Header: {
-				version: 1,
-				description: 'Karaoke Mugen Favorites List'
-			},
-			Favorites: [ 'a07a32f7-63eb-46a6-8158-09bf4b06f1c7' ]
+			favorites: favoritesExport
 		};
 		return request
 			.post('/api/public/favorites/import')
@@ -290,30 +285,6 @@ describe('Favorites', function() {
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'FAVORITES_IMPORTED');
 				assert.strictEqual(response.body.data.message,'Favorites imported');
-				assert.strictEqual(response.body.data.unknownKaras.length, 0);
-			});
-	});
-
-	it('Import favorites with an unknown karaoke', function() {
-		var data = {
-			Header: {
-				version: 1,
-				description: 'Karaoke Mugen Favorites List'
-			},
-			Favorites: [
-				'a07a32f7-63eb-46a6-8158-09bf4b06f1c7',
-				'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
-			]
-		};
-		return request
-			.post('/api/public/favorites/import')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send(data)
-			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'FAVORITES_IMPORTED');
-				assert.strictEqual(response.body.data.unknownKaras.length, 1);
 			});
 	});
 });
@@ -380,7 +351,7 @@ describe('Series and year', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.strictEqual(response.body.data.content.length>=1, true);
-				assert.strictEqual(response.body.data.infos.count, 3);
+				assert.strictEqual(response.body.data.infos.count, 2);
 			});
 	});
 
@@ -393,7 +364,7 @@ describe('Series and year', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.strictEqual(response.body.data.content.length>=1, true);
-				assert.strictEqual(response.body.data.infos.count, 3);
+				assert.strictEqual(response.body.data.infos.count, 1);
 			});
 	});
 });
@@ -687,28 +658,7 @@ describe('Playlists', function() {
 
 	it('Import a playlist', function() {
 		var data = {
-			playlist: {
-				Header: {
-					version: 4,
-					description: 'Karaoke Mugen Playlist File'
-				},
-				PlaylistInformation: {
-					name: 'Faves : adminTest',
-					created_at: '2019-01-01T01:01:01.000Z',
-					modified_at: '2019-01-01T01:01:01.000Z',flag_visible: 0
-				},
-				PlaylistContents: [
-					{
-						kid: 'a07a32f7-63eb-46a6-8158-09bf4b06f1c7',nickname: 'adminTest',
-						created_at: '2019-01-01T01:01:01.000Z',
-						pos:1,
-						username: 'adminTest',
-						serie: 'Ken le Survivant',
-						title: 'AVI + sous-titres',
-						flag_playing:1
-					}
-				]
-			}
+			playlist: playlistExport
 		};
 		return request
 			.post('/api/admin/playlists/import')
@@ -1008,7 +958,7 @@ describe('Users', function() {
 			role: 'admin'
 		};
 		return request
-			.post('/api/public/users')
+			.post('/api/admin/users')
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.send(data)
@@ -1045,7 +995,6 @@ describe('Users', function() {
 				response.body.data.forEach(element => {
 					if (element.login === 'BakaToTest') {
 						assert.strictEqual(element.type, 1);
-						assert.strictEqual(element.flag_admin, 0);
 					}
 				});
 			});
@@ -1070,7 +1019,6 @@ describe('Users', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.strictEqual(response.body.data.type, 1);
-				assert.strictEqual(response.body.data.flag_admin, 0);
 			});
 	});
 
@@ -1082,7 +1030,6 @@ describe('Users', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.strictEqual(response.body.data.type, 1);
-				assert.strictEqual(response.body.data.flag_admin, 0);
 			});
 	});
 
@@ -1209,7 +1156,7 @@ describe('Main', function() {
 
 	it('Update settings', function() {
 		var data = SETTINGS;
-		//data.data.EngineAllowViewWhitelist=0;
+		data.data.EngineAllowViewWhitelist = 0;
 		return request
 			.put('/api/admin/settings')
 			.set('Accept', 'application/json')

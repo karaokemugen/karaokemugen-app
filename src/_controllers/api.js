@@ -138,9 +138,8 @@ export function APIControllerAdmin(router) {
 					const new_playlist = await createAutoMix(req.body, req.authToken.username);
 					emitWS('playlistsUpdated');
 					res.status(201).json(OKMessage(new_playlist,'AUTOMIX_CREATED',null));
-
 				} catch(err) {
-					logger.error(err);
+					logger.error('Automix', err);
 					res.status(500).json(errMessage('AUTOMIX_ERROR',err));
 				}
 			} else {
@@ -4066,7 +4065,7 @@ export function APIControllerPublic(router) {
 					const response = {
 						message: 'Favorites imported'
 					};
-					if (data.karasUnknown.length > 0) response.unknownKaras = data.karasUnknown;
+					if (data.karasUnknown && data.karasUnknown.length > 0) response.unknownKaras = data.karasUnknown;
 					emitWS('favoritesUpdated', req.authToken.username);
 					res.json(OKMessage(response,'FAVORITES_IMPORTED'));
 				} catch(err) {

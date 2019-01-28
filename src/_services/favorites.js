@@ -167,14 +167,14 @@ async function getAllFavorites(userList) {
 export async function createAutoMix(params, username) {
 	// Create Playlist.
 	profile('AutoMix');
-	const user = await findUserByName(username);
 	const favs = await getAllFavorites(params.users.split(','));
+	if (favs.length === 0) throw 'No favorites found for those users';
 	const autoMixPLName = `AutoMix ${date()}`;
 	const playlist_id = await createPlaylist(autoMixPLName,{
 		visible: true
 	},username);
 	// Copy karas from everyone listed
-	await addKaraToPlaylist(favs, user.nickname, playlist_id);
+	await addKaraToPlaylist(favs, username, playlist_id);
 	// Shuffle time.
 	await shufflePlaylist(playlist_id);
 	// Cut playlist after duration
