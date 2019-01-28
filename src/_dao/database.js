@@ -361,10 +361,21 @@ export async function importFromSQLite() {
 			null
 		]);
 		await transaction([
+			{sql: 'TRUNCATE favorites;'},
+			{sql: 'TRUNCATE whitelist;'},
+			{sql: 'TRUNCATE played;'},
+			{sql: 'TRUNCATE users CASCADE;'},
+			{sql: 'TRUNCATE upvote RESTART IDENTITY;'},
+			{sql: 'TRUNCATE requested'},
+			{sql: 'TRUNCATE playlist RESTART IDENTITY CASCADE;'},
+			{sql: 'TRUNCATE playlist_content RESTART IDENTITY CASCADE;'},
+			{sql: 'TRUNCATE blacklist_criteria RESTART IDENTITY CASCADE;'}
+		]);
+		await transaction([
 			{sql: 'INSERT INTO favorites VALUES($1,$2)', params: newF},
 			{sql: 'INSERT INTO whitelist VALUES($1,$2,$3)', params: newW},
 			{sql: 'INSERT INTO played VALUES($1,$2,$3)', params: newVC},
-			{sql: 'INSERT INTO users VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', params: newU},
+			{sql: 'INSERT INTO users VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', params: newU},
 			{sql: 'INSERT INTO upvote VALUES($1,$2)', params: newUP},
 			{sql: 'INSERT INTO requested VALUES($1,$2,$3,$4)', params: newRQ},
 			{sql: 'INSERT INTO playlist VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', params: newP},
