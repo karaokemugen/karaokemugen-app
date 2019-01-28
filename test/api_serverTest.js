@@ -364,7 +364,7 @@ describe('Series and year', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.strictEqual(response.body.data.content.length>=1, true);
-				assert.strictEqual(response.body.data.infos.count, 1);
+				assert.strictEqual(response.body.data.infos.count, 3);
 			});
 	});
 });
@@ -1172,7 +1172,7 @@ describe('Main', function() {
 //TODO WEBAPPMODE_CLOSED_API_MESSAGE
 describe('Error case', function() {
 });
-*/
+
 
 describe('Main - Shutdown', function() {
 	it('Shutdown the entire application', function() {
@@ -1187,3 +1187,4 @@ describe('Main - Shutdown', function() {
 			});
 	});
 });
+*/
