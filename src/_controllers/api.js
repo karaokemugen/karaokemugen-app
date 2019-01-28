@@ -3882,7 +3882,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const karas = await getFavorites(req.authToken, req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 9999999);
+				const karas = await getFavorites(req.authToken.username, req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 9999999);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -4019,9 +4019,9 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
-				const playlist = await exportFavorites(req.authToken);
+				const favorites = await exportFavorites(req.authToken.username);
 				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
-				res.json(OKMessage(playlist));
+				res.json(OKMessage(favorites));
 			} catch(err) {
 				res.status(500).json(errMessage('FAVORITES_EXPORT_ERROR',err.message,err.data));
 			}
@@ -4030,11 +4030,11 @@ export function APIControllerPublic(router) {
 	/**
  * @api {post} /public/favorites/import Import favorites
  * @apiName postFavoritesImport
- * @apiVersion 2.2.0
+ * @apiVersion 2.5.0
  * @apiGroup Favorites
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
- * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
+ * @apiSuccess {String} favoritesFile Favorites file in JSON form, following Karaoke Mugen's file format. See docs for more info.
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -4057,20 +4057,17 @@ export function APIControllerPublic(router) {
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
 			const validationErrors = check(req.body, {
-				playlist: {isJSON: true}
+				favorites: {isJSON: true}
 			});
 			if (!validationErrors) {
 				try {
-					const playlist = JSON.parse(req.body.playlist);
-					const data = await importFavorites(playlist,req.authToken);
+					const data = await importFavorites(req.body.favorites,req.authToken.username);
 					const response = {
-						message: 'Favorites imported',
-						playlist_id: data.playlist_id
+						message: 'Favorites imported'
 					};
-					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;
-					emitWS('playlistContentsUpdated',data.playlist_id);
-					emitWS('playlistsUpdated');
-					res.json(OKMessage(response,'FAVORITES_IMPORTED',data.playlist_id));
+					if (data.karasUnknown.length > 0) response.unknownKaras = data.karasUnknown;
+					emitWS('favoritesUpdated', req.authToken.username);
+					res.json(OKMessage(response,'FAVORITES_IMPORTED'));
 				} catch(err) {
 					res.status(500).json(errMessage('FAVORITES_IMPORT_ERROR',err));
 				}

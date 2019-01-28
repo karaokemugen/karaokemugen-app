@@ -8212,3 +8212,31 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 401 Unauthorized
  */
+
+ 	/**
+ * @api {post} /public/favorites/import Import favorites
+ * @apiName postFavoritesImport
+ * @apiVersion 2.2.0
+ * @apiGroup Favorites
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "FAVORITES_IMPORTED",
+ *   "data": {
+ *       "message": "Favorites imported",
+ *       "unknownKaras": []
+ *   }
+ * }
+ * @apiError FAVORITES_IMPORT_ERROR Unable to import playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "FAVORITES_IMPORT_ERROR",
+ *   "message": "No header section"
+ * }
+ */

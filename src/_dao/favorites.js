@@ -32,6 +32,6 @@ export async function insertFavorites(karaList, username) {
 		kara,
 		username
 	]));
-	return await transaction([{params: karas, sql: sql.addFavorites}]);
+	return await transaction([{params: karas, sql: sql.insertFavorites}]);
 }
 

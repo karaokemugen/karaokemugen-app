@@ -436,7 +436,8 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 	try {
 		profile('addKaraToPL');
 		if (!pl) throw {code: 1, msg: `Playlist ${playlist_id} unknown`};
-		if (!await isAllKaras(karas)) throw {code: 3, msg: 'One of the karaokes does not exist'};
+		const karasUnknown = await isAllKaras(karas);
+		if (karasUnknown.length > 0) throw {code: 3, msg: 'One of the karaokes does not exist'};
 		logger.info(`[Playlist] Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`);
 
 		if (!addByAdmin) {

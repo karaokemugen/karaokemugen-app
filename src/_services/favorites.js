@@ -4,13 +4,13 @@ import {findUserByName} from '../_services/user';
 import logger from 'winston';
 import {date} from '../_utils/date';
 import {profile} from '../_utils/logger';
-import {formatKaraList} from './kara';
+import {formatKaraList, isAllKaras} from './kara';
 import { uuidRegexp } from './constants';
 import { getRemoteToken } from '../_dao/user';
 import got from 'got';
 import {getConfig} from '../_utils/config';
 
-export async function getFavorites(username, filter, lang, from, size) {
+export async function getFavorites(username, filter, lang, from = 0, size = 99999999) {
 	try {
 		profile('getFavorites');
 		const favs = await selectFavorites(filter, lang, from, size, username);
@@ -37,7 +37,7 @@ export async function fetchAndAddFavorites(instance, token, username) {
 			},
 			Favorites: res.body
 		};
-		await importFavorites(favorites, {username: username});
+		await importFavorites(favorites, username);
 	} catch(err) {
 		throw err;
 	}
@@ -122,22 +122,31 @@ async function manageFavoriteInInstance(action, username, kid) {
 
 export async function exportFavorites(username) {
 	const favs = await getFavorites(username);
+	if (favs.content.length === 0) throw 'Favorites empty';
 	return {
 		Header: {
 			version: 1,
-			description: 'Karaoke Mugen Favorites List'
+			description: 'Karaoke Mugen Favorites List File'
 		},
-		Favorites: favs.map(f => f.kid)
+		Favorites: favs.content.map(f => f.kid)
 	};
 }
 
 export async function importFavorites(favs, username) {
-	if (!favs.Header.version === 1) throw 'Incompatible favorites version list';
-	if (!favs.Header.description !== 'Karaoke Mugen Favorites List') throw 'Not a favorites list';
+	if (favs.Header.version !== 1) throw 'Incompatible favorites version list';
+	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') throw 'Not a favorites list';
 	if (!Array.isArray(favs.Favorites)) throw 'Favorites item is not an array';
 	const re = new RegExp(uuidRegexp);
 	if (favs.Favorites.some(f => !re.test(f))) throw 'One item in the favorites list is not a UUID';
-	await addToFavorites(username, favs.Favorites);
+	try {
+		// Stripping favorites from unknown karaokes in our database to avoid importing them
+		const karasUnknown = await isAllKaras(favs.Favorites);
+		favs.Favorites = favs.Favorites.filter(f => !karasUnknown.includes(f));
+		await addToFavorites(username, favs.Favorites);
+		return { karasUnknown: karasUnknown };
+	} catch(err) {
+		throw err;
+	}
 }
 
 async function getAllFavorites(userList) {
@@ -147,8 +156,8 @@ async function getAllFavorites(userList) {
 			logger.warn(`[AutoMix] Username ${user} does not exist`);
 		} else {
 			const favs = await getFavorites(user);
-			favs.forEach(f => {
-				if (!kids.includes(f)) kids.push(f);
+			favs.content.forEach(f => {
+				if (!kids.includes(f.kid)) kids.push(f.kid);
 			});
 		}
 	}

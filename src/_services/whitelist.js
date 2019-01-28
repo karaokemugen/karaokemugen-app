@@ -12,7 +12,8 @@ export async function addKaraToWhitelist(kid, reason, token, lang) {
 	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara[0].title}...`);
 	try {
 		profile('addKaraToWL');
-		if (!await isAllKaras(karas)) throw 'One of the karaokes does not exist.';
+		const karasUnknown = await isAllKaras(karas);
+		if (karasUnknown.length > 0) throw 'One of the karaokes does not exist.';
 		await addToWL(karas, reason);
 		generateBlacklist();
 		return karas;

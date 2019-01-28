@@ -27,11 +27,11 @@ import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 
 export async function isAllKaras(karas) {
-	let allKarasOK = true;
+	const unknownKaras = [];
 	for (const kid of karas) {
-		if (!await isKara(kid)) allKarasOK = false;
+		if (!await isKara(kid)) unknownKaras.push(kid);
 	}
-	return allKarasOK;
+	return unknownKaras;
 }
 
 async function isKara(kid) {

@@ -144,7 +144,7 @@ describe('Blacklist', function() {
 				assert.strictEqual(response.body.data.blcriteria_value,data.blcriteria_value);
 			});
 	});
-	
+
 	it('Get blacklist (public)', function() {
 		return request
 			.get('/api/public/blacklist/')
@@ -222,8 +222,8 @@ describe('Favorites', function() {
 			.expect(200)
 			.then(function(response) {
 				favoritesExport = response.body.data;
-				assert.strictEqual(response.body.data.Header.description,'Karaoke Mugen Playlist File');
-				assert.strictEqual(response.body.data.PlaylistContents.length, 1);
+				assert.strictEqual(response.body.data.Header.description,'Karaoke Mugen Favorites List File');
+				assert.strictEqual(response.body.data.Favorites.length, 1);
 			});
 	});
 
@@ -273,24 +273,13 @@ describe('Favorites', function() {
 			});
 	});
 
-	it('Delete karaoke from your favorites Error 500', function() {
-		var data = {
-			kid: 'a07a32f7-63eb-46a6-8158-09bf4b06f1c7'
-		};
-		return request
-			.delete('/api/public/favorites')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send(data)
-			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'FAVORITES_DELETE_ERROR');
-			});
-	});
-
 	it('Import favorites', function() {
 		var data = {
-			"playlist": "{\"Header\":{\"version\":3,\"description\":\"Karaoke Mugen Playlist File\"},\"PlaylistInformation\":{\"name\":\"Faves : adminTest\",\"created_at\":1548104672,\"modified_at\":1548104675,\"flag_visible\":0},\"PlaylistContents\":[{\"kid\":\"a07a32f7-63eb-46a6-8158-09bf4b06f1c7\",\"pseudo_add\":\"adminTest\",\"created_at\":1548104675,\"pos\":1,\"username\":\"adminTest\",\"serie\":\"Ken le Survivant\",\"title\":\"AVI + sous-titres\",\"flag_playing\":1}]}"
+			Header: {
+				version: 1,
+				description: 'Karaoke Mugen Favorites List'
+			},
+			Favorites: [ 'a07a32f7-63eb-46a6-8158-09bf4b06f1c7' ]
 		};
 		return request
 			.post('/api/public/favorites/import')
@@ -305,9 +294,16 @@ describe('Favorites', function() {
 			});
 	});
 
-	it('Import favorites Error 500', function() {
+	it('Import favorites with an unknown karaoke', function() {
 		var data = {
-			playlist: favoritesExport.PlaylistContents
+			Header: {
+				version: 1,
+				description: 'Karaoke Mugen Favorites List'
+			},
+			Favorites: [
+				'a07a32f7-63eb-46a6-8158-09bf4b06f1c7',
+				'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+			]
 		};
 		return request
 			.post('/api/public/favorites/import')
@@ -316,7 +312,8 @@ describe('Favorites', function() {
 			.send(data)
 			.expect(500)
 			.then(function(response) {
-				assert.strictEqual(response.body.code,'FAVORITES_IMPORT_ERROR');
+				assert.strictEqual(response.body.code,'FAVORITES_IMPORTED');
+				assert.strictEqual(response.body.data.unknownKaras.length, 1);
 			});
 	});
 });
@@ -333,7 +330,7 @@ describe('Karaokes', function() {
 				assert.notStrictEqual(response.body.data, null);
 			});
 	});
-	
+
 	it('Get complete list of karaokes with Dragon Ball in their name', function() {
 		return request
 			.get('/api/public/karas?filter=Dragon%20Ball')
@@ -446,7 +443,7 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				
+
 				assert.strictEqual(response.body.code,'PL_SONG_ADDED');
 			});
 	});
@@ -464,7 +461,7 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(function(response) {
-				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');	
+				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
 				assert.strictEqual(response.body.message,'No karaoke could be added,'+
 				' all are in destination playlist already (PLID : '+playlist+')');
 			});
@@ -750,7 +747,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	
+
 	it('List contents from current playlist', function() {
 		return request
 			.get('/api/public/playlists/current/karas')
@@ -766,7 +763,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	
+
 	it('Edit karaoke from playlist : flag_playing', function() {
 		var data = {
 			flag_playing: '1'
@@ -948,7 +945,7 @@ describe('Song Poll', function() {
 				assert.strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
 			});
 	});
-	
+
 });
 
 describe('Tags', function() {
@@ -1015,7 +1012,7 @@ describe('Users', function() {
 				assert.strictEqual(response.body.data.nickname, 'toto');
 			});
 	});
-	
+
 	it('List users', function() {
 		return request
 			.get('/api/public/users/')
@@ -1204,7 +1201,7 @@ describe('Main', function() {
 /*
 //TODO test error case with EngineAllowViewWhitelist
 //TODO WEBAPPMODE_CLOSED_API_MESSAGE
-describe('Error case', function() {	
+describe('Error case', function() {
 });
 */
 
