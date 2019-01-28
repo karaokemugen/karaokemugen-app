@@ -1,5 +1,5 @@
 import passport from 'passport';
-import { decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint } from '../_services/user';
+import { updateLastLoginName, decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint } from '../_services/user';
 
 const loginErr = {
 	code: 'LOG_ERROR',
@@ -90,6 +90,7 @@ export default function authController(router) {
 				if (guest) {
 					const token = await checkLogin(guest, req.body.fingerprint);
 					updateUserFingerprint(guest, req.body.fingerprint);
+					updateLastLoginName(guest);
 					res.send(token);
 				} else {
 					res.status(500).send({

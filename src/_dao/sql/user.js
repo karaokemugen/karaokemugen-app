@@ -98,7 +98,8 @@ WHERE pk_login = :username;
 
 export const updateUserFingerprint = `
 UPDATE users SET
-	fingerprint = :fingerprint
+	fingerprint = :fingerprint,
+	flag_online = TRUE
 WHERE pk_login = :username;
 `;
 
