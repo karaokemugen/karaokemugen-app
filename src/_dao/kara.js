@@ -141,7 +141,7 @@ export async function isKara(kid) {
 
 export async function isKaraInPlaylist(kid,playlist_id) {
 	const res = await db().query(yesql(sql.isKaraInPlaylist)({
-		kara_id: kid,
+		kid: kid,
 		playlist_id: playlist_id
 	}));
 	return res.rows.length > 0;

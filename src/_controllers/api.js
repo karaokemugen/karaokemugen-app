@@ -2032,7 +2032,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await importPlaylist(JSON.parse(req.body.playlist),req.authToken.username);
+					const data = await importPlaylist(req.body.playlist,req.authToken.username);
 					const response = {
 						message: 'Playlist imported',
 						playlist_id: data.playlist_id

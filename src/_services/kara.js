@@ -16,6 +16,7 @@ import {selectAllKaras,
 	addPlayed,
 	getKaraHistory as getKaraHistoryDB
 } from '../_dao/kara';
+import {getState} from '../_utils/state';
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
 import sample from 'lodash.sample';
@@ -96,12 +97,12 @@ export async function getAllKaras(username, filter, lang, searchType, searchValu
 	return await selectAllKaras(username, filter, lang, searchType, searchValue, from, size);
 }
 
-export async function getRandomKara(playlist_id, filter, username) {
+export async function getRandomKara(username, filter) {
 	logger.debug('[Kara] Requesting a random song');
 	// Get karaoke list
 	let [karas, pl] = await Promise.all([
 		getAllKaras(username, filter),
-		getPlaylistContentsMini(playlist_id)
+		getPlaylistContentsMini(getState().modePlaylistID)
 	]);
 	// Strip list to just kara IDs
 	const allKIDs = karas.map(e => e.kid);

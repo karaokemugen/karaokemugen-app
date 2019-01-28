@@ -318,7 +318,7 @@ describe('Favorites', function() {
 	});
 });
 
-describe('Karaokes', function() {
+describe('Karas information', function() {
 	it('Get a random karaoke ID', function() {
 		return request
 			.get('/api/public/karas/random')
@@ -357,7 +357,7 @@ describe('Karaokes', function() {
 
 	it('Get song lyrics', function() {
 		return request
-			.get('/api/public/karas/4c8b1a5-f59a-4142-ae46-b43037a9d75b/lyrics')
+			.get('/api/public/karas/b5df891e-6d1f-407d-8b5a-e6bd5368c366/lyrics')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -369,7 +369,7 @@ describe('Karaokes', function() {
 
 });
 
-describe('Karas', function() {
+describe('Series and year', function() {
 
 	it('Get series list', function() {
 		return request
@@ -430,7 +430,7 @@ describe('Playlists', function() {
 	var new_playlist_public_id;
 	var plc_id;
 	var playlist = 1;
-	it('Add karaoke 6 to playlist 1', function() {
+	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 to playlist 1', function() {
 		var data = {
 			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'requestedby': 'Test'
@@ -448,7 +448,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Add karaoke 6 again to playlist 1 to see if it fails', function() {
+	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 again to playlist 1 to see if it fails', function() {
 		var data = {
 			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'requestedby': 'Test'
@@ -485,7 +485,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Add karaoke 6 to an unknown playlist to see if it fails', function() {
+	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 to an unknown playlist to see if it fails', function() {
 		var data = {
 			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'requestedby': 'Test'
@@ -517,7 +517,7 @@ describe('Playlists', function() {
 
 	it('Get list of karaokes in a playlist (public)', function() {
 		return request
-			.get('/api/admin/playlists/'+playlist+'/karas')
+			.get('/api/public/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -533,7 +533,7 @@ describe('Playlists', function() {
 			name:'new_playlist',
 			flag_visible:'1',
 			flag_public:'0',
-			flag_current:'1',
+			flag_current:'0',
 		};
 		return request
 			.post('/api/admin/playlists')
@@ -687,7 +687,28 @@ describe('Playlists', function() {
 
 	it('Import a playlist', function() {
 		var data = {
-			"playlist": "{\"Header\":{\"version\":3,\"description\":\"Karaoke Mugen Playlist File\"},\"PlaylistInformation\":{\"name\":\"Faves : adminTest\",\"created_at\":1548104672,\"modified_at\":1548104675,\"flag_visible\":0},\"PlaylistContents\":[{\"kid\":\"a07a32f7-63eb-46a6-8158-09bf4b06f1c7\",\"pseudo_add\":\"adminTest\",\"created_at\":1548104675,\"pos\":1,\"username\":\"adminTest\",\"serie\":\"Ken le Survivant\",\"title\":\"AVI + sous-titres\",\"flag_playing\":1}]}"
+			playlist: {
+				Header: {
+					version: 4,
+					description: 'Karaoke Mugen Playlist File'
+				},
+				PlaylistInformation: {
+					name: 'Faves : adminTest',
+					created_at: '2019-01-01T01:01:01.000Z',
+					modified_at: '2019-01-01T01:01:01.000Z',flag_visible: 0
+				},
+				PlaylistContents: [
+					{
+						kid: 'a07a32f7-63eb-46a6-8158-09bf4b06f1c7',nickname: 'adminTest',
+						created_at: '2019-01-01T01:01:01.000Z',
+						pos:1,
+						username: 'adminTest',
+						serie: 'Ken le Survivant',
+						title: 'AVI + sous-titres',
+						flag_playing:1
+					}
+				]
+			}
 		};
 		return request
 			.post('/api/admin/playlists/import')
@@ -717,10 +738,10 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Update a playlist s information', function() {
+	it('Update a playlist\'s information', function() {
 		var data = {
-			name:'new_playlist',
-			flag_visible: '1',
+			name: 'new_playlist',
+			flag_visible: 1,
 			pl_id: playlist
 		};
 		return request
@@ -766,7 +787,7 @@ describe('Playlists', function() {
 
 	it('Edit karaoke from playlist : flag_playing', function() {
 		var data = {
-			flag_playing: '1'
+			flag_playing: 1
 		};
 		return request
 			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
@@ -783,7 +804,7 @@ describe('Playlists', function() {
 
 	it('Edit karaoke from playlist : position', function() {
 		var data = {
-			pos: '1'
+			pos: 1
 		};
 		return request
 			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)

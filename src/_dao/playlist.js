@@ -9,7 +9,7 @@ export async function editPlaylist(pl) {
 	return await db().query(yesql(sql.editPlaylist)({
 		playlist_id: pl.id,
 		name: pl.name,
-		modified_at: new Date(pl.modified_at * 1000),
+		modified_at: pl.modified_at,
 		flag_visible: pl.flag_visible,
 	}));
 }
@@ -17,8 +17,8 @@ export async function editPlaylist(pl) {
 export async function createPlaylist(pl) {
 	const res = await db().query(yesql(sql.createPlaylist)({
 		name: pl.name,
-		created_at: new Date(pl.created_at * 1000),
-		modified_at: new Date(pl.modified_at * 1000),
+		created_at: pl.created_at,
+		modified_at: pl.modified_at,
 		flag_visible: pl.flag_visible || false,
 		flag_current: pl.flag_current || false,
 		flag_public: pl.flag_public || false,

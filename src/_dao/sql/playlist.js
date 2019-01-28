@@ -338,31 +338,14 @@ GROUP BY pc.fk_kid, ak.title, ak.serie, ak.serie_i18n, pc.nickname, pc.fk_login,
 
 
 export const getPLCByKIDUser = `
-SELECT ak.kid AS kid,
-	ak.title AS title,
-	ak.songorder AS songorder,
-	ak.serie AS serie,
-	ak.serie_i18n AS serie_i18n,
-	ak.songtypes AS songtypes,
-	ak.singers AS singers,
-	ak.gain AS gain,
-	pc.nickname AS nickname,
-	ak.mediafile AS mediafile,
+SELECT
 	pc.pos AS pos,
 	pc.flag_playing AS flag_playing,
-	pc.pk_id_plcontent AS playlistcontent_id,
-	(CASE WHEN :dejavu_time < max(p.played_at)
-		THEN TRUE
-		ELSE FALSE
-    END) AS flag_dejavu,
-	MAX(p.played_at) AS lastplayed_at
-FROM all_karas AS ak
-LEFT OUTER JOIN played p ON ak.kid = p.fk_kid
-INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
+	pc.pk_id_plcontent AS playlistcontent_id
+FROM playlist_content pc
 WHERE pc.fk_id_playlist = :playlist_id
-	AND pc.kid = :kid
-	AND pc.fk_login = :login
-ORDER BY pc.pos;
+	AND pc.fk_kid = :kid
+	AND pc.fk_login = :username;
 `;
 
 export const getPlaylistInfo = `
