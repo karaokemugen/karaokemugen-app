@@ -613,9 +613,9 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				// No errors detected
-				req.body.login = unescape(req.body.login.trim());
-				req.body.role = unescape(req.body.role);
-				req.body.password = unescape(req.body.password);
+				if (req.body.login) req.body.login = unescape(req.body.login.trim());
+				if (req.body.role) req.body.role = unescape(req.body.role);
+				if (req.body.password) req.body.password = unescape(req.body.password);
 				try {
 					await createUser(req.body, {
 						admin: req.body.role === 'admin', createFavoritePlaylist: true
@@ -684,6 +684,7 @@ export function APIControllerAdmin(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			try {
 				const userdata = await findUserByName(req.params.username, {public:false});
+				delete userdata.password;
 				res.json(OKMessage(userdata));
 			} catch(err) {
 				logger.error(err);

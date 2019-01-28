@@ -1004,7 +1004,8 @@ describe('Users', function() {
 	it('Create new user (as admin)', function() {
 		var data = {
 			login: 'BakaToTest2',
-			password: 'ilyenapas2'
+			password: 'ilyenapas2',
+			role: 'admin'
 		};
 		return request
 			.post('/api/public/users')
