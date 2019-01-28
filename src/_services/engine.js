@@ -65,7 +65,7 @@ export async function initEngine() {
 	if (!conf.isDemo && !conf.isTest) inits.push(initPlayer());
 	inits.push(initFrontend(conf.appFrontendPort));
 	testPlaylists();
-	if (+conf.OnlineStats) inits.push(initStats());
+	if (+conf.OnlineStats > 0) inits.push(initStats());
 	//Initialize engine
 	// Test if current/public playlists exist
 	try {
