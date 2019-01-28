@@ -3370,7 +3370,7 @@ export function APIControllerPublic(router) {
 		* @api {get} /public/years Get year list
 		* @apiName GetYears
 		* @apiVersion 2.3.0
-		* @apiGroup Karas
+		* @apiGroup Karaokes
 		* @apiPermission public
 		* @apiHeader authorization Auth token received from logging in
 		* @apiSuccess {String[]} data Array of years
@@ -3406,7 +3406,7 @@ export function APIControllerPublic(router) {
 		* @api {get} /public/series Get series list
 		* @apiName GetSeries
 		* @apiVersion 2.5.0
-		* @apiGroup Karas
+		* @apiGroup Karaokes
 		* @apiPermission public
 		* @apiHeader authorization Auth token received from logging in
 		* @apiParam {String} [filter] Text filter to search series for
