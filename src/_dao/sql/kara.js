@@ -218,4 +218,4 @@ VALUES(
 );
 `;
 
-export const getYears = 'SELECT DISTINCT year FROM all_karas ORDER BY year';
+export const getYears = 'SELECT year, karacount FROM all_years ORDER BY year';
