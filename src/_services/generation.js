@@ -210,7 +210,6 @@ function getSeries(kara) {
  */
 function getAllSeries(karas, seriesData) {
 	const series = {};
-	logger.profile('getAllSeries');
 	for (const serie of seriesData) {
 		series[serie.name] = {
 			sid: serie.sid
