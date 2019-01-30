@@ -9,7 +9,7 @@ import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBLCTags, selectTags
 } from '../_dao/sql/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
-import {serieRequired, verifyKaraData} from '../_services/kara';
+import {verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
 import {refreshKaras, refreshYears} from '../_dao/kara';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
@@ -62,34 +62,36 @@ export async function extractAllSeriesFiles() {
 
 export async function readAllSeries(seriesFiles) {
 	const seriesPromises = [];
+	const seriesMap = new Map();
 	for (const seriesFile of seriesFiles) {
-		seriesPromises.push(() => processSerieFile(seriesFile));
+		seriesPromises.push(() => processSerieFile(seriesFile, seriesMap));
 	}
-	return await parallel(seriesPromises, 16);
+	const seriesData = await parallel(seriesPromises, 16);
+	return { data: seriesData, map: seriesMap };
 }
 
-async function processSerieFile(seriesFile) {
+async function processSerieFile(seriesFile, map) {
 	const data = await getDataFromSeriesFile(seriesFile);
 	data.seriefile = basename(seriesFile);
+	map.set(data.name, { sid: data.sid, kids: [] });
 	bar.incr();
 	return data;
 }
 
-export async function readAllKaras(karafiles) {
+export async function readAllKaras(karafiles, seriesMap) {
 	const karaPromises = [];
 	for (const karafile of karafiles) {
-		karaPromises.push(() => readAndCompleteKarafile(karafile));
+		karaPromises.push(() => readAndCompleteKarafile(karafile, seriesMap));
 	}
 	const karas = await parallel(karaPromises, 16);
 	// Errors are non-blocking
 	if (karas.some((kara) => {
 		return kara.error;
 	})) error = true;
-
 	return karas.filter(kara => !kara.error);
 }
 
-async function readAndCompleteKarafile(karafile) {
+async function readAndCompleteKarafile(karafile, seriesMap) {
 	const karaData = await getDataFromKaraFile(karafile);
 	try {
 		verifyKaraData(karaData);
@@ -97,6 +99,13 @@ async function readAndCompleteKarafile(karafile) {
 		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete : ${err}`);
 		error = true;
 		return karaData;
+	}
+	if (karaData.series) {
+		for (const serie of karaData.series.split(',')) {
+			const seriesData = seriesMap.get(serie);
+			seriesData.kids.push(karaData.KID);
+			seriesMap.set(serie, seriesData);
+		}
 	}
 	await writeKara(karafile, karaData);
 	bar.incr();
@@ -186,45 +195,6 @@ function checkDuplicateSIDs(series) {
 	if (errors.length > 0) throw `One or several SIDs are duplicated in your database : ${JSON.stringify(errors,null,2)}. Please fix this by removing the duplicated serie(s) and retry generating your database.`;
 }
 
-function getSeries(kara) {
-	const series = new Set();
-	// Extracted series names from kara files
-	if (kara.series && kara.series.trim()) {
-		kara.series.split(',').forEach(serie => {
-			if (serie.trim()) {
-				series.add(serie.trim());
-			}
-		});
-	}
-	// At least one series is mandatory if kara is not LIVE/MV type
-	if (serieRequired(kara.type) && !series) {
-		logger.error(`Karaoke series cannot be detected! (${JSON.stringify(kara)})`);
-		error = true;
-	}
-
-	return series;
-}
-
-/**
- * Returns a Map<String, Array>, linking a series to the karaoke indexes involved.
- */
-function getAllSeries(karas, seriesData) {
-	const series = {};
-	for (const serie of seriesData) {
-		series[serie.name] = {
-			sid: serie.sid
-		};
-		for (const kara of karas) {
-			const karaSeries = kara.series.split(',');
-			if (!series[serie.name].kids) series[serie.name].kids = [];
-			if (karaSeries.includes(serie.name)) {
-				series[serie.name].kids.push(kara.KID);
-			}
-		}
-	}
-	return series;
-}
-
 function prepareSerieInsertData(serie, data) {
 	return [
 		serie,
@@ -236,9 +206,9 @@ function prepareSerieInsertData(serie, data) {
 
 function prepareAllSeriesInsertData(mapSeries, seriesData) {
 	const data = [];
-	for (const serie of Object.keys(mapSeries)) {
-		const serieData = seriesData.filter(e => e.name === serie);
-		data.push(prepareSerieInsertData(serie, serieData[0]));
+	for (const serie of mapSeries) {
+		const serieData = seriesData.filter(e => e.name === serie[0]);
+		data.push(prepareSerieInsertData(serie[0], serieData[0]));
 	}
 	return data;
 }
@@ -248,10 +218,10 @@ function prepareAllSeriesInsertData(mapSeries, seriesData) {
  */
 function prepareAllKarasSeriesInsertData(mapSeries) {
 	const data = [];
-	for (const serie of Object.keys(mapSeries)) {
-		for (const kid of mapSeries[serie].kids) {
+	for (const serie of mapSeries) {
+		for (const kid of serie[1].kids) {
 			data.push([
-				mapSeries[serie].sid,
+				serie[1].sid,
 				kid
 			]);
 		}
@@ -273,16 +243,16 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 		}
 	}
 	// Checking if some series present in .kara files are not present in the series files
-	for (const serie of Object.keys(mapSeries)) {
-		if (!findSeries(serie, seriesData)) {
+	for (const serie of mapSeries) {
+		if (!findSeries(serie[0], seriesData)) {
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
 			// In strict mode, it triggers an error
-			if (getConfig().optStrict) strictModeError(serie);
+			if (getConfig().optStrict) strictModeError(serie[0]);
 			i18nData.push([
 				'jpn',
-				serie,
-				serie
+				serie[0],
+				serie[0]
 			]);
 		}
 	}
@@ -475,42 +445,39 @@ export async function run() {
 
 		logger.info('[Gen] Starting database generation');
 		const karaFiles = await extractAllKaraFiles();
+		const seriesFiles = await extractAllSeriesFiles();
 		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
 		if (karaFiles.length === 0) throw 'No kara files found';
-
-		bar = new Bar({
-			message: 'Reading .kara files  ',
-			event: 'generationProgress'
-		}, karaFiles.length + 1);
-		const karas = await readAllKaras(karaFiles);
-		logger.debug(`[Gen] Number of karas read : ${karas.length}`);
-		// Check if we don't have two identical KIDs
-		checkDuplicateKIDs(karas);
-		bar.incr();
-		// Series data
-		bar.stop();
-
-		const seriesFiles = await extractAllSeriesFiles();
 		if (seriesFiles.length === 0) throw 'No series files found';
 		bar = new Bar({
 			message: 'Reading .series files',
 			event: 'generationProgress'
 		}, seriesFiles.length);
-		const seriesData = await readAllSeries(seriesFiles);
-		checkDuplicateSeries(seriesData);
-		checkDuplicateSIDs(seriesData);
-		// Preparing data to insert
+		const series = await readAllSeries(seriesFiles);
+		checkDuplicateSeries(series.data);
+		checkDuplicateSIDs(series.data);
 		bar.stop();
+
+		bar = new Bar({
+			message: 'Reading .kara files  ',
+			event: 'generationProgress'
+		}, karaFiles.length + 1);
+		const karas = await readAllKaras(karaFiles, series.map);
+		logger.debug(`[Gen] Number of karas read : ${karas.length}`);
+		// Check if we don't have two identical KIDs
+		checkDuplicateKIDs(karas);
+		bar.incr();
+		bar.stop();
+		// Preparing data to insert
 		logger.info('[Gen] Data files processed, creating database');
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
 		}, 5);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
-		const seriesMap = getAllSeries(karas, seriesData);
-		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap, seriesData);
-		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
-		const sqlSeriesi18nData = await prepareAltSeriesInsertData(seriesData, seriesMap);
+		const sqlInsertSeries = prepareAllSeriesInsertData(series.map, series.data);
+		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(series.map);
+		const sqlSeriesi18nData = await prepareAltSeriesInsertData(series.data, series.map);
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
