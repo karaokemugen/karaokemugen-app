@@ -35,7 +35,7 @@ class KaraForm extends Component {
 		// If there's an author field already in the karadata, it gets filled later.
 		if (!this.props.kara.dateadded) {
 			this.props.kara.dateadded = timestamp.now();
-			localStorage.getItem('username') !== 'admin' ? this.state.author = [localStorage.getItem('username')] : this.state.author = [];
+			localStorage.getItem('username') !== 'admin' ? this.state.authors = [localStorage.getItem('username')] : this.state.authors = [];
 		}
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
 		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singer.includes('NO_TAG')) this.state.singer = this.props.kara.singers;
