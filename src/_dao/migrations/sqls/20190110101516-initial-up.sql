@@ -325,13 +325,17 @@ SELECT
 	s.pk_sid AS sid,
 	array_to_json(array_agg(json_build_object('lang', sl.lang, 'name', sl.name))) as i18n,
 	string_agg(sl.name, ' ') as search,
-	jsonb_array_elements_text(s.aliases) as search_aliases,
+	d.list AS search_aliases,
 	s.seriefile AS seriefile,
 	(SELECT COUNT(ks.fk_kid) FROM kara_serie ks WHERE ks.fk_sid = s.pk_sid) AS karacount
 	FROM serie s
+	CROSS JOIN LATERAL (
+		SELECT string_agg(d.elem::text, ' ') AS list
+		FROM jsonb_array_elements_text(s.aliases) AS d(elem)
+	) d 
 	LEFT JOIN serie_lang sl ON sl.fk_sid = s.pk_sid
-	GROUP BY s.pk_sid
-    ORDER BY name;
+	GROUP BY s.pk_sid, d.list
+	ORDER BY name;
 
 CREATE INDEX idx_as_name ON all_series(name);
 CREATE INDEX idx_as_sid ON all_series(sid);
