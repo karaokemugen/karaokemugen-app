@@ -342,13 +342,10 @@ function strictModeError(series) {
 }
 
 function getTagId(tagName, tags) {
-
 	const index = tags.indexOf(tagName) + 1;
-
 	if (index > 0) {
 		return index;
 	}
-
 	tags.push(tagName);
 	return tags.length;
 }
@@ -393,28 +390,38 @@ function prepareAllTagsInsertData(allTags) {
 	});
 	// We browse through tag data to add the default tags if they don't exist.
 	for (const tag of karaTags) {
-		if (!data.find(t => t.$tagname === `TAG_${tag}`)) {
+		const tagi18n = {};
+		if (!data.find(t => t[2] === `TAG_${tag}`)) {
 			const tagDefaultName = `TAG_${tag}`;
+			for (const language of Object.keys(translations)) {
+				// Key is the language, value is a i18n text
+				if (translations[language][`TAG_${tag}`]) tagi18n[language] = translations[language][`TAG_${tag}`];
+			}
 			data.push([
 				lastIndex + 1,
 				7,
 				tagDefaultName,
 				slug(tagDefaultName),
-				{}
+				tagi18n
 			]);
 			lastIndex++;
 		}
 	}
 	// We do it as well for types
 	for (const type of karaTypesMap) {
-		if (!data.find(t => t.$tagname === `TYPE_${type[0]}`)) {
+		const tagi18n = {};
+		if (!data.find(t => t[2] === `TYPE_${type[0]}`)) {
 			const typeDefaultName = `TYPE_${type[0]}`;
+			for (const language of Object.keys(translations)) {
+				// Key is the language, value is a i18n text
+				if (translations[language][`TYPE_${type[0]}`]) tagi18n[language] = translations[language][`TAG_${type[0]}`];
+			}
 			data.push([
 				lastIndex + 1,
 				3,
 				typeDefaultName,
 				slug(typeDefaultName),
-				{}
+				tagi18n
 			]);
 			lastIndex++;
 		}
@@ -496,7 +503,7 @@ export async function run() {
 		await db().query('VACUUM ANALYZE;');
 		bar.incr();
 		await checkUserdbIntegrity(null);
-		bar-incr();
+		bar.incr();
 		await Promise.all([
 			refreshKaras(),
 			refreshSeries(),
