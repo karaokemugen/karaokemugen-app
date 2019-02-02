@@ -148,8 +148,9 @@ async function updateSeries(kara) {
 			name: s
 		};
 		seriesObj.i18n = {...langObj};
-		const serie = await getOrAddSerieID(seriesObj);
-		sids.push(serie.sid);
+		const sid = await getOrAddSerieID(seriesObj);
+		sids.push(sid);
+		if (kara.KID) kara.kid = kara.KID;
 	}
 	await updateKaraSeries(kara.kid,sids);
 }
