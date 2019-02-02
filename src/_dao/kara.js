@@ -29,7 +29,7 @@ export async function getYears() {
 }
 
 export async function updateKara(kara) {
-	await db().query(sql.updateKara, {
+	await db().query(yesql(sql.updateKara)({
 		karafile: kara.karafile,
 		mediafile: kara.mediafile,
 		subfile: kara.subfile,
@@ -40,7 +40,7 @@ export async function updateKara(kara) {
 		gain: kara.mediagain,
 		modified_at: new Date(kara.datemodif * 1000),
 		kid: kara.KID
-	});
+	}));
 	await Promise.all([
 		refreshKaras(),
 		refreshYears(),
