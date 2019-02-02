@@ -72,7 +72,7 @@ class KaraEdit extends Component {
 						mediafile_old: res.data[0].mediafile,
 						mediafile: res.data[0].mediafile,
 						tags: res.data[0].misc_tags.map(e => e.name),
-						series: res.data[0].serie,
+						series: res.data[0].serie_orig,
 						singers: res.data[0].singers.map(e => e.name),
 						groups: res.data[0].groups.map(e => e.name),
 						songwriters: res.data[0].songwriters.map(e => e.name),

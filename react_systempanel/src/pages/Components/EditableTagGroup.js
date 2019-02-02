@@ -90,7 +90,7 @@ export default class EditableTagGroup extends React.Component {
 				// Lazyness just scored a 12 with 2d6 on me
 				// We'll only display the english version of the tag name for now.
 				// Maybe when a hero will come and fix issue #263 we'll have true i18n and evil will be vanquished for the next 1000 years.
-				return { value: tag.name, text: tag.i18n.en };
+				return { value: tag.name, text: tag.i18n.en ? tag.i18n.en : tag.name };
 			}) || [];
 			result = this.sortByProp(result, 'text');
 			this.setState({ DS: result });

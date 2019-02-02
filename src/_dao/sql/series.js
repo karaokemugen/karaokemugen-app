@@ -3,7 +3,7 @@
 export const getSeriesByName = `
 SELECT
 	name
-FROM aseries
+FROM all_series
 WHERE name = :name
 ;`;
 export const getSeries = (filterClauses, lang, limitClause, offsetClause) => `
@@ -50,7 +50,7 @@ export const insertSerie = `
 INSERT INTO serie(
 	name,
 	aliases,
-	sid,
+	pk_sid,
 	seriefile
 )
 VALUES(

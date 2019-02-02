@@ -51,7 +51,7 @@ export default function systemController(router) {
 			.catch(err => res.status(500).send('Error while loading kara: ' + err));
 	});
 	router.put('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		editKara(req.params.kid,req.body)
+		editKara(req.body)
 			.then(() => res.status(200).send('Karas successfully edited'))
 			.catch(err => res.status(500).send(`Error while editing kara: ${err}`));
 	});
