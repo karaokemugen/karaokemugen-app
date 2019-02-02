@@ -1,4 +1,4 @@
-import {db} from './database';
+import {db, paramWords} from './database';
 import {pg as yesql} from 'yesql';
 import slug from 'slug';
 const sql = require('./sql/tag');
@@ -12,9 +12,30 @@ export async function getTag(id) {
 	return res.rows[0];
 }
 
-export async function getAllTags() {
-	const res = await db().query(sql.getAllTags);
+export async function getAllTags(filter, type, from, size) {
+	let filterClauses = filter ? buildTagClauses(filter) : {sql: [], params: {}};
+	let typeClauses = type ? ` AND tagtype = ${type}` : '';
+	let limitClause = '';
+	let offsetClause = '';
+	if (from > 0) offsetClause = `OFFSET ${from} `;
+	if (size > 0) limitClause = `LIMIT ${size} `;
+	const query = sql.getAllTags(filterClauses.sql, typeClauses, limitClause, offsetClause);
+	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
+}
+
+function buildTagClauses(words) {
+	const params = paramWords(words);
+	let sql = [];
+	for (const i in words.split(' ').filter(s => !('' === s))) {
+		sql.push(`lower(unaccent(name)) LIKE :word${i} OR
+		lower(unaccent(i18n::varchar)) LIKE :word${i}
+		`);
+	}
+	return {
+		sql: sql,
+		params: params
+	};
 }
 
 export async function checkOrCreateTag(tag) {

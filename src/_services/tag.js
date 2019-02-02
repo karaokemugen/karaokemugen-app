@@ -32,12 +32,6 @@ export function translateTags(taglist) {
 	return taglist;
 }
 
-function filterTags(tags, filter, type) {
-	if (type) tags = tags.filter(tag => +tag.type === +type);
-	if (filter) tags = tags.filter(tag => tag.name.toUpperCase().includes(filter.toUpperCase()) || tag.name_i18n.toUpperCase().includes(filter.toUpperCase()));
-	return tags;
-}
-
 export async function formatTagList(tagList, from, count) {
 	tagList = await translateTags(tagList);
 	return {
@@ -52,8 +46,7 @@ export async function formatTagList(tagList, from, count) {
 
 export async function getTags(filter, type, from, size) {
 	profile('getTags');
-	let tags = await getAllTags();
-	tags = filterTags(tags, filter, type);
+	let tags = await getAllTags(filter, type, from, size);
 	const ret = await formatTagList(tags.slice(from, from + size), from, tags.length);
 	profile('getTags');
 	return ret;
