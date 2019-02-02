@@ -12,7 +12,7 @@ import {
 import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {check} from '../_utils/validators';
-import {addSerie} from '../_services/series';
+import {getOrAddSerieID} from '../_services/series';
 import timestamp from 'unix-timestamp';
 import { compareKarasChecksum } from './generation';
 
@@ -240,7 +240,7 @@ async function processSeries(kara) {
 			i18n: {}
 		};
 		serieObj.i18n[kara.lang[0]] = serie;
-		await addSerie(serieObj);
+		await getOrAddSerieID(serieObj);
 	}
 }
 
