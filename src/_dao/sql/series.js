@@ -1,5 +1,11 @@
 // SQL for series
 
+export const getSeriesByName = `
+SELECT
+	name
+FROM aseries
+WHERE name = :name
+;`;
 export const getSeries = (filterClauses, lang, limitClause, offsetClause) => `
 SELECT
 	aseries.name AS name,

@@ -38,6 +38,13 @@ export async function selectAllSeries(filter, lang, from, size) {
 	return series.rows;
 }
 
+export async function selectSerieByName(name) {
+	const res = await db().query(yesql(sql.getSeriesByName)({
+		name: name
+	}));
+	return res.rows.length > 0;
+}
+
 export async function insertSerie(serieObj) {
 	let aliases;
 	Array.isArray(serieObj.aliases) ? aliases = serieObj.aliases.join(',') : aliases = null;
