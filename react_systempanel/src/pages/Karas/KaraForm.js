@@ -27,7 +27,7 @@ class KaraForm extends Component {
 			creators: [],
 			songwriters: [],
 			groups: [],
-			songtypes: 'OP',
+			songtype: 'OP',
 			langs: ['jpn']
 		};
 		timestamp.round = true;
@@ -38,14 +38,14 @@ class KaraForm extends Component {
 			localStorage.getItem('username') !== 'admin' ? this.state.authors = [localStorage.getItem('username')] : this.state.authors = [];
 		}
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
-		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singer.includes('NO_TAG')) this.state.singer = this.props.kara.singers;
+		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singers.includes('NO_TAG')) this.state.singer = this.props.kara.singers;
 		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
 		if (this.props.kara.groups && this.props.kara.groups.length > 0 && !this.props.kara.groups.includes('NO_TAG')) this.state.groups = this.props.kara.groups;
 		if (this.props.kara.songwriters && this.props.kara.songwriters.length  > 0 && !this.props.kara.songwriters.includes('NO_TAG')) this.state.songwriters = this.props.kara.songwriters;
 		if (this.props.kara.authors && this.props.kara.authors.length > 0 && !this.props.kara.authors.includes('NO_TAG')) this.state.authors = this.props.kara.authors;
 		if (this.props.kara.langs && this.props.kara.langs.length > 0 && !this.props.kara.langs.includes('NO_TAG')) this.state.langs = this.props.kara.langs;
 		if (this.props.kara.creators && this.props.kara.creators.length > 0 && !this.props.kara.creators.includes('NO_TAG')) this.state.creators = this.props.kara.creators;
-		if (this.props.kara.types && this.props.kara.types.length > 0) this.state.songtypes =  this.props.kara.types[0].replace('TYPE_','');
+		if (this.props.kara.songtype && this.props.kara.songtype.length > 0) this.state.songtype =  this.props.kara.songtype[0].replace('TYPE_','');
 		if (this.props.kara.tags && this.props.kara.tags.length > 0 && !this.props.kara.tags.includes('NO_TAG')) this.state.tags = this.props.kara.tags;
 		if (this.props.kara.mediafile_old) {
 			this.state.overwrite = true;
@@ -236,7 +236,7 @@ class KaraForm extends Component {
 				>
 					{getFieldDecorator('type', {
 						rules: [{required: true}],
-						initialValue: this.state.songtypes || 'OP'
+						initialValue: this.state.songtype || 'OP'
 					})(<Select placeholder={'Song type'}
 						onChange={ this.onChangeType }
 					>
@@ -440,7 +440,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 8, offset: 0 }}
 				>
 					{getFieldDecorator('dateadded', {
-						initialValue: new Date(this.props.kara.dateadded * 1000)
+						initialValue: new Date(this.props.kara.dateadded)
 					})(<Input disabled={true} />)}
 				</Form.Item>
 				<Form.Item
@@ -449,7 +449,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 8, offset: 0 }}
 				>
 					{getFieldDecorator('datemodif', {
-						initialValue: new Date(this.props.kara.datemodif * 1000)
+						initialValue: new Date(this.props.kara.datemodif)
 					})(<Input disabled={true} />)}
 				</Form.Item>
 				<Form.Item

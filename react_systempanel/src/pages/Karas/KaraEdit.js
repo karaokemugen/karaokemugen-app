@@ -12,7 +12,7 @@ timestamp.round = true;
 const newKara = {
 	kid: null,
 	songorder: null,
-	type: 'OP',
+	songtype: 'OP',
 	serie: null,
 	title: null,
 	lang: 'jpn',
@@ -82,7 +82,7 @@ class KaraEdit extends Component {
 						title: res.data[0].title,
 						year: res.data[0].year,
 						order: res.data[0].songorder,
-						types: res.data[0].songtypes.map(e => e.name),
+						songtype: res.data[0].songtype.map(e => e.name),
 						dateadded: res.data[0].created_at,
 						datemodif: res.data[0].modified_at
 					};
