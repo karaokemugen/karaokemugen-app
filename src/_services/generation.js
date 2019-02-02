@@ -480,7 +480,7 @@ export async function run() {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 7);
+		}, 10);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const sqlInsertSeries = prepareAllSeriesInsertData(series.map, series.data);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(series.map);
@@ -504,12 +504,13 @@ export async function run() {
 		bar.incr();
 		await checkUserdbIntegrity(null);
 		bar.incr();
-		await Promise.all([
-			refreshKaras(),
-			refreshSeries(),
-			refreshYears(),
-			refreshTags()
-		]);
+		await refreshKaras();
+		bar.incr();
+		await refreshSeries();
+		bar.incr();
+		await refreshYears();
+		bar.incr();
+		await refreshTags();
 		bar.incr();
 		bar.stop();
 		await saveSetting('lastGeneration', new Date());
