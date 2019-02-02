@@ -1,6 +1,6 @@
 import logger from 'winston/lib/winston';
 import {open} from 'sqlite';
-import {getConfig} from '../_utils/config';
+import {getConfig, setConfig} from '../_utils/config';
 import {Pool} from 'pg';
 import {exit} from '../_services/engine';
 import {duration} from '../_utils/date';
@@ -206,6 +206,7 @@ export async function initDBSystem() {
 	}
 	const settings = await getSettings();
 	if (!settings.lastGeneration) {
+		setConfig({ appFirstRun: 1 });
 		logger.info('[DB] Database is brand new: database generation triggered');
 		doGenerate = true;
 	}
