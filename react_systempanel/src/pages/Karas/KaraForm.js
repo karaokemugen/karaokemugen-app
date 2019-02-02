@@ -386,7 +386,7 @@ class KaraForm extends Component {
 				<Form.Item
 					label={(
 						<span>Tag(s)&nbsp;
-							<Tooltip title={(<a href="https://lab.shelter.moe/karaokemugen/karaokebase/blob/master/docs/french/tags.md">See tag list</a>)}>
+							<Tooltip title={(<a href="http://mugen.karaokes.moe/docs/fr/contrib-guide/tags/">See tag list</a>)}>
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
