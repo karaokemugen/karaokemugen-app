@@ -473,7 +473,7 @@ export async function run() {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 5);
+		}, 7);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const sqlInsertSeries = prepareAllSeriesInsertData(series.map, series.data);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(series.map);
@@ -496,12 +496,15 @@ export async function run() {
 		await db().query('VACUUM ANALYZE;');
 		bar.incr();
 		await checkUserdbIntegrity(null);
+		bar-incr();
+		await Promise.all([
+			refreshKaras(),
+			refreshSeries(),
+			refreshYears(),
+			refreshTags()
+		]);
+		bar.incr();
 		bar.stop();
-		refreshKaras();
-		refreshSeries();
-		refreshYears();
-		refreshTags();
-
 		await saveSetting('lastGeneration', new Date());
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
