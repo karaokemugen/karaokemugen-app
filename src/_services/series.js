@@ -51,7 +51,7 @@ export async function deleteSerie(sid) {
 
 export async function addSerie(serieObj) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
-	const serie = await selectSerieByName(serieObj.name)
+	const serie = await selectSerieByName(serieObj.name);
 	if (!serie) throw 'Series original name already exists';
 	serieObj.sid = uuidV4();
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';

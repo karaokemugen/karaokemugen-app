@@ -4,7 +4,7 @@ export const getSeriesByName = `
 SELECT
 	name,
 	pk_sid as sid
-FROM aseries
+FROM all_series
 WHERE name = :name
 ;`;
 
@@ -52,7 +52,7 @@ export const insertSerie = `
 INSERT INTO serie(
 	name,
 	aliases,
-	sid,
+	pk_sid,
 	seriefile
 )
 VALUES(
