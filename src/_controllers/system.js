@@ -81,8 +81,8 @@ export default function systemController(router) {
 			});
 	});
 
-	router.get('/system/tags', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getTags(req.lang, req.query.filter, req.query.type, 0, 999999999)
+	router.get('/system/tags', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		getTags(req.query.filter, req.query.type, 0, 999999999)
 			.then(tags => res.json(tags))
 			.catch(err => res.status(500).send(`Error while fetching tags: ${err}`));
 	});
