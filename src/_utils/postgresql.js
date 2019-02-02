@@ -52,12 +52,21 @@ export async function initPGData() {
 	const conf = getConfig();
 	logger.info('[DB] No database present, initializing a new one...');
 	try {
-		const options = [ 'init','-o', `-U ${conf.db.prod.superuser} -E UTF8`, '-D', resolve(conf.appPath, conf.PathDB, 'postgres/') ];
-		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), options, {
-			cwd: resolve(conf.appPath, conf.BinPostgresPath),
-			windowsVerbatimArguments: true,
-			stdio: 'inherit'
-		});
+		if (conf.os === 'darwin') {
+			const options = [ 'init','-o', `-U ${conf.db.prod.superuser} -E UTF8`, '-D', resolve(conf.appPath, conf.PathDB, 'postgres/') ];
+			await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), options, {
+				cwd: resolve(conf.appPath, conf.BinPostgresPath),
+				windowsVerbatimArguments: true,
+				stdio: 'inherit'
+			});
+		} else {
+			const options = `init -o "-U ${conf.db.prod.superuser} -E UTF8" -D ${resolve(conf.appPath, conf.PathDB, 'postgres/')}`;
+			await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), options.split(' '), {
+				cwd: resolve(conf.appPath, conf.BinPostgresPath),
+				windowsVerbatimArguments: true,
+				stdio: 'inherit'
+			});
+		}
 	} catch(err) {
 		throw `Init failed : ${err}`;
 	}
