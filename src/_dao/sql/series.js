@@ -2,10 +2,12 @@
 
 export const getSeriesByName = `
 SELECT
-	name
+	name,
+	pk_sid as sid
 FROM aseries
 WHERE name = :name
 ;`;
+
 export const getSeries = (filterClauses, lang, limitClause, offsetClause) => `
 SELECT
 	aseries.name AS name,
