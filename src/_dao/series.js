@@ -42,7 +42,7 @@ export async function selectSerieByName(name) {
 	const res = await db().query(yesql(sql.getSeriesByName)({
 		name: name
 	}));
-	return res.rows.length > 0;
+	return res.rows[0];
 }
 
 export async function insertSerie(serieObj) {

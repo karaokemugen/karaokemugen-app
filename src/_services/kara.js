@@ -26,6 +26,7 @@ import {getLanguage} from 'iso-countries-languages';
 import {resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
+import { getOrAddSerie } from './series';
 
 export async function isAllKaras(karas) {
 	const unknownKaras = [];
@@ -147,7 +148,8 @@ async function updateSeries(kara) {
 			name: s
 		};
 		seriesObj.i18n = {...langObj};
-		sids.push(seriesObj.sid);
+		const serie = await getOrAddSerie(seriesObj);
+		sids.push(serie.sid);
 	}
 	await updateKaraSeries(kara.kid,sids);
 }

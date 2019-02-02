@@ -13,6 +13,15 @@ export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	return ret;
 }
 
+export async function getOrAddSerieID(serieObj) {
+	const serie = await selectSerieByName(serieObj.name);
+	if (serie) return serie.sid;
+	//Series does not exist, create it.
+	const sid = await addSerie(serieObj);
+	return sid;
+}
+
+
 export function formatSeriesList(seriesList, from, count) {
 	return {
 		infos: {
@@ -42,7 +51,8 @@ export async function deleteSerie(sid) {
 
 export async function addSerie(serieObj) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
-	if (await selectSerieByName(serieObj.name)) throw 'Series original name already exists';
+	const serie = await selectSerieByName(serieObj.name)
+	if (!serie) throw 'Series original name already exists';
 	serieObj.sid = uuidV4();
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	await Promise.all([
@@ -51,6 +61,7 @@ export async function addSerie(serieObj) {
 		writeSeriesFile(serieObj)
 	]);
 	await refreshSeries();
+	return serieObj.sid;
 }
 
 export async function editSerie(sid,serieObj) {
