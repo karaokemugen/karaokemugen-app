@@ -605,7 +605,7 @@ var settingsNotUpdated;
 			var newOptionVal;
 			$this.toggleClass('on');
 			if($this.hasClass('on')) {
-				newOptionVal = $('#selectPlaylist1 > option[data-flag_favorites=1]').val();
+				newOptionVal = $('#selectPlaylist1 > option[data-flag_favorites="true"]').val();
 			} else {
 				newOptionVal = -1;
 			}
@@ -865,13 +865,13 @@ var settingsNotUpdated;
 						url: 'public/users/',
 						type: 'GET'})
 						.done(function (response) {
-							var users = [response.filter(a => a.flag_online==1)] //, response.filter(a => a.flag_online==0)];
+							var users = [response.filter(a => a.flag_online)] //, response.filter(a => a.flag_online==false)];
 							var $userlist = $('.userlist');
 							var userlistStr = '';
 							users.forEach( (userList) => {
 								$.each(userList, function(i, k) {
 									userlistStr +=
-										'<li ' + dataToDataAttribute(k) + ' class="list-group-item' + (k.flag_online==1 ? ' online' : '') + '">'
+										'<li ' + dataToDataAttribute(k) + ' class="list-group-item' + (k.flag_online ? ' online' : '') + '">'
 									+	'<div class="userLine">'
 									+	'<span class="nickname">' + k.nickname + '</span>'
 									+	'<img class="avatar" src="' + pathAvatar + k.avatar_file + '"/>'
@@ -1292,7 +1292,7 @@ var settingsNotUpdated;
 		playKara = scope === 'admin' && idPlaylist > 0 ? playKaraHtml : '';
 
 		// public users can add kara to one list, current or public
-		canAddKara = scope === 'admin' ? canAddKara : $('#selectPlaylist' + side + ' > option:selected').data('flag_' + playlistToAdd) == '1';
+		canAddKara = scope === 'admin' ? canAddKara : $('#selectPlaylist' + side + ' > option:selected').data('flag_' + playlistToAdd)
 
 		urlFiltre = url + '?filter=' + filter + fromTo;
 
@@ -1353,7 +1353,7 @@ var settingsNotUpdated;
 							}
 							if (mode === 'list') {
 								var likeKara = likeKaraHtml;
-								if (kara.flag_upvoted === 1) {
+								if (kara.flag_upvoted) {
 									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
                                 }
                                 
@@ -1366,7 +1366,7 @@ var settingsNotUpdated;
                                 +   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
                                 +   (scope === 'public' && !isTouchScreen ? (  kara['flag_favorites'] || idPlaylist === -5 ? makeFavButtonSmallFav : makeFavButtonSmall ) : '')
 								+	(scope === 'admin' ? playKara : '')
-								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
+								+	(scope !== 'admin' && dashboard.data('flag_public') ? likeKara : '')
 								+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
 								+	'</div>'
 								+   '<div class="contentDiv">'
@@ -1645,16 +1645,16 @@ var settingsNotUpdated;
 		$.ajax({ url: scope + '/playlists', }).done(function (data) {
 			playlistList = data; // object containing all the playlists
 			var shiftCount = 0;
-			if(playlistList[0] && (playlistList[0].flag_current == 1 || playlistList[0].flag_public == 1)) shiftCount++;
-			if(playlistList[1] && (playlistList[1].flag_current == 1 || playlistList[1].flag_public == 1)) shiftCount++;
-			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist']});
-			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias']});
-			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] });
+			if(playlistList[0] && (playlistList[0].flag_current || playlistList[0].flag_public)) shiftCount++;
+			if(playlistList[1] && (playlistList[1].flag_current || playlistList[1].flag_public)) shiftCount++;
+			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist'] == 1});
+			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias'] == 1});
+			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] == 1});
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'num_karas' : kmStats.karas });
 
 			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
 			searchOptionListHtml += '<option value="-6" data-playlist_id="-6"></option>';
-			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="1"></option>';
+			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="true"></option>';
 			// building the options
 			var optionListHtml = '';
 			$.each(playlistList, function (key, value) {
@@ -1674,7 +1674,7 @@ var settingsNotUpdated;
 					select1.val(val1? val1 : panel1Default);
 					select2.val(val2? val2 : playlistToAddId);
 					if (webappMode == 1) {
-						var currentPlaylistId = select2.find('option[data-flag_current="1"]').attr('value');
+						var currentPlaylistId = select2.find('option[data-flag_current="true"]').attr('value');
 						select2.val(currentPlaylistId);
 					}
 				} else {
@@ -1733,7 +1733,7 @@ var settingsNotUpdated;
 
 			// managing flags
 			['flag_current', 'flag_public'].forEach(function (e) {
-				if (option.data(e) == '1') dashboard.find('button[name="' + e + '"]').removeClass('btn-default').addClass('btn-primary');
+				if (option.data(e)) dashboard.find('button[name="' + e + '"]').removeClass('btn-default').addClass('btn-primary');
 				else dashboard.find('button[name="' + e + '"]').removeClass('btn-primary').addClass('btn-default');
 			});
 
@@ -2210,17 +2210,17 @@ var settingsNotUpdated;
 
 	formatPlaylist = function (playlist) {
 		if (!playlist.id) return playlist.text;
-		if (!$(playlist.element).data('flag_current') == '1'
-			&& !$(playlist.element).data('flag_public') == '1'
-			&& !$(playlist.element).data('flag_visible') == '0')  return playlist.text;
+		if (!$(playlist.element).data('flag_current')
+			&& !$(playlist.element).data('flag_public')
+			&& $(playlist.element).data('flag_visible'))  return playlist.text;
 
 		var icon = '';
-		if ($(playlist.element).data('flag_current') == '1') {
+		if ($(playlist.element).data('flag_current')) {
 			icon =  '<i class="glyphicon glyphicon-facetime-video"></i>';
-		} else if ($(playlist.element).data('flag_public') == '1') {
+		} else if ($(playlist.element).data('flag_public')) {
 			icon = '<i class="glyphicon glyphicon-globe"></i>';
 		}
-		if ($(playlist.element).data('flag_visible') == '0') {
+		if (!$(playlist.element).data('flag_visible')) {
 			icon +=  ' <i class="glyphicon glyphicon-eye-close"></i> ';
 		}
 

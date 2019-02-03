@@ -260,10 +260,10 @@ span:not(.hideCommands) {
 .panel-heading > div > div:nth-child(2) {
 	padding-left: 4px;
 }
-.plDashboard[data-flag_visible="1"] [name="flag_visible"] > i.glyphicon-eye-close {
+.plDashboard[data-flag_visible="true"] [name="flag_visible"] > i.glyphicon-eye-close {
 	display: none;
 }
-.plDashboard[data-flag_visible="0"] [name="flag_visible"] > i.glyphicon-eye-open {
+.plDashboard[data-flag_visible="false"] [name="flag_visible"] > i.glyphicon-eye-open {
 	display: none;
 }
 
@@ -280,7 +280,7 @@ span:not(.hideCommands) {
 }
 
 .plDashboard[data-playlist_id^="-"] .flagsContainer button,
-.plDashboard[data-flag_favorites="1"] .flagsContainer button {
+.plDashboard[data-flag_favorites="true"] .flagsContainer button {
 	display: none;
 }
 

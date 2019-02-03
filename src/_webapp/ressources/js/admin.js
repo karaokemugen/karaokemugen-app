@@ -170,7 +170,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 
 			// var flag = $this.hasClass('free') ? 0 : 1;
-			var flag = 1;
+			var flag = true;
 			$.ajax({
 				type: 'PUT',
 				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlaylistContent,
@@ -317,7 +317,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			$.ajax({
 				type: 'PUT',
 				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
-				data: { flag_playing: '1' }
+				data: { flag_playing: true }
 			}).done(function () {
 				DEBUG && console.log('Kara plc_id ' + idPlc + ' flag_playing set to true');
 			});
@@ -575,7 +575,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			urlEnd = '/setPublic';
 		} else if (name === 'flag_visible') {
 			urlEnd = '';
-			setTo = btn.closest('.plDashboard').data('flag_visible') == '1' ? 0 : 1;
+			setTo = !btn.closest('.plDashboard').data('flag_visible');
         
 			if(idPlaylist > 0) {
 				data = { name: namePlaylist, flag_visible: setTo };
@@ -687,7 +687,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 			displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST'),'',
 				function(playlistName) {
-					data = { name: playlistName, flag_visible: 0, flag_current: 0, flag_public: 0 };
+					data = { name: playlistName, flag_visible: false, flag_current: false, flag_public: false };
 					ajx(type, url, data, function (idNewPlaylist) {
 						playlistsUpdating.done(function () {
 							select.val(idNewPlaylist).change();
@@ -719,7 +719,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						userlistStr +=
 							'<div class="checkbox"><label>'
 						+	'<input type="checkbox" name="users"'
-						+	' value="' + k.login + '" ' + (k.flag_online==1 ? 'checked' : '') + '>'
+						+	' value="' + k.login + '" ' + (k.flag_online ? 'checked' : '') + '>'
 						+	k.nickname + '</label></div>';
 					});
 					userlistStr += '</div>';
