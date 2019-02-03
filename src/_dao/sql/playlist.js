@@ -296,9 +296,8 @@ SELECT
   pc.pk_id_plcontent AS playlistcontent_id,
   pc.fk_id_playlist as playlist_id,
   pc.flag_playing AS flag_playing,
-  COUNT(up.fk_kid) AS upvotes,
+  COUNT(up.fk_id_plcontent) AS upvotes,
   pc.flag_free AS flag_free,
-  MAX(p.modified_at) AS lastplayed_at,
   (CASE WHEN wl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_whitelisted,
   (CASE WHEN bl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_blacklisted,
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
@@ -308,7 +307,7 @@ FROM playlist_content AS pc
 INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN played p ON ak.kid = p.fk_kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
-LEFT OUTER JOIN request rq ON rq.fk_kid = ak.kid
+LEFT OUTER JOIN requested rq ON rq.fk_kid = ak.kid
 LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
 LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
 LEFT OUTER JOIN favorites AS f on ak.kid = f.fk_kid
