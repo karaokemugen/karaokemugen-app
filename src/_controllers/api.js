@@ -218,9 +218,9 @@ export function APIControllerAdmin(router) {
 			// Add playlist
 			const validationErrors = check(req.body, {
 				name: {presence: {allowEmpty: false}},
-				flag_visible: {boolIntValidator: true},
-				flag_public: {boolIntValidator: true},
-				flag_current: {boolIntValidator: true}
+				flag_visible: {boolStringValidator: true},
+				flag_public: {boolStringValidator: true},
+				flag_current: {boolStringValidator: true}
 			});
 			if (!validationErrors) {
 				// No errors detected
@@ -333,7 +333,7 @@ export function APIControllerAdmin(router) {
 			// Update playlist info
 			const validationErrors = check(req.body, {
 				name: {presence: {allowEmpty: false}},
-				flag_visible: {boolIntValidator: true},
+				flag_visible: {boolStringValidator: true},
 			});
 			if (!validationErrors) {
 				// No errors detected
@@ -1195,8 +1195,8 @@ export function APIControllerAdmin(router) {
  * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
  * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
  * @apiParam {Number} [pos] Position in target playlist where to move the song to.
- * @apiParam {Boolean} [flag_playing] If set to 1, the selected song will become the currently playing song.
- * @apiParam {Boolean} [flag_free] If set to 1, the selected song will be marked as free. Setting it to 0 has no effect.
+ * @apiParam {Boolean} [flag_playing] If set to true, the selected song will become the currently playing song.
+ * @apiParam {Boolean} [flag_free] If set to true, the selected song will be marked as free. Setting it to false has no effect.
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} data PLCID modified
  *

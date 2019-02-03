@@ -616,7 +616,7 @@ var settingsNotUpdated;
 			var panel = $this.closest('.panel');
 			var dashboard = panel.find('.plDashboard');
 			var idPlaylist = dashboard.data('playlist_id');
-			var num_karas = dashboard.attr('karacount');
+			var karacount = dashboard.attr('karacount');
 			var side = panel.attr('side');
 			var playlist = $('#playlist' + side);
 
@@ -626,7 +626,7 @@ var settingsNotUpdated;
 				if($this.attr('value') === 'top') {
 					from = 0;
 				} else if ($this.attr('value') === 'bottom') {
-					from =  Math.max(0, num_karas - pageSize);
+					from =  Math.max(0, karacount - pageSize);
 				} else if ($this.attr('value') === 'playing') {
 					from = -1;
 				}
@@ -1650,7 +1650,7 @@ var settingsNotUpdated;
 			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist'] == 1});
 			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias'] == 1});
 			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] == 1});
-			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'num_karas' : kmStats.karas });
+			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'karacount' : kmStats.karas });
 
 			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
 			searchOptionListHtml += '<option value="-6" data-playlist_id="-6"></option>';
@@ -1781,7 +1781,7 @@ var settingsNotUpdated;
 					' / ' + dashboard.attr('karacount') + (!isTouchScreen ? ' karas' : '')
 					: '') +
 				(idPlaylist > -1 ?
-					' ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('length'), 'hm') + ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'), 'hm')
+					' ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('duration'), 'hm') + ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'), 'hm')
 					: '');
 
 			dashboard.parent().find('.plInfos').text(plInfos).data('from', range.from).data('to', max);
@@ -1988,7 +1988,7 @@ var settingsNotUpdated;
 		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 
-		var lastPlayed = data['lastplayed_at'];
+		var lastPlayed =  new Date(data['lastplayed_at']).valueOf();
 		var lastPlayedStr = '';
 		if(lastPlayed) {
 			lastPlayed = 1000 * lastPlayed;
@@ -2001,7 +2001,7 @@ var settingsNotUpdated;
 		}
 		var details = {
 			  'UPVOTE_NUMBER' : data['upvotes']
-			, 'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
+			, 'DETAILS_ADDED': 		(data['created_at'] ? i18n.__('DETAILS_ADDED_2', data['created_at']) : '') + (data['nickname'] ? i18n.__('DETAILS_ADDED_3', data['nickname']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
 			, 'BLCTYPE_6': 			data['author']
@@ -2250,7 +2250,7 @@ var settingsNotUpdated;
 			kmStats = data;
 			if(scope === 'public') {
 				$('#selectPlaylist1 > option[value=-1]')
-					.data('num_karas', kmStats.karas).attr('data-num_karas', kmStats.karas);
+					.data('karacount', kmStats.karas).attr('data-karacount', kmStats.karas);
 			}
 		});
 
