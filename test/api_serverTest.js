@@ -502,9 +502,9 @@ describe('Playlists', function() {
 	it('Create a playlist', function() {
 		var playlist = {
 			name:'new_playlist',
-			flag_visible:'1',
-			flag_public:'0',
-			flag_current:'0',
+			flag_visible: true,
+			flag_public: false,
+			flag_current: false,
 		};
 		return request
 			.post('/api/admin/playlists')
@@ -522,9 +522,9 @@ describe('Playlists', function() {
 	it('Create a CURRENT playlist', function() {
 		var playlist_current = {
 			name:'new_playlist',
-			flag_visible:'1',
-			flag_public:'0',
-			flag_current:'1'
+			flag_visible: true,
+			flag_public: false,
+			flag_current: true
 		};
 		return request
 			.post('/api/admin/playlists')
@@ -542,9 +542,9 @@ describe('Playlists', function() {
 	it('Create a PUBLIC playlist', function() {
 		var playlist_public = {
 			name:'new_playlist',
-			flag_visible:'1',
-			flag_public:'1',
-			flag_current:'0'
+			flag_visible: true,
+			flag_public: true,
+			flag_current: false
 		};
 		return request
 			.post('/api/admin/playlists')
@@ -691,7 +691,7 @@ describe('Playlists', function() {
 	it('Update a playlist\'s information', function() {
 		var data = {
 			name: 'new_playlist',
-			flag_visible: 1,
+			flag_visible: true,
 			pl_id: playlist
 		};
 		return request
@@ -737,7 +737,7 @@ describe('Playlists', function() {
 
 	it('Edit karaoke from playlist : flag_playing', function() {
 		var data = {
-			flag_playing: 1
+			flag_playing: true
 		};
 		return request
 			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
