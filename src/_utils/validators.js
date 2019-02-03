@@ -63,7 +63,7 @@ function boolIntValidator(value) {
 }
 
 function boolStringValidator(value) {
-	if (value === true || value === false
+	if (!value || value === true || value === false
 	||  value === 'true' || value === 'false'
 	) return null;
 	return `${value} must be boolean`;
