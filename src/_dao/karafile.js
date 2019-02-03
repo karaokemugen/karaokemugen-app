@@ -13,7 +13,7 @@ import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedia
 import {extractSubtitles, getMediaInfo} from '../_utils/ffmpeg';
 import {formatKara} from '../_services/kara';
 import {getConfig} from '../_utils/config';
-import {getAllKaras} from './kara';
+import {selectAllKaras} from './kara';
 
 let error = false;
 
@@ -187,7 +187,7 @@ async function findSubFile(videoFile, kara) {
 
 export async function replaceSerieInKaras(oldSerie, newSerie) {
 	logger.info(`[Kara] Replacing serie "${oldSerie}" by "${newSerie}" in .kara files`);
-	const karas = await getAllKaras('admin');
+	const karas = await selectAllKaras(null, null, null, null, null, true);
 	let karasWithSerie = [];
 	for (const kara of karas) {
 		if (kara.serie_orig && kara.serie_orig.split(',').includes(oldSerie)) karasWithSerie.push(kara.karafile);
@@ -208,7 +208,7 @@ export async function replaceSerieInKaras(oldSerie, newSerie) {
 
 export async function removeSerieInKaras(serie) {
 	logger.info(`[Kara] Removing serie ${serie} in .kara files`);
-	const karas = await getAllKaras('admin');
+	const karas = await selectAllKaras(null, null, null, null, null, true);
 	let karasWithSerie = [];
 	for (const kara of karas) {
 		if (kara.serie_orig && kara.serie_orig.split(',').includes(serie)) karasWithSerie.push(kara.karafile);

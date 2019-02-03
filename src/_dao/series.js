@@ -47,7 +47,7 @@ export async function selectSerieByName(name) {
 
 export async function insertSerie(serieObj) {
 	let aliases;
-	Array.isArray(serieObj.aliases) ? aliases = serieObj.aliases.join(',') : aliases = null;
+	Array.isArray(serieObj.aliases) ? aliases = JSON.stringify(serieObj.aliases) : aliases = null;
 	await db().query(yesql(sql.insertSerie)({
 		name: serieObj.name,
 		aliases: aliases,

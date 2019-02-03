@@ -66,8 +66,8 @@ export async function getSongTimeSpentForUser(playlist_id,username) {
 	return res.rows[0];
 }
 
-export async function getKara(kara_id, username, lang, role) {
-	const res = await selectAllKaras(username, null, lang, 'kara', kara_id, role === 'admin');
+export async function getKara(kid, username, lang, role) {
+	const res = await selectAllKaras(username, null, lang, 'kid', kid, role === 'admin');
 	return res[0];
 }
 

@@ -65,24 +65,24 @@ class KaraEdit extends Component {
 			axios.get(`/api/system/karas/${this.props.match.params.kid}`)
 				.then(res => {
 					const karaData = {
-						authors: res.data[0].authors.map(e => e.name),
-						creators: res.data[0].creators.map(e => e.name),
+						authors: res.data[0].authors ? res.data[0].authors.map(e => e.name) : [],
+						creators: res.data[0].creators ? res.data[0].creators.map(e => e.name) : [],
 						kid: res.data[0].kid,
-						langs: res.data[0].languages.map(e => e.name),
+						langs: res.data[0].languages ? res.data[0].languages.map(e => e.name) : [],
 						mediafile_old: res.data[0].mediafile,
 						mediafile: res.data[0].mediafile,
-						tags: res.data[0].misc_tags.map(e => e.name),
+						tags: res.data[0].misc_tags ? res.data[0].misc_tags.map(e => e.name) : [],
 						series: res.data[0].serie_orig,
-						singers: res.data[0].singers.map(e => e.name),
-						groups: res.data[0].groups.map(e => e.name),
-						songwriters: res.data[0].songwriters.map(e => e.name),
+						singers: res.data[0].singers ? res.data[0].singers.map(e => e.name) : [],
+						groups: res.data[0].groups ? res.data[0].groups.map(e => e.name) : [],
+						songwriters: res.data[0].songwriters ? res.data[0].songwriters.map(e => e.name) : [],
 						subfile: res.data[0].subfile,
 						subfile_old: res.data[0].subfile,
 						karafile: res.data[0].karafile,
 						title: res.data[0].title,
 						year: res.data[0].year,
 						order: res.data[0].songorder,
-						songtype: res.data[0].songtype.map(e => e.name),
+						songtype: res.data[0].songtype ? res.data[0].songtype.map(e => e.name) : [],
 						dateadded: res.data[0].created_at,
 						datemodif: res.data[0].modified_at
 					};
