@@ -488,7 +488,7 @@ export async function run() {
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
-		bar.incr()
+		bar.incr();
 		await emptyDatabase();
 		bar.incr();
 		// Inserting data in a transaction

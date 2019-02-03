@@ -5,7 +5,7 @@ import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFil
 import logger from 'winston';
 import {ASSToLyrics} from '../_utils/ass';
 import {getPlaylistContentsMini} from './playlist';
-import {refreshAll} from '../_dao/database');
+import {refreshAll} from '../_dao/database';
 import {selectAllKaras,
 	getYears as getYearsDB,
 	getKara as getKaraDB,
