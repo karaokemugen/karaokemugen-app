@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {Checkbox, message, Tooltip, Button, Form, Icon, Input, InputNumber, Select, Upload} from 'antd';
 import PropTypes from 'prop-types';
 import EditableTagGroup from '../Components/EditableTagGroup';
-import timestamp from 'unix-timestamp';
 
 class KaraForm extends Component {
 
@@ -30,11 +29,10 @@ class KaraForm extends Component {
 			songtype: 'OP',
 			langs: ['jpn']
 		};
-		timestamp.round = true;
 		// If kara is being edited (already has a dateadded) author won't be automatically filled if there's no author already.
 		// If there's an author field already in the karadata, it gets filled later.
 		if (!this.props.kara.dateadded) {
-			this.props.kara.dateadded = timestamp.now();
+			this.props.kara.dateadded = new Date();
 			localStorage.getItem('username') !== 'admin' ? this.state.authors = [localStorage.getItem('username')] : this.state.authors = [];
 		}
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
@@ -440,7 +438,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 8, offset: 0 }}
 				>
 					{getFieldDecorator('dateadded', {
-						initialValue: new Date(this.props.kara.dateadded)
+						initialValue: this.props.kara.dateadded
 					})(<Input disabled={true} />)}
 				</Form.Item>
 				<Form.Item
@@ -449,7 +447,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 8, offset: 0 }}
 				>
 					{getFieldDecorator('datemodif', {
-						initialValue: new Date(this.props.kara.datemodif)
+						initialValue: this.props.kara.datemodif
 					})(<Input disabled={true} />)}
 				</Form.Item>
 				<Form.Item
@@ -467,16 +465,6 @@ class KaraForm extends Component {
 				<Form.Item>
 					{getFieldDecorator('karafile', {
 						initialValue: this.props.kara.karafile
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('dateadded', {
-						initialValue: this.props.kara.dateadded
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('datemodif', {
-						initialValue: this.props.kara.datemodif
 					})(<Input type="hidden" />)}
 				</Form.Item>
 				<Form.Item>

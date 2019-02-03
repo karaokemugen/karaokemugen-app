@@ -23,7 +23,7 @@ const newKara = {
 	author: null,
 	misc: null,
 	groups: null,
-	dateadded: timestamp.now()
+	dateadded: null
 };
 
 class KaraEdit extends Component {
