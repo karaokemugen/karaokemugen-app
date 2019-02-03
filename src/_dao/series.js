@@ -11,8 +11,10 @@ export function buildClausesSeries(words) {
 	const params = paramWords(words);
 	let sql = [];
 	for (const i in words.split(' ').filter(s => !('' === s))) {
-		sql.push(`lower(unaccent(aseries.search)) LIKE :word${i}`);
-		sql.push(`lower(unaccent(aseries.search_aliases)) LIKE :word${i}`);
+		sql.push(` (lower(unaccent(aseries.name)) LIKE :word${i}
+				OR lower(unaccent(aseries.search)) LIKE :word${i}
+		 		OR lower(unaccent(aseries.search_aliases)) LIKE :word${i})`
+		);
 	}
 	return {
 		sql: sql,
