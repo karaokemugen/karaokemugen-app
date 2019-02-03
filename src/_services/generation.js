@@ -499,6 +499,7 @@ export async function run() {
 			{sql: insertKaraSeries, params: sqlInsertKarasSeries},
 			{sql: inserti18nSeries, params: sqlSeriesi18nData}
 		]);
+		await db().query('SELECT SETVAL(\'tag_pk_id_tag_seq\',(SELECT MAX(pk_id_tag) FROM tag)');
 		bar.incr();
 		await db().query('VACUUM ANALYZE;');
 		bar.incr();
