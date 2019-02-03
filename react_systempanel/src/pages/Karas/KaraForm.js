@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {Checkbox, message, Tooltip, Button, Form, Icon, Input, InputNumber, Select, Upload} from 'antd';
 import PropTypes from 'prop-types';
 import EditableTagGroup from '../Components/EditableTagGroup';
-import timestamp from 'unix-timestamp';
 
 class KaraForm extends Component {
 
@@ -13,13 +12,6 @@ class KaraForm extends Component {
 			overwrite: false,
 			subfileList: [],
 			mediafileList: [],
-			singerDS: [],
-			serieDS: [],
-			songwriterDS: [],
-			creatorDS: [],
-			authorDS: [],
-			groupsDS: [],
-			tagDS: [],
 			singers: [],
 			authors: [],
 			tags: ['TAG_ANIME', 'TAG_TVSHOW'],
@@ -30,15 +22,14 @@ class KaraForm extends Component {
 			songtype: 'OP',
 			langs: ['jpn']
 		};
-		timestamp.round = true;
 		// If kara is being edited (already has a dateadded) author won't be automatically filled if there's no author already.
 		// If there's an author field already in the karadata, it gets filled later.
 		if (!this.props.kara.dateadded) {
-			this.props.kara.dateadded = timestamp.now();
+			this.props.kara.dateadded = new Date();
 			localStorage.getItem('username') !== 'admin' ? this.state.authors = [localStorage.getItem('username')] : this.state.authors = [];
 		}
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
-		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singers.includes('NO_TAG')) this.state.singer = this.props.kara.singers;
+		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singers.includes('NO_TAG')) this.state.singers = this.props.kara.singers;
 		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
 		if (this.props.kara.groups && this.props.kara.groups.length > 0 && !this.props.kara.groups.includes('NO_TAG')) this.state.groups = this.props.kara.groups;
 		if (this.props.kara.songwriters && this.props.kara.songwriters.length  > 0 && !this.props.kara.songwriters.includes('NO_TAG')) this.state.songwriters = this.props.kara.songwriters;
@@ -66,7 +57,7 @@ class KaraForm extends Component {
 	}
 
 	componentDidMount() {
-		this.onChangeType(this.state.songtype || 'OP');
+		this.onChangeType(this.state.songtype);
 		this.props.form.validateFields();
 	}
 
@@ -236,7 +227,7 @@ class KaraForm extends Component {
 				>
 					{getFieldDecorator('type', {
 						rules: [{required: true}],
-						initialValue: this.state.songtype || 'OP'
+						initialValue: this.state.songtype
 					})(<Select placeholder={'Song type'}
 						onChange={ this.onChangeType }
 					>
@@ -440,7 +431,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 8, offset: 0 }}
 				>
 					{getFieldDecorator('dateadded', {
-						initialValue: new Date(this.props.kara.dateadded)
+						initialValue: this.props.kara.dateadded
 					})(<Input disabled={true} />)}
 				</Form.Item>
 				<Form.Item
@@ -449,7 +440,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 8, offset: 0 }}
 				>
 					{getFieldDecorator('datemodif', {
-						initialValue: new Date(this.props.kara.datemodif)
+						initialValue: this.props.kara.datemodif
 					})(<Input disabled={true} />)}
 				</Form.Item>
 				<Form.Item
@@ -467,16 +458,6 @@ class KaraForm extends Component {
 				<Form.Item>
 					{getFieldDecorator('karafile', {
 						initialValue: this.props.kara.karafile
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('dateadded', {
-						initialValue: this.props.kara.dateadded
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('datemodif', {
-						initialValue: this.props.kara.datemodif
 					})(<Input type="hidden" />)}
 				</Form.Item>
 				<Form.Item>

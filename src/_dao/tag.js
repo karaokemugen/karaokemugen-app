@@ -55,11 +55,11 @@ export async function checkOrCreateTag(tag) {
 	return res.rows[0].pk_id_tag;
 }
 
-export async function updateKaraTags(kara_id, tags) {
-	await db().query(sql.deleteTagsByKara, [kara_id]);
+export async function updateKaraTags(kid, tags) {
+	await db().query(sql.deleteTagsByKara, [kid]);
 	for (const tag of tags) {
 		await db().query(yesql(sql.insertKaraTags)({
-			kara_id: kara_id,
+			kid: kid,
 			tag_id: tag.id
 		}));
 	}

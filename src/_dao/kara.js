@@ -5,7 +5,6 @@ import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_utils/files';
 import { getState } from '../_utils/state';
 import {pg as yesql} from 'yesql';
-import {refreshTags} from './tag';
 
 const sql = require('./sql/kara');
 
@@ -41,15 +40,10 @@ export async function updateKara(kara) {
 		modified_at: new Date(kara.datemodif * 1000),
 		kid: kara.KID
 	}));
-	await Promise.all([
-		refreshKaras(),
-		refreshYears(),
-		refreshTags()
-	]);
 }
 
 export async function addKara(kara) {
-	await db().query(sql.insertKara, {
+	await db().query(yesql(sql.insertKara)({
 		karafile: kara.karafile,
 		mediafile: kara.mediafile,
 		subfile: kara.subfile,
@@ -61,12 +55,7 @@ export async function addKara(kara) {
 		modified_at: new Date(kara.datemodif * 1000),
 		created_at: new Date(kara.dateadded * 1000),
 		kid: kara.KID
-	});
-	await Promise.all([
-		refreshKaras(),
-		refreshYears(),
-		refreshTags()
-	]);
+	}));
 }
 
 export async function getSongTimeSpentForUser(playlist_id,username) {

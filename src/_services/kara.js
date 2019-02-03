@@ -14,11 +14,13 @@ import {selectAllKaras,
 	addKara,
 	updateKara,
 	addPlayed,
-	getKaraHistory as getKaraHistoryDB
+	getKaraHistory as getKaraHistoryDB,
+	refreshKaras,
+	refreshYears
 } from '../_dao/kara';
 import {getState} from '../_utils/state';
 import {updateKaraSeries} from '../_dao/series';
-import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
+import {updateKaraTags, checkOrCreateTag, refreshTags} from '../_dao/tag';
 import sample from 'lodash.sample';
 import {getConfig} from '../_utils/config';
 import langs from 'langs';
@@ -148,8 +150,9 @@ async function updateSeries(kara) {
 			name: s
 		};
 		seriesObj.i18n = {...langObj};
-		const serie = await getOrAddSerieID(seriesObj);
-		sids.push(serie.sid);
+		const sid = await getOrAddSerieID(seriesObj);
+		sids.push(sid);
+		if (kara.KID) kara.kid = kara.KID;
 	}
 	await updateKaraSeries(kara.kid,sids);
 }
@@ -157,6 +160,7 @@ async function updateSeries(kara) {
 async function updateTags(kara) {
 	// Create an array of tags to add for our kara
 	let tags = [];
+	if (kara.KID) kara.kid = kara.KID;
 	kara.singer
 		? kara.singer.split(',').forEach(t => tags.push({tag: t, type: tagTypes.singer}))
 		: tags.pugh({tag: 'NO_TAG', type: tagTypes.singer});
@@ -195,6 +199,11 @@ export async function createKaraInDB(kara) {
 		updateTags(kara),
 		updateSeries(kara)
 	]);
+	await Promise.all([
+		refreshKaras(),
+		refreshYears(),
+		refreshTags()
+	]);
 }
 
 export async function editKaraInDB(kara) {
@@ -202,6 +211,11 @@ export async function editKaraInDB(kara) {
 	await Promise.all([
 		updateTags(kara),
 		updateSeries(kara)
+	]);
+	await Promise.all([
+		refreshKaras(),
+		refreshYears(),
+		refreshTags()
 	]);
 }
 

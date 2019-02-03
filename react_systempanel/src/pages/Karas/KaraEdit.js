@@ -12,18 +12,18 @@ timestamp.round = true;
 const newKara = {
 	kid: null,
 	songorder: null,
-	songtype: 'OP',
+	songtype: null,
 	serie: null,
 	title: null,
 	lang: 'jpn',
-	singer: null,
+	singers: null,
 	songwriter: null,
 	year: null,
 	creator: null,
-	author: null,
+	authors: null,
 	misc: null,
 	groups: null,
-	dateadded: timestamp.now()
+	dateadded: null
 };
 
 class KaraEdit extends Component {
