@@ -14,11 +14,13 @@ import {selectAllKaras,
 	addKara,
 	updateKara,
 	addPlayed,
-	getKaraHistory as getKaraHistoryDB
+	getKaraHistory as getKaraHistoryDB,
+	refreshKaras,
+	refreshYears
 } from '../_dao/kara';
 import {getState} from '../_utils/state';
 import {updateKaraSeries} from '../_dao/series';
-import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
+import {updateKaraTags, checkOrCreateTag, refreshTags} from '../_dao/tag';
 import sample from 'lodash.sample';
 import {getConfig} from '../_utils/config';
 import langs from 'langs';
@@ -165,7 +167,8 @@ async function updateTags(kara) {
 	if (kara.author) kara.author.split(',').forEach(t => tags.push({tag: t, type: tagTypes.author}));
 	if (kara.lang) kara.lang.split(',').forEach(t => tags.push({tag: t, type: tagTypes.lang}));
 	if (kara.groups) kara.groups.split(',').forEach(t => tags.push({tag: t, type: tagTypes.group}));
-
+	if (kara.KID) kara.kid = kara.KID;
+	
 	//Songtype is a little specific.
 	tags.push({tag: karaTypes[kara.type].dbType, type: tagTypes.songtype});
 
@@ -182,6 +185,11 @@ export async function createKaraInDB(kara) {
 		updateTags(kara),
 		updateSeries(kara)
 	]);
+	await Promise.all([
+		refreshKaras(),
+		refreshYears(),
+		refreshTags()
+	]);
 }
 
 export async function editKaraInDB(kara) {
@@ -189,6 +197,11 @@ export async function editKaraInDB(kara) {
 	await Promise.all([
 		updateTags(kara),
 		updateSeries(kara)
+	]);
+	await Promise.all([
+		refreshKaras(),
+		refreshYears(),
+		refreshTags()
 	]);
 }
 

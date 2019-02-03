@@ -16,11 +16,11 @@ const newKara = {
 	serie: null,
 	title: null,
 	lang: 'jpn',
-	singer: null,
+	singers: null,
 	songwriter: null,
 	year: null,
 	creator: null,
-	author: null,
+	authors: null,
 	misc: null,
 	groups: null,
 	dateadded: null

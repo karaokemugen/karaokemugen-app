@@ -126,19 +126,19 @@ export default function systemController(router) {
 	router.get('/system/karas/history', requireAuth, requireValidUser, requireAdmin, (req, res) =>{
 		getKaraHistory(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
 			.then(karas => res.json(karas))
-			.catch(err => res.status(500).send(`Error while fetching karas: ${err}`));
+			.catch(err => res.status(500).send(`Error while fetching karas history: ${err}`));
 	});
 
 	router.get('/system/karas/ranking', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) =>{
 		getTop50(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
 			.then(karas => res.json(karas))
-			.catch(err => res.status(500).send(`Error while fetching karas: ${err}`));
+			.catch(err => res.status(500).send(`Error while fetching karas most requested: ${err}`));
 	});
 
 	router.get('/system/karas/viewcounts', requireAuth, requireValidUser, requireAdmin, (req, res) =>{
 		getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
 			.then(karas => res.json(karas))
-			.catch(err => res.status(500).send(`Error while fetching karas: ${err}`));
+			.catch(err => res.status(500).send(`Error while fetching karas most played: ${err}`));
 	});
 
 	router.get('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {

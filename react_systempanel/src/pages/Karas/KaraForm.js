@@ -12,13 +12,6 @@ class KaraForm extends Component {
 			overwrite: false,
 			subfileList: [],
 			mediafileList: [],
-			singerDS: [],
-			serieDS: [],
-			songwriterDS: [],
-			creatorDS: [],
-			authorDS: [],
-			groupsDS: [],
-			tagDS: [],
 			singers: [],
 			authors: [],
 			tags: ['TAG_ANIME', 'TAG_TVSHOW'],
@@ -36,7 +29,7 @@ class KaraForm extends Component {
 			localStorage.getItem('username') !== 'admin' ? this.state.authors = [localStorage.getItem('username')] : this.state.authors = [];
 		}
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
-		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singers.includes('NO_TAG')) this.state.singer = this.props.kara.singers;
+		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singers.includes('NO_TAG')) this.state.singers = this.props.kara.singers;
 		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
 		if (this.props.kara.groups && this.props.kara.groups.length > 0 && !this.props.kara.groups.includes('NO_TAG')) this.state.groups = this.props.kara.groups;
 		if (this.props.kara.songwriters && this.props.kara.songwriters.length  > 0 && !this.props.kara.songwriters.includes('NO_TAG')) this.state.songwriters = this.props.kara.songwriters;
