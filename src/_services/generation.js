@@ -480,7 +480,7 @@ export async function run() {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 10);
+		}, 5);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const sqlInsertSeries = prepareAllSeriesInsertData(series.map, series.data);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(series.map);
@@ -488,6 +488,7 @@ export async function run() {
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
+		bar.incr()
 		await emptyDatabase();
 		bar.incr();
 		// Inserting data in a transaction
@@ -505,14 +506,10 @@ export async function run() {
 		bar.incr();
 		await checkUserdbIntegrity(null);
 		bar.incr();
-		await refreshKaras();
-		bar.incr();
-		await refreshSeries();
-		bar.incr();
-		await refreshYears();
-		bar.incr();
-		await refreshTags();
-		bar.incr();
+		refreshKaras();
+		refreshSeries();
+		refreshYears();
+		refreshTags();
 		bar.stop();
 		await saveSetting('lastGeneration', new Date());
 		if (error) throw 'Error during generation. Find out why in the messages above.';

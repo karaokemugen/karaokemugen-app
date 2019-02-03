@@ -4,6 +4,7 @@ import {profile} from '../_utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../_utils/files';
+import { refreshKaras } from '../_dao/kara';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
@@ -60,7 +61,7 @@ export async function addSerie(serieObj) {
 		insertSeriei18n(serieObj),
 		writeSeriesFile(serieObj)
 	]);
-	await refreshSeries();
+	refreshSeries();
 	return serieObj.sid;
 }
 
@@ -77,5 +78,6 @@ export async function editSerie(sid,serieObj) {
 		updateSerie(serieObj),
 		writeSeriesFile(serieObj)
 	]);
-	await refreshSeries();
+	refreshSeries();
+	refreshKaras();
 }
