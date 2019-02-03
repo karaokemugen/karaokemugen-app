@@ -37,6 +37,8 @@ CREATE TABLE tag
 	i18n JSONB
 );
 
+CREATE UNIQUE INDEX idx_tag ON tag (name, tagtype);
+
 CREATE TABLE serie_lang
 (
 	pk_id_serie_lang serial PRIMARY KEY,
