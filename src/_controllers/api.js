@@ -1135,10 +1135,10 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {Number} data/kara_created_at In `Date()` format
  * @apiSuccess {Number} data/created_at Karaoke added to playlist, in `Date()` format
  * @apiSuccess {Number} data/kara_modified_at In `Date()` format
- * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
- * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
- * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
- * @apiSuccess {Number} data/flag_free Wether the song has been marked as free or not
+ * @apiSuccess {Boolean} data/flag_blacklisted Is the song in the blacklist ?
+ * @apiSuccess {Boolean} data/flag_playing Is the song the one currently playing ?
+ * @apiSuccess {Boolean} data/flag_whitelisted Is the song in the whitelist ?
+ * @apiSuccess {Boolean} data/flag_free Wether the song has been marked as free or not
  * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
  * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
  * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
@@ -1195,8 +1195,8 @@ export function APIControllerAdmin(router) {
  * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
  * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
  * @apiParam {Number} [pos] Position in target playlist where to move the song to.
- * @apiParam {Number} [flag_playing] If set to 1, the selected song will become the currently playing song.
- * @apiParam {Number} [flag_free] If set to 1, the selected song will be marked as free. Setting it to 0 has no effect.
+ * @apiParam {Boolean} [flag_playing] If set to 1, the selected song will become the currently playing song.
+ * @apiParam {Boolean} [flag_free] If set to 1, the selected song will be marked as free. Setting it to 0 has no effect.
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} data PLCID modified
  *
@@ -1220,9 +1220,9 @@ export function APIControllerAdmin(router) {
 			//Params: position
 
 			const validationErrors = check(req.body, {
-				flag_playing: {boolIntValidator: true},
+				flag_playing: {boolValidator: true},
 				pos: {integerValidator: true},
-				flag_free: {boolIntValidator: true}
+				flag_free: {boolValidator: true}
 			});
 			if (!validationErrors) {
 				try {

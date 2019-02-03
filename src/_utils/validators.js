@@ -62,6 +62,11 @@ function boolIntValidator(value) {
 	return null;
 }
 
+function boolValidator(value) {
+	if (value === true || value === false) return null;
+	return `${value} must be boolean`;
+}
+
 function seriesAliasesValidator(value) {
 	if (!value) return null;
 
@@ -118,7 +123,8 @@ const validatorsList = {
 	typeValidator,
 	seriesi18nValidator,
 	arrayNoCommaValidator,
-	uuidArrayValidator
+	uuidArrayValidator,
+	boolValidator
 };
 
 // Sanitizers
