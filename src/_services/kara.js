@@ -157,13 +157,27 @@ async function updateSeries(kara) {
 async function updateTags(kara) {
 	// Create an array of tags to add for our kara
 	let tags = [];
-	if (kara.singer) kara.singer.split(',').forEach(t => tags.push({tag: t, type: tagTypes.singer}));
-	if (kara.tags) kara.tags.split(',').forEach(t => tags.push({tag: t, type: tagTypes.misc}));
-	if (kara.songwriter) kara.songwriter.split(',').forEach(t => tags.push({tag: t, type: tagTypes.songwriter}));
-	if (kara.creator) kara.creator.split(',').forEach(t => tags.push({tag: t, type: tagTypes.creator}));
-	if (kara.author) kara.author.split(',').forEach(t => tags.push({tag: t, type: tagTypes.author}));
-	if (kara.lang) kara.lang.split(',').forEach(t => tags.push({tag: t, type: tagTypes.lang}));
-	if (kara.groups) kara.groups.split(',').forEach(t => tags.push({tag: t, type: tagTypes.group}));
+	kara.singer
+		? kara.singer.split(',').forEach(t => tags.push({tag: t, type: tagTypes.singer}))
+		: tags.pugh({tag: 'NO_TAG', type: tagTypes.singer});
+	kara.tags
+		? kara.tags.split(',').forEach(t => tags.push({tag: t, type: tagTypes.misc}))
+		: tags.pugh({tag: 'NO_TAG', type: tagTypes.misc});
+	kara.songwriter
+		? kara.songwriter.split(',').forEach(t => tags.push({tag: t, type: tagTypes.songwriter}))
+		: tags.pugh({tag: 'NO_TAG', type: tagTypes.songwriter});
+	kara.creator
+		? kara.creator.split(',').forEach(t => tags.push({tag: t, type: tagTypes.creator}))
+		: tags.pugh({tag: 'NO_TAG', type: tagTypes.creator});
+	kara.author
+		? kara.author.split(',').forEach(t => tags.push({tag: t, type: tagTypes.author}))
+		: tags.pugh({tag: 'NO_TAG', type: tagTypes.author});
+	kara.lang
+		? kara.lang.split(',').forEach(t => tags.push({tag: t, type: tagTypes.lang}))
+		: tags.pugh({tag: 'NO_TAG', type: tagTypes.lang});
+	kara.groups
+		? kara.groups.split(',').forEach(t => tags.push({tag: t, type: tagTypes.group}))
+		: tags.pugh({tag: 'NO_TAG', type: tagTypes.group});
 
 	//Songtype is a little specific.
 	tags.push({tag: karaTypes[kara.type].dbType, type: tagTypes.songtype});
