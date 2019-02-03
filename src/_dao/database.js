@@ -12,7 +12,7 @@ import {resolve} from 'path';
 import {asyncRename, asyncExists} from '../_utils/files';
 import {isShutdownPG, initPG} from '../_utils/postgresql';
 import { generateBlacklist } from '../_services/blacklist';
-import {refreshYears, refreshKaras} from './karas';
+import {refreshYears, refreshKaras} from './kara';
 import {refreshTags} from './tag';
 import {refreshSeries} from './series';
 
