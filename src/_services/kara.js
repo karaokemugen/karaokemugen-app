@@ -163,25 +163,25 @@ async function updateTags(kara) {
 	if (kara.KID) kara.kid = kara.KID;
 	kara.singer
 		? kara.singer.split(',').forEach(t => tags.push({tag: t, type: tagTypes.singer}))
-		: tags.pugh({tag: 'NO_TAG', type: tagTypes.singer});
+		: tags.push({tag: 'NO_TAG', type: tagTypes.singer});
 	kara.tags
 		? kara.tags.split(',').forEach(t => tags.push({tag: t, type: tagTypes.misc}))
-		: tags.pugh({tag: 'NO_TAG', type: tagTypes.misc});
+		: tags.push({tag: 'NO_TAG', type: tagTypes.misc});
 	kara.songwriter
 		? kara.songwriter.split(',').forEach(t => tags.push({tag: t, type: tagTypes.songwriter}))
-		: tags.pugh({tag: 'NO_TAG', type: tagTypes.songwriter});
+		: tags.push({tag: 'NO_TAG', type: tagTypes.songwriter});
 	kara.creator
 		? kara.creator.split(',').forEach(t => tags.push({tag: t, type: tagTypes.creator}))
-		: tags.pugh({tag: 'NO_TAG', type: tagTypes.creator});
+		: tags.push({tag: 'NO_TAG', type: tagTypes.creator});
 	kara.author
 		? kara.author.split(',').forEach(t => tags.push({tag: t, type: tagTypes.author}))
-		: tags.pugh({tag: 'NO_TAG', type: tagTypes.author});
+		: tags.push({tag: 'NO_TAG', type: tagTypes.author});
 	kara.lang
 		? kara.lang.split(',').forEach(t => tags.push({tag: t, type: tagTypes.lang}))
-		: tags.pugh({tag: 'NO_TAG', type: tagTypes.lang});
+		: tags.push({tag: 'NO_TAG', type: tagTypes.lang});
 	kara.groups
 		? kara.groups.split(',').forEach(t => tags.push({tag: t, type: tagTypes.group}))
-		: tags.pugh({tag: 'NO_TAG', type: tagTypes.group});
+		: tags.push({tag: 'NO_TAG', type: tagTypes.group});
 
 	//Songtype is a little specific.
 	tags.push({tag: karaTypes[kara.type].dbType, type: tagTypes.songtype});
