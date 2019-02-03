@@ -1220,9 +1220,9 @@ export function APIControllerAdmin(router) {
 			//Params: position
 
 			const validationErrors = check(req.body, {
-				flag_playing: {boolValidator: true},
+				flag_playing: {boolStringValidator: true},
 				pos: {integerValidator: true},
-				flag_free: {boolValidator: true}
+				flag_free: {boolStringValidator: true}
 			});
 			if (!validationErrors) {
 				try {
