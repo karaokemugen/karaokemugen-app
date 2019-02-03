@@ -96,15 +96,11 @@ export function translateKaraInfo(karas, lang) {
 	return karas;
 }
 
-export async function getAllKaras(username, filter, lang, searchType, searchValue, from, size) {
-	return await selectAllKaras(username, filter, lang, searchType, searchValue, from, size);
-}
-
 export async function getRandomKara(username, filter) {
 	logger.debug('[Kara] Requesting a random song');
 	// Get karaoke list
 	let [karas, pl] = await Promise.all([
-		getAllKaras(username, filter),
+		selectAllKaras(username, filter),
 		getPlaylistContentsMini(getState().modePlaylistID)
 	]);
 	// Strip list to just kara IDs
@@ -305,7 +301,7 @@ export async function getKaraHistory() {
 }
 
 export async function getTop50(token, lang) {
-	return await getAllKaras(token.username, null, lang, 'requested', null);
+	return await selectAllKaras(token.username, null, lang, 'requested', null);
 }
 
 export async function getKaraPlayed(token, lang, from, size) {
@@ -335,7 +331,7 @@ export async function getYears() {
 export async function getKaras(filter, lang, from, size, searchType, searchValue, token) {
 	try {
 		profile('getKaras');
-		const pl = await getAllKaras(token.username, filter, lang, searchType, searchValue);
+		const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue);
 		profile('formatList');
 		const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 		profile('formatList');
