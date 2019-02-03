@@ -218,9 +218,9 @@ export function APIControllerAdmin(router) {
 			// Add playlist
 			const validationErrors = check(req.body, {
 				name: {presence: {allowEmpty: false}},
-				flag_visible: {boolIntValidator: true},
-				flag_public: {boolIntValidator: true},
-				flag_current: {boolIntValidator: true}
+				flag_visible: {boolStringValidator: true},
+				flag_public: {boolStringValidator: true},
+				flag_current: {boolStringValidator: true}
 			});
 			if (!validationErrors) {
 				// No errors detected
@@ -333,7 +333,7 @@ export function APIControllerAdmin(router) {
 			// Update playlist info
 			const validationErrors = check(req.body, {
 				name: {presence: {allowEmpty: false}},
-				flag_visible: {boolIntValidator: true},
+				flag_visible: {boolStringValidator: true},
 			});
 			if (!validationErrors) {
 				// No errors detected
