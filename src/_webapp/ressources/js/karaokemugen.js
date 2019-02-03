@@ -367,14 +367,14 @@ var settingsNotUpdated;
 					var data = response.content;
 					displayMessage('info', 'Info', 'Ajout de ' + response.infos.count + ' karas à la playlist ' + $('#panel' + non(side) + ' .plDashboard').data('name'));
 					var karaList = data.map(function(a) {
-						return a.kara_id;
+						return a.kid;
 					}).join();
 					var urlPost = getPlData(idPlaylistTo).url;
 
 					$.ajax({
 						url: urlPost,
 						type: 'POST',
-						data: { kara_id : karaList, requestedby : logInfos.username }
+						data: { kid : karaList, requestedby : logInfos.username }
 					}).done(function () {
 						DEBUG && console.log(karaList + ' added to playlist ' + idPlaylistTo);
 
@@ -477,7 +477,7 @@ var settingsNotUpdated;
 			$.ajax({
 				url: 'public/favorites',
 				type: type,
-				data: { 'kara_id' : idKara } })
+				data: { 'kid' : idKara } })
 				.done(function (response) {
 					if($el) {
 						if(make) {
@@ -510,9 +510,9 @@ var settingsNotUpdated;
 			var extraSearchInfo = "";
 			var searchLanguage = navigator.languages[0];
 			searchLanguage = searchLanguage.substring(0, 2);
-			if(!details.data('misc') || (
-				details.data('misc').indexOf('TAG_VIDEOGAME') === -1
-				&& details.data('misc').indexOf('TAG_MOVIE') === -1
+			if(!details.data('misc_tags') || (
+                details.data('misc_tags').find(e => e.name == 'TAG_VIDEOGAME')
+                && details.data('misc_tags').find(e => e.name == 'TAG_MOVIE')
 			)) {
 				extraSearchInfo = 'anime ';
 			}
@@ -1325,9 +1325,8 @@ var settingsNotUpdated;
 						// build the kara line
 						if (data.hasOwnProperty(key)) {
 							var kara = data[key];
-							if (kara.language === null) kara.language = '';
 
-							var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
+							var karaDataAttributes = ' idKara="' + kara.kid + '" '
 							+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
 							+	(idPlaylist > 0 || idPlaylist == -5 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
 							+	kara.pos + '" data-username="' + kara.username + '"' : '')
@@ -1337,8 +1336,8 @@ var settingsNotUpdated;
 
 							var badges = '';
 
-							if(kara.misc) {
-								var tagArray = kara.misc.split(',');
+							if(kara.misc_tags) {
+								var tagArray = kara.misc_tags.map(e => e.name);
 								tagArray.sort(function(a, b){
 									return flattenedTagsGroups.indexOf(a) - flattenedTagsGroups.indexOf(b);
 								  });
@@ -1373,7 +1372,7 @@ var settingsNotUpdated;
 								+	'<div>' + buildKaraTitle(kara, {'search' : filter}) + '</div>'
 								+	'<div>' + badges + '</div>'
 								+   '</div>'
-								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
+								+   (saveDetailsKara(idPlaylist, kara.kid) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
 								+   '</li>';
 							}
 						}
@@ -1844,7 +1843,7 @@ var settingsNotUpdated;
 				} else if ( data.currentlyPlaying > 0 ) {
 					$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
 						var kara = dataKara[0];
-						$('#karaInfo').attr('idKara', kara.kara_id);
+						$('#karaInfo').attr('idKara', kara.kid);
 						$('#karaInfo').attr('length', kara.duration);
 						$('#karaInfo > span').text( buildKaraTitle(kara) );
 						$('#karaInfo > span').data('text', buildKaraTitle(kara) );
@@ -1903,19 +1902,22 @@ var settingsNotUpdated;
 	buildKaraTitle = function(data, options) {
 		if(typeof options == 'undefined') {
 			options = {};
-		}
-
-		if(data.language && data.language.indexOf('mul') > -1) {
-			data.language = 'mul';
-		} else if (!data.language) {
-			data.language = '';
-		}
+        }
+        var isMulti = data.languages.find(e => e.name.indexOf('mul') > -1);
+		if(data.languages && isMulti) {
+			data.languages = [isMulti];
+        }
+        
 		var titleText = 'fillerTitle';
 
 		var limit = isSmall ? 35 : 50;
-		var serieText =  data.serie ? data.serie : data.singer.replace(/,/g, ', ');
+		var serieText =  data.serie ? data.serie : data.singers.map(e => e.name).join(', ');
 		serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
-		var titleArray = [data.language.toUpperCase(), serieText, data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : '')];
+        var titleArray = [
+                            data.languages.map(e => e.name).join(', ').toUpperCase(),
+                            serieText,
+                            i18n.__(data.songtype[0].name + '_SHORT') + (data.songorder > 0 ? ' ' + data.songorder : '')
+                        ];
 		var titleClean = titleArray.map(function (e, k) {
 			return titleArray[k] ? titleArray[k] : '';
 		});
@@ -1939,13 +1941,13 @@ var settingsNotUpdated;
 
 	toggleDetailsKara = function (el) {
 		var liKara = el.closest('li');
-		var idKara = parseInt(liKara.attr('idkara'));
+		var idKara = liKara.attr('idkara');
 		var idPlc = parseInt(liKara.attr('idplaylistcontent'));
 		var idPlaylist = parseInt( el.closest('.panel').find('.plDashboard').data('playlist_id'));
 		var infoKara = liKara.find('.detailsKara');
 
 		if(!liKara.hasClass('loading')) { // if we're already loading the div, don't do anything
-			if (!infoKara.is(':visible') ) { // || infoKara.length == 0
+            if (!infoKara.is(':visible') ) { // || infoKara.length == 0
 				var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 				liKara.addClass('loading');
 				$.ajax({ url: urlInfoKara }).done(function (data) {
@@ -2004,19 +2006,19 @@ var settingsNotUpdated;
 			, 'DETAILS_ADDED': 		(data['created_at'] ? i18n.__('DETAILS_ADDED_2', data['created_at']) : '') + (data['nickname'] ? i18n.__('DETAILS_ADDED_3', data['nickname']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
-			, 'BLCTYPE_6': 			data['author']
-			, 'DETAILS_VIEWS':		data['viewcount']
-			, 'BLCTYPE_4':			data['creator']
+			, 'BLCTYPE_6': 			data['authors'].map(e => e.name).join(', ')
+			, 'DETAILS_VIEWS':		data['played']
+			, 'BLCTYPE_4':			data['creators'].map(e => e.name).join(', ')
 			, 'DETAILS_DURATION':	data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
-			, 'DETAILS_LANGUAGE':	data['language_i18n']
-			, 'BLCTYPE_7':			data['misc_i18n']
+			, 'DETAILS_LANGUAGE':	data['languages_i18n'].join(', ')
+			, 'BLCTYPE_7':			data['misc_tags'].map(e => i18n.__(e.name)).join(', ')
 			, 'DETAILS_SERIE':		data['serie']
 			, 'DETAILS_SERIE_ORIG':		data['serie_orig']
 			//	, 'DETAILS_SERIE_ALT':	data['serie_altname']
-			, 'BLCTYPE_2':			data['singer']
-			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
+			, 'BLCTYPE_2':			data['singers'].map(e => e.name).join(', ')
+			, 'DETAILS_TYPE ':		i18n.__(data['songtype'][0].name) + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
 			, 'DETAILS_YEAR':		data['year']
-			, 'BLCTYPE_8':			data['songwriter']
+			, 'BLCTYPE_8':			data['songwriters'].map(e => e.name).join(', ')
 		};
 		var htmlDetails = Object.keys(details).map(function (k) {
 			if(details[k] && details[k] !== 'NO_TAG' && details[k] !== i18n.__('NO_TAG')) {
@@ -2054,7 +2056,7 @@ var settingsNotUpdated;
 				+ htmlTable
 				+ '</div>';
 		} else if (htmlMode == 'karaCard') {
-			$.ajax({ url: 'public/karas/' + data.kara_id + '/lyrics' }).done(function (data) {
+			$.ajax({ url: 'public/karas/' + data.kid + '/lyrics' }).done(function (data) {
 				var lyrics = i18n.__('NOLYRICS');
 				if (typeof data === 'object') {
 					lyrics =  data.join('<br/>');
@@ -2196,7 +2198,7 @@ var settingsNotUpdated;
 	saveDetailsKara = function(idPlaylist, idKara, command) {
 		if(isNaN(idPlaylist) || isNaN(idKara)) return false;
 		idPlaylist = parseInt(idPlaylist);
-		idKara = parseInt(idKara);
+		idKara = idKara;
 		if(saveLastDetailsKara[idPlaylist + 1000] == undefined) saveLastDetailsKara[idPlaylist + 1000] = [];
 		if(command == 'add') {
 			saveLastDetailsKara[idPlaylist + 1000].push(idKara);

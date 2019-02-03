@@ -111,8 +111,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		$('.playlist-main').on('click', 'button.addBlacklistCriteria', function () {
 			// TODO check if type is valid maybe
 			var type = $('#bcType').val();
-			var val = $('#bcVal').val();
-			var data = { blcriteria_type: type, blcriteria_value: val };
+            var val = $('#bcVal').val();
+            
+            var data = { blcriteria_type: type, blcriteria_value: val };
 			$.ajax({
 				url: scope + '/blacklist/criterias',
 				type: 'POST',
@@ -233,7 +234,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						type = 'PATCH';
 					} else {
 						var requestedby = idPlaylistFrom == -1 || li.data('username') == undefined ? logInfos.username : li.data('username');
-						data = { requestedby: requestedby, kara_id: idKara };
+						data = { requestedby: requestedby, kid: idKara };
 					}
 				} else if (idPlaylistTo == -1) {
 					//displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
@@ -243,7 +244,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					data = { blcriteria_type: 1001, blcriteria_value: idKara };
 				} else if (idPlaylistTo == -3) {
 					url = scope + '/whitelist';
-					data = { kara_id: idKara};
+					data = { kid: idKara};
 				}
 
 				if(e.type === 'contextmenu') {
