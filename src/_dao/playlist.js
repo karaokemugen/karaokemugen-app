@@ -182,7 +182,7 @@ export async function getPlaylistInfo(id) {
 export async function getPlaylists(forUser) {
 	let query = sql.getPlaylists;
 	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';
-	if (forUser) return await db().query(query + ' AND p.flag_visible = TRUE ' + order);
+	if (forUser) return await db().query(query + ' WHERE p.flag_visible = TRUE ' + order);
 	const res = await db().query(query + order);
 	return res.rows;
 }
