@@ -64,7 +64,7 @@ class KaraForm extends Component {
 	}
 
 	componentDidMount() {
-		this.onChangeType(this.state.songtype || 'OP');
+		this.onChangeType(this.state.songtype);
 		this.props.form.validateFields();
 	}
 
@@ -234,7 +234,7 @@ class KaraForm extends Component {
 				>
 					{getFieldDecorator('type', {
 						rules: [{required: true}],
-						initialValue: this.state.songtype || 'OP'
+						initialValue: this.state.songtype
 					})(<Select placeholder={'Song type'}
 						onChange={ this.onChangeType }
 					>

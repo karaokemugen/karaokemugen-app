@@ -12,7 +12,7 @@ timestamp.round = true;
 const newKara = {
 	kid: null,
 	songorder: null,
-	songtype: 'OP',
+	songtype: null,
 	serie: null,
 	title: null,
 	lang: 'jpn',
