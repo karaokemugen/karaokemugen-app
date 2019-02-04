@@ -478,11 +478,11 @@ export function APIControllerAdmin(router) {
 * @apiPermission admin
 * @apiHeader authorization Auth token received from logging in
 * @apiParam {String} username Username to add favorites to
-* @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
+* @apiParam {uuid[]} kid Karaoke song IDs, separated by commas
 * @apiParam {String} [reason] Reason the song was added
 * @apiSuccess {Number} args Arguments associated with message
 * @apiSuccess {Number} code Message to display
-* @apiSuccess {Number[]} data/kara_id List of karaoke IDs separated by commas
+* @apiSuccess {uuid[]} data/kid List of karaoke IDs separated by commas
 *
 * @apiSuccessExample Success-Response:
 * HTTP/1.1 201 Created
@@ -1530,7 +1530,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {String} [reason] Reason the song was added
  * @apiSuccess {Number} args Arguments associated with message
  * @apiSuccess {Number} code Message to display
- * @apiSuccess {uuid[]} data/kara_id List of karaoke IDs separated by commas
+ * @apiSuccess {uuid[]} data/kid List of karaoke IDs separated by commas
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 201 Created
@@ -1538,7 +1538,7 @@ export function APIControllerAdmin(router) {
  *   "args": "2",
  *   "code": "WL_SONG_ADDED",
  *   "data": {
- *       "kara_id": "2"
+ *       "kid": "uuid"
  *   }
  * }
  * @apiError WL_ADD_SONG_ERROR Karaoke couldn't be added to whitelist
@@ -1562,7 +1562,7 @@ export function APIControllerAdmin(router) {
 					await addKaraToWhitelist(req.body.kid,req.body.reason, req.authToken, req.lang);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
-					res.status(201).json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));
+					res.status(201).json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kid));
 				} catch(err) {
 					res.status(500).json(errMessage('WL_ADD_SONG_ERROR',err.message,err.data));
 				}
@@ -2916,14 +2916,14 @@ export function APIControllerPublic(router) {
 	/**
  * @api {post} /public/karas/:kid Add karaoke to current/public playlist
  * @apiName PostKaras
- * @apiVersion 2.1.2
+ * @apiVersion 2.5.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
- * @apiParam {Number} kara_id Karaoke ID to add to current/public playlist
+ * @apiParam {uuid} kid Karaoke ID to add to current/public playlist
  * @apiSuccess {String} args/kara Karaoke title added
- * @apiSuccess {Number} args/kara_id Karaoke ID added.
+ * @apiSuccess {uuid} args/kid Karaoke ID added.
  * @apiSuccess {String} args/playlist Name of playlist the song was added to
  * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
  * @apiSuccess {String} code Message to display
@@ -2934,38 +2934,37 @@ export function APIControllerPublic(router) {
  * {
  *   "args": {
  *       "kara": "Dragon Screamer",
- *       "kara_id": "1029",
+ *       "kid": "kid",
  *       "playlist": "Courante",
  *       "playlist_id": 1
  *   },
  *   "code": "PLAYLIST_MODE_SONG_ADDED",
  *   "data": {
  *       "kara": "Dragon Screamer",
- *       "kara_id": "1029",
+ *       "kid": "kid",
  *       "playlist": "Courante",
  *       "playlist_id": 1
  *   }
  * }
-
-* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
-* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED All songs are already present in playlist
-* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED Song is blacklisted and cannot be added
-* @apiError PLAYLIST_MODE_ADD_SONG_ERROR General error while adding song
-* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
-* @apiErrorExample Error-Response:
-* HTTP/1.1 500 Internal Server Error
-* {
-*   "args": {
-*       "kid": "uuid",
-*       "playlist": 1,
-*       "user": "Axel"
-*   },
-*   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
-*   "message": "User quota reached"
-* }
-* @apiErrorExample Error-Response:
-* HTTP/1.1 403 Forbidden
-*/
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED All songs are already present in playlist
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED Song is blacklisted and cannot be added
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR General error while adding song
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": {
+ *       "kid": "uuid",
+ *       "playlist": 1,
+ *       "user": "Axel"
+ *   },
+ *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
+ *   "message": "User quota reached"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
 		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
 			try {

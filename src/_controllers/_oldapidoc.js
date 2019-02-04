@@ -8240,3 +8240,38 @@
  *   "message": "No header section"
  * }
  */
+
+/**
+ * @api {post} /public/karas/:kid Add karaoke to current/public playlist
+ * @apiName PostKaras
+ * @apiVersion 2.1.2
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
+ * @apiParam {Number} kara_id Karaoke ID to add to current/public playlist
+ * @apiSuccess {String} args/kara Karaoke title added
+ * @apiSuccess {Number} args/kara_id Karaoke ID added.
+ * @apiSuccess {String} args/playlist Name of playlist the song was added to
+ * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data See `args` above.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "kara": "Dragon Screamer",
+ *       "kara_id": "1029",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   },
+ *   "code": "PLAYLIST_MODE_SONG_ADDED",
+ *   "data": {
+ *       "kara": "Dragon Screamer",
+ *       "kara_id": "1029",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   }
+ * }
+ */
