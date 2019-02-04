@@ -3,7 +3,7 @@
 export const emptyBlacklistCriterias = 'DELETE FROM blacklist_criteria;';
 
 export const generateBlacklist = `
-DELETE FROM blacklist;
+TRUNCATE blacklist;
 INSERT INTO blacklist (fk_kid, created_at, reason)
 	SELECT kt.fk_kid, now() ,'Blacklisted Tag : ' || t.name || ' (type ' || t.tagtype || ')'
 	FROM blacklist_criteria AS blc
@@ -50,6 +50,7 @@ UNION
 	INNER JOIN kara k ON unaccent(k.title) LIKE ('%' || blc.value || '%')
 	WHERE blc.type = 1004
 	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
+ON CONFLICT DO NOTHING;
 `;
 
 export const getBlacklistCriterias = `
