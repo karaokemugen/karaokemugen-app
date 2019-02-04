@@ -1754,7 +1754,7 @@ export function APIControllerAdmin(router) {
 			//Add blacklist criteria
 			const validationErrors = check(req.body, {
 				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
-				blcriteria_value: {presence: true}
+				blcriteria_value: {presence: {allowEmpty: false}}
 			});
 			if (!validationErrors) {
 				try {
@@ -1850,7 +1850,7 @@ export function APIControllerAdmin(router) {
 			//Update BLC
 			const validationErrors = check(req.body, {
 				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
-				blcriteria_value: {presence: true}
+				blcriteria_value: {presence: {allowEmpty: false}}
 			});
 			if (!validationErrors) {
 				try {
