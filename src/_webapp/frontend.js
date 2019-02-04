@@ -48,12 +48,13 @@ export async function initFrontend(port) {
 		layoutsDir: join(__dirname, 'ressources/views/layouts/'),
 		extname: '.hbs',
 		helpers: {
+			//How comes array functions do not work here?
 			i18n: function() {
 				const args = Array.prototype.slice.call(arguments);
 				const options = args.pop();
 				return i18n.__.apply(options.data.root, args);
 			},
-			if_eq: function(a, b, opts) {
+			if_eq: (a, b, opts) => {
 				if(a === b)
 					return opts.fn(this);
 				else
@@ -74,7 +75,7 @@ export async function initFrontend(port) {
 	app.use(json());
 	app.use('/api', apiRouter());
 	// Add headers
-	app.use(function (req, res, next) {
+	app.use((req, res, next) => {
 		// Website you wish to allow to connect
 		res.setHeader('Access-Control-Allow-Origin', '*');
 		// Request methods you wish to allow
@@ -110,17 +111,15 @@ export async function initFrontend(port) {
 		const config = getConfig();
 
 		let view = 'public';
-		if(+config.WebappMode === 0) {
+		if (+config.WebappMode === 0) {
 			view = 'publicClosed';
 		} else if (+config.WebappMode === 1) {
 			view = 'publicLimited';
 		}
 		let url;
-		if (+config.EngineDisplayConnectionInfoHost) {
-			url = config.EngineDisplayConnectionInfoHost;
-		} else {
-			url = address();
-		}
+		+config.EngineDisplayConnectionInfoHost
+			? url = config.EngineDisplayConnectionInfoHost
+			: url = address();
 
 		res.render(view, {'layout': 'publicHeader',
 			'clientAdress'	:	`http://${url}`,
@@ -129,29 +128,25 @@ export async function initFrontend(port) {
 			'query'			:	JSON.stringify(req.query)
 		});
 	});
-	routerAdmin.get('/', (req, res) => {
+	routerAdmin.get('/', async (req, res) => {
 		const config = getConfig();
 
 		//Get list of monitors to allow users to select one for the player
-		graphics().then((data) => {
-			logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
-			[0,1,2,3,4].forEach(function(key) {
-				if (data.displays[key] && data.displays[key].model) {
-					data.displays[key].model = data.displays[key].model.replace('�','e');
-				}
-				if (!data.displays[key]) {
-					data.displays[key] = {model : ''};
-				}
+		const data = await graphics();
+		logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
+		const displays = data.displays
+			.filter(d => d.resolutionx > 0)
+			.map(d => {
+				d.model = d.model.replace('�','e');
+				return d;
 			});
-
-			res.render('admin', {'layout': 'adminHeader',
-				'clientAdress'	:	`http://${address()}`,
-				'displays'		:	data.displays,
-				'query'			:	JSON.stringify(req.query),
-				'appFirstRun'	:	config.appFirstRun,
-                'onlineHost'  	:	config.OnlineUsers ? config.OnlineHost : '',
-				'webappMode'	:	config.WebappMode
-			});
+		res.render('admin', {'layout': 'adminHeader',
+			'clientAdress'	:	`http://${address()}`,
+			'displays'		:	displays,
+			'query'			:	JSON.stringify(req.query),
+			'appFirstRun'	:	config.appFirstRun,
+			'onlineHost'  	:	config.OnlineUsers ? config.OnlineHost : '',
+			'webappMode'	:	config.WebappMode
 		});
 	});
 	routerWelcome.get('/', (req, res) => {
