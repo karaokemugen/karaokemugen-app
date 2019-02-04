@@ -51,7 +51,6 @@
     "Kmeuh <clemalbo@cegetel.net> (@Kmeuh)",
     "Bibah <thebibah14@gmail.com> (@TheBibah14)"
   ],
-  "engineStrict": false,
   "engines": {
     "node": ">=10.9.0 <11.0.0"
   },
@@ -65,8 +64,8 @@
       "dist/**/*.js"
     ],
     "assets": [
-      "dist/_common/db/migrations/**",
-      "dist/_common/locales/*",
+      "dist/_dao/migrations/**",
+      "dist/_locales/*",
       "dist/_player/assets/*",
       "dist/_webapp/vendors/**",
       "dist/_webapp/ressources/**",
@@ -154,7 +153,6 @@
     "mocha": "^5.2.0",
     "supertest": "^3.4.2"
   },
-  "false": {},
   "apidoc": {
     "url": "http://localhost:1337/api"
   }
