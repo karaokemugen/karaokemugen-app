@@ -109,9 +109,9 @@ export async function getRandomKara(username, filter) {
 	return sample(allKarasNotInCurrentPlaylist);
 }
 
-export async function getKara(kid, token, lang) {
+export async function getKara(kid, token, lang, view) {
 	profile('getKaraInfo');
-	const kara = await getKaraDB(kid, token.username, lang, token.role);
+	const kara = await getKaraDB(kid, token.username, lang, token.role, view);
 	if (!kara) throw `Kara ${kid} unknown`;
 	let output = translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].mediafile);
@@ -286,18 +286,18 @@ export function serieRequired(karaType) {
 	return karaType !== karaTypes.MV.type && karaType !== karaTypes.LIVE.type;
 }
 
-export async function getKaraHistory() {
+export async function getKaraHistory(view) {
 	// Called by system route
-	return await getKaraHistoryDB();
+	return await getKaraHistoryDB(view);
 }
 
-export async function getTop50(token, lang) {
-	return await selectAllKaras(token.username, null, lang, 'requested', null);
+export async function getTop50(token, lang, view) {
+	return await selectAllKaras(token.username, null, lang, 'requested', null, view);
 }
 
-export async function getKaraPlayed(token, lang, from, size) {
+export async function getKaraPlayed(token, lang, from, size, view) {
 	// Called by system route
-	return await selectAllKaras(token.username, null, lang, 'played', null, from, size);
+	return await selectAllKaras(token.username, null, lang, 'played', null, from, size, view);
 }
 
 export async function addPlayedKara(kid) {
@@ -319,10 +319,10 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter, lang, from, size, searchType, searchValue, token) {
+export async function getKaras(filter, lang, from, size, searchType, searchValue, token, view) {
 	try {
 		profile('getKaras');
-		const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue);
+		const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, null, null, view);
 		profile('formatList');
 		const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 		profile('formatList');

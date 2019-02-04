@@ -66,12 +66,12 @@ export async function getSongTimeSpentForUser(playlist_id,username) {
 	return res.rows[0];
 }
 
-export async function getKara(kid, username, lang, role) {
-	const res = await selectAllKaras(username, null, lang, 'kid', kid, role === 'admin');
+export async function getKara(kid, username, lang, role, view) {
+	const res = await selectAllKaras(username, null, lang, 'kid', kid, null, null, role === 'admin', view);
 	return res[0];
 }
 
-export async function selectAllKaras(username, filter, lang, mode, modeValue, from = 0, size = 0, admin = true) {
+export async function selectAllKaras(username, filter, lang, mode, modeValue, from = 0, size = 0, admin = true, view) {
 	let filterClauses = filter ? buildClauses(filter) : {sql: [], params: {}};
 	let typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
 	// Hide blacklisted songs if not admin
@@ -80,6 +80,8 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	let limitClause = '';
 	let offsetClause = '';
 	let havingClause = '';
+	let viewClause = '';
+	if (view) viewClause = 'v_';
 	if (mode === 'recent') orderClauses = 'created_at DESC, ';
 	if (mode === 'requested') {
 		orderClauses = 'requested DESC, ';
@@ -92,7 +94,7 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	//Disabled until we get the frontend to work around this.
 	//if (from > 0) offsetClause = `OFFSET ${from} `;
 	//if (size > 0) limitClause = `LIMIT ${size} `;
-	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
+	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, havingClause, limitClause, offsetClause, viewClause);
 	const params = {
 		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60)) * 1000),
 		username: username,
@@ -102,8 +104,10 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	return res.rows;
 }
 
-export async function getKaraHistory() {
-	const res = await db().query(sql.getKaraHistory);
+export async function getKaraHistory(view) {
+	let viewClause = '';
+	if (view) viewClause = 'v_';
+	const res = await db().query(sql.getKaraHistory(viewClause));
 	return res.rows;
 }
 

@@ -44,9 +44,9 @@ export async function formatTagList(tagList, from, count) {
 	};
 }
 
-export async function getTags(filter, type, from, size) {
+export async function getTags(filter, type, from, size, view) {
 	profile('getTags');
-	let tags = await getAllTags(filter, type, from, size);
+	let tags = await getAllTags(filter, type, from, size, view);
 	const ret = await formatTagList(tags.slice(from, from + size), from, tags.length);
 	profile('getTags');
 	return ret;

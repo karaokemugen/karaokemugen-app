@@ -8,7 +8,7 @@ FROM all_series
 WHERE name = :name
 ;`;
 
-export const getSeries = (filterClauses, lang, limitClause, offsetClause) => `
+export const getSeries = (filterClauses, lang, limitClause, offsetClause, viewClause) => `
 SELECT
 	aseries.name AS name,
 	COALESCE(
@@ -22,7 +22,7 @@ SELECT
 	aseries.search AS search,
 	aseries.seriefile AS seriefile,
 	aseries.karacount::integer AS karacount
-FROM all_series aseries
+FROM ${viewClause}all_series aseries
 WHERE 1 = 1
 	${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 ORDER BY i18n_name
@@ -30,7 +30,7 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const getSerieByID = (lang) => `
+export const getSerieByID = (lang, viewClause) => `
 SELECT
 	aseries.name AS name,
 	COALESCE(
@@ -44,7 +44,7 @@ SELECT
 	aseries.search AS search,
 	aseries.seriefile AS seriefile,
 	aseries.karacount::integer AS karacount
-FROM all_series aseries
+FROM ${viewClause}all_series aseries
 WHERE sid = $1;
 `;
 

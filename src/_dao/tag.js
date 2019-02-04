@@ -12,14 +12,16 @@ export async function getTag(id) {
 	return res.rows[0];
 }
 
-export async function getAllTags(filter, type, from, size) {
+export async function getAllTags(filter, type, from, size, view) {
 	let filterClauses = filter ? buildTagClauses(filter) : {sql: [], params: {}};
 	let typeClauses = type ? ` AND tagtype = ${type}` : '';
 	let limitClause = '';
 	let offsetClause = '';
+	let viewClause = '';
+	if (view) viewClause = 'v_';
 	if (from > 0) offsetClause = `OFFSET ${from} `;
 	if (size > 0) limitClause = `LIMIT ${size} `;
-	const query = sql.getAllTags(filterClauses.sql, typeClauses, limitClause, offsetClause);
+	const query = sql.getAllTags(filterClauses.sql, typeClauses, limitClause, offsetClause, viewClause);
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }

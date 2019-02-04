@@ -50,7 +50,7 @@ VALUES(
 )
 `;
 
-export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, havingClause, limitClause, offsetClause) => `SELECT
+export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, havingClause, limitClause, offsetClause, viewClause) => `SELECT
   ak.kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
@@ -91,7 +91,7 @@ export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, havi
 		THEN FALSE
 		ELSE TRUE
   END) as flag_favorites
-FROM all_karas AS ak
+FROM ${viewClause}all_karas AS ak
 LEFT OUTER JOIN kara_serie AS ks_main ON ks_main.fk_kid = ak.kid
 LEFT OUTER JOIN serie_lang AS sl_main ON sl_main.fk_sid = ks_main.fk_sid AND sl_main.lang = ${lang.main}
 LEFT OUTER JOIN kara_serie AS ks_fall ON ks_fall.fk_sid = ak.kid
@@ -123,7 +123,7 @@ FROM kara
 WHERE pk_kid = $1;
 `;
 
-export const getKaraHistory = `
+export const getKaraHistory = (viewClause) => `
 SELECT ak.title AS title,
 	ak.songorder AS songorder,
 	ak.serie AS serie,
@@ -132,7 +132,7 @@ SELECT ak.title AS title,
     ak.languages AS languages,
     (SELECT COUNT(fk_kid) AS played FROM played WHERE fk_kid = ak.kid) AS played,
     p.played_at AS played_at
-FROM all_karas AS ak
+FROM ${viewClause}all_karas AS ak
 INNER JOIN played p ON p.fk_kid = ak.kid
 ORDER BY p.played_at DESC
 `;
