@@ -1188,7 +1188,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/playlists/:pl_id([0-9]+)/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
- * @apiVersion 2.3.0
+ * @apiVersion 2.5.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
