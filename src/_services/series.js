@@ -47,7 +47,7 @@ export async function deleteSerie(sid) {
 	await removeSeriesFile(serie.name);
 	await removeSerieInKaras(serie.name);
 	await removeSerie(sid);
-	await refreshSeries();
+	refreshSeries();
 }
 
 export async function addSerie(serieObj) {
