@@ -46,7 +46,7 @@ export default function systemController(router) {
 			.catch(err => res.status(500).send(`Error while regenerating DB: ${err}`));
 	});
 	router.get('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getKara(req.params.kid,req.authToken,req.lang)
+		getKara(req.params.kid,req.authToken,req.lang, true)
 			.then(kara => res.json(kara))
 			.catch(err => res.status(500).send('Error while loading kara: ' + err));
 	});
@@ -74,7 +74,7 @@ export default function systemController(router) {
 	});
 
 	router.get('/system/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getKaras(req.query.filter, req.lang, 0, 99999999999999, null, null, req.authToken)
+		getKaras(req.query.filter, req.lang, 0, 99999999999999, null, null, req.authToken, true)
 			.then(karas => res.json(karas))
 			.catch(err => {
 				res.status(500).send(`Error while fetching karas: ${err}`);
@@ -82,13 +82,13 @@ export default function systemController(router) {
 	});
 
 	router.get('/system/tags', requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getTags(req.query.filter, req.query.type, 0, 999999999)
+		getTags(req.query.filter, req.query.type, 0, 999999999, true)
 			.then(tags => res.json(tags))
 			.catch(err => res.status(500).send(`Error while fetching tags: ${err}`));
 	});
 
 	router.get('/system/series', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getSeries(req.query.filter, req.lang, 0, 999999999999)
+		getSeries(req.query.filter, req.lang, 0, 999999999999, true)
 			.then(series => res.json(series))
 			.catch(err => res.status(500).send(`Error while fetching series: ${err}`));
 	});
@@ -100,7 +100,7 @@ export default function systemController(router) {
 	});
 
 	router.get('/system/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getSerie(req.params.sid)
+		getSerie(req.params.sid, true)
 			.then((series) => res.json(series))
 			.catch(err => res.status(500).send(`Error deleting series: ${err}`));
 	});
@@ -124,19 +124,19 @@ export default function systemController(router) {
 	});
 
 	router.get('/system/karas/history', requireAuth, requireValidUser, requireAdmin, (req, res) =>{
-		getKaraHistory(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
+		getKaraHistory(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999, true)
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas history: ${err}`));
 	});
 
 	router.get('/system/karas/ranking', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) =>{
-		getTop50(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
+		getTop50(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999, true)
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas most requested: ${err}`));
 	});
 
 	router.get('/system/karas/viewcounts', requireAuth, requireValidUser, requireAdmin, (req, res) =>{
-		getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
+		getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999, true)
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas most played: ${err}`));
 	});

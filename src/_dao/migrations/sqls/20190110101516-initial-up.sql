@@ -52,8 +52,8 @@ CREATE TABLE kara_serie
 (
 	fk_sid uuid NOT NULL,
 	fk_kid uuid NOT NULL,
-	FOREIGN KEY(fk_sid) REFERENCES serie(pk_sid) ON DELETE CASCADE,
-	FOREIGN KEY(fk_kid) REFERENCES kara(pk_kid) ON DELETE CASCADE
+	FOREIGN KEY(fk_sid) REFERENCES serie(pk_sid) ON DELETE RESTRICT,
+	FOREIGN KEY(fk_kid) REFERENCES kara(pk_kid) ON DELETE RESTRICT
 );
 
 CREATE TABLE kara_tag
