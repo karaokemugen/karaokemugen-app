@@ -1098,6 +1098,7 @@ export async function getCurrentSong() {
 
 export async function buildDummyPlaylist(playlist_id) {
 	const stats = await getStats();
+	const state = await getState();
 	let karaCount = stats.karas;
 	// Limiting to 5 sample karas to add if there's more.
 	if (karaCount > 5) karaCount = 5;
@@ -1105,9 +1106,11 @@ export async function buildDummyPlaylist(playlist_id) {
 		logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);
 		for (let i = 1; i <= karaCount; i++) {
 			const kid = await getRandomKara(playlist_id);
-			await addKaraToPlaylist(kid,'admin',getState().currentPlaylistID);
+			await addKaraToPlaylist(kid,'admin',state.currentPlaylistID);
 		}
 		logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
+		emitWS('playlistInfoUpdated',state.currentPlaylistID);
+		emitWS('playlistContentsUpdated',state.currentPlaylistID);
 		return true;
 	} else {
 		logger.warn('[PLC] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
