@@ -56,7 +56,6 @@ export async function initPGData() {
 			const options = [ 'init','-o', `-U ${conf.db.prod.superuser} -E UTF8`, '-D', resolve(conf.appPath, conf.PathDB, 'postgres/') ];
 			await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), options, {
 				cwd: resolve(conf.appPath, conf.BinPostgresPath),
-				windowsVerbatimArguments: true,
 				stdio: 'inherit'
 			});
 		} else {
@@ -91,8 +90,6 @@ export async function updatePGConf() {
 export async function checkPG() {
 	const conf = getConfig();
 	if (!conf.db.prod.bundledPostgresBinary) return false;
-	// Status sends an exit code of 3 if postgresql is not running
-	// So it's thrown.
 	try {
 		const options = `status -D ${resolve(conf.appPath, conf.PathDB, 'postgres/')}`;
 		await execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), options.split(' '), {
@@ -100,6 +97,8 @@ export async function checkPG() {
 		});
 		return true;
 	} catch(err) {
+		// Status sends an exit code of 3 if postgresql is not running
+		// It gets thrown here so we return false (not running).
 		return false;
 	}
 }
