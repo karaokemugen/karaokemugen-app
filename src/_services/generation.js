@@ -480,7 +480,7 @@ export async function run() {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 5);
+		}, 6);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const sqlInsertSeries = prepareAllSeriesInsertData(series.map, series.data);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(series.map);
@@ -500,13 +500,15 @@ export async function run() {
 			{sql: insertKaraSeries, params: sqlInsertKarasSeries},
 			{sql: inserti18nSeries, params: sqlSeriesi18nData}
 		]);
+		// Setting the pk_id_tag sequence to allow further edits during runtime
 		await db().query('SELECT SETVAL(\'tag_pk_id_tag_seq\',(SELECT MAX(pk_id_tag) FROM tag))');
 		bar.incr();
 		await db().query('VACUUM ANALYZE;');
 		bar.incr();
 		await checkUserdbIntegrity(null);
 		bar.incr();
-		refreshKaras();
+		await refreshKaras();
+		bar.incr();
 		refreshSeries();
 		refreshYears();
 		refreshTags();
@@ -525,10 +527,8 @@ export async function run() {
 
 /**
  * @function run_userdb_integrity_checks
- * Get all karas from all_karas view
- * Get all karas in playlist_content, blacklist, viewcount, whitelist
- * Parse karas in playlist_content, search for the KIDs in all_karas
- * If id_kara is different, write a UPDATE query.
+ * Get all tags and compare to the ones in the blacklist criterias, if any.
+ * If tag IDs have changed, update them in blacklist criterias.
  */
 export async function checkUserdbIntegrity() {
 	logger.debug('[Gen] Running user database integrity checks');
