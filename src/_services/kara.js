@@ -339,7 +339,7 @@ export async function getYears() {
 export async function getKaras(filter, lang, from, size, searchType, searchValue, token, view) {
 	try {
 		profile('getKaras');
-		const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, null, null, view);
+		const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin', view);
 		profile('formatList');
 		const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 		profile('formatList');
