@@ -6,9 +6,9 @@ import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../_utils/files';
 import { refreshKaras } from '../_dao/kara';
 
-export async function getSeries(filter, lang, from = 0, size = 99999999999, view) {
+export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
-	const series = await selectAllSeries(filter, lang, view);
+	const series = await selectAllSeries(filter, lang);
 	const ret = formatSeriesList(series.slice(from, from + size), from, series.length);
 	profile('getSeries');
 	return ret;
@@ -34,8 +34,8 @@ export function formatSeriesList(seriesList, from, count) {
 	};
 }
 
-export async function getSerie(sid, view) {
-	const serie = await selectSerie(sid, view);
+export async function getSerie(sid) {
+	const serie = await selectSerie(sid);
 	if (!serie) throw 'Series ID unknown';
 	return serie;
 }

@@ -112,9 +112,9 @@ export async function getRandomKara(username, filter) {
 	return sample(allKarasNotInCurrentPlaylist);
 }
 
-export async function getKara(kid, token, lang, view) {
+export async function getKara(kid, token, lang) {
 	profile('getKaraInfo');
-	const kara = await getKaraDB(kid, token.username, lang, token.role, view);
+	const kara = await getKaraDB(kid, token.username, lang, token.role);
 	if (!kara) throw `Kara ${kid} unknown`;
 	let output = translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].mediafile);
@@ -303,18 +303,18 @@ export function serieRequired(karaType) {
 	return karaType !== karaTypes.MV.type && karaType !== karaTypes.LIVE.type;
 }
 
-export async function getKaraHistory(view) {
+export async function getKaraHistory() {
 	// Called by system route
-	return await getKaraHistoryDB(view);
+	return await getKaraHistoryDB();
 }
 
-export async function getTop50(token, lang, view) {
-	return await selectAllKaras(token.username, null, lang, 'requested', null, view);
+export async function getTop50(token, lang) {
+	return await selectAllKaras(token.username, null, lang, 'requested', null);
 }
 
-export async function getKaraPlayed(token, lang, from, size, view) {
+export async function getKaraPlayed(token, lang, from, size) {
 	// Called by system route
-	return await selectAllKaras(token.username, null, lang, 'played', null, from, size, view);
+	return await selectAllKaras(token.username, null, lang, 'played', null, from, size);
 }
 
 export async function addPlayedKara(kid) {
@@ -336,10 +336,10 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter, lang, from, size, searchType, searchValue, token, view) {
+export async function getKaras(filter, lang, from, size, searchType, searchValue, token) {
 	try {
 		profile('getKaras');
-		const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin', view);
+		const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin');
 		profile('formatList');
 		const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 		profile('formatList');

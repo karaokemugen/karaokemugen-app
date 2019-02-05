@@ -34,17 +34,15 @@ export function buildClausesSeries(words) {
 	};
 }
 
-export async function selectAllSeries(filter, lang, from, size, view) {
+export async function selectAllSeries(filter, lang, from, size) {
 
 	const filterClauses = filter ? buildClausesSeries(filter) : {sql: [], params: {}};
-	let viewClause = '';
-	if (view) viewClause = 'v_';
 	let offsetClause = '';
 	let limitClause = '';
 	//Disabled until frontend manages this
 	//if (from && from > 0) offsetClause = `OFFSET ${from} `;
 	//if (size && size > 0) limitClause = `LIMIT ${size} `;
-	const query = sql.getSeries(filterClauses.sql, langSelector(lang), limitClause, offsetClause, viewClause);
+	const query = sql.getSeries(filterClauses.sql, langSelector(lang), limitClause, offsetClause);
 	const q = yesql(query)(filterClauses.params);
 	const series = await db().query(q);
 	for (const i in series.rows) {
@@ -104,10 +102,8 @@ export async function updateKaraSeries(kid, sids) {
 	}
 }
 
-export async function selectSerie(sid, lang, view) {
-	let viewClause = '';
-	if (view) viewClause = 'v_';
-	const query = sql.getSerieByID(langSelector(lang), viewClause);
+export async function selectSerie(sid, lang) {
+	const query = sql.getSerieByID(langSelector(lang));
 	const series = await db().query(query, [sid]);
 	return series.rows[0];
 }

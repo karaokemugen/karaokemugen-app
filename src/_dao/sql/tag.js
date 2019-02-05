@@ -6,14 +6,14 @@ FROM tag
 WHERE pk_id_tag = $1
 `;
 
-export const getAllTags = (filterClauses, typeClauses, limitClause, offsetClause, viewClause) => `
+export const getAllTags = (filterClauses, typeClauses, limitClause, offsetClause) => `
 SELECT tag_id,
 	tagtype AS type,
 	name,
 	slug,
 	i18n,
 	karacount
-FROM ${viewClause}all_tags
+FROM all_tags
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
