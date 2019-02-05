@@ -4,6 +4,7 @@ import {getConfig} from '../../_utils/config';
 import {findUserByName, updateLastLoginName, remoteCheckAuth, fetchAndUpdateRemoteUser} from '../../_services/user';
 import { getRemoteToken, upsertRemoteToken } from '../../_dao/user';
 import { fetchAndAddFavorites } from '../../_services/favorites';
+import { logger } from 'handlebars';
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
 
@@ -36,7 +37,8 @@ export async function checkValidUser(token, onlineToken) {
 					}
 				} catch(err) {
 					upsertRemoteToken(token.username, null);
-					throw err;
+					logger.warn(`[RemoteUser] Failed to check remote auth (user logged in as local only) : ${err}`);
+					throw false;
 				}
 			}
 		}

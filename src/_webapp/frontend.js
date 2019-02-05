@@ -124,7 +124,7 @@ export async function initFrontend(port) {
 		res.render(view, {'layout': 'publicHeader',
 			'clientAdress'	:	`http://${url}`,
 			'webappMode'	:	config.WebappMode,
-            'onlineHost'  	:	config.OnlineUsers ? config.OnlineHost : '',
+			'onlineHost'  	:	config.OnlineUsers ? config.OnlineHost : '',
 			'query'			:	JSON.stringify(req.query)
 		});
 	});
