@@ -1,10 +1,22 @@
 import {langSelector, paramWords, db} from './database';
 import {pg as yesql} from 'yesql';
+import logger from 'winston';
 
 const sql = require('./sql/series');
 
 export async function refreshSeries() {
-	return await db().query('REFRESH MATERIALIZED VIEW all_series');
+	logger.profile('RefreshSeries');
+	await db().query('REFRESH MATERIALIZED VIEW all_series');
+	logger.profile('RefreshSeries');
+}
+
+export async function refreshKaraSeries() {
+	logger.profile('RefreshSeriesi18n');
+	await db().query('REFRESH MATERIALIZED VIEW series_i18n');
+	logger.profile('RefreshSeriesi18n');
+	logger.profile('RefreshKaraSeries');
+	await db().query('REFRESH MATERIALIZED VIEW all_kara_series');
+	logger.profile('RefreshKaraSeries');
 }
 
 export function buildClausesSeries(words) {

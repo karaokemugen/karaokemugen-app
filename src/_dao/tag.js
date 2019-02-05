@@ -1,10 +1,28 @@
 import {db, paramWords} from './database';
 import {pg as yesql} from 'yesql';
 import slug from 'slug';
+import logger from 'winston';
 const sql = require('./sql/tag');
 
 export async function refreshTags() {
-	return await db().query('REFRESH MATERIALIZED VIEW all_tags');
+	logger.profile('RefreshTags');
+	await db().query('REFRESH MATERIALIZED VIEW all_tags');
+	logger.profile('RefreshTags');
+}
+
+export async function refreshKaraTags() {
+	logger.profile('RefreshKaraTags');
+	await Promise.all([
+		db().query('REFRESH MATERIALIZED VIEW author'),
+		db().query('REFRESH MATERIALIZED VIEW creator'),
+		db().query('REFRESH MATERIALIZED VIEW group_tags'),
+		db().query('REFRESH MATERIALIZED VIEW language'),
+		db().query('REFRESH MATERIALIZED VIEW singer'),
+		db().query('REFRESH MATERIALIZED VIEW misc'),
+		db().query('REFRESH MATERIALIZED VIEW songtype'),
+		db().query('REFRESH MATERIALIZED VIEW songwriter')
+	]);
+	logger.profile('RefreshKaraTags');
 }
 
 export async function getTag(id) {

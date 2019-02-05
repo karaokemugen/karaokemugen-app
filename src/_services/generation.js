@@ -11,11 +11,8 @@ import {
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
-import {refreshKaras, refreshYears} from '../_dao/kara';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
-import {db, transaction, saveSetting} from '../_dao/database';
-import { refreshSeries } from '../_dao/series';
-import { refreshTags } from '../_dao/tag';
+import {refreshAll, db, transaction, saveSetting} from '../_dao/database';
 import slug from 'slug';
 import {createHash} from 'crypto';
 import Bar from '../_utils/bar';
@@ -480,13 +477,19 @@ export async function run() {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 6);
+		}, 13);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
+		bar.incr();
 		const sqlInsertSeries = prepareAllSeriesInsertData(series.map, series.data);
+		bar.incr();
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(series.map);
+		bar.incr();
 		const sqlSeriesi18nData = await prepareAltSeriesInsertData(series.data, series.map);
+		bar.incr();
 		const tags = getAllKaraTags(karas);
+		bar.incr();
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
+		bar.incr();
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
 		bar.incr();
 		await emptyDatabase();
@@ -501,19 +504,19 @@ export async function run() {
 			{sql: inserti18nSeries, params: sqlSeriesi18nData}
 		]);
 		// Setting the pk_id_tag sequence to allow further edits during runtime
+		bar.incr();
 		await db().query('SELECT SETVAL(\'tag_pk_id_tag_seq\',(SELECT MAX(pk_id_tag) FROM tag))');
 		bar.incr();
 		await db().query('VACUUM ANALYZE;');
 		bar.incr();
-		await checkUserdbIntegrity(null);
+		await Promise.all([
+			checkUserdbIntegrity(null),
+			refreshAll()
+		]);
 		bar.incr();
-		await refreshKaras();
-		bar.incr();
-		refreshSeries();
-		refreshYears();
-		refreshTags();
-		bar.stop();
 		await saveSetting('lastGeneration', new Date());
+		bar.incr();
+		bar.stop();
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);

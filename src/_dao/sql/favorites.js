@@ -11,8 +11,6 @@ SELECT
 	  ak.serie) AS serie,
   ak.serie AS serie_orig,
   ak.serie_altname AS serie_altname,
-  ak.serie_i18n AS serie_i18n,
-  ak.sid AS sid,
   ak.singers AS singers,
   ak.songtypes AS songtype,
   ak.creators AS creators,

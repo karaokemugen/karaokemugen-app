@@ -5,7 +5,10 @@ import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFil
 import logger from 'winston';
 import {ASSToLyrics} from '../_utils/ass';
 import {getPlaylistContentsMini} from './playlist';
-import {refreshAll} from '../_dao/database';
+import {refreshKaras, refreshYears} from '../_dao/kara';
+import {refreshKaraSeries, refreshSeries} from '../_dao/series';
+import {refreshKaraTags, refreshTags} from '../_dao/tag';
+
 import {selectAllKaras,
 	getYears as getYearsDB,
 	getKara as getKaraDB,
@@ -194,7 +197,14 @@ export async function createKaraInDB(kara) {
 		updateTags(kara),
 		updateSeries(kara)
 	]);
-	refreshAll();
+	await Promise.all([
+		refreshKaraSeries(),
+		refreshKaraTags()
+	]);
+	await refreshKaras();
+	refreshSeries();
+	refreshYears();
+	refreshTags();
 }
 
 export async function editKaraInDB(kara) {
@@ -203,7 +213,14 @@ export async function editKaraInDB(kara) {
 		updateTags(kara),
 		updateSeries(kara)
 	]);
-	refreshAll();
+	await Promise.all([
+		refreshKaraSeries(),
+		refreshKaraTags()
+	]);
+	await refreshKaras();
+	refreshSeries();
+	refreshYears();
+	refreshTags();
 }
 
 /**

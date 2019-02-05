@@ -128,9 +128,8 @@ SELECT
 	  ak.serie) AS serie,
   ak.serie AS serie_orig,
   ak.serie_altname AS serie_altname,
-  ak.serie_i18n AS serie_i18n,
-  ak.sid AS sid,
   ak.seriefiles AS seriefiles,
+  ak.sid AS sid,
   ak.subfile AS subfile,
   ak.singers AS singers,
   ak.songtypes AS songtype,
@@ -188,7 +187,7 @@ LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
 LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
 WHERE pc.fk_id_playlist = :playlist_id
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname, ak.serie_i18n, ak.sid, ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
+GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
 ORDER BY pc.pos
 ${limitClause}
 ${offsetClause}
@@ -214,8 +213,7 @@ SELECT ak.kid AS kid,
 		),
 		ak.serie
 	) AS serie,
-	ak.serie_i18n AS serie_i18n,
-    ak.songtypes AS songtypes,
+	ak.songtypes AS songtypes,
 	ak.singers AS singers,
     ak.gain AS gain,
     pc.nickname AS nickname,
@@ -263,8 +261,6 @@ SELECT
   ak.songorder AS songorder,
   ak.serie AS serie,
   ak.serie_altname AS serie_altname,
-  ak.serie_i18n AS serie_i18n,
-  ak.sid AS sid,
   ak.seriefiles AS seriefiles,
   ak.subfile AS subfile,
   ak.singers AS singers,
@@ -315,14 +311,13 @@ LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.f
 LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc.fk_id_playlist AND plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND pc.pos
 LEFT OUTER JOIN kara AS plc_before_karas ON plc_before_karas.pk_kid = plc_before.fk_kid
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
-GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname, ak.serie_i18n, ak.sid, ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
+GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
 `;
 
 export const getPLCInfoMini = `
 SELECT pc.fk_kid AS kid,
 	ak.title AS title,
 	ak.serie AS serie,
-	ak.serie_i18n AS serie_i18n,
 	pc.nickname AS nickname,
 	pc.fk_login AS username,
 	pc.pk_id_plcontent AS playlistcontent_id,
@@ -332,7 +327,7 @@ FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 WHERE  pc.pk_id_plcontent = $1
-GROUP BY pc.fk_kid, ak.title, ak.serie, ak.serie_i18n, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist
+GROUP BY pc.fk_kid, ak.title, ak.serie, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist
 `;
 
 

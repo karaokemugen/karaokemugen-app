@@ -13,8 +13,8 @@ import {asyncRename, asyncExists} from '../_utils/files';
 import {isShutdownPG, initPG} from '../_utils/postgresql';
 import { generateBlacklist } from '../_services/blacklist';
 import {refreshYears, refreshKaras} from './kara';
-import {refreshTags} from './tag';
-import {refreshSeries} from './series';
+import {refreshTags, refreshKaraTags} from './tag';
+import {refreshSeries, refreshKaraSeries} from './series';
 
 
 const sql = require('./sql/database');
@@ -399,10 +399,16 @@ export async function importFromSQLite() {
 }
 
 export async function refreshAll() {
+	logger.profile('Refresh');
 	await Promise.all([
-		refreshKaras(),
+		refreshKaraSeries(),
+		refreshKaraTags()
+	]);
+	await Promise.all([
 		refreshSeries(),
+		refreshKaras(),
 		refreshYears(),
 		refreshTags()
 	]);
+	logger.profile('Refresh');
 }

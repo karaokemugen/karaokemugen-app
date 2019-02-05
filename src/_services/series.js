@@ -1,5 +1,5 @@
 import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
-import {refreshSeries, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
+import {refreshSeries, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, refreshKaraSeries} from '../_dao/series';
 import {profile} from '../_utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 import uuidV4 from 'uuid/v4';
@@ -44,10 +44,13 @@ export async function deleteSerie(sid) {
 	//Not removing from database, a regeneration will do the trick.
 	const serie = await getSerie(sid);
 	if (!serie) throw 'Series ID unknown';
-	await removeSeriesFile(serie.name);
-	await removeSerieInKaras(serie.name);
 	await removeSerie(sid);
-	refreshSeries();
+	await Promise.all([
+		refreshSeries(),
+		removeSeriesFile(serie.name),
+		removeSerieInKaras(serie.name),
+	]);
+	refreshKaraSeries().then(refreshKaras());
 }
 
 export async function addSerie(serieObj) {
@@ -61,7 +64,8 @@ export async function addSerie(serieObj) {
 		insertSeriei18n(serieObj),
 		writeSeriesFile(serieObj)
 	]);
-	refreshSeries();
+	await refreshSeries();
+	refreshKaraSeries().then(refreshKaras());
 	return serieObj.sid;
 }
 
@@ -78,6 +82,6 @@ export async function editSerie(sid,serieObj) {
 		updateSerie(serieObj),
 		writeSeriesFile(serieObj)
 	]);
-	refreshSeries();
-	refreshKaras();
+	await refreshSeries();
+	refreshKaraSeries().then(refreshKaras());
 }
