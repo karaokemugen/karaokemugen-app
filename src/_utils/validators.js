@@ -91,6 +91,7 @@ function uuidArrayValidator(value) {
 	value = value.toString();
 	if (value.includes(',')) {
 		const array = value.split(',');
+		if (array.some(e => !e)) return `'${value} contains an undefined`;
 		if (array.every(new RegExp(uuidRegexp).test)) return null;
 		return ` '${value}' is invalid (not an array of UUIDs)`;
 	}

@@ -33,7 +33,7 @@ export async function fetchAndAddFavorites(instance, token, username) {
 		const favorites = {
 			Header: {
 				version: 1,
-				description: 'Karaoke Mugen Favorites List'
+				description: 'Karaoke Mugen Favorites List File'
 			},
 			Favorites: res.body
 		};
@@ -54,7 +54,10 @@ export async function addToFavorites(username, kid) {
 		if (Array.isArray(kid)) karas = kid;
 		if (typeof kid === 'string') karas = kid.split(',');
 		await insertFavorites(karas, username);
-		if (username.includes('@') && +getConfig().OnlineUsers) manageFavoriteInInstance('POST', username, kid);
+		if (username.includes('@') && +getConfig().OnlineUsers) for (const kara of karas) {
+			manageFavoriteInInstance('POST', username, kara);
+		}
+
 	} catch(err) {
 		throw err;
 	} finally {
@@ -137,12 +140,13 @@ export async function importFavorites(favs, username) {
 	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') throw 'Not a favorites list';
 	if (!Array.isArray(favs.Favorites)) throw 'Favorites item is not an array';
 	const re = new RegExp(uuidRegexp);
-	if (favs.Favorites.some(f => !re.test(f))) throw 'One item in the favorites list is not a UUID';
+	if (favs.Favorites.some(f => !re.test(f.kid))) throw 'One item in the favorites list is not a UUID';
 	try {
 		// Stripping favorites from unknown karaokes in our database to avoid importing them
-		const karasUnknown = await isAllKaras(favs.Favorites);
-		favs.Favorites = favs.Favorites.filter(f => !karasUnknown.includes(f));
-		await addToFavorites(username, favs.Favorites);
+		let favorites = favs.Favorites.map(f => f.kid);
+		const karasUnknown = await isAllKaras(favorites);
+		favorites = favorites.filter(f => !karasUnknown.includes(f));
+		await addToFavorites(username, favorites);
 		return { karasUnknown: karasUnknown };
 	} catch(err) {
 		throw err;
