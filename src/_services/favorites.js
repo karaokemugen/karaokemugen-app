@@ -131,7 +131,7 @@ export async function exportFavorites(username) {
 			version: 1,
 			description: 'Karaoke Mugen Favorites List File'
 		},
-		Favorites: favs.content.map(f => f.kid)
+		Favorites: favs.content
 	};
 }
 
