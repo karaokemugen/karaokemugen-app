@@ -263,8 +263,13 @@ export function buildTypeClauses(mode, value) {
 		for (const c of criterias) {
 			// Splitting only after the first ":"
 			const type = c.split(/:(.+)/)[0];
-			const values = c.split(/:(.+)/)[1].split(',').map((v) => { return "'"+v+"'::uuid"});
-			if (type === 's') search = `${search} AND serie_id <@ ARRAY[${values}]`;@> ARRAY[${values}]`;
+			let values;
+			if (type === 's') {
+    			values = c.split(/:(.+)/)[1].split(',').map((v) => `'${v}'::uuid`);
+    			search = `${search} AND serie_id <@ ARRAY[${values}]`;
+			} else {
+    			values = c.split(/:(.+)/)[1];
+			}
 			if (type === 'y') search = `${search} AND year IN (${values})`;
 			if (type === 't') search = `${search} AND all_tags_id @> ARRAY[${values}]`;
 		}
