@@ -721,17 +721,17 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,token) {
 
 export async function editPLC(plc_id,params,token) {
 	profile('editPLC');
-	if (!params.flag_playing) throw 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one';
-	if (!params.flag_free) throw 'flag_free cannot be unset!';
+	if (params.flag_playing === 'false') throw 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one';
+	if (params.flag_free === 'false') throw 'flag_free cannot be unset!';
 	const plcData = await getPLCInfoMini(plc_id);
 	if (!plcData) throw 'PLC ID unknown';
 	const pl = await getPlaylistInfo(plcData.playlist_id);
 	if (token.role !== 'admin' && !pl.flag_visible) throw `Playlist ${plcData.playlist_id} unknown`;
-	if (params.flag_playing) {
+	if (params.flag_playing === 'true') {
 		await setPlaying(plc_id, pl.playlist_id);
 		if (pl.flag_current) playingUpdated();
 	}
-	if (params.flag_free) {
+	if (params.flag_free === 'true') {
 		await freePLC(plc_id);
 		updateSongsLeft(plcData.user_id,pl.playlist_id);
 	}
