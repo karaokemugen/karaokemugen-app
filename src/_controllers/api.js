@@ -1228,8 +1228,8 @@ export function APIControllerAdmin(router) {
 				try {
 					const data = await editPLC(req.params.plc_id,{
 						pos: +req.body.pos,
-						flag_playing: +req.body.flag_playing,
-						flag_free: +req.body.flag_free
+						flag_playing: req.body.flag_playing,
+						flag_free: req.body.flag_free
 					},req.authToken);
 					emitWS('playlistContentsUpdated',data.pl_id);
 					emitWS('playlistInfoUpdated',data.pl_id);
