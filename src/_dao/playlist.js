@@ -171,7 +171,7 @@ export async function getPLCByKIDAndUser(kid,username,playlist_id) {
 		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60)) * 1000),
 		username: username
 	}));
-	return res.rows;
+	return res.rows[0];
 }
 
 export async function getPlaylistInfo(id) {
