@@ -1092,7 +1092,7 @@ export async function getCurrentSong() {
 		const plc = await getPLCByKIDUser(kara.kid,kara.username,playlist_id);
 		if (plc) await deleteKaraFromPlaylist(plc.playlistcontent_id,playlist_id);
 	}
-	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
+	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtypes[0].name+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 	return kara;
 }
 
