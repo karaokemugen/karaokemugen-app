@@ -178,7 +178,7 @@ INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
 LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
-LEFT OUTER JOIN favorites f ON f.fk_kid = ak.kid
+LEFT OUTER JOIN favorites f ON f.fk_kid = ak.kid AND f.fk_login = :username
 LEFT OUTER JOIN kara_serie AS ks_main ON ks_main.fk_kid = ak.kid
 LEFT OUTER JOIN serie_lang AS sl_main ON sl_main.fk_sid = ks_main.fk_sid AND sl_main.lang = ${lang.main}
 LEFT OUTER JOIN kara_serie AS ks_fall ON ks_fall.fk_kid = ak.kid
@@ -306,7 +306,7 @@ LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 LEFT OUTER JOIN requested rq ON rq.fk_kid = ak.kid
 LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
 LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
-LEFT OUTER JOIN favorites AS f on ak.kid = f.fk_kid
+LEFT OUTER JOIN favorites AS f on ak.kid = f.fk_kid AND f.fk_login = :username
 LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.fk_id_playlist = pc.fk_id_playlist AND plc_current_playing.flag_playing = TRUE
 LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc.fk_id_playlist AND plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND pc.pos
 LEFT OUTER JOIN kara AS plc_before_karas ON plc_before_karas.pk_kid = plc_before.fk_kid

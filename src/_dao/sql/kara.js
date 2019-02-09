@@ -97,7 +97,7 @@ LEFT OUTER JOIN kara_serie AS ks_fall ON ks_fall.fk_sid = ak.kid
 LEFT OUTER JOIN serie_lang AS sl_fall ON sl_fall.fk_sid = ks_fall.fk_sid AND sl_fall.lang = ${lang.fallback}
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
 LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
-LEFT OUTER JOIN favorites AS f ON f.fk_login = :username
+LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = kid
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
