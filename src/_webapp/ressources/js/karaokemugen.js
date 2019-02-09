@@ -442,15 +442,15 @@ var settingsNotUpdated;
 				var $searchMenu = $(this).closest('.searchMenu');
 				var $tag = $searchMenu.find('li.tagFilter');
 				var tagType = $searchMenu.find('.tagsTypes').val();
-				var searchType = 'tag';
+				var searchCriteria = 'tag';
 
 				$tag.attr('searchValue', tag_id);
 
 				if(tagType === 'serie' || tagType === 'year') {
-					searchType = tagType;
+					searchCriteria = tagType;
 				}
 
-				$tag.attr('searchType', searchType);
+				$tag.attr('searchCriteria', searchCriteria);
 				$tag.find('.choice').click();
 			}
 		});
@@ -1264,6 +1264,7 @@ var settingsNotUpdated;
 
 		var $filter = $('#searchMenu' + side + ' li.active');
 		var searchType = $filter.attr('searchType');
+        var searchCriteria = $filter.attr('searchCriteria');
         var searchValue = $filter.attr('searchValue');
 
         /* getting all the info we need about range */
@@ -1297,7 +1298,15 @@ var settingsNotUpdated;
 		urlFiltre = url + '?filter=' + filter + fromTo;
 
 		if(searchType) {
-			urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchValue ? searchValue : '');
+            searchCriteria = searchCriteria ?
+                {
+                    'year' : 'y',
+                    'serie' : 's',
+                    'tag' : 't'
+                }[searchCriteria]
+                : '';
+            
+			urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchCriteria && searchValue ? searchCriteria + ':' + searchValue : '');
 		}
 
 
@@ -2240,9 +2249,14 @@ var settingsNotUpdated;
 		var locScroll1 = localStorage.getItem('scroll1');
 		var locScroll2 = localStorage.getItem('scroll2');
 
-		if(locPlaylistRange) playlistRange = JSON.parse(locPlaylistRange);
-		if(locSearchPlaylist1 && locSearchPlaylist1 != 'undefined') $('#searchPlaylist1').val(locSearchPlaylist1);
-		if(locSearchPlaylist2 && locSearchPlaylist2 != 'undefined') $('#searchPlaylist2').val(locSearchPlaylist2);
+        if(locPlaylistRange) playlistRange = JSON.parse(locPlaylistRange);
+        var searchVal1 = '', searchVal2 = '';
+		if(locSearchPlaylist1 && locSearchPlaylist1 != 'undefined') searchVal1 = locSearchPlaylist1;
+        if(locSearchPlaylist2 && locSearchPlaylist2 != 'undefined') searchVal2 = locSearchPlaylist2;
+                
+        $('#searchPlaylist1').val(searchVal1);
+        $('#searchPlaylist2').val(searchVal2);
+    
 
 		setupAjax();
 
@@ -2333,14 +2347,15 @@ var settingsNotUpdated;
 				$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
 
 				forSelectTags = tags.map(function(val, ind){
-					return {id:val.tag_id, text: val.name_i18n, type: val.type};
+                    var trad = val.i18n[i18n.locale];
+					return {id:val.tag_id, text: trad ? trad : val.name, type: val.type};
 				});
 
 				$.ajax({ url: 'public/series', }).done(function (data) {
 
 					var series = data.content;
 					series = series.map(function(val, ind){
-						return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
+						return {id:val.sid, text: val.i18n_name, type: 'serie'};
 					});
 					forSelectTags.push.apply(forSelectTags, series);
 
