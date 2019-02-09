@@ -147,6 +147,7 @@ export function decodeJwtToken(token, config) {
 }
 
 export async function convertToRemoteUser(token, password, instance) {
+	if (token.username === 'admin') throw 'Admin user cannot be converted to an online account';
 	const user = await findUserByName(token.username);
 	if (!user) throw 'User unknown';
 	if (!await checkPassword(user, password)) throw 'Wrong password';
@@ -445,6 +446,7 @@ export async function createUser(user, opts) {
 
 	await newUserIntegrityChecks(user);
 	if (user.login.includes('@') && opts.createRemote) {
+		if (user.login.split('@')[0] === 'admin') throw 'Admin accounts are not allowed to be created online';
 		if (!+getConfig().OnlineUsers) throw 'Creating online accounts is not allowed on this instance';
 		try {
 			await createRemoteUser(user);
@@ -614,7 +616,7 @@ export async function updateUserQuotas(kara) {
 	profile('updateUserQuotas');
 }
 
-export async function checkLogin(username, password) {
+export async function checkLogin(username, password, admin) {
 	const conf = getConfig();
 	let user = {};
 	if (username.includes('@') && +conf.OnlineUsers) {

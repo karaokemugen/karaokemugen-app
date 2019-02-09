@@ -59,7 +59,7 @@ export async function editUser(user) {
 }
 
 export async function reassignToUser(oldUsername,username) {
-	const updates = [
+	return Promise.all([
 		db().query(yesql(sql.reassignPlaylistToUser)({
 			username: username,
 			old_username: oldUsername
@@ -68,9 +68,7 @@ export async function reassignToUser(oldUsername,username) {
 			username: username,
 			old_username: oldUsername
 		}))
-	];
-	return await Promise.all(updates);
-
+	]);
 }
 
 export async function updateExpiredUsers(expireTime) {
