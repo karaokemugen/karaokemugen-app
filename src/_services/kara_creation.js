@@ -141,6 +141,8 @@ async function generateKara(kara, opts) {
 		} else {
 			kara.dateadded = timestamp.fromDate(kara.dateadded);
 		}
+		kara.songwriter.sort();
+		kara.singer.sort();
 		//Trim spaces before and after elements.
 		kara.series.forEach((e,i) => kara.series[i] = e.trim());
 		kara.lang.forEach((e,i) => kara.lang[i] = e.trim());
