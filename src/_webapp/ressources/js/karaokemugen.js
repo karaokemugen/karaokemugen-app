@@ -39,6 +39,7 @@ var scrollUpdating;
 var playlistsUpdating;
 var playlistContentUpdating;
 var settingsUpdating;
+var tagsUpdating;
 
 /* html */
 var addKaraHtml;
@@ -1475,19 +1476,23 @@ var settingsNotUpdated;
 							if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
 								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
 							}
-							// build the blacklist criteria line
-							var tagsFiltered = jQuery.grep(tags, function(obj) {
-								return obj.tag_id == data[k].value;
-							});
-							var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
-							var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
+                            // build the blacklist criteria line
 
-							blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
-								'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
-							+	'<div class="actionDiv">' + html + '</div>'
-							+	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
-							+	'<div class="contentDiv">' + textContent + '</div>'
-							+	'</li>');
+                            tagsUpdating.done(e => {
+                                var tagsFiltered = jQuery.grep(tags, function(obj) {
+                                    return obj.tag_id == data[k].value;
+                                });
+                                var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
+                                var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
+    
+                                blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
+                                    '<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
+                                +	'<div class="actionDiv">' + html + '</div>'
+                                +	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
+                                +	'<div class="contentDiv">' + textContent + '</div>'
+                                +	'</li>');
+                            })
+						
 						}
 					}
 					//htmlContent = blacklistCriteriasHtml.html();
@@ -2325,8 +2330,9 @@ var settingsNotUpdated;
 				});
 			});
 
-			$.ajax({ url: 'public/tags', }).done(function (data) {
-				tags = data.content;
+            tagsUpdating = $.ajax({ url: 'public/tags', }).done(function (data) {
+                tags = data.content;
+                console.log('YEAH');
 				var serie, year;
 
 				var tagList = tagsTypesList.map(function(val, ind){

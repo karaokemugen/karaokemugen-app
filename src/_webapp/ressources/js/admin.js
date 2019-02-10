@@ -134,31 +134,33 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			});
 		});
 		$('.playlist-main').on('change', '#bcType', function () {
-			if(tags) {
-				var bcType = $(this).val();
-				var tagsFiltered = jQuery.grep(tags, function (obj) {
-					return obj.type == bcType;
-				});
-	
-				var $bcValInput;
-				if (tagsFiltered.length > 0) {
-					$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
-					$.each(tagsFiltered, function (i, o) {
-						var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
-						$bcValInput.append($option);
-					});
-				} else {
-					$bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
-				}
-				$('#bcValContainer').empty().append($bcValInput);
-	
-				if (tagsFiltered.length > 0) {
-					$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
-	
-				}
-			} else {
-				console.log("Err: tags empty");
-			}
+            tagsUpdating.done(() => {
+                if(tags) {
+                    var bcType = $(this).val();
+                    var tagsFiltered = jQuery.grep(tags, function (obj) {
+                        return obj.type == bcType;
+                    });
+        
+                    var $bcValInput;
+                    if (tagsFiltered.length > 0) {
+                        $bcValInput = $('<select id="bcVal" class="input-sm"></select>');
+                        $.each(tagsFiltered, function (i, o) {
+                            var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
+                            $bcValInput.append($option);
+                        });
+                    } else {
+                        $bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
+                    }
+                    $('#bcValContainer').empty().append($bcValInput);
+        
+                    if (tagsFiltered.length > 0) {
+                        $('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
+        
+                    }
+                } else {
+                    console.log("Err: tags empty");
+                }
+            })
 		});
 
 		
