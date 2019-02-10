@@ -2012,7 +2012,7 @@ var settingsNotUpdated;
 		}
 		var details = {
 			  'UPVOTE_NUMBER' : data['upvotes']
-			, 'DETAILS_ADDED': 		(data['created_at'] ? i18n.__('DETAILS_ADDED_2', data['created_at']) : '') + (data['nickname'] ? i18n.__('DETAILS_ADDED_3', data['nickname']) : '')
+			, 'DETAILS_ADDED': 		(data['created_at'] ? i18n.__('DETAILS_ADDED_2',new Date( data['created_at']).toLocaleDateString()) : '') + (data['nickname'] ? i18n.__('DETAILS_ADDED_3', data['nickname']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
 			, 'BLCTYPE_6': 			data['authors'].map(e => e.name).join(', ')
