@@ -15,6 +15,7 @@ import { generateBlacklist } from '../_services/blacklist';
 import {refreshYears, refreshKaras} from './kara';
 import {refreshTags, refreshKaraTags} from './tag';
 import {refreshSeries, refreshKaraSeries} from './series';
+import {profile} from '../_utils/logger';
 
 
 const sql = require('./sql/database');
@@ -404,7 +405,7 @@ export async function importFromSQLite() {
 }
 
 export async function refreshAll() {
-	logger.profile('Refresh');
+	profile('Refresh');
 	await Promise.all([
 		refreshKaraSeries(),
 		refreshKaraTags()
@@ -415,5 +416,5 @@ export async function refreshAll() {
 		refreshYears(),
 		refreshTags()
 	]);
-	logger.profile('Refresh');
+	profile('Refresh');
 }

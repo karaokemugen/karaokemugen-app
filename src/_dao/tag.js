@@ -1,17 +1,17 @@
 import {db, paramWords} from './database';
 import {pg as yesql} from 'yesql';
 import slug from 'slug';
-import logger from 'winston';
+import {profile} from '../_utils/logger';
 const sql = require('./sql/tag');
 
 export async function refreshTags() {
-	logger.profile('RefreshTags');
+	profile('RefreshTags');
 	await db().query('REFRESH MATERIALIZED VIEW all_tags');
-	logger.profile('RefreshTags');
+	profile('RefreshTags');
 }
 
 export async function refreshKaraTags() {
-	logger.profile('RefreshKaraTags');
+	profile('RefreshKaraTags');
 	await Promise.all([
 		db().query('REFRESH MATERIALIZED VIEW author'),
 		db().query('REFRESH MATERIALIZED VIEW creator'),
@@ -22,7 +22,7 @@ export async function refreshKaraTags() {
 		db().query('REFRESH MATERIALIZED VIEW songtype'),
 		db().query('REFRESH MATERIALIZED VIEW songwriter')
 	]);
-	logger.profile('RefreshKaraTags');
+	profile('RefreshKaraTags');
 }
 
 export async function getTag(id) {
