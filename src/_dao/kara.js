@@ -5,7 +5,7 @@ import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_utils/files';
 import { getState } from '../_utils/state';
 import {pg as yesql} from 'yesql';
-import logger from 'winston';
+import {profile} from '../_utils/logger';
 
 const sql = require('./sql/kara');
 
@@ -15,15 +15,15 @@ export async function getSongCountForUser(playlist_id,username) {
 }
 
 export async function refreshKaras() {
-	logger.profile('RefreshKaras');
+	profile('RefreshKaras');
 	await db().query('REFRESH MATERIALIZED VIEW all_karas');
-	logger.profile('RefreshKaras');
+	profile('RefreshKaras');
 }
 
 export async function refreshYears() {
-	logger.profile('RefreshYears');
+	profile('RefreshYears');
 	await db().query('REFRESH MATERIALIZED VIEW all_years');
-	logger.profile('RefreshYears');
+	profile('RefreshYears');
 }
 
 
