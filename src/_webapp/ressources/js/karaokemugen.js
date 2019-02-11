@@ -154,7 +154,6 @@ var settingsNotUpdated;
 						var args = res.args && typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
 							return res.args[e];
 						}) : [res.args];
-						//var args = res.args;
 						var errMessage = i18n.__(res.code, args);
 						if(showInfoMessage.indexOf(res.code) === -1) {
 							console.log(res.code, errMessage, 'console');
@@ -175,7 +174,6 @@ var settingsNotUpdated;
 					var errMessage = 'unknown';
 					var code = '';
 					if(res.status == 500 && res.responseJSON.code) {
-						// var args = res.responseJSON.args;
 						var args = typeof res.responseJSON.args === 'object' ? Object.keys(res.responseJSON.args).map(function(e) {
 							return res.responseJSON.args[e];
 						}) : [ res.responseJSON.args];
@@ -199,7 +197,6 @@ var settingsNotUpdated;
 
 		setupAjax = function () {
 			var headers = logInfos.onlineToken ? { 'Authorization': logInfos.token, 'onlineAuthorization': logInfos.onlineToken } :  { 'Authorization': logInfos.token };
-			// console.log(headers);
 			$.ajaxSetup({
 				cache: false,
 				headers: headers
@@ -550,7 +547,6 @@ var settingsNotUpdated;
 					}
 			  }
 			};
-			//var newWindows = window.open();
 			xhttp.open("GET", searchUrl , true);
 			xhttp.send();
 
@@ -595,7 +591,6 @@ var settingsNotUpdated;
 							playlistContentUpdating.done( function() {
 								scrollToKara(2, chosenOne);
 							});
-							//displayMessage('success', '', 'Kara ajouté à la playlist <i>' + playlistToAdd + '</i>.');
 						});
 					},'lucky');
 				});
@@ -656,9 +651,7 @@ var settingsNotUpdated;
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);
-			if(container.attr('flagScroll') == true || container.attr('flagScroll') == 'true' )  {
-				//container.attr('flagScroll', false);
-			} else {
+			if(container.attr('flagScroll') != true && container.attr('flagScroll') != 'true' )  {
 				var playlist = container.find('ul').first();
 				var side = playlist.attr('side');
 				var dashboard = $('#panel' + side + ' > .plDashboard');
@@ -670,7 +663,6 @@ var settingsNotUpdated;
 				var shift = 2 * parseInt((12*pageSize/20)/2);
 				var fillerBottom = playlist.find('.filler').last();
 				var fillerTop = playlist.find('.filler').first();
-				// console.log(container, playlist, dashboard, karaCount, nbKaraInPlaylist, shift, fillerBottom.length , fillerTop.length)
 				if (fillerTop.length > 0 && fillerBottom.length > 0) {
 					var scrollDown = container.offset().top + container.innerHeight() >= fillerBottom.offset().top && to < karaCount && nbKaraInPlaylist >= pageSize;
 					var scrollUp = fillerTop.offset().top + fillerTop.innerHeight() > container.offset().top + 10 && from > 0;
@@ -742,7 +734,6 @@ var settingsNotUpdated;
 		$('#nav-login .guest').click( function() {
 			new Fingerprint2( { excludeUserAgent: true }).get(function(result, components) {
 				login('', result);
-				// console.log(components);
 			});
 		});
 		$('#nav-signup input').focus( function(){
@@ -799,7 +790,6 @@ var settingsNotUpdated;
 						if(scope === 'public' || introManager &&  typeof introManager._currentStep !== 'undefined') login(username, password);
 
 					}).fail(function(response) {
-						//displayMessage('info','', i18n.__('LOG_ERROR'));
 						$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
 						$('#signupPassword').focus();
 					});
@@ -1037,9 +1027,6 @@ var settingsNotUpdated;
 		/* profil stuff END */
 		/* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
 		if(isTouchScreen) {
-			$('select').on('select2:open', function() {
-				//$('.select2-search input').prop('focus', 0);
-			});
 			$('#progressBarColor').addClass('cssTransition');
 		}
 
@@ -1313,7 +1300,6 @@ var settingsNotUpdated;
 
 		// ask for the kara list from given playlist
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
-		//var start = window.performance.now();
 		var async = !(isTouchScreen && isChrome && scrollingType);
 		ajaxSearch[url] = $.ajax({  url: urlFiltre,
 			type: 'GET', async: async,
@@ -1816,7 +1802,6 @@ var settingsNotUpdated;
 			}
 			if (oldState.status != data.status || oldState.playerStatus != data.playerStatus) {
 				status = data.status === 'stop' ? 'stop' : data.playerStatus;
-				//DEBUG && console.log("status : " + status + " enginestatus : " + data.status  + " playerStatus : " + data.playerStatus );
 				switch (status) {
 				case 'play':
 					$('#status').attr('name','pause');
@@ -1836,9 +1821,6 @@ var settingsNotUpdated;
 			}
 			if($('input[name="lyrics"]').is(':checked') || (mode == 'mobile' || webappMode == 1) && $('#switchInfoBar').hasClass('showLyrics')) {
 				var text = data['subText'];
-				/* if(oldState['subText'] != null && text != null && text.indexOf(oldState['subText']) > -1 && text != oldState['subText']) {
-                    text.replace(oldState['subText'], "<span style='color:red;'>" + oldState['subText'] + "</span>");
-                }*/
 				if (text) text = text.indexOf('\n') == -1 ? text:  text.substring(0, text.indexOf('\n') );
 				$('#karaInfo > span').html(text);
 			}
@@ -1868,9 +1850,6 @@ var settingsNotUpdated;
 						}
 					});
 				}
-				// else {
-				// 	console.log('ER: currentlyPlaying is bogus : ' + data.currentlyPlaying);
-				// }
 			}
 			if (data.showSubs != oldState.showSubs) {
 				if (data.showSubs) {
@@ -1888,11 +1867,9 @@ var settingsNotUpdated;
 			}
 			if (data.onTop != oldState.onTop) {
 				$('input[name="PlayerStayOnTop"]').bootstrapSwitch('state', data.onTop, true);
-				//if(scope === 'admin') setSettings($('input[name="PlayerStayOnTop"]'));
 			}
 			if (data.fullscreen != oldState.fullscreen) {
 				$('input[name="PlayerFullscreen"]').bootstrapSwitch('state', data.fullscreen, true);
-				//if(scope === 'admin') setSettings($('input[name="PlayerFullscreen"]'));
 			}
 			if (data.volume != oldState.volume) {
 				var val = data.volume, base = 100, pow = .76;
@@ -1963,7 +1940,7 @@ var settingsNotUpdated;
 		var infoKara = liKara.find('.detailsKara');
 
 		if(!liKara.hasClass('loading')) { // if we're already loading the div, don't do anything
-			if (!infoKara.is(':visible') ) { // || infoKara.length == 0
+			if (!infoKara.is(':visible') ) {
 				var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 				liKara.addClass('loading');
 				$.ajax({ url: urlInfoKara }).done(function (data) {
@@ -2030,7 +2007,6 @@ var settingsNotUpdated;
 			, 'BLCTYPE_7':			data['misc_tags'].map(e => i18n.__(e.name)).join(', ')
 			, 'DETAILS_SERIE':		data['serie']
 			, 'DETAILS_SERIE_ORIG':		data['serie_orig']
-			//	, 'DETAILS_SERIE_ALT':	data['serie_altname']
 			, 'BLCTYPE_2':			data['singers'].map(e => e.name).join(', ')
 			, 'DETAILS_TYPE ':		i18n.__(data['songtype'][0].name) + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
 			, 'DETAILS_YEAR':		data['year']
@@ -2221,7 +2197,6 @@ var settingsNotUpdated;
 		} else if(command == 'remove') {
 			saveLastDetailsKara[idPlaylist + 1000].pop(idKara);
 		} else {
-		//DEBUG && console.log("ah",(-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000])));
 			return (-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000]));
 		}
 	};
@@ -2440,12 +2415,9 @@ var settingsNotUpdated;
 	};
 
 	$(window).resize(function () {
-		//  initSwitchs();
 		isSmall = $(window).width() < 1025;
 		var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
 		var topHeight2 = $('#panel2 .panel-heading.container-fluid').outerHeight();
-		//$('#playlist1').parent().css('height', 'calc(100% - ' + (scope === 'public' ? 0 : topHeight1) + 'px ');
-		//$('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
 
 		resizeModal();
 
@@ -2533,8 +2505,6 @@ var settingsNotUpdated;
 				url: 'admin/player',
 				type: 'PUT',
 				data: { command: val }
-			}).done(function () {
-				// refreshPlayerInfos();
 			});
 		});
 	};
@@ -2581,7 +2551,6 @@ var settingsNotUpdated;
 
 				deferred.resolve();
 			}).fail(function(response) {
-				//displayMessage('info','', i18n.__('LOG_ERROR'));
 				$('#loginModal').modal('show');
 				$('#password').val('').focus();
 				$('#password, #login').addClass('redBorders');
@@ -2638,7 +2607,6 @@ var settingsNotUpdated;
 	};
 
 	addKaraPublic = function(idKara, doneCallback, failCallback) {
-		//var karaName = $('li[idkara="' + idKara + '"]').first().find('.contentDiv').text();
 
 		$.ajax({ url: 'public/karas/' + idKara,
 			type: 'POST',
@@ -2657,7 +2625,6 @@ var settingsNotUpdated;
 				if(idSearchList == 1) doneCallback();
 				else  failCallback();
 			}
-			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		}).fail(function() {
 			if(failCallback) failCallback();
 		});
@@ -2667,9 +2634,6 @@ var settingsNotUpdated;
 
 		$.ajax({ url: scope + '/playlists/' + playlistToAdd + '/karas/' + idPlaylistContent,
 			type: 'DELETE'
-		}).done(function() {
-
-			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		});
 	};
 

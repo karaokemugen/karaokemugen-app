@@ -11,12 +11,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		// handling small touchscreen screens with big virtual keyboard
 
 		$('select[type="playlist_select"]').on('select2:open', function () {
-			//$('#header').hide();
 			$('.select2-dropdown').css('z-index', '9999');
 		});
 
 		$('select[type="playlist_select"]').on('select2:close', function () {
-			// $('#header').show();
 			$('.select2-dropdown').css('z-index', '1051');
 			document.body.scrollTop = 0; // For Chrome, Safari and Opera 
 			document.documentElement.scrollTop = 0; // For IE and Firefox
@@ -45,14 +43,12 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				url: 'admin/player',
 				type: 'PUT',
 				data: dataAjax
-			}).done(function () {
-				// refreshPlayerInfos();
 			});
 		});
 
 
 		$('.btn[action="account"]').click(function () {
-			showProfil()
+			showProfil();
 		});
 
 		$('.btn[action="poweroff"]').click(function () {
@@ -118,8 +114,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				url: scope + '/blacklist/criterias',
 				type: 'POST',
 				data: data
-			}).done(function () {
-				//displayMessage('success', 'Success', 'Criteria ' + type + ' - ' + val + ' added to the list');
 			});
 		});
 
@@ -129,8 +123,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			$.ajax({
 				url: scope + '/blacklist/criterias/' + bcId,
 				type: 'DELETE'
-			}).done(function () {
-				//displayMessage('success', 'Success', 'Blacklist criteria ' + bcId + ' deleted');
 			});
 		});
 		$('.playlist-main').on('change', '#bcType', function () {
@@ -172,7 +164,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			var side = $this.closest('.panel').attr('side');
 			var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 
-			// var flag = $this.hasClass('free') ? 0 : 1;
 			var flag = true;
 			$.ajax({
 				type: 'PUT',
@@ -239,7 +230,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						data = { requestedby: requestedby, kid: idKara };
 					}
 				} else if (idPlaylistTo == -1) {
-					//displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
 					DEBUG && console.log('ERR: can\'t add kara to the kara list from database');
 				} else if (idPlaylistTo == -2 || idPlaylistTo == -4) {
 					url = scope + '/blacklist/criterias';
@@ -305,7 +295,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 							data: data
 						}).done(function () {
 							li.hide();
-							//fillPlaylist(side);
 						});
 					}
 				});
@@ -349,7 +338,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 		$('#karaInfo').click(function (e) {
 			if (status != undefined && status != '' && status != 'stop' && $(this).attr('length') != -1) {
-				//refreshPlayerInfos(goToPosition, e);
 				goToPosition(e);
 			}
 		});
@@ -380,7 +368,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				$('#progressBarColor').addClass('cssTransform');
 				stopUpdate = false;
 				mouseDown = false;
-				//refreshPlayerInfos();
 			}
 		});
 
@@ -437,7 +424,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 			$.each(data, function (i, val) {
 				var input = $('[name="' + i + '"]');
-				// DEBUG && console.log(i, val);
 				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
 					if (input.attr('type') !== 'checkbox' || input.hasClass('hideInput')) {
 						input.val(val);
@@ -494,7 +480,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 	/* el is the html element containing the value being updated */
 	setSettings = function (el) {
-		//    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
 		if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
 			settingsUpdating = getSettings(el.attr('name'));
 
@@ -539,7 +524,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		var songLength = karaInfo.attr('length');
 		var barInnerwidth = karaInfo.innerWidth();
 		var futurTimeX = e.pageX - karaInfo.offset().left;
-		//var presentTimeX = $('#progressBarColor').width();
 		var futurTimeSec = songLength * futurTimeX / barInnerwidth;
 		
 		if(!isNaN(futurTimeSec) && futurTimeSec >= 0) {
@@ -547,7 +531,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				.css('transform', 'translateX(' + e.pageX + 'px)')
 				.addClass('');
 
-			//var start_time = new Date().getTime();
 			$.ajax({
 				url: 'admin/player',
 				type: 'PUT',
@@ -557,7 +540,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				}
 			})
 				.done(function () {
-					//var request_time = new Date().getTime() - start_time;
 					setStopUpdate(false);
 				});
 		} else {
