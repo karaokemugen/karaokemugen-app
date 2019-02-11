@@ -514,7 +514,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					settingsArray[obj.name] = obj.value;
 				});
 				settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
-
+				settingsArray['PlayerNoHud'] = settings['PlayerNoHud'];
+				settingsArray['PlayerNoBar'] = settings['PlayerNoBar'];
 				DEBUG && console.log('setSettings : ', settingsArray);
 
 				$.ajax({
