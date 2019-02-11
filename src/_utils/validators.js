@@ -57,8 +57,8 @@ function typeValidator(value) {
 
 function boolIntValidator(value) {
 	const err = ` '${value}' is invalid (must be -1, 0 or 1)`;
+	if (!value && +value !== 0) return err; // We don't want undefined, but it must not be 0 either to throw an error
 	if (value && ![-1, 0, 1].includes(+value)) return err;
-
 	return null;
 }
 
