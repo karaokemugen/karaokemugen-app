@@ -1854,7 +1854,7 @@ var settingsNotUpdated;
 					$('#karaInfo > span').text( i18n.__('JINGLE_TIME') );
 					$('#karaInfo > span').data('text',i18n.__('JINGLE_TIME') );
 
-				} else if ( data.currentlyPlaying > 0 ) {
+				} else {
 					$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
 						var kara = dataKara[0];
 						$('#karaInfo').attr('idKara', kara.kid);
@@ -1866,9 +1866,10 @@ var settingsNotUpdated;
 							buildKaraDetails(kara, 'karaCard');
 						}
 					});
-				} else {
-					console.log('ER: currentlyPlaying is bogus : ' + data.currentlyPlaying);
 				}
+				// else {
+				// 	console.log('ER: currentlyPlaying is bogus : ' + data.currentlyPlaying);
+				// }
 			}
 			if (data.showSubs != oldState.showSubs) {
 				if (data.showSubs) {
