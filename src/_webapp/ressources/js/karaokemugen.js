@@ -339,13 +339,13 @@ var settingsNotUpdated;
 			displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
 				var adress = 'mailto:' + settings.karaSuggestionMail;
 				var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
-                var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
-                setTimeout(function() {
-                    displayMessage('info', i18n.__('KARA_SUGGESTION_INFO'),
-                    i18n.__('KARA_SUGGESTION_LINK', 'https://lab.shelter.moe/karaokemugen/karaokebase/issues/', 'console'), '30000');
-                }, 200);
+				var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
+				setTimeout(function() {
+					displayMessage('info', i18n.__('KARA_SUGGESTION_INFO'),
+						i18n.__('KARA_SUGGESTION_LINK', 'https://lab.shelter.moe/karaokemugen/karaokebase/issues/', 'console'), '30000');
+				}, 200);
 
-                window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
+				window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
 			}, search);
 		});
 
@@ -472,7 +472,7 @@ var settingsNotUpdated;
 			}
 		});
 
-    /*****************/
+		/*****************/
 		makeFav = function(idKara, make, $el) {
 			var type = make ? 'POST' : 'DELETE';
 			$.ajax({
@@ -512,7 +512,7 @@ var settingsNotUpdated;
 			var searchLanguage = navigator.languages[0];
 			searchLanguage = searchLanguage.substring(0, 2);
 			if(!details.data('misc_tags') || (
-                details.data('misc_tags').find(e => e.name == 'TAG_VIDEOGAME')
+				details.data('misc_tags').find(e => e.name == 'TAG_VIDEOGAME')
                 && details.data('misc_tags').find(e => e.name == 'TAG_MOVIE')
 			)) {
 				extraSearchInfo = 'anime ';
@@ -761,16 +761,16 @@ var settingsNotUpdated;
 			}
 		});
 		$('#nav-signup .login').click( () => {
-            var servername = $('#signupServ').val();
-            var username = $('#signupLogin').val();
-            if(username.includes('@')) {
-                $('#signupLogin').addClass('errorBackground')
-                displayMessage('warning','', i18n.__('CHAR_NOT_ALLOWED', '@'));
-                $('#signupLogin').focus();
-                return;
-            } else {
-                $('#signupLogin').removeClass('errorBackground')
-            }
+			var servername = $('#signupServ').val();
+			var username = $('#signupLogin').val();
+			if(username.includes('@')) {
+				$('#signupLogin').addClass('errorBackground')
+				displayMessage('warning','', i18n.__('CHAR_NOT_ALLOWED', '@'));
+				$('#signupLogin').focus();
+				return;
+			} else {
+				$('#signupLogin').removeClass('errorBackground')
+			}
 			var username = username + (servername ? '@' + servername : '');
 			var password = $('#signupPassword').val();
 			var passwordConfirmation = $('#signupPasswordConfirmation').val();
@@ -1007,31 +1007,31 @@ var settingsNotUpdated;
 		});
 
 		$('.profileConvert').click(function() {
-            if(settings) {
-                displayModal('custom', i18n.__('PROFILE_CONVERT'),
-                    '<label>' + i18n.__('INSTANCE_NAME') + '</label>'
+			if(settings) {
+				displayModal('custom', i18n.__('PROFILE_CONVERT'),
+					'<label>' + i18n.__('INSTANCE_NAME') + '</label>'
                     + '<input type="text"  name="modalLoginServ" value="' + settings.OnlineHost + '"//>'
                     + '<label>' + i18n.__('PROFILE_PASSWORD_AGAIN') + '</label>'
                     + '<input type="password" placeholder="' + i18n.__('PASSWORD') + '" class="form-control" name="password">', function(data){
 
-                        var msgData =  { instance: data.modalLoginServ, password : data.password };
+						var msgData =  { instance: data.modalLoginServ, password : data.password };
 
-                        ajx('POST', 'public/myaccount/online', msgData, function(response) {
-                            displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
+						ajx('POST', 'public/myaccount/online', msgData, function(response) {
+							displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
 
-                            createCookie('mugenToken',  response.token, -1);
-                            createCookie('mugenTokenOnline',  response.onlineToken, -1);
+							createCookie('mugenToken',  response.token, -1);
+							createCookie('mugenTokenOnline',  response.onlineToken, -1);
 
-                            logInfos = parseJwt(response.token);
-                            logInfos.token = response.token;
-                            logInfos.onlineToken = response.onlineToken;
-                            initApp();
-                        });
-                    }
-                );
-            } else {
-                getSettings();
-            }
+							logInfos = parseJwt(response.token);
+							logInfos.token = response.token;
+							logInfos.onlineToken = response.onlineToken;
+							initApp();
+						});
+					}
+				);
+			} else {
+				getSettings();
+			}
 		});
 
 		/* profil stuff END */
@@ -1081,7 +1081,7 @@ var settingsNotUpdated;
 	oldState = {};
 	oldSearchVal = '';
 
-    addKaraHtml = '<button title="' + i18n.__('TOOLTIP_ADDKARA')
+	addKaraHtml = '<button title="' + i18n.__('TOOLTIP_ADDKARA')
                 + (scope == 'admin' ? ' - ' + i18n.__('TOOLTIP_ADDKARA_ADMIN') : '')
                 + '" name="addKara" class="btn btn-sm btn-action"></button>';
                 
@@ -1265,10 +1265,10 @@ var settingsNotUpdated;
 
 		var $filter = $('#searchMenu' + side + ' li.active');
 		var searchType = $filter.attr('searchType');
-        var searchCriteria = $filter.attr('searchCriteria');
-        var searchValue = $filter.attr('searchValue');
+		var searchCriteria = $filter.attr('searchCriteria');
+		var searchValue = $filter.attr('searchValue');
 
-        /* getting all the info we need about range */
+		/* getting all the info we need about range */
 		localStorage.setItem('search' + side, filter ? filter : '');
 		localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
 
@@ -1299,13 +1299,13 @@ var settingsNotUpdated;
 		urlFiltre = url + '?filter=' + filter + fromTo;
 
 		if(searchType) {
-            searchCriteria = searchCriteria ?
-                {
-                    'year' : 'y',
-                    'serie' : 's',
-                    'tag' : 't'
-                }[searchCriteria]
-                : '';
+			searchCriteria = searchCriteria ?
+				{
+					'year' : 'y',
+					'serie' : 's',
+					'tag' : 't'
+				}[searchCriteria]
+				: '';
             
 			urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchCriteria && searchValue ? searchCriteria + ':' + searchValue : '');
 		}
@@ -1364,9 +1364,9 @@ var settingsNotUpdated;
 								var likeKara = likeKaraHtml;
 								if (kara.flag_upvoted) {
 									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
-                                }
+								}
                                 
-                                // TODO add fav button next to info for public pc interface
+								// TODO add fav button next to info for public pc interface
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
 								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
@@ -1476,22 +1476,22 @@ var settingsNotUpdated;
 							if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
 								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
 							}
-                            // build the blacklist criteria line
+							// build the blacklist criteria line
 
-                            tagsUpdating.done(e => {
-                                var tagsFiltered = jQuery.grep(tags, function(obj) {
-                                    return obj.tag_id == data[k].value;
-                                });
-                                var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
-                                var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
+							tagsUpdating.done(e => {
+								var tagsFiltered = jQuery.grep(tags, function(obj) {
+									return obj.tag_id == data[k].value;
+								});
+								var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
+								var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
     
-                                blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
-                                    '<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
+								blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
+									'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
                                 +	'<div class="actionDiv">' + html + '</div>'
                                 +	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
                                 +	'<div class="contentDiv">' + textContent + '</div>'
                                 +	'</li>');
-                            })
+							})
 						
 						}
 					}
@@ -1917,22 +1917,22 @@ var settingsNotUpdated;
 	buildKaraTitle = function(data, options) {
 		if(typeof options == 'undefined') {
 			options = {};
-        }
-        var isMulti = data.languages.find(e => e.name.indexOf('mul') > -1);
+		}
+		var isMulti = data.languages.find(e => e.name.indexOf('mul') > -1);
 		if(data.languages && isMulti) {
 			data.languages = [isMulti];
-        }
+		}
         
 		var titleText = 'fillerTitle';
 
 		var limit = isSmall ? 35 : 50;
 		var serieText =  data.serie ? data.serie : data.singers.map(e => e.name).join(', ');
 		serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
-        var titleArray = [
-                            data.languages.map(e => e.name).join(', ').toUpperCase(),
-                            serieText,
-                            i18n.__(data.songtype[0].name + '_SHORT') + (data.songorder > 0 ? ' ' + data.songorder : '')
-                        ];
+		var titleArray = [
+			data.languages.map(e => e.name).join(', ').toUpperCase(),
+			serieText,
+			i18n.__(data.songtype[0].name + '_SHORT') + (data.songorder > 0 ? ' ' + data.songorder : '')
+		];
 		var titleClean = titleArray.map(function (e, k) {
 			return titleArray[k] ? titleArray[k] : '';
 		});
@@ -1962,7 +1962,7 @@ var settingsNotUpdated;
 		var infoKara = liKara.find('.detailsKara');
 
 		if(!liKara.hasClass('loading')) { // if we're already loading the div, don't do anything
-            if (!infoKara.is(':visible') ) { // || infoKara.length == 0
+			if (!infoKara.is(':visible') ) { // || infoKara.length == 0
 				var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 				liKara.addClass('loading');
 				$.ajax({ url: urlInfoKara }).done(function (data) {
@@ -2255,13 +2255,13 @@ var settingsNotUpdated;
 		var locScroll1 = localStorage.getItem('scroll1');
 		var locScroll2 = localStorage.getItem('scroll2');
 
-        if(locPlaylistRange) playlistRange = JSON.parse(locPlaylistRange);
-        var searchVal1 = '', searchVal2 = '';
+		if(locPlaylistRange) playlistRange = JSON.parse(locPlaylistRange);
+		var searchVal1 = '', searchVal2 = '';
 		if(locSearchPlaylist1 && locSearchPlaylist1 != 'undefined') searchVal1 = locSearchPlaylist1;
-        if(locSearchPlaylist2 && locSearchPlaylist2 != 'undefined') searchVal2 = locSearchPlaylist2;
+		if(locSearchPlaylist2 && locSearchPlaylist2 != 'undefined') searchVal2 = locSearchPlaylist2;
                 
-        $('#searchPlaylist1').val(searchVal1);
-        $('#searchPlaylist2').val(searchVal2);
+		$('#searchPlaylist1').val(searchVal1);
+		$('#searchPlaylist2').val(searchVal2);
     
 
 		setupAjax();
@@ -2331,9 +2331,9 @@ var settingsNotUpdated;
 				});
 			});
 
-            tagsUpdating = $.ajax({ url: 'public/tags', }).done(function (data) {
-                tags = data.content;
-                console.log('YEAH');
+			tagsUpdating = $.ajax({ url: 'public/tags', }).done(function (data) {
+				tags = data.content;
+				console.log('YEAH');
 				var serie, year;
 
 				var tagList = tagsTypesList.map(function(val, ind){
@@ -2354,7 +2354,7 @@ var settingsNotUpdated;
 				$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
 
 				forSelectTags = tags.map(function(val, ind){
-                    var trad = val.i18n[i18n.locale];
+					var trad = val.i18n[i18n.locale];
 					return {id:val.tag_id, text: trad ? trad : val.name, type: val.type};
 				});
 
@@ -2600,12 +2600,12 @@ var settingsNotUpdated;
 
 	getPlaylistRange = function(idPl) {
 
-        var side = sideOfPlaylist(idPl);
-        var search = $('#searchPlaylist' + side).val();
+		var side = sideOfPlaylist(idPl);
+		var search = $('#searchPlaylist' + side).val();
 		var $filter = $('#searchMenu' + side + ' li.active');
 		var searchType = $filter.attr('searchType');
 		var searchValue = $filter.attr('searchValue');
-        var key = [search, searchType, searchValue].join('_');
+		var key = [search, searchType, searchValue].join('_');
 
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
 		return playlistRange[idPl][key] ? playlistRange[idPl][key] : { from : 0, to : pageSize };
@@ -2673,21 +2673,21 @@ var settingsNotUpdated;
 		});
 	};
 
-    manageOnlineUsersUI = function(data) {
-        $('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
-        DEBUG && console.log(logInfos);
-        if(!data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
-            $('.profileConvert').hide();
-        } else {
-            $('.profileConvert').show();
-        }
+	manageOnlineUsersUI = function(data) {
+		$('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
+		DEBUG && console.log(logInfos);
+		if(!data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
+			$('.profileConvert').hide();
+		} else {
+			$('.profileConvert').show();
+		}
 
-        if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
-            setTimeout(function() {
-                displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
-            }, 500)
-        }
-    }
+		if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
+			setTimeout(function() {
+				displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
+			}, 500)
+		}
+	}
 
 	/* socket part */
 
