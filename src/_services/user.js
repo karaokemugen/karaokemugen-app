@@ -443,15 +443,14 @@ export async function createUser(user, opts) {
 	user.url = user.url || null;
 	user.email = user.email || null;
 	if (user.type === 2) user.flag_online = 0;
-
 	await newUserIntegrityChecks(user);
-	if (user.login.includes('@') && opts.createRemote) {
-		if (user.login.split('@')[0] === 'admin') throw 'Admin accounts are not allowed to be created online';
-		if (!+getConfig().OnlineUsers) throw 'Creating online accounts is not allowed on this instance';
-		try {
+	if (user.login.includes('@')) {
+		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATION_ERROR', data: 'Admin accounts are not allowed to be created online' };
+		if (!+getConfig().OnlineUsers) throw { code: 'USER_CREATION_ERROR', data: 'Creating online accounts is not allowed on this instance'};
+		if (opts.createRemote) try {
 			await createRemoteUser(user);
 		} catch(err) {
-			throw err;
+			throw { code: 'USER_CREATION_ERROR', data: err};
 		}
 	}
 	if (user.password) user.password = hashPassword(user.password);
