@@ -1848,7 +1848,8 @@ var settingsNotUpdated;
 				$('#progressBarColor').stop().css({transform : 'translateX(0)'});
 				barCss.addClass('cssTransform');
 
-				if( data.currentlyPlaying === -1 ) {
+				if( data.currentlyPlaying === -1 || data.currentlyPlaying === null) {
+					data.currentlyPlaying = -1;
 					$('#karaInfo').attr('idKara', data.currentlyPlaying);
 					$('#karaInfo').attr('length', -1);
 					$('#karaInfo > span').text( i18n.__('JINGLE_TIME') );
@@ -2333,7 +2334,6 @@ var settingsNotUpdated;
 
 			tagsUpdating = $.ajax({ url: 'public/tags', }).done(function (data) {
 				tags = data.content;
-				console.log('YEAH');
 				var serie, year;
 
 				var tagList = tagsTypesList.map(function(val, ind){
