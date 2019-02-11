@@ -146,7 +146,9 @@ export const defaultGuestNames = [
 	'Yuki Nagato',
 	'Mikuru Asahina',
 	'Kyon-kun denwa',
-	'Chika-Chika'
+	'Chika-Chika',
+	'Goblin Slayer-kun',
+	'Giorgio Vanni <3'
 ];
 
 export const initializationCatchphrases = [

@@ -445,12 +445,12 @@ export async function createUser(user, opts) {
 	if (user.type === 2) user.flag_online = 0;
 	await newUserIntegrityChecks(user);
 	if (user.login.includes('@')) {
-		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATION_ERROR', data: 'Admin accounts are not allowed to be created online' };
-		if (!+getConfig().OnlineUsers) throw { code: 'USER_CREATION_ERROR', data: 'Creating online accounts is not allowed on this instance'};
+		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };
+		if (!+getConfig().OnlineUsers) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
 		if (opts.createRemote) try {
 			await createRemoteUser(user);
 		} catch(err) {
-			throw { code: 'USER_CREATION_ERROR', data: err};
+			throw { code: 'USER_CREATE_ERROR', data: err};
 		}
 	}
 	if (user.password) user.password = hashPassword(user.password);
@@ -461,7 +461,7 @@ export async function createUser(user, opts) {
 		return true;
 	} catch (err) {
 		logger.error(`[User] Unable to create user ${user.login} : ${err}`);
-		throw { code: 'USER_CREATION_ERROR', data: err};
+		throw { code: 'USER_CREATE_ERROR', data: err};
 	}
 }
 
