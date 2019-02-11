@@ -36,7 +36,6 @@ test:
     - master
     - next
     - tags
-    - 379-postgresql
 
 build:
   stage: build
@@ -162,4 +161,3 @@ apidoc:
   only:
     - master
     - next
-    - 379-postgresql
