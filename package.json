@@ -58,19 +58,21 @@
   "private": true,
   "pkg": {
     "scripts": [
+	  "node_modules/db-migrate/lib/commands/**",
       "node_modules/image-size/lib/types/*.js",
       "node_modules/sqlite3/node_modules/node-pre-gyp/lib/*.js",
       "node_modules/sqlite3/node_modules/node-pre-gyp/lib/util/*.js*",
       "dist/**/*.js"
     ],
     "assets": [
-      "dist/_dao/migrations/**",
+      "migrations/**",
       "dist/_locales/*",
       "dist/_player/assets/*",
       "dist/_webapp/vendors/**",
       "dist/_webapp/ressources/**",
       "dist/VERSION",
-      "react_systempanel/build/**"
+	  "react_systempanel/build/**",
+	  "package.json"
     ]
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_utils/files';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncWriteFile, asyncRemove, asyncUnlink} from './_utils/files';
 import {getConfig, initConfig, configureBinaries} from './_utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {writeFileSync, readFileSync} from 'fs';
@@ -98,6 +98,16 @@ async function main() {
 	const tempAvatar = resolve(appPath, config.PathAvatars, 'blank.png');
 	if (await asyncExists(tempAvatar)) await asyncUnlink(tempAvatar);
 	writeFileSync(tempAvatar, fileBuffer);
+
+	const pjson = resolve(appPath, 'package.json');
+	if (!await asyncExists(pjson)) {
+		await asyncWriteFile(pjson, JSON.stringify({
+			dependencies: {
+				'db-migrate': '',
+				'db-migrate-pg': ''
+			}
+		}), 'utf-8');
+	}
 
 	/**
 	 * Test if network ports are available

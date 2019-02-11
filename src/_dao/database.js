@@ -8,7 +8,7 @@ import deburr from 'lodash.deburr';
 import langs from 'langs';
 import {compareKarasChecksum, run as generateDB} from '../_services/generation';
 import DBMigrate from 'db-migrate';
-import {resolve} from 'path';
+import {join, resolve} from 'path';
 import {asyncRename, asyncExists} from '../_utils/files';
 import {isShutdownPG, initPG} from '../_utils/postgresql';
 import { generateBlacklist } from '../_services/blacklist';
@@ -164,7 +164,7 @@ async function migrateDB() {
 	logger.info('[DB] Running migrations if needed');
 	const dbm = DBMigrate.getInstance(true, {
 		cmdOptions: {
-			'migrations-dir': 'src/_dao/migrations',
+			'migrations-dir': join(__dirname, '../../migrations/'),
 			'log-level': 'warn|error|info'
 		}
 	});
