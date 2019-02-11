@@ -111,9 +111,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		$('.playlist-main').on('click', 'button.addBlacklistCriteria', function () {
 			// TODO check if type is valid maybe
 			var type = $('#bcType').val();
-            var val = $('#bcVal').val();
+			var val = $('#bcVal').val();
             
-            var data = { blcriteria_type: type, blcriteria_value: val };
+			var data = { blcriteria_type: type, blcriteria_value: val };
 			$.ajax({
 				url: scope + '/blacklist/criterias',
 				type: 'POST',
@@ -134,33 +134,33 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			});
 		});
 		$('.playlist-main').on('change', '#bcType', function () {
-            tagsUpdating.done(() => {
-                if(tags) {
-                    var bcType = $(this).val();
-                    var tagsFiltered = jQuery.grep(tags, function (obj) {
-                        return obj.type == bcType;
-                    });
+			tagsUpdating.done(() => {
+				if(tags) {
+					var bcType = $(this).val();
+					var tagsFiltered = jQuery.grep(tags, function (obj) {
+						return obj.type == bcType;
+					});
         
-                    var $bcValInput;
-                    if (tagsFiltered.length > 0) {
-                        $bcValInput = $('<select id="bcVal" class="input-sm"></select>');
-                        $.each(tagsFiltered, function (i, o) {
-                            var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
-                            $bcValInput.append($option);
-                        });
-                    } else {
-                        $bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
-                    }
-                    $('#bcValContainer').empty().append($bcValInput);
+					var $bcValInput;
+					if (tagsFiltered.length > 0) {
+						$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
+						$.each(tagsFiltered, function (i, o) {
+							var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
+							$bcValInput.append($option);
+						});
+					} else {
+						$bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
+					}
+					$('#bcValContainer').empty().append($bcValInput);
         
-                    if (tagsFiltered.length > 0) {
-                        $('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
+					if (tagsFiltered.length > 0) {
+						$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
         
-                    }
-                } else {
-                    console.log("Err: tags empty");
-                }
-            })
+					}
+				} else {
+					console.log("Err: tags empty");
+				}
+			})
 		});
 
 		
@@ -429,7 +429,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		var promise = $.Deferred();
 		$.ajax({ url: 'admin/settings' }).done(function (data) {
 
-            manageOnlineUsersUI(data);
+			manageOnlineUsersUI(data);
      
 			settings = data;
 			
@@ -499,11 +499,11 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			settingsUpdating = getSettings(el.attr('name'));
 
 			$('#settings').promise().then(function () {
-				settingsArray = {};
-				numberArray = $('#settings [type="number"]').map(function () {
+				var settingsArray = {};
+				var numberArray = $('#settings [type="number"]').map(function () {
 					return { name: this.name, value: this.value ? this.value : '0' }; 
 				}).get();
-				formArray = numberArray.concat($('#settings [type!="number"]').serializeArray())
+				var formArray = numberArray.concat($('#settings [type!="number"]').serializeArray())
 					.concat($('#settings input[type=checkbox]:not(:checked)')
 						.map(function () {
 							return { name: this.name, value: '0' }; 
