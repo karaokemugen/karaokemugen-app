@@ -579,7 +579,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			urlEnd = '/setPublic';
 		} else if (name === 'flag_visible') {
 			urlEnd = '';
-			setTo = !btn.closest('.plDashboard').data('flag_visible');
+			var setTo = !btn.closest('.plDashboard').data('flag_visible');
         
 			if(idPlaylist > 0) {
 				data = { name: namePlaylist, flag_visible: setTo };
@@ -588,13 +588,13 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				$('input[name="EngineAllowView' + list[idPlaylist] + '"]').val(1).bootstrapSwitch('state', setTo);
 				return false;
 			}
+		} else {
+			return false;
 		}
 		$.ajax({
 			url: 'admin/playlists/' + idPlaylist + urlEnd,
 			type: 'PUT',
 			data: data
-		}).done(function () {
-			//refreshPlaylistSelects();
 		});
 	});
 
