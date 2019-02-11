@@ -279,8 +279,8 @@ SELECT
   ak.created_at AS kara_created_at,
   ak.modified_at AS kara_modified_at,
   ak.mediasize AS mediasize,
-  COUNT(p.played_at) AS played,
-  COUNT(rq.requested_at) AS requested,
+  COUNT(p.played_at)::integer AS played,
+  COUNT(rq.requested_at)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
 		THEN TRUE
 		ELSE FALSE
@@ -292,7 +292,7 @@ SELECT
   pc.pk_id_plcontent AS playlistcontent_id,
   pc.fk_id_playlist as playlist_id,
   pc.flag_playing AS flag_playing,
-  COUNT(up.fk_id_plcontent) AS upvotes,
+  COUNT(up.fk_id_plcontent)::integer AS upvotes,
   pc.flag_free AS flag_free,
   (CASE WHEN wl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_whitelisted,
   (CASE WHEN bl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_blacklisted,

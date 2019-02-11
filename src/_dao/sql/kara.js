@@ -79,8 +79,8 @@ export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, havi
   ak.modified_at AS modified_at,
   ak.mediasize AS mediasize,
   ak.groups AS groups,
-  COUNT(p.*) AS played,
-  COUNT(rq.*) AS requested,
+  COUNT(p.*)::integer AS played,
+  COUNT(rq.*)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
 		THEN TRUE
 		ELSE FALSE
