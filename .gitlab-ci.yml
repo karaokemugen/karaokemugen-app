@@ -5,7 +5,7 @@ cache:
   paths:
   - node_modules/
   - bin/
-  - react_client/node_modules/
+  - react_systempanel/node_modules/
 
 stages:
   - test
