@@ -76,6 +76,11 @@ export async function getKara(kid, username, lang, role) {
 	return res;
 }
 
+export async function selectRandomKara(playlist_id) {
+	const res = await db().query(sql.getRandomKara, [playlist_id]);
+	return res.rows[0].kid;
+}
+
 export async function selectAllKaras(username, filter, lang, mode, modeValue, from = 0, size = 0, admin = true) {
 	let filterClauses = filter ? buildClauses(filter) : {sql: [], params: {}};
 	let typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
