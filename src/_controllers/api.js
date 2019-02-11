@@ -860,7 +860,7 @@ export function APIControllerAdmin(router) {
 				res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
 
 			} catch(err) {
-				res.status(500).json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
+				res.status(500).json(errMessage(err.message ? 'PL_SET_CURRENT_ERROR' : err,err.message,err.data));
 			}
 		});
 	router.route('/admin/playlists/:pl_id([0-9]+)/setPublic')
@@ -895,7 +895,7 @@ export function APIControllerAdmin(router) {
 				emitWS('playlistInfoUpdated',req.params.pl_id);
 				res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
 			} catch(err) {
-				res.status(500).json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
+				res.status(500).json(errMessage(err.message ? 'PL_SET_PUBLIC_ERROR' : err,err.message,err.data));
 			}
 		});
 	router.route('/admin/playlists/:pl_id([0-9]+)/karas')

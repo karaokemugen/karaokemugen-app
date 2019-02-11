@@ -196,7 +196,7 @@ export async function trimPlaylist(playlist_id,duration) {
 export async function setCurrentPlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw 'Playlist unknown';
-	if (pl.flag_public) throw 'A current playlist cannot be set to public. Set another playlist to current first.';
+	if (pl.flag_public) throw 'PL_SET_CURRENT_PUBLIC_ERROR';
 	try {
 		const state = getState();
 		const oldCurrentPlaylist_id = state.currentPlaylistID;
@@ -229,7 +229,7 @@ export async function unsetVisiblePlaylist(playlist_id) {
 export async function setPublicPlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw 'Playlist unknown';
-	if (pl.flag_current) throw 'A public playlist cannot be set to current. Set another playlist to public first.';
+	if (pl.flag_current) throw 'PL_SET_PUBLIC_CURRENT_ERROR';
 	try {
 		const state = getState();
 		const oldPublicPlaylist_id = state.publicPlaylistID;
