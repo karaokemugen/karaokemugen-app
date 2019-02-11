@@ -4,7 +4,6 @@ import {check, initValidators} from '../_utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import logger from 'winston';
 import {ASSToLyrics} from '../_utils/ass';
-import {getPlaylistContentsMini} from './playlist';
 import {refreshKaras, refreshYears} from '../_dao/kara';
 import {refreshKaraSeries, refreshSeries} from '../_dao/series';
 import {refreshKaraTags, refreshTags} from '../_dao/tag';
@@ -18,12 +17,12 @@ import {selectAllKaras,
 	addKara,
 	updateKara,
 	addPlayed,
-	getKaraHistory as getKaraHistoryDB
+	getKaraHistory as getKaraHistoryDB,
+	selectRandomKara
 } from '../_dao/kara';
 import {getState} from '../_utils/state';
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
-import sample from 'lodash.sample';
 import {getConfig} from '../_utils/config';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
@@ -100,16 +99,7 @@ export function translateKaraInfo(karas, lang) {
 
 export async function getRandomKara(username, filter) {
 	logger.debug('[Kara] Requesting a random song');
-	// Get karaoke list
-	let [karas, pl] = await Promise.all([
-		selectAllKaras(username, filter),
-		getPlaylistContentsMini(getState().modePlaylistID)
-	]);
-	// Strip list to just kara IDs
-	const allKIDs = karas.map(e => e.kid);
-	const plKIDs = pl.map(e => e.kid);
-	const allKarasNotInCurrentPlaylist = allKIDs.filter(e => plKIDs.indexOf(e) < 0);
-	return sample(allKarasNotInCurrentPlaylist);
+	return await selectRandomKara(getState().modePlaylistID);
 }
 
 export async function getKara(kid, token, lang) {

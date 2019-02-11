@@ -79,8 +79,8 @@ export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, havi
   ak.modified_at AS modified_at,
   ak.mediasize AS mediasize,
   ak.groups AS groups,
-  COUNT(p.*) AS played,
-  COUNT(rq.*) AS requested,
+  COUNT(p.*)::integer AS played,
+  COUNT(rq.*)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
 		THEN TRUE
 		ELSE FALSE
@@ -219,3 +219,14 @@ VALUES(
 `;
 
 export const getYears = 'SELECT year, karacount FROM all_years ORDER BY year';
+
+export const getRandomKara = `
+SELECT ak.kid
+FROM all_karas ak
+WHERE ak.kid NOT IN (
+	SELECT pc.fk_kid
+	FROM playlist_content pc
+	WHERE pc.fk_id_playlist = $1
+)
+ORDER BY RANDOM() LIMIT 1;
+`;
