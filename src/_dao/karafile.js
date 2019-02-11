@@ -8,12 +8,12 @@ import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
-import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_common/utils/config';
-import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
+import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_utils/files';
+import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_utils/config';
+import {extractSubtitles, getMediaInfo} from '../_utils/ffmpeg';
 import {formatKara} from '../_services/kara';
-import {getConfig} from '../_common/utils/config';
-import {getAllKaras} from './kara';
+import {getConfig} from '../_utils/config';
+import {selectAllKaras} from './kara';
 
 let error = false;
 
@@ -74,7 +74,7 @@ export async function getDataFromKaraFile(karafile) {
 	try {
 		mediaFile = await resolveFileInDirs(karaData.mediafile, resolvedPathMedias());
 	} catch (err) {
-		logger.debug('[Kara] Media file not found : ' + karaData.mediafile);
+		logger.debug(`[Kara] Media file not found : ${karaData.mediafile}`);
 		if (conf.optStrict) strictModeError(karaData, 'mediafile');
 		if (!karaData.mediagain) karaData.mediagain = 0;
 		if (!karaData.mediasize) karaData.mediasize = 0;
@@ -112,7 +112,14 @@ export async function extractAssInfos(subFile, karaData) {
 export async function extractMediaTechInfos(mediaFile, karaData) {
 	const conf = getConfig();
 	if (!conf.optNoMedia) {
-		const mediaStats = await asyncStat(mediaFile);
+		let mediaStats;
+		try {
+			mediaStats = await asyncStat(mediaFile);
+		} catch(err) {
+			// Return early if file isn't found
+			if (conf.optStrict) strictModeError(karaData, `Media file "${mediaFile} not found`);
+			return;
+		}
 		if (mediaStats.size !== +karaData.mediasize) {
 			karaData.isKaraModified = true;
 			karaData.mediasize = mediaStats.size;
@@ -180,7 +187,7 @@ async function findSubFile(videoFile, kara) {
 
 export async function replaceSerieInKaras(oldSerie, newSerie) {
 	logger.info(`[Kara] Replacing serie "${oldSerie}" by "${newSerie}" in .kara files`);
-	const karas = await getAllKaras('admin');
+	const karas = await selectAllKaras(null, null, null, null, null, true);
 	let karasWithSerie = [];
 	for (const kara of karas) {
 		if (kara.serie_orig && kara.serie_orig.split(',').includes(oldSerie)) karasWithSerie.push(kara.karafile);
@@ -201,7 +208,7 @@ export async function replaceSerieInKaras(oldSerie, newSerie) {
 
 export async function removeSerieInKaras(serie) {
 	logger.info(`[Kara] Removing serie ${serie} in .kara files`);
-	const karas = await getAllKaras('admin');
+	const karas = await selectAllKaras(null, null, null, null, null, true);
 	let karasWithSerie = [];
 	for (const kara of karas) {
 		if (kara.serie_orig && kara.serie_orig.split(',').includes(serie)) karasWithSerie.push(kara.karafile);

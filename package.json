@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "2.4.2",
+  "version": "2.5.0",
   "description": "Karaoke playlist manager / player",
   "bin": {
     "karaokemugen": "./dist/index.js"
@@ -11,10 +11,14 @@
     "debug": "babel-node $NODE_DEBUG_OPTION src/index.js -- --debug",
     "test": "mocha --require babel-register --timeout 20000",
     "build": "yarn buildReact && rm -Rf dist && babel --source-maps --copy-files -d dist/ src/",
-    "install": "cd react_client && yarn install",
+    "install": "cd react_systempanel && yarn install",
     "setup": "yarn install && yarn buildReact",
-    "buildReact": "cd react_client && yarn build",
-    "startReact": "cd react_client && yarn start"
+    "buildReact": "cd react_systempanel && yarn build",
+    "startReact": "cd react_systempanel && yarn start",
+    "migrate": "node node_modules/db-migrate/bin/db-migrate sync [all] --migrations-dir src/_dao/migrations",
+    "migrateDown": "node node_modules/db-migrate/bin/db-migrate down --migrations-dir src/_dao/migrations",
+    "migrateUp": "node node_modules/db-migrate/bin/db-migrate up --migrations-dir src/_dao/migrations",
+    "dropDatabase": "node util/dropDatabase.js"
   },
   "homepage": "https://mugen.karaokes.moe/en",
   "repository": {
@@ -47,7 +51,6 @@
     "Kmeuh <clemalbo@cegetel.net> (@Kmeuh)",
     "Bibah <thebibah14@gmail.com> (@TheBibah14)"
   ],
-  "engineStrict": false,
   "engines": {
     "node": ">=10.9.0 <11.0.0"
   },
@@ -61,13 +64,13 @@
       "dist/**/*.js"
     ],
     "assets": [
-      "dist/_common/db/migrations/**",
-      "dist/_common/locales/*",
+      "dist/_dao/migrations/**",
+      "dist/_locales/*",
       "dist/_player/assets/*",
       "dist/_webapp/vendors/**",
       "dist/_webapp/ressources/**",
       "dist/VERSION",
-      "react_client/build/**"
+      "react_systempanel/build/**"
     ]
   },
   "dependencies": {
@@ -79,24 +82,27 @@
     "chokidar": "^2.0.4",
     "cli-progress": "^2.1.1",
     "cookie-parser": "^1.4.3",
+    "db-migrate": "^0.11.5",
+    "db-migrate-pg": "^0.4.0",
     "decompress": "^4.2.0",
     "execa": "^1.0.0",
     "express": "^4.16.4",
     "express-handlebars": "^3.0.0",
-    "file-type": "^10.7.0",
+    "file-type": "^10.7.1",
     "form-data": "^2.3.3",
     "fs-extra": "^7.0.1",
-    "got": "^9.5.0",
+    "got": "^9.6.0",
     "i18n": "^0.8.3",
-    "image-size": "^0.6.3",
+    "image-size": "^0.7.1",
     "ini": "^1.3.5",
     "internet-available": "^1.0.0",
     "ip": "^1.1.5",
     "is-valid-json": "^1.0.2",
-    "iso-countries-languages": "^0.1.1",
+    "iso-countries-languages": "0.1.1",
     "jwt-simple": "^0.5.5",
     "langs": "^2.0.0",
     "lodash.deburr": "^4.1.0",
+    "lodash.merge": "^4.6.1",
     "lodash.sample": "^4.2.1",
     "lodash.samplesize": "^4.2.0",
     "lodash.shuffle": "^4.2.0",
@@ -109,24 +115,27 @@
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "pg": "^7.8.0",
     "pretty-bytes": "^5.1.0",
     "pretty-error": "^2.1.1",
-    "promise-retry": "^1.1.1",
-    "qrcode": "^1.3.2",
+    "qrcode": "^1.3.3",
     "randomstring": "^1.1.5",
     "read-chunk": "^3.0.0",
     "readline-sync": "^1.4.9",
     "sanitize-filename": "^1.6.1",
+    "semver": "^5.6.0",
+    "slug": "^0.9.3",
     "socket.io": "^2.2.0",
-    "sqlite": "^3.0.0",
-    "systeminformation": "^3.54.0",
+    "sqlite": "^3.0.1",
+    "systeminformation": "^4.0.6",
     "unix-timestamp": "^0.2.0",
     "uuid": "^3.3.2",
     "validate.js": "^0.12.0",
-    "webdav": "1.6.1",
-    "winston": "^3.1.0",
-    "winston-daily-rotate-file": "^3.5.1",
-    "xml2js": "^0.4.19"
+    "webdav": "^2.5.0",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^3.6.0",
+    "xml2js": "^0.4.19",
+    "yesql": "^3.2.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -134,17 +143,16 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.2.0",
-    "eslint": "^5.12.0",
+    "eslint": "^5.13.0",
     "eslint-config-react-app": "^3.0.6",
     "eslint-loader": "^2.1.1",
     "eslint-plugin-flowtype": "^3.2.1",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-react": "^7.12.3",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.12.4",
     "mocha": "^5.2.0",
-    "supertest": "^3.3.0"
+    "supertest": "^3.4.2"
   },
-  "false": {},
   "apidoc": {
     "url": "http://localhost:1337/api"
   }

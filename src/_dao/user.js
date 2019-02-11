@@ -1,6 +1,11 @@
-import {getUserDb} from './database';
-const sql = require('../_common/db/user');
+import {db} from './database';
+import {pg as yesql} from 'yesql';
+const sql = require('./sql/user');
 
+export async function getUser(username) {
+	const res = await db().query(yesql(sql.selectUserByName)({username: username}));
+	return res.rows[0];
+}
 
 const remoteTokens = [];
 // Format:
@@ -9,115 +14,100 @@ const remoteTokens = [];
 //   token: ...
 // }
 
-export async function getUserByName(username) {
-	return await getUserDb().get(sql.selectUserByName, { $username: username });
+export async function checkNicknameExists(nickname) {
+	const res = await db().query(yesql(sql.testNickname)({nickname: nickname}));
+	return res.rows[0];
 }
 
-export async function checkNicknameExists(nickname,NORM_nickname) {
-	return await getUserDb().get(sql.testNickname, {
-		$nickname: nickname,
-		$NORM_nickname: NORM_nickname
-	});
-}
-
-export async function deleteUser(id) {
-	return await getUserDb().run(sql.deleteUser, { $id: id });
-}
-
-export async function getUserByID(id) {
-	return await getUserDb().get(sql.selectUserByID, { $id: id });
+export async function deleteUser(username) {
+	return await db().query(sql.deleteUser, [username]);
 }
 
 export async function listUsers() {
-	return await getUserDb().all(sql.selectUsers);
+	const res = await db().query(sql.selectUsers);
+	return res.rows;
 }
 
 export async function listGuests() {
-	return await getUserDb().all(sql.selectGuests);
-}
-
-export async function getUserRequests(username) {
-	return await getUserDb().all(sql.getUserRequests, {$username: username});
+	const res = await db().query(sql.selectGuests);
+	return res.rows;
 }
 
 export async function addUser(user) {
-	return await getUserDb().run(sql.createUser, {
-		$type: user.type,
-		$login: user.login,
-		$password: user.password,
-		$nickname: user.nickname,
-		$NORM_nickname: user.NORM_nickname,
-		$last_login: user.last_login,
-		$flag_online: user.flag_online,
-		$flag_admin: user.flag_admin
-	});
+	return await db().query(yesql(sql.createUser)({
+		type: user.type,
+		login: user.login,
+		password: user.password,
+		nickname: user.nickname,
+		last_login_at: user.last_login_at,
+		flag_online: user.flag_online,
+	}));
 }
 
 export async function editUser(user) {
-	return await getUserDb().run(sql.editUser, {
-		$id: user.id,
-		$nickname: user.nickname,
-		$NORM_nickname: user.NORM_nickname,
-		$avatar_file: user.avatar_file,
-		$login: user.login,
-		$bio: user.bio,
-		$url: user.url,
-		$email: user.email,
-		$flag_admin: user.flag_admin,
-		$type: user.type
-	});
+	if (!user.old_login) user.old_login = user.login;
+	return await db().query(yesql(sql.editUser)({
+		nickname: user.nickname,
+		avatar_file: user.avatar_file,
+		login: user.login,
+		bio: user.bio,
+		url: user.url,
+		email: user.email,
+		type: user.type,
+		old_login: user.old_login
+	}));
 }
 
-export async function reassignToUser(old_id,id) {
-	const updates = [
-		getUserDb().run(sql.reassignPlaylistToUser, {
-			$id: id,
-			$old_id: old_id
-		}),
-		getUserDb().run(sql.reassignPlaylistContentToUser, {
-			$id: id,
-			$old_id: old_id
-		})
-	];
-	return await Promise.all(updates);
-
+export async function reassignToUser(oldUsername,username) {
+	return Promise.all([
+		db().query(yesql(sql.reassignPlaylistToUser)({
+			username: username,
+			old_username: oldUsername
+		})),
+		db().query(yesql(sql.reassignPlaylistContentToUser)({
+			username: username,
+			old_username: oldUsername
+		}))
+	]);
 }
 
 export async function updateExpiredUsers(expireTime) {
-	return await getUserDb().run(sql.updateExpiredUsers, { $expire_time: expireTime });
+	return await db().query(sql.updateExpiredUsers, [new Date(expireTime * 1000)]);
 }
 
 export async function updateUserFingerprint(username, fingerprint) {
-	return await getUserDb().run(sql.updateUserFingerprint, {
-		$username: username,
-		$fingerprint: fingerprint
-	});
+	return await db().query(yesql(sql.updateUserFingerprint)({
+		username: username,
+		fingerprint: fingerprint
+	}));
 }
 
 export async function getRandomGuest() {
-	return await getUserDb().get(sql.selectRandomGuestName);
+	const res = await db().query(sql.selectRandomGuestName);
+	return res.rows[0];
 }
 
 export async function findFingerprint(fingerprint) {
-	return await getUserDb().get(sql.findFingerprint, {$fingerprint: fingerprint });
+	const res = await db().query(sql.findFingerprint, [fingerprint] );
+	return res.rows[0];
 }
 
 export async function resetGuestsPassword() {
-	return await getUserDb().run(sql.resetGuestsPassword);
+	return await db().query(sql.resetGuestsPassword);
 }
 
-export async function updateUserLastLogin(id,now) {
-	return await getUserDb().run(sql.updateLastLogin, {
-		$id: id,
-		$now: now
-	});
+export async function updateUserLastLogin(username) {
+	return await db().query(yesql(sql.updateLastLogin)({
+		username: username,
+		now: new Date()
+	}));
 }
 
-export async function updateUserPassword(id,password) {
-	return await getUserDb().run(sql.editUserPassword, {
-		$id: id,
-		$password: password
-	});
+export async function updateUserPassword(username,password) {
+	return await db().query(yesql(sql.editUserPassword)({
+		username: username,
+		password: password
+	}));
 }
 
 export function getRemoteToken(username) {

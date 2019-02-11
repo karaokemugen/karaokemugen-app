@@ -1,24 +1,22 @@
 import {formatKaraList, isAllKaras, getKara} from './kara';
-import {isAllKarasInPlaylist} from './playlist';
 import {removeKaraFromWhitelist, getWhitelistContents as getWLContents, emptyWhitelist as emptyWL, addKaraToWhitelist as addToWL} from '../_dao/whitelist';
 import {generateBlacklist} from './blacklist';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 import logger from 'winston';
 
-export async function addKaraToWhitelist(kara_id) {
-	let karas = [kara_id];
-	if (typeof kara_id === 'string') karas = kara_id.split(',');
-	const kara = await getKara(karas[0]);
+export async function addKaraToWhitelist(kid, reason, token, lang) {
+	let karas = [kid];
+	if (Array.isArray(kid)) karas = kid;
+	if (typeof kid === 'string') karas = kid.split(',');
+	const kara = await getKara(karas[0], token, lang);
 	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara[0].title}...`);
 	try {
 		profile('addKaraToWL');
-		if (!await isAllKaras(karas)) throw 'One of the karaokes does not exist.';
-		const karasInWhitelist = await getWhitelistContents();
-		const karaList = isAllKarasInPlaylist(karas,karasInWhitelist.content);
-		if (karaList.length === 0) throw 'No karaoke could be added, all are in whitelist already';
-		await addToWL(karaList);
-		await generateBlacklist();
-		return karaList;
+		const karasUnknown = await isAllKaras(karas);
+		if (karasUnknown.length > 0) throw 'One of the karaokes does not exist.';
+		await addToWL(karas, reason);
+		generateBlacklist();
+		return karas;
 	} catch(err) {
 		throw {
 			message: err,
@@ -41,22 +39,16 @@ export async function getWhitelistContents(filter, lang, from, size) {
 	}
 }
 
-export async function deleteKaraFromWhitelist(wlcs) {
-	let karas = [wlcs];
-	if (typeof wlcs === 'string') karas = wlcs.split(',');
-	let karaList = [];
-	karas.forEach((wlc_id) => {
-		karaList.push({
-			wlc_id: wlc_id
-		});
-	});
+export async function deleteKaraFromWhitelist(kid) {
+	let karas = [kid];
+	if (Array.isArray(kid)) karas = kid;
+	if (typeof wlcs === 'string') karas = kid.split(',');
 	try {
 		profile('deleteWLC');
-		logger.info(`[Whitelist] Deleting karaokes from whitelist : ${wlcs}`);
-		await removeKaraFromWhitelist(karaList);
+		logger.info(`[Whitelist] Deleting karaokes from whitelist : ${kid}`);
+		await removeKaraFromWhitelist(karas);
 		return await generateBlacklist();
 	} catch(err) {
-		logger.err(`${err}`);
 		throw err;
 	} finally {
 		profile('deleteWLC');

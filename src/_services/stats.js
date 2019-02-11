@@ -1,6 +1,6 @@
-import { getConfig } from '../_common/utils/config';
+import { getConfig } from '../_utils/config';
 import si from 'systeminformation';
-import { exportViewcounts, exportRequests, exportFavorites } from '../_dao/stats';
+import { exportPlayed, exportRequests, exportFavorites } from '../_dao/stats';
 import internet from 'internet-available';
 import got from 'got';
 import logger from 'winston';
@@ -45,7 +45,7 @@ export async function sendPayload() {
 async function buildPayload() {
 	return {
 		instance: await buildInstanceStats(),
-		viewcounts: await exportViewcounts(),
+		viewcounts: await exportPlayed(),
 		requests: await exportRequests(),
 		favorites: await exportFavorites(),
 	};

@@ -1,5 +1,5 @@
-import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_common/utils/files';
-import {getConfig, initConfig, configureBinaries} from './_common/utils/config';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_utils/files';
+import {getConfig, initConfig, configureBinaries} from './_utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {writeFileSync, readFileSync} from 'fs';
 import {copy} from 'fs-extra';
@@ -65,7 +65,7 @@ async function main() {
 	logger.debug(`[Launcher] SysPath : ${appPath}`);
 	logger.debug(`[Launcher] Locale : ${config.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${config.os}`);
-	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
+	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, 2));
 
 	// Checking binaries
 	await configureBinaries(config);
@@ -103,11 +103,17 @@ async function main() {
 	 * Test if network ports are available
 	 */
 	verifyOpenPort(config.appFrontendPort);
+	verifyOpenPort(config.db.prod.port);
 
 	/**
 	 * Gentlemen, start your engines.
 	 */
-	initEngine();
+	try {
+		await initEngine();
+	} catch(err) {
+		logger.error(`[Launcher] Karaoke Mugen initialization failed :( : ${err}`)
+		exit(1);
+	}
 }
 
 /**
@@ -171,10 +177,11 @@ async function checkPaths(config) {
 function verifyOpenPort(port) {
 	const server = createServer();
 	server.once('error', err => {
-		if (err.code === 'EADDRINUSE') {
+		if (err) {
 			logger.error(`[Launcher] Port ${port} is already in use.`);
-			logger.error('[Launcher] If another Karaoke Mugen instance is running, please kill it (process name is "node" or "KaraokeMugen")');
-			logger.error('[Launcher] Then restart the app.');
+			console.log('\nIf another Karaoke Mugen instance is running, please kill it (process name is "node" or "KaraokeMugen")');
+			console.log('Also verify that no postgreSQL server is running on said port');
+			console.log('Then restart the app.');
 			process.exit(1);
 		}
 	});

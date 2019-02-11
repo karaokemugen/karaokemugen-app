@@ -1,4 +1,4 @@
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {editUser} from '../_services/user';
 import randomstring from 'randomstring';
 import opn from 'opn';
@@ -9,8 +9,7 @@ function generateAdminPassword() {
 		{
 			password: adminPassword,
 			nickname: 'Dummy Plug System',
-			type: 1,
-			flag_admin: 1
+			type: 0
 		},
 		null,
 		'admin');

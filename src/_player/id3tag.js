@@ -18,9 +18,9 @@ export function readID3(fileBuffer, options) {
 }
 
 
-export async function getID3(file) {	
+export async function getID3(file) {
 	try {
-		return await readID3(file);		
+		return await readID3(file);
 	} catch (err) {
 		throw err;
 	}

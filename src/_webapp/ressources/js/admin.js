@@ -112,6 +112,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			// TODO check if type is valid maybe
 			var type = $('#bcType').val();
 			var val = $('#bcVal').val();
+            
 			var data = { blcriteria_type: type, blcriteria_value: val };
 			$.ajax({
 				url: scope + '/blacklist/criterias',
@@ -133,31 +134,33 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			});
 		});
 		$('.playlist-main').on('change', '#bcType', function () {
-			if(tags) {
-				var bcType = $(this).val();
-				var tagsFiltered = jQuery.grep(tags, function (obj) {
-					return obj.type == bcType;
-				});
-	
-				var $bcValInput;
-				if (tagsFiltered.length > 0) {
-					$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
-					$.each(tagsFiltered, function (i, o) {
-						var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
-						$bcValInput.append($option);
+			tagsUpdating.done(() => {
+				if(tags) {
+					var bcType = $(this).val();
+					var tagsFiltered = jQuery.grep(tags, function (obj) {
+						return obj.type == bcType;
 					});
+        
+					var $bcValInput;
+					if (tagsFiltered.length > 0) {
+						$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
+						$.each(tagsFiltered, function (i, o) {
+							var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
+							$bcValInput.append($option);
+						});
+					} else {
+						$bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
+					}
+					$('#bcValContainer').empty().append($bcValInput);
+        
+					if (tagsFiltered.length > 0) {
+						$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
+        
+					}
 				} else {
-					$bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
+					console.log("Err: tags empty");
 				}
-				$('#bcValContainer').empty().append($bcValInput);
-	
-				if (tagsFiltered.length > 0) {
-					$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
-	
-				}
-			} else {
-				console.log("Err: tags empty");
-			}
+			})
 		});
 
 		
@@ -170,7 +173,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 
 			// var flag = $this.hasClass('free') ? 0 : 1;
-			var flag = 1;
+			var flag = true;
 			$.ajax({
 				type: 'PUT',
 				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlaylistContent,
@@ -233,7 +236,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						type = 'PATCH';
 					} else {
 						var requestedby = idPlaylistFrom == -1 || li.data('username') == undefined ? logInfos.username : li.data('username');
-						data = { requestedby: requestedby, kara_id: idKara };
+						data = { requestedby: requestedby, kid: idKara };
 					}
 				} else if (idPlaylistTo == -1) {
 					//displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
@@ -243,7 +246,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					data = { blcriteria_type: 1001, blcriteria_value: idKara };
 				} else if (idPlaylistTo == -3) {
 					url = scope + '/whitelist';
-					data = { kara_id: idKara};
+					data = { kid: idKara};
 				}
 
 				if(e.type === 'contextmenu') {
@@ -317,7 +320,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			$.ajax({
 				type: 'PUT',
 				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
-				data: { flag_playing: '1' }
+				data: { flag_playing: true }
 			}).done(function () {
 				DEBUG && console.log('Kara plc_id ' + idPlc + ' flag_playing set to true');
 			});
@@ -426,7 +429,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		var promise = $.Deferred();
 		$.ajax({ url: 'admin/settings' }).done(function (data) {
 
-            manageOnlineUsersUI(data);
+			manageOnlineUsersUI(data);
      
 			settings = data;
 			
@@ -496,11 +499,11 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			settingsUpdating = getSettings(el.attr('name'));
 
 			$('#settings').promise().then(function () {
-				settingsArray = {};
-				numberArray = $('#settings [type="number"]').map(function () {
+				var settingsArray = {};
+				var numberArray = $('#settings [type="number"]').map(function () {
 					return { name: this.name, value: this.value ? this.value : '0' }; 
 				}).get();
-				formArray = numberArray.concat($('#settings [type!="number"]').serializeArray())
+				var formArray = numberArray.concat($('#settings [type!="number"]').serializeArray())
 					.concat($('#settings input[type=checkbox]:not(:checked)')
 						.map(function () {
 							return { name: this.name, value: '0' }; 
@@ -511,7 +514,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					settingsArray[obj.name] = obj.value;
 				});
 				settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
-
+				settingsArray['PlayerNoHud'] = settings['PlayerNoHud'];
+				settingsArray['PlayerNoBar'] = settings['PlayerNoBar'];
 				DEBUG && console.log('setSettings : ', settingsArray);
 
 				$.ajax({
@@ -575,7 +579,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			urlEnd = '/setPublic';
 		} else if (name === 'flag_visible') {
 			urlEnd = '';
-			setTo = btn.closest('.plDashboard').data('flag_visible') == '1' ? 0 : 1;
+			setTo = !btn.closest('.plDashboard').data('flag_visible');
         
 			if(idPlaylist > 0) {
 				data = { name: namePlaylist, flag_visible: setTo };
@@ -687,7 +691,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 			displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST'),'',
 				function(playlistName) {
-					data = { name: playlistName, flag_visible: 0, flag_current: 0, flag_public: 0 };
+					data = { name: playlistName, flag_visible: false, flag_current: false, flag_public: false };
 					ajx(type, url, data, function (idNewPlaylist) {
 						playlistsUpdating.done(function () {
 							select.val(idNewPlaylist).change();
@@ -719,7 +723,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						userlistStr +=
 							'<div class="checkbox"><label>'
 						+	'<input type="checkbox" name="users"'
-						+	' value="' + k.login + '" ' + (k.flag_online==1 ? 'checked' : '') + '>'
+						+	' value="' + k.login + '" ' + (k.flag_online ? 'checked' : '') + '>'
 						+	k.nickname + '</label></div>';
 					});
 					userlistStr += '</div>';

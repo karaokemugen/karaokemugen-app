@@ -1,14 +1,14 @@
 
-import {on} from '../_common/utils/pubsub';
-import {getConfig} from '../_common/utils/config';
+import {on} from '../_utils/pubsub';
+import {getConfig} from '../_utils/config';
 import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, getPlaylistContentsMini} from '../_services/playlist';
 import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
 import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
 import logger from 'winston';
-import {timer} from '../_common/utils/timer';
-import {getState, setState} from '../_common/utils/state';
+import {timer} from '../_utils/timer';
+import {getState, setState} from '../_utils/state';
 const sleep = promisify(setTimeout);
 
 let poll = [];
@@ -61,7 +61,7 @@ export async function getPollResults() {
 	await copyKaraToPlaylist([winner[0].playlistcontent_id],playlist_id);
 	emitWS('playlistInfoUpdated',playlist_id);
 	emitWS('playlistContentsUpdated',playlist_id);
-	const kara = `${winner[0].serie} - ${winner[0].songtype_i18n_short}${winner[0].songorder} - ${winner[0].title}`;
+	const kara = `${winner[0].serie} - ${winner[0].songtypes[0].replace('TYPE_','')}${winner[0].songorder} - ${winner[0].title}`;
 	logger.info(`[Poll] Winner is "${kara}" with ${maxVotes} votes`);
 	return {
 		votes: maxVotes,
@@ -140,8 +140,8 @@ export async function getPoll(token, lang, from, size) {
 	return {
 		infos: {
 			count: poll.length,
-			from: parseInt(from,10),
-			to: parseInt(from,10)+parseInt(size,10)
+			from: +from,
+			to: +from + +size
 		},
 		poll: poll,
 		timeLeft: clock.getTimeLeft(),

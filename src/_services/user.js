@@ -1,26 +1,24 @@
-import {deletePlaylist} from '../_services/playlist';
-import {findFavoritesPlaylist, convertToRemoteFavorites} from '../_services/favorites';
-import {detectFileType, asyncMove, asyncExists, asyncUnlink, asyncReadDir} from '../_common/utils/files';
-import {getConfig} from '../_common/utils/config';
-import {freePLCBeforePos, getPlaylistContentsMini, freePLC, createPlaylist} from '../_services/playlist';
+import {getConfig} from '../_utils/config';
+import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from '../_services/playlist';
+import {convertToRemoteFavorites} from '../_services/favorites';
+import {detectFileType, asyncMove, asyncExists, asyncUnlink, asyncReadDir} from '../_utils/files';
 import {createHash} from 'crypto';
-import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {defaultGuestNames} from '../_services/constants';
 import randomstring from 'randomstring';
-import {on} from '../_common/utils/pubsub';
+import {on} from '../_utils/pubsub';
 import {getSongCountForUser, getSongTimeSpentForUser} from '../_dao/kara';
 import {emitWS} from '../_webapp/frontend';
-import {profile} from '../_common/utils/logger';
-import {getState} from '../_common/utils/state';
+import {profile} from '../_utils/logger';
+import {getState} from '../_utils/state';
 import got from 'got';
 import { getRemoteToken, upsertRemoteToken } from '../_dao/user';
 import formData from 'form-data';
 import { createReadStream } from 'fs';
-import { writeStreamToFile } from '../_common/utils/files';
+import { writeStreamToFile } from '../_utils/files';
 import { fetchAndAddFavorites } from '../_services/favorites';
 import {encode, decode} from 'jwt-simple';
 
@@ -73,15 +71,6 @@ async function updateExpiredUsers() {
 	}
 }
 
-export async function updateLastLoginName(login) {
-	const currentUser = await findUserByName(login);
-	// To avoid flooding database UPDATEs, only update login time every minute for a user
-	if (!userLoginTimes[login] || userLoginTimes[login] < (now() - 60)) {
-		userLoginTimes[login] = now();
-		return await db.updateUserLastLogin(currentUser.id,now());
-	}
-}
-
 export async function getUserRequests(username) {
 	if (!await findUserByName(username)) throw 'User unknown';
 	return await db.getUserRequests(username);
@@ -98,33 +87,6 @@ export async function fetchRemoteAvatar(instance, avatarFile) {
 		return avatarPath;
 	} catch(err) {
 		throw err;
-	}
-}
-
-async function editRemoteUser(user) {
-	// Fetch remote token
-	const remoteToken = getRemoteToken(user.login);
-	const instance = user.login.split('@')[1];
-	const login = user.login.split('@')[0];
-	const form = new formData();
-	const conf = getConfig();
-
-	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file)), user.avatar_file);
-	form.append('nickname', user.nickname);
-	if (user.bio) form.append('bio', user.bio);
-	if (user.email) form.append('email', user.email);
-	if (user.url) form.append('url', user.url);
-	if (user.password) form.append('password', user.password);
-	try {
-		await got(`http://${instance}/api/users/${login}`, {
-			method: 'PUT',
-			body: form,
-			headers: {
-				authorization: remoteToken.token
-			}
-		});
-	} catch(err) {
-		throw `Remote update failed : ${err}`;
 	}
 }
 
@@ -170,38 +132,6 @@ export async function fetchAndUpdateRemoteUser(username, password, onlineToken) 
 	return user;
 }
 
-export async function checkLogin(username, password) {
-	const conf = getConfig();
-	let user = {};
-	if (username.includes('@') && +conf.OnlineUsers) {
-		try {
-			// If username has a @, check its instance for existence
-			// If OnlineUsers is disabled, accounts are connected with
-			// their local version if it exists already.
-			const instance = username.split('@')[1];
-			user = await fetchAndUpdateRemoteUser(username, password);
-			upsertRemoteToken(username, user.onlineToken);
-			// Download and add all favorites
-			fetchAndAddFavorites(instance, user.onlineToken, username, user.nickname);
-		} catch(err) {
-			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${err}`);
-		}
-	} else {
-		// User is a local user
-		user = await findUserByName(username);
-		if (!user) throw false;
-		if (!await checkPassword(user, password)) throw false;
-	}
-	const role = getRole(user);
-	updateLastLoginName(username);
-	return {
-		token: createJwtToken(username, role, conf),
-		onlineToken: user.onlineToken,
-		username: username,
-		role: role
-	};
-}
-
 function createJwtToken(username, role, config) {
 	const conf = config || getConfig();
 	const timestamp = new Date().getTime();
@@ -216,14 +146,8 @@ export function decodeJwtToken(token, config) {
 	return decode(token, conf.JwtSecret);
 }
 
-function getRole(user) {
-	if (+user.type === 2) return 'guest';
-	if (+user.flag_admin === 1) return 'admin';
-	return 'user';
-}
-
-
 export async function convertToRemoteUser(token, password, instance) {
+	if (token.username === 'admin') throw 'Admin user cannot be converted to an online account';
 	const user = await findUserByName(token.username);
 	if (!user) throw 'User unknown';
 	if (!await checkPassword(user, password)) throw 'Wrong password';
@@ -238,7 +162,7 @@ export async function convertToRemoteUser(token, password, instance) {
 	upsertRemoteToken(user.login, remoteUser.token);
 	try {
 		await editUser(token.username, user, null, token.role, {
-			editRemote: true,
+			editRemote: false,
 			renameUser: true
 		});
 		await convertToRemoteFavorites(user.login);
@@ -251,31 +175,63 @@ export async function convertToRemoteUser(token, password, instance) {
 	}
 }
 
-export async function editUser(username, user, avatar, role, opts = {
-	editRemote: true,
-	renameUser: false,
+
+export async function updateLastLoginName(login) {
+	// To avoid flooding database UPDATEs, only update login time every minute for a user
+	if (!userLoginTimes[login]) userLoginTimes[login] = new Date();
+	if (userLoginTimes[login] < new Date((now() * 1000) - 60)) {
+		userLoginTimes[login] = new Date();
+		return await db.updateUserLastLogin(login);
+	}
+}
+
+async function editRemoteUser(user) {
+	// Fetch remote token
+	const remoteToken = getRemoteToken(user.login);
+	const instance = user.login.split('@')[1];
+	const login = user.login.split('@')[0];
+	const form = new formData();
+	const conf = getConfig();
+
+	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file)), user.avatar_file);
+	form.append('nickname', user.nickname);
+	if (user.bio) form.append('bio', user.bio);
+	if (user.email) form.append('email', user.email);
+	if (user.url) form.append('url', user.url);
+	if (user.password) form.append('password', user.password);
+	try {
+		await got(`http://${instance}/api/users/${login}`, {
+			method: 'PUT',
+			body: form,
+			headers: {
+				authorization: remoteToken.token
+			}
+		});
+	} catch(err) {
+		throw `Remote update failed : ${err}`;
+	}
+}
+
+
+export async function editUser(username,user,avatar,role, opts = {
+	editRemote: false,
+	renameUser: false
 }) {
 	try {
 		let currentUser;
-		if (user.id) {
-			currentUser = await findUserByID(user.id);
-		} else {
-			currentUser = await findUserByName(username);
-		}
+		currentUser = await findUserByName(username);
 		if (!currentUser) throw 'User unknown';
 		if (currentUser.type === 2 && role !== 'admin') throw 'Guests are not allowed to edit their profiles';
-		user.id = currentUser.id;
 		if (!opts.renameUser) user.login = username;
+		user.login = username;
+		if (!user.bio) user.bio = null;
+		if (!user.url) user.url = null;
+		if (!user.email) user.email = null;
+		if (user.type === 0 && role !== 'admin') throw 'Admin flag permission denied';
 		if (!user.type) user.type = currentUser.type;
-		if (!user.bio) user.bio = currentUser.bio;
-		if (!user.url) user.url = currentUser.url;
-		if (!user.email) user.email = currentUser.email;
-		if (!user.flag_admin) user.flag_admin = currentUser.flag_admin;
-		if (user.flag_admin && role !== 'admin') throw 'Admin flag permission denied';
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
-		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname, user.NORM_nickname)) throw 'Nickname already exists';
-		user.NORM_nickname = deburr(user.nickname);
+		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname)) throw 'Nickname already exists';
 		if (avatar) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in
@@ -291,7 +247,7 @@ export async function editUser(username, user, avatar, role, opts = {
 		// Modifying passwords is not allowed in demo mode
 		if (user.password && !getConfig().isDemo) {
 			user.password = hashPassword(user.password);
-			await db.updateUserPassword(user.id,user.password);
+			await db.updateUserPassword(user.login,user.password);
 		}
 		return user;
 	} catch (err) {
@@ -336,7 +292,7 @@ async function replaceAvatar(oldImageFile,avatar) {
 export async function findUserByName(username, opt) {
 	//Check if user exists in db
 	if (!opt) opt = {};
-	const userdata = await db.getUserByName(username);
+	const userdata = await db.getUser(username);
 	if (userdata) {
 		if (!userdata.bio) userdata.bio = null;
 		if (!userdata.url) userdata.url = null;
@@ -347,18 +303,6 @@ export async function findUserByName(username, opt) {
 			userdata.fingerprint = null;
 			userdata.email = null;
 		}
-		if (userdata.type === 1) userdata.favoritesPlaylistID = await findFavoritesPlaylist(username);
-		return userdata;
-	}
-	return false;
-}
-
-export async function findUserByID(id) {
-	const userdata = await db.getUserByID(id);
-	if (userdata) {
-		if (!userdata.bio) userdata.bio = null;
-		if (!userdata.url) userdata.url = null;
-		if (!userdata.email) userdata.email = null;
 		return userdata;
 	}
 	return false;
@@ -383,11 +327,11 @@ export async function checkPassword(user,password) {
 
 export async function findFingerprint(fingerprint) {
 	let guest = await db.findFingerprint(fingerprint);
-	if (guest) return guest.login;
+	if (guest) return guest.pk_login;
 	guest = await db.getRandomGuest();
 	if (!guest) return false;
-	await db.updateUserPassword(guest.id, hashPassword(fingerprint));
-	return guest.login;
+	await db.updateUserPassword(guest.pk_login, hashPassword(fingerprint));
+	return guest.pk_login;
 }
 
 export async function updateUserFingerprint(username, fingerprint) {
@@ -484,82 +428,66 @@ export async function getRemoteUser(username, token) {
 }
 
 export async function createUser(user, opts) {
-
 	if (!opts) opts = {
-		createFavoritePlaylist: true,
+		admin: false,
 		createRemote: true
 	};
 	user.type = user.type || 1;
+	if (opts.admin) user.type = 0;
 	user.nickname = user.nickname || user.login;
-	user.last_login = now();
-	user.NORM_nickname = deburr(user.nickname);
+	user.last_login_at = new Date();
 	user.avatar_file = user.avatar_file || 'blank.png';
-	user.flag_online = user.flag_online || 1;
-	user.flag_admin = user.flag_admin || 0;
+	user.flag_online = user.flag_online || false;
+
 	user.bio = user.bio || null;
 	user.url = user.url || null;
 	user.email = user.email || null;
 	if (user.type === 2) user.flag_online = 0;
-
 	await newUserIntegrityChecks(user);
-	if (user.login.includes('@') && opts.createRemote) {
-		if (!+getConfig().OnlineUsers) throw 'Creating online accounts is not allowed on this instance';
-		try {
+	if (user.login.includes('@')) {
+		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };
+		if (!+getConfig().OnlineUsers) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
+		if (opts.createRemote) try {
 			await createRemoteUser(user);
 		} catch(err) {
-			throw err;
+			throw { code: 'USER_CREATE_ERROR', data: err};
 		}
 	}
 	if (user.password) user.password = hashPassword(user.password);
 	try {
 		await db.addUser(user);
-		if (user.type === 1 && opts.createFavoritePlaylist) {
-			await createPlaylist(`Faves : ${user.login}`, {favorites: true} , user.login);
-			logger.info(`[User] Created user ${user.login}`);
-			logger.debug(`[User] User data : ${JSON.stringify(user)}`);
-		}
+		if (user.type < 2) logger.info(`[User] Created user ${user.login}`);
+		logger.debug(`[User] User data : ${JSON.stringify(user, null, 2)}`);
 		return true;
 	} catch (err) {
 		logger.error(`[User] Unable to create user ${user.login} : ${err}`);
-		throw { code: 'USER_CREATION_ERROR', data: err};
+		throw { code: 'USER_CREATE_ERROR', data: err};
 	}
 }
 
 async function newUserIntegrityChecks(user) {
-	if (user.id) throw { code: 'USER_WITH_ID'};
-	if (user.type === 1 && !user.password) throw { code: 'USER_EMPTY_PASSWORD'};
+	if (user.type < 2 && !user.password) throw { code: 'USER_EMPTY_PASSWORD'};
 	if (user.type === 2 && user.password) throw { code: 'GUEST_WITH_PASSWORD'};
 
 	// Check if login already exists.
-	if (await db.getUserByName(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
+	if (await db.getUser(user.login) || await db.checkNicknameExists(user.login)) {
 		logger.error(`[User] User/nickname ${user.login} already exists, cannot create it`);
 		throw { code: 'USER_ALREADY_EXISTS', data: {username: user.login}};
 	}
 }
 
 export async function deleteUser(username) {
-	const user = await findUserByName(username);
-	if (!user) throw {code: 'USER_NOT_EXISTS'};
-	return await deleteUserById(user.id);
-}
-
-export async function deleteUserById(id) {
-
 	try {
-		const user = await findUserByID(id);
+		if (username === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is used for the Karaoke Instrumentality Project'};
+		const user = await findUserByName(username);
 		if (!user) throw {code: 'USER_NOT_EXISTS'};
-		if (user.login === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is used for the Karaoke Instrumentality Project'};
-		const playlist_id = await findFavoritesPlaylist(user.login);
-		if (playlist_id) {
-			await deletePlaylist(playlist_id);
-		}
 		//Reassign karas and playlists owned by the user to the admin user
-		await db.reassignToUser(user.id,1);
-		await db.deleteUser(user.id);
-		logger.debug(`[User] Deleted user ${user.login} (id ${user.id})`);
+		await db.reassignToUser(username,'admin');
+		await db.deleteUser(username);
+		logger.debug(`[User] Deleted user ${username}`);
 		return true;
 	} catch (err) {
-		logger.error(`[User] Unable to delete user ${id} : ${err}`);
+		logger.error(`[User] Unable to delete user ${username} : ${err}`);
 		throw ({code: 'USER_DELETE_ERROR', data: err});
 	}
 }
@@ -586,23 +514,24 @@ async function createDefaultGuests() {
 export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
+	updateExpiredUsers();
 	setInterval(updateExpiredUsers, 60000);
 	// Check if a admin user exists just in case. If not create it with a random password.
 
 	if (!await findUserByName('admin')) await createUser({
 		login: 'admin',
-		password: randomstring.generate(8),
-		flag_admin: 1
+		password: randomstring.generate(8)
 	}, {
-		createFavoritePlaylist: false
+		admin: true
 	});
 
 	if (getConfig().isTest) {
 		if (!await findUserByName('adminTest')) {
 			await createUser({
 				login: 'adminTest',
-				password: 'ceciestuntest',
-				flag_admin: 1
+				password: 'ceciestuntest'
+			}, {
+				admin: true
 			});
 		}
 	} else {
@@ -628,20 +557,20 @@ async function cleanupAvatars() {
 	return true;
 }
 
-export async function updateSongsLeft(user_id,playlist_id) {
+export async function updateSongsLeft(username,playlist_id) {
 	const conf = getConfig();
-	const user = await findUserByID(user_id);
+	const user = await findUserByName(username);
 	let quotaLeft;
 	if (!playlist_id) playlist_id = getState().modePlaylistID;
-	if (user.flag_admin === 0 && +conf.EngineQuotaType > 0) {
+	if (user.type >= 1 && +conf.EngineQuotaType > 0) {
 		switch(+conf.EngineQuotaType) {
 		default:
 		case 1:
-			const count = await getSongCountForUser(playlist_id,user_id);
+			const count = await getSongCountForUser(playlist_id,username);
 			quotaLeft = +conf.EngineSongsPerUser - count.count;
 			break;
 		case 2:
-			const time = await getSongTimeSpentForUser(playlist_id,user_id);
+			const time = await getSongTimeSpentForUser(playlist_id,username);
 			quotaLeft = +conf.EngineTimePerUser - time.timeSpent;
 		}
 	} else {
@@ -659,29 +588,68 @@ export async function updateUserQuotas(kara) {
 	//If karaokes are present in the public playlist, we're marking it free.
 	//First find which KIDs are to be freed. All those before the currently playing kara
 	// are to be set free.
-	const internalState = getState();
+	const state = getState();
 	profile('updateUserQuotas');
-	await freePLCBeforePos(kara.pos, internalState.currentPlaylistID);
+	await freePLCBeforePos(kara.pos, state.currentPlaylistID);
 	// For every KID we check if it exists and add the PLC to a list
 	const [publicPlaylist, currentPlaylist] = await Promise.all([
-		getPlaylistContentsMini(internalState.publicPlaylistID),
-		getPlaylistContentsMini(internalState.currentPlaylistID)
+		getPlaylistContentsMini(state.publicPlaylistID),
+		getPlaylistContentsMini(state.currentPlaylistID)
 	]);
 	let freeTasks = [];
 	let usersNeedingUpdate = [];
 	for (const currentSong of currentPlaylist) {
 		publicPlaylist.some(publicSong => {
-			if (publicSong.kid === currentSong.kid && currentSong.flag_free === 1) {
+			if (publicSong.kid === currentSong.kid && currentSong.flag_free) {
 				freeTasks.push(freePLC(publicSong.playlistcontent_id));
-				if (!usersNeedingUpdate.includes(publicSong.user_id)) usersNeedingUpdate.push(publicSong.user_id);
+				if (!usersNeedingUpdate.includes(publicSong.username)) usersNeedingUpdate.push(publicSong.username);
 				return true;
 			}
 			return false;
 		});
 	}
 	await Promise.all(freeTasks);
-	usersNeedingUpdate.forEach(user_id => {
-		updateSongsLeft(user_id,internalState.modePlaylistID);
+	usersNeedingUpdate.forEach(username => {
+		updateSongsLeft(username,state.modePlaylistID);
 	});
 	profile('updateUserQuotas');
+}
+
+export async function checkLogin(username, password, admin) {
+	const conf = getConfig();
+	let user = {};
+	if (username.includes('@') && +conf.OnlineUsers) {
+		try {
+			// If username has a @, check its instance for existence
+			// If OnlineUsers is disabled, accounts are connected with
+			// their local version if it exists already.
+			const instance = username.split('@')[1];
+			user = await fetchAndUpdateRemoteUser(username, password);
+			upsertRemoteToken(username, user.onlineToken);
+			// Download and add all favorites
+			fetchAndAddFavorites(instance, user.onlineToken, username, user.nickname);
+		} catch(err) {
+			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${err}`);
+		}
+	} else {
+		// User is a local user
+		user = await findUserByName(username);
+		if (!user) throw false;
+		if (!await checkPassword(user, password)) throw false;
+	}
+	const role = getRole(user);
+	updateLastLoginName(username);
+	return {
+		token: createJwtToken(username, role, conf),
+		onlineToken: user.onlineToken,
+		username: username,
+		role: role
+	};
+}
+
+function getRole(user) {
+	if (+user.type === 2) return 'guest';
+	if (+user.type === 0) return 'admin';
+	if (+user.type === 1) return 'user';
+	return 'guest';
 }

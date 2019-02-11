@@ -1,12 +1,12 @@
 import {basename, resolve} from 'path';
-import {getConfig} from '../_common/utils/config';
-import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
+import {getConfig} from '../_utils/config';
+import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, asyncMkdirp, asyncExists, asyncRemove} from '../_utils/files';
 import decompress from 'decompress';
 import logger from 'winston';
 import {copy} from 'fs-extra';
 import prettyBytes from 'pretty-bytes';
-import webdav from 'webdav';
-import Downloader from '../_common/utils/downloader';
+import {createClient as webdav} from 'webdav';
+import Downloader from '../_utils/downloader';
 import {emitWS} from '../_webapp/frontend';
 
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
@@ -85,8 +85,10 @@ async function listRemoteMedias() {
 	});
 	let webdavClient = webdav(
     	shelter.url,
-    	shelter.user,
-    	shelter.password
+    	{
+			username: shelter.user,
+			password: shelter.password
+		}
 	);
 	const contents = await webdavClient.getDirectoryContents('/');
 	webdavClient = null;

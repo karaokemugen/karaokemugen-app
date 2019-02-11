@@ -1,24 +1,23 @@
 //Utils
-import {setConfig, getConfig} from '../_common/utils/config';
-import {profile} from '../_common/utils/logger';
+import {setConfig, getConfig} from '../_utils/config';
+import {profile} from '../_utils/logger';
 import readlineSync from 'readline-sync';
 import logger from 'winston';
-import {getState, setState} from '../_common/utils/state';
+import {getState, setState} from '../_utils/state';
+import {checkPG, killPG} from '../_utils/postgresql';
 
 //KM Modules
 import {createPreviews} from '../_webapp/previews';
 import {initUserSystem} from './user';
-import {initDBSystem, getStats, closeUserDatabase} from '../_dao/database';
+import {initDBSystem, closeDB, getStats} from '../_dao/database';
 import {initFrontend} from '../_webapp/frontend';
-import {initFavoritesSystem} from './favorites';
 import {initOnlineSystem} from '../_webapp/online';
 import {initPlayer, quitmpv} from './player';
-import {initStats, sendPayload} from './stats';
-import {karaGenerationBatch} from '../_admin/generate_karasfiles';
-import {validateKaras} from './kara';
+import {initStats} from './stats';
+import {karaGenerationBatch} from './kara_creation';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
-import {runBaseUpdate} from '../_updater/karabase_updater.js';
-import {initPlaylistSystem, createPlaylist, buildDummyPlaylist, isACurrentPlaylist, isAPublicPlaylist} from './playlist';
+import {runBaseUpdate} from '../_updater/karabase_updater';
+import {initPlaylistSystem, testPlaylists} from './playlist';
 
 export async function initEngine() {
 	profile('Init');
@@ -36,15 +35,6 @@ export async function initEngine() {
 		logger.error(`[Engine] Karaoke import failed : ${err}`);
 		exit(1);
 	}
-	if (conf.optValidateKaras) try {
-		logger.info('[Engine] Starting validation process, please wait...');
-		await validateKaras();
-		logger.info('[Engine] Validation completed successfully. Yayifications!');
-		exit(0);
-	} catch (err) {
-		logger.error(`[Engine] Validation failed : ${err}`);
-		exit(1);
-	}
 	if (conf.optBaseUpdate) try {
 		if (await runBaseUpdate()) {
 			logger.info('[Engine] Done updating karaoke base');
@@ -58,7 +48,11 @@ export async function initEngine() {
 		exit(1);
 	}
 	//Database system is the foundation of every other system
-	await initDBSystem();
+	try {
+		await initDBSystem();
+	} catch(err) {
+		throw err;
+	}
 	await initUserSystem();
 	if (+conf.OnlineURL) try {
 		await initOnlineSystem();
@@ -66,41 +60,14 @@ export async function initEngine() {
 		logger.error(`[Engine] Failed to init online system : ${err}`);
 	}
 	let inits = [];
-	if (+conf.EngineCreatePreviews) {
-		createPreviews();
-	}
+	if (+conf.EngineCreatePreviews) createPreviews();
 	inits.push(initPlaylistSystem());
 	if (!conf.isDemo && !conf.isTest) inits.push(initPlayer());
 	inits.push(initFrontend(conf.appFrontendPort));
-	inits.push(initFavoritesSystem());
-	if (+conf.OnlineStats === 1) inits.push(initStats());
+	testPlaylists();
+	if (+conf.OnlineStats > 0) inits.push(initStats());
 	//Initialize engine
 	// Test if current/public playlists exist
-	const currentPL_id = await isACurrentPlaylist();
-	if (currentPL_id) {
-		setState({currentPlaylistID: currentPL_id});
-	} else {
-		setState({currentPlaylistID: await createPlaylist(__('CURRENT_PLAYLIST'),{
-			visible: true,
-			current: true
-		},'admin')
-		});
-		logger.info('[Engine] Initial current playlist created');
-		if (!conf.isTest) {
-			inits.push(buildDummyPlaylist(getState().currentPlaylistID));
-		}
-	}
-	const publicPL_id = await isAPublicPlaylist();
-	if (publicPL_id) {
-		setState({ publicPlaylistID: publicPL_id });
-	} else {
-		setState({ publicPlaylistID: await createPlaylist(__('PUBLIC_PLAYLIST'),{
-			visible: true,
-			public: true
-		},'admin')
-		});
-		logger.info('[Engine] Initial public playlist created');
-	}
 	try {
 		await Promise.all(inits);
 		//Easter egg
@@ -114,7 +81,6 @@ export async function initEngine() {
 	} finally {
 		profile('Init');
 	}
-
 }
 
 export function exit(rc) {
@@ -125,16 +91,32 @@ export function exit(rc) {
 
 	if (getState().player.ready) {
 		quitmpv();
-		logger.info('[Engine] Player has shut down');
+		logger.info('[Engine] Player has shutdown');
 	}
-
-	closeUserDatabase().then(() => {
-		logger.info('[Engine] Database closed');
-		console.log('\nMata ne !\n');
-		if (process.platform !== 'win32' || !process.stdout.isTTY) process.exit(rc);
-		if (rc !== 0) readlineSync.question('Press enter to exit', {hideEchoBack: true});
-		process.exit(rc);
+	closeDB();
+	checkPG().then(started => {
+		if (started) {
+			killPG().then(() => {
+				logger.info('[Engine] PostgreSQL has shutdown');
+				mataNe(rc);
+			}).catch(err => {
+				logger.error('[Engine] PostgreSQL could not be stopped!');
+				mataNe(rc);
+			});
+		} else {
+			mataNe(rc);
+		}
+	}).catch((err) => {
+		logger.error(`[Engine] Failed to shutdown PostgreSQL : ${err}`);
+		mataNe(1);
 	});
+}
+
+function mataNe(rc) {
+	console.log('\nMata ne !\n');
+	if (process.platform !== 'win32' || !process.stdout.isTTY) process.exit(rc);
+	if (rc !== 0) readlineSync.question('Press enter to exit', {hideEchoBack: true});
+	process.exit(rc);
 }
 
 export function shutdown() {

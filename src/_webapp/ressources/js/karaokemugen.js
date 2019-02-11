@@ -39,6 +39,7 @@ var scrollUpdating;
 var playlistsUpdating;
 var playlistContentUpdating;
 var settingsUpdating;
+var tagsUpdating;
 
 /* html */
 var addKaraHtml;
@@ -338,13 +339,13 @@ var settingsNotUpdated;
 			displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
 				var adress = 'mailto:' + settings.karaSuggestionMail;
 				var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
-                var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
-                setTimeout(function() {
-                    displayMessage('info', i18n.__('KARA_SUGGESTION_INFO'),
-                    i18n.__('KARA_SUGGESTION_LINK', 'https://lab.shelter.moe/karaokemugen/karaokebase/issues/', 'console'), '30000');
-                }, 200);
+				var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
+				setTimeout(function() {
+					displayMessage('info', i18n.__('KARA_SUGGESTION_INFO'),
+						i18n.__('KARA_SUGGESTION_LINK', 'https://lab.shelter.moe/karaokemugen/karaokebase/issues/', 'console'), '30000');
+				}, 200);
 
-                window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
+				window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
 			}, search);
 		});
 
@@ -367,14 +368,14 @@ var settingsNotUpdated;
 					var data = response.content;
 					displayMessage('info', 'Info', 'Ajout de ' + response.infos.count + ' karas à la playlist ' + $('#panel' + non(side) + ' .plDashboard').data('name'));
 					var karaList = data.map(function(a) {
-						return a.kara_id;
+						return a.kid;
 					}).join();
 					var urlPost = getPlData(idPlaylistTo).url;
 
 					$.ajax({
 						url: urlPost,
 						type: 'POST',
-						data: { kara_id : karaList, requestedby : logInfos.username }
+						data: { kid : karaList, requestedby : logInfos.username }
 					}).done(function () {
 						DEBUG && console.log(karaList + ' added to playlist ' + idPlaylistTo);
 
@@ -442,15 +443,15 @@ var settingsNotUpdated;
 				var $searchMenu = $(this).closest('.searchMenu');
 				var $tag = $searchMenu.find('li.tagFilter');
 				var tagType = $searchMenu.find('.tagsTypes').val();
-				var searchType = 'tag';
+				var searchCriteria = 'tag';
 
 				$tag.attr('searchValue', tag_id);
 
 				if(tagType === 'serie' || tagType === 'year') {
-					searchType = tagType;
+					searchCriteria = tagType;
 				}
 
-				$tag.attr('searchType', searchType);
+				$tag.attr('searchCriteria', searchCriteria);
 				$tag.find('.choice').click();
 			}
 		});
@@ -471,13 +472,13 @@ var settingsNotUpdated;
 			}
 		});
 
-    /*****************/
+		/*****************/
 		makeFav = function(idKara, make, $el) {
 			var type = make ? 'POST' : 'DELETE';
 			$.ajax({
 				url: 'public/favorites',
 				type: type,
-				data: { 'kara_id' : idKara } })
+				data: { 'kid' : idKara } })
 				.done(function (response) {
 					if($el) {
 						if(make) {
@@ -510,9 +511,9 @@ var settingsNotUpdated;
 			var extraSearchInfo = "";
 			var searchLanguage = navigator.languages[0];
 			searchLanguage = searchLanguage.substring(0, 2);
-			if(!details.data('misc') || (
-				details.data('misc').indexOf('TAG_VIDEOGAME') === -1
-				&& details.data('misc').indexOf('TAG_MOVIE') === -1
+			if(!details.data('misc_tags') || (
+				details.data('misc_tags').find(e => e.name == 'TAG_VIDEOGAME')
+                && details.data('misc_tags').find(e => e.name == 'TAG_MOVIE')
 			)) {
 				extraSearchInfo = 'anime ';
 			}
@@ -605,7 +606,7 @@ var settingsNotUpdated;
 			var newOptionVal;
 			$this.toggleClass('on');
 			if($this.hasClass('on')) {
-				newOptionVal = $('#selectPlaylist1 > option[data-flag_favorites=1]').val();
+				newOptionVal = $('#selectPlaylist1 > option[data-flag_favorites="true"]').val();
 			} else {
 				newOptionVal = -1;
 			}
@@ -616,7 +617,7 @@ var settingsNotUpdated;
 			var panel = $this.closest('.panel');
 			var dashboard = panel.find('.plDashboard');
 			var idPlaylist = dashboard.data('playlist_id');
-			var num_karas = dashboard.attr('karacount');
+			var karacount = dashboard.attr('karacount');
 			var side = panel.attr('side');
 			var playlist = $('#playlist' + side);
 
@@ -626,7 +627,7 @@ var settingsNotUpdated;
 				if($this.attr('value') === 'top') {
 					from = 0;
 				} else if ($this.attr('value') === 'bottom') {
-					from =  Math.max(0, num_karas - pageSize);
+					from =  Math.max(0, karacount - pageSize);
 				} else if ($this.attr('value') === 'playing') {
 					from = -1;
 				}
@@ -760,16 +761,16 @@ var settingsNotUpdated;
 			}
 		});
 		$('#nav-signup .login').click( () => {
-            var servername = $('#signupServ').val();
-            var username = $('#signupLogin').val();
-            if(username.includes('@')) {
-                $('#signupLogin').addClass('errorBackground')
-                displayMessage('warning','', i18n.__('CHAR_NOT_ALLOWED', '@'));
-                $('#signupLogin').focus();
-                return;
-            } else {
-                $('#signupLogin').removeClass('errorBackground')
-            }
+			var servername = $('#signupServ').val();
+			var username = $('#signupLogin').val();
+			if(username.includes('@')) {
+				$('#signupLogin').addClass('errorBackground')
+				displayMessage('warning','', i18n.__('CHAR_NOT_ALLOWED', '@'));
+				$('#signupLogin').focus();
+				return;
+			} else {
+				$('#signupLogin').removeClass('errorBackground')
+			}
 			var username = username + (servername ? '@' + servername : '');
 			var password = $('#signupPassword').val();
 			var passwordConfirmation = $('#signupPasswordConfirmation').val();
@@ -865,13 +866,13 @@ var settingsNotUpdated;
 						url: 'public/users/',
 						type: 'GET'})
 						.done(function (response) {
-							var users = [response.filter(a => a.flag_online==1)] //, response.filter(a => a.flag_online==0)];
+							var users = [response.filter(a => a.flag_online)] //, response.filter(a => a.flag_online==false)];
 							var $userlist = $('.userlist');
 							var userlistStr = '';
 							users.forEach( (userList) => {
 								$.each(userList, function(i, k) {
 									userlistStr +=
-										'<li ' + dataToDataAttribute(k) + ' class="list-group-item' + (k.flag_online==1 ? ' online' : '') + '">'
+										'<li ' + dataToDataAttribute(k) + ' class="list-group-item' + (k.flag_online ? ' online' : '') + '">'
 									+	'<div class="userLine">'
 									+	'<span class="nickname">' + k.nickname + '</span>'
 									+	'<img class="avatar" src="' + pathAvatar + k.avatar_file + '"/>'
@@ -1006,31 +1007,31 @@ var settingsNotUpdated;
 		});
 
 		$('.profileConvert').click(function() {
-            if(settings) {
-                displayModal('custom', i18n.__('PROFILE_CONVERT'),
-                    '<label>' + i18n.__('INSTANCE_NAME') + '</label>'
+			if(settings) {
+				displayModal('custom', i18n.__('PROFILE_CONVERT'),
+					'<label>' + i18n.__('INSTANCE_NAME') + '</label>'
                     + '<input type="text"  name="modalLoginServ" value="' + settings.OnlineHost + '"//>'
                     + '<label>' + i18n.__('PROFILE_PASSWORD_AGAIN') + '</label>'
                     + '<input type="password" placeholder="' + i18n.__('PASSWORD') + '" class="form-control" name="password">', function(data){
 
-                        var msgData =  { instance: data.modalLoginServ, password : data.password };
+						var msgData =  { instance: data.modalLoginServ, password : data.password };
 
-                        ajx('POST', 'public/myaccount/online', msgData, function(response) {
-                            displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
+						ajx('POST', 'public/myaccount/online', msgData, function(response) {
+							displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
 
-                            createCookie('mugenToken',  response.token, -1);
-                            createCookie('mugenTokenOnline',  response.onlineToken, -1);
+							createCookie('mugenToken',  response.token, -1);
+							createCookie('mugenTokenOnline',  response.onlineToken, -1);
 
-                            logInfos = parseJwt(response.token);
-                            logInfos.token = response.token;
-                            logInfos.onlineToken = response.onlineToken;
-                            initApp();
-                        });
-                    }
-                );
-            } else {
-                getSettings();
-            }
+							logInfos = parseJwt(response.token);
+							logInfos.token = response.token;
+							logInfos.onlineToken = response.onlineToken;
+							initApp();
+						});
+					}
+				);
+			} else {
+				getSettings();
+			}
 		});
 
 		/* profil stuff END */
@@ -1080,7 +1081,7 @@ var settingsNotUpdated;
 	oldState = {};
 	oldSearchVal = '';
 
-    addKaraHtml = '<button title="' + i18n.__('TOOLTIP_ADDKARA')
+	addKaraHtml = '<button title="' + i18n.__('TOOLTIP_ADDKARA')
                 + (scope == 'admin' ? ' - ' + i18n.__('TOOLTIP_ADDKARA_ADMIN') : '')
                 + '" name="addKara" class="btn btn-sm btn-action"></button>';
                 
@@ -1264,9 +1265,10 @@ var settingsNotUpdated;
 
 		var $filter = $('#searchMenu' + side + ' li.active');
 		var searchType = $filter.attr('searchType');
-        var searchValue = $filter.attr('searchValue');
+		var searchCriteria = $filter.attr('searchCriteria');
+		var searchValue = $filter.attr('searchValue');
 
-        /* getting all the info we need about range */
+		/* getting all the info we need about range */
 		localStorage.setItem('search' + side, filter ? filter : '');
 		localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
 
@@ -1292,12 +1294,20 @@ var settingsNotUpdated;
 		playKara = scope === 'admin' && idPlaylist > 0 ? playKaraHtml : '';
 
 		// public users can add kara to one list, current or public
-		canAddKara = scope === 'admin' ? canAddKara : $('#selectPlaylist' + side + ' > option:selected').data('flag_' + playlistToAdd) == '1';
+		canAddKara = scope === 'admin' ? canAddKara : $('#selectPlaylist' + side + ' > option:selected').data('flag_' + playlistToAdd)
 
 		urlFiltre = url + '?filter=' + filter + fromTo;
 
 		if(searchType) {
-			urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchValue ? searchValue : '');
+			searchCriteria = searchCriteria ?
+				{
+					'year' : 'y',
+					'serie' : 's',
+					'tag' : 't'
+				}[searchCriteria]
+				: '';
+            
+			urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchCriteria && searchValue ? searchCriteria + ':' + searchValue : '');
 		}
 
 
@@ -1325,9 +1335,8 @@ var settingsNotUpdated;
 						// build the kara line
 						if (data.hasOwnProperty(key)) {
 							var kara = data[key];
-							if (kara.language === null) kara.language = '';
 
-							var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
+							var karaDataAttributes = ' idKara="' + kara.kid + '" '
 							+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
 							+	(idPlaylist > 0 || idPlaylist == -5 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
 							+	kara.pos + '" data-username="' + kara.username + '"' : '')
@@ -1337,8 +1346,8 @@ var settingsNotUpdated;
 
 							var badges = '';
 
-							if(kara.misc) {
-								var tagArray = kara.misc.split(',');
+							if(kara.misc_tags) {
+								var tagArray = kara.misc_tags.map(e => e.name);
 								tagArray.sort(function(a, b){
 									return flattenedTagsGroups.indexOf(a) - flattenedTagsGroups.indexOf(b);
 								  });
@@ -1353,11 +1362,11 @@ var settingsNotUpdated;
 							}
 							if (mode === 'list') {
 								var likeKara = likeKaraHtml;
-								if (kara.flag_upvoted === 1) {
+								if (kara.flag_upvoted) {
 									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
-                                }
+								}
                                 
-                                // TODO add fav button next to info for public pc interface
+								// TODO add fav button next to info for public pc interface
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
 								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
@@ -1366,14 +1375,14 @@ var settingsNotUpdated;
                                 +   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
                                 +   (scope === 'public' && !isTouchScreen ? (  kara['flag_favorites'] || idPlaylist === -5 ? makeFavButtonSmallFav : makeFavButtonSmall ) : '')
 								+	(scope === 'admin' ? playKara : '')
-								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
+								+	(scope !== 'admin' && dashboard.data('flag_public') ? likeKara : '')
 								+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
 								+	'</div>'
 								+   '<div class="contentDiv">'
 								+	'<div>' + buildKaraTitle(kara, {'search' : filter}) + '</div>'
 								+	'<div>' + badges + '</div>'
 								+   '</div>'
-								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
+								+   (saveDetailsKara(idPlaylist, kara.kid) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
 								+   '</li>';
 							}
 						}
@@ -1468,18 +1477,22 @@ var settingsNotUpdated;
 								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
 							}
 							// build the blacklist criteria line
-							var tagsFiltered = jQuery.grep(tags, function(obj) {
-								return obj.tag_id == data[k].value;
-							});
-							var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
-							var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
 
-							blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
-								'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
-							+	'<div class="actionDiv">' + html + '</div>'
-							+	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
-							+	'<div class="contentDiv">' + textContent + '</div>'
-							+	'</li>');
+							tagsUpdating.done(e => {
+								var tagsFiltered = jQuery.grep(tags, function(obj) {
+									return obj.tag_id == data[k].value;
+								});
+								var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
+								var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
+    
+								blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
+									'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
+                                +	'<div class="actionDiv">' + html + '</div>'
+                                +	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
+                                +	'<div class="contentDiv">' + textContent + '</div>'
+                                +	'</li>');
+							})
+						
 						}
 					}
 					//htmlContent = blacklistCriteriasHtml.html();
@@ -1645,16 +1658,16 @@ var settingsNotUpdated;
 		$.ajax({ url: scope + '/playlists', }).done(function (data) {
 			playlistList = data; // object containing all the playlists
 			var shiftCount = 0;
-			if(playlistList[0] && (playlistList[0].flag_current == 1 || playlistList[0].flag_public == 1)) shiftCount++;
-			if(playlistList[1] && (playlistList[1].flag_current == 1 || playlistList[1].flag_public == 1)) shiftCount++;
-			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist']});
-			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias']});
-			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] });
-			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'num_karas' : kmStats.karas });
+			if(playlistList[0] && (playlistList[0].flag_current || playlistList[0].flag_public)) shiftCount++;
+			if(playlistList[1] && (playlistList[1].flag_current || playlistList[1].flag_public)) shiftCount++;
+			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist'] == 1});
+			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias'] == 1});
+			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] == 1});
+			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'karacount' : kmStats.karas });
 
 			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
 			searchOptionListHtml += '<option value="-6" data-playlist_id="-6"></option>';
-			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="1"></option>';
+			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="true"></option>';
 			// building the options
 			var optionListHtml = '';
 			$.each(playlistList, function (key, value) {
@@ -1674,7 +1687,7 @@ var settingsNotUpdated;
 					select1.val(val1? val1 : panel1Default);
 					select2.val(val2? val2 : playlistToAddId);
 					if (webappMode == 1) {
-						var currentPlaylistId = select2.find('option[data-flag_current="1"]').attr('value');
+						var currentPlaylistId = select2.find('option[data-flag_current="true"]').attr('value');
 						select2.val(currentPlaylistId);
 					}
 				} else {
@@ -1733,7 +1746,7 @@ var settingsNotUpdated;
 
 			// managing flags
 			['flag_current', 'flag_public'].forEach(function (e) {
-				if (option.data(e) == '1') dashboard.find('button[name="' + e + '"]').removeClass('btn-default').addClass('btn-primary');
+				if (option.data(e)) dashboard.find('button[name="' + e + '"]').removeClass('btn-default').addClass('btn-primary');
 				else dashboard.find('button[name="' + e + '"]').removeClass('btn-primary').addClass('btn-default');
 			});
 
@@ -1781,7 +1794,7 @@ var settingsNotUpdated;
 					' / ' + dashboard.attr('karacount') + (!isTouchScreen ? ' karas' : '')
 					: '') +
 				(idPlaylist > -1 ?
-					' ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('length'), 'hm') + ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'), 'hm')
+					' ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('duration'), 'hm') + ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'), 'hm')
 					: '');
 
 			dashboard.parent().find('.plInfos').text(plInfos).data('from', range.from).data('to', max);
@@ -1835,16 +1848,17 @@ var settingsNotUpdated;
 				$('#progressBarColor').stop().css({transform : 'translateX(0)'});
 				barCss.addClass('cssTransform');
 
-				if( data.currentlyPlaying === -1 ) {
+				if( data.currentlyPlaying === -1 || data.currentlyPlaying === null) {
+					data.currentlyPlaying = -1;
 					$('#karaInfo').attr('idKara', data.currentlyPlaying);
 					$('#karaInfo').attr('length', -1);
 					$('#karaInfo > span').text( i18n.__('JINGLE_TIME') );
 					$('#karaInfo > span').data('text',i18n.__('JINGLE_TIME') );
 
-				} else if ( data.currentlyPlaying > 0 ) {
+				} else {
 					$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
 						var kara = dataKara[0];
-						$('#karaInfo').attr('idKara', kara.kara_id);
+						$('#karaInfo').attr('idKara', kara.kid);
 						$('#karaInfo').attr('length', kara.duration);
 						$('#karaInfo > span').text( buildKaraTitle(kara) );
 						$('#karaInfo > span').data('text', buildKaraTitle(kara) );
@@ -1853,9 +1867,10 @@ var settingsNotUpdated;
 							buildKaraDetails(kara, 'karaCard');
 						}
 					});
-				} else {
-					console.log('ER: currentlyPlaying is bogus : ' + data.currentlyPlaying);
 				}
+				// else {
+				// 	console.log('ER: currentlyPlaying is bogus : ' + data.currentlyPlaying);
+				// }
 			}
 			if (data.showSubs != oldState.showSubs) {
 				if (data.showSubs) {
@@ -1904,18 +1919,21 @@ var settingsNotUpdated;
 		if(typeof options == 'undefined') {
 			options = {};
 		}
-
-		if(data.language && data.language.indexOf('mul') > -1) {
-			data.language = 'mul';
-		} else if (!data.language) {
-			data.language = '';
+		var isMulti = data.languages.find(e => e.name.indexOf('mul') > -1);
+		if(data.languages && isMulti) {
+			data.languages = [isMulti];
 		}
+        
 		var titleText = 'fillerTitle';
 
 		var limit = isSmall ? 35 : 50;
-		var serieText =  data.serie ? data.serie : data.singer.replace(/,/g, ', ');
+		var serieText =  data.serie ? data.serie : data.singers.map(e => e.name).join(', ');
 		serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
-		var titleArray = [data.language.toUpperCase(), serieText, data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : '')];
+		var titleArray = [
+			data.languages.map(e => e.name).join(', ').toUpperCase(),
+			serieText,
+			i18n.__(data.songtype[0].name + '_SHORT') + (data.songorder > 0 ? ' ' + data.songorder : '')
+		];
 		var titleClean = titleArray.map(function (e, k) {
 			return titleArray[k] ? titleArray[k] : '';
 		});
@@ -1939,7 +1957,7 @@ var settingsNotUpdated;
 
 	toggleDetailsKara = function (el) {
 		var liKara = el.closest('li');
-		var idKara = parseInt(liKara.attr('idkara'));
+		var idKara = liKara.attr('idkara');
 		var idPlc = parseInt(liKara.attr('idplaylistcontent'));
 		var idPlaylist = parseInt( el.closest('.panel').find('.plDashboard').data('playlist_id'));
 		var infoKara = liKara.find('.detailsKara');
@@ -1988,7 +2006,7 @@ var settingsNotUpdated;
 		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 
-		var lastPlayed = data['lastplayed_at'];
+		var lastPlayed =  new Date(data['lastplayed_at']).valueOf();
 		var lastPlayedStr = '';
 		if(lastPlayed) {
 			lastPlayed = 1000 * lastPlayed;
@@ -2001,22 +2019,22 @@ var settingsNotUpdated;
 		}
 		var details = {
 			  'UPVOTE_NUMBER' : data['upvotes']
-			, 'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
+			, 'DETAILS_ADDED': 		(data['created_at'] ? i18n.__('DETAILS_ADDED_2',new Date( data['created_at']).toLocaleDateString()) : '') + (data['nickname'] ? ' ' + i18n.__('DETAILS_ADDED_3', data['nickname']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
-			, 'BLCTYPE_6': 			data['author']
-			, 'DETAILS_VIEWS':		data['viewcount']
-			, 'BLCTYPE_4':			data['creator']
+			, 'BLCTYPE_6': 			data['authors'].map(e => e.name).join(', ')
+			, 'DETAILS_VIEWS':		data['played']
+			, 'BLCTYPE_4':			data['creators'].map(e => e.name).join(', ')
 			, 'DETAILS_DURATION':	data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
-			, 'DETAILS_LANGUAGE':	data['language_i18n']
-			, 'BLCTYPE_7':			data['misc_i18n']
+			, 'DETAILS_LANGUAGE':	data['languages_i18n'].join(', ')
+			, 'BLCTYPE_7':			data['misc_tags'].map(e => i18n.__(e.name)).join(', ')
 			, 'DETAILS_SERIE':		data['serie']
 			, 'DETAILS_SERIE_ORIG':		data['serie_orig']
 			//	, 'DETAILS_SERIE_ALT':	data['serie_altname']
-			, 'BLCTYPE_2':			data['singer']
-			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
+			, 'BLCTYPE_2':			data['singers'].map(e => e.name).join(', ')
+			, 'DETAILS_TYPE ':		i18n.__(data['songtype'][0].name) + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
 			, 'DETAILS_YEAR':		data['year']
-			, 'BLCTYPE_8':			data['songwriter']
+			, 'BLCTYPE_8':			data['songwriters'].map(e => e.name).join(', ')
 		};
 		var htmlDetails = Object.keys(details).map(function (k) {
 			if(details[k] && details[k] !== 'NO_TAG' && details[k] !== i18n.__('NO_TAG')) {
@@ -2054,7 +2072,7 @@ var settingsNotUpdated;
 				+ htmlTable
 				+ '</div>';
 		} else if (htmlMode == 'karaCard') {
-			$.ajax({ url: 'public/karas/' + data.kara_id + '/lyrics' }).done(function (data) {
+			$.ajax({ url: 'public/karas/' + data.kid + '/lyrics' }).done(function (data) {
 				var lyrics = i18n.__('NOLYRICS');
 				if (typeof data === 'object') {
 					lyrics =  data.join('<br/>');
@@ -2196,7 +2214,7 @@ var settingsNotUpdated;
 	saveDetailsKara = function(idPlaylist, idKara, command) {
 		if(isNaN(idPlaylist) || isNaN(idKara)) return false;
 		idPlaylist = parseInt(idPlaylist);
-		idKara = parseInt(idKara);
+		idKara = idKara;
 		if(saveLastDetailsKara[idPlaylist + 1000] == undefined) saveLastDetailsKara[idPlaylist + 1000] = [];
 		if(command == 'add') {
 			saveLastDetailsKara[idPlaylist + 1000].push(idKara);
@@ -2210,17 +2228,17 @@ var settingsNotUpdated;
 
 	formatPlaylist = function (playlist) {
 		if (!playlist.id) return playlist.text;
-		if (!$(playlist.element).data('flag_current') == '1'
-			&& !$(playlist.element).data('flag_public') == '1'
-			&& !$(playlist.element).data('flag_visible') == '0')  return playlist.text;
+		if (!$(playlist.element).data('flag_current')
+			&& !$(playlist.element).data('flag_public')
+			&& $(playlist.element).data('flag_visible'))  return playlist.text;
 
 		var icon = '';
-		if ($(playlist.element).data('flag_current') == '1') {
+		if ($(playlist.element).data('flag_current')) {
 			icon =  '<i class="glyphicon glyphicon-facetime-video"></i>';
-		} else if ($(playlist.element).data('flag_public') == '1') {
+		} else if ($(playlist.element).data('flag_public')) {
 			icon = '<i class="glyphicon glyphicon-globe"></i>';
 		}
-		if ($(playlist.element).data('flag_visible') == '0') {
+		if (!$(playlist.element).data('flag_visible')) {
 			icon +=  ' <i class="glyphicon glyphicon-eye-close"></i> ';
 		}
 
@@ -2239,8 +2257,13 @@ var settingsNotUpdated;
 		var locScroll2 = localStorage.getItem('scroll2');
 
 		if(locPlaylistRange) playlistRange = JSON.parse(locPlaylistRange);
-		if(locSearchPlaylist1 && locSearchPlaylist1 != 'undefined') $('#searchPlaylist1').val(locSearchPlaylist1);
-		if(locSearchPlaylist2 && locSearchPlaylist2 != 'undefined') $('#searchPlaylist2').val(locSearchPlaylist2);
+		var searchVal1 = '', searchVal2 = '';
+		if(locSearchPlaylist1 && locSearchPlaylist1 != 'undefined') searchVal1 = locSearchPlaylist1;
+		if(locSearchPlaylist2 && locSearchPlaylist2 != 'undefined') searchVal2 = locSearchPlaylist2;
+                
+		$('#searchPlaylist1').val(searchVal1);
+		$('#searchPlaylist2').val(searchVal2);
+    
 
 		setupAjax();
 
@@ -2250,7 +2273,7 @@ var settingsNotUpdated;
 			kmStats = data;
 			if(scope === 'public') {
 				$('#selectPlaylist1 > option[value=-1]')
-					.data('num_karas', kmStats.karas).attr('data-num_karas', kmStats.karas);
+					.data('karacount', kmStats.karas).attr('data-karacount', kmStats.karas);
 			}
 		});
 
@@ -2309,7 +2332,7 @@ var settingsNotUpdated;
 				});
 			});
 
-			$.ajax({ url: 'public/tags', }).done(function (data) {
+			tagsUpdating = $.ajax({ url: 'public/tags', }).done(function (data) {
 				tags = data.content;
 				var serie, year;
 
@@ -2331,14 +2354,15 @@ var settingsNotUpdated;
 				$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
 
 				forSelectTags = tags.map(function(val, ind){
-					return {id:val.tag_id, text: val.name_i18n, type: val.type};
+					var trad = val.i18n[i18n.locale];
+					return {id:val.tag_id, text: trad ? trad : val.name, type: val.type};
 				});
 
 				$.ajax({ url: 'public/series', }).done(function (data) {
 
 					var series = data.content;
 					series = series.map(function(val, ind){
-						return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
+						return {id:val.sid, text: val.i18n_name, type: 'serie'};
 					});
 					forSelectTags.push.apply(forSelectTags, series);
 
@@ -2576,12 +2600,12 @@ var settingsNotUpdated;
 
 	getPlaylistRange = function(idPl) {
 
-        var side = sideOfPlaylist(idPl);
-        var search = $('#searchPlaylist' + side).val();
+		var side = sideOfPlaylist(idPl);
+		var search = $('#searchPlaylist' + side).val();
 		var $filter = $('#searchMenu' + side + ' li.active');
 		var searchType = $filter.attr('searchType');
 		var searchValue = $filter.attr('searchValue');
-        var key = [search, searchType, searchValue].join('_');
+		var key = [search, searchType, searchValue].join('_');
 
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
 		return playlistRange[idPl][key] ? playlistRange[idPl][key] : { from : 0, to : pageSize };
@@ -2649,21 +2673,21 @@ var settingsNotUpdated;
 		});
 	};
 
-    manageOnlineUsersUI = function(data) {
-        $('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
-        DEBUG && console.log(logInfos);
-        if(!data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
-            $('.profileConvert').hide();
-        } else {
-            $('.profileConvert').show();
-        }
+	manageOnlineUsersUI = function(data) {
+		$('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
+		DEBUG && console.log(logInfos);
+		if(!data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
+			$('.profileConvert').hide();
+		} else {
+			$('.profileConvert').show();
+		}
 
-        if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
-            setTimeout(function() {
-                displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
-            }, 500)
-        }
-    }
+		if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
+			setTimeout(function() {
+				displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
+			}, 500)
+		}
+	}
 
 	/* socket part */
 

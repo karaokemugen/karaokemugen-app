@@ -1,5 +1,5 @@
 import {toFile} from 'qrcode';
-import {getConfig} from '../_common/utils/config.js';
+import {getConfig} from '../_utils/config.js';
 import {resolve} from 'path';
 import logger from 'winston';
 
@@ -9,8 +9,7 @@ export async function buildQRCode(url) {
 	logger.debug(`[QRCode] URL detected : ${url}`);
 	toFile(qrcodeImageFile, url, {}, (err) => {
 		if (err) {
-			logger.error('[QRCode] Error generating QR Code : '+err);
-			throw err;
+			throw `Error generating QR Code : ${err}`;
 		} else {
 			return true;
 		}

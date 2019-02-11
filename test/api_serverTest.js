@@ -5,24 +5,12 @@ const fs = require('fs');
 const ini = require('ini');
 const extend = require('extend');
 
-var SETTINGS = ini.parse(fs.readFileSync('config.ini.sample', 'utf-8'));
+var SETTINGS = ini.parse(fs.readFileSync('config.sample.ini', 'utf-8'));
 if(fs.existsSync('config.ini')) {
 	// et surcharge via le contenu du fichier personnalisé si présent
 	var configCustom = ini.parse(fs.readFileSync('config.ini', 'utf-8'));
 	extend(true,SETTINGS,configCustom);
 
-}
-
-function toString(o) {
-	Object.keys(o).forEach(k => {
-		if (typeof o[k] === 'object') {
-			return toString(o[k]);
-		}
-
-		o[k] = '' + o[k];
-	});
-
-	return o;
 }
 
 const usernameAdmin = 'adminTest';
@@ -96,26 +84,7 @@ describe('Blacklist', function() {
 	it('Add a blacklist criteria', function() {
 		var data = {
 			'blcriteria_type': '1001',
-			'blcriteria_value': '1'
-		};
-		return request
-			.post('/api/admin/blacklist/criterias')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect('Content-Type', /json/)
-			.expect(201)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'BLC_ADDED');
-				assert.strictEqual(response.body.data.blcriteria_type,data.blcriteria_type);
-				assert.strictEqual(response.body.data.blcriteria_value,data.blcriteria_value);
-			});
-	});
-
-	it('Add a blacklist criteria', function() {
-		var data = {
-			'blcriteria_type': '99999',
-			'blcriteria_value': '1'
+			'blcriteria_value': 'c28c8739-da02-49b4-889e-b15d1e9b2139'
 		};
 		return request
 			.post('/api/admin/blacklist/criterias')
@@ -160,7 +129,7 @@ describe('Blacklist', function() {
 	it('Edit a blacklist criteria', function() {
 		var data = {
 			blcriteria_type: 1001,
-			blcriteria_value: 2
+			blcriteria_value: 'a9c17ee5-b0f1-43d7-a1e0-0babf5997bde'
 		};
 		return request
 			.put('/api/admin/blacklist/criterias/'+blc_id)
@@ -175,7 +144,7 @@ describe('Blacklist', function() {
 				assert.strictEqual(response.body.data.blcriteria_value,data.blcriteria_value);
 			});
 	});
-	
+
 	it('Get blacklist (public)', function() {
 		return request
 			.get('/api/public/blacklist/')
@@ -229,7 +198,7 @@ describe('Blacklist', function() {
 describe('Favorites', function() {
 	it('Add karaoke to your favorites', function() {
 		var data = {
-			kara_id: 1
+			kid: 'a07a32f7-63eb-46a6-8158-09bf4b06f1c7'
 		};
 		return request
 			.post('/api/public/favorites')
@@ -240,11 +209,10 @@ describe('Favorites', function() {
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'FAVORITES_ADDED');
 				assert.strictEqual(response.body.data, null);
-				assert.strictEqual(response.body.args.playlist_id, 1);
 			});
 	});
 
-	var favoritesExport;
+	let favoritesExport;
 	it('Export favorites', function() {
 		return request
 			.get('/api/public/favorites/export')
@@ -253,8 +221,8 @@ describe('Favorites', function() {
 			.expect(200)
 			.then(function(response) {
 				favoritesExport = response.body.data;
-				assert.strictEqual(response.body.data.Header.description,'Karaoke Mugen Playlist File');
-				assert.strictEqual(response.body.data.PlaylistContents.length, 1);
+				assert.strictEqual(response.body.data.Header.description,'Karaoke Mugen Favorites List File');
+				assert.strictEqual(response.body.data.Favorites.length, 1);
 			});
 	});
 
@@ -289,7 +257,7 @@ describe('Favorites', function() {
 
 	it('Delete karaoke from your favorites', function() {
 		var data = {
-			kara_id: 1
+			kid: 'a07a32f7-63eb-46a6-8158-09bf4b06f1c7'
 		};
 		return request
 			.delete('/api/public/favorites')
@@ -300,28 +268,13 @@ describe('Favorites', function() {
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'FAVORITES_DELETED');
 				assert.strictEqual(response.body.data, null);
-				assert.strictEqual(response.body.args.playlist_id, 1);
 			});
 	});
 
-	it('Delete karaoke from your favorites Error 500', function() {
-		var data = {
-			kara_id: 1
-		};
-		return request
-			.delete('/api/public/favorites')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send(data)
-			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'FAVORITES_DELETE_ERROR');
-			});
-	});
 
 	it('Import favorites', function() {
 		var data = {
-			"playlist": "{\"Header\":{\"version\":3,\"description\":\"Karaoke Mugen Playlist File\"},\"PlaylistInformation\":{\"name\":\"Faves : adminTest\",\"created_at\":1548104672,\"modified_at\":1548104675,\"flag_visible\":0},\"PlaylistContents\":[{\"kid\":\"a07a32f7-63eb-46a6-8158-09bf4b06f1c7\",\"pseudo_add\":\"adminTest\",\"created_at\":1548104675,\"pos\":1,\"username\":\"adminTest\",\"serie\":\"Ken le Survivant\",\"title\":\"AVI + sous-titres\",\"flag_playing\":1}]}"
+			favorites: favoritesExport
 		};
 		return request
 			.post('/api/public/favorites/import')
@@ -332,27 +285,11 @@ describe('Favorites', function() {
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'FAVORITES_IMPORTED');
 				assert.strictEqual(response.body.data.message,'Favorites imported');
-				assert.strictEqual(response.body.data.unknownKaras.length, 0);
-			});
-	});
-
-	it('Import favorites Error 500', function() {
-		var data = {
-			playlist: favoritesExport.PlaylistContents
-		};
-		return request
-			.post('/api/public/favorites/import')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send(data)
-			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'FAVORITES_IMPORT_ERROR');
 			});
 	});
 });
 
-describe('Karaokes', function() {
+describe('Karas information', function() {
 	it('Get a random karaoke ID', function() {
 		return request
 			.get('/api/public/karas/random')
@@ -364,7 +301,7 @@ describe('Karaokes', function() {
 				assert.notStrictEqual(response.body.data, null);
 			});
 	});
-	
+
 	it('Get complete list of karaokes with Dragon Ball in their name', function() {
 		return request
 			.get('/api/public/karas?filter=Dragon%20Ball')
@@ -379,7 +316,7 @@ describe('Karaokes', function() {
 
 	it('Get song info from database', function() {
 		return request
-			.get('/api/public/karas/1')
+			.get('/api/public/karas/f4c8b1a5-f59a-4142-ae46-b43037a9d75b')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -391,7 +328,7 @@ describe('Karaokes', function() {
 
 	it('Get song lyrics', function() {
 		return request
-			.get('/api/public/karas/1/lyrics')
+			.get('/api/public/karas/b5df891e-6d1f-407d-8b5a-e6bd5368c366/lyrics')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -403,7 +340,7 @@ describe('Karaokes', function() {
 
 });
 
-describe('Karas', function() {
+describe('Series and year', function() {
 
 	it('Get series list', function() {
 		return request
@@ -464,9 +401,9 @@ describe('Playlists', function() {
 	var new_playlist_public_id;
 	var plc_id;
 	var playlist = 1;
-	it('Add karaoke 6 to playlist 1', function() {
+	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 to playlist 1', function() {
 		var data = {
-			'kara_id': 6,
+			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'requestedby': 'Test'
 		};
 		return request
@@ -477,14 +414,14 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				
+
 				assert.strictEqual(response.body.code,'PL_SONG_ADDED');
 			});
 	});
 
-	it('Add karaoke 6 again to playlist 1 to see if it fails', function() {
+	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 again to playlist 1 to see if it fails', function() {
 		var data = {
-			'kara_id': 6,
+			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'requestedby': 'Test'
 		};
 		return request
@@ -495,7 +432,7 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(function(response) {
-				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');	
+				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
 				assert.strictEqual(response.body.message,'No karaoke could be added,'+
 				' all are in destination playlist already (PLID : '+playlist+')');
 			});
@@ -503,7 +440,7 @@ describe('Playlists', function() {
 
 	it('Add an unknown karaoke to playlist 1 to see if it fails', function() {
 		var data = {
-			'kara_id': 10000,
+			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2132',
 			'requestedby': 'Test'
 		};
 		return request
@@ -519,9 +456,9 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Add karaoke 6 to an unknown playlist to see if it fails', function() {
+	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 to an unknown playlist to see if it fails', function() {
 		var data = {
-			'kara_id': 6,
+			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'requestedby': 'Test'
 		};
 		return request
@@ -551,7 +488,7 @@ describe('Playlists', function() {
 
 	it('Get list of karaokes in a playlist (public)', function() {
 		return request
-			.get('/api/admin/playlists/'+playlist+'/karas')
+			.get('/api/public/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -565,9 +502,9 @@ describe('Playlists', function() {
 	it('Create a playlist', function() {
 		var playlist = {
 			name:'new_playlist',
-			flag_visible:'1',
-			flag_public:'0',
-			flag_current:'1',
+			flag_visible: true,
+			flag_public: false,
+			flag_current: false,
 		};
 		return request
 			.post('/api/admin/playlists')
@@ -585,9 +522,9 @@ describe('Playlists', function() {
 	it('Create a CURRENT playlist', function() {
 		var playlist_current = {
 			name:'new_playlist',
-			flag_visible:'1',
-			flag_public:'0',
-			flag_current:'1'
+			flag_visible: true,
+			flag_public: false,
+			flag_current: true
 		};
 		return request
 			.post('/api/admin/playlists')
@@ -605,9 +542,9 @@ describe('Playlists', function() {
 	it('Create a PUBLIC playlist', function() {
 		var playlist_public = {
 			name:'new_playlist',
-			flag_visible:'1',
-			flag_public:'1',
-			flag_current:'0'
+			flag_visible: true,
+			flag_public: true,
+			flag_current: false
 		};
 		return request
 			.post('/api/admin/playlists')
@@ -640,14 +577,14 @@ describe('Playlists', function() {
 
 	it('Add karaoke to current/public playlist', function() {
 		return request
-			.post('/api/public/karas/2')
+			.post('/api/public/karas/a9c17ee5-b0f1-43d7-a1e0-0babf5997bde')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'PLAYLIST_MODE_SONG_ADDED');
-				assert.strictEqual(response.body.data.kara_id,2);
+				assert.strictEqual(response.body.data.kid[0], 'a9c17ee5-b0f1-43d7-a1e0-0babf5997bde');
 			});
 	});
 
@@ -721,7 +658,7 @@ describe('Playlists', function() {
 
 	it('Import a playlist', function() {
 		var data = {
-			"playlist": "{\"Header\":{\"version\":3,\"description\":\"Karaoke Mugen Playlist File\"},\"PlaylistInformation\":{\"name\":\"Faves : adminTest\",\"created_at\":1548104672,\"modified_at\":1548104675,\"flag_visible\":0},\"PlaylistContents\":[{\"kid\":\"a07a32f7-63eb-46a6-8158-09bf4b06f1c7\",\"pseudo_add\":\"adminTest\",\"created_at\":1548104675,\"pos\":1,\"username\":\"adminTest\",\"serie\":\"Ken le Survivant\",\"title\":\"AVI + sous-titres\",\"flag_playing\":1}]}"
+			playlist: playlistExport
 		};
 		return request
 			.post('/api/admin/playlists/import')
@@ -751,10 +688,10 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Update a playlist s information', function() {
+	it('Update a playlist\'s information', function() {
 		var data = {
-			name:'new_playlist',
-			flag_visible: '1',
+			name: 'new_playlist',
+			flag_visible: true,
 			pl_id: playlist
 		};
 		return request
@@ -781,7 +718,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	
+
 	it('List contents from current playlist', function() {
 		return request
 			.get('/api/public/playlists/current/karas')
@@ -797,10 +734,10 @@ describe('Playlists', function() {
 			});
 	});
 
-	
+
 	it('Edit karaoke from playlist : flag_playing', function() {
 		var data = {
-			flag_playing: '1'
+			flag_playing: true
 		};
 		return request
 			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
@@ -817,7 +754,7 @@ describe('Playlists', function() {
 
 	it('Edit karaoke from playlist : position', function() {
 		var data = {
-			pos: '1'
+			pos: 1
 		};
 		return request
 			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
@@ -979,7 +916,7 @@ describe('Song Poll', function() {
 				assert.strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
 			});
 	});
-	
+
 });
 
 describe('Tags', function() {
@@ -1017,10 +954,11 @@ describe('Users', function() {
 	it('Create new user (as admin)', function() {
 		var data = {
 			login: 'BakaToTest2',
-			password: 'ilyenapas2'
+			password: 'ilyenapas2',
+			role: 'admin'
 		};
 		return request
-			.post('/api/public/users')
+			.post('/api/admin/users')
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.send(data)
@@ -1046,7 +984,7 @@ describe('Users', function() {
 				assert.strictEqual(response.body.data.nickname, 'toto');
 			});
 	});
-	
+
 	it('List users', function() {
 		return request
 			.get('/api/public/users/')
@@ -1057,7 +995,6 @@ describe('Users', function() {
 				response.body.data.forEach(element => {
 					if (element.login === 'BakaToTest') {
 						assert.strictEqual(element.type, 1);
-						assert.strictEqual(element.flag_admin, 0);
 					}
 				});
 			});
@@ -1082,7 +1019,6 @@ describe('Users', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.strictEqual(response.body.data.type, 1);
-				assert.strictEqual(response.body.data.flag_admin, 0);
 			});
 	});
 
@@ -1094,7 +1030,6 @@ describe('Users', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.strictEqual(response.body.data.type, 1);
-				assert.strictEqual(response.body.data.flag_admin, 0);
 			});
 	});
 
@@ -1114,7 +1049,7 @@ describe('Users', function() {
 describe('Whitelist', function() {
 	it('Add song to whitelist', function() {
 		var data = {
-			'kara_id': 1,
+			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
 			'reason': 'Because reasons'
 		};
 		return request
@@ -1126,7 +1061,7 @@ describe('Whitelist', function() {
 			.expect(201)
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'WL_SONG_ADDED');
-				assert.strictEqual(response.body.data.kara_id, data.kara_id);
+				assert.strictEqual(response.body.data.kid, data.kid);
 				assert.strictEqual(response.body.data.reason, data.reason);
 			});
 	});
@@ -1159,7 +1094,7 @@ describe('Whitelist', function() {
 
 	it('Delete whitelist item', function() {
 		var data = {
-			'wlc_id': wlc_id,
+			kid: 'c28c8739-da02-49b4-889e-b15d1e9b2139'
 		};
 		return request
 			.delete('/api/admin/whitelist/')
@@ -1220,28 +1155,24 @@ describe('Main', function() {
 	});
 
 	it('Update settings', function() {
-		var data = toString(SETTINGS);
-		//data.data.EngineAllowViewWhitelist=0;
+		var data = SETTINGS;
+		data.data.EngineAllowViewWhitelist = 0;
 		return request
 			.put('/api/admin/settings')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data.data)
 			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response){
-				assert.strictEqual(response.body.data.isTest, 'true');
-				//assert.strictEqual(response.body.data.EngineAllowViewWhitelist,0);
-			});
+			.expect(200);
 	});
 });
 
 /*
 //TODO test error case with EngineAllowViewWhitelist
 //TODO WEBAPPMODE_CLOSED_API_MESSAGE
-describe('Error case', function() {	
+describe('Error case', function() {
 });
-*/
+
 
 describe('Main - Shutdown', function() {
 	it('Shutdown the entire application', function() {
@@ -1256,3 +1187,4 @@ describe('Main - Shutdown', function() {
 			});
 	});
 });
+*/
