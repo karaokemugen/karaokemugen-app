@@ -106,7 +106,7 @@ deploy_win:
     - rm -Rf jingles-master*
     - cd ../..
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
-    - cp -f ../config.ini.sample .
+    - cp -f ../config.sample.ini .
     - cp -Rf ../samples .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
     - cd ..
@@ -141,7 +141,7 @@ deploy_osx:
     - rm -f archive.tar
     - cd ../..
     - cp -f ../bin/karaokemugen-app KaraokeMugen
-    - cp -f ../config.ini.sample .
+    - cp -f ../config.sample.ini .
     - cp -Rf ../samples .
     - tar cvz * >KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.tar.gz
     - cd ..
