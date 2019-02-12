@@ -19,9 +19,10 @@
     "react-redux": "^5.1.1",
     "react-router-dom": "^4.3.1",
     "react-router-redux": "^5.0.0-alpha.8",
-    "socket.io-client": "^2.2.0",
     "react-scripts": "2.1.1",
-    "redux": "^4.0.0"
+    "redux": "^4.0.0",
+    "socket.io-client": "^2.2.0",
+    "unix-timestamp": "^0.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
