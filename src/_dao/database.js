@@ -38,12 +38,11 @@ export function paramWords(filter) {
 }
 
 async function query(...args) {
-	// Do nothing :)
+	return [{}];
 }
 
 export function closeDB() {
-	database = {};
-	database.query = query;
+	database = { query: query};
 }
 
 export function buildClauses(words) {
