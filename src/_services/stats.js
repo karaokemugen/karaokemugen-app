@@ -37,13 +37,14 @@ export async function sendPayload() {
 		});
 		logger.info('[Stats] Payload sent successfully');
 	} catch(err) {
-		logger.error(`[Stats] Uploading stats payload failed : ${err}`);
+		logger.error(`[Stats] Uploading stats payload failed : ${err.response.body}`);
 	}
 
 }
 
 async function buildPayload() {
 	return {
+		payloadVersion: 2,
 		instance: await buildInstanceStats(),
 		viewcounts: await exportPlayed(),
 		requests: await exportRequests(),

@@ -203,7 +203,6 @@ export async function initDBSystem() {
 		throw `Database initialization failed : ${err}`;
 	}
 	if (conf.optReset) await resetUserData();
-	await importFromSQLite();
 	logger.info('[DB] Checking data files...');
 	if (!await compareKarasChecksum()) {
 		logger.info('[DB] Data files have changed: database generation triggered');
@@ -222,6 +221,7 @@ export async function initDBSystem() {
 		logger.error(`[DB] Generation failed : ${err}`);
 		if (+conf.optGenerateDB) exit(1);
 	}
+	await importFromSQLite();
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
 	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
@@ -290,7 +290,7 @@ export async function importFromSQLite() {
 			//Getting data
 			const [blc, p, plc, rq, up, u, vc, w, f] = await Promise.all([
 				sqliteDB.all('SELECT * FROM blacklist_criteria;'),
-				sqliteDB.all('SELECT pk_id_playlist, name,num_karas,length,created_at,modified_at,flag_visible,flag_current,flag_public,flag_favorites,time_left,u.login AS username FROM playlist, user u WHERE u.pk_id_user = fk_id_user AND flag_favorites = 0;'),
+				sqliteDB.all('SELECT pk_id_playlist, name,num_karas,length,created_at,modified_at,flag_visible,flag_current,flag_public,flag_favorites,time_left,u.login AS username FROM playlist, user u WHERE u.pk_id_user = fk_id_user;'),
 				sqliteDB.all('SELECT pk_id_plcontent, fk_id_playlist, kid, created_at, pos, flag_playing, pseudo_add, u.login AS username, flag_free FROM playlist_content, user u WHERE u.pk_id_user = fk_id_user;'),
 				sqliteDB.all('SELECT u.login AS username, kid, session_started_at, requested_at FROM request, user u WHERE u.pk_id_user = fk_id_user;'),
 				sqliteDB.all('SELECT fk_id_plcontent, u.login AS username FROM upvote, user u WHERE u.pk_id_user = fk_id_user;'),
@@ -387,11 +387,11 @@ export async function importFromSQLite() {
 				{sql: 'INSERT INTO users VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', params: newU},
 				{sql: 'INSERT INTO playlist VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', params: newP},
 				{sql: 'INSERT INTO playlist_content VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)', params: newPLC},
-				{sql: 'INSERT INTO favorites VALUES($1,$2)', params: newF},
-				{sql: 'INSERT INTO whitelist VALUES($1,$2,$3)', params: newW},
-				{sql: 'INSERT INTO played VALUES($1,$2,$3)', params: newVC},
-				{sql: 'INSERT INTO upvote VALUES($1,$2)', params: newUP},
-				{sql: 'INSERT INTO requested VALUES($1,$2,$3,$4)', params: newRQ},
+				{sql: 'INSERT INTO favorites VALUES($1,$2) ON CONFLICT DO NOTHING', params: newF},
+				{sql: 'INSERT INTO whitelist VALUES($1,$2,$3) ON CONFLICT DO NOTHING', params: newW},
+				{sql: 'INSERT INTO played VALUES($1,$2,$3) ON CONFLICT DO NOTHING', params: newVC},
+				{sql: 'INSERT INTO upvote VALUES($1,$2) ON CONFLICT DO NOTHING', params: newUP},
+				{sql: 'INSERT INTO requested VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING', params: newRQ},
 				{sql: 'INSERT INTO blacklist_criteria VALUES($1,$2,$3,$4)', params: newBLC}
 			]);
 			await db().query(`

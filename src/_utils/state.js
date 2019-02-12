@@ -64,6 +64,8 @@ function manageMode() {
 		? state.modePlaylistID = state.currentPlaylistID
 		: state.modePlaylistID = state.publicPlaylistID;
 	if (+state.private !== +previousState.private) {
-		+state.private === 1 ? logger.info('[Engine] Karaoke mode switching to private') : logger.info('[Engine] Karaoke mode switching to public');
+		+state.private === 1
+			? logger.info('[Engine] Karaoke mode switching to private')
+			: logger.info('[Engine] Karaoke mode switching to public');
 	}
 }

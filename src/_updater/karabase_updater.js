@@ -28,9 +28,7 @@ async function downloadBase() {
 		filename: dest,
 		url: baseURL
 	});
-	const baseDownload = new Downloader(list, {
-		bar: true
-	});
+	const baseDownload = new Downloader(list, {bar: true});
 	return new Promise((resolve, reject) => {
 		baseDownload.download(fileErrors => {
 			if (fileErrors.length > 0) {
@@ -281,7 +279,7 @@ async function listLocalMedias() {
 async function removeFiles(files, dir) {
 	for (const file of files) {
 		await asyncUnlink(resolve(dir, file));
-		logger.info('[Updater] Removed : '+file);
+		logger.info(`[Updater] Removed : ${file}`);
 	}
 }
 
