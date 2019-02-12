@@ -1,3 +1,7 @@
+export function now(seconds) {
+	if (seconds) return Math.floor(new Date().getTime() / 1000);
+	return new Date().getTime();
+}
 
 export function date() {
 	const d = new Date();

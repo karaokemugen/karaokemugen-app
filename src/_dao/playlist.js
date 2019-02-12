@@ -1,6 +1,6 @@
 import {langSelector, buildClauses, db, transaction} from './database';
 import {getConfig} from '../_utils/config';
-import {now} from 'unix-timestamp';
+import {now} from '../_utils/date';
 import {pg as yesql} from 'yesql';
 
 const sql = require('./sql/playlist');
@@ -126,7 +126,7 @@ export async function getPlaylistContents(id, username, filter, lang) {
 	const res = await db().query(yesql(query)({
 		playlist_id: id,
 		username: username,
-		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60)) * 1000),
+		dejavu_time: new Date(now() - (getConfig().EngineMaxDejaVuTime * 60 * 1000)),
 		...filterClauses.params
 	}));
 	return res.rows;
@@ -153,7 +153,7 @@ export async function getPLCInfo(id, forUser, username) {
 	const res = await db().query(yesql(query)(
 		{
 			playlistcontent_id: id,
-			dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60)) * 1000),
+			dejavu_time: new Date(now() - (getConfig().EngineMaxDejaVuTime * 60 * 1000)),
 			username: username
 		}));
 	return res.rows[0];

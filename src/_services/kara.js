@@ -1,4 +1,3 @@
-import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
@@ -7,6 +6,7 @@ import {ASSToLyrics} from '../_utils/ass';
 import {refreshKaras, refreshYears} from '../_dao/kara';
 import {refreshKaraSeries, refreshSeries} from '../_dao/series';
 import {refreshKaraTags, refreshTags} from '../_dao/tag';
+import {now} from '../_utils/date';
 
 import {selectAllKaras,
 	getYears as getYearsDB,
@@ -217,7 +217,6 @@ export async function editKaraInDB(kara) {
  * Generate info to write in a .kara file from an object passed as argument by filtering out unnecessary fields and adding default values if needed.
  */
 export function formatKara(karaData) {
-	timestamp.round = true;
 	return {
 		mediafile: karaData.mediafile || '',
 		subfile: karaData.subfile || 'dummy.ass',
@@ -235,8 +234,8 @@ export function formatKara(karaData) {
 		author: karaData.author || '',
 		lang: karaData.lang || 'und',
 		KID: karaData.KID || uuidV4(),
-		dateadded: karaData.dateadded || timestamp.now(),
-		datemodif: karaData.datemodif || timestamp.now(),
+		dateadded: karaData.dateadded || now(true),
+		datemodif: karaData.datemodif || now(true),
 		mediasize: karaData.mediasize || 0,
 		mediagain: karaData.mediagain || 0,
 		mediaduration: karaData.mediaduration || 0,

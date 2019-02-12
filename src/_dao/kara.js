@@ -1,11 +1,11 @@
 import {buildTypeClauses, langSelector, buildClauses, db, transaction} from './database';
-import {now} from 'unix-timestamp';
 import {getConfig} from '../_utils/config';
 import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_utils/files';
 import { getState } from '../_utils/state';
 import {pg as yesql} from 'yesql';
 import {profile} from '../_utils/logger';
+import {now} from '../_utils/date';
 
 const sql = require('./sql/kara');
 
@@ -104,7 +104,7 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	//if (size > 0) limitClause = `LIMIT ${size} `;
 	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
 	const params = {
-		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60)) * 1000),
+		dejavu_time: new Date(now() - (getConfig().EngineMaxDejaVuTime * 60 * 1000)),
 		username: username,
 		...filterClauses.params
 	};

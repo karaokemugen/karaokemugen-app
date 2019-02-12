@@ -3,7 +3,7 @@
  * These functions do not resolve paths. Arguments should be resolved already.
  */
 
-import timestamp from 'unix-timestamp';
+import {now} from '../_utils/date';
 import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {parse, extname, resolve} from 'path';
@@ -56,15 +56,14 @@ export async function getDataFromKaraFile(karafile) {
 		karaData.KID = uuidV4();
 		if (conf.optStrict) strictModeError(karaData, 'kid');
 	}
-	timestamp.round = true;
 	if (!karaData.dateadded) {
 		karaData.isKaraModified = true;
-		karaData.dateadded = timestamp.now();
+		karaData.dateadded = now(true);
 		if (conf.optStrict) strictModeError(karaData, 'dateadded');
 	}
 	if (!karaData.datemodif) {
 		karaData.isKaraModified = true;
-		karaData.datemodif = timestamp.now();
+		karaData.datemodif = now(true);
 		if (conf.optStrict) strictModeError(karaData, 'datemodif');
 	}
 	karaData.karafile = karafile;
@@ -139,7 +138,7 @@ export async function writeKara(karafile, karaData) {
 	if (karaData.isKaraModified === false) {
 		return;
 	}
-	infosToWrite.datemodif = timestamp.now();
+	infosToWrite.datemodif = now(true);
 	delete infosToWrite.karafile;
 	karaData.datemodif = infosToWrite.datemodif;
 	await asyncWriteFile(karafile, stringify(infosToWrite));

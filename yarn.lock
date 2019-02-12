@@ -6375,11 +6375,6 @@ universalify@^0.1.0:
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
   integrity sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==
 
-unix-timestamp@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/unix-timestamp/-/unix-timestamp-0.2.0.tgz#e1cdc2808df6327d27e635d9351e72815288733e"
-  integrity sha1-4c3CgI32Mn0n5jXZNR5ygVKIcz4=
-
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/unpipe/-/unpipe-1.0.0.tgz#b2bf4ee8514aae6165b4817829d21b2ef49904ec"

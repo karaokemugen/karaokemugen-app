@@ -13,7 +13,7 @@ import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {check} from '../_utils/validators';
 import {getOrAddSerieID} from '../_services/series';
-import timestamp from 'unix-timestamp';
+import {now} from '.._utils/date';
 import { compareKarasChecksum } from './generation';
 
 export async function editKara(kara,opts = {compareChecksum: true}) {
@@ -135,12 +135,9 @@ async function generateKara(kara, opts) {
 
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
-		timestamp.round = true;
-		if (!kara.dateadded) {
-			kara.dateadded = timestamp.now();
-		} else {
-			kara.dateadded = timestamp.fromDate(kara.dateadded);
-		}
+		!kara.dateadded
+			? kara.dateadded = now(true)
+			: kara.dateadded = Math.floor(new Date(kara.dateadded).getTime() / 1000);
 		kara.songwriter.sort();
 		kara.singer.sort();
 		//Trim spaces before and after elements.

@@ -58,7 +58,7 @@
   "private": true,
   "pkg": {
     "scripts": [
-	  "node_modules/db-migrate/lib/commands/**",
+      "node_modules/db-migrate/lib/commands/**",
       "node_modules/image-size/lib/types/*.js",
       "node_modules/sqlite3/node_modules/node-pre-gyp/lib/*.js",
       "node_modules/sqlite3/node_modules/node-pre-gyp/lib/util/*.js*",
@@ -71,8 +71,8 @@
       "dist/_webapp/vendors/**",
       "dist/_webapp/ressources/**",
       "dist/VERSION",
-	  "react_systempanel/build/**",
-	  "package.json"
+      "react_systempanel/build/**",
+      "package.json"
     ]
   },
   "dependencies": {
@@ -130,7 +130,6 @@
     "socket.io": "^2.2.0",
     "sqlite": "^3.0.1",
     "systeminformation": "^4.0.10",
-    "unix-timestamp": "^0.2.0",
     "uuid": "^3.3.2",
     "validate.js": "^0.12.0",
     "webdav": "^2.5.0",

@@ -3,7 +3,7 @@ import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from '../_services/p
 import {convertToRemoteFavorites} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink, asyncReadDir} from '../_utils/files';
 import {createHash} from 'crypto';
-import {now} from 'unix-timestamp';
+import {now} from '../_utils/date';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
@@ -63,7 +63,7 @@ async function updateExpiredUsers() {
 	// Unflag connected accounts from database if they expired
 	try {
 		if (!databaseBusy) {
-			await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
+			await db.updateExpiredUsers(now(true) - (getConfig().AuthExpireTime * 60));
 			await db.resetGuestsPassword();
 		}
 	} catch(err) {
@@ -179,7 +179,7 @@ export async function convertToRemoteUser(token, password, instance) {
 export async function updateLastLoginName(login) {
 	// To avoid flooding database UPDATEs, only update login time every minute for a user
 	if (!userLoginTimes[login]) userLoginTimes[login] = new Date();
-	if (userLoginTimes[login] < new Date((now() * 1000) - 60)) {
+	if (userLoginTimes[login] < now(true) - 60) {
 		userLoginTimes[login] = new Date();
 		return await db.updateUserLastLogin(login);
 	}

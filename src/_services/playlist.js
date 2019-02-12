@@ -2,7 +2,7 @@
 import {uuidRegexp} from './constants';
 import {getStats} from '../_dao/database';
 import {getConfig} from '../_utils/config';
-import {now} from 'unix-timestamp';
+import {now} from '../_utils/date';
 import logger from 'winston';
 import shuffle from 'lodash.shuffle';
 import {emitWS} from '../_webapp/frontend';
@@ -1121,7 +1121,7 @@ export async function buildDummyPlaylist(playlist_id) {
 async function updateFreeOrphanedSongs() {
 	// Flag songs as free if they are older than X minutes
 	try {
-		if (!databaseBusy) await updateFreeOrphanedSongsDB(now() - (getConfig().EngineFreeAutoTime * 60));
+		if (!databaseBusy) await updateFreeOrphanedSongsDB(now(true) - (getConfig().EngineFreeAutoTime * 60));
 	} catch(err) {
 		logger.error(`[Playlist] Failed to free orphaned songs (will try again) : ${err}`);
 	}
