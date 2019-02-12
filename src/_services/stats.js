@@ -31,13 +31,17 @@ export async function sendPayload() {
 		logger.info(`[Stats] Sending payload (${prettyBytes(JSON.stringify(payload).length)})`);
 		logger.debug(`[Stats] Payload being sent : ${JSON.stringify(payload,null,2)}`);
 		const conf = getConfig();
-		await got(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/stats`,{
-			json: true,
-			body: payload
-		});
+		try {
+			await got(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/stats`,{
+				json: true,
+				body: payload
+			});
+		} catch(err) {
+			throw err.response.body;
+		}
 		logger.info('[Stats] Payload sent successfully');
 	} catch(err) {
-		logger.error(`[Stats] Uploading stats payload failed : ${err.response.body}`);
+		logger.error(`[Stats] Uploading stats payload failed : ${err}`);
 	}
 
 }

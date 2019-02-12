@@ -167,7 +167,6 @@ async function migrateDB() {
 			'log-level': 'warn|error|info'
 		}
 	});
-	await dbm.silence();
 	try {
 		await dbm.sync('all');
 	} catch(err) {
