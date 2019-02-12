@@ -208,7 +208,7 @@ async function editRemoteUser(user) {
 			}
 		});
 	} catch(err) {
-		throw `Remote update failed : ${err}`;
+		throw `Remote update failed : ${err.response.body}`;
 	}
 }
 
@@ -364,7 +364,7 @@ export async function remoteLogin(username, password) {
 		});
 		return JSON.parse(res.body);
 	} catch(err) {
-		throw { code: 'USER_ONLINE_LOGIN_ERROR', message: err };
+		throw { code: 'USER_ONLINE_LOGIN_ERROR', message: err.response.body };
 	}
 }
 
@@ -378,7 +378,7 @@ async function getAllRemoteUsers(instance) {
 	} catch(err) {
 		throw {
 			code: 'USER_ONLINE_CHECK_LOGIN_ERROR',
-			message: err
+			message: err.response.body
 		};
 	}
 }
@@ -406,7 +406,7 @@ async function createRemoteUser(user) {
 	} catch(err) {
 		throw {
 			code: 'USER_ONLINE_CREATION_ERROR',
-			message: err
+			message: err.response.body
 		};
 	}
 };
@@ -423,7 +423,8 @@ export async function getRemoteUser(username, token) {
 		});
 		return res.body;
 	} catch(err) {
-		if (err.statusCode === 401) throw 'Unauthorized';		throw 'Unknown error';
+		if (err.statusCode === 401) throw 'Unauthorized';
+		throw `Unknown error : ${err.response.body}`;
 	}
 }
 

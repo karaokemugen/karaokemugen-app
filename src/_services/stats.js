@@ -37,7 +37,7 @@ export async function sendPayload() {
 		});
 		logger.info('[Stats] Payload sent successfully');
 	} catch(err) {
-		logger.error(`[Stats] Uploading stats payload failed : ${err}`);
+		logger.error(`[Stats] Uploading stats payload failed : ${err.response.body}`);
 	}
 
 }
