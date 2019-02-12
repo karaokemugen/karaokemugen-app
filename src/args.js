@@ -11,10 +11,10 @@ Options :
 --debug       Displays additional debug messages
 --sql         Traces SQL query at the debug log level
 --generate    Generates a new database then quits
---validate    Validates/checks/updates .kara files without writing a database then quits
 --strict      Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
 --profiling   Displays profiling information for some functions
 --test        Launches in test mode (for running unit tests)
+--reset       Reset user data (WARNING! Backup your base first!)
 --demo        Launches in demo mode (no admin panel, no password changes)
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
@@ -32,6 +32,7 @@ export async function parseCommandLineArgs(argv) {
 		process.env['NODE_ENV'] = 'development';
 	}
 	if (argv.reset) {
+		logger.warn('[Launcher] USER DATA IS GOING TO BE RESET');
 		setConfig({optReset: true});
 	}
 	if (argv.version) {
@@ -53,10 +54,6 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.strict) {
 		logger.info('[Launcher] Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.');
 		setConfig({optStrict: true});
-	}
-	if (argv.karagen) {
-		logger.info('[Launcher] .kara generation requested');
-		setConfig({optKaragen: true});
 	}
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');

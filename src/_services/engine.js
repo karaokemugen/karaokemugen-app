@@ -14,7 +14,6 @@ import {initFrontend} from '../_webapp/frontend';
 import {initOnlineSystem} from '../_webapp/online';
 import {initPlayer, quitmpv} from './player';
 import {initStats} from './stats';
-import {karaGenerationBatch} from './kara_creation';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {initPlaylistSystem, testPlaylists} from './playlist';
@@ -28,13 +27,6 @@ export async function initEngine() {
 		ontop: conf.PlayerStayOnTop,
 		private: conf.EnginePrivateMode,
 	});
-	if (conf.optKaragen) try {
-		await karaGenerationBatch();
-		exit(0);
-	} catch (err) {
-		logger.error(`[Engine] Karaoke import failed : ${err}`);
-		exit(1);
-	}
 	if (conf.optBaseUpdate) try {
 		if (await runBaseUpdate()) {
 			logger.info('[Engine] Done updating karaoke base');

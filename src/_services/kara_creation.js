@@ -5,7 +5,7 @@
 import logger from 'winston';
 import {basename, extname, resolve} from 'path';
 import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias,} from '../_utils/config';
-import {sanitizeFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_utils/files';
+import {sanitizeFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, replaceExt} from '../_utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
@@ -167,16 +167,6 @@ async function generateKara(kara, opts) {
  * which respect the KM naming convention. If such a file is found, the associated
  * karaoke file is created, and subtitle files are moved to their own directories.
  */
-
-export async function karaGenerationBatch() {
-	const importFiles = await asyncReadDir(resolvedPathImport());
-	const importPromises = filterMedias(importFiles).map(mediaFile => importKara(mediaFile));
-	try {
-		await Promise.all(importPromises);
-	} catch(err) {
-		throw err;
-	}
-}
 
 function defineFilename(data) {
 	if (data) {
