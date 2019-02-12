@@ -215,22 +215,25 @@ export async function initDBSystem() {
 	}
 	if (doGenerate) try {
 		await generateDatabase();
-		if (+conf.optGenerateDB) exit(0);
 	} catch(err) {
 		logger.error(`[DB] Generation failed : ${err}`);
-		if (+conf.optGenerateDB) exit(1);
+		if (conf.optGenerateDB) exit(1);
 	}
-	await importFromSQLite();
-	logger.debug( '[DB] Database Interface is READY');
-	const stats = await getStats();
-	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
-	logger.info(`Series       : ${stats.series}`);
-	logger.info(`Languages    : ${stats.languages}`);
-	logger.info(`Artists      : ${stats.singers} singers, ${stats.songwriters} songwriters, ${stats.creators} creators`);
-	logger.info(`Kara Authors : ${stats.authors}`);
-	logger.info(`Playlists    : ${stats.playlists}`);
-	logger.info(`Songs played : ${stats.played}`);
-	return true;
+	if (conf.optGenerateDB) {
+		exit(0);
+	} else {
+		await importFromSQLite();
+		logger.debug( '[DB] Database Interface is READY');
+		const stats = await getStats();
+		logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
+		logger.info(`Series       : ${stats.series}`);
+		logger.info(`Languages    : ${stats.languages}`);
+		logger.info(`Artists      : ${stats.singers} singers, ${stats.songwriters} songwriters, ${stats.creators} creators`);
+		logger.info(`Kara Authors : ${stats.authors}`);
+		logger.info(`Playlists    : ${stats.playlists}`);
+		logger.info(`Songs played : ${stats.played}`);
+		return true;
+	}
 }
 
 export async function resetUserData() {
