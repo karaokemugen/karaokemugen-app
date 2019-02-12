@@ -291,7 +291,7 @@ export async function importFromSQLite() {
 			//Getting data
 			const [blc, p, plc, rq, up, u, vc, w, f] = await Promise.all([
 				sqliteDB.all('SELECT * FROM blacklist_criteria;'),
-				sqliteDB.all('SELECT pk_id_playlist, name,num_karas,length,created_at,modified_at,flag_visible,flag_current,flag_public,flag_favorites,time_left,u.login AS username FROM playlist, user u WHERE u.pk_id_user = fk_id_user AND flag_favorites = 0;'),
+				sqliteDB.all('SELECT pk_id_playlist, name,num_karas,length,created_at,modified_at,flag_visible,flag_current,flag_public,flag_favorites,time_left,u.login AS username FROM playlist, user u WHERE u.pk_id_user = fk_id_user;'),
 				sqliteDB.all('SELECT pk_id_plcontent, fk_id_playlist, kid, created_at, pos, flag_playing, pseudo_add, u.login AS username, flag_free FROM playlist_content, user u WHERE u.pk_id_user = fk_id_user;'),
 				sqliteDB.all('SELECT u.login AS username, kid, session_started_at, requested_at FROM request, user u WHERE u.pk_id_user = fk_id_user;'),
 				sqliteDB.all('SELECT fk_id_plcontent, u.login AS username FROM upvote, user u WHERE u.pk_id_user = fk_id_user;'),
