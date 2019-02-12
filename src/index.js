@@ -113,7 +113,6 @@ async function main() {
 	 * Test if network ports are available
 	 */
 	verifyOpenPort(config.appFrontendPort);
-	verifyOpenPort(config.db.prod.port);
 
 	/**
 	 * Gentlemen, start your engines.
