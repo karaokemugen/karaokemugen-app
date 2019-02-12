@@ -38,7 +38,7 @@ export function paramWords(filter) {
 }
 
 async function query(...args) {
-	return [{}];
+	return {rows: [{}]};
 }
 
 export function closeDB() {
