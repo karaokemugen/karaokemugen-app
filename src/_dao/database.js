@@ -204,7 +204,6 @@ export async function initDBSystem() {
 		throw `Database initialization failed : ${err}`;
 	}
 	if (conf.optReset) await resetUserData();
-	await importFromSQLite();
 	logger.info('[DB] Checking data files...');
 	if (!await compareKarasChecksum()) {
 		logger.info('[DB] Data files have changed: database generation triggered');
@@ -223,6 +222,7 @@ export async function initDBSystem() {
 		logger.error(`[DB] Generation failed : ${err}`);
 		if (+conf.optGenerateDB) exit(1);
 	}
+	await importFromSQLite();
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
 	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
