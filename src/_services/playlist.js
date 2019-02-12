@@ -393,7 +393,7 @@ export async function getKaraFromPlaylist(plc_id,lang,token) {
 		let output = translateKaraInfo([kara], lang);
 		try {
 			profile('previewCheck');
-			const previewfile = await isPreviewAvailable(output[0].mediafile);
+			const previewfile = await isPreviewAvailable(output[0].kid, output[0].mediasize);
 			if (previewfile) output[0].previewfile = previewfile;
 			profile('previewCheck');
 		} catch(err) {

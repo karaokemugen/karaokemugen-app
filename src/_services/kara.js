@@ -107,7 +107,7 @@ export async function getKara(kid, token, lang) {
 	const kara = await getKaraDB(kid, token.username, lang, token.role);
 	if (!kara) throw `Kara ${kid} unknown`;
 	let output = translateKaraInfo(kara, lang);
-	const previewfile = await isPreviewAvailable(output[0].mediafile);
+	const previewfile = await isPreviewAvailable(output[0].kid, output[0].mediasize);
 	if (previewfile) output[0].previewfile = previewfile;
 	profile('getKaraInfo');
 	return output;
