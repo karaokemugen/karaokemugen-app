@@ -67,7 +67,7 @@ async function main() {
 	logger.debug(`[Launcher] OS : ${config.os}`);
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, 2));
 
-	// Checking binaries
+	// Checking binaries paths.
 	await configureBinaries(config);
 
 	// Checking paths, create them if needed.
@@ -99,6 +99,7 @@ async function main() {
 	if (await asyncExists(tempAvatar)) await asyncUnlink(tempAvatar);
 	writeFileSync(tempAvatar, fileBuffer);
 
+	logger.debug('[Launcher] Writing fake package.json if it does not exist for db-migrate');
 	const pjson = resolve(appPath, 'package.json');
 	if (!await asyncExists(pjson)) {
 		await asyncWriteFile(pjson, JSON.stringify({
@@ -120,7 +121,7 @@ async function main() {
 	try {
 		await initEngine();
 	} catch(err) {
-		logger.error(`[Launcher] Karaoke Mugen initialization failed :( : ${err}`)
+		logger.error(`[Launcher] Karaoke Mugen initialization failed :( : ${err}`);
 		exit(1);
 	}
 }
@@ -163,8 +164,9 @@ async function checkPaths(config) {
 			logger.warn('[Launcher] No samples directory found, will not copy them.');
 		}
 	}
-
+	// Emptying temp directory
 	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
+	// Checking paths
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSeries.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));

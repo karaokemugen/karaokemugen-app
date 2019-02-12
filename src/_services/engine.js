@@ -49,6 +49,7 @@ export async function initEngine() {
 	if (+conf.OnlineURL) try {
 		await initOnlineSystem();
 	} catch(err) {
+		//Non-blocking
 		logger.error(`[Engine] Failed to init online system : ${err}`);
 	}
 	let inits = [];
@@ -86,6 +87,7 @@ export function exit(rc) {
 		logger.info('[Engine] Player has shutdown');
 	}
 	closeDB();
+	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
 	checkPG().then(started => {
 		if (started) {
 			killPG().then(() => {

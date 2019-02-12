@@ -17,7 +17,7 @@ Options :
 --reset       Reset user data (WARNING! Backup your base first!)
 --demo        Launches in demo mode (no admin panel, no password changes)
 --config file Specify a config file to use (default is config.ini)
---updateBase  Update karaoke base files (no generation)
+--updateBase  Update karaoke base files
 --noBrowser   Do not open a browser window upon launch
 --noMedia     (generation only) Do not try to fetch data from media files
 `;
