@@ -27,6 +27,10 @@ export async function parseCommandLineArgs(argv) {
 		console.log(help);
 		process.exit(0);
 	}
+	if (argv.sql) {
+		logger.info('[Launcher] SQL queries will be logged (bundled postgresql server only. If you use your own server, set the log_statement setting to "all")');
+		setConfig({optSQL: true});
+	}
 	if (argv.debug) {
 		logger.info('[Launcher] Debug messages enabled on console');
 		process.env['NODE_ENV'] = 'development';
