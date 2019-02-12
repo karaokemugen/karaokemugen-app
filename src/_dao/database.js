@@ -385,14 +385,14 @@ export async function importFromSQLite() {
 				{sql: 'TRUNCATE blacklist_criteria RESTART IDENTITY CASCADE;'}
 			]);
 			await transaction([
+				{sql: 'INSERT INTO users VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', params: newU},
+				{sql: 'INSERT INTO playlist VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', params: newP},
+				{sql: 'INSERT INTO playlist_content VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)', params: newPLC},
 				{sql: 'INSERT INTO favorites VALUES($1,$2)', params: newF},
 				{sql: 'INSERT INTO whitelist VALUES($1,$2,$3)', params: newW},
 				{sql: 'INSERT INTO played VALUES($1,$2,$3)', params: newVC},
-				{sql: 'INSERT INTO users VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', params: newU},
 				{sql: 'INSERT INTO upvote VALUES($1,$2)', params: newUP},
 				{sql: 'INSERT INTO requested VALUES($1,$2,$3,$4)', params: newRQ},
-				{sql: 'INSERT INTO playlist VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', params: newP},
-				{sql: 'INSERT INTO playlist_content VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)', params: newPLC},
 				{sql: 'INSERT INTO blacklist_criteria VALUES($1,$2,$3,$4)', params: newBLC}
 			]);
 			await db().query(`
