@@ -13,7 +13,7 @@ import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {check} from '../_utils/validators';
 import {getOrAddSerieID} from '../_services/series';
-import {now} from '.._utils/date';
+import {now} from '../_utils/date';
 import { compareKarasChecksum } from './generation';
 
 export async function editKara(kara,opts = {compareChecksum: true}) {
