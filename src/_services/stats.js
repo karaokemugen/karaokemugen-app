@@ -44,6 +44,7 @@ export async function sendPayload() {
 
 async function buildPayload() {
 	return {
+		payloadVersion: 2,
 		instance: await buildInstanceStats(),
 		viewcounts: await exportPlayed(),
 		requests: await exportRequests(),
