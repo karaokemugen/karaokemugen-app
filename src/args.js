@@ -11,6 +11,7 @@ Options :
 --debug       Displays additional debug messages
 --sql         Traces SQL query at the debug log level
 --generate    Generates a new database then quits
+--validate    Validates kara files and modify them if needed (no generation)
 --strict      Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
 --profiling   Displays profiling information for some functions
 --test        Launches in test mode (for running unit tests)
@@ -34,6 +35,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.debug) {
 		logger.info('[Launcher] Debug messages enabled on console');
 		process.env['NODE_ENV'] = 'development';
+	}
+	if (argv.validate) {
+		logger.info('[Launcher] Validation (no generation) requested');
+		setConfig({optValidate: true});
 	}
 	if (argv.reset) {
 		logger.warn('[Launcher] USER DATA IS GOING TO BE RESET');

@@ -441,7 +441,7 @@ function prepareTagsKaraInsertData(tagsByKara) {
 	return data;
 }
 
-export async function run() {
+export async function run(validateOnly) {
 	try {
 		emit('databaseBusy',true);
 		if (generating) throw 'A database generation is already in progress';
@@ -472,6 +472,10 @@ export async function run() {
 		checkDuplicateKIDs(karas);
 		bar.incr();
 		bar.stop();
+		if (validateOnly) {
+			if (error) throw 'Error during generation. Find out why in the messages above.';
+			return true;
+		}
 		// Preparing data to insert
 		logger.info('[Gen] Data files processed, creating database');
 		bar = new Bar({

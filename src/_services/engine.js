@@ -17,6 +17,7 @@ import {initStats} from './stats';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {initPlaylistSystem, testPlaylists} from './playlist';
+import { run } from './generation';
 
 export async function initEngine() {
 	profile('Init');
@@ -37,6 +38,13 @@ export async function initEngine() {
 		}
 	} catch (err) {
 		logger.error(`[Engine] Update failed : ${err}`);
+		exit(1);
+	}
+	if (conf.optValidate) try {
+		await run(true);
+		exit(0);
+	} catch(err) {
+		logger.error(`[Engine] Validation error : ${err}`);
 		exit(1);
 	}
 	//Database system is the foundation of every other system
