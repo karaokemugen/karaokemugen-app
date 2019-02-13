@@ -21,7 +21,7 @@ export async function checkBinaries(config) {
 		await Promise.all(requiredBinariesChecks);
 	} catch (err) {
 		binMissing(binariesPath, err);
-		exit();
+		await exit(1);
 	}
 
 	return binariesPath;

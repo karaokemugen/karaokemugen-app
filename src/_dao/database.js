@@ -226,10 +226,10 @@ export async function initDBSystem() {
 		await generateDatabase();
 	} catch(err) {
 		logger.error(`[DB] Generation failed : ${err}`);
-		if (conf.optGenerateDB) exit(1);
+		if (conf.optGenerateDB) await exit(1);
 	}
 	if (conf.optGenerateDB) {
-		exit(0);
+		await exit(0);
 	} else {
 		await importFromSQLite();
 		logger.debug( '[DB] Database Interface is READY');
@@ -260,10 +260,10 @@ async function generateDatabase() {
 	try {
 		await generateDB(conf);
 		logger.info('[DB] Database generation completed successfully!');
-		if (conf.optGenerateDB) exit(0);
+		if (conf.optGenerateDB) await exit(0);
 	} catch(err) {
 		logger.error('[DB] Database generation completed with errors!');
-		if (conf.optGenerateDB) exit(1);
+		if (conf.optGenerateDB) await exit(1);
 	}
 	return true;
 }

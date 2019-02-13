@@ -34,19 +34,20 @@ export async function initEngine() {
 			setConfig({optGenerateDB: true});
 		} else {
 			logger.info('[Engine] No updates found, exiting');
-			exit(0);
+			await exit(0);
 		}
 	} catch (err) {
 		logger.error(`[Engine] Update failed : ${err}`);
-		exit(1);
+		await exit(1);
 	}
 	if (conf.optValidate) try {
 		await run(true);
-		exit(0);
+		await exit(0);
 	} catch(err) {
 		logger.error(`[Engine] Validation error : ${err}`);
-		exit(1);
+		await exit(1);
 	}
+	logger.info('Continue');
 	//Database system is the foundation of every other system
 	try {
 		await initDBSystem();
@@ -84,7 +85,7 @@ export async function initEngine() {
 	}
 }
 
-export function exit(rc) {
+export async function exit(rc) {
 	logger.info('[Engine] Shutdown in progress');
 	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
 	//On other systems or if terminal is not a TTY we exit immediately.
@@ -96,22 +97,23 @@ export function exit(rc) {
 	}
 	closeDB();
 	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
-	checkPG().then(started => {
-		if (started) {
-			killPG().then(() => {
+	try {
+		if (await checkPG()) {
+			try {
+				await killPG;
 				logger.info('[Engine] PostgreSQL has shutdown');
 				mataNe(rc);
-			}).catch(err => {
+			} catch(err) {
 				logger.error('[Engine] PostgreSQL could not be stopped!');
 				mataNe(rc);
-			});
+			}
 		} else {
 			mataNe(rc);
 		}
-	}).catch((err) => {
+	} catch(err) {
 		logger.error(`[Engine] Failed to shutdown PostgreSQL : ${err}`);
 		mataNe(1);
-	});
+	}
 }
 
 function mataNe(rc) {

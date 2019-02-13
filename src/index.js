@@ -27,6 +27,10 @@ process.on('SIGINT', () => {
 	exit('SIGINT');
 });
 
+process.on('SIGTERM', () => {
+	exit('SIGTERM');
+});
+
 // CTRL+C for Windows :
 
 if (process.platform === 'win32' ) {

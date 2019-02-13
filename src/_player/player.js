@@ -200,7 +200,7 @@ async function startmpv() {
 		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
 		logger.error(`[Player] mpv binary : ${conf.BinmpvPath}`);
 		logger.error('[Player] Exiting due to obsolete mpv version');
-		exit(1);
+		await exit(1);
 	}
 	if (conf.os === 'darwin' && semver.satisfies(mpvVersion, '0.27.x')) mpvOptions.push('--no-native-fs');
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
