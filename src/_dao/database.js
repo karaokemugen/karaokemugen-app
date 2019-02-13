@@ -9,7 +9,7 @@ import langs from 'langs';
 import {compareKarasChecksum, run as generateDB} from '../_services/generation';
 import DBMigrate from 'db-migrate';
 import {join, resolve} from 'path';
-import {asyncRename, asyncExists} from '../_utils/files';
+import {asyncCopy, asyncUnlink, asyncExists} from '../_utils/files';
 import {isShutdownPG, initPG} from '../_utils/postgresql';
 import { generateBlacklist } from '../_services/blacklist';
 import {refreshYears, refreshKaras} from './kara';
@@ -297,7 +297,10 @@ export async function importFromSQLite() {
 	if (await asyncExists(sqliteDBFile)) {
 		logger.info('[DB] SQLite database detected. Importing...');
 		try {
+			await asyncCopy(sqliteDBFile, 'old_'+sqliteDBFile, { overwrite: true });
 			const sqliteDB = await open(sqliteDBFile, {verbose: true});
+			//Removing PLC without a playlist
+			await sqliteDB.run('DELETE FROM playlist_content WHERE fk_id_playlist NOT IN (SELECT pk_id_playlist FROM playlist);');
 			//Getting data
 			const [blc, p, plc, rq, up, u, vc, w, f] = await Promise.all([
 				sqliteDB.all('SELECT * FROM blacklist_criteria;'),
@@ -412,7 +415,7 @@ export async function importFromSQLite() {
 			`);
 			await generateBlacklist();
 			logger.info('[DB] SQLite import complete');
-			await asyncRename(sqliteDBFile, sqliteDBFile+'-old');
+			await asyncUnlink(sqliteDBFile);
 		} catch(err) {
 			logger.error(`[DB] Your old SQLite database could not be imported : ${err}`);
 		}
