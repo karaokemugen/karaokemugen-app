@@ -258,7 +258,7 @@ export async function getStats() {
 async function generateDatabase() {
 	const conf = getConfig();
 	try {
-		await generateDB(conf);
+		await generateDB();
 		logger.info('[DB] Database generation completed successfully!');
 		if (conf.optGenerateDB) await exit(0);
 	} catch(err) {
