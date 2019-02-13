@@ -477,7 +477,7 @@ export async function run() {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 13);
+		}, 16);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		bar.incr();
 		const sqlInsertSeries = prepareAllSeriesInsertData(series.map, series.data);
@@ -495,16 +495,25 @@ export async function run() {
 		await emptyDatabase();
 		bar.incr();
 		// Inserting data in a transaction
-		await transaction([
-			{sql: insertKaras, params: sqlInsertKaras},
-			{sql: insertSeries, params: sqlInsertSeries},
-			{sql: insertTags, params: sqlInsertTags},
-			{sql: insertKaraTags, params: sqlInsertKarasTags},
-			{sql: insertKaraSeries, params: sqlInsertKarasSeries},
-			{sql: inserti18nSeries, params: sqlSeriesi18nData}
+		await Promise.all([
+			transaction([{sql: insertKaras, params: sqlInsertKaras}]),
+			transaction([
+				{sql: insertSeries, params: sqlInsertSeries},
+				{sql: inserti18nSeries, params: sqlSeriesi18nData}
+			]),
+			transaction([{sql: insertTags, params: sqlInsertTags}])
 		]);
-		// Setting the pk_id_tag sequence to allow further edits during runtime
 		bar.incr();
+		await db().query('SET CONSTRAINTS ALL DEFERRED');
+		bar.incr();
+		await Promise.all([
+			transaction([{sql: insertKaraTags, params: sqlInsertKarasTags}]),
+			transaction([{sql: insertKaraSeries, params: sqlInsertKarasSeries}])
+		]);
+		bar.incr();
+		await db().query('SET CONSTRAINTS ALL IMMEDIATE');
+		bar.incr();
+		// Setting the pk_id_tag sequence to allow further edits during runtime
 		await db().query('SELECT SETVAL(\'tag_pk_id_tag_seq\',(SELECT MAX(pk_id_tag) FROM tag))');
 		bar.incr();
 		await db().query('VACUUM ANALYZE;');
