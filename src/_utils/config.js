@@ -153,8 +153,6 @@ async function loadConfigFiles(appPath) {
 	if (await asyncExists(databaseConfigFile)) {
 		const dbConfig = await loadDBConfig(databaseConfigFile);
 		config.db = merge(config.db, dbConfig);
-	} else {
-		await asyncWriteFile(databaseConfigFile, JSON.stringify(config.db, null, 2), 'utf-8');
 	}
 }
 

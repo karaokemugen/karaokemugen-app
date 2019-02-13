@@ -99,17 +99,6 @@ async function main() {
 	if (await asyncExists(tempAvatar)) await asyncUnlink(tempAvatar);
 	writeFileSync(tempAvatar, fileBuffer);
 
-	logger.debug('[Launcher] Writing fake package.json if it does not exist for db-migrate');
-	const pjson = resolve(appPath, 'package.json');
-	if (!await asyncExists(pjson)) {
-		await asyncWriteFile(pjson, JSON.stringify({
-			dependencies: {
-				'db-migrate': '',
-				'db-migrate-pg': ''
-			}
-		}), 'utf-8');
-	}
-
 	/**
 	 * Test if network ports are available
 	 */

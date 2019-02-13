@@ -161,7 +161,16 @@ export async function initDB() {
 
 async function migrateDB() {
 	logger.info('[DB] Running migrations if needed');
+	const conf = getConfig();
 	const dbm = DBMigrate.getInstance(true, {
+		config: conf.db,
+		noPlugins: true,
+		plugins: {
+			dependencies: {
+				'db-migrate': 1,
+				'db-migrate-pg': 1
+			}
+		},
 		cmdOptions: {
 			'migrations-dir': join(__dirname, '../../migrations/'),
 			'log-level': 'warn|error|info'
