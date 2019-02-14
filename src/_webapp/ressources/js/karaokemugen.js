@@ -2329,21 +2329,22 @@ var settingsNotUpdated;
 
 				$('.tagsTypes').select2({ theme: 'bootstrap',
 					tags: false,
-					minimumResultsForSearch: 15,
+                    minimumResultsForSearch: 15,
 					data: tagList
 				});
 				$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
 
 				forSelectTags = tags.map(function(val, ind){
 					var trad = val.i18n[i18n.locale];
-					return {id:val.tag_id, text: trad ? trad : val.name, type: val.type};
+					return {id:val.tag_id, text: trad ? trad : val.name, type: val.type, karacount: val.karacount};
 				});
 
 				$.ajax({ url: 'public/series', }).done(function (data) {
 
 					var series = data.content;
 					series = series.map(function(val, ind){
-						return {id:val.sid, text: val.i18n_name, type: 'serie'};
+                        return {id:val.sid, text: val.i18n_name, type: 'serie',
+                                aliases : val.aliases, karacount : val.karacount};
 					});
 					forSelectTags.push.apply(forSelectTags, series);
 
@@ -2367,7 +2368,9 @@ var settingsNotUpdated;
 									var type = $('.tagsTypes').val();
 
 									var items = forSelectTags.filter(function(item) {
-										return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
+                                        return item.type == type
+                                            && (new RegExp(params.data.q, 'i').test(item.text)
+                                                || item.aliases && new RegExp(params.data.q, 'i').test(item.aliases.join(' ')));
 									});
 									var totalLength = items.length;
 
