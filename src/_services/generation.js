@@ -5,18 +5,17 @@ import {has as hasLang} from 'langs';
 import {asyncReadFile, checksum, asyncReadDirFilter} from '../_utils/files';
 import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
-import {
-	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBLCTags, selectTags
-} from '../_dao/sql/generation';
+import {selectBLCTags, selectTags} from '../_dao/sql/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
-import {refreshAll, db, transaction, saveSetting} from '../_dao/database';
+import {copyFromData, refreshAll, db, saveSetting} from '../_dao/database';
 import slug from 'slug';
 import {createHash} from 'crypto';
 import Bar from '../_utils/bar';
 import {emit} from '../_utils/pubsub';
+import uuidV4 from 'uuid/v4';
 
 let error = false;
 let generating = false;
@@ -118,12 +117,12 @@ function prepareKaraInsertData(kara, index) {
 		kara.order || null,
 		kara.mediafile,
 		kara.subfile,
-		new Date(kara.dateadded * 1000),
-		new Date(kara.datemodif * 1000),
-		kara.mediagain,
-		kara.mediaduration,
 		basename(kara.karafile),
-		kara.mediasize
+		kara.mediaduration,
+		kara.mediasize,
+		kara.mediagain,
+		new Date(kara.dateadded * 1000).toISOString(),
+		new Date(kara.datemodif * 1000).toISOString()
 	];
 }
 
@@ -193,10 +192,13 @@ function checkDuplicateSIDs(series) {
 }
 
 function prepareSerieInsertData(serie, data) {
+	if (data.aliases) data.aliases.forEach((d,i) => {
+		data.aliases[i] = d.replace(/"/g,'\\"');
+	});
 	return [
+		data.sid,
 		serie,
 		JSON.stringify(data.aliases || []),
-		data.sid,
 		data.seriefile
 	];
 }
@@ -228,13 +230,16 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 
 async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 	const i18nData = [];
+	let index = 0;
 	for (const serie of seriesData) {
 		if (serie.i18n) {
 			for (const lang of Object.keys(serie.i18n)) {
+				index++;
 				i18nData.push([
+					index,
+					serie.sid,
 					lang,
-					serie.i18n[lang],
-					serie.name
+					serie.i18n[lang]
 				]);
 			}
 		}
@@ -242,14 +247,16 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 	// Checking if some series present in .kara files are not present in the series files
 	for (const serie of mapSeries) {
 		if (!findSeries(serie[0], seriesData)) {
+			index++;
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
 			// In strict mode, it triggers an error
 			if (getConfig().optStrict) strictModeError(serie[0]);
 			i18nData.push([
+				index,
+				uuidV4(),
 				'jpn',
 				serie[0],
-				serie[0]
 			]);
 		}
 	}
@@ -381,7 +388,7 @@ function prepareAllTagsInsertData(allTags) {
 			tagType,
 			tagName,
 			tagSlug,
-			tagi18n
+			JSON.stringify(tagi18n)
 		]);
 		lastIndex = index + 1;
 	});
@@ -399,7 +406,7 @@ function prepareAllTagsInsertData(allTags) {
 				7,
 				tagDefaultName,
 				slug(tagDefaultName),
-				tagi18n
+				JSON.stringify(tagi18n)
 			]);
 			lastIndex++;
 		}
@@ -418,7 +425,7 @@ function prepareAllTagsInsertData(allTags) {
 				3,
 				typeDefaultName,
 				slug(typeDefaultName),
-				tagi18n
+				JSON.stringify(tagi18n)
 			]);
 			lastIndex++;
 		}
@@ -481,7 +488,7 @@ export async function run(validateOnly) {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 16);
+		}, 15);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		bar.incr();
 		const sqlInsertSeries = prepareAllSeriesInsertData(series.map, series.data);
@@ -500,22 +507,16 @@ export async function run(validateOnly) {
 		bar.incr();
 		// Inserting data in a transaction
 		await Promise.all([
-			transaction([{sql: insertKaras, params: sqlInsertKaras}]),
-			transaction([
-				{sql: insertSeries, params: sqlInsertSeries},
-				{sql: inserti18nSeries, params: sqlSeriesi18nData}
-			]),
-			transaction([{sql: insertTags, params: sqlInsertTags}])
+			copyFromData('kara', sqlInsertKaras),
+			copyFromData('serie', sqlInsertSeries),
+			copyFromData('tag', sqlInsertTags)
 		]);
-		bar.incr();
-		await db().query('SET CONSTRAINTS ALL DEFERRED');
 		bar.incr();
 		await Promise.all([
-			transaction([{sql: insertKaraTags, params: sqlInsertKarasTags}]),
-			transaction([{sql: insertKaraSeries, params: sqlInsertKarasSeries}])
+			copyFromData('serie_lang', sqlSeriesi18nData),
+			copyFromData('kara_tag', sqlInsertKarasTags),
+			copyFromData('kara_serie', sqlInsertKarasSeries)
 		]);
-		bar.incr();
-		await db().query('SET CONSTRAINTS ALL IMMEDIATE');
 		bar.incr();
 		// Setting the pk_id_tag sequence to allow further edits during runtime
 		await db().query('SELECT SETVAL(\'tag_pk_id_tag_seq\',(SELECT MAX(pk_id_tag) FROM tag))');

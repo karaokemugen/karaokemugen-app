@@ -16,7 +16,7 @@ import {refreshYears, refreshKaras} from './kara';
 import {refreshTags, refreshKaraTags} from './tag';
 import {refreshSeries, refreshKaraSeries} from './series';
 import {profile} from '../_utils/logger';
-
+import {from as copyFrom} from 'pg-copy-streams';
 
 const sql = require('./sql/database');
 
@@ -74,6 +74,25 @@ export function langSelector(lang) {
 	case 2: return {main: `'${engineLocale['2B']}'`, fallback: '\'eng\''};
 	case 3: return {main: `'${userLocale['2B']}'`, fallback: '\'eng\''};
 	}
+}
+
+export async function copyFromData(table, data) {
+	const client = await database.connect();
+	let stream = client.query(copyFrom(`COPY ${table} FROM STDIN DELIMITER '|' NULL ''`));
+	data.forEach((d,i) => data[i] = d.join('|'));
+	data = data.join('\n');
+	stream.write(data);
+	stream.end();
+	return new Promise((resolve, reject) => {
+		stream.on('end', () => {
+			client.release();
+			resolve();
+		});
+		stream.on('error', (err) => {
+			client.release();
+			reject(err);
+		});
+	});
 }
 
 export async function transaction(queries) {
