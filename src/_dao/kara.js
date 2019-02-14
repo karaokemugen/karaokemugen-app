@@ -1,4 +1,4 @@
-import {buildTypeClauses, langSelector, buildClauses, db, transaction} from './database';
+import {expand, flatten, buildTypeClauses, langSelector, buildClauses, db, transaction} from './database';
 import {getConfig} from '../_utils/config';
 import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_utils/files';
@@ -6,6 +6,7 @@ import { getState } from '../_utils/state';
 import {pg as yesql} from 'yesql';
 import {profile} from '../_utils/logger';
 import {now} from '../_utils/date';
+import logger from 'winston';
 
 const sql = require('./sql/kara');
 
@@ -169,15 +170,19 @@ export async function resetViewcounts() {
 }
 
 export async function addKaraToPlaylist(karaList) {
-	const karas = karaList.map((kara) => ([
+	const karas = karaList.map(kara => ([
 		kara.playlist_id,
 		kara.username,
 		kara.nickname,
 		kara.kid,
 		kara.created_at,
-		kara.pos
+		kara.pos,
+		false,
+		false
 	]));
-	return await transaction([{params: karas, sql: sql.addKaraToPlaylist}]);
+	const query = sql.addKaraToPlaylist(expand(karas.length, karas[0].length));
+	const values = flatten(karas);
+	return await db().query(query, values);
 }
 
 export async function removeKaraFromPlaylist(karas, playlist_id) {

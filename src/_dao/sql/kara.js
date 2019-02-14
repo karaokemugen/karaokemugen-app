@@ -1,25 +1,16 @@
 // SQL for kara management
 
-export const addKaraToPlaylist = `
+export const addKaraToPlaylist = values => `
 INSERT INTO playlist_content(
 	fk_id_playlist,
+	fk_login,
+	nickname,
 	fk_kid,
 	created_at,
-	fk_login,
 	pos,
 	flag_playing,
-	flag_free,
-	nickname
-) VALUES(
-	$1,
-	$4,
-	$5,
-	$2,
-	$6,
-	FALSE,
-	FALSE,
-	$3
-);
+	flag_free
+) VALUES ${values};
 `;
 
 export const addViewcount = `
