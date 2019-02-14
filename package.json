@@ -83,6 +83,7 @@
     "chalk": "^2.4.2",
     "chokidar": "^2.1.1",
     "cli-progress": "^2.1.1",
+    "compression": "^1.7.3",
     "cookie-parser": "^1.4.3",
     "db-migrate": "^0.11.5",
     "db-migrate-pg": "^0.5.0",

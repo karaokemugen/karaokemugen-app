@@ -2,6 +2,7 @@ import {join, resolve} from 'path';
 import express from 'express';
 import exphbs from 'express-handlebars';
 import cookieParser from 'cookie-parser';
+import compression from 'compression';
 import {address} from 'ip';
 import {graphics} from 'systeminformation';
 import logger from 'winston';
@@ -69,6 +70,7 @@ export async function initFrontend(port) {
 	const conf = getConfig();
 	app.set('view engine', 'hbs');
 	app.set('views', join(__dirname, 'ressources/views/'));
+	app.use(compression());
 	app.use(cookieParser());
 	app.use(i18n.init);
 	app.use(urlencoded({ extended: true, limit: '50mb' }));
