@@ -466,6 +466,7 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 			};
 		});
 
+
 		const [userMaxPosition,
 			numUsersInPlaylist,
 			playlistMaxPos
@@ -475,7 +476,6 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 				countPlaylistUsers(playlist_id),
 				getMaxPosInPlaylist(playlist_id),
 			]);
-
 		const plContents = await getPlaylistKaraIDs(playlist_id);
 		// Making a unique ID depending on if we're in public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not

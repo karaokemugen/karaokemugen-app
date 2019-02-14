@@ -13,12 +13,12 @@ import {selectAllKaras,
 	getKara as getKaraDB,
 	getKaraMini as getKaraMiniDB,
 	getASS,
-	isKara as isKaraDB,
 	addKara,
 	updateKara,
 	addPlayed,
 	getKaraHistory as getKaraHistoryDB,
-	selectRandomKara
+	selectRandomKara,
+	selectAllKIDs
 } from '../_dao/kara';
 import {getState} from '../_utils/state';
 import {updateKaraSeries} from '../_dao/series';
@@ -32,15 +32,8 @@ import {isPreviewAvailable} from '../_webapp/previews';
 import { getOrAddSerieID } from './series';
 
 export async function isAllKaras(karas) {
-	const unknownKaras = [];
-	for (const kid of karas) {
-		if (!await isKara(kid)) unknownKaras.push(kid);
-	}
-	return unknownKaras;
-}
-
-async function isKara(kid) {
-	return await isKaraDB(kid);
+	const allKaras = await selectAllKIDs();
+	return karas.filter(kid => !allKaras.includes(kid));
 }
 
 export function translateKaraInfo(karas, lang) {

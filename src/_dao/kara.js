@@ -6,7 +6,6 @@ import { getState } from '../_utils/state';
 import {pg as yesql} from 'yesql';
 import {profile} from '../_utils/logger';
 import {now} from '../_utils/date';
-import logger from 'winston';
 
 const sql = require('./sql/kara');
 
@@ -134,11 +133,6 @@ export async function getASS(sub) {
 	throw 'Subfile not found';
 }
 
-export async function isKara(kid) {
-	const res = await db().query(sql.isKara, [kid]);
-	return res.rows[0];
-}
-
 export async function isKaraInPlaylist(kid,playlist_id) {
 	const res = await db().query(yesql(sql.isKaraInPlaylist)({
 		kid: kid,
@@ -167,6 +161,11 @@ export async function addKaraToRequests(username,karaList) {
 
 export async function resetViewcounts() {
 	return await db().query(sql.resetViewcounts);
+}
+
+export async function selectAllKIDs() {
+	const res = await db().query(sql.selectAllKIDs);
+	return res.rows.map(k => k.kid);
 }
 
 export async function addKaraToPlaylist(karaList) {

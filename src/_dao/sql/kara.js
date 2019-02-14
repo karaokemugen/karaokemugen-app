@@ -107,12 +107,6 @@ FROM all_karas AS ak
 WHERE ak.kid = $1
 `;
 
-export const isKara = `
-SELECT pk_kid
-FROM kara
-WHERE pk_kid = $1;
-`;
-
 export const getKaraHistory = `
 SELECT ak.title AS title,
 	ak.songorder AS songorder,
@@ -220,4 +214,9 @@ WHERE ak.kid NOT IN (
 	WHERE pc.fk_id_playlist = $1
 )
 ORDER BY RANDOM() LIMIT 1;
+`;
+
+export const selectAllKIDs = `
+SELECT ak.kid
+FROM all_karas ak;
 `;
