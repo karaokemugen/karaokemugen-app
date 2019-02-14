@@ -731,8 +731,12 @@ bdgc {
 	padding-left: 3px;
 }
 .select2-selection > span > span > i {
-	__line-height: 2.3;
+	/* line-height: 2.3; */
 	line-height: 1.35;
+}
+.select2-results__option > span > k , .select2-selection > span >  k {
+    float: right;
+    opacity: .5;
 }
 
 .toastMessageContainer {

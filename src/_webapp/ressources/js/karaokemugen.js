@@ -2226,6 +2226,15 @@ var settingsNotUpdated;
 		var $option = $('<span>' + icon + ' ' + playlist.text + '</span>');
 
 		return $option;
+    };
+    
+	formatTagsPlaylist = function (playlist) {
+		if (!playlist.id) return playlist.text;
+
+        count = '<k>' + playlist.karacount + '</k>';
+		var $option = $('<span>' + count + ' ' + playlist.text + '</span>') ;
+
+		return $option;
 	};
 
 	// Some html & stats init
@@ -2352,7 +2361,7 @@ var settingsNotUpdated;
 
 						var years = data.content;
 						years = years.map(function(val, ind){
-							return {id:val.year, text: val.year, type: 'year'};
+							return {id:val.year, text: val.year, type: 'year', karacount: val.karacount};
 						});
 						forSelectTags.push.apply(forSelectTags, years);
 
@@ -2361,6 +2370,8 @@ var settingsNotUpdated;
 							placeholder: '',
 							dropdownAutoWidth: false,
 							minimumResultsForSearch: 20,
+                            templateResult: formatTagsPlaylist,
+                            templateSelection : formatTagsPlaylist,
 							ajax: {
 								transport: function(params, success, failure) {
 									var page = params.data.page;
