@@ -47,7 +47,6 @@ export async function initEngine() {
 		logger.error(`[Engine] Validation error : ${err}`);
 		await exit(1);
 	}
-	logger.info('Continue');
 	//Database system is the foundation of every other system
 	try {
 		await initDBSystem();
