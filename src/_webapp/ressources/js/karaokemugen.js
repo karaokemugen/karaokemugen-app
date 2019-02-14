@@ -1830,8 +1830,14 @@ var settingsNotUpdated;
 				$('#progressBarColor').stop().css({transform : 'translateX(0)'});
 				barCss.addClass('cssTransform');
 
-				if( data.currentlyPlaying === -1 || data.currentlyPlaying === null) {
-					data.currentlyPlaying = -1;
+
+                if ( data.currentlyPlaying === null) {
+                    
+                    $('#karaInfo').attr('idKara', data.currentlyPlaying);
+					$('#karaInfo').attr('length', -1);
+					$('#karaInfo > span').text( i18n.__('KARA_PAUSED_WAITING') );
+					$('#karaInfo > span').data('text',i18n.__('KARA_PAUSED_WAITING') );
+                } else if ( data.currentlyPlaying === -1) {
 					$('#karaInfo').attr('idKara', data.currentlyPlaying);
 					$('#karaInfo').attr('length', -1);
 					$('#karaInfo > span').text( i18n.__('JINGLE_TIME') );
