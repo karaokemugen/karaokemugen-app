@@ -79,7 +79,7 @@ var settingsNotUpdated;
             perf = getPerformanceIndice()
             sessionStorage.setItem('perf', perf);
         }
-        pageSize = Math.min(400, Math.max(90, 105 + perf * perf * 10))
+        pageSize = parseInt(Math.min(400, Math.max(90, 105 + perf * perf * 10)));
         // alert(pageSize)
         if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
 
