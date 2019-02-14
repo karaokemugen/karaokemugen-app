@@ -73,6 +73,16 @@ var settingsNotUpdated;
 }(function ($, window, document) {
 	$(function () {
 
+
+        var perf = sessionStorage.getItem('perf');
+        if (!perf) {
+            perf = getPerformanceIndice()
+            sessionStorage.setItem('perf', perf);
+        }
+        pageSize = Math.min(400, Math.max(90, 105 + perf * perf * 10))
+        // alert(pageSize)
+        if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
+
 		initSwitchs();
 
 		tagsGroups = {
@@ -1059,8 +1069,7 @@ var settingsNotUpdated;
 	dragAndDrop = true;
 	stopUpdate = false;
 
-	pageSize = isTouchScreen ? 120 : 180;
-	if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
+	pageSize = isTouchScreen ? 170 : 270;
 
 	saveLastDetailsKara = [[]];
 	playlistRange = {};
