@@ -1,4 +1,4 @@
-import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncWriteFile, asyncRemove, asyncUnlink} from './_utils/files';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_utils/files';
 import {getConfig, initConfig, configureBinaries} from './_utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {writeFileSync, readFileSync} from 'fs';
