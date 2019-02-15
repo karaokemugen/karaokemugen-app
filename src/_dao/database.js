@@ -408,7 +408,7 @@ export async function importFromSQLite() {
 			]);
 			// Admin flag is not needed anymore. Instead admins have type 0
 			u.forEach((e,i) => {
-				if (e.flag_admin) newU[i][4] = 0;
+				if (e.flag_admin) newU[i][3] = 0;
 			});
 			const newVC = vc.map(e => [
 				new Date(e.session_started_at * 1000),
