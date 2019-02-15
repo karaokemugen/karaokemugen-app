@@ -19,6 +19,12 @@ export async function refreshKaraSeries() {
 	profile('RefreshKaraSeries');
 }
 
+export async function refreshKaraSeriesLang() {
+	profile('RefreshKaraSeriesLang');
+	await db().query('REFRESH MATERIALIZED VIEW all_kara_serie_langs');
+	profile('RefreshKaraSeriesLang');
+}
+
 export function buildClausesSeries(words) {
 	const params = paramWords(words);
 	let sql = [];

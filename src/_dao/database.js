@@ -14,7 +14,7 @@ import {isShutdownPG, initPG} from '../_utils/postgresql';
 import { generateBlacklist } from '../_services/blacklist';
 import {refreshYears, refreshKaras} from './kara';
 import {refreshTags, refreshKaraTags} from './tag';
-import {refreshSeries, refreshKaraSeries} from './series';
+import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from './series';
 import {profile} from '../_utils/logger';
 import {from as copyFrom} from 'pg-copy-streams';
 
@@ -463,6 +463,7 @@ export async function refreshAll() {
 		refreshKaraTags()
 	]);
 	await Promise.all([
+		refreshKaraSeriesLang(),
 		refreshSeries(),
 		refreshKaras(),
 		refreshYears(),

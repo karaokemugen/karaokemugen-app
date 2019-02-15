@@ -80,8 +80,8 @@ SELECT
   ak.title AS title,
   ak.songorder AS songorder,
   COALESCE(
-	  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_sid = ks.fk_sid AND ks.fk_kid = kid AND sl.lang = ${lang.main}),
-	  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_sid = ks.fk_sid AND ks.fk_kid = kid AND sl.lang = ${lang.fallback}),
+	  (SELECT name FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.main}),
+	  (SELECT name FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.fallback}),
 	  ak.serie) AS serie,
   ak.serie AS serie_orig,
   ak.serie_altname AS serie_altname,
