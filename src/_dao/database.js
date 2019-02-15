@@ -331,7 +331,7 @@ export async function importFromSQLite() {
 	if (await asyncExists(sqliteDBFile)) {
 		logger.info('[DB] SQLite database detected. Importing...');
 		try {
-			await asyncCopy(sqliteDBFile, 'old_'+sqliteDBFile, { overwrite: true });
+			await asyncCopy(sqliteDBFile, sqliteDBFile+'_old', { overwrite: true });
 			const sqliteDB = await open(sqliteDBFile, {verbose: true});
 			//Removing PLC without a playlist
 			await sqliteDB.run('DELETE FROM playlist_content WHERE fk_id_playlist NOT IN (SELECT pk_id_playlist FROM playlist);');
