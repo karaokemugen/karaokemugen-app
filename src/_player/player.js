@@ -424,6 +424,7 @@ export function stop() {
 	playerState._playing = false;
 	playerState.playerstatus = 'stop';
 	loadBackground();
+	displayInfo();
 	setState({player: playerState});
 	return playerState;
 }
@@ -524,7 +525,7 @@ export async function displaySongInfo(infos) {
 	displayingInfo = false;
 }
 
-export function displayInfo(duration = 10000000000000) {
+export function displayInfo(duration = 10000000) {
 	const conf = getConfig();
 	let text = '';
 	if (+conf.EngineDisplayConnectionInfo) text = `${conf.EngineDisplayConnectionInfoMessage} ${__('GO_TO')} ${conf.osURL} !`;
