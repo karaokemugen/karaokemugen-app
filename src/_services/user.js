@@ -35,7 +35,12 @@ export async function removeRemoteUser(token, password) {
 	const username = token.username.split('@')[0];
 	// Verify that password matches with online before proceeding
 	try {
-		await remoteLogin(token.username, password);
+		try {
+			await remoteLogin(token.username, password);
+		} catch(err) {
+			if (err === 'Unauthorized') throw err;
+			throw err;
+		}
 		await got(`http://${instance}/api/users`, {
 			method: 'DELETE',
 			headers: {
@@ -364,7 +369,10 @@ export async function remoteLogin(username, password) {
 		});
 		return JSON.parse(res.body);
 	} catch(err) {
-		throw { code: 'USER_ONLINE_LOGIN_ERROR', message: err.response.body };
+		// Remote login returned 401 so we throw an error
+		// For other errors, no error is thrown
+		if (err.statusCode === 401) throw 'Unauthorized';
+		throw err;
 	}
 }
 
@@ -630,7 +638,7 @@ export async function checkLogin(username, password, admin) {
 			// Download and add all favorites
 			fetchAndAddFavorites(instance, user.onlineToken, username, user.nickname);
 		} catch(err) {
-			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${err}`);
+			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${JSON.stringify(err)}`);
 		}
 	} else {
 		// User is a local user
