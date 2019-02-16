@@ -33,13 +33,10 @@ on('databaseBusy', status => {
 export async function removeRemoteUser(token, password) {
 	const instance = token.username.split('@')[1];
 	const username = token.username.split('@')[0];
+	// Verify that no local user exists with the name we're going to rename it to
+	if (await findUserByName(username)) throw 'User already exists locally, delete it first.';
 	// Verify that password matches with online before proceeding
-	try {
-		await remoteLogin(token.username, password);
-	} catch(err) {
-		if (err === 'Unauthorized') throw err;
-		throw err;
-	}
+	await remoteLogin(token.username, password);
 	await got(`http://${instance}/api/users`, {
 		method: 'DELETE',
 		headers: {
@@ -48,8 +45,6 @@ export async function removeRemoteUser(token, password) {
 	});
 	// Renaming user locally
 	const user = await findUserByName(token.username);
-	// Verify that no local user exists with the name we're going to rename it to
-	if (await findUserByName(username)) throw 'User already exists locally, delete it first.';
 	user.login = username;
 	await editUser(token.username, user, null, 'admin', {
 		editRemote: false,
@@ -387,15 +382,11 @@ async function getAllRemoteUsers(instance) {
 async function createRemoteUser(user) {
 	const instance = user.login.split('@')[1];
 	const login = user.login.split('@')[0];
-	try {
-		const users = await getAllRemoteUsers(instance);
-		if (users.filter(u => u.login === user.login).length === 1) throw {
-			code: 'USER_ALREADY_EXISTS_ONLINE',
-			message: `User already exists on ${instance} or incorrect password`
-		};
-	} catch(err) {
-		// User unknown, we're good to create it
-	}
+	const users = await getAllRemoteUsers(instance);
+	if (users.filter(u => u.login === user.login).length === 1) throw {
+		code: 'USER_ALREADY_EXISTS_ONLINE',
+		message: `User already exists on ${instance} or incorrect password`
+	};
 	try {
 		await got(`http://${instance}/api/users`, {
 			body: {
