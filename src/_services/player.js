@@ -155,7 +155,7 @@ function stopPlayer(now) {
 	} else {
 		logger.info('[Player] Karaoke stopping after current song');
 	}
-	setState({status: 'stop'});
+	setState({status: 'stop', currentlyPlayingKara: null});
 }
 
 function pausePlayer() {
