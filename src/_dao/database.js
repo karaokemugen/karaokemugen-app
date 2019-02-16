@@ -450,6 +450,7 @@ export async function importFromSQLite() {
 			await generateBlacklist();
 			logger.info('[DB] SQLite import complete');
 			await asyncUnlink(sqliteDBFile);
+			setConfig({ appFirstRun: 0 });
 		} catch(err) {
 			logger.error(`[DB] Your old SQLite database could not be imported : ${err}`);
 		}
