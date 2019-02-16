@@ -138,7 +138,7 @@ export async function fetchAndUpdateRemoteUser(username, password, onlineToken) 
 		user.onlineToken = onlineToken.token;
 		return user;
 	} else {
-		//Onlinetoken was not provided : KM Server might obe offline
+		//Onlinetoken was not provided : KM Server might be offline
 		let user = await findUserByName(username);
 		if (!user) throw {code: 'USER_LOGIN_ERROR'};
 		return user;
