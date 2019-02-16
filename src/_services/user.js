@@ -97,44 +97,52 @@ export async function fetchRemoteAvatar(instance, avatarFile) {
 
 export async function fetchAndUpdateRemoteUser(username, password, onlineToken) {
 	if (!onlineToken) onlineToken = await remoteLogin(username, password);
-	let remoteUser;
-	try {
-		remoteUser = await getRemoteUser(username, onlineToken.token);
-	} catch(err) {
-		throw err;
-	}
-	// Check if user exists. If it does not, create it.
-	let user = await findUserByName(username);
-	if (!user) {
-		await createUser({
-			login: username,
+	// if OnlineToken is empty, it means we couldn't fetch user data, let's not continue but don't throw an error
+	if (onlineToken.token) {
+		let remoteUser;
+		try {
+			remoteUser = await getRemoteUser(username, onlineToken.token);
+		} catch(err) {
+			throw err;
+		}
+		// Check if user exists. If it does not, create it.
+		let user = await findUserByName(username);
+		if (!user) {
+			await createUser({
+				login: username,
+				password: password
+			}, {
+				createFavoritePlaylist: true,
+				createRemote: false
+			});
+		}
+		// Update user with new data
+		let avatar_file = null;
+		if (remoteUser.avatar_file !== 'blank.png') {
+			avatar_file = {
+				path: await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file)
+			};
+		}
+		user = await editUser(username,{
+			bio: remoteUser.bio,
+			url: remoteUser.url,
+			email: remoteUser.email,
+			nickname: remoteUser.nickname,
 			password: password
-		}, {
-			createFavoritePlaylist: true,
-			createRemote: false
+		},
+		avatar_file,
+		'admin',
+		{
+			editRemote: false
 		});
+		user.onlineToken = onlineToken.token;
+		return user;
+	} else {
+		//Onlinetoken was not provided : KM Server might obe offline
+		let user = await findUserByName(username);
+		if (!user) throw {code: 'USER_LOGIN_ERROR'};
+		return user;
 	}
-	// Update user with new data
-	let avatar_file = null;
-	if (remoteUser.avatar_file !== 'blank.png') {
-		avatar_file = {
-			path: await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file)
-		};
-	}
-	user = await editUser(username,{
-		bio: remoteUser.bio,
-		url: remoteUser.url,
-		email: remoteUser.email,
-		nickname: remoteUser.nickname,
-		password: password
-	},
-	avatar_file,
-	'admin',
-	{
-		editRemote: false
-	});
-	user.onlineToken = onlineToken.token;
-	return user;
 }
 
 function createJwtToken(username, role, config) {
@@ -372,7 +380,8 @@ export async function remoteLogin(username, password) {
 		// Remote login returned 401 so we throw an error
 		// For other errors, no error is thrown
 		if (err.statusCode === 401) throw 'Unauthorized';
-		throw err;
+		logger.debug(`[RemoteUser] Got error when connectiong user ${username} : ${err}`);
+		return {};
 	}
 }
 
