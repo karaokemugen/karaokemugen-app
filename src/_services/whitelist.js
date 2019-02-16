@@ -28,15 +28,11 @@ export async function addKaraToWhitelist(kid, reason, token, lang) {
 }
 
 export async function getWhitelistContents(filter, lang, from, size) {
-	try {
-		profile('getWL');
-		const pl = await getWLContents(filter, lang);
-		const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
-		profile('getWL');
-		return ret;
-	} catch(err) {
-		throw err;
-	}
+	profile('getWL');
+	const pl = await getWLContents(filter, lang);
+	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+	profile('getWL');
+	return ret;
 }
 
 export async function deleteKaraFromWhitelist(kid) {

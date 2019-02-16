@@ -37,17 +37,13 @@ export function getConfig() {
 }
 
 export async function editSetting(key, value) {
-	try {
-		let newConfig = {...getConfig()};
-		newConfig[key] = value;
-		if (!Object.keys(defaults).includes(key)) throw `${key} is not editable`;
-		verifyConfig(newConfig);
-		newConfig = sanitizeConfig(newConfig);
-		const publicSettings = await mergeConfig(newConfig);
-		return publicSettings;
-	} catch(err) {
-		throw err;
-	}
+	let newConfig = {...getConfig()};
+	newConfig[key] = value;
+	if (!Object.keys(defaults).includes(key)) throw `${key} is not editable`;
+	verifyConfig(newConfig);
+	newConfig = sanitizeConfig(newConfig);
+	const publicSettings = await mergeConfig(newConfig);
+	return publicSettings;
 }
 
 export function sanitizeConfig(conf) {
@@ -171,12 +167,8 @@ async function loadConfig(configFile) {
 	const content = await asyncReadFile(configFile, 'utf-8');
 	const parsedContent = parse(content);
 	const newConfig = {...config, ...parsedContent};
-	try {
-		verifyConfig(newConfig);
-		config = {...newConfig};
-	} catch(err) {
-		throw err;
-	}
+	verifyConfig(newConfig);
+	config = {...newConfig};
 }
 
 async function configureLocale() {

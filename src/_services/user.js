@@ -35,33 +35,29 @@ export async function removeRemoteUser(token, password) {
 	const username = token.username.split('@')[0];
 	// Verify that password matches with online before proceeding
 	try {
-		try {
-			await remoteLogin(token.username, password);
-		} catch(err) {
-			if (err === 'Unauthorized') throw err;
-			throw err;
-		}
-		await got(`http://${instance}/api/users`, {
-			method: 'DELETE',
-			headers: {
-				authorization: token.onlineToken
-			}
-		});
-		// Renaming user locally
-		const user = await findUserByName(token.username);
-		// Verify that no local user exists with the name we're going to rename it to
-		if (await findUserByName(username)) throw 'User already exists locally, delete it first.';
-		user.login = username;
-		await editUser(token.username, user, null, 'admin', {
-			editRemote: false,
-			renameUser: false
-		});
-		return {
-			token: createJwtToken(user.login, token.role)
-		};
+		await remoteLogin(token.username, password);
 	} catch(err) {
+		if (err === 'Unauthorized') throw err;
 		throw err;
 	}
+	await got(`http://${instance}/api/users`, {
+		method: 'DELETE',
+		headers: {
+			authorization: token.onlineToken
+		}
+	});
+	// Renaming user locally
+	const user = await findUserByName(token.username);
+	// Verify that no local user exists with the name we're going to rename it to
+	if (await findUserByName(username)) throw 'User already exists locally, delete it first.';
+	user.login = username;
+	await editUser(token.username, user, null, 'admin', {
+		editRemote: false,
+		renameUser: false
+	});
+	return {
+		token: createJwtToken(user.login, token.role)
+	};
 }
 
 async function updateExpiredUsers() {
@@ -83,16 +79,12 @@ export async function getUserRequests(username) {
 
 export async function fetchRemoteAvatar(instance, avatarFile) {
 	const conf = getConfig();
-	try {
-		const res = await got(`http://${instance}/avatars/${avatarFile}`, {
-			stream: true
-		});
-		const avatarPath = resolve(conf.appPath, conf.PathTemp, avatarFile);
-		await writeStreamToFile(res, avatarPath);
-		return avatarPath;
-	} catch(err) {
-		throw err;
-	}
+	const res = await got(`http://${instance}/avatars/${avatarFile}`, {
+		stream: true
+	});
+	const avatarPath = resolve(conf.appPath, conf.PathTemp, avatarFile);
+	await writeStreamToFile(res, avatarPath);
+	return avatarPath;
 }
 
 export async function fetchAndUpdateRemoteUser(username, password, onlineToken) {
@@ -166,11 +158,7 @@ export async function convertToRemoteUser(token, password, instance) {
 	if (!await checkPassword(user, password)) throw 'Wrong password';
 	user.login = `${token.username}@${instance}`;
 	user.password = password;
-	try {
-		await createRemoteUser(user);
-	} catch(err) {
-		throw err;
-	}
+	await createRemoteUser(user);
 	const remoteUser = await remoteLogin(user.login, password);
 	upsertRemoteToken(user.login, remoteUser.token);
 	try {
@@ -352,17 +340,13 @@ export async function updateUserFingerprint(username, fingerprint) {
 }
 
 export async function remoteCheckAuth(instance, token) {
-	try {
-		const res = await got.get(`http://${instance}/api/auth/check`, {
-			headers: {
-				authorization: token
-			}
-		});
-		if (res.statusCode === 401) return false;
-		return res.body;
-	} catch(err) {
-		throw err;
-	}
+	const res = await got.get(`http://${instance}/api/auth/check`, {
+		headers: {
+			authorization: token
+		}
+	});
+	if (res.statusCode === 401) return false;
+	return res.body;
 }
 
 export async function remoteLogin(username, password) {

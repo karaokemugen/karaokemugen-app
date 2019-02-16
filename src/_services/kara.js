@@ -319,17 +319,13 @@ export async function getYears() {
 }
 
 export async function getKaras(filter, lang, from, size, searchType, searchValue, token) {
-	try {
-		profile('getKaras');
-		const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin');
-		profile('formatList');
-		const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
-		profile('formatList');
-		profile('getKaras');
-		return ret;
-	} catch(err) {
-		throw err;
-	}
+	profile('getKaras');
+	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin');
+	profile('formatList');
+	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+	profile('formatList');
+	profile('getKaras');
+	return ret;
 }
 
 export function formatKaraList(karaList, lang, from, count) {

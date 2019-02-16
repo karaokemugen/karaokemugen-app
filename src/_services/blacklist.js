@@ -19,15 +19,11 @@ import {formatKaraList} from './kara';
 import {uuidRegexp} from './constants';
 
 export async function getBlacklist(filter, lang, from, size) {
-	try {
-		profile('getBL');
-		const pl = await getBLContents(filter, lang);
-		const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
-		profile('getBL');
-		return ret;
-	} catch(err) {
-		throw err;
-	}
+	profile('getBL');
+	const pl = await getBLContents(filter, lang);
+	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+	profile('getBL');
+	return ret;
 }
 
 export async function getBlacklistCriterias(lang) {
@@ -121,48 +117,44 @@ export async function addBlacklistCriteria(blctype, blcvalue) {
 }
 
 async function translateBlacklistCriterias(blcs, lang) {
-	try {
-		const blcList = blcs;
-		// If lang is not provided, assume we're using node's system locale
-		if (!lang) lang = getConfig().EngineDefaultLocale;
-		// Test if lang actually exists in ISO639-1 format
-		if (!langs.has('1',lang)) throw `Unknown language : ${lang}`;
-		// Instanciate a translation object for our needs with the correct language.
-		const i18n = require('i18n'); // Needed for its own translation instance
-		i18n.configure({
-			directory: resolve(__dirname,'../_locales'),
-		});
-		i18n.setLocale(lang);
-		// We need to read the detected locale in ISO639-1
-		for (const i in blcList) {
-			if (blcList[i].type === 1) {
-				// We just need to translate the tag name if there is a translation
-				if (typeof blcList[i].value !== 'string') throw `BLC value is not a string : ${blcList[i].value}`;
-				if (blcList[i].value.startsWith('TAG_')) {
-					blcList[i].value_i18n = i18n.__(blcList[i].value);
-				} else {
-					blcList[i].value_i18n = blcList[i].value;
-				}
+	const blcList = blcs;
+	// If lang is not provided, assume we're using node's system locale
+	if (!lang) lang = getConfig().EngineDefaultLocale;
+	// Test if lang actually exists in ISO639-1 format
+	if (!langs.has('1',lang)) throw `Unknown language : ${lang}`;
+	// Instanciate a translation object for our needs with the correct language.
+	const i18n = require('i18n'); // Needed for its own translation instance
+	i18n.configure({
+		directory: resolve(__dirname,'../_locales'),
+	});
+	i18n.setLocale(lang);
+	// We need to read the detected locale in ISO639-1
+	for (const i in blcList) {
+		if (blcList[i].type === 1) {
+			// We just need to translate the tag name if there is a translation
+			if (typeof blcList[i].value !== 'string') throw `BLC value is not a string : ${blcList[i].value}`;
+			if (blcList[i].value.startsWith('TAG_')) {
+				blcList[i].value_i18n = i18n.__(blcList[i].value);
+			} else {
+				blcList[i].value_i18n = blcList[i].value;
 			}
-			if (blcList[i].type >= 2 && blcList[i].type <= 999) {
-				// We need to get the tag name and then translate it if needed
-				const tag = await getTag(blcList[i].value);
-				if (typeof tag.name !== 'string') throw 'Tag name is not a string : '+JSON.stringify(tag);
-				if (tag.name.startsWith('TAG_')) {
-					blcList[i].value_i18n = i18n.__(tag.name);
-				} else {
-					blcList[i].value_i18n = tag.name;
-				}
-			}
-			if (blcList[i].type === 1001) {
-				// We have a kara ID, let's get the kara itself and append it to the value
-				const kara = await getKara(blcList[i].value, 'admin', lang, 'admin');
-				blcList[i].value = translateKaraInfo(kara, lang);
-			}
-			// No need to do anything, values have been modified if necessary
 		}
-		return blcList;
-	} catch(err) {
-		throw err;
+		if (blcList[i].type >= 2 && blcList[i].type <= 999) {
+			// We need to get the tag name and then translate it if needed
+			const tag = await getTag(blcList[i].value);
+			if (typeof tag.name !== 'string') throw 'Tag name is not a string : '+JSON.stringify(tag);
+			if (tag.name.startsWith('TAG_')) {
+				blcList[i].value_i18n = i18n.__(tag.name);
+			} else {
+				blcList[i].value_i18n = tag.name;
+			}
+		}
+		if (blcList[i].type === 1001) {
+			// We have a kara ID, let's get the kara itself and append it to the value
+			const kara = await getKara(blcList[i].value, 'admin', lang, 'admin');
+			blcList[i].value = translateKaraInfo(kara, lang);
+		}
+		// No need to do anything, values have been modified if necessary
 	}
+	return blcList;
 }
