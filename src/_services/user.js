@@ -616,9 +616,11 @@ export async function checkLogin(username, password, admin) {
 			// their local version if it exists already.
 			const instance = username.split('@')[1];
 			user = await fetchAndUpdateRemoteUser(username, password);
-			upsertRemoteToken(username, user.onlineToken);
-			// Download and add all favorites
-			fetchAndAddFavorites(instance, user.onlineToken, username, user.nickname);
+			if (user.onlineToken) {
+				upsertRemoteToken(username, user.onlineToken);
+				// Download and add all favorites
+				fetchAndAddFavorites(instance, user.onlineToken, username, user.nickname);
+			}
 		} catch(err) {
 			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${JSON.stringify(err)}`);
 		}
