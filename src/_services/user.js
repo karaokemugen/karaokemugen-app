@@ -335,13 +335,17 @@ export async function updateUserFingerprint(username, fingerprint) {
 }
 
 export async function remoteCheckAuth(instance, token) {
-	const res = await got.get(`http://${instance}/api/auth/check`, {
-		headers: {
-			authorization: token
-		}
-	});
-	if (res.statusCode === 401) return false;
-	return res.body;
+	try {
+		const res = await got.get(`http://${instance}/api/auth/check`, {
+			headers: {
+				authorization: token
+			}
+		});
+		return res.body;
+	} catch(err) {
+		logger.debug(`[RemoteUser] Got error when check auth : ${err}`);
+		return false;
+	}
 }
 
 export async function remoteLogin(username, password) {
