@@ -372,8 +372,9 @@ async function getAllRemoteUsers(instance) {
 			});
 		return users.body;
 	} catch(err) {
+		logger.debug(`[RemoteUser] Got error when get all remote users : ${err}`);
 		throw {
-			code: 'USER_ONLINE_CHECK_LOGIN_ERROR',
+			code: 'USER_CREATE_ERROR_ONLINE',
 			message: err.response.body
 		};
 	}
@@ -396,8 +397,9 @@ async function createRemoteUser(user) {
 			form: true
 		});
 	} catch(err) {
+		logger.debug(`[RemoteUser] Got error when create remote user ${login} : ${err}`);
 		throw {
-			code: 'USER_ONLINE_CREATION_ERROR',
+			code: 'USER_CREATE_ERROR_ONLINE',
 			message: err.response.body
 		};
 	}
@@ -440,11 +442,7 @@ export async function createUser(user, opts) {
 	if (user.login.includes('@')) {
 		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };
 		if (!+getConfig().OnlineUsers) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
-		if (opts.createRemote) try {
-			await createRemoteUser(user);
-		} catch(err) {
-			throw { code: 'USER_CREATE_ERROR', data: err};
-		}
+		if (opts.createRemote) await createRemoteUser(user);
 	}
 	if (user.password) user.password = hashPassword(user.password);
 	try {
