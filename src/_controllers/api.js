@@ -3785,7 +3785,11 @@ export function APIControllerPublic(router) {
 					emitWS('userUpdated',req.authToken.username);
 					res.json(OKMessage(tokens,'USER_CONVERTED'));
 				} catch(err) {
-					res.status(500).json(errMessage('USER_CONVERT_ERROR',err));
+					if (err.code) {
+						res.status(500).json(errMessage(err.code,err.message));
+					} else {
+						res.status(500).json(errMessage('USER_CONVERT_ERROR',err));
+					}
 				}
 			} else {
 			// Errors detected
