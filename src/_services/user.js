@@ -36,11 +36,11 @@ export async function removeRemoteUser(token, password) {
 	// Verify that no local user exists with the name we're going to rename it to
 	if (await findUserByName(username)) throw 'User already exists locally, delete it first.';
 	// Verify that password matches with online before proceeding
-	await remoteLogin(token.username, password);
+	const onlineToken = await remoteLogin(token.username, password);
 	await got(`http://${instance}/api/users`, {
 		method: 'DELETE',
 		headers: {
-			authorization: token.onlineToken
+			authorization: onlineToken.token
 		}
 	});
 	// Renaming user locally
