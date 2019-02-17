@@ -195,6 +195,7 @@
 	"ALWAYS_ON_TOP": "Toujours au dessus",
 	"FULLSCREEN": "Plein écran",
 	"ADMIN_PASSWORD_CHANGE": "Changer mot de passe admin",
+    "ADMIN_PLEASE": "Merci d'utiliser un compte admin",
 	"PASSWORD": "Mot de passe",
 	"PASSWORDCONF": "Confirmer mdp",
 	"MONITOR_NUMBER": "Numéro de l'écran",

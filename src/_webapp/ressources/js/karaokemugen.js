@@ -2551,6 +2551,10 @@ var settingsNotUpdated;
 			type: 'POST',
 			data: data })
 			.done(function (response) {
+                if(scope === 'admin' && response.role !== 'admin') {
+                    displayMessage('warning','', i18n.__('ADMIN_PLEASE'));
+                    return deferred.reject();
+                }
 				var token;
 				$('#loginModal').modal('hide');
 				$('#password, #login').removeClass('redBorders');
