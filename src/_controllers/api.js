@@ -617,7 +617,7 @@ export function APIControllerAdmin(router) {
 				if (req.body.password) req.body.password = unescape(req.body.password);
 				try {
 					await createUser(req.body, {
-						admin: req.body.role === 'admin', createFavoritePlaylist: true
+						admin: req.body.role === 'admin', createRemote: true
 					});
 					res.json(OKMessage(true,'USER_CREATED'));
 				} catch(err) {

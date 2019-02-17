@@ -99,7 +99,6 @@ export async function fetchAndUpdateRemoteUser(username, password, onlineToken) 
 				login: username,
 				password: password
 			}, {
-				createFavoritePlaylist: true,
 				createRemote: false
 			});
 		}
