@@ -624,12 +624,12 @@ export async function checkLogin(username, password, admin) {
 		} catch(err) {
 			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${JSON.stringify(err)}`);
 		}
-	} else {
-		// User is a local user
-		user = await findUserByName(username);
-		if (!user) throw false;
-		if (!await checkPassword(user, password)) throw false;
 	}
+	
+	// User is a local user
+	user = await findUserByName(username);
+	if (!user) throw false;
+	if (!await checkPassword(user, password)) throw false;
 	const role = getRole(user);
 	updateLastLoginName(username);
 	return {
