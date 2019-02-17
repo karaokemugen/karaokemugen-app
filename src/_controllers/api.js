@@ -2371,7 +2371,7 @@ export function APIControllerPublic(router) {
 			try {
 				const stats = await getKMStats();
 				const userData = await findUserByName(req.authToken.username);
-				updateSongsLeft(userData.id);
+				updateSongsLeft(userData.login);
 				res.json(OKMessage(stats));
 			} catch(err) {
 				logger.error(err);
@@ -3579,7 +3579,7 @@ export function APIControllerPublic(router) {
 				if (req.file) avatar = req.file;
 				try {
 					const userdata = await editUser(req.params.username,req.body,avatar,req.authToken.role);
-					emitWS('userUpdated',userdata.id);
+					emitWS('userUpdated',req.authToken.username);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));
 				} catch(err) {
 					res.status(500).json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
@@ -3642,7 +3642,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const userData = await findUserByName(req.authToken.username, {public:false});
-				updateSongsLeft(userData.id);
+				updateSongsLeft(userData.login);
 				res.json(OKMessage(userData));
 			} catch(err) {
 				logger.error(err);
@@ -3732,7 +3732,7 @@ export function APIControllerPublic(router) {
 				//Get username
 				try {
 					const userdata = await editUser(req.authToken.username,req.body,avatar,req.authToken.role);
-					emitWS('userUpdated',req.params.user_id);
+					emitWS('userUpdated',req.authToken.username);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));
 				} catch(err) {
 					res.status(500).json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
