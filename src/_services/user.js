@@ -48,7 +48,7 @@ export async function removeRemoteUser(token, password) {
 	user.login = username;
 	await editUser(token.username, user, null, 'admin', {
 		editRemote: false,
-		renameUser: false
+		renameUser: true
 	});
 	return {
 		token: createJwtToken(user.login, token.role)
@@ -219,7 +219,7 @@ export async function editUser(username,user,avatar,role, opts = {
 		if (!currentUser) throw 'User unknown';
 		if (currentUser.type === 2 && role !== 'admin') throw 'Guests are not allowed to edit their profiles';
 		if (!opts.renameUser) user.login = username;
-		user.login = username;
+		user.old_login = username;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
