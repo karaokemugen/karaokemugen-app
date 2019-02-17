@@ -384,7 +384,7 @@ async function createRemoteUser(user) {
 	const instance = user.login.split('@')[1];
 	const login = user.login.split('@')[0];
 	const users = await getAllRemoteUsers(instance);
-	if (users.filter(u => u.login === user.login).length === 1) throw {
+	if (users.filter(u => u.login === login).length === 1) throw {
 		code: 'USER_ALREADY_EXISTS_ONLINE',
 		message: `User already exists on ${instance} or incorrect password`
 	};
