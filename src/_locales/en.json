@@ -555,6 +555,8 @@
 	},
 	"PROFILE_CONVERT": "Convert to online profile",
 	"PROFILE_CONVERTED": "Your profile was successfuly converted",
+	"PROFILE_ONLINE_DELETE": "Delete my online profile",
+	"PROFILE_ONLINE_DELETED": "Your online profile was successfuly deleted",
 	"INSTANCE_NAME": "Server name",
 	"INSTANCE_NAME_SHORT": "Server"
 }

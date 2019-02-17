@@ -1034,6 +1034,30 @@ var settingsNotUpdated;
 			}
 		});
 
+		$('.profileDelete').click(function() {
+			if(settings) {
+				displayModal('custom', i18n.__('PROFILE_ONLINE_DELETE'),
+					'<label>' + i18n.__('PROFILE_PASSWORD_AGAIN') + '</label>'
+                    + '<input type="password" placeholder="' + i18n.__('PASSWORD') + '" class="form-control" name="password">', function(data){
+
+						var msgData =  { password : data.password };
+
+						ajx('DELETE', 'public/myaccount/online', msgData, function(response) {
+							displayMessage('success', '', i18n.__('PROFILE_ONLINE_DELETED'));
+							createCookie('mugenToken',  response.token, -1);
+
+							logInfos = parseJwt(response.token);
+							logInfos.token = response.token;
+							logInfos.onlineToken = response.onlineToken;
+							initApp();
+						});
+					}
+				);
+			} else {
+				getSettings();
+			}
+		});
+
 		/* profil stuff END */
 		/* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
 		if(isTouchScreen) {
