@@ -22,7 +22,7 @@ export async function checkValidUser(token, onlineToken) {
 			if (remoteToken && remoteToken.token === onlineToken) {
 				// Remote token exists, no problem here
 				return true;
-			} else {
+			} else if (remoteToken) {
 				// Remote token does not exist, we're going to verify it and add it if it does work
 				try {
 					// Firing this first to avoid multiple triggers, will get canceled if auth is not OK.
