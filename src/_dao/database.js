@@ -311,8 +311,8 @@ export function buildTypeClauses(mode, value) {
 			const type = c.split(/:(.+)/)[0];
 			let values;
 			if (type === 's') {
-    			values = c.split(/:(.+)/)[1].split(',').map((v) => `'${v}'::uuid`);
-    			search = `${search} AND serie_id <@ ARRAY[${values}]`;
+    			values = c.split(/:(.+)/)[1].split(',').map((v) => `'%${v}%'`);
+    			search = `${search} AND sid::varchar LIKE ${values}`;
 			} else {
     			values = c.split(/:(.+)/)[1];
 			}
