@@ -1045,6 +1045,7 @@ var settingsNotUpdated;
 						ajx('DELETE', 'public/myaccount/online', msgData, function(response) {
 							displayMessage('success', '', i18n.__('PROFILE_ONLINE_DELETED'));
 							createCookie('mugenToken',  response.token, -1);
+							createCookie('mugenTokenOnline',  response.onlineToken, -1);
 
 							logInfos = parseJwt(response.token);
 							logInfos.token = response.token;

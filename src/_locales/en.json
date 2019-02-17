@@ -382,6 +382,8 @@
 	"USER_ALREADY_EXISTS_ONLINE": "This username already exists on that online instance",
 	"USER_DELETED": "User deleted",
 	"USER_DELETE_ERROR": "Unable to delete user",
+	"USER_DELETED_ONLINE": "User online deleted",
+	"USER_DELETE_ERROR_ONLINE": "Unable to convert user to local",
 	"USER_EMPTY_PASSWORD": "Password is empty!",
 	"USER_EMPTY_LOGIN": "Login is empty!",
 	"USER_NOT_EXISTS": "User %s does not exist!",

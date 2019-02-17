@@ -385,6 +385,8 @@
 	"USER_ALREADY_EXISTS_ONLINE": "Cet utilisateur existe déjà dans cette instance en ligne",
 	"USER_DELETED": "Utilisateur supprimé",
 	"USER_DELETE_ERROR": "Impossible de supprimer l'utilisateur",
+	"USER_DELETED_ONLINE": "Utilisateur en ligne supprimé",
+	"USER_DELETE_ERROR_ONLINE": "Impossible de convertir en utilisateur local",
 	"USER_EMPTY_PASSWORD": "Le mot de passe est vide !",
 	"USER_EMPTY_LOGIN": "Le nom d'utilisateur est vide !",
 	"USER_NOT_EXISTS": "L'utilisateur n'existe pas !",

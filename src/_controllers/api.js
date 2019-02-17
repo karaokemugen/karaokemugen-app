@@ -3812,10 +3812,10 @@ export function APIControllerPublic(router) {
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
 	 * {
-	 *   "code": "USER_ONLINE_DELETED",
+	 *   "code": "USER_DELETED_ONLINE",
 	 * 	 "data": { token: abcdef... }
 	 * }
-	 * @apiError USER_ONLINE_DELETED_ERROR Unable to convert user to local
+	 * @apiError USER_DELETE_ERROR_ONLINE Unable to convert user to local
 	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
@@ -3831,9 +3831,9 @@ export function APIControllerPublic(router) {
 				try {
 					const newToken = await removeRemoteUser(req.authToken, req.body.password);
 					emitWS('userUpdated', req.authToken.username);
-					res.json(OKMessage(newToken,'USER_ONLINE_DELETED'));
+					res.json(OKMessage(newToken,'USER_DELETED_ONLINE'));
 				} catch(err) {
-					res.status(500).json(errMessage('USER_ONLINE_DELETED_ERROR',err));
+					res.status(500).json(errMessage('USER_DELETE_ERROR_ONLINE',err));
 				}
 			} else {
 			// Errors detected
