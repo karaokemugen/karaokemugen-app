@@ -23,24 +23,20 @@ export async function getFavorites(username, filter, lang, from = 0, size = 9999
 }
 
 export async function fetchAndAddFavorites(instance, token, username) {
-	try {
-		const res = await got(`http://${instance}/api/favorites`, {
-			headers: {
-				authorization: token
-			},
-			json: true
-		});
-		const favorites = {
-			Header: {
-				version: 1,
-				description: 'Karaoke Mugen Favorites List File'
-			},
-			Favorites: res.body
-		};
-		await importFavorites(favorites, username);
-	} catch(err) {
-		throw err;
-	}
+	const res = await got(`http://${instance}/api/favorites`, {
+		headers: {
+			authorization: token
+		},
+		json: true
+	});
+	const favorites = {
+		Header: {
+			version: 1,
+			description: 'Karaoke Mugen Favorites List File'
+		},
+		Favorites: res.body
+	};
+	await importFavorites(favorites, username);
 }
 
 export async function emptyFavorites(username) {
@@ -57,7 +53,6 @@ export async function addToFavorites(username, kid) {
 		if (username.includes('@') && +getConfig().OnlineUsers) for (const kara of karas) {
 			manageFavoriteInInstance('POST', username, kara);
 		}
-
 	} catch(err) {
 		throw err;
 	} finally {
@@ -69,17 +64,13 @@ export async function convertToRemoteFavorites(username) {
 	// This is called when converting a local account to a remote one
 	// We thus know no favorites exist remotely.
 	if (!+getConfig().OnlineUsers) return true;
-	try {
-		const favorites = await getFavorites({username: username});
-		const addFavorites = [];
-		if (favorites.content.length > 0) {
-			for (const favorite of favorites) {
-				addFavorites.push(manageFavoriteInInstance('POST', username, favorite.kid));
-			}
-			await Promise.all(addFavorites);
+	const favorites = await getFavorites({username: username});
+	const addFavorites = [];
+	if (favorites.content.length > 0) {
+		for (const favorite of favorites) {
+			addFavorites.push(manageFavoriteInInstance('POST', username, favorite.kid));
 		}
-	} catch(err) {
-		throw err;
+		await Promise.all(addFavorites);
 	}
 }
 
@@ -141,16 +132,12 @@ export async function importFavorites(favs, username) {
 	if (!Array.isArray(favs.Favorites)) throw 'Favorites item is not an array';
 	const re = new RegExp(uuidRegexp);
 	if (favs.Favorites.some(f => !re.test(f.kid))) throw 'One item in the favorites list is not a UUID';
-	try {
-		// Stripping favorites from unknown karaokes in our database to avoid importing them
-		let favorites = favs.Favorites.map(f => f.kid);
-		const karasUnknown = await isAllKaras(favorites);
-		favorites = favorites.filter(f => !karasUnknown.includes(f));
-		await addToFavorites(username, favorites);
-		return { karasUnknown: karasUnknown };
-	} catch(err) {
-		throw err;
-	}
+	// Stripping favorites from unknown karaokes in our database to avoid importing them
+	let favorites = favs.Favorites.map(f => f.kid);
+	const karasUnknown = await isAllKaras(favorites);
+	favorites = favorites.filter(f => !karasUnknown.includes(f));
+	await addToFavorites(username, favorites);
+	return { karasUnknown: karasUnknown };
 }
 
 async function getAllFavorites(userList) {

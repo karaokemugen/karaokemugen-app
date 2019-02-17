@@ -211,14 +211,10 @@ export async function playerNeedsRestart() {
 };
 
 async function restartPlayer() {
-	try {
-		profile('restartmpv');
-		await restartmpv();
-		logger.info('[Player] Player restart complete');
-		profile('restartmpv');
-	} catch(err) {
-		throw err;
-	}
+	profile('restartmpv');
+	await restartmpv();
+	logger.info('[Player] Player restart complete');
+	profile('restartmpv');
 }
 
 

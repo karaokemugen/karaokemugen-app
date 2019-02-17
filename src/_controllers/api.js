@@ -590,7 +590,7 @@ export function APIControllerAdmin(router) {
  * @apiError USER_CREATE_ERROR Unable to create user
  * @apiError USER_ALREADY_EXISTS This username already exists
  * @apiError USER_ALREADY_EXISTS_ONLINE This username already exists on that online instance
- * @apiError USER_ONLINE_CREATION_ERROR Unable to create the online user
+ * @apiError USER_CREATE_ERROR_ONLINE Unable to create the online user
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -2371,7 +2371,7 @@ export function APIControllerPublic(router) {
 			try {
 				const stats = await getKMStats();
 				const userData = await findUserByName(req.authToken.username);
-				updateSongsLeft(userData.id);
+				updateSongsLeft(userData.login);
 				res.json(OKMessage(stats));
 			} catch(err) {
 				logger.error(err);
@@ -3579,7 +3579,7 @@ export function APIControllerPublic(router) {
 				if (req.file) avatar = req.file;
 				try {
 					const userdata = await editUser(req.params.username,req.body,avatar,req.authToken.role);
-					emitWS('userUpdated',userdata.id);
+					emitWS('userUpdated',req.authToken.username);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));
 				} catch(err) {
 					res.status(500).json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
@@ -3642,7 +3642,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const userData = await findUserByName(req.authToken.username, {public:false});
-				updateSongsLeft(userData.id);
+				updateSongsLeft(userData.login);
 				res.json(OKMessage(userData));
 			} catch(err) {
 				logger.error(err);
@@ -3732,7 +3732,7 @@ export function APIControllerPublic(router) {
 				//Get username
 				try {
 					const userdata = await editUser(req.authToken.username,req.body,avatar,req.authToken.role);
-					emitWS('userUpdated',req.params.user_id);
+					emitWS('userUpdated',req.authToken.username);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));
 				} catch(err) {
 					res.status(500).json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
@@ -4139,7 +4139,7 @@ export function APIControllerPublic(router) {
  * @apiError USER_ALREADY_EXISTS This username already exists
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiError USER_ALREADY_EXISTS_ONLINE This username already exists on that online instance
- * @apiError USER_ONLINE_CREATION_ERROR Unable to create the online user
+ * @apiError USER_CREATE_ERROR_ONLINE Unable to create the online user
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error

@@ -387,23 +387,19 @@ export async function getPlaylistContents(playlist_id,token,filter,lang,from,siz
 
 export async function getKaraFromPlaylist(plc_id,lang,token) {
 	profile('getPLCInfo');
+	const kara = await getPLCInfo(plc_id, token.role === 'user', token.username);
+	if (!kara) throw 'PLCID unknown';
+	let output = translateKaraInfo([kara], lang);
 	try {
-		const kara = await getPLCInfo(plc_id, token.role === 'user', token.username);
-		if (!kara) throw 'PLCID unknown';
-		let output = translateKaraInfo([kara], lang);
-		try {
-			profile('previewCheck');
-			const previewfile = await isPreviewAvailable(output[0].kid, output[0].mediasize);
-			if (previewfile) output[0].previewfile = previewfile;
-			profile('previewCheck');
-		} catch(err) {
-			logger.warn(`[Previews] Error detecting previews : ${err}`);
-		}
-		profile('getPLCInfo');
-		return output;
+		profile('previewCheck');
+		const previewfile = await isPreviewAvailable(output[0].kid, output[0].mediasize);
+		if (previewfile) output[0].previewfile = previewfile;
+		profile('previewCheck');
 	} catch(err) {
-		throw err;
+		logger.warn(`[Previews] Error detecting previews : ${err}`);
 	}
+	profile('getPLCInfo');
+	return output;
 }
 
 async function getPLCByKIDUser(kid,username,playlist_id) {

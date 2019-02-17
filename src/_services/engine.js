@@ -48,11 +48,7 @@ export async function initEngine() {
 		await exit(1);
 	}
 	//Database system is the foundation of every other system
-	try {
-		await initDBSystem();
-	} catch(err) {
-		throw err;
-	}
+	await initDBSystem();
 	await initUserSystem();
 	if (+conf.OnlineURL) try {
 		await initOnlineSystem();

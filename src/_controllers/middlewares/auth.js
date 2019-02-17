@@ -4,7 +4,7 @@ import {getConfig} from '../../_utils/config';
 import {findUserByName, updateLastLoginName, remoteCheckAuth, fetchAndUpdateRemoteUser} from '../../_services/user';
 import { getRemoteToken, upsertRemoteToken } from '../../_dao/user';
 import { fetchAndAddFavorites } from '../../_services/favorites';
-import { logger } from 'handlebars';
+import logger from 'winston';
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
 
