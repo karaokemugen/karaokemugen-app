@@ -11,16 +11,13 @@ import {exit, initEngine} from './_services/engine';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
-import PrettyError from 'pretty-error';
-
-const pe = new PrettyError();
 
 process.on('uncaughtException', function (exception) {
-	console.log(pe.render(exception));
+	console.log('Uncaught exception:', exception);
 });
 
 process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at:', p);
+	console.log('Unhandled Rejection at:', p, reason);
 });
 
 process.on('SIGINT', () => {
