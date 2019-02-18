@@ -11,7 +11,6 @@ import {copy} from 'fs-extra';
 import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
-import {watch} from 'chokidar';
 import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
 import {publishURL} from '../_webapp/online';
@@ -119,22 +118,6 @@ export async function initConfig(appPath, argv) {
 	configureHost();
 	if (config.JwtSecret === 'Change me') setConfig( {JwtSecret: uuidV4() });
 	if (config.appInstanceID === 'Change me') setConfig( {appInstanceID: uuidV4() });
-	//Configure watcher
-	const configWatcher = watch(resolve(appPath, configFile), {useFsEvents: false});
-	configWatcher.on('change', () => {
-		if (!savingSettings) {
-			const oldConf = getConfig();
-			logger.debug('[Config] Config file has been changed from the outside world, reloading it...');
-			loadConfig(resolve(appPath, configFile)).then(() => {
-				mergeConfig(oldConf, getConfig());
-			}).catch(err => {
-				logger.error(`[Config] Error parsing new config file : ${err}`);
-				logger.warn('[Config] Config file has errors. It has been ignored');
-			});
-		}
-
-	});
-
 	return getConfig();
 }
 
