@@ -16,24 +16,18 @@ export async function addUpvote(plc_id,username) {
 		if (!plc) throw {message: 'PLC ID unknown'};
 		if (plc.username === username) throw {code: 'UPVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
-		if (userList.some(u => {
-			return u.username === username;
-		})) throw {code: 'UPVOTE_ALREADY_DONE'};
+		if (userList.some(u => u.username === username)) throw {code: 'UPVOTE_ALREADY_DONE'};
 		await insertUpvote(plc_id,username);
-		const upvotes = plc.upvotes + 1;
+		plc.upvotes++;
 		const ret = {
-			upvotes: upvotes,
+			upvotes: plc.upvotes,
 			song: `${plc.serie} - ${plc.title}`,
 			playlist_id: plc.playlist_id,
 			code: 'UPVOTE_DONE'
 		};
 		const conf = getConfig();
 		if (!+conf.EngineFreeUpvotes) return ret;
-		let modePlaylist_id;
-		+conf.EnginePrivateMode
-			? modePlaylist_id = getState().currentPlaylistID
-			: modePlaylist_id = getState().publicPlaylistID;
-		tryToFreeKara(plc_id, upvotes, plc.username, modePlaylist_id);
+		tryToFreeKara(plc_id, upvotes, plc.username, getState().modePlaylistID);
 		return ret;
 	} catch(err) {
 		if (!err.code) err.code = 'UPVOTE_FAILED';
@@ -47,13 +41,12 @@ export async function deleteUpvote(plc_id,username) {
 		if (!plc) throw {message: 'PLC ID unknown'};
 		if (plc.username === username) throw {code: 'DOWNVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
-		const userIDs = userList.map(u => u.login);
-		if (!userIDs.includes(username)) throw {code: 'DOWNVOTE_ALREADY_DONE'};
+		const users = userList.map(u => u.login);
+		if (!users.includes(username)) throw {code: 'DOWNVOTE_ALREADY_DONE'};
 		await removeUpvote(plc_id,username);
-		const upvotes = plc.upvotes - 1;
 		// Karaokes are not 'un-freed' when downvoted.
 		return {
-			upvotes: upvotes,
+			upvotes: plc.upvotes - 1,
 			song: `${plc.serie} - ${plc.title}`,
 			playlist_id: plc.playlist_id,
 			code: 'DOWNVOTE_DONE'
