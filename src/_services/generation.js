@@ -11,7 +11,7 @@ import {verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
 import {copyFromData, refreshAll, db, saveSetting} from '../_dao/database';
-import slug from 'slug';
+import slugify from 'slugify';
 import {createHash} from 'crypto';
 import Bar from '../_utils/bar';
 import {emit} from '../_utils/pubsub';
@@ -364,10 +364,7 @@ function prepareAllTagsInsertData(allTags) {
 		const tagParts = tag.split(',');
 		const tagName = tagParts[0];
 		const tagType = tagParts[1];
-		slug.defaults.mode = 'rfc3986';
-		let tagSlug = slug(tagName, {
-			lower: true,
-		});
+		let tagSlug = slugify(tagName);
 		if (slugs.includes(`${tagType} ${tagSlug}`)) {
 			tagSlug = `${tagSlug}-${hash(tagName)}`;
 		}
@@ -405,7 +402,7 @@ function prepareAllTagsInsertData(allTags) {
 				lastIndex + 1,
 				7,
 				tagDefaultName,
-				slug(tagDefaultName),
+				slugify(tagDefaultName),
 				JSON.stringify(tagi18n)
 			]);
 			lastIndex++;
@@ -424,7 +421,7 @@ function prepareAllTagsInsertData(allTags) {
 				lastIndex + 1,
 				3,
 				typeDefaultName,
-				slug(typeDefaultName),
+				slugify(typeDefaultName),
 				JSON.stringify(tagi18n)
 			]);
 			lastIndex++;

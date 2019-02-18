@@ -1,6 +1,6 @@
 import {db, paramWords} from './database';
 import {pg as yesql} from 'yesql';
-import slug from 'slug';
+import slugify from 'slugify';
 import {profile} from '../_utils/logger';
 const sql = require('./sql/tag');
 
@@ -63,11 +63,10 @@ export async function checkOrCreateTag(tag) {
 	}));
 	if (tagDB.rows.length > 0) return tagDB.rows[0].tag_id;
 	//Tag does not exist, create it.
-	slug.defaults.mode = 'rfc3986';
 	const res = await db().query(yesql(sql.insertTag)({
 		name: tag.tag,
 		type: tag.type,
-		slug: slug(tag.tag, { lower: true }),
+		slug: slugify(tag.tag),
 		i18n: {}
 	}));
 	return res.rows[0].pk_id_tag;
