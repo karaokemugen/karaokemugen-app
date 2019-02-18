@@ -23,7 +23,7 @@ import { fetchAndAddFavorites } from '../_services/favorites';
 import {encode, decode} from 'jwt-simple';
 
 const db = require('../_dao/user');
-let userLoginTimes = {};
+let userLoginTimes = new Map;
 let databaseBusy = false;
 
 on('databaseBusy', status => {
@@ -173,9 +173,9 @@ export async function convertToRemoteUser(token, password, instance) {
 
 export async function updateLastLoginName(login) {
 	// To avoid flooding database UPDATEs, only update login time every minute for a user
-	if (!userLoginTimes[login]) userLoginTimes[login] = new Date();
-	if (userLoginTimes[login] < now(true) - 60) {
-		userLoginTimes[login] = new Date();
+	if (!userLoginTimes.has(login)) userLoginTimes.set(login, new Date());
+	if (userLoginTimes.get(login) < now(true) - 60) {
+		userLoginTimes.set(login, new Date());
 		return await db.updateUserLastLogin(login);
 	}
 }
@@ -183,11 +183,11 @@ export async function updateLastLoginName(login) {
 async function editRemoteUser(user) {
 	// Fetch remote token
 	const remoteToken = getRemoteToken(user.login);
-	const instance = user.login.split('@')[1];
-	const login = user.login.split('@')[0];
+	const [instance, login] = user.login.split('@');
 	const form = new formData();
 	const conf = getConfig();
 
+	// Create the form data sent as payload to edit remote user
 	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file)), user.avatar_file);
 	form.append('nickname', user.nickname);
 	if (user.bio) form.append('bio', user.bio);
@@ -208,15 +208,15 @@ async function editRemoteUser(user) {
 }
 
 
-export async function editUser(username,user,avatar,role, opts = {
+export async function editUser(username, user, avatar, role, opts = {
 	editRemote: false,
 	renameUser: false
 }) {
 	try {
-		let currentUser;
-		currentUser = await findUserByName(username);
+		let currentUser = await findUserByName(username);
 		if (!currentUser) throw 'User unknown';
 		if (currentUser.type === 2 && role !== 'admin') throw 'Guests are not allowed to edit their profiles';
+		// If we're renaming a user, user.login is going to be set to something different than username
 		if (!opts.renameUser) user.login = username;
 		user.old_login = username;
 		if (!user.bio) user.bio = null;
@@ -628,7 +628,7 @@ export async function checkLogin(username, password, admin) {
 			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${JSON.stringify(err)}`);
 		}
 	}
-	
+
 	// User is a local user
 	user = await findUserByName(username);
 	if (!user) throw false;
