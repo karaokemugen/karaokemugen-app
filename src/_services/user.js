@@ -1,4 +1,4 @@
-import {getConfig} from '../_utils/config';
+import {getConfig, setConfig} from '../_utils/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from '../_services/playlist';
 import {convertToRemoteFavorites} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink, asyncReadDir} from '../_utils/files';
@@ -31,6 +31,7 @@ on('databaseBusy', status => {
 });
 
 export async function removeRemoteUser(token, password) {
+	// Function used when asking for user deletion on Karaoke Mugen Server
 	const instance = token.username.split('@')[1];
 	const username = token.username.split('@')[0];
 	// Verify that no local user exists with the name we're going to rename it to
@@ -67,7 +68,7 @@ async function updateExpiredUsers() {
 	}
 }
 
-export async function getUserRequests(username) {
+async function getUserRequests(username) {
 	if (!await findUserByName(username)) throw 'User unknown';
 	return await db.getUserRequests(username);
 }
@@ -83,6 +84,9 @@ export async function fetchRemoteAvatar(instance, avatarFile) {
 }
 
 export async function fetchAndUpdateRemoteUser(username, password, onlineToken) {
+	// We try to login to KM Server using the provided login password.
+	// If login is successful, we get user profile data and create user if it doesn't exist already in our local database.
+	// If it exists, we edit the user instead.
 	if (!onlineToken) onlineToken = await remoteLogin(username, password);
 	// if OnlineToken is empty, it means we couldn't fetch user data, let's not continue but don't throw an error
 	if (onlineToken.token) {
@@ -146,6 +150,7 @@ export function decodeJwtToken(token, config) {
 }
 
 export async function convertToRemoteUser(token, password, instance) {
+	// Converting a local account to a online one.
 	if (token.username === 'admin') throw 'Admin user cannot be converted to an online account';
 	const user = await findUserByName(token.username);
 	if (!user) throw 'User unknown';
@@ -181,6 +186,8 @@ export async function updateLastLoginName(login) {
 }
 
 async function editRemoteUser(user) {
+	// Edit online user's profile.
+	// This includes updating remote avatar.
 	// Fetch remote token
 	const remoteToken = getRemoteToken(user.login);
 	const [instance, login] = user.login.split('@');
@@ -280,19 +287,18 @@ async function replaceAvatar(oldImageFile,avatar) {
 	}
 }
 
-export async function findUserByName(username, opt) {
+export async function findUserByName(username, opt = {
+	public: false
+}) {
 	//Check if user exists in db
-	if (!opt) opt = {};
 	const userdata = await db.getUser(username);
 	if (userdata) {
-		if (!userdata.bio) userdata.bio = null;
-		if (!userdata.url) userdata.url = null;
-		if (!userdata.email) userdata.email = null;
+		if (!userdata.bio || opt.public) userdata.bio = null;
+		if (!userdata.url || opt.public) userdata.url = null;
+		if (!userdata.email || opt.public) userdata.email = null;
 		if (opt.public) {
-			userdata.email = null;
 			userdata.password = null;
 			userdata.fingerprint = null;
-			userdata.email = null;
 		}
 		return userdata;
 	}
@@ -305,11 +311,11 @@ export function hashPassword(password) {
 	return hash.digest('hex');
 }
 
-export async function checkPassword(user,password) {
+export async function checkPassword(user, password) {
 	const hashedPassword = hashPassword(password);
 	// Access is granted only if passwords match OR user type is 2 (guest) and its password in database is empty.
 	if (user.password === hashedPassword || (user.type === 2 && !user.password)) {
-		// If password was empty for a guest, we set it to the password given on login.
+		// If password was empty for a guest, we set it to the password given on login (which is its device fingerprint).
 		if (user.type === 2 && !user.password) await db.updateUserPassword(user.login,hashedPassword);
 		return true;
 	}
@@ -317,6 +323,9 @@ export async function checkPassword(user,password) {
 }
 
 export async function findFingerprint(fingerprint) {
+	// This checks database for a fingerprint.
+	// If fingerprint is present we return the login name of that user
+	// If not we find a new guest account to assign to the user.
 	let guest = await db.findFingerprint(fingerprint);
 	if (guest) return guest.pk_login;
 	guest = await db.getRandomGuest();
@@ -330,6 +339,8 @@ export async function updateUserFingerprint(username, fingerprint) {
 }
 
 export async function remoteCheckAuth(instance, token) {
+	// Just checking that the online token we have is still valid on
+	// KM Server.
 	try {
 		const res = await got.get(`http://${instance}/api/auth/check`, {
 			headers: {
@@ -344,11 +355,12 @@ export async function remoteCheckAuth(instance, token) {
 }
 
 export async function remoteLogin(username, password) {
-	const instance = username.split('@')[1];
+	// Function called when you enter a login/password and login contains an @. We're checking login/password pair against KM Server.
+	const [login, instance] = username.split('@');
 	try {
 		const res = await got(`http://${instance}/api/auth/login`, {
 			body: {
-				username: username.split('@')[0],
+				username: login,
 				password: password
 			},
 			form: true
@@ -380,8 +392,7 @@ async function getAllRemoteUsers(instance) {
 }
 
 async function createRemoteUser(user) {
-	const instance = user.login.split('@')[1];
-	const login = user.login.split('@')[0];
+	const [login, instance] = user.login.split('@');
 	const users = await getAllRemoteUsers(instance);
 	if (users.filter(u => u.login === login).length === 1) throw {
 		code: 'USER_ALREADY_EXISTS_ONLINE',
@@ -405,8 +416,7 @@ async function createRemoteUser(user) {
 };
 
 export async function getRemoteUser(username, token) {
-	const instance = username.split('@')[1];
-	const login = username.split('@')[0];
+	const [login, instance] = username.split('@');
 	try {
 		const res = await got(`http://${instance}/api/users/${login}`, {
 			headers: {
@@ -468,7 +478,7 @@ async function newUserIntegrityChecks(user) {
 
 export async function deleteUser(username) {
 	try {
-		if (username === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is used for the Karaoke Instrumentality Project'};
+		if (username === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
 		const user = await findUserByName(username);
 		if (!user) throw {code: 'USER_NOT_EXISTS'};
 		//Reassign karas and playlists owned by the user to the admin user
@@ -508,12 +518,15 @@ export async function initUserSystem() {
 	setInterval(updateExpiredUsers, 60000);
 	// Check if a admin user exists just in case. If not create it with a random password.
 
-	if (!await findUserByName('admin')) await createUser({
-		login: 'admin',
-		password: randomstring.generate(8)
-	}, {
-		admin: true
-	});
+	if (!await findUserByName('admin')) {
+		await createUser({
+			login: 'admin',
+			password: randomstring.generate(8)
+		}, {
+			admin: true
+		});
+		setConfig({appFirstRun: 1});
+	}
 
 	if (getConfig().isTest) {
 		if (!await findUserByName('adminTest')) {
@@ -547,7 +560,7 @@ async function cleanupAvatars() {
 	return true;
 }
 
-export async function updateSongsLeft(username,playlist_id) {
+export async function updateSongsLeft(username, playlist_id) {
 	const conf = getConfig();
 	const user = await findUserByName(username);
 	let quotaLeft;
@@ -556,7 +569,7 @@ export async function updateSongsLeft(username,playlist_id) {
 		switch(+conf.EngineQuotaType) {
 		default:
 		case 1:
-			const count = await getSongCountForUser(playlist_id,username);
+			const count = await getSongCountForUser(playlist_id, username);
 			quotaLeft = +conf.EngineSongsPerUser - count.count;
 			break;
 		case 2:
@@ -575,9 +588,10 @@ export async function updateSongsLeft(username,playlist_id) {
 }
 
 export async function updateUserQuotas(kara) {
-	//If karaokes are present in the public playlist, we're marking it free.
-	//First find which KIDs are to be freed. All those before the currently playing kara
+	// If karaokes are present in the public playlist, we're marking them free.
+	// First find which KIDs are to be freed. All those before the currently playing kara
 	// are to be set free.
+	// Then we're updating song quotas for all users involved.
 	const state = getState();
 	profile('updateUserQuotas');
 	await freePLCBeforePos(kara.pos, state.currentPlaylistID);
@@ -600,12 +614,12 @@ export async function updateUserQuotas(kara) {
 	}
 	await Promise.all(freeTasks);
 	usersNeedingUpdate.forEach(username => {
-		updateSongsLeft(username,state.modePlaylistID);
+		updateSongsLeft(username, state.modePlaylistID);
 	});
 	profile('updateUserQuotas');
 }
 
-export async function checkLogin(username, password, admin) {
+export async function checkLogin(username, password) {
 	const conf = getConfig();
 	let user = {};
 	if (username.includes('@') && +conf.OnlineUsers) {
