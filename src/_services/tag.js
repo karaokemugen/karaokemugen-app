@@ -11,13 +11,9 @@ export function translateTags(taglist) {
 		let i18nString;
 		if (tag.type === 5) {
 			const langdata = langs.where('2B', tag.name);
-			if (tag.name === 'und') {
-				i18nString = 'UNDEFINED_LANGUAGE';
-			} else if (tag.name === 'zxx') {
-				i18nString = 'NO_LANGUAGE';
-			} else {
-				if (!langdata) i18nString = 'UNKNOWN_LANGUAGE';
-			}
+			if (!langdata) i18nString = 'UNKNOWN_LANGUAGE';
+			if (tag.name === 'und') i18nString = 'UNDEFINED_LANGUAGE';
+			if (tag.name === 'zxx') i18nString = 'NO_LANGUAGE';
 			if (i18nString) {
 				for (const language of Object.keys(translations)) {
 					taglist[index].i18n[language] = translations[language][i18nString];
