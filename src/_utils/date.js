@@ -3,13 +3,14 @@ export function now(seconds) {
 	return new Date().getTime();
 }
 
-export function date() {
+export function date(iso) {
 	const d = new Date();
 	let day = d.getDate();
 	let month = d.getMonth() + 1;
 	const year = d.getFullYear();
 	if (day < 10) day = '0'+day;
 	if (month < 10) month = '0'+month;
+	if (iso) return `${year}-${month}-${day}`;
 	return `${day}-${month}-${year}`;
 }
 

@@ -1,8 +1,7 @@
 import logger from 'winston';
-import dailyRotateFile from  'winston-daily-rotate-file';
 import {asyncCheckOrMkdir} from './files';
 import {resolve} from 'path';
-import {time} from './date';
+import {date, time} from './date';
 import {getConfig} from './config';
 
 export async function configureLogger(appPath, debug) {
@@ -27,11 +26,10 @@ export async function configureLogger(appPath, debug) {
 			)
 		})
 	);
+	const today = date(true);
 	logger.add(
-		new dailyRotateFile({
-			filename: 'karaokemugen-%DATE%.log',
-			dirname: logDir,
-			zippedArchive: true,
+		new logger.transports.File({
+			filename: resolve(logDir, `karaokemugen.${today}.log`),
 			level: 'debug',
 			handleExceptions: true,
 			format: logger.format.combine(

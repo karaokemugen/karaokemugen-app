@@ -134,7 +134,6 @@
     "validate.js": "^0.12.0",
     "webdav": "^2.5.0",
     "winston": "^3.2.1",
-    "winston-daily-rotate-file": "^3.7.0",
     "xml2js": "^0.4.19",
     "yesql": "^3.2.2"
   },
