@@ -815,8 +815,8 @@ export async function importPlaylist(playlist, username, playlist_id) {
 			}
 			await addKaraToPL(karasToImport);
 			if (playingKara.kid) {
-				const plcPlaying = await getPLCByKIDUser(playingKara.kid,playingKara.username,playlist_id);
-				await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
+				const plcPlaying = await getPLCByKIDUser(playingKara.kid,playingKara.username, playlist_id);
+				await setPlaying(plcPlaying.playlistcontent_id, playlist_id);
 			}
 			return {
 				playlist_id: playlist_id,
@@ -839,29 +839,29 @@ export async function shufflePlaylist(playlist_id, isSmartShuffle) {
 	try {
 		profile('shuffle');
 		let playlist = await getPlaylistContentsMini(playlist_id);
-
 		if (!pl.flag_current) {
-			isSmartShuffle ? playlist = smartShuffle(playlist) : playlist = shuffle(playlist);
+			isSmartShuffle
+				? playlist = smartShuffle(playlist)
+				: playlist = shuffle(playlist);
 		} else {
 			// If it's current playlist, we'll make two arrays out of the playlist :
 			// - One before (and including) the current song being played (flag_playing = true)
 			// - One after.
 			// We'll shuffle the one after then concatenate the two arrays.
-			let BeforePlaying = [];
-			let AfterPlaying = [];
-			let ReachedPlaying = false;
-			playlist.forEach((kara) => {
-				if (!ReachedPlaying) {
-					BeforePlaying.push(kara);
-					if (kara.flag_playing) ReachedPlaying = true;
-				} else {
-					AfterPlaying.push(kara);
-				}
-			});
-			isSmartShuffle ? AfterPlaying = smartShuffle(AfterPlaying) : AfterPlaying = shuffle(AfterPlaying);
-			playlist = BeforePlaying.concat(AfterPlaying);
+			const playingPos = getPlayingPos(playlist);
+			if (playingPos) {
+				const BeforePlaying = playlist.filter(plc => plc.pos <= playingPos.plc_id_pos);
+				let AfterPlaying = playlist.filter(plc => plc.pos > playingPos.plc_id_pos);
+				isSmartShuffle
+					? AfterPlaying = smartShuffle(AfterPlaying)
+					: AfterPlaying = shuffle(AfterPlaying);
+				playlist = BeforePlaying.concat(AfterPlaying);
+			} else {
 			// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
-			if (!ReachedPlaying) isSmartShuffle ? playlist = smartShuffle(playlist) : playlist = shuffle(playlist);
+				isSmartShuffle
+					? playlist = smartShuffle(playlist)
+					: playlist = shuffle(playlist);
+			}
 		}
 		await replacePlaylist(playlist);
 		updatePlaylistLastEditTime(playlist_id);
