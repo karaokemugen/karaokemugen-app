@@ -47,14 +47,9 @@ export function stopPoll() {
 
 export async function getPollResults() {
 	logger.debug('[Poll] Getting poll results');
-	const maxVotes = Math.max.apply(Math,poll.map((choice) => {
-		return choice.votes;
-	}));
+	const maxVotes = Math.max.apply(Math, poll.map(choice => choice.votes ));
 	// We check if winner isn't the only one...
-	let winners = [];
-	for (const choice of poll) {
-		if (+choice.votes === +maxVotes) winners.push(choice);
-	}
+	let winners = poll.filter(c => +c.votes === +maxVotes);
 	let winner = sample(winners);
 	winner = translateKaraInfo(winner);
 	const playlist_id = getState().currentPlaylistID;
@@ -117,13 +112,13 @@ export async function startPoll() {
 	const availableKaras = isAllKarasInPlaylist(pubpl, curpl);
 	let pollChoices = conf.EngineSongPollChoices;
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
-	poll = sampleSize(availableKaras,pollChoices);
+	poll = sampleSize(availableKaras, pollChoices);
 	//Init votes to 0 for each poll item
 	for (const index in poll) {
 		poll[index].votes = 0;
 	}
 	poll = translateKaraInfo(poll);
-	logger.debug('[Poll] New poll : '+JSON.stringify(poll));
+	logger.debug(`[Poll] New poll : ${JSON.stringify(poll)}`);
 	emitWS('newSongPoll',poll);
 	timerPoll();
 }
