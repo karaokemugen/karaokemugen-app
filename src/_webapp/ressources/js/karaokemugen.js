@@ -491,11 +491,8 @@ var settingsNotUpdated;
 						if(make) {
 							$el.addClass('currentFav');
 						} else {
-							$el.removeClass('currentFav');
-							if($('#panel1 .plDashboard').data('playlist_id') == -5) {
-								fillPlaylist(1);
-							}
-						}
+                            $el.removeClass('currentFav');
+                        }
 					}
 				}).fail(function(response) {
 				});
@@ -1679,15 +1676,19 @@ var settingsNotUpdated;
 			playlistList = data; // object containing all the playlists
 			var shiftCount = 0;
 			if(playlistList[0] && (playlistList[0].flag_current || playlistList[0].flag_public)) shiftCount++;
-			if(playlistList[1] && (playlistList[1].flag_current || playlistList[1].flag_public)) shiftCount++;
+            if(playlistList[1] && (playlistList[1].flag_current || playlistList[1].flag_public)) shiftCount++;
+
+            if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -5, 'name': 'Favs', 'flag_favorites' : true });
 			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist'] == 1});
 			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias'] == 1});
 			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] == 1});
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'karacount' : kmStats.karas });
 
+            // for public interface only
 			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
 			searchOptionListHtml += '<option value="-6" data-playlist_id="-6"></option>';
-			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="true"></option>';
+            searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="true"></option>';
+            
 			// building the options
 			var optionListHtml = '';
 			$.each(playlistList, function (key, value) {
@@ -2813,6 +2814,14 @@ var settingsNotUpdated;
 			if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
 				playlistContentUpdating = fillPlaylist(side);
 				refreshPlaylistDashboard(side, true);
+			}
+		});
+
+		socket.on('favoritesUpdated', function(){
+            var side = sideOfPlaylist(-5);
+            console.log('rest');
+			if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
+				playlistContentUpdating = fillPlaylist(side);
 			}
 		});
 
