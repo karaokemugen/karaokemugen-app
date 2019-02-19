@@ -18,11 +18,9 @@ async function getPlayingSong() {
 		profile('tryToReadKaraInPlaylist');
 		try {
 			const kara = await getCurrentSong();
-			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, '\n'));
-			let serie = kara.serie;
-			let title = kara.title;
-			if (!serie) serie = kara.singer;
-			if (!title) title = '';
+			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
+			let serie = kara.serie || kara.singer;
+			let title = kara.title || '';
 			logger.info(`[Player] Playing ${serie}${title}`);
 			await play({
 				media: kara.mediafile,
@@ -42,8 +40,9 @@ async function getPlayingSong() {
 			} else {
 				stopPlayer(true);
 			}
+		} finally {
+			profile('tryToReadKaraInPlaylist');
 		}
-		profile('tryToReadKaraInPlaylist');
 	}
 }
 
@@ -94,13 +93,13 @@ export async function playerEnding() {
 
 async function prev() {
 	logger.info('[Player] Going to previous song');
-	stopPlayer(true);
+	await stopPlayer(true);
 	try {
 		await previousSong();
-		playPlayer();
 	} catch(err) {
 		logger.warn(`[Player] Previous song is not available : ${err}`);
 		// A failed previous means we restart the current song.
+	} finally {
 		playPlayer();
 	}
 }
@@ -165,13 +164,13 @@ function pausePlayer() {
 }
 
 function mutePlayer() {
-	logger.info('[Player] Player muted');
 	mute();
+	logger.info('[Player] Player muted');
 }
 
 function unmutePlayer() {
-	logger.info('[Player] Player unmuted');
 	unmute();
+	logger.info('[Player] Player unmuted');
 }
 
 function seekPlayer(delta) {
@@ -187,13 +186,13 @@ function setVolumePlayer(volume) {
 }
 
 function showSubsPlayer() {
-	logger.info('[Player] Showing lyrics on screen');
 	showSubs();
+	logger.info('[Player] Showing lyrics on screen');
 }
 
 function hideSubsPlayer() {
-	logger.info('[Player] Hiding lyrics on screen');
 	hideSubs();
+	logger.info('[Player] Hiding lyrics on screen');
 }
 
 
@@ -224,6 +223,8 @@ export async function sendCommand(command, options) {
 	if (commandInProgress) throw 'A command is already in progress';
 	if (getConfig().isDemo || getConfig().isTest) throw 'Player management is disabled in demo or test modes';
 	commandInProgress = true;
+	// Automatically set it back to false after 3 seconds
+	setTimeout(commandInProgress = false, 3000);
 	if (command === 'play') {
 		await playPlayer();
 	} else if (command === 'stopNow') {
