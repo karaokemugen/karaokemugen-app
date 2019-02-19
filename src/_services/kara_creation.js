@@ -7,7 +7,7 @@ import {basename, extname, resolve} from 'path';
 import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias,} from '../_utils/config';
 import {sanitizeFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, replaceExt} from '../_utils/files';
 import {
-	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
+	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, writeKara
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
@@ -16,13 +16,15 @@ import {getOrAddSerieID} from '../_services/series';
 import {now} from '../_utils/date';
 import { compareKarasChecksum } from './generation';
 
-export async function editKara(kara,opts = {compareChecksum: true}) {
+export async function editKara(kara, opts = {compareChecksum: true}) {
 	let newKara;
 	try {
-		const mediaFile = resolve(resolvedPathMedias()[0],kara.mediafile);
+		const mediaFile = resolve(resolvedPathMedias()[0], kara.mediafile);
 		let subFile;
-		kara.subfile && kara.subfile !== 'dummy.ass' ? subFile = resolve(resolvedPathSubs()[0],kara.subfile) : subFile = kara.subfile;
-		const karaFile = resolve(resolvedPathKaras()[0],kara.karafile);
+		kara.subfile && kara.subfile !== 'dummy.ass'
+			? subFile = resolve(resolvedPathSubs()[0], kara.subfile)
+			: subFile = kara.subfile;
+		const karaFile = resolve(resolvedPathKaras()[0], kara.karafile);
 		// Removing useless data
 		delete kara.karafile;
 		// Copying already present files in temp directory to be worked on with by generateKara
@@ -159,13 +161,8 @@ async function generateKara(kara, opts) {
 	}
 }
 
-/**
- * Generating kara files in batch mode. The import folder is scanned for video files
- * which respect the KM naming convention. If such a file is found, the associated
- * karaoke file is created, and subtitle files are moved to their own directories.
- */
-
 function defineFilename(data) {
+	// Generate filename according to tags and type.
 	if (data) {
 		const extraTags = [];
 		if (data.tags.includes('TAG_PS3')) extraTags.push('PS3');
@@ -200,15 +197,14 @@ async function importKara(mediaFile, subFile, data) {
 	const kara = defineFilename(data);
 	logger.info('[KaraGen] Generating kara file for ' + kara);
 	let karaSubFile;
-	subFile === 'dummy.ass' ? karaSubFile = subFile : karaSubFile = `${kara}${extname(subFile || '.ass')}`;
+	subFile === 'dummy.ass'
+		? karaSubFile = subFile
+		: karaSubFile = `${kara}${extname(subFile || '.ass')}`;
 	let karaData = formatKara({ ...data,
 		mediafile: `${kara}${extname(mediaFile)}`,
 		subfile: karaSubFile
 	});
 	karaData.overwrite = data.overwrite;
-	// In case we have no data (like from an automated import)
-	// try to guess some of the data from the filename)
-	if (!data) karaData = {mediafile: mediaFile, ...karaDataInfosFromFilename(mediaFile)};
 
 	// Extract media info, find subfile, and process series before moving files
 	const mediaPath = resolve(resolvedPathImport(), mediaFile);
@@ -237,28 +233,6 @@ async function processSeries(kara) {
 	}
 }
 
-function karaDataInfosFromFilename(mediaFile) {
-	try {
-		const filenameInfos = karaFilenameInfos(mediaFile);
-		const common = {
-			title: filenameInfos.title,
-			type: getType(filenameInfos.type),
-			order: filenameInfos.order,
-			lang: filenameInfos.lang
-		};
-
-		if (filenameInfos.type === 'LIVE' || filenameInfos.type === 'MV') {
-			return { ...common, singer: filenameInfos.serie };
-		} else {
-			return { ...common, series: filenameInfos.serie };
-		}
-	} catch (err) {
-		// File not named correctly
-		logger.warn('[KaraGen] Bad kara file name: ' + err);
-	}
-	return {};
-}
-
 async function findSubFile(mediaPath, karaData, subFile) {
 	// Replacing file extension by .ass in the same directory
 	// Default is media + .ass instead of media extension.
@@ -278,6 +252,7 @@ async function findSubFile(mediaPath, karaData, subFile) {
 		} catch (err) {
 			// Non-blocking.
 			logger.info('[KaraGen] Could not extract subtitles from video file ' + mediaPath + ' : ' + err);
+			return 'dummy.ass';
 		}
 	} else {
 		return 'dummy.ass';

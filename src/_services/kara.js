@@ -133,6 +133,7 @@ async function updateSeries(kara) {
 		seriesObj.i18n = {...langObj};
 		const sid = await getOrAddSerieID(seriesObj);
 		sids.push(sid);
+		// Remove this when we'll update .kara file format to version 4
 		if (kara.KID) kara.kid = kara.KID;
 	}
 	await updateKaraSeries(kara.kid,sids);
@@ -141,6 +142,7 @@ async function updateSeries(kara) {
 async function updateTags(kara) {
 	// Create an array of tags to add for our kara
 	let tags = [];
+	// Remove this when we'll update .kara file format to version 4
 	if (kara.KID) kara.kid = kara.KID;
 	kara.singer
 		? kara.singer.split(',').forEach(t => tags.push({tag: t, type: tagTypes.singer}))
@@ -291,6 +293,7 @@ export async function getKaraHistory() {
 }
 
 export async function getTop50(token, lang) {
+	// Called by system route
 	return await selectAllKaras(token.username, null, lang, 'requested', null);
 }
 

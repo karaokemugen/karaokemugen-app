@@ -6,7 +6,7 @@
 import {now} from '../_utils/date';
 import uuidV4 from 'uuid/v4';
 import logger from 'winston';
-import {parse, extname, resolve} from 'path';
+import {extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
 import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_utils/files';
 import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_utils/config';
@@ -16,27 +16,6 @@ import {getConfig} from '../_utils/config';
 import {selectAllKaras} from './kara';
 
 let error = false;
-
-export function karaFilenameInfos(karaFile) {
-	const karaFileName = parse(karaFile).name;
-	const infos = karaFileName.split(/\s+-\s+/); // LANGUAGE - SERIES - TYPE+ORDER - TITLE
-
-	if (infos.length < 3) {
-		throw `Kara filename "${karaFileName} does not respect naming convention`;
-	}
-	// Adding in 5th position the number extracted from the type field.
-	const orderInfos = infos[2].match(/^([a-zA-Z0-9 ]{2,30}?)(\d*)$/);
-	infos.push(orderInfos[2] ? +orderInfos[2] : 0);
-
-	// Let's return an object with our data correctly positionned.
-	return {
-		lang: infos[0].toLowerCase(),
-		serie: infos[1],
-		type: orderInfos[1],
-		order: orderInfos[2] ? +orderInfos[2] : 0,
-		title: infos[3] || ''
-	};
-}
 
 function strictModeError(karaData, data) {
 	delete karaData.ass;
