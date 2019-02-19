@@ -147,7 +147,6 @@ export const defaultGuestNames = [
 	'Mikuru Asahina',
 	'Kyon-kun denwa',
 	'Chika-Chika',
-	'Goblin Slayer-kun',
 	'Giorgio Vanni <3'
 ];
 

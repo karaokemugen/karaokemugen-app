@@ -50,9 +50,7 @@ export async function addToFavorites(username, kid) {
 		if (Array.isArray(kid)) karas = kid;
 		if (typeof kid === 'string') karas = kid.split(',');
 		await insertFavorites(karas, username);
-		if (username.includes('@') && +getConfig().OnlineUsers) for (const kara of karas) {
-			manageFavoriteInInstance('POST', username, kara);
-		}
+		if (username.includes('@') && +getConfig().OnlineUsers) karas.forEach(k => manageFavoriteInInstance('POST', username, k));
 	} catch(err) {
 		throw err;
 	} finally {
@@ -161,9 +159,9 @@ export async function createAutoMix(params, username) {
 	const favs = await getAllFavorites(params.users.split(','));
 	if (favs.length === 0) throw 'No favorites found for those users';
 	const autoMixPLName = `AutoMix ${date()}`;
-	const playlist_id = await createPlaylist(autoMixPLName,{
+	const playlist_id = await createPlaylist(autoMixPLName, {
 		visible: true
-	},username);
+	}, username);
 	// Copy karas from everyone listed
 	await addKaraToPlaylist(favs, username, playlist_id);
 	// Shuffle time.
