@@ -41,7 +41,6 @@ export async function getSerie(sid) {
 }
 
 export async function deleteSerie(sid) {
-	//Not removing from database, a regeneration will do the trick.
 	const serie = await getSerie(sid);
 	if (!serie) throw 'Series ID unknown';
 	await removeSerie(sid);
@@ -50,6 +49,7 @@ export async function deleteSerie(sid) {
 		removeSeriesFile(serie.name),
 		removeSerieInKaras(serie.name),
 	]);
+	// Refreshing karas is done asynchronously
 	refreshKaraSeries().then(refreshKaras());
 }
 
@@ -58,7 +58,7 @@ export async function addSerie(serieObj) {
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) throw 'Series original name already exists';
 	serieObj.sid = uuidV4();
-	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
+	serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
 	await Promise.all([
 		insertSerie(serieObj),
 		insertSeriei18n(serieObj),
@@ -69,7 +69,7 @@ export async function addSerie(serieObj) {
 	return serieObj.sid;
 }
 
-export async function editSerie(sid,serieObj) {
+export async function editSerie(sid, serieObj) {
 	const oldSerie = await getSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
