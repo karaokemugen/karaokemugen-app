@@ -133,14 +133,6 @@ export async function getASS(sub) {
 	throw 'Subfile not found';
 }
 
-export async function isKaraInPlaylist(kid,playlist_id) {
-	const res = await db().query(yesql(sql.isKaraInPlaylist)({
-		kid: kid,
-		playlist_id: playlist_id
-	}));
-	return res.rows.length > 0;
-}
-
 export async function addPlayed(kid) {
 	return await db().query(yesql(sql.addViewcount)({
 		kid: kid,

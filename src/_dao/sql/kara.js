@@ -121,13 +121,6 @@ INNER JOIN played p ON p.fk_kid = ak.kid
 ORDER BY p.played_at DESC
 `;
 
-export const isKaraInPlaylist = `
-SELECT fk_kid
-FROM playlist_content
-WHERE fk_id_playlist = :playlist_id
-AND fk_kid = :kid;
-`;
-
 export const removeKaraFromPlaylist = `
 DELETE FROM playlist_content
 WHERE pk_id_plcontent IN ($playlistcontent_id)

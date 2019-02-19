@@ -60,7 +60,6 @@ import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
 	getKaraMini,
 	removeKaraFromPlaylist,
 	addKaraToPlaylist as addKaraToPL,
-	isKaraInPlaylist as isKaraInPL,
 	getSongTimeSpentForUser,
 	getSongCountForUser,
 	addKaraToRequests
@@ -155,10 +154,6 @@ async function setPlaying(plc_id, playlist_id) {
 
 async function getPLCIDByDate(playlist_id, date_added) {
 	return await getPLCByDate(playlist_id, date_added);
-}
-
-async function isKaraInPlaylist(kid, playlist_id) {
-	return await isKaraInPL(kid, playlist_id);
 }
 
 export async function trimPlaylist(playlist_id, duration) {
@@ -974,7 +969,7 @@ export async function nextSong() {
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (current.index + 1 >= current.content.length && !+conf.EngineRepeatPlaylist) {
 		logger.debug('[PLC] End of playlist.');
-		await setPlaying(null,current.id);
+		await setPlaying(null, current.id);
 		throw 'Current position is last song!';
 	} else {
 		// If we're here, it means either we're beyond the length of the playlist
@@ -983,7 +978,7 @@ export async function nextSong() {
 		if (current.index + 1 >= current.content.length) current.index = 0;
 		const kara = current.content[current.index + 1];
 		if (!kara) throw 'Karaoke received is empty!';
-		await setPlaying(kara.playlistcontent_id,current.id);
+		await setPlaying(kara.playlistcontent_id, current.id);
 	}
 }
 
@@ -1040,18 +1035,18 @@ export async function getCurrentSong() {
 
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 	if (!kara.songorder || kara.songorder === 0) kara.songorder = '';
-	// Construct mpv message to display.
 	//If karaoke is present in the public playlist, we're deleting it.
 	if (+conf.EngineRemovePublicOnPlay) {
-		const playlist_id = await findPublicPlaylist();
-		const plc = await getPLCByKIDUser(kara.kid,kara.username,playlist_id);
-		if (plc) await deleteKaraFromPlaylist(plc.playlistcontent_id,playlist_id);
+		const playlist_id = getState().publicPlaylistID;
+		const plc = await getPLCByKIDUser(kara.kid, kara.username, playlist_id);
+		if (plc) deleteKaraFromPlaylist(plc.playlistcontent_id,playlist_id);
 	}
+	// Construct mpv message to display.
 	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtypes[0].name+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 	return kara;
 }
 
-export async function buildDummyPlaylist(playlist_id) {
+export async function buildDummyPlaylist() {
 	const stats = await getStats();
 	const state = await getState();
 	let karaCount = stats.karas;
@@ -1060,12 +1055,12 @@ export async function buildDummyPlaylist(playlist_id) {
 	if (karaCount > 0) {
 		logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);
 		for (let i = 1; i <= karaCount; i++) {
-			const kid = await getRandomKara(playlist_id);
-			await addKaraToPlaylist(kid,'admin',state.currentPlaylistID);
+			const kid = await getRandomKara(state.currentPlaylistID);
+			await addKaraToPlaylist(kid, 'admin', state.currentPlaylistID);
 		}
 		logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
-		emitWS('playlistInfoUpdated',state.currentPlaylistID);
-		emitWS('playlistContentsUpdated',state.currentPlaylistID);
+		emitWS('playlistInfoUpdated', state.currentPlaylistID);
+		emitWS('playlistContentsUpdated', state.currentPlaylistID);
 		return true;
 	} else {
 		logger.warn('[PLC] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
@@ -1098,7 +1093,7 @@ export async function testCurrentPlaylist() {
 		},'admin')
 		});
 		logger.debug('[Playlist] Initial current playlist created');
-		if (!conf.isTest) buildDummyPlaylist(getState().currentPlaylistID);
+		if (!conf.isTest) buildDummyPlaylist();
 	}
 }
 
