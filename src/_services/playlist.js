@@ -877,7 +877,7 @@ export async function shufflePlaylist(playlist_id, isSmartShuffle) {
 	}
 }
 
-function smartShuffle(playlist){ // Smart Shuffle begin
+function smartShuffle(playlist) {
 	let userShuffleBoolean = false; // The boolean to add a shuffle condition if the number of user is high enough
 	playlist = shuffle(playlist);
 	let verificator = 0;
@@ -890,9 +890,7 @@ function smartShuffle(playlist){ // Smart Shuffle begin
 				userTest++;
 			}
 		}
-		if (userTest > 5) {
-			userShuffleBoolean = true;
-		}
+		if (userTest > 5) userShuffleBoolean = true;
 		let user_iterator = 0;
 		if (userShuffleBoolean) {
 			while (playlist.length - user_iterator > 0) {
@@ -954,18 +952,20 @@ function smartShuffle(playlist){ // Smart Shuffle begin
 }
 
 export async function previousSong() {
-	const playlist_id = await findCurrentPlaylist();
+	const playlist_id = getState().currentPlaylistID;
 	const playlist = await getPlaylistContentsMini(playlist_id);
 	if (playlist.length === 0) throw 'Playlist is empty!';
 	let readpos = 0;
-	playlist.forEach((kara, index) => {
-		if (kara.flag_playing) readpos = index - 1;
+	const reachedPlaying = playlist.some((plc, index) => {
+		readpos = index - 1;
+		return plc.flag_playing;
 	});
 	// If readpos ends up being -1 then we're at the beginning of the playlist and can't go to the previous song
+	if (!reachedPlaying) throw 'No playing kara in current playlist';
 	if (readpos < 0) throw 'Current position is first song!';
 	const kara = playlist[readpos];
 	if (!kara) throw 'Karaoke received is empty!';
-	await setPlaying(kara.playlistcontent_id,playlist_id);
+	await setPlaying(kara.playlistcontent_id, playlist_id);
 }
 
 export async function nextSong() {
