@@ -596,7 +596,7 @@ describe('Playlists', function() {
 			.expect(500)
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'PL_DELETE_ERROR');
-				assert.strictEqual(response.body.message,'Playlist '+new_playlist_current_id+' is current. Unable to delete it');
+				assert.strictEqual(response.body.message,'Playlist '+new_playlist_current_id+' is current. Unable to delete it. Make another playlist current first.');
 			});
 	});
 
@@ -609,7 +609,7 @@ describe('Playlists', function() {
 			.expect(500)
 			.then(function(response) {
 				assert.strictEqual(response.body.code,'PL_DELETE_ERROR');
-				assert.strictEqual(response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it');
+				assert.strictEqual(response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it. Make another playlist public first.');
 			});
 	});
 
