@@ -54,9 +54,7 @@ export function getJingles() {
 }
 
 export function removeJingle(jingle) {
-	currentJingles = currentJingles.filter(e => {
-		return e.file !== jingle;
-	});
+	currentJingles = currentJingles.filter(e => e.file !== jingle);
 }
 
 export function getSingleJingle() {

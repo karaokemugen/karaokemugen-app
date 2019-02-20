@@ -210,6 +210,17 @@ async function importKara(mediaFile, subFile, data) {
 	const mediaPath = resolve(resolvedPathImport(), mediaFile);
 	let subPath;
 	if (subFile !== 'dummy.ass') subPath = await findSubFile(mediaPath, karaData, subFile);
+
+	// Autocreating groups based on song year
+
+	if (+karaData.year >= 1950 && +karaData.year <= 1959 && !karaData.groups.includes('50s')) karaData.groups.push('50s');
+	if (+karaData.year >= 1960 && +karaData.year <= 1969 && !karaData.groups.includes('60s')) karaData.groups.push('60s');
+	if (+karaData.year >= 1970 && +karaData.year <= 1979 && !karaData.groups.includes('70s')) karaData.groups.push('70s');
+	if (+karaData.year >= 1980 && +karaData.year <= 1989 && !karaData.groups.includes('80s')) karaData.groups.push('80s');
+	if (+karaData.year >= 1990 && +karaData.year <= 1999 && !karaData.groups.includes('90s')) karaData.groups.push('90s');
+	if (+karaData.year >= 2000 && +karaData.year <= 2009 && !karaData.groups.includes('2000s')) karaData.groups.push('2000s');
+	if (+karaData.year >= 2010 && +karaData.year <= 2019 && !karaData.groups.includes('2010s')) karaData.groups.push('2010s');
+
 	try {
 		if (subPath !== 'dummy.ass') await extractAssInfos(subPath, karaData);
 		await extractMediaTechInfos(mediaPath, karaData);
@@ -265,6 +276,7 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	const karaFilename = replaceExt(karaData.mediafile, '.kara');
 	const karaPath = resolve(resolvedPathKaras()[0], karaFilename);
 	if (subPath === 'dummy.ass') karaData.subfile = 'dummy.ass';
+
 	karaData.series = karaData.series.join(',');
 	karaData.groups = karaData.groups.join(',');
 	karaData.lang = karaData.lang.join(',');
