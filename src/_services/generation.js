@@ -517,6 +517,7 @@ export async function run(validateOnly) {
 		bar.incr();
 		// Setting the pk_id_tag sequence to allow further edits during runtime
 		await db().query('SELECT SETVAL(\'tag_pk_id_tag_seq\',(SELECT MAX(pk_id_tag) FROM tag))');
+		await db().query('SELECT SETVAL(\'serie_lang_pk_id_serie_lang_seq\',(SELECT MAX(pk_id_serie_lang) FROM serie_lang))');
 		bar.incr();
 		await db().query('VACUUM ANALYZE;');
 		bar.incr();
