@@ -558,8 +558,8 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 	}
 }
 
-export async function getPLCInfo(plc_id) {
-	return await getPLCInfoDB(plc_id);
+export async function getPLCInfo(plc_id, forUser, username) {
+	return await getPLCInfoDB(plc_id, forUser, username);
 }
 
 export async function getPLCInfoMini(plc_id) {

@@ -224,7 +224,9 @@ export async function sendCommand(command, options) {
 	if (getConfig().isDemo || getConfig().isTest) throw 'Player management is disabled in demo or test modes';
 	commandInProgress = true;
 	// Automatically set it back to false after 3 seconds
-	setTimeout(commandInProgress = false, 3000);
+	setTimeout(function () {
+		commandInProgress = false;
+	}, 3000);
 	if (command === 'play') {
 		await playPlayer();
 	} else if (command === 'stopNow') {
