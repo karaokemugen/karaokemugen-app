@@ -1128,6 +1128,10 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	*/
 }
 
+.profileConvert, .profileDelete {
+    font-family: inherit;
+}
+
 #loginModal input[type="text"]:not(:focus), #loginModal input[type="password"]:not(:focus) {
     background-color: hsla(229, 9%, 30%, 1);
 }
