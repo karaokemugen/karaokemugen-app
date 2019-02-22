@@ -2568,19 +2568,23 @@ var settingsNotUpdated;
 		var deferred = $.Deferred();
 		var url = 'auth/login';
 		var data = { username: username, password: password};
+        
 		if(!username) {
 			url = 'auth/login/guest';
 			data = { fingerprint : password };
+		} else if(scope === 'admin' && appFirstRun === 1) {
+		    url = 'admin/users/login';
 		}
+
 		$.ajax({
 			url: url,
 			type: 'POST',
 			data: data })
 			.done(function (response) {
-                if(scope === 'admin' && response.role !== 'admin') {
-                    displayMessage('warning','', i18n.__('ADMIN_PLEASE'));
-                    return deferred.reject();
-                }
+				if(scope === 'admin' && response.role !== 'admin') {
+					displayMessage('warning','', i18n.__('ADMIN_PLEASE'));
+					return deferred.reject();
+				}
 				var token;
 				$('#loginModal').modal('hide');
 				$('#password, #login').removeClass('redBorders');
