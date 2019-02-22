@@ -2708,6 +2708,11 @@ var settingsNotUpdated;
 		} else {
 			$('.profileConvert').show();
 		}
+		if(logInfos.onlineToken) {
+			$('.profileDelete').show();
+		} else {
+			$('.profileDelete').hide();
+		}
 		settingsUpdating.done(function () {
 			if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
 				setTimeout(function() {
