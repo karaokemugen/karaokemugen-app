@@ -2704,12 +2704,18 @@ var settingsNotUpdated;
 		} else {
 			$('.profileConvert').show();
 		}
-
-		if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
-			setTimeout(function() {
-				displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
-			}, 500)
+		if(logInfos.onlineToken) {
+			$('.profileDelete').show();
+		} else {
+			$('.profileDelete').hide();
 		}
+		settingsUpdating.done(function () {
+			if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
+				setTimeout(function() {
+					displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
+				}, 500);
+			}
+		});
 	}
 
 	/* socket part */
@@ -2818,8 +2824,7 @@ var settingsNotUpdated;
 		});
 
 		socket.on('favoritesUpdated', function(){
-            var side = sideOfPlaylist(-5);
-            console.log('rest');
+			var side = sideOfPlaylist(-5);
 			if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
 				playlistContentUpdating = fillPlaylist(side);
 			}
