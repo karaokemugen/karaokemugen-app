@@ -74,14 +74,14 @@ var settingsNotUpdated;
 	$(function () {
 
 
-        var perf = sessionStorage.getItem('perf');
-        if (!perf) {
-            perf = getPerformanceIndice()
-            sessionStorage.setItem('perf', perf);
-        }
-        pageSize = parseInt(Math.min(400, Math.max(90, 105 + perf * perf * 10)));
-        // alert(pageSize)
-        if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
+		var perf = sessionStorage.getItem('perf');
+		if (!perf) {
+			perf = getPerformanceIndice()
+			sessionStorage.setItem('perf', perf);
+		}
+		pageSize = parseInt(Math.min(400, Math.max(90, 105 + perf * perf * 10)));
+		// alert(pageSize)
+		if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
 
 		initSwitchs();
 
@@ -491,8 +491,8 @@ var settingsNotUpdated;
 						if(make) {
 							$el.addClass('currentFav');
 						} else {
-                            $el.removeClass('currentFav');
-                        }
+							$el.removeClass('currentFav');
+						}
 					}
 				}).fail(function(response) {
 				});
@@ -1676,18 +1676,18 @@ var settingsNotUpdated;
 			playlistList = data; // object containing all the playlists
 			var shiftCount = 0;
 			if(playlistList[0] && (playlistList[0].flag_current || playlistList[0].flag_public)) shiftCount++;
-            if(playlistList[1] && (playlistList[1].flag_current || playlistList[1].flag_public)) shiftCount++;
+			if(playlistList[1] && (playlistList[1].flag_current || playlistList[1].flag_public)) shiftCount++;
 
-            if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -5, 'name': 'Favs', 'flag_favorites' : true });
+			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -5, 'name': 'Favs', 'flag_favorites' : true });
 			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist'] == 1});
 			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias'] == 1});
 			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] == 1});
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'karacount' : kmStats.karas });
 
-            // for public interface only
+			// for public interface only
 			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
 			searchOptionListHtml += '<option value="-6" data-playlist_id="-6"></option>';
-            searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="true"></option>';
+			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="true"></option>';
             
 			// building the options
 			var optionListHtml = '';
@@ -1866,13 +1866,13 @@ var settingsNotUpdated;
 				barCss.addClass('cssTransform');
 
 
-                if ( data.currentlyPlaying === null) {
+				if ( data.currentlyPlaying === null) {
                     
-                    $('#karaInfo').attr('idKara', data.currentlyPlaying);
+					$('#karaInfo').attr('idKara', data.currentlyPlaying);
 					$('#karaInfo').attr('length', -1);
 					$('#karaInfo > span').text( i18n.__('KARA_PAUSED_WAITING') );
 					$('#karaInfo > span').data('text',i18n.__('KARA_PAUSED_WAITING') );
-                } else if ( data.currentlyPlaying === -1) {
+				} else if ( data.currentlyPlaying === -1) {
 					$('#karaInfo').attr('idKara', data.currentlyPlaying);
 					$('#karaInfo').attr('length', -1);
 					$('#karaInfo > span').text( i18n.__('JINGLE_TIME') );
@@ -2261,12 +2261,12 @@ var settingsNotUpdated;
 		var $option = $('<span>' + icon + ' ' + playlist.text + '</span>');
 
 		return $option;
-    };
+	};
     
 	formatTagsPlaylist = function (playlist) {
 		if (!playlist.id) return playlist.text;
 
-        count = '<k>' + playlist.karacount + '</k>';
+		count = '<k>' + playlist.karacount + '</k>';
 		var $option = $('<span>' + count + ' ' + playlist.text + '</span>') ;
 
 		return $option;
@@ -2373,7 +2373,7 @@ var settingsNotUpdated;
 
 				$('.tagsTypes').select2({ theme: 'bootstrap',
 					tags: false,
-                    minimumResultsForSearch: 15,
+					minimumResultsForSearch: 15,
 					data: tagList
 				});
 				$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
@@ -2387,8 +2387,8 @@ var settingsNotUpdated;
 
 					var series = data.content;
 					series = series.map(function(val, ind){
-                        return {id:val.sid, text: val.i18n_name, type: 'serie',
-                                aliases : val.aliases, karacount : val.karacount};
+						return {id:val.sid, text: val.i18n_name, type: 'serie',
+							aliases : val.aliases, karacount : val.karacount};
 					});
 					forSelectTags.push.apply(forSelectTags, series);
 
@@ -2405,8 +2405,8 @@ var settingsNotUpdated;
 							placeholder: '',
 							dropdownAutoWidth: false,
 							minimumResultsForSearch: 20,
-                            templateResult: formatTagsPlaylist,
-                            templateSelection : formatTagsPlaylist,
+							templateResult: formatTagsPlaylist,
+							templateSelection : formatTagsPlaylist,
 							ajax: {
 								transport: function(params, success, failure) {
 									var page = params.data.page;
@@ -2414,7 +2414,7 @@ var settingsNotUpdated;
 									var type = $('.tagsTypes').val();
 
 									var items = forSelectTags.filter(function(item) {
-                                        return item.type == type
+										return item.type == type
                                             && (new RegExp(params.data.q, 'i').test(item.text)
                                                 || item.aliases && new RegExp(params.data.q, 'i').test(item.aliases.join(' ')));
 									});
@@ -2568,19 +2568,23 @@ var settingsNotUpdated;
 		var deferred = $.Deferred();
 		var url = 'auth/login';
 		var data = { username: username, password: password};
+        
 		if(!username) {
 			url = 'auth/login/guest';
 			data = { fingerprint : password };
+		} else if(scope === 'admin' && appFirstRun === 1) {
+		    url = 'admin/users/login';
 		}
+
 		$.ajax({
 			url: url,
 			type: 'POST',
 			data: data })
 			.done(function (response) {
-                if(scope === 'admin' && response.role !== 'admin') {
-                    displayMessage('warning','', i18n.__('ADMIN_PLEASE'));
-                    return deferred.reject();
-                }
+				if(scope === 'admin' && response.role !== 'admin') {
+					displayMessage('warning','', i18n.__('ADMIN_PLEASE'));
+					return deferred.reject();
+				}
 				var token;
 				$('#loginModal').modal('hide');
 				$('#password, #login').removeClass('redBorders');
@@ -2704,13 +2708,19 @@ var settingsNotUpdated;
 		} else {
 			$('.profileConvert').show();
 		}
-
-		if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
-			setTimeout(function() {
-				displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
-			}, 500)
+		if(logInfos.onlineToken) {
+			$('.profileDelete').show();
+		} else {
+			$('.profileDelete').hide();
 		}
-	}
+		settingsUpdating.done(function () {
+			if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
+				setTimeout(function() {
+					displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
+				}, 500);
+			}
+		});
+	};
 
 	/* socket part */
 
@@ -2818,8 +2828,7 @@ var settingsNotUpdated;
 		});
 
 		socket.on('favoritesUpdated', function(){
-            var side = sideOfPlaylist(-5);
-            console.log('rest');
+			var side = sideOfPlaylist(-5);
 			if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
 				playlistContentUpdating = fillPlaylist(side);
 			}
