@@ -171,7 +171,7 @@ SELECT
 	THEN TRUE
 	ELSE FALSE
   END) AS flag_blacklisted,
-  COUNT(up.fk_login) AS upvotes,
+  COUNT(up.fk_login)::integer AS upvotes,
   (CASE WHEN up.fk_login = :username THEN 1 ELSE 0 END) as flag_upvoted
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
@@ -312,7 +312,7 @@ SELECT pc.fk_kid AS kid,
 	pc.fk_login AS username,
 	pc.pk_id_plcontent AS playlistcontent_id,
 	pc.fk_id_playlist AS playlist_id,
-	COUNT(up.fk_login) AS upvotes
+	COUNT(up.fk_login)::integer AS upvotes
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
