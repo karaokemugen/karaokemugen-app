@@ -2703,17 +2703,18 @@ var settingsNotUpdated;
 	manageOnlineUsersUI = function(data) {
 		$('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
 		DEBUG && console.log(logInfos);
-		if(!settings.OnlineUsers || !data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
-			$('.profileConvert').hide();
-		} else {
-			$('.profileConvert').show();
-		}
-		if(logInfos.onlineToken) {
-			$('.profileDelete').show();
-		} else {
-			$('.profileDelete').hide();
-		}
+		
 		settingsUpdating.done(function () {
+            if(!settings.OnlineUsers || !data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
+                $('.profileConvert').hide();
+            } else {
+                $('.profileConvert').show();
+            }
+            if(logInfos.onlineToken) {
+                $('.profileDelete').show();
+            } else {
+                $('.profileDelete').hide();
+            }
 			if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
 				setTimeout(function() {
 					displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
