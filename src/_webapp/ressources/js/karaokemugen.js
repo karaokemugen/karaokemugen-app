@@ -1373,8 +1373,8 @@ var settingsNotUpdated;
 										badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
 									}
 								});
-							}
-							if(kara.upvotes) {
+                            }
+							if(kara.upvotes !== '0') {
 								badges += likeCountHtml.replace('upvotes', kara.upvotes);
 							}
 							if (mode === 'list') {
