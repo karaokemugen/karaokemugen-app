@@ -146,6 +146,7 @@ export default function authController(router) {
 				editRemote: false,
 				renameUser: false
 			});
+			token.role = 'admin';
 			res.send(token);
 		} catch(err) {
 			res.status(401).send(loginErr);
