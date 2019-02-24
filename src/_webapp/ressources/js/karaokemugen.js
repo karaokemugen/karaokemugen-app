@@ -2703,7 +2703,7 @@ var settingsNotUpdated;
 	manageOnlineUsersUI = function(data) {
 		$('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
 		DEBUG && console.log(logInfos);
-		if(!data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
+		if(!settings.OnlineUsers || !data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
 			$('.profileConvert').hide();
 		} else {
 			$('.profileConvert').show();
