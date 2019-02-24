@@ -146,8 +146,7 @@ export default function authController(router) {
 				editRemote: false,
 				renameUser: false
 			});
-			token.role = 'admin';
-			res.send(token);
+			res.send(await checkLogin(req.body.username, req.body.password));
 		} catch(err) {
 			res.status(401).send(loginErr);
 		}
