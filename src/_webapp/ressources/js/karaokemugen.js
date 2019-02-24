@@ -2572,7 +2572,7 @@ var settingsNotUpdated;
 		if(!username) {
 			url = 'auth/login/guest';
 			data = { fingerprint : password };
-		} else if(scope === 'admin' && appFirstRun === 1) {
+		} else if(scope === 'admin' && appFirstRun === 1 && username !== 'admin') {
 		    url = 'admin/users/login';
 		}
 
