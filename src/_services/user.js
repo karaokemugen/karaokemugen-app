@@ -68,11 +68,6 @@ async function updateExpiredUsers() {
 	}
 }
 
-async function getUserRequests(username) {
-	if (!await findUserByName(username)) throw 'User unknown';
-	return await db.getUserRequests(username);
-}
-
 export async function fetchRemoteAvatar(instance, avatarFile) {
 	const conf = getConfig();
 	const res = await got(`https://${instance}/avatars/${avatarFile}`, {

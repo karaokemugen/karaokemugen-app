@@ -1,5 +1,5 @@
 import {requireAuth, requireValidUser, requireAdmin} from './middlewares/auth';
-import { updateLastLoginName, decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint, findUserByName, editUser } from '../_services/user';
+import { updateLastLoginName, createJwtToken, decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint, findUserByName, editUser } from '../_services/user';
 
 const loginErr = {
 	code: 'LOG_ERROR',
@@ -146,7 +146,9 @@ export default function authController(router) {
 				editRemote: false,
 				renameUser: false
 			});
-			res.send(await checkLogin(req.body.username, req.body.password));
+			token.role = 'admin';
+			token.token = createJwtToken(user.login, token.role);
+			res.send(token);
 		} catch(err) {
 			res.status(401).send(loginErr);
 		}
