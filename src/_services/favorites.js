@@ -23,7 +23,7 @@ export async function getFavorites(username, filter, lang, from = 0, size = 9999
 }
 
 export async function fetchAndAddFavorites(instance, token, username) {
-	const res = await got(`http://${instance}/api/favorites`, {
+	const res = await got(`https://${instance}/api/favorites`, {
 		headers: {
 			authorization: token
 		},
@@ -97,7 +97,7 @@ async function manageFavoriteInInstance(action, username, kid) {
 	const instance = username.split('@')[1];
 	const remoteToken = getRemoteToken(username);
 	try {
-		return await got(`http://${instance}/api/favorites`, {
+		return await got(`https://${instance}/api/favorites`, {
 			method: action,
 			body: {
 				kid: kid

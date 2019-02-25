@@ -7,7 +7,7 @@ export async function publishURL() {
 	const conf = getConfig();
 	const localHost = conf.EngineDisplayConnectionInfoHost || conf.osHost;
 	try {
-		await got(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, {
+		await got(`https://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, {
 			body: {
 				localIP: localHost,
 				localPort: conf.appFrontendPort,
