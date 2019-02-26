@@ -1,45 +1,48 @@
-import {getUserDb, transaction} from './database';
-const sql = require('../_common/db/download');
+import {db, transaction} from './database';
+const sql = require('./sql/download');
 
 export async function insertDownloads(downloads) {
-	const dls = downloads.map((dl) => ({
-		$name: dl.name,
-		$status: 'DL_PLANNED',
-		$size: dl.size,
-		$urls: JSON.stringify(dl.urls),
-		$uuid: dl.uuid,
-	}));
-	return await transaction(dls, sql.insertDownload);
+	const dls = downloads.map(dl => [
+		dl.name,
+		'DL_PLANNED',
+		dl.size,
+		dl.urls,
+		dl.uuid
+	]);
+	return await transaction([{sql: sql.insertDownload, params: dls}]);
 }
 
 export async function selectDownloads() {
-	return await getUserDb().all(sql.selectDownloads);
+	const dls = await db().query(sql.selectDownloads);
+	return dls.rows;
 }
 
 export async function selectPendingDownloads() {
-	return await getUserDb().all(sql.selectPendingDownloads);
+	const dls = await db().query(sql.selectPendingDownloads);
+	return dls.rows;
 }
 
 export async function initDownloads() {
-	await getUserDb().run(sql.updateRunningDownloads);
-	await getUserDb().run(sql.deleteDoneFailedDownloads);
+	await db().query(sql.updateRunningDownloads);
+	await db().query(sql.deleteDoneFailedDownloads);
 }
 
 export async function selectDownload(id) {
-	return await getUserDb().get(sql.selectDownload, {$id: id});
+	const dl = await db().query(sql.selectDownload, [id]);
+	return dl.rows[0];
 }
 
 export async function deleteDownload(id) {
-	return await getUserDb().run(sql.deleteDownload, {$id: id});
+	return await db().query(sql.deleteDownload, [id]);
 }
 
 export async function updateDownload(uuid, status) {
-	return await getUserDb().run(sql.updateDownloadStatus, {
-		$uuid: uuid,
-		$status: status
-	});
+	return await db().query(sql.updateDownloadStatus, [
+		uuid,
+		status
+	]);
 }
 
 export async function emptyDownload() {
-	return await getUserDb().run(sql.emptyDownload);
+	return await db().query(sql.emptyDownload);
 }

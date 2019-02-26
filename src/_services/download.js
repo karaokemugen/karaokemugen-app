@@ -1,12 +1,12 @@
 import {emptyDownload, selectDownload, selectDownloads, updateDownload, deleteDownload, insertDownloads, selectPendingDownloads, initDownloads} from '../_dao/download';
-import Downloader from '../_common/utils/downloader';
+import Downloader from '../_utils/downloader';
 import Queue from 'better-queue';
 import uuidV4 from 'uuid/v4';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from 'winston';
-import {asyncMove} from '../_common/utils/files';
+import {asyncMove} from '../_utils/files';
 import { integrateSeriesFile } from './series';
 import { integrateKaraFile } from './kara';
 
@@ -44,7 +44,7 @@ export async function initDownloader() {
 
 function initQueue() {
 	q = new Queue(queueDownload, queueOptions);
-	q.on('task_failed', (taskId, err, stats) => logger.error(`[Download] Task ${taskId} failed : ${err}`));
+	q.on('task_failed', (taskId, err) => logger.error(`[Download] Task ${taskId} failed : ${err}`));
 	q.on('drain', () => logger.info('[Download] Ano ne, ano ne! I finished all my downloads!'));
 }
 
@@ -192,9 +192,7 @@ export async function addDownloads(repo, downloads) {
 		};
 	});
 	//Remove downloads with null entry (they are already present and could not be added)
-	dls = dls.filter((dl) => {
-		return dl !== null;
-	});
+	dls = dls.filter(dl => dl !== null);
 	if (dls.length === 0) throw 'No downloads added, all are already in queue or running';
 	await insertDownloads(dls);
 	try {
