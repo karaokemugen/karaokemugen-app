@@ -1,0 +1,288 @@
+/** Centralized configuration management for Karaoke Mugen. */
+
+import {resolve} from 'path';
+import {parse, stringify} from 'ini';
+import osLocale from 'os-locale';
+import i18n from 'i18n';
+import {address} from 'ip';
+import {configureLogger} from './logger';
+import logger from 'winston';
+import {copy} from 'fs-extra';
+import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
+import {checkBinaries} from './binchecker.js';
+import uuidV4 from 'uuid/v4';
+import {configConstraints, defaults} from './default_settings.js';
+import {check, unescape} from './validators';
+import {publishURL} from '../_webapp/online';
+import {playerNeedsRestart} from '../_services/player';
+import {setState, getState} from './state';
+import testJSON from 'is-valid-json';
+import {setSongPoll} from '../_services/poll';
+import { initStats, stopStats } from '../_services/stats';
+import merge from 'lodash.merge';
+
+/** Object containing all config */
+let config = {};
+let configFile = 'config.ini';
+let savingSettings;
+let configReady;
+
+/**
+ * We return a copy of the configuration data so the original one can't be modified
+ * without passing by this module's functions.
+ */
+export function getConfig() {
+	return {...config};
+}
+
+export async function editSetting(key, value) {
+	let newConfig = {...getConfig()};
+	newConfig[key] = value;
+	if (!Object.keys(defaults).includes(key)) throw `${key} is not editable`;
+	verifyConfig(newConfig);
+	newConfig = sanitizeConfig(newConfig);
+	const publicSettings = await mergeConfig(newConfig);
+	return publicSettings;
+}
+
+export function sanitizeConfig(conf) {
+	for (const setting of Object.keys(conf)) {
+		if (/^\+?(0|[1-9]\d*)$/.test(conf[setting])) {
+			conf[setting] = parseInt(conf[setting], 10);
+		}
+		if (setting === 'EngineDisplayConnectionInfoMessage' ||
+		    setting === 'EngineDisplayConnectionInfoHost') {
+			conf[setting] = unescape(conf[setting].trim());
+		}
+	}
+	return conf;
+}
+
+export function verifyConfig(conf) {
+	const validationErrors = check(conf, configConstraints);
+	if (validationErrors) {
+		throw `Config is not valid: ${JSON.stringify(validationErrors)}`;
+	}
+}
+
+export async function mergeConfig(newConfig) {
+	const oldConfig = getConfig();
+	// Determine if mpv needs to be restarted
+	for (const setting in newConfig) {
+		if (setting.startsWith('Player') &&
+			setting !== 'PlayerFullscreen' &&
+			setting !== 'PlayerStayOnTop') {
+			if (oldConfig[setting] != newConfig[setting]) {
+				playerNeedsRestart();
+				logger.debug('[Config] Setting mpv to restart after next song');
+			}
+		}
+	}
+
+	if (newConfig.OnlineURL && getState().ready) publishURL();
+	setConfig(newConfig);
+	const conf = getConfig();
+	+conf.EngineSongPoll === 1 ? setSongPoll(true) : setSongPoll(false);
+	// Toggling stats
+	+conf.OnlineStats === 1 ? initStats() : stopStats();
+	// Toggling and updating settings
+	setState({private: conf.EnginePrivateMode});
+	configureHost();
+
+	// Determine which settings we send back. We get rid of all system and admin settings
+	let publicSettings = {};
+	for (const key in conf) {
+		if (conf.hasOwnProperty(key)) {
+			if (!key.startsWith('Path') &&
+				!key.startsWith('Admin') &&
+				!key.startsWith('Bin') &&
+				!key.startsWith('os')
+			) {
+				publicSettings[key] = conf[key];
+			}
+		}
+	}
+	return publicSettings;
+}
+
+/** Initializing configuration */
+export async function initConfig(appPath, argv) {
+	if (argv.config) configFile = argv.config;
+	await configureLogger(appPath, !!argv.debug);
+	config = {...config, appPath: appPath};
+	config = {...config, os: process.platform};
+
+	await configureLocale();
+	await loadConfigFiles(appPath);
+	configReady = true;
+	configureHost();
+	if (config.JwtSecret === 'Change me') setConfig( {JwtSecret: uuidV4() });
+	if (config.appInstanceID === 'Change me') setConfig( {appInstanceID: uuidV4() });
+	return getConfig();
+}
+
+async function loadConfigFiles(appPath) {
+	const overrideConfigFile = resolve(appPath, configFile);
+	const databaseConfigFile = resolve(appPath, 'database.json');
+	const versionFile = resolve(__dirname, '../VERSION');
+	config = {...config, ...defaults};
+	config.appPath = appPath;
+	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
+	if (await asyncExists(versionFile)) await loadConfig(versionFile);
+	if (await asyncExists(databaseConfigFile)) {
+		const dbConfig = await loadDBConfig(databaseConfigFile);
+		config.db = merge(config.db, dbConfig);
+	}
+}
+
+async function loadDBConfig(configFile) {
+	const configData = await asyncReadFile(configFile, 'utf-8');
+	if (!testJSON(configData)) {
+		logger.error('[Config] Database config file is not valid JSON');
+		throw 'Syntax error in database.json';
+	}
+	return JSON.parse(configData);
+}
+
+async function loadConfig(configFile) {
+	logger.debug(`[Config] Reading configuration file ${configFile}`);
+	await asyncRequired(configFile);
+	const content = await asyncReadFile(configFile, 'utf-8');
+	const parsedContent = parse(content);
+	const newConfig = {...config, ...parsedContent};
+	verifyConfig(newConfig);
+	config = {...newConfig};
+}
+
+async function configureLocale() {
+	i18n.configure({
+		directory: resolve(__dirname, '../_locales'),
+		defaultLocale: 'en',
+		cookie: 'locale',
+		register: global
+	});
+	let detectedLocale = await osLocale();
+	detectedLocale = detectedLocale.substring(0, 2);
+	i18n.setLocale(detectedLocale);
+	config = {...config, EngineDefaultLocale: detectedLocale };
+}
+
+export async function configureBinaries(config) {
+	logger.debug('[Launcher] Checking if binaries are available');
+	const binaries = await checkBinaries(config);
+	setConfig(binaries);
+}
+
+export function configureHost() {
+	const conf = getConfig();
+	let URLPort = `:${conf.appFrontendPort}`;
+	config = {...config, osHost: address()};
+	if (+conf.appFrontendPort === 80) URLPort = '';
+	if (+conf.OnlineURL) return config = {...config, osURL: `http://${config.OnlineHost}`};
+	if (conf.EngineDisplayConnectionInfoHost === '') return config = {...config, osURL: `http://${address()}${URLPort}`};
+	return config = {...config, osURL: `http://${conf.EngineDisplayConnectionInfoHost}${URLPort}`};
+}
+
+export async function setConfig(configPart) {
+	config = {...config, ...configPart};
+	if (configReady) updateConfig(config);
+	return getConfig();
+}
+
+export async function backupConfig() {
+	// Create a backup of our config file. Just in case.
+	logger.debug('[Config] Making a backup of config.ini');
+	return await copy(
+		resolve(config.appPath, 'config.ini'),
+		resolve(config.appPath, 'config.ini.backup'),
+		{ overwrite: true }
+	);
+}
+
+export function getPublicConfig() {
+	let settings = {};
+	const conf = getConfig();
+	for (const key in conf) {
+		if (conf.hasOwnProperty(key)) {
+			if (!key.startsWith('Path') &&
+			!key.startsWith('Bin') &&
+			!key.startsWith('appPath') &&
+			!key.startsWith('Jwt') &&
+			!key.startsWith('is') &&
+			!key.startsWith('mpv') &&
+			!key.startsWith('os') &&
+			!key.startsWith('db') &&
+			!key.startsWith('karaSuggestionMail') &&
+			!key.startsWith('appInstanceID')
+			) {
+				settings[key] = conf[key];
+			}
+		}
+	}
+	return settings;
+}
+
+export async function updateConfig(newConfig) {
+	savingSettings = true;
+	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinPostgresPath','BinPostgresDumpExe', 'BinPostgresCTLExe', 'BinPostgresInitExe','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale', 'db'];
+	const filteredConfig = {};
+	Object.entries(newConfig).forEach(([k, v]) => {
+		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))
+			&& (newConfig[k] !== defaults[k])
+            && (filteredConfig[k] = v);
+	});
+	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
+	await asyncWriteFile(resolve(config.appPath, configFile), stringify(filteredConfig), 'utf-8');
+	savingSettings = false;
+}
+
+/**
+ * Functions used to manipulate configuration. We can pass a optional config object.
+ * In this case, the method works with the configuration passed as argument rather than the current
+ * configuration.
+ */
+
+export function resolvedPathKaras(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathKaras.split('|').map(path => resolve(conf.appPath, path));
+}
+
+export function resolvedPathSeries(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathSeries.split('|').map(path => resolve(conf.appPath, path));
+}
+
+export function resolvedPathJingles(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathJingles.split('|').map(path => resolve(conf.appPath, path));
+}
+
+export function resolvedPathBackgrounds(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathBackgrounds.split('|').map(path => resolve(conf.appPath, path));
+}
+
+export function resolvedPathSubs(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathSubs.split('|').map(path => resolve(conf.appPath, path));
+}
+
+export function resolvedPathMedias(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathMedias.split('|').map(path => resolve(conf.appPath, path));
+}
+
+export function resolvedPathImport(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return resolve(conf.appPath, conf.PathImport);
+}
+
+export function resolvedPathTemp(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return resolve(conf.appPath, conf.PathTemp);
+}
+
+export function resolvedPathPreviews(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return resolve(conf.appPath, conf.PathPreviews);
+}

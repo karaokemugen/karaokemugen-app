@@ -438,9 +438,11 @@ startIntro = function(mode, stepLabel){
 
 	introManager.onexit(() => {
 		if (scope === 'admin') {
+            appFirstRun = 0;
+            
 			var $appFirstRun = $('#settings [name="appFirstRun"]');
 			$appFirstRun.val(0);
-			setSettings($appFirstRun);
+            setSettings($appFirstRun);
 		} else {
 			createCookie('publicTuto', 'true');
 			$('#loginModal').removeClass('firstRun');
@@ -454,4 +456,24 @@ startIntro = function(mode, stepLabel){
 		$(el).attr('previousClass', $(el).attr('class'));
 	});
 	buttons.attr('class', 'btn btn-default' + (isTouchScreen ? ' btn-sm' : ' btn-xs' ));
+}
+
+getPerformanceIndice = function() {
+    var _speedconstant = 1.15600e-8; //if speed=(c*a)/t, then constant=(s*t)/a and time=(a*c)/s
+    var d = new Date();
+    // var amount = 150000000;
+    var amount = 110000000;
+    var estprocessor = 1.7; //average processor speed, in GHZ
+    console.log("Running loop "+amount+" times. Estimated time (for "+estprocessor+"ghz processor) is "+(Math.round(((_speedconstant*amount)/estprocessor)*100)/100)+"s");
+    for (var i = amount; i>0; i--) {} 
+    var newd = new Date();
+    var accnewd = Number(String(newd.getSeconds())+"."+String(newd.getMilliseconds()));
+    var accd = Number(String(d.getSeconds())+"."+String(d.getMilliseconds())); 
+    var di = accnewd-accd;
+    //console.log(accnewd,accd,di);
+    if (d.getMinutes() != newd.getMinutes()) {
+    di = (60*(newd.getMinutes()-d.getMinutes()))+di}
+    spd = ((_speedconstant*amount)/di);
+    console.log("Time: "+Math.round(di*1000)/1000+"s, estimated speed: "+Math.round(spd*1000)/1000+"GHZ");
+    return Math.round(spd*1000)/1000;
 }

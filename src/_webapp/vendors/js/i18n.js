@@ -9,6 +9,7 @@ var I18n = function(options){
 I18n.localeCache = {};
 
 I18n.prototype = {
+    locale: "",
 	defaultLocale: "en",
 	directory: "/locales",
 	extension: ".min.json",
@@ -17,18 +18,17 @@ I18n.prototype = {
 		return this.locale;
 	},
 
-	setLocale: function(locale){
-		if(!locale) {
+	setLocale: function(loc){
+		if(!loc) {
 			// locale = $("html").attr("lang");
-			locale = navigator.languages[0].substring(0, 2);
+			loc = navigator.languages[0].substring(0, 2);
 		}
 
-		if(!locale)
-			locale = this.defaultLocale;
+		if(!loc)
+			loc = this.defaultLocale;
+		this.locale = loc;
 
-		this.locale = locale;
-
-		if(locale in I18n.localeCache) return;
+		if(loc in I18n.localeCache) return;
 		else this.getLocaleFileFromServer();
 	},
 

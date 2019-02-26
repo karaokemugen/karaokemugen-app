@@ -1,5 +1,5 @@
-import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_common/utils/files';
-import {getConfig, initConfig, configureBinaries} from './_common/utils/config';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_utils/files';
+import {getConfig, initConfig, configureBinaries} from './_utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {writeFileSync, readFileSync} from 'fs';
 import {copy} from 'fs-extra';
@@ -11,20 +11,21 @@ import {exit, initEngine} from './_services/engine';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
-import PrettyError from 'pretty-error';
-
-const pe = new PrettyError();
 
 process.on('uncaughtException', function (exception) {
-	console.log(pe.render(exception));
+	console.log('Uncaught exception:', exception);
 });
 
 process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at:', p);
+	console.log('Unhandled Rejection at:', p, reason);
 });
 
 process.on('SIGINT', () => {
 	exit('SIGINT');
+});
+
+process.on('SIGTERM', () => {
+	exit('SIGTERM');
 });
 
 // CTRL+C for Windows :
@@ -65,9 +66,9 @@ async function main() {
 	logger.debug(`[Launcher] SysPath : ${appPath}`);
 	logger.debug(`[Launcher] Locale : ${config.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${config.os}`);
-	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
+	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, 2));
 
-	// Checking binaries
+	// Checking binaries paths.
 	await configureBinaries(config);
 
 	// Checking paths, create them if needed.
@@ -107,7 +108,12 @@ async function main() {
 	/**
 	 * Gentlemen, start your engines.
 	 */
-	initEngine();
+	try {
+		await initEngine();
+	} catch(err) {
+		logger.error(`[Launcher] Karaoke Mugen initialization failed :( : ${err}`);
+		exit(1);
+	}
 }
 
 /**
@@ -148,8 +154,9 @@ async function checkPaths(config) {
 			logger.warn('[Launcher] No samples directory found, will not copy them.');
 		}
 	}
-
+	// Emptying temp directory
 	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
+	// Checking paths
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSeries.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
@@ -171,10 +178,11 @@ async function checkPaths(config) {
 function verifyOpenPort(port) {
 	const server = createServer();
 	server.once('error', err => {
-		if (err.code === 'EADDRINUSE') {
+		if (err) {
 			logger.error(`[Launcher] Port ${port} is already in use.`);
-			logger.error('[Launcher] If another Karaoke Mugen instance is running, please kill it (process name is "node" or "KaraokeMugen")');
-			logger.error('[Launcher] Then restart the app.');
+			console.log('\nIf another Karaoke Mugen instance is running, please kill it (process name is "node" or "KaraokeMugen")');
+			console.log('Also verify that no postgreSQL server is running on said port');
+			console.log('Then restart the app.');
 			process.exit(1);
 		}
 	});

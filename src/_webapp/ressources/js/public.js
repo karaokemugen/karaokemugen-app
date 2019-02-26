@@ -1,7 +1,6 @@
 $(document).ready(function () {
 	
 	$('#choixPseudo').focus(function(){
-		//this.setSelectionRange(0, this.value.length);
 		this.value = '';
 	});
 
@@ -56,12 +55,10 @@ $(document).ready(function () {
 	$('input[name="kara_panel"]').on('switchChange.bootstrapSwitch', function () {
 		if ($(this).val() == 0) {
 			$('#searchPlaylist1').fadeIn(animTime);
-			// $('#searchPlaylist2').fadeOut(animTime);      
 			$('#playlist1').closest('.panel').show();
 			$('#playlist2').closest('.panel').css('width', '');
 		} else {
 			$('#searchPlaylist1').fadeOut(animTime);
-			// $('#searchPlaylist2').fadeIn(animTime); 
 			$('#playlist1').closest('.panel').hide();
 			$('#playlist2').closest('.panel').css('width', '100%');
 		}
@@ -100,7 +97,6 @@ $(document).ready(function () {
 var datePlus10 = new Date();
 datePlus10.setFullYear(datePlus10.getFullYear() + 10);
 
-scope = 'public';
 var currentPanning;
 var settings = {};
 refreshTime = 2000;
@@ -113,7 +109,9 @@ getPublicSettings = function() {
 			window.location.reload();
 		}
 
-		playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
+        playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
+        
+        manageOnlineUsersUI(data);
 
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
 			playlistToAddId = data.playlist_id;
@@ -128,7 +126,7 @@ getPublicSettings = function() {
 			promise.resolve();
 		});
 
-		// Init with player infos, set the playlist's id where users can add their karas
+        // Init with player infos, set the playlist's id where users can add their karas
 		settings = data;
 			
 		$('#version').text(settings['VersionName'] + ' ' + settings['VersionNo']);
@@ -194,10 +192,6 @@ if(webappMode == 2) {
 			manager.add(tapper);
 
 			if(side == 1) {
-				manager.on('panstart', function (e) {
-					/*var target = $(e.target).closest('li').get(0);
-					if(target) currentPanning = target;*/
-				});
 				manager.on('pan', function (e) {
 					e.gesture = e;
 					

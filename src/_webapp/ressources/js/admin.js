@@ -1,5 +1,6 @@
 var mouseDown;          // Boolean : capture if the mouse is pressed
 
+
 (function (yourcode) {
 	yourcode(window.jQuery, window, document);
 }(function ($, window, document) {
@@ -10,12 +11,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		// handling small touchscreen screens with big virtual keyboard
 
 		$('select[type="playlist_select"]').on('select2:open', function () {
-			//$('#header').hide();
 			$('.select2-dropdown').css('z-index', '9999');
 		});
 
 		$('select[type="playlist_select"]').on('select2:close', function () {
-			// $('#header').show();
 			$('.select2-dropdown').css('z-index', '1051');
 			document.body.scrollTop = 0; // For Chrome, Safari and Opera 
 			document.documentElement.scrollTop = 0; // For IE and Firefox
@@ -44,14 +43,12 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				url: 'admin/player',
 				type: 'PUT',
 				data: dataAjax
-			}).done(function () {
-				// refreshPlayerInfos();
 			});
 		});
 
 
 		$('.btn[action="account"]').click(function () {
-			showProfil()
+			showProfil();
 		});
 
 		$('.btn[action="poweroff"]').click(function () {
@@ -111,13 +108,12 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			// TODO check if type is valid maybe
 			var type = $('#bcType').val();
 			var val = $('#bcVal').val();
+            
 			var data = { blcriteria_type: type, blcriteria_value: val };
 			$.ajax({
 				url: scope + '/blacklist/criterias',
 				type: 'POST',
 				data: data
-			}).done(function () {
-				//displayMessage('success', 'Success', 'Criteria ' + type + ' - ' + val + ' added to the list');
 			});
 		});
 
@@ -127,36 +123,36 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			$.ajax({
 				url: scope + '/blacklist/criterias/' + bcId,
 				type: 'DELETE'
-			}).done(function () {
-				//displayMessage('success', 'Success', 'Blacklist criteria ' + bcId + ' deleted');
 			});
 		});
 		$('.playlist-main').on('change', '#bcType', function () {
-			if(tags) {
-				var bcType = $(this).val();
-				var tagsFiltered = jQuery.grep(tags, function (obj) {
-					return obj.type == bcType;
-				});
-	
-				var $bcValInput;
-				if (tagsFiltered.length > 0) {
-					$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
-					$.each(tagsFiltered, function (i, o) {
-						var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
-						$bcValInput.append($option);
+			tagsUpdating.done(() => {
+				if(tags) {
+					var bcType = $(this).val();
+					var tagsFiltered = jQuery.grep(tags, function (obj) {
+						return obj.type == bcType;
 					});
+        
+					var $bcValInput;
+					if (tagsFiltered.length > 0) {
+						$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
+						$.each(tagsFiltered, function (i, o) {
+							var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
+							$bcValInput.append($option);
+						});
+					} else {
+						$bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
+					}
+					$('#bcValContainer').empty().append($bcValInput);
+        
+					if (tagsFiltered.length > 0) {
+						$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
+        
+					}
 				} else {
-					$bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
+					console.log("Err: tags empty");
 				}
-				$('#bcValContainer').empty().append($bcValInput);
-	
-				if (tagsFiltered.length > 0) {
-					$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
-	
-				}
-			} else {
-				console.log("Err: tags empty");
-			}
+			})
 		});
 
 		
@@ -168,8 +164,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			var side = $this.closest('.panel').attr('side');
 			var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 
-			// var flag = $this.hasClass('free') ? 0 : 1;
-			var flag = 1;
+			var flag = true;
 			$.ajax({
 				type: 'PUT',
 				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlaylistContent,
@@ -232,17 +227,16 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						type = 'PATCH';
 					} else {
 						var requestedby = idPlaylistFrom == -1 || li.data('username') == undefined ? logInfos.username : li.data('username');
-						data = { requestedby: requestedby, kara_id: idKara };
+						data = { requestedby: requestedby, kid: idKara };
 					}
 				} else if (idPlaylistTo == -1) {
-					//displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
 					DEBUG && console.log('ERR: can\'t add kara to the kara list from database');
 				} else if (idPlaylistTo == -2 || idPlaylistTo == -4) {
 					url = scope + '/blacklist/criterias';
 					data = { blcriteria_type: 1001, blcriteria_value: idKara };
 				} else if (idPlaylistTo == -3) {
 					url = scope + '/whitelist';
-					data = { kara_id: idKara};
+					data = { kid: idKara};
 				}
 
 				if(e.type === 'contextmenu') {
@@ -301,7 +295,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 							data: data
 						}).done(function () {
 							li.hide();
-							//fillPlaylist(side);
 						});
 					}
 				});
@@ -316,7 +309,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			$.ajax({
 				type: 'PUT',
 				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
-				data: { flag_playing: '1' }
+				data: { flag_playing: true }
 			}).done(function () {
 				DEBUG && console.log('Kara plc_id ' + idPlc + ' flag_playing set to true');
 			});
@@ -345,7 +338,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 		$('#karaInfo').click(function (e) {
 			if (status != undefined && status != '' && status != 'stop' && $(this).attr('length') != -1) {
-				//refreshPlayerInfos(goToPosition, e);
 				goToPosition(e);
 			}
 		});
@@ -376,7 +368,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				$('#progressBarColor').addClass('cssTransform');
 				stopUpdate = false;
 				mouseDown = false;
-				//refreshPlayerInfos();
 			}
 		});
 
@@ -393,7 +384,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	/* variables & ajax setup */
 
 	mouseDown = false;
-	scope = 'admin';
 	panel1Default = -1;
 
 	// dynamic creation of switchable settings 
@@ -425,13 +415,15 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	getSettings = function (nameExclude) {
 		var promise = $.Deferred();
 		$.ajax({ url: 'admin/settings' }).done(function (data) {
+
+			manageOnlineUsersUI(data);
+     
 			settings = data;
 			
 			checkOnlineStats(settings);
 
 			$.each(data, function (i, val) {
 				var input = $('[name="' + i + '"]');
-				// DEBUG && console.log(i, val);
 				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
 					if (input.attr('type') !== 'checkbox' || input.hasClass('hideInput')) {
 						input.val(val);
@@ -488,16 +480,15 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 	/* el is the html element containing the value being updated */
 	setSettings = function (el) {
-		//    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
 		if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
 			settingsUpdating = getSettings(el.attr('name'));
 
 			$('#settings').promise().then(function () {
-				settingsArray = {};
-				numberArray = $('#settings [type="number"]').map(function () {
+				var settingsArray = {};
+				var numberArray = $('#settings [type="number"]').map(function () {
 					return { name: this.name, value: this.value ? this.value : '0' }; 
 				}).get();
-				formArray = numberArray.concat($('#settings [type!="number"]').serializeArray())
+				var formArray = numberArray.concat($('#settings [type!="number"]').serializeArray())
 					.concat($('#settings input[type=checkbox]:not(:checked)')
 						.map(function () {
 							return { name: this.name, value: '0' }; 
@@ -508,7 +499,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					settingsArray[obj.name] = obj.value;
 				});
 				settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
-
+				settingsArray['PlayerNoHud'] = settings['PlayerNoHud'];
+				settingsArray['PlayerNoBar'] = settings['PlayerNoBar'];
 				DEBUG && console.log('setSettings : ', settingsArray);
 
 				$.ajax({
@@ -532,7 +524,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		var songLength = karaInfo.attr('length');
 		var barInnerwidth = karaInfo.innerWidth();
 		var futurTimeX = e.pageX - karaInfo.offset().left;
-		//var presentTimeX = $('#progressBarColor').width();
 		var futurTimeSec = songLength * futurTimeX / barInnerwidth;
 		
 		if(!isNaN(futurTimeSec) && futurTimeSec >= 0) {
@@ -540,7 +531,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				.css('transform', 'translateX(' + e.pageX + 'px)')
 				.addClass('');
 
-			//var start_time = new Date().getTime();
 			$.ajax({
 				url: 'admin/player',
 				type: 'PUT',
@@ -550,7 +540,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				}
 			})
 				.done(function () {
-					//var request_time = new Date().getTime() - start_time;
 					setStopUpdate(false);
 				});
 		} else {
@@ -572,7 +561,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			urlEnd = '/setPublic';
 		} else if (name === 'flag_visible') {
 			urlEnd = '';
-			setTo = btn.closest('.plDashboard').data('flag_visible') == '1' ? 0 : 1;
+			var setTo = !btn.closest('.plDashboard').data('flag_visible');
         
 			if(idPlaylist > 0) {
 				data = { name: namePlaylist, flag_visible: setTo };
@@ -581,13 +570,13 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				$('input[name="EngineAllowView' + list[idPlaylist] + '"]').val(1).bootstrapSwitch('state', setTo);
 				return false;
 			}
+		} else {
+			return false;
 		}
 		$.ajax({
 			url: 'admin/playlists/' + idPlaylist + urlEnd,
 			type: 'PUT',
 			data: data
-		}).done(function () {
-			//refreshPlaylistSelects();
 		});
 	});
 
@@ -684,7 +673,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 			displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST'),'',
 				function(playlistName) {
-					data = { name: playlistName, flag_visible: 0, flag_current: 0, flag_public: 0 };
+					data = { name: playlistName, flag_visible: false, flag_current: false, flag_public: false };
 					ajx(type, url, data, function (idNewPlaylist) {
 						playlistsUpdating.done(function () {
 							select.val(idNewPlaylist).change();
@@ -716,7 +705,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						userlistStr +=
 							'<div class="checkbox"><label>'
 						+	'<input type="checkbox" name="users"'
-						+	' value="' + k.login + '" ' + (k.flag_online==1 ? 'checked' : '') + '>'
+						+	' value="' + k.login + '" ' + (k.flag_online ? 'checked' : '') + '>'
 						+	k.nickname + '</label></div>';
 					});
 					userlistStr += '</div>';

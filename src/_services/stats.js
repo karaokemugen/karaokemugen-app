@@ -1,6 +1,6 @@
-import { getConfig } from '../_common/utils/config';
+import { getConfig } from '../_utils/config';
 import si from 'systeminformation';
-import { exportViewcounts, exportRequests, exportFavorites } from '../_dao/stats';
+import { exportPlayed, exportRequests, exportFavorites } from '../_dao/stats';
 import internet from 'internet-available';
 import got from 'got';
 import logger from 'winston';
@@ -31,10 +31,14 @@ export async function sendPayload() {
 		logger.info(`[Stats] Sending payload (${prettyBytes(JSON.stringify(payload).length)})`);
 		logger.debug(`[Stats] Payload being sent : ${JSON.stringify(payload,null,2)}`);
 		const conf = getConfig();
-		await got(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/stats`,{
-			json: true,
-			body: payload
-		});
+		try {
+			await got(`https://${conf.OnlineHost}:${conf.OnlinePort}/api/stats`,{
+				json: true,
+				body: payload
+			});
+		} catch(err) {
+			throw err.response.body;
+		}
 		logger.info('[Stats] Payload sent successfully');
 	} catch(err) {
 		logger.error(`[Stats] Uploading stats payload failed : ${err}`);
@@ -44,8 +48,9 @@ export async function sendPayload() {
 
 async function buildPayload() {
 	return {
+		payloadVersion: 2,
 		instance: await buildInstanceStats(),
-		viewcounts: await exportViewcounts(),
+		viewcounts: await exportPlayed(),
 		requests: await exportRequests(),
 		favorites: await exportFavorites(),
 	};
