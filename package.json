@@ -15,9 +15,9 @@
     "setup": "yarn install && yarn buildReact",
     "buildReact": "cd react_systempanel && yarn build",
     "startReact": "cd react_systempanel && yarn start",
-    "migrate": "node node_modules/db-migrate/bin/db-migrate sync [all] --migrations-dir src/_dao/migrations",
-    "migrateDown": "node node_modules/db-migrate/bin/db-migrate down --migrations-dir src/_dao/migrations",
-    "migrateUp": "node node_modules/db-migrate/bin/db-migrate up --migrations-dir src/_dao/migrations",
+    "migrate": "node node_modules/db-migrate/bin/db-migrate sync [all]",
+    "migrateDown": "node node_modules/db-migrate/bin/db-migrate down",
+    "migrateUp": "node node_modules/db-migrate/bin/db-migrate up",
     "dropDatabase": "node util/dropDatabase.js"
   },
   "homepage": "https://mugen.karaokes.moe/en",
