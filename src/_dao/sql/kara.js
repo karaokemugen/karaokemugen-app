@@ -80,7 +80,8 @@ export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, havi
   (CASE WHEN f.fk_kid IS NULL
 		THEN FALSE
 		ELSE TRUE
-  END) as flag_favorites
+  END) as flag_favorites,
+  ak.repo AS repo
 FROM all_karas AS ak
 LEFT OUTER JOIN kara_serie AS ks_main ON ks_main.fk_kid = ak.kid
 LEFT OUTER JOIN serie_lang AS sl_main ON sl_main.fk_sid = ks_main.fk_sid AND sl_main.lang = ${lang.main}
@@ -186,7 +187,8 @@ INSERT INTO kara(
 	modified_at,
 	created_at,
 	karafile,
-	pk_kid
+	pk_kid,
+	fk_repo_name
 )
 VALUES(
 	:title,
@@ -199,7 +201,8 @@ VALUES(
 	:modified_at,
 	:created_at,
 	:karafile,
-	:kid
+	:kid,
+	:repo
 );
 `;
 
