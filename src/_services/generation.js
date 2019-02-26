@@ -36,6 +36,7 @@ async function emptyDatabase() {
 	TRUNCATE serie RESTART IDENTITY CASCADE;
 	TRUNCATE serie_lang RESTART IDENTITY CASCADE;
 	TRUNCATE kara RESTART IDENTITY CASCADE;
+	TRUNCATE repo CASCADE;
 	COMMIT;
 	`);
 }
@@ -122,7 +123,9 @@ function prepareKaraInsertData(kara, index) {
 		kara.mediasize,
 		kara.mediagain,
 		new Date(kara.dateadded * 1000).toISOString(),
-		new Date(kara.datemodif * 1000).toISOString()
+		new Date(kara.datemodif * 1000).toISOString(),
+		//Setting kara.moe as default for now.
+		'kara.moe'
 	];
 }
 
@@ -485,7 +488,7 @@ export async function run(validateOnly) {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 15);
+		}, 16);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		bar.incr();
 		const sqlInsertSeries = prepareAllSeriesInsertData(series.map, series.data);
@@ -514,6 +517,9 @@ export async function run(validateOnly) {
 			copyFromData('kara_tag', sqlInsertKarasTags),
 			copyFromData('kara_serie', sqlInsertKarasSeries)
 		]);
+		bar.incr();
+		// Adding the kara.moe repository. For now it's the only one available, we'll add everything to manage multiple repos later.
+		await db().query('INSERT INTO repo VALUES(\'kara.moe\')');
 		bar.incr();
 		// Setting the pk_id_tag sequence to allow further edits during runtime
 		await db().query('SELECT SETVAL(\'tag_pk_id_tag_seq\',(SELECT MAX(pk_id_tag) FROM tag))');

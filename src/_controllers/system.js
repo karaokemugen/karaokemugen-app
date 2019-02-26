@@ -14,6 +14,7 @@ import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
 import {getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads} from '../_services/download';
+import {getRepos} from '../_services/repo';
 import {dumpPG} from '../_utils/postgresql';
 import logger from 'winston';
 
@@ -189,7 +190,14 @@ export default function systemController(router) {
 			res.status(500).send(`Error resetting viewcounts: ${err}`);
 		}
 	});
-
+	router.get('/system/repos', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const repos = await getRepos();
+			res.json(repos);
+		} catch(err) {
+			res.status(500).send(`Error getting repositories: ${err}`);
+		}
+	});
 	router.post('/system/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			const msg = await addDownloads(req.body.repository,req.body.downloads);
