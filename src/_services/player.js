@@ -13,8 +13,8 @@ const sleep = promisify(setTimeout);
 
 let commandInProgress = false;
 
-async function getPlayingSong() {
-	if (!getState().player.playing) {
+async function getPlayingSong(now) {
+	if (!getState().player.playing || now) {
 		profile('tryToReadKaraInPlaylist');
 		try {
 			const kara = await getCurrentSong();
@@ -52,8 +52,7 @@ export async function playingUpdated() {
 	// hitting play again to get the new song.
 	const state = getState();
 	if (state.status === 'play' && state.player.playing) {
-		await stopPlayer(true);
-		playPlayer();
+		playPlayer(true);
 	}
 }
 
@@ -133,13 +132,13 @@ function toggleOnTopPlayer() {
 }
 
 
-export async function playPlayer() {
+export async function playPlayer(now) {
 	profile('Play');
 	const state = getState();
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
-	if (state.status === 'stop') {
+	if (state.status === 'stop' || now) {
 		// Switch to playing mode and ask which karaoke to play next
-		await getPlayingSong();
+		await getPlayingSong(now);
 		setState({status: 'play'});
 	} else {
 		resume();
