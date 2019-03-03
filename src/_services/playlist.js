@@ -446,7 +446,9 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it wont count
 		// If no song is currently playing, plContentsBeforePlay returns all songs in playlist.
 		const playingObject = getPlayingPos(plContents);
-		const playingPos = playingObject ? playingObject.plc_id_pos : 0;
+		const playingPos = playingObject
+			? playingObject.plc_id_pos
+			: 0;
 		const plContentsBeforePlay = plContents.filter(plc => plc.pos > playingPos);
 		if (+conf.EngineAllowDuplicates) {
 			if (!pl.flag_public) {
@@ -514,7 +516,7 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 			pos = playlistMaxPos.maxpos + 1;
 		}
 		for (const i in karaList) {
-			karaList[i].pos = pos + i;
+			karaList[i].pos = pos + +i;
 		}
 		await addKaraToPL(karaList);
 		updatePlaylistLastEditTime(playlist_id);
