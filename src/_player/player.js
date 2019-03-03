@@ -274,7 +274,7 @@ async function startmpv() {
 	player.observeProperty('eof-reached',17);
 	player.on('statuschange', status => {
 		// If we're displaying an image, it means it's the pause inbetween songs
-		if (playerState._playing && status && ((status['playtime-remaining'] >= 0 && status['playtime-remaining'] <= 1 && status.pause) || status['eof-reached']) ) {
+		if (playerState._playing && status && ((status['playtime-remaining'] !== null && status['playtime-remaining'] >= 0 && status['playtime-remaining'] <= 1 && status.pause) || status['eof-reached']) ) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			playerState.playing = false;
 			playerState._playing = false;
@@ -584,7 +584,6 @@ export async function playJingle() {
 			if (monitorEnabled) playerMonitor.play();
 			displayInfo();
 			playerState.playerstatus = 'play';
-			loadBackground('append');
 			playerState._playing = true;
 			emitPlayerState();
 		} catch(err) {
