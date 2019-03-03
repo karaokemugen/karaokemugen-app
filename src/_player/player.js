@@ -270,21 +270,20 @@ async function startmpv() {
 	player.observeProperty('sub-text',13);
 	player.observeProperty('volume',14);
 	player.observeProperty('duration',15);
-	player.observeProperty('time-pos',16);
-	player.observeProperty('playtime-remaining',17);
-	player.observeProperty('playback-abort',18);
+	player.observeProperty('playtime-remaining',16);
+	player.observeProperty('eof-reached',17);
 	player.on('statuschange', status => {
 		// If we're displaying an image, it means it's the pause inbetween songs
-		if (playerState._playing && status && status['playtime-remaining'] >= 0 && status['playtime-remaining'] <= 1 && status.pause ) {
+		if (playerState._playing && status && ((status['playtime-remaining'] >= 0 && status['playtime-remaining'] <= 1 && status.pause) || status['eof-reached']) ) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			playerState.playing = false;
 			playerState._playing = false;
 			playerState.playerstatus = 'stop';
 			player.pause();
 			if (monitorEnabled) playerMonitor.pause();
-			//playerState.mediaType = 'background';
 			playerEnding();
 		}
+
 		playerState.mutestatus = status.mute;
 		playerState.duration = status.duration;
 		playerState.subtext = status['sub-text'];
