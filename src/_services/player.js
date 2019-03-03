@@ -3,7 +3,7 @@ import {getConfig} from '../_utils/config';
 import logger from 'winston';
 import {profile} from '../_utils/logger';
 import {promisify} from 'util';
-import {displayInfo, playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem} from '../_player/player';
+import {loadBackground, displayInfo, playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem} from '../_player/player';
 import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
@@ -77,12 +77,11 @@ export async function playerEnding() {
 		try {
 			state.counterToJingle++;
 			setState({counterToJingle: state.counterToJingle});
-			displayInfo();
 			if (state.status !== 'stop') {
-				await nextSong();
-				await getPlayingSong();
+				await next();
 			}
 		} catch(err) {
+			loadBackground();
 			displayInfo();
 			logger.warn(`[Player] Next song is not available : ${err}`);
 			stopPlayer();
@@ -92,23 +91,21 @@ export async function playerEnding() {
 
 async function prev() {
 	logger.info('[Player] Going to previous song');
-	await stopPlayer(true);
 	try {
 		await previousSong();
 	} catch(err) {
 		logger.warn(`[Player] Previous song is not available : ${err}`);
 		// A failed previous means we restart the current song.
 	} finally {
-		playPlayer();
+		playPlayer(true);
 	}
 }
 
 async function next() {
 	logger.info('[Player] Going to next song');
-	stopPlayer(true);
 	try {
 		await nextSong();
-		playPlayer();
+		playPlayer(true);
 	} catch(err) {
 		logger.warn(`[Player] Next song is not available : ${err}`);
 	}

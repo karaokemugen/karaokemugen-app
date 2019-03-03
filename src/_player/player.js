@@ -270,16 +270,19 @@ async function startmpv() {
 	player.observeProperty('sub-text',13);
 	player.observeProperty('volume',14);
 	player.observeProperty('duration',15);
-	player.on('statuschange',(status) => {
+	player.observeProperty('time-pos',16);
+	player.observeProperty('playtime-remaining',17);
+	player.observeProperty('playback-abort',18);
+	player.on('statuschange', status => {
 		// If we're displaying an image, it means it's the pause inbetween songs
-		if (playerState._playing && status && status.filename && status.filename.match(/\.(png|jp.?g|gif)/i)) {
+		if (playerState._playing && status && status['playtime-remaining'] >= 0 && status['playtime-remaining'] <= 1 && status.pause ) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			playerState.playing = false;
 			playerState._playing = false;
 			playerState.playerstatus = 'stop';
 			player.pause();
 			if (monitorEnabled) playerMonitor.pause();
-			playerState.mediaType = 'background';
+			//playerState.mediaType = 'background';
 			playerEnding();
 		}
 		playerState.mutestatus = status.mute;
@@ -303,7 +306,7 @@ async function startmpv() {
 		if (monitorEnabled) playerMonitor.play();
 		emitPlayerState();
 	});
-	player.on('timeposition',(position) => {
+	player.on('timeposition', position => {
 		// Returns the position in seconds in the current song
 		playerState.timeposition = position;
 		emitPlayerState();
@@ -394,7 +397,7 @@ export async function play(mediadata) {
 		// Displaying infos about current song on screen.
 		displaySongInfo(mediadata.infos);
 		playerState.currentSongInfos = mediadata.infos;
-		loadBackground('append');
+		//loadBackground('append');
 		playerState._playing = true;
 		emitPlayerState();
 		songNearEnd = false;
