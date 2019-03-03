@@ -977,7 +977,7 @@ export async function nextSong() {
 		// If we're here, it means either we're beyond the length of the playlist
 		// OR that EngineRepeatPlaylist is set to 1.
 		// We test again if we're at the end of the playlist. If so we go back to first song.
-		if (current.index + 1 >= current.content.length) current.index = 0;
+		if (current.index + 1 >= current.content.length) current.index = -1;
 		const kara = current.content[current.index + 1];
 		if (!kara) throw 'Karaoke received is empty!';
 		await setPlaying(kara.playlistcontent_id, current.id);
