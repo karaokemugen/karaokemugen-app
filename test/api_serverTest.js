@@ -369,20 +369,6 @@ describe('Series and year', function() {
 	});
 });
 
-describe('Misc', function() {
-	it('Get latest KM news', function() {
-		return request
-			.get('/api/public/newsfeed')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response){
-				assert.strictEqual(response.body.length>0,true);
-			});
-	});
-});
-
 describe('Player', function() {
 	it('Get player status', function() {
 		return request
