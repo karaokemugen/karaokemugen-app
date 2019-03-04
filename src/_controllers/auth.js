@@ -143,6 +143,7 @@ export default function authController(router) {
 			// Edit the user to make it admin
 			let user = await findUserByName(req.body.username);
 			user.type = 0;
+			user.password = req.body.password;
 			await editUser(token.username, user, null, 'admin', {
 				editRemote: false,
 				renameUser: false
