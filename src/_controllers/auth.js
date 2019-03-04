@@ -149,7 +149,6 @@ export default function authController(router) {
 			});
 			token.role = 'admin';
 			token.token = createJwtToken(user.login, token.role);
-			console.log(token);
 			res.send(token);
 		} catch(err) {
 			res.status(401).send(loginErr);

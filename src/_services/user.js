@@ -130,7 +130,7 @@ export async function fetchAndUpdateRemoteUser(username, password, onlineToken) 
 	}
 }
 
-function createJwtToken(username, role, config) {
+export function createJwtToken(username, role, config) {
 	const conf = config || getConfig();
 	const timestamp = new Date().getTime();
 	return encode(
