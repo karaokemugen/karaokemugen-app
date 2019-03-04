@@ -138,13 +138,11 @@ export default function authController(router) {
  */
 		if (!req.body.password) req.body.password = '';
 		try {
-			console.log('CheckLogin');
 			const token = await checkLogin(req.body.username, req.body.password);
 
 			// Edit the user to make it admin
 			let user = await findUserByName(req.body.username);
 			user.type = 0;
-			console.log('EditUser');
 			await editUser(token.username, user, null, 'admin', {
 				editRemote: false,
 				renameUser: false
