@@ -56,7 +56,7 @@ export const requireValidUser = (req, res, next) => {
 		.then(() => {
 			next();
 		})
-		.catch((err) => {
+		.catch(err => {
 			res.status(404).send('User logged in unknown');
 		});
 };
