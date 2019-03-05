@@ -109,7 +109,7 @@ async function loadBackground() {
 		await Promise.all(loads);
 		displayInfo();
 	} catch(err) {
-		logger.error(`[Player] Unable to load background in ${mode} mode : ${JSON.stringify(err)}`);
+		logger.error(`[Player] Unable to load background : ${JSON.stringify(err)}`);
 	}
 }
 
