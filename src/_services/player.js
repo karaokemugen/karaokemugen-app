@@ -19,7 +19,7 @@ async function getPlayingSong(now) {
 		try {
 			const kara = await getCurrentSong();
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
-			let serie = kara.serie || kara.singers[0].name;
+			let serie = kara.serie || kara.singers.map(singer => singer.name).split(', ');
 			let title = kara.title || '';
 			logger.info(`[Player] Playing ${serie}${title}`);
 			await play({
