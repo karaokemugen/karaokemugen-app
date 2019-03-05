@@ -15,7 +15,7 @@ let commandInProgress = false;
 
 async function getPlayingSong(now) {
 	if (!getState().player.playing || now) {
-		profile('tryToReadKaraInPlaylist');
+		profile('getPlayingSong');
 		try {
 			const kara = await getCurrentSong();
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
@@ -41,7 +41,7 @@ async function getPlayingSong(now) {
 				stopPlayer(true);
 			}
 		} finally {
-			profile('tryToReadKaraInPlaylist');
+			profile('getPlayingSong');
 		}
 	}
 }

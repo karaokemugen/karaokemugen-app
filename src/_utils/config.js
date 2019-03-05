@@ -24,7 +24,6 @@ import merge from 'lodash.merge';
 /** Object containing all config */
 let config = {};
 let configFile = 'config.ini';
-let savingSettings;
 let configReady;
 
 /**
@@ -223,7 +222,6 @@ export function getPublicConfig() {
 }
 
 export async function updateConfig(newConfig) {
-	savingSettings = true;
 	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinPostgresPath','BinPostgresDumpExe', 'BinPostgresCTLExe', 'BinPostgresInitExe','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale', 'db'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
@@ -233,7 +231,6 @@ export async function updateConfig(newConfig) {
 	});
 	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
 	await asyncWriteFile(resolve(config.appPath, configFile), stringify(filteredConfig), 'utf-8');
-	savingSettings = false;
 }
 
 /**
