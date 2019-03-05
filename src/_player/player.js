@@ -65,9 +65,8 @@ async function extractBackgroundFiles(backgroundDir) {
 	return backgroundFiles;
 }
 
-async function loadBackground(mode) {
+async function loadBackground() {
 	const conf = getConfig();
-	if (!mode) mode = 'replace';
 	// Default background
 	let backgroundFiles = [];
 	const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
@@ -87,7 +86,7 @@ async function loadBackground(mode) {
 		if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);
 	}
 	backgroundImageFile = sample(backgroundFiles);
-	logger.debug('[Player] Background : '+backgroundImageFile);
+	logger.debug(`[Player] Background ${backgroundImageFile}`);
 	let videofilter = '';
 	if (+conf.EngineDisplayConnectionInfoQRCode &&
 		+conf.EngineDisplayConnectionInfo ) {
@@ -104,11 +103,11 @@ async function loadBackground(mode) {
 	try {
 		logger.debug(`[Player] Background videofilter : ${videofilter}`);
 		const loads = [
-			player.load(backgroundImageFile,mode,[videofilter])
+			player.load(backgroundImageFile, 'replace', [videofilter])
 		];
-		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile,mode,[videofilter]));
+		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile, 'replace', [videofilter]));
 		await Promise.all(loads);
-		if (mode === 'replace') displayInfo();
+		displayInfo();
 	} catch(err) {
 		logger.error(`[Player] Unable to load background in ${mode} mode : ${JSON.stringify(err)}`);
 	}
@@ -396,7 +395,6 @@ export async function play(mediadata) {
 		// Displaying infos about current song on screen.
 		displaySongInfo(mediadata.infos);
 		playerState.currentSongInfos = mediadata.infos;
-		//loadBackground('append');
 		playerState._playing = true;
 		emitPlayerState();
 		songNearEnd = false;
@@ -550,7 +548,7 @@ export async function restartmpv() {
 	logger.debug('[Player] Stopped mpv (restarting)');
 	emitPlayerState();
 	await startmpv();
-	logger.debug('[Player] restarted mpv');
+	logger.debug('[Player] Restarted mpv');
 	emitPlayerState();
 	return true;
 }
