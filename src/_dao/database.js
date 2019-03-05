@@ -6,7 +6,7 @@ import {exit} from '../_services/engine';
 import {duration} from '../_utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
-import {compareKarasChecksum, run as generateDB} from '../_services/generation';
+import {baseChecksum, run as generateDB} from '../_services/generation';
 import DBMigrate from 'db-migrate';
 import {join, resolve} from 'path';
 import {asyncCopy, asyncUnlink, asyncExists} from '../_utils/files';
@@ -20,7 +20,18 @@ import {from as copyFrom} from 'pg-copy-streams';
 
 const sql = require('./sql/database');
 
+export async function compareKarasChecksum() {
+	const settings = await getSettings();
+	const currentChecksum = await baseChecksum();
+	if (settings.baseChecksum !== currentChecksum) {
+		await saveSetting('baseChecksum', currentChecksum);
+		return false;
+	}
+	return true;
+}
+
 export function paramWords(filter) {
+	//This function takes a search filter (list of words), cleans and maps them for use in SQL queries "LIKE".
 	let params = {};
 	const words = deburr(filter)
 		.toLowerCase()
@@ -38,6 +49,7 @@ export function paramWords(filter) {
 }
 
 async function query(...args) {
+	// Fake query function used as a decoy when closing DB.
 	return {rows: [{}]};
 }
 
@@ -78,8 +90,8 @@ export function langSelector(lang) {
 
 // These two utility functions are used to make multiple inserts into one
 // You can do only one insert with multiple values, this helps.
-// expand returns ($1, $2), ($1, $2), ($1, 2) for (3, 2)
-export function expand(rowCount, columnCount, startAt=1){
+// expand returns ($1, $2), ($1, $2), ($1, $2) for (3, 2)
+export function expand(rowCount, columnCount, startAt = 1){
 	let index = startAt;
 	return Array(rowCount).fill(0).map(v => `(${Array(columnCount).fill(0).map(v => `$${index++}`).join(', ')})`).join(', ');
 }
@@ -103,7 +115,7 @@ export async function copyFromData(table, data) {
 			client.release();
 			resolve();
 		});
-		stream.on('error', (err) => {
+		stream.on('error', err => {
 			client.release();
 			reject(err);
 		});
@@ -251,7 +263,7 @@ export async function initDBSystem() {
 		doGenerate = true;
 	}
 	const settings = await getSettings();
-	if (!settings.lastGeneration) {
+	if (!doGenerate && !settings.lastGeneration) {
 		setConfig({ appFirstRun: 1 });
 		logger.info('[DB] Database is brand new: database generation triggered');
 		doGenerate = true;
