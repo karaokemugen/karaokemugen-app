@@ -2312,10 +2312,10 @@ eslint-scope@3.7.1:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
-eslint-scope@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-4.0.0.tgz#50bf3071e9338bcdc43331794a0cb533f0136172"
-  integrity sha512-1G6UTDi7Jc1ELFwnR58HV4fK9OQK4S6N985f166xqXxpjU6plxFISJa2Ba9KCQuFa8RCnj/lSFJbHo7UFDBnUA==
+eslint-scope@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-4.0.2.tgz#5f10cd6cabb1965bf479fa65745673439e21cb0e"
+  integrity sha512-5q1+B/ogmHl8+paxtOKx38Z8LtWkVGuNt3+GQNErqwLl6ViNp/gdJGMCjZNxZ8j/VYjDNZ2Fo+eQc1TAVPIzbg==
   dependencies:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
@@ -2330,10 +2330,10 @@ eslint-visitor-keys@^1.0.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#3f3180fb2e291017716acb4c9d6d5b5c34a6a81d"
   integrity sha512-qzm/XxIbxm/FHyH341ZrbnMUpe+5Bocte9xkmFMzPMjRaZMcXww+MpBptFvtU+79L362nqiLhekCxCxDPaUMBQ==
 
-eslint@^5.14.1:
-  version "5.14.1"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.14.1.tgz#490a28906be313685c55ccd43a39e8d22efc04ba"
-  integrity sha512-CyUMbmsjxedx8B0mr79mNOqetvkbij/zrXnFeK2zc3pGRn3/tibjiNAv/3UxFEyfMDjh+ZqTrJrEGBFiGfD5Og==
+eslint@^5.15.1:
+  version "5.15.1"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.15.1.tgz#8266b089fd5391e0009a047050795b1d73664524"
+  integrity sha512-NTcm6vQ+PTgN3UBsALw5BMhgO6i5EpIjQF/Xb5tIh3sk9QhrFafujUOczGz4J24JBlzWclSB9Vmx8d+9Z6bFCg==
   dependencies:
     "@babel/code-frame" "^7.0.0"
     ajv "^6.9.1"
@@ -2341,7 +2341,7 @@ eslint@^5.14.1:
     cross-spawn "^6.0.5"
     debug "^4.0.1"
     doctrine "^3.0.0"
-    eslint-scope "^4.0.0"
+    eslint-scope "^4.0.2"
     eslint-utils "^1.3.1"
     eslint-visitor-keys "^1.0.0"
     espree "^5.0.1"
@@ -2462,10 +2462,10 @@ expand-tilde@^2.0.0, expand-tilde@^2.0.2:
   dependencies:
     homedir-polyfill "^1.0.1"
 
-express-handlebars@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/express-handlebars/-/express-handlebars-3.0.1.tgz#b520ebd46a34a74ed598a0c85afdfdf7d7996ef2"
-  integrity sha512-ZrfVjnGHS8liArTuVpWFckWII6Wwf1Z9BLqgDIYNjzH/yYxkRPeYvA4mv/o+7f7mJTJAX9oXys0ZZRGqkUyTog==
+express-handlebars@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/express-handlebars/-/express-handlebars-3.0.2.tgz#4f70f1bb06cade5436a7a2c90efc2c9af1cf71e7"
+  integrity sha512-rPaSqR8xPnSqfvWvI8Mhtn7nifaMmySq6yhWkjH07Ks/nuDaRngJyf7eDN2I7PBkNVdZHf0Bz+1rY1yrZFdx8g==
   dependencies:
     glob "^7.1.3"
     graceful-fs "^4.1.2"
@@ -4214,10 +4214,10 @@ mkdirp@0.5.1, mkdirp@0.x.x, mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0:
   dependencies:
     minimist "0.0.8"
 
-mocha@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/mocha/-/mocha-6.0.0.tgz#b558da6245a09581aa4a1c6aee9e0fa6ad0e1767"
-  integrity sha512-A7g9k3yr8oJaXn2IItFnfgjyxFc/LTe6Wwv7FczP+e8G74o9xYNSbMYmCf1ouldRojLrFcOb+z75P6Ak0GX6ug==
+mocha@^6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/mocha/-/mocha-6.0.2.tgz#cdc1a6fdf66472c079b5605bac59d29807702d2c"
+  integrity sha512-RtTJsmmToGyeTznSOMoM6TPEk1A84FQaHIciKrRqARZx+B5ccJ5tXlmJzEKGBxZdqk9UjpRsesZTUkZmR5YnuQ==
   dependencies:
     ansi-colors "3.2.3"
     browser-stdout "1.3.1"
@@ -6005,10 +6005,10 @@ supports-color@^5.3.0:
   dependencies:
     has-flag "^3.0.0"
 
-systeminformation@^4.0.10:
-  version "4.0.10"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.0.10.tgz#a357ed417b7a5079c8cb33b3d65d5c490d4700cc"
-  integrity sha512-dgzHnLGoMEHcQdMQqmSbXiV16Xj/aEzM2VdtwewjI8vhIHcIy0OjjC4ncxazrq8hAcZXt+ORTZzUA+2179/Umw==
+systeminformation@^4.0.15:
+  version "4.0.15"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.0.15.tgz#0f514208a78be0c2a13e16a841bd0574b5de977e"
+  integrity sha512-fnG0dDORrBHhF9IQzX4pMJzNuQnZvmepGqqv6a2J7VYGv/Z/8+E5Mrzbx4HLvVJZHhTcSe8szTWgLa1ALeh8lg==
 
 table@^5.2.3:
   version "5.2.3"
@@ -6385,15 +6385,16 @@ watchr@~2.4.13:
     taskgroup "^4.2.0"
     typechecker "^2.0.8"
 
-webdav@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/webdav/-/webdav-2.5.0.tgz#d984609a79b8d02217ae32754c4bba438d51f62a"
-  integrity sha512-5baP4IZjio1CJK8c/h3o/0dzfvciyI+qniWDOTPKjDSx49WfrIKXA6RDoI6ZGMlT+n7BD84N/MAcjvTtxyjL4Q==
+webdav@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/webdav/-/webdav-2.6.0.tgz#28918f01c2e1d0757c7bc719a1b240976db56979"
+  integrity sha512-g18OYeUwMnlEXyUOxgd15W8Q7VMniGPNFtDNxwl/bo2/u9aI/a0+cE1RT2EntZErlfkfGtiQF1Z5fbmGjubrTg==
   dependencies:
     axios "^0.18.0"
     base-64 "^0.1.0"
     hot-patcher "^0.5.0"
     merge "^1.2.1"
+    minimatch "^3.0.4"
     path-posix "^1.0.0"
     url-join "^4.0.0"
     url-parse "^1.4.4"
