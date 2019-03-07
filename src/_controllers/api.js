@@ -1,6 +1,6 @@
 //Middlewares
 import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from './middlewares/webapp_mode';
-import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from './middlewares/auth';
+import {requireAuth, requireRegularUser, requireValidUser, updateUserLoginTime, requireAdmin} from './middlewares/auth';
 import {getLang} from './middlewares/lang';
 
 //Utils
@@ -3883,7 +3883,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited,  requireValidUser, requireRegularUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const karas = await getFavorites(req.authToken.username, req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 9999999);
 				res.json(OKMessage(karas));
@@ -3926,7 +3926,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, requireRegularUser, updateUserLoginTime, async (req, res) => {
 			const validationErrors = check(req.body, {
 				kid: {uuidArrayValidator: true}
 			});
@@ -3977,7 +3977,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.delete(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.delete(getLang, requireAuth, requireWebappLimited, requireValidUser, requireRegularUser, updateUserLoginTime, async (req, res) => {
 			// Delete kara from favorites
 			// Deletion is through kara ID.
 			const validationErrors = check(req.body, {
@@ -4019,7 +4019,7 @@ export function APIControllerPublic(router) {
  *   "code": "FAVORITES_EXPORT_ERROR"
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, requireRegularUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
 				const favorites = await exportFavorites(req.authToken.username);
@@ -4057,7 +4057,7 @@ export function APIControllerPublic(router) {
  *   "message": "No header section"
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, requireRegularUser,updateUserLoginTime, requireWebappLimited, async (req, res) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
 			const validationErrors = check(req.body, {
 				favorites: {isJSON: true}
