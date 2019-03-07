@@ -644,7 +644,7 @@ describe('Playlists', function() {
 
 	it('Import a playlist', function() {
 		var data = {
-			playlist: playlistExport
+			playlist: JSON.stringify(playlistExport)
 		};
 		return request
 			.post('/api/admin/playlists/import')
