@@ -16,6 +16,7 @@ import {createHash} from 'crypto';
 import Bar from '../_utils/bar';
 import {emit} from '../_utils/pubsub';
 import uuidV4 from 'uuid/v4';
+import { generateBlacklist } from './blacklist';
 
 let error = false;
 let generating = false;
@@ -485,7 +486,7 @@ export async function run(validateOnly) {
 		bar = new Bar({
 			message: 'Generating database  ',
 			event: 'generationProgress'
-		}, 15);
+		}, 16);
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		bar.incr();
 		const sqlInsertSeries = prepareAllSeriesInsertData(series.map, series.data);
@@ -584,6 +585,8 @@ export async function checkUserdbIntegrity() {
 		COMMIT;
 		`);
 	}
+	if (bar) bar.incr();
+	await generateBlacklist();
 	if (bar) bar.incr();
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }
