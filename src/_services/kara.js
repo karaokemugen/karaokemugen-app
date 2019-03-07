@@ -32,6 +32,8 @@ import {isPreviewAvailable} from '../_webapp/previews';
 import { getOrAddSerieID } from './series';
 
 export async function isAllKaras(karas) {
+	// Returns an array of unknown karaokes
+	// If array is empty, all songs in "karas" are present in database
 	const allKaras = await selectAllKIDs();
 	return karas.filter(kid => !allKaras.includes(kid));
 }

@@ -257,10 +257,12 @@ export async function initDBSystem() {
 		throw `Database initialization failed : ${err}`;
 	}
 	if (conf.optReset) await resetUserData();
-	logger.info('[DB] Checking data files...');
-	if (!await compareKarasChecksum()) {
-		logger.info('[DB] Data files have changed: database generation triggered');
-		doGenerate = true;
+	if (!conf.optNoBaseCheck) {
+		logger.info('[DB] Checking data files...');
+		if (!await compareKarasChecksum()) {
+			logger.info('[DB] Data files have changed: database generation triggered');
+			doGenerate = true;
+		}
 	}
 	const settings = await getSettings();
 	if (!doGenerate && !settings.lastGeneration) {

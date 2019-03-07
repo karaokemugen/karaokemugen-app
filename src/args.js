@@ -19,6 +19,7 @@ Options :
 --demo        Launches in demo mode (no admin panel, no password changes)
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files
+--noBaseCheck Disable data file checking
 --noBrowser   Do not open a browser window upon launch
 --noMedia     (generation only) Do not try to fetch data from media files
 `;
@@ -59,6 +60,10 @@ export async function parseCommandLineArgs(argv) {
 			logger.info('[Launcher] Medias will not be read during generation');
 			setConfig({optNoMedia: true});
 		}
+	}
+	if (argv.noBaseCheck) {
+		logger.info('[Launcher] Data files will not be checked. ENABLED AT YOUR OWN RISK');
+		setConfig({optNoBaseCheck: true});
 	}
 	if (argv.strict) {
 		logger.info('[Launcher] Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.');
