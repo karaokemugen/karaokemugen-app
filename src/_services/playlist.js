@@ -774,6 +774,9 @@ export async function importPlaylist(playlist, username, playlist_id) {
 		if (playlist.PlaylistInformation.flag_visible !== true &&
 		playlist.PlaylistInformation.flag_visible !== false) throw 'Visible flag must be boolean';
 		if (!playlist.PlaylistInformation.name) throw 'Playlist name must not be empty';
+		// Convert unix timestamps to JS Dates
+		if (!isNaN(playlist.PlaylistInformation.created_at)) playlist.PlaylistInformation.created_at = new Date(playlist.PlaylistInformation.created_at * 1000);
+		if (!isNaN(playlist.PlaylistInformation.modified_at)) playlist.PlaylistInformation.modified_at = new Date(playlist.PlaylistInformation.modified_at * 1000);
 		let flag_playingDetected = false;
 		if (playlist.PlaylistContents) {
 			for (const index in playlist.PlaylistContents) {
@@ -786,6 +789,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 					playingKara.kid = kara.kid;
 					playingKara.user = kara.username;
 				}
+				if (!isNaN(kara.created_at)) playlist.PlaylistContents[index].created_at = new Date(kara.created_at * 1000);
 				if (isNaN(kara.pos)) throw 'Position must be a number';
 				if (!kara.nickname) throw 'All karaokes must have a nickname associated with them';
 				const user = await findUserByName(kara.username);
