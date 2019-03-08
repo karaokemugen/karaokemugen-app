@@ -83,7 +83,6 @@ export async function playerEnding() {
 		} catch(err) {
 			loadBackground();
 			displayInfo();
-			logger.warn(`[Player] Next song is not available : ${err}`);
 			stopPlayer();
 		}
 	}
@@ -108,6 +107,7 @@ async function next() {
 		playPlayer(true);
 	} catch(err) {
 		logger.warn(`[Player] Next song is not available : ${err}`);
+		throw err;
 	}
 }
 

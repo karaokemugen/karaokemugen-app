@@ -65,7 +65,7 @@ async function extractBackgroundFiles(backgroundDir) {
 	return backgroundFiles;
 }
 
-async function loadBackground() {
+export async function loadBackground() {
 	const conf = getConfig();
 	// Default background
 	let backgroundFiles = [];
