@@ -189,7 +189,8 @@ async function startmpv() {
 	if (+conf.PlayerNoBar) mpvOptions.push('--no-osd-bar');
 	//On all platforms, check if we're using mpv at least version 0.25 or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
-	const mpvVersion = await getmpvVersion(conf.BinmpvPath);
+	let mpvVersion = await getmpvVersion(conf.BinmpvPath);
+	mpvVersion = mpvVersion.split('-')[0];
 	logger.debug(`[Player] mpv version : ${mpvVersion}`);
 
 	//If we're on macOS, add --no-native-fs to get a real
