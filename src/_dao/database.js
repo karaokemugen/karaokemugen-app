@@ -231,6 +231,7 @@ async function migrateDB() {
 export async function getSettings() {
 	const res = await db().query(sql.selectSettings);
 	const settings = {};
+	// Return an object with option: value.
 	res.rows.forEach(e => settings[e.option] = e.value);
 	return settings;
 }
