@@ -205,7 +205,7 @@ export async function initDB() {
 async function migrateDB() {
 	logger.info('[DB] Running migrations if needed');
 	const conf = getConfig();
-	const dbm = DBMigrate.getInstance(true, {
+	let options = {
 		config: conf.db,
 		noPlugins: true,
 		plugins: {
@@ -216,9 +216,11 @@ async function migrateDB() {
 		},
 		cmdOptions: {
 			'migrations-dir': join(__dirname, '../../migrations/'),
-			'log-level': 'warn|error|info'
+			'log-level': 'warn|error'
 		}
-	});
+	};
+	if (conf.optDebug) options.cmdOptions['log-level'] = 'warn|error|info';
+	const dbm = DBMigrate.getInstance(true, options);
 	try {
 		await dbm.sync('all');
 	} catch(err) {
