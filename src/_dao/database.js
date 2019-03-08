@@ -39,9 +39,7 @@ export function paramWords(filter) {
 		.replace(',', ' ')
 		.split(' ')
 		.filter(s => !('' === s))
-		.map(word => {
-			return `%${word}%`;
-		});
+		.map(word => `%${word}%`);
 	for (const i in words) {
 		params[`word${i}`] = `%${words[i]}%`;
 	}
@@ -76,8 +74,8 @@ export function buildClauses(words) {
 
 export function langSelector(lang) {
 	const conf = getConfig();
-	const userLocale = langs.where('1',lang || conf.EngineDefaultLocale);
-	const engineLocale = langs.where('1',conf.EngineDefaultLocale);
+	const userLocale = langs.where('1', lang || conf.EngineDefaultLocale);
+	const engineLocale = langs.where('1', conf.EngineDefaultLocale);
 	//Fallback to english for cases other than 0 (original name)
 	switch(+conf.WebappSongLanguageMode) {
 	case 0: return {main: null, fallback: null};
@@ -106,8 +104,7 @@ export function flatten(arr){
 export async function copyFromData(table, data) {
 	const client = await database.connect();
 	let stream = client.query(copyFrom(`COPY ${table} FROM STDIN DELIMITER '|' NULL ''`));
-	data.forEach((d,i) => data[i] = d.join('|'));
-	data = data.join('\n');
+	data = data.map(d => d.join('|')).join('\n');
 	stream.write(data);
 	stream.end();
 	return new Promise((resolve, reject) => {

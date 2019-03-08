@@ -50,11 +50,9 @@ export async function checkValidUser(token, onlineToken) {
 }
 
 export const requireRegularUser = (req, res, next) => {
-	if (req.user.type === 2) {
-		res.status(401).send('Guests cannot use favorites')
-	} else {
-		next();
-	}
+	req.user.type === 2
+		? res.status(401).send('Guests cannot use favorites')
+		: next();
 };
 
 export const requireValidUser = (req, res, next) => {
@@ -73,7 +71,9 @@ export const requireValidUser = (req, res, next) => {
 
 export const requireAdmin = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
-	token.role === 'admin' ? next() : res.status(403).send('Only admin can use this function');
+	token.role === 'admin'
+		? next()
+		: res.status(403).send('Only admin can use this function');
 };
 
 
