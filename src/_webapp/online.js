@@ -18,7 +18,7 @@ export async function publishURL() {
 		logger.debug('[ShortURL] Server accepted our publish');
 		configureHost();
 	} catch(err) {
-		throw `Failed publishing our IP to ${conf.OnlineHost} : ${err.response.body}`;
+		logger.error(`Failed publishing our IP to ${conf.OnlineHost} : ${err}`);
 	}
 }
 
