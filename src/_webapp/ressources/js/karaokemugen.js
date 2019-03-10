@@ -1139,7 +1139,8 @@ var settingsNotUpdated;
 		'BLCTYPE_5',
 		'BLCTYPE_6',
 		'BLCTYPE_7',
-		'BLCTYPE_8'];
+		'BLCTYPE_8',
+		'BLCTYPE_9'];
 
 	tagsTypesList = [
 		'DETAILS_SERIE',
