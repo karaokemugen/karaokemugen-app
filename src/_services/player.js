@@ -19,9 +19,7 @@ async function getPlayingSong(now) {
 		try {
 			const kara = await getCurrentSong();
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
-			let serie = kara.serie || kara.singers.map(singer => singer.name).split(', ');
-			let title = kara.title || '';
-			logger.info(`[Player] Playing ${serie}${title}`);
+			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length-4)}`);
 			await play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
