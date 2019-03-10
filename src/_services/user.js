@@ -205,7 +205,7 @@ async function editRemoteUser(user) {
 			}
 		});
 	} catch(err) {
-		throw `Remote update failed : ${err.response.body}`;
+		throw `Remote update failed : ${err.response ? err.response.body : err}`;
 	}
 }
 
@@ -381,7 +381,7 @@ async function getAllRemoteUsers(instance) {
 		logger.debug(`[RemoteUser] Got error when get all remote users : ${err}`);
 		throw {
 			code: 'USER_CREATE_ERROR_ONLINE',
-			message: err.response.body
+			message: err.response ? err.response.body : err
 		};
 	}
 }
@@ -405,7 +405,7 @@ async function createRemoteUser(user) {
 		logger.debug(`[RemoteUser] Got error when create remote user ${login} : ${err}`);
 		throw {
 			code: 'USER_CREATE_ERROR_ONLINE',
-			message: err.response.body
+			message: err.response ? err.response.body : err
 		};
 	}
 };
@@ -422,7 +422,7 @@ export async function getRemoteUser(username, token) {
 		return res.body;
 	} catch(err) {
 		if (err.statusCode === 401) throw 'Unauthorized';
-		throw `Unknown error : ${err.response.body}`;
+		throw `Unknown error : ${err.response ? err.response.body : err}`;
 	}
 }
 
