@@ -556,13 +556,11 @@ export async function restartmpv() {
 
 export async function quitmpv() {
 	logger.debug('[Player] Quitting mpv');
-	await player.stop();
-	await player.quit();
+	player.quit();
 	// Destroy mpv instance.
 	player = null;
 	if (playerMonitor) {
-		await playerMonitor.stop();
-		await playerMonitor.quit();
+		playerMonitor.quit();
 		playerMonitor = null;
 	}
 	playerState.ready = false;
