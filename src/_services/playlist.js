@@ -769,27 +769,23 @@ export async function importPlaylist(playlist, username, playlist_id) {
 		if (playlist.Header.version > 4) throw `Cannot import this version (${playlist.Header.version})`;
 		if (!playlist.PlaylistContents) throw 'No PlaylistContents section';
 		if (!playlist.PlaylistInformation) throw 'No PlaylistInformation section';
-		if (isNaN(playlist.PlaylistInformation.created_at) && !Date.parse(playlist.PlaylistInformation.created_at)) throw 'Creation time is not valid';
-		if (isNaN(playlist.PlaylistInformation.modified_at) && !Date.parse(playlist.PlaylistInformation.modified_at)) throw 'Modification time is not valid';
+		if (!Date.parse(playlist.PlaylistInformation.created_at)) throw 'Creation time is not valid';
+		if (!Date.parse(playlist.PlaylistInformation.modified_at)) throw 'Modification time is not valid';
 		if (playlist.PlaylistInformation.flag_visible !== true &&
 		playlist.PlaylistInformation.flag_visible !== false) throw 'Visible flag must be boolean';
 		if (!playlist.PlaylistInformation.name) throw 'Playlist name must not be empty';
-		// Convert unix timestamps to JS Dates
-		if (!isNaN(playlist.PlaylistInformation.created_at)) playlist.PlaylistInformation.created_at = new Date(+playlist.PlaylistInformation.created_at * 1000);
-		if (!isNaN(playlist.PlaylistInformation.modified_at)) playlist.PlaylistInformation.modified_at = new Date(+playlist.PlaylistInformation.modified_at * 1000);
 		let flag_playingDetected = false;
 		if (playlist.PlaylistContents) {
 			for (const index in playlist.PlaylistContents) {
 				const kara = playlist.PlaylistContents[index];
 				if (!(new RegExp(uuidRegexp).test(kara.kid))) throw 'KID is not a valid UUID!';
-				if (isNaN(kara.created_at) && !Date.parse(kara.created_at)) throw 'Karaoke added time is not a valid date';
+				if (!Date.parse(kara.created_at)) throw 'Karaoke added time is not a number';
 				if (kara.flag_playing === true) {
 					if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
 					flag_playingDetected = true;
 					playingKara.kid = kara.kid;
 					playingKara.user = kara.username;
 				}
-				if (!isNaN(kara.created_at)) playlist.PlaylistContents[index].created_at = new Date(+kara.created_at * 1000);
 				if (isNaN(kara.pos)) throw 'Position must be a number';
 				if (!kara.nickname) throw 'All karaokes must have a nickname associated with them';
 				const user = await findUserByName(kara.username);
@@ -981,7 +977,7 @@ export async function nextSong() {
 		// If we're here, it means either we're beyond the length of the playlist
 		// OR that EngineRepeatPlaylist is set to 1.
 		// We test again if we're at the end of the playlist. If so we go back to first song.
-		if (+conf.EngineRepeatPlaylist && current.index + 1 >= current.content.length) current.index = -1;
+		if (current.index + 1 >= current.content.length) current.index = -1;
 		const kara = current.content[current.index + 1];
 		if (!kara) throw 'Karaoke received is empty!';
 		await setPlaying(kara.playlistcontent_id, current.id);
@@ -1037,7 +1033,11 @@ export async function getCurrentSong() {
 	// If series is empty, pick singer information instead
 
 	let series = kara.serie;
-	if (!kara.serie) series = kara.singers.map(s => s.name).join(', ');
+	if (!kara.serie) {
+		Array.isArray(kara.singers)
+			? series = kara.singers.map(s => s.name).join(', ')
+			: series = kara.singers;
+	}
 
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 	if (!kara.songorder || kara.songorder === 0) kara.songorder = '';

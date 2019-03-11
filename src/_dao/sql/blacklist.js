@@ -96,6 +96,7 @@ SELECT
   ak.duration AS duration,
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
+  bl.
   bl.created_at AS blacklisted_at,
   bl.reason AS reason
   FROM all_karas AS ak
