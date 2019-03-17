@@ -28,7 +28,7 @@ describe('Auth', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.notStrictEqual(response.body.token, '');
 				assert.notStrictEqual(response.body.username, '');
 				assert.notStrictEqual(response.body.role, 'user');
@@ -44,9 +44,11 @@ describe('Auth', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code, 'NO_MORE_GUESTS_AVAILABLE');
-				assert.strictEqual(response.body.message, null);
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.response.body.code, 'NO_MORE_GUESTS_AVAILABLE');
+				assert.strictEqual(err.response.body.message, null);
 			});
 	});
 
@@ -60,7 +62,7 @@ describe('Auth', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				token = response.body.token;
 				assert.strictEqual(response.body.username,data.username);
 				assert.strictEqual(response.body.role, 'admin');
@@ -76,7 +78,11 @@ describe('Auth', function() {
 			.post('/api/auth/login')
 			.set('Accept', 'application/json')
 			.send(data)
-			.expect(401);
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.status, 401);
+			  });
 	});
 });
 
@@ -93,7 +99,7 @@ describe('Blacklist', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(201)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'BLC_ADDED');
 				assert.strictEqual(response.body.data.blcriteria_type,data.blcriteria_type);
 				assert.strictEqual(response.body.data.blcriteria_value,data.blcriteria_value);
@@ -107,7 +113,7 @@ describe('Blacklist', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.length >= 1,true);
 			});
 	});
@@ -120,7 +126,7 @@ describe('Blacklist', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				blc_id = response.body.data[0].blcriteria_id.toString();
 				assert.strictEqual(response.body.data.length >= 1,true);
 			});
@@ -138,7 +144,7 @@ describe('Blacklist', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'BLC_UPDATED');
 				assert.strictEqual(response.body.data.blcriteria_type,data.blcriteria_type);
 				assert.strictEqual(response.body.data.blcriteria_value,data.blcriteria_value);
@@ -152,7 +158,7 @@ describe('Blacklist', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.content.length >= 1,true);
 			});
 	});
@@ -164,7 +170,7 @@ describe('Blacklist', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.content.length >= 1,true);
 			});
 	});
@@ -176,7 +182,7 @@ describe('Blacklist', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'BLC_DELETED');
 				assert.strictEqual(response.body.data,blc_id);
 			});
@@ -188,7 +194,7 @@ describe('Blacklist', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'BLC_EMPTIED');
 				assert.strictEqual(response.body.data,null);
 			});
@@ -206,7 +212,7 @@ describe('Favorites', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'FAVORITES_ADDED');
 				assert.strictEqual(response.body.data, null);
 			});
@@ -219,7 +225,7 @@ describe('Favorites', function() {
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				favoritesExport = response.body.data;
 				assert.strictEqual(response.body.data.Header.description,'Karaoke Mugen Favorites List File');
 				assert.strictEqual(response.body.data.Favorites.length, 1);
@@ -232,7 +238,7 @@ describe('Favorites', function() {
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.content.length, 1);
 				assert.strictEqual(response.body.data.infos.count, 1);
 			});
@@ -249,7 +255,7 @@ describe('Favorites', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(201)
-			.then(function(response) {
+			.then(response => {
 				assert.notStrictEqual(response.body.data.playlist_id, null);
 				assert.notStrictEqual(response.body.data.playlist_name, null);
 			});
@@ -265,7 +271,7 @@ describe('Favorites', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'FAVORITES_DELETED');
 				assert.strictEqual(response.body.data, null);
 			});
@@ -282,7 +288,7 @@ describe('Favorites', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'FAVORITES_IMPORTED');
 				assert.strictEqual(response.body.data.message,'Favorites imported');
 			});
@@ -297,7 +303,7 @@ describe('Karas information', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.notStrictEqual(response.body.data, null);
 			});
 	});
@@ -309,7 +315,7 @@ describe('Karas information', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.content[0].serie, 'Dragon Ball');
 			});
 	});
@@ -321,7 +327,7 @@ describe('Karas information', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.length, 1);
 			});
 	});
@@ -333,7 +339,7 @@ describe('Karas information', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.length>=1, true);
 			});
 	});
@@ -349,7 +355,7 @@ describe('Series and year', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.content.length>=1, true);
 				assert.strictEqual(response.body.data.infos.count, 3);
 			});
@@ -362,7 +368,7 @@ describe('Series and year', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.content.length>=1, true);
 				assert.strictEqual(response.body.data.infos.count, 3);
 			});
@@ -399,8 +405,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(201)
-			.then(function(response) {
-
+			.then(response => {
 				assert.strictEqual(response.body.code,'PL_SONG_ADDED');
 			});
 	});
@@ -417,9 +422,11 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
-				assert.strictEqual(response.body.message,'No karaoke could be added,'+
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.response.body.code,'PL_ADD_SONG_ERROR');
+				assert.strictEqual(err.response.body.message,'No karaoke could be added,'+
 				' all are in destination playlist already (PLID : '+playlist+')');
 			});
 	});
@@ -436,9 +443,11 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
-				assert.strictEqual(response.body.message,'One of the karaokes does not exist');
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.response.body.code,'PL_ADD_SONG_ERROR');
+				assert.strictEqual(err.response.body.message,'One of the karaokes does not exist');
 			});
 	});
 
@@ -454,8 +463,10 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.response.body.code,'PL_ADD_SONG_ERROR');
 			});
 	});
 
@@ -466,7 +477,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id.toString();
 				assert.strictEqual(response.body.data.content.length >= 1, true);
 			});
@@ -479,7 +490,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.content.length >= 1, true);
 			});
 	});
@@ -499,7 +510,7 @@ describe('Playlists', function() {
 			.send(playlist)
 			.expect('Content-Type', /json/)
 			.expect(201)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code, 'PL_CREATED');
 				new_playlist_id = response.body.data.toString();
 			});
@@ -519,7 +530,7 @@ describe('Playlists', function() {
 			.send(playlist_current)
 			.expect('Content-Type', /json/)
 			.expect(201)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code, 'PL_CREATED');
 				new_playlist_current_id = response.body.data;
 			});
@@ -539,7 +550,7 @@ describe('Playlists', function() {
 			.send(playlist_public)
 			.expect('Content-Type', /json/)
 			.expect(201)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code, 'PL_CREATED');
 				new_playlist_public_id = response.body.data.toString();
 			});
@@ -556,7 +567,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(201)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code, 'PL_SONG_MOVED');
 			});
 	});
@@ -568,7 +579,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(201)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'PLAYLIST_MODE_SONG_ADDED');
 				assert.strictEqual(response.body.data.kid[0], 'a9c17ee5-b0f1-43d7-a1e0-0babf5997bde');
 			});
@@ -580,9 +591,11 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'PL_DELETE_ERROR');
-				assert.strictEqual(response.body.message,'Playlist '+new_playlist_current_id+' is current. Unable to delete it. Make another playlist current first.');
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.response.body.code,'PL_DELETE_ERROR');
+				assert.strictEqual(err.response.body.message,'Playlist '+new_playlist_current_id+' is current. Unable to delete it. Make another playlist current first.');
 			});
 	});
 
@@ -593,9 +606,11 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'PL_DELETE_ERROR');
-				assert.strictEqual(response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it. Make another playlist public first.');
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.response.body.code,'PL_DELETE_ERROR');
+				assert.strictEqual(err.response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it. Make another playlist public first.');
 			});
 	});
 
@@ -610,7 +625,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type',  /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'PL_SONG_DELETED');
 			});
 	});
@@ -622,7 +637,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'PL_SHUFFLED');
 				assert.strictEqual(response.body.data, '1');
 			});
@@ -635,7 +650,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				playlistExport = response.body.data;
 				assert.strictEqual(response.body.data.Header.description,'Karaoke Mugen Playlist File');
 				assert.strictEqual(response.body.data.PlaylistContents.length, 2);
@@ -652,7 +667,7 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'PL_IMPORTED');
 				assert.strictEqual(response.body.data.message,'Playlist imported');
 				assert.strictEqual(response.body.data.unknownKaras.length, 0);
@@ -669,8 +684,10 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code,'PL_IMPORT_ERROR');
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.response.body.code,'PL_IMPORT_ERROR');
 			});
 	});
 
@@ -686,7 +703,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'PL_UPDATED');
 				assert.strictEqual(response.body.data,playlist.toString());
 			});
@@ -712,7 +729,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				// We get the PLC_ID of our last karaoke, the one we just added
 				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id;
 				current_plc_id = plc_id.toString();
@@ -732,7 +749,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'PL_CONTENT_MODIFIED');
 				assert.strictEqual(response.body.data, current_plc_id);
 			});
@@ -749,7 +766,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'PL_CONTENT_MODIFIED');
 				assert.strictEqual(response.body.data, current_plc_id);
 			});
@@ -772,7 +789,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.length >= 2, true);
 			});
 	});
@@ -784,7 +801,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.playlist_id, 1);
 			});
 	});
@@ -796,7 +813,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.playlist_id, 1);
 			});
 	});
@@ -817,7 +834,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code, 'PL_SET_CURRENT');
 			});
 	});
@@ -829,7 +846,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code, 'PL_SET_PUBLIC');
 			});
 	});
@@ -841,8 +858,10 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code, 'UPVOTE_NO_SELF');
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.response.body.code, 'UPVOTE_NO_SELF');
 			});
 	});
 
@@ -853,7 +872,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'PL_EMPTIED');
 				assert.strictEqual(response.body.data,new_playlist_public_id);
 			});
@@ -866,7 +885,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'PL_DELETED');
 				assert.strictEqual(response.body.data,new_playlist_id);
 			});
@@ -882,8 +901,10 @@ describe('Song Poll', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.response.body.code, 'POLL_NOT_ACTIVE');
 			});
 	});
 
@@ -898,8 +919,10 @@ describe('Song Poll', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(function(response) {
-				assert.strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
+			.then(() => {
+				assert.fail();
+			  }, err => {
+				assert.strictEqual(err.response.body.code, 'POLL_NOT_ACTIVE');
 			});
 	});
 
@@ -913,7 +936,7 @@ describe('Tags', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.content.length>=1, true);
 				assert.strictEqual(response.body.data.infos.count>=1, true);
 			});
@@ -931,7 +954,7 @@ describe('Users', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'USER_CREATED');
 				assert.strictEqual(response.body.data, true);
 			});
@@ -949,7 +972,7 @@ describe('Users', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'USER_CREATED');
 				assert.strictEqual(response.body.data, true);
 			});
@@ -965,7 +988,7 @@ describe('Users', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'USER_UPDATED');
 				assert.strictEqual(response.body.data.nickname, 'toto');
 			});
@@ -977,7 +1000,7 @@ describe('Users', function() {
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				response.body.data.forEach(element => {
 					if (element.login === 'BakaToTest') {
 						assert.strictEqual(element.type, 1);
@@ -992,7 +1015,7 @@ describe('Users', function() {
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.nickname, 'toto');
 			});
 	});
@@ -1003,7 +1026,7 @@ describe('Users', function() {
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.type, 1);
 			});
 	});
@@ -1014,7 +1037,7 @@ describe('Users', function() {
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.type, 1);
 			});
 	});
@@ -1025,7 +1048,7 @@ describe('Users', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.args,'BakaToTest');
 				assert.strictEqual(response.body.code, 'USER_DELETED');
 			});
@@ -1045,7 +1068,7 @@ describe('Whitelist', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(201)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'WL_SONG_ADDED');
 				assert.strictEqual(response.body.data.kid, data.kid);
 				assert.strictEqual(response.body.data.reason, data.reason);
@@ -1059,7 +1082,7 @@ describe('Whitelist', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.content.length, 1);
 			});
 	});
@@ -1072,7 +1095,7 @@ describe('Whitelist', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.data.content.length, 1);
 				wlc_id = response.body.data.content[0].whitelist_id;
 			});
@@ -1088,7 +1111,7 @@ describe('Whitelist', function() {
 			.set('Authorization', token)
 			.send(data)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'WL_SONG_DELETED');
 				assert.strictEqual(response.body.data, wlc_id);
 			});
@@ -1100,7 +1123,7 @@ describe('Whitelist', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(200)
-			.then(function(response) {
+			.then(response => {
 				assert.strictEqual(response.body.code,'WL_EMPTIED');
 			});
 	});
@@ -1114,7 +1137,7 @@ describe('Main', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response){
+			.then(response =>{
 				assert.strictEqual(response.body.data.appPath, undefined);
 			});
 	});
@@ -1126,7 +1149,7 @@ describe('Main', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response){
+			.then(response =>{
 				SETTINGS = response.body;
 			});
 	});
@@ -1168,7 +1191,7 @@ describe('Main - Shutdown', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response){
+			.then(response =>{
 				assert.strictEqual(response.body,'Shutdown in progress');
 			});
 	});

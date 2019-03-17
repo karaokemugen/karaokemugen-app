@@ -14,10 +14,20 @@ This is a major release.
 ### Improvements
 
 - Configuration storage has been completely revamped and is now a YAML file instead of the old INI format. (#355)
-- Favorites are now handled in a simpler way. Favorites playlists are no longer used, instead Favorites are stored on a separate table in database (#389)
+- Favorites are now handled in a simpler way. Favorites playlists are no longer used, instead Favorites are stored on a separate table in database. You can safely delete any favorites playlist after upgrading to 2.5.0 (#389)
 - Karaoke Mugen now uses a PostgreSQL database instead of a SQLite3 one, leading to cleaner code and faster response times (#379)
 - Already present since 2.4.1 : Initialization catchphrases(tm) are now displayed on the welcome screen (#375)
 - MP3 playback is now more dynamic with some visualization effects (#349)
+- Downloadable groups can now be filtered / blacklisted
+- New guest names and catchphrases !
+- Transitions between songs are now shorter as we do not reload the karaoke background image
+- Blacklist is now regenerated after a kara generation to keep it consistent
+- New option `--noBaseCheck` to disable data file checks
+- Configuration is not updated anymore in realtime if you modify the config file while Karaoke Mugen is running (it caused too many problems). You'll need to modify the config file while Karaoke Mugen is stopped.
+- All communication with Karaoke Mugen Server is now done in HTTPS.
+- Executable file has been greatly reduced by replacing some packages with simpler, lighter versions
+- The `--sql` command line flag now logs SQL queries only with the bundled PostgreSQL server. If you're using your own PostgreSQL, refer to the PostgreSQL documentation on how to log queries.
+- Preview generation should be more consistent now.
 
 ### Fixes
 
@@ -26,7 +36,6 @@ This is a major release.
 - Fixed Karaoke Mugen allowing users to put commas in series names (#386)
 - Fixed Karaoke Mugen adding you as an author to a karaoke you're editing if there's no author already in metadata info (#385)
 - Fixed series name not translated with user's browser's locale in control panel (#384)
-
 
 ## v2.4.2 "Juri Joueuse" - 13/12/2018
 

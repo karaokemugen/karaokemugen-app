@@ -21,9 +21,9 @@ export async function isPreviewAvailable(kid, mediasize) {
 	return await asyncExists(resolve(previewDir, `${kid}.${mediasize}.mp4`));
 }
 
-export async function createPreviews(config) {
+export async function createPreviews() {
 	logger.debug('[Previews] Starting preview generation');
-	const karas = await getKaras(null, null, null, null, null, null, {username: 'admin', role: 'admin'});
+	const karas = await getKaras(undefined, undefined, undefined, undefined, undefined, undefined, {username: 'admin', role: 'admin'});
 	const previewDir = resolvedPathPreviews();
 	const previewFiles = await extractPreviewFiles(previewDir);
 	// Remove unused previewFiles

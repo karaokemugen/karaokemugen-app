@@ -323,7 +323,7 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter, lang, from, size, searchType, searchValue, token) {
+export async function getKaras(filter, lang, from = 0, size = 999999999, searchType, searchValue, token) {
 	profile('getKaras');
 	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin');
 	profile('formatList');
