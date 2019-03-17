@@ -80,7 +80,7 @@ export function langSelector(lang) {
 	switch(+conf.WebappSongLanguageMode) {
 	case 0: return {main: null, fallback: null};
 	default:
-	case 1: return {main: 'ak.language',fallback: '\'eng\''};
+	case 1: return {main: 'SUBSTRING(ak.languages_sortable, 0, 3)',fallback: '\'eng\''};
 	case 2: return {main: `'${engineLocale['2B']}'`, fallback: '\'eng\''};
 	case 3: return {main: `'${userLocale['2B']}'`, fallback: '\'eng\''};
 	}
