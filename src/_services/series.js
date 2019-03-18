@@ -5,6 +5,7 @@ import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../_utils/files';
 import { refreshKaras } from '../_dao/kara';
+import {compareKarasChecksum} from '../_dao/database';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
@@ -50,6 +51,7 @@ export async function deleteSerie(sid) {
 		removeSerieInKaras(serie.name),
 	]);
 	// Refreshing karas is done asynchronously
+	compareKarasChecksum(true);
 	refreshKaraSeries().then(refreshKaras());
 }
 
@@ -64,15 +66,16 @@ export async function addSerie(serieObj) {
 		insertSeriei18n(serieObj),
 		writeSeriesFile(serieObj)
 	]);
+	compareKarasChecksum(true);
 	await refreshSeries();
 	refreshKaraSeries().then(refreshKaras());
 	return serieObj.sid;
 }
 
 export async function editSerie(sid, serieObj) {
+	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const oldSerie = await getSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
-	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	if (oldSerie.name !== serieObj.name) {
 		await replaceSerieInKaras(oldSerie.name, serieObj.name);
 		await removeSeriesFile(oldSerie.name);
@@ -82,6 +85,7 @@ export async function editSerie(sid, serieObj) {
 		updateSerie(serieObj),
 		writeSeriesFile(serieObj)
 	]);
+	compareKarasChecksum(true);
 	await refreshSeries();
 	refreshKaraSeries().then(refreshKaras());
 }

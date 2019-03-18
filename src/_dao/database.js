@@ -20,9 +20,9 @@ import {from as copyFrom} from 'pg-copy-streams';
 
 const sql = require('./sql/database');
 
-export async function compareKarasChecksum() {
+export async function compareKarasChecksum(silent) {
 	const settings = await getSettings();
-	const currentChecksum = await baseChecksum();
+	const currentChecksum = await baseChecksum({silent: silent});
 	if (settings.baseChecksum !== currentChecksum) {
 		await saveSetting('baseChecksum', currentChecksum);
 		return false;
