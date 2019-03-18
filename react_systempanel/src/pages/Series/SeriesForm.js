@@ -30,7 +30,7 @@ class SerieForm extends Component {
 			obj[`lang_${lang}`] = this.props.serie.i18n[lang];
 			this.props.form.setFieldsValue(obj);
 		}
-		this.props.form.validateFields();
+		//this.props.form.validateFields();
 	}
 
 	showSelect = () => {
