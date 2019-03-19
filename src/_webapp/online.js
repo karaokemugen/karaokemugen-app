@@ -7,7 +7,7 @@ export async function publishURL() {
 	const conf = getConfig();
 	const localHost = conf.EngineDisplayConnectionInfoHost || conf.osHost;
 	try {
-		await got(`https://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, {
+		await got(`https://${conf.OnlineHost}/api/shortener`, {
 			body: {
 				localIP: localHost,
 				localPort: conf.appFrontendPort,
@@ -18,7 +18,7 @@ export async function publishURL() {
 		logger.debug('[ShortURL] Server accepted our publish');
 		configureHost();
 	} catch(err) {
-		throw `Failed publishing our IP to ${conf.OnlineHost} : ${err.response.body}`;
+		logger.error(`Failed publishing our IP to ${conf.OnlineHost} : ${err}`);
 	}
 }
 

@@ -3,7 +3,7 @@ import {basename, join} from 'path';
 import {profile} from '../_utils/logger';
 import {has as hasLang} from 'langs';
 import {asyncReadFile, checksum, asyncReadDirFilter} from '../_utils/files';
-import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_utils/config';
+import {getConfig, resolvedPathSeries, resolvedPathKaras} from '../_utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {selectBLCTags, selectTags} from '../_dao/sql/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
@@ -16,6 +16,7 @@ import {createHash} from 'crypto';
 import Bar from '../_utils/bar';
 import {emit} from '../_utils/pubsub';
 import uuidV4 from 'uuid/v4';
+import { generateBlacklist } from './blacklist';
 
 let error = false;
 let generating = false;
@@ -591,12 +592,13 @@ export async function checkUserdbIntegrity() {
 		`);
 	}
 	if (bar) bar.incr();
+	await generateBlacklist();
+	if (bar) bar.incr();
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }
 
-export async function compareKarasChecksum(opts = {silent: false}) {
-	profile('compareChecksum');
-	const conf = getConfig();
+export async function baseChecksum(opts = {silent: false}) {
+	profile('baseChecksum');
 	const karaFiles = await extractAllKaraFiles();
 	const seriesFiles = await extractAllSeriesFiles();
 	let KMData = '';
@@ -617,10 +619,6 @@ export async function compareKarasChecksum(opts = {silent: false}) {
 	}
 	if (!opts.silent) bar.stop();
 	const karaDataSum = checksum(KMData);
-	profile('compareChecksum');
-	if (karaDataSum !== conf.appKaraDataChecksum) {
-		setConfig({appKaraDataChecksum: karaDataSum});
-		return false;
-	}
-	return true;
+	profile('baseChecksum');
+	return karaDataSum;
 }

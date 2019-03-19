@@ -32,12 +32,12 @@ export async function sendPayload() {
 		logger.debug(`[Stats] Payload being sent : ${JSON.stringify(payload,null,2)}`);
 		const conf = getConfig();
 		try {
-			await got(`https://${conf.OnlineHost}:${conf.OnlinePort}/api/stats`,{
+			await got(`https://${conf.OnlineHost}/api/stats`,{
 				json: true,
 				body: payload
 			});
 		} catch(err) {
-			throw err.response.body;
+			throw err;
 		}
 		logger.info('[Stats] Payload sent successfully');
 	} catch(err) {

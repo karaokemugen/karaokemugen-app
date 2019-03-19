@@ -1139,7 +1139,8 @@ var settingsNotUpdated;
 		'BLCTYPE_5',
 		'BLCTYPE_6',
 		'BLCTYPE_7',
-		'BLCTYPE_8'];
+		'BLCTYPE_8',
+		'BLCTYPE_9'];
 
 	tagsTypesList = [
 		'DETAILS_SERIE',
@@ -1150,7 +1151,8 @@ var settingsNotUpdated;
 		'BLCTYPE_5',
 		'BLCTYPE_6',
 		'DETAILS_YEAR',
-		'BLCTYPE_8'];
+		'BLCTYPE_8',
+		'BLCTYPE_9'];
 
 	/* list of error code allowing an info popup message on screen */
 	showInfoMessage = [

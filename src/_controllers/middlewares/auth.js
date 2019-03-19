@@ -16,7 +16,8 @@ export const updateUserLoginTime = (req, res, next) => {
 
 export async function checkValidUser(token, onlineToken) {
 	// If user is remote, see if we have a remote token ready.
-	if (await findUserByName(token.username)) {
+	const user = await findUserByName(token.username);
+	if (user) {
 		if (token.username.includes('@') && +getConfig().OnlineUsers) {
 			const remoteToken = getRemoteToken(token.username);
 			if (remoteToken && remoteToken.token === onlineToken) {
@@ -30,7 +31,7 @@ export async function checkValidUser(token, onlineToken) {
 					if (await remoteCheckAuth(token.username.split('@')[1], onlineToken)){
 						fetchAndAddFavorites(token.username.split('@')[1], onlineToken, token.username, token.username);
 						fetchAndUpdateRemoteUser(token.username, null, onlineToken);
-						return true;
+						return user;
 					} else {
 						// Cancelling remote token.
 						upsertRemoteToken(token.username, null);
@@ -42,28 +43,37 @@ export async function checkValidUser(token, onlineToken) {
 				}
 			}
 		}
-		return true;
+		return user;
 	} else {
 		throw false;
 	}
 }
+
+export const requireRegularUser = (req, res, next) => {
+	req.user.type === 2
+		? res.status(401).send('Guests cannot use favorites')
+		: next();
+};
 
 export const requireValidUser = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
 	const onlineToken = req.get('onlineAuthorization');
 	req.authToken = token;
 	checkValidUser(token, onlineToken)
-		.then(() => {
+		.then(user => {
+			req.user = user;
 			next();
 		})
-		.catch((err) => {
+		.catch(err => {
 			res.status(404).send('User logged in unknown');
 		});
 };
 
 export const requireAdmin = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
-	token.role === 'admin' ? next() : res.status(403).send('Only admin can use this function');
+	token.role === 'admin'
+		? next()
+		: res.status(403).send('Only admin can use this function');
 };
 
 

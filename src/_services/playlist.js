@@ -446,7 +446,9 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it wont count
 		// If no song is currently playing, plContentsBeforePlay returns all songs in playlist.
 		const playingObject = getPlayingPos(plContents);
-		const playingPos = playingObject ? playingObject.plc_id_pos : 0;
+		const playingPos = playingObject
+			? playingObject.plc_id_pos
+			: 0;
 		const plContentsBeforePlay = plContents.filter(plc => plc.pos > playingPos);
 		if (+conf.EngineAllowDuplicates) {
 			if (!pl.flag_public) {
@@ -514,7 +516,7 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 			pos = playlistMaxPos.maxpos + 1;
 		}
 		for (const i in karaList) {
-			karaList[i].pos = pos + i;
+			karaList[i].pos = pos + +i;
 		}
 		await addKaraToPL(karaList);
 		updatePlaylistLastEditTime(playlist_id);
@@ -767,23 +769,27 @@ export async function importPlaylist(playlist, username, playlist_id) {
 		if (playlist.Header.version > 4) throw `Cannot import this version (${playlist.Header.version})`;
 		if (!playlist.PlaylistContents) throw 'No PlaylistContents section';
 		if (!playlist.PlaylistInformation) throw 'No PlaylistInformation section';
-		if (!Date.parse(playlist.PlaylistInformation.created_at)) throw 'Creation time is not valid';
-		if (!Date.parse(playlist.PlaylistInformation.modified_at)) throw 'Modification time is not valid';
+		if (isNaN(playlist.PlaylistInformation.created_at) && !Date.parse(playlist.PlaylistInformation.created_at)) throw 'Creation time is not valid';
+		if (isNaN(playlist.PlaylistInformation.modified_at) && !Date.parse(playlist.PlaylistInformation.modified_at)) throw 'Modification time is not valid';
 		if (playlist.PlaylistInformation.flag_visible !== true &&
 		playlist.PlaylistInformation.flag_visible !== false) throw 'Visible flag must be boolean';
 		if (!playlist.PlaylistInformation.name) throw 'Playlist name must not be empty';
+		// Convert unix timestamps to JS Dates
+		if (!isNaN(playlist.PlaylistInformation.created_at)) playlist.PlaylistInformation.created_at = new Date(+playlist.PlaylistInformation.created_at * 1000);
+		if (!isNaN(playlist.PlaylistInformation.modified_at)) playlist.PlaylistInformation.modified_at = new Date(+playlist.PlaylistInformation.modified_at * 1000);
 		let flag_playingDetected = false;
 		if (playlist.PlaylistContents) {
 			for (const index in playlist.PlaylistContents) {
 				const kara = playlist.PlaylistContents[index];
 				if (!(new RegExp(uuidRegexp).test(kara.kid))) throw 'KID is not a valid UUID!';
-				if (!Date.parse(kara.created_at)) throw 'Karaoke added time is not a number';
+				if (isNaN(kara.created_at) && !Date.parse(kara.created_at)) throw 'Karaoke added time is not a valid date';
 				if (kara.flag_playing === true) {
 					if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
 					flag_playingDetected = true;
 					playingKara.kid = kara.kid;
 					playingKara.user = kara.username;
 				}
+				if (!isNaN(kara.created_at)) playlist.PlaylistContents[index].created_at = new Date(+kara.created_at * 1000);
 				if (isNaN(kara.pos)) throw 'Position must be a number';
 				if (!kara.nickname) throw 'All karaokes must have a nickname associated with them';
 				const user = await findUserByName(kara.username);
@@ -975,7 +981,7 @@ export async function nextSong() {
 		// If we're here, it means either we're beyond the length of the playlist
 		// OR that EngineRepeatPlaylist is set to 1.
 		// We test again if we're at the end of the playlist. If so we go back to first song.
-		if (current.index + 1 >= current.content.length) current.index = 0;
+		if (+conf.EngineRepeatPlaylist && current.index + 1 >= current.content.length) current.index = -1;
 		const kara = current.content[current.index + 1];
 		if (!kara) throw 'Karaoke received is empty!';
 		await setPlaying(kara.playlistcontent_id, current.id);

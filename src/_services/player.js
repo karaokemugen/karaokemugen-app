@@ -3,7 +3,7 @@ import {getConfig} from '../_utils/config';
 import logger from 'winston';
 import {profile} from '../_utils/logger';
 import {promisify} from 'util';
-import {displayInfo, playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem} from '../_player/player';
+import {loadBackground, displayInfo, playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem} from '../_player/player';
 import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
@@ -13,15 +13,13 @@ const sleep = promisify(setTimeout);
 
 let commandInProgress = false;
 
-async function getPlayingSong() {
-	if (!getState().player.playing) {
-		profile('tryToReadKaraInPlaylist');
+async function getPlayingSong(now) {
+	if (!getState().player.playing || now) {
+		profile('getPlayingSong');
 		try {
 			const kara = await getCurrentSong();
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
-			let serie = kara.serie || kara.singers[0].name;
-			let title = kara.title || '';
-			logger.info(`[Player] Playing ${serie}${title}`);
+			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length-4)}`);
 			await play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
@@ -41,7 +39,7 @@ async function getPlayingSong() {
 				stopPlayer(true);
 			}
 		} finally {
-			profile('tryToReadKaraInPlaylist');
+			profile('getPlayingSong');
 		}
 	}
 }
@@ -52,8 +50,7 @@ export async function playingUpdated() {
 	// hitting play again to get the new song.
 	const state = getState();
 	if (state.status === 'play' && state.player.playing) {
-		await stopPlayer(true);
-		playPlayer();
+		playPlayer(true);
 	}
 }
 
@@ -78,14 +75,12 @@ export async function playerEnding() {
 		try {
 			state.counterToJingle++;
 			setState({counterToJingle: state.counterToJingle});
-			displayInfo();
 			if (state.status !== 'stop') {
-				await nextSong();
-				await getPlayingSong();
+				await next();
 			}
 		} catch(err) {
+			loadBackground();
 			displayInfo();
-			logger.warn(`[Player] Next song is not available : ${err}`);
 			stopPlayer();
 		}
 	}
@@ -93,25 +88,24 @@ export async function playerEnding() {
 
 async function prev() {
 	logger.info('[Player] Going to previous song');
-	await stopPlayer(true);
 	try {
 		await previousSong();
 	} catch(err) {
 		logger.warn(`[Player] Previous song is not available : ${err}`);
 		// A failed previous means we restart the current song.
 	} finally {
-		playPlayer();
+		playPlayer(true);
 	}
 }
 
 async function next() {
 	logger.info('[Player] Going to next song');
-	stopPlayer(true);
 	try {
 		await nextSong();
-		playPlayer();
+		playPlayer(true);
 	} catch(err) {
 		logger.warn(`[Player] Next song is not available : ${err}`);
+		throw err;
 	}
 }
 
@@ -133,13 +127,13 @@ function toggleOnTopPlayer() {
 }
 
 
-export async function playPlayer() {
+export async function playPlayer(now) {
 	profile('Play');
 	const state = getState();
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
-	if (state.status === 'stop') {
+	if (state.status === 'stop' || now) {
 		// Switch to playing mode and ask which karaoke to play next
-		await getPlayingSong();
+		await getPlayingSong(now);
 		setState({status: 'play'});
 	} else {
 		resume();

@@ -88,6 +88,7 @@ export async function insertSeriei18n(serieObj) {
 
 export async function updateSerie(serie) {
 	let aliases;
+	Array.isArray(serie.aliases) ? aliases = JSON.stringify(serie.aliases) : aliases = null;
 	await db().query(yesql(sql.updateSerie)({
 		sid: serie.sid,
 		name: serie.name,

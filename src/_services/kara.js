@@ -35,6 +35,8 @@ import { getOrAddSerieID, deleteSerie } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../_utils/files';
 
 export async function isAllKaras(karas) {
+	// Returns an array of unknown karaokes
+	// If array is empty, all songs in "karas" are present in database
 	const allKaras = await selectAllKIDs();
 	return karas.filter(kid => !allKaras.includes(kid));
 }
@@ -369,7 +371,7 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter, lang, from, size, searchType, searchValue, token) {
+export async function getKaras(filter, lang, from = 0, size = 999999999, searchType, searchValue, token) {
 	profile('getKaras');
 	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin');
 	profile('formatList');

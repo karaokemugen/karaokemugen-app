@@ -6,7 +6,7 @@ import {exit} from '../_services/engine';
 import {duration} from '../_utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
-import {compareKarasChecksum, run as generateDB} from '../_services/generation';
+import {baseChecksum, run as generateDB} from '../_services/generation';
 import DBMigrate from 'db-migrate';
 import {join, resolve} from 'path';
 import {asyncCopy, asyncUnlink, asyncExists} from '../_utils/files';
@@ -20,7 +20,18 @@ import {from as copyFrom} from 'pg-copy-streams';
 
 const sql = require('./sql/database');
 
+export async function compareKarasChecksum() {
+	const settings = await getSettings();
+	const currentChecksum = await baseChecksum();
+	if (settings.baseChecksum !== currentChecksum) {
+		await saveSetting('baseChecksum', currentChecksum);
+		return false;
+	}
+	return true;
+}
+
 export function paramWords(filter) {
+	//This function takes a search filter (list of words), cleans and maps them for use in SQL queries "LIKE".
 	let params = {};
 	const words = deburr(filter)
 		.toLowerCase()
@@ -28,9 +39,7 @@ export function paramWords(filter) {
 		.replace(',', ' ')
 		.split(' ')
 		.filter(s => !('' === s))
-		.map(word => {
-			return `%${word}%`;
-		});
+		.map(word => `%${word}%`);
 	for (const i in words) {
 		params[`word${i}`] = `%${words[i]}%`;
 	}
@@ -38,6 +47,7 @@ export function paramWords(filter) {
 }
 
 async function query(...args) {
+	// Fake query function used as a decoy when closing DB.
 	return {rows: [{}]};
 }
 
@@ -64,13 +74,13 @@ export function buildClauses(words) {
 
 export function langSelector(lang) {
 	const conf = getConfig();
-	const userLocale = langs.where('1',lang || conf.EngineDefaultLocale);
-	const engineLocale = langs.where('1',conf.EngineDefaultLocale);
+	const userLocale = langs.where('1', lang || conf.EngineDefaultLocale);
+	const engineLocale = langs.where('1', conf.EngineDefaultLocale);
 	//Fallback to english for cases other than 0 (original name)
 	switch(+conf.WebappSongLanguageMode) {
 	case 0: return {main: null, fallback: null};
 	default:
-	case 1: return {main: 'ak.language',fallback: '\'eng\''};
+	case 1: return {main: 'SUBSTRING(ak.languages_sortable, 0, 3)',fallback: '\'eng\''};
 	case 2: return {main: `'${engineLocale['2B']}'`, fallback: '\'eng\''};
 	case 3: return {main: `'${userLocale['2B']}'`, fallback: '\'eng\''};
 	}
@@ -78,8 +88,8 @@ export function langSelector(lang) {
 
 // These two utility functions are used to make multiple inserts into one
 // You can do only one insert with multiple values, this helps.
-// expand returns ($1, $2), ($1, $2), ($1, 2) for (3, 2)
-export function expand(rowCount, columnCount, startAt=1){
+// expand returns ($1, $2), ($1, $2), ($1, $2) for (3, 2)
+export function expand(rowCount, columnCount, startAt = 1){
 	let index = startAt;
 	return Array(rowCount).fill(0).map(v => `(${Array(columnCount).fill(0).map(v => `$${index++}`).join(', ')})`).join(', ');
 }
@@ -94,8 +104,7 @@ export function flatten(arr){
 export async function copyFromData(table, data) {
 	const client = await database.connect();
 	let stream = client.query(copyFrom(`COPY ${table} FROM STDIN DELIMITER '|' NULL ''`));
-	data.forEach((d,i) => data[i] = d.join('|'));
-	data = data.join('\n');
+	data = data.map(d => d.join('|')).join('\n');
 	stream.write(data);
 	stream.end();
 	return new Promise((resolve, reject) => {
@@ -103,7 +112,7 @@ export async function copyFromData(table, data) {
 			client.release();
 			resolve();
 		});
-		stream.on('error', (err) => {
+		stream.on('error', err => {
 			client.release();
 			reject(err);
 		});
@@ -196,7 +205,7 @@ export async function initDB() {
 async function migrateDB() {
 	logger.info('[DB] Running migrations if needed');
 	const conf = getConfig();
-	const dbm = DBMigrate.getInstance(true, {
+	let options = {
 		config: conf.db,
 		noPlugins: true,
 		plugins: {
@@ -207,9 +216,11 @@ async function migrateDB() {
 		},
 		cmdOptions: {
 			'migrations-dir': join(__dirname, '../../migrations/'),
-			'log-level': 'warn|error|info'
+			'log-level': 'warn|error'
 		}
-	});
+	};
+	if (conf.optDebug) options.cmdOptions['log-level'] = 'warn|error|info';
+	const dbm = DBMigrate.getInstance(true, options);
 	try {
 		await dbm.sync('all');
 	} catch(err) {
@@ -220,6 +231,7 @@ async function migrateDB() {
 export async function getSettings() {
 	const res = await db().query(sql.selectSettings);
 	const settings = {};
+	// Return an object with option: value.
 	res.rows.forEach(e => settings[e.option] = e.value);
 	return settings;
 }
@@ -242,16 +254,18 @@ export async function initDBSystem() {
 		await connectDB();
 		await migrateDB();
 	} catch(err) {
-		throw `Database initialization failed : ${err}`;
+		throw `Database initialization failed. Check if a postgres binary is already running on that port and kill it? Error : ${err}`;
 	}
 	if (conf.optReset) await resetUserData();
-	logger.info('[DB] Checking data files...');
-	if (!await compareKarasChecksum()) {
-		logger.info('[DB] Data files have changed: database generation triggered');
-		doGenerate = true;
+	if (!conf.optNoBaseCheck) {
+		logger.info('[DB] Checking data files...');
+		if (!await compareKarasChecksum()) {
+			logger.info('[DB] Data files have changed: database generation triggered');
+			doGenerate = true;
+		}
 	}
 	const settings = await getSettings();
-	if (!settings.lastGeneration) {
+	if (!doGenerate && !settings.lastGeneration) {
 		setConfig({ appFirstRun: 1 });
 		logger.info('[DB] Database is brand new: database generation triggered');
 		doGenerate = true;
