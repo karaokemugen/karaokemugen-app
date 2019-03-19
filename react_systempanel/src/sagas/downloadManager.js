@@ -64,6 +64,8 @@ function* filterOnlineKaras(action) {
 		onlineKaras = [];
 	}
 
+	console.log('filterOnlineKaras',onlineKaras);
+
 	onlineKaras.forEach(k => {
 		k.name = k.subfile.replace('.ass', '');
 	});
