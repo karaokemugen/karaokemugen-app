@@ -72,7 +72,7 @@ export function buildClauses(words) {
 	};
 }
 
-export function langSelector(lang) {
+export function langSelector(lang, series) {
 	const conf = getConfig();
 	const userLocale = langs.where('1', lang || conf.EngineDefaultLocale);
 	const engineLocale = langs.where('1', conf.EngineDefaultLocale);
@@ -80,7 +80,9 @@ export function langSelector(lang) {
 	switch(+conf.WebappSongLanguageMode) {
 	case 0: return {main: null, fallback: null};
 	default:
-	case 1: return {main: 'SUBSTRING(ak.languages_sortable, 0, 3)',fallback: '\'eng\''};
+	case 1:
+		if (!series) return {main: 'SUBSTRING(ak.languages_sortable, 0, 3)', fallback: '\'eng\''};
+		return {main: null, fallback: null};
 	case 2: return {main: `'${engineLocale['2B']}'`, fallback: '\'eng\''};
 	case 3: return {main: `'${userLocale['2B']}'`, fallback: '\'eng\''};
 	}

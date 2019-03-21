@@ -48,7 +48,7 @@ export async function selectAllSeries(filter, lang, from, size) {
 	//Disabled until frontend manages this
 	//if (from && from > 0) offsetClause = `OFFSET ${from} `;
 	//if (size && size > 0) limitClause = `LIMIT ${size} `;
-	const query = sql.getSeries(filterClauses.sql, langSelector(lang), limitClause, offsetClause);
+	const query = sql.getSeries(filterClauses.sql, langSelector(lang, true), limitClause, offsetClause);
 	const q = yesql(query)(filterClauses.params);
 	const series = await db().query(q);
 	for (const i in series.rows) {
@@ -110,7 +110,7 @@ export async function updateKaraSeries(kid, sids) {
 }
 
 export async function selectSerie(sid, lang) {
-	const query = sql.getSerieByID(langSelector(lang));
+	const query = sql.getSerieByID(langSelector(lang, true));
 	const series = await db().query(query, [sid]);
 	return series.rows[0];
 }
