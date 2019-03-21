@@ -65,9 +65,8 @@ async function extractBackgroundFiles(backgroundDir) {
 	return backgroundFiles;
 }
 
-async function loadBackground(mode) {
+export async function loadBackground() {
 	const conf = getConfig();
-	if (!mode) mode = 'replace';
 	// Default background
 	let backgroundFiles = [];
 	const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
@@ -87,7 +86,7 @@ async function loadBackground(mode) {
 		if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);
 	}
 	backgroundImageFile = sample(backgroundFiles);
-	logger.debug('[Player] Background : '+backgroundImageFile);
+	logger.debug(`[Player] Background ${backgroundImageFile}`);
 	let videofilter = '';
 	if (+conf.EngineDisplayConnectionInfoQRCode &&
 		+conf.EngineDisplayConnectionInfo ) {
@@ -104,13 +103,13 @@ async function loadBackground(mode) {
 	try {
 		logger.debug(`[Player] Background videofilter : ${videofilter}`);
 		const loads = [
-			player.load(backgroundImageFile,mode,[videofilter])
+			player.load(backgroundImageFile, 'replace', [videofilter])
 		];
-		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile,mode,[videofilter]));
+		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile, 'replace', [videofilter]));
 		await Promise.all(loads);
-		if (mode === 'replace') displayInfo();
+		displayInfo();
 	} catch(err) {
-		logger.error(`[Player] Unable to load background in ${mode} mode : ${JSON.stringify(err)}`);
+		logger.error(`[Player] Unable to load background : ${JSON.stringify(err)}`);
 	}
 }
 
@@ -190,7 +189,8 @@ async function startmpv() {
 	if (+conf.PlayerNoBar) mpvOptions.push('--no-osd-bar');
 	//On all platforms, check if we're using mpv at least version 0.25 or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
-	const mpvVersion = await getmpvVersion(conf.BinmpvPath);
+	let mpvVersion = await getmpvVersion(conf.BinmpvPath);
+	mpvVersion = mpvVersion.split('-')[0];
 	logger.debug(`[Player] mpv version : ${mpvVersion}`);
 
 	//If we're on macOS, add --no-native-fs to get a real
@@ -270,18 +270,20 @@ async function startmpv() {
 	player.observeProperty('sub-text',13);
 	player.observeProperty('volume',14);
 	player.observeProperty('duration',15);
-	player.on('statuschange',(status) => {
+	player.observeProperty('playtime-remaining',16);
+	player.observeProperty('eof-reached',17);
+	player.on('statuschange', status => {
 		// If we're displaying an image, it means it's the pause inbetween songs
-		if (playerState._playing && status && status.filename && status.filename.match(/\.(png|jp.?g|gif)/i)) {
+		if (playerState._playing && status && ((status['playtime-remaining'] !== null && status['playtime-remaining'] >= 0 && status['playtime-remaining'] <= 1 && status.pause) || status['eof-reached']) ) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			playerState.playing = false;
 			playerState._playing = false;
 			playerState.playerstatus = 'stop';
 			player.pause();
 			if (monitorEnabled) playerMonitor.pause();
-			playerState.mediaType = 'background';
 			playerEnding();
 		}
+
 		playerState.mutestatus = status.mute;
 		playerState.duration = status.duration;
 		playerState.subtext = status['sub-text'];
@@ -303,7 +305,7 @@ async function startmpv() {
 		if (monitorEnabled) playerMonitor.play();
 		emitPlayerState();
 	});
-	player.on('timeposition',(position) => {
+	player.on('timeposition', position => {
 		// Returns the position in seconds in the current song
 		playerState.timeposition = position;
 		emitPlayerState();
@@ -394,7 +396,6 @@ export async function play(mediadata) {
 		// Displaying infos about current song on screen.
 		displaySongInfo(mediadata.infos);
 		playerState.currentSongInfos = mediadata.infos;
-		loadBackground('append');
 		playerState._playing = true;
 		emitPlayerState();
 		songNearEnd = false;
@@ -548,17 +549,19 @@ export async function restartmpv() {
 	logger.debug('[Player] Stopped mpv (restarting)');
 	emitPlayerState();
 	await startmpv();
-	logger.debug('[Player] restarted mpv');
+	logger.debug('[Player] Restarted mpv');
 	emitPlayerState();
 	return true;
 }
 
 export async function quitmpv() {
 	logger.debug('[Player] Quitting mpv');
+	player.stop();
 	player.quit();
 	// Destroy mpv instance.
 	player = null;
 	if (playerMonitor) {
+		playerMonitor.stop();
 		playerMonitor.quit();
 		playerMonitor = null;
 	}
@@ -582,7 +585,6 @@ export async function playJingle() {
 			if (monitorEnabled) playerMonitor.play();
 			displayInfo();
 			playerState.playerstatus = 'play';
-			loadBackground('append');
 			playerState._playing = true;
 			emitPlayerState();
 		} catch(err) {

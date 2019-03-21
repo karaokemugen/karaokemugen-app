@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { List, Button, Progress } from 'antd';
+import { downloadStart as dstart, downloadPause as dpause } from '../../../actions/karas';
 
 const ListItem = List.Item;
 
@@ -10,6 +11,14 @@ class DownloadQueueKaras extends Component {
 	}
 
 	componentDidMount() {}
+
+	downloadStart = () => {
+		this.props.downloadStart();
+	};
+
+	downloadPause = () => {
+		this.props.downloadPause();
+	};
 
 	renderDownloadQueue(item) {
 		const { status } = item;
@@ -35,13 +44,17 @@ class DownloadQueueKaras extends Component {
 	}
 
 	render() {
+		console.log(this.props.downloadSong)
 		const { downloadQueue } = this.props;
 		return (
-			<List
-				dataSource={downloadQueue}
-				renderItem={this.renderDownloadQueue}
-				loading={this.props.isSearching}
-			/>
+			<div>
+				<Button onClick={() => this.downloadStart()}>Start</Button>
+				<List
+					dataSource={downloadQueue}
+					renderItem={this.renderDownloadQueue}
+					loading={this.props.isSearching}
+				/>
+			</div>
 		);
 	}
 }
@@ -54,7 +67,10 @@ const mapStateToProps = state => {
 	};
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+	downloadStart: dstart,
+	downloadPause: dpause
+};
 
 export default connect(
 	mapStateToProps,

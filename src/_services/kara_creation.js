@@ -14,7 +14,7 @@ import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {check} from '../_utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import {now} from '../_utils/date';
-import { compareKarasChecksum } from './generation';
+import { compareKarasChecksum } from '../_dao/database';
 
 export async function editKara(kara, opts = {compareChecksum: true}) {
 	let newKara;

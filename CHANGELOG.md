@@ -1,5 +1,42 @@
 # Versions
 
+## v2.5.0 "Konata Karaokiste"
+
+This is a major release.
+
+### New features
+
+- Songs can now be downloaded individually from a Karaoke Mugen Server (like `kara.moe`) instead of updating the complete karaoke base every time. (#339)
+- Users can now create online accounts on a Karaoke Mugen Server, which means favorites and profile info are stored online and not on the local Karaoke Mugen application (#303)
+- Added tag CREDITLESS for creditless songs (#382)
+- Already present since 2.4.1 : Stats are now uploaded periodically to Karaoke Mugen Server (if the instance admin agrees) (#377)
+
+### Improvements
+
+- Configuration storage has been completely revamped and is now a YAML file instead of the old INI format. (#355)
+- Favorites are now handled in a simpler way. Favorites playlists are no longer used, instead Favorites are stored on a separate table in database. You can safely delete any favorites playlist after upgrading to 2.5.0 (#389)
+- Karaoke Mugen now uses a PostgreSQL database instead of a SQLite3 one, leading to cleaner code and faster response times (#379)
+- Already present since 2.4.1 : Initialization catchphrases(tm) are now displayed on the welcome screen (#375)
+- MP3 playback is now more dynamic with some visualization effects (#349)
+- Downloadable groups can now be filtered / blacklisted
+- New guest names and catchphrases !
+- Transitions between songs are now shorter as we do not reload the karaoke background image
+- Blacklist is now regenerated after a kara generation to keep it consistent
+- New option `--noBaseCheck` to disable data file checks
+- Configuration is not updated anymore in realtime if you modify the config file while Karaoke Mugen is running (it caused too many problems). You'll need to modify the config file while Karaoke Mugen is stopped.
+- All communication with Karaoke Mugen Server is now done in HTTPS.
+- Executable file has been greatly reduced by replacing some packages with simpler, lighter versions
+- The `--sql` command line flag now logs SQL queries only with the bundled PostgreSQL server. If you're using your own PostgreSQL, refer to the PostgreSQL documentation on how to log queries.
+- Preview generation should be more consistent now.
+
+### Fixes
+
+- Users can now add a song more than once in a playlist (if the required setting is enabled) (#388)
+- Fixed song search so it now also searches in series names aliases (#387)
+- Fixed Karaoke Mugen allowing users to put commas in series names (#386)
+- Fixed Karaoke Mugen adding you as an author to a karaoke you're editing if there's no author already in metadata info (#385)
+- Fixed series name not translated with user's browser's locale in control panel (#384)
+
 ## v2.4.2 "Juri Joueuse" - 13/12/2018
 
 This is a bug fix release.

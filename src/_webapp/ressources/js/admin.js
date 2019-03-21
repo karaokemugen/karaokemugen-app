@@ -132,12 +132,15 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					var tagsFiltered = jQuery.grep(tags, function (obj) {
 						return obj.type == bcType;
 					});
-        
 					var $bcValInput;
 					if (tagsFiltered.length > 0) {
 						$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
 						$.each(tagsFiltered, function (i, o) {
-							var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
+					        var trad = o.i18n[i18n.locale];
+							var $option = $('<option/>')
+								.attr('value', o.tag_id)
+								.attr('karacount', o.karacount)
+								.text(trad ? trad : o.name);
 							$bcValInput.append($option);
 						});
 					} else {

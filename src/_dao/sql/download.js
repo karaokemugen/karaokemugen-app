@@ -3,7 +3,7 @@ SELECT name,
 	urls,
 	size,
 	status,
-	uuid,
+	pk_uuid,
 	started_at
 FROM download
 ORDER BY started_at DESC
@@ -14,7 +14,7 @@ SELECT name,
 	urls,
 	size,
 	status,
-	uuid,
+	pk_uuid,
 	started_at
 FROM download
 WHERE status = 'DL_PLANNED'
@@ -26,10 +26,10 @@ SELECT name,
 	urls,
 	size,
 	status,
-	uuid,
+	pk_uuid,
 	started_at
 FROM download
-WHERE uuid = $1
+WHERE pk_uuid = $1
 `;
 
 export const updateRunningDownloads = `
@@ -49,7 +49,7 @@ INSERT INTO download(
 	urls,
 	size,
 	status,
-	uuid
+	pk_uuid
 ) VALUES(
 	$1,
 	$2,
@@ -60,13 +60,13 @@ INSERT INTO download(
 
 export const updateDownloadStatus = `
 UPDATE download
-SET status = $1
-WHERE uuid = $2
+SET status = $2
+WHERE pk_uuid = $1
 `;
 
 export const deleteDownload = `
 DELETE FROM download
-WHERE uuid = $1
+WHERE pk_uuid = $1
 `;
 
 export const emptyDownload = 'TRUNCATE download CASCADE';

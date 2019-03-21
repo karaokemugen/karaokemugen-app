@@ -17,14 +17,20 @@ import {
 	setIsSearching,
 	KARAS_DOWNLOAD_ADD_TO_QUEUE,
 	KARAS_LOAD_DOWNLOAD_QUEUE,
-	KARAS_DOWNLOAD_PROGRESS_UPDATE
+	KARAS_DOWNLOAD_PROGRESS_UPDATE,
+	KARAS_DOWNLOAD_START,
+	KARAS_DOWNLOAD_PAUSE
 } from '../actions/karas';
-import { getDownloadQueue, postToDownloadQueue } from '../api/local';
+import { getDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../api/local';
 import { getRecentKaras, getKarasBySearchString } from '../api/online';
 import { fetchLocalKara, fetchDownloadQueue } from '../reducers/karas';
 
 function downloadQueueChannel() {
 	return eventChannel(emit => {
+		setTimeout(async () => {
+			const res = await getDownloadQueue();
+			emit(res);
+		}, 1000)
 		const iv = setInterval(async () => {
 			const res = await getDownloadQueue();
 			emit(res);
@@ -63,6 +69,8 @@ function* filterOnlineKaras(action) {
 	} else {
 		onlineKaras = [];
 	}
+
+	console.log('filterOnlineKaras',onlineKaras);
 
 	onlineKaras.forEach(k => {
 		k.name = k.subfile.replace('.ass', '');
@@ -149,9 +157,19 @@ function* addToDownloadQueue(action) {
 	// });
 }
 
+function* startDownloadQueue(action) {
+	yield call(putToDownloadQueueStart);
+}
+
+function* pauseDownloadQueue(action) {
+	yield call(putToDownloadQueuePause);
+}
+
 export default function* downloadManager() {
 	yield fork(watchDownloadQueue);
 	yield fork(watchDownloadProgressUpdates);
 	yield takeLatest(KARAS_FILTER_ONLINE, filterOnlineKaras);
 	yield takeEvery(KARAS_DOWNLOAD_ADD_TO_QUEUE, addToDownloadQueue);
+	yield takeEvery(KARAS_DOWNLOAD_START, startDownloadQueue);
+	yield takeEvery(KARAS_DOWNLOAD_PAUSE, pauseDownloadQueue);
 }

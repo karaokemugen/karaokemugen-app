@@ -123,7 +123,7 @@ export const defaultGuestNames = [
 	'Darling',
 	'Yuri Katsuki',
 	'Victor-kun',
-	'Kumiko Omae',
+	'Kumiko Ômae',
 	'Silent Mobius DVD',
 	'Utena',
 	'Eren Jäger',
@@ -147,7 +147,12 @@ export const defaultGuestNames = [
 	'Mikuru Asahina',
 	'Kyon-kun denwa',
 	'Chika-Chika',
-	'Giorgio Vanni <3'
+	'Giorgio Vanni <3',
+	'Gungnir Datto !?',
+	'Truck-kun',
+	'Ore no Uta wo kike!',
+	'BUT IT WAS ME, DIO!',
+	'One Song Man'
 ];
 
 export const initializationCatchphrases = [
@@ -184,7 +189,8 @@ export const initializationCatchphrases = [
 	'"I must not run away from karaoke" --Shinji Ikari',
 	'"Karaoke is top priority!" --Mizuho Kazami',
 	'"Darkness beyond twilight. Crimson beyond blood that flows. Buried in the flow of time. In thy great name, I pledge myself to darkness. Let all the fools who stand in our way be destroyed, by the power you and I possess... DRAGON SLAVE!" --Lina Inverse (after someone requested the song "Otome no Inori")',
-	'"My microphone is the one that will pierce the heavens!" --Kamina'
+	'"My microphone is the one that will pierce the heavens!" --Kamina',
+	'"Karaoke is an insult to life itself." --Hayao Miyazaki'
 ];
 
 export const karaTypes = Object.freeze({

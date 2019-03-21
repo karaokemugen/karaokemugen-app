@@ -39,7 +39,7 @@ class ManageKaras extends Component {
 			<div style={{ height: '100%', overflow: 'auto' }}>
 				<Tabs defaultActiveKey="1" style={{ padding: 24 }}>
 					<TabPane tab="Local karas" key="1">
-						<List dataSource={localKaras} renderItem={renderLocalKaras} />
+						<List dataSource={localKaras} renderItem={renderLocalKaras} pagination={{position:'both',pageSize:50}}/>
 					</TabPane>
 					<TabPane tab="Get more karas" key="2">
 						<DownloadKaras />
