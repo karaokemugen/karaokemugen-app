@@ -19,10 +19,14 @@ import { getLocalKaras, deleteKaraByLocalId } from '../api/local';
 
 function localKarasChannel() {
 	return eventChannel(emit => {
-		const iv = setInterval(async () => {
+		setTimeout(async () => {
 			const res = await getLocalKaras();
 			emit(res);
 		}, 1000);
+		const iv = setInterval(async () => {
+			const res = await getLocalKaras();
+			emit(res);
+		}, 10000);
 		return () => clearInterval(iv);
 	});
 }

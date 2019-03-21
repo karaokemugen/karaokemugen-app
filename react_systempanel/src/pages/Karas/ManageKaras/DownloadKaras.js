@@ -17,6 +17,7 @@ class DownloadKaras extends Component {
 		filterOnlineKaras();
 	}
 
+	searchChange_delay = null;
 	searchChange = e => {
 		const newState = {
 			...this.state,
@@ -24,11 +25,15 @@ class DownloadKaras extends Component {
 				searchString: e.target.value
 			}
 		};
-		const { filter } = this.state;
+		const { filter } = newState;
 		const { filterOnlineKaras } = this.props;
 		this.setState(newState, () => {
-			filterOnlineKaras(filter);
+			clearTimeout(this.searchChange_delay);
+			this.searchChange_delay = setTimeout((e) => {
+				filterOnlineKaras(filter);
+			},500, filter)
 		});
+		
 	};
 
 	downloadSong = kid => {
@@ -51,14 +56,15 @@ class DownloadKaras extends Component {
 			filter: { searchString }
 		} = this.state;
 		return (
-			<>
+			<div>
 				<input type="text" onChange={this.searchChange} value={searchString} />
 				<List
 					dataSource={onlineKaras}
 					renderItem={this.renderOnlineKaras}
 					loading={isSearching}
+					pagination={{position:'both',pageSize:50}}
 				/>
-			</>
+			</div>
 		);
 	}
 }

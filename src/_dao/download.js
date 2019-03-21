@@ -4,9 +4,9 @@ const sql = require('./sql/download');
 export async function insertDownloads(downloads) {
 	const dls = downloads.map(dl => [
 		dl.name,
-		'DL_PLANNED',
-		dl.size,
 		dl.urls,
+		dl.size,
+		'DL_PLANNED',
 		dl.uuid
 	]);
 	return await transaction([{sql: sql.insertDownload, params: dls}]);

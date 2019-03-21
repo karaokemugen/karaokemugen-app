@@ -25,10 +25,14 @@ import { fetchLocalKara, fetchDownloadQueue } from '../reducers/karas';
 
 function downloadQueueChannel() {
 	return eventChannel(emit => {
+		setTimeout(async () => {
+			const res = await getDownloadQueue();
+			emit(res);
+		}, 1000)
 		const iv = setInterval(async () => {
 			const res = await getDownloadQueue();
 			emit(res);
-		}, 1000);
+		}, 5000);
 		return () => clearInterval(iv);
 	});
 }
