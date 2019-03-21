@@ -7,7 +7,7 @@ import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from 'winston';
 import {asyncMove} from '../_utils/files';
-import { integrateSeriesFile } from './series';
+import { integrateSeriesFile } from '../_dao/seriesfile';
 import { integrateKaraFile } from './kara';
 
 const queueOptions = {
@@ -116,6 +116,7 @@ async function processDownload(download) {
 	// Now adding our newly downloaded kara
 	for (const serie of bundle.series) {
 		await integrateSeriesFile(serie);
+		logger.info(`[Download] Finished integration of "${serie}"`);
 	}
 	await integrateKaraFile(bundle.kara);
 	logger.info(`[Download] Song "${download.name}" added to database`);

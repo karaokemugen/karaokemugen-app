@@ -2,11 +2,10 @@ import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
 import {refreshSeries, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, refreshKaraSeries} from '../_dao/series';
 import {profile} from '../_utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
-import { compareKarasChecksum } from './generation';
 import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../_utils/files';
 import { refreshKaras } from '../_dao/kara';
-import {compareKarasChecksum} from '../_dao/database';
+import { compareKarasChecksum } from '../_dao/database';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
