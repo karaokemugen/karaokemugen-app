@@ -79,7 +79,6 @@ export async function removeSeriesFile(name) {
 
 export async function integrateSeriesFile(file) {
 	const seriesFileData = await getDataFromSeriesFile(file);
-	seriesFileData.seriefile = basename(file);
 	const seriesDBData = await getSerie(seriesFileData.sid);
 	if (seriesDBData) {
 		await editSerie(seriesDBData.sid, seriesFileData);
