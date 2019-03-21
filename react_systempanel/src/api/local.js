@@ -16,6 +16,28 @@ export async function getLocalKaras() {
 	}
 }
 
+// START karas download queue
+export async function putToDownloadQueueStart() {
+	try {
+		const res = await axios.put('/api/system/downloads/start');
+		return res.data;
+	} catch (e) {
+		console.log('Error from /api/local.js:putToDownloadQueueStart');
+		throw e;
+	}
+}
+
+// PAUSE karas download queue
+export async function putToDownloadQueuePause() {
+	try {
+		const res = await axios.put('/api/system/downloads/pause');
+		return res.data;
+	} catch (e) {
+		console.log('Error from /api/local.js:putToDownloadQueuePause');
+		throw e;
+	}
+}
+
 // GET karas download queue
 export async function getDownloadQueue() {
 	try {

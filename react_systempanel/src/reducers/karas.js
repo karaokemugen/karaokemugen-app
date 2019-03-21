@@ -5,13 +5,16 @@ import {
 	KARAS_FILTER_ONLINE,
 	KARAS_SET_IS_SEARCHING,
 	KARAS_LOAD_DOWNLOAD_QUEUE,
-	KARAS_DOWNLOAD_PROGRESS_UPDATE
+	KARAS_DOWNLOAD_PROGRESS_UPDATE,
+	KARAS_DOWNLOAD_START,
+	KARAS_DOWNLOAD_PAUSE
 } from '../actions/karas';
 
 const defaultState = {
 	localKaras: [],
 	onlineKaras: [],
 	downloadQueue: [],
+	downloadState: 'pause',
 	isWatchingDownloadQueue: false,
 	isSearching: false
 };
@@ -48,6 +51,18 @@ export default function(state = defaultState, action) {
 		return {
 			...state,
 			downloadQueue: action.payload
+		};
+
+	case KARAS_DOWNLOAD_START:
+		return {
+			...state,
+			downloadState: 'start'
+		};
+
+	case KARAS_DOWNLOAD_PAUSE:
+		return {
+			...state,
+			downloadState: 'pause'
 		};
 
 	case KARAS_SET_IS_SEARCHING:
