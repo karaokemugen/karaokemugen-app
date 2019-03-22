@@ -6,14 +6,14 @@
 import {now} from '../_utils/date';
 import uuidV4 from 'uuid/v4';
 import logger from 'winston';
-import {extname, resolve} from 'path';
+import {basename, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_utils/files';
+import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs, asyncUnlink} from '../_utils/files';
 import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_utils/config';
 import {extractSubtitles, getMediaInfo} from '../_utils/ffmpeg';
-import {formatKara} from '../_services/kara';
+import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {getConfig} from '../_utils/config';
-import {selectAllKaras} from './kara';
+import {getKara, selectAllKaras} from './kara';
 
 let error = false;
 
@@ -21,6 +21,23 @@ function strictModeError(karaData, data) {
 	delete karaData.ass;
 	logger.error(`[Kara] STRICT MODE ERROR : One kara's ${data} is going to be modified : ${JSON.stringify(karaData,null,2)}`);
 	error = true;
+}
+
+export async function integrateKaraFile(file) {
+	const karaData = await getDataFromKaraFile(file);
+	karaData.karafile = basename(file);
+	const karaDB = await getKara(karaData.KID, {username: 'admin', role: 'admin'});
+	console.log(karaDB);
+	if (karaDB.length > 0) {
+		console.log('Edit');
+		await editKaraInDB(karaData);
+		if (karaDB[0].karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].karafile, getConfig().PathKaras.split('|')));
+		if (karaDB[0].mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].mediafile, getConfig().PathMedias.split('|')));
+		if (karaDB[0].subfile !== 'dummy.ass' && karaDB[0].subfile !== karaData.subfile) await asyncUnlink(await resolveFileInDirs(karaDB[0].subfile, getConfig().PathSubs.split('|')));
+	} else {
+		console.log('Create');
+		await createKaraInDB(karaData);
+	}
 }
 
 export async function getDataFromKaraFile(karafile) {

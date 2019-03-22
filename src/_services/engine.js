@@ -19,6 +19,8 @@ import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { run } from './generation';
+import { integrateSeriesFile } from '../_dao/seriesfile';
+import { integrateKaraFile } from '../_dao/karafile';
 
 export async function initEngine() {
 	profile('Init');
@@ -79,6 +81,13 @@ export async function initEngine() {
 		logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
 	} finally {
 		profile('Init');
+	}
+	try {
+		const path = require('path');
+		await integrateSeriesFile(path.resolve(conf.appPath,'../times/series/Mahoromatic Automatic Maiden.series.json'));
+		await integrateKaraFile(path.resolve(conf.appPath, '../times/karas/JPN - Mahoromatic Automatic Maiden - OP - Kaerimichi.kara'));
+	} catch(err) {
+		console.log(err);
 	}
 }
 

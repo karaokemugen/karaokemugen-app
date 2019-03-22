@@ -8,7 +8,7 @@ import internet from 'internet-available';
 import logger from 'winston';
 import {asyncMove} from '../_utils/files';
 import { integrateSeriesFile } from '../_dao/seriesfile';
-import { integrateKaraFile } from './kara';
+import { integrateKaraFile } from '../_dao/karafile';
 
 const queueOptions = {
 	id: 'uuid',

@@ -4,7 +4,6 @@ import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFil
 import logger from 'winston';
 import {ASSToLyrics} from '../_utils/ass';
 import {refreshKaras, refreshYears} from '../_dao/kara';
-import {getDataFromKaraFile} from '../_dao/karafile';
 import {refreshKaraSeries, refreshSeries} from '../_dao/series';
 import {refreshKaraTags, refreshTags} from '../_dao/tag';
 import {now} from '../_utils/date';
@@ -172,7 +171,7 @@ async function updateSeries(kara) {
 		// Remove this when we'll update .kara file format to version 4
 		if (kara.KID) kara.kid = kara.KID;
 	}
-	await updateKaraSeries(kara.kid,sids);
+	//await updateKaraSeries(kara.kid,sids);
 }
 
 async function updateTags(kara) {
@@ -210,20 +209,6 @@ async function updateTags(kara) {
 		tags[i].id = await checkOrCreateTag(tags[i]);
 	}
 	return await updateKaraTags(kara.kid, tags);
-}
-
-export async function integrateKaraFile(file) {
-	const karaData = await getDataFromKaraFile(file);
-	karaData.karafile = basename(file);
-	const karaDB = await getKaraDB(karaData.KID, 'admin', null, 'admin');
-	if (karaDB) {
-		await editKaraInDB(karaData);
-		if (karaDB.karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB.karafile, getConfig().PathKaras.split('|')));
-		if (karaDB.mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB.mediafile, getConfig().PathMedias.split('|')));
-		if (karaDB.subfile !== 'dummy.ass' && karaDB.subfile !== karaData.subfile) await asyncUnlink(await resolveFileInDirs(karaDB.subfile, getConfig().PathSubs.split('|')));
-	} else {
-		await createKaraInDB(karaData);
-	}
 }
 
 export async function createKaraInDB(kara) {
