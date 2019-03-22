@@ -61,6 +61,7 @@ export async function editKara(kara, opts = {compareChecksum: true}) {
 	// Update in database
 	newKara.data.karafile = basename(newKara.file);
 	try {
+		await processSeries(newKara.data);
 		await editKaraInDB(newKara.data);
 		compareKarasChecksum({silent: true});
 	} catch(err) {
@@ -75,6 +76,7 @@ export async function createKara(kara) {
 	const newKara = await generateKara(kara);
 	try {
 		newKara.data.karafile = basename(newKara.file);
+		await processSeries(newKara.data);
 		await createKaraInDB(newKara.data);
 	} catch(err) {
 		const errMsg = `.kara file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
@@ -227,7 +229,6 @@ async function importKara(mediaFile, subFile, data) {
 	try {
 		if (subPath !== 'dummy.ass') await extractAssInfos(subPath, karaData);
 		await extractMediaTechInfos(mediaPath, karaData);
-		await processSeries(data);
 		return await generateAndMoveFiles(mediaPath, subPath, karaData);
 	} catch(err) {
 		const error = `Error importing ${kara} : ${err}`;
@@ -237,6 +238,7 @@ async function importKara(mediaFile, subFile, data) {
 }
 
 async function processSeries(kara) {
+	//Creates series in kara if they do not exist already.
 	for (const serie of kara.series) {
 		const serieObj = {
 			name: serie,

@@ -27,15 +27,12 @@ export async function integrateKaraFile(file) {
 	const karaData = await getDataFromKaraFile(file);
 	karaData.karafile = basename(file);
 	const karaDB = await getKara(karaData.KID, {username: 'admin', role: 'admin'});
-	console.log(karaDB);
 	if (karaDB.length > 0) {
-		console.log('Edit');
 		await editKaraInDB(karaData);
 		if (karaDB[0].karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].karafile, getConfig().PathKaras.split('|')));
 		if (karaDB[0].mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].mediafile, getConfig().PathMedias.split('|')));
 		if (karaDB[0].subfile !== 'dummy.ass' && karaDB[0].subfile !== karaData.subfile) await asyncUnlink(await resolveFileInDirs(karaDB[0].subfile, getConfig().PathSubs.split('|')));
 	} else {
-		console.log('Create');
 		await createKaraInDB(karaData);
 	}
 }

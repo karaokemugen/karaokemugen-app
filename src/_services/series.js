@@ -19,8 +19,7 @@ export async function getOrAddSerieID(serieObj) {
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) return serie.sid;
 	//Series does not exist, create it.
-	const sid = await addSerie(serieObj);
-	return sid;
+	return await addSerie(serieObj);
 }
 
 

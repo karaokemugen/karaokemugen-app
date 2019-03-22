@@ -27,7 +27,7 @@ import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
 import {getConfig} from '../_utils/config';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {basename, resolve} from 'path';
+import {resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 import { getOrAddSerieID, deleteSerie } from './series';
@@ -171,7 +171,7 @@ async function updateSeries(kara) {
 		// Remove this when we'll update .kara file format to version 4
 		if (kara.KID) kara.kid = kara.KID;
 	}
-	//await updateKaraSeries(kara.kid,sids);
+	await updateKaraSeries(kara.kid,sids);
 }
 
 async function updateTags(kara) {

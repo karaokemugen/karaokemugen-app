@@ -82,13 +82,6 @@ export async function initEngine() {
 	} finally {
 		profile('Init');
 	}
-	try {
-		const path = require('path');
-		await integrateSeriesFile(path.resolve(conf.appPath,'../times/series/Mahoromatic Automatic Maiden.series.json'));
-		await integrateKaraFile(path.resolve(conf.appPath, '../times/karas/JPN - Mahoromatic Automatic Maiden - OP - Kaerimichi.kara'));
-	} catch(err) {
-		console.log(err);
-	}
 }
 
 export async function exit(rc) {
