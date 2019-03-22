@@ -38,8 +38,8 @@ export async function deleteDownload(id) {
 
 export async function updateDownload(uuid, status) {
 	return await db().query(sql.updateDownloadStatus, [
-		uuid,
-		status
+		status,
+		uuid
 	]);
 }
 

@@ -60,8 +60,8 @@ INSERT INTO download(
 
 export const updateDownloadStatus = `
 UPDATE download
-SET status = $2
-WHERE pk_uuid = $1
+SET status = $1
+WHERE pk_uuid = $2
 `;
 
 export const deleteDownload = `

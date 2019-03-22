@@ -147,7 +147,7 @@ function* addToDownloadQueue(action) {
 		'seriefiles'
 	]);
 	downloadObject.size = kara.mediasize;
-	downloadObject.name = kara.kid;
+	downloadObject.name = kara.name;
 	yield call(postToDownloadQueue, 'kara.moe', [downloadObject]);
 
 	// const latestQueue = yield call(getDownloadQueue);
