@@ -19,7 +19,7 @@ let error = false;
 
 function strictModeError(karaData, data) {
 	delete karaData.ass;
-	logger.error(`[Kara] STRICT MODE ERROR : One kara's ${data} is going to be modified : ${JSON.stringify(karaData,null,2)}`);
+	logger.error(`[Kara] STRICT MODE ERROR : ${data} - Kara data read : ${JSON.stringify(karaData,null,2)}`);
 	error = true;
 }
 
@@ -33,17 +33,17 @@ export async function getDataFromKaraFile(karafile) {
 	if (!karaData.KID) {
 		karaData.isKaraModified = true;
 		karaData.KID = uuidV4();
-		if (conf.optStrict) strictModeError(karaData, 'kid');
+		if (conf.optStrict) strictModeError(karaData, 'kid is missing');
 	}
 	if (!karaData.dateadded) {
 		karaData.isKaraModified = true;
 		karaData.dateadded = now(true);
-		if (conf.optStrict) strictModeError(karaData, 'dateadded');
+		if (conf.optStrict) strictModeError(karaData, 'dateadded is missing');
 	}
 	if (!karaData.datemodif) {
 		karaData.isKaraModified = true;
 		karaData.datemodif = now(true);
-		if (conf.optStrict) strictModeError(karaData, 'datemodif');
+		if (conf.optStrict) strictModeError(karaData, 'datemodif is missing');
 	}
 	karaData.karafile = karafile;
 
@@ -79,7 +79,7 @@ export async function extractAssInfos(subFile, karaData) {
 		if (subChecksum !== karaData.subchecksum) {
 			karaData.isKaraModified = true;
 			karaData.subchecksum = subChecksum;
-			if (getConfig().optStrict) strictModeError(karaData, 'subchecksum');
+			if (getConfig().optStrict) strictModeError(karaData, 'subchecksum is missing or invalid');
 		}
 	} else {
 		karaData.ass = '';
@@ -103,11 +103,11 @@ export async function extractMediaTechInfos(mediaFile, karaData) {
 			karaData.mediasize = mediaStats.size;
 
 			const mediaData = await getMediaInfo(mediaFile);
-			if (mediaData.error && conf.optStrict) strictModeError(karaData, 'ffmpeg return code');
+			if (mediaData.error && conf.optStrict) strictModeError(karaData, 'ffmpeg failed');
 
 			karaData.mediagain = mediaData.audiogain;
 			karaData.mediaduration = mediaData.duration;
-			if (conf.optStrict) strictModeError(karaData, 'mediasize/gain/duration');
+			if (conf.optStrict) strictModeError(karaData, 'mediasize/gain/duration are invalid');
 		}
 	}
 }
@@ -148,7 +148,7 @@ async function findSubFile(videoFile, kara) {
 			} catch (err) {
 				// Not blocking.
 				logger.warn(`[Kara] Could not extract subtitles from video file ${videoFile}`);
-				if (conf.optStrict) strictModeError(kara, 'extracting subtitles');
+				if (conf.optStrict) strictModeError(kara, 'extracting subtitles failed');
 			}
 		}
 	} else {
@@ -156,7 +156,7 @@ async function findSubFile(videoFile, kara) {
 			if (kara.subfile !== 'dummy.ass') return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
 		} catch (err) {
 			logger.warn(`[Kara] Could not find subfile '${kara.subfile}' (in ${JSON.stringify(resolvedPathSubs())}).`);
-			if (conf.optStrict) strictModeError(kara, 'subfile');
+			if (conf.optStrict) strictModeError(kara, `subfile ${kara.subfile} not found`);
 		}
 	}
 	// Non-blocking case if file isn't found
