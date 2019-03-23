@@ -234,7 +234,6 @@ async function importKara(mediaFile, subFile, data) {
 	if (subFile !== 'dummy.ass') subPath = await findSubFile(mediaPath, karaData, subFile);
 
 	// Autocreating groups based on song year
-	console.log(karaData.tag)
 	if(containsVideoGameSupportTag(karaData.tags) && !karaData.tags.includes('TAG_VIDEOGAME')) karaData.tags.push('TAG_VIDEOGAME');
 	if(mediaFile.match('^.+\\.(ogg|m4a|mp3)$') && !karaData.tags.includes('TAG_SOUNDONLY')) karaData.tags.push('TAG_SOUNDONLY');
 
