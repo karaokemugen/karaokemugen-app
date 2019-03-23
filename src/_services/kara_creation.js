@@ -161,6 +161,28 @@ async function generateKara(kara, opts) {
 	}
 }
 
+function containsVideoGameSupportTag(tags) {
+	return tags.includes('TAG_PS3')
+			|| tags.includes('TAG_PS2')
+			|| tags.includes('TAG_PSX')
+			|| tags.includes('TAG_PS4')
+			|| tags.includes('TAG_PSV')
+			|| tags.includes('TAG_PSP')
+			|| tags.includes('TAG_XBOX360')
+			|| tags.includes('TAG_GAMECUBE')
+			||tags.includes('TAG_DS')
+			|| tags.includes('TAG_3DS')
+			|| tags.includes('TAG_PC')
+			|| tags.includes('TAG_SEGACD')
+			|| tags.includes('TAG_SATURN')
+			|| tags.includes('TAG_WII')
+			|| tags.includes('TAG_DREAMCAST')
+			|| tags.includes('TAG_SWITCH')
+			|| tags.includes('TAG_XBOXONE')
+			|| tags.includes('TAG_VN')
+			|| tags.includes('TAG_MOBAGE');
+}
+
 function defineFilename(data) {
 	// Generate filename according to tags and type.
 	if (data) {
@@ -212,6 +234,9 @@ async function importKara(mediaFile, subFile, data) {
 	if (subFile !== 'dummy.ass') subPath = await findSubFile(mediaPath, karaData, subFile);
 
 	// Autocreating groups based on song year
+	console.log(karaData.tag)
+	if(containsVideoGameSupportTag(karaData.tags) && !karaData.tags.includes('TAG_VIDEOGAME')) karaData.tags.push('TAG_VIDEOGAME');
+	if(mediaFile.match('^.+\\.(ogg|m4a|mp3)$') && !karaData.tags.includes('TAG_SOUNDONLY')) karaData.tags.push('TAG_SOUNDONLY');
 
 	if (+karaData.year >= 1950 && +karaData.year <= 1959 && !karaData.groups.includes('50s')) karaData.groups.push('50s');
 	if (+karaData.year >= 1960 && +karaData.year <= 1969 && !karaData.groups.includes('60s')) karaData.groups.push('60s');
