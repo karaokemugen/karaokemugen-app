@@ -92,11 +92,6 @@ export function translateKaraInfo(karas, lang) {
 	return karas;
 }
 
-export async function getRandomKara(username, filter) {
-	logger.debug('[Kara] Requesting a random song');
-	return await selectRandomKara(getState().modePlaylistID);
-}
-
 export async function getKara(kid, token, lang) {
 	profile('getKaraInfo');
 	const kara = await getKaraDB(kid, token.username, lang, token.role);
@@ -323,9 +318,9 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter, lang, from = 0, size = 999999999, searchType, searchValue, token) {
+export async function getKaras(filter, lang, from = 0, size = 999999999, searchType, searchValue, token, random) {
 	profile('getKaras');
-	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin');
+	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin', random);
 	profile('formatList');
 	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	profile('formatList');

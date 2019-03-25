@@ -298,13 +298,13 @@ describe('Favorites', function() {
 describe('Karas information', function() {
 	it('Get a random karaoke ID', function() {
 		return request
-			.get('/api/public/karas/random')
+			.get('/api/public/karas?random=1')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				assert.notStrictEqual(response.body.data, null);
+				assert.notStrictEqual(response.body.data.content, null);
 			});
 	});
 

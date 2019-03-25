@@ -395,6 +395,47 @@ var settingsNotUpdated;
 				}).done(function () {
 					DEBUG && console.log('Playlist ' + idPlaylist + ' emptied');
 				});
+			} else if (name === 'addRandomKaras') {
+                
+				displayModal('prompt', i18n.__('CL_ADD_RANDOM_TITLE'),'', function(nbOfRandoms){
+					$.ajax({
+						url: url,
+						data : { random : nbOfRandoms},
+						type: 'GET'
+					}).done(function (randomKaras) {
+						// console.log(randomKaras);
+						if(randomKaras.content.length > 0) {
+
+							let textContent = randomKaras.content.map(e => buildKaraTitle(e)).join('<br/><br/>');
+                            
+							displayModal('confirm', i18n.__('CL_CONGRATS'), i18n.__('CL_ABOUT_TO_ADD', '<br/><br/>' + textContent), function(){
+								var karaList = randomKaras.content.map(function(a) {
+									return a.kid;
+								}).join();
+
+                                
+				            	var urlPost = getPlData(idPlaylistTo).url;
+
+								$.ajax({
+									url: urlPost,
+									type: 'POST',
+									data: { kid : karaList },
+									complete: function() {
+										$('#modalBox').modal('hide');
+										$('body').removeClass('modal-open');
+										$('.modal-backdrop').remove();
+									}
+								}).done(function () {
+									DEBUG && console.log(karaList + ' added to playlist ' + idPlaylistTo);
+									
+								});
+							},'');
+						} else {
+							console.log('Error : server could not pick any random song');
+						}
+					});
+				},'');
+			
 			}
 		});
 
@@ -585,22 +626,24 @@ var settingsNotUpdated;
 		$('.getLucky').on('click', function () {
 			var filter = $('#searchPlaylist' + 1).val();
 
-			$.ajax({ url: 'public/karas/random?filter=' + filter }).done(function (data) {
-				var chosenOne = data;
-				$.ajax({ url: 'public/karas/' + chosenOne }).done(function (data) {
-					data = data[0];
-					displayModal('confirm', i18n.__('CL_CONGRATS'), i18n.__('CL_ABOUT_TO_ADD', buildKaraTitle(data)), function(){
-						$.ajax({
-							url: 'public/karas/' + chosenOne,
-							type: 'POST',
-							data: { requestedby : logInfos.username }
-						}).done(function () {
-							playlistContentUpdating.done( function() {
-								scrollToKara(2, chosenOne);
+			$.ajax({ url: 'public/karas?filter=' + filter, data : { random : 1 } }).done(function (data) {
+				if(data && data.content && data.content[0]) {
+					var chosenOne = data.content[0].kid;
+					$.ajax({ url: 'public/karas/' + chosenOne }).done(function (data) {
+						data = data[0];
+						displayModal('confirm', i18n.__('CL_CONGRATS'), i18n.__('CL_ABOUT_TO_ADD', buildKaraTitle(data)), function(){
+							$.ajax({
+								url: 'public/karas/' + chosenOne,
+								type: 'POST',
+								data: { requestedby : logInfos.username }
+							}).done(function () {
+								playlistContentUpdating.done( function() {
+									scrollToKara(2, chosenOne);
+								});
 							});
-						});
-					},'lucky');
-				});
+						},'lucky');
+					});
+				}
 			});
 		});
 		$('.favorites').on('click', function() {
@@ -2707,16 +2750,16 @@ var settingsNotUpdated;
 		DEBUG && console.log(logInfos);
 		
 		settingsUpdating.done(function () {
-            if(!settings.OnlineUsers || !data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
-                $('.profileConvert').hide();
-            } else {
-                $('.profileConvert').show();
-            }
-            if(logInfos.onlineToken) {
-                $('.profileDelete').show();
-            } else {
-                $('.profileDelete').hide();
-            }
+			if(!settings.OnlineUsers || !data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
+				$('.profileConvert').hide();
+			} else {
+				$('.profileConvert').show();
+			}
+			if(logInfos.onlineToken) {
+				$('.profileDelete').show();
+			} else {
+				$('.profileDelete').hide();
+			}
 			if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
 				setTimeout(function() {
 					displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);

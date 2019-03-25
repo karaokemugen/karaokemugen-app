@@ -117,7 +117,7 @@ WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos,pc.created_at DESC
 `;
 
-export const getPlaylistContents = (filterClauses, lang, limitClause, offsetClause) => `
+export const getPlaylistContents = (filterClauses, lang, whereClause, orderClause, limitClause, offsetClause) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
@@ -187,8 +187,9 @@ LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
 LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
 WHERE pc.fk_id_playlist = :playlist_id
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+  ${whereClause}
 GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
-ORDER BY pc.pos
+ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}
 `;
