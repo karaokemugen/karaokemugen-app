@@ -357,7 +357,8 @@
 	"LYRICS": "Paroles",
 	"NOLYRICS": "Pas de paroles affichables pour cette chanson",
 	"CL_CONGRATS": "Félicitations",
-	"CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter %s",
+    "CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter %s",
+    "CL_ADD_RANDOM_TITLE" : "Combien de chansons aléatoires voulez-vous ajouter ?",
 	"CL_INFORMATIVE_MESSAGE": "Message à caractère informatif",
 	"CL_RENAME_PLAYLIST": "Renommez %s",
 	"CL_CREATE_PLAYLIST": "Créer une nouvelle liste de lecture",
@@ -561,5 +562,6 @@
 	"PROFILE_ONLINE_DELETE": "Supprimer mon profil en ligne",
 	"PROFILE_ONLINE_DELETED": "Votre profil en ligne a bien été supprimé",
     "INSTANCE_NAME": "Nom du serveur",
-    "INSTANCE_NAME_SHORT": "Serveur"
+    "INSTANCE_NAME_SHORT": "Serveur",
+	"ADD_RANDOM_KARAS": "Ajouter une ou plusieurs chansons aléatoirement"
 }

@@ -910,6 +910,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiParam {Number} [random=0] Return a [random] number of karaokes from that playlist.
  *
  * @apiSuccess {Object[]} data/content/plc Array of `playlistcontent` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
@@ -937,7 +938,7 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang, +req.query.from || 0, +req.query.size || 9999999);
+				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang, +req.query.from || 0, +req.query.size || 9999999, +req.query.random || 0);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				res.status(500).json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
@@ -2615,6 +2616,7 @@ export function APIControllerPublic(router) {
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  * @apiParam {String} [searchType] Can be `search`, `kid`, `requested`, `recent` or `played`
  * @apiParam {String} [searchValue] Value to search for. For `kid` it's a UUID, for `search` it's a string comprised of criterias separated by `!`. Criterias are `s:` for series, `y:` for year et `t:` for tag. Example, all songs with tags 53 and 1022 and year 1990 is `t:53,1022!y:1990`
+ * @apiParam {Number} [random] If specified, will return a `number` random list of songs
  *
  * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
@@ -2649,51 +2651,12 @@ export function APIControllerPublic(router) {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			try {
-				const karas = await getKaras(req.query.filter,req.lang,+req.query.from || 0, +req.query.size || 9999999,req.query.searchType, req.query.searchValue, req.authToken);
+				const karas = await getKaras(req.query.filter,req.lang,+req.query.from || 0, +req.query.size || 9999999,req.query.searchType, req.query.searchValue, req.authToken, req.query.random);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
 				res.statusCode = 500;
 				res.json(errMessage('SONG_LIST_ERROR',err));
-			}
-		});
-	router.route('/public/karas/random')
-	/**
- * @api {get} /public/karas/random Get a random karaoke ID
- * @apiName GetKarasRandom
- * @apiVersion 2.5.0
- * @apiGroup Karaokes
- * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
- * @apiDescription This selects a random karaoke from the database. What you will do with it depends entirely on you.
- * @apiSuccess {Number} data Random KID (uuid)
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": "uuid"
- * }
- * @apiError GET_UNLUCKY Unable to find a random karaoke
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
- */
-
-		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
-			try {
-				const kid = await getRandomKara(req.authToken, req.query.filter);
-				if (!kid) {
-					res.statusCode = 500;
-					res.json(errMessage('GET_UNLUCKY'));
-				} else {
-					res.json(OKMessage(kid));
-				}
-
-			} catch(err) {
-				logger.error(err);
-				res.statusCode = 500;
-				res.json(errMessage('GET_LUCKY_ERROR',err));
 			}
 		});
 	router.route('/public/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')

@@ -198,17 +198,6 @@ VALUES(
 
 export const getYears = 'SELECT year, karacount FROM all_years ORDER BY year';
 
-export const getRandomKara = `
-SELECT ak.kid
-FROM all_karas ak
-WHERE ak.kid NOT IN (
-	SELECT pc.fk_kid
-	FROM playlist_content pc
-	WHERE pc.fk_id_playlist = $1
-)
-ORDER BY RANDOM() LIMIT 1;
-`;
-
 export const selectAllKIDs = `
 SELECT ak.kid
 FROM all_karas ak;
