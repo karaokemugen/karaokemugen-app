@@ -5,6 +5,7 @@ import internet from 'internet-available';
 import got from 'got';
 import logger from 'winston';
 import prettyBytes from 'pretty-bytes';
+import { asyncWriteFile } from '../_utils/files';
 
 let intervalID;
 
@@ -29,8 +30,9 @@ export async function sendPayload() {
 		}
 		const payload = await buildPayload();
 		logger.info(`[Stats] Sending payload (${prettyBytes(JSON.stringify(payload).length)})`);
-		logger.debug(`[Stats] Payload being sent : ${JSON.stringify(payload,null,2)}`);
+		logger.debug('[Stats] Payload data saved locally to logs/statsPayload.json');
 		const conf = getConfig();
+		asyncWriteFile(conf.appPath, 'logs/statsPayload.json', JSON.stringify(payload, null, 2), 'utf-8');
 		try {
 			await got(`https://${conf.OnlineHost}/api/stats`,{
 				json: true,
