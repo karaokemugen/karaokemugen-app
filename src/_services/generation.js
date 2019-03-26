@@ -100,6 +100,7 @@ async function readAndCompleteKarafile(karafile, seriesMap) {
 	if (karaData.series) {
 		for (const serie of karaData.series.split(',')) {
 			const seriesData = seriesMap.get(serie);
+			if (!seriesData) throw `Series ${serie} was not found in your series.json files`;
 			seriesData.kids.push(karaData.KID);
 			seriesMap.set(serie, seriesData);
 		}
