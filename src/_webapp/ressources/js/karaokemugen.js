@@ -89,8 +89,8 @@ var settingsNotUpdated;
 			'TAGCAT_FAMI':['TAG_ANIME','TAG_REAL','TAG_VIDEOGAME'],
 			'TAGCAT_SUPP':['TAG_3DS','TAG_DREAMCAST','TAG_DS','TAG_GAMECUBE','TAG_PC','TAG_PS2','TAG_PS3','TAG_PS4','TAG_PSP','TAG_PSV','TAG_PSX','TAG_SATURN','TAG_SEGACD','TAG_SWITCH','TAG_WII','TAG_WII','TAG_XBOX360'],
 			'TAGCAT_CLAS':['TAG_IDOL','TAG_MAGICALGIRL','TAG_MECHA','TAG_SHOUJO','TAG_SHOUNEN','TAG_YAOI','TAG_YURI'],
-			'TAGCAT_ORIG':['TAG_MOBAGE','TAG_MOVIE','TAG_ONA','TAG_OVA','TAG_TOKU','TAG_TVSHOW','TAG_VN','TAG_VOCALOID'],
-			'TAGCAT_TYPE':['TAG_DUO','TAG_HARDMODE','TAG_HUMOR','TAG_LONG','TAG_PARODY','TAG_R18','TAG_REMIX','TAG_SPECIAL','TAG_SPOIL'],
+			'TAGCAT_ORIG':['TAG_MOBAGE','TAG_DRAMA','TAG_MOVIE','TAG_ONA','TAG_OVA','TAG_TOKU','TAG_TVSHOW','TAG_VN','TAG_VOCALOID'],
+			'TAGCAT_TYPE':['TAG_DUO','TAG_HARDMODE','TAG_HUMOR','TAG_LONG','TAG_PARODY','TAG_R18','TAG_COVER','TAG_REMIX','TAG_SPECIAL','TAG_SPOIL'],
 		}
 		flattenedTagsGroups = [].concat.apply([], Object.values(tagsGroups));
 		// Once page is loaded
@@ -396,7 +396,7 @@ var settingsNotUpdated;
 					DEBUG && console.log('Playlist ' + idPlaylist + ' emptied');
 				});
 			} else if (name === 'addRandomKaras') {
-                
+
 				displayModal('prompt', i18n.__('CL_ADD_RANDOM_TITLE'),'', function(nbOfRandoms){
 					$.ajax({
 						url: url,
@@ -407,13 +407,13 @@ var settingsNotUpdated;
 						if(randomKaras.content.length > 0) {
 
 							let textContent = randomKaras.content.map(e => buildKaraTitle(e)).join('<br/><br/>');
-                            
+
 							displayModal('confirm', i18n.__('CL_CONGRATS'), i18n.__('CL_ABOUT_TO_ADD', '<br/><br/>' + textContent), function(){
 								var karaList = randomKaras.content.map(function(a) {
 									return a.kid;
 								}).join();
 
-                                
+
 				            	var urlPost = getPlData(idPlaylistTo).url;
 
 								$.ajax({
@@ -427,7 +427,7 @@ var settingsNotUpdated;
 									}
 								}).done(function () {
 									DEBUG && console.log(karaList + ' added to playlist ' + idPlaylistTo);
-									
+
 								});
 							},'');
 						} else {
@@ -435,7 +435,7 @@ var settingsNotUpdated;
 						}
 					});
 				},'');
-			
+
 			}
 		});
 
@@ -1145,7 +1145,7 @@ var settingsNotUpdated;
 	addKaraHtml = '<button title="' + i18n.__('TOOLTIP_ADDKARA')
                 + (scope == 'admin' ? ' - ' + i18n.__('TOOLTIP_ADDKARA_ADMIN') : '')
                 + '" name="addKara" class="btn btn-sm btn-action"></button>';
-                
+
 	deleteKaraHtml = '<button title="' + i18n.__('TOOLTIP_DELETEKARA') + '" name="deleteKara" class="btn btn-sm btn-action"></button>';
 	deleteCriteriaHtml = '<button title="' + i18n.__('TOOLTIP_DELETECRITERIA') + '" name="deleteCriteria" class="btn btn-action deleteCriteria"></button>';
 	transferKaraHtml = '<button title="' + i18n.__('TOOLTIP_TRANSFERKARA') + '" name="transferKara" class="btn btn-sm btn-action"></button>';
@@ -1369,7 +1369,7 @@ var settingsNotUpdated;
 					'tag' : 't'
 				}[searchCriteria]
 				: '';
-            
+
 			urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchCriteria && searchValue ? searchCriteria + ':' + searchValue : '');
 		}
 
@@ -1427,7 +1427,7 @@ var settingsNotUpdated;
 								if (kara.flag_upvoted) {
 									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
 								}
-                                
+
 								// TODO add fav button next to info for public pc interface
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
 								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
@@ -1546,7 +1546,7 @@ var settingsNotUpdated;
 								});
 								var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
 								var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
-    
+
 								blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
 									'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
                                 +	'<div class="actionDiv">' + html + '</div>'
@@ -1554,7 +1554,7 @@ var settingsNotUpdated;
                                 +	'<div class="contentDiv">' + textContent + '</div>'
                                 +	'</li>');
 							})
-						
+
 						}
 					}
 					//htmlContent = blacklistCriteriasHtml.html();
@@ -1733,7 +1733,7 @@ var settingsNotUpdated;
 			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
 			searchOptionListHtml += '<option value="-6" data-playlist_id="-6"></option>';
 			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="true"></option>';
-            
+
 			// building the options
 			var optionListHtml = '';
 			$.each(playlistList, function (key, value) {
@@ -1912,7 +1912,7 @@ var settingsNotUpdated;
 
 
 				if ( data.currentlyPlaying === null) {
-                    
+
 					$('#karaInfo').attr('idKara', data.currentlyPlaying);
 					$('#karaInfo').attr('length', -1);
 					$('#karaInfo > span').text( i18n.__('KARA_PAUSED_WAITING') );
@@ -1986,7 +1986,7 @@ var settingsNotUpdated;
 		if(data.languages && isMulti) {
 			data.languages = [isMulti];
 		}
-        
+
 		var titleText = 'fillerTitle';
 
 		var limit = isSmall ? 35 : 50;
@@ -2307,7 +2307,7 @@ var settingsNotUpdated;
 
 		return $option;
 	};
-    
+
 	formatTagsPlaylist = function (playlist) {
 		if (!playlist.id) return playlist.text;
 
@@ -2330,10 +2330,10 @@ var settingsNotUpdated;
 		var searchVal1 = '', searchVal2 = '';
 		if(locSearchPlaylist1 && locSearchPlaylist1 != 'undefined') searchVal1 = locSearchPlaylist1;
 		if(locSearchPlaylist2 && locSearchPlaylist2 != 'undefined') searchVal2 = locSearchPlaylist2;
-                
+
 		$('#searchPlaylist1').val(searchVal1);
 		$('#searchPlaylist2').val(searchVal2);
-    
+
 
 		setupAjax();
 
@@ -2613,7 +2613,7 @@ var settingsNotUpdated;
 		var deferred = $.Deferred();
 		var url = 'auth/login';
 		var data = { username: username, password: password};
-        
+
 		if(!username) {
 			url = 'auth/login/guest';
 			data = { fingerprint : password };
@@ -2748,7 +2748,7 @@ var settingsNotUpdated;
 	manageOnlineUsersUI = function(data) {
 		$('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
 		DEBUG && console.log(logInfos);
-		
+
 		settingsUpdating.done(function () {
 			if(!settings.OnlineUsers || !data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
 				$('.profileConvert').hide();
