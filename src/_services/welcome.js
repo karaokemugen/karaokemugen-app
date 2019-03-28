@@ -26,7 +26,7 @@ export async function welcomeToYoukousoKaraokeMugen(port) {
 		console.log(`\nAdmin password is : ${adminPassword}\nPlease keep it in a safe place, it will not be displayed ever again.\nTo reset admin password, set appFirstRun to 1 in config.ini\n`);
 	} else {
 		if (!conf.optNoBrowser && !conf.isDemo && !conf.isTest) {
-			opn(`http://localhost:${port}/welcome`);
+			open(`http://localhost:${port}/welcome`);
 		}
 	}
 }
