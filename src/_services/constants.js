@@ -276,6 +276,7 @@ export const tags = [
 	'SPOIL',
 	'SWITCH',
 	'TOKU',
+	'TVSHOW',
 	'VIDEOGAME',
 	'VN',
 	'VOCALOID',
