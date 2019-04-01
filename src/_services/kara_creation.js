@@ -15,6 +15,7 @@ import {check} from '../_utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import {now} from '../_utils/date';
 import { compareKarasChecksum } from '../_dao/database';
+import { webOptimize } from '../_utils/ffmpeg';
 
 export async function editKara(kara, opts = {compareChecksum: true}) {
 	let newKara;
@@ -248,7 +249,6 @@ async function importKara(mediaFile, subFile, data) {
 
 	try {
 		if (subPath !== 'dummy.ass') await extractAssInfos(subPath, karaData);
-		await extractMediaTechInfos(mediaPath, karaData);
 		await processSeries(data);
 		return await generateAndMoveFiles(mediaPath, subPath, karaData);
 	} catch(err) {
@@ -315,7 +315,15 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	if (subPath && karaData.subfile !== 'dummy.ass') subDest = resolve(resolvedPathSubs()[0], karaData.subfile);
 	try {
 		// Moving media in the first media folder.
-		await asyncMove(mediaPath, mediaDest, { overwrite: karaData.overwrite });
+		if (extname(mediaDest).toLowerCase() === '.mp4') {
+			if (!karaData.overwrite && await asyncExists(mediaDest)) throw 'Media file already exists in destination folder'
+			await webOptimize(mediaPath, mediaDest);
+			await asyncUnlink(mediaPath);
+		} else {
+			await asyncMove(mediaPath, mediaDest, { overwrite: karaData.overwrite });
+		}
+		// Extracting media info here and now because we migth have had to weboptimize it earlier.
+		await extractMediaTechInfos(mediaDest, karaData);
 		// Moving subfile in the first lyrics folder.
 		if (subDest) await asyncMove(subPath, subDest, { overwrite: karaData.overwrite });
 		delete karaData.overwrite;
