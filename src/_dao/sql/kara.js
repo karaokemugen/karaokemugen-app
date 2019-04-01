@@ -114,7 +114,7 @@ SELECT ak.title AS title,
 	ak.singers AS singers,
 	ak.songtypes AS songtypes,
     ak.languages AS languages,
-    (SELECT COUNT(fk_kid) AS played FROM played WHERE fk_kid = ak.kid) AS played,
+    (SELECT COUNT(fk_kid) AS played FROM played WHERE fk_kid = ak.kid)::integer AS played,
     p.played_at AS played_at
 FROM all_karas AS ak
 INNER JOIN played p ON p.fk_kid = ak.kid

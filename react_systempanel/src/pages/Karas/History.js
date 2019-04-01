@@ -54,11 +54,11 @@ class KaraList extends Component {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
 		key: 'serie',
-		render: (serie, record) => (serie || record.singer)
+		render: (serie, record) => (serie || record.singers[0].name)
 	}, {
 		title: 'Type',
-		dataIndex: 'songtype',
-		key: 'songtype',
+		dataIndex: 'songtypes',
+		key: 'songtypes',
 		render: (songtypes, record) => (songtypes[0].name.replace('TYPE_','') + ' ' + (record.songorder || ''))
 	}, {
 		title: 'Title',
@@ -71,11 +71,11 @@ class KaraList extends Component {
 		render: played => played,
 	}, {
 		title: 'Seen on',
-		dataIndex: 'viewed_at',
-		key: 'viewed_at',
-		render: viewed_at => (new Date(viewed_at)).toLocaleString('en'),
+		dataIndex: 'played_at',
+		key: 'played_at',
+		render: played_at => (new Date(played_at)).toLocaleString('en'),
 		defaultSortOrder: 'descend',
-		sorter: (a,b) => a.viewed_at - b.viewed_at
+		sorter: (a,b) => a.played_at - b.played_at
 	}];
 }
 
