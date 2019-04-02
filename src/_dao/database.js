@@ -46,6 +46,10 @@ export function paramWords(filter) {
 	return params;
 }
 
+async function queryLog(...args) {
+	logger.debug(`[SQL] ${JSON.stringify(args).replace(/\\n/g,'\n').replace(/\\t/g,'   ')}`);
+	return database.query_orig(...args);
+}
 async function query(...args) {
 	// Fake query function used as a decoy when closing DB.
 	return {rows: [{}]};
@@ -167,6 +171,11 @@ export async function connectDB(opts = {superuser: false, db: null}) {
 		dbConfig.database = opts.db;
 	}
 	database = new Pool(dbConfig);
+	if (getState().opt.sql) {
+		//If SQL logs are enabled, we're going to monkey-patch the query function.
+		database.query_orig = database.query;
+		database.query = queryLog;
+	}
 	try {
 		await database.connect();
 		database.on('error', err => {

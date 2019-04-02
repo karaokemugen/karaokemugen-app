@@ -26,8 +26,8 @@ This is a major release.
 - Configuration is not updated anymore in realtime if you modify the config file while Karaoke Mugen is running (it caused too many problems). You'll need to modify the config file while Karaoke Mugen is stopped.
 - All communication with Karaoke Mugen Server is now done in HTTPS.
 - Executable file has been greatly reduced by replacing some packages with simpler, lighter versions
-- The `--sql` command line flag now logs SQL queries only with the bundled PostgreSQL server. If you're using your own PostgreSQL, refer to the PostgreSQL documentation on how to log queries.
 - Preview generation should be more consistent now.
+- When creating a new karaoke, mp4 videos are web-optimized automatically
 - Karaoke operators can now add several random karaokes to the current playlist by pressing a button on the admin interface, to fill a playlist for example (#392).
 
 ### Fixes
