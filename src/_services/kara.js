@@ -105,17 +105,16 @@ export async function deleteKara(kid) {
 
 	// If kara_ids contains only one entry, it means the series won't have any more kara attached to it, so it's safe to remove it.
 	const karas = await selectAllKaras('admin', null, null, 'search', `s:${kara.sid}`, null, null, true);
-	if (karas.length <= 1 && kara.sid.length>0) {
-		for(let i=0; i<kara.sid.length; i++)
-		{
+	if (karas.length <= 1 && kara.sid.length > 0) {
+		for(let i=0; i<kara.sid.length; i++) {
 			try {
 				await deleteSerie(kara.sid[i]);
 			} catch(e) {
-				// statements
-				console.log(e);
+				logger.error(`[Kara] Unable to remove all series from a karaoke : ${e}`);
+				throw e;
 			}
 		}
-	} 
+	}
 
 	// Remove files
 	const conf = getConfig();
@@ -142,7 +141,7 @@ export async function deleteKara(kid) {
 
 	// Remove kara from database
 	await deleteKaraDB(kid);
-
+	logger.info(`[Kara] Song ${kara.karafile} removed`);
 	await Promise.all([
 		refreshKaraSeries(),
 		refreshKaraTags()
