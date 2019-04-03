@@ -56,10 +56,8 @@ export async function postToDownloadQueue(repo = 'kara.moe', downloads) {
 			repository: repo,
 			downloads
 		};
-		console.log(dl);
 		await axios.post('/api/system/downloads', dl);
 	} catch (e) {
-		console.log(e);
 		console.log('Error from /api/local.js:postToDownloadQueue');
 		throw e;
 	}

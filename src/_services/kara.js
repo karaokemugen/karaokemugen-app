@@ -7,7 +7,7 @@ import {refreshKaras, refreshYears} from '../_dao/kara';
 import {refreshKaraSeries, refreshSeries} from '../_dao/series';
 import {refreshKaraTags, refreshTags} from '../_dao/tag';
 import {now} from '../_utils/date';
-import {compareKarasChecksum} from './generation';
+import { compareKarasChecksum } from '../_dao/database';
 import {selectAllKaras,
 	getYears as getYearsDB,
 	getKara as getKaraDB,
@@ -102,14 +102,27 @@ export async function getRandomKara(username, filter) {
 export async function deleteKara(kid) {
 	const kara = await getKaraMini(kid);
 	if (!kara) throw `Unknown kara ID ${kid}`;
+
 	// If kara_ids contains only one entry, it means the series won't have any more kara attached to it, so it's safe to remove it.
 	const karas = await selectAllKaras('admin', null, null, 'search', `s:${kara.sid}`, null, null, true);
-	if (karas.length <= 1) await deleteSerie(kara.sid);
+	if (karas.length <= 1 && kara.sid.length>0) {
+		for(let i=0; i<kara.sid.length; i++)
+		{
+			try {
+				await deleteSerie(kara.sid[i]);
+			} catch(e) {
+				// statements
+				console.log(e);
+			}
+		}
+	} 
+
 	// Remove files
 	const conf = getConfig();
 	const PathsMedias = conf.PathMedias.split('|');
 	const PathsSubs = conf.PathSubs.split('|');
 	const PathsKaras = conf.PathKaras.split('|');
+
 	try {
 		await asyncUnlink(await resolveFileInDirs(kara.mediafile, PathsMedias));
 	} catch(err) {
@@ -126,8 +139,18 @@ export async function deleteKara(kid) {
 		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
 	}
 	compareKarasChecksum({silent: true});
+
 	// Remove kara from database
 	await deleteKaraDB(kid);
+
+	await Promise.all([
+		refreshKaraSeries(),
+		refreshKaraTags()
+	]);
+	await refreshKaras();
+	refreshSeries();
+	refreshYears();
+	refreshTags();
 }
 
 export async function getKara(kid, token, lang) {

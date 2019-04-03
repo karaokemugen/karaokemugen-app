@@ -3,5 +3,5 @@ import localKarasSaga from './localKaras';
 import downloadManagerSaga from './downloadManager';
 
 export default function* root() {
-	yield all([call(localKarasSaga), call(downloadManagerSaga)]);
+	//yield all([call(localKarasSaga), call(downloadManagerSaga)]);
 }

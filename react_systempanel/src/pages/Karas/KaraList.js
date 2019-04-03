@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {Icon, Layout, Table, Input} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
+import { deleteKaraByLocalId } from '../../api/local';
 
 class KaraList extends Component {
 
@@ -12,6 +13,8 @@ class KaraList extends Component {
 		this.state = {
 			karas: [],
 			kara: {},
+			karas_removing_lastcall:0,
+			karas_removing:[],
 			currentPage: localStorage.getItem('karaPage') || 1,
 			filter: localStorage.getItem('karaFilter') || ''
 		};
@@ -19,16 +22,17 @@ class KaraList extends Component {
 	}
 
 	componentDidMount() {
+		this.props.loading(true);
 		this.refresh();
+		setInterval(this.deletionQueueCron.bind(this),1000);
 	}
 
 	refresh() {
-		this.props.loading(true);
+		//this.props.loading(true);
 		axios.get('/api/system/karas', { params: { filter: this.state.filter,  }})
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data.content});
-				console.log(this.state);
 			})
 			.catch(err => {
 				this.props.loading(false);
@@ -47,13 +51,40 @@ class KaraList extends Component {
 		});
 	}
 
+	deleteKara(kara) {
+		this.deletionQueuePush(kara.kid);
+		deleteKaraByLocalId(kara.kid);
+	}
+
+	deletionQueuePush(kid) {
+		let karas_removing = this.state.karas_removing;
+		karas_removing.push(kid);
+		this.setState({
+			karas_removing:karas_removing,
+			karas_removing_lastcall:new Date().getTime()
+		})
+	}
+	deletionQueueCron()
+	{
+		if(this.state.karas_removing_lastcall > 0 && this.state.karas_removing_lastcall < new Date().getTime() - 3000)
+		{
+			this.setState({
+				karas_removing:[],
+				karas_removing_lastcall:0
+			})
+			this.refresh()
+		}
+	}
+
+
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Layout>
 					<Layout.Header>
 						<Input.Search
-							placeholder={ this.state.filter || 'Search filter' }
+							placeholder='Search filter'
+							value={this.state.filter}
 							onChange={event => this.changeFilter(event)}
 							enterButton="Search"
 							onSearch={this.refresh.bind(this)}
@@ -127,6 +158,15 @@ class KaraList extends Component {
 		render: (text, record) => (<span>
 			<Link to={`/system/karas/${record.kid}`}><Icon type='edit'/></Link>
 		</span>)
+	}, {
+		title: 'Delete',
+		key: 'delete',
+		render: (text, record) => {
+			if(this.state.karas_removing.indexOf(record.kid)>=0)
+				return <button type="button"><Icon type="sync" spin /></button>
+			else
+				return <button type="button" onClick={this.deleteKara.bind(this,record)}><Icon type='close-circle' theme="twoTone" twoToneColor="#d8493e"/></button>
+		}
 	}];
 }
 

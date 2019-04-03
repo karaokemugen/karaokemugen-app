@@ -101,7 +101,11 @@ ${offsetClause}
 `;
 
 export const getKaraMini = `
-SELECT ak.title AS title,
+SELECT
+	ak.kid AS kid,
+	ak.title AS title,
+	ak.mediafile AS mediafile,
+	ak.karafile AS karafile,
 	ak.subfile AS subfile,
 	ak.duration AS duration,
 	ak.sid AS sid
@@ -125,8 +129,12 @@ ORDER BY p.played_at DESC
 
 export const deleteKara = `
 DELETE FROM kara WHERE pk_kid = $1;
-DELETE FROM kara_tag WHERE fk_kid = $1;
+`;
+export const deleteKaraSerie = `
 DELETE FROM kara_serie WHERE fk_kid = $1;
+`;
+export const deleteKaraTag = `
+DELETE FROM kara_tag WHERE fk_kid = $1;
 `;
 
 export const removeKaraFromPlaylist = `

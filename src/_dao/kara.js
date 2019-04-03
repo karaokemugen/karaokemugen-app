@@ -84,7 +84,11 @@ export async function selectRandomKara(playlist_id) {
 }
 
 export async function deleteKara(kid) {
-	return await db().query(sql.deleteKara, [kid]);
+	let r = true;
+	try { r = r && await db().query(sql.deleteKaraTag, [kid]); } catch(e) { console.log(e); r = false; }
+	try { r = r && await db().query(sql.deleteKaraSerie, [kid]); } catch(e) { console.log(e); r = false; }
+	try { r = r && await db().query(sql.deleteKara, [kid]); } catch(e) { console.log(e); r = false; }
+	return r;
 }
 
 export async function selectAllKaras(username, filter, lang, mode, modeValue, from = 0, size = 0, admin = true) {
