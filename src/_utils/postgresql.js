@@ -96,7 +96,7 @@ export async function updatePGConf() {
 
 export async function checkPG() {
 	const conf = getConfig();
-	const state = getConfig();
+	const state = getState();
 	if (!conf.Database.prod.bundledPostgresBinary) return false;
 	try {
 		const options = `status -D ${resolve(state.appPath, conf.System.Path.DB, 'postgres/')}`;
