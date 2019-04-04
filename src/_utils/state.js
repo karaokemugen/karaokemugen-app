@@ -20,7 +20,8 @@ let state = {
 	frontendPort: null,
 	player: {},
 	ready: false,
-	sessionStart: new Date()
+	sessionStart: new Date(),
+	opt: {}
 };
 let previousState = {...state};
 

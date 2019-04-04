@@ -17,6 +17,7 @@ import {refreshTags, refreshKaraTags} from './tag';
 import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from './series';
 import {profile} from '../_utils/logger';
 import {from as copyFrom} from 'pg-copy-streams';
+import {getState} from '../_utils/state';
 
 const sql = require('./sql/database');
 

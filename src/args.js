@@ -1,5 +1,6 @@
 import {setConfig} from './_utils/config';
 import logger from 'winston';
+import { setState } from './_utils/state';
 
 const help = `Usage :
 
@@ -30,8 +31,8 @@ export async function parseCommandLineArgs(argv) {
 		process.exit(0);
 	}
 	if (argv.sql) {
-		logger.info('[Launcher] SQL queries will be logged (bundled postgresql server only. If you use your own server, set the log_statement setting to "all")');
-		setConfig({optSQL: true});
+		logger.info('[Launcher] SQL queries will be logged');
+		setState({opt: {sql: true}});
 	}
 	if (argv.debug) {
 		logger.info('[Launcher] Debug messages enabled on console');
