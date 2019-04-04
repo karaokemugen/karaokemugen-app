@@ -52,7 +52,7 @@ import {
 
 //KM Modules
 import {updateSongsLeft, findUserByName} from './user';
-import {translateKaraInfo, isAllKaras, formatKaraList, getRandomKara} from './kara';
+import {translateKaraInfo, isAllKaras, formatKaraList, getKaras} from './kara';
 import {playPlayer, playingUpdated} from './player';
 import {isPreviewAvailable} from '../_webapp/previews';
 import {getBlacklist} from './blacklist';
@@ -336,12 +336,12 @@ export async function getPlaylistContentsMini(playlist_id) {
 	return await getPLContentsMini(playlist_id);
 }
 
-export async function getPlaylistContents(playlist_id, token, filter, lang, from = 0, size = 99999999999) {
+export async function getPlaylistContents(playlist_id, token, filter, lang, from = 0, size = 99999999999, random = 0) {
 	const plInfo = await getPlaylistInfo(playlist_id, token);
 	try {
 		profile('getPLC');
 		if (token.role !== 'admin' && !plInfo.flag_visible) throw `Playlist ${playlist_id} unknown`;
-		const pl = await getPLContents(playlist_id, token.username, filter, lang);
+		const pl = await getPLContents(playlist_id, token.username, filter, lang, random);
 		if (from === -1) {
 			const pos = getPlayingPos(pl);
 			pos
@@ -1060,10 +1060,8 @@ export async function buildDummyPlaylist() {
 	if (karaCount > 5) karaCount = 5;
 	if (karaCount > 0) {
 		logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);
-		for (let i = 1; i <= karaCount; i++) {
-			const kid = await getRandomKara(state.currentPlaylistID);
-			await addKaraToPlaylist(kid, 'admin', state.currentPlaylistID);
-		}
+		const karas = await getKaras(null, 'en', 0, karaCount, null, null, {username: 'admin', role: 'admin'}, karaCount);
+		karas.content.forEach(k => addKaraToPlaylist(k.kid, 'admin', state.currentPlaylistID));
 		logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
 		emitWS('playlistInfoUpdated', state.currentPlaylistID);
 		emitWS('playlistContentsUpdated', state.currentPlaylistID);

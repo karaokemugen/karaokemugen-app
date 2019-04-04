@@ -101,8 +101,14 @@ async function readAndCompleteKarafile(karafile, seriesMap) {
 	if (karaData.series) {
 		for (const serie of karaData.series.split(',')) {
 			const seriesData = seriesMap.get(serie);
-			seriesData.kids.push(karaData.KID);
-			seriesMap.set(serie, seriesData);
+			if (seriesData) {
+				seriesData.kids.push(karaData.KID);
+				seriesMap.set(serie, seriesData);
+			} else {
+				error = true;
+				karaData.error = true;
+				logger.error(`[Gen] Series ${serie} was not found in your series.json files (Kara file : ${karafile})`);
+			}
 		}
 	}
 	await writeKara(karafile, karaData);
@@ -345,7 +351,7 @@ function getTypes(kara, allTags) {
 }
 
 function strictModeError(series) {
-	logger.error(`[Gen] STRICT MODE ERROR : One series ${series} does not exist in the series file`);
+	logger.error(`[Gen] STRICT MODE ERROR : Series ${series} does not exist in the series file`);
 	error = true;
 }
 
@@ -480,8 +486,8 @@ export async function run(validateOnly) {
 		checkDuplicateKIDs(karas);
 		bar.incr();
 		bar.stop();
+		if (error) throw 'Error during generation. Find out why in the messages above.';
 		if (validateOnly) {
-			if (error) throw 'Error during generation. Find out why in the messages above.';
 			return true;
 		}
 		// Preparing data to insert

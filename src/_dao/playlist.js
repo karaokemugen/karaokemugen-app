@@ -1,5 +1,6 @@
 import {langSelector, buildClauses, db, transaction} from './database';
 import {getConfig} from '../_utils/config';
+import {getState} from '../_utils/state';
 import {now} from '../_utils/date';
 import {pg as yesql} from 'yesql';
 
@@ -115,14 +116,25 @@ export async function getPlaylistContentsMini(id, lang) {
 	return res.rows;
 }
 
-export async function getPlaylistContents(id, username, filter, lang) {
+export async function getPlaylistContents(id, username, filter, lang, random) {
 	const filterClauses = filter ? buildClauses(filter, 'playlist') : {sql: [], params: {}};
 	let limitClause = '';
 	let offsetClause = '';
-	const query = sql.getPlaylistContents(filterClauses.sql, langSelector(lang), limitClause, offsetClause);
+	let orderClause = 'pc.pos';
+	let whereClause = '';
 	//Disabled until we get the frontend to work around this.
 	//if (from > 0) offsetClause = `OFFSET ${from} `;
 	//if (size > 0) limitClause = `LIMIT ${size} `;
+	if (+random > 0) {
+		limitClause = ` LIMIT ${+random}`;
+		whereClause = ` AND pc.fk_kid NOT IN (
+			SELECT pc.fk_kid
+			FROM playlist_content pc
+			WHERE pc.fk_id_playlist = ${getState().modePlaylistID}
+		)`;
+		orderClause = 'RANDOM()';
+	}
+	const query = sql.getPlaylistContents(filterClauses.sql, langSelector(lang), whereClause, orderClause, limitClause, offsetClause);
 	const res = await db().query(yesql(query)({
 		playlist_id: id,
 		username: username,

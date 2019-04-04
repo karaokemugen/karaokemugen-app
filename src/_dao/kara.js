@@ -78,11 +78,6 @@ export async function getKara(kid, username, lang, role) {
 	return res;
 }
 
-export async function selectRandomKara(playlist_id) {
-	const res = await db().query(sql.getRandomKara, [playlist_id]);
-	return res.rows[0].kid;
-}
-
 export async function deleteKara(kid) {
 	let r = true;
 	try { r = r && await db().query(sql.deleteKaraTag, [kid]); } catch(e) { console.log(e); r = false; }
@@ -91,11 +86,11 @@ export async function deleteKara(kid) {
 	return r;
 }
 
-export async function selectAllKaras(username, filter, lang, mode, modeValue, from = 0, size = 0, admin = true) {
+export async function selectAllKaras(username, filter, lang, mode, modeValue, from = 0, size = 0, admin = true, random = 0) {
 	let filterClauses = filter ? buildClauses(filter) : {sql: [], params: {}};
 	let typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
 	// Hide blacklisted songs if not admin
-	if (!admin) typeClauses = typeClauses + ' AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)';
+	if (!admin) typeClauses = `${typeClauses} AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)`;
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
@@ -112,6 +107,16 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	//Disabled until we get the frontend to work around this.
 	//if (from > 0) offsetClause = `OFFSET ${from} `;
 	//if (size > 0) limitClause = `LIMIT ${size} `;
+	// If we're asking for random songs, here we modify the query to get them.
+	if (+random > 0) {
+		orderClauses = `RANDOM(), ${orderClauses}`;
+		limitClause = `LIMIT ${+random}`;
+		typeClauses = `${typeClauses} AND ak.kid NOT IN (
+			SELECT pc.fk_kid
+			FROM playlist_content pc
+			WHERE pc.fk_id_playlist = ${getState().modePlaylistID}
+		)`
+	}
 	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
 	const params = {
 		dejavu_time: new Date(now() - (getConfig().EngineMaxDejaVuTime * 60 * 1000)),

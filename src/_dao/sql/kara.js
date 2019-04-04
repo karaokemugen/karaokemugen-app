@@ -120,7 +120,7 @@ SELECT ak.title AS title,
 	ak.singers AS singers,
 	ak.songtypes AS songtypes,
     ak.languages AS languages,
-    (SELECT COUNT(fk_kid) AS played FROM played WHERE fk_kid = ak.kid) AS played,
+    (SELECT COUNT(fk_kid) AS played FROM played WHERE fk_kid = ak.kid)::integer AS played,
     p.played_at AS played_at
 FROM all_karas AS ak
 INNER JOIN played p ON p.fk_kid = ak.kid
@@ -215,17 +215,6 @@ VALUES(
 `;
 
 export const getYears = 'SELECT year, karacount FROM all_years ORDER BY year';
-
-export const getRandomKara = `
-SELECT ak.kid
-FROM all_karas ak
-WHERE ak.kid NOT IN (
-	SELECT pc.fk_kid
-	FROM playlist_content pc
-	WHERE pc.fk_id_playlist = $1
-)
-ORDER BY RANDOM() LIMIT 1;
-`;
 
 export const selectAllKIDs = `
 SELECT ak.kid

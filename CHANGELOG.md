@@ -28,6 +28,7 @@ This is a major release.
 - Executable file has been greatly reduced by replacing some packages with simpler, lighter versions
 - The `--sql` command line flag now logs SQL queries only with the bundled PostgreSQL server. If you're using your own PostgreSQL, refer to the PostgreSQL documentation on how to log queries.
 - Preview generation should be more consistent now.
+- Karaoke operators can now add several random karaokes to the current playlist by pressing a button on the admin interface, to fill a playlist for example (#392).
 
 ### Fixes
 

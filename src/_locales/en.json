@@ -56,6 +56,10 @@
 	"TYPE_PV": "Promotional Video",
 	"TYPE_PV_SHORT": "PV",
 	"NO_TAG": "No info",
+	"TAG_COVER": "Cover",
+	"TAG_COVER_SHORT": "COV",
+	"TAG_DRAMA": "Drama",
+	"TAG_DRAMA_SHORT": "DRM",
 	"TAG_SPECIAL": "Special",
 	"TAG_SPECIAL_SHORT": "SPE",
 	"TAG_REMIX": "Remix",
@@ -195,8 +199,8 @@
 	"NEXT_SONG": "Next song",
 	"ALWAYS_ON_TOP": "Always on top",
 	"FULLSCREEN": "Fullscreen",
-    "ADMIN_PASSWORD_CHANGE": "Change admin password",
-    "ADMIN_PLEASE": "Please use an admin account",
+	"ADMIN_PASSWORD_CHANGE": "Change admin password",
+	"ADMIN_PLEASE": "Please use an admin account",
 	"PASSWORD": "Password",
 	"PASSWORDCONF": "Confirm password",
 	"MONITOR_NUMBER": "Monitor no.",
@@ -276,6 +280,7 @@
 	"CL_WRONG_KARA_ORDER": "Kara positions in this playlist are messed up, refreshing it. <br/>Please try again.",
 	"CL_CONGRATS": "Congratulations",
 	"CL_ABOUT_TO_ADD": "You're about to add %s",
+    "CL_ADD_RANDOM_TITLE" : "How many random songs do you want to add ?",
 	"CL_INFORMATIVE_MESSAGE": "Informative message",
 	"CL_RENAME_PLAYLIST": "Rename %s",
 	"CL_CREATE_PLAYLIST": "Create new playlist",
@@ -561,5 +566,6 @@
 	"PROFILE_ONLINE_DELETE": "Delete my online profile",
 	"PROFILE_ONLINE_DELETED": "Your online profile was successfuly deleted",
 	"INSTANCE_NAME": "Server name",
-	"INSTANCE_NAME_SHORT": "Server"
+	"INSTANCE_NAME_SHORT": "Server",
+	"ADD_RANDOM_KARAS": "Add random songs"
 }

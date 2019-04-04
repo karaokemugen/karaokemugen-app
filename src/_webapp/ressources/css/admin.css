@@ -116,14 +116,21 @@ span[name="checkboxKara"][checked]:before, [name="selectAllKaras"][checked]:befo
 }
 
 
-.panel[cantransferkara="false"] .actionDiv > button[name="transferKara"], 
+.plDashboard[data-playlist_id="-2"]  .actionDiv > button[name="addRandomKaras"],
+.plDashboard[data-playlist_id="-3"]  .actionDiv > button[name="addRandomKaras"],
+.plDashboard[data-playlist_id="-4"]  .actionDiv > button[name="addRandomKaras"],
+.panel[canaddkara="false"]  .actionDiv > button[name="addRandomKaras"],
+.panel[cantransferkara="false"]  .actionDiv > button[name="addRandomKaras"]  {
+	display: none;
+}
+
 .plDashboard[data-playlist_id="-1"]  .actionDiv > button[name="transferKara"],
 .plDashboard[data-playlist_id="-4"]  .actionDiv > button[name="transferKara"]{
 	display: none;
 }
 
-.panel[canaddkara="false"] .actionDiv > button[name="addKara"]
-.panel[canaddkara="false"] .actionDiv > button[name="addAllKara"] {
+.panel[canaddkara="false"] .actionDiv > button[name="addKara"],
+.panel[canaddkara="false"] .actionDiv > button[name="addAllKaras"] {
 	display: none;
 }
 
@@ -306,10 +313,19 @@ span:not(.hideCommands) {
 	display: none;
 }
 
+/* supprimer ?*/
 .panel[canAddKara="false"] button[name="addAllKaras"] {
 	display: none;
 }
 
+button[name="addRandomKaras"] {
+    padding: 5px 9px;
+}
+button[name="addRandomKaras"] > img{
+    margin-top: -6px;
+    width: 18px;
+    filter: brightness(90%);
+}
 
 .plDashboard[data-playlist_id="-1"] .actionDiv > button[name="deleteKara"],
 .plDashboard[data-playlist_id="-4"] .actionDiv > button[name="deleteKara"]  {

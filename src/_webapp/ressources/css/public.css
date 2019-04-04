@@ -135,6 +135,7 @@ div.bootstrap-switch-large{
     background-color: hsla(0, 0%, 20%, .9);
     border-width: 0px;
     border-bottom: solid 1px hsla(0, 0%, 35%, 1);
+    filter: opacity(88%);
     order: 5;
 }
 .header .getLucky:hover {

@@ -3,11 +3,8 @@ import {check, initValidators} from '../_utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import logger from 'winston';
 import {ASSToLyrics} from '../_utils/ass';
-import {refreshKaras, refreshYears} from '../_dao/kara';
-import {refreshKaraSeries, refreshSeries} from '../_dao/series';
-import {refreshKaraTags, refreshTags} from '../_dao/tag';
 import {now} from '../_utils/date';
-import { compareKarasChecksum } from '../_dao/database';
+import { refreshAll, compareKarasChecksum } from '../_dao/database';
 import {selectAllKaras,
 	getYears as getYearsDB,
 	getKara as getKaraDB,
@@ -18,10 +15,8 @@ import {selectAllKaras,
 	updateKara,
 	addPlayed,
 	getKaraHistory as getKaraHistoryDB,
-	selectRandomKara,
 	selectAllKIDs
 } from '../_dao/kara';
-import {getState} from '../_utils/state';
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
 import {getConfig} from '../_utils/config';
@@ -95,11 +90,6 @@ export function translateKaraInfo(karas, lang) {
 	return karas;
 }
 
-export async function getRandomKara(username, filter) {
-	logger.debug('[Kara] Requesting a random song');
-	return await selectRandomKara(getState().modePlaylistID);
-}
-
 export async function deleteKara(kid) {
 	const kara = await getKaraMini(kid);
 	if (!kara) throw `Unknown kara ID ${kid}`;
@@ -151,18 +141,7 @@ export async function deleteKara(kid) {
 var delayedDbRefreshTimeout = null;
 export async function delayedDbRefreshViews(ttl=100) {
 	clearTimeout(delayedDbRefreshTimeout)
-	delayedDbRefreshTimeout = setTimeout(dbRefreshViews,ttl);
-}
-export async function dbRefreshViews() {
-	logger.info(`[Kara] Refresh DB materialized views`);
-		await Promise.all([
-			refreshKaraSeries(),
-			refreshKaraTags()
-		]);
-		await refreshKaras();
-		refreshSeries();
-		refreshYears();
-		refreshTags();
+	delayedDbRefreshTimeout = setTimeout(refreshAll,ttl);
 }
 
 export async function getKara(kid, token, lang) {
@@ -380,9 +359,9 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter, lang, from = 0, size = 999999999, searchType, searchValue, token) {
+export async function getKaras(filter, lang, from = 0, size = 999999999, searchType, searchValue, token, random) {
 	profile('getKaras');
-	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin');
+	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin', random);
 	profile('formatList');
 	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	profile('formatList');
