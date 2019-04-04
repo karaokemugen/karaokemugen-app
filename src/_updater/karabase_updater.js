@@ -1,5 +1,6 @@
 import {basename, resolve} from 'path';
 import {getConfig} from '../_utils/config';
+import {getState} from '../_utils/state';
 import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, asyncMkdirp, asyncExists, asyncRemove} from '../_utils/files';
 import decompress from 'decompress';
 import logger from 'winston';
@@ -165,7 +166,7 @@ async function compareMedias(localFiles, remoteFiles) {
 	let removedFiles = [];
 	let addedFiles = [];
 	let updatedFiles = [];
-	const mediasPath = resolve(state.appPath, conf.System.Path.Medias[0]);
+	const mediasPath = resolve(getState().appPath, conf.System.Path.Medias[0]);
 	logger.info('[Updater] Comparing your medias with the current ones');
 	emitWS('downloadProgress', {
 		text: 'Comparing your media files with Karaoke Mugen\'s latest files',
@@ -232,7 +233,7 @@ function downloadMedias(files, mediasPath) {
 	let list = [];
 	for (const file of files) {
 		list.push({
-			filename: resolve(state.appPath, mediasPath, file.name),
+			filename: resolve(getState().appPath, mediasPath, file.name),
 			url: `${shelter.url}/${encodeURIComponent(file.name)}`,
 			size: file.size
 		});
@@ -257,10 +258,10 @@ function downloadMedias(files, mediasPath) {
 
 async function listLocalMedias() {
 	const conf = getConfig();
-	const mediaFiles = await asyncReadDir(resolve(state.appPath, conf.System.Path.Medias[0]));
+	const mediaFiles = await asyncReadDir(resolve(getState().appPath, conf.System.Path.Medias[0]));
 	let localMedias = [];
 	for (const file of mediaFiles) {
-		const mediaStats = await asyncStat(resolve(state.appPath, conf.System.Path.Medias[0], file));
+		const mediaStats = await asyncStat(resolve(getState().appPath, conf.System.Path.Medias[0], file));
 		localMedias.push({
 			name: file,
 			size: mediaStats.size
@@ -289,7 +290,7 @@ async function updateFiles(files, dirSource, dirDest, isNew) {
 
 async function checkDirs() {
 	const conf = getConfig();
-	if (await isGitRepo(resolve(state.appPath, conf.System.Path.Karas[0], '../'))) {
+	if (await isGitRepo(resolve(getState().appPath, conf.System.Path.Karas[0], '../'))) {
 		logger.warn('[Updater] Your base folder is a git repository. We cannot update it, please run "git pull" to get updates or use your git client to do it. Media files are going to be updated though.');
 		return false;
 	}
