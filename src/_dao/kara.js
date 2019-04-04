@@ -1,7 +1,7 @@
 import {expand, flatten, buildTypeClauses, langSelector, buildClauses, db, transaction} from './database';
 import {getConfig} from '../_utils/config';
 import {resolve} from 'path';
-import {asyncExists, asyncReadFile} from '../_utils/files';
+import {asyncExists, asyncReadFile, resolveFileInDirs} from '../_utils/files';
 import { getState } from '../_utils/state';
 import {pg as yesql} from 'yesql';
 import {profile} from '../_utils/logger';
@@ -133,7 +133,7 @@ export async function getKaraMini(kid) {
 
 export async function getASS(sub) {
 	const conf = getConfig();
-	const subfile = resolve(getState().appPath,conf.System.Path.Lyrics,sub);
+	const subfile = await resolveFileInDirs(sub, conf.System.Path.Lyrics);
 	if (await asyncExists(subfile)) return await asyncReadFile(subfile, 'utf-8');
 	throw 'Subfile not found';
 }

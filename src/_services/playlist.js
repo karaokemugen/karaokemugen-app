@@ -1086,7 +1086,6 @@ export async function initPlaylistSystem() {
 }
 
 export async function testCurrentPlaylist() {
-	const conf = getConfig();
 	const currentPL_id = await findCurrentPlaylist();
 	if (currentPL_id) {
 		setState({currentPlaylistID: currentPL_id});
@@ -1097,7 +1096,7 @@ export async function testCurrentPlaylist() {
 		},'admin')
 		});
 		logger.debug('[Playlist] Initial current playlist created');
-		if (!conf.isTest) buildDummyPlaylist();
+		if (!getState().isTest) buildDummyPlaylist();
 	}
 }
 

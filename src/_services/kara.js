@@ -17,7 +17,6 @@ import {selectAllKaras,
 	updateKara,
 	addPlayed,
 	getKaraHistory as getKaraHistoryDB,
-	selectRandomKara,
 	selectAllKIDs
 } from '../_dao/kara';
 import {getState} from '../_utils/state';
