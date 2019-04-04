@@ -70,7 +70,7 @@
       "dist/_player/assets/*",
       "dist/_webapp/vendors/**",
       "dist/_webapp/ressources/**",
-      "dist/VERSION",
+      "dist/version.yml",
       "react_systempanel/build/**"
     ]
   },
