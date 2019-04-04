@@ -143,14 +143,25 @@ export async function deleteKara(kid) {
 	// Remove kara from database
 	await deleteKaraDB(kid);
 	logger.info(`[Kara] Song ${kara.karafile} removed`);
-	await Promise.all([
-		refreshKaraSeries(),
-		refreshKaraTags()
-	]);
-	await refreshKaras();
-	refreshSeries();
-	refreshYears();
-	refreshTags();
+
+	delayedDbRefreshViews(2000)
+}
+
+var delayedDbRefreshTimeout = null;
+export async function delayedDbRefreshViews(ttl=100) {
+	clearTimeout(delayedDbRefreshTimeout)
+	delayedDbRefreshTimeout = setTimeout(dbRefreshViews,ttl);
+}
+export async function dbRefreshViews() {
+	logger.info(`[Kara] Refresh DB materialized views`);
+		await Promise.all([
+			refreshKaraSeries(),
+			refreshKaraTags()
+		]);
+		await refreshKaras();
+		refreshSeries();
+		refreshYears();
+		refreshTags();
 }
 
 export async function getKara(kid, token, lang) {
@@ -240,14 +251,9 @@ export async function createKaraInDB(kara) {
 		updateTags(kara),
 		updateSeries(kara)
 	]);
-	await Promise.all([
-		refreshKaraSeries(),
-		refreshKaraTags()
-	]);
-	await refreshKaras();
-	refreshSeries();
-	refreshYears();
-	refreshTags();
+
+	dbRefreshViews();
+
 }
 
 export async function editKaraInDB(kara) {
@@ -256,14 +262,8 @@ export async function editKaraInDB(kara) {
 		updateSeries(kara),
 		updateKara(kara)
 	]);
-	await Promise.all([
-		refreshKaraSeries(),
-		refreshKaraTags()
-	]);
-	await refreshKaras();
-	refreshSeries();
-	refreshYears();
-	refreshTags();
+
+	dbRefreshViews();
 }
 
 /**
