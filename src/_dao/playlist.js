@@ -138,7 +138,7 @@ export async function getPlaylistContents(id, username, filter, lang, random) {
 	const res = await db().query(yesql(query)({
 		playlist_id: id,
 		username: username,
-		dejavu_time: new Date(now() - (getConfig().EngineMaxDejaVuTime * 60 * 1000)),
+		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 		...filterClauses.params
 	}));
 	return res.rows;
@@ -165,7 +165,7 @@ export async function getPLCInfo(id, forUser, username) {
 	const res = await db().query(yesql(query)(
 		{
 			playlistcontent_id: id,
-			dejavu_time: new Date(now() - (getConfig().EngineMaxDejaVuTime * 60 * 1000)),
+			dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 			username: username
 		}));
 	return res.rows[0];
@@ -180,7 +180,7 @@ export async function getPLCByKIDAndUser(kid,username,playlist_id) {
 	const res = await db().query(yesql(sql.getPLCByKIDUser)({
 		kid: kid,
 		playlist_id: playlist_id,
-		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60)) * 1000),
+		dejavu_time: new Date((now() - (getConfig().Playlist.MaxDejaVuTime * 60)) * 1000),
 		username: username
 	}));
 	return res.rows[0];

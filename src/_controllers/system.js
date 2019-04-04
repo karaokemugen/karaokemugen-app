@@ -1,5 +1,6 @@
 import {editSetting, backupConfig, getConfig} from '../_utils/config';
 import {emitWS} from '../_webapp/frontend';
+import {getState} from '../_utils/state';
 import {run as generateDatabase} from '../_services/generation';
 import {renameAllKaras, editKara, createKara, karaGenerationBatch} from '../_services/kara_creation';
 import {requireAuth, requireValidUser, requireAdmin} from './middlewares/auth';
@@ -17,8 +18,7 @@ import {dumpPG} from '../_utils/postgresql';
 import logger from 'winston';
 
 export default function systemController(router) {
-	const conf = getConfig();
-	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
+	let upload = multer({ dest: resolve(getState().appPath, getConfig().System.Path.Temp)});
 
 	router.get('/system/config', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		res.json(getConfig());
@@ -26,7 +26,7 @@ export default function systemController(router) {
 
 	router.put('/system/config', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
-			const publicSettings = editSetting(req.body.setting, req.body.value);
+			const publicSettings = editSetting(req.body.setting);
 			emitWS('settingsUpdated',publicSettings);
 			res.status(200).send('Config updated');
 		} catch(err) {

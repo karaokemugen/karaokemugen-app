@@ -3,24 +3,17 @@ import passport from 'passport';
 import {Strategy, ExtractJwt} from 'passport-jwt';
 import LocalStrategy from 'passport-local';
 
-import {hashPassword,findUserByName} from '../_services/user';
+import {hashPassword, findUserByName} from '../_services/user';
 import {getConfig} from '../_utils/config';
 
 export function configurePassport(conf) {
-
-	const resolvedConf = conf || getConfig();
-
-	const localLogin = localPassportStrategy(resolvedConf);
-	const jwtLogin = jwtPassportStrategy(resolvedConf);
-
-	passport.use(jwtLogin);
-	passport.use(localLogin);
+	passport.use(localPassportStrategy());
+	passport.use(jwtPassportStrategy());
 }
 
 function localPassportStrategy() {
 	const localOptions = {usernameField: 'username', passwordField: 'password'};
-
-	return new LocalStrategy(localOptions, function (username, password, done) {
+	return new LocalStrategy(localOptions, (username, password, done) => {
 		const hash = hashPassword(password);
 		findUserByName(username)
 			.then((userdata) => {
@@ -37,13 +30,11 @@ function localPassportStrategy() {
 	});
 }
 
-function jwtPassportStrategy(config) {
-
+function jwtPassportStrategy() {
 	const jwtOptions = {
 		jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-		secretOrKey: config.JwtSecret
+		secretOrKey: getConfig().App.JwtSecret
 	};
-
 	return new Strategy(jwtOptions, function (payload, done) {
 		return done(null, payload.username);
 	});

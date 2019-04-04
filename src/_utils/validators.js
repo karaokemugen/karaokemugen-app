@@ -55,18 +55,13 @@ function typeValidator(value) {
 	return null;
 }
 
-function boolIntValidator(value) {
-	const err = ` '${value}' is invalid (must be -1, 0 or 1)`;
-	if (!value && +value !== 0) return err; // We don't want undefined, but it must not be 0 either to throw an error
-	if (value && ![-1, 0, 1].includes(+value)) return err;
-	return null;
-}
-
-function boolStringValidator(value) {
-	if (!value || value === true || value === false
-	||  value === 'true' || value === 'false'
-	) return null;
-	return `${value} must be boolean`;
+function boolUndefinedValidator(value) {
+	if (value === true ||
+		value === false ||
+		value === undefined ||
+		value === 'true' ||
+		value === 'false') return null;
+	return `${value} must be strictly boolean`;
 }
 
 function seriesAliasesValidator(value) {
@@ -92,7 +87,7 @@ function uuidArrayValidator(value) {
 	if (value.includes(',')) {
 		const array = value.split(',');
 		if (array.some(e => !e)) return `'${value} contains an undefined`;
-		if (array.every(e => new RegExp(uuidRegexp).test(e)))return null;
+		if (array.every(e => new RegExp(uuidRegexp).test(e))) return null;
 		return ` '${value}' is invalid (not an array of UUIDs)`;
 	}
 	if (new RegExp(uuidRegexp).test(value)) return null;
@@ -113,21 +108,25 @@ function numbersArrayValidator(value) {
 	return ` '${value}' is invalid (not a number)`;
 }
 
+function isArray(value){
+	if(Array.isArray(value)) return null;
+	return `'${value}' is invalid (not an array)`;
+}
 // Validators list
 
 const validatorsList = {
-	boolIntValidator,
 	numbersArrayValidator,
 	integerValidator,
 	seriesAliasesValidator,
 	isJSON,
+	isArray,
 	langValidator,
 	tagsValidator,
 	typeValidator,
 	seriesi18nValidator,
 	arrayNoCommaValidator,
 	uuidArrayValidator,
-	boolStringValidator
+	boolUndefinedValidator,
 };
 
 // Sanitizers

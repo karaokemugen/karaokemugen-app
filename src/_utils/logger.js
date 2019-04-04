@@ -2,7 +2,7 @@ import logger from 'winston';
 import {asyncCheckOrMkdir} from './files';
 import {resolve} from 'path';
 import {date, time} from './date';
-import {getConfig} from './config';
+import {getState} from './state';
 
 export async function configureLogger(appPath, debug) {
 	const consoleLogLevel = debug ? 'debug' : 'info';
@@ -44,5 +44,5 @@ export async function configureLogger(appPath, debug) {
 }
 
 export function profile(func) {
-	if (getConfig().optProfiling) logger.profile(`[Profiling] ${func}`);
+	if (getState().opt.profiling) logger.profile(`[Profiling] ${func}`);
 }

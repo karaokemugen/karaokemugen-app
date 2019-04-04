@@ -50,7 +50,7 @@ export async function addToFavorites(username, kid) {
 		if (Array.isArray(kid)) karas = kid;
 		if (typeof kid === 'string') karas = kid.split(',');
 		await insertFavorites(karas, username);
-		if (username.includes('@') && +getConfig().OnlineUsers) karas.forEach(k => manageFavoriteInInstance('POST', username, k));
+		if (username.includes('@') && getConfig().Online.Users) karas.forEach(k => manageFavoriteInInstance('POST', username, k));
 	} catch(err) {
 		throw err;
 	} finally {
@@ -61,7 +61,7 @@ export async function addToFavorites(username, kid) {
 export async function convertToRemoteFavorites(username) {
 	// This is called when converting a local account to a remote one
 	// We thus know no favorites exist remotely.
-	if (!+getConfig().OnlineUsers) return true;
+	if (!getConfig().Online.Users) return true;
 	const favorites = await getFavorites({username: username});
 	const addFavorites = [];
 	if (favorites.content.length > 0) {
@@ -79,7 +79,7 @@ export async function deleteFavorites(username, kid) {
 		if (Array.isArray(kid)) karas = kid;
 		if (typeof kid === 'string') karas = kid.split(',');
 		await removeFavorites(karas, username);
-		if (username.includes('@') && +getConfig().OnlineUsers) {
+		if (username.includes('@') && getConfig().Online.Users) {
 			for (const kid of karas) {
 				manageFavoriteInInstance('DELETE', username, kid);
 			}
@@ -93,7 +93,7 @@ export async function deleteFavorites(username, kid) {
 
 async function manageFavoriteInInstance(action, username, kid) {
 	// If OnlineUsers is disabled, we return early and do not try to update favorites online.
-	if (!+getConfig().OnlineUsers) return true;
+	if (!getConfig().Online.Users) return true;
 	const instance = username.split('@')[1];
 	const remoteToken = getRemoteToken(username);
 	try {

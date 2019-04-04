@@ -12,7 +12,7 @@ import {getKara} from '../_dao/kara';
 import {translateKaraInfo} from './kara';
 import logger from 'winston';
 import langs from 'langs';
-import {getConfig} from '../_utils/config';
+import {getState} from '../_utils/state';
 import {resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {formatKaraList} from './kara';
@@ -119,7 +119,7 @@ export async function addBlacklistCriteria(blctype, blcvalue) {
 async function translateBlacklistCriterias(blcs, lang) {
 	const blcList = blcs;
 	// If lang is not provided, assume we're using node's system locale
-	if (!lang) lang = getConfig().EngineDefaultLocale;
+	if (!lang) lang = getState().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
 	if (!langs.has('1',lang)) throw `Unknown language : ${lang}`;
 	// Instanciate a translation object for our needs with the correct language.
