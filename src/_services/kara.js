@@ -139,7 +139,7 @@ export async function deleteKara(kid) {
 	await deleteKaraDB(kid);
 	logger.info(`[Kara] Song ${kara.karafile} removed`);
 
-	delayedDbRefreshViews(2000)
+	delayedDbf(2000)
 }
 
 var delayedDbRefreshTimeout = null;
