@@ -122,9 +122,9 @@ class KaraList extends Component {
 		dataIndex: 'languages',
 		key: 'languages',
 		render: languages => {
-			const ret = languages.map(e => {
+			const ret = languages ? languages.map(e => {
 				return e.name;
-			});
+			}) : [];
 			return ret.join(', ').toUpperCase();
 		}
 	}, {
@@ -132,9 +132,9 @@ class KaraList extends Component {
 		dataIndex: 'serie',
 		key: 'serie',
 		render: (serie, record) => {
-			const singers = record.singers.map(e => {
+			const singers = record.singers ? record.singers.map(e => {
 				return e.name;
-			});
+			}) : [];
 			return serie || singers.join(', ');
 		}
 	}, {
@@ -142,9 +142,9 @@ class KaraList extends Component {
 		dataIndex: 'songtype',
 		key: 'songtype',
 		render: (songtypes, record) => {
-			const types = songtypes.map(e => {
+			const types = songtypes ? songtypes.map(e => {
 				return e.name;
-			});
+			}) : [];
 			const songorder = record.songorder || '';
 			return types.join(', ').replace('TYPE_','') + ' ' + songorder || '';
 		}
