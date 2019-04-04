@@ -19,7 +19,7 @@ import sample from 'lodash.sample';
 import systemController from '../_controllers/system';
 import authController from '../_controllers/auth';
 import {APIControllerPublic, APIControllerAdmin} from '../_controllers/api';
-
+import { getState } from '../_utils/state';
 
 let ws;
 
@@ -43,7 +43,10 @@ function apiRouter() {
 }
 
 
-export async function initFrontend(port) {
+export async function initFrontend() {
+	try {
+		const conf = getConfig();
+	const state = getState();
 	const app = express();
 	app.engine('hbs', exphbs({
 		layoutsDir: join(__dirname, 'ressources/views/layouts/'),
@@ -67,7 +70,6 @@ export async function initFrontend(port) {
 	const routerWelcome = express.Router();
 	app.use(passport.initialize());
 	configurePassport();
-	const conf = getConfig();
 	app.set('view engine', 'hbs');
 	app.set('views', join(__dirname, 'ressources/views/'));
 	app.use(compression());
@@ -94,7 +96,7 @@ export async function initFrontend(port) {
 	});
 	app.use(express.static(__dirname + '/'));
 	//path for system control panel
-	if (!conf.isDemo) {
+	if (state.isDemo) {
 		app.use('/system', express.static(resolve(__dirname, '../../react_systempanel/build')));
 		app.get('/system/*', (req, res) => {
 			res.sendFile(resolve(__dirname, '../../react_systempanel/build/index.html'));
@@ -103,30 +105,29 @@ export async function initFrontend(port) {
 	//Path to locales for webapp
 	app.use('/locales',express.static(__dirname + '/../_locales/'));
 	//Path to video previews
-	app.use('/previews',express.static(resolve(conf.appPath,conf.PathPreviews)));
+	app.use('/previews',express.static(resolve(state.appPath,conf.System.Path.Previews)));
 	//Path to user avatars
-	app.use('/avatars',express.static(resolve(conf.appPath,conf.PathAvatars)));
+	app.use('/avatars',express.static(resolve(state.appPath,conf.System.Path.Avatars)));
 	app.use('/admin', routerAdmin);
 	app.use('/welcome', routerWelcome);
 
 	app.get('/', (req, res) => {
 		const config = getConfig();
-
 		let view = 'public';
-		if (+config.WebappMode === 0) {
+		if (+config.Frontend.Mode === 0) {
 			view = 'publicClosed';
-		} else if (+config.WebappMode === 1) {
+		} else if (+config.Frontend.Mode === 1) {
 			view = 'publicLimited';
 		}
 		let url;
-		+config.EngineDisplayConnectionInfoHost
-			? url = config.EngineDisplayConnectionInfoHost
+		config.Karaoke.Display.ConnectionInfo.Host
+			? url = config.Karaoke.Display.ConnectionInfo.Host
 			: url = address();
 
 		res.render(view, {'layout': 'publicHeader',
 			'clientAdress'	:	`http://${url}`,
-			'webappMode'	:	+config.WebappMode,
-			'onlineHost'  	:	+config.OnlineUsers ? config.OnlineHost : '',
+			'webappMode'	:	+config.Frontend.Mode,
+			'onlineHost'  	:	config.Online.Users ? config.Online.Host : '',
 			'query'			:	JSON.stringify(req.query)
 		});
 	});
@@ -146,9 +147,9 @@ export async function initFrontend(port) {
 			'clientAdress'	:	`http://${address()}`,
 			'displays'		:	displays,
 			'query'			:	JSON.stringify(req.query),
-			'appFirstRun'	:	+config.appFirstRun,
-			'onlineHost'  	:	+config.OnlineUsers ? config.OnlineHost : '',
-			'webappMode'	:	+config.WebappMode
+			'appFirstRun'	:	config.App.FirstRun,
+			'onlineHost'  	:	config.Online.Users ? config.Online.Host : '',
+			'webappMode'	:	config.Frontend.Mode
 		});
 	});
 	routerWelcome.get('/', (req, res) => {
@@ -171,9 +172,13 @@ export async function initFrontend(port) {
 	});
 	const server = createServer(app);
 	ws = require('socket.io').listen(server);
-	server.listen(port, () => {
-		logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);
+	server.listen(conf.Frontend.Port, () => {
+		logger.debug(`[Webapp] Webapp is READY and listens on port ${conf.Frontend.Port}`);
 	});
+}catch(err) {
+	console.log(err);
+	throw err;
+}
 }
 
 

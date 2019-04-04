@@ -69,10 +69,10 @@ export async function loadBackground() {
 	const conf = getConfig();
 	// Default background
 	let backgroundFiles = [];
-	const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
+	const defaultImageFile = resolve(getState().appPath,conf.System.Path.Temp,'default.jpg');
 	let backgroundImageFile = defaultImageFile;
-	if (conf.PlayerBackground) {
-		backgroundImageFile = resolve(conf.appPath,conf.PathBackgrounds,conf.PlayerBackground);
+	if (conf.Player.Background) {
+		backgroundImageFile = resolve(getState().appPath,conf.System.Path.Backgrounds,conf.Player.Background);
 		if (await asyncExists(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
 			logger.warn(`[Player] Unable to find background file ${backgroundImageFile}, reverting to default one`);
@@ -88,8 +88,8 @@ export async function loadBackground() {
 	backgroundImageFile = sample(backgroundFiles);
 	logger.debug(`[Player] Background ${backgroundImageFile}`);
 	let videofilter = '';
-	if (+conf.EngineDisplayConnectionInfoQRCode &&
-		+conf.EngineDisplayConnectionInfo ) {
+	if (conf.Karaoke.Display.ConnectionInfo.QRCode &&
+		conf.Karaoke.Display.ConnectionInfo.Enabled ) {
 		//Positionning QR Code according to video size
 		const dimensions = sizeOf(backgroundImageFile);
 		let QRCodeWidth, QRCodeHeight;
@@ -97,7 +97,7 @@ export async function loadBackground() {
 
 		const posX = Math.floor(dimensions.width*0.015);
 		const posY = Math.floor(dimensions.height*0.015);
-		const qrCode = resolve(conf.appPath,conf.PathTemp,'qrcode.png').replace(/\\/g,'/');
+		const qrCode = resolve(getState().appPath,conf.System.Path.Temp,'qrcode.png').replace(/\\/g,'/');
 		videofilter = `lavfi-complex=movie=\\'${qrCode}\\'[logo];[logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1]overlay=${posX}:${posY}[vo]`;
 	}
 	try {
@@ -118,8 +118,7 @@ export async function initPlayerSystem() {
 	playerState.fullscreen = state.fullscreen;
 	playerState.stayontop = state.ontop;
 	buildJinglesList();
-	const conf = getConfig();
-	await buildQRCode(conf.osURL);
+	await buildQRCode(state.osURL);
 	logger.debug('[Player] QRCode generated');
 	await startmpv();
 	emitPlayerState();
@@ -133,7 +132,8 @@ async function getmpvVersion(path) {
 
 async function startmpv() {
 	const conf = getConfig();
-	if (+conf.PlayerMonitor) {
+	const state = getState();
+	if (conf.Player.Monitor) {
 		monitorEnabled = true;
 	} else {
 		monitorEnabled = false;
@@ -144,52 +144,52 @@ async function startmpv() {
 		'--no-border',
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
-		`--log-file=${resolve(conf.appPath,'mpv.log')}`,
+		`--log-file=${resolve(state.appPath,'mpv.log')}`,
 		`--volume=${+playerState.volume}`,
-		`--input-conf=${resolve(conf.appPath,conf.PathTemp,'input.conf')}`,
+		`--input-conf=${resolve(state.appPath,conf.System.Path.Temp,'input.conf')}`,
 		'--autoload-files=no'
 	];
-	if (+conf.PlayerPIP) {
-		mpvOptions.push(`--autofit=${conf.PlayerPIPSize}%x${conf.PlayerPIPSize}%`);
+	if (conf.Player.PIP.Enabled) {
+		mpvOptions.push(`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`);
 		// By default, center.
 		let positionX = 50;
 		let positionY = 50;
-		if (conf.PlayerPIPPositionX === 'Left') positionX = 1;
-		if (conf.PlayerPIPPositionX === 'Center') positionX = 50;
-		if (conf.PlayerPIPPositionX === 'Right') positionX = 99;
-		if (conf.PlayerPIPPositionY === 'Top') positionY = 5;
-		if (conf.PlayerPIPPositionY === 'Center') positionY = 50;
-		if (conf.PlayerPIPPositionY === 'Bottom') positionY = 99;
+		if (conf.Player.PIP.PositionX === 'Left') positionX = 1;
+		if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
+		if (conf.Player.PIP.PositionX === 'Right') positionX = 99;
+		if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
+		if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
+		if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
 		mpvOptions.push(`--geometry=${positionX}%:${positionY}%`);
 	}
-	if (conf.mpvVideoOutput) {
-		mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
+	if (conf.Player.mpvVideoOutput) {
+		mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
 	} else {
 		//Force direct3d for Windows users
 		//On some graphics cards (mainly Intel) there's no openGl support
 		//There is an issue with mpv's recent versions as directory bugs out some videos
 		//and backgrounds
 		//This is not a problem with the bundled 0.27 version, but is with 0.28
-		if (conf.os === 'win32') mpvOptions.push('--vo=direct3d');
+		if (state.os === 'win32') mpvOptions.push('--vo=direct3d');
 	}
-	if (conf.PlayerScreen) {
-		mpvOptions.push(`--screen=${conf.PlayerScreen}`);
-		mpvOptions.push(`--fs-screen=${conf.PlayerScreen}`);
+	if (conf.Player.Screen) {
+		mpvOptions.push(`--screen=${conf.Player.Screen}`);
+		mpvOptions.push(`--fs-screen=${conf.Player.Screen}`);
 	}
 	// Fullscreen is disabled if pipmode is set.
-	if (+conf.PlayerFullscreen && !+conf.PlayerPIP) {
+	if (conf.Player.Fullscreen && !conf.Player.PIP.Enabled) {
 		mpvOptions.push('--fullscreen');
 		playerState.fullscreen = true;
 	}
-	if (+conf.PlayerStayOnTop) {
+	if (conf.Player.StayOnTop) {
 		playerState.stayontop = true;
 		mpvOptions.push('--ontop');
 	}
-	if (+conf.PlayerNoHud) mpvOptions.push('--no-osc');
-	if (+conf.PlayerNoBar) mpvOptions.push('--no-osd-bar');
+	if (conf.Player.NoHud) mpvOptions.push('--no-osc');
+	if (conf.Player.NoBar) mpvOptions.push('--no-osd-bar');
 	//On all platforms, check if we're using mpv at least version 0.25 or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
-	let mpvVersion = await getmpvVersion(conf.BinmpvPath);
+	let mpvVersion = await getmpvVersion(state.binPath.mpv);
 	mpvVersion = mpvVersion.split('-')[0];
 	logger.debug(`[Player] mpv version : ${mpvVersion}`);
 
@@ -198,22 +198,24 @@ async function startmpv() {
 	if (!semver.satisfies(mpvVersion, '>=0.25.0')) {
 		// Version is too old. Abort.
 		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
-		logger.error(`[Player] mpv binary : ${conf.BinmpvPath}`);
+		logger.error(`[Player] mpv binary : ${state.binPath.mpv}`);
 		logger.error('[Player] Exiting due to obsolete mpv version');
 		await exit(1);
 	}
-	if (conf.os === 'darwin' && semver.satisfies(mpvVersion, '0.27.x')) mpvOptions.push('--no-native-fs');
+	if (state.os === 'darwin' && semver.satisfies(mpvVersion, '0.27.x')) mpvOptions.push('--no-native-fs');
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
-	logger.debug(`[Player] mpv binary : ${conf.BinmpvPath}`);
+	logger.debug(`[Player] mpv binary : ${state.binPath.mpv}`);
 	let socket;
 	// Name socket file accordingly depending on OS.
-	conf.os === 'win32' ? socket = '\\\\.\\pipe\\mpvsocket' : socket = '/tmp/km-node-mpvsocket';
+	state.os === 'win32'
+		? socket = '\\\\.\\pipe\\mpvsocket'
+		: socket = '/tmp/km-node-mpvsocket';
 	player = new mpv(
 		{
 			ipc_command: '--input-ipc-server',
 			auto_restart: true,
 			audio_only: false,
-			binary: conf.BinmpvPath,
+			binary: state.binPath.mpv,
 			socket: socket,
 			time_update: 1,
 			verbose: false,
@@ -231,21 +233,21 @@ async function startmpv() {
 			'--no-osc',
 			'--no-osd-bar',
 			'--geometry=1%:99%',
-			`--autofit=${conf.PlayerPIPSize}%x${conf.PlayerPIPSize}%`,
+			`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`,
 			'--autoload-files=no'
 		];
-		if (conf.mpvVideoOutput) {
-			mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
+		if (conf.Player.mpvVideoOutput) {
+			mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
 		} else {
 			//Force direct3d for Windows users
-			if (conf.os === 'win32') mpvOptions.push('--vo=direct3d');
+			if (state.os === 'win32') mpvOptions.push('--vo=direct3d');
 		}
 		playerMonitor = new mpv(
 			{
 				ipc_command: '--input-ipc-server',
 				auto_restart: true,
 				audio_only: false,
-				binary: conf.BinmpvPath,
+				binary: state.binPath.mpv,
 				socket: `${socket}2`,
 				time_update: 1,
 				verbose: false,
@@ -319,7 +321,7 @@ async function startmpv() {
 		const conf = getConfig();
 		// Stop poll if position reaches 10 seconds before end of song
 		if (Math.floor(position) >= Math.floor(playerState.duration - 10) && playerState.mediaType === 'song' &&
-		+conf.EngineSongPoll &&
+		conf.Karaoke.Poll.Enabled &&
 		!songNearEnd) {
 			songNearEnd = true;
 			endPoll();
@@ -335,24 +337,22 @@ export async function play(mediadata) {
 	logger.debug('[Player] Play event triggered');
 	playerState.playing = true;
 	//Search for media file in the different Pathmedias
-	const PathsMedias = conf.PathMedias.split('|');
-	const PathsSubs = conf.PathSubs.split('|');
 	let mediaFile;
 	let subFile;
 	try {
-		mediaFile = await resolveFileInDirs(mediadata.media,PathsMedias);
+		mediaFile = await resolveFileInDirs(mediadata.media, conf.System.Path.Medias);
 	} catch (err) {
 		logger.debug(`[Player] Error while resolving media path : ${err}`);
 		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
-		if (conf.PathMediasHTTP) {
-			mediaFile = `${conf.PathMediasHTTP}/${encodeURIComponent(mediadata.media)}`;
-			logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.PathMediasHTTP}`);
+		if (conf.System.Path.MediasHTTP) {
+			mediaFile = `${conf.System.Path.MediasHTTP}/${encodeURIComponent(mediadata.media)}`;
+			logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.System.Path.MediasHTTP}`);
 		} else {
-			throw `No media source for ${mediadata.media} (tried in ${PathsMedias.toString()} and HTTP source)`;
+			throw `No media source for ${mediadata.media} (tried in ${conf.System.Path.Medias.toString()} and HTTP source)`;
 		}
 	}
 	try {
-		if (mediadata.subfile !== 'dummy.ass') subFile = await resolveFileInDirs(mediadata.subfile,PathsSubs);
+		if (mediadata.subfile !== 'dummy.ass') subFile = await resolveFileInDirs(mediadata.subfile, conf.System.Path.Lyrics);
 	} catch(err) {
 		logger.debug(`[Player] Error while resolving subs path : ${err}`);
 		logger.warn(`[Player] Subs NOT FOUND : ${mediadata.subfile}`);
@@ -366,10 +366,10 @@ export async function play(mediadata) {
 		if (mediaFile.endsWith('.mp3')) {
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
 			// Courtesy of @nah :)
-			if (+conf.PlayerVisualizationEffects) options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
+			if (conf.Player.VisualizationEffects) options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
-				const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
+				const defaultImageFile = resolve(state.appPath,conf.System.Path.Temp,'default.jpg');
 				options.push(`external-file=${defaultImageFile.replace(/\\/g,'/')}`);
 				options.push('force-window=yes');
 				options.push('image-display-duration=inf');
@@ -528,9 +528,10 @@ export async function displaySongInfo(infos) {
 
 export function displayInfo(duration = 10000000) {
 	const conf = getConfig();
+	const ci = conf.Karaoke.Display.ConnectionInfo;
 	let text = '';
-	if (+conf.EngineDisplayConnectionInfo) text = `${conf.EngineDisplayConnectionInfoMessage} ${__('GO_TO')} ${conf.osURL} !`;
-	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://karaokes.moe`;
+	if (ci.Enabled) text = `${ci.Message} ${__('GO_TO')} ${getState().osURL} !`;
+	const version = `Karaoke Mugen ${getState().version.number} (${getState().version.name}) - http://karaokes.moe`;
 	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {
 		command: [

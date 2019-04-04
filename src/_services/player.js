@@ -29,7 +29,7 @@ async function getPlayingSong(now) {
 			setState({currentlyPlayingKara: kara.kid});
 			addPlayedKara(kara.kid);
 			updateUserQuotas(kara);
-			if (+getConfig().EngineSongPoll) startPoll();
+			if (getConfig().Karaoke.Poll.Enabled) startPoll();
 		} catch(err) {
 			logger.error(`[Player] Error during song playback : ${err}`);
 			if (getState().status !== 'stop') {
@@ -64,8 +64,8 @@ export async function playerEnding() {
 		await restartPlayer();
 	}
 	const conf = getConfig();
-	logger.debug(`[Jingles] Songs before next jingle: ${conf.EngineJinglesInterval - state.counterToJingle}`);
-	if (state.counterToJingle >= conf.EngineJinglesInterval && conf.EngineJinglesInterval > 0) {
+	logger.debug(`[Jingles] Songs before next jingle: ${conf.Karaoke.JinglesInterval - state.counterToJingle}`);
+	if (state.counterToJingle >= conf.Karaoke.JinglesInterval && conf.Karaoke.JinglesInterval > 0) {
 		setState({
 			currentlyPlayingKara: -1,
 			counterToJingle: 0
@@ -192,7 +192,7 @@ function hideSubsPlayer() {
 
 export async function playerNeedsRestart() {
 	const state = getState();
-	if (state.status === 'stop' && !state.playerNeedsRestart && !getConfig().isDemo && !getConfig().isTest) {
+	if (state.status === 'stop' && !state.playerNeedsRestart && !state.isDemo && !state.isTest) {
 		setState({ playerNeedsRestart: true });
 		logger.info('[Player] Player will restart in 5 seconds');
 		await sleep(5000);
@@ -215,7 +215,7 @@ export async function sendCommand(command, options) {
 	const state = getState();
 	if (!state.player.ready) throw 'Player is not ready yet!';
 	if (commandInProgress) throw 'A command is already in progress';
-	if (getConfig().isDemo || getConfig().isTest) throw 'Player management is disabled in demo or test modes';
+	if (state.isDemo || state.isTest) throw 'Player management is disabled in demo or test modes';
 	commandInProgress = true;
 	// Automatically set it back to false after 3 seconds
 	setTimeout(function () {

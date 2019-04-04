@@ -23,7 +23,6 @@ import {selectAllKaras,
 import {getState} from '../_utils/state';
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
-import {getConfig} from '../_utils/config';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
 import {resolve} from 'path';
@@ -40,7 +39,7 @@ export async function isAllKaras(karas) {
 
 export function translateKaraInfo(karas, lang) {
 	// If lang is not provided, assume we're using node's system locale
-	if (!lang) lang = getConfig().EngineDefaultLocale;
+	if (!lang) lang = getState().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
 	if (!langs.has('1',lang)) throw `Unknown language : ${lang}`;
 	// Instanciate a translation object for our needs with the correct language.

@@ -4,6 +4,7 @@ import {resolvedPathSeries, getConfig} from '../_utils/config';
 import {resolve} from 'path';
 import { check, initValidators } from '../_utils/validators';
 import {uuidRegexp} from '../_services/constants';
+import { getState } from '../_utils/state';
 
 const header = {
 	version: 3,
@@ -52,7 +53,7 @@ export function findSeries(serie, seriesData) {
 
 export async function writeSeriesFile(series) {
 	const conf = getConfig();
-	const seriesFile = resolve(conf.appPath, conf.PathSeries.split('|')[0], `${sanitizeFile(series.name)}.series.json`);
+	const seriesFile = resolve(getState().appPath, conf.System.Path.Series[0], `${sanitizeFile(series.name)}.series.json`);
 	const seriesData = {
 		header: header,
 		series: series

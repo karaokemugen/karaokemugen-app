@@ -109,7 +109,7 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	}
 	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
 	const params = {
-		dejavu_time: new Date(now() - (getConfig().EngineMaxDejaVuTime * 60 * 1000)),
+		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 		username: username,
 		...filterClauses.params
 	};
@@ -133,7 +133,7 @@ export async function getKaraMini(kid) {
 
 export async function getASS(sub) {
 	const conf = getConfig();
-	const subfile = resolve(conf.appPath,conf.PathSubs,sub);
+	const subfile = resolve(getState().appPath,conf.System.Path.Lyrics,sub);
 	if (await asyncExists(subfile)) return await asyncReadFile(subfile, 'utf-8');
 	throw 'Subfile not found';
 }

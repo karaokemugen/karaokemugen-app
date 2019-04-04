@@ -183,7 +183,7 @@
     <button title="{{i18n "MESSAGE"}}" id="adminMessage" class="btn btn-dark pull-right" style="border-left-width: 0px"><i class="glyphicon glyphicon-comment"></i></button>
 
     <div class="pull-left btn-group switchs" style="width: 129px; max-width: 12.4vw;">
-        <input title='{{i18n "SWITCH_PRIVATE"}}' data-introStep="7" data-introLabel="mode" type="checkbox" checked name="EnginePrivateMode" class="btn pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> {{i18n "PRIVATE"}}"
+        <input title='{{i18n "SWITCH_PRIVATE"}}' data-introStep="7" data-introLabel="mode" type="checkbox" checked name="Karaoke.Private" class="btn pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> {{i18n "PRIVATE"}}"
             data-off-text="<i class='glyphicon glyphicon-eye-open'></i> {{i18n "PUBLIC"}}" data-size="large"/>
         <input title='{{i18n "SWITCH_OPTIONS"}}' data-introStep="13" data-introLabel="settings" type="checkbox" checked name="kara_panel" class="btn pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  {{i18n "OPTIONS"}}"
             data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  {{i18n "CL_PLAYLISTS"}}" data-size="large"/>
@@ -475,21 +475,21 @@
                 <div class="tab-content">
                     <div id="nav-player" role="tabpanel" aria-labelledby="nav-player-tab" class="modal-body tab-pane fade in active">
                         <div class="form-group">
-                            <label for="PlayerStayOnTop" class="col-xs-4 control-label">{{i18n "ALWAYS_ON_TOP"}}</label>
+                            <label for="Player.StayOnTop" class="col-xs-4 control-label">{{i18n "ALWAYS_ON_TOP"}}</label>
                             <div class="col-xs-6">
-                                <input action="command" switch="onoff" type="checkbox" name="PlayerStayOnTop" nameCommand="toggleAlwaysOnTop">
+                                <input action="command" switch="onoff" type="checkbox" name="Player.StayOnTop" nameCommand="toggleAlwaysOnTop">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="PlayerFullscreen" class="col-xs-4 control-label">{{i18n "FULLSCREEN"}}</label>
+                            <label for="Player.FullScreen" class="col-xs-4 control-label">{{i18n "FULLSCREEN"}}</label>
                             <div class="col-xs-6">
-                                <input action="command" switch="onoff" type="checkbox" name="PlayerFullscreen" nameCommand="toggleFullscreen">
+                                <input action="command" switch="onoff" type="checkbox" name="Player.FullScreen" nameCommand="toggleFullscreen">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="PlayerScreen" class="col-xs-4 control-label">{{i18n "MONITOR_NUMBER"}}</label>
+                            <label for="Player.Screen" class="col-xs-4 control-label">{{i18n "MONITOR_NUMBER"}}</label>
                             <div class="col-xs-6">
-                                <select type="number" class="form-control" name="PlayerScreen">
+                                <select type="number" class="form-control" name="Player.Screen">
                                         {{#each displays}}
                                             <option value="{{@index}}"> ({{resolutionx}}x{{resolutiony}}) {{model}}</option>
                                         {{/each}}
@@ -499,21 +499,21 @@
 
                         <div id="connexionInfoSettings" class="well well-sm settingsGroupPanel">
                             <div class="form-group">
-                                <label class="col-xs-4 control-label" for="EngineDisplayConnectionInfoQRCode">{{i18n "ENGINEDISPLAYCONNECTIONINFOQRCODE"}}</label>
+                                <label class="col-xs-4 control-label" for="Karaoke.Display.ConnectionInfo.QRCode">{{i18n "ENGINEDISPLAYCONNECTIONINFOQRCODE"}}</label>
                                 <div class="col-xs-6">
-                                    <input name="EngineDisplayConnectionInfoQRCode" type="checkbox">
+                                    <input name="Karaoke.Display.ConnectionInfo.QRCode" type="checkbox">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="EngineDisplayConnectionInfoHost" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOHOST"}}</label>
+                                <label for="Karaoke.Display.ConnectionInfo.Host" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOHOST"}}</label>
                                 <div class="col-xs-6">
-                                    <input class="form-control" name="EngineDisplayConnectionInfoHost">
+                                    <input class="form-control" name="Karaoke.Display.ConnectionInfo.Host">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="EngineDisplayConnectionInfoMessage" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOMESSAGE"}}</label>
+                                <label for="Karaoke.Display.ConnectionInfo.Message" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOMESSAGE"}}</label>
                                 <div class="col-xs-6">
-                                    <input class="form-control" name="EngineDisplayConnectionInfoMessage">
+                                    <input class="form-control" name="Karaoke.Display.ConnectionInfo.Message">
                                 </div>
                             </div>
                         </div>
@@ -522,16 +522,16 @@
                         
                         <div id="pipSettings" class="well well-sm settingsGroupPanel">
                             <div class="form-group">
-                                <label for="PlayerPIPSize" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}}</label>
+                                <label for="Player.PIP.Size" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}}</label>
                                 <div class="col-xs-6">
-                                    <input type="range" name="PlayerPIPSize">
+                                    <input type="range" name="Player.PIP.Size">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="PlayerPIPPositionX" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_X"}}</label>
+                                <label for="Player.PIP.PositionX" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_X"}}</label>
                                 <div class="col-xs-6">
-                                    <select class="form-control" name="PlayerPIPPositionX">
+                                    <select class="form-control" name="Player.PIP.PositionX">
                                         <option value="Left" > {{i18n "LEFT"}} </option>
                                         <option value="Center" default> {{i18n "CENTER"}} </option>
                                         <option value="Right" > {{i18n "RIGHT"}} </option>
@@ -540,9 +540,9 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="PlayerPIPPositionY" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_Y"}}</label>
+                                <label for="Player.PIP.PositionY" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_Y"}}</label>
                                 <div class="col-xs-6">
-                                    <select class="form-control" name="PlayerPIPPositionY">
+                                    <select class="form-control" name="Player.PIP.PositionY">
                                         <option value="Bottom" > {{i18n "BOTTOM"}} </option>
                                         <option value="Center" default> {{i18n "CENTER"}} </option>
                                         <option value="Top" > {{i18n "TOP"}} </option>
@@ -554,9 +554,9 @@
                     <div id="nav-interface" role="tabpanel" aria-labelledby="nav-interface-tab" class="modal-body tab-pane fade">
                     
                         <div class="form-group">
-                            <label for="WebappMode" class="col-xs-4 control-label">{{i18n "WEBAPPMODE"}}</label>
+                            <label for="Frontend.Mode" class="col-xs-4 control-label">{{i18n "WEBAPPMODE"}}</label>
                             <div class="col-xs-6">
-                                <select type="number" class="form-control" name="WebappMode">
+                                <select type="number" class="form-control" name="Frontend.Mode">
                                         <option value="0">{{i18n "WEBAPPMODE_CLOSED"}}</option>
                                         <option value="1">{{i18n "WEBAPPMODE_LIMITED"}}</option>
                                         <option value="2">{{i18n "WEBAPPMODE_OPEN"}}</option>
@@ -565,9 +565,9 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="WebappSongLanguageMode" class="col-xs-4 control-label">{{i18n "SERIE_NAME_MODE"}}</label>
+                            <label for="Frontend.SeriesLanguageMode" class="col-xs-4 control-label">{{i18n "SERIE_NAME_MODE"}}</label>
                             <div class="col-xs-6">
-                                <select type="number" class="form-control" name="WebappSongLanguageMode">
+                                <select type="number" class="form-control" name="Frontend.SeriesLanguageMode">
                                         <option value="0">{{i18n "SERIE_NAME_MODE_ORIGINAL"}}</option>
                                         <option value="1">{{i18n "SERIE_NAME_MODE_SONG"}}</option>
                                         <option value="2">{{i18n "SERIE_NAME_MODE_ADMIN"}}</option>
@@ -580,9 +580,9 @@
                         
                         <div id="nav-karaokeAllMode">
                             <div class="form-group">
-                                <label for="EngineQuotaType" class="col-xs-4 control-label">{{i18n "QUOTA_TYPE"}}</label>
+                                <label for="Karaoke.Quota.Type" class="col-xs-4 control-label">{{i18n "QUOTA_TYPE"}}</label>
                                 <div class="col-xs-6">
-                                    <select type="number" class="form-control" name="EngineQuotaType">
+                                    <select type="number" class="form-control" name="Karaoke.Quota.Type">
                                             <option value="0"> {{i18n "QUOTA_TYPE_0"}} </option>
                                             <option value="1"> {{i18n "QUOTA_TYPE_1"}} </option>
                                             <option value="2"> {{i18n "QUOTA_TYPE_2"}} </option>
@@ -590,27 +590,27 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="EngineTimePerUser" class="col-xs-4 control-label">{{i18n "TIME_BY_USER"}}</label>
+                                <label for="Karaoke.Quota.Time" class="col-xs-4 control-label">{{i18n "TIME_BY_USER"}}</label>
                                 <div class="col-xs-6">
-                                    <input type="number" class="form-control" name="EngineTimePerUser" placeholder="1000">
+                                    <input type="number" class="form-control" name="Karaoke.Quota.Time" placeholder="1000">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="EngineSongsPerUser" class="col-xs-4 control-label">{{i18n "SONGS_BY_USER"}}</label>
+                                <label for="Karaoke.Quota.Songs" class="col-xs-4 control-label">{{i18n "SONGS_BY_USER"}}</label>
                                 <div class="col-xs-6">
-                                    <input type="number" class="form-control" name="EngineSongsPerUser" placeholder="1000">
+                                    <input type="number" class="form-control" name="Karaoke.Quota.Songs" placeholder="1000">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="EngineFreeAutoTime" class="col-xs-4 control-label">{{i18n "FREE_AUTO_TIME"}}</label>
+                                <label for="Karaoke.Quota.FreeAutoTime" class="col-xs-4 control-label">{{i18n "FREE_AUTO_TIME"}}</label>
                                 <div class="col-xs-6">
-                                    <input type="number" class="form-control" name="EngineFreeAutoTime" placeholder="1000">
+                                    <input type="number" class="form-control" name="Karaoke.Quota.FreeAutoTime" placeholder="1000">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="EngineJingleInterval" class="col-xs-4 control-label">{{i18n "ENGINEJINGLESINTERVAL"}}</label>
+                                <label for="Karaoke.JinglesInterval" class="col-xs-4 control-label">{{i18n "ENGINEJINGLESINTERVAL"}}</label>
                                 <div class="col-xs-6">
-                                    <input type="number" class="form-control" name="EngineJinglesInterval" placeholder="20">
+                                    <input type="number" class="form-control" name="Karaoke.JinglesInterval" placeholder="20">
                                 </div>
                             </div>
                         </div>
@@ -625,34 +625,34 @@
                         <div id="nav-karaokePublicMode">
                             <div id="freeUpvotesSettings" class="well well-sm settingsGroupPanel">
                                 <div class="form-group">
-                                    <label class="col-xs-4 control-label" for="EngineFreeUpvotesRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
+                                    <label class="col-xs-4 control-label" for="Karaoke.Quota.FreeUpVoteRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
                                     <div class="col-xs-6">
-                                        <input class="form-control" type="number" name="EngineFreeUpvotesRequiredMin">
+                                        <input class="form-control" type="number" name="Karaoke.Quota.FreeUpVoteRequiredMin">
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="EngineFreeUpvotesRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
+                                    <label for="Karaoke.Quota.FreeUpVoteRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
                                     <div class="col-xs-6">
-                                        <input class="form-control" type="number" name="EngineFreeUpvotesRequiredPercent">
+                                        <input class="form-control" type="number" name="Karaoke.Quota.FreeUpVoteRequiredPercent">
                                     </div>
                                 </div>
                             </div>   
                             <div id="songPollSettings" class="well well-sm settingsGroupPanel">
                                 <div class="form-group">
-                                    <label class="col-xs-4 control-label" for="EngineSongPollChoices">{{i18n "ENGINESONGPOLLCHOICES"}}</label>
+                                    <label class="col-xs-4 control-label" for="Karaoke.Poll.Choices">{{i18n "ENGINESONGPOLLCHOICES"}}</label>
                                     <div class="col-xs-6">
-                                        <input class="form-control" type="number" name="EngineSongPollChoices">
+                                        <input class="form-control" type="number" name="Karaoke.Poll.Choices">
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="EngineSongPollTimeout" class="col-xs-4 control-label">{{i18n "ENGINESONGPOLLTIMEOUT"}}</label>
+                                    <label for="Karaoke.Poll.Timeout" class="col-xs-4 control-label">{{i18n "ENGINESONGPOLLTIMEOUT"}}</label>
                                     <div class="col-xs-6">
-                                        <input class="form-control" type="number" name="EngineSongPollTimeout">
+                                        <input class="form-control" type="number" name="Karaoke.Poll.Timeout">
                                     </div>
                                 </div>
                             </div>    
                         </div>
-                        <input name="appFirstRun" class="hideInput hidden">
+                        <input name="App.FirstRun" class="hideInput hidden">
                     </div>
                 </div>            
             </form>

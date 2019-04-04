@@ -233,7 +233,7 @@ var settingsNotUpdated;
 			login('admin', query.admpwd).done(() => {
 				if(!welcomeScreen) {
 					startIntro('admin');
-					var privateMode = $('input[name="EnginePrivateMode"]');
+					var privateMode = $('input[name="Karaoke.Private"]');
 					privateMode.val(1);
 					setSettings(privateMode);
 				} else {
@@ -344,7 +344,7 @@ var settingsNotUpdated;
 		$('.playlist-main').on('click','li.karaSuggestion', function() {
 			var search = $('#searchPlaylist1').val();
 			displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
-				var adress = 'mailto:' + settings.karaSuggestionMail;
+				var adress = 'mailto:' + settings.App.karaSuggestionMail;
 				var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
 				var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
 				setTimeout(function() {
@@ -1050,7 +1050,7 @@ var settingsNotUpdated;
 			if(settings) {
 				displayModal('custom', i18n.__('PROFILE_CONVERT'),
 					'<label>' + i18n.__('INSTANCE_NAME') + '</label>'
-                    + '<input type="text"  name="modalLoginServ" value="' + settings.OnlineHost + '"//>'
+                    + '<input type="text"  name="modalLoginServ" value="' + settings.Online.Host + '"//>'
                     + '<label>' + i18n.__('PROFILE_PASSWORD_AGAIN') + '</label>'
                     + '<input type="password" placeholder="' + i18n.__('PASSWORD') + '" class="form-control" name="password">', function(data){
 
@@ -1724,9 +1724,9 @@ var settingsNotUpdated;
 			if(playlistList[1] && (playlistList[1].flag_current || playlistList[1].flag_public)) shiftCount++;
 
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -5, 'name': 'Favs', 'flag_favorites' : true });
-			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist'] == 1});
-			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias'] == 1});
-			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] == 1});
+			if (scope === 'admin' || settings['Frontend.Permissions.AllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['Frontend.Permissions.AllowViewWhitelist'] == 1});
+			if (scope === 'admin' || settings['Frontend.Permissions.AllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['Frontend.Permissions.AllowViewBlacklistCriterias'] == 1});
+			if (scope === 'admin' || settings['Frontend.Permissions.AllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['Frontend.Permissions.AllowViewBlacklist'] == 1});
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'karacount' : kmStats.karas });
 
 			// for public interface only
@@ -1952,10 +1952,10 @@ var settingsNotUpdated;
 				}
 			}
 			if (data.onTop != oldState.onTop) {
-				$('input[name="PlayerStayOnTop"]').bootstrapSwitch('state', data.onTop, true);
+				$('input[name="Player.StayOnTop"]').bootstrapSwitch('state', data.onTop, true);
 			}
 			if (data.fullscreen != oldState.fullscreen) {
-				$('input[name="PlayerFullscreen"]').bootstrapSwitch('state', data.fullscreen, true);
+				$('input[name="Player.FullScreen"]').bootstrapSwitch('state', data.fullscreen, true);
 			}
 			if (data.volume != oldState.volume) {
 				var val = data.volume, base = 100, pow = .76;
@@ -2151,7 +2151,7 @@ var settingsNotUpdated;
 
 	checkOnlineStats = function(settings) {
 
-		if(settings.OnlineStats == -1) {
+		if(settings.Online.Stats == -1) {
 			if($('#onlineStatsModal').length < 1) {
 				var top =		'<div class="modal modalPage fade" id="onlineStatsModal" role="dialog">'+
 				'    <div class="modal-dialog modal-md">'+
@@ -2211,7 +2211,7 @@ var settingsNotUpdated;
 				$('body').append($(top + content + bottom));
 
 				$('#onlineStatsModal .onlineStatsBtn').click((e) => {
-					settings.OnlineStats = '' + $(e.target).attr('value');
+					settings.Online.Stats = '' + $(e.target).attr('value');
 					ajx('PUT', 'admin/settings', settings, function(data) {
 						$('#onlineStatsModal').modal('hide');
 					});
@@ -2256,7 +2256,7 @@ var settingsNotUpdated;
 		if(show) {
 			$pollModal.modal('show');
 		}
-		if(!timer) timer = settings.EngineSongPollTimeout*1000;
+		if(!timer) timer = settings.Karaoke.Poll.Timeout*1000;
 		$timer.finish().width('100%').animate({ width : '0%' }, timer, 'linear');
 
 	};
@@ -2365,12 +2365,12 @@ var settingsNotUpdated;
 		if(settingsUpdating) {
 			settingsUpdating.done( function() {
 
-				if(scope === 'public' && settings.EngineSongPoll) {
+				if(scope === 'public' && settings.Karaoke.Poll.Enabled) {
 					ajx('GET', 'public/songpoll', {}, function(data) {
 						$('.showPoll').toggleClass('hidden');
 					});
 				}
-				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
+				settingsNotUpdated = ['Player.StayOnTop', 'Player.FullScreen'];
 				playlistsUpdating = refreshPlaylistSelects();
 				playlistsUpdating.done(function () {
 					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
@@ -2548,13 +2548,13 @@ var settingsNotUpdated;
     * Init bootstrapSwitchs
     */
 	initSwitchs = function () {
-		$('input[switch="onoff"],[name="EnginePrivateMode"],[name="kara_panel"],[name="lyrics"],#settings input[type="checkbox"]').bootstrapSwitch('destroy', true);
+		$('input[switch="onoff"],[name="Karaoke.Private"],[name="kara_panel"],[name="lyrics"],#settings input[type="checkbox"]').bootstrapSwitch('destroy', true);
 
 		$('input[switch="onoff"]').bootstrapSwitch({
 			wrapperClass: 'btn btn-default',
 			'data-size': 'normal'
 		});
-		$('[name="EnginePrivateMode"],[name="kara_panel"],[name="lyrics"]').bootstrapSwitch({
+		$('[name="Karaoke.Private"],[name="kara_panel"],[name="lyrics"]').bootstrapSwitch({
 			'wrapperClass': 'btn',
 			'data-size': 'large',
 			'labelWidth': '15',
@@ -2586,7 +2586,7 @@ var settingsNotUpdated;
 				}
 			});
 
-			$('#settings input[type="checkbox"], input[name="EnginePrivateMode"]').on('switchChange.bootstrapSwitch', function () {
+			$('#settings input[type="checkbox"], input[name="Karaoke.Private"]').on('switchChange.bootstrapSwitch', function () {
 				setSettings($(this));
 			});
 
@@ -2606,7 +2606,7 @@ var settingsNotUpdated;
 				type: 'PUT',
 				data: { command: val }
 			});
-		});
+		}); 
 	};
 
 	login = function(username, password) {
@@ -2617,7 +2617,7 @@ var settingsNotUpdated;
 		if(!username) {
 			url = 'auth/login/guest';
 			data = { fingerprint : password };
-		} else if(scope === 'admin' && appFirstRun === 1 && username !== 'admin') {
+		} else if(scope === 'admin' && appFirstRun && username !== 'admin') {
 		    url = 'admin/users/login';
 		}
 
@@ -2746,11 +2746,11 @@ var settingsNotUpdated;
 	};
 
 	manageOnlineUsersUI = function(data) {
-		$('[name="modalLoginServ"]').val(data['OnlineUsers'] ? data['OnlineHost'] : '');
+		$('[name="modalLoginServ"]').val(data.Online.Users ? data.Online.Host : '');
 		DEBUG && console.log(logInfos);
 
-		settingsUpdating.done(function () {
-			if(!settings.OnlineUsers || !data.OnlineUsers || logInfos.onlineToken || logInfos.role == 'guest') {
+        settingsUpdating.done(function () {
+			if(!settings.Online.Users || !data.Online.Users || logInfos.onlineToken || logInfos.role == 'guest') {
 				$('.profileConvert').hide();
 			} else {
 				$('.profileConvert').show();
@@ -2758,9 +2758,9 @@ var settingsNotUpdated;
 			if(logInfos.onlineToken) {
 				$('.profileDelete').show();
 			} else {
-				$('.profileDelete').hide();
+			    $('.profileDelete').hide();
 			}
-			if(!data.OnlineUsers && (Object.keys(settings).length == 0 || settings.OnlineUsers) && logInfos.username.includes('@')) {
+			if(!data.Online.Users && (Object.keys(settings).length == 0 || settings.Online.Users) && logInfos.username.includes('@')) {
 				setTimeout(function() {
 					displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
 				}, 500);

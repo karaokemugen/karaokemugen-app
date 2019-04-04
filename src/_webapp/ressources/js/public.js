@@ -104,12 +104,13 @@ panel1Default = -1;
 
 getPublicSettings = function() {
 	var promise = $.Deferred();
-	$.ajax({ url: 'public/settings' }).done(function (data) {
-		if(typeof settings.WebappMode !=="undefined" && data.WebappMode !== settings.WebappMode) {	// webapp mode changed, reload app and all
+	$.ajax({ url: 'public/settings' }).done(function (configAndVersiondata) {
+        settings = configAndVersiondata.config;
+		if(typeof settings.Frontend.Mode !=="undefined" && data.Frontend.Mode !== settings.Frontend.Mode) {	// webapp mode changed, reload app and all
 			window.location.reload();
 		}
 
-        playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
+        playlistToAdd = data.Karaoke.Private == 1 ? 'current' : 'public';
         
         manageOnlineUsersUI(data);
 
@@ -129,8 +130,8 @@ getPublicSettings = function() {
         // Init with player infos, set the playlist's id where users can add their karas
 		settings = data;
 			
-		$('#version').text(settings['VersionName'] + ' ' + settings['VersionNo']);
-		$('#mode').text(settings['private'] == '1' ? 'Privé' : 'Public');
+		$('#version').text(configAndVersiondata.version.name + ' ' + configAndVersiondata.version.number);
+		$('#mode').text(configAndVersiondata['Karaoke.Private'] == '1' ? 'Privé' : 'Public');
 	}); 
 	return promise.promise();
 };

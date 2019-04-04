@@ -11,6 +11,8 @@ import {exit, initEngine} from './_services/engine';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
+import { setState, getState } from './_utils/state';
+
 
 process.on('uncaughtException', function (exception) {
 	console.log('Uncaught exception:', exception);
@@ -45,28 +47,33 @@ if (process.platform === 'win32' ) {
 
 let appPath;
 process.pkg ? appPath = join(process.execPath,'../') : appPath = join(__dirname,'../');
+setState({appPath: appPath});
 
 process.env['NODE_ENV'] = 'production'; // Default
 
 main()
 	.catch(err => {
 		logger.error(`[Launcher] Error during launch : ${err}`);
+		console.log(err);
 		exit(1);
 	});
 
 async function main() {
 	const argv = parseArgs();
-	let config = await initConfig(appPath, argv);
+	setState({os: process.platform});
+	let config = await initConfig(argv);
+	const state = getState();
 	console.log(chalk.blue(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
-	console.log(`Version ${chalk.bold.green(config.VersionNo)} (${chalk.bold.green(config.VersionName)})`);
+	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
 	console.log('================================================================');
 	await parseCommandLineArgs(argv);
 	config = getConfig();
 	logger.debug(`[Launcher] SysPath : ${appPath}`);
-	logger.debug(`[Launcher] Locale : ${config.EngineDefaultLocale}`);
-	logger.debug(`[Launcher] OS : ${config.os}`);
+	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
+	logger.debug(`[Launcher] OS : ${state.os}`);
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, 2));
+	logger.debug('[Launcher] Initial state : ' + JSON.stringify(state, null, 2));
 
 	// Checking binaries paths.
 	await configureBinaries(config);
@@ -81,29 +88,29 @@ async function main() {
 	// See https://github.com/zeit/pkg/issues/420
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-	logger.debug('[Launcher] Copying input.conf to ' + resolve(appPath, config.PathTemp));
+	logger.debug('[Launcher] Copying input.conf to ' + resolve(appPath, config.System.Path.Temp));
 	let fileBuffer = readFileSync(join(__dirname, '/_player/assets/input.conf'));
-	const tempInput = resolve(appPath, config.PathTemp, 'input.conf');
+	const tempInput = resolve(appPath, config.System.Path.Temp, 'input.conf');
 	if (await asyncExists(tempInput)) await asyncUnlink(tempInput);
 	writeFileSync(tempInput, fileBuffer);
 
-	logger.debug('[Launcher] Copying default background to ' + resolve(appPath, config.PathTemp));
-	fileBuffer = readFileSync(join(__dirname, `/_player/assets/${config.VersionImage}`));
-	const tempBackground = resolve(appPath, config.PathTemp, 'default.jpg');
+	logger.debug('[Launcher] Copying default background to ' + resolve(appPath, config.System.Path.Temp));
+	fileBuffer = readFileSync(join(__dirname, `/_player/assets/${state.version.image}`));
+	const tempBackground = resolve(appPath, config.System.Path.Temp, 'default.jpg');
 	if (await asyncExists(tempBackground)) await asyncUnlink(tempBackground);
 	writeFileSync(tempBackground, fileBuffer);
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
-	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.PathAvatars));
+	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.System.Path.Avatars));
 	fileBuffer = readFileSync(join(__dirname, '/_webapp/ressources/img/blank.png'));
-	const tempAvatar = resolve(appPath, config.PathAvatars, 'blank.png');
+	const tempAvatar = resolve(appPath, config.System.Path.Avatars, 'blank.png');
 	if (await asyncExists(tempAvatar)) await asyncUnlink(tempAvatar);
 	writeFileSync(tempAvatar, fileBuffer);
 
 	/**
 	 * Test if network ports are available
 	 */
-	verifyOpenPort(config.appFrontendPort);
+	verifyOpenPort(config.Frontend.Port);
 
 	/**
 	 * Gentlemen, start your engines.
@@ -134,7 +141,7 @@ function parseArgs() {
  */
 async function checkPaths(config) {
 
-	const appPath = config.appPath;
+	const appPath = getState().appPath;
 
 	// If no karaoke is found, copy the samples directory if it exists
 	try {
@@ -155,21 +162,21 @@ async function checkPaths(config) {
 		}
 	}
 	// Emptying temp directory
-	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
+	if (await asyncExists(resolve(appPath, config.System.Path.Temp))) await asyncRemove(resolve(appPath, config.System.Path.Temp));
 	// Checking paths
 	let checks = [];
-	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.PathSeries.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.PathMedias.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.PathJingles.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.PathBackgrounds.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	checks.push(asyncCheckOrMkdir(appPath, config.PathDB));
-	checks.push(asyncCheckOrMkdir(appPath, config.PathBin));
-	checks.push(asyncCheckOrMkdir(appPath, config.PathTemp));
-	checks.push(asyncCheckOrMkdir(appPath, config.PathPreviews));
-	checks.push(asyncCheckOrMkdir(appPath, config.PathImport));
-	checks.push(asyncCheckOrMkdir(appPath, config.PathAvatars));
+	config.System.Path.Karas.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.System.Path.Series.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.System.Path.Lyrics.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.System.Path.Medias.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.System.Path.Jingles.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.System.Path.Backgrounds.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Avatars));
+	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Bin));
+	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.DB));
+	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Import));
+	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Temp));
+	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Previews));
 
 	await Promise.all(checks);
 	logger.debug('[Launcher] Directory checks complete');
