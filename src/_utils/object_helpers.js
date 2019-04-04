@@ -1,5 +1,5 @@
 import transform from 'lodash.transform';
-import isEqual from 'lodash.isEqual';
+import isEqual from 'lodash.isequal';
 
 // Function to extract differences between objects. First argument is the new object, second is the defaults.
 export function difference(object, base) {
