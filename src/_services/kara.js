@@ -123,20 +123,21 @@ export async function deleteKara(kid) {
 	const PathsKaras = conf.PathKaras.split('|');
 
 	try {
-		await asyncUnlink(await resolveFileInDirs(kara.mediafile, PathsMedias));
+		await asyncUnlink(await resolveFileInDirs(kara.mediafile, PathsMedias)).catch(function(){ /* Fail silently */});
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing mediafile ${kara.mediafile} failed : ${err}`);
 	}
 	try {
-		await asyncUnlink(await resolveFileInDirs(kara.karafile, PathsKaras));
+		await asyncUnlink(await resolveFileInDirs(kara.karafile, PathsKaras)).catch(function(){ /* Fail silently */});
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing karafile ${kara.karafile} failed : ${err}`);
 	}
 	if (kara.subfile !== 'dummy.ass') try {
-		await asyncUnlink(await resolveFileInDirs(kara.subfile, PathsSubs));
+		await asyncUnlink(await resolveFileInDirs(kara.subfile, PathsSubs)).catch(function(){ /* Fail silently */});
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
 	}
+
 	compareKarasChecksum({silent: true});
 
 	// Remove kara from database
