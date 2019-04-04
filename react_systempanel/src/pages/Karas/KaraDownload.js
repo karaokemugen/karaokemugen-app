@@ -15,9 +15,11 @@ class KaraDownload extends Component {
 		this.state = {
 			karas_local: [],
 			karas_online: [],
+			karas_online_count: 0,
 			karas_queue: [],
 			kara: {},
-			currentPage: localStorage.getItem('karaDownloadPage') || 1,
+			currentPage: parseInt(localStorage.getItem('karaDownloadPage')) || 1,
+			currentPageSize: parseInt(localStorage.getItem('karaDownloadPageSize')) || 100,
 			filter: localStorage.getItem('karaDownloadFilter') || ''
 		};
 
@@ -29,11 +31,6 @@ class KaraDownload extends Component {
 		this.api_read_kara_queue();
 		setInterval(this.api_get_local_karas.bind(this),2000);
 		setInterval(this.api_read_kara_queue.bind(this),1000);
-	}
-
-	changePage(page) {
-		this.setState({currentPage: page});
-		localStorage.setItem('karaDownloadPage',page);
 	}
 
 	changeFilter(event) {
@@ -61,30 +58,28 @@ class KaraDownload extends Component {
 
 	api_get_online_karas() {
 		this.props.loading(true);
-		if(this.state.filter!='')
-		{
-			got(
-				`https://kara.moe/api/karas?filter=${this.state.filter}`,
-				{ json : true }
-			).then(res => {
-					let karas = res.body.content;
-					karas = karas.map((kara) => { 
-						kara.name = kara.subfile.replace('.ass', '')
-						return kara;
-					})
-					this.props.loading(false);
-					this.setState({karas_online: karas});
-				})
-				.catch(err => {
-					//this.props.loading(false);
-					//this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-				});
-		}
-		else
-		{
+		var p = Math.max(0,this.state.currentPage - 1);
+		var psz = this.state.currentPageSize;
+		var pfrom = p*psz;
+		got(
+			`https://kara.moe/api/karas?filter=${this.state.filter}&from=${pfrom}&size=${psz}`,
+			{ json : true }
+		).then(res => {
+			let karas = res.body.content;
+			karas = karas.map((kara) => { 
+				kara.name = kara.subfile.replace('.ass', '')
+				return kara;
+			})
 			this.props.loading(false);
-			this.setState({karas_online: []});
-		}
+			this.setState({
+				karas_online: karas,
+				karas_online_count: res.body.infos.count || 0,
+			});
+		})
+		.catch(err => {
+			//this.props.loading(false);
+			//this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+		});
 	}
 
 	async api_read_kara_queue() {
@@ -95,6 +90,16 @@ class KaraDownload extends Component {
 			console.log('Error KaraDownload.js in api_read_kara_queue');
 			throw e;
 		}
+	}
+
+	handleTableChange = (pagination, filters, sorter) => {
+		this.setState({
+			currentPage: pagination.current,
+			currentPageSize: pagination.pageSize,
+		});
+		localStorage.setItem('karaDownloadPage',pagination.current);
+		localStorage.setItem('karaDownloadPageSize',pagination.pageSize);
+		setTimeout(this.api_get_online_karas.bind(this),10);
 	}
 
 	render() {
@@ -112,23 +117,23 @@ class KaraDownload extends Component {
 					</Layout.Header>
 					<Layout.Content>
 						<Table
+							onChange={this.handleTableChange}
 							dataSource={this.state.karas_online}
 							columns={this.columns}
 							rowKey='kid'
 							pagination={{
-								current: this.state.currentPage,
-								defaultPageSize: 100,
-								pageSize: 100,
+								current: this.state.currentPage || 0,
+								defaultPageSize: this.state.currentPageSize,
+								pageSize: this.state.currentPageSize,
 								pageSizeOptions: ['10','25','50','100','500'],
 								showTotal: (total, range) => {
 									const to = range[1];
 									const from = range[0];
 									return `Showing ${from}-${to} of ${total} songs`;
 								},
-								total: this.state.karas_online.length,
+								total: this.state.karas_online_count,
 								showSizeChanger: true,
 								showQuickJumper: true,
-								onChange: page => this.changePage(page)
 							}}
 						/>
 					</Layout.Content>
@@ -149,9 +154,9 @@ class KaraDownload extends Component {
 		dataIndex: 'languages',
 		key: 'languages',
 		render: languages => {
-			const ret = languages.map(e => {
+			const ret = languages ? languages.map(e => {
 				return e.name;
-			});
+			}) : [];
 			return ret.join(', ').toUpperCase();
 		}
 	}, {
@@ -159,9 +164,9 @@ class KaraDownload extends Component {
 		dataIndex: 'serie',
 		key: 'serie',
 		render: (serie, record) => {
-			const singers = record.singers.map(e => {
+			const singers = record.singers ? record.singers.map(e => {
 				return e.name;
-			});
+			}) : [];
 			return serie || singers.join(', ');
 		}
 	}, {
@@ -169,9 +174,9 @@ class KaraDownload extends Component {
 		dataIndex: 'songtype',
 		key: 'songtype',
 		render: (songtypes, record) => {
-			const types = songtypes.map(e => {
+			const types = songtypes ? songtypes.map(e => {
 				return e.name;
-			});
+			}) : [];
 			const songorder = record.songorder || '';
 			return types.join(', ').replace('TYPE_','') + ' ' + songorder || '';
 		}
