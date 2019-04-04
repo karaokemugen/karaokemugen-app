@@ -1,18 +1,8 @@
 const assert = require('assert');
 const supertest = require('supertest');
 const request = supertest('http://localhost:1337');
-const fs = require('fs');
-const ini = require('ini');
-const extend = require('extend');
 
-var SETTINGS = ini.parse(fs.readFileSync('config.sample.ini', 'utf-8'));
-if(fs.existsSync('config.ini')) {
-	// et surcharge via le contenu du fichier personnalisé si présent
-	var configCustom = ini.parse(fs.readFileSync('config.ini', 'utf-8'));
-	extend(true,SETTINGS,configCustom);
-
-}
-
+var SETTINGS;
 const usernameAdmin = 'adminTest';
 const passwordAdmin = 'ceciestuntest';
 let token;
@@ -1138,7 +1128,7 @@ describe('Main', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response =>{
-				assert.strictEqual(response.body.data.appPath, undefined);
+				assert.strictEqual(response.body.data.config.FirstRun, true);
 			});
 	});
 
@@ -1165,7 +1155,7 @@ describe('Main', function() {
 
 	it('Update settings', function() {
 		var data = SETTINGS;
-		data.data.EngineAllowViewWhitelist = 0;
+		data.data.Frontend = { Permissions: {AllowViewWhitelist: false }};
 		return request
 			.put('/api/admin/settings')
 			.set('Accept', 'application/json')
