@@ -489,10 +489,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
             $('#settings').promise().then(function () {
                 var settingsArray = {};
-                var numberArray = $('#settings [type="number"]').map(function () {
+                  var numberArray = $('#settings [type="number"], #settings [type="range"]').map(function () {
                     return { name: this.name, value: this.value && !isNaN(this.value) ? parseInt(this.value) : 0 };
                 }).get();
-                var formArray = numberArray.concat($('#settings [type!="number"][type!="checkbox"]').serializeArray())
+                var formArray = numberArray.concat($('#settings [type!="number"][type!="checkbox"][type!="range"]').serializeArray())
                     .concat($('#settings input[type=checkbox]')
                         .map(function () {
                             return { name: this.name, value: this.checked ? true : false };
