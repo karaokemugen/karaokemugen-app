@@ -232,8 +232,7 @@ export async function createKaraInDB(kara) {
 		updateSeries(kara)
 	]);
 
-	dbRefreshViews();
-
+	refreshAll();
 }
 
 export async function editKaraInDB(kara) {
@@ -243,7 +242,7 @@ export async function editKaraInDB(kara) {
 		updateKara(kara)
 	]);
 
-	dbRefreshViews();
+	refreshAll();
 }
 
 /**
