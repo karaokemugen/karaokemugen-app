@@ -30,3 +30,4 @@ mpv.log
 react_systempanel/node_modules
 react_systempanel/coverage
 react_systempanel/build
+react_client
