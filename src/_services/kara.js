@@ -58,6 +58,7 @@ export function translateKaraInfo(karas, lang) {
 	// Put it into an array first
 	if (!Array.isArray(karas)) karas = [karas];
 	karas.forEach((kara,index) => {
+		kara.languages = kara.languages || [];
 		if (kara.languages.length > 0) {
 			let languages = [];
 			let langdata;
@@ -111,7 +112,7 @@ export async function deleteKara(kid) {
 				await deleteSerie(kara.sid[i]);
 			} catch(e) {
 				logger.error(`[Kara] Unable to remove all series from a karaoke : ${e}`);
-				throw e;
+				//throw e;
 			}
 		}
 	}
