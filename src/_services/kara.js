@@ -107,9 +107,9 @@ export async function deleteKara(kid) {
 	// If kara_ids contains only one entry, it means the series won't have any more kara attached to it, so it's safe to remove it.
 	const karas = await selectAllKaras('admin', null, null, 'search', `s:${kara.sid}`, null, null, true);
 	if (karas.length <= 1 && kara.sid.length > 0) {
-		for(let i=0; i<kara.sid.length; i++) {
+		for(const sid of kara.sid) {
 			try {
-				await deleteSerie(kara.sid[i]);
+				await deleteSerie(sid);
 			} catch(e) {
 				logger.error(`[Kara] Unable to remove all series from a karaoke : ${e}`);
 				//throw e;
