@@ -4,8 +4,12 @@ import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFil
 import logger from 'winston';
 import {ASSToLyrics} from '../_utils/ass';
 import {now} from '../_utils/date';
+import {refreshTags, refreshKaraTags} from '../_dao/tag';
+import {refreshSeries, refreshKaraSeries} from '../_dao/series';
 import { refreshAll, compareKarasChecksum } from '../_dao/database';
 import {selectAllKaras,
+	refreshYears,
+	refreshKaras,
 	getYears as getYearsDB,
 	getKara as getKaraDB,
 	getKaraMini as getKaraMiniDB,
@@ -139,7 +143,7 @@ export async function deleteKara(kid) {
 }
 
 var delayedDbRefreshTimeout = null;
-export async function delayedDbRefreshViews(ttl=100) {
+export async function delayedDbf(ttl=100) {
 	clearTimeout(delayedDbRefreshTimeout)
 	delayedDbRefreshTimeout = setTimeout(refreshAll,ttl);
 }
@@ -231,8 +235,14 @@ export async function createKaraInDB(kara) {
 		updateTags(kara),
 		updateSeries(kara)
 	]);
-
-	refreshAll();
+	await Promise.all([
+		refreshKaraSeries(),
+		refreshKaraTags()
+	]);
+	await refreshKaras();
+	refreshSeries();
+	refreshYears();
+	refreshTags();
 }
 
 export async function editKaraInDB(kara) {
@@ -241,8 +251,14 @@ export async function editKaraInDB(kara) {
 		updateSeries(kara),
 		updateKara(kara)
 	]);
-
-	refreshAll();
+	await Promise.all([
+		refreshKaraSeries(),
+		refreshKaraTags()
+	]);
+	await refreshKaras();
+	refreshSeries();
+	refreshYears();
+	refreshTags();
 }
 
 /**
