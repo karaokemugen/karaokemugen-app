@@ -8,6 +8,7 @@ import logger from 'winston';
 import prettyBytes from 'pretty-bytes';
 import { asyncWriteFile } from '../_utils/files';
 import {resolve} from 'path';
+import cloneDeep from 'lodash.clonedeep';
 
 let intervalID;
 
@@ -61,7 +62,7 @@ async function buildPayload() {
 }
 
 async function buildInstanceStats() {
-	const conf = getConfig();
+	const conf = cloneDeep(getConfig());
 	const state = getState();
 	delete conf.App.JwtSecret;
 	const [cpu, mem, gfx, os, disks] = await Promise.all([
