@@ -366,7 +366,13 @@ export async function play(mediadata) {
 		if (mediaFile.endsWith('.mp3')) {
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
 			// Courtesy of @nah :)
-			if (conf.Player.VisualizationEffects) options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
+			if (conf.Player.VisualizationEffects) {
+				if (mediadata.avatar) {
+					options.push(`lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl];movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[ovrl][logo]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 8},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
+				} else {
+					options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
+				}
+			}
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
 				const defaultImageFile = resolve(getState().appPath,conf.System.Path.Temp,'default.jpg');
