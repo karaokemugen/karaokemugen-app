@@ -104,7 +104,7 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 			SELECT pc.fk_kid
 			FROM playlist_content pc
 			WHERE pc.fk_id_playlist = ${getState().modePlaylistID}
-		)`
+		)`;
 	}
 	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
 	const params = {

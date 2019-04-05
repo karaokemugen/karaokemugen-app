@@ -9,6 +9,7 @@ import {emitWS} from '../_webapp/frontend';
 import {on} from '../_utils/pubsub';
 import {setState, getState} from '../_utils/state';
 import {profile} from '../_utils/logger';
+import {resolve} from 'path';
 
 //DAO
 import {
@@ -1031,6 +1032,10 @@ export async function getCurrentSong() {
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.nickname = kara.nickname.replace(/[\{\}]/g,'');
 		requester = `${__('REQUESTED_BY')} ${kara.nickname}`;
+		// Get user avatar
+		const user = await findUserByName(kara.username);
+		const state = getState();
+		kara.avatar = resolve(state.appPath, conf.System.Path.Avatars, user.avatar_file);
 	} else {
 		requester = '';
 	}

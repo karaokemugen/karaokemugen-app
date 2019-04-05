@@ -24,7 +24,8 @@ async function getPlayingSong(now) {
 				media: kara.mediafile,
 				subfile: kara.subfile,
 				gain: kara.gain,
-				infos: kara.infos
+				infos: kara.infos,
+				avatar: kara.avatar
 			});
 			setState({currentlyPlayingKara: kara.kid});
 			addPlayedKara(kara.kid);
