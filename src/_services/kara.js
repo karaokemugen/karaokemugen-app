@@ -1,7 +1,6 @@
 import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
-import logger from 'winston';
 import {ASSToLyrics} from '../_utils/ass';
 import {refreshKaras, refreshYears} from '../_dao/kara';
 import {refreshKaraSeries, refreshSeries} from '../_dao/series';

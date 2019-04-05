@@ -17,9 +17,9 @@ export async function killPG() {
 	shutdownInProgress = true;
 	const state = getState();
 	const conf = getConfig();
-	const pgDataDir = resolve(resolve(getState().appPath, conf.System.Path.DB, 'postgres'));
-	return await execa(resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl), ['-D', pgDataDir, '-w', 'stop'], {
-		cwd: resolve(state.appPath, state.binPath.postgres)
+	const pgDataDir = resolve(getState().appPath, conf.System.Path.DB, 'postgres');
+	return await execa(resolve(state.binPath.postgres, state.binPath.postgres_ctl), ['-D', pgDataDir, '-w', 'stop'], {
+		cwd: state.binPath.postgres
 	});
 }
 

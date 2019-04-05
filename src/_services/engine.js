@@ -1,5 +1,5 @@
 //Utils
-import {setConfig, getConfig} from '../_utils/config';
+import {getConfig} from '../_utils/config';
 import {profile} from '../_utils/logger';
 import readlineSync from 'readline-sync';
 import logger from 'winston';
@@ -97,7 +97,7 @@ export async function exit(rc) {
 	try {
 		if (await checkPG()) {
 			try {
-				await killPG;
+				await killPG();
 				logger.info('[Engine] PostgreSQL has shutdown');
 				mataNe(rc);
 			} catch(err) {
@@ -105,6 +105,7 @@ export async function exit(rc) {
 				mataNe(rc);
 			}
 		} else {
+			console.log('PG not running')
 			mataNe(rc);
 		}
 	} catch(err) {

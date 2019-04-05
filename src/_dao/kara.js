@@ -1,6 +1,5 @@
 import {expand, flatten, buildTypeClauses, langSelector, buildClauses, db, transaction} from './database';
 import {getConfig} from '../_utils/config';
-import {resolve} from 'path';
 import {asyncExists, asyncReadFile, resolveFileInDirs} from '../_utils/files';
 import { getState } from '../_utils/state';
 import {pg as yesql} from 'yesql';
