@@ -105,7 +105,6 @@ export async function exit(rc) {
 				mataNe(rc);
 			}
 		} else {
-			console.log('PG not running')
 			mataNe(rc);
 		}
 	} catch(err) {
