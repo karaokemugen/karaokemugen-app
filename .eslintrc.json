@@ -22,10 +22,6 @@
             "error",
             "tab"
         ],
-        "linebreak-style": [
-            "error",
-            "linux"
-        ],
         "quotes": [
             "error",
             "single"
