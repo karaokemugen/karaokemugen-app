@@ -238,7 +238,7 @@ async function migrateDB() {
 	try {
 		await dbm.sync('all');
 	} catch(err) {
-		throw `[DB] Migrations failed : ${err}`;
+		throw `Migrations failed : ${err}`;
 	}
 }
 
@@ -259,6 +259,7 @@ export async function initDBSystem() {
 	const conf = getConfig();
 	const state = getState();
 	if (state.opt.generateDB) doGenerate = true;
+	// Only for bundled postgres binary :
 	// First login as super user to make sure user, database and extensions are created
 	try {
 		if (conf.Database.prod.bundledPostgresBinary) {
@@ -289,23 +290,18 @@ export async function initDBSystem() {
 		await generateDatabase();
 	} catch(err) {
 		logger.error(`[DB] Generation failed : ${err}`);
-		if (state.opt.generateDB) await exit(1);
 	}
-	if (state.opt.generateDB) {
-		await exit(0);
-	} else {
-		await importFromSQLite();
-		logger.debug( '[DB] Database Interface is READY');
-		const stats = await getStats();
-		logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
-		logger.info(`Series       : ${stats.series}`);
-		logger.info(`Languages    : ${stats.languages}`);
-		logger.info(`Artists      : ${stats.singers} singers, ${stats.songwriters} songwriters, ${stats.creators} creators`);
-		logger.info(`Kara Authors : ${stats.authors}`);
-		logger.info(`Playlists    : ${stats.playlists}`);
-		logger.info(`Songs played : ${stats.played}`);
-		return true;
-	}
+	await importFromSQLite();
+	logger.debug( '[DB] Database Interface is READY');
+	const stats = await getStats();
+	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
+	logger.info(`Series       : ${stats.series}`);
+	logger.info(`Languages    : ${stats.languages}`);
+	logger.info(`Artists      : ${stats.singers} singers, ${stats.songwriters} songwriters, ${stats.creators} creators`);
+	logger.info(`Kara Authors : ${stats.authors}`);
+	logger.info(`Playlists    : ${stats.playlists}`);
+	logger.info(`Songs played : ${stats.played}`);
+	return true;
 }
 
 export async function resetUserData() {
@@ -325,7 +321,7 @@ async function generateDatabase() {
 		logger.info('[DB] Database generation completed successfully!');
 		if (state.opt.generateDB) await exit(0);
 	} catch(err) {
-		logger.error('[DB] Database generation completed with errors!');
+		logger.error(`[DB] Database generation completed with errors : ${err}`);
 		if (state.opt.generateDB) await exit(1);
 	}
 	return true;
@@ -340,7 +336,7 @@ export function buildTypeClauses(mode, value) {
 			const type = c.split(/:(.+)/)[0];
 			let values;
 			if (type === 's') {
-    			values = c.split(/:(.+)/)[1].split(',').map((v) => `'%${v}%'`);
+    			values = c.split(/:(.+)/)[1].split(',').map(v => `'%${v}%'`);
     			search = `${search} AND sid::varchar LIKE ${values}`;
 			} else {
     			values = c.split(/:(.+)/)[1];
