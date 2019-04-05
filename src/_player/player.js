@@ -368,9 +368,9 @@ export async function play(mediadata) {
 			// Courtesy of @nah :)
 			if (conf.Player.VisualizationEffects) {
 				if (mediadata.avatar) {
-					options.push(`lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl];movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[ovrl][logo]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 8},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
+					options.push(`lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt=axis=0[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl];movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[logo][ovrl]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 7},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
 				} else {
-					options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
+					options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt=axis=0[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
 				}
 			}
 			const id3tags = await getID3(mediaFile);
@@ -384,7 +384,7 @@ export async function play(mediadata) {
 		} else {
 			// If video, display avatar if it's defined.
 			// Again, lavfi-complex expert @nah comes to the rescue!
-			if (mediadata.avatar) options.push(`lavfi-complex=movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 8},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
+			if (mediadata.avatar) options.push(`lavfi-complex=movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 7},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
 		}
 		let loads = [player.load(mediaFile,'replace', options)];
 		if (monitorEnabled) loads.push(playerMonitor.load(mediaFile,'replace', options));
