@@ -369,7 +369,7 @@ export async function play(mediadata) {
 			if (conf.Player.VisualizationEffects) options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
-				const defaultImageFile = resolve(state.appPath,conf.System.Path.Temp,'default.jpg');
+				const defaultImageFile = resolve(getState().appPath,conf.System.Path.Temp,'default.jpg');
 				options.push(`external-file=${defaultImageFile.replace(/\\/g,'/')}`);
 				options.push('force-window=yes');
 				options.push('image-display-duration=inf');

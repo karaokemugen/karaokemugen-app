@@ -1939,7 +1939,6 @@ export function APIControllerAdmin(router) {
 					await sendCommand(req.body.command,req.body.options);
 					res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
 				} catch(err) {
-					logger.error(err);
 					res.status(500).json(errMessage('COMMAND_SEND_ERROR',err));
 				}
 			} else {
