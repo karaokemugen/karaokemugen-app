@@ -1727,9 +1727,9 @@ var settingsNotUpdated;
 			if(playlistList[1] && (playlistList[1].flag_current || playlistList[1].flag_public)) shiftCount++;
 
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -5, 'name': 'Favs', 'flag_favorites' : true });
-			if (scope === 'admin' || settings['Frontend.Permissions.AllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['Frontend.Permissions.AllowViewWhitelist'] == 1});
-			if (scope === 'admin' || settings['Frontend.Permissions.AllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['Frontend.Permissions.AllowViewBlacklistCriterias'] == 1});
-			if (scope === 'admin' || settings['Frontend.Permissions.AllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['Frontend.Permissions.AllowViewBlacklist'] == 1});
+			if (scope === 'admin' || settings.Frontend.Permissions.AllowViewWhitelist)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['Frontend.Permissions.AllowViewWhitelist'] == 1});
+			if (scope === 'admin' || settings.Frontend.Permissions.AllowViewBlacklistCriterias)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['Frontend.Permissions.AllowViewBlacklistCriterias'] == 1});
+			if (scope === 'admin' || settings.Frontend.Permissions.AllowViewBlacklist)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['Frontend.Permissions.AllowViewBlacklist'] == 1});
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'karacount' : kmStats.karas });
 
 			// for public interface only
