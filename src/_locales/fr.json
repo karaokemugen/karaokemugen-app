@@ -230,6 +230,7 @@
 	"ENGINEALLOWDUPLICATES": "Permettre les doublons dans les playlists",
 	"ENGINECREATEPREVIEWS": "Activer la génération des aperçus vidéo",
 	"ENGINEDISPLAYNICKNAME": "Afficher les pseudos",
+    "ENGINEDISPLAYAVATAR": "Afficher les avatars",
 	"WEBAPPMODE": "Mode de l'interface publique",
 	"WEBAPPMODE_CLOSED": "Fermé",
 	"WEBAPPMODE_LIMITED": "Chanson en cours et playlists uniquement",
