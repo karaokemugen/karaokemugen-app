@@ -2640,7 +2640,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			//Get list of blacklist criterias IF the settings allow public to see it
+			//Get list of blacklist criterias IF the settings allow public to see it			);
 			if (getConfig().Frontend.Permissions.AllowViewBlacklistCriterias) {
 				try {
 					const blc = await getBlacklistCriterias();
