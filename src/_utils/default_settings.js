@@ -53,6 +53,7 @@ export const defaults = {
 		Repeat: false,
 		SmartInsert: false,
 		Display: {
+			Avatar: true,
 			Nickname: true,
 			ConnectionInfo: {
 				Enabled: true,
@@ -167,6 +168,7 @@ export const configConstraints = {
 	'Karaoke.Quota.FreeUpVoteRequiredPercent': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1, lowerThanOrEqualTo: 100}},
 	'Karaoke.Quota.Songs': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Karaoke.Quota.Time': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
+	'Karaoke.Display.Avatar': {inclusion : bools},
 	'Karaoke.Display.Nickname': {inclusion : bools},
 	'Karaoke.Display.ConnectionInfo.Enabled': {inclusion : bools},
 	'Karaoke.Display.ConnectionInfo.QRCode': {inclusion : bools},
