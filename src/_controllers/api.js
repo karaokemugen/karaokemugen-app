@@ -465,7 +465,7 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const karas = await getFavorites(req.params.username,req.body.filter,req.lang,+req.body.from || 0,req.body.size || 99999999);
+				const karas = await getFavorites(req.params.username,req.query.filter,req.lang,+req.query.from || 0,req.query.size || 99999999);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1529,7 +1529,7 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const karas = await getWhitelistContents(req.body.filter,req.lang,+req.body.from || 0,req.body.size || 99999999);
+				const karas = await getWhitelistContents(req.query.filter,req.lang,+req.query.from || 0,req.query.size || 99999999);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1679,7 +1679,7 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const karas = await getBlacklist(req.body.filter,req.lang,+req.body.from || 0, +req.body.size || 99999999);
+				const karas = await getBlacklist(req.query.filter,req.lang,+req.query.from || 0, +req.query.size || 99999999);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -2241,7 +2241,7 @@ export function APIControllerPublic(router) {
 			// Get playlist contents, only if visible
 			//Access :pl_id by req.params.pl_id
 			try {
-				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang,+req.body.from || 0,+req.body.size || 9999999);
+				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang,+req.query.from || 0,+req.query.size || 9999999);
 				if (!playlist) res.statusCode = 404;
 				res.json(OKMessage(playlist));
 			} catch(err) {
