@@ -1463,9 +1463,12 @@ var settingsNotUpdated;
 					// creating filler space for dyanmic scrolling
 					var fillerTopH = Math.min(response.infos.from * 34, container.height()/1.5);
 					var fillerBottomH = Math.min((count - response.infos.from - pageSize) * 34, container.height()/1.5);
-
-					var fillerTop = '<li class="list-group-item filler" style="height:' + fillerTopH + 'px"><div class="loader"><div></div></div></li>';
-					var fillerBottom = '<li class="list-group-item filler" style="height:' + fillerBottomH + 'px"><div class="loader"><div></div></div></li>';
+                    var fillerBottomMargin = (scope !== 'admin' && idPlaylist == playlistToAddId) ? 80 : 0;
+					var fillerTop = '<li class="list-group-item filler" style="height:' + fillerTopH + 'px;"><div class="loader"><div></div></div></li>';
+                    var fillerBottom = '<li class="list-group-item filler"'
+                                    +   'style="height:' + fillerBottomH + 'px;'
+                                    +   'margin-bottom:' + fillerBottomMargin + 'px;">'
+                                    +   '<div class="loader"><div></div></div></li>';
 
 					htmlContent =	fillerTop
 								+	htmlContent
