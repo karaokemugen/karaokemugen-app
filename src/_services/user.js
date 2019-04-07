@@ -23,7 +23,7 @@ import { fetchAndAddFavorites } from '../_services/favorites';
 import {encode, decode} from 'jwt-simple';
 
 const db = require('../_dao/user');
-let userLoginTimes = new Map;
+let userLoginTimes = new Map();
 let databaseBusy = false;
 
 on('databaseBusy', status => {

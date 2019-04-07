@@ -22,7 +22,7 @@ function generateAdminPassword() {
 export async function welcomeToYoukousoKaraokeMugen(port) {
 	const conf = getConfig();
 	const state = getState();
-    if (conf.App.FirstRun) {
+	if (conf.App.FirstRun) {
 		const adminPassword = generateAdminPassword();
 		if (!state.isDemo && !state.isTest) open(`http://localhost:${port}/welcome?admpwd=${adminPassword}`);
 		console.log(`\nAdmin password is : ${adminPassword}\nPlease keep it in a safe place, it will not be displayed ever again.\nTo reset admin password, set appFirstRun to true in config.yml\n`);

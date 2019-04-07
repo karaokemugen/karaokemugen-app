@@ -26,7 +26,7 @@ export async function addUpvote(plc_id,username) {
 			code: 'UPVOTE_DONE'
 		};
 		if (!getConfig().Karaoke.Quota.FreeUpvotes) return ret;
-		tryToFreeKara(plc_id, upvotes, plc.username, getState().modePlaylistID);
+		tryToFreeKara(plc_id, plc.upvotes, plc.username, getState().modePlaylistID);
 		return ret;
 	} catch(err) {
 		if (!err.code) err.code = 'UPVOTE_FAILED';

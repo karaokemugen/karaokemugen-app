@@ -16,8 +16,8 @@ export function difference(object, base) {
 // Function to clear empty objects inside of an object.
 export function clearEmpties(o) {
 	for (var k in o) {
-	  	if (!o[k] || typeof o[k] !== "object") {
-			continue // If null or not an object, skip to the next iteration
+	  	if (!o[k] || typeof o[k] !== 'object') {
+			continue; // If null or not an object, skip to the next iteration
 	  	}
 		  // The property is an object
 	  	clearEmpties(o[k]); // <-- Make a recursive call on the nested object

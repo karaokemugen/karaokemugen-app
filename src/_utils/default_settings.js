@@ -133,7 +133,7 @@ export const defaults = {
 			DB: 'app/db'
 		}
 	}
-}
+};
 
 const horizontalPosArray = ['Left', 'Right', 'Center'];
 const verticalPosArray = ['Top', 'Bottom', 'Center'];
