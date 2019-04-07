@@ -7,7 +7,7 @@ import {now} from '../_utils/date';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
-import {imageFileRegexp, defaultGuestNames} from '../_services/constants';
+import {imageFileTypes, defaultGuestNames} from '../_services/constants';
 import randomstring from 'randomstring';
 import {on} from '../_utils/pubsub';
 import {getSongCountForUser, getSongTimeSpentForUser} from '../_dao/kara';
@@ -268,7 +268,7 @@ async function replaceAvatar(oldImageFile,avatar) {
 	try {
 		const conf = getConfig();
 		const fileType = await detectFileType(avatar.path);
-		if (!new RegExp(imageFileRegexp).test(fileType)) throw 'Wrong avatar file type';
+		if (imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
 		// Construct the name of the new avatar file with its ID and filetype.
 		const newAvatarFile = `${uuidV4()}.${fileType}`;
 		const newAvatarPath = resolve(getState().appPath,conf.System.Path.Avatars, newAvatarFile);

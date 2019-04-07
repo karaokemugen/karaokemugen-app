@@ -5,9 +5,8 @@
 /** Regexps for validation. */
 export const uuidRegexp = '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
 export const mediaFileRegexp = '^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg|ogg|m4a|mp3)$';
-export const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
 export const subFileRegexp = '^.+\\.ass$';
-
+export const imageFileTypes = ['jpg', 'jpeg', 'png', 'gif']
 
 export const defaultGuestNames = [
 	'Jean-Michel Normal',
