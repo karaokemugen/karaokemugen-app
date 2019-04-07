@@ -146,6 +146,8 @@
 	"TAG_SEGACD_SHORT": "SCD",
 	"TAG_WII": "Nintendo Wii",
 	"TAG_WII_SHORT": "WII",
+	"TAG_WIIU": "Nintendo Wii U",
+	"TAG_WIIU_SHORT": "NWU",
 	"TAG_SWITCH": "Nintendo Switch",
 	"TAG_SWITCH_SHORT": "SWI",
 	"TAG_SATURN": "Sega Saturn",

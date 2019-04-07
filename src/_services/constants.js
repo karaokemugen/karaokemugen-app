@@ -281,6 +281,7 @@ export const tags = [
 	'VN',
 	'VOCALOID',
 	'WII',
+	'WIIU',
 	'YAOI',
 	'YURI',
 	'XBOX360',
