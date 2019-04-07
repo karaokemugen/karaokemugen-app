@@ -1,6 +1,6 @@
 import logger from 'winston';
 import {resolvedPathBackgrounds, getConfig} from '../_utils/config';
-import {resolve} from 'path';
+import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../_utils/files';
 import sample from 'lodash.sample';
 import sizeOf from 'image-size';
@@ -15,6 +15,7 @@ import {endPoll} from '../_services/poll';
 import {getState, setState} from '../_utils/state';
 import execa from 'execa';
 import semver from 'semver';
+import { imageFileTypes } from '../_services/constants';
 
 const sleep = promisify(setTimeout);
 
@@ -51,7 +52,8 @@ async function extractAllBackgroundFiles() {
 	for (const resolvedPath of resolvedPathBackgrounds()) {
 		backgroundFiles = backgroundFiles.concat(await extractBackgroundFiles(resolvedPath));
 	}
-	return backgroundFiles;
+	// Return only files which have an extension included in the imageFileTypes array
+	return backgroundFiles.filter(f => imageFileTypes.includes(extname(f).substring(1)));
 }
 
 async function extractBackgroundFiles(backgroundDir) {
