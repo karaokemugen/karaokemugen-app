@@ -153,7 +153,9 @@ export async function initFrontend() {
 		});
 	});
 	routerWelcome.get('/', (req, res) => {
+		const config = getConfig();
 		res.render('welcome', {
+			'appFirstRun'	:	config.App.FirstRun,
 			'catchphrases'	:	sample(initializationCatchphrases),
 			'clientAdress'	:	`http://${address()}`,
 			'query'			:	JSON.stringify(req.query),
