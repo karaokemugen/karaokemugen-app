@@ -85,7 +85,6 @@ export default function authController(router) {
 		} else {
 			try {
 				const guest = await findFingerprint(req.body.fingerprint);
-				console.log(guest);
 				if (guest) {
 					const token = await checkLogin(guest, req.body.fingerprint);
 					updateUserFingerprint(guest, req.body.fingerprint);
