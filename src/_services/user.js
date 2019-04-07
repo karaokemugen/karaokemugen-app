@@ -268,7 +268,7 @@ async function replaceAvatar(oldImageFile,avatar) {
 	try {
 		const conf = getConfig();
 		const fileType = await detectFileType(avatar.path);
-		if (imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
+		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
 		// Construct the name of the new avatar file with its ID and filetype.
 		const newAvatarFile = `${uuidV4()}.${fileType}`;
 		const newAvatarPath = resolve(getState().appPath,conf.System.Path.Avatars, newAvatarFile);
