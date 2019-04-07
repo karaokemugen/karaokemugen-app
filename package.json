@@ -49,7 +49,8 @@
     "Lua <deformer.lua@gmail.com>",
     "mirukyu <A13x7950@gmail.com>",
     "Kmeuh <clemalbo@cegetel.net> (@Kmeuh)",
-    "Bibah <thebibah14@gmail.com> (@TheBibah14)"
+    "Bibah <thebibah14@gmail.com> (@TheBibah14)",
+    "Rinchama (@Rinchama)"
   ],
   "engines": {
     "node": ">=10.9.0 <11.0.0"
