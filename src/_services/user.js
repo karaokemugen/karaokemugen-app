@@ -322,8 +322,10 @@ export async function findFingerprint(fingerprint) {
 	// If fingerprint is present we return the login name of that user
 	// If not we find a new guest account to assign to the user.
 	let guest = await db.findFingerprint(fingerprint);
+	logger.debug(guest);
 	if (guest) return guest.pk_login;
 	guest = await db.getRandomGuest();
+	logger.debug(guest);
 	if (!guest) return false;
 	await db.updateUserPassword(guest.pk_login, hashPassword(fingerprint));
 	return guest.pk_login;
