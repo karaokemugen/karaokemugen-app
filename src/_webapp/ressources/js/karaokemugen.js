@@ -229,7 +229,7 @@ var settingsNotUpdated;
 			$('#wlcm_disconnect').hide();
 		}
 
-		if(query.admpwd && scope === 'admin' && appFirstRun) { // app first run admin
+		if(query.admpwd && scope === 'admin' && typeof appFirstRun != "undefined" && appFirstRun) { // app first run admin
 			login('admin', query.admpwd).done(() => {
 				if(!welcomeScreen) {
 					startIntro('admin');
@@ -2620,7 +2620,7 @@ var settingsNotUpdated;
 		if(!username) {
 			url = 'auth/login/guest';
 			data = { fingerprint : password };
-		} else if(scope === 'admin' && appFirstRun && username !== 'admin') {
+		} else if(scope === 'admin' && typeof appFirstRun != "undefined" && appFirstRun && username !== 'admin') {
 		    url = 'admin/users/login';
 		}
 
