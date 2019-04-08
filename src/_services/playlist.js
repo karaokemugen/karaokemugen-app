@@ -1060,7 +1060,7 @@ export async function getCurrentSong() {
 
 export async function buildDummyPlaylist() {
 	const stats = await getStats();
-	const state = await getState();
+	const state = getState();
 	let karaCount = stats.karas;
 	// Limiting to 5 sample karas to add if there's more.
 	if (karaCount > 5) karaCount = 5;
