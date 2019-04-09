@@ -9,6 +9,7 @@ import logger from 'winston';
 import {asyncMove} from '../_utils/files';
 import { integrateSeriesFile } from '../_dao/seriesfile';
 import { integrateKaraFile } from '../_dao/karafile';
+import {getState} from '../_utils/state';
 
 const queueOptions = {
 	id: 'uuid',
@@ -65,22 +66,23 @@ export async function startDownloads() {
 
 async function processDownload(download) {
 	const conf = getConfig();
+	const state = getState();
 	await setDownloadStatus(download.uuid, 'DL_RUNNING');
 	let list = [];
-	const localMedia = resolve(conf.appPath,conf.PathMedias.split('|')[0],download.urls.media.local);
-	const localLyrics = resolve(conf.appPath,conf.PathSubs.split('|')[0],download.urls.lyrics.local);
-	const localKara = resolve(conf.appPath,conf.PathKaras.split('|')[0],download.urls.kara.local);
-	const localSeriesPath = resolve(conf.appPath,conf.PathSeries.split('|')[0]);
+	const localMedia = resolve(state.appPath,conf.System.Path.Medias[0],download.urls.media.local);
+	const localLyrics = resolve(state.appPath,conf.System.Path.Lyrics[0],download.urls.lyrics.local);
+	const localKara = resolve(state.appPath,conf.System.Path.Karas[0],download.urls.kara.local);
+	const localSeriesPath = resolve(state.appPath,conf.System.Path.Series[0]);
 
 	let bundle = {
 		kara: localKara,
 		series: []
 	};
 
-	const tempMedia = resolve(conf.appPath,conf.PathTemp,download.urls.media.local);
-	const tempLyrics = resolve(conf.appPath,conf.PathTemp,download.urls.lyrics.local);
-	const tempKara = resolve(conf.appPath,conf.PathTemp,download.urls.kara.local);
-	const tempSeriesPath = resolve(conf.appPath,conf.PathTemp);
+	const tempMedia = resolve(state.appPath,conf.System.Path.Temp,download.urls.media.local);
+	const tempLyrics = resolve(state.appPath,conf.System.Path.Temp,download.urls.lyrics.local);
+	const tempKara = resolve(state.appPath,conf.System.Path.Temp,download.urls.kara.local);
+	const tempSeriesPath = resolve(state.appPath,conf.System.Path.Temp);
 	list.push({
 		filename: tempMedia,
 		url: download.urls.media.remote,

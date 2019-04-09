@@ -4,7 +4,7 @@
 
 import logger from 'winston';
 import {basename, extname, resolve} from 'path';
-import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias,} from '../_utils/config';
+import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias} from '../_utils/config';
 import {sanitizeFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, replaceExt} from '../_utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, writeKara
