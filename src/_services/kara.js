@@ -29,6 +29,8 @@ import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 import { getOrAddSerieID, deleteSerie } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../_utils/files';
+import {getConfig} from '../_utils/config';
+import logger from 'winston';
 
 export async function isAllKaras(karas) {
 	// Returns an array of unknown karaokes
@@ -111,22 +113,19 @@ export async function deleteKara(kid) {
 
 	// Remove files
 	const conf = getConfig();
-	const PathsMedias = conf.PathMedias.split('|');
-	const PathsSubs = conf.PathSubs.split('|');
-	const PathsKaras = conf.PathKaras.split('|');
 
 	try {
-		await asyncUnlink(await resolveFileInDirs(kara.mediafile, PathsMedias)).catch(function(){ /* Fail silently */});
+		await asyncUnlink(await resolveFileInDirs(kara.mediafile, conf.System.Path.Medias)).catch(function(){ /* Fail silently */});
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing mediafile ${kara.mediafile} failed : ${err}`);
 	}
 	try {
-		await asyncUnlink(await resolveFileInDirs(kara.karafile, PathsKaras)).catch(function(){ /* Fail silently */});
+		await asyncUnlink(await resolveFileInDirs(kara.karafile, conf.System.Path.Karas)).catch(function(){ /* Fail silently */});
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing karafile ${kara.karafile} failed : ${err}`);
 	}
 	if (kara.subfile !== 'dummy.ass') try {
-		await asyncUnlink(await resolveFileInDirs(kara.subfile, PathsSubs)).catch(function(){ /* Fail silently */});
+		await asyncUnlink(await resolveFileInDirs(kara.subfile, conf.System.Path.Lyrics)).catch(function(){ /* Fail silently */});
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
 	}
