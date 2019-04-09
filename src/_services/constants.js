@@ -151,7 +151,8 @@ export const defaultGuestNames = [
 	'Truck-kun',
 	'Ore no Uta wo kike!',
 	'BUT IT WAS ME, DIO!',
-	'One Song Man'
+	'One Song Man',
+	'Raphtalia > Holo'
 ];
 
 export const initializationCatchphrases = [
