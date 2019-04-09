@@ -5,12 +5,37 @@ import {Input, Layout, Button, Table} from 'antd';
 
 import {loading, infoMessage, errorMessage} from '../actions/navigation';
 
+// Transforms object to dot notation
+// Transforms dot notation to object and value
+
 class Config extends Component {
 
+	dotify = obj => {
+		//Code from the package node-dotify
+		let res = {};
+		function recurse(obj, current) {
+			for (var key in obj) {
+				let value = obj[key];
+				let newKey = (current ? current + '.' + key : key);  // joined key with dot
+				if (value && typeof value === 'object') {
+				  	recurse(value, newKey);  // it's a nested object, so do it again
+				} else {
+				  	res[newKey] = value;  // it's not an object, so set the property
+				}
+			}
+		}
+		recurse(obj);
+		return res;
+	}
+
+	expand = (str, val) => {
+		return str.split('.').reduceRight((acc, currentValue) => {
+			return { [currentValue]: acc }
+		}, val)
+	}
 	saveSetting(record, value) {
 		axios.put('/api/system/config', {
-			setting: record.key,
-			value: value
+			setting: this.expand(record.key, value)
 		})
 			.then(() => this.settingSaved(record.key, value))
 			.catch((err) => this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`));
@@ -55,7 +80,9 @@ class Config extends Component {
 			.catch(err => this.props.errorMsg('Unable to fetch configuration ' + err));
 	}
 
-	configKeyValue = (data) => Object.entries(data).map(([k,v]) => ({key: k, value: v}));
+	configKeyValue = data => {
+		return Object.entries(this.dotify(data)).map(([k,v]) => ({key: k, value: v}));
+	}
 
 	configBackup() {
 		this.props.loading(true);

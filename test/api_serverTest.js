@@ -1,18 +1,8 @@
 const assert = require('assert');
 const supertest = require('supertest');
-const request = supertest('http://localhost:1337');
-const fs = require('fs');
-const ini = require('ini');
-const extend = require('extend');
-
-var SETTINGS = ini.parse(fs.readFileSync('config.sample.ini', 'utf-8'));
-if(fs.existsSync('config.ini')) {
-	// et surcharge via le contenu du fichier personnalisé si présent
-	var configCustom = ini.parse(fs.readFileSync('config.ini', 'utf-8'));
-	extend(true,SETTINGS,configCustom);
-
-}
-
+let port = 1337;
+let SETTINGS;
+const request = supertest(`http://localhost:${port}`);
 const usernameAdmin = 'adminTest';
 const passwordAdmin = 'ceciestuntest';
 let token;
@@ -34,7 +24,6 @@ describe('Auth', function() {
 				assert.notStrictEqual(response.body.role, 'user');
 			});
 	});
-
 	it('Login / Sign in (as guest) Error 500', function() {
 		var data = {
 			fingerprint: '999'
@@ -44,11 +33,9 @@ describe('Auth', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(500)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.response.body.code, 'NO_MORE_GUESTS_AVAILABLE');
-				assert.strictEqual(err.response.body.message, null);
+			.then(response => {
+				assert.strictEqual(response.body.code, 'NO_MORE_GUESTS_AVAILABLE');
+				assert.strictEqual(response.body.message, null);
 			});
 	});
 
@@ -78,10 +65,8 @@ describe('Auth', function() {
 			.post('/api/auth/login')
 			.set('Accept', 'application/json')
 			.send(data)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.status, 401);
+			.then(response => {
+				assert.strictEqual(response.status, 401);
 			  });
 	});
 });
@@ -422,11 +407,9 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.response.body.code,'PL_ADD_SONG_ERROR');
-				assert.strictEqual(err.response.body.message,'No karaoke could be added,'+
+			.then(response => {
+				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
+				assert.strictEqual(response.body.message,'No karaoke could be added,'+
 				' all are in destination playlist already (PLID : '+playlist+')');
 			});
 	});
@@ -443,11 +426,9 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.response.body.code,'PL_ADD_SONG_ERROR');
-				assert.strictEqual(err.response.body.message,'One of the karaokes does not exist');
+			.then(response => {
+				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
+				assert.strictEqual(response.body.message,'One of the karaokes does not exist');
 			});
 	});
 
@@ -463,10 +444,8 @@ describe('Playlists', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.response.body.code,'PL_ADD_SONG_ERROR');
+			.then(response => {
+				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
 			});
 	});
 
@@ -591,11 +570,9 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(500)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.response.body.code,'PL_DELETE_ERROR');
-				assert.strictEqual(err.response.body.message,'Playlist '+new_playlist_current_id+' is current. Unable to delete it. Make another playlist current first.');
+			.then(response => {
+				assert.strictEqual(response.body.code,'PL_DELETE_ERROR');
+				assert.strictEqual(response.body.message,'Playlist '+new_playlist_current_id+' is current. Unable to delete it. Make another playlist current first.');
 			});
 	});
 
@@ -606,11 +583,9 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.response.body.code,'PL_DELETE_ERROR');
-				assert.strictEqual(err.response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it. Make another playlist public first.');
+			.then(response => {
+				assert.strictEqual(response.body.code,'PL_DELETE_ERROR');
+				assert.strictEqual(response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it. Make another playlist public first.');
 			});
 	});
 
@@ -684,10 +659,8 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(500)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.response.body.code,'PL_IMPORT_ERROR');
+			.then(response => {
+				assert.strictEqual(response.body.code,'PL_IMPORT_ERROR');
 			});
 	});
 
@@ -858,10 +831,8 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.response.body.code, 'UPVOTE_NO_SELF');
+			.then(response => {
+				assert.strictEqual(response.body.code, 'UPVOTE_NO_SELF');
 			});
 	});
 
@@ -901,10 +872,8 @@ describe('Song Poll', function() {
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.response.body.code, 'POLL_NOT_ACTIVE');
+			.then(response => {
+				assert.strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
 			});
 	});
 
@@ -919,10 +888,8 @@ describe('Song Poll', function() {
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(500)
-			.then(() => {
-				assert.fail();
-			  }, err => {
-				assert.strictEqual(err.response.body.code, 'POLL_NOT_ACTIVE');
+			.then(response => {
+				assert.strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
 			});
 	});
 
@@ -1138,7 +1105,7 @@ describe('Main', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response =>{
-				assert.strictEqual(response.body.data.appPath, undefined);
+				assert.strictEqual(response.body.data.config.Frontend.Port, port);
 			});
 	});
 
@@ -1165,7 +1132,7 @@ describe('Main', function() {
 
 	it('Update settings', function() {
 		var data = SETTINGS;
-		data.data.EngineAllowViewWhitelist = 0;
+		data.data.Frontend = { Permissions: {AllowViewWhitelist: false }};
 		return request
 			.put('/api/admin/settings')
 			.set('Accept', 'application/json')

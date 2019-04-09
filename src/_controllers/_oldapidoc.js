@@ -8306,3 +8306,198 @@
  *   "message": "PLCID unknown!"
  * }
  */
+
+/**
+ * @api {get} /admin/settings Get settings
+ * @apiName GetSettings
+ * @apiVersion 2.4.1
+ * @apiGroup Main
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "AdminPassword": "xxxx",
+ *       "BinPlayerLinux": "/usr/bin/mpv",
+ *       "BinPlayerOSX": "app/bin/mpv.app/Contents/MacOS/mpv",
+ *       "BinPlayerWindows": "app/bin/mpv.exe",
+ *       "BinffmpegLinux": "/usr/bin/ffmpeg",
+ *       "BinffmpegOSX": "app/bin/ffmpeg",
+ *       "BinffmpegPath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffmpeg.exe",
+ *       "BinffmpegWindows": "app/bin/ffmpeg.exe",
+ *       "BinffprobeLinux": "/usr/bin/ffprobe",
+ *       "BinffprobeOSX": "app/bin/ffprobe",
+ *       "BinffprobePath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffprobe.exe
+ *       "BinffprobeWindows": "app/bin/ffprobe.exe",
+ *       "BinmpvPath": "D:\\perso\\karaokemugen-app\\app\\bin\\mpv.exe",
+ *       "EngineAllowViewBlacklist": "1",
+ *       "EngineAllowViewBlacklistCriterias": "1",
+ *       "EngineAllowViewWhitelist": "1",
+ *       "EngineAutoPlay": "0",
+ *       "EngineDefaultLocale": "fr",
+ *       "EngineDisplayConnectionInfo": "1",
+ *       "EngineDisplayConnectionInfoHost": "",
+ *       "EngineDisplayConnectionInfoMessage": "",
+ *       "EngineDisplayConnectionInfoQRCode": "1",
+ *       "EngineDisplayNickname": "1",
+ * 		 "EngineFreeUpvotes": "1",
+ *       "EngineFreeUpvotesRequiredPercentage": "33",
+ *       "EngineFreeUpvotesRequiredMin": "4",
+ *       "EngineFreeAutoTime": "60",
+ *       "EngineJinglesInterval": "1",
+ *       "EnginePrivateMode": "1",
+ * 		 "EngineRemovePublicOnPlay": "1",
+ * 		 "EngineQuotaType": "1",
+ *       "EngineRepeatPlaylist": "0",
+ *       "EngineSmartInsert": "1",
+ * 		 "EngineSongPoll": "0",
+ * 		 "EngineSongPollChoices": "4",
+ * 		 "EngineSongPollTimeout": "30",
+ *       "EngineSongsPerUser": "10000",
+ * 		 "EngineTimePerUser": "10000",
+ *       "EngineCreatePreviews": "1",
+ * 		 "OnlineStats": "0",
+ *       "PathAltname": "../times/series_altnames.csv",
+ *       "PathBackgrounds": "app/backgrounds",
+ *       "PathBin": "app/bin",
+ *       "PathDB": "app/db",
+ *       "PathDBKarasFile": "karas.sqlite3",
+ *       "PathDBUserFile": "userdata.sqlite3",
+ *       "PathJingles": "app/jingles",
+ *       "PathKaras": "../times/karas",
+ *       "PathSubs": "../times/lyrics",
+ *       "PathTemp": "app/temp",
+ *       "PathMedias": "app/data/medias",
+ *       "PathMediasHTTP": "",
+ *       "PlayerBackground": "",
+ *       "PlayerFullscreen": "0",
+ *       "PlayerMonitor": "0",
+ *       "PlayerPIP": "1",
+ *       "PlayerPIPPositionX": "Left",
+ *       "PlayerPIPPositionY": "Bottom",
+ *       "PlayerPIPSize": "30",
+ *       "PlayerScreen": "0",
+ *       "PlayerStayOnTop": "1",
+ *       "VersionName": "Finé Fiévreuse",
+ *       "VersionNo": "v2.0 Release Candidate 1",
+ *       "appPath": "F:\\karaokemugen-app\\",
+ *       "isTest": false,
+ *       "mpvVideoOutput": "direct3d",
+ *       "os": "win32",
+ *       "osHost": "10.202.40.43",
+ * 		 "WebappMode": "2",
+ * 		 "WebappSongLanguageMode": "1"
+ *   }
+ * }
+ */
+
+	/**
+ * @api {get} /public/settings Get settings (public)
+ * @apiName GetSettingsPublic
+ * @apiVersion 2.2.0
+ * @apiGroup Main
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries and other internal settings.
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "EngineAllowNicknameChange": "1",
+ *       "EngineAllowViewBlacklist": "1",
+ *       "EngineAllowViewBlacklistCriterias": "1",
+ *       "EngineAllowViewWhitelist": "1",
+ *       "EngineAutoPlay": "0",
+ *       "EngineDefaultLocale": "fr",
+ *       "EngineDisplayConnectionInfo": "1",
+ *       "EngineDisplayConnectionInfoHost": "",
+ *       "EngineDisplayConnectionInfoMessage": "",
+ *       "EngineDisplayConnectionInfoQRCode": "1",
+ *       "EngineDisplayNickname": "1",
+ *       "EngineFreeAutoTime": "60",
+ * 		 "EngineFreeUpvotes": "1",
+ * 		 "EngineFreeUpvotesPercent": "33",
+ * 		 "EngineFreeUpvotesMin": "4",
+ *       "EngineJinglesInterval": "1",
+ *       "EnginePrivateMode": "1",
+ * 		 "EngineRemovePublicOnPlay": "1",
+ *       "EngineQuotaType": "1",
+ *       "EngineRepeatPlaylist": "0",
+ *       "EngineSmartInsert": "1",
+ * 		 "EngineSongPoll": "0",
+ * 		 "EngineSongPollChoices": "4",
+ * 		 "EngineSongPollTimeout": "30",
+ *       "EngineSongsPerUser": "10000",
+ *       "EngineTimePerUser": "10000",
+ *       "PlayerBackground": "",
+ *       "PlayerFullscreen": "0",
+ *       "PlayerMonitor": "0",
+ *       "PlayerPIP": "1",
+ *       "PlayerPIPPositionX": "Left",
+ *       "PlayerPIPPositionY": "Bottom",
+ *       "PlayerPIPSize": "30",
+ *       "PlayerScreen": "0",
+ *       "PlayerStayOnTop": "1",
+ *       "VersionName": "Finé Fiévreuse",
+ *       "VersionNo": "v2.0 Release Candidate 1",
+ *       "mpvVideoOutput": "direct3d",
+ * 		 "WebappMode": "2",
+ *       "WebappSongLanguageMode": "1"
+ *   }
+ * }
+ */
+
+	/**
+ * @api {put} /admin/settings Update settings
+ * @apiName PutSettings
+ * @apiVersion 2.4.1
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiGroup Main
+ * @apiDescription **Note :** All settings must be sent at once in a single request.
+ * @apiParam {Boolean} EngineAllowViewBlacklist Allow/disallow users to view blacklist contents from the guest interface
+ * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
+ * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
+ * @apiParam {Boolean} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
+ * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message)
+ * @apiParam {String} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
+ * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
+ * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
+ * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
+ * @apiParam {Number} EngineFreeAutoTime Time in minutes before a song is automatically freed.
+ * @apiParam {Boolean} EngineFreeUpvotes Enable/disable Free Songs By Upvotes feature
+ * @apiParam {Number} EngineFreeUpvotesRequiredMin Minimum number of upvotes required to free a song
+ * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
+ * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
+ * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
+ * @apiParam {Boolean} EngineRemovePublicOnPlay Enable/disable auto removal of songs in public playlist if they've just been played
+ * @apiParam {Number} EngineQuotaType Type of quota for users when adding songs. `0` = no quota, `1` = limited by number of songs, `2` = limited by total song duration.
+ * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
+ * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
+ * @apiParam {Boolean} EngineSongPoll Enable/disable public song poll
+ * @apiParam {Number} EngineSongPollChoices Number of songs the public can choose from during a public poll
+ * @apiParam {Number} EngineSongPollTimeout Poll duration in seconds
+ * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
+ * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
+ * @apiParam {Boolean} OnlineStats Enable/Disable stats upload to Karaoke Mugen Online
+ * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
+ * @apiParam {Boolean} PlayerMonitor Enable/disable player's second screen (monitor)
+ * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
+ * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen
+ * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
+ * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
+ * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
+ * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
+ * @apiParam {Number} WebappSongLanguageMode How to display series : `0` = according to the original name, `1` = according to song's language, or defaults to the `series=` metadata, `2` = according to admin's language or fallbacks to english then original, `3` = according to user language or fallbacks to english then original
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ */

@@ -7,7 +7,7 @@ import {now} from '../_utils/date';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
-import {imageFileRegexp, defaultGuestNames} from '../_services/constants';
+import {imageFileTypes, defaultGuestNames} from '../_services/constants';
 import randomstring from 'randomstring';
 import {on} from '../_utils/pubsub';
 import {getSongCountForUser, getSongTimeSpentForUser} from '../_dao/kara';
@@ -23,7 +23,7 @@ import { fetchAndAddFavorites } from '../_services/favorites';
 import {encode, decode} from 'jwt-simple';
 
 const db = require('../_dao/user');
-let userLoginTimes = new Map;
+let userLoginTimes = new Map();
 let databaseBusy = false;
 
 on('databaseBusy', status => {
@@ -60,7 +60,7 @@ async function updateExpiredUsers() {
 	// Unflag connected accounts from database if they expired
 	try {
 		if (!databaseBusy) {
-			await db.updateExpiredUsers(now(true) - (getConfig().AuthExpireTime * 60));
+			await db.updateExpiredUsers(now(true) - (getConfig().Frontend.AuthExpireTime * 60));
 			await db.resetGuestsPassword();
 		}
 	} catch(err) {
@@ -73,7 +73,7 @@ export async function fetchRemoteAvatar(instance, avatarFile) {
 	const res = await got(`https://${instance}/avatars/${avatarFile}`, {
 		stream: true
 	});
-	const avatarPath = resolve(conf.appPath, conf.PathTemp, avatarFile);
+	const avatarPath = resolve(getState().appPath, conf.System.Path.Temp, avatarFile);
 	await writeStreamToFile(res, avatarPath);
 	return avatarPath;
 }
@@ -135,13 +135,13 @@ export function createJwtToken(username, role, config) {
 	const timestamp = new Date().getTime();
 	return encode(
 		{ username, iat: timestamp, role },
-		conf.JwtSecret
+		conf.App.JwtSecret
 	);
 }
 
 export function decodeJwtToken(token, config) {
 	const conf = config || getConfig();
-	return decode(token, conf.JwtSecret);
+	return decode(token, conf.App.JwtSecret);
 }
 
 export async function convertToRemoteUser(token, password, instance) {
@@ -190,7 +190,7 @@ async function editRemoteUser(user) {
 	const conf = getConfig();
 
 	// Create the form data sent as payload to edit remote user
-	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file)), user.avatar_file);
+	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(getState().appPath, conf.System.Path.Avatars, user.avatar_file)), user.avatar_file);
 	form.append('nickname', user.nickname);
 	if (user.bio) form.append('bio', user.bio);
 	if (user.email) form.append('email', user.email);
@@ -240,9 +240,9 @@ export async function editUser(username, user, avatar, role, opts = {
 		}
 		await db.editUser(user);
 		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);
-		if (user.login.includes('@') && opts.editRemote && +getConfig().OnlineUsers) await editRemoteUser(user);
+		if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) await editRemoteUser(user);
 		// Modifying passwords is not allowed in demo mode
-		if (user.password && !getConfig().isDemo) {
+		if (user.password && !getState().isDemo) {
 			user.password = hashPassword(user.password);
 			await db.updateUserPassword(user.login,user.password);
 		}
@@ -268,11 +268,11 @@ async function replaceAvatar(oldImageFile,avatar) {
 	try {
 		const conf = getConfig();
 		const fileType = await detectFileType(avatar.path);
-		if (!new RegExp(imageFileRegexp).test(fileType)) throw 'Wrong avatar file type';
+		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
 		// Construct the name of the new avatar file with its ID and filetype.
 		const newAvatarFile = `${uuidV4()}.${fileType}`;
-		const newAvatarPath = resolve(conf.PathAvatars,newAvatarFile);
-		const oldAvatarPath = resolve(conf.PathAvatars,oldImageFile);
+		const newAvatarPath = resolve(getState().appPath,conf.System.Path.Avatars, newAvatarFile);
+		const oldAvatarPath = resolve(getState().appPath,conf.System.Path.Avatars, oldImageFile);
 		if (await asyncExists(oldAvatarPath) &&
 			oldImageFile !== 'blank.png') await asyncUnlink(oldAvatarPath);
 		await asyncMove(avatar.path,newAvatarPath);
@@ -322,8 +322,10 @@ export async function findFingerprint(fingerprint) {
 	// If fingerprint is present we return the login name of that user
 	// If not we find a new guest account to assign to the user.
 	let guest = await db.findFingerprint(fingerprint);
+	logger.debug(guest);
 	if (guest) return guest.pk_login;
 	guest = await db.getRandomGuest();
+	logger.debug(guest);
 	if (!guest) return false;
 	await db.updateUserPassword(guest.pk_login, hashPassword(fingerprint));
 	return guest.pk_login;
@@ -445,7 +447,7 @@ export async function createUser(user, opts) {
 	await newUserIntegrityChecks(user);
 	if (user.login.includes('@')) {
 		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };
-		if (!+getConfig().OnlineUsers) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
+		if (!+getConfig().Online.Users) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
 		if (opts.createRemote) await createRemoteUser(user);
 	}
 	if (user.password) user.password = hashPassword(user.password);
@@ -495,7 +497,7 @@ async function createDefaultGuests() {
 		if (!guests.find(g => g.login === guest)) guestsToCreate.push(guest);
 	}
 	let maxGuests = guestsToCreate.length;
-	if (getConfig().isTest) maxGuests = 1;
+	if (getState().isTest) maxGuests = 1;
 	logger.debug(`[User] Creating ${maxGuests} new guest accounts`);
 	for (let i = 0; i < maxGuests; i++) {
 		if (!await findUserByName(guestsToCreate[i])) await createUser({
@@ -520,10 +522,10 @@ export async function initUserSystem() {
 		}, {
 			admin: true
 		});
-		setConfig({appFirstRun: 1});
+		setConfig({ App: { FirstRun: true }});
 	}
 
-	if (getConfig().isTest) {
+	if (getState().isTest) {
 		if (!await findUserByName('adminTest')) {
 			await createUser({
 				login: 'adminTest',
@@ -548,9 +550,9 @@ async function cleanupAvatars() {
 		if (!avatars.includes(user.avatar_file)) avatars.push(user.avatar_file);
 	}
 	const conf = getConfig();
-	const avatarFiles = await asyncReadDir(resolve(conf.appPath, conf.PathAvatars));
+	const avatarFiles = await asyncReadDir(resolve(getState().appPath, conf.System.Path.Avatars));
 	for (const file of avatarFiles) {
-		if (!avatars.includes(file) && file !== 'blank.png') asyncUnlink(resolve(conf.appPath, conf.PathAvatars, file));
+		if (!avatars.includes(file) && file !== 'blank.png') asyncUnlink(resolve(getState().appPath, conf.System.Path.Avatars, file));
 	}
 	return true;
 }
@@ -560,16 +562,16 @@ export async function updateSongsLeft(username, playlist_id) {
 	const user = await findUserByName(username);
 	let quotaLeft;
 	if (!playlist_id) playlist_id = getState().modePlaylistID;
-	if (user.type >= 1 && +conf.EngineQuotaType > 0) {
-		switch(+conf.EngineQuotaType) {
+	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
+		switch(+conf.Karaoke.Quota.Type) {
 		default:
 		case 1:
 			const count = await getSongCountForUser(playlist_id, username);
-			quotaLeft = +conf.EngineSongsPerUser - count.count;
+			quotaLeft = +conf.Karaoke.Quota.Songs - count.count;
 			break;
 		case 2:
 			const time = await getSongTimeSpentForUser(playlist_id,username);
-			quotaLeft = +conf.EngineTimePerUser - time.timeSpent;
+			quotaLeft = +conf.Karaoke.Quota.Time - time.timeSpent;
 		}
 	} else {
 		quotaLeft = -1;
@@ -578,7 +580,7 @@ export async function updateSongsLeft(username, playlist_id) {
 	emitWS('quotaAvailableUpdated', {
 		username: user.login,
 		quotaLeft: quotaLeft,
-		quotaType: +conf.EngineQuotaType
+		quotaType: +conf.Karaoke.Quota.Type
 	});
 }
 
@@ -618,7 +620,7 @@ export async function checkLogin(username, password) {
 	const conf = getConfig();
 	let user = {};
 	let onlineToken;
-	if (username.includes('@') && +conf.OnlineUsers) {
+	if (username.includes('@') && +conf.Online.Users) {
 		try {
 			// If username has a @, check its instance for existence
 			// If OnlineUsers is disabled, accounts are connected with

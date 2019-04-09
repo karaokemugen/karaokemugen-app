@@ -153,7 +153,7 @@ WHERE pc.fk_login = $2
 
 export const getTimeSpentPerUser = `
 SELECT SUM(k.duration) AS timeSpent
-FROM karas AS k
+FROM kara AS k
 INNER JOIN playlist_content AS pc ON pc.fk_kid = k.pk_kid
 WHERE pc.fk_login = $2
 	AND pc.fk_id_playlist = $1

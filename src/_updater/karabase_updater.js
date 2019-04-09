@@ -1,5 +1,6 @@
 import {basename, resolve} from 'path';
 import {getConfig} from '../_utils/config';
+import {getState} from '../_utils/state';
 import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, asyncMkdirp, asyncExists, asyncRemove} from '../_utils/files';
 import decompress from 'decompress';
 import logger from 'winston';
@@ -19,7 +20,7 @@ let updateRunning = false;
 
 async function downloadBase() {
 	const conf = getConfig();
-	const dest = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
+	const dest = resolve(getState().appPath, conf.System.Path.Temp, 'archive.zip');
 	if (await asyncExists(dest)) await asyncRemove(dest);
 	logger.info('[Updater] Downloading current base (.kara and .ass files)...');
 	const list = [];
@@ -42,8 +43,8 @@ async function downloadBase() {
 
 async function decompressBase() {
 	const conf = getConfig();
-	const workPath = resolve(conf.appPath, conf.PathTemp, 'newbase');
-	const archivePath = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
+	const workPath = resolve(getState().appPath, conf.System.Path.Temp, 'newbase');
+	const archivePath = resolve(getState().appPath, conf.System.Path.Temp, 'archive.zip');
 	emitWS('downloadProgress', {
 		text: 'Decompressing .kara, .ass and .series files',
 		value: 0,
@@ -95,17 +96,15 @@ async function listRemoteMedias() {
 
 async function compareBases() {
 	const conf = getConfig();
-	const pathSubs = conf.PathSubs.split('|');
-	const pathKaras = conf.PathKaras.split('|');
-	const pathSeries = conf.PathSeries.split('|');
-	const seriesMinePath = resolve(conf.appPath, pathSeries[0]);
-	const lyricsMinePath = resolve(conf.appPath, pathSubs[0]);
-	const karasMinePath = resolve(conf.appPath, pathKaras[0]);
+	const state = getState();
+	const seriesMinePath = resolve(state.appPath, conf.System.Path.Series[0]);
+	const lyricsMinePath = resolve(state.appPath, conf.System.Path.Lyrics[0]);
+	const karasMinePath = resolve(state.appPath, conf.System.Path.Karas[0]);
 	const archive = await decompressBase();
 	const archiveWOExt = basename(archive, '.zip');
-	const karasBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt,'karas');
-	const lyricsBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'lyrics');
-	const seriesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series');
+	const karasBasePath = resolve(state.appPath, conf.System.Path.Temp, 'newbase', archiveWOExt,'karas');
+	const lyricsBasePath = resolve(state.appPath, conf.System.Path.Temp, 'newbase', archiveWOExt, 'lyrics');
+	const seriesBasePath = resolve(state.appPath, conf.System.Path.Temp, 'newbase', archiveWOExt, 'series');
 	logger.info('[Updater] Comparing your base with the current one');
 	emitWS('downloadProgress', {
 		text: 'Comparing your base with Karaoke Mugen\'s latest files',
@@ -157,18 +156,17 @@ async function compareBases() {
 			value: 100,
 			total: 100
 		});
-		asyncRemove(resolve(conf.appPath, conf.PathTemp, 'newbase'));
+		asyncRemove(resolve(state.appPath, conf.System.Path.Temp, 'newbase'));
 		return true;
 	}
 }
 
 async function compareMedias(localFiles, remoteFiles) {
 	const conf = getConfig();
-	const pathMedias = conf.PathMedias.split('|');
 	let removedFiles = [];
 	let addedFiles = [];
 	let updatedFiles = [];
-	const mediasPath = resolve(conf.appPath, pathMedias[0]);
+	const mediasPath = resolve(getState().appPath, conf.System.Path.Medias[0]);
 	logger.info('[Updater] Comparing your medias with the current ones');
 	emitWS('downloadProgress', {
 		text: 'Comparing your media files with Karaoke Mugen\'s latest files',
@@ -232,11 +230,10 @@ async function compareMedias(localFiles, remoteFiles) {
 }
 
 function downloadMedias(files, mediasPath) {
-	const conf = getConfig();
 	let list = [];
 	for (const file of files) {
 		list.push({
-			filename: resolve(conf.appPath, mediasPath, file.name),
+			filename: resolve(getState().appPath, mediasPath, file.name),
 			url: `${shelter.url}/${encodeURIComponent(file.name)}`,
 			size: file.size
 		});
@@ -261,12 +258,10 @@ function downloadMedias(files, mediasPath) {
 
 async function listLocalMedias() {
 	const conf = getConfig();
-	const mediaPaths = conf.PathMedias.split('|');
-	const mediaPath = mediaPaths[0];
-	const mediaFiles = await asyncReadDir(resolve(conf.appPath, mediaPath));
+	const mediaFiles = await asyncReadDir(resolve(getState().appPath, conf.System.Path.Medias[0]));
 	let localMedias = [];
 	for (const file of mediaFiles) {
-		const mediaStats = await asyncStat(resolve(conf.appPath, mediaPath, file));
+		const mediaStats = await asyncStat(resolve(getState().appPath, conf.System.Path.Medias[0], file));
 		localMedias.push({
 			name: file,
 			size: mediaStats.size
@@ -295,9 +290,7 @@ async function updateFiles(files, dirSource, dirDest, isNew) {
 
 async function checkDirs() {
 	const conf = getConfig();
-	const karaPaths = conf.PathKaras.split('|');
-	const karaPath = karaPaths[0];
-	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) {
+	if (await isGitRepo(resolve(getState().appPath, conf.System.Path.Karas[0], '../'))) {
 		logger.warn('[Updater] Your base folder is a git repository. We cannot update it, please run "git pull" to get updates or use your git client to do it. Media files are going to be updated though.');
 		return false;
 	}

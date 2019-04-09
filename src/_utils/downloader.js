@@ -4,7 +4,7 @@ import {basename} from 'path';
 import got from 'got';
 import prettyBytes from 'pretty-bytes';
 import {createWriteStream} from 'fs';
-import { getConfig } from './config';
+import { getState } from './state';
 import { emitWS } from '../_webapp/frontend';
 
 
@@ -87,7 +87,7 @@ export default class Downloader {
 				https: new HttpsAgent()
 			},
 			headers: {
-				'user-agent': `KaraokeMugen/${getConfig().VersionNo}`
+				'user-agent': `KaraokeMugen/${getState().version.number}`
 			}
 		};
 		let stream = createWriteStream(filename);

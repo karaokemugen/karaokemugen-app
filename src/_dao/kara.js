@@ -1,7 +1,6 @@
 import {expand, flatten, buildTypeClauses, langSelector, buildClauses, db, transaction} from './database';
 import {getConfig} from '../_utils/config';
-import {resolve} from 'path';
-import {asyncExists, asyncReadFile} from '../_utils/files';
+import {asyncExists, asyncReadFile, resolveFileInDirs} from '../_utils/files';
 import { getState } from '../_utils/state';
 import {pg as yesql} from 'yesql';
 import {profile} from '../_utils/logger';
@@ -115,11 +114,11 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 			SELECT pc.fk_kid
 			FROM playlist_content pc
 			WHERE pc.fk_id_playlist = ${getState().modePlaylistID}
-		)`
+		)`;
 	}
 	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
 	const params = {
-		dejavu_time: new Date(now() - (getConfig().EngineMaxDejaVuTime * 60 * 1000)),
+		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 		username: username,
 		...filterClauses.params
 	};
@@ -143,7 +142,7 @@ export async function getKaraMini(kid) {
 
 export async function getASS(sub) {
 	const conf = getConfig();
-	const subfile = resolve(conf.appPath,conf.PathSubs,sub);
+	const subfile = await resolveFileInDirs(sub, conf.System.Path.Lyrics);
 	if (await asyncExists(subfile)) return await asyncReadFile(subfile, 'utf-8');
 	throw 'Subfile not found';
 }

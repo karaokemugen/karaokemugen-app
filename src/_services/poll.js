@@ -23,8 +23,8 @@ on('stateUpdated', state => {
 
 export async function timerPoll() {
 	const internalDate = pollDate = new Date();
-	clock = new timer(() => {}, getConfig().EngineSongPollTimeout * 1000);
-	await sleep(getConfig().EngineSongPollTimeout * 1000);
+	clock = new timer(() => {}, getConfig().Karaoke.Poll.Timeout * 1000);
+	await sleep(getConfig().Karaoke.Poll.Timeout * 1000);
 	if (internalDate === pollDate) endPoll();
 }
 
@@ -110,7 +110,7 @@ export async function startPoll() {
 		return false;
 	}
 	const availableKaras = isAllKarasInPlaylist(pubpl, curpl);
-	let pollChoices = conf.EngineSongPollChoices;
+	let pollChoices = conf.Karaoke.Poll.Choices;
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
 	poll = sampleSize(availableKaras, pollChoices);
 	//Init votes to 0 for each poll item

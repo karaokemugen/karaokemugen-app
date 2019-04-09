@@ -32,38 +32,39 @@
         var scope = 'admin';
         var query = {{{query}}};
         var webappMode = {{webappMode}};
-        var appFirstRun = {{appFirstRun}};
+        var appFirstRun = {{appFirstRun}} == true;
         var settingsOnOffHighlight = {
             // add settings you want to highlight
         }
         var settingsOnOff = {
             'player' : 
-                { "PlayerPIP": "{{i18n "PLAYERPIP"}}"
-                , "EngineDisplayConnectionInfo": "{{i18n "ENGINEDISPLAYCONNECTIONINFO"}}"
-                , "EngineDisplayNickname": "{{i18n "ENGINEDISPLAYNICKNAME"}}"
-                , "PlayerMonitor": "{{i18n "PLAYERMONITOR"}}"
-                , "PlayerVisualizationEffects" : "{{i18n "PLAYERVISUALIZATIONEFFECTS"}}"
+                { "Player.PIP.Enabled": "{{i18n "PLAYERPIP"}}"
+                , "Karaoke.Display.ConnectionInfo.Enabled": "{{i18n "ENGINEDISPLAYCONNECTIONINFO"}}"
+                , "Karaoke.Display.Nickname": "{{i18n "ENGINEDISPLAYNICKNAME"}}"
+                , "Karaoke.Display.Avatar": "{{i18n "ENGINEDISPLAYAVATAR"}}"
+                , "Player.Monitor": "{{i18n "PLAYERMONITOR"}}"
+                , "Player.VisualizationEffects" : "{{i18n "PLAYERVISUALIZATIONEFFECTS"}}"
                 },
             'interface' :
-                { "EngineAllowViewBlacklist": "{{i18n "ENGINEALLOWVIEWBLACKLIST"}}"
-                , "EngineAllowViewBlacklistCriterias": "{{i18n "ENGINEALLOWVIEWBLACKLISTCRITERIAS"}}"
-                , "EngineAllowViewWhitelist": "{{i18n "ENGINEALLOWVIEWWHITELIST"}}"
-                , "EngineCreatePreviews": "{{i18n "ENGINECREATEPREVIEWS"}}"
+                { "Frontend.Permissions.AllowViewBlacklist": "{{i18n "ENGINEALLOWVIEWBLACKLIST"}}"
+                , "Frontend.Permissions.AllowViewBlacklistCriterias": "{{i18n "ENGINEALLOWVIEWBLACKLISTCRITERIAS"}}"
+                , "Frontend.Permissions.AllowViewWhitelist": "{{i18n "ENGINEALLOWVIEWWHITELIST"}}"
+                , "Karaoke.CreatePreviews": "{{i18n "ENGINECREATEPREVIEWS"}}"
                 },
             'karaokeAllMode' :
-                { "EngineRepeatPlaylist": "{{i18n "ENGINEREPEATPLAYLIST"}}"
-                , "EngineSmartInsert": "{{i18n "ENGINEENABLESMARTINSERT"}}"
-                , "EngineAutoPlay": "{{i18n "ENGINEAUTOPLAY"}}"
-                , "EngineAllowDuplicates": "{{i18n "ENGINEALLOWDUPLICATES"}}"
+                { "Karaoke.Repeat": "{{i18n "ENGINEREPEATPLAYLIST"}}"
+                , "Karaoke.SmartInsert": "{{i18n "ENGINEENABLESMARTINSERT"}}"
+                , "Karaoke.Autoplay": "{{i18n "ENGINEAUTOPLAY"}}"
+                , "Playlist.AllowDuplicates": "{{i18n "ENGINEALLOWDUPLICATES"}}"
                 },
             'karaokePublicMode' :
-                { "EngineSongPoll": "{{i18n "ENGINESONGPOLL"}}"
-                , "EngineFreeUpvotes": "{{i18n "ENGINEFREEUPVOTES"}}" 
+                { "Karaoke.Poll.Enabled": "{{i18n "ENGINESONGPOLL"}}"
+                , "Karaoke.Quota.FreeUpVote": "{{i18n "ENGINEFREEUPVOTES"}}" 
                 },
             'karaokeOnlineSettings' :
-                { "OnlineURL": "{{i18n "ONLINEURL"}}"
-                , "OnlineUsers": "{{i18n "ONLINEUSERS"}}"
-                , "OnlineStats": "{{i18n "ONLINESTATS"}}"
+                { "Online.URL": "{{i18n "ONLINEURL"}}"
+                , "Online.Users": "{{i18n "ONLINEUSERS"}}"
+                , "Online.Stats": "{{i18n "ONLINESTATS"}}"
                 }
             };
 
