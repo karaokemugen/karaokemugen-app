@@ -96,21 +96,31 @@ async function processDownload(download) {
 		url: download.urls.kara.remote,
 		id: download.name
 	});
-	for (const serie of download.urls.serie) {
-		list.push({
-			filename: resolve(tempSeriesPath, serie.local),
-			url: serie.remote,
-			id: download.name
-		});
-		bundle.series.push(resolve(localSeriesPath, serie.local));
+
+	for (const serie of download.urls.serie)
+	{
+		if(typeof serie.local == 'string')
+		{
+			list.push({
+				filename: resolve(tempSeriesPath, serie.local),
+				url: serie.remote,
+				id: download.name
+			});
+			bundle.series.push(resolve(localSeriesPath, serie.local));
+		}
 	}
+
 	await downloadFiles(download, list);
 	// Delete files if they're already present
 	await asyncMove(tempMedia, localMedia, {overwrite: true});
 	if (download.urls.lyrics.local !== 'dummy.ass') await asyncMove(tempLyrics, localLyrics, {overwrite: true});
 	await asyncMove(tempKara, localKara, {overwrite: true});
-	for (const seriefile of download.urls.serie) {
-		await asyncMove(resolve(tempSeriesPath, seriefile.local), resolve(localSeriesPath, seriefile.local), {overwrite: true});
+	for (const seriefile of download.urls.serie)
+	{
+		if(typeof seriefile.local == 'string')
+		{
+			await asyncMove(resolve(tempSeriesPath, seriefile.local), resolve(localSeriesPath, seriefile.local), {overwrite: true});
+		}
 	}
 	logger.info(`[Download] Finished downloading item "${download.name}"`);
 	// Now adding our newly downloaded kara
