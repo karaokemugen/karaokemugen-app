@@ -48,7 +48,6 @@ export function timeToSeconds(time) {
 
 //FormatDateString From Duration in Seconds
 export function duration(duration) {
-	console.log(duration);
 	if (typeof duration !== 'number') throw `The parameter ${duration} is supposed to be a number !`;
 	if (duration === 0) return (`0 ${__('SECOND')}`);
 	if (Math.floor(duration) !== duration || duration <= 0) throw `The parameter ${duration} is supposed to be "integer" and be superior to 0`;

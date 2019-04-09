@@ -549,7 +549,6 @@ export async function run(validateOnly) {
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
-		console.log(err);
 		throw err;
 	} finally {
 		emit('databaseBusy',false);
