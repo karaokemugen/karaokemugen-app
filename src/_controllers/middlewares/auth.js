@@ -9,7 +9,7 @@ import logger from 'winston';
 export const requireAuth = passport.authenticate('jwt', { session: false });
 
 export const updateUserLoginTime = (req, res, next) => {
-	const token = decode(req.get('authorization'), getConfig().JwtSecret);
+	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	updateLastLoginName(token.username);
 	next();
 };
@@ -18,7 +18,7 @@ export async function checkValidUser(token, onlineToken) {
 	// If user is remote, see if we have a remote token ready.
 	const user = await findUserByName(token.username);
 	if (user) {
-		if (token.username.includes('@') && +getConfig().OnlineUsers) {
+		if (token.username.includes('@') && +getConfig().Online.Users) {
 			const remoteToken = getRemoteToken(token.username);
 			if (remoteToken && remoteToken.token === onlineToken) {
 				// Remote token exists, no problem here
@@ -56,7 +56,7 @@ export const requireRegularUser = (req, res, next) => {
 };
 
 export const requireValidUser = (req, res, next) => {
-	const token = decode(req.get('authorization'), getConfig().JwtSecret);
+	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	const onlineToken = req.get('onlineAuthorization');
 	req.authToken = token;
 	checkValidUser(token, onlineToken)
@@ -70,7 +70,7 @@ export const requireValidUser = (req, res, next) => {
 };
 
 export const requireAdmin = (req, res, next) => {
-	const token = decode(req.get('authorization'), getConfig().JwtSecret);
+	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	token.role === 'admin'
 		? next()
 		: res.status(403).send('Only admin can use this function');

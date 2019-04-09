@@ -1,6 +1,5 @@
-import {setConfig} from './_utils/config';
+import {setState} from './_utils/state';
 import logger from 'winston';
-import { setState } from './_utils/state';
 
 const help = `Usage :
 
@@ -36,15 +35,16 @@ export async function parseCommandLineArgs(argv) {
 	}
 	if (argv.debug) {
 		logger.info('[Launcher] Debug messages enabled on console');
+		setState({opt: {debug: true}});
 		process.env['NODE_ENV'] = 'development';
 	}
 	if (argv.validate) {
 		logger.info('[Launcher] Validation (no generation) requested');
-		setConfig({optValidate: true});
+		setState({opt: {validate: true}});
 	}
 	if (argv.reset) {
 		logger.warn('[Launcher] USER DATA IS GOING TO BE RESET');
-		setConfig({optReset: true});
+		setState({opt: {reset: true}});
 	}
 	if (argv.version) {
 		// Version number is already displayed so we exit here.
@@ -52,37 +52,37 @@ export async function parseCommandLineArgs(argv) {
 	}
 	if (argv.profiling) {
 		logger.info('[Launcher] Profiling enabled');
-		setConfig({optProfiling: true});
+		setState({opt: {profiling: true}});
 	}
 	if (argv.generate) {
 		logger.info('[Launcher] Database generation requested');
-		setConfig({optGenerateDB: true});
+		setState({opt: {generateDB: true}});
 		if (argv.noMedia) {
 			logger.info('[Launcher] Medias will not be read during generation');
-			setConfig({optNoMedia: true});
+			setState({opt: {noMedia: true}});
 		}
 	}
 	if (argv.noBaseCheck) {
 		logger.info('[Launcher] Data files will not be checked. ENABLED AT YOUR OWN RISK');
-		setConfig({optNoBaseCheck: true});
+		setState({opt: {noBaseCheck: true}});
 	}
 	if (argv.strict) {
 		logger.info('[Launcher] Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.');
-		setConfig({optStrict: true});
+		setState({opt: {strict: true}});
 	}
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');
-		setConfig({optBaseUpdate: true});
+		setState({opt: {baseUpdate: true}});
 	}
 	if (argv.test) {
 		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');
-		setConfig({isTest: true});
+		setState({isTest: true});
 	}
 	if (argv.demo) {
 		logger.info('[Launcher] Demo mode enabled');
-		setConfig({isDemo: true});
+		setState({isDemo: true});
 	}
-	if (argv.noBrowser) setConfig({optNoBrowser: true});
+	if (argv.noBrowser) setState({opt: {noBrowser: true}});
 }
 
 

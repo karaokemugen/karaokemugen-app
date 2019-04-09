@@ -15,6 +15,7 @@ import {check} from '../_utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import {now} from '../_utils/date';
 import { compareKarasChecksum } from '../_dao/database';
+import { webOptimize } from '../_utils/ffmpeg';
 
 export async function editKara(kara, opts = {compareChecksum: true}) {
 	let newKara;
@@ -135,8 +136,8 @@ async function generateKara(kara, opts) {
 	delete kara.subfile_orig;
 	delete kara.mediafile_orig;
 	// Let's move baby.
-	await asyncMove(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
-	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncMove(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
+	await asyncCopy(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
+	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncCopy(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
 
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
@@ -181,6 +182,7 @@ function containsVideoGameSupportTag(tags) {
 			|| tags.includes('TAG_SEGACD')
 			|| tags.includes('TAG_SATURN')
 			|| tags.includes('TAG_WII')
+			|| tags.includes('TAG_WIIU')
 			|| tags.includes('TAG_DREAMCAST')
 			|| tags.includes('TAG_SWITCH')
 			|| tags.includes('TAG_XBOXONE')
@@ -212,6 +214,7 @@ function defineFilename(data) {
 		if (data.tags.includes('TAG_SEGACD')) extraTags.push('SEGACD');
 		if (data.tags.includes('TAG_SATURN')) extraTags.push('SATURN');
 		if (data.tags.includes('TAG_WII')) extraTags.push('WII');
+		if (data.tags.includes('TAG_WIIU')) extraTags.push('WIIU');
 		if (data.tags.includes('TAG_SWITCH')) extraTags.push('SWITCH');
 		if (data.tags.includes('TAG_VIDEOGAME')) extraTags.push('GAME');
 		let extraType = '';
@@ -253,7 +256,7 @@ async function importKara(mediaFile, subFile, data) {
 
 	try {
 		if (subPath !== 'dummy.ass') await extractAssInfos(subPath, karaData);
-		await extractMediaTechInfos(mediaPath, karaData);
+		await processSeries(data);
 		return await generateAndMoveFiles(mediaPath, subPath, karaData);
 	} catch(err) {
 		const error = `Error importing ${kara} : ${err}`;
@@ -320,7 +323,15 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	if (subPath && karaData.subfile !== 'dummy.ass') subDest = resolve(resolvedPathSubs()[0], karaData.subfile);
 	try {
 		// Moving media in the first media folder.
-		await asyncMove(mediaPath, mediaDest, { overwrite: karaData.overwrite });
+		if (extname(mediaDest).toLowerCase() === '.mp4') {
+			if (!karaData.overwrite && await asyncExists(mediaDest)) throw 'Media file already exists in destination folder';
+			await webOptimize(mediaPath, mediaDest);
+			await asyncUnlink(mediaPath);
+		} else {
+			await asyncMove(mediaPath, mediaDest, { overwrite: karaData.overwrite });
+		}
+		// Extracting media info here and now because we migth have had to weboptimize it earlier.
+		await extractMediaTechInfos(mediaDest, karaData);
 		// Moving subfile in the first lyrics folder.
 		if (subDest) await asyncMove(subPath, subDest, { overwrite: karaData.overwrite });
 		delete karaData.overwrite;

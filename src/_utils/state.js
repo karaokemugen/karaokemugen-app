@@ -1,6 +1,7 @@
 import {emitWS} from '../_webapp/frontend';
 import {emit} from './pubsub';
 import logger from 'winston';
+import merge from 'lodash.merge';
 
 // Internal settings
 let state = {
@@ -11,7 +12,7 @@ let state = {
 	currentlyPlayingKara: null,
 	counterToJingle: 1,
 	status: 'stop', // [stop,play,pause] // general engine status
-	private: 1, // [int(1|0)] // karaoke mode
+	private: true, //  // karaoke mode
 	fullscreen: false,
 	ontop: true,
 	playlist: null,
@@ -21,7 +22,35 @@ let state = {
 	player: {},
 	ready: false,
 	sessionStart: new Date(),
-	opt: {}
+	isDemo: false,
+	isTest: false,
+	appPath: undefined,
+	osURL: undefined,
+	os: undefined,
+	version: {
+		number: undefined,
+		name: ''
+	},
+	binPath: {
+		mpv: undefined,
+		ffmpeg: undefined,
+		postgres: undefined,
+		postgres_ctl: undefined,
+		postgres_dump: undefined,
+	},
+	opt: {
+		generateDB: false,
+		reset: false,
+		noBaseCheck: false,
+		strict: false,
+		noMedia: false,
+		baseUpdate: false,
+		noBrowser: false,
+		profiling: false,
+		sql: false,
+		validate: false,
+		debug: false
+	}
 };
 let previousState = {...state};
 
@@ -52,7 +81,7 @@ export function getState() {
 }
 
 export function setState(part) {
-	state = {...state, ...part};
+	state = merge(state, part);
 	manageMode();
 	emit('stateUpdated', state);
 	emitState();
@@ -64,8 +93,8 @@ function manageMode() {
 	state.private
 		? state.modePlaylistID = state.currentPlaylistID
 		: state.modePlaylistID = state.publicPlaylistID;
-	if (+state.private !== +previousState.private) {
-		+state.private === 1
+	if (state.private !== previousState.private) {
+		state.private
 			? logger.info('[Engine] Karaoke mode switching to private')
 			: logger.info('[Engine] Karaoke mode switching to public');
 	}

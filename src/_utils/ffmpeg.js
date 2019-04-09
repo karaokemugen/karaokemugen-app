@@ -1,11 +1,11 @@
 import execa from 'execa';
 import logger from 'winston';
 import {asyncRequired} from './files';
-import {getConfig} from './config';
+import {getState} from './state';
 import {timeToSeconds} from './date';
 
 export async function extractSubtitles(videofile, extractfile) {
-	await execa(getConfig().BinffmpegPath, ['-y', '-i', videofile, extractfile], {encoding: 'utf8'});
+	await execa(getState().binPath.ffmpeg, ['-y', '-i', videofile, extractfile], {encoding: 'utf8'});
 
 	// Verify if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything
 	return await asyncRequired(extractfile);
@@ -13,7 +13,7 @@ export async function extractSubtitles(videofile, extractfile) {
 
 export async function createPreview(videopreview) {
 	try {
-		return await execa(getConfig().BinffmpegPath, ['-y', '-i', videopreview.videofile, '-ss', '0', '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-2:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-threads', '1', '-t', '15', videopreview.previewfile], {encoding: 'utf8'});
+		return await execa(getState().binPath.ffmpeg, ['-y', '-i', videopreview.videofile, '-ss', '0', '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-2:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-threads', '1', '-t', '15', videopreview.previewfile], {encoding: 'utf8'});
 	} catch(err) {
 		logger.error(`[ffmpeg] Video ${videopreview.videofile} not generated : ${err.code} (${err.message}`);
 		logger.error(`[ffmpeg] STDOUT: ${err.stdout}`);
@@ -22,9 +22,20 @@ export async function createPreview(videopreview) {
 	}
 }
 
+export async function webOptimize(source, destination) {
+	try {
+		return await execa(getState().binPath.ffmpeg, ['-y', '-i', source, '-movflags', 'faststart', '-acodec' , 'copy', '-vcodec', 'copy', destination], {encoding: 'utf8'});
+	} catch(err) {
+		logger.error(`[ffmpeg] Video ${source} could not be faststarted : ${err.code} (${err.message}`);
+		logger.error(`[ffmpeg] STDOUT: ${err.stdout}`);
+		logger.error(`[ffmpeg] STDERR: ${err.stderr}`);
+		throw err;
+	}
+}
+
 export async function getMediaInfo(mediafile) {
 	try {
-		const result = await execa(getConfig().BinffmpegPath, ['-i', mediafile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
+		const result = await execa(getState().binPath.ffmpeg, ['-i', mediafile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 		const outputArray = result.stderr.split(' ');
 		const indexTrackGain = outputArray.indexOf('track_gain');
 		const indexDuration = outputArray.indexOf('Duration:');

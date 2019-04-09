@@ -6,10 +6,10 @@ import logger from './logger';
 import {mediaFileRegexp, imageFileRegexp} from '../_services/constants';
 import fileType from 'file-type';
 import readChunk from 'read-chunk';
-import {getConfig} from './config';
 import {createHash} from 'crypto';
 import sanitizeFilename from 'sanitize-filename';
 import deburr from 'lodash.deburr';
+import { getState } from './state';
 
 export function sanitizeFile(file) {
 	const replaceMap = {
@@ -119,7 +119,7 @@ export async function isGitRepo(dir) {
  */
 export async function resolveFileInDirs(filename, dirs) {
 	const resolvedFile = dirs
-		.map((dir) => resolve(getConfig().appPath, dir, filename))
+		.map((dir) => resolve(getState().appPath, dir, filename))
 		.find((resolvedFile) => asyncExists(resolvedFile));
 
 	if (!resolvedFile) throw `File "${filename}" not found in any listed directory: ${dirs}`;

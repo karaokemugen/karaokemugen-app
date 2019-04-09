@@ -3,7 +3,8 @@ import {basename, join} from 'path';
 import {profile} from '../_utils/logger';
 import {has as hasLang} from 'langs';
 import {asyncReadFile, checksum, asyncReadDirFilter} from '../_utils/files';
-import {getConfig, resolvedPathSeries, resolvedPathKaras} from '../_utils/config';
+import {resolvedPathSeries, resolvedPathKaras} from '../_utils/config';
+import {getState} from '../_utils/state';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {selectBLCTags, selectTags} from '../_dao/sql/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
@@ -83,9 +84,7 @@ export async function readAllKaras(karafiles, seriesMap) {
 	}
 	const karas = await parallel(karaPromises, 16);
 	// Errors are non-blocking
-	if (karas.some((kara) => {
-		return kara.error;
-	})) error = true;
+	if (karas.some(kara => kara.error)) error = true;
 	return karas.filter(kara => !kara.error);
 }
 
@@ -261,7 +260,7 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
 			// In strict mode, it triggers an error
-			if (getConfig().optStrict) strictModeError(serie[0]);
+			if (getState().opt.strict) strictModeError(serie[0]);
 			i18nData.push([
 				index,
 				uuidV4(),

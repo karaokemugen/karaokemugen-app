@@ -9,6 +9,7 @@ import {emitWS} from '../_webapp/frontend';
 import {on} from '../_utils/pubsub';
 import {setState, getState} from '../_utils/state';
 import {profile} from '../_utils/logger';
+import {resolve} from 'path';
 
 //DAO
 import {
@@ -97,13 +98,13 @@ export async function freePLCBeforePos(pos, playlist_id) {
 
 export async function isUserAllowedToAddKara(playlist_id, requester, duration) {
 	const conf = getConfig();
-	if (+conf.EngineQuotaType === 0) return true;
+	if (+conf.Karaoke.Quota.Type === 0) return true;
 	const user = await findUserByName(requester);
 	let limit;
-	switch(+conf.EngineQuotaType) {
+	switch(+conf.Karaoke.Quota.Type) {
 	default:
 	case 1:
-		limit = conf.EngineSongsPerUser;
+		limit = conf.Karaoke.Quota.Songs;
 		try {
 			const count = await getSongCountForUser(playlist_id,user.login);
 			if (count.count >= limit) {
@@ -115,7 +116,7 @@ export async function isUserAllowedToAddKara(playlist_id, requester, duration) {
 			throw err;
 		}
 	case 2:
-		limit = getConfig().EngineTimePerUser;
+		limit = conf.Karaoke.Quota.Time;
 		try {
 			const time = await getSongTimeSpentForUser(playlist_id,user.login);
 			if (!time.timeSpent) time.timeSpent = 0;
@@ -450,7 +451,7 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 			? playingObject.plc_id_pos
 			: 0;
 		const plContentsBeforePlay = plContents.filter(plc => plc.pos > playingPos);
-		if (+conf.EngineAllowDuplicates) {
+		if (conf.Playlist.AllowDuplicates) {
 			if (!pl.flag_public) {
 				plContentsBeforePlay.forEach(p => p.unique_id = `${p.kid}_${p.username}`);
 				karaList.forEach(k => k.unique_id = `${k.kid}_${user.login}`);
@@ -464,8 +465,8 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 		}
 		let removeDuplicates = false;
 		if (addByAdmin) {
-			if (+conf.EngineAllowDuplicates) {
-				// Adding duplicates is not allowed on public playlists
+			if (conf.Playlist.AllowDuplicates) {
+				// Adding duplicates is not allowed on public & favorites playlists
 				if (pl.flag_public) removeDuplicates = true;
 				// Don't remove duplicates if it's another playlist type. Admin can add a song multiple times in the current or any other playlist, even by the same user
 			} else {
@@ -495,7 +496,7 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 		// And use that +1 to set our playlist position.
 		// If pos is -1, we must add it after the currently flag_playing karaoke.
 		// Position management here :
-		if (+conf.EngineSmartInsert && user.type > 0) {
+		if (conf.Karaoke.SmartInsert && !user.flag_admin) {
 			if (userMaxPosition === null) {
 				// No songs yet from that user, they go first.
 				pos = -1;
@@ -528,7 +529,7 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 		} else {
 			await updatePlaylistDuration(playlist_id);
 		}
-		if (+conf.EngineAutoPlay &&
+		if (conf.Karaoke.Autoplay &&
 			+playlist_id === state.currentPlaylistID &&
 			state.status === 'stop' ) playPlayer();
 		await Promise.all([
@@ -971,20 +972,21 @@ export async function previousSong() {
 
 export async function nextSong() {
 	const conf = getConfig();
-	const current = await getCurrentPlaylistContents();
+	const playlist = await getCurrentPlaylistContents();
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
-	if (current.index + 1 >= current.content.length && !+conf.EngineRepeatPlaylist) {
+	if (playlist.content.length === 0) throw 'Playlist is empty!';
+	if (playlist.index + 1 >= playlist.content.length && !conf.Karaoke.RepeatPlaylist) {
 		logger.debug('[PLC] End of playlist.');
-		await setPlaying(null, current.id);
+		await setPlaying(null, playlist.id);
 		throw 'Current position is last song!';
 	} else {
 		// If we're here, it means either we're beyond the length of the playlist
-		// OR that EngineRepeatPlaylist is set to 1.
+		// OR that RepeatPlaylist is set to 1.
 		// We test again if we're at the end of the playlist. If so we go back to first song.
-		if (+conf.EngineRepeatPlaylist && current.index + 1 >= current.content.length) current.index = -1;
-		const kara = current.content[current.index + 1];
+		if (conf.Karaoke.RepeatPlaylist && playlist.index + 1 >= playlist.content.length) playlist.index = -1;
+		const kara = playlist.content[playlist.index + 1];
 		if (!kara) throw 'Karaoke received is empty!';
-		await setPlaying(kara.playlistcontent_id, current.id);
+		await setPlaying(kara.playlistcontent_id, playlist.id);
 	}
 }
 
@@ -1025,11 +1027,15 @@ export async function getCurrentSong() {
 	// Let's add details to our object so the player knows what to do with it.
 	kara.playlist_id = playlist.id;
 	let requester;
-	if (+conf.EngineDisplayNickname) {
+	if (conf.Karaoke.Display.Nickname) {
 		// When a kara has been added by admin/import, do not display it on screen.
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.nickname = kara.nickname.replace(/[\{\}]/g,'');
 		requester = `${__('REQUESTED_BY')} ${kara.nickname}`;
+		// Get user avatar
+		const user = await findUserByName(kara.username);
+		const state = getState();
+		kara.avatar = resolve(state.appPath, conf.System.Path.Avatars, user.avatar_file);
 	} else {
 		requester = '';
 	}
@@ -1042,10 +1048,10 @@ export async function getCurrentSong() {
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 	if (!kara.songorder || kara.songorder === 0) kara.songorder = '';
 	//If karaoke is present in the public playlist, we're deleting it.
-	if (+conf.EngineRemovePublicOnPlay) {
+	if (conf.Playlist.RemovePublicOnPlay) {
 		const playlist_id = getState().publicPlaylistID;
-		const plc = await getPLCByKIDUser(kara.kid, kara.username, playlist_id);
-		if (plc) deleteKaraFromPlaylist(plc.playlistcontent_id,playlist_id);
+		const plc = await getPLCByKIDUser(kara.kid,kara.username,playlist_id);
+		if (plc) await deleteKaraFromPlaylist(plc.playlistcontent_id,playlist_id);
 	}
 	// Construct mpv message to display.
 	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtypes[0].name+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
@@ -1054,7 +1060,7 @@ export async function getCurrentSong() {
 
 export async function buildDummyPlaylist() {
 	const stats = await getStats();
-	const state = await getState();
+	const state = getState();
 	let karaCount = stats.karas;
 	// Limiting to 5 sample karas to add if there's more.
 	if (karaCount > 5) karaCount = 5;
@@ -1075,7 +1081,7 @@ export async function buildDummyPlaylist() {
 async function updateFreeOrphanedSongs() {
 	// Flag songs as free if they are older than X minutes
 	try {
-		if (!databaseBusy) await updateFreeOrphanedSongsDB(now(true) - (getConfig().EngineFreeAutoTime * 60));
+		if (!databaseBusy) await updateFreeOrphanedSongsDB(now(true) - (getConfig().Karaoke.Quota.FreeAutoTime * 60));
 	} catch(err) {
 		logger.error(`[Playlist] Failed to free orphaned songs (will try again) : ${err}`);
 	}
@@ -1086,7 +1092,6 @@ export async function initPlaylistSystem() {
 }
 
 export async function testCurrentPlaylist() {
-	const conf = getConfig();
 	const currentPL_id = await findCurrentPlaylist();
 	if (currentPL_id) {
 		setState({currentPlaylistID: currentPL_id});
@@ -1097,7 +1102,7 @@ export async function testCurrentPlaylist() {
 		},'admin')
 		});
 		logger.debug('[Playlist] Initial current playlist created');
-		if (!conf.isTest) buildDummyPlaylist();
+		if (!getState().isTest) buildDummyPlaylist();
 	}
 }
 

@@ -156,11 +156,11 @@ Karaoke Mugen can use PostgreSQL in two ways :
 
 Binaries must be placed in the `app/bin` folder (create it if it doesn't exist already).
 
-You can also specify paths where to find those binaries in your `config.ini` file if you have them already installed elsewhere on your system and wish to use them.
+You can also specify paths where to find those binaries in your `config.yml` file if you have them already installed elsewhere on your system and wish to use them.
 
 ### Bianries - Linux
 
-Make sure ffmpeg/mpv are available in `/usr/bin`. If that's not the case, modify those paths in `config.ini`
+Make sure ffmpeg/mpv are available in `/usr/bin`. If that's not the case, modify those paths in `config.yml`
 
 Make sure postgresql is launched and ready for use.
 

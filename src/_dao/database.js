@@ -1,6 +1,7 @@
 import logger from 'winston/lib/winston';
 import {open} from 'sqlite';
 import {getConfig, setConfig} from '../_utils/config';
+import {getState} from '../_utils/state';
 import {Pool} from 'pg';
 import {exit} from '../_services/engine';
 import {duration} from '../_utils/date';
@@ -17,7 +18,6 @@ import {refreshTags, refreshKaraTags} from './tag';
 import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from './series';
 import {profile} from '../_utils/logger';
 import {from as copyFrom} from 'pg-copy-streams';
-import {getState} from '../_utils/state';
 
 const sql = require('./sql/database');
 
@@ -51,6 +51,7 @@ async function queryLog(...args) {
 	logger.debug(`[SQL] ${JSON.stringify(args).replace(/\\n/g,'\n').replace(/\\t/g,'   ')}`);
 	return database.query_orig(...args);
 }
+
 async function query(...args) {
 	// Fake query function used as a decoy when closing DB.
 	return {rows: [{}]};
@@ -79,10 +80,11 @@ export function buildClauses(words) {
 
 export function langSelector(lang, series) {
 	const conf = getConfig();
-	const userLocale = langs.where('1', lang || conf.EngineDefaultLocale);
-	const engineLocale = langs.where('1', conf.EngineDefaultLocale);
+	const state = getState();
+	const userLocale = langs.where('1',lang || state.EngineDefaultLocale);
+	const engineLocale = langs.where('1',state.EngineDefaultLocale);
 	//Fallback to english for cases other than 0 (original name)
-	switch(+conf.WebappSongLanguageMode) {
+	switch(+conf.Frontend.SeriesLanguageMode) {
 	case 0: return {main: null, fallback: null};
 	default:
 	case 1:
@@ -160,15 +162,15 @@ export function db() {
 export async function connectDB(opts = {superuser: false, db: null}) {
 	const conf = getConfig();
 	const dbConfig = {
-		host: conf.db.prod.host,
-		user: conf.db.prod.user,
-		port: conf.db.prod.port,
-		password: conf.db.prod.password,
-		database: conf.db.prod.database
+		host: conf.Database.prod.host,
+		user: conf.Database.prod.user,
+		port: conf.Database.prod.port,
+		password: conf.Database.prod.password,
+		database: conf.Database.prod.database
 	};
 	if (opts.superuser) {
-		dbConfig.user = conf.db.prod.superuser;
-		dbConfig.password = conf.db.prod.superuserPassword;
+		dbConfig.user = conf.Database.prod.superuser;
+		dbConfig.password = conf.Database.prod.superuserPassword;
 		dbConfig.database = opts.db;
 	}
 	database = new Pool(dbConfig);
@@ -193,20 +195,20 @@ export async function initDB() {
 	const conf = getConfig();
 	await connectDB({superuser: true, db: 'postgres'});
 	try {
-		await db().query(`CREATE DATABASE ${conf.db.prod.database} ENCODING 'UTF8'`);
+		await db().query(`CREATE DATABASE ${conf.Database.prod.database} ENCODING 'UTF8'`);
 		logger.info('[DB] Database created');
 	} catch(err) {
 		logger.debug('[DB] Database already exists');
 	}
 	try {
-		await db().query(`CREATE USER ${conf.db.prod.user} WITH ENCRYPTED PASSWORD '${conf.db.prod.password}';`);
+		await db().query(`CREATE USER ${conf.Database.prod.user} WITH ENCRYPTED PASSWORD '${conf.Database.prod.password}';`);
 		logger.info('[DB] User created');
 	} catch(err) {
 		logger.debug('[DB] User already exists');
 	}
-	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.db.prod.database} TO ${conf.db.prod.user};`);
+	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.Database.prod.database} TO ${conf.Database.prod.user};`);
 	// We need to reconnect to create the extension on our newly created database
-	await connectDB({superuser: true, db: conf.db.prod.database});
+	await connectDB({superuser: true, db: conf.Database.prod.database});
 	try {
 		await db().query('CREATE EXTENSION unaccent;');
 	} catch(err) {
@@ -218,7 +220,7 @@ async function migrateDB() {
 	logger.info('[DB] Running migrations if needed');
 	const conf = getConfig();
 	let options = {
-		config: conf.db,
+		config: conf.Database,
 		noPlugins: true,
 		plugins: {
 			dependencies: {
@@ -231,12 +233,12 @@ async function migrateDB() {
 			'log-level': 'warn|error'
 		}
 	};
-	if (conf.optDebug) options.cmdOptions['log-level'] = 'warn|error|info';
+	if (getState().opt.debug) options.cmdOptions['log-level'] = 'warn|error|info';
 	const dbm = DBMigrate.getInstance(true, options);
 	try {
 		await dbm.sync('all');
 	} catch(err) {
-		throw `[DB] Migrations failed : ${err}`;
+		throw `Migrations failed : ${err}`;
 	}
 }
 
@@ -255,10 +257,12 @@ export async function saveSetting(setting, value) {
 export async function initDBSystem() {
 	let doGenerate;
 	const conf = getConfig();
-	if (conf.optGenerateDB) doGenerate = true;
+	const state = getState();
+	if (state.opt.generateDB) doGenerate = true;
+	// Only for bundled postgres binary :
 	// First login as super user to make sure user, database and extensions are created
 	try {
-		if (conf.db.prod.bundledPostgresBinary) {
+		if (conf.Database.prod.bundledPostgresBinary) {
 			await initPG();
 			await initDB();
 		}
@@ -268,8 +272,8 @@ export async function initDBSystem() {
 	} catch(err) {
 		throw `Database initialization failed. Check if a postgres binary is already running on that port and kill it? Error : ${err}`;
 	}
-	if (conf.optReset) await resetUserData();
-	if (!conf.optNoBaseCheck) {
+	if (state.opt.reset) await resetUserData();
+	if (!state.opt.noBaseCheck) {
 		logger.info('[DB] Checking data files...');
 		const karasChecksum = await compareKarasChecksum();
 		if (karasChecksum === false) {
@@ -281,7 +285,7 @@ export async function initDBSystem() {
 	}
 	const settings = await getSettings();
 	if (!doGenerate && !settings.lastGeneration) {
-		setConfig({ appFirstRun: 1 });
+		setConfig({ App: { FirstRun: true }});
 		logger.info('[DB] Database is brand new: database generation triggered');
 		doGenerate = true;
 	}
@@ -289,23 +293,18 @@ export async function initDBSystem() {
 		await generateDatabase();
 	} catch(err) {
 		logger.error(`[DB] Generation failed : ${err}`);
-		if (conf.optGenerateDB) await exit(1);
 	}
-	if (conf.optGenerateDB) {
-		await exit(0);
-	} else {
-		await importFromSQLite();
-		logger.debug( '[DB] Database Interface is READY');
-		const stats = await getStats();
-		logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
-		logger.info(`Series       : ${stats.series}`);
-		logger.info(`Languages    : ${stats.languages}`);
-		logger.info(`Artists      : ${stats.singers} singers, ${stats.songwriters} songwriters, ${stats.creators} creators`);
-		logger.info(`Kara Authors : ${stats.authors}`);
-		logger.info(`Playlists    : ${stats.playlists}`);
-		logger.info(`Songs played : ${stats.played}`);
-		return true;
-	}
+	await importFromSQLite();
+	logger.debug( '[DB] Database Interface is READY');
+	const stats = await getStats();
+	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
+	logger.info(`Series       : ${stats.series}`);
+	logger.info(`Languages    : ${stats.languages}`);
+	logger.info(`Artists      : ${stats.singers} singers, ${stats.songwriters} songwriters, ${stats.creators} creators`);
+	logger.info(`Kara Authors : ${stats.authors}`);
+	logger.info(`Playlists    : ${stats.playlists}`);
+	logger.info(`Songs played : ${stats.played}`);
+	return true;
 }
 
 export async function resetUserData() {
@@ -319,14 +318,14 @@ export async function getStats() {
 }
 
 async function generateDatabase() {
-	const conf = getConfig();
+	const state = getState();
 	try {
 		await generateDB();
 		logger.info('[DB] Database generation completed successfully!');
-		if (conf.optGenerateDB) await exit(0);
+		if (state.opt.generateDB) await exit(0);
 	} catch(err) {
-		logger.error('[DB] Database generation completed with errors!');
-		if (conf.optGenerateDB) await exit(1);
+		logger.error(`[DB] Database generation completed with errors : ${err}`);
+		if (state.opt.generateDB) await exit(1);
 	}
 	return true;
 }
@@ -340,7 +339,7 @@ export function buildTypeClauses(mode, value) {
 			const type = c.split(/:(.+)/)[0];
 			let values;
 			if (type === 's') {
-    			values = c.split(/:(.+)/)[1].split(',').map((v) => `'%${v}%'`);
+    			values = c.split(/:(.+)/)[1].split(',').map(v => `'%${v}%'`);
     			search = `${search} AND sid::varchar LIKE ${values}`;
 			} else {
     			values = c.split(/:(.+)/)[1];
@@ -356,7 +355,7 @@ export function buildTypeClauses(mode, value) {
 
 export async function importFromSQLite() {
 	const conf = getConfig();
-	const sqliteDBFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
+	const sqliteDBFile = resolve(getState().appPath, conf.System.Path.DB, 'userdata.sqlite3');
 	if (await asyncExists(sqliteDBFile)) {
 		logger.info('[DB] SQLite database detected. Importing...');
 		try {
@@ -479,7 +478,7 @@ export async function importFromSQLite() {
 			await generateBlacklist();
 			logger.info('[DB] SQLite import complete');
 			await asyncUnlink(sqliteDBFile);
-			setConfig({ appFirstRun: 0 });
+			setConfig({ App: { FirstRun: false }});
 		} catch(err) {
 			logger.error(`[DB] Your old SQLite database could not be imported : ${err}`);
 		}

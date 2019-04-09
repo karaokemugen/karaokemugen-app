@@ -6,7 +6,7 @@ import {getLang} from './middlewares/lang';
 //Utils
 import {getPublicState, getState} from '../_utils/state';
 import logger from 'winston';
-import {sanitizeConfig, mergeConfig, verifyConfig, getPublicConfig, getConfig} from '../_utils/config';
+import {editSetting, getPublicConfig, getConfig} from '../_utils/config';
 import {check, unescape} from '../_utils/validators';
 import {resolve} from 'path';
 import multer from 'multer';
@@ -20,7 +20,7 @@ import {updateSongsLeft} from '../_services/user';
 import {message} from '../_player/player';
 import {addKaraToPlaylist, copyKaraToPlaylist, shufflePlaylist, getPlaylistContents, emptyPlaylist, setCurrentPlaylist, setPublicPlaylist, editPLC, editPlaylist, deleteKaraFromPlaylist, deletePlaylist, getPlaylistInfo, createPlaylist, getPlaylists, getKaraFromPlaylist, exportPlaylist, importPlaylist} from '../_services/playlist';
 import {getTags} from '../_services/tag';
-import {getYears, getRandomKara, getKaraLyrics, getKaras, getKara} from '../_services/kara';
+import {getYears, getKaraLyrics, getKaras, getKara} from '../_services/kara';
 import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelistContents} from '../_services/whitelist';
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, emptyFavorites, addToFavorites, deleteFavorites, exportFavorites, importFavorites} from '../_services/favorites';
@@ -28,6 +28,8 @@ import {vote} from '../_services/upvote';
 import {convertToRemoteUser, removeRemoteUser, createUser, findUserByName, deleteUser, editUser, listUsers} from '../_services/user';
 import {getPoll, addPollVote} from '../_services/poll';
 import {getSeries} from '../_services/series';
+
+const bools = [true, false, 'true', 'false'];
 
 function errMessage(code,message,args) {
 	return {
@@ -218,9 +220,9 @@ export function APIControllerAdmin(router) {
 			// Add playlist
 			const validationErrors = check(req.body, {
 				name: {presence: {allowEmpty: false}},
-				flag_visible: {boolStringValidator: true},
-				flag_public: {boolStringValidator: true},
-				flag_current: {boolStringValidator: true}
+				flag_visible: {inclusion: bools},
+				flag_public: {inclusion: bools},
+				flag_current: {inclusion: bools}
 			});
 			if (!validationErrors) {
 				// No errors detected
@@ -333,7 +335,7 @@ export function APIControllerAdmin(router) {
 			// Update playlist info
 			const validationErrors = check(req.body, {
 				name: {presence: {allowEmpty: false}},
-				flag_visible: {boolStringValidator: true},
+				flag_visible: {inclusion: bools},
 			});
 			if (!validationErrors) {
 				// No errors detected
@@ -463,7 +465,7 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const karas = await getFavorites(req.params.username,req.body.filter,req.lang,+req.body.from || 0,req.body.size || 99999999);
+				const karas = await getFavorites(req.params.username,req.query.filter,req.lang,+req.query.from || 0,req.query.size || 99999999);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1221,9 +1223,9 @@ export function APIControllerAdmin(router) {
 			//Params: position
 
 			const validationErrors = check(req.body, {
-				flag_playing: {boolStringValidator: true},
+				flag_playing: {inclusion: bools},
 				pos: {integerValidator: true},
-				flag_free: {boolStringValidator: true}
+				flag_free: {inclusion: bools}
 			});
 			if (!validationErrors) {
 				try {
@@ -1251,7 +1253,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/settings Get settings
  * @apiName GetSettings
- * @apiVersion 2.4.1
+ * @apiVersion 2.5.0
  * @apiGroup Main
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -1260,78 +1262,136 @@ export function APIControllerAdmin(router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "data": {
- *       "AdminPassword": "xxxx",
- *       "BinPlayerLinux": "/usr/bin/mpv",
- *       "BinPlayerOSX": "app/bin/mpv.app/Contents/MacOS/mpv",
- *       "BinPlayerWindows": "app/bin/mpv.exe",
- *       "BinffmpegLinux": "/usr/bin/ffmpeg",
- *       "BinffmpegOSX": "app/bin/ffmpeg",
- *       "BinffmpegPath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffmpeg.exe",
- *       "BinffmpegWindows": "app/bin/ffmpeg.exe",
- *       "BinffprobeLinux": "/usr/bin/ffprobe",
- *       "BinffprobeOSX": "app/bin/ffprobe",
- *       "BinffprobePath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffprobe.exe
- *       "BinffprobeWindows": "app/bin/ffprobe.exe",
- *       "BinmpvPath": "D:\\perso\\karaokemugen-app\\app\\bin\\mpv.exe",
- *       "EngineAllowViewBlacklist": "1",
- *       "EngineAllowViewBlacklistCriterias": "1",
- *       "EngineAllowViewWhitelist": "1",
- *       "EngineAutoPlay": "0",
- *       "EngineDefaultLocale": "fr",
- *       "EngineDisplayConnectionInfo": "1",
- *       "EngineDisplayConnectionInfoHost": "",
- *       "EngineDisplayConnectionInfoMessage": "",
- *       "EngineDisplayConnectionInfoQRCode": "1",
- *       "EngineDisplayNickname": "1",
- * 		 "EngineFreeUpvotes": "1",
- *       "EngineFreeUpvotesRequiredPercentage": "33",
- *       "EngineFreeUpvotesRequiredMin": "4",
- *       "EngineFreeAutoTime": "60",
- *       "EngineJinglesInterval": "1",
- *       "EnginePrivateMode": "1",
- * 		 "EngineRemovePublicOnPlay": "1",
- * 		 "EngineQuotaType": "1",
- *       "EngineRepeatPlaylist": "0",
- *       "EngineSmartInsert": "1",
- * 		 "EngineSongPoll": "0",
- * 		 "EngineSongPollChoices": "4",
- * 		 "EngineSongPollTimeout": "30",
- *       "EngineSongsPerUser": "10000",
- * 		 "EngineTimePerUser": "10000",
- *       "EngineCreatePreviews": "1",
- * 		 "OnlineStats": "0",
- *       "PathAltname": "../times/series_altnames.csv",
- *       "PathBackgrounds": "app/backgrounds",
- *       "PathBin": "app/bin",
- *       "PathDB": "app/db",
- *       "PathDBKarasFile": "karas.sqlite3",
- *       "PathDBUserFile": "userdata.sqlite3",
- *       "PathJingles": "app/jingles",
- *       "PathKaras": "../times/karas",
- *       "PathSubs": "../times/lyrics",
- *       "PathTemp": "app/temp",
- *       "PathMedias": "app/data/medias",
- *       "PathMediasHTTP": "",
- *       "PlayerBackground": "",
- *       "PlayerFullscreen": "0",
- *       "PlayerMonitor": "0",
- *       "PlayerPIP": "1",
- *       "PlayerPIPPositionX": "Left",
- *       "PlayerPIPPositionY": "Bottom",
- *       "PlayerPIPSize": "30",
- *       "PlayerScreen": "0",
- *       "PlayerStayOnTop": "1",
- *       "VersionName": "Finé Fiévreuse",
- *       "VersionNo": "v2.0 Release Candidate 1",
- *       "appPath": "F:\\karaokemugen-app\\",
- *       "isTest": false,
- *       "mpvVideoOutput": "direct3d",
- *       "os": "win32",
- *       "osHost": "10.202.40.43",
- * 		 "WebappMode": "2",
- * 		 "WebappSongLanguageMode": "1"
- *   }
+ *    "data": {
+ *	"config": {
+ *	 App: {
+ *		FirstRun: true,
+ *		InstanceID: 'Change me',
+ *		JwtSecret: 'Change me',
+ *		karaSuggestionMail: 'shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org',
+ *	},
+ *	Database: {
+ *		'sql-file': true,
+ *		defaultEnv: 'prod',
+ *		prod: {
+ *			driver: 'pg',
+ *			user: 'karaokemugen_app',
+ *			password: 'musubi',
+ *			host: 'localhost',
+ *			port: 6559,
+ *			database: 'karaokemugen_app',
+ *			schema: 'public',
+ *			superuser: 'postgres',
+ *			superuserPassword: null,
+ *			bundledPostgresBinary: true
+ *		}
+ *	},
+ *	Online: {
+ *		Host: 'kara.moe',
+ *		Stats: undefined,
+ *		URL: true,
+ *		Users: true
+ *	},
+ *	Frontend: {
+ *		Port: 1337,
+ *		AuthExpireTime: 15,
+ *		Mode: 2,
+ *		SeriesLanguageMode: 3,
+ *		Permissions: {
+ *			AllowViewBlacklist: true,
+ *			AllowViewBlackListCriterias: true,
+ *			AllowViewWhiteList: true,
+ *		}
+ *	},
+ *	Karaoke: {
+ *		Autoplay: false,
+ *		CreatePreviews: false,
+ *		JinglesInterval: 20,
+ *		Private: true,
+ *		RepeatPlaylist: false,
+ *		SmartInsert: false,
+ *		Display: {
+ *			Nickname: false,
+ *			ConnectionInfo: false,
+ *			ConnectionInfoQRCode: false,
+ *			ConnectionInfoMessage: '',
+ *			ConnectionInfoHost: false
+ *		},
+ *		Poll: {
+ *			Choices: 4,
+ *			Enabled: false,
+ *			Timeout: 30
+ *		},
+ *		Quota: {
+ *			FreeAutoTime: 60,
+ *			FreeUpVote: true,
+ *			FreeUpVoteRequiredMin: 3,
+ *			FreeUpVoteRequiredPercent: 33,
+ *			Songs: 10000,
+ *			Time: 10000,
+ *			Type: 0,
+ *		}
+ *	},
+ *	Player: {
+ *		mpvVideoOutput: '',
+ *		Background: '',
+ *		FullScreen: false,
+ *		Monitor: false,
+ *		NoBar: true,
+ *		NoHud: true,
+ *		Screen: 0,
+ *		StayOnTop: true,
+ *		PIP: {
+ *			Enabled: true,
+ *			PositionX: 'Right',
+ *			PositionY: 'Bottom',
+ *			Size: 30,
+ *		}
+ *	},
+ *	Playlist: {
+ *		AllowDuplicates: false,
+ *		MaxDejaVuTime: 60,
+ *		RemovePublicOnPlay: false
+ *	},
+ *	System: {
+ *		Binaries: {
+ *			Player: {
+ *				Linux: '/usr/bin/mpv',
+ *				OSX: 'app/bin/mpv.app/Contents/MacOS/mpv',
+ *				Windows: 'app/bin/mpv.exe'
+ *			},
+ *			ffmpeg: {
+ *				Linux: '/usr/bin/ffmpeg',
+ *				OSX: 'app/bin/ffmpeg',
+ *				Windows: 'app/bin/ffmpeg.exe'
+ *			},
+ *			Postgres: {
+ *				Windows: 'app/bin/postgres/bin/',
+ *				OSX: 'app/bin/postgres/bin/',
+ *				Linux: 'app/bin/postgres/bin/',
+ *			}
+ *		},
+ *		Path: {
+ *			Avatars: 'app/avatars',
+ *			Backgrounds: 'app/backgrounds',
+ *			Bin: 'app/bin',
+ *			Import: 'app/import',
+ *			Jingles: 'app/jingles',
+ *			Karas: 'app/data/karas',
+ *			Medias: 'app/data/medias',
+ *			MediasHTTP: '',
+ *			Previews: 'app/previews',
+ *			Series: 'app/data/series',
+ *			Subs: 'app/data/lyrics',
+ * 			Temp: 'app/temp',
+ *			DB: 'app/db'
+ *		}
+ *	}
+ * },
+ * version: {
+ * 		number: '2.5-next',
+ * 		name: 'Konata Karaokiste'
+ * }
  * }
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
@@ -1340,47 +1400,12 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/settings Update settings
  * @apiName PutSettings
- * @apiVersion 2.4.1
+ * @apiVersion 2.5.0
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiGroup Main
- * @apiDescription **Note :** All settings must be sent at once in a single request.
- * @apiParam {Boolean} EngineAllowViewBlacklist Allow/disallow users to view blacklist contents from the guest interface
- * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
- * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
- * @apiParam {Boolean} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
- * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message)
- * @apiParam {String} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
- * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
- * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
- * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
- * @apiParam {Number} EngineFreeAutoTime Time in minutes before a song is automatically freed.
- * @apiParam {Boolean} EngineFreeUpvotes Enable/disable Free Songs By Upvotes feature
- * @apiParam {Number} EngineFreeUpvotesRequiredMin Minimum number of upvotes required to free a song
- * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
- * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
- * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
- * @apiParam {Boolean} EngineRemovePublicOnPlay Enable/disable auto removal of songs in public playlist if they've just been played
- * @apiParam {Number} EngineQuotaType Type of quota for users when adding songs. `0` = no quota, `1` = limited by number of songs, `2` = limited by total song duration.
- * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
- * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
- * @apiParam {Boolean} EngineSongPoll Enable/disable public song poll
- * @apiParam {Number} EngineSongPollChoices Number of songs the public can choose from during a public poll
- * @apiParam {Number} EngineSongPollTimeout Poll duration in seconds
- * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
- * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
- * @apiParam {Boolean} OnlineStats Enable/Disable stats upload to Karaoke Mugen Online
- * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
- * @apiParam {Boolean} PlayerMonitor Enable/disable player's second screen (monitor)
- * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
- * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen
- * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
- * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
- * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
- * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
- * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
- * @apiParam {Number} WebappSongLanguageMode How to display series : `0` = according to the original name, `1` = according to song's language, or defaults to the `series=` metadata, `2` = according to admin's language or fallbacks to english then original, `3` = according to user language or fallbacks to english then original
- * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
+ * @apiDescription **Note :** Contrary to previous versions of Karaoke Mugen, you only need to send the setting you want to modify.
+ * @apiParam {Object} setting Object containing one or more settings to be merged into the new config. For example, if you want to disable the view blacklist permission, send `{Frontend: {Permissions: { AllowViewBlacklist: false}}}`. Check configuration documentation for more information.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -1388,22 +1413,13 @@ export function APIControllerAdmin(router) {
  */
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			//Update settings
-			// Convert body to strings
 			try {
-				verifyConfig(req.body);
-				try {
-					req.body = sanitizeConfig(req.body);
-					const publicSettings = await mergeConfig(req.body);
-					emitWS('settingsUpdated',publicSettings);
-					res.json(OKMessage(req.body,'SETTINGS_UPDATED'));
-				} catch(err) {
-					logger.error(err);
-					res.status(500).json(errMessage('SETTINGS_UPDATE_ERROR',err));
-				}
+				const publicSettings = await editSetting(req.body.setting);
+				emitWS('settingsUpdated',publicSettings);
+				res.json(OKMessage(publicSettings,'SETTINGS_UPDATED'));
 			} catch(err) {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(err);
+				logger.error(err);
+				res.status(500).json(errMessage('SETTINGS_UPDATE_ERROR',err));
 			}
 		});
 
@@ -1513,7 +1529,7 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const karas = await getWhitelistContents(req.body.filter,req.lang,+req.body.from || 0,req.body.size || 99999999);
+				const karas = await getWhitelistContents(req.query.filter,req.lang,+req.query.from || 0,req.query.size || 99999999);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1663,7 +1679,7 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const karas = await getBlacklist(req.body.filter,req.lang,+req.body.from || 0, +req.body.size || 99999999);
+				const karas = await getBlacklist(req.query.filter,req.lang,+req.query.from || 0, +req.query.size || 99999999);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1923,7 +1939,6 @@ export function APIControllerAdmin(router) {
 					await sendCommand(req.body.command,req.body.options);
 					res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
 				} catch(err) {
-					logger.error(err);
 					res.status(500).json(errMessage('COMMAND_SEND_ERROR',err));
 				}
 			} else {
@@ -2105,9 +2120,8 @@ export function APIControllerPublic(router) {
 		next(); // make sure we go to the next routes and don't stop here
 	});
 	*/
-	const conf = getConfig();
 	// Middleware for playlist and files import
-	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
+	let upload = multer({ dest: resolve(getState().appPath,getConfig().System.Path.Temp)});
 	// Public routes
 	router.route('/public/playlists')
 	/**
@@ -2227,7 +2241,7 @@ export function APIControllerPublic(router) {
 			// Get playlist contents, only if visible
 			//Access :pl_id by req.params.pl_id
 			try {
-				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang,+req.body.from || 0,+req.body.size || 9999999);
+				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang,+req.query.from || 0,+req.query.size || 9999999);
 				if (!playlist) res.statusCode = 404;
 				res.json(OKMessage(playlist));
 			} catch(err) {
@@ -2281,7 +2295,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/settings Get settings (public)
  * @apiName GetSettingsPublic
- * @apiVersion 2.2.0
+ * @apiVersion 2.5.0
  * @apiGroup Main
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -2291,53 +2305,144 @@ export function APIControllerPublic(router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "data": {
- *       "EngineAllowNicknameChange": "1",
- *       "EngineAllowViewBlacklist": "1",
- *       "EngineAllowViewBlacklistCriterias": "1",
- *       "EngineAllowViewWhitelist": "1",
- *       "EngineAutoPlay": "0",
- *       "EngineDefaultLocale": "fr",
- *       "EngineDisplayConnectionInfo": "1",
- *       "EngineDisplayConnectionInfoHost": "",
- *       "EngineDisplayConnectionInfoMessage": "",
- *       "EngineDisplayConnectionInfoQRCode": "1",
- *       "EngineDisplayNickname": "1",
- *       "EngineFreeAutoTime": "60",
- * 		 "EngineFreeUpvotes": "1",
- * 		 "EngineFreeUpvotesPercent": "33",
- * 		 "EngineFreeUpvotesMin": "4",
- *       "EngineJinglesInterval": "1",
- *       "EnginePrivateMode": "1",
- * 		 "EngineRemovePublicOnPlay": "1",
- *       "EngineQuotaType": "1",
- *       "EngineRepeatPlaylist": "0",
- *       "EngineSmartInsert": "1",
- * 		 "EngineSongPoll": "0",
- * 		 "EngineSongPollChoices": "4",
- * 		 "EngineSongPollTimeout": "30",
- *       "EngineSongsPerUser": "10000",
- *       "EngineTimePerUser": "10000",
- *       "PlayerBackground": "",
- *       "PlayerFullscreen": "0",
- *       "PlayerMonitor": "0",
- *       "PlayerPIP": "1",
- *       "PlayerPIPPositionX": "Left",
- *       "PlayerPIPPositionY": "Bottom",
- *       "PlayerPIPSize": "30",
- *       "PlayerScreen": "0",
- *       "PlayerStayOnTop": "1",
- *       "VersionName": "Finé Fiévreuse",
- *       "VersionNo": "v2.0 Release Candidate 1",
- *       "mpvVideoOutput": "direct3d",
- * 		 "WebappMode": "2",
- *       "WebappSongLanguageMode": "1"
- *   }
+ *    "data": {
+ *	"config": {
+ *	 App: {
+ *		FirstRun: true,
+ *		InstanceID: 'Change me',
+ *		JwtSecret: 'Change me',
+ *		karaSuggestionMail: 'shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org',
+ *	},
+ *	Database: {
+ *		'sql-file': true,
+ *		defaultEnv: 'prod',
+ *		prod: {
+ *			driver: 'pg',
+ *			user: 'karaokemugen_app',
+ *			password: 'musubi',
+ *			host: 'localhost',
+ *			port: 6559,
+ *			database: 'karaokemugen_app',
+ *			schema: 'public',
+ *			superuser: 'postgres',
+ *			superuserPassword: null,
+ *			bundledPostgresBinary: true
+ *		}
+ *	},
+ *	Online: {
+ *		Host: 'kara.moe',
+ *		Stats: undefined,
+ *		URL: true,
+ *		Users: true
+ *	},
+ *	Frontend: {
+ *		Port: 1337,
+ *		AuthExpireTime: 15,
+ *		Mode: 2,
+ *		SeriesLanguageMode: 3,
+ *		Permissions: {
+ *			AllowViewBlacklist: true,
+ *			AllowViewBlackListCriterias: true,
+ *			AllowViewWhiteList: true,
+ *		}
+ *	},
+ *	Karaoke: {
+ *		Autoplay: false,
+ *		CreatePreviews: false,
+ *		JinglesInterval: 20,
+ *		Private: true,
+ *		RepeatPlaylist: false,
+ *		SmartInsert: false,
+ *		Display: {
+ *			Nickname: false,
+ *			ConnectionInfo: false,
+ *			ConnectionInfoQRCode: false,
+ *			ConnectionInfoMessage: '',
+ *			ConnectionInfoHost: false
+ *		},
+ *		Poll: {
+ *			Choices: 4,
+ *			Enabled: false,
+ *			Timeout: 30
+ *		},
+ *		Quota: {
+ *			FreeAutoTime: 60,
+ *			FreeUpVote: true,
+ *			FreeUpVoteRequiredMin: 3,
+ *			FreeUpVoteRequiredPercent: 33,
+ *			Songs: 10000,
+ *			Time: 10000,
+ *			Type: 0,
+ *		}
+ *	},
+ *	Player: {
+ *		mpvVideoOutput: '',
+ *		Background: '',
+ *		FullScreen: false,
+ *		Monitor: false,
+ *		NoBar: true,
+ *		NoHud: true,
+ *		Screen: 0,
+ *		StayOnTop: true,
+ *		PIP: {
+ *			Enabled: true,
+ *			PositionX: 'Right',
+ *			PositionY: 'Bottom',
+ *			Size: 30,
+ *		}
+ *	},
+ *	Playlist: {
+ *		AllowDuplicates: false,
+ *		MaxDejaVuTime: 60,
+ *		RemovePublicOnPlay: false
+ *	},
+ *	System: {
+ *		Binaries: {
+ *			Player: {
+ *				Linux: '/usr/bin/mpv',
+ *				OSX: 'app/bin/mpv.app/Contents/MacOS/mpv',
+ *				Windows: 'app/bin/mpv.exe'
+ *			},
+ *			ffmpeg: {
+ *				Linux: '/usr/bin/ffmpeg',
+ *				OSX: 'app/bin/ffmpeg',
+ *				Windows: 'app/bin/ffmpeg.exe'
+ *			},
+ *			Postgres: {
+ *				Windows: 'app/bin/postgres/bin/',
+ *				OSX: 'app/bin/postgres/bin/',
+ *				Linux: 'app/bin/postgres/bin/',
+ *			}
+ *		},
+ *		Path: {
+ *			Avatars: 'app/avatars',
+ *			Backgrounds: 'app/backgrounds',
+ *			Bin: 'app/bin',
+ *			Import: 'app/import',
+ *			Jingles: 'app/jingles',
+ *			Karas: 'app/data/karas',
+ *			Medias: 'app/data/medias',
+ *			MediasHTTP: '',
+ *			Previews: 'app/previews',
+ *			Series: 'app/data/series',
+ *			Subs: 'app/data/lyrics',
+ * 			Temp: 'app/temp',
+ *			DB: 'app/db'
+ *		}
+ *	}
+ * },
+ * version: {
+ * 		number: '2.5-next',
+ * 		name: 'Konata Karaokiste'
+ * }
  * }
  */
 		.get(async (req, res) => {
 			//We don't want to return all settings.
-			res.json(OKMessage(getPublicConfig()));
+			res.json(OKMessage({
+				config: getPublicConfig(),
+				version: getState().version
+			}));
 		});
 	router.route('/public/stats')
 	/**
@@ -2426,7 +2531,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Returns whitelist IF the settings allow public to see it
-			if (getConfig().EngineAllowViewWhitelist) {
+			if (getConfig().Frontend.Permissions.AllowViewWhitelist) {
 				try {
 					const karas = await	getWhitelistContents(req.query.filter,req.lang,+req.query.from || 0,+req.query.size || 99999999);
 					res.json(OKMessage(karas));
@@ -2485,7 +2590,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Get list of blacklisted karas IF the settings allow public to see it
-			if (getConfig().EngineAllowViewBlacklist) {
+			if (getConfig().Frontend.Permissions.AllowViewBlacklist) {
 				try {
 					const karas = await getBlacklist(req.query.filter,req.lang,+req.query.from || 0,+req.query.size || 999999);
 					res.json(OKMessage(karas));
@@ -2535,8 +2640,8 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			//Get list of blacklist criterias IF the settings allow public to see it
-			if (getConfig().EngineAllowViewBlacklistCriterias) {
+			//Get list of blacklist criterias IF the settings allow public to see it			);
+			if (getConfig().Frontend.Permissions.AllowViewBlacklistCriterias) {
 				try {
 					const blc = await getBlacklistCriterias();
 					res.json(OKMessage(blc));
