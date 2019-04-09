@@ -465,7 +465,12 @@ export async function run(validateOnly) {
 		const karaFiles = await extractAllKaraFiles();
 		const seriesFiles = await extractAllSeriesFiles();
 		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
-		if (karaFiles.length === 0) throw 'No kara files found';
+		if (karaFiles.length === 0) {
+			// Returning early if no kara is found
+			logger.warn('[Gen] No .kara files found, ending generation');
+			await emptyDatabase();
+			return;
+		}
 		if (seriesFiles.length === 0) throw 'No series files found';
 		bar = new Bar({
 			message: 'Reading .series files',
@@ -608,6 +613,7 @@ export async function baseChecksum(opts = {silent: false}) {
 	const karaFiles = await extractAllKaraFiles();
 	const seriesFiles = await extractAllSeriesFiles();
 	let KMData = '';
+	if (karaFiles.length === 0) return null;
 	if (!opts.silent) bar = new Bar({
 		message: 'Checking .karas...   '
 	}, karaFiles.length);

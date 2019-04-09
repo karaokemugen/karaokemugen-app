@@ -43,8 +43,11 @@ if (process.platform === 'win32' ) {
 
 // Main app begins here.
 
+// Determining our application's path depends on if we're running inside a packaged binary or not.
 let appPath;
-process.pkg ? appPath = join(process.execPath,'../') : appPath = join(__dirname,'../');
+process.pkg
+  ? appPath = join(process.execPath,'../')
+  : appPath = join(__dirname,'../');
 
 process.env['NODE_ENV'] = 'production'; // Default
 
@@ -137,12 +140,7 @@ async function checkPaths(config) {
 	const appPath = config.appPath;
 
 	// If no karaoke is found, copy the samples directory if it exists
-	try {
-		await asyncReadDir(resolve(appPath, 'app/data'));
-		// Check inside karas folder too.
-		const karas = await asyncReadDir(resolve(appPath, 'app/data/karas'));
-		if (karas.length === 0) throw 'No kara files';
-	} catch(err) {
+	if (!await asyncExists(resolve(appPath, 'app/data'))) {
 		try {
 			await asyncReadDir(resolve(appPath, 'samples'));
 			logger.debug('[Launcher] Kara files are missing - copying samples');
@@ -154,6 +152,7 @@ async function checkPaths(config) {
 			logger.warn('[Launcher] No samples directory found, will not copy them.');
 		}
 	}
+
 	// Emptying temp directory
 	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
 	// Checking paths

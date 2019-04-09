@@ -28,7 +28,7 @@ export async function compareKarasChecksum(silent) {
 		await saveSetting('baseChecksum', currentChecksum);
 		return false;
 	}
-	return true;
+	return currentChecksum;
 }
 
 export function paramWords(filter) {
@@ -271,10 +271,13 @@ export async function initDBSystem() {
 	if (conf.optReset) await resetUserData();
 	if (!conf.optNoBaseCheck) {
 		logger.info('[DB] Checking data files...');
-		if (!await compareKarasChecksum()) {
+		const karasChecksum = await compareKarasChecksum();
+		if (karasChecksum === false) {
 			logger.info('[DB] Data files have changed: database generation triggered');
 			doGenerate = true;
 		}
+		// If karasChecksum returns null, it means there were no files to check. We run generation anyway (it'll return an empty database) to avoid making the current startup procedure any more complex.
+		if (karasChecksum === null) doGenerate = true;
 	}
 	const settings = await getSettings();
 	if (!doGenerate && !settings.lastGeneration) {

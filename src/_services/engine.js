@@ -19,8 +19,6 @@ import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { run } from './generation';
-import { integrateSeriesFile } from '../_dao/seriesfile';
-import { integrateKaraFile } from '../_dao/karafile';
 
 export async function initEngine() {
 	profile('Init');
