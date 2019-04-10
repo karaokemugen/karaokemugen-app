@@ -11,6 +11,9 @@ import { integrateSeriesFile } from '../_dao/seriesfile';
 import { integrateKaraFile } from '../_dao/karafile';
 import {getState} from '../_utils/state';
 import {uuidRegexp} from '../_services/constants';
+import {refreshKarasAfterDBChange} from './kara';
+import {refreshSeriesAfterDBChange} from './series';
+import { compareKarasChecksum } from '../_dao/database';
 
 const queueOptions = {
 	id: 'uuid',
@@ -44,10 +47,25 @@ export async function initDownloader() {
 	return;
 }
 
+
 function initQueue() {
+	// We'll compare data dir checksum and execute refresh every 5 downloads and everytime the queue is drained
+	let taskCounter = 0;
 	q = new Queue(queueDownload, queueOptions);
+	q.on('task_finish', () => {
+		taskCounter++;
+		if (taskCounter >= 5) {
+			compareKarasChecksum(true);
+			refreshSeriesAfterDBChange().then(refreshKarasAfterDBChange());
+			taskCounter = 0;
+		}
+	});
 	q.on('task_failed', (taskId, err) => logger.error(`[Download] Task ${taskId} failed : ${err}`));
-	q.on('drain', () => logger.info('[Download] Ano ne, ano ne! I finished all my downloads!'));
+	q.on('drain', () => {
+		logger.info('[Download] Ano ne, ano ne! I finished all my downloads!');
+		refreshSeriesAfterDBChange().then(refreshKarasAfterDBChange());
+		taskCounter = 0;
+	});
 }
 
 export async function startDownloads() {
@@ -123,13 +141,17 @@ async function processDownload(download) {
 	}
 	logger.info(`[Download] Finished downloading item "${download.name}"`);
 	// Now adding our newly downloaded kara
-	for (const serie of bundle.series) {
-		await integrateSeriesFile(serie);
-		logger.info(`[Download] Finished integration of "${serie}"`);
+	try {
+		for (const serie of bundle.series) {
+			await integrateSeriesFile(serie);
+			logger.info(`[Download] Finished integration of "${serie}"`);
+		}
+		await integrateKaraFile(bundle.kara);
+		logger.info(`[Download] Song "${download.name}" added to database`);
+	} catch(err) {
+		logger.error(`[Download] Song "${download.name}" downloaded but not added to database. Regenerate your database manually after fixing errors`);
+		throw err;
 	}
-	await integrateKaraFile(bundle.kara);
-	logger.info(`[Download] Song "${download.name}" added to database`);
-
 }
 
 async function downloadFiles(download, list) {

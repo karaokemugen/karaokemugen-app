@@ -54,7 +54,7 @@ export async function deleteSerie(sid) {
 	refreshKaraSeries().then(refreshKaras());
 }
 
-export async function addSerie(serieObj) {
+export async function addSerie(serieObj, opts = {refresh: true}) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) throw 'Series original name already exists';
@@ -67,13 +67,14 @@ export async function addSerie(serieObj) {
 		writeSeriesFile(serieObj)
 	]);
 
-	compareKarasChecksum(true);
-	await refreshSeries();
-	refreshKaraSeries().then(refreshKaras());
+	if (opts.refresh) {
+		compareKarasChecksum(true);
+		await refreshSeriesAfterDBChange();
+	}
 	return serieObj.sid;
 }
 
-export async function editSerie(sid, serieObj) {
+export async function editSerie(sid, serieObj, opts = { refresh: true }) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const oldSerie = await getSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
@@ -86,7 +87,13 @@ export async function editSerie(sid, serieObj) {
 		updateSerie(serieObj),
 		writeSeriesFile(serieObj)
 	]);
-	compareKarasChecksum(true);
+	if (opts.refresh) {
+		compareKarasChecksum(true);
+		await refreshSeriesAfterDBChange();
+	}
+}
+
+export async function refreshSeriesAfterDBChange() {
 	await refreshSeries();
 	refreshKaraSeries().then(refreshKaras());
 }

@@ -131,7 +131,7 @@ export async function deleteKara(kid) {
 		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
 	}
 
-	compareKarasChecksum({silent: true});
+	compareKarasChecksum(true);
 
 	// Remove kara from database
 	await deleteKaraDB(kid);
@@ -228,38 +228,26 @@ async function updateTags(kara) {
 	return await updateKaraTags(kara.kid, tags);
 }
 
-export async function createKaraInDB(kara) {
+export async function createKaraInDB(kara, opts = {
+	refresh: true
+}) {
 	await addKara(kara);
 	await Promise.all([
 		updateTags(kara),
 		updateSeries(kara)
 	]);
-	await Promise.all([
-		refreshKaraSeries(),
-		refreshKaraTags()
-	]);
-	await refreshKaras();
-	refreshKaraSeriesLang();
-	refreshSeries();
-	refreshYears();
-	refreshTags();
+	if (opts.refresh) await refreshKarasAfterDBChange();
 }
 
-export async function editKaraInDB(kara) {
+export async function editKaraInDB(kara, opts = {
+	refresh: true
+}) {
 	await Promise.all([
 		updateTags(kara),
 		updateSeries(kara),
 		updateKara(kara)
 	]);
-	await Promise.all([
-		refreshKaraSeries(),
-		refreshKaraTags()
-	]);
-	await refreshKaras();
-	refreshKaraSeriesLang();
-	refreshSeries();
-	refreshYears();
-	refreshTags();
+	if (opts.refresh) await refreshKarasAfterDBChange();
 }
 
 /**
@@ -395,4 +383,16 @@ export function formatKaraList(karaList, lang, from, count) {
 		},
 		content: karaList
 	};
+}
+
+export async function refreshKarasAfterDBChange() {
+	await Promise.all([
+		refreshKaraSeries(),
+		refreshKaraTags()
+	]);
+	await refreshKaras();
+	refreshKaraSeriesLang();
+	refreshSeries();
+	refreshYears();
+	refreshTags();
 }

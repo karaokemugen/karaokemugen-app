@@ -82,9 +82,9 @@ export async function integrateSeriesFile(file) {
 	const seriesFileData = await getDataFromSeriesFile(file);
 	try {
 		const seriesDBData = await getSerie(seriesFileData.sid);
-		await editSerie(seriesDBData.sid, seriesFileData);
+		await editSerie(seriesDBData.sid, seriesFileData, { refresh: false });
 		if (seriesDBData.name !== seriesFileData.name) await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().PathSeries.split('|')));
 	} catch(err) {
-		await addSerie(seriesFileData);
+		await addSerie(seriesFileData, { refresh: false });
 	}
 }
