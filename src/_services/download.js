@@ -31,7 +31,7 @@ function queueDownload(input, done) {
 		.then(() => {
 			done();
 		})
-		.catch((err) => {
+		.catch(err => {
 			done(err);
 		});
 }

@@ -60,6 +60,7 @@ export async function addSerie(serieObj) {
 	if (serie) throw 'Series original name already exists';
 	if (!serieObj.sid) serieObj.sid = uuidV4();
 	if (!serieObj.seriefile) serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
+
 	await insertSerie(serieObj);
 	await Promise.all([
 		insertSeriei18n(serieObj),

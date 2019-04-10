@@ -4,7 +4,7 @@ import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFil
 import {ASSToLyrics} from '../_utils/ass';
 import {now} from '../_utils/date';
 import {refreshTags, refreshKaraTags} from '../_dao/tag';
-import {refreshSeries, refreshKaraSeries} from '../_dao/series';
+import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../_dao/series';
 import { refreshAll, compareKarasChecksum } from '../_dao/database';
 import {selectAllKaras,
 	refreshYears,
@@ -239,6 +239,7 @@ export async function createKaraInDB(kara) {
 		refreshKaraTags()
 	]);
 	await refreshKaras();
+	refreshKaraSeriesLang();
 	refreshSeries();
 	refreshYears();
 	refreshTags();
@@ -255,6 +256,7 @@ export async function editKaraInDB(kara) {
 		refreshKaraTags()
 	]);
 	await refreshKaras();
+	refreshKaraSeriesLang();
 	refreshSeries();
 	refreshYears();
 	refreshTags();
