@@ -130,12 +130,6 @@ ORDER BY p.played_at DESC
 export const deleteKara = `
 DELETE FROM kara WHERE pk_kid = $1;
 `;
-export const deleteKaraSerie = `
-DELETE FROM kara_serie WHERE fk_kid = $1;
-`;
-export const deleteKaraTag = `
-DELETE FROM kara_tag WHERE fk_kid = $1;
-`;
 
 export const removeKaraFromPlaylist = `
 DELETE FROM playlist_content
