@@ -1,4 +1,4 @@
-import {emptyDownload, selectDownload, selectDownloads, updateDownload, deleteDownload, insertDownloads, selectPendingDownloads, initDownloads} from '../_dao/download';
+import {selectDownloadBLC, truncateDownloadBLC, insertDownloadBLC, updateDownloadBLC, deleteDownloadBLC, emptyDownload, selectDownload, selectDownloads, updateDownload, deleteDownload, insertDownloads, selectPendingDownloads, initDownloads} from '../_dao/download';
 import Downloader from '../_utils/downloader';
 import Queue from 'better-queue';
 import uuidV4 from 'uuid/v4';
@@ -10,6 +10,7 @@ import {asyncMove} from '../_utils/files';
 import { integrateSeriesFile } from '../_dao/seriesfile';
 import { integrateKaraFile } from '../_dao/karafile';
 import {getState} from '../_utils/state';
+import {uuidRegexp} from '../_services/constants';
 
 const queueOptions = {
 	id: 'uuid',
@@ -99,10 +100,8 @@ async function processDownload(download) {
 		id: download.name
 	});
 
-	for (const serie of download.urls.serie)
-	{
-		if(typeof serie.local == 'string')
-		{
+	for (const serie of download.urls.serie) {
+		if (typeof serie.local == 'string') {
 			list.push({
 				filename: resolve(tempSeriesPath, serie.local),
 				url: serie.remote,
@@ -117,10 +116,8 @@ async function processDownload(download) {
 	await asyncMove(tempMedia, localMedia, {overwrite: true});
 	if (download.urls.lyrics.local !== 'dummy.ass') await asyncMove(tempLyrics, localLyrics, {overwrite: true});
 	await asyncMove(tempKara, localKara, {overwrite: true});
-	for (const seriefile of download.urls.serie)
-	{
-		if(typeof seriefile.local == 'string')
-		{
+	for (const seriefile of download.urls.serie) {
+		if (typeof seriefile.local == 'string') {
 			await asyncMove(resolve(tempSeriesPath, seriefile.local), resolve(localSeriesPath, seriefile.local), {overwrite: true});
 		}
 	}
@@ -250,4 +247,34 @@ export async function wipeDownloads() {
 	q.destroy();
 	initQueue();
 	return await emptyDownload();
+}
+
+export async function getDownloadBLC() {
+	return await selectDownloadBLC();
+}
+
+export async function addDownloadBLC(type, value) {
+	if (+type < 0 && +type > 1004) throw `Incorrect BLC type (${type})`;
+	if (+type === 1001 && !new RegExp(uuidRegexp).test(value)) throw `Blacklist criteria value mismatch : type ${type} must have UUID value`;
+	if ((+type === 1002 || +type === 1003) && isNaN(value)) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
+	return await insertDownloadBLC(type, value);
+}
+
+export async function editDownloadBLC(id, type, value) {
+	const dlBLC = await selectDownloadBLC();
+	if (!dlBLC.some(e => e.dlblc_id === +id)) throw 'DL BLC ID does not exist';
+	if (+type < 0 && +type > 1004) throw `Incorrect BLC type (${type})`;
+	if (+type === 1001 && !new RegExp(uuidRegexp).test(value)) throw `Blacklist criteria value mismatch : type ${type} must have UUID value`;
+	if ((+type === 1002 || +type === 1003) && isNaN(value)) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
+	return await updateDownloadBLC(id, type, value);
+}
+
+export async function removeDownloadBLC(id) {
+	const dlBLC = await selectDownloadBLC();
+	if (!dlBLC.some(e => e.dlblc_id === +id)) throw 'DL BLC ID does not exist';
+	return await deleteDownloadBLC(id);
+}
+
+export async function emptyDownloadBLC() {
+	return await truncateDownloadBLC();
 }

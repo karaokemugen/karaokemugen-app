@@ -14,7 +14,7 @@ import {resetViewcounts} from '../_dao/kara';
 import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
-import {getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads} from '../_services/download';
+import {getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads} from '../_services/download';
 import {getRepos} from '../_services/repo';
 import {dumpPG} from '../_utils/postgresql';
 import logger from 'winston';
@@ -252,6 +252,46 @@ export default function systemController(router) {
 			res.status(200).send('Downloads starting');
 		} catch(err) {
 			res.status(500).send(`Error starting downloads: ${err}`);
+		}
+	});
+	router.get('/system/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const blc = await getDownloadBLC();
+			res.status(200).json(blc);
+		} catch(err) {
+			res.status(500).send(`Error getting download BLCs : ${err}`);
+		}
+	});
+	router.post('/system/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await addDownloadBLC(req.body.type, req.body.value);
+			res.status(200).send('Download blacklist criteria added');
+		} catch(err) {
+			res.status(500).send(`Error adding download BLC : ${err}`);
+		}
+	});
+	router.put('/system/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await editDownloadBLC(req.params.id, req.body.type, req.body.value);
+			res.status(200).send('Download blacklist criteria edited');
+		} catch(err) {
+			res.status(500).send(`Error editing download BLC : ${err}`);
+		}
+	});
+	router.delete('/system/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await removeDownloadBLC(req.params.id);
+			res.status(200).send('Download blacklist criteria removed');
+		} catch(err) {
+			res.status(500).send(`Error removing download BLC : ${err}`);
+		}
+	});
+	router.delete('/system/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await emptyDownloadBLC();
+			res.status(200).send('Download blacklist criterias emptied');
+		} catch(err) {
+			res.status(500).send(`Error emptying download BLC : ${err}`);
 		}
 	});
 	router.post('/system/db/renamekaras', requireAuth, requireValidUser, requireAdmin, async (req, res) => {

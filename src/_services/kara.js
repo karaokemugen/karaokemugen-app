@@ -31,6 +31,7 @@ import { getOrAddSerieID, deleteSerie } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../_utils/files';
 import {getConfig} from '../_utils/config';
 import logger from 'winston';
+import {getState} from '../_utils/state';
 
 export async function isAllKaras(karas) {
 	// Returns an array of unknown karaokes
@@ -136,12 +137,13 @@ export async function deleteKara(kid) {
 	await deleteKaraDB(kid);
 	logger.info(`[Kara] Song ${kara.karafile} removed`);
 
-	delayedDbRefreshViews(2000)
+	delayedDbRefreshViews(2000);
 }
 
-var delayedDbRefreshTimeout = null;
+let delayedDbRefreshTimeout = null;
+
 export async function delayedDbRefreshViews(ttl=100) {
-	clearTimeout(delayedDbRefreshTimeout)
+	clearTimeout(delayedDbRefreshTimeout);
 	delayedDbRefreshTimeout = setTimeout(refreshAll,ttl);
 }
 

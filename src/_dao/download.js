@@ -46,3 +46,24 @@ export async function updateDownload(uuid, status) {
 export async function emptyDownload() {
 	return await db().query(sql.emptyDownload);
 }
+
+export async function selectDownloadBLC() {
+	const res = await db().query(sql.selectDownloadBLC);
+	return res.rows;
+}
+
+export async function truncateDownloadBLC() {
+	return await db().query(sql.truncateDownloadBLC);
+}
+
+export async function deleteDownloadBLC(id) {
+	return await db().query(sql.deleteDownloadBLC, [id]);
+}
+
+export async function insertDownloadBLC(type, value) {
+	return await db().query(sql.insertDownloadBLC, [type, value]);
+}
+
+export async function updateDownloadBLC(id, type, value) {
+	return await db().query(sql.updateDownloadBLC, [id, type, value]);
+}
