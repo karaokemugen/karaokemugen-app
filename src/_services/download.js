@@ -256,7 +256,7 @@ export async function getDownloadBLC() {
 export async function addDownloadBLC(type, value) {
 	if (+type < 0 && +type > 1004) throw `Incorrect BLC type (${type})`;
 	if (+type === 1001 && !new RegExp(uuidRegexp).test(value)) throw `Blacklist criteria value mismatch : type ${type} must have UUID value`;
-	if ((+type === 1002 || +type === 1003) && isNaN(value)) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
+	if ((+type === 1002 || +type === 1003 || +type > 1004) && isNaN(value)) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
 	return await insertDownloadBLC(type, value);
 }
 
@@ -265,7 +265,7 @@ export async function editDownloadBLC(id, type, value) {
 	if (!dlBLC.some(e => e.dlblc_id === +id)) throw 'DL BLC ID does not exist';
 	if (+type < 0 && +type > 1004) throw `Incorrect BLC type (${type})`;
 	if (+type === 1001 && !new RegExp(uuidRegexp).test(value)) throw `Blacklist criteria value mismatch : type ${type} must have UUID value`;
-	if ((+type === 1002 || +type === 1003) && isNaN(value)) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
+	if ((+type === 1002 || +type === 1003 || +type > 1004) && isNaN(value)) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
 	return await updateDownloadBLC(id, type, value);
 }
 
