@@ -72,7 +72,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                     var msgData =   {  
                                         message: data.message,
                                         destination: data.destination,
-                                        duration: isNaN(data.duration) ? defaultDuration : data.duration
+                                        duration: !data.duration || isNaN(data.duration) ? defaultDuration : data.duration
                                     };
                    
                     ajx('POST', 'admin/player/message', msgData);
