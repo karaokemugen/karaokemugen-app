@@ -55,6 +55,7 @@ function initQueue() {
 	q.on('task_finish', () => {
 		taskCounter++;
 		if (taskCounter >= 5) {
+			logger.debug('[Download] Triggering database refresh');
 			compareKarasChecksum(true);
 			refreshSeriesAfterDBChange().then(refreshKarasAfterDBChange());
 			taskCounter = 0;
