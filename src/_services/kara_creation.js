@@ -133,8 +133,8 @@ async function generateKara(kara, opts) {
 	delete kara.subfile_orig;
 	delete kara.mediafile_orig;
 	// Let's move baby.
-	await asyncMove(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
-	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncMove(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
+	await asyncCopy(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
+	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncCopy(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
 
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
@@ -318,7 +318,7 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	try {
 		// Moving media in the first media folder.
 		if (extname(mediaDest).toLowerCase() === '.mp4') {
-			if (!karaData.overwrite && await asyncExists(mediaDest)) throw 'Media file already exists in destination folder'
+			if (!karaData.overwrite && await asyncExists(mediaDest)) throw 'Media file already exists in destination folder';
 			await webOptimize(mediaPath, mediaDest);
 			await asyncUnlink(mediaPath);
 		} else {
