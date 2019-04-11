@@ -22,8 +22,10 @@ import {from as copyFrom} from 'pg-copy-streams';
 const sql = require('./sql/database');
 
 export async function compareKarasChecksum(silent) {
-	const settings = await getSettings();
-	const currentChecksum = await baseChecksum({silent: silent});
+	const [settings, currentChecksum] = await Promise.all([
+		getSettings(),
+		baseChecksum({silent: silent})
+	]);
 	if (settings.baseChecksum !== currentChecksum) {
 		await saveSetting('baseChecksum', currentChecksum);
 		return false;
@@ -97,7 +99,7 @@ export function langSelector(lang, series) {
 
 // These two utility functions are used to make multiple inserts into one
 // You can do only one insert with multiple values, this helps.
-// expand returns ($1, $2), ($1, $2), ($1, $2) for (3, 2)
+// expand returns [($1, $2), ($1, $2), ($1, $2)] for (3, 2)
 export function expand(rowCount, columnCount, startAt = 1){
 	let index = startAt;
 	return Array(rowCount).fill(0).map(v => `(${Array(columnCount).fill(0).map(v => `$${index++}`).join(', ')})`).join(', ');
@@ -151,7 +153,7 @@ export async function transaction(queries) {
 	}
 }
 
-/* Opened DB are exposed to be used by DAO objects. */
+/* Opened DB is exposed to be used by DAO objects. */
 
 let database;
 

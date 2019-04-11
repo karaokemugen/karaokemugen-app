@@ -51,9 +51,7 @@ export async function playingUpdated() {
 	// Current playing song has been changed, stopping playing now and
 	// hitting play again to get the new song.
 	const state = getState();
-	if (state.status === 'play' && state.player.playing) {
-		playPlayer(true);
-	}
+	if (state.status === 'play' && state.player.playing) playPlayer(true);
 }
 
 export async function playerEnding() {

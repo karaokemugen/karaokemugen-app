@@ -145,12 +145,12 @@ async function processDownload(download) {
 	try {
 		for (const serie of bundle.series) {
 			await integrateSeriesFile(serie);
-			logger.info(`[Download] Finished integration of "${serie}"`);
+			logger.info(`[Download] Series "${serie}" added to database`);
 		}
 		await integrateKaraFile(bundle.kara);
 		logger.info(`[Download] Song "${download.name}" added to database`);
 	} catch(err) {
-		logger.error(`[Download] Song "${download.name}" downloaded but not added to database. Regenerate your database manually after fixing errors`);
+		logger.error(`[Download] Song "${download.name}" downloaded but not properly added to database. Regenerate your database manually after fixing errors`);
 		throw err;
 	}
 }
@@ -166,14 +166,14 @@ async function downloadFiles(download, list) {
 				setDownloadStatus(download.uuid, 'DL_FAILED')
 					.then(() => {
 						reject(`Error downloading this file : ${fileErrors.toString()}`);
-					}).catch((err) => {
+					}).catch(err => {
 						reject(`Error downloading this file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
 					});
 			} else {
 				setDownloadStatus(download.uuid, 'DL_DONE')
 					.then(() => {
 						resolve();
-					}).catch((err) => {
+					}).catch(err => {
 						reject(`Download finished but setting its state failed : ${err}`);
 					});
 			}
@@ -182,6 +182,7 @@ async function downloadFiles(download, list) {
 }
 
 export function pauseQueue() {
+	// Queue is paused but the current running task is not paused.
 	return q.pause();
 }
 
