@@ -66,12 +66,15 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 '<select class="form-control" name="destination"><option value="screen">' + i18n.__('CL_SCREEN') + '</option>'
                 + '<option value="users">' + i18n.__('CL_USERS') + '</option><option value="all">' + i18n.__('CL_ALL') + '</option></select>'
                 + '<input type="text"name="duration" placeholder="5000 (ms)"/>'
-                + '<input type="text" placeholder="Message" class="form-control" id="message" name="message">', function (data) {
-
-                    var msgData = { message: data.message, destination: data.destination };
-                    if (data.duration) {
-                        msgData['duration'] = data.duration;
-                    }
+                + '<input type="text" placeholder="Message" class="form-control" id="message" name="message">', function (data)
+                {
+                    var defaultDuration = 5000;
+                    var msgData =   {  
+                                        message: data.message,
+                                        destination: data.destination,
+                                        duration: isNaN(data.duration) ? defaultDuration : data.duration
+                                    };
+                   
                     ajx('POST', 'admin/player/message', msgData);
                 }
             );
