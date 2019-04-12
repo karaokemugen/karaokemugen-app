@@ -496,7 +496,7 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 		// And use that +1 to set our playlist position.
 		// If pos is -1, we must add it after the currently flag_playing karaoke.
 		// Position management here :
-		if (conf.Karaoke.SmartInsert && !user.flag_admin) {
+		if (conf.Karaoke.SmartInsert && user.type !== 0) {
 			if (userMaxPosition === null) {
 				// No songs yet from that user, they go first.
 				pos = -1;
