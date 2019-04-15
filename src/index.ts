@@ -1,6 +1,6 @@
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_utils/files';
 import {getConfig, initConfig, configureBinaries} from './_utils/config';
-import {parseCommandLineArgs} from './args.js';
+import {parseCommandLineArgs} from './args';
 import {writeFileSync, readFileSync} from 'fs';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
@@ -12,7 +12,6 @@ import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
 import { setState, getState } from './_utils/state';
-
 
 process.on('uncaughtException', function (exception) {
 	console.log('Uncaught exception:', exception);
@@ -45,7 +44,7 @@ if (process.platform === 'win32' ) {
 
 // Main app begins here.
 
-let appPath;
+let appPath: string;
 process.pkg ? appPath = join(process.execPath,'../') : appPath = join(__dirname,'../');
 setState({appPath: appPath});
 
@@ -61,14 +60,14 @@ main()
 async function main() {
 	const argv = parseArgs();
 	setState({os: process.platform});
-	let config = await initConfig(argv);
+	await initConfig(argv);
 	const state = getState();
 	console.log(chalk.blue(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
 	console.log('================================================================');
 	await parseCommandLineArgs(argv);
-	config = getConfig();
+	let config = getConfig();
 	logger.debug(`[Launcher] SysPath : ${appPath}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
@@ -141,7 +140,7 @@ function parseArgs() {
  */
 async function checkPaths(config) {
 
-	const appPath = getState().appPath;
+	const appPath: string = getState().appPath;
 
 	// If no karaoke is found, copy the samples directory if it exists
 	try {
@@ -182,7 +181,7 @@ async function checkPaths(config) {
 	logger.debug('[Launcher] Directory checks complete');
 }
 
-function verifyOpenPort(port) {
+function verifyOpenPort(port: number) {
 	const server = createServer();
 	server.once('error', err => {
 		if (err) {
