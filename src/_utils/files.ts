@@ -92,16 +92,16 @@ const filterValidFiles = (files) => files.filter(file => !file.startsWith('.') &
 export const filterMedias = (files) => filterValidFiles(files);
 export const filterImages = (files) => filterValidFiles(files);
 
-export const checksum = (str, algorithm, encoding) => createHash(algorithm || 'md5')
+export const checksum = (str: string, algorithm: string, encoding: string) => createHash(algorithm || 'md5')
 	.update(str, 'utf8')
 	.digest(encoding || 'hex');
 
 /** Function used to verify if a required file exists. It throws an exception if not. */
-export async function asyncRequired(file) {
+export async function asyncRequired(file: string) {
 	if (!await asyncExists(file)) throw `File "${file}" does not exist`;
 }
 
-export async function asyncCheckOrMkdir(...dir) {
+export async function asyncCheckOrMkdir(...dir: string[]) {
 	const resolvedDir = resolve(...dir);
 	if (!await asyncExists(resolvedDir)) {
 		if (logger) logger.debug(`[File] Creating folder ${resolvedDir}`);
@@ -109,7 +109,7 @@ export async function asyncCheckOrMkdir(...dir) {
 	}
 }
 
-export async function isGitRepo(dir) {
+export async function isGitRepo(dir: string) {
 	const dirContents = await asyncReadDir(dir);
 	return dirContents.includes('.git');
 }
@@ -117,7 +117,7 @@ export async function isGitRepo(dir) {
 /**
  * Searching file in a list of folders. If the file is found, we return its complete path with resolve.
  */
-export async function resolveFileInDirs(filename, dirs) {
+export async function resolveFileInDirs(filename: string, dirs: string[]) {
 	const resolvedFile = dirs
 		.map((dir) => resolve(getState().appPath, dir, filename))
 		.find((resolvedFile) => asyncExists(resolvedFile));
@@ -128,11 +128,11 @@ export async function resolveFileInDirs(filename, dirs) {
 }
 
 /** Replacing extension in filename */
-export function replaceExt(filename, newExt) {
+export function replaceExt(filename: string, newExt: string) {
 	return filename.replace(/\.[^.]+$/, newExt);
 }
 
-async function compareFiles(file1, file2) {
+async function compareFiles(file1: string, file2: string) {
 	const files = [file1, file2];
 
 	if (await Promise.all(files.some((file) => !asyncExists(file)))) return false;
@@ -142,11 +142,11 @@ async function compareFiles(file1, file2) {
 	return file1data === file2data;
 }
 
-async function compareAllFiles(files, dir1, dir2) {
+async function compareAllFiles(files: string[], dir1: string, dir2: string) {
 	return await Promise.all(files.filter((file) => !compareFiles(resolve(dir1, file), resolve(dir2, file))));
 }
 
-export async function compareDirs(dir1, dir2) {
+export async function compareDirs(dir1: string, dir2: string) {
 
 	const [dir1List, dir2List] = await Promise.all([
 		asyncReadDir(dir1),
@@ -166,12 +166,12 @@ export async function compareDirs(dir1, dir2) {
 	};
 }
 
-export async function asyncReadDirFilter(dir, ext) {
+export async function asyncReadDirFilter(dir: string, ext: string) {
 	const dirListing = await asyncReadDir(dir);
 	return dirListing.filter(file => file.endsWith(ext) && !file.startsWith('.')).map(file => resolve(dir, file));
 }
 
-export function writeStreamToFile(stream, filePath) {
+export function writeStreamToFile(stream, filePath: string) {
 	return new Promise((resolve, reject) => {
 		const file = createWriteStream(filePath);
 		stream.pipe(file);

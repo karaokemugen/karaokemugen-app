@@ -8,25 +8,142 @@ import {address} from 'ip';
 import {configureLogger} from './logger';
 import logger from 'winston';
 import {copy} from 'fs-extra';
-import {asyncWriteFile, asyncRename, asyncExists, asyncReadFile, asyncRequired} from './files';
-import {checkBinaries} from './binchecker.js';
+import {asyncExists, asyncReadFile, asyncRename, asyncRequired, asyncWriteFile} from './files';
+import {checkBinaries} from './binchecker';
 import uuidV4 from 'uuid/v4';
-import {configConstraints, defaults} from './default_settings.js';
+import {configConstraints, defaults} from './default_settings';
 import {check} from './validators';
 import {publishURL} from '../_webapp/online';
 import {playerNeedsRestart} from '../_services/player';
-import {setState, getState} from './state';
+import {getState, setState} from './state';
 import testJSON from 'is-valid-json';
 import {setSongPoll} from '../_services/poll';
-import { initStats, stopStats } from '../_services/stats';
+import {initStats, stopStats} from '../_services/stats';
 import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
-import {safeLoad, safeDump} from 'js-yaml';
+import {safeDump, safeLoad} from 'js-yaml';
 import {clearEmpties, difference} from './object_helpers';
 import cloneDeep from 'lodash.clonedeep';
 
+interface Config {
+	App: {
+		JwtSecret: string,
+		InstanceID: string,
+		FirstRun: boolean,
+		karaSuggestionMail: string
+	},
+	Online: {
+		Host: string,
+		Port: number,
+		Users: boolean,
+		URL: boolean,
+		Stats: {
+			
+		}
+	},
+	Frontend: {
+		Port: number,
+		Mode: number,
+		SongLanguageMode: number,
+		AuthExpireTime: number,
+		Permissions: {
+			AllowViewWhitelist: boolean,
+			AllowViewBlacklist: boolean,
+			AllowViewBlacklistCriterias: boolean
+		}
+	},
+	Karaoke: {
+		Private: boolean,
+		Autoplay: boolean,
+		Repeat: boolean,
+		MaxDejaVuTime: number,
+		SmartInsert: boolean,
+		CreatePreviews: boolean,
+		Display: {
+			Nickname: boolean,
+			ConnectionInfo: {
+				Enabled: boolean,
+				QRCode: boolean,
+				Host: string
+			}
+		},
+		Poll: {
+			Enabled: boolean,
+			Choices: number,
+			Timeout: number
+		},
+		Quota: {
+			Songs: number,
+			Time: number,
+			Type: number,
+			FreeAutoTime: number,
+			FreeUpvotes: boolean,
+			FreeUpvotesRequiredPercent: number,
+			FreeUpvotesRequiredMin: number
+		}
+	},
+	Player: {
+		StayOnTop: boolean,
+		FullScreen: boolean,
+		Background: string,
+		Screen: number,
+		VisualizationEffects: boolean,
+		Monitor: boolean,
+		NoHud: boolean,
+		NoBar: boolean,
+		mpvVideoOutput: string,
+		PIP: {
+			Enabled: boolean,
+			Size: number,
+			PositionX: number,
+			PositionY: number
+		}
+	},
+	Playlist: {
+		allowDuplicates: boolean,
+		MaxDejaVuTime: number,
+		JinglesInterval: number,
+		RemovePublicOnPlay: boolean
+	},
+	System: {
+		Binaries: {
+			Player: {
+				Windows: string,
+				OSX: string,
+				Linux: string
+			},
+			Postgres: {
+				Windows: string,
+				OSX: string,
+				Linux: string
+			},
+			ffmpeg: {
+				Windows: string,
+				OSX: string,
+				Linux: string
+			}
+		},
+		Path: {
+			Bin: string,
+			Karas: string[],
+			Medias: string[],
+			Lyrics: string[],
+			DB: string,
+			Series: string[],
+			Backgrounds: string[],
+			Jingles: string[],
+			Temp: string,
+			Previews: string,
+			Import: string,
+			Avatars: string,
+			MediasHTTP: string
+		}
+	},
+	Database: {}
+}
+
 /** Object containing all config */
-let config = {};
+let config: Config = getDefaultConfig();
 let configFile = 'config.yml';
 let configReady;
 
@@ -75,32 +192,128 @@ export async function mergeConfig(newConfig, oldConfig) {
 	configureHost();
 }
 
+function getDefaultConfig(): Config {
+	return {
+		App: {
+			JwtSecret: undefined,
+			InstanceID: undefined,
+			FirstRun: undefined,
+			karaSuggestionMail: undefined
+		},
+		Online: {
+			Host: undefined,
+			Port: undefined,
+			Users: undefined,
+			URL: undefined,
+			Stats: {}
+		},
+		Frontend: {
+			Port: undefined,
+			Mode: undefined,
+			SongLanguageMode: undefined,
+			AuthExpireTime: undefined,
+			Permissions: {
+				AllowViewWhitelist: undefined,
+				AllowViewBlacklist: undefined,
+				AllowViewBlacklistCriterias: undefined
+			}
+		},
+		Karaoke: {
+			Private: undefined,
+			Autoplay: undefined,
+			Repeat: undefined,
+			MaxDejaVuTime: undefined,
+			SmartInsert: undefined,
+			CreatePreviews: undefined,
+			Display: {
+				Nickname: undefined,
+				ConnectionInfo: {
+					Enabled: undefined,
+					QRCode: undefined,
+					Host: undefined
+				}
+			},
+			Poll: {
+				Enabled: undefined,
+				Choices: undefined,
+				Timeout: undefined
+			},
+			Quota: {
+				Songs: undefined,
+				Time: undefined,
+				Type: undefined,
+				FreeAutoTime: undefined,
+				FreeUpvotes: undefined,
+				FreeUpvotesRequiredPercent: undefined,
+				FreeUpvotesRequiredMin: undefined
+			}
+		},
+		Player: {
+			StayOnTop: undefined,
+			FullScreen: undefined,
+			Background: undefined,
+			Screen: undefined,
+			VisualizationEffects: undefined,
+			Monitor: undefined,
+			NoHud: undefined,
+			NoBar: undefined,
+			mpvVideoOutput: undefined,
+			PIP: {
+				Enabled: undefined,
+				Size: undefined,
+				PositionX: undefined,
+				PositionY: undefined
+			}
+		},
+		Playlist: {
+			allowDuplicates: undefined,
+			MaxDejaVuTime: undefined,
+			JinglesInterval: undefined,
+			RemovePublicOnPlay: undefined
+		},
+		System: {
+			Binaries: {
+				Player: {
+					Windows: undefined,
+					OSX: undefined,
+					Linux: undefined
+				},
+				Postgres: {
+					Windows: undefined,
+					OSX: undefined,
+					Linux: undefined
+				},
+				ffmpeg: {
+					Windows: undefined,
+					OSX: undefined,
+					Linux: undefined
+				}
+			},
+			Path: {
+				Bin: undefined,
+				Karas: undefined,
+				Medias: undefined,
+				Lyrics: undefined,
+				DB: undefined,
+				Series: undefined,
+				Backgrounds: undefined,
+				Jingles: undefined,
+				Temp: undefined,
+				Previews: undefined,
+				Import: undefined,
+				Avatars: undefined,
+				MediasHTTP: undefined
+			}
+		},
+		Database: {}
+	};
+}
+
 async function importIniFile(iniFile) {
 	//Imports old KM config INI and transforms it to our new config object overlord
 	const content = await asyncReadFile(iniFile, 'utf-8');
 	const ini = parse(content);
-	const c = {
-		App: {},
-		Online: {},
-		Frontend: { Permissions: {} },
-		Karaoke: {
-			Display: { ConnectionInfo: {}},
-			Poll: {},
-			Quota: {}
-		},
-		Player: {
-			PIP: {}
-		},
-		Playlist: {},
-		System: {
-			Binaries: {
-				Player: {},
-				ffmpeg: {},
-				Postgres: {}
-			},
-			Path: {}
-		}
-	};
+	const c = getDefaultConfig();
 	if (ini.JwtSecret) c.App.JwtSecret = ini.JwtSecret;
 	if (ini.EngineDisplayNickname) c.Karaoke.Display.Nickname = true;
 	if (ini.EngineDisplayConnectionInfo == 0) c.Karaoke.Display.ConnectionInfo.Enabled = false;
