@@ -7,18 +7,18 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "start": "babel-node src/index.js --",
-    "debug": "babel-node $NODE_DEBUG_OPTION src/index.js -- --debug",
+    "start": "ts-node src/index.ts --",
+    "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
     "test": "mocha --require babel-register --timeout 20000",
-    "build": "yarn buildReact && rm -Rf dist && babel --source-maps --copy-files -d dist/ src/",
-    "install": "cd react_systempanel && yarn install",
-    "setup": "yarn install && yarn buildReact",
-    "buildReact": "cd react_systempanel && yarn build",
-    "startReact": "cd react_systempanel && yarn start",
+    "build": "npm run buildReact && rm -Rf dist && babel --source-maps --copy-files -d dist/ src/",
+    "install": "cd react_systempanel && npm install",
+    "setup": "npm install && npm run buildReact",
+    "buildReact": "cd react_systempanel && npm build",
+    "startReact": "cd react_systempanel && npm start",
     "migrate": "node node_modules/db-migrate/bin/db-migrate sync [all] --migrations-dir src/_dao/migrations",
     "migrateDown": "node node_modules/db-migrate/bin/db-migrate down --migrations-dir src/_dao/migrations",
     "migrateUp": "node node_modules/db-migrate/bin/db-migrate up --migrations-dir src/_dao/migrations",
-    "dropDatabase": "node util/dropDatabase.js"
+    "dropDatabase": "ts-node util/dropDatabase.ts"
   },
   "homepage": "https://mugen.karaokes.moe/en",
   "repository": {
@@ -76,10 +76,14 @@
     ]
   },
   "dependencies": {
+    "@types/fs-extra": "^5.0.5",
+    "@types/minimist": "^1.2.0",
+    "@types/node": "^11.13.4",
     "agentkeepalive": "^4.0.2",
     "ass-compiler": "^0.0.10",
     "async-await-parallel": "^1.0.0",
     "body-parser": "^1.18.3",
+    "build": "^0.1.4",
     "chalk": "^2.4.2",
     "cli-progress": "^2.1.1",
     "compression": "^1.7.3",
@@ -143,10 +147,12 @@
     "yesql": "^3.2.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^10.0.1",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-stage-2": "^6.24.1",
+    "@babel/core": "^7.4.3",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
+    "@babel/preset-typescript": "^7.3.3",
+    "@typescript-eslint/eslint-plugin": "^1.6.0",
+    "@typescript-eslint/parser": "^1.6.0",
     "chai": "^4.2.0",
     "eslint": "^5.15.3",
     "eslint-config-react-app": "^3.0.8",
@@ -156,7 +162,8 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
     "mocha": "^6.1.1",
-    "supertest": "^4.0.0"
+    "supertest": "^4.0.0",
+    "typescript": "^3.4.3"
   },
   "apidoc": {
     "url": "http://localhost:1337/api"
