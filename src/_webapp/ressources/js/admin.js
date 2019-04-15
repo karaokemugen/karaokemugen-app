@@ -505,8 +505,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 $(formArray).each(function (index, obj) {
                     settingsArray[obj.name] = obj.value;
                 });
-                settingsArray['Karaoke.Private'] = $('input[name="Karaoke.Private"]').val() === "true";
-                settingsArray['App.FirstRun'] = $('input[name="App.FirstRun"]').val() === "true";
+                settingsArray['Karaoke.Private'] = $('input[name="Karaoke.Private"]').val() === "1";
+                settingsArray['App.FirstRun'] = $('input[name="App.FirstRun"]').val() === "1";
                 settingsArray['Player.NoHud'] = settings['Player.NoHud'];
                 settingsArray['Player.NoBar'] = settings['Player.NoBar'];
                 DEBUG && console.log('setSettings : ', settingsArray);
