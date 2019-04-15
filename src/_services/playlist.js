@@ -612,7 +612,7 @@ export async function copyKaraToPlaylist(plc_id, playlist_id, pos) {
 			const res = await getMaxPosInPlaylist(playlist_id);
 			let startpos = res.maxpos + 1;
 			for (const i in plcList) {
-				plcList[i].pos = startpos + i + 1;
+				plcList[i].pos = startpos + +i;
 			};
 		}
 		await addKaraToPL(plcList);
