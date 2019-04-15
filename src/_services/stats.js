@@ -29,7 +29,7 @@ export async function sendPayload() {
 		try {
 			await internet();
 		} catch(err) {
-			throw `This instance is not connected to the internets : ${err}`;
+			throw 'This instance is not connected to the internets';
 		}
 		const payload = await buildPayload();
 		logger.info(`[Stats] Sending payload (${prettyBytes(JSON.stringify(payload).length)})`);

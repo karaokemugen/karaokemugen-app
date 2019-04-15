@@ -4238,7 +4238,7 @@ export function APIControllerPublic(router) {
 				req.body.login = unescape(req.body.login.trim());
 				// No errors detected
 				try {
-					await createUser({...req.body, flag_admin: 0});
+					await createUser(req.body);
 					res.json(OKMessage(true,'USER_CREATED'));
 				} catch(err) {
 					res.status(500).json(errMessage(err.code,err.message));
