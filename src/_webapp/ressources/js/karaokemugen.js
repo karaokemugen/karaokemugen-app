@@ -1929,6 +1929,7 @@ var settingsNotUpdated;
 				} else {
 					$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
 						var kara = dataKara[0];
+						$('.karaCard').attr('idKara', kara.kid);
 						$('#karaInfo').attr('idKara', kara.kid);
 						$('#karaInfo').attr('length', kara.duration);
 						$('#karaInfo > span').text( buildKaraTitle(kara) );
