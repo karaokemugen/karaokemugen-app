@@ -401,7 +401,7 @@ export function isAllKarasInPlaylist(karas, karasToRemove) {
 	return karas.filter(k => !karasToRemove.map(ktr => ktr.unique_id).includes(k.unique_id));
 }
 
-export async function addKaraToPlaylist(kids: string|string[], requester:string, playlist_id: number, pos?: number) {
+export async function addKaraToPlaylist(kids: string|string[], requester:string, playlist_id?: number, pos?: number) {
 	let addByAdmin = true;
 	const conf = getConfig();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
@@ -761,7 +761,7 @@ export async function exportPlaylist(playlist_id) {
 	}
 }
 
-export async function importPlaylist(playlist, username, playlist_id) {
+export async function importPlaylist(playlist: any, username: string, playlist_id?: number) {
 	// Check if format is valid :
 	// Header must contain :
 	// description = Karaoke Mugen Playlist File

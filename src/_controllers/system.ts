@@ -2,7 +2,7 @@ import {editSetting, backupConfig, getConfig} from '../_utils/config';
 import {emitWS} from '../_webapp/frontend';
 import {getState} from '../_utils/state';
 import {run as generateDatabase} from '../_services/generation';
-import {renameAllKaras, editKara, createKara, karaGenerationBatch} from '../_services/kara_creation';
+import {editKara, createKara} from '../_services/kara_creation';
 import {requireAuth, requireValidUser, requireAdmin} from './middlewares/auth';
 import {requireNotDemo} from './middlewares/demo';
 import {getLang} from './middlewares/lang';
@@ -55,11 +55,14 @@ export default function systemController(router) {
 			.then(() => res.status(200).send('Karas successfully edited'))
 			.catch(err => res.status(500).send(`Error while editing kara: ${err}`));
 	});
+
+	/*
 	router.post('/system/karas/generate-all', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		karaGenerationBatch()
 			.then(() => res.status(200).send('Karas successfully generated'))
 			.catch(err => res.status(500).send(`Error while generating karas: ${err}`));
 	});
+	*/
 
 	router.post('/system/karas/importfile', upload.single('file'), (req, res) => {
 		res.status(200).send(JSON.stringify(req.file));
@@ -124,13 +127,13 @@ export default function systemController(router) {
 	});
 
 	router.get('/system/karas/history', requireAuth, requireValidUser, requireAdmin, (req, res) =>{
-		getKaraHistory(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
+		getKaraHistory()
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas history: ${err}`));
 	});
 
 	router.get('/system/karas/ranking', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) =>{
-		getTop50(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
+		getTop50(req.authToken, req.lang)
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas most requested: ${err}`));
 	});
@@ -182,6 +185,7 @@ export default function systemController(router) {
 
 	});
 
+	/*
 	router.post('/system/db/renamekaras', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			await renameAllKaras();
@@ -190,6 +194,7 @@ export default function systemController(router) {
 			res.status(500).send(`Error renaming karas: ${err}`);
 		}
 	});
+	*/
 
 	router.post('/system/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		runBaseUpdate()

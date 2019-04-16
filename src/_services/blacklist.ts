@@ -26,7 +26,7 @@ export async function getBlacklist(filter?: any, lang?: string, from?: number, s
 	return ret;
 }
 
-export async function getBlacklistCriterias(lang) {
+export async function getBlacklistCriterias(lang?: string) {
 	try {
 		profile('getBLC');
 		const blcs = await getBLC();

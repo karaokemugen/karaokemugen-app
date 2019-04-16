@@ -25,7 +25,26 @@ let playerMonitor;
 let monitorEnabled = false;
 let songNearEnd = false;
 
-let playerState = {
+interface PlayerState {
+	volume: number,
+	playing: boolean,
+	playerstatus: string,
+	_playing: boolean, // internal delay flag
+	timeposition: number,
+	duration: number,
+	mutestatus: boolean,
+	subtext: string,
+	currentSongInfos: object,
+	mediaType: string,
+	showsubs: boolean,
+	stayontop: boolean,
+	fullscreen: boolean,
+	ready: boolean,
+	url: string,
+	status?: string
+}
+
+let playerState: PlayerState = {
 	volume: 100,
 	playing: false,
 	playerstatus: 'stop',
@@ -74,7 +93,7 @@ export async function loadBackground() {
 	const defaultImageFile = resolve(getState().appPath,conf.System.Path.Temp,'default.jpg');
 	let backgroundImageFile = defaultImageFile;
 	if (conf.Player.Background) {
-		backgroundImageFile = resolve(getState().appPath,conf.System.Path.Backgrounds,conf.Player.Background);
+		backgroundImageFile = resolve(getState().appPath, conf.System.Path.Backgrounds[0], conf.Player.Background);
 		if (await asyncExists(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
 			logger.warn(`[Player] Unable to find background file ${backgroundImageFile}, reverting to default one`);
@@ -179,7 +198,7 @@ async function startmpv() {
 		mpvOptions.push(`--fs-screen=${conf.Player.Screen}`);
 	}
 	// Fullscreen is disabled if pipmode is set.
-	if (conf.Player.Fullscreen && !conf.Player.PIP.Enabled) {
+	if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
 		mpvOptions.push('--fullscreen');
 		playerState.fullscreen = true;
 	}
@@ -542,7 +561,7 @@ export function displayInfo(duration = 10000000) {
 	const conf = getConfig();
 	const ci = conf.Karaoke.Display.ConnectionInfo;
 	let text = '';
-	if (ci.Enabled) text = `${ci.Message} ${__('GO_TO')} ${getState().osURL} !`;
+	if (ci.Enabled) text = `${ci.Message} ${i18n.__('GO_TO')} ${getState().osURL} !`;
 	const version = `Karaoke Mugen ${getState().version.number} (${getState().version.name}) - http://karaokes.moe`;
 	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {

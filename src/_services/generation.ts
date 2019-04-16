@@ -451,7 +451,7 @@ function prepareTagsKaraInsertData(tagsByKara) {
 	return data;
 }
 
-export async function run(validateOnly) {
+export async function run(validateOnly: boolean = false) {
 	try {
 		emit('databaseBusy',true);
 		if (generating) throw 'A database generation is already in progress';

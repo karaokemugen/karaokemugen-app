@@ -360,7 +360,7 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter: object, lang: string, from = 0, size = 999999999, searchType, searchValue, token: Token, random) {
+export async function getKaras(filter: object, lang: string, from = 0, size = 999999999, searchType, searchValue, token: Token, random?) {
 	profile('getKaras');
 	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin', random);
 	profile('formatList');

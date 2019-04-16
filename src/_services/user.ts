@@ -167,7 +167,7 @@ export function createJwtToken(username: string, role: string, config?: Config) 
 	);
 }
 
-export function decodeJwtToken(token, config) {
+export function decodeJwtToken(token, config?: Config) {
 	const conf = config || getConfig();
 	return decode(token, conf.App.JwtSecret);
 }
@@ -585,7 +585,7 @@ async function cleanupAvatars() {
 	return true;
 }
 
-export async function updateSongsLeft(username, playlist_id) {
+export async function updateSongsLeft(username, playlist_id?: number) {
 	const conf = getConfig();
 	const user = await findUserByName(username);
 	let quotaLeft;

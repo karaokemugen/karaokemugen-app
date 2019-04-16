@@ -29,7 +29,7 @@ export async function checkValidUser(token, onlineToken) {
 					// Firing this first to avoid multiple triggers, will get canceled if auth is not OK.
 					upsertRemoteToken(token.username, onlineToken);
 					if (await remoteCheckAuth(token.username.split('@')[1], onlineToken)){
-						fetchAndAddFavorites(token.username.split('@')[1], onlineToken, token.username, token.username);
+						fetchAndAddFavorites(token.username.split('@')[1], onlineToken, token.username);
 						fetchAndUpdateRemoteUser(token.username, null, onlineToken);
 						return user;
 					} else {

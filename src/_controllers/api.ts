@@ -31,7 +31,7 @@ import {getSeries} from '../_services/series';
 
 const bools = [true, false, 'true', 'false'];
 
-function errMessage(code,message,args) {
+function errMessage(code, message?, args?) {
 	return {
 		code: code,
 		args: args,
@@ -39,7 +39,7 @@ function errMessage(code,message,args) {
 	};
 }
 
-function OKMessage(data,code,args) {
+function OKMessage(data, code?, args?) {
 	return {
 		code: code,
 		args: args,
@@ -383,7 +383,7 @@ export function APIControllerAdmin(router) {
  */
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				await deletePlaylist(req.params.pl_id,req.authToken);
+				await deletePlaylist(req.params.pl_id);
 				emitWS('playlistsUpdated');
 				res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
 			} catch(err) {
@@ -2055,7 +2055,8 @@ export function APIControllerAdmin(router) {
 					const data = await importPlaylist(JSON.parse(req.body.playlist), req.authToken.username);
 					const response = {
 						message: 'Playlist imported',
-						playlist_id: data.playlist_id
+						playlist_id: data.playlist_id,
+						unknownKaras: undefined
 					};
 					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;
 					emitWS('playlistsUpdated');
@@ -4138,7 +4139,8 @@ export function APIControllerPublic(router) {
 				try {
 					const data = await importFavorites(req.body.favorites,req.authToken.username);
 					const response = {
-						message: 'Favorites imported'
+						message: 'Favorites imported',
+						unknownKaras: undefined
 					};
 					if (data.karasUnknown && data.karasUnknown.length > 0) response.unknownKaras = data.karasUnknown;
 					emitWS('favoritesUpdated', req.authToken.username);
@@ -4260,7 +4262,7 @@ export function APIControllerPublic(router) {
 	 */
 	 .get(getLang, async (req, res) => {
 			try {
-				const result = await getFeeds(req.lang);
+				const result = await getFeeds();
 				res.json(result);
 			} catch(err) {
 				res.status(500).send(err);
