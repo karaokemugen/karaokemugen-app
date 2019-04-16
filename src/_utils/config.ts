@@ -139,7 +139,18 @@ interface Config {
 			MediasHTTP: string
 		}
 	},
-	Database: {}
+	Database: {
+		prod: {
+			host: string,
+			port: number,
+			user: string,
+			password: string,
+			superuser: string,
+			superuserPassword: string,
+			database: string,
+			bundledPostgresBinary: boolean
+		}
+	}
 }
 
 /** Object containing all config */
@@ -305,7 +316,18 @@ function getDefaultConfig(): Config {
 				MediasHTTP: undefined
 			}
 		},
-		Database: {}
+		Database: {
+			prod: {
+				host: undefined,
+				port: undefined,
+				user: undefined,
+				password: undefined,
+				superuser: undefined,
+				superuserPassword: undefined,
+				database: undefined,
+				bundledPostgresBinary: undefined
+			}
+		}
 	};
 }
 
