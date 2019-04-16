@@ -65,7 +65,7 @@ export async function convertToRemoteFavorites(username) {
 	const favorites = await getFavorites({username: username});
 	const addFavorites = [];
 	if (favorites.content.length > 0) {
-		for (const favorite of favorites) {
+		for (const favorite of favorites.content) {
 			addFavorites.push(manageFavoriteInInstance('POST', username, favorite.kid));
 		}
 		await Promise.all(addFavorites);
