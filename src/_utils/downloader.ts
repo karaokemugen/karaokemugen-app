@@ -7,8 +7,28 @@ import {createWriteStream} from 'fs';
 import { getState } from './state';
 import { emitWS } from '../_webapp/frontend';
 
+interface DownloadItem {
+	url: string,
+	filename: string,
+	size: number
+}
+
+interface DownloadOpts {
+	bar: boolean
+	auth?: {
+		user: string,
+		pass: string
+	}
+}
 
 export default class Downloader {
+
+	list: DownloadItem[];
+	pos: number;
+	opts: DownloadOpts;
+	fileErrors: string[];
+	bar: _cliProgress.Bar;
+	onEnd: (this: void, errors: string[]) => void;
 
 	constructor(list, opts) {
 	  this.list = list;
@@ -23,7 +43,7 @@ export default class Downloader {
 	}
 
 	// Triggers the download chain
-	download = onEnd => {
+	download = (onEnd? : (this: void, errors: string[]) => void)  => {
 	  if (onEnd) this.onEnd = onEnd;
 	  if (this.pos >= this.list.length) {
 			this.onEnd(this.fileErrors);
@@ -46,7 +66,7 @@ export default class Downloader {
 				this.download();
 			});
 	  }
-	}
+	};
 
 	DoDownload = (url, filename, size, onSuccess, onError) => {
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
@@ -61,7 +81,8 @@ export default class Downloader {
 			},
 			headers: {
 				'user-agent': `KaraokeMugen/${getState().version.number}`
-			}
+			},
+			auth: undefined
 		};
 		let stream = createWriteStream(filename);
 		if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
@@ -96,5 +117,5 @@ export default class Downloader {
 				onSuccess();
 			})
 			.pipe(stream);
-	}
+	};
 }
