@@ -116,9 +116,9 @@ async function importIniFile(iniFile) {
 	if (ini.EngineTimePerUser) c.Karaoke.Quota.Time = +ini.EngineTimePerUser;
 	if (ini.EngineQuotaType) c.Karaoke.Quota.Type = +ini.EngineQuotaType;
 	if (ini.EngineFreeAutoTime) c.Karaoke.Quota.FreeAutoTime = +ini.EngineFreeAutoTime;
-	if (ini.EngineFreeUpvotes) c.Karaoke.Quota.FreeUpvotes = false;
-	if (ini.EngineFreeUpvotesRequiredPercent) c.Karaoke.Quota.FreeUpvotesRequiredPercent = +ini.EngineFreeUpvotesRequiredPercent;
-	if (ini.EngineFreeUpvotesRequiredMin) c.Karaoke.Quota.FreeUpvotesRequiredMin = +ini.EngineFreeUpvotesRequiredMin;
+	if (ini.EngineFreeUpvotes) c.Karaoke.Quota.FreeUpVotes = false;
+	if (ini.EngineFreeUpvotesRequiredPercent) c.Karaoke.Quota.FreeUpVotesRequiredPercent = +ini.EngineFreeUpvotesRequiredPercent;
+	if (ini.EngineFreeUpVotesRequiredMin) c.Karaoke.Quota.FreeUpvotesRequiredMin = +ini.EngineFreeUpVotesRequiredMin;
 	if (ini.EngineAutoPlay) c.Karaoke.Autoplay = true;
 	if (ini.EngineRepeatPlaylist) c.Karaoke.Repeat = true;
 	if (ini.EngineMaxDejaVuTime) c.Playlist.MaxDejaVuTime = +ini.EngineMaxDejaVuTime;
