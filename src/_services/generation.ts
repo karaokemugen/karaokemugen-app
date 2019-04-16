@@ -8,7 +8,7 @@ import {getState} from '../_utils/state';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {selectBLCTags, selectTags} from '../_dao/sql/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
-import {verifyKaraData} from '../_services/kara';
+import {Kara, verifyKaraData} from './kara';
 import parallel from 'async-await-parallel';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
 import {copyFromData, refreshAll, db, saveSetting} from '../_dao/database';
@@ -115,7 +115,7 @@ async function readAndCompleteKarafile(karafile, seriesMap) {
 }
 
 
-function prepareKaraInsertData(kara, index) {
+function prepareKaraInsertData(kara: Kara): any[] {
 	return [
 		kara.KID,
 		kara.title,
@@ -132,7 +132,7 @@ function prepareKaraInsertData(kara, index) {
 	];
 }
 
-function prepareAllKarasInsertData(karas) {
+function prepareAllKarasInsertData(karas: Kara[]) {
 	return karas.map(kara => prepareKaraInsertData(kara));
 }
 
@@ -415,7 +415,7 @@ function prepareAllTagsInsertData(allTags) {
 		}
 	}
 	// We do it as well for types
-	for (const type of karaTypesMap) {
+	for (const type of karaTypesMap.entries()) {
 		const tagi18n = {};
 		if (!data.find(t => t[2] === `TYPE_${type[0]}`)) {
 			const typeDefaultName = `TYPE_${type[0]}`;
@@ -528,7 +528,7 @@ export async function run(validateOnly) {
 		await db().query('VACUUM ANALYZE;');
 		bar.incr();
 		await Promise.all([
-			checkUserdbIntegrity(null),
+			checkUserdbIntegrity(),
 			refreshAll()
 		]);
 		bar.incr();

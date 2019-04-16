@@ -96,8 +96,6 @@ export interface KaraInPlaylist {
 	pos?: number
 }
 
-
-
 function getPlayingPos(playlist) {
 	// Getting position of the currently playing karaoke in a playlist
 	const index = playlist.findIndex(e => e.flag_playing);
@@ -403,14 +401,12 @@ export function isAllKarasInPlaylist(karas, karasToRemove) {
 	return karas.filter(k => !karasToRemove.map(ktr => ktr.unique_id).includes(k.unique_id));
 }
 
-export async function addKaraToPlaylist(kids: string, requester:string, playlist_id: number, pos?: number) {
+export async function addKaraToPlaylist(kids: string|string[], requester:string, playlist_id: number, pos?: number) {
 	let addByAdmin = true;
 	const conf = getConfig();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
 	const state = getState();
-	let karas = [kids];
-	if (typeof kids === 'string') karas = kids.split(',');
-	if (Array.isArray(kids)) karas = kids;
+	let karas: string[] = (typeof kids === 'string') ? kids.split(',') : kids;
 	if (!playlist_id) {
 		addByAdmin = false;
 		playlist_id = state.modePlaylistID;
@@ -808,7 +804,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 					if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
 					flag_playingDetected = true;
 					playingKara.kid = kara.kid;
-					playingKara.user = kara.username;
+					playingKara.username = kara.username;
 				}
 				if (!isNaN(kara.created_at)) playlist.PlaylistContents[index].created_at = new Date(+kara.created_at * 1000);
 				if (isNaN(kara.pos)) throw 'Position must be a number';
@@ -853,7 +849,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 	}
 }
 
-export async function shufflePlaylist(playlist_id, isSmartShuffle) {
+export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: boolean) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
 	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle

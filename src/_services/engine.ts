@@ -24,7 +24,7 @@ export async function initEngine() {
 	const conf = getConfig();
 	const state = getState();
 	setState({
-		fullscreen: conf.Player.Fullscreen,
+		fullscreen: conf.Player.FullScreen,
 		ontop: conf.Player.StayOnTop,
 		private: conf.Karaoke.Private,
 	});

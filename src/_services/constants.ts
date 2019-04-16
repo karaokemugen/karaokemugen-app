@@ -220,7 +220,7 @@ export const tagTypes = Object.freeze({
 });
 
 /** Map used for database generation */
-export const karaTypesMap = Object.freeze(new Map([
+export const karaTypesMap: Readonly<Map<string, string>> = Object.freeze(new Map([
 	[karaTypes.OP.type, 'TYPE_OP,3'],
 	[karaTypes.ED.type, 'TYPE_ED,3'],
 	[karaTypes.IN.type, 'TYPE_IN,3'],

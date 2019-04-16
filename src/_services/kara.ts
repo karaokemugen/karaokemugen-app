@@ -23,21 +23,55 @@ import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {resolve} from 'path';
+import {basename, resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 import {getOrAddSerieID, Serie} from './series';
 import {Token} from './user';
 
 export interface Kara {
+	kid?: string,
+	KID?: string,
 	languages?: KaraLang[],
-	languages_i18n?: string[]
+	languages_i18n?: string[],
+	previewfile?: string,
+	mediafile?: string,
+	mediasize?: number,
+	mediaduration?: number,
+	mediagain?: number
+	subfile?: string,
+	subchecksum?: string,
+	karafile?: string,
+	title: string,
+	year?: number,
+	order?: number,
+	dateadded?: number, // Date?
+	datemodif?: number, // Date?
+	overwrite?: boolean,
+	series?: string[],
+	singer?: string[],
+	tags?: string[],
+	groups?: string[],
+	songwriter?: string[],
+	creator?: string[],
+	author?: string[],
+	lang?: string[],
+	type?: string,
+	version?: number
 }
 
 export interface KaraLang {
 	name: string
 }
 
+export interface KaraList {
+	infos: {
+		count: number,
+		from: number,
+		to: number
+	},
+	content: Kara[]
+}
 
 export async function isAllKaras(karas) {
 	// Returns an array of unknown karaokes
@@ -216,7 +250,7 @@ export async function editKaraInDB(kara) {
 /**
  * Generate info to write in a .kara file from an object passed as argument by filtering out unnecessary fields and adding default values if needed.
  */
-export function formatKara(karaData) {
+export function formatKara(karaData): Kara {
 	return {
 		mediafile: karaData.mediafile || '',
 		subfile: karaData.subfile || 'dummy.ass',
@@ -326,7 +360,7 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter, lang, from = 0, size = 999999999, searchType, searchValue, token, random) {
+export async function getKaras(filter: object, lang: string, from = 0, size = 999999999, searchType, searchValue, token: Token, random) {
 	profile('getKaras');
 	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin', random);
 	profile('formatList');
@@ -336,7 +370,7 @@ export async function getKaras(filter, lang, from = 0, size = 999999999, searchT
 	return ret;
 }
 
-export function formatKaraList(karaList, lang, from, count) {
+export function formatKaraList(karaList: Kara[], lang: string, from: number, count: number): KaraList {
 	karaList = translateKaraInfo(karaList, lang);
 	return {
 		infos: {

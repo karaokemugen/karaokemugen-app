@@ -10,7 +10,7 @@ import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, writeKara
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
-import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
+import {createKaraInDB, editKaraInDB, formatKara, Kara} from '../_services/kara';
 import {check} from '../_utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import {now} from '../_utils/date';
@@ -68,7 +68,7 @@ export async function editKara(kara, opts = {compareChecksum: true}) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	if (opts.compareChecksum) compareKarasChecksum({silent: true});
+	if (opts.compareChecksum) compareKarasChecksum(true);
 }
 
 export async function createKara(kara) {
@@ -81,11 +81,11 @@ export async function createKara(kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	compareKarasChecksum({silent: true});
+	compareKarasChecksum(true);
 	return newKara;
 }
 
-async function generateKara(kara, opts) {
+async function generateKara(kara) {
 	/*
 	kara = {
 		title = string
@@ -105,7 +105,6 @@ async function generateKara(kara, opts) {
 		subfile_orig = Original name from the user's computer
 	}
 	*/
-	if (!opts) opts = {};
 	if ((kara.type !== 'MV' && kara.type !== 'LIVE') && kara.series.length < 1) throw 'Series cannot be empty if type is not MV or LIVE';
 	if (!kara.mediafile) throw 'No media file uploaded';
 	const validationErrors = check(kara, {
@@ -297,7 +296,7 @@ async function findSubFile(mediaPath, karaData, subFile) {
 	}
 }
 
-async function generateAndMoveFiles(mediaPath, subPath, karaData) {
+async function generateAndMoveFiles(mediaPath: string, subPath: string, karaData) {
 	// Generating kara file in the first kara folder
 
 	const karaFilename = replaceExt(karaData.mediafile, '.kara');

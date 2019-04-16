@@ -92,9 +92,9 @@ const filterValidFiles = (files) => files.filter(file => !file.startsWith('.') &
 export const filterMedias = (files) => filterValidFiles(files);
 export const filterImages = (files) => filterValidFiles(files);
 
-export const checksum = (str: string, algorithm: string, encoding: HexBase64Latin1Encoding) => createHash(algorithm || 'md5')
+export const checksum = (str: string, algorithm: string = 'md5', encoding: HexBase64Latin1Encoding = 'hex') => createHash(algorithm)
 	.update(str, 'utf8')
-	.digest(encoding || 'hex');
+	.digest(encoding);
 
 /** Function used to verify if a required file exists. It throws an exception if not. */
 export async function asyncRequired(file: string) {

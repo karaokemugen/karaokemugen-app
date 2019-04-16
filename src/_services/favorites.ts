@@ -1,16 +1,16 @@
 import {selectFavorites, removeAllFavorites, removeFavorites, insertFavorites} from '../_dao/favorites';
-import {trimPlaylist, shufflePlaylist, createPlaylist, addKaraToPlaylist} from '../_services/playlist';
-import {findUserByName} from '../_services/user';
+import {trimPlaylist, shufflePlaylist, createPlaylist, addKaraToPlaylist} from './playlist';
+import {findUserByName} from './user';
 import logger from 'winston';
 import {date} from '../_utils/date';
 import {profile} from '../_utils/logger';
-import {formatKaraList, isAllKaras} from './kara';
+import {formatKaraList, isAllKaras, KaraList} from './kara';
 import { uuidRegexp } from './constants';
 import { getRemoteToken } from '../_dao/user';
 import got from 'got';
 import {getConfig} from '../_utils/config';
 
-export async function getFavorites(username: string, filter?: any, lang?: string, from: number = 0, size: number = 99999999) {
+export async function getFavorites(username: string, filter?: any, lang?: string, from: number = 0, size: number = 99999999): Promise<KaraList> {
 	try {
 		profile('getFavorites');
 		const favs = await selectFavorites(filter, lang, from, size, username);
@@ -65,7 +65,7 @@ export async function convertToRemoteFavorites(username: string) {
 	const favorites = await getFavorites(username);
 	const addFavorites = [];
 	if (favorites.content.length > 0) {
-		for (const favorite of favorites) {
+		for (const favorite of favorites.content) {
 			addFavorites.push(manageFavoriteInInstance('POST', username, favorite.kid));
 		}
 		await Promise.all(addFavorites);

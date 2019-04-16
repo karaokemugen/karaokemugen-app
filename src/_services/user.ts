@@ -32,7 +32,7 @@ interface UserOpts {
 export interface Token {
 	username: string,
 	role: string,
-	token: string
+	token?: string
 }
 
 export interface User {
