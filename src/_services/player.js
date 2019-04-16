@@ -79,7 +79,13 @@ export async function playerEnding() {
 			currentlyPlayingKara: -1,
 			counterToJingle: 0
 		});
-		await playJingle();
+		await promiseRetry(playJingle(), {
+			times: 2,
+			onerror: (err, index) => {
+				stop();
+				logger.warn(`[Player] Failed to load jingle (attempt ${index}): ${err}`);
+			}
+		});
 	} else {
 		try {
 			state.counterToJingle++;
