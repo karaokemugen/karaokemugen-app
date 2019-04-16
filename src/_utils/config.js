@@ -123,7 +123,7 @@ async function importIniFile(iniFile) {
 	if (ini.EngineRepeatPlaylist) c.Karaoke.Repeat = true;
 	if (ini.EngineMaxDejaVuTime) c.Playlist.MaxDejaVuTime = +ini.EngineMaxDejaVuTime;
 	if (ini.EngineSmartInsert) c.Karaoke.SmartInsert = true;
-	if (ini.EngineJinglesInterval) c.Playlist.JinglesInterval = ini.EngineJinglesInterval;
+	if (ini.EngineJinglesInterval) c.Karaoke.JinglesInterval = ini.EngineJinglesInterval;
 	if (ini.EngineCreatePreviews) c.Karaoke.CreatePreviews = true;
 	if (ini.EngineSongPoll) c.Karaoke.Poll.Enabled = true;
 	if (ini.EngineSongPollChoices) c.Karaoke.Poll.Choices = +ini.EngineSongPollChoices;
