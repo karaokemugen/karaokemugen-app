@@ -975,7 +975,7 @@ export async function nextSong() {
 	const playlist = await getCurrentPlaylistContents();
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (playlist.content.length === 0) throw 'Playlist is empty!';
-	if (playlist.index + 1 >= playlist.content.length && !conf.Karaoke.RepeatPlaylist) {
+	if (playlist.index + 1 >= playlist.content.length && !conf.Karaoke.Repeat) {
 		logger.debug('[PLC] End of playlist.');
 		await setPlaying(null, playlist.id);
 		throw 'Current position is last song!';
@@ -983,7 +983,7 @@ export async function nextSong() {
 		// If we're here, it means either we're beyond the length of the playlist
 		// OR that RepeatPlaylist is set to 1.
 		// We test again if we're at the end of the playlist. If so we go back to first song.
-		if (conf.Karaoke.RepeatPlaylist && playlist.index + 1 >= playlist.content.length) playlist.index = -1;
+		if (conf.Karaoke.Repeat && playlist.index + 1 >= playlist.content.length) playlist.index = -1;
 		const kara = playlist.content[playlist.index + 1];
 		if (!kara) throw 'Karaoke received is empty!';
 		await setPlaying(kara.playlistcontent_id, playlist.id);
