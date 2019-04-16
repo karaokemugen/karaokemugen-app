@@ -2,8 +2,15 @@ import {db, transaction, langSelector, buildClauses} from './database';
 import {pg as yesql} from 'yesql';
 const sql = require('./sql/favorites');
 
-export async function selectFavorites(filter, lang, from = 0, size = 0, username) {
-	const filterClauses = filter ? buildClauses(filter) : {sql: [], params: {}};
+interface Filter {
+	sql: any[],
+	params: {
+		username?: string
+	}
+}
+
+export async function selectFavorites(filter: Filter, lang, from = 0, size = 0, username) {
+	const filterClauses: Filter = filter ? buildClauses(filter) : {sql: [], params: {}};
 	filterClauses.params.username = username;
 	let limitClause = '';
 	let offsetClause = '';

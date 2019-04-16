@@ -21,6 +21,11 @@ import {from as copyFrom} from 'pg-copy-streams';
 
 const sql = require('./sql/database');
 
+interface Settings {
+	baseChecksum?: string,
+	lastGeneration?: number
+}
+
 export async function compareKarasChecksum(silent?: boolean) {
 	const settings = await getSettings();
 	const currentChecksum = await baseChecksum({silent: silent});
@@ -242,7 +247,7 @@ async function migrateDB() {
 	}
 }
 
-export async function getSettings() {
+export async function getSettings(): Promise<Settings> {
 	const res = await db().query(sql.selectSettings);
 	const settings = {};
 	// Return an object with option: value.

@@ -117,7 +117,7 @@ export async function getPlaylistContentsMini(id: number, lang?: string) {
 }
 
 export async function getPlaylistContents(id, username, filter, lang, random) {
-	const filterClauses = filter ? buildClauses(filter, 'playlist') : {sql: [], params: {}};
+	const filterClauses = filter ? buildClauses(filter) : {sql: [], params: {}};
 	let limitClause = '';
 	let offsetClause = '';
 	let orderClause = 'pc.pos';

@@ -32,7 +32,7 @@ export async function getDataFromSeriesFile(file) {
 	const seriesFileData = await asyncReadFile(file, 'utf-8');
 	if (!testJSON(seriesFileData)) throw `Syntax error in file ${file}`;
 	const seriesData = JSON.parse(seriesFileData);
-	if (header > +seriesData.header) throw `Series file is too old (version found: ${seriesData.header.version}, expected version: ${header.version})`;
+	if (header.version > +seriesData.header.version) throw `Series file is too old (version found: ${seriesData.header.version}, expected version: ${header.version})`;
 	const validationErrors = seriesDataValidationErrors(seriesData.series);
 	if (validationErrors) {
 		throw `Series data is not valid: ${JSON.stringify(validationErrors)}`;

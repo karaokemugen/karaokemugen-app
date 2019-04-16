@@ -47,8 +47,7 @@ export interface Config {
 	Frontend: {
 		Port: number,
 		Mode: number,
-		SongLanguageMode: number,
-
+		SeriesLanguageMode: number,
 		AuthExpireTime: number,
 		Permissions: {
 			AllowNicknameChange: boolean,
@@ -232,7 +231,7 @@ function getDefaultConfig(): Config {
 		Frontend: {
 			Port: undefined,
 			Mode: undefined,
-			SongLanguageMode: undefined,
+			SeriesLanguageMode: undefined,
 			AuthExpireTime: undefined,
 			Permissions: {
 				AllowNicknameChange: undefined,
@@ -419,7 +418,7 @@ async function importIniFile(iniFile) {
 	if (ini.mpvVideoOutput) c.Player.mpvVideoOutput = ini.mpvVideoOutput;
 	if (ini.AuthExpireTime) c.Frontend.AuthExpireTime = +ini.AuthExpireTime;
 	if (ini.WebappMode) c.Frontend.Mode = +ini.WebappMode;
-	if (ini.WebappSongLanguageMode) c.Frontend.SongLanguageMode = +ini.WebappSongLanguageMode;
+	if (ini.WebappSongLanguageMode) c.Frontend.SeriesLanguageMode = +ini.WebappSongLanguageMode;
 	if (ini.OnlineUsers) c.Online.Users = true;
 	if (ini.OnlineURL) c.Online.URL = true;
 	if (ini.OnlineMode) c.Online.URL = true;

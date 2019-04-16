@@ -161,7 +161,7 @@ async function findSubFile(videoFile, kara) {
 
 export async function replaceSerieInKaras(oldSerie, newSerie) {
 	logger.info(`[Kara] Replacing serie "${oldSerie}" by "${newSerie}" in .kara files`);
-	const karas = await selectAllKaras(null, null, null, null, null, true);
+	const karas = await selectAllKaras(null, null, null, null, null, 0);
 	let karasWithSerie = [];
 	for (const kara of karas) {
 		if (kara.serie_orig && kara.serie_orig.split(',').includes(oldSerie)) karasWithSerie.push(kara.karafile);
@@ -182,7 +182,7 @@ export async function replaceSerieInKaras(oldSerie, newSerie) {
 
 export async function removeSerieInKaras(serie) {
 	logger.info(`[Kara] Removing serie ${serie} in .kara files`);
-	const karas = await selectAllKaras(null, null, null, null, null, true);
+	const karas = await selectAllKaras(null, null, null, null, null, 0);
 	let karasWithSerie = [];
 	for (const kara of karas) {
 		if (kara.serie_orig && kara.serie_orig.split(',').includes(serie)) karasWithSerie.push(kara.karafile);
