@@ -8,6 +8,7 @@ import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
 import {previousSong, nextSong, getCurrentSong} from './playlist';
+import promiseRetry from 'promise.retry';
 
 const sleep = promisify(setTimeout);
 
@@ -20,13 +21,19 @@ async function getPlayingSong(now) {
 			const kara = await getCurrentSong();
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
 			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length-4)}`);
-			await play({
+			await promiseRetry(play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
 				gain: kara.gain,
 				infos: kara.infos,
 				avatar: kara.avatar,
 				duration: kara.duration
+			}), {
+				times: 2,
+				onerror: (err, index) => {
+					stop();
+					logger.warn(`[Player] Failed to load media (attempt ${index}): ${err}`);
+				}
 			});
 			setState({currentlyPlayingKara: kara.kid});
 			addPlayedKara(kara.kid);
