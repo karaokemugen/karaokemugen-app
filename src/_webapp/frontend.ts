@@ -10,7 +10,7 @@ import i18n from 'i18n';
 import {getConfig} from '../_utils/config';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
-import {configurePassport} from '../_webapp/passport_manager';
+import {configurePassport} from './passport_manager';
 import {createServer} from 'http';
 import { initializationCatchphrases } from '../_services/constants';
 import sample from 'lodash.sample';
@@ -23,9 +23,9 @@ import { getState } from '../_utils/state';
 
 let ws;
 
-export function emitWS(type,data) {
+export function emitWS(type, data?) {
 	//logger.debug( '[WS] Sending message '+type+' : '+JSON.stringify(data));
-	if (ws) ws.sockets.emit(type,data);
+	if (ws) ws.sockets.emit(type, data);
 }
 
 function apiRouter() {

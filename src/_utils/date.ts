@@ -1,5 +1,3 @@
-import __ = i18n.__;
-
 export function now(seconds?: boolean): number {
 	if (seconds) return Math.floor(new Date().getTime() / 1000);
 	return new Date().getTime();
@@ -67,9 +65,9 @@ export function duration(duration: number): string {
 	// what's left is seconds
 	const seconds = duration % 60;  // in theory the modulus is not required
 	let returnString = '';
-	if (days !== 0) returnString = returnString + `${days} ${__('DAY')} `;
-	if (hours !== 0) returnString = returnString + `${hours} ${__('HOUR')} `;
-	if (minutes !== 0) returnString = returnString + `${minutes} ${__('MINUTE')} `;
-	if (seconds !== 0) returnString = returnString + `${seconds} ${__('SECOND')} `;
+	if (days !== 0) returnString = returnString + `${days} ${i18n.__('DAY')} `;
+	if (hours !== 0) returnString = returnString + `${hours} ${i18n.__('HOUR')} `;
+	if (minutes !== 0) returnString = returnString + `${minutes} ${i18n.__('MINUTE')} `;
+	if (seconds !== 0) returnString = returnString + `${seconds} ${i18n.__('SECOND')} `;
 	return returnString;
 }

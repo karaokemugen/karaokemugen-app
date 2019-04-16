@@ -44,8 +44,9 @@ if (process.platform === 'win32' ) {
 
 // Main app begins here.
 
-let appPath: string;
-process.pkg ? appPath = join(process.execPath,'../') : appPath = join(__dirname,'../');
+let appPath: string = join(__dirname,'../');
+// TODO Fix this for packaging (works with tsc but not ts-node).
+// process.pkg ? appPath = join(process.execPath,'../') : appPath = join(__dirname,'../');
 setState({appPath: appPath});
 
 process.env['NODE_ENV'] = 'production'; // Default

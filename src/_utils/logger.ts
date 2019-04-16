@@ -14,7 +14,7 @@ export async function configureLogger(appPath, debug) {
 	logger.add(
 		new logger.transports.Console({
 			level: consoleLogLevel,
-			colorize: true,
+			// colorize: true,
 			format: logger.format.combine(
 				logger.format.colorize(),
 				logger.format.printf(info => {

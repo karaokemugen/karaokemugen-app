@@ -5,7 +5,7 @@
 		// Search under node_modules for non-relative imports.
 		"moduleResolution": "node",
 		// Process & infer types from .js files.
-		"allowJs": true,
+		"allowJs": false,
 		// Don't emit; allow Babel to transform files.
 		"noEmit": true,
 		// Enable strictest settings like strictNullChecks & noImplicitAny.
@@ -14,7 +14,9 @@
 		// Disallow features that require cross-file information for emit.
 		"isolatedModules": true,
 		// Import non-ES modules as default imports.
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		// Import constants from JSON (locales).
+		"resolveJsonModule": true
 	},
 	"include": [
 		"src"

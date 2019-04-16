@@ -3,9 +3,3 @@ declare namespace NodeJS {
         pkg: boolean;
     }
 }
-
-declare namespace winston {
-    interface ConsoleTransportOptions {
-        colorize?: boolean;
-    }
-}

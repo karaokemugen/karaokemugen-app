@@ -25,6 +25,7 @@ export interface State {
 	appPath: string,
 	osURL: string,
 	os: string,
+	osHost?: string
 	EngineDefaultLocale: string,
 	player: {
 		playing: boolean,

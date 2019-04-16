@@ -14,7 +14,7 @@ import {initFrontend} from '../_webapp/frontend';
 import {initOnlineURLSystem} from '../_webapp/online';
 import {initPlayer, quitmpv} from './player';
 import {initStats} from './stats';
-import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
+import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { run } from './generation';

@@ -63,6 +63,7 @@ export interface Config {
 		MaxDejaVuTime: number,
 		SmartInsert: boolean,
 		CreatePreviews: boolean,
+		JinglesInterval: number,
 		Display: {
 			Avatar: boolean,
 			Nickname: boolean,
@@ -108,7 +109,6 @@ export interface Config {
 	Playlist: {
 		AllowDuplicates: boolean,
 		MaxDejaVuTime: number,
-		JinglesInterval: number,
 		RemovePublicOnPlay: boolean
 	},
 	System: {
@@ -247,6 +247,7 @@ function getDefaultConfig(): Config {
 			MaxDejaVuTime: undefined,
 			SmartInsert: undefined,
 			CreatePreviews: undefined,
+			JinglesInterval: undefined,
 			Display: {
 				Avatar: undefined,
 				Nickname: undefined,
@@ -292,7 +293,6 @@ function getDefaultConfig(): Config {
 		Playlist: {
 			AllowDuplicates: undefined,
 			MaxDejaVuTime: undefined,
-			JinglesInterval: undefined,
 			RemovePublicOnPlay: undefined
 		},
 		System: {
@@ -375,7 +375,7 @@ async function importIniFile(iniFile) {
 	if (ini.EngineRepeatPlaylist) c.Karaoke.Repeat = true;
 	if (ini.EngineMaxDejaVuTime) c.Playlist.MaxDejaVuTime = +ini.EngineMaxDejaVuTime;
 	if (ini.EngineSmartInsert) c.Karaoke.SmartInsert = true;
-	if (ini.EngineJinglesInterval) c.Playlist.JinglesInterval = ini.EngineJinglesInterval;
+	if (ini.EngineJinglesInterval) c.Karaoke.JinglesInterval = ini.EngineJinglesInterval;
 	if (ini.EngineCreatePreviews) c.Karaoke.CreatePreviews = true;
 	if (ini.EngineSongPoll) c.Karaoke.Poll.Enabled = true;
 	if (ini.EngineSongPollChoices) c.Karaoke.Poll.Choices = +ini.EngineSongPollChoices;

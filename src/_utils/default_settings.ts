@@ -55,6 +55,7 @@ export const defaults: Config = {
 		Private: true,
 		Repeat: false,
 		SmartInsert: false,
+		MaxDejaVuTime: 60,
 		Display: {
 			Avatar: true,
 			Nickname: true,
@@ -72,9 +73,9 @@ export const defaults: Config = {
 		},
 		Quota: {
 			FreeAutoTime: 60,
-			FreeUpVote: true,
-			FreeUpVotesRequiredMin: 3,
-			FreeUpVotesRequiredPercent: 33,
+			FreeUpvotes: true,
+			FreeUpvotesRequiredMin: 3,
+			FreeUpvotesRequiredPercent: 33,
 			Songs: 10000,
 			Time: 10000,
 			Type: 0,
@@ -100,8 +101,7 @@ export const defaults: Config = {
 	Playlist: {
 		AllowDuplicates: false,
 		MaxDejaVuTime: 60,
-		RemovePublicOnPlay: false,
-		JinglesInterval: 30
+		RemovePublicOnPlay: false
 	},
 	System: {
 		Binaries: {
