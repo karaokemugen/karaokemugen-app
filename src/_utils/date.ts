@@ -1,34 +1,33 @@
-export function now(seconds) {
+import __ = i18n.__;
+
+export function now(seconds?: boolean): number {
 	if (seconds) return Math.floor(new Date().getTime() / 1000);
 	return new Date().getTime();
 }
 
-export function date(iso) {
+export function date(iso?: boolean): string {
 	const d = new Date();
 	let day = d.getDate();
 	let month = d.getMonth() + 1;
 	const year = d.getFullYear();
-	if (day < 10) day = '0'+day;
-	if (month < 10) month = '0'+month;
-	if (iso) return `${year}-${month}-${day}`;
-	return `${day}-${month}-${year}`;
+
+	let dayStr = (day < 10 ? '0' : '') + day;
+	let monthStr = (month < 10 ? '0' : '') + month;
+	return iso? `${year}-${monthStr}-${dayStr}` : `${dayStr}-${monthStr}-${year}`;
 }
 
-export function time() {
+export function time(): string {
 	const date = new Date();
 	let hour = date.getHours();
-	hour = (hour < 10 ? '0' : '') + hour;
+	let hourStr = (hour < 10 ? '0' : '') + hour;
 	let min  = date.getMinutes();
-	min = (min < 10 ? '0' : '') + min;
+	let minStr = (min < 10 ? '0' : '') + min;
 	let sec  = date.getSeconds();
-	sec = (sec < 10 ? '0' : '') + sec;
-	return hour + ':' + min + ':' + sec;
+	let secStr = (sec < 10 ? '0' : '') + sec;
+	return `${hourStr}:${minStr}:${secStr}`;
 }
 
-export function timeToSeconds(time) {
-	if(typeof time !== 'string'){
-		throw `The parameter ${time} is supposed to be a string !`;
-	}
+export function timeToSeconds(time: string): number {
 
 	if(!time.match(/\d+:\d{1,2}:\d+\.?\d*/)){
 		throw `The parameter ${time} is in a wrong format '00:00:00.000' .`;
@@ -40,18 +39,14 @@ export function timeToSeconds(time) {
 		throw `The parameter ${time} is invalid, please follow the format "Hours:Minutes:Seconds.Milliseconds`;
 	}
 
-	a[2] = Math.floor(a[2]); // Seconds can have miliseconds
+	a[2] = '' + Math.floor(+a[2]); // Seconds can have miliseconds
 	// minutes are worth 60 seconds. Hours are worth 60 minutes.
 
 	return (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
 }
 
 //FormatDateString From Duration in Seconds
-export function duration(duration) {
-	if(typeof duration !== 'number'){
-		throw `The parameter ${duration} is supposed to be a number !`;
-	}
-
+export function duration(duration: number): string {
 	if(Math.floor(duration) !== duration || duration <= 0){
 		throw `The parameter ${duration} is supposed to be "entier" and be superior to 0`;
 	}

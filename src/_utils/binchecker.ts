@@ -5,11 +5,20 @@ import {asyncRequired} from './files';
 import {exit} from '../_services/engine';
 import logger from 'winston';
 import { getState, setState } from './state';
+import {Config} from './config';
 
 // Check if binaries are available
 // Provide their paths for runtime
 
-export async function checkBinaries(config) {
+export interface BinariesConfig {
+	ffmpeg: string,
+	mpv: string,
+	postgres: string,
+	postgres_ctl: string,
+	postgres_dump: string
+}
+
+export async function checkBinaries(config: Config): Promise<BinariesConfig> {
 
 	const binariesPath = configuredBinariesForSystem(config);
 	let requiredBinariesChecks = [];
@@ -27,7 +36,7 @@ export async function checkBinaries(config) {
 	return binariesPath;
 }
 
-function configuredBinariesForSystem(config) {
+function configuredBinariesForSystem(config): BinariesConfig {
 	switch (process.platform) {
 	case 'win32':
 		return {

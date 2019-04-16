@@ -4,6 +4,8 @@ import {resolve} from 'path';
 import {date, time} from './date';
 import {getState} from './state';
 
+export default logger;
+
 export async function configureLogger(appPath, debug) {
 	const consoleLogLevel = debug ? 'debug' : 'info';
 	const logDir = resolve(appPath, 'logs');

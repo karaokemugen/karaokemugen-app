@@ -39,8 +39,8 @@ export async function getMediaInfo(mediafile) {
 		const outputArray = result.stderr.split(' ');
 		const indexTrackGain = outputArray.indexOf('track_gain');
 		const indexDuration = outputArray.indexOf('Duration:');
-		let audiogain = 0;
-		let duration = 0;
+		let audiogain = '0';
+		let duration = '0';
 		let error = false;
 		if (indexTrackGain > -1) {
 			let gain = parseFloat(outputArray[indexTrackGain + 2]);
@@ -51,7 +51,7 @@ export async function getMediaInfo(mediafile) {
 
 		if (indexDuration > -1) {
 			duration = outputArray[indexDuration + 1].replace(',','');
-			duration = timeToSeconds(duration);
+			duration = timeToSeconds(duration).toString();
 		} else {
 			error = true;
 		}

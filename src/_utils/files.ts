@@ -6,7 +6,7 @@ import logger from './logger';
 import {mediaFileRegexp, imageFileRegexp} from '../_services/constants';
 import fileType from 'file-type';
 import readChunk from 'read-chunk';
-import {createHash} from 'crypto';
+import {createHash, HexBase64Latin1Encoding} from 'crypto';
 import sanitizeFilename from 'sanitize-filename';
 import deburr from 'lodash.deburr';
 import { getState } from './state';
@@ -92,7 +92,7 @@ const filterValidFiles = (files) => files.filter(file => !file.startsWith('.') &
 export const filterMedias = (files) => filterValidFiles(files);
 export const filterImages = (files) => filterValidFiles(files);
 
-export const checksum = (str: string, algorithm: string, encoding: string) => createHash(algorithm || 'md5')
+export const checksum = (str: string, algorithm: string, encoding: HexBase64Latin1Encoding) => createHash(algorithm || 'md5')
 	.update(str, 'utf8')
 	.digest(encoding || 'hex');
 
@@ -135,7 +135,10 @@ export function replaceExt(filename: string, newExt: string) {
 async function compareFiles(file1: string, file2: string) {
 	const files = [file1, file2];
 
-	if (await Promise.all(files.some((file) => !asyncExists(file)))) return false;
+	let [file1exists, file2exists] = await Promise.all(files.map(file => asyncExists(file)));
+	if (!file1exists || !file2exists) {
+		return false;
+	}
 
 	const [file1data, file2data] = await Promise.all(files.map((file) => asyncReadFile(file, 'utf-8')));
 

@@ -3,6 +3,15 @@ import {emitWS} from '../_webapp/frontend';
 
 export default class Bar {
 
+	options: {
+		event?: string
+	};
+	total: number;
+	start: number;
+	value: number;
+	format: string;
+	bar: cliProgress.Bar;
+
 	constructor(options, total) {
 		this.options = options;
 		this.total = total;
@@ -27,7 +36,7 @@ export default class Bar {
 			value: this.total,
 			total: this.total
 		});
-	}
+	};
 
 	incr = () => {
 		this.bar.increment();
@@ -35,5 +44,5 @@ export default class Bar {
 			value: this.value,
 			total: this.total
 		});
-	}
+	};
 }

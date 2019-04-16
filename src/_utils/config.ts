@@ -25,7 +25,10 @@ import {safeDump, safeLoad} from 'js-yaml';
 import {clearEmpties, difference} from './object_helpers';
 import cloneDeep from 'lodash.clonedeep';
 
-interface Config {
+export type PositionX = 'Left' | 'Right' | 'Center';
+export type PositionY = 'Top' | 'Bottom' | 'Center';
+
+export interface Config {
 	App: {
 		JwtSecret: string,
 		InstanceID: string,
@@ -47,6 +50,7 @@ interface Config {
 		SongLanguageMode: number,
 		AuthExpireTime: number,
 		Permissions: {
+			AllowNicknameChange: boolean,
 			AllowViewWhitelist: boolean,
 			AllowViewBlacklist: boolean,
 			AllowViewBlacklistCriterias: boolean
@@ -60,11 +64,13 @@ interface Config {
 		SmartInsert: boolean,
 		CreatePreviews: boolean,
 		Display: {
+			Avatar: boolean,
 			Nickname: boolean,
 			ConnectionInfo: {
 				Enabled: boolean,
 				QRCode: boolean,
-				Host: string
+				Host: string,
+				Message: string
 			}
 		},
 		Poll: {
@@ -95,12 +101,12 @@ interface Config {
 		PIP: {
 			Enabled: boolean,
 			Size: number,
-			PositionX: number,
-			PositionY: number
+			PositionX: PositionX,
+			PositionY: PositionY
 		}
 	},
 	Playlist: {
-		allowDuplicates: boolean,
+		AllowDuplicates: boolean,
 		MaxDejaVuTime: number,
 		JinglesInterval: number,
 		RemovePublicOnPlay: boolean
@@ -140,13 +146,17 @@ interface Config {
 		}
 	},
 	Database: {
+		'sql-file': boolean,
+		defaultEnv: string,
 		prod: {
+			driver: string,
 			host: string,
 			port: number,
 			user: string,
 			password: string,
 			superuser: string,
 			superuserPassword: string,
+			schema: string,
 			database: string,
 			bundledPostgresBinary: boolean
 		}
@@ -224,6 +234,7 @@ function getDefaultConfig(): Config {
 			SongLanguageMode: undefined,
 			AuthExpireTime: undefined,
 			Permissions: {
+				AllowNicknameChange: undefined,
 				AllowViewWhitelist: undefined,
 				AllowViewBlacklist: undefined,
 				AllowViewBlacklistCriterias: undefined
@@ -237,11 +248,13 @@ function getDefaultConfig(): Config {
 			SmartInsert: undefined,
 			CreatePreviews: undefined,
 			Display: {
+				Avatar: undefined,
 				Nickname: undefined,
 				ConnectionInfo: {
 					Enabled: undefined,
 					QRCode: undefined,
-					Host: undefined
+					Host: undefined,
+					Message: undefined
 				}
 			},
 			Poll: {
@@ -277,7 +290,7 @@ function getDefaultConfig(): Config {
 			}
 		},
 		Playlist: {
-			allowDuplicates: undefined,
+			AllowDuplicates: undefined,
 			MaxDejaVuTime: undefined,
 			JinglesInterval: undefined,
 			RemovePublicOnPlay: undefined
@@ -317,13 +330,17 @@ function getDefaultConfig(): Config {
 			}
 		},
 		Database: {
+			'sql-file': undefined,
+			defaultEnv: undefined,
 			prod: {
+				driver: undefined,
 				host: undefined,
 				port: undefined,
 				user: undefined,
 				password: undefined,
 				superuser: undefined,
 				superuserPassword: undefined,
+				schema: undefined,
 				database: undefined,
 				bundledPostgresBinary: undefined
 			}
@@ -346,7 +363,7 @@ async function importIniFile(iniFile) {
 	if (ini.EngineAllowViewWhitelist == 0) c.Frontend.Permissions.AllowViewWhitelist = false;
 	if (ini.EngineAllowViewBlacklist == 0) c.Frontend.Permissions.AllowViewBlacklist = false;
 	if (ini.EngineAllowViewBlacklistCriterias == 0) c.Frontend.Permissions.AllowViewBlacklistCriterias = false;
-	if (ini.EngineAllowDuplicates) c.Playlist.allowDuplicates = true;
+	if (ini.EngineAllowDuplicates) c.Playlist.AllowDuplicates = true;
 	if (ini.EngineSongsPerUser) c.Karaoke.Quota.Songs = +ini.EngineSongsPerUser;
 	if (ini.EngineTimePerUser) c.Karaoke.Quota.Time = +ini.EngineTimePerUser;
 	if (ini.EngineQuotaType) c.Karaoke.Quota.Type = +ini.EngineQuotaType;

@@ -4,7 +4,9 @@
 
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.ini to bypass the default value .
-export const defaults = {
+import {Config} from './config';
+
+export const defaults: Config = {
 	App: {
 		FirstRun: true,
 		InstanceID: 'Change me',
@@ -29,6 +31,7 @@ export const defaults = {
 	},
 	Online: {
 		Host: 'kara.moe',
+		Port: undefined,
 		Stats: undefined,
 		URL: true,
 		Users: true
@@ -70,8 +73,8 @@ export const defaults = {
 		Quota: {
 			FreeAutoTime: 60,
 			FreeUpVote: true,
-			FreeUpVoteRequiredMin: 3,
-			FreeUpVoteRequiredPercent: 33,
+			FreeUpVotesRequiredMin: 3,
+			FreeUpVotesRequiredPercent: 33,
 			Songs: 10000,
 			Time: 10000,
 			Type: 0,
@@ -97,7 +100,8 @@ export const defaults = {
 	Playlist: {
 		AllowDuplicates: false,
 		MaxDejaVuTime: 60,
-		RemovePublicOnPlay: false
+		RemovePublicOnPlay: false,
+		JinglesInterval: 30
 	},
 	System: {
 		Binaries: {
