@@ -172,7 +172,7 @@ let configReady;
  * We return a copy of the configuration data so the original one can't be modified
  * without passing by this module's functions.
  */
-export function getConfig() {
+export function getConfig(): Config {
 	return {...config};
 }
 

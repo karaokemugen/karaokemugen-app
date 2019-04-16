@@ -10,6 +10,18 @@ import {createClient as webdav} from 'webdav';
 import Downloader from '../_utils/downloader';
 import {emitWS} from '../_webapp/frontend';
 
+
+declare interface LocalFile {
+	name: string,
+	size: number
+}
+
+declare interface RemoteFile {
+	basename: string,
+	size: number
+}
+
+
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
 	url: 'http://mugen.karaokes.moe/downloads/medias',
@@ -161,7 +173,7 @@ async function compareBases() {
 	}
 }
 
-async function compareMedias(localFiles, remoteFiles) {
+async function compareMedias(localFiles: LocalFile[], remoteFiles: RemoteFile[]): Promise<boolean> {
 	const conf = getConfig();
 	let removedFiles = [];
 	let addedFiles = [];
@@ -220,7 +232,7 @@ async function compareMedias(localFiles, remoteFiles) {
 			bytesToDownload = bytesToDownload + file.size;
 		}
 		logger.info(`[Updater] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);
-		await downloadMedias(filesToDownload, mediasPath, bytesToDownload);
+		await downloadMedias(filesToDownload, mediasPath);
 		logger.info('[Updater] Done updating medias');
 		return true;
 	} else {
@@ -229,7 +241,7 @@ async function compareMedias(localFiles, remoteFiles) {
 	}
 }
 
-function downloadMedias(files, mediasPath) {
+function downloadMedias(files: LocalFile[], mediasPath: string): Promise<void> {
 	let list = [];
 	for (const file of files) {
 		list.push({
@@ -256,7 +268,7 @@ function downloadMedias(files, mediasPath) {
 	});
 }
 
-async function listLocalMedias() {
+async function listLocalMedias(): Promise<LocalFile[]> {
 	const conf = getConfig();
 	const mediaFiles = await asyncReadDir(resolve(getState().appPath, conf.System.Path.Medias[0]));
 	let localMedias = [];
@@ -271,15 +283,15 @@ async function listLocalMedias() {
 	return localMedias;
 }
 
-async function removeFiles(files, dir) {
+async function removeFiles(files: string[], dir: string): Promise<void> {
 	for (const file of files) {
 		await asyncUnlink(resolve(dir, file));
 		logger.info(`[Updater] Removed : ${file}`);
 	}
 }
 
-async function updateFiles(files, dirSource, dirDest, isNew) {
-	if (files.length === 0) return true;
+async function updateFiles(files: string[], dirSource: string, dirDest: string, isNew?: boolean): Promise<void> {
+	if (files.length === 0) return;
 	for (const file of files) {
 		let action = 'Updated';
 		if (isNew) action = 'Added';
