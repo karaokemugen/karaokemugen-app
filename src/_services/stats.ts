@@ -1,6 +1,6 @@
 import { getConfig } from '../_utils/config';
 import { getState } from '../_utils/state';
-import si from 'systeminformation';
+import si, {Systeminformation} from 'systeminformation';
 import { exportPlayed, exportRequests, exportFavorites } from '../_dao/stats';
 import internet from 'internet-available';
 import got from 'got';
@@ -9,6 +9,11 @@ import prettyBytes from 'pretty-bytes';
 import { asyncWriteFile } from '../_utils/files';
 import {resolve} from 'path';
 import cloneDeep from 'lodash.clonedeep';
+import CpuData = Systeminformation.CpuData;
+import MemData = Systeminformation.MemData;
+import GraphicsData = Systeminformation.GraphicsData;
+import OsData = Systeminformation.OsData;
+import DiskLayoutData = Systeminformation.DiskLayoutData;
 
 let intervalID;
 

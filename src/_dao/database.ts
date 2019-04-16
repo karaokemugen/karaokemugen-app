@@ -21,7 +21,7 @@ import {from as copyFrom} from 'pg-copy-streams';
 
 const sql = require('./sql/database');
 
-export async function compareKarasChecksum(silent) {
+export async function compareKarasChecksum(silent?: boolean) {
 	const settings = await getSettings();
 	const currentChecksum = await baseChecksum({silent: silent});
 	if (settings.baseChecksum !== currentChecksum) {
@@ -78,7 +78,7 @@ export function buildClauses(words) {
 	};
 }
 
-export function langSelector(lang, series) {
+export function langSelector(lang?: string, series?: boolean) {
 	const conf = getConfig();
 	const state = getState();
 	const userLocale = langs.where('1',lang || state.EngineDefaultLocale);

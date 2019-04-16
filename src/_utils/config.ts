@@ -48,6 +48,7 @@ export interface Config {
 		Port: number,
 		Mode: number,
 		SongLanguageMode: number,
+
 		AuthExpireTime: number,
 		Permissions: {
 			AllowNicknameChange: boolean,

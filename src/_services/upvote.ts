@@ -1,6 +1,6 @@
 import {insertUpvote,removeUpvote, getUpvotesByPLC} from '../_dao/upvote';
-import {freePLC, updateSongsLeft, getPLCInfoMini} from '../_services/playlist';
-import {listUsers} from '../_services/user';
+import {freePLC, getPLCInfoMini} from './playlist';
+import {listUsers, updateSongsLeft} from './user';
 import {getConfig} from '../_utils/config';
 import logger from 'winston';
 import {getState} from '../_utils/state';

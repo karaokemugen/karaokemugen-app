@@ -18,7 +18,7 @@ import {profile} from '../_utils/logger';
 import {formatKaraList} from './kara';
 import {uuidRegexp} from './constants';
 
-export async function getBlacklist(filter, lang, from, size) {
+export async function getBlacklist(filter?: any, lang?: string, from?: number, size?: number) {
 	profile('getBL');
 	const pl = await getBLContents(filter, lang);
 	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);

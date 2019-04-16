@@ -26,7 +26,18 @@ import {getLanguage} from 'iso-countries-languages';
 import {resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
-import { getOrAddSerieID } from './series';
+import {getOrAddSerieID, Serie} from './series';
+import {Token} from './user';
+
+export interface Kara {
+	languages?: KaraLang[],
+	languages_i18n?: string[]
+}
+
+export interface KaraLang {
+	name: string
+}
+
 
 export async function isAllKaras(karas) {
 	// Returns an array of unknown karaokes
@@ -35,7 +46,7 @@ export async function isAllKaras(karas) {
 	return karas.filter(kid => !allKaras.includes(kid));
 }
 
-export function translateKaraInfo(karas, lang) {
+export function translateKaraInfo(karas: Kara|Kara[], lang?: string): Kara[] {
 	// If lang is not provided, assume we're using node's system locale
 	if (!lang) lang = getState().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
@@ -52,7 +63,7 @@ export function translateKaraInfo(karas, lang) {
 	// If the kara list provided is not an array (only a single karaoke)
 	// Put it into an array first
 	if (!Array.isArray(karas)) karas = [karas];
-	karas.forEach((kara,index) => {
+	karas.forEach((kara, index) => {
 		if (kara.languages.length > 0) {
 			let languages = [];
 			let langdata;
@@ -76,7 +87,7 @@ export function translateKaraInfo(karas, lang) {
 					// We need to convert ISO639-2B to ISO639-1 to get its language
 					langdata = langs.where('2B',karalang.name);
 					if (langdata === undefined) {
-						languages.push(__('UNKNOWN_LANGUAGE'));
+						languages.push(i18n.__('UNKNOWN_LANGUAGE'));
 					} else {
 						languages.push(getLanguage(detectedLocale[1],langdata[1]));
 					}
@@ -89,11 +100,11 @@ export function translateKaraInfo(karas, lang) {
 	return karas;
 }
 
-export async function getKara(kid, token, lang) {
+export async function getKara(kid: string, token: Token, lang?: string): Promise<Kara> {
 	profile('getKaraInfo');
 	const kara = await getKaraDB(kid, token.username, lang, token.role);
 	if (!kara) throw `Kara ${kid} unknown`;
-	let output = translateKaraInfo(kara, lang);
+	let output: Kara = translateKaraInfo(kara, lang)[0];
 	const previewfile = await isPreviewAvailable(output[0].kid, output[0].mediasize);
 	if (previewfile) output[0].previewfile = previewfile;
 	profile('getKaraInfo');
@@ -121,7 +132,7 @@ async function updateSeries(kara) {
 	for (const s of kara.series.split(',')) {
 		let langObj = {};
 		langObj[lang] = s;
-		let seriesObj = {
+		let seriesObj: Serie = {
 			name: s
 		};
 		seriesObj.i18n = {...langObj};

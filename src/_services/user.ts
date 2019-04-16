@@ -1,13 +1,13 @@
-import {getConfig, setConfig} from '../_utils/config';
-import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from '../_services/playlist';
-import {convertToRemoteFavorites} from '../_services/favorites';
+import {Config, getConfig, setConfig} from '../_utils/config';
+import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
+import {convertToRemoteFavorites} from './favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink, asyncReadDir} from '../_utils/files';
 import {createHash} from 'crypto';
 import {now} from '../_utils/date';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
-import {imageFileTypes, defaultGuestNames} from '../_services/constants';
+import {imageFileTypes, defaultGuestNames} from './constants';
 import randomstring from 'randomstring';
 import {on} from '../_utils/pubsub';
 import {getSongCountForUser, getSongTimeSpentForUser} from '../_dao/kara';
@@ -19,8 +19,36 @@ import { getRemoteToken, upsertRemoteToken } from '../_dao/user';
 import formData from 'form-data';
 import { createReadStream } from 'fs';
 import { writeStreamToFile } from '../_utils/files';
-import { fetchAndAddFavorites } from '../_services/favorites';
+import { fetchAndAddFavorites } from './favorites';
 import {encode, decode} from 'jwt-simple';
+
+interface UserOpts {
+	admin?: boolean,
+	createRemote?: boolean,
+	editRemote?: boolean,
+	renameUser?: boolean
+}
+
+export interface Token {
+	username: string,
+	role: string,
+	token: string
+}
+
+export interface User {
+	login?: string,
+	old_login?: string,
+	type?: number,
+	avatar_file?: string,
+	bio?: string,
+	url?: string,
+	email?: string,
+	nickname?: string,
+	password?: string,
+	last_login_at?: Date,
+	flag_online?: boolean,
+	onlineToken?: string
+}
 
 const db = require('../_dao/user');
 let userLoginTimes = new Map();
@@ -30,7 +58,7 @@ on('databaseBusy', status => {
 	databaseBusy = status;
 });
 
-export async function removeRemoteUser(token, password) {
+export async function removeRemoteUser(token: Token, password: string) {
 	// Function used when asking for user deletion on Karaoke Mugen Server
 	const instance = token.username.split('@')[1];
 	const username = token.username.split('@')[0];
@@ -78,7 +106,7 @@ export async function fetchRemoteAvatar(instance, avatarFile) {
 	return avatarPath;
 }
 
-export async function fetchAndUpdateRemoteUser(username, password, onlineToken) {
+export async function fetchAndUpdateRemoteUser(username: string, password: string, onlineToken?: Token): Promise<User> {
 	// We try to login to KM Server using the provided login password.
 	// If login is successful, we get user profile data and create user if it doesn't exist already in our local database.
 	// If it exists, we edit the user instead.
@@ -130,7 +158,7 @@ export async function fetchAndUpdateRemoteUser(username, password, onlineToken) 
 	}
 }
 
-export function createJwtToken(username, role, config) {
+export function createJwtToken(username: string, role: string, config?: Config) {
 	const conf = config || getConfig();
 	const timestamp = new Date().getTime();
 	return encode(
@@ -210,9 +238,9 @@ async function editRemoteUser(user) {
 }
 
 
-export async function editUser(username, user, avatar, role, opts = {
+export async function editUser(username: string, user: User, avatar: boolean, role: string, opts: UserOpts = {
 	editRemote: false,
-	renameUser: false
+	renameUser: false,
 }) {
 	try {
 		let currentUser = await findUserByName(username);
@@ -410,7 +438,7 @@ async function createRemoteUser(user) {
 			message: err.response ? err.response.body : err
 		};
 	}
-};
+}
 
 export async function getRemoteUser(username, token) {
 	const [login, instance] = username.split('@');
@@ -428,7 +456,7 @@ export async function getRemoteUser(username, token) {
 	}
 }
 
-export async function createUser(user, opts) {
+export async function createUser(user: User, opts?: UserOpts) {
 	if (!opts) opts = {
 		admin: false,
 		createRemote: true
@@ -443,7 +471,7 @@ export async function createUser(user, opts) {
 	user.bio = user.bio || null;
 	user.url = user.url || null;
 	user.email = user.email || null;
-	if (user.type === 2) user.flag_online = 0;
+	if (user.type === 2) user.flag_online = false;
 	await newUserIntegrityChecks(user);
 	if (user.login.includes('@')) {
 		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };
@@ -462,7 +490,7 @@ export async function createUser(user, opts) {
 	}
 }
 
-async function newUserIntegrityChecks(user) {
+async function newUserIntegrityChecks(user: User) {
 	if (user.type < 2 && !user.password) throw { code: 'USER_EMPTY_PASSWORD'};
 	if (user.type === 2 && user.password) throw { code: 'GUEST_WITH_PASSWORD'};
 
@@ -618,7 +646,7 @@ export async function updateUserQuotas(kara) {
 
 export async function checkLogin(username, password) {
 	const conf = getConfig();
-	let user = {};
+	let user: User = {};
 	let onlineToken;
 	if (username.includes('@') && +conf.Online.Users) {
 		try {
@@ -631,7 +659,7 @@ export async function checkLogin(username, password) {
 			if (onlineToken) {
 				upsertRemoteToken(username, onlineToken);
 				// Download and add all favorites
-				fetchAndAddFavorites(instance, onlineToken, username, user.nickname);
+				fetchAndAddFavorites(instance, onlineToken, username);
 			}
 		} catch(err) {
 			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${JSON.stringify(err)}`);

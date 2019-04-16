@@ -1,6 +1,6 @@
-import {getConfig} from '../_utils/config';
-import {getState} from '../_utils/state';
-import {editUser} from '../_services/user';
+import {Config, getConfig} from '../_utils/config';
+import {getState, State} from '../_utils/state';
+import {editUser} from './user';
 import randomstring from 'randomstring';
 import open from 'open';
 
@@ -19,9 +19,9 @@ function generateAdminPassword() {
 	return adminPassword;
 }
 
-export async function welcomeToYoukousoKaraokeMugen(port) {
-	const conf = getConfig();
-	const state = getState();
+export async function welcomeToYoukousoKaraokeMugen(port: number) {
+	const conf: Config = getConfig();
+	const state: State = getState();
 	if (conf.App.FirstRun) {
 		const adminPassword = generateAdminPassword();
 		if (!state.isDemo && !state.isTest) open(`http://localhost:${port}/welcome?admpwd=${adminPassword}`);

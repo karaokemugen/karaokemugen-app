@@ -129,7 +129,7 @@ function toggleOnTopPlayer() {
 }
 
 
-export async function playPlayer(now) {
+export async function playPlayer(now?: boolean) {
 	profile('Play');
 	const state = getState();
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
@@ -143,7 +143,7 @@ export async function playPlayer(now) {
 	profile('Play');
 }
 
-function stopPlayer(now) {
+function stopPlayer(now?: boolean) {
 	if (now) {
 		logger.info('[Player] Karaoke stopping NOW');
 		stop();

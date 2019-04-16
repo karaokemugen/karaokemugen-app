@@ -7,6 +7,12 @@ import { sanitizeFile } from '../_utils/files';
 import { refreshKaras } from '../_dao/kara';
 import {compareKarasChecksum} from '../_dao/database';
 
+export interface Serie {
+	sid?:string,
+	name?: string,
+	i18n?: any
+}
+
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
 	const series = await selectAllSeries(filter, lang);

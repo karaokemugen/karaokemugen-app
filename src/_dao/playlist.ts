@@ -110,7 +110,7 @@ export async function trimPlaylist(id,pos) {
 	}));
 }
 
-export async function getPlaylistContentsMini(id, lang) {
+export async function getPlaylistContentsMini(id: number, lang?: string) {
 	const query = sql.getPlaylistContentsMini(langSelector(lang));
 	const res = await db().query(query, [id]);
 	return res.rows;

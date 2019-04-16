@@ -38,7 +38,7 @@ export async function getWhitelistContents(filter, lang, from, size) {
 export async function deleteKaraFromWhitelist(kid) {
 	let karas = [kid];
 	if (Array.isArray(kid)) karas = kid;
-	if (typeof wlcs === 'string') karas = kid.split(',');
+	// if (typeof wlcs === 'string') karas = kid.split(',');
 	try {
 		profile('deleteWLC');
 		logger.info(`[Whitelist] Deleting karaokes from whitelist : ${kid}`);

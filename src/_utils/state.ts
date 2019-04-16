@@ -3,7 +3,7 @@ import {emit} from './pubsub';
 import logger from 'winston';
 import merge from 'lodash.merge';
 
-interface State {
+export interface State {
 	currentPlaylistID: number,
 	publicPlaylistID: number,
 	modePlaylistID: number,
@@ -18,6 +18,14 @@ interface State {
 	timeposition: 0,
 	songPoll: boolean,
 	frontendPort: number,
+	ready: boolean,
+	sessionStart: Date,
+	isDemo: boolean,
+	isTest: boolean,
+	appPath: string,
+	osURL: string,
+	os: string,
+	EngineDefaultLocale: string,
 	player: {
 		playing: boolean,
 		fullscreen: boolean,
@@ -31,13 +39,6 @@ interface State {
 		volume: number,
 		ready: boolean
 	},
-	ready: boolean,
-	sessionStart: Date,
-	isDemo: boolean,
-	isTest: boolean,
-	appPath: string,
-	osURL: string,
-	os: string,
 	version: {
 		number: string,
 		name: string,
@@ -63,7 +64,9 @@ interface State {
 		validate: boolean,
 		debug: boolean
 	},
-	EngineDefaultLocale: string
+	engine: {
+		ontop: boolean
+	}
 }
 
 interface PublicState {
@@ -98,6 +101,14 @@ let state: State = {
 	timeposition: 0,
 	songPoll: false,
 	frontendPort: null,
+	ready: false,
+	sessionStart: new Date(),
+	isDemo: false,
+	isTest: false,
+	appPath: undefined,
+	osURL: undefined,
+	os: undefined,
+	EngineDefaultLocale: 'fr',
 	player: {
 		playing: undefined,
 		fullscreen: undefined,
@@ -111,13 +122,6 @@ let state: State = {
 		volume: undefined,
 		ready: undefined
 	},
-	ready: false,
-	sessionStart: new Date(),
-	isDemo: false,
-	isTest: false,
-	appPath: undefined,
-	osURL: undefined,
-	os: undefined,
 	version: {
 		number: undefined,
 		name: '',
@@ -143,7 +147,9 @@ let state: State = {
 		validate: false,
 		debug: false
 	},
-	EngineDefaultLocale: 'fr'
+	engine: {
+		ontop: undefined
+	}
 };
 let previousState = {...state};
 

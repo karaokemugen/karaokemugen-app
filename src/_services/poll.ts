@@ -1,7 +1,7 @@
 
 import {on} from '../_utils/pubsub';
 import {getConfig} from '../_utils/config';
-import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, getPlaylistContentsMini} from '../_services/playlist';
+import {copyKaraToPlaylist, isAllKarasInPlaylist, getPlaylistContentsMini} from './playlist';
 import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
 import {emitWS} from '../_webapp/frontend';
@@ -9,6 +9,7 @@ import {promisify} from 'util';
 import logger from 'winston';
 import {timer} from '../_utils/timer';
 import {getState, setState} from '../_utils/state';
+import {translateKaraInfo} from "./kara";
 const sleep = promisify(setTimeout);
 
 let poll = [];
@@ -148,6 +149,6 @@ export function setSongPoll(enabled) {
 	const state = getState();
 	const oldState = state.songPoll;
 	setState({songPoll: enabled});
-	if (!oldState && enabled) startPoll(state.publicPlaylistID,state.currentPlaylistID);
+	if (!oldState && enabled) startPoll();
 	if (oldState && !enabled) stopPoll();
 }

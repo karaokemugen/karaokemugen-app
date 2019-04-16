@@ -1,6 +1,7 @@
 import {langSelector, paramWords, db} from './database';
 import {pg as yesql} from 'yesql';
 import {profile} from '../_utils/logger';
+import {Serie} from '../_services/series';
 
 const sql = require('./sql/series');
 
@@ -40,7 +41,8 @@ export function buildClausesSeries(words) {
 	};
 }
 
-export async function selectAllSeries(filter, lang, from, size) {
+export async function selectAllSeries(filter, lang) {
+	// from?: number, size?: number
 
 	const filterClauses = filter ? buildClausesSeries(filter) : {sql: [], params: {}};
 	let offsetClause = '';
@@ -99,7 +101,7 @@ export async function updateSerie(serie) {
 	await insertSeriei18n(serie);
 }
 
-export async function updateKaraSeries(kid, sids) {
+export async function updateKaraSeries(kid: string, sids: string[]) {
 	await db().query(sql.deleteSeriesByKara, [kid]);
 	for (const sid of sids) {
 		await db().query(yesql(sql.insertKaraSeries)({
@@ -109,7 +111,7 @@ export async function updateKaraSeries(kid, sids) {
 	}
 }
 
-export async function selectSerie(sid, lang) {
+export async function selectSerie(sid: string, lang?: string): Promise<Serie> {
 	const query = sql.getSerieByID(langSelector(lang, true));
 	const series = await db().query(query, [sid]);
 	return series.rows[0];

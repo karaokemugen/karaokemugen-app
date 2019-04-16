@@ -10,7 +10,7 @@ import { getRemoteToken } from '../_dao/user';
 import got from 'got';
 import {getConfig} from '../_utils/config';
 
-export async function getFavorites(username, filter, lang, from = 0, size = 99999999) {
+export async function getFavorites(username: string, filter?: any, lang?: string, from: number = 0, size: number = 99999999) {
 	try {
 		profile('getFavorites');
 		const favs = await selectFavorites(filter, lang, from, size, username);
@@ -58,11 +58,11 @@ export async function addToFavorites(username, kid) {
 	}
 }
 
-export async function convertToRemoteFavorites(username) {
+export async function convertToRemoteFavorites(username: string) {
 	// This is called when converting a local account to a remote one
 	// We thus know no favorites exist remotely.
 	if (!getConfig().Online.Users) return true;
-	const favorites = await getFavorites({username: username});
+	const favorites = await getFavorites(username);
 	const addFavorites = [];
 	if (favorites.content.length > 0) {
 		for (const favorite of favorites) {
@@ -112,7 +112,7 @@ async function manageFavoriteInInstance(action, username, kid) {
 	}
 }
 
-export async function exportFavorites(username) {
+export async function exportFavorites(username: string) {
 	const favs = await getFavorites(username);
 	if (favs.content.length === 0) throw 'Favorites empty';
 	return {
