@@ -179,7 +179,7 @@ async function startmpv() {
 		mpvOptions.push(`--fs-screen=${conf.Player.Screen}`);
 	}
 	// Fullscreen is disabled if pipmode is set.
-	if (conf.Player.Fullscreen && !conf.Player.PIP.Enabled) {
+	if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
 		mpvOptions.push('--fullscreen');
 		playerState.fullscreen = true;
 	}
