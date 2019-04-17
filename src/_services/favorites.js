@@ -62,7 +62,7 @@ export async function convertToRemoteFavorites(username) {
 	// This is called when converting a local account to a remote one
 	// We thus know no favorites exist remotely.
 	if (!getConfig().Online.Users) return true;
-	const favorites = await getFavorites({username: username});
+	const favorites = await getFavorites(username);
 	const addFavorites = [];
 	if (favorites.content.length > 0) {
 		for (const favorite of favorites) {
