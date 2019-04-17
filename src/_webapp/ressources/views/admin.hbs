@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body">
                 <div class="modal-message">
-                
+
                 </div>
                 <div class="form">
                     <input type="text" class="form-control" id="modalInput" name="modalInput"    />
@@ -88,7 +88,7 @@
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <div class="col-xs-12 col-sm-12">
 
                             </div>
@@ -99,7 +99,7 @@
 
                         </div>
                     </div>
-                    <div class="modal-footer"> 
+                    <div class="modal-footer">
                  </div>
 
             </div>
@@ -116,7 +116,7 @@
             </ul>
             <div class="tab-content" id="nav-tabContent">
                 <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
-                 
+
                     <div class="modal-message">
                             <input type="text" class="" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
                             <input type="text" class="" id="loginServ" name="modalLoginServ" placeholder="{{i18n "INSTANCE_NAME_SHORT"}}" value="{{ onlineHost }}"/>
@@ -132,7 +132,7 @@
                 <div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
                     <div class="">
                             <input type="text" class="" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
-                            <input type="text" class="" id="signupServ" name="modalLoginServ" placeholder="{{i18n "INSTANCE_NAME_SHORT"}}" value="{{ onlineHost  }}"/>                            
+                            <input type="text" class="" id="signupServ" name="modalLoginServ" placeholder="{{i18n "INSTANCE_NAME_SHORT"}}" value="{{ onlineHost  }}"/>
                             <input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
                             <input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
                             <br/>
@@ -149,16 +149,16 @@
                     </div>
                 </div>
             </div>
-           
+
         </div>
     </div>
 </div>
 
 <div id="header" class="header" introStep="6" introLabel="lecteur" introTooltipClass="_introBottom">
-   
+
     <div class="dropdown btn btn-default btn-dark pull-right" id="manageButton">
         <button class="btn btn-dark pull-right dropdown-toggle klogo" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-           
+
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
             <li title="{{i18n "ACCOUNT"}}" action="account" class="btn btn-default btn-dark">
@@ -169,17 +169,17 @@
                 <i class="glyphicon glyphicon-off"></i></li>
         </ul>
     </div>
-    
+
     <a title="{{i18n "MUTE_UNMUTE"}}" action="command" id="mutestatus" name="mute" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-volume-up unmute"></i>
 		<i class="glyphicon glyphicon-volume-off mute"></i>
-		<input title='{{i18n "VOLUME_LEVEL"}}' action="command" name="setVolume" id="volume" value="100" type="range" />	
+		<input title='{{i18n "VOLUME_LEVEL"}}' action="command" name="setVolume" id="volume" value="100" type="range" />
 	</a>
     <button title="{{i18n "SHOW_HIDE_SUBS"}}" action="command" id="showSubs" name="hideSubs" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-subtitles hideSubs"></i>
         <i class="glyphicon glyphicon glyphicon-question-sign showSubs"></i>
     </button>
-    
+
     <button title="{{i18n "MESSAGE"}}" id="adminMessage" class="btn btn-dark pull-right" style="border-left-width: 0px"><i class="glyphicon glyphicon-comment"></i></button>
 
     <div class="pull-left btn-group switchs" style="width: 129px; max-width: 12.4vw;">
@@ -208,7 +208,7 @@
 <div id="underHeader" class="underHeader container-fluid" introStep="5"  introLabel="playlists">
     <div class="playlist-main row" id="playlist" introStep="9"  introLabel="playlists_2">
         <div class="panel col-lg-6 col-xs-6" id="panel1" side="1">
-            <div class="panel-heading container-fluid plDashboard">            
+            <div class="panel-heading container-fluid plDashboard">
                 <div class="plSelect">
                     <button title="{{i18n "PLAYLIST_COMMANDS"}}" class="btn btn-default pull-left showPlaylistCommands" side="1">
                         <i class="glyphicon glyphicon-wrench"></i>
@@ -220,17 +220,17 @@
                     <div class="btn-group plCommands controls">
                         <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
                             <i class="glyphicon glyphicon-random"></i>
-                        </button> 
+                        </button>
                         <button title='{{i18n "PLAYLIST_SMART_SHUFFLE"}}' class="btn btn-default" name="smartShuffle">
                             <i class="glyphicon glyphicon-random"></i>
-                        </button> 
+                        </button>
                     </div>
-                  
+
                 </div>
                 <div class="searchMenuButtonContainer btn-group plCommands">
                     <button type="button" class="searchMenuButton collapsed btn btn-default" data-toggle="collapse" data-target="#searchMenu1" aria-expanded="false">
                         <i class="glyphicon glyphicon-filter"></i>
-                    </button> 
+                    </button>
                 </div>
                 <div class="plSearch">
                     <input type="text" class="form-control input-md" side="1" id="searchPlaylist1" placeholder="&#xe003;" onclick="this.select();"/>
@@ -248,7 +248,7 @@
                         </button>
                     </div>
                 </div>
-              
+
                 <div class="plCommandsContainer actionDivContainer">
                     <div class="btn-group plCommands controls">
                         <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
@@ -282,13 +282,13 @@
                             <i class="glyphicon glyphicon-erase"></i>
                         </button>
                         <button title="{{i18n "ADD_KARA"}}" name="addKara" class="btn btn-default">
-                           
+
                         </button>
                         <button title="{{i18n "DELETE_KARA"}}" name="deleteKara" class="btn btn-default">
-                           
+
                         </button>
                         <button title="{{i18n "TRANSFER_KARA"}}" name="transferKara" class="btn btn-default">
-                         
+
                         </button>
                         <button title="{{i18n "SELECT_ALL"}}" name="selectAllKaras" class="btn btn-default clusterAction">
                         </button>
@@ -314,14 +314,14 @@
                         <li class="active"><a class="choice" href="#"><i class="glyphicon glyphicon-sort-by-alphabet"></i> {{i18n "VIEW_STANDARD"}}</a></li>
                         <li searchType="recent" ><a class="choice" href="#"><i class="glyphicon glyphicon-time"></i> {{i18n "VIEW_RECENT"}}</a></li>
                         <li searchType="requested" ><a class="choice" href="#"><i class="glyphicon glyphicon-fire"></i> {{i18n "VIEW_POPULAR"}}</a></li>
-                
-                    </ul>             
+
+                    </ul>
                 </div>
             </nav>
             <div class="playlistContainer">
                 <ul id="playlist1" side="1" class="list-group">
                     <li class="list-group-item"></li>
-                </ul> 
+                </ul>
             </div>
             <div class="plFooter">
                  <div class="plBrowse">
@@ -332,9 +332,9 @@
                 <div class="plInfos"></div>
             </div>
         </div>
-        
+
         <div class="panel col-lg-6 col-xs-6" id="panel2" side="2" introStep="12"  introPosition="left" introLabel="playlists_manage_advanced">
-            <div class="panel-heading container-fluid plDashboard" introStep="10"  introLabel="playlists_manage">            
+            <div class="panel-heading container-fluid plDashboard" introStep="10"  introLabel="playlists_manage">
                 <div class="plSelect">
                     <button title="{{i18n "PLAYLIST_COMMANDS"}}" class="btn btn-default pull-left showPlaylistCommands" side="1"  introStep="11"  introLabel="playlists_manage_button">
                         <i class="glyphicon glyphicon-wrench"></i>
@@ -344,24 +344,24 @@
                 </div>
 
                 <div class="controlsContainer">
-                    <div class="btn-group plCommands controls"> 
+                    <div class="btn-group plCommands controls">
                         <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
                             <i class="glyphicon glyphicon-random"></i>
-                        </button> 
+                        </button>
                         <button title='{{i18n "PLAYLIST_SMART_SHUFFLE"}}' class="btn btn-default" name="smartShuffle">
                             <i class="glyphicon glyphicon-random"></i>
-                        </button>    
-                      
+                        </button>
+
                     </div>
                 </div>
                 <div class="searchMenuButtonContainer btn-group plCommands">
                     <button type="button" class="searchMenuButton collapsed btn btn-default" data-toggle="collapse" data-target="#searchMenu2" aria-expanded="false">
                         <i class="glyphicon glyphicon-filter"></i>
-                    </button> 
+                    </button>
                 </div>
-                
+
                  <div class="plCommandsContainer actionDivContainer">
-                   
+
                     <div class="btn-group plCommands actionDiv">
                         <button title="{{i18n "ADD_RANDOM_KARAS"}}" name="addRandomKaras" class="btn btn-default clusterAction">
                             <img src="/ressources/img/clover.png" title="" style="">
@@ -373,17 +373,17 @@
                             <i class="glyphicon glyphicon-erase"></i>
                         </button>
                         <button title="{{i18n "ADD_KARA"}}" name="addKara" class="btn btn-default">
-                           
+
                         </button>
                         <button title="{{i18n "DELETE_KARA"}}" name="deleteKara" class="btn btn-default">
-                           
+
                         </button>
                         <button title="{{i18n "TRANSFER_KARA"}}" name="transferKara" class="btn btn-default">
-                         
+
                         </button>
                         <button title="{{i18n "SELECT_ALL"}}" name="selectAllKaras" class="btn btn-default clusterAction">
                         </button>
-                    </div>  
+                    </div>
                     <div class="btn-group plCommands controls">
                         <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
                             <i class="glyphicon glyphicon-pencil"></i>
@@ -422,7 +422,7 @@
                  <div class="plSearch">
                     <input type="text" class="form-control input-md" side="2" id="searchPlaylist2" placeholder="&#xe003;" onclick="this.select();"/>
                 </div>
-               
+
             </div>
             <nav class="navbar navbar-default  searchMenuContainer">
                 <div class="searchMenu container collapse" id="searchMenu2">
@@ -443,8 +443,8 @@
                         <li class="active"><a class="choice" href="#"><i class="glyphicon glyphicon-sort-by-alphabet"></i> {{i18n "VIEW_STANDARD"}}</a></li>
                         <li searchType="recent" ><a class="choice" href="#"><i class="glyphicon glyphicon-time"></i> {{i18n "VIEW_RECENT"}}</a></li>
                         <li searchType="requested" ><a class="choice" href="#"><i class="glyphicon glyphicon-fire"></i> {{i18n "VIEW_POPULAR"}}</a></li>
-                
-                    </ul>             
+
+                    </ul>
                 </div>
             </nav>
             <div class="playlistContainer">
@@ -471,7 +471,7 @@
                     <li class="modal-title" ><a data-toggle="tab" href="#nav-karaoke" role="tab" aria-controls="nav-lokaraokegin" aria-selected="false">{{i18n "SETTINGS_KARAOKE"}}</a></li>
                     <li class="modal-title" ><a data-toggle="tab" href="#nav-interface" role="tab" aria-controls="nav-interface" aria-selected="false">{{i18n "SETTINGS_INTERFACE"}}</a></li>
                 </ul>
-    
+
                 <div class="tab-content">
                     <div id="nav-player" role="tabpanel" aria-labelledby="nav-player-tab" class="modal-body tab-pane fade in active">
                         <div class="form-group">
@@ -519,7 +519,7 @@
                         </div>
 
 
-                        
+
                         <div id="pipSettings" class="well well-sm settingsGroupPanel">
                             <div class="form-group">
                                 <label for="Player.PIP.Size" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}}</label>
@@ -552,7 +552,7 @@
                         </div>
                     </div>
                     <div id="nav-interface" role="tabpanel" aria-labelledby="nav-interface-tab" class="modal-body tab-pane fade">
-                    
+
                         <div class="form-group">
                             <label for="Frontend.Mode" class="col-xs-4 control-label">{{i18n "WEBAPPMODE"}}</label>
                             <div class="col-xs-6">
@@ -563,7 +563,7 @@
                                     </select>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="Frontend.SeriesLanguageMode" class="col-xs-4 control-label">{{i18n "SERIE_NAME_MODE"}}</label>
                             <div class="col-xs-6">
@@ -577,7 +577,7 @@
                         </div>
                     </div>
                     <div id="nav-karaoke" role="tabpanel" aria-labelledby="nav-karaoke-tab" class="modal-body tab-pane fade">
-                        
+
                         <div id="nav-karaokeAllMode">
                             <div class="form-group">
                                 <label for="Karaoke.Quota.Type" class="col-xs-4 control-label">{{i18n "QUOTA_TYPE"}}</label>
@@ -625,18 +625,18 @@
                         <div id="nav-karaokePublicMode">
                             <div id="freeUpvotesSettings" class="well well-sm settingsGroupPanel">
                                 <div class="form-group">
-                                    <label class="col-xs-4 control-label" for="Karaoke.Quota.FreeUpVoteRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
+                                    <label class="col-xs-4 control-label" for="Karaoke.Quota.FreeUpVotesRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
                                     <div class="col-xs-6">
-                                        <input class="form-control" type="number" name="Karaoke.Quota.FreeUpVoteRequiredMin">
+                                        <input class="form-control" type="number" name="Karaoke.Quota.FreeUpVotesRequiredMin">
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="Karaoke.Quota.FreeUpVoteRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
+                                    <label for="Karaoke.Quota.FreeUpVotesRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
                                     <div class="col-xs-6">
-                                        <input class="form-control" type="number" name="Karaoke.Quota.FreeUpVoteRequiredPercent">
+                                        <input class="form-control" type="number" name="Karaoke.Quota.FreeUpVotesRequiredPercent">
                                     </div>
                                 </div>
-                            </div>   
+                            </div>
                             <div id="songPollSettings" class="well well-sm settingsGroupPanel">
                                 <div class="form-group">
                                     <label class="col-xs-4 control-label" for="Karaoke.Poll.Choices">{{i18n "ENGINESONGPOLLCHOICES"}}</label>
@@ -650,11 +650,11 @@
                                         <input class="form-control" type="number" name="Karaoke.Poll.Timeout">
                                     </div>
                                 </div>
-                            </div>    
+                            </div>
                         </div>
                         <input name="App.FirstRun" class="hideInput hidden">
                     </div>
-                </div>            
+                </div>
             </form>
         </div>
         <div class="col-lg-2 col-xs-0"></div>

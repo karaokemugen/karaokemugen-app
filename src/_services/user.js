@@ -443,7 +443,7 @@ export async function createUser(user, opts) {
 	user.bio = user.bio || null;
 	user.url = user.url || null;
 	user.email = user.email || null;
-	if (user.type === 2) user.flag_online = 0;
+	if (user.type === 2) user.flag_online = false;
 	await newUserIntegrityChecks(user);
 	if (user.login.includes('@')) {
 		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };
