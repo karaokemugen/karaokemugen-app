@@ -10,7 +10,7 @@ export function timer(callback, delay) {
 	this.pause = () => {
 		running = false;
 		clearTimeout(id);
-		remaining -= new Date() - started;
+		remaining -= new Date().getTime() - started;
 	};
 
 	this.getTimeLeft = () => {
