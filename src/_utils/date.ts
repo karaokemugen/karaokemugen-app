@@ -1,3 +1,5 @@
+import i18n from 'i18n';
+
 export function now(seconds?: boolean): number {
 	if (seconds) return Math.floor(new Date().getTime() / 1000);
 	return new Date().getTime();

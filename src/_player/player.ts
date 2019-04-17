@@ -1,3 +1,4 @@
+import i18n from 'i18n';
 import logger from 'winston';
 import {resolvedPathBackgrounds, getConfig} from '../_utils/config';
 import {resolve, extname} from 'path';

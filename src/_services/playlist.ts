@@ -10,6 +10,7 @@ import {on} from '../_utils/pubsub';
 import {setState, getState} from '../_utils/state';
 import {profile} from '../_utils/logger';
 import {resolve} from 'path';
+import i18n from 'i18n';
 
 //DAO
 import {
