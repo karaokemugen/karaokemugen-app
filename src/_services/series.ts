@@ -75,8 +75,10 @@ export async function addSerie(serieObj) {
 	]);
 	compareKarasChecksum(true);
 	await refreshSeries();
-	await refreshKaraSeries();
-	refreshKaras();
+	// Workaround for TS type bug.
+	let nextRefresh: any = () => refreshKaras();
+	refreshKaraSeries().then(nextRefresh());
+
 	return serieObj.sid;
 }
 
@@ -95,6 +97,7 @@ export async function editSerie(sid, serieObj) {
 	]);
 	compareKarasChecksum(true);
 	await refreshSeries();
-	await refreshKaraSeries();
-	refreshKaras();
+	// Workaround for TS type bug.
+	let nextRefresh: any = () => refreshKaras();
+	refreshKaraSeries().then(nextRefresh());
 }
