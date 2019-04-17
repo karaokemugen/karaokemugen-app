@@ -30,135 +30,133 @@ export type PositionY = 'Top' | 'Bottom' | 'Center';
 
 export interface Config {
 	App: {
-		JwtSecret: string,
-		InstanceID: string,
-		FirstRun: boolean,
-		karaSuggestionMail: string
+		JwtSecret?: string,
+		InstanceID?: string,
+		FirstRun?: boolean,
+		karaSuggestionMail?: string
 	},
 	Online: {
-		Host: string,
-		Port: number,
-		Users: boolean,
-		URL: boolean,
-		Stats: {
-			
-		}
+		Host?: string,
+		Port?: number,
+		Users?: boolean,
+		URL?: boolean,
+		Stats?: boolean
 	},
 	Frontend: {
-		Port: number,
-		Mode: number,
-		SeriesLanguageMode: number,
-		AuthExpireTime: number,
-		Permissions: {
-			AllowNicknameChange: boolean,
-			AllowViewWhitelist: boolean,
-			AllowViewBlacklist: boolean,
-			AllowViewBlacklistCriterias: boolean
+		Port?: number,
+		Mode?: number,
+		SeriesLanguageMode?: number,
+		AuthExpireTime?: number,
+		Permissions?: {
+			AllowNicknameChange?: boolean,
+			AllowViewWhitelist?: boolean,
+			AllowViewBlacklist?: boolean,
+			AllowViewBlacklistCriterias?: boolean
 		}
 	},
 	Karaoke: {
-		Private: boolean,
-		Autoplay: boolean,
-		Repeat: boolean,
-		MaxDejaVuTime: number,
-		SmartInsert: boolean,
-		CreatePreviews: boolean,
-		JinglesInterval: number,
+		Private?: boolean,
+		Autoplay?: boolean,
+		Repeat?: boolean,
+		MaxDejaVuTime?: number,
+		SmartInsert?: boolean,
+		CreatePreviews?: boolean,
+		JinglesInterval?: number,
 		Display: {
-			Avatar: boolean,
-			Nickname: boolean,
-			ConnectionInfo: {
-				Enabled: boolean,
-				QRCode: boolean,
-				Host: string,
-				Message: string
+			Avatar?: boolean,
+			Nickname?: boolean,
+			ConnectionInfo?: {
+				Enabled?: boolean,
+				QRCode?: boolean,
+				Host?: string,
+				Message?: string
 			}
 		},
 		Poll: {
-			Enabled: boolean,
-			Choices: number,
-			Timeout: number
+			Enabled?: boolean,
+			Choices?: number,
+			Timeout?: number
 		},
 		Quota: {
-			Songs: number,
-			Time: number,
-			Type: number,
-			FreeAutoTime: number,
-			FreeUpvotes: boolean,
-			FreeUpvotesRequiredPercent: number,
-			FreeUpvotesRequiredMin: number
+			Songs?: number,
+			Time?: number,
+			Type?: number,
+			FreeAutoTime?: number,
+			FreeUpvotes?: boolean,
+			FreeUpvotesRequiredPercent?: number,
+			FreeUpvotesRequiredMin?: number
 		}
 	},
 	Player: {
-		StayOnTop: boolean,
-		FullScreen: boolean,
-		Background: string,
-		Screen: number,
-		VisualizationEffects: boolean,
-		Monitor: boolean,
-		NoHud: boolean,
-		NoBar: boolean,
-		mpvVideoOutput: string,
+		StayOnTop?: boolean,
+		FullScreen?: boolean,
+		Background?: string,
+		Screen?: number,
+		VisualizationEffects?: boolean,
+		Monitor?: boolean,
+		NoHud?: boolean,
+		NoBar?: boolean,
+		mpvVideoOutput?: string,
 		PIP: {
-			Enabled: boolean,
-			Size: number,
-			PositionX: PositionX,
-			PositionY: PositionY
+			Enabled?: boolean,
+			Size?: number,
+			PositionX?: PositionX,
+			PositionY?: PositionY
 		}
 	},
 	Playlist: {
-		AllowDuplicates: boolean,
-		MaxDejaVuTime: number,
-		RemovePublicOnPlay: boolean
+		AllowDuplicates?: boolean,
+		MaxDejaVuTime?: number,
+		RemovePublicOnPlay?: boolean
 	},
 	System: {
 		Binaries: {
 			Player: {
-				Windows: string,
-				OSX: string,
-				Linux: string
+				Windows?: string,
+				OSX?: string,
+				Linux?: string
 			},
 			Postgres: {
-				Windows: string,
-				OSX: string,
-				Linux: string
+				Windows?: string,
+				OSX?: string,
+				Linux?: string
 			},
 			ffmpeg: {
-				Windows: string,
-				OSX: string,
-				Linux: string
+				Windows?: string,
+				OSX?: string,
+				Linux?: string
 			}
 		},
 		Path: {
-			Bin: string,
-			Karas: string[],
-			Medias: string[],
-			Lyrics: string[],
-			DB: string,
-			Series: string[],
-			Backgrounds: string[],
-			Jingles: string[],
-			Temp: string,
-			Previews: string,
-			Import: string,
-			Avatars: string,
-			MediasHTTP: string
+			Bin?: string,
+			Karas?: string[],
+			Medias?: string[],
+			Lyrics?: string[],
+			DB?: string,
+			Series?: string[],
+			Backgrounds?: string[],
+			Jingles?: string[],
+			Temp?: string,
+			Previews?: string,
+			Import?: string,
+			Avatars?: string,
+			MediasHTTP?: string
 		}
 	},
 	Database: {
-		'sql-file': boolean,
-		defaultEnv: string,
+		'sql-file'?: boolean,
+		defaultEnv?: string,
 		prod: {
-			driver: string,
-			host: string,
-			port: number,
-			user: string,
-			password: string,
-			superuser: string,
-			superuserPassword: string,
-			schema: string,
-			database: string,
-			bundledPostgresBinary: boolean
+			driver?: string,
+			host?: string,
+			port?: number,
+			user?: string,
+			password?: string,
+			superuser?: string,
+			superuserPassword?: string,
+			schema?: string,
+			database?: string,
+			bundledPostgresBinary?: boolean
 		}
 	}
 }
@@ -215,135 +213,32 @@ export async function mergeConfig(newConfig, oldConfig) {
 
 function getDefaultConfig(): Config {
 	return {
-		App: {
-			JwtSecret: undefined,
-			InstanceID: undefined,
-			FirstRun: undefined,
-			karaSuggestionMail: undefined
-		},
-		Online: {
-			Host: undefined,
-			Port: undefined,
-			Users: undefined,
-			URL: undefined,
-			Stats: {}
-		},
+		App: {},
+		Online: {},
 		Frontend: {
-			Port: undefined,
-			Mode: undefined,
-			SeriesLanguageMode: undefined,
-			AuthExpireTime: undefined,
-			Permissions: {
-				AllowNicknameChange: undefined,
-				AllowViewWhitelist: undefined,
-				AllowViewBlacklist: undefined,
-				AllowViewBlacklistCriterias: undefined
-			}
+			Permissions: {}
 		},
 		Karaoke: {
-			Private: undefined,
-			Autoplay: undefined,
-			Repeat: undefined,
-			MaxDejaVuTime: undefined,
-			SmartInsert: undefined,
-			CreatePreviews: undefined,
-			JinglesInterval: undefined,
 			Display: {
-				Avatar: undefined,
-				Nickname: undefined,
-				ConnectionInfo: {
-					Enabled: undefined,
-					QRCode: undefined,
-					Host: undefined,
-					Message: undefined
-				}
+				ConnectionInfo: {}
 			},
-			Poll: {
-				Enabled: undefined,
-				Choices: undefined,
-				Timeout: undefined
-			},
-			Quota: {
-				Songs: undefined,
-				Time: undefined,
-				Type: undefined,
-				FreeAutoTime: undefined,
-				FreeUpvotes: undefined,
-				FreeUpvotesRequiredPercent: undefined,
-				FreeUpvotesRequiredMin: undefined
-			}
+			Poll: {},
+			Quota: {}
 		},
 		Player: {
-			StayOnTop: undefined,
-			FullScreen: undefined,
-			Background: undefined,
-			Screen: undefined,
-			VisualizationEffects: undefined,
-			Monitor: undefined,
-			NoHud: undefined,
-			NoBar: undefined,
-			mpvVideoOutput: undefined,
-			PIP: {
-				Enabled: undefined,
-				Size: undefined,
-				PositionX: undefined,
-				PositionY: undefined
-			}
+			PIP: {}
 		},
-		Playlist: {
-			AllowDuplicates: undefined,
-			MaxDejaVuTime: undefined,
-			RemovePublicOnPlay: undefined
-		},
+		Playlist: {},
 		System: {
 			Binaries: {
-				Player: {
-					Windows: undefined,
-					OSX: undefined,
-					Linux: undefined
-				},
-				Postgres: {
-					Windows: undefined,
-					OSX: undefined,
-					Linux: undefined
-				},
-				ffmpeg: {
-					Windows: undefined,
-					OSX: undefined,
-					Linux: undefined
-				}
+				Player: {},
+				Postgres: {},
+				ffmpeg: {}
 			},
-			Path: {
-				Bin: undefined,
-				Karas: undefined,
-				Medias: undefined,
-				Lyrics: undefined,
-				DB: undefined,
-				Series: undefined,
-				Backgrounds: undefined,
-				Jingles: undefined,
-				Temp: undefined,
-				Previews: undefined,
-				Import: undefined,
-				Avatars: undefined,
-				MediasHTTP: undefined
-			}
+			Path: {}
 		},
 		Database: {
-			'sql-file': undefined,
-			defaultEnv: undefined,
-			prod: {
-				driver: undefined,
-				host: undefined,
-				port: undefined,
-				user: undefined,
-				password: undefined,
-				superuser: undefined,
-				superuserPassword: undefined,
-				schema: undefined,
-				database: undefined,
-				bundledPostgresBinary: undefined
-			}
+			prod: {}
 		}
 	};
 }

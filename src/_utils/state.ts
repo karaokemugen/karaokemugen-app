@@ -4,69 +4,69 @@ import logger from 'winston';
 import merge from 'lodash.merge';
 
 export interface State {
-	currentPlaylistID: number,
-	publicPlaylistID: number,
-	modePlaylistID: number,
-	playerNeedsRestart: boolean,
-	currentlyPlayingKara: boolean,
-	counterToJingle: number,
-	status: string,
-	private: boolean,
-	fullscreen: boolean,
-	ontop: boolean,
-	playlist: null,
-	timeposition: 0,
-	songPoll: boolean,
-	frontendPort: number,
-	ready: boolean,
-	sessionStart: Date,
-	isDemo: boolean,
-	isTest: boolean,
-	appPath: string,
-	osURL: string,
-	os: string,
+	currentPlaylistID?: number,
+	publicPlaylistID?: number,
+	modePlaylistID?: number,
+	playerNeedsRestart?: boolean,
+	currentlyPlayingKara?: boolean,
+	counterToJingle?: number,
+	status?: string,
+	private?: boolean,
+	fullscreen?: boolean,
+	ontop?: boolean,
+	playlist?: null,
+	timeposition?: 0,
+	songPoll?: boolean,
+	frontendPort?: number,
+	ready?: boolean,
+	sessionStart?: Date,
+	isDemo?: boolean,
+	isTest?: boolean,
+	appPath?: string,
+	osURL?: string,
+	os?: string,
 	osHost?: string
-	EngineDefaultLocale: string,
-	player: {
-		playing: boolean,
-		fullscreen: boolean,
-		timeposition: number,
-		duration: number,
-		mutestatus: string,
-		playerstatus: string,
-		currentlyPlaying: boolean,
-		subtext: string,
-		showsubs: boolean,
-		volume: number,
-		ready: boolean
+	EngineDefaultLocale?: string,
+	player?: {
+		playing?: boolean,
+		fullscreen?: boolean,
+		timeposition?: number,
+		duration?: number,
+		mutestatus?: string,
+		playerstatus?: string,
+		currentlyPlaying?: boolean,
+		subtext?: string,
+		showsubs?: boolean,
+		volume?: number,
+		ready?: boolean
 	},
-	version: {
-		number: string,
-		name: string,
-		image: string
+	version?: {
+		number?: string,
+		name?: string,
+		image?: string
 	},
-	binPath: {
-		mpv: string,
-		ffmpeg: string,
-		postgres: string,
-		postgres_ctl: string,
-		postgres_dump: string,
+	binPath?: {
+		mpv?: string,
+		ffmpeg?: string,
+		postgres?: string,
+		postgres_ctl?: string,
+		postgres_dump?: string,
 	},
-	opt: {
-		generateDB: boolean,
-		reset: boolean,
-		noBaseCheck: boolean,
-		strict: boolean,
-		noMedia: boolean,
-		baseUpdate: boolean,
-		noBrowser: boolean,
-		profiling: boolean,
-		sql: boolean,
-		validate: boolean,
-		debug: boolean
+	opt?: {
+		generateDB?: boolean,
+		reset?: boolean,
+		noBaseCheck?: boolean,
+		strict?: boolean,
+		noMedia?: boolean,
+		baseUpdate?: boolean,
+		noBrowser?: boolean,
+		profiling?: boolean,
+		sql?: boolean,
+		validate?: boolean,
+		debug?: boolean
 	},
-	engine: {
-		ontop: boolean
+	engine?: {
+		ontop?: boolean
 	}
 }
 
@@ -88,9 +88,6 @@ interface PublicState {
 
 // Internal settings
 let state: State = {
-	currentPlaylistID: undefined,
-	publicPlaylistID: undefined,
-	modePlaylistID: undefined,
 	playerNeedsRestart: false,
 	currentlyPlayingKara: null,
 	counterToJingle: 1,
@@ -106,34 +103,9 @@ let state: State = {
 	sessionStart: new Date(),
 	isDemo: false,
 	isTest: false,
-	appPath: undefined,
-	osURL: undefined,
-	os: undefined,
 	EngineDefaultLocale: 'fr',
 	player: {
-		playing: undefined,
-		fullscreen: undefined,
-		timeposition: undefined,
-		duration: undefined,
-		mutestatus: undefined,
-		playerstatus: undefined,
-		currentlyPlaying: undefined,
-		subtext: undefined,
-		showsubs: undefined,
-		volume: undefined,
-		ready: undefined
-	},
-	version: {
-		number: undefined,
-		name: '',
-		image: undefined
-	},
-	binPath: {
-		mpv: undefined,
-		ffmpeg: undefined,
-		postgres: undefined,
-		postgres_ctl: undefined,
-		postgres_dump: undefined,
+		ready: false
 	},
 	opt: {
 		generateDB: false,
@@ -147,9 +119,6 @@ let state: State = {
 		sql: false,
 		validate: false,
 		debug: false
-	},
-	engine: {
-		ontop: undefined
 	}
 };
 let previousState = {...state};
