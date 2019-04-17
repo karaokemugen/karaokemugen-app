@@ -788,7 +788,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 					if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
 					flag_playingDetected = true;
 					playingKara.kid = kara.kid;
-					playingKara.user = kara.username;
+					playingKara.username = kara.username;
 				}
 				if (!isNaN(kara.created_at)) playlist.PlaylistContents[index].created_at = new Date(+kara.created_at * 1000);
 				if (isNaN(kara.pos)) throw 'Position must be a number';
