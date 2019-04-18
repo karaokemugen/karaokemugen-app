@@ -71,7 +71,7 @@ function initQueue() {
 		logger.error(`[Download] Task ${taskId} failed : ${err}`);
 		emitQueueStatus('updated');
 	});
-	q.on('empty', emitQueueStatus('updated'));
+	q.on('empty', () => emitQueueStatus('updated'));
 	q.on('drain', () => {
 		logger.info('[Download] Ano ne, ano ne! I finished all my downloads!');
 		refreshSeriesAfterDBChange().then(refreshKarasAfterDBChange());
