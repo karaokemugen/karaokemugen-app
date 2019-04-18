@@ -59,7 +59,6 @@ export interface Config {
 		Private?: boolean,
 		Autoplay?: boolean,
 		Repeat?: boolean,
-		MaxDejaVuTime?: number,
 		SmartInsert?: boolean,
 		CreatePreviews?: boolean,
 		JinglesInterval?: number,

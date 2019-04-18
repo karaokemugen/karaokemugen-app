@@ -55,7 +55,6 @@ export const defaults: Config = {
 		Private: true,
 		Repeat: false,
 		SmartInsert: false,
-		MaxDejaVuTime: 60,
 		Display: {
 			Avatar: true,
 			Nickname: true,
