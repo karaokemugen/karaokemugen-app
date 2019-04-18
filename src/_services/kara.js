@@ -172,10 +172,18 @@ export async function getKaraLyrics(kid) {
 }
 
 async function updateSeries(kara) {
+	// statements
 	if (!kara.series) return true;
 	let lang = 'und';
 	if (kara.lang) lang = kara.lang.split(',')[0];
 	let sids = [];
+
+	// Remove this when we'll update .kara file format to version 4
+	if (kara.KID)
+	{
+		kara.kid = kara.KID;
+	}
+
 	for (const s of kara.series.split(',')) {
 		let langObj = {};
 		langObj[lang] = s;
@@ -184,9 +192,10 @@ async function updateSeries(kara) {
 		};
 		seriesObj.i18n = {...langObj};
 		const sid = await getOrAddSerieID(seriesObj);
-		sids.push(sid);
-		// Remove this when we'll update .kara file format to version 4
-		if (kara.KID) kara.kid = kara.KID;
+		if(sid)
+		{
+			sids.push(sid);
+		}
 	}
 	await updateKaraSeries(kara.kid,sids);
 }

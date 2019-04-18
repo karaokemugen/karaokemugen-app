@@ -158,11 +158,21 @@ async function processDownload(download) {
 	// Now adding our newly downloaded kara
 	try {
 		for (const serie of bundle.series) {
-			await integrateSeriesFile(serie);
-			logger.info(`[Download] Series "${serie}" added to database`);
+			try {
+				await integrateSeriesFile(serie);
+				logger.info(`[Download] Series "${serie}" added to database`);
+			} catch(err) {
+				logger.error(`[Download] Series "${serie}" not properly added to database`);
+				throw err;
+			}
 		}
-		await integrateKaraFile(bundle.kara);
-		logger.info(`[Download] Song "${download.name}" added to database`);
+		try {
+			await integrateKaraFile(bundle.kara);
+			logger.info(`[Download] Song "${download.name}" added to database`);
+		} catch(err) {
+			logger.error(`[Download] Song "${download.name}" not properly added to database`);
+			throw err;
+		}
 	} catch(err) {
 		logger.error(`[Download] Song "${download.name}" downloaded but not properly added to database. Regenerate your database manually after fixing errors`);
 		throw err;
