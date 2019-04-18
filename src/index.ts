@@ -1,5 +1,5 @@
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_utils/files';
-import {getConfig, initConfig, configureBinaries} from './_utils/config';
+import {Config, getConfig, initConfig, configureBinaries} from './_utils/config';
 import {parseCommandLineArgs} from './args';
 import {writeFileSync, readFileSync} from 'fs';
 import {copy} from 'fs-extra';
@@ -13,7 +13,7 @@ import chalk from 'chalk';
 import {createInterface} from 'readline';
 import { setState, getState } from './_utils/state';
 
-process.on('uncaughtException', function (exception) {
+process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
 });
 
@@ -45,6 +45,7 @@ if (process.platform === 'win32' ) {
 // Main app begins here.
 
 let appPath: string;
+// Testing if we're in a packaged version of KM or not.
 ('pkg' in process) ? appPath = join(process['execPath'],'../') : appPath = join(__dirname,'../');
 setState({appPath: appPath});
 
@@ -71,8 +72,8 @@ async function main() {
 	logger.debug(`[Launcher] SysPath : ${appPath}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
-	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, 2));
-	logger.debug('[Launcher] Initial state : ' + JSON.stringify(state, null, 2));
+	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(config, null, 2)}`);
+	logger.debug(`[Launcher] Initial state : ${JSON.stringify(state, null, 2)}`);
 
 	// Checking binaries paths.
 	await configureBinaries(config);
@@ -138,7 +139,7 @@ function parseArgs() {
 /**
  * Checking if application paths exist.
  */
-async function checkPaths(config) {
+async function checkPaths(config: Config) {
 
 	const appPath: string = getState().appPath;
 
