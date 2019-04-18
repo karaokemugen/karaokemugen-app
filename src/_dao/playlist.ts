@@ -161,7 +161,7 @@ export async function getPlaylistKaraNames(id) {
 }
 
 export async function getPLCInfo(id, forUser, username) {
-	const query = sql.getPLCInfo + (forUser ? ' AND p.flag_visible = TRUE' : '');
+	const query = sql.getPLCInfo(forUser);
 	const res = await db().query(yesql(query)(
 		{
 			playlistcontent_id: id,

@@ -242,6 +242,7 @@ export const tags = [
 	'ANIME',
 	'CREDITLESS',
 	'COVER',
+	'DUB',
 	'DRAMA',
 	'DREAMCAST',
 	'DUO',

@@ -25,7 +25,7 @@ export async function addUpvote(plc_id,username) {
 			playlist_id: plc.playlist_id,
 			code: 'UPVOTE_DONE'
 		};
-		if (!getConfig().Karaoke.Quota.FreeUpvotes) return ret;
+		if (!getConfig().Karaoke.Quota.FreeUpVotes) return ret;
 		tryToFreeKara(plc_id, plc.upvotes, plc.username, getState().modePlaylistID);
 		return ret;
 	} catch(err) {
@@ -61,8 +61,8 @@ async function tryToFreeKara(plc_id, upvotes, username, playlist_id) {
 	const onlineUsers = allUsersList.filter(user => user.flag_online);
 	const upvotePercent = (upvotes / onlineUsers.length) * 100;
 	const conf = getConfig();
-	if (upvotePercent >= +conf.Karaoke.Quota.FreeUpvotesRequiredPercent &&
-		upvotes >= +conf.Karaoke.Quota.FreeUpvotesRequiredMin) {
+	if (upvotePercent >= +conf.Karaoke.Quota.FreeUpVotesRequiredPercent &&
+		upvotes >= +conf.Karaoke.Quota.FreeUpVotesRequiredMin) {
 		await freePLC(plc_id);
 		updateSongsLeft(username, playlist_id);
 		logger.debug(`[Upvote] PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`);

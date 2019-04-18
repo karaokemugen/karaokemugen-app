@@ -245,7 +245,7 @@ ORDER BY karaname;
 `;
 
 
-export const getPLCInfo = `
+export const getPLCInfo = (forUser) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
@@ -291,6 +291,7 @@ SELECT
   (CASE WHEN up.fk_login = :username THEN TRUE ELSE FALSE END) as flag_upvoted,
   SUM(plc_before_karas.duration) - ak.duration AS time_before_play
 FROM playlist_content AS pc
+INNER JOIN  playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN played p ON ak.kid = p.fk_kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
@@ -302,6 +303,7 @@ LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.f
 LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc.fk_id_playlist AND plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND pc.pos
 LEFT OUTER JOIN kara AS plc_before_karas ON plc_before_karas.pk_kid = plc_before.fk_kid
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
+${forUser ? ' AND pl.flag_visible = TRUE' : ''}
 GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
 `;
 
