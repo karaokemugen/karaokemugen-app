@@ -1,6 +1,7 @@
 import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
 import {refreshSeries, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, refreshKaraSeries} from '../_dao/series';
 import {profile} from '../_utils/logger';
+import logger from 'winston';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../_utils/files';
@@ -57,7 +58,10 @@ export async function deleteSerie(sid) {
 export async function addSerie(serieObj, opts = {refresh: true}) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const serie = await selectSerieByName(serieObj.name);
-	if (serie) throw 'Series original name already exists';
+	if (serie) {
+		logger.warning(`Series original name already exists "${serieObj.name}"`);
+		return serie.sid;
+	}
 	if (!serieObj.sid) serieObj.sid = uuidV4();
 	if (!serieObj.seriefile) serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
 
