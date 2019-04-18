@@ -14,6 +14,7 @@ import {uuidRegexp} from '../_services/constants';
 import {refreshKarasAfterDBChange} from './kara';
 import {refreshSeriesAfterDBChange} from './series';
 import { compareKarasChecksum } from '../_dao/database';
+import { emitWS } from '../_webapp/frontend';
 
 const queueOptions = {
 	id: 'uuid',
@@ -27,6 +28,10 @@ const queueOptions = {
 };
 
 let q;
+
+function emitQueueStatus(status) {
+	emitWS('downloadQueueStatus', status);
+}
 
 function queueDownload(input, done) {
 	logger.info(`[Download] Processing queue item : ${input.name}`);
@@ -60,12 +65,19 @@ function initQueue() {
 			refreshSeriesAfterDBChange().then(refreshKarasAfterDBChange());
 			taskCounter = 0;
 		}
+		emitQueueStatus('updated');
 	});
-	q.on('task_failed', (taskId, err) => logger.error(`[Download] Task ${taskId} failed : ${err}`));
+	q.on('task_failed', (taskId, err) => {
+		logger.error(`[Download] Task ${taskId} failed : ${err}`);
+		emitQueueStatus('updated');
+	});
+	q.on('empty', emitQueueStatus('updated'));
 	q.on('drain', () => {
 		logger.info('[Download] Ano ne, ano ne! I finished all my downloads!');
 		refreshSeriesAfterDBChange().then(refreshKarasAfterDBChange());
 		taskCounter = 0;
+		emitQueueStatus('updated');
+		emitQueueStatus('stopped');
 	});
 }
 
@@ -78,8 +90,10 @@ export async function startDownloads() {
 			await internet();
 			downloads.forEach(dl => q.push(dl));
 			logger.info('[Downloader] Download queue starting up');
+			emitQueueStatus('started');
 		} catch(err) {
 			if (downloads.length > 0) logger.warn('[Downloader] There are planned downloads, but your computer seems offline');
+			emitQueueStatus('stopped');
 		}
 	}
 }
@@ -183,10 +197,12 @@ async function downloadFiles(download, list) {
 
 export function pauseQueue() {
 	// Queue is paused but the current running task is not paused.
+	emitQueueStatus('paused');
 	return q.pause();
 }
 
 export function resumeQueue() {
+	emitQueueStatus('started');
 	return q.resume();
 }
 
@@ -257,19 +273,22 @@ export async function retryDownload(uuid) {
 	if (dl.status === 'DL_PLANNED') throw 'Download is already planned!';
 	await setDownloadStatus(uuid, 'DL_PLANNED');
 	q.push(dl);
+	emitQueueStatus('started');
 }
 
 export async function removeDownload(uuid) {
 	const dl = await selectDownload(uuid);
 	if (!dl) throw 'Download ID unknown';
 	if (dl.status !== 'DL_PLANNED') throw 'Only planned downloads can be cancelled';
+	await deleteDownload(uuid);
 	q.cancel(uuid);
-	return await deleteDownload(uuid);
+	emitQueueStatus('updated');
 }
 
 export async function wipeDownloads() {
 	q.destroy();
 	initQueue();
+	emitQueueStatus('stopped');
 	return await emptyDownload();
 }
 
