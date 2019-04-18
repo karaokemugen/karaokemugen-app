@@ -322,10 +322,10 @@ export async function findFingerprint(fingerprint) {
 	// If fingerprint is present we return the login name of that user
 	// If not we find a new guest account to assign to the user.
 	let guest = await db.findFingerprint(fingerprint);
-	logger.debug(guest);
+	if (getState().isTest) logger.debug(guest);
 	if (guest) return guest.pk_login;
 	guest = await db.getRandomGuest();
-	logger.debug(guest);
+	if (getState().isTest) logger.debug(guest);
 	if (!guest) return false;
 	await db.updateUserPassword(guest.pk_login, hashPassword(fingerprint));
 	return guest.pk_login;
@@ -443,7 +443,7 @@ export async function createUser(user, opts) {
 	user.bio = user.bio || null;
 	user.url = user.url || null;
 	user.email = user.email || null;
-	if (user.type === 2) user.flag_online = 0;
+	if (user.type === 2) user.flag_online = false;
 	await newUserIntegrityChecks(user);
 	if (user.login.includes('@')) {
 		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };

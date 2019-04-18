@@ -1462,21 +1462,25 @@ export function APIControllerAdmin(router) {
 				destination: {inclusion: ['screen', 'users', 'all']}
 			});
 			if (!validationErrors) {
-				if (req.body.destination === 'users' ||
-				    req.body.destination === 'all') {
-					emitWS('adminMessage', req.body );
-					res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
-				}
-				if (req.body.destination === 'screen' ||
-				    req.body.destination === 'all') {
+				if (req.body.destination === 'users') emitWS('adminMessage', req.body );
+				if (req.body.destination === 'screen') {
 					try {
 						await message(req.body.message,+req.body.duration);
-						res.json(OKMessage(req.body,'MESSAGE_SENT'));
 					} catch(err) {
 						logger.error(err);
 						res.status(500).json(errMessage('MESSAGE_SEND_ERROR',err));
 					}
 				}
+				if (req.body.destination === 'all') {
+					emitWS('adminMessage', req.body );
+					try {
+						await message(req.body.message,+req.body.duration);
+					} catch(err) {
+						logger.error(err);
+						res.status(500).json(errMessage('MESSAGE_SEND_ERROR',err));
+					}
+				}
+				res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
@@ -4234,7 +4238,7 @@ export function APIControllerPublic(router) {
 				req.body.login = unescape(req.body.login.trim());
 				// No errors detected
 				try {
-					await createUser({...req.body, flag_admin: 0});
+					await createUser(req.body);
 					res.json(OKMessage(true,'USER_CREATED'));
 				} catch(err) {
 					res.status(500).json(errMessage(err.code,err.message));

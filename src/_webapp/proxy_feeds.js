@@ -29,7 +29,7 @@ export async function getFeeds() {
 	try {
 		await internet();
 	} catch(err) {
-		throw `This instance is not connected to the internets : ${err}`;
+		throw 'This instance is not connected to the internets';
 	}
 	let feedPromises = [];
 	for (const feed of feeds) {

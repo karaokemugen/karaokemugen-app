@@ -496,7 +496,7 @@ export async function addKaraToPlaylist(kids, requester, playlist_id, pos) {
 		// And use that +1 to set our playlist position.
 		// If pos is -1, we must add it after the currently flag_playing karaoke.
 		// Position management here :
-		if (conf.Karaoke.SmartInsert && !user.flag_admin) {
+		if (conf.Karaoke.SmartInsert && user.type !== 0) {
 			if (userMaxPosition === null) {
 				// No songs yet from that user, they go first.
 				pos = -1;
@@ -612,7 +612,7 @@ export async function copyKaraToPlaylist(plc_id, playlist_id, pos) {
 			const res = await getMaxPosInPlaylist(playlist_id);
 			let startpos = res.maxpos + 1;
 			for (const i in plcList) {
-				plcList[i].pos = startpos + i + 1;
+				plcList[i].pos = startpos + +i;
 			};
 		}
 		await addKaraToPL(plcList);
@@ -788,7 +788,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 					if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
 					flag_playingDetected = true;
 					playingKara.kid = kara.kid;
-					playingKara.user = kara.username;
+					playingKara.username = kara.username;
 				}
 				if (!isNaN(kara.created_at)) playlist.PlaylistContents[index].created_at = new Date(+kara.created_at * 1000);
 				if (isNaN(kara.pos)) throw 'Position must be a number';
@@ -975,7 +975,7 @@ export async function nextSong() {
 	const playlist = await getCurrentPlaylistContents();
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (playlist.content.length === 0) throw 'Playlist is empty!';
-	if (playlist.index + 1 >= playlist.content.length && !conf.Karaoke.RepeatPlaylist) {
+	if (playlist.index + 1 >= playlist.content.length && !conf.Karaoke.Repeat) {
 		logger.debug('[PLC] End of playlist.');
 		await setPlaying(null, playlist.id);
 		throw 'Current position is last song!';
@@ -983,7 +983,7 @@ export async function nextSong() {
 		// If we're here, it means either we're beyond the length of the playlist
 		// OR that RepeatPlaylist is set to 1.
 		// We test again if we're at the end of the playlist. If so we go back to first song.
-		if (conf.Karaoke.RepeatPlaylist && playlist.index + 1 >= playlist.content.length) playlist.index = -1;
+		if (conf.Karaoke.Repeat && playlist.index + 1 >= playlist.content.length) playlist.index = -1;
 		const kara = playlist.content[playlist.index + 1];
 		if (!kara) throw 'Karaoke received is empty!';
 		await setPlaying(kara.playlistcontent_id, playlist.id);

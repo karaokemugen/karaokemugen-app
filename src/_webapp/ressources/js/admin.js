@@ -4,7 +4,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 (function (yourcode) {
     yourcode(window.jQuery, window, document);
 }(function ($, window, document) {
-    // The $ is now locally scoped 
+    // The $ is now locally scoped
     // Listen for the jQuery ready event on the document
     $(function () {
 
@@ -16,7 +16,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
         $('select[type="playlist_select"]').on('select2:close', function () {
             $('.select2-dropdown').css('z-index', '1051');
-            document.body.scrollTop = 0; // For Chrome, Safari and Opera 
+            document.body.scrollTop = 0; // For Chrome, Safari and Opera
             document.documentElement.scrollTop = 0; // For IE and Firefox
         });
 
@@ -66,12 +66,15 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 '<select class="form-control" name="destination"><option value="screen">' + i18n.__('CL_SCREEN') + '</option>'
                 + '<option value="users">' + i18n.__('CL_USERS') + '</option><option value="all">' + i18n.__('CL_ALL') + '</option></select>'
                 + '<input type="text"name="duration" placeholder="5000 (ms)"/>'
-                + '<input type="text" placeholder="Message" class="form-control" id="message" name="message">', function (data) {
+                + '<input type="text" placeholder="Message" class="form-control" id="message" name="message">', function (data)
+                {
+                    var defaultDuration = 5000;
+                    var msgData =   {
+                                        message: data.message,
+                                        destination: data.destination,
+                                        duration: !data.duration || isNaN(data.duration) ? defaultDuration : data.duration
+                                    };
 
-                    var msgData = { message: data.message, destination: data.destination };
-                    if (data.duration) {
-                        msgData['duration'] = data.duration;
-                    }
                     ajx('POST', 'admin/player/message', msgData);
                 }
             );
@@ -389,7 +392,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
     mouseDown = false;
     panel1Default = -1;
 
-    // dynamic creation of switchable settings 
+    // dynamic creation of switchable settings
     $.each(settingsOnOff, function (tab, settingsList) {
         var htmlSettings = '';
         $.each(settingsList, function (e, val) {
@@ -403,7 +406,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 $(htmlString).addClass('groupSettingActivator').insertBefore('#pipSettings');
             } else if (e === 'Karaoke.Display.ConnectionInfo.Enabled') {
                 $(htmlString).addClass('groupSettingActivator').insertBefore('#connexionInfoSettings');
-            } else if (e === 'Karaoke.Quota.FreeUpVote') {
+            } else if (e === 'Karaoke.Quota.FreeUpVotes') {
                 $(htmlString).addClass('groupSettingActivator').insertBefore('#freeUpvotesSettings');
             } else if (e === 'Karaoke.Poll.Enabled') {
                 $(htmlString).addClass('groupSettingActivator').insertBefore('#songPollSettings');
@@ -456,7 +459,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                             val ? $('#pipSettings').show('500') : $('#pipSettings').hide('500');
                         } else if (input.attr('name') === 'Karaoke.Display.ConnectionInfo.Enabled') {
                             val ? $('#connexionInfoSettings').show('500') : $('#connexionInfoSettings').hide('500');
-                        } else if (input.attr('name') === 'Karaoke.Quota.FreeUpVote') {
+                        } else if (input.attr('name') === 'Karaoke.Quota.FreeUpVotes') {
                             val ? $('#freeUpvotesSettings').show('500') : $('#freeUpvotesSettings').hide('500');
                         } else if (input.attr('name') === 'Karaoke.Poll.Enabled') {
                             val ? $('#songPollSettings').show('500') : $('#songPollSettings').hide('500');
@@ -502,8 +505,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 $(formArray).each(function (index, obj) {
                     settingsArray[obj.name] = obj.value;
                 });
-                settingsArray['Karaoke.Private'] = $('input[name="Karaoke.Private"]').val() === "true";
-                settingsArray['App.FirstRun'] = $('input[name="App.FirstRun"]').val() === "true";
+                settingsArray['Karaoke.Private'] = $('input[name="Karaoke.Private"]').val() === "1";
+                settingsArray['App.FirstRun'] = $('input[name="App.FirstRun"]').val() === "1";
                 settingsArray['Player.NoHud'] = settings['Player.NoHud'];
                 settingsArray['Player.NoBar'] = settings['Player.NoBar'];
                 DEBUG && console.log('setSettings : ', settingsArray);
@@ -658,7 +661,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			/*
 			url = scope + '/playlists/import';
 			type = 'POST';
-            
+
 			displayModal('prompt','Collez votre JSON ci-dessous', '', function(json){
 				data['playlist'] = json;
 				ajx(type, url, data);

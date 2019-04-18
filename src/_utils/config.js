@@ -116,14 +116,14 @@ async function importIniFile(iniFile) {
 	if (ini.EngineTimePerUser) c.Karaoke.Quota.Time = +ini.EngineTimePerUser;
 	if (ini.EngineQuotaType) c.Karaoke.Quota.Type = +ini.EngineQuotaType;
 	if (ini.EngineFreeAutoTime) c.Karaoke.Quota.FreeAutoTime = +ini.EngineFreeAutoTime;
-	if (ini.EngineFreeUpvotes) c.Karaoke.Quota.FreeUpvotes = false;
-	if (ini.EngineFreeUpvotesRequiredPercent) c.Karaoke.Quota.FreeUpvotesRequiredPercent = +ini.EngineFreeUpvotesRequiredPercent;
-	if (ini.EngineFreeUpvotesRequiredMin) c.Karaoke.Quota.FreeUpvotesRequiredMin = +ini.EngineFreeUpvotesRequiredMin;
+	if (ini.EngineFreeUpvotes) c.Karaoke.Quota.FreeUpVotes = false;
+	if (ini.EngineFreeUpvotesRequiredPercent) c.Karaoke.Quota.FreeUpVotesRequiredPercent = +ini.EngineFreeUpvotesRequiredPercent;
+	if (ini.EngineFreeUpVotesRequiredMin) c.Karaoke.Quota.FreeUpvotesRequiredMin = +ini.EngineFreeUpVotesRequiredMin;
 	if (ini.EngineAutoPlay) c.Karaoke.Autoplay = true;
 	if (ini.EngineRepeatPlaylist) c.Karaoke.Repeat = true;
 	if (ini.EngineMaxDejaVuTime) c.Playlist.MaxDejaVuTime = +ini.EngineMaxDejaVuTime;
 	if (ini.EngineSmartInsert) c.Karaoke.SmartInsert = true;
-	if (ini.EngineJinglesInterval) c.Playlist.JinglesInterval = ini.EngineJinglesInterval;
+	if (ini.EngineJinglesInterval) c.Karaoke.JinglesInterval = ini.EngineJinglesInterval;
 	if (ini.EngineCreatePreviews) c.Karaoke.CreatePreviews = true;
 	if (ini.EngineSongPoll) c.Karaoke.Poll.Enabled = true;
 	if (ini.EngineSongPollChoices) c.Karaoke.Poll.Choices = +ini.EngineSongPollChoices;
@@ -166,7 +166,7 @@ async function importIniFile(iniFile) {
 	if (ini.mpvVideoOutput) c.Player.mpvVideoOutput = ini.mpvVideoOutput;
 	if (ini.AuthExpireTime) c.Frontend.AuthExpireTime = +ini.AuthExpireTime;
 	if (ini.WebappMode) c.Frontend.Mode = +ini.WebappMode;
-	if (ini.WebappSongLanguageMode) c.Frontend.SongLanguageMode = +ini.WebappSongLanguageMode;
+	if (ini.WebappSongLanguageMode) c.Frontend.SeriesLanguageMode = +ini.WebappSongLanguageMode;
 	if (ini.OnlineUsers) c.Online.Users = true;
 	if (ini.OnlineURL) c.Online.URL = true;
 	if (ini.OnlineMode) c.Online.URL = true;
