@@ -52,6 +52,25 @@ class KaraDownload extends Component {
 		this.api_read_kara_queue();
 	}
 
+	downloadAll() {
+		this.props.loading(true);
+		got(
+			`https://kara.moe/api/karas?filter=${this.state.filter}`,
+			{ json : true }
+		).then(res => {
+			let karas = res.body.content;
+			karas.forEach((kara) => { 
+				kara.name = kara.subfile.replace('.ass', '');
+				this.downloadKara(kara)
+			})
+			this.props.loading(false);
+		})
+		.catch(err => {
+			this.props.loading(false);
+			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+		});
+	}
+
 	async api_get_local_karas() {
 		this.setState({karas_local: await getLocalKaras()});
 	}
@@ -77,8 +96,8 @@ class KaraDownload extends Component {
 			});
 		})
 		.catch(err => {
-			//this.props.loading(false);
-			//this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			this.props.loading(false);
+			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
 		});
 	}
 
@@ -116,12 +135,14 @@ class KaraDownload extends Component {
 						/>
 					</Layout.Header>
 					<Layout.Content>
+						<button type="button" onClick={this.downloadAll.bind(this)}><Icon type='download'/></button>
 						<Table
 							onChange={this.handleTableChange}
 							dataSource={this.state.karas_online}
 							columns={this.columns}
 							rowKey='kid'
 							pagination={{
+								position:"both",
 								current: this.state.currentPage || 0,
 								defaultPageSize: this.state.currentPageSize,
 								pageSize: this.state.currentPageSize,
