@@ -164,16 +164,7 @@ async function startmpv() {
 		if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
 		mpvOptions.push(`--geometry=${positionX}%:${positionY}%`);
 	}
-	if (conf.Player.mpvVideoOutput) {
-		mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
-	} else {
-		//Force direct3d for Windows users
-		//On some graphics cards (mainly Intel) there's no openGl support
-		//There is an issue with mpv's recent versions as directory bugs out some videos
-		//and backgrounds
-		//This is not a problem with the bundled 0.27 version, but is with 0.28
-		if (state.os === 'win32') mpvOptions.push('--vo=direct3d');
-	}
+	if (conf.Player.mpvVideoOutput) mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
 	if (conf.Player.Screen) {
 		mpvOptions.push(`--screen=${conf.Player.Screen}`);
 		mpvOptions.push(`--fs-screen=${conf.Player.Screen}`);
