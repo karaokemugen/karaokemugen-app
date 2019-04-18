@@ -1,13 +1,13 @@
 {
 	"compilerOptions": {
 		// Target latest version of ECMAScript.
-		"target": "esnext",
+		"target": "es5",
 		// Search under node_modules for non-relative imports.
 		"moduleResolution": "node",
 		// Process & infer types from .js files.
 		"allowJs": false,
 		// Don't emit; allow Babel to transform files.
-		"noEmit": true,
+		"noEmit": false,
 		// Enable strictest settings like strictNullChecks & noImplicitAny.
 		// true is better but requires a global refactoring.
 		"strict": false,
@@ -16,9 +16,13 @@
 		// Import non-ES modules as default imports.
 		"esModuleInterop": true,
 		// Import constants from JSON (locales).
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"removeComments": true,
+		"outDir": "dist/",
+		"downlevelIteration": true
 	},
 	"include": [
 		"src"
-	]
+	],
 }

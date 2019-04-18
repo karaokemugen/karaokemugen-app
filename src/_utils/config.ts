@@ -24,6 +24,7 @@ import isEqual from 'lodash.isequal';
 import {safeDump, safeLoad} from 'js-yaml';
 import {clearEmpties, difference} from './object_helpers';
 import cloneDeep from 'lodash.clonedeep';
+import {version} from '../version';
 
 export type PositionX = 'Left' | 'Right' | 'Center';
 export type PositionY = 'Top' | 'Bottom' | 'Center';
@@ -350,21 +351,16 @@ export async function initConfig(argv) {
 async function loadConfigFiles(appPath) {
 	const overrideConfigFile = resolve(appPath, configFile);
 	const databaseConfigFile = resolve(appPath, 'database.json');
-	const versionFile = resolve(__dirname, '../version.yml');
 	config = merge(config, defaults);
-	setState({appPath: appPath});
+	setState({
+		appPath: appPath,
+		version: version
+	});
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
-	if (await asyncExists(versionFile)) await loadVersion(versionFile);
 	if (await asyncExists(databaseConfigFile)) {
 		const dbConfig = await loadDBConfig(databaseConfigFile);
 		config.Database = merge(config.Database, dbConfig);
 	}
-}
-
-async function loadVersion(versionFile) {
-	const content = await asyncReadFile(versionFile, 'utf-8');
-	const parsedContent = safeLoad(content);
-	setState({version: {...parsedContent}});
 }
 
 async function loadDBConfig(configFile) {

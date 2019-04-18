@@ -49,7 +49,7 @@ export async function initFrontend() {
 		const state = getState();
 		const app = express();
 		app.engine('hbs', exphbs({
-			layoutsDir: join(__dirname, 'ressources/views/layouts/'),
+			layoutsDir: join(__dirname, '../../frontend/ressources/views/layouts/'),
 			extname: '.hbs',
 			helpers: {
 			//How comes array functions do not work here?
@@ -71,7 +71,7 @@ export async function initFrontend() {
 		app.use(passport.initialize());
 		configurePassport();
 		app.set('view engine', 'hbs');
-		app.set('views', join(__dirname, 'ressources/views/'));
+		app.set('views', join(__dirname, '/../../frontend/ressources/views/'));
 		app.use(compression());
 		app.use(cookieParser());
 		app.use(i18n.init);
@@ -94,7 +94,7 @@ export async function initFrontend() {
 				next();
 			}
 		});
-		app.use(express.static(__dirname + '/'));
+		app.use(express.static(__dirname + '/../../frontend/'));
 		//path for system control panel
 		if (!state.isDemo) {
 			app.use('/system', express.static(resolve(__dirname, '../../react_systempanel/build')));

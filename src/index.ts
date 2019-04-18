@@ -89,20 +89,20 @@ async function main() {
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	logger.debug('[Launcher] Copying input.conf to ' + resolve(appPath, config.System.Path.Temp));
-	let fileBuffer = readFileSync(join(__dirname, '/_player/assets/input.conf'));
+	let fileBuffer = readFileSync(join(__dirname, '../assets/input.conf'));
 	const tempInput = resolve(appPath, config.System.Path.Temp, 'input.conf');
 	if (await asyncExists(tempInput)) await asyncUnlink(tempInput);
 	writeFileSync(tempInput, fileBuffer);
 
 	logger.debug('[Launcher] Copying default background to ' + resolve(appPath, config.System.Path.Temp));
-	fileBuffer = readFileSync(join(__dirname, `/_player/assets/${state.version.image}`));
+	fileBuffer = readFileSync(join(__dirname, `../assets/${state.version.image}`));
 	const tempBackground = resolve(appPath, config.System.Path.Temp, 'default.jpg');
 	if (await asyncExists(tempBackground)) await asyncUnlink(tempBackground);
 	writeFileSync(tempBackground, fileBuffer);
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.System.Path.Avatars));
-	fileBuffer = readFileSync(join(__dirname, '/_webapp/ressources/img/blank.png'));
+	fileBuffer = readFileSync(join(__dirname, '../frontend/ressources/img/blank.png'));
 	const tempAvatar = resolve(appPath, config.System.Path.Avatars, 'blank.png');
 	if (await asyncExists(tempAvatar)) await asyncUnlink(tempAvatar);
 	writeFileSync(tempAvatar, fileBuffer);
