@@ -174,6 +174,7 @@
     "eslint-plugin-react": "^7.12.4",
     "mocha": "^6.1.1",
     "supertest": "^4.0.0",
+    "ts-node": "^8.1.0",
     "typescript": "^3.4.3"
   },
   "apidoc": {
