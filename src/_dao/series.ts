@@ -2,6 +2,9 @@ import {langSelector, paramWords, db} from './database';
 import {pg as yesql} from 'yesql';
 import {profile} from '../_utils/logger';
 import {Serie} from '../_services/series';
+import { Query } from '../_types/database';
+import { KaraParams } from '../_types/kara';
+import { Series } from '../_types/series';
 
 const sql = require('./sql/series');
 
@@ -26,7 +29,7 @@ export async function refreshKaraSeriesLang() {
 	profile('RefreshKaraSeriesLang');
 }
 
-export function buildClausesSeries(words) {
+export function buildClausesSeries(words: string) {
 	const params = paramWords(words);
 	let sql = [];
 	for (const i in words.split(' ').filter(s => !('' === s))) {
@@ -41,16 +44,15 @@ export function buildClausesSeries(words) {
 	};
 }
 
-export async function selectAllSeries(filter, lang) {
-	// from?: number, size?: number
+export async function selectAllSeries(params: KaraParams) {
 
-	const filterClauses = filter ? buildClausesSeries(filter) : {sql: [], params: {}};
+	const filterClauses = params.filter ? buildClausesSeries(params.filter) : {sql: [], params: {}};
 	let offsetClause = '';
 	let limitClause = '';
 	//Disabled until frontend manages this
-	//if (from && from > 0) offsetClause = `OFFSET ${from} `;
-	//if (size && size > 0) limitClause = `LIMIT ${size} `;
-	const query = sql.getSeries(filterClauses.sql, langSelector(lang, true), limitClause, offsetClause);
+	//if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
+	//if (params.size > 0) limitClause = `LIMIT ${params.size} `;
+	const query = sql.getSeries(filterClauses.sql, langSelector(params.lang, true), limitClause, offsetClause);
 	const q = yesql(query)(filterClauses.params);
 	const series = await db().query(q);
 	for (const i in series.rows) {
@@ -60,25 +62,23 @@ export async function selectAllSeries(filter, lang) {
 	return series.rows;
 }
 
-export async function selectSerieByName(name) {
+export async function selectSerieByName(name: string) {
 	const res = await db().query(yesql(sql.getSeriesByName)({
 		name: name
 	}));
 	return res.rows[0];
 }
 
-export async function insertSerie(serieObj) {
-	let aliases;
-	Array.isArray(serieObj.aliases) ? aliases = JSON.stringify(serieObj.aliases) : aliases = null;
+export async function insertSerie(serieObj: Series) {
 	await db().query(yesql(sql.insertSerie)({
 		name: serieObj.name,
-		aliases: aliases,
+		aliases: JSON.stringify(serieObj.aliases),
 		sid: serieObj.sid,
 		seriefile: serieObj.seriefile
 	}));
 }
 
-export async function insertSeriei18n(serieObj) {
+export async function insertSeriei18n(serieObj: Series) {
 	for (const lang of Object.keys(serieObj.i18n)) {
 		await db().query(yesql(sql.insertSeriei18n)({
 			sid: serieObj.sid,
@@ -88,13 +88,11 @@ export async function insertSeriei18n(serieObj) {
 	}
 }
 
-export async function updateSerie(serie) {
-	let aliases;
-	Array.isArray(serie.aliases) ? aliases = JSON.stringify(serie.aliases) : aliases = null;
+export async function updateSerie(serie: Series) {
 	await db().query(yesql(sql.updateSerie)({
 		sid: serie.sid,
 		name: serie.name,
-		aliases: aliases,
+		aliases: JSON.stringify(serie.aliases),
 		seriefile: serie.seriefile
 	}));
 	await db().query(sql.deleteSeriesi18n, [serie.sid]);
@@ -117,6 +115,6 @@ export async function selectSerie(sid: string, lang?: string): Promise<Serie> {
 	return series.rows[0];
 }
 
-export async function removeSerie(sid) {
+export async function removeSerie(sid: string) {
 	await db().query(sql.deleteSeries, [sid]);
 }

@@ -17,11 +17,14 @@ import {resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {formatKaraList} from './kara';
 import {uuidRegexp} from './constants';
+import {KaraParams} from '../_types/kara';
+import {BLC} from '../_types/blacklist';
+import {isNumber} from '../_utils/validators';
 
-export async function getBlacklist(filter?: any, lang?: string, from?: number, size?: number) {
+export async function getBlacklist(params: KaraParams) {
 	profile('getBL');
-	const pl = await getBLContents(filter, lang);
-	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+	const pl = await getBLContents(params);
+	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.lang, params.from, pl.length);
 	profile('getBL');
 	return ret;
 }
@@ -42,7 +45,7 @@ export async function generateBlacklist() {
 	return await generateBL();
 }
 
-async function isBLCriteria(blc_id) {
+async function isBLCriteria(blc_id: number) {
 	return await isBLC(blc_id);
 }
 
@@ -52,34 +55,29 @@ export async function emptyBlacklistCriterias() {
 	return await generateBlacklist();
 }
 
-export async function editBlacklistCriteria(blc_id, blctype, blcvalue) {
-	if (!await isBLCriteria(blc_id)) throw `BLC ID ${blc_id} unknown`;
+export async function editBlacklistCriteria(blc: BLC) {
+	if (!await isBLCriteria(blc.id)) throw `BLC ID ${blc.id} unknown`;
 	profile('editBLC');
-	logger.info(`[Blacklist] Editing criteria ${blc_id} : ${blctype} = ${blcvalue}`);
-	if (blctype < 0 && blctype > 1004) throw `Blacklist criteria type error : ${blctype} is incorrect`;
-	if (+blctype === 1001) {
-		const re = new RegExp(uuidRegexp);
-		if (!re.test(blcvalue)) throw `Blacklist criteria value mismatch : type ${blctype} must have UUID values`;
+	logger.info(`[Blacklist] Editing criteria ${blc.id} : ${blc.type} = ${blc.value}`);
+	if (blc.type < 0 && blc.type > 1004) throw `Blacklist criteria type error : ${blc.type} is incorrect`;
+	if (blc.type === 1001) {
+		if (!new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`;
 	}
-	if (((blctype > 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (isNaN(blcvalue))) throw `Blacklist criteria type mismatch : type ${blctype} must have a numeric value!`;
-	await editBLC({
-		id: blc_id,
-		type: blctype,
-		value: blcvalue
-	});
+	if (((blc.type > 1001 && blc.type <= 1003) || (blc.type > 0 && blc.type < 999)) && (isNaN(blc.value))) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
+	await editBLC(blc);
 	await generateBlacklist();
 	profile('editBLC');
 }
 
-async function BLCgetTagName(blcList) {
+async function BLCgetTagName(blcList: BLC[]) {
 	for (const index in blcList) {
-		const res = await getTag(blcList[index].blcvalue);
-		if (res) blcList[index].blcuniquevalue = res.name;
+		const res = await getTag(blcList[index].value);
+		if (res) blcList[index].uniquevalue = res.name;
 	}
 	return blcList;
 }
 
-export async function deleteBlacklistCriteria(blc_id) {
+export async function deleteBlacklistCriteria(blc_id: number) {
 	profile('delBLC');
 	logger.info(`[Blacklist] Deleting criteria ${blc_id}`);
 	if (!await isBLCriteria(blc_id)) throw `BLC ID ${blc_id} unknown`;
@@ -88,25 +86,26 @@ export async function deleteBlacklistCriteria(blc_id) {
 	profile('delBLC');
 }
 
-export async function addBlacklistCriteria(blctype, blcvalue) {
+export async function addBlacklistCriteria(type: number, value: any) {
 	profile('addBLC');
-	let blcvalues;
-	typeof blcvalue === 'string' ? blcvalues = blcvalue.split(',') : blcvalues = [blcvalue];
-	logger.info(`[Blacklist] Adding criteria ${blctype} = ${blcvalues}`);
-	let blcList = blcvalues.map(e => {
+	let blcvalues: string[];
+	typeof value === 'string'
+		? blcvalues = value.split(',')
+		: blcvalues = [value];
+	logger.info(`[Blacklist] Adding criteria ${type} = ${blcvalues}`);
+	let blcList = blcvalues.map((e: any) => {
 		return {
-			blcvalue: e,
-			blctype: +blctype
+			value: e,
+			type: type
 		};
 	});
 	try {
-		if (+blctype < 0 && +blctype > 1004) throw `Incorrect BLC type (${blctype})`;
-		if (+blctype > 0 && +blctype < 1000) blcList = await BLCgetTagName(blcList);
-		if (+blctype === 1001) {
-			const re = new RegExp(uuidRegexp);
-			if (blcList.some(blc => !re.test(blc.blcvalue))) throw `Blacklist criteria value mismatch : type ${blctype} must have UUID values`;
+		if (type < 0 && type > 1004) throw `Incorrect BLC type (${type})`;
+		if (type > 0 && type < 1000) blcList = await BLCgetTagName(blcList);
+		if (type === 1001) {
+			if (blcList.some((blc: BLC) => !new RegExp(uuidRegexp).test(blc.value))) throw `Blacklist criteria value mismatch : type ${type} must have UUID values`;
 		}
-		if (((+blctype > 1001 && +blctype <= 1003) || (+blctype > 0 && +blctype < 999)) && blcvalues.some(isNaN)) throw `Blacklist criteria type mismatch : type ${blctype} must have a numeric value!`;
+		if (((type > 1001 && type <= 1003) || (type > 0 && type < 999)) && blcvalues.some(isNumber)) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
 		await addBLC(blcList);
 		return await generateBlacklist();
 	} catch(err) {
@@ -116,8 +115,7 @@ export async function addBlacklistCriteria(blctype, blcvalue) {
 	}
 }
 
-async function translateBlacklistCriterias(blcs, lang) {
-	const blcList = blcs;
+async function translateBlacklistCriterias(blcList: BLC[], lang: string) {
 	// If lang is not provided, assume we're using node's system locale
 	if (!lang) lang = getState().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format

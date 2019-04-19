@@ -5,6 +5,7 @@ import {resolve} from 'path';
 import { check, initValidators } from '../_utils/validators';
 import {uuidRegexp} from '../_services/constants';
 import { getState } from '../_utils/state';
+import { Series } from '../_types/series';
 
 const header = {
 	version: 3,
@@ -18,17 +19,17 @@ const seriesConstraintsV3 = {
 	i18n: {seriesi18nValidator: true}
 };
 
-export async function readSeriesFile(seriesFile) {
-	let file;
+export async function readSeriesFile(seriesFile: string) {
+	let file: string;
 	try {
-		file = resolveFileInDirs(seriesFile, resolvedPathSeries());
+		file = await resolveFileInDirs(seriesFile, resolvedPathSeries());
 	} catch(err) {
 		throw `No series file found (${seriesFile})`;
 	}
 	return await getDataFromSeriesFile(file);
 }
 
-export async function getDataFromSeriesFile(file) {
+export async function getDataFromSeriesFile(file: string) {
 	const seriesFileData = await asyncReadFile(file, 'utf-8');
 	if (!testJSON(seriesFileData)) throw `Syntax error in file ${file}`;
 	const seriesData = JSON.parse(seriesFileData);
@@ -40,18 +41,16 @@ export async function getDataFromSeriesFile(file) {
 	return seriesData.series;
 }
 
-export function seriesDataValidationErrors(seriesData) {
+export function seriesDataValidationErrors(seriesData: Series) {
 	initValidators();
 	return check(seriesData, seriesConstraintsV3);
 }
 
-export function findSeries(serie, seriesData) {
-	return seriesData.find(s => {
-		return s.name === serie;
-	});
+export function findSeries(name: string, series: Series[]) {
+	return series.find(s => s.name === name);
 }
 
-export async function writeSeriesFile(series) {
+export async function writeSeriesFile(series: Series) {
 	const conf = getConfig();
 	const seriesFile = resolve(getState().appPath, conf.System.Path.Series[0], `${sanitizeFile(series.name)}.series.json`);
 	const seriesData = {
@@ -60,14 +59,13 @@ export async function writeSeriesFile(series) {
 	};
 	//Remove useless data
 	if (series.aliases && series.aliases.length === 0) delete seriesData.series.aliases;
-	delete seriesData.series.NORM_i18n_name;
 	delete seriesData.series.serie_id;
 	delete seriesData.series.i18n_name;
 	delete seriesData.series.seriefile;
 	return await asyncWriteFile(seriesFile, JSON.stringify(seriesData, null, 2), {encoding: 'utf8'});
 }
 
-export async function removeSeriesFile(name) {
+export async function removeSeriesFile(name: string) {
 	try {
 		const filename = await resolveFileInDirs(`${sanitizeFile(name)}.series.json`, resolvedPathSeries());
 		await asyncUnlink(filename);

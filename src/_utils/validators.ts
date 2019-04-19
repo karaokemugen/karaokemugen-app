@@ -77,7 +77,7 @@ function isJSON(value) {
 	return ` '${value}' is invalid JSON`;
 }
 
-function isNumber(value) {
+export function isNumber(value: any) {
 	return !isNaN(value);
 }
 

@@ -1,4 +1,4 @@
-import logger from 'winston/lib/winston';
+import logger from 'winston';
 import {open} from 'sqlite';
 import {getConfig, setConfig} from '../_utils/config';
 import {getState} from '../_utils/state';
@@ -18,13 +18,9 @@ import {refreshTags, refreshKaraTags} from './tag';
 import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from './series';
 import {profile} from '../_utils/logger';
 import {from as copyFrom} from 'pg-copy-streams';
+import {Query, Settings} from '../_types/database';
 
 const sql = require('./sql/database');
-
-interface Settings {
-	baseChecksum?: string,
-	lastGeneration?: number
-}
 
 export async function compareKarasChecksum(silent?: boolean) {
 	const settings = await getSettings();
@@ -36,7 +32,7 @@ export async function compareKarasChecksum(silent?: boolean) {
 	return true;
 }
 
-export function paramWords(filter) {
+export function paramWords(filter: string) {
 	//This function takes a search filter (list of words), cleans and maps them for use in SQL queries "LIKE".
 	let params = {};
 	const words = deburr(filter)
@@ -44,20 +40,20 @@ export function paramWords(filter) {
 		.replace('\'', ' ')
 		.replace(',', ' ')
 		.split(' ')
-		.filter(s => !('' === s))
-		.map(word => `%${word}%`);
+		.filter((s: string) => !('' === s))
+		.map((word: string) => `%${word}%`);
 	for (const i in words) {
 		params[`word${i}`] = `%${words[i]}%`;
 	}
 	return params;
 }
 
-async function queryLog(...args) {
+async function queryLog(...args: any[]) {
 	logger.debug(`[SQL] ${JSON.stringify(args).replace(/\\n/g,'\n').replace(/\\t/g,'   ')}`);
 	return database.query_orig(...args);
 }
 
-async function query(...args) {
+async function query() {
 	// Fake query function used as a decoy when closing DB.
 	return {rows: [{}]};
 }
@@ -66,7 +62,7 @@ export function closeDB() {
 	database = { query: query};
 }
 
-export function buildClauses(words) {
+export function buildClauses(words: string) {
 	const params = paramWords(words);
 	let sql = [];
 	for (const i in words.split(' ').filter(s => !('' === s))) {
@@ -83,7 +79,7 @@ export function buildClauses(words) {
 	};
 }
 
-export function langSelector(lang?: string, series?: boolean) {
+export function langSelector(lang: string, series?: boolean) {
 	const conf = getConfig();
 	const state = getState();
 	const userLocale = langs.where('1',lang || state.EngineDefaultLocale);
@@ -103,42 +99,42 @@ export function langSelector(lang?: string, series?: boolean) {
 // These two utility functions are used to make multiple inserts into one
 // You can do only one insert with multiple values, this helps.
 // expand returns ($1, $2), ($1, $2), ($1, $2) for (3, 2)
-export function expand(rowCount, columnCount, startAt = 1){
+export function expand(rowCount: number, columnCount: number, startAt: number = 1){
 	let index = startAt;
-	return Array(rowCount).fill(0).map(v => `(${Array(columnCount).fill(0).map(v => `$${index++}`).join(', ')})`).join(', ');
+	return Array(rowCount).fill(0).map(() => `(${Array(columnCount).fill(0).map(() => `$${index++}`).join(', ')})`).join(', ');
 }
 
 // flatten([[1, 2], [3, 4]]) returns [1, 2, 3, 4]
-export function flatten(arr){
+export function flatten(arr: any[]){
 	let newArr = [];
-	arr.forEach(v => v.forEach(p => newArr.push(p)));
+	arr.forEach(v => v.forEach((p: any) => newArr.push(p)));
 	return newArr;
 }
 
-export async function copyFromData(table, data) {
+export async function copyFromData(table: string, data: string[][]) {
 	const client = await database.connect();
 	let stream = client.query(copyFrom(`COPY ${table} FROM STDIN DELIMITER '|' NULL ''`));
-	data = data.map(d => d.join('|')).join('\n');
-	stream.write(data);
+	const copyData = data.map(d => d.join('|')).join('\n');
+	stream.write(copyData);
 	stream.end();
 	return new Promise((resolve, reject) => {
 		stream.on('end', () => {
 			client.release();
 			resolve();
 		});
-		stream.on('error', err => {
+		stream.on('error', (err: any) => {
 			client.release();
 			reject(err);
 		});
 	});
 }
 
-export async function transaction(queries) {
+export async function transaction(queries: Query[]) {
 	const client = await database.connect();
 	try {
 		await client.query('BEGIN');
 		for (const query of queries) {
-			if (Array.isArray(query.params)) {
+			if (query.params) {
 				for (const param of query.params) {
 					await client.query(query.sql, param);
 				}
@@ -158,7 +154,7 @@ export async function transaction(queries) {
 
 /* Opened DB are exposed to be used by DAO objects. */
 
-let database;
+let database: any;
 
 export function db() {
 	return database;
@@ -186,7 +182,7 @@ export async function connectDB(opts = {superuser: false, db: null}) {
 	}
 	try {
 		await database.connect();
-		database.on('error', err => {
+		database.on('error', (err: any) => {
 			// If shutdown is in progress for PG binary, we won't catch errors. (or we'll get connection reset messages spamming console)
 			if (!isShutdownPG()) logger.error(`[DB] Database error : ${err}`);
 		});
@@ -251,16 +247,16 @@ export async function getSettings(): Promise<Settings> {
 	const res = await db().query(sql.selectSettings);
 	const settings = {};
 	// Return an object with option: value.
-	res.rows.forEach(e => settings[e.option] = e.value);
+	res.rows.forEach((e: any) => settings[e.option] = e.value);
 	return settings;
 }
 
-export async function saveSetting(setting, value) {
+export async function saveSetting(setting: string, value: string) {
 	return await db().query(sql.upsertSetting, [setting, value]);
 }
 
 export async function initDBSystem() {
-	let doGenerate;
+	let doGenerate: boolean;
 	const conf = getConfig();
 	const state = getState();
 	if (state.opt.generateDB) doGenerate = true;
@@ -332,7 +328,7 @@ async function generateDatabase() {
 	return true;
 }
 
-export function buildTypeClauses(mode, value) {
+export function buildTypeClauses(mode: string, value: any) {
 	if (mode === 'search') {
 		let search = '';
 		const criterias = value.split('!');
@@ -341,7 +337,7 @@ export function buildTypeClauses(mode, value) {
 			const type = c.split(/:(.+)/)[0];
 			let values;
 			if (type === 's') {
-    			values = c.split(/:(.+)/)[1].split(',').map(v => `'%${v}%'`);
+    			values = c.split(/:(.+)/)[1].split(',').map((v: string) => `'%${v}%'`);
     			search = `${search} AND sid::varchar LIKE ${values}`;
 			} else {
     			values = c.split(/:(.+)/)[1];

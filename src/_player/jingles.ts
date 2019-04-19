@@ -4,6 +4,7 @@ import {resolvedPathJingles} from '../_utils/config';
 import {getMediaInfo} from '../_utils/ffmpeg';
 import logger from 'winston';
 import sample from 'lodash.sample';
+import { Jingle } from '../_types/jingles';
 
 let allJingles = [];
 let currentJingles = [];
@@ -16,7 +17,7 @@ async function extractAllJingleFiles() {
 	return jingleFiles;
 }
 
-async function extractJingleFiles(jingleDir) {
+async function extractJingleFiles(jingleDir: string) {
 	const jingleFiles = [];
 	const dirListing = await asyncReadDir(jingleDir);
 	for (const file of dirListing) {
@@ -27,7 +28,7 @@ async function extractJingleFiles(jingleDir) {
 	return jingleFiles;
 }
 
-async function getAllVideoGains(jingleFiles) {
+async function getAllVideoGains(jingleFiles: string[]): Promise<Jingle[]> {
 	let jinglesList = [];
 	for (const jinglefile of jingleFiles) {
 		const videodata = await getMediaInfo(jinglefile);
@@ -53,7 +54,7 @@ export function getJingles() {
 	return currentJingles;
 }
 
-export function removeJingle(jingle) {
+export function removeJingle(jingle: Jingle) {
 	currentJingles = currentJingles.filter(e => e.file !== jingle);
 }
 

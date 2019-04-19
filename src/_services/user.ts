@@ -21,40 +21,13 @@ import { createReadStream } from 'fs';
 import { writeStreamToFile } from '../_utils/files';
 import { fetchAndAddFavorites } from './favorites';
 import {encode, decode} from 'jwt-simple';
-
-interface UserOpts {
-	admin?: boolean,
-	createRemote?: boolean,
-	editRemote?: boolean,
-	renameUser?: boolean
-}
-
-export interface Token {
-	username: string,
-	role: string,
-	token?: string
-}
-
-export interface User {
-	login?: string,
-	old_login?: string,
-	type?: number,
-	avatar_file?: string,
-	bio?: string,
-	url?: string,
-	email?: string,
-	nickname?: string,
-	password?: string,
-	last_login_at?: Date,
-	flag_online?: boolean,
-	onlineToken?: string
-}
+import {Token, User, UserOpts} from '../_types/user';
 
 const db = require('../_dao/user');
 let userLoginTimes = new Map();
 let databaseBusy = false;
 
-on('databaseBusy', status => {
+on('databaseBusy', (status: boolean) => {
 	databaseBusy = status;
 });
 
@@ -98,9 +71,8 @@ async function updateExpiredUsers() {
 
 export async function fetchRemoteAvatar(instance, avatarFile) {
 	const conf = getConfig();
-	const res = await got(`https://${instance}/avatars/${avatarFile}`, {
-		stream: true
-	});
+	// If this stops working, use got() and a stream: true property again
+	const res = await got.stream(`https://${instance}/avatars/${avatarFile}`);
 	const avatarPath = resolve(getState().appPath, conf.System.Path.Temp, avatarFile);
 	await writeStreamToFile(res, avatarPath);
 	return avatarPath;

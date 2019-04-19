@@ -23,57 +23,14 @@ import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {basename, resolve} from 'path';
+import {resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 import {getOrAddSerieID, Serie} from './series';
-import {Token} from './user';
+import {Token} from '../_types/user';
+import {Kara, KaraList, KaraFile} from '../_types/kara';
 
-export interface Kara {
-	kid?: string,
-	KID?: string,
-	languages?: KaraLang[],
-	languages_i18n?: string[],
-	previewfile?: string,
-	mediafile?: string,
-	mediasize?: number,
-	mediaduration?: number,
-	mediagain?: number
-	subfile?: string,
-	subchecksum?: string,
-	karafile?: string,
-	title: string,
-	year?: number,
-	order?: number,
-	dateadded?: number, // Date?
-	datemodif?: number, // Date?
-	overwrite?: boolean,
-	series?: string[],
-	singer?: string[],
-	tags?: string[],
-	groups?: string[],
-	songwriter?: string[],
-	creator?: string[],
-	author?: string[],
-	lang?: string[],
-	type?: string,
-	version?: number
-}
-
-export interface KaraLang {
-	name: string
-}
-
-export interface KaraList {
-	infos: {
-		count: number,
-		from: number,
-		to: number
-	},
-	content: Kara[]
-}
-
-export async function isAllKaras(karas) {
+export async function isAllKaras(karas: string[]) {
 	// Returns an array of unknown karaokes
 	// If array is empty, all songs in "karas" are present in database
 	const allKaras = await selectAllKIDs();
@@ -100,7 +57,7 @@ export function translateKaraInfo(karas: Kara|Kara[], lang?: string): Kara[] {
 	karas.forEach((kara, index) => {
 		if (kara.languages.length > 0) {
 			let languages = [];
-			let langdata;
+			let langdata: any;
 			kara.languages.forEach(karalang => {
 				// Special case : und
 				// Undefined language
@@ -119,7 +76,7 @@ export function translateKaraInfo(karas: Kara|Kara[], lang?: string): Kara[] {
 					break;
 				default:
 					// We need to convert ISO639-2B to ISO639-1 to get its language
-					langdata = langs.where('2B',karalang.name);
+					langdata = langs.where('2B', karalang.name);
 					if (langdata === undefined) {
 						languages.push(i18n.__('UNKNOWN_LANGUAGE'));
 					} else {
@@ -145,11 +102,11 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 	return output;
 }
 
-export async function getKaraMini(kid) {
+export async function getKaraMini(kid: string) {
 	return await getKaraMiniDB(kid);
 }
 
-export async function getKaraLyrics(kid) {
+export async function getKaraLyrics(kid: string) {
 	const kara = await getKaraMini(kid);
 	if (!kara) throw `Kara ${kid} unknown`;
 	if (kara.subfile === 'dummy.ass') return 'Lyrics not available for this song';
@@ -158,12 +115,12 @@ export async function getKaraLyrics(kid) {
 	return 'Lyrics not available for this song';
 }
 
-async function updateSeries(kara) {
+async function updateSeries(kara: Kara) {
 	if (!kara.series) return true;
 	let lang = 'und';
-	if (kara.lang) lang = kara.lang.split(',')[0];
+	if (kara.lang) lang = kara.lang[0];
 	let sids = [];
-	for (const s of kara.series.split(',')) {
+	for (const s of kara.series) {
 		let langObj = {};
 		langObj[lang] = s;
 		let seriesObj: Serie = {
@@ -178,31 +135,31 @@ async function updateSeries(kara) {
 	await updateKaraSeries(kara.kid,sids);
 }
 
-async function updateTags(kara) {
+async function updateTags(kara: Kara) {
 	// Create an array of tags to add for our kara
 	let tags = [];
 	// Remove this when we'll update .kara file format to version 4
 	if (kara.KID) kara.kid = kara.KID;
 	kara.singer
-		? kara.singer.split(',').forEach(t => tags.push({tag: t, type: tagTypes.singer}))
+		? kara.singer.forEach(t => tags.push({tag: t, type: tagTypes.singer}))
 		: tags.push({tag: 'NO_TAG', type: tagTypes.singer});
 	kara.tags
-		? kara.tags.split(',').forEach(t => tags.push({tag: t, type: tagTypes.misc}))
+		? kara.tags.forEach(t => tags.push({tag: t, type: tagTypes.misc}))
 		: tags.push({tag: 'NO_TAG', type: tagTypes.misc});
 	kara.songwriter
-		? kara.songwriter.split(',').forEach(t => tags.push({tag: t, type: tagTypes.songwriter}))
+		? kara.songwriter.forEach(t => tags.push({tag: t, type: tagTypes.songwriter}))
 		: tags.push({tag: 'NO_TAG', type: tagTypes.songwriter});
 	kara.creator
-		? kara.creator.split(',').forEach(t => tags.push({tag: t, type: tagTypes.creator}))
+		? kara.creator.forEach(t => tags.push({tag: t, type: tagTypes.creator}))
 		: tags.push({tag: 'NO_TAG', type: tagTypes.creator});
 	kara.author
-		? kara.author.split(',').forEach(t => tags.push({tag: t, type: tagTypes.author}))
+		? kara.author.forEach(t => tags.push({tag: t, type: tagTypes.author}))
 		: tags.push({tag: 'NO_TAG', type: tagTypes.author});
 	kara.lang
-		? kara.lang.split(',').forEach(t => tags.push({tag: t, type: tagTypes.lang}))
+		? kara.lang.forEach(t => tags.push({tag: t, type: tagTypes.lang}))
 		: tags.push({tag: 'NO_TAG', type: tagTypes.lang});
 	kara.groups
-		? kara.groups.split(',').forEach(t => tags.push({tag: t, type: tagTypes.group}))
+		? kara.groups.forEach(t => tags.push({tag: t, type: tagTypes.group}))
 		: tags.push({tag: 'NO_TAG', type: tagTypes.group});
 
 	//Songtype is a little specific.
@@ -215,7 +172,7 @@ async function updateTags(kara) {
 	return await updateKaraTags(kara.kid, tags);
 }
 
-export async function createKaraInDB(kara) {
+export async function createKaraInDB(kara: Kara) {
 	await addKara(kara);
 	await Promise.all([
 		updateTags(kara),
@@ -231,7 +188,7 @@ export async function createKaraInDB(kara) {
 	refreshTags();
 }
 
-export async function editKaraInDB(kara) {
+export async function editKaraInDB(kara: Kara) {
 	await updateKara(kara);
 	await Promise.all([
 		updateTags(kara),
@@ -250,26 +207,26 @@ export async function editKaraInDB(kara) {
 /**
  * Generate info to write in a .kara file from an object passed as argument by filtering out unnecessary fields and adding default values if needed.
  */
-export function formatKara(karaData): Kara {
+export function formatKara(karaData: Kara): KaraFile {
 	return {
 		mediafile: karaData.mediafile || '',
 		subfile: karaData.subfile || 'dummy.ass',
 		subchecksum: karaData.subchecksum || '',
 		title: karaData.title || '',
-		series: karaData.series || '',
+		series: karaData.series.join(',') || '',
 		type: karaData.type || '',
 		order: karaData.order || '',
 		year: karaData.year || '',
-		singer: karaData.singer || '',
-		tags: karaData.tags || '',
-		groups: karaData.groups || '',
-		songwriter: karaData.songwriter || '',
-		creator: karaData.creator || '',
-		author: karaData.author || '',
-		lang: karaData.lang || 'und',
-		KID: karaData.KID || uuidV4(),
-		dateadded: karaData.dateadded || now(true),
-		datemodif: karaData.datemodif || now(true),
+		singer: karaData.singer.join(',') || '',
+		tags: karaData.tags.join(',') || '',
+		groups: karaData.groups.join(',') || '',
+		songwriter: karaData.songwriter.join(',') || '',
+		creator: karaData.creator.join(',') || '',
+		author: karaData.author.join(',') || '',
+		lang: karaData.lang.join(',') || 'und',
+		KID: karaData.kid || uuidV4(),
+		dateadded: Math.floor(karaData.dateadded.getTime() / 1000) || now(true),
+		datemodif: Math.floor(karaData.datemodif.getTime() / 1000) || now(true),
 		mediasize: karaData.mediasize || 0,
 		mediagain: karaData.mediagain || 0,
 		mediaduration: karaData.mediaduration || 0,
@@ -288,7 +245,7 @@ const karaConstraintsV3 = {
 	},
 	title: {presence: {allowEmpty: true}},
 	type: {presence: true, inclusion: karaTypesArray},
-	series: (value, attributes) => {
+	series: (value: string, attributes: any) => {
 		if (!serieRequired(attributes['type'])) {
 			return { presence: {allowEmpty: true} };
 		} else {
@@ -307,12 +264,12 @@ const karaConstraintsV3 = {
 	version: {numericality: {onlyInteger: true, equality: 3}}
 };
 
-export function karaDataValidationErrors(karaData) {
+export function karaDataValidationErrors(karaData: KaraFile) {
 	initValidators();
 	return check(karaData, karaConstraintsV3);
 }
 
-export function verifyKaraData(karaData) {
+export function verifyKaraData(karaData: KaraFile) {
 	// Version 2 is considered deprecated, so let's throw an error.
 	if (karaData.version < 3) throw 'Karaoke version 2 or lower is deprecated';
 	const validationErrors = karaDataValidationErrors(karaData);
@@ -322,7 +279,7 @@ export function verifyKaraData(karaData) {
 }
 
 /** Only MV or LIVE types don't have to have a series filled. */
-export function serieRequired(karaType) {
+export function serieRequired(karaType: string) {
 	return karaType !== karaTypes.MV.type && karaType !== karaTypes.LIVE.type;
 }
 
@@ -331,17 +288,29 @@ export async function getKaraHistory() {
 	return await getKaraHistoryDB();
 }
 
-export async function getTop50(token, lang) {
+export async function getTop50(token: Token, lang: string) {
 	// Called by system route
-	return await selectAllKaras(token.username, null, lang, 'requested', null);
+	return await selectAllKaras({
+		username: token.username,
+		filter: null,
+		lang: lang,
+		mode: 'requested'
+	});
 }
 
-export async function getKaraPlayed(token, lang, from, size) {
+export async function getKaraPlayed(token: Token, lang: string, from: number, size: number) {
 	// Called by system route
-	return await selectAllKaras(token.username, null, lang, 'played', null, from, size);
+	return await selectAllKaras({
+		username: token.username,
+		filter: null,
+		lang: lang,
+		mode: 'played',
+		from: from,
+		size: size
+	});
 }
 
-export async function addPlayedKara(kid) {
+export async function addPlayedKara(kid: string) {
 	profile('addPlayed');
 	const ret = await addPlayed(kid);
 	profile('addPlayed');
@@ -360,9 +329,19 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter: object, lang: string, from = 0, size = 999999999, searchType, searchValue, token: Token, random?) {
+export async function getKaras(filter: string, lang: string, from = 0, size = 999999999, mode: string, modeValue: string, token: Token, random: number = 0) {
 	profile('getKaras');
-	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin', random);
+	const pl = await selectAllKaras({
+		username: token.username,
+		filter: filter,
+		lang: lang,
+		mode: mode,
+		modeValue: modeValue,
+		from: from,
+		size: size,
+		admin: token.role === 'admin',
+		random: random
+	});
 	profile('formatList');
 	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	profile('formatList');

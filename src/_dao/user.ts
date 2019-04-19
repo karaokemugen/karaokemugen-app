@@ -1,8 +1,9 @@
 import {db} from './database';
 import {pg as yesql} from 'yesql';
+import { User } from '../_types/user';
 const sql = require('./sql/user');
 
-export async function getUser(username) {
+export async function getUser(username: string) {
 	const res = await db().query(yesql(sql.selectUserByName)({username: username}));
 	return res.rows[0];
 }
@@ -14,12 +15,12 @@ const remoteTokens = [];
 //   token: ...
 // }
 
-export async function checkNicknameExists(nickname) {
+export async function checkNicknameExists(nickname: string) {
 	const res = await db().query(yesql(sql.testNickname)({nickname: nickname}));
 	return res.rows[0];
 }
 
-export async function deleteUser(username) {
+export async function deleteUser(username: string) {
 	return await db().query(sql.deleteUser, [username]);
 }
 
@@ -33,7 +34,7 @@ export async function listGuests() {
 	return res.rows;
 }
 
-export async function addUser(user) {
+export async function addUser(user: User) {
 	return await db().query(yesql(sql.createUser)({
 		type: user.type,
 		login: user.login,
@@ -44,7 +45,7 @@ export async function addUser(user) {
 	}));
 }
 
-export async function editUser(user) {
+export async function editUser(user: User) {
 	if (!user.old_login) user.old_login = user.login;
 	return await db().query(yesql(sql.editUser)({
 		nickname: user.nickname,
@@ -58,7 +59,7 @@ export async function editUser(user) {
 	}));
 }
 
-export async function reassignToUser(oldUsername,username) {
+export async function reassignToUser(oldUsername: string, username: string) {
 	return Promise.all([
 		db().query(yesql(sql.reassignPlaylistToUser)({
 			username: username,
@@ -71,11 +72,11 @@ export async function reassignToUser(oldUsername,username) {
 	]);
 }
 
-export async function updateExpiredUsers(expireTime) {
+export async function updateExpiredUsers(expireTime: number) {
 	return await db().query(sql.updateExpiredUsers, [new Date(expireTime * 1000)]);
 }
 
-export async function updateUserFingerprint(username, fingerprint) {
+export async function updateUserFingerprint(username: string, fingerprint: string) {
 	return await db().query(yesql(sql.updateUserFingerprint)({
 		username: username,
 		fingerprint: fingerprint
@@ -87,7 +88,7 @@ export async function getRandomGuest() {
 	return res.rows[0];
 }
 
-export async function findFingerprint(fingerprint) {
+export async function findFingerprint(fingerprint: string) {
 	const res = await db().query(sql.findFingerprint, [fingerprint] );
 	return res.rows[0];
 }
@@ -96,27 +97,27 @@ export async function resetGuestsPassword() {
 	return await db().query(sql.resetGuestsPassword);
 }
 
-export async function updateUserLastLogin(username) {
+export async function updateUserLastLogin(username: string) {
 	return await db().query(yesql(sql.updateLastLogin)({
 		username: username,
 		now: new Date()
 	}));
 }
 
-export async function updateUserPassword(username,password) {
+export async function updateUserPassword(username: string, password: string) {
 	return await db().query(yesql(sql.editUserPassword)({
 		username: username,
 		password: password
 	}));
 }
 
-export function getRemoteToken(username) {
+export function getRemoteToken(username: string) {
 	const index = findRemoteToken(username);
 	if (index !== null) return remoteTokens[index];
 	return null;
 }
 
-function findRemoteToken(username) {
+function findRemoteToken(username: string) {
 	let remoteTokenIndex;
 	const remoteTokenFound = remoteTokens.some((rt, index) => {
 		remoteTokenIndex = index;
@@ -126,7 +127,7 @@ function findRemoteToken(username) {
 	return null;
 }
 
-export function upsertRemoteToken(username, token) {
+export function upsertRemoteToken(username: string, token: string) {
 	const index = findRemoteToken(username);
 	if (index) delete remoteTokens[index];
 	remoteTokens.push({

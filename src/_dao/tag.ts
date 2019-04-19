@@ -2,6 +2,7 @@ import {db, paramWords} from './database';
 import {pg as yesql} from 'yesql';
 import slugify from 'slugify';
 import {profile} from '../_utils/logger';
+import { TagParams, Tag } from '../_types/tag';
 const sql = require('./sql/tag');
 
 export async function refreshTags() {
@@ -25,24 +26,26 @@ export async function refreshKaraTags() {
 	profile('RefreshKaraTags');
 }
 
-export async function getTag(id) {
+export async function getTag(id: number) {
 	const res = await db().query(sql.getTag, [id]);
 	return res.rows[0];
 }
 
-export async function getAllTags(filter, type, from, size) {
-	let filterClauses = filter ? buildTagClauses(filter) : {sql: [], params: {}};
-	let typeClauses = type ? ` AND tagtype = ${type}` : '';
+export async function getAllTags(params: TagParams) {
+	let filterClauses = params.filter
+		? buildTagClauses(params.filter)
+		: {sql: [], params: {}};
+	let typeClauses = params.type ? ` AND tagtype = ${params.type}` : '';
 	let limitClause = '';
 	let offsetClause = '';
-	if (from > 0) offsetClause = `OFFSET ${from} `;
-	if (size > 0) limitClause = `LIMIT ${size} `;
+	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
+	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	const query = sql.getAllTags(filterClauses.sql, typeClauses, limitClause, offsetClause);
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }
 
-function buildTagClauses(words) {
+function buildTagClauses(words: string) {
 	const params = paramWords(words);
 	let sql = [];
 	for (const i in words.split(' ').filter(s => !('' === s))) {
@@ -56,7 +59,7 @@ function buildTagClauses(words) {
 	};
 }
 
-export async function checkOrCreateTag(tag) {
+export async function checkOrCreateTag(tag: Tag) {
 	const tagDB = await db().query(yesql(sql.getTagByNameAndType)({
 		name: tag.tag,
 		type: tag.type
@@ -72,7 +75,7 @@ export async function checkOrCreateTag(tag) {
 	return res.rows[0].pk_id_tag;
 }
 
-export async function updateKaraTags(kid, tags) {
+export async function updateKaraTags(kid: string, tags: Tag[]) {
 	await db().query(sql.deleteTagsByKara, [kid]);
 	for (const tag of tags) {
 		await db().query(yesql(sql.insertKaraTags)({
