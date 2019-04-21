@@ -15,6 +15,7 @@ import {refreshKarasAfterDBChange} from './kara';
 import {refreshSeriesAfterDBChange} from './series';
 import { compareKarasChecksum } from '../_dao/database';
 import { emitWS } from '../_webapp/frontend';
+import got from 'got';
 
 const queueOptions = {
 	id: 'uuid',
@@ -330,4 +331,14 @@ export async function removeDownloadBLC(id) {
 
 export async function emptyDownloadBLC() {
 	return await truncateDownloadBLC();
+}
+
+export async function getRemoteKaras(instance, filter, from, size) {
+	const params = new URLSearchParams([
+		['filter', filter || ''],
+		['size', size],
+		['from', from]
+	]);
+	const res = await got(`https://${instance}/api/karas?${params.toString()}`);
+	return JSON.parse(res.body);
 }

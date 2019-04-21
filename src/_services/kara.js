@@ -376,7 +376,7 @@ export async function getKaras(filter, lang, from = 0, size = 999999999, searchT
 	profile('getKaras');
 	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin', random);
 	profile('formatList');
-	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+	const ret = formatKaraList(pl.slice(+from, +from + +size), lang, +from, +pl.length);
 	profile('formatList');
 	profile('getKaras');
 	return ret;

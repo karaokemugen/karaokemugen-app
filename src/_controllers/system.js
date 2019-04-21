@@ -14,7 +14,7 @@ import {resetViewcounts} from '../_dao/kara';
 import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
-import {getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads} from '../_services/download';
+import {getRemoteKaras, getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads} from '../_services/download';
 import {getRepos} from '../_services/repo';
 import {dumpPG} from '../_utils/postgresql';
 import logger from 'winston';
@@ -77,12 +77,18 @@ export default function systemController(router) {
 			});
 	});
 
-	router.get('/system/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getKaras(req.query.filter, req.lang, 0, 99999999999999, null, null, req.authToken)
-			.then(karas => res.json(karas))
-			.catch(err => {
-				res.status(500).send(`Error while fetching karas: ${err}`);
-			});
+	router.get('/system/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			let karas;
+			if (req.query.instance) {
+				karas = await getRemoteKaras(req.query.instance, req.query.filter, req.query.from, req.query.size);
+			} else {
+				karas = await getKaras(req.query.filter, req.lang, req.query.from, req.query.size, null, null, req.authToken);
+			}
+			res.json(karas);
+		} catch(err) {
+			res.status(500).send(`Error while fetching karas: ${err}`);
+		}
 	});
 
 	router.get('/system/tags', requireAuth, requireValidUser, requireAdmin, (req, res) => {
