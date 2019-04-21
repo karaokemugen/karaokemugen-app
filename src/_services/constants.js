@@ -192,7 +192,7 @@ export const initializationCatchphrases = [
 	'"My microphone is the one that will pierce the heavens!" --Kamina',
 	'"Karaoke is an insult to life itself." --Hayao Miyazaki',
 	'"KARAOKE SENRYAKUUUUUUU!" --Princess of the Crystal',
-	'"Fun karaoke is fun." --Yui Hirasawa',
+	'"Fun karaokes are fun." --Yui Hirasawa',
 	'"Karaoke nano wa ikenai to omoimasu." --Mahoro',
 	'"Don\'t forget the karaoke of 3 oct 11." --Edward Elric',
 	'"I think it\'s time we sing this karaoke. Get everybody and the mic together. Ok, three, two, one, let\'s sing." --Spike Spiegel',
