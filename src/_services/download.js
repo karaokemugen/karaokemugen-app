@@ -333,9 +333,9 @@ export async function emptyDownloadBLC() {
 	return await truncateDownloadBLC();
 }
 
-export async function getRemoteKaras(instance, filter, from, size) {
+export async function getRemoteKaras(instance, filter = '', from = 0, size = 99999999999999) {
 	const params = new URLSearchParams([
-		['filter', filter || ''],
+		['filter', filter],
 		['size', size],
 		['from', from]
 	]);
