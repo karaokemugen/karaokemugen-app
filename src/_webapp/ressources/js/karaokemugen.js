@@ -1435,7 +1435,7 @@ var settingsNotUpdated;
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   '<div class="infoDiv">'
                                 +   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
-                                +   (scope === 'public' && !isTouchScreen ? (  kara['flag_favorites'] || idPlaylist === -5 ? makeFavButtonSmallFav : makeFavButtonSmall ) : '')
+                                +   (scope === 'public' && logInfos.role !== 'guest' && !isTouchScreen ? (  kara['flag_favorites'] || idPlaylist === -5 ? makeFavButtonSmallFav : makeFavButtonSmall ) : '')
 								+	(scope === 'admin' ? playKara : '')
 								+	(scope !== 'admin' && dashboard.data('flag_public') ? likeKara : '')
 								+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
@@ -2111,7 +2111,7 @@ var settingsNotUpdated;
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
 		var infoKaraTemp = 'no mode specified';
 		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButtonFav : makeFavButton;
-
+        if(logInfos.role === 'guest') makeFavButtonAdapt = '';
 		if (htmlMode == 'list') {
 			var isPublic = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_public');
 			var isCurrent = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_current');
