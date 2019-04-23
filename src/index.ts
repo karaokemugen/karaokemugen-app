@@ -1,5 +1,6 @@
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_utils/files';
-import {Config, getConfig, initConfig, configureBinaries} from './_utils/config';
+import {getConfig, initConfig, configureBinaries} from './_utils/config';
+import {Config} from './_types/config';
 import {parseCommandLineArgs} from './args';
 import {writeFileSync, readFileSync} from 'fs';
 import {copy} from 'fs-extra';

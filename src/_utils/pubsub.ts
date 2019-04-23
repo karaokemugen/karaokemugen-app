@@ -5,12 +5,12 @@ import {EventEmitter} from 'events';
 
 const eventEmitter = new EventEmitter();
 
-export function emit(typeEvent, ...data) {
+export function emit(typeEvent: string, ...data: any) {
 	//logger.debug( 'Emitting event ' + typeEvent);
 	return eventEmitter.emit(typeEvent, data);
 }
 
-export function on(typeEvent, listenerFunc) {
+export function on(typeEvent: string, listenerFunc: any) {
 	//logger.debug( 'Subscribing to event ' + typeEvent);
 	return eventEmitter.on(typeEvent, listenerFunc);
 }

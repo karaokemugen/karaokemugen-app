@@ -4,7 +4,7 @@ import {getState} from '../_utils/state';
 import {resolve} from 'path';
 import logger from 'winston';
 
-export async function buildQRCode(url) {
+export async function buildQRCode(url: string) {
 	const conf = getConfig();
 	const qrcodeImageFile = resolve(getState().appPath,conf.System.Path.Temp, 'qrcode.png');
 	logger.debug(`[QRCode] URL detected : ${url}`);

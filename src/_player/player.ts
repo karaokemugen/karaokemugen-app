@@ -17,33 +17,15 @@ import {getState, setState} from '../_utils/state';
 import execa from 'execa';
 import semver from 'semver';
 import { imageFileTypes } from '../_services/constants';
+import {PlayerState, MediaData, mpvStatus} from '../_types/player';
 
 const sleep = promisify(setTimeout);
 
 let displayingInfo = false;
-let player;
-let playerMonitor;
+let player: any;
+let playerMonitor: any;
 let monitorEnabled = false;
 let songNearEnd = false;
-
-interface PlayerState {
-	volume: number,
-	playing: boolean,
-	playerstatus: string,
-	_playing: boolean, // internal delay flag
-	timeposition: number,
-	duration: number,
-	mutestatus: boolean,
-	subtext: string,
-	currentSongInfos: object,
-	mediaType: string,
-	showsubs: boolean,
-	stayontop: boolean,
-	fullscreen: boolean,
-	ready: boolean,
-	url: string,
-	status?: string
-}
 
 let playerState: PlayerState = {
 	volume: 100,
@@ -76,7 +58,7 @@ async function extractAllBackgroundFiles() {
 	return backgroundFiles.filter(f => imageFileTypes.includes(extname(f).substring(1)));
 }
 
-async function extractBackgroundFiles(backgroundDir) {
+async function extractBackgroundFiles(backgroundDir: string) {
 	const backgroundFiles = [];
 	const dirListing = await asyncReadDir(backgroundDir);
 	for (const file of dirListing) {
@@ -147,7 +129,7 @@ export async function initPlayerSystem() {
 	logger.debug('[Player] Player is READY');
 }
 
-async function getmpvVersion(path) {
+async function getmpvVersion(path: string) {
 	const output = await execa(path,['--version']);
 	return semver.valid(output.stdout.split(' ')[1]);
 }
@@ -218,7 +200,7 @@ async function startmpv() {
 	if (state.os === 'darwin' && semver.satisfies(mpvVersion, '0.27.x')) mpvOptions.push('--no-native-fs');
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
 	logger.debug(`[Player] mpv binary : ${state.binPath.mpv}`);
-	let socket;
+	let socket: string;
 	// Name socket file accordingly depending on OS.
 	state.os === 'win32'
 		? socket = '\\\\.\\pipe\\mpvsocket'
@@ -283,11 +265,9 @@ async function startmpv() {
 	}
 	await loadBackground();
 	player.observeProperty('sub-text',13);
-	player.observeProperty('volume',14);
-	player.observeProperty('duration',15);
-	player.observeProperty('playtime-remaining',16);
-	player.observeProperty('eof-reached',17);
-	player.on('statuschange', status => {
+	player.observeProperty('playtime-remaining',14);
+	player.observeProperty('eof-reached',15);
+	player.on('statuschange', (status: mpvStatus) => {
 		// If we're displaying an image, it means it's the pause inbetween songs
 		if (playerState._playing && status && ((status['playtime-remaining'] !== null && status['playtime-remaining'] >= 0 && status['playtime-remaining'] <= 1 && status.pause) || status['eof-reached']) ) {
 			// immediate switch to Playing = False to avoid multiple trigger
@@ -320,7 +300,7 @@ async function startmpv() {
 		if (monitorEnabled) playerMonitor.play();
 		emitPlayerState();
 	});
-	player.on('timeposition', position => {
+	player.on('timeposition', (position: number) => {
 		// Returns the position in seconds in the current song
 		playerState.timeposition = position;
 		emitPlayerState();
@@ -345,13 +325,13 @@ async function startmpv() {
 	return true;
 }
 
-export async function play(mediadata) {
+export async function play(mediadata: MediaData) {
 	const conf = getConfig();
 	logger.debug('[Player] Play event triggered');
 	playerState.playing = true;
 	//Search for media file in the different Pathmedias
-	let mediaFile;
-	let subFile;
+	let mediaFile: string;
+	let subFile: string;
 	try {
 		mediaFile = await resolveFileInDirs(mediadata.media, conf.System.Path.Medias);
 	} catch (err) {
@@ -427,7 +407,7 @@ export async function play(mediadata) {
 	}
 }
 
-export function setFullscreen(fsState) {
+export function setFullscreen(fsState: boolean) {
 	playerState.fullscreen = fsState;
 	fsState ? player.fullscreen() : player.leaveFullscreen();
 	return playerState.fullscreen;
@@ -473,12 +453,12 @@ export function resume() {
 	return playerState;
 }
 
-export function seek(delta) {
+export function seek(delta: number) {
 	if (monitorEnabled) playerMonitor.seek(delta);
 	return player.seek(delta);
 }
 
-export function goTo(pos) {
+export function goTo(pos: number) {
 	if (monitorEnabled) playerMonitor.goToPosition(pos);
 	return player.goToPosition(pos);
 }
@@ -491,7 +471,7 @@ export function unmute() {
 	return player.unmute();
 }
 
-export function setVolume(volume) {
+export function setVolume(volume: number) {
 	playerState.volume = volume;
 	player.volume(volume);
 	setState({player: playerState});
@@ -514,7 +494,7 @@ export function showSubs() {
 	return playerState;
 }
 
-export async function message(message, duration = 10000) {
+export async function message(message: string, duration: number = 10000) {
 	if (!getState().player.ready) throw 'Player is not ready yet!';
 	logger.info(`[Player] I have a message from another time... : ${message}`);
 	const command = {
@@ -533,7 +513,7 @@ export async function message(message, duration = 10000) {
 	}
 }
 
-export async function displaySongInfo(infos) {
+export async function displaySongInfo(infos: string) {
 	displayingInfo = true;
 	const command = {
 		command: [
@@ -549,7 +529,7 @@ export async function displaySongInfo(infos) {
 	displayingInfo = false;
 }
 
-export function displayInfo(duration = 10000000) {
+export function displayInfo(duration: number = 10000000) {
 	const conf = getConfig();
 	const ci = conf.Karaoke.Display.ConnectionInfo;
 	let text = '';

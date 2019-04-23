@@ -10,8 +10,10 @@ import {createHash, HexBase64Latin1Encoding} from 'crypto';
 import sanitizeFilename from 'sanitize-filename';
 import deburr from 'lodash.deburr';
 import { getState } from './state';
+import { ComparedDirs } from '../_types/files';
+import { Stream } from 'stream';
 
-export function sanitizeFile(file) {
+export function sanitizeFile(file: string): string {
 	const replaceMap = {
 		'·': '.',
 		'・': '.',
@@ -62,37 +64,37 @@ export function sanitizeFile(file) {
 	return file;
 }
 
-export async function detectFileType(file) {
+export async function detectFileType(file: string): Promise<string> {
 	const buffer = await readChunk(file, 0, 4100);
 	const detected = fileType(buffer);
 	return detected.ext;
 }
 
-const passThroughFunction = (fn, args) => {
+const passThroughFunction = (fn: any, args: any) => {
 	if(!Array.isArray(args)) args = [args];
 	return promisify(fn)(...args);
 };
 
-export const asyncExists = (file) => passThroughFunction(exists, file);
-export const asyncReadFile = (...args) => passThroughFunction(readFile, args);
-export const asyncReadDir = (...args) => passThroughFunction(readdir, args);
-export const asyncMkdirp = (...args) => passThroughFunction(mkdirp, args);
-export const asyncRemove = (...args) => passThroughFunction(remove, args);
-export const asyncRename = (...args) => passThroughFunction(rename, args);
-export const asyncUnlink = (...args) => passThroughFunction(unlink, args);
-export const asyncCopy = (...args) => passThroughFunction(copy, args);
-export const asyncStat = (...args) => passThroughFunction(stat, args);
-export const asyncWriteFile = (...args) => passThroughFunction(writeFile, args);
-export const asyncMove = (...args) => passThroughFunction(move, args);
+export const asyncExists = (file: string) => passThroughFunction(exists, file);
+export const asyncReadFile = (...args: any) => passThroughFunction(readFile, args);
+export const asyncReadDir = (...args: any) => passThroughFunction(readdir, args);
+export const asyncMkdirp = (...args: any) => passThroughFunction(mkdirp, args);
+export const asyncRemove = (...args: any) => passThroughFunction(remove, args);
+export const asyncRename = (...args: any) => passThroughFunction(rename, args);
+export const asyncUnlink = (...args: any) => passThroughFunction(unlink, args);
+export const asyncCopy = (...args: any) => passThroughFunction(copy, args);
+export const asyncStat = (...args: any) => passThroughFunction(stat, args);
+export const asyncWriteFile = (...args: any) => passThroughFunction(writeFile, args);
+export const asyncMove = (...args: any) => passThroughFunction(move, args);
 
-export const isImageFile = (fileName) => new RegExp(imageFileRegexp).test(fileName);
-export const isMediaFile = (fileName) => new RegExp(mediaFileRegexp).test(fileName);
+export const isImageFile = (fileName: string) => new RegExp(imageFileRegexp).test(fileName);
+export const isMediaFile = (fileName: string) => new RegExp(mediaFileRegexp).test(fileName);
 
-const filterValidFiles = (files) => files.filter(file => !file.startsWith('.') && isMediaFile(file));
-export const filterMedias = (files) => filterValidFiles(files);
-export const filterImages = (files) => filterValidFiles(files);
+const filterValidFiles = (files: string[]) => files.filter(file => !file.startsWith('.') && isMediaFile(file));
+export const filterMedias = (files: string[]) => filterValidFiles(files);
+export const filterImages = (files: string[]) => filterValidFiles(files);
 
-export const checksum = (str: string, algorithm: string = 'md5', encoding: HexBase64Latin1Encoding = 'hex') => createHash(algorithm)
+export const checksum = (str: string, algorithm = 'md5', encoding: HexBase64Latin1Encoding = 'hex') => createHash(algorithm)
 	.update(str, 'utf8')
 	.digest(encoding);
 
@@ -109,7 +111,7 @@ export async function asyncCheckOrMkdir(...dir: string[]) {
 	}
 }
 
-export async function isGitRepo(dir: string) {
+export async function isGitRepo(dir: string): Promise<boolean> {
 	const dirContents = await asyncReadDir(dir);
 	return dirContents.includes('.git');
 }
@@ -117,10 +119,10 @@ export async function isGitRepo(dir: string) {
 /**
  * Searching file in a list of folders. If the file is found, we return its complete path with resolve.
  */
-export async function resolveFileInDirs(filename: string, dirs: string[]) {
+export async function resolveFileInDirs(filename: string, dirs: string[]): Promise<string> {
 	const resolvedFile = dirs
-		.map((dir) => resolve(getState().appPath, dir, filename))
-		.find((resolvedFile) => asyncExists(resolvedFile));
+		.map(dir => resolve(getState().appPath, dir, filename))
+		.find(resolvedFile => asyncExists(resolvedFile));
 
 	if (!resolvedFile) throw `File "${filename}" not found in any listed directory: ${dirs}`;
 
@@ -128,11 +130,11 @@ export async function resolveFileInDirs(filename: string, dirs: string[]) {
 }
 
 /** Replacing extension in filename */
-export function replaceExt(filename: string, newExt: string) {
+export function replaceExt(filename: string, newExt: string): string {
 	return filename.replace(/\.[^.]+$/, newExt);
 }
 
-async function compareFiles(file1: string, file2: string) {
+async function compareFiles(file1: string, file2: string): Promise<boolean> {
 	const files = [file1, file2];
 
 	let [file1exists, file2exists] = await Promise.all(files.map(file => asyncExists(file)));
@@ -145,20 +147,20 @@ async function compareFiles(file1: string, file2: string) {
 	return file1data === file2data;
 }
 
-async function compareAllFiles(files: string[], dir1: string, dir2: string) {
+async function compareAllFiles(files: string[], dir1: string, dir2: string): Promise<string[]> {
 	return await Promise.all(files.filter((file) => !compareFiles(resolve(dir1, file), resolve(dir2, file))));
 }
 
-export async function compareDirs(dir1: string, dir2: string) {
+export async function compareDirs(dir1: string, dir2: string): Promise<ComparedDirs> {
 
 	const [dir1List, dir2List] = await Promise.all([
 		asyncReadDir(dir1),
 		asyncReadDir(dir2)
 	]);
 
-	const newFiles = dir2List.filter((file) => !dir1List.includes(file));
-	const commonFiles = dir2List.filter((file) => dir1List.includes(file));
-	const removedFiles = dir1List.filter((file) => !dir2List.includes(file));
+	const newFiles = dir2List.filter((file: string) => !dir1List.includes(file));
+	const commonFiles = dir2List.filter((file: string) => dir1List.includes(file));
+	const removedFiles = dir1List.filter((file: string) => !dir2List.includes(file));
 
 	const updatedFiles = await compareAllFiles(commonFiles, dir1, dir2);
 	return {
@@ -171,14 +173,14 @@ export async function compareDirs(dir1: string, dir2: string) {
 
 export async function asyncReadDirFilter(dir: string, ext: string) {
 	const dirListing = await asyncReadDir(dir);
-	return dirListing.filter(file => file.endsWith(ext) && !file.startsWith('.')).map(file => resolve(dir, file));
+	return dirListing.filter((file: string) => file.endsWith(ext) && !file.startsWith('.')).map((file: string) => resolve(dir, file));
 }
 
-export function writeStreamToFile(stream, filePath: string) {
+export function writeStreamToFile(stream: Stream, filePath: string) {
 	return new Promise((resolve, reject) => {
 		const file = createWriteStream(filePath);
 		stream.pipe(file);
 		stream.on('end', () => resolve());
-		stream.on('error', (err) => reject(err));
+		stream.on('error', (err: string) => reject(err));
 	});
 }

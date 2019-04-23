@@ -10,7 +10,7 @@ import { asyncWriteFile } from '../_utils/files';
 import {resolve} from 'path';
 import cloneDeep from 'lodash.clonedeep';
 
-let intervalID;
+let intervalID: any;
 
 export async function initStats() {
 	logger.debug('[Stats] Starting stats upload');
@@ -72,10 +72,7 @@ async function buildInstanceStats() {
 		si.osInfo(),
 		si.diskLayout()
 	]);
-	let total_disk_size = disks.size;
-	// for (const disk of disks) {
-	//	total_disk_size = total_disk_size + disks.size;
-	// }
+	const total_disk_size = disks.size;
 	return {
 		config: {...conf},
 		instance_id: conf.App.InstanceID,

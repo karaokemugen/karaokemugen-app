@@ -10,15 +10,17 @@ import logger from 'winston';
 import {timer} from '../_utils/timer';
 import {getState, setState} from '../_utils/state';
 import {translateKaraInfo} from "./kara";
+import { State } from '../_types/state';
+import { Token } from '../_types/user';
 const sleep = promisify(setTimeout);
 
 let poll = [];
 let voters = [];
-let pollDate;
+let pollDate: Date;
 let pollEnding = false;
-let clock;
+let clock: any;
 
-on('stateUpdated', state => {
+on('stateUpdated', (state: State) => {
 	if (!state.songPoll && poll.length > 0) stopPoll();
 });
 
@@ -65,7 +67,7 @@ export async function getPollResults() {
 	};
 }
 
-export async function addPollVote(playlistcontent_id,token) {
+export async function addPollVote(playlistcontent_id: number, token: Token) {
 	if (poll.length === 0 || pollEnding) throw {
 		code: 'POLL_NOT_ACTIVE'
 	};
@@ -124,15 +126,15 @@ export async function startPoll() {
 	timerPoll();
 }
 
-function hasUserVoted(username) {
+function hasUserVoted(username: string) {
 	return voters.includes(username);
 }
 
-export async function getPoll(token, lang, from, size) {
+export async function getPoll(token: Token, lang: string, from: number, size: number) {
 	if (poll.length === 0) throw {
 		code: 'POLL_NOT_ACTIVE'
 	};
-	poll = translateKaraInfo(poll,lang);
+	poll = translateKaraInfo(poll, lang);
 	return {
 		infos: {
 			count: poll.length,
@@ -145,7 +147,7 @@ export async function getPoll(token, lang, from, size) {
 	};
 }
 
-export function setSongPoll(enabled) {
+export function setSongPoll(enabled: boolean) {
 	const state = getState();
 	const oldState = state.songPoll;
 	setState({songPoll: enabled});

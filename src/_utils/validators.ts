@@ -5,13 +5,12 @@ import {uuidRegexp, karaTypes, tags} from '../_services/constants';
 
 // Validators
 
-function integerValidator(value) {
-	if(!value || !isNaN(value)) return null;
-
+function integerValidator(value: any) {
+	if(isNumber(value)) return null;
 	return ` '${value}' is invalid (not an integer)`;
 }
 
-function arrayNoCommaValidator(value) {
+function arrayNoCommaValidator(value: string[]) {
 	if (!Array.isArray(value)) return `${value} is not an array`;
 	value = value.map((value) => value.trim());
 	for (const elem of value) {
@@ -21,27 +20,27 @@ function arrayNoCommaValidator(value) {
 }
 
 
-function langValidator(value) {
+function langValidator(value: any) {
 	if (!Array.isArray(value)) value = value.replace(/"/g, '').split(',');
-	value = value.map((value) => value.trim());
+	value = value.map((value: string) => value.trim());
 
-	const firstInvalidLang = value.find((lang) => !(lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang)));
+	const firstInvalidLang = value.find((lang: string) => !(lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang)));
 	if (firstInvalidLang) return `'${firstInvalidLang}' is invalid ISO639-2B code`;
 
 	return null;
 }
 
-function tagsValidator(value) {
+function tagsValidator(value: any) {
 	if (!Array.isArray(value)) value = value.replace(/"/g, '').split(',');
-	value = value.map((value) => value.trim());
+	value = value.map((value: string) => value.trim());
 
-	const firstInvalidTag = value.find((tag) => !tags.includes(tag.replace(/TAG_/,'')));
+	const firstInvalidTag = value.find((tag: string) => !tags.includes(tag.replace(/TAG_/,'')));
 	if (firstInvalidTag) return `list '${firstInvalidTag}' is invalid (not a known tag)`;
 
 	return null;
 }
 
-function seriesi18nValidator(value) {
+function seriesi18nValidator(value: object) {
 	if (typeof value !== 'object') return `i18n data (${value}) is not an object`;
 
 	const firstInvalidLang = Object.keys(value).find((lang) => !(lang === 'und' || lang === 'mul' || hasLang('2B', lang)));
@@ -50,12 +49,12 @@ function seriesi18nValidator(value) {
 	return null;
 }
 
-function typeValidator(value) {
+function typeValidator(value: string) {
 	if (!karaTypes[value]) return `${value} is an invalid song type`;
 	return null;
 }
 
-function boolUndefinedValidator(value) {
+function boolUndefinedValidator(value: any) {
 	if (value === true ||
 		value === false ||
 		value === undefined ||
@@ -64,7 +63,7 @@ function boolUndefinedValidator(value) {
 	return `${value} must be strictly boolean`;
 }
 
-function seriesAliasesValidator(value) {
+function seriesAliasesValidator(value: string[]) {
 	if (!value) return null;
 
 	if (!Array.isArray(value)) return ` '${value}' is invalid (not an array)`;
@@ -72,7 +71,7 @@ function seriesAliasesValidator(value) {
 	return null;
 }
 
-function isJSON(value) {
+function isJSON(value: string) {
 	if (testJSON(value)) return null;
 	return ` '${value}' is invalid JSON`;
 }
@@ -81,7 +80,7 @@ export function isNumber(value: any) {
 	return !isNaN(value);
 }
 
-function uuidArrayValidator(value) {
+function uuidArrayValidator(value: string) {
 	if(!value) return ` '${value}' is invalid (empty)`;
 	value = value.toString();
 	if (value.includes(',')) {
@@ -95,7 +94,7 @@ function uuidArrayValidator(value) {
 	return ` '${value}' is invalid (not a UUID)`;
 }
 
-function numbersArrayValidator(value) {
+function numbersArrayValidator(value: string) {
 	if(!value) return ` '${value}' is invalid (empty)`;
 	value = value.toString();
 	if (value.includes(',')) {
@@ -103,12 +102,12 @@ function numbersArrayValidator(value) {
 		if (array.every(isNumber)) return null;
 		return ` '${value}' is invalid (not an array of numbers)`;
 	}
-	if (!isNaN(value)) return null;
+	if (isNumber(value)) return null;
 
 	return ` '${value}' is invalid (not a number)`;
 }
 
-function isArray(value){
+function isArray(value: any){
 	if(Array.isArray(value)) return null;
 	return `'${value}' is invalid (not an array)`;
 }
@@ -131,7 +130,7 @@ const validatorsList = {
 
 // Sanitizers
 
-export function unescape(str) {
+export function unescape(str: string) {
 	return str
 		.replace(/&quot;/g, '"')
 		.replace(/&#39;/g, '\'')
@@ -149,7 +148,7 @@ export function initValidators() {
 		.forEach((validatorName) => validate.validators[validatorName] = validatorsList[validatorName]);
 }
 
-export function check(obj, constraints) {
+export function check(obj: any, constraints: any) {
 	initValidators();
 	return validate(obj, constraints);
 }

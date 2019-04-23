@@ -31,7 +31,7 @@ import {getSeries} from '../_services/series';
 
 const bools = [true, false, 'true', 'false'];
 
-function errMessage(code, message?, args?) {
+function errMessage(code: any, message?: string, args?: any) {
 	return {
 		code: code,
 		args: args,
@@ -39,7 +39,7 @@ function errMessage(code, message?, args?) {
 	};
 }
 
-function OKMessage(data, code?, args?) {
+function OKMessage(data: any, code?: any, args?: any) {
 	return {
 		code: code,
 		args: args,
@@ -137,7 +137,10 @@ export function APIControllerAdmin(router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					const new_playlist = await createAutoMix(req.body, req.authToken.username);
+					const new_playlist = await createAutoMix({
+						duration: +req.body.duration,
+						users: req.body.users.split(',')
+					}, req.authToken.username);
 					emitWS('playlistsUpdated');
 					res.status(201).json(OKMessage(new_playlist,'AUTOMIX_CREATED',null));
 				} catch(err) {
@@ -465,7 +468,13 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const karas = await getFavorites(req.params.username,req.query.filter,req.lang,+req.query.from || 0,req.query.size || 99999999);
+				const karas = await getFavorites({
+					username: req.params.username,
+					filter: req.query.filter,
+					lang: req.lang,
+					from: +req.query.from || 0,
+					size: req.query.size || 99999999
+				});
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1533,7 +1542,12 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const karas = await getWhitelistContents(req.query.filter,req.lang,+req.query.from || 0,req.query.size || 99999999);
+				const karas = await getWhitelistContents({
+					filter: req.query.filter,
+					lang: req.lang,
+					from: +req.query.from || 0,
+					size: +req.query.size || 99999999
+				});
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1683,7 +1697,12 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const karas = await getBlacklist(req.query.filter,req.lang,+req.query.from || 0, +req.query.size || 99999999);
+				const karas = await getBlacklist({
+					filter:	req.query.filter,
+					lang: req.lang,
+					from: +req.query.from || 0,
+					size: +req.query.size || 99999999
+				});
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1875,7 +1894,12 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await editBlacklistCriteria(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value);
+					await editBlacklistCriteria({
+						id: +req.params.blc_id,
+						type: +req.body.blcriteria_type,
+						value: req.body.blcriteria_value
+					});
+
 					emitWS('blacklistUpdated');
 					res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
 				} catch(err) {
@@ -2538,7 +2562,12 @@ export function APIControllerPublic(router) {
 			//Returns whitelist IF the settings allow public to see it
 			if (getConfig().Frontend.Permissions.AllowViewWhitelist) {
 				try {
-					const karas = await	getWhitelistContents(req.query.filter,req.lang,+req.query.from || 0,+req.query.size || 99999999);
+					const karas = await	getWhitelistContents({
+						filter: req.query.filter,
+						lang: req.lang,
+						from: +req.query.from || 0,
+						size: +req.query.size || 99999999
+					});
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
@@ -2597,7 +2626,12 @@ export function APIControllerPublic(router) {
 			//Get list of blacklisted karas IF the settings allow public to see it
 			if (getConfig().Frontend.Permissions.AllowViewBlacklist) {
 				try {
-					const karas = await getBlacklist(req.query.filter,req.lang,+req.query.from || 0,+req.query.size || 999999);
+					const karas = await getBlacklist({
+						filter: req.query.filter,
+						lang: req.lang,
+						from: +req.query.from || 0,
+						size: +req.query.size || 999999
+					});
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
@@ -3430,7 +3464,12 @@ export function APIControllerPublic(router) {
 	*/
 		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const tags = await getTags(req.query.filter,req.query.type, +req.query.from || 0, +req.query.size || 999999);
+				const tags = await getTags({
+					filter: req.query.filter,
+					type: req.query.type,
+					from: +req.query.from || 0,
+					size: +req.query.size || 99999
+				});
 				res.json(OKMessage(tags));
 			} catch(err) {
 				logger.error(err);
@@ -3538,7 +3577,12 @@ export function APIControllerPublic(router) {
 		*/
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const series = await getSeries(req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 999999);
+				const series = await getSeries({
+					filter: req.query.filter,
+					lang: req.lang,
+					from: +req.query.from || 0,
+					size: +req.query.size || 999999
+				});
 				res.json(OKMessage(series));
 			} catch(err) {
 				logger.error(err);
@@ -3958,7 +4002,13 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited,  requireValidUser, requireRegularUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const karas = await getFavorites(req.authToken.username, req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 9999999);
+				const karas = await getFavorites({
+					username: req.authToken.username,
+					filter: req.query.filter,
+					lang: req.lang,
+					from: +req.query.from || 0,
+					size: +req.query.size || 9999999
+				});
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);

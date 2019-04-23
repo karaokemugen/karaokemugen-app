@@ -1,3 +1,5 @@
+import { LangClause } from "../../_types/database";
+
 // SQL for series
 
 export const getSeriesByName = `
@@ -8,7 +10,7 @@ FROM all_series
 WHERE name = :name
 ;`;
 
-export const getSeries = (filterClauses, lang, limitClause, offsetClause) => `
+export const getSeries = (filterClauses: string[], lang: LangClause, limitClause: string, offsetClause: string) => `
 SELECT
 	aseries.name AS name,
 	COALESCE(
@@ -30,7 +32,7 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const getSerieByID = (lang) => `
+export const getSerieByID = (lang: LangClause) => `
 SELECT
 	aseries.name AS name,
 	COALESCE(

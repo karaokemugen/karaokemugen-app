@@ -25,146 +25,12 @@ import {safeDump, safeLoad} from 'js-yaml';
 import {clearEmpties, difference} from './object_helpers';
 import cloneDeep from 'lodash.clonedeep';
 import {version} from '../version';
-
-export type PositionX = 'Left' | 'Right' | 'Center';
-export type PositionY = 'Top' | 'Bottom' | 'Center';
-
-export interface Config {
-	App: {
-		JwtSecret?: string,
-		InstanceID?: string,
-		FirstRun?: boolean,
-		karaSuggestionMail?: string
-	},
-	Online: {
-		Host?: string,
-		Port?: number,
-		Users?: boolean,
-		URL?: boolean,
-		Stats?: boolean
-	},
-	Frontend: {
-		Port?: number,
-		Mode?: number,
-		SeriesLanguageMode?: number,
-		AuthExpireTime?: number,
-		Permissions?: {
-			AllowNicknameChange?: boolean,
-			AllowViewWhitelist?: boolean,
-			AllowViewBlacklist?: boolean,
-			AllowViewBlacklistCriterias?: boolean
-		}
-	},
-	Karaoke: {
-		Private?: boolean,
-		Autoplay?: boolean,
-		Repeat?: boolean,
-		SmartInsert?: boolean,
-		CreatePreviews?: boolean,
-		JinglesInterval?: number,
-		Display: {
-			Avatar?: boolean,
-			Nickname?: boolean,
-			ConnectionInfo?: {
-				Enabled?: boolean,
-				QRCode?: boolean,
-				Host?: string,
-				Message?: string
-			}
-		},
-		Poll: {
-			Enabled?: boolean,
-			Choices?: number,
-			Timeout?: number
-		},
-		Quota: {
-			Songs?: number,
-			Time?: number,
-			Type?: number,
-			FreeAutoTime?: number,
-			FreeUpVotes?: boolean,
-			FreeUpVotesRequiredPercent?: number,
-			FreeUpVotesRequiredMin?: number
-		}
-	},
-	Player: {
-		StayOnTop?: boolean,
-		FullScreen?: boolean,
-		Background?: string,
-		Screen?: number,
-		VisualizationEffects?: boolean,
-		Monitor?: boolean,
-		NoHud?: boolean,
-		NoBar?: boolean,
-		mpvVideoOutput?: string,
-		PIP: {
-			Enabled?: boolean,
-			Size?: number,
-			PositionX?: PositionX,
-			PositionY?: PositionY
-		}
-	},
-	Playlist: {
-		AllowDuplicates?: boolean,
-		MaxDejaVuTime?: number,
-		RemovePublicOnPlay?: boolean
-	},
-	System: {
-		Binaries: {
-			Player: {
-				Windows?: string,
-				OSX?: string,
-				Linux?: string
-			},
-			Postgres: {
-				Windows?: string,
-				OSX?: string,
-				Linux?: string
-			},
-			ffmpeg: {
-				Windows?: string,
-				OSX?: string,
-				Linux?: string
-			}
-		},
-		Path: {
-			Bin?: string,
-			Karas?: string[],
-			Medias?: string[],
-			Lyrics?: string[],
-			DB?: string,
-			Series?: string[],
-			Backgrounds?: string[],
-			Jingles?: string[],
-			Temp?: string,
-			Previews?: string,
-			Import?: string,
-			Avatars?: string,
-			MediasHTTP?: string
-		}
-	},
-	Database: {
-		'sql-file'?: boolean,
-		defaultEnv?: string,
-		prod: {
-			driver?: string,
-			host?: string,
-			port?: number,
-			user?: string,
-			password?: string,
-			superuser?: string,
-			superuserPassword?: string,
-			schema?: string,
-			database?: string,
-			bundledPostgresBinary?: boolean
-		}
-	}
-}
+import {Config} from '../_types/config';
 
 /** Object containing all config */
 let config: Config = getDefaultConfig();
 let configFile = 'config.yml';
-let configReady;
+let configReady = false;
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
@@ -174,7 +40,7 @@ export function getConfig(): Config {
 	return {...config};
 }
 
-export async function editSetting(part) {
+export async function editSetting(part: object) {
 	const oldConfig = cloneDeep(config);
 	const newConfig = merge(config, part);
 	verifyConfig(newConfig);
@@ -182,18 +48,18 @@ export async function editSetting(part) {
 	return config;
 }
 
-export function verifyConfig(conf) {
+export function verifyConfig(conf: Config) {
 	const validationErrors = check(conf, configConstraints);
 	if (validationErrors) {
 		throw `Config is not valid: ${JSON.stringify(validationErrors)}`;
 	}
 }
 
-export async function mergeConfig(newConfig, oldConfig) {
+export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Determine if mpv needs to be restarted
 	if (!isEqual(oldConfig.Player, newConfig.Player)) {
 		//If these two settings haven't been changed, it means another one has, so we're restarting mpv
-		if (oldConfig.Player.Fullscreen === newConfig.Player.Fullscreen && oldConfig.Player.StayOnTop === newConfig.Player.StayOnTop) {
+		if (oldConfig.Player.FullScreen === newConfig.Player.FullScreen && oldConfig.Player.StayOnTop === newConfig.Player.StayOnTop) {
 			playerNeedsRestart();
 			logger.debug('[Config] Setting mpv to restart after next song');
 		}
@@ -243,7 +109,7 @@ function getDefaultConfig(): Config {
 	};
 }
 
-async function importIniFile(iniFile) {
+async function importIniFile(iniFile: string) {
 	//Imports old KM config INI and transforms it to our new config object overlord
 	const content = await asyncReadFile(iniFile, 'utf-8');
 	const ini = parse(content);
@@ -330,7 +196,7 @@ async function importIniFile(iniFile) {
 }
 
 /** Initializing configuration */
-export async function initConfig(argv) {
+export async function initConfig(argv: any) {
 	let appPath = getState().appPath;
 	if (argv.config) configFile = argv.config;
 	await configureLogger(appPath, !!argv.debug);
@@ -347,7 +213,7 @@ export async function initConfig(argv) {
 	return getConfig();
 }
 
-async function loadConfigFiles(appPath) {
+async function loadConfigFiles(appPath: string) {
 	const overrideConfigFile = resolve(appPath, configFile);
 	const databaseConfigFile = resolve(appPath, 'database.json');
 	config = merge(config, defaults);
@@ -362,7 +228,7 @@ async function loadConfigFiles(appPath) {
 	}
 }
 
-async function loadDBConfig(configFile) {
+async function loadDBConfig(configFile: string) {
 	const configData = await asyncReadFile(configFile, 'utf-8');
 	if (!testJSON(configData)) {
 		logger.error('[Config] Database config file is not valid JSON');
@@ -371,7 +237,7 @@ async function loadDBConfig(configFile) {
 	return JSON.parse(configData);
 }
 
-async function loadConfig(configFile) {
+async function loadConfig(configFile: string) {
 	logger.debug(`[Config] Reading configuration file ${configFile}`);
 	await asyncRequired(configFile);
 	const content = await asyncReadFile(configFile, 'utf-8');
@@ -415,7 +281,7 @@ export function configureHost() {
 	}
 }
 
-export async function setConfig(configPart) {
+export async function setConfig(configPart: any) {
 	config = merge(config, configPart);
 	if (configReady) updateConfig(config);
 	return getConfig();
@@ -439,7 +305,7 @@ export function getPublicConfig() {
 	return publicSettings;
 }
 
-export async function updateConfig(newConfig) {
+export async function updateConfig(newConfig: Config) {
 	const filteredConfig = difference(newConfig, defaults);
 	clearEmpties(filteredConfig);
 	delete filteredConfig.Database;

@@ -1,5 +1,6 @@
 import cliProgress from 'cli-progress';
 import {emitWS} from '../_webapp/frontend';
+import { BarOptions } from '../_types/bar';
 
 export default class Bar {
 
@@ -12,7 +13,7 @@ export default class Bar {
 	format: string;
 	bar: cliProgress.Bar;
 
-	constructor(options, total) {
+	constructor(options: BarOptions, total: number) {
 		this.options = options;
 		this.total = total;
 		this.start = 0;
@@ -39,7 +40,7 @@ export default class Bar {
 	};
 
 	incr = () => {
-		this.bar.increment();
+		this.bar.increment(1);
 		if (this.options.event) emitWS(this.options.event, {
 			value: this.value,
 			total: this.total

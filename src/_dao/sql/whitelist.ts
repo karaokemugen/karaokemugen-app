@@ -1,3 +1,5 @@
+import { LangClause } from "../../_types/database";
+
 // SQL for whitelist management
 
 export const emptyWhitelist = 'DELETE FROM whitelist;';
@@ -15,7 +17,7 @@ VALUES (
 ) ON CONFLICT DO NOTHING;
 `;
 
-export const getWhitelistContents = (filterClauses, lang, limitClause, offsetClause) => `
+export const getWhitelistContents = (filterClauses: string[], lang: LangClause, limitClause: string, offsetClause: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,

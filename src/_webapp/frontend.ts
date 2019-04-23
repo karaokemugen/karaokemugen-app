@@ -21,9 +21,9 @@ import authController from '../_controllers/auth';
 import {APIControllerPublic, APIControllerAdmin} from '../_controllers/api';
 import { getState } from '../_utils/state';
 
-let ws;
+let ws: any;
 
-export function emitWS(type, data?) {
+export function emitWS(type: string, data?: any) {
 	//logger.debug( '[WS] Sending message '+type+' : '+JSON.stringify(data));
 	if (ws) ws.sockets.emit(type, data);
 }
@@ -58,7 +58,7 @@ export async function initFrontend() {
 					const options = args.pop();
 					return i18n.__.apply(options.data.root, args);
 				},
-				if_eq: (a, b, opts) => {
+				if_eq: (a: any, b: any, opts: any) => {
 					if(a === b)
 						return opts.fn(this);
 					else
@@ -119,7 +119,7 @@ export async function initFrontend() {
 			} else if (+config.Frontend.Mode === 1) {
 				view = 'publicLimited';
 			}
-			let url;
+			let url: string;
 			config.Karaoke.Display.ConnectionInfo.Host
 				? url = config.Karaoke.Display.ConnectionInfo.Host
 				: url = address();

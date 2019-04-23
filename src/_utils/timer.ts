@@ -1,5 +1,5 @@
-export function timer(callback, delay) {
-	let id, started, remaining = delay, running;
+export function timer(callback: any, delay: number) {
+	let id: any, started: Date, remaining: number = delay, running : boolean;
 
 	this.start = () => {
 		running = true;
@@ -10,7 +10,7 @@ export function timer(callback, delay) {
 	this.pause = () => {
 		running = false;
 		clearTimeout(id);
-		remaining -= new Date().getTime() - started;
+		remaining -= new Date().getTime() - started.getTime();
 	};
 
 	this.getTimeLeft = () => {

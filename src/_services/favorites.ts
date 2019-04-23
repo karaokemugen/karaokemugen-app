@@ -4,17 +4,19 @@ import {findUserByName} from './user';
 import logger from 'winston';
 import {date} from '../_utils/date';
 import {profile} from '../_utils/logger';
-import {formatKaraList, isAllKaras, KaraList} from './kara';
+import {formatKaraList, isAllKaras} from './kara';
+import {KaraList} from '../_types/kara';
+import {FavParams, FavExport, AutoMixParams} from '../_types/favorites';
 import { uuidRegexp } from './constants';
 import { getRemoteToken } from '../_dao/user';
 import got from 'got';
 import {getConfig} from '../_utils/config';
 
-export async function getFavorites(username: string, filter?: any, lang?: string, from: number = 0, size: number = 99999999): Promise<KaraList> {
+export async function getFavorites(params: FavParams): Promise<KaraList> {
 	try {
 		profile('getFavorites');
-		const favs = await selectFavorites(filter, lang, from, size, username);
-		return formatKaraList(favs.slice(from, from + size), lang, from, favs.length);
+		const favs = await selectFavorites(params);
+		return formatKaraList(favs.slice(params.from, params.from + params.size), params.lang, params.from, favs.length);
 	} catch(err) {
 		throw err;
 	} finally {
@@ -22,7 +24,7 @@ export async function getFavorites(username: string, filter?: any, lang?: string
 	}
 }
 
-export async function fetchAndAddFavorites(instance, token, username) {
+export async function fetchAndAddFavorites(instance: string, token: string, username: string) {
 	const res = await got(`https://${instance}/api/favorites`, {
 		headers: {
 			authorization: token
@@ -39,11 +41,11 @@ export async function fetchAndAddFavorites(instance, token, username) {
 	await importFavorites(favorites, username);
 }
 
-export async function emptyFavorites(username) {
+export async function emptyFavorites(username: string) {
 	return await removeAllFavorites(username);
 }
 
-export async function addToFavorites(username, kid) {
+export async function addToFavorites(username: string, kid: any) {
 	try {
 		profile('addToFavorites');
 		let karas = [kid];
@@ -62,7 +64,11 @@ export async function convertToRemoteFavorites(username: string) {
 	// This is called when converting a local account to a remote one
 	// We thus know no favorites exist remotely.
 	if (!getConfig().Online.Users) return true;
-	const favorites = await getFavorites(username);
+	const favorites = await getFavorites({
+		filter: null,
+		lang: null,
+		username: username
+	});
 	const addFavorites = [];
 	if (favorites.content.length > 0) {
 		for (const favorite of favorites.content) {
@@ -72,7 +78,7 @@ export async function convertToRemoteFavorites(username: string) {
 	}
 }
 
-export async function deleteFavorites(username, kid) {
+export async function deleteFavorites(username: string, kid: string) {
 	try {
 		profile('deleteFavorites');
 		let karas = [kid];
@@ -91,7 +97,7 @@ export async function deleteFavorites(username, kid) {
 	}
 }
 
-async function manageFavoriteInInstance(action, username, kid) {
+async function manageFavoriteInInstance(action: string, username: string, kid: string) {
 	// If OnlineUsers is disabled, we return early and do not try to update favorites online.
 	if (!getConfig().Online.Users) return true;
 	const instance = username.split('@')[1];
@@ -113,7 +119,11 @@ async function manageFavoriteInInstance(action, username, kid) {
 }
 
 export async function exportFavorites(username: string) {
-	const favs = await getFavorites(username);
+	const favs = await getFavorites({
+		username: username,
+		filter: null,
+		lang: null
+	});
 	if (favs.content.length === 0) throw 'Favorites empty';
 	return {
 		Header: {
@@ -124,12 +134,11 @@ export async function exportFavorites(username: string) {
 	};
 }
 
-export async function importFavorites(favs, username) {
+export async function importFavorites(favs: FavExport, username: string) {
 	if (favs.Header.version !== 1) throw 'Incompatible favorites version list';
 	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') throw 'Not a favorites list';
 	if (!Array.isArray(favs.Favorites)) throw 'Favorites item is not an array';
-	const re = new RegExp(uuidRegexp);
-	if (favs.Favorites.some(f => !re.test(f.kid))) throw 'One item in the favorites list is not a UUID';
+	if (favs.Favorites.some(f => !new RegExp(uuidRegexp).test(f.kid))) throw 'One item in the favorites list is not a UUID';
 	// Stripping favorites from unknown karaokes in our database to avoid importing them
 	let favorites = favs.Favorites.map(f => f.kid);
 	const karasUnknown = await isAllKaras(favorites);
@@ -138,13 +147,17 @@ export async function importFavorites(favs, username) {
 	return { karasUnknown: karasUnknown };
 }
 
-async function getAllFavorites(userList) {
+async function getAllFavorites(userList: string[]) {
 	const kids = [];
 	for (const user of userList) {
 		if (!await findUserByName(user)) {
 			logger.warn(`[AutoMix] Username ${user} does not exist`);
 		} else {
-			const favs = await getFavorites(user);
+			const favs = await getFavorites({
+				username: user,
+				filter: null,
+				lang: null
+			});
 			favs.content.forEach(f => {
 				if (!kids.includes(f.kid)) kids.push(f.kid);
 			});
@@ -153,10 +166,10 @@ async function getAllFavorites(userList) {
 	return kids;
 }
 
-export async function createAutoMix(params, username) {
+export async function createAutoMix(params: AutoMixParams, username: string) {
 	// Create Playlist.
 	profile('AutoMix');
-	const favs = await getAllFavorites(params.users.split(','));
+	const favs = await getAllFavorites(params.users);
 	if (favs.length === 0) throw 'No favorites found for those users';
 	const autoMixPLName = `AutoMix ${date()}`;
 	const playlist_id = await createPlaylist(autoMixPLName, {
@@ -167,7 +180,7 @@ export async function createAutoMix(params, username) {
 	// Shuffle time.
 	await shufflePlaylist(playlist_id);
 	// Cut playlist after duration
-	await trimPlaylist(playlist_id, +params.duration);
+	await trimPlaylist(playlist_id, params.duration);
 	profile('AutoMix');
 	return {
 		playlist_id: playlist_id,

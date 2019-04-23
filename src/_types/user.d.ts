@@ -10,7 +10,17 @@ export interface UserOpts {
 export interface Token {
 	username: string,
 	role: Role,
-	token?: string
+	token?: string,
+	onlineToken?: string
+}
+
+export interface Tokens {
+	token: string,
+	onlineToken: string
+}
+
+export interface SingleToken {
+	token: string
 }
 
 export interface User {

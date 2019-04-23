@@ -4,7 +4,7 @@
 
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.ini to bypass the default value .
-import {Config} from './config';
+import {Config} from '../_types/config';
 
 export const defaults: Config = {
 	App: {

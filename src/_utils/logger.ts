@@ -6,7 +6,7 @@ import {getState} from './state';
 
 export default logger;
 
-export async function configureLogger(appPath, debug) {
+export async function configureLogger(appPath: string, debug: boolean) {
 	const consoleLogLevel = debug ? 'debug' : 'info';
 	const logDir = resolve(appPath, 'logs');
 	await asyncCheckOrMkdir(logDir);
@@ -45,6 +45,6 @@ export async function configureLogger(appPath, debug) {
 	);
 }
 
-export function profile(func) {
+export function profile(func: string) {
 	if (getState().opt.profiling) logger.profile(`[Profiling] ${func}`);
 }

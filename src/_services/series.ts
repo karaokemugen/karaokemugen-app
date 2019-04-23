@@ -6,22 +6,18 @@ import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../_utils/files';
 import { refreshKaras } from '../_dao/kara';
 import {compareKarasChecksum} from '../_dao/database';
+import {Series} from '../_types/series';
+import { KaraParams } from '../_types/kara';
 
-export interface Serie {
-	sid?:string,
-	name?: string,
-	i18n?: any
-}
-
-export async function getSeries(filter, lang, from = 0, size = 99999999999) {
+export async function getSeries(params: KaraParams) {
 	profile('getSeries');
-	const series = await selectAllSeries(filter, lang);
-	const ret = formatSeriesList(series.slice(from, from + size), from, series.length);
+	const series = await selectAllSeries(params);
+	const ret = formatSeriesList(series.slice(params.from, params.from + params.size), params.from, series.length);
 	profile('getSeries');
 	return ret;
 }
 
-export async function getOrAddSerieID(serieObj) {
+export async function getOrAddSerieID(serieObj: Series) {
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) return serie.sid;
 	//Series does not exist, create it.
@@ -30,7 +26,7 @@ export async function getOrAddSerieID(serieObj) {
 }
 
 
-export function formatSeriesList(seriesList, from, count) {
+export function formatSeriesList(seriesList: any[], from: number, count: number) {
 	return {
 		infos: {
 			count: count,
@@ -41,13 +37,13 @@ export function formatSeriesList(seriesList, from, count) {
 	};
 }
 
-export async function getSerie(sid) {
+export async function getSerie(sid: string) {
 	const serie = await selectSerie(sid);
 	if (!serie) throw 'Series ID unknown';
 	return serie;
 }
 
-export async function deleteSerie(sid) {
+export async function deleteSerie(sid: string) {
 	const serie = await getSerie(sid);
 	if (!serie) throw 'Series ID unknown';
 	await removeSerie(sid);
@@ -62,7 +58,7 @@ export async function deleteSerie(sid) {
 	refreshKaras();
 }
 
-export async function addSerie(serieObj) {
+export async function addSerie(serieObj: Series) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) throw 'Series original name already exists';
@@ -82,7 +78,7 @@ export async function addSerie(serieObj) {
 	return serieObj.sid;
 }
 
-export async function editSerie(sid, serieObj) {
+export async function editSerie(sid: string, serieObj: Series) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const oldSerie = await getSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';

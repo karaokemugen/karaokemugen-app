@@ -9,14 +9,14 @@ import {
 import {createPreview} from '../_utils/ffmpeg';
 import {getKaras} from '../_services/kara';
 
-async function extractPreviewFiles(previewDir) {
+async function extractPreviewFiles(previewDir: string) {
 	const dirListing = await asyncReadDir(previewDir);
-	return dirListing.filter(file => {
+	return dirListing.filter((file: string) => {
 		return (!file.startsWith('.') && (!file.startsWith('output')) && file.endsWith('.mp4'));
 	});
 }
 
-export async function isPreviewAvailable(kid, mediasize) {
+export async function isPreviewAvailable(kid: string, mediasize: number) {
 	const previewDir = resolvedPathPreviews();
 	return await asyncExists(resolve(previewDir, `${kid}.${mediasize}.mp4`));
 }

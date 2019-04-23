@@ -1,4 +1,5 @@
 // SQL for playlist management
+import {LangClause} from '../../_types/database';
 
 export const updatePlaylistLastEditTime = `
 UPDATE playlist SET
@@ -117,7 +118,7 @@ WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos,pc.created_at DESC
 `;
 
-export const getPlaylistContents = (filterClauses, lang, whereClause, orderClause, limitClause, offsetClause) => `
+export const getPlaylistContents = (filterClauses: string[], lang: LangClause, whereClause: string, orderClause: string, limitClause: string, offsetClause: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
@@ -194,7 +195,7 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const getPlaylistContentsMini = (lang) => `
+export const getPlaylistContentsMini = (lang: LangClause) => `
 SELECT ak.kid AS kid,
     ak.languages AS languages,
 	ak.title AS title,
@@ -245,7 +246,7 @@ ORDER BY karaname;
 `;
 
 
-export const getPLCInfo = (forUser) => `
+export const getPLCInfo = (forUser: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,

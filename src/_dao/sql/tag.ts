@@ -6,7 +6,7 @@ FROM tag
 WHERE pk_id_tag = $1
 `;
 
-export const getAllTags = (filterClauses, typeClauses, limitClause, offsetClause) => `
+export const getAllTags = (filterClauses: string[], typeClauses: string, limitClause: string, offsetClause: string) => `
 SELECT tag_id,
 	tagtype AS type,
 	name,

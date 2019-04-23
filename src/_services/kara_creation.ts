@@ -10,18 +10,19 @@ import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, writeKara
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
-import {createKaraInDB, editKaraInDB, formatKara, Kara} from '../_services/kara';
+import {createKaraInDB, editKaraInDB} from '../_services/kara';
+import {Kara, NewKara} from '../_types/kara';
 import {check} from '../_utils/validators';
 import {getOrAddSerieID} from '../_services/series';
-import {now} from '../_utils/date';
 import { compareKarasChecksum } from '../_dao/database';
 import { webOptimize } from '../_utils/ffmpeg';
 
-export async function editKara(kara, opts = {compareChecksum: true}) {
-	let newKara;
+export async function editKara(kara: Kara, opts = {compareChecksum: true}) {
+	let newKara: NewKara;
+	let overwrite = false;
 	try {
 		const mediaFile = resolve(resolvedPathMedias()[0], kara.mediafile);
-		let subFile;
+		let subFile: string;
 		kara.subfile && kara.subfile !== 'dummy.ass'
 			? subFile = resolve(resolvedPathSubs()[0], kara.subfile)
 			: subFile = kara.subfile;
@@ -30,22 +31,21 @@ export async function editKara(kara, opts = {compareChecksum: true}) {
 		delete kara.karafile;
 		// Copying already present files in temp directory to be worked on with by generateKara
 		if (!kara.mediafile_orig) {
-			kara.overwrite = true;
+			overwrite = true;
 			kara.mediafile_orig = kara.mediafile;
 			if (!await asyncExists(mediaFile)) throw `Mediafile ${mediaFile} does not exist! Check your base files or upload a new media`;
 			await asyncCopy(mediaFile, resolve(resolvedPathTemp(),kara.mediafile), {overwrite: true});
 		}
 		if (!kara.subfile_orig) {
-			kara.overwrite = true;
+			overwrite = true;
 			kara.subfile_orig = kara.subfile;
 			if (kara.subfile !== 'dummy.ass') {
 				if (!await asyncExists(subFile)) throw `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`;
 				await asyncCopy(subFile, resolve(resolvedPathTemp(),kara.subfile), {overwrite: true});
 			}
 		}
-		kara.KID = kara.kid;
 		// Treat files
-		newKara = await generateKara(kara);
+		newKara = await generateKara(kara, overwrite);
 		const newSubFile = resolve(resolvedPathSubs()[0],newKara.data.subfile);
 		const newMediaFile = resolve(resolvedPathMedias()[0],newKara.data.mediafile);
 
@@ -72,7 +72,7 @@ export async function editKara(kara, opts = {compareChecksum: true}) {
 }
 
 export async function createKara(kara) {
-	const newKara = await generateKara(kara);
+	const newKara = await generateKara(kara, false);
 	try {
 		newKara.data.karafile = basename(newKara.file);
 		await createKaraInDB(newKara.data);
@@ -85,7 +85,7 @@ export async function createKara(kara) {
 	return newKara;
 }
 
-async function generateKara(kara) {
+async function generateKara(kara: Kara, overwrite: boolean) {
 	/*
 	kara = {
 		title = string
@@ -125,7 +125,7 @@ async function generateKara(kara) {
 	// First name media files and subfiles according to their extensions
 	// Since temp files don't have any extension anymore
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
-	let newSubFile;
+	let newSubFile: string;
 	if (kara.subfile && kara.subfile !== 'dummy.ass' && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
 	if (kara.subfile === 'dummy.ass') newSubFile = kara.subfile;
 	// We don't need these anymore.
@@ -137,9 +137,7 @@ async function generateKara(kara) {
 
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
-		!kara.dateadded
-			? kara.dateadded = now(true)
-			: kara.dateadded = Math.floor(new Date(kara.dateadded).getTime() / 1000);
+		if (!kara.dateadded) kara.dateadded = new Date();
 		kara.songwriter.sort();
 		kara.singer.sort();
 		//Trim spaces before and after elements.
@@ -152,7 +150,7 @@ async function generateKara(kara) {
 		kara.creator.forEach((e,i) => kara.creator[i] = e.trim());
 		kara.author.forEach((e,i) => kara.author[i] = e.trim());
 		if (!kara.order) kara.order = '';
-		return await importKara(newMediaFile, newSubFile, kara);;
+		return await importKara(newMediaFile, newSubFile, kara, overwrite);
 	} catch(err) {
 		logger.error(`[Karagen] Error during generation : ${err}`);
 		if (await asyncExists(newMediaFile)) await asyncUnlink(newMediaFile);
@@ -161,7 +159,7 @@ async function generateKara(kara) {
 	}
 }
 
-function containsVideoGameSupportTag(tags) {
+function containsVideoGameSupportTag(tags: string[]): boolean {
 	return tags.includes('TAG_PS3')
 			|| tags.includes('TAG_PS2')
 			|| tags.includes('TAG_PSX')
@@ -184,7 +182,7 @@ function containsVideoGameSupportTag(tags) {
 			|| tags.includes('TAG_MOBAGE');
 }
 
-function defineFilename(data) {
+function defineFilename(data: Kara): string {
 	// Generate filename according to tags and type.
 	if (data) {
 		const extraTags = [];
@@ -220,40 +218,37 @@ function defineFilename(data) {
 	}
 }
 
-async function importKara(mediaFile, subFile, data) {
+async function importKara(mediaFile: string, subFile: string, data: Kara, overwrite: boolean) {
 	const kara = defineFilename(data);
 	logger.info('[KaraGen] Generating kara file for ' + kara);
-	let karaSubFile;
+	let karaSubFile: string;
 	subFile === 'dummy.ass'
 		? karaSubFile = subFile
 		: karaSubFile = `${kara}${extname(subFile || '.ass')}`;
-	let karaData = formatKara({ ...data,
-		mediafile: `${kara}${extname(mediaFile)}`,
-		subfile: karaSubFile
-	});
-	karaData.overwrite = data.overwrite;
+	data.mediafile = `${kara}${extname(mediaFile)}`;
+	data.subfile = karaSubFile;
 
 	// Extract media info, find subfile, and process series before moving files
 	const mediaPath = resolve(resolvedPathImport(), mediaFile);
-	let subPath;
-	if (subFile !== 'dummy.ass') subPath = await findSubFile(mediaPath, karaData, subFile);
+	let subPath: string;
+	if (subFile !== 'dummy.ass') subPath = await findSubFile(mediaPath, data, subFile);
 
 	// Autocreating groups based on song year
-	if(containsVideoGameSupportTag(karaData.tags) && !karaData.tags.includes('TAG_VIDEOGAME')) karaData.tags.push('TAG_VIDEOGAME');
-	if(mediaFile.match('^.+\\.(ogg|m4a|mp3)$') && !karaData.tags.includes('TAG_SOUNDONLY')) karaData.tags.push('TAG_SOUNDONLY');
+	if(containsVideoGameSupportTag(data.tags) && !data.tags.includes('TAG_VIDEOGAME')) data.tags.push('TAG_VIDEOGAME');
+	if(mediaFile.match('^.+\\.(ogg|m4a|mp3)$') && !data.tags.includes('TAG_SOUNDONLY')) data.tags.push('TAG_SOUNDONLY');
 
-	if (+karaData.year >= 1950 && +karaData.year <= 1959 && !karaData.groups.includes('50s')) karaData.groups.push('50s');
-	if (+karaData.year >= 1960 && +karaData.year <= 1969 && !karaData.groups.includes('60s')) karaData.groups.push('60s');
-	if (+karaData.year >= 1970 && +karaData.year <= 1979 && !karaData.groups.includes('70s')) karaData.groups.push('70s');
-	if (+karaData.year >= 1980 && +karaData.year <= 1989 && !karaData.groups.includes('80s')) karaData.groups.push('80s');
-	if (+karaData.year >= 1990 && +karaData.year <= 1999 && !karaData.groups.includes('90s')) karaData.groups.push('90s');
-	if (+karaData.year >= 2000 && +karaData.year <= 2009 && !karaData.groups.includes('2000s')) karaData.groups.push('2000s');
-	if (+karaData.year >= 2010 && +karaData.year <= 2019 && !karaData.groups.includes('2010s')) karaData.groups.push('2010s');
+	if (+data.year >= 1950 && +data.year <= 1959 && !data.groups.includes('50s')) data.groups.push('50s');
+	if (+data.year >= 1960 && +data.year <= 1969 && !data.groups.includes('60s')) data.groups.push('60s');
+	if (+data.year >= 1970 && +data.year <= 1979 && !data.groups.includes('70s')) data.groups.push('70s');
+	if (+data.year >= 1980 && +data.year <= 1989 && !data.groups.includes('80s')) data.groups.push('80s');
+	if (+data.year >= 1990 && +data.year <= 1999 && !data.groups.includes('90s')) data.groups.push('90s');
+	if (+data.year >= 2000 && +data.year <= 2009 && !data.groups.includes('2000s')) data.groups.push('2000s');
+	if (+data.year >= 2010 && +data.year <= 2019 && !data.groups.includes('2010s')) data.groups.push('2010s');
 
 	try {
-		if (subPath !== 'dummy.ass') await extractAssInfos(subPath, karaData);
+		if (subPath !== 'dummy.ass') data.subchecksum = await extractAssInfos(subPath);
 		await processSeries(data);
-		return await generateAndMoveFiles(mediaPath, subPath, karaData);
+		return await generateAndMoveFiles(mediaPath, subPath, data, overwrite);
 	} catch(err) {
 		const error = `Error importing ${kara} : ${err}`;
 		logger.error(`[KaraGen] ${error}`);
@@ -261,18 +256,19 @@ async function importKara(mediaFile, subFile, data) {
 	}
 }
 
-async function processSeries(kara) {
+async function processSeries(kara: Kara) {
 	for (const serie of kara.series) {
 		const serieObj = {
 			name: serie,
-			i18n: {}
+			i18n: {},
+			sid: null
 		};
 		serieObj.i18n[kara.lang[0]] = serie;
 		await getOrAddSerieID(serieObj);
 	}
 }
 
-async function findSubFile(mediaPath, karaData, subFile) {
+async function findSubFile(mediaPath: string, karaData: Kara, subFile: string) {
 	// Replacing file extension by .ass in the same directory
 	// Default is media + .ass instead of media extension.
 	// If subfile exists, assFile becomes that.
@@ -285,7 +281,7 @@ async function findSubFile(mediaPath, karaData, subFile) {
 	} else if (mediaPath.endsWith('.mkv')) {
 		// In case of a mkv, we're going to extract its subtitles track
 		try {
-			const extractFile = await extractVideoSubtitles(mediaPath, karaData.KID);
+			const extractFile = await extractVideoSubtitles(mediaPath, karaData.kid);
 			karaData.subfile = replaceExt(karaData.mediafile, '.ass');
 			return extractFile;
 		} catch (err) {
@@ -298,38 +294,31 @@ async function findSubFile(mediaPath, karaData, subFile) {
 	}
 }
 
-async function generateAndMoveFiles(mediaPath: string, subPath: string, karaData) {
+async function generateAndMoveFiles(mediaPath: string, subPath: string, karaData: Kara, overwrite: boolean): Promise<NewKara> {
 	// Generating kara file in the first kara folder
 
 	const karaFilename = replaceExt(karaData.mediafile, '.kara');
 	const karaPath = resolve(resolvedPathKaras()[0], karaFilename);
 	if (subPath === 'dummy.ass') karaData.subfile = 'dummy.ass';
 
-	karaData.series = karaData.series.join(',');
-	karaData.groups = karaData.groups.join(',');
-	karaData.lang = karaData.lang.join(',');
-	karaData.singer = karaData.singer.join(',');
-	karaData.songwriter = karaData.songwriter.join(',');
-	karaData.tags = karaData.tags.join(',');
-	karaData.creator = karaData.creator.join(',');
-	karaData.author = karaData.author.join(',');
 	const mediaDest = resolve(resolvedPathMedias()[0], karaData.mediafile);
-	let subDest;
+	let subDest: string;
 	if (subPath && karaData.subfile !== 'dummy.ass') subDest = resolve(resolvedPathSubs()[0], karaData.subfile);
 	try {
 		// Moving media in the first media folder.
 		if (extname(mediaDest).toLowerCase() === '.mp4') {
-			if (!karaData.overwrite && await asyncExists(mediaDest)) throw 'Media file already exists in destination folder';
+			if (!overwrite && await asyncExists(mediaDest)) throw 'Media file already exists in destination folder';
 			await webOptimize(mediaPath, mediaDest);
 			await asyncUnlink(mediaPath);
 		} else {
-			await asyncMove(mediaPath, mediaDest, { overwrite: karaData.overwrite });
+			await asyncMove(mediaPath, mediaDest, { overwrite: overwrite });
 		}
-		// Extracting media info here and now because we migth have had to weboptimize it earlier.
-		await extractMediaTechInfos(mediaDest, karaData);
+		// Extracting media info here and now because we might have had to weboptimize it earlier.
+		const mediainfo = await extractMediaTechInfos(mediaDest, karaData.mediasize);
+		karaData.mediagain = mediainfo.gain;
+		karaData.mediaduration = mediainfo.duration;
 		// Moving subfile in the first lyrics folder.
-		if (subDest) await asyncMove(subPath, subDest, { overwrite: karaData.overwrite });
-		delete karaData.overwrite;
+		if (subDest) await asyncMove(subPath, subDest, { overwrite: overwrite });
 	} catch (err) {
 		throw `Error while moving files. Maybe destination files (${mediaDest} or ${subDest} already exist? (${err})`;
 	}

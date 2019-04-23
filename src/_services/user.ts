@@ -1,4 +1,5 @@
-import {Config, getConfig, setConfig} from '../_utils/config';
+import {getConfig, setConfig} from '../_utils/config';
+import {Config} from '../_types/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
 import {convertToRemoteFavorites} from './favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink, asyncReadDir} from '../_utils/files';
@@ -21,7 +22,8 @@ import { createReadStream } from 'fs';
 import { writeStreamToFile } from '../_utils/files';
 import { fetchAndAddFavorites } from './favorites';
 import {encode, decode} from 'jwt-simple';
-import {Token, User, UserOpts} from '../_types/user';
+import {Token, User, UserOpts, Tokens, SingleToken, Role} from '../_types/user';
+import { PLC } from '../_types/playlist';
 
 const db = require('../_dao/user');
 let userLoginTimes = new Map();
@@ -31,7 +33,7 @@ on('databaseBusy', (status: boolean) => {
 	databaseBusy = status;
 });
 
-export async function removeRemoteUser(token: Token, password: string) {
+export async function removeRemoteUser(token: Token, password: string): Promise<SingleToken> {
 	// Function used when asking for user deletion on Karaoke Mugen Server
 	const instance = token.username.split('@')[1];
 	const username = token.username.split('@')[0];
@@ -69,7 +71,7 @@ async function updateExpiredUsers() {
 	}
 }
 
-export async function fetchRemoteAvatar(instance, avatarFile) {
+export async function fetchRemoteAvatar(instance: string, avatarFile: string): Promise<string> {
 	const conf = getConfig();
 	// If this stops working, use got() and a stream: true property again
 	const res = await got.stream(`https://${instance}/avatars/${avatarFile}`);
@@ -85,7 +87,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 	if (!onlineToken) onlineToken = await remoteLogin(username, password);
 	// if OnlineToken is empty, it means we couldn't fetch user data, let's not continue but don't throw an error
 	if (onlineToken.token) {
-		let remoteUser;
+		let remoteUser: User;
 		try {
 			remoteUser = await getRemoteUser(username, onlineToken.token);
 		} catch(err) {
@@ -130,7 +132,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 	}
 }
 
-export function createJwtToken(username: string, role: string, config?: Config) {
+export function createJwtToken(username: string, role: string, config?: Config): string {
 	const conf = config || getConfig();
 	const timestamp = new Date().getTime();
 	return encode(
@@ -139,12 +141,12 @@ export function createJwtToken(username: string, role: string, config?: Config) 
 	);
 }
 
-export function decodeJwtToken(token, config?: Config) {
+export function decodeJwtToken(token: string, config?: Config) {
 	const conf = config || getConfig();
 	return decode(token, conf.App.JwtSecret);
 }
 
-export async function convertToRemoteUser(token, password, instance) {
+export async function convertToRemoteUser(token: Token, password: string , instance: string): Promise<Tokens> {
 	// Converting a local account to a online one.
 	if (token.username === 'admin') throw 'Admin user cannot be converted to an online account';
 	const user = await findUserByName(token.username);
@@ -171,7 +173,7 @@ export async function convertToRemoteUser(token, password, instance) {
 }
 
 
-export async function updateLastLoginName(login) {
+export async function updateLastLoginName(login: string) {
 	// To avoid flooding database UPDATEs, only update login time every minute for a user
 	if (!userLoginTimes.has(login)) userLoginTimes.set(login, new Date());
 	if (userLoginTimes.get(login) < now(true) - 60) {
@@ -180,7 +182,7 @@ export async function updateLastLoginName(login) {
 	}
 }
 
-async function editRemoteUser(user) {
+async function editRemoteUser(user: User) {
 	// Edit online user's profile.
 	// This includes updating remote avatar.
 	// Fetch remote token
@@ -210,7 +212,7 @@ async function editRemoteUser(user) {
 }
 
 
-export async function editUser(username: string, user: User, avatar: boolean, role: string, opts: UserOpts = {
+export async function editUser(username: string, user: User, avatar: Express.Multer.File, role: string, opts: UserOpts = {
 	editRemote: false,
 	renameUser: false,
 }) {
@@ -256,15 +258,15 @@ export async function editUser(username: string, user: User, avatar: boolean, ro
 	}
 }
 
-export async function listGuests() {
+export async function listGuests(): Promise<User[]> {
 	return await db.listGuests();
 }
 
-export async function listUsers() {
+export async function listUsers(): Promise<User[]> {
 	return await db.listUsers();
 }
 
-async function replaceAvatar(oldImageFile,avatar) {
+async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File): Promise<string> {
 	try {
 		const conf = getConfig();
 		const fileType = await detectFileType(avatar.path);
@@ -282,9 +284,9 @@ async function replaceAvatar(oldImageFile,avatar) {
 	}
 }
 
-export async function findUserByName(username, opt = {
+export async function findUserByName(username: string, opt = {
 	public: false
-}) {
+}): Promise<User> {
 	//Check if user exists in db
 	const userdata = await db.getUser(username);
 	if (userdata) {
@@ -297,16 +299,16 @@ export async function findUserByName(username, opt = {
 		}
 		return userdata;
 	}
-	return false;
+	return null;
 }
 
-export function hashPassword(password) {
+export function hashPassword(password: string): string {
 	const hash = createHash('sha256');
 	hash.update(password);
 	return hash.digest('hex');
 }
 
-export async function checkPassword(user, password) {
+export async function checkPassword(user: User, password: string): Promise<boolean> {
 	const hashedPassword = hashPassword(password);
 	// Access is granted only if passwords match OR user type is 2 (guest) and its password in database is empty.
 	if (user.password === hashedPassword || (user.type === 2 && !user.password)) {
@@ -317,7 +319,7 @@ export async function checkPassword(user, password) {
 	return false;
 }
 
-export async function findFingerprint(fingerprint) {
+export async function findFingerprint(fingerprint: string): Promise<string> {
 	// This checks database for a fingerprint.
 	// If fingerprint is present we return the login name of that user
 	// If not we find a new guest account to assign to the user.
@@ -326,16 +328,16 @@ export async function findFingerprint(fingerprint) {
 	if (guest) return guest.pk_login;
 	guest = await db.getRandomGuest();
 	if (getState().isTest) logger.debug(guest);
-	if (!guest) return false;
+	if (!guest) return null;
 	await db.updateUserPassword(guest.pk_login, hashPassword(fingerprint));
 	return guest.pk_login;
 }
 
-export async function updateUserFingerprint(username, fingerprint) {
+export async function updateUserFingerprint(username: string, fingerprint: string) {
 	return await db.updateUserFingerprint(username, fingerprint);
 }
 
-export async function remoteCheckAuth(instance, token) {
+export async function remoteCheckAuth(instance: string, token: string) {
 	// Just checking that the online token we have is still valid on
 	// KM Server.
 	try {
@@ -351,7 +353,7 @@ export async function remoteCheckAuth(instance, token) {
 	}
 }
 
-export async function remoteLogin(username, password) {
+export async function remoteLogin(username: string, password: string): Promise<Token> {
 	// Function called when you enter a login/password and login contains an @. We're checking login/password pair against KM Server.
 	const [login, instance] = username.split('@');
 	try {
@@ -368,11 +370,15 @@ export async function remoteLogin(username, password) {
 		// For other errors, no error is thrown
 		if (err.statusCode === 401) throw 'Unauthorized';
 		logger.debug(`[RemoteUser] Got error when connectiong user ${username} : ${err}`);
-		return {};
+		return {
+			token: null,
+			role: null,
+			username: null
+		};
 	}
 }
 
-async function getAllRemoteUsers(instance) {
+async function getAllRemoteUsers(instance: string): Promise<User[]> {
 	try {
 		const users = await got(`https://${instance}/api/users`,
 			{
@@ -388,7 +394,7 @@ async function getAllRemoteUsers(instance) {
 	}
 }
 
-async function createRemoteUser(user) {
+async function createRemoteUser(user: User) {
 	const [login, instance] = user.login.split('@');
 	const users = await getAllRemoteUsers(instance);
 	if (users.filter(u => u.login === login).length === 1) throw {
@@ -412,7 +418,7 @@ async function createRemoteUser(user) {
 	}
 }
 
-export async function getRemoteUser(username, token) {
+export async function getRemoteUser(username: string, token: string): Promise<User> {
 	const [login, instance] = username.split('@');
 	try {
 		const res = await got(`https://${instance}/api/users/${login}`, {
@@ -428,11 +434,10 @@ export async function getRemoteUser(username, token) {
 	}
 }
 
-export async function createUser(user: User, opts?: UserOpts) {
-	if (!opts) opts = {
-		admin: false,
-		createRemote: true
-	};
+export async function createUser(user: User, opts: UserOpts = {
+	admin: false,
+	createRemote: true
+}) {
 	user.type = user.type || 1;
 	if (opts.admin) user.type = 0;
 	user.nickname = user.nickname || user.login;
@@ -473,7 +478,7 @@ async function newUserIntegrityChecks(user: User) {
 	}
 }
 
-export async function deleteUser(username) {
+export async function deleteUser(username: string) {
 	try {
 		if (username === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
 		const user = await findUserByName(username);
@@ -557,7 +562,7 @@ async function cleanupAvatars() {
 	return true;
 }
 
-export async function updateSongsLeft(username, playlist_id?: number) {
+export async function updateSongsLeft(username: string, playlist_id?: number) {
 	const conf = getConfig();
 	const user = await findUserByName(username);
 	let quotaLeft;
@@ -584,7 +589,7 @@ export async function updateSongsLeft(username, playlist_id?: number) {
 	});
 }
 
-export async function updateUserQuotas(kara) {
+export async function updateUserQuotas(kara: PLC) {
 	// If karaokes are present in the public playlist, we're marking them free.
 	// First find which KIDs are to be freed. All those before the currently playing kara
 	// are to be set free.
@@ -600,7 +605,7 @@ export async function updateUserQuotas(kara) {
 	let freeTasks = [];
 	let usersNeedingUpdate = [];
 	for (const currentSong of currentPlaylist) {
-		publicPlaylist.some(publicSong => {
+		publicPlaylist.some((publicSong: PLC) => {
 			if (publicSong.kid === currentSong.kid && currentSong.flag_free) {
 				freeTasks.push(freePLC(publicSong.playlistcontent_id));
 				if (!usersNeedingUpdate.includes(publicSong.username)) usersNeedingUpdate.push(publicSong.username);
@@ -616,10 +621,10 @@ export async function updateUserQuotas(kara) {
 	profile('updateUserQuotas');
 }
 
-export async function checkLogin(username, password) {
+export async function checkLogin(username: string, password: string): Promise<Token> {
 	const conf = getConfig();
 	let user: User = {};
-	let onlineToken;
+	let onlineToken: string;
 	if (username.includes('@') && +conf.Online.Users) {
 		try {
 			// If username has a @, check its instance for existence
@@ -652,7 +657,7 @@ export async function checkLogin(username, password) {
 	};
 }
 
-function getRole(user) {
+function getRole(user: User): Role {
 	if (+user.type === 2) return 'guest';
 	if (+user.type === 0) return 'admin';
 	if (+user.type === 1) return 'user';

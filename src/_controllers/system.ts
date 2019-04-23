@@ -85,13 +85,23 @@ export default function systemController(router) {
 	});
 
 	router.get('/system/tags', requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getTags(req.query.filter, req.query.type, 0, 999999999)
+		getTags({
+			filter: req.query.filter,
+			type: req.query.type,
+			from: 0,
+			size: 999999999
+		})
 			.then(tags => res.json(tags))
 			.catch(err => res.status(500).send(`Error while fetching tags: ${err}`));
 	});
 
 	router.get('/system/series', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getSeries(req.query.filter, req.lang, 0, 999999999999)
+		getSeries({
+			filter: req.query.filter,
+			lang: req.lang,
+			from: 0,
+			size: 999999999999
+		})
 			.then(series => res.json(series))
 			.catch(err => res.status(500).send(`Error while fetching series: ${err}`));
 	});

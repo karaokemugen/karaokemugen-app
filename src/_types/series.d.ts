@@ -1,12 +1,11 @@
 export interface Series {
 	name: string,
 	aliases?: string[],
-	i18n: any,
-	sid: string,
+	i18n?: any,
+	sid?: string,
 	seriefile?: string,
 	serie_id?: number,
-	i18n_name?: string,
-
+	i18n_name?: string
 }
 
 export interface SeriesFile {

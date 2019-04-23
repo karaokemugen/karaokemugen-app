@@ -1,6 +1,7 @@
 // SQL for favorites management
+import {LangClause} from '../../_types/database';
 
-export const getFavorites = (filterClauses, lang, limitClause, offsetClause) => `
+export const getFavorites = (filterClauses: string[], lang: LangClause, limitClause: string, offsetClause: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,

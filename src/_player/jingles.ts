@@ -35,9 +35,9 @@ async function getAllVideoGains(jingleFiles: string[]): Promise<Jingle[]> {
 		jinglesList.push(
 			{
 				file: jinglefile,
-				gain: videodata.audiogain
+				gain: videodata.gain
 			});
-		logger.debug(`[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.audiogain} dB`);
+		logger.debug(`[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.gain} dB`);
 	}
 	return jinglesList;
 }

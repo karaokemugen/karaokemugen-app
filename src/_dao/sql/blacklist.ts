@@ -1,4 +1,5 @@
 // SQL for Blacklist management
+import {LangClause} from '../../_types/database';
 
 export const emptyBlacklistCriterias = 'DELETE FROM blacklist_criteria;';
 
@@ -74,7 +75,7 @@ DELETE FROM blacklist_criteria
 WHERE pk_id_blcriteria = $1
 `;
 
-export const getBlacklistContents = (filterClauses, lang, limitClause, offsetClause) => `
+export const getBlacklistContents = (filterClauses: string[], lang: LangClause, limitClause: string, offsetClause: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,

@@ -9,7 +9,7 @@ import logger from 'winston';
 
 let shutdownInProgress = false;
 
-export function isShutdownPG() {
+export function isShutdownPG(): boolean {
 	return shutdownInProgress;
 }
 
@@ -23,7 +23,7 @@ export async function killPG() {
 	});
 }
 
-function setConfig(config, setting, value) {
+function setConfig(config: string, setting: string, value: any): string {
 	const pgConfArr = config.split('\n');
 	const found = pgConfArr.some(l => {
 		return l.startsWith(`${setting}=`);

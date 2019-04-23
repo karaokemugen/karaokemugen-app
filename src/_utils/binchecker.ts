@@ -4,19 +4,12 @@ import {resolve} from 'path';
 import {asyncRequired} from './files';
 import {exit} from '../_services/engine';
 import logger from 'winston';
-import { getState, setState } from './state';
-import {Config} from './config';
+import { getState } from './state';
+import {Config} from '../_types/config';
+import {BinariesConfig} from '../_types/binChecker';
 
 // Check if binaries are available
 // Provide their paths for runtime
-
-export interface BinariesConfig {
-	ffmpeg: string,
-	mpv: string,
-	postgres: string,
-	postgres_ctl: string,
-	postgres_dump: string
-}
 
 export async function checkBinaries(config: Config): Promise<BinariesConfig> {
 
@@ -36,7 +29,7 @@ export async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	return binariesPath;
 }
 
-function configuredBinariesForSystem(config): BinariesConfig {
+function configuredBinariesForSystem(config: Config): BinariesConfig {
 	switch (process.platform) {
 	case 'win32':
 		return {
@@ -65,7 +58,7 @@ function configuredBinariesForSystem(config): BinariesConfig {
 	}
 }
 
-function binMissing(binariesPath, err) {
+function binMissing(binariesPath: any, err: string) {
 	logger.error('[BinCheck] One or more binaries could not be found! (' + err + ')');
 	logger.error('[BinCheck] Paths searched : ');
 	logger.error('[BinCheck] ffmpeg : ' + binariesPath.ffmpeg);

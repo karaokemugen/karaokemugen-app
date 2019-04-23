@@ -7,5 +7,7 @@ export interface TagParams extends KaraParams {
 export interface Tag {
 	tag: string,
 	type: number,
-	id?: number
+	name: string,
+	id?: number,
+	i18n?: object,
 }

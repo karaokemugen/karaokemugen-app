@@ -1,8 +1,6 @@
 import {langSelector, paramWords, db} from './database';
 import {pg as yesql} from 'yesql';
 import {profile} from '../_utils/logger';
-import {Serie} from '../_services/series';
-import { Query } from '../_types/database';
 import { KaraParams } from '../_types/kara';
 import { Series } from '../_types/series';
 
@@ -109,7 +107,7 @@ export async function updateKaraSeries(kid: string, sids: string[]) {
 	}
 }
 
-export async function selectSerie(sid: string, lang?: string): Promise<Serie> {
+export async function selectSerie(sid: string, lang?: string): Promise<Series> {
 	const query = sql.getSerieByID(langSelector(lang, true));
 	const series = await db().query(query, [sid]);
 	return series.rows[0];

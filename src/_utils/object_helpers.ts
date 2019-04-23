@@ -1,9 +1,10 @@
 import transform from 'lodash.transform';
 import isEqual from 'lodash.isequal';
+import { Dictionary } from 'lodash';
 
 // Function to extract differences between objects. First argument is the new object, second is the defaults.
-export function difference(object, base) {
-	function changes(object, base) {
+export function difference(object: any, base: any) {
+	function changes(object: Dictionary<{}>, base: Dictionary<{}>) {
 		return transform(object, (result, value, key) => {
 			if (!isEqual(value, base[key])) {
 				result[key] = (typeof value === 'object' && typeof base[key] === 'object') ? changes(value, base[key]) : value;
@@ -14,7 +15,7 @@ export function difference(object, base) {
 }
 
 // Function to clear empty objects inside of an object.
-export function clearEmpties(o) {
+export function clearEmpties(o: object) {
 	for (var k in o) {
 	  	if (!o[k] || typeof o[k] !== 'object') {
 			continue; // If null or not an object, skip to the next iteration

@@ -1,6 +1,6 @@
 export interface KaraParams {
-	filter: string,
-	lang: string,
+	filter?: string,
+	lang?: string,
 	from?: number,
 	size?: number,
 	mode?: string,
@@ -10,16 +10,23 @@ export interface KaraParams {
 	random?: number
 }
 
+export interface NewKara {
+	data: Kara,
+	file: string
+}
+
 export interface Kara {
 	kid?: string,
 	languages?: KaraLang[],
 	languages_i18n?: string[],
 	previewfile?: string,
 	mediafile?: string,
+	mediafile_orig?: string,
 	mediasize?: number,
 	mediaduration?: number,
 	mediagain?: number,
 	subfile?: string,
+	subfile_orig?: string,
 	subchecksum?: string,
 	karafile?: string,
 	title: string,
@@ -85,7 +92,7 @@ export interface KaraList {
 }
 
 export interface MediaInfo {
-	size: number,
+	size?: number,
 	error: boolean,
 	gain: number,
 	duration: number

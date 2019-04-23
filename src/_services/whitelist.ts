@@ -3,11 +3,10 @@ import {removeKaraFromWhitelist, getWhitelistContents as getWLContents, emptyWhi
 import {generateBlacklist} from './blacklist';
 import {profile} from '../_utils/logger';
 import logger from 'winston';
+import { Token } from '../_types/user';
+import { KaraParams } from '../_types/kara';
 
-export async function addKaraToWhitelist(kid, reason, token, lang) {
-	let karas = [kid];
-	if (Array.isArray(kid)) karas = kid;
-	if (typeof kid === 'string') karas = kid.split(',');
+export async function addKaraToWhitelist(karas: string[], reason: string, token: Token, lang: string) {
 	const kara = await getKara(karas[0], token, lang);
 	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara[0].title}...`);
 	try {
@@ -27,21 +26,18 @@ export async function addKaraToWhitelist(kid, reason, token, lang) {
 	}
 }
 
-export async function getWhitelistContents(filter, lang, from, size) {
+export async function getWhitelistContents(params: KaraParams) {
 	profile('getWL');
-	const pl = await getWLContents(filter, lang);
-	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+	const pl = await getWLContents(params);
+	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.lang, params.from, pl.length);
 	profile('getWL');
 	return ret;
 }
 
-export async function deleteKaraFromWhitelist(kid) {
-	let karas = [kid];
-	if (Array.isArray(kid)) karas = kid;
-	// if (typeof wlcs === 'string') karas = kid.split(',');
+export async function deleteKaraFromWhitelist(karas: string[]) {
 	try {
 		profile('deleteWLC');
-		logger.info(`[Whitelist] Deleting karaokes from whitelist : ${kid}`);
+		logger.info(`[Whitelist] Deleting karaokes from whitelist : ${karas.toString()}`);
 		await removeKaraFromWhitelist(karas);
 		return await generateBlacklist();
 	} catch(err) {

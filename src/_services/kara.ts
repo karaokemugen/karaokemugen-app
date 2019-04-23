@@ -1,11 +1,8 @@
-import uuidV4 from 'uuid/v4';
-import {check, initValidators} from '../_utils/validators';
-import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
+import {tagTypes, karaTypes} from './constants';
 import {ASSToLyrics} from '../_utils/ass';
 import {refreshKaras, refreshYears} from '../_dao/kara';
 import {refreshKaraSeries, refreshSeries} from '../_dao/series';
 import {refreshKaraTags, refreshTags} from '../_dao/tag';
-import {now} from '../_utils/date';
 
 import {selectAllKaras,
 	getYears as getYearsDB,
@@ -26,11 +23,12 @@ import {getLanguage} from 'iso-countries-languages';
 import {resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
-import {getOrAddSerieID, Serie} from './series';
+import {getOrAddSerieID} from './series';
 import {Token} from '../_types/user';
-import {Kara, KaraList, KaraFile} from '../_types/kara';
+import {Kara, KaraList} from '../_types/kara';
+import {Series} from '../_types/series';
 
-export async function isAllKaras(karas: string[]) {
+export async function isAllKaras(karas: string[]): Promise<string[]> {
 	// Returns an array of unknown karaokes
 	// If array is empty, all songs in "karas" are present in database
 	const allKaras = await selectAllKIDs();
@@ -106,13 +104,13 @@ export async function getKaraMini(kid: string) {
 	return await getKaraMiniDB(kid);
 }
 
-export async function getKaraLyrics(kid: string) {
+export async function getKaraLyrics(kid: string): Promise<string[]> {
 	const kara = await getKaraMini(kid);
 	if (!kara) throw `Kara ${kid} unknown`;
-	if (kara.subfile === 'dummy.ass') return 'Lyrics not available for this song';
+	if (kara.subfile === 'dummy.ass') return ['Lyrics not available for this song'];
 	const ASS = await getASS(kara.subfile);
 	if (ASS) return ASSToLyrics(ASS);
-	return 'Lyrics not available for this song';
+	return ['Lyrics not available for this song'];
 }
 
 async function updateSeries(kara: Kara) {
@@ -123,14 +121,12 @@ async function updateSeries(kara: Kara) {
 	for (const s of kara.series) {
 		let langObj = {};
 		langObj[lang] = s;
-		let seriesObj: Serie = {
+		let seriesObj: Series = {
 			name: s
 		};
 		seriesObj.i18n = {...langObj};
 		const sid = await getOrAddSerieID(seriesObj);
 		sids.push(sid);
-		// Remove this when we'll update .kara file format to version 4
-		if (kara.KID) kara.kid = kara.KID;
 	}
 	await updateKaraSeries(kara.kid,sids);
 }
@@ -139,7 +135,6 @@ async function updateTags(kara: Kara) {
 	// Create an array of tags to add for our kara
 	let tags = [];
 	// Remove this when we'll update .kara file format to version 4
-	if (kara.KID) kara.kid = kara.KID;
 	kara.singer
 		? kara.singer.forEach(t => tags.push({tag: t, type: tagTypes.singer}))
 		: tags.push({tag: 'NO_TAG', type: tagTypes.singer});
@@ -204,85 +199,6 @@ export async function editKaraInDB(kara: Kara) {
 	refreshTags();
 }
 
-/**
- * Generate info to write in a .kara file from an object passed as argument by filtering out unnecessary fields and adding default values if needed.
- */
-export function formatKara(karaData: Kara): KaraFile {
-	return {
-		mediafile: karaData.mediafile || '',
-		subfile: karaData.subfile || 'dummy.ass',
-		subchecksum: karaData.subchecksum || '',
-		title: karaData.title || '',
-		series: karaData.series.join(',') || '',
-		type: karaData.type || '',
-		order: karaData.order || '',
-		year: karaData.year || '',
-		singer: karaData.singer.join(',') || '',
-		tags: karaData.tags.join(',') || '',
-		groups: karaData.groups.join(',') || '',
-		songwriter: karaData.songwriter.join(',') || '',
-		creator: karaData.creator.join(',') || '',
-		author: karaData.author.join(',') || '',
-		lang: karaData.lang.join(',') || 'und',
-		KID: karaData.kid || uuidV4(),
-		dateadded: Math.floor(karaData.dateadded.getTime() / 1000) || now(true),
-		datemodif: Math.floor(karaData.datemodif.getTime() / 1000) || now(true),
-		mediasize: karaData.mediasize || 0,
-		mediagain: karaData.mediagain || 0,
-		mediaduration: karaData.mediaduration || 0,
-		version: karaData.version || 3
-	};
-}
-
-const karaConstraintsV3 = {
-	mediafile: {
-		presence: {allowEmpty: false},
-		format: mediaFileRegexp
-	},
-	subfile: {
-		presence: {allowEmpty: false},
-		format: subFileRegexp
-	},
-	title: {presence: {allowEmpty: true}},
-	type: {presence: true, inclusion: karaTypesArray},
-	series: (value: string, attributes: any) => {
-		if (!serieRequired(attributes['type'])) {
-			return { presence: {allowEmpty: true} };
-		} else {
-			return { presence: {allowEmpty: false} };
-		}
-	},
-	lang: {langValidator: true},
-	order: {integerValidator: true},
-	year: {integerValidator: true},
-	KID: {presence: true, format: uuidRegexp},
-	dateadded: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	datemodif: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	mediasize: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	mediagain: {numericality: true},
-	mediaduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	version: {numericality: {onlyInteger: true, equality: 3}}
-};
-
-export function karaDataValidationErrors(karaData: KaraFile) {
-	initValidators();
-	return check(karaData, karaConstraintsV3);
-}
-
-export function verifyKaraData(karaData: KaraFile) {
-	// Version 2 is considered deprecated, so let's throw an error.
-	if (karaData.version < 3) throw 'Karaoke version 2 or lower is deprecated';
-	const validationErrors = karaDataValidationErrors(karaData);
-	if (validationErrors) {
-		throw `Karaoke data is not valid: ${JSON.stringify(validationErrors)}`;
-	}
-}
-
-/** Only MV or LIVE types don't have to have a series filled. */
-export function serieRequired(karaType: string) {
-	return karaType !== karaTypes.MV.type && karaType !== karaTypes.LIVE.type;
-}
-
 export async function getKaraHistory() {
 	// Called by system route
 	return await getKaraHistoryDB();
@@ -329,7 +245,7 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter: string, lang: string, from = 0, size = 999999999, mode: string, modeValue: string, token: Token, random: number = 0) {
+export async function getKaras(filter: string, lang: string, from = 0, size = 999999999, mode: string, modeValue: string, token: Token, random = 0) {
 	profile('getKaras');
 	const pl = await selectAllKaras({
 		username: token.username,

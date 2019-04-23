@@ -4,7 +4,7 @@ interface ID3 {
 	image?: string,
 }
 
-export function readID3(fileBuffer: Buffer, options?: object): Promise<ID3> {
+export function readID3(fileBuffer: string, options?: object): Promise<ID3> {
 	return new Promise(
 		(resolve, reject) =>
 			id3.read(
@@ -22,7 +22,7 @@ export function readID3(fileBuffer: Buffer, options?: object): Promise<ID3> {
 }
 
 
-export async function getID3(file: Buffer): Promise<ID3> {
+export async function getID3(file: string): Promise<ID3> {
 	try {
 		return await readID3(file);
 	} catch (err) {

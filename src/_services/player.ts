@@ -14,7 +14,7 @@ const sleep = promisify(setTimeout);
 
 let commandInProgress = false;
 
-async function getPlayingSong(now) {
+async function getPlayingSong(now: boolean) {
 	if (!getState().player.playing || now) {
 		profile('getPlayingSong');
 		try {
@@ -81,7 +81,7 @@ export async function playerEnding() {
 		});
 		await promiseRetry(playJingle(), {
 			times: 2,
-			onerror: (err, index) => {
+			onerror: (err: string, index: number) => {
 				stop();
 				logger.warn(`[Player] Failed to load jingle (attempt ${index}): ${err}`);
 			}
@@ -182,15 +182,15 @@ function unmutePlayer() {
 	logger.info('[Player] Player unmuted');
 }
 
-function seekPlayer(delta) {
+function seekPlayer(delta: number) {
 	seek(delta);
 }
 
-function goToPlayer(seconds) {
+function goToPlayer(seconds: number) {
 	goTo(seconds);
 }
 
-function setVolumePlayer(volume) {
+function setVolumePlayer(volume: number) {
 	setVolume(volume);
 }
 
@@ -226,7 +226,7 @@ async function restartPlayer() {
 }
 
 
-export async function sendCommand(command, options) {
+export async function sendCommand(command: string, options: any) {
 	const state = getState();
 	if (!state.player.ready) throw 'Player is not ready yet!';
 	if (commandInProgress) throw 'A command is already in progress';

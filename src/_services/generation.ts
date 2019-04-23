@@ -5,10 +5,10 @@ import {has as hasLang} from 'langs';
 import {asyncReadFile, checksum, asyncReadDirFilter} from '../_utils/files';
 import {resolvedPathSeries, resolvedPathKaras} from '../_utils/config';
 import {getState} from '../_utils/state';
-import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
+import {getDataFromKaraFile, verifyKaraData, writeKara, parseKara} from '../_dao/karafile';
 import {selectBLCTags, selectTags} from '../_dao/sql/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
-import {Kara, verifyKaraData} from './kara';
+import {Kara, KaraFile} from '../_types/kara';
 import parallel from 'async-await-parallel';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
 import {copyFromData, refreshAll, db, saveSetting} from '../_dao/database';
@@ -18,12 +18,15 @@ import Bar from '../_utils/bar';
 import {emit} from '../_utils/pubsub';
 import uuidV4 from 'uuid/v4';
 import { generateBlacklist } from './blacklist';
+import { Series } from '../_types/series';
+import { TagsInsertData, SeriesInsertData, SeriesMap, TagsByKara} from '../_types/generation';
+import { Tag } from '../_types/tag';
 
 let error = false;
 let generating = false;
-let bar;
+let bar: any;
 
-function hash(string) {
+function hash(string: string): string {
 	const hash = createHash('sha1');
 	hash.update(string);
 	return hash.digest('hex');
@@ -42,7 +45,7 @@ async function emptyDatabase() {
 	`);
 }
 
-export async function extractAllKaraFiles() {
+export async function extractAllKaraFiles(): Promise<string[]> {
 	let karaFiles = [];
 	for (const resolvedPath of resolvedPathKaras()) {
 		karaFiles = karaFiles.concat(await asyncReadDirFilter(resolvedPath, '.kara'));
@@ -50,7 +53,7 @@ export async function extractAllKaraFiles() {
 	return karaFiles;
 }
 
-export async function extractAllSeriesFiles() {
+export async function extractAllSeriesFiles(): Promise<string[]> {
 	let seriesFiles = [];
 	for (const resolvedPath of resolvedPathSeries()) {
 		seriesFiles = seriesFiles.concat(await asyncReadDirFilter(resolvedPath, '.series.json'));
@@ -58,7 +61,7 @@ export async function extractAllSeriesFiles() {
 	return seriesFiles;
 }
 
-export async function readAllSeries(seriesFiles) {
+export async function readAllSeries(seriesFiles: string[]): Promise<SeriesInsertData> {
 	const seriesPromises = [];
 	const seriesMap = new Map();
 	for (const seriesFile of seriesFiles) {
@@ -68,7 +71,8 @@ export async function readAllSeries(seriesFiles) {
 	return { data: seriesData, map: seriesMap };
 }
 
-async function processSerieFile(seriesFile, map) {
+async function processSerieFile(seriesFile: string, map: SeriesMap): Promise<Series> {
+	//FIXME Need to find a type for ES6 maps
 	const data = await getDataFromSeriesFile(seriesFile);
 	data.seriefile = basename(seriesFile);
 	map.set(data.name, { sid: data.sid, kids: [] });
@@ -76,31 +80,33 @@ async function processSerieFile(seriesFile, map) {
 	return data;
 }
 
-export async function readAllKaras(karafiles, seriesMap) {
+export async function readAllKaras(karafiles: string[], seriesMap: SeriesMap): Promise<Kara[]> {
 	const karaPromises = [];
 	for (const karafile of karafiles) {
 		karaPromises.push(() => readAndCompleteKarafile(karafile, seriesMap));
 	}
 	const karas = await parallel(karaPromises, 16);
 	// Errors are non-blocking
-	if (karas.some(kara => kara.error)) error = true;
-	return karas.filter(kara => !kara.error);
+	if (karas.some((kara: KaraFile) => kara.error)) error = true;
+	return karas.filter((kara: KaraFile) => !kara.error);
 }
 
-async function readAndCompleteKarafile(karafile, seriesMap) {
-	const karaData = await getDataFromKaraFile(karafile);
+async function readAndCompleteKarafile(karafile: string, seriesMap: SeriesMap): Promise<Kara> {
+	let karaData: Kara
+	const karaFileData: KaraFile = await parseKara(karafile);
 	try {
-		verifyKaraData(karaData);
+		verifyKaraData(karaFileData);
+		karaData = await getDataFromKaraFile(karafile, karaFileData);
 	} catch (err) {
 		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete : ${err}`);
 		error = true;
 		return karaData;
 	}
-	if (karaData.series) {
-		for (const serie of karaData.series.split(',')) {
+	if (karaData.series.length > 0) {
+		for (const serie of karaData.series) {
 			const seriesData = seriesMap.get(serie);
 			if (seriesData) {
-				seriesData.kids.push(karaData.KID);
+				seriesData.kids.push(karaData.kid);
 				seriesMap.set(serie, seriesData);
 			} else {
 				error = true;
@@ -117,7 +123,7 @@ async function readAndCompleteKarafile(karafile, seriesMap) {
 
 function prepareKaraInsertData(kara: Kara): any[] {
 	return [
-		kara.KID,
+		kara.kid,
 		kara.title,
 		kara.year || null,
 		kara.order || null,
@@ -127,37 +133,37 @@ function prepareKaraInsertData(kara: Kara): any[] {
 		kara.mediaduration,
 		kara.mediasize,
 		kara.mediagain,
-		new Date(kara.dateadded * 1000).toISOString(),
-		new Date(kara.datemodif * 1000).toISOString()
+		kara.dateadded.toISOString(),
+		kara.datemodif.toISOString()
 	];
 }
 
-function prepareAllKarasInsertData(karas: Kara[]) {
+function prepareAllKarasInsertData(karas: Kara[]): any[] {
 	return karas.map(kara => prepareKaraInsertData(kara));
 }
 
-function checkDuplicateKIDs(karas) {
+function checkDuplicateKIDs(karas: Kara[]) {
 	let searchKaras = [];
 	let errors = [];
 	for (const kara of karas) {
 		// Find out if our kara exists in our list, if not push it.
 		const search = searchKaras.find(k => {
-			return k.KID === kara.KID;
+			return k.kid === kara.kid;
 		});
 		if (search) {
 			// One KID is duplicated, we're going to throw an error.
 			errors.push({
-				KID: kara.KID,
+				kid: kara.kid,
 				kara1: kara.karafile,
 				kara2: search.karafile
 			});
 		}
-		searchKaras.push({ KID: kara.KID, karafile: kara.karafile });
+		searchKaras.push({ kid: kara.kid, karafile: kara.karafile });
 	}
 	if (errors.length > 0) throw `One or several KIDs are duplicated in your database : ${JSON.stringify(errors,null,2)}. Please fix this by removing the duplicated karaoke(s) and retry generating your database.`;
 }
 
-function checkDuplicateSeries(series) {
+function checkDuplicateSeries(series: Series[]) {
 	let searchSeries = [];
 	let errors = [];
 	for (const serie of series) {
@@ -176,7 +182,7 @@ function checkDuplicateSeries(series) {
 	if (errors.length > 0) throw `One or several series are duplicated in your database : ${JSON.stringify(errors,null,2)}. Please fix this by removing the duplicated series file(s) and retry generating your database.`;
 }
 
-function checkDuplicateSIDs(series) {
+function checkDuplicateSIDs(series: Series[]) {
 	let searchSeries = [];
 	let errors = [];
 	for (const serie of series) {
@@ -197,7 +203,7 @@ function checkDuplicateSIDs(series) {
 	if (errors.length > 0) throw `One or several SIDs are duplicated in your database : ${JSON.stringify(errors,null,2)}. Please fix this by removing the duplicated serie(s) and retry generating your database.`;
 }
 
-function prepareSerieInsertData(serie, data) {
+function prepareSerieInsertData(serie: string, data: Series): string[] {
 	if (data.aliases) data.aliases.forEach((d,i) => {
 		data.aliases[i] = d.replace(/"/g,'\\"');
 	});
@@ -209,7 +215,7 @@ function prepareSerieInsertData(serie, data) {
 	];
 }
 
-function prepareAllSeriesInsertData(mapSeries, seriesData) {
+function prepareAllSeriesInsertData(mapSeries: any, seriesData: Series[]): string[][] {
 	const data = [];
 	for (const serie of mapSeries) {
 		const serieData = seriesData.filter(e => e.name === serie[0]);
@@ -221,7 +227,7 @@ function prepareAllSeriesInsertData(mapSeries, seriesData) {
 /**
  * Warning : we iterate on keys and not on map entries to get the right order and thus the same indexes as the function prepareAllSeriesInsertData. This is the historical way of doing it and should be improved sometimes.
  */
-function prepareAllKarasSeriesInsertData(mapSeries) {
+function prepareAllKarasSeriesInsertData(mapSeries: any): string[][] {
 	const data = [];
 	for (const serie of mapSeries) {
 		for (const kid of serie[1].kids) {
@@ -234,7 +240,7 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 	return data;
 }
 
-async function prepareAltSeriesInsertData(seriesData, mapSeries) {
+async function prepareAltSeriesInsertData(seriesData: Series[], mapSeries: any): Promise<string[][]> {
 	const i18nData = [];
 	let index = 0;
 	for (const serie of seriesData) {
@@ -269,54 +275,50 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 	return i18nData;
 }
 
-function getAllKaraTags(karas) {
-
+function getAllKaraTags(karas: Kara[]): TagsInsertData {
 	const allTags = [];
-
 	const tagsByKara = new Map();
-
 	karas.forEach(kara => {
-		const karaIndex = kara.KID;
+		const karaIndex = kara.kid;
 		tagsByKara.set(karaIndex, getKaraTags(kara, allTags));
 	});
-
 	return {
 		tagsByKara: tagsByKara,
 		allTags: allTags
 	};
 }
 
-function getKaraTags(kara, allTags) {
+function getKaraTags(kara: Kara, allTags: string[]): Set<number> {
 
 	const result = new Set();
 
-	if (kara.singer) {
-		kara.singer.split(',').forEach(singer => result.add(getTagId(singer.trim() + ',2', allTags)));
+	if (kara.singer.length > 0) {
+		kara.singer.forEach(singer => result.add(getTagId(singer.trim() + ',2', allTags)));
 	} else {
 		result.add(getTagId('NO_TAG,2', allTags));
 	}
-	if (kara.author) {
-		kara.author.split(',').forEach(author => result.add(getTagId(author.trim() + ',6', allTags)));
+	if (kara.author.length > 0) {
+		kara.author.forEach(author => result.add(getTagId(author.trim() + ',6', allTags)));
 	} else {
 		result.add(getTagId('NO_TAG,6', allTags));
 	}
-	if (kara.tags) {
-		kara.tags.split(',').forEach(tag => result.add(getTagId(tag.trim() + ',7', allTags)));
+	if (kara.tags.length > 0) {
+		kara.tags.forEach(tag => result.add(getTagId(tag.trim() + ',7', allTags)));
 	} else {
 		result.add(getTagId('NO_TAG,7', allTags));
 	}
-	if (kara.creator) {
-		kara.creator.split(',').forEach(creator => result.add(getTagId(creator.trim() + ',4', allTags)));
+	if (kara.creator.length > 0) {
+		kara.creator.forEach(creator => result.add(getTagId(creator.trim() + ',4', allTags)));
 	} else {
 		result.add(getTagId('NO_TAG,4', allTags));
 	}
-	if (kara.songwriter) {
-		kara.songwriter.split(',').forEach(songwriter => result.add(getTagId(songwriter.trim() + ',8', allTags)));
+	if (kara.songwriter.length > 0) {
+		kara.songwriter.forEach(songwriter => result.add(getTagId(songwriter.trim() + ',8', allTags)));
 	} else {
 		result.add(getTagId('NO_TAG,8', allTags));
 	}
-	if (kara.groups) kara.groups.split(',').forEach(group => result.add(getTagId(group.trim() + ',9', allTags)));
-	if (kara.lang) kara.lang.split(',').forEach(lang => {
+	if (kara.groups.length > 0) kara.groups.forEach(group => result.add(getTagId(group.trim() + ',9', allTags)));
+	if (kara.lang) kara.lang.forEach(lang => {
 		if (lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang)) {
 			result.add(getTagId(lang.trim() + ',5', allTags));
 		}
@@ -327,7 +329,7 @@ function getKaraTags(kara, allTags) {
 	return result;
 }
 
-function getTypes(kara, allTags) {
+function getTypes(kara: Kara, allTags: string[]): Set<Number> {
 	const result = new Set();
 
 	karaTypesMap.forEach((value, key) => {
@@ -346,12 +348,12 @@ function getTypes(kara, allTags) {
 	return result;
 }
 
-function strictModeError(series) {
+function strictModeError(series: string) {
 	logger.error(`[Gen] STRICT MODE ERROR : Series ${series} does not exist in the series file`);
 	error = true;
 }
 
-function getTagId(tagName, tags) {
+function getTagId(tagName: string, tags: string[]): number {
 	const index = tags.indexOf(tagName) + 1;
 	if (index > 0) {
 		return index;
@@ -360,11 +362,11 @@ function getTagId(tagName, tags) {
 	return tags.length;
 }
 
-function prepareAllTagsInsertData(allTags) {
+function prepareAllTagsInsertData(allTags: string[]): any[][] {
 	const data = [];
 	const slugs = [];
 	const translations = require(join(__dirname,'../_locales/'));
-	let lastIndex;
+	let lastIndex: number;
 
 	allTags.forEach((tag, index) => {
 		const tagParts = tag.split(',');
@@ -436,7 +438,7 @@ function prepareAllTagsInsertData(allTags) {
 	return data;
 }
 
-function prepareTagsKaraInsertData(tagsByKara) {
+function prepareTagsKaraInsertData(tagsByKara: TagsByKara) {
 	const data = [];
 
 	tagsByKara.forEach((tags, kid) => {
@@ -532,7 +534,7 @@ export async function run(validateOnly: boolean = false) {
 			refreshAll()
 		]);
 		bar.incr();
-		await saveSetting('lastGeneration', new Date());
+		await saveSetting('lastGeneration', new Date().toString());
 		bar.incr();
 		bar.stop();
 		if (error) throw 'Error during generation. Find out why in the messages above.';
@@ -565,22 +567,22 @@ export async function checkUserdbIntegrity() {
 	if (bar) bar.incr();
 	let sql = '';
 
-	blcTags.rows.forEach(blcTag => {
+	blcTags.rows.forEach((blcTag: Tag ) => {
 		let tagFound = false;
-		allTags.rows.forEach(tag => {
-			if (tag.name === blcTag.tagname && tag.tagtype === blcTag.type) {
+		allTags.rows.forEach((tag: Tag) => {
+			if (tag.name === blcTag.name && tag.type === blcTag.type) {
 				// Found a matching Tagname, checking if id_tags are the same
-				if (tag.id_tag !== blcTag.id_tag) {
-					sql += `UPDATE blacklist_criteria SET value = ${tag.id_tag}
-						WHERE uniquevalue = '${blcTag.tagname}' AND type = ${blcTag.type};`;
+				if (tag.id !== blcTag.id) {
+					sql += `UPDATE blacklist_criteria SET value = ${tag.id}
+						WHERE uniquevalue = '${blcTag.name}' AND type = ${blcTag.type};`;
 				}
 				tagFound = true;
 			}
 		});
 		//If No Tag with this name and type was found in the AllTags table, delete the Tag
 		if (!tagFound) {
-			sql += `DELETE FROM blacklist_criteria WHERE uniquevalue = '${blcTag.tagname}' AND type = ${blcTag.type};`;
-			logger.warn(`[Gen] Deleted Tag ${blcTag.tagname} from blacklist criteria (type ${blcTag.type})`);
+			sql += `DELETE FROM blacklist_criteria WHERE uniquevalue = '${blcTag.name}' AND type = ${blcTag.type};`;
+			logger.warn(`[Gen] Deleted Tag ${blcTag.name} from blacklist criteria (type ${blcTag.type})`);
 		}
 	});
 	if (sql) {

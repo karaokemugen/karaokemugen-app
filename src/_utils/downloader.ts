@@ -6,20 +6,7 @@ import prettyBytes from 'pretty-bytes';
 import {createWriteStream} from 'fs';
 import { getState } from './state';
 import { emitWS } from '../_webapp/frontend';
-
-interface DownloadItem {
-	url: string,
-	filename: string,
-	size: number
-}
-
-interface DownloadOpts {
-	bar: boolean
-	auth?: {
-		user: string,
-		pass: string
-	}
-}
+import { DownloadItem, DownloadOpts } from '../_types/downloader';
 
 export default class Downloader {
 
@@ -30,7 +17,7 @@ export default class Downloader {
 	bar: _cliProgress.Bar;
 	onEnd: (this: void, errors: string[]) => void;
 
-	constructor(list, opts) {
+	constructor(list: DownloadItem[], opts: DownloadOpts) {
 	  this.list = list;
 	  this.pos = 0;
 	  this.opts = opts;
@@ -43,7 +30,7 @@ export default class Downloader {
 	}
 
 	// Triggers the download chain
-	download = (onEnd? : (this: void, errors: string[]) => void)  => {
+	download = (onEnd?: (this: void, errors: string[]) => void)  => {
 	  if (onEnd) this.onEnd = onEnd;
 	  if (this.pos >= this.list.length) {
 			this.onEnd(this.fileErrors);
@@ -68,7 +55,7 @@ export default class Downloader {
 	  }
 	};
 
-	DoDownload = (url, filename, size, onSuccess, onError) => {
+	DoDownload = (url: string, filename: string, size: number, onSuccess?: any, onError?: any) => {
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
 		const HttpAgent = require('agentkeepalive');
 		const {HttpsAgent} = HttpAgent;
@@ -88,7 +75,7 @@ export default class Downloader {
 		if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
 		got.stream(url, options)
 			.on('response', res => {
-				size = res.headers['content-length'];
+				size = +res.headers['content-length'];
 				if (this.opts.bar) {
 					this.bar.start(Math.floor(size / 1000) / 1000, 0);
 				}

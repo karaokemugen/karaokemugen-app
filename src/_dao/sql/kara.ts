@@ -1,6 +1,7 @@
 // SQL for kara management
+import {LangClause} from '../../_types/database';
 
-export const addKaraToPlaylist = values => `
+export const addKaraToPlaylist = (values:string) => `
 INSERT INTO playlist_content(
 	fk_id_playlist,
 	fk_login,
@@ -41,7 +42,7 @@ VALUES(
 )
 `;
 
-export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, havingClause, limitClause, offsetClause) => `SELECT
+export const getAllKaras = (filterClauses: string[], lang: LangClause, typeClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string) => `SELECT
   ak.kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,

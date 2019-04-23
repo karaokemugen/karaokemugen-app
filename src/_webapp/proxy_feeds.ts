@@ -1,10 +1,8 @@
 import got from 'got';
 import logger from 'winston';
-import xml2js from 'xml2js';
-import {promisify} from 'util';
+import {xml2json} from 'xml2js';
 import internet from 'internet-available';
 
-const parser = new xml2js.Parser();
 const feeds = [
 	{
 		name: 'git_base',
@@ -21,10 +19,6 @@ const feeds = [
 	}
 ];
 
-async function parseXML(...args) {
-	return promisify(parser.parseString)(...args);
-}
-
 export async function getFeeds() {
 	try {
 		await internet();
@@ -38,12 +32,12 @@ export async function getFeeds() {
 	return await Promise.all(feedPromises);
 }
 
-async function fetchFeed(url, name) {
+async function fetchFeed(url: string, name: string) {
 	try {
 		const response = await got(url);
 		return {
 			name: name,
-			body: await parseXML(response.body)
+			body: xml2json(response.body, {compact: true})
 		};
 	} catch(err) {
 		logger.error(`[Feeds] Unable to fetch feed ${name}. Is this instance connected to Internet?`);

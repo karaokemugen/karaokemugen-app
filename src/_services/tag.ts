@@ -3,12 +3,13 @@ import {join} from 'path';
 import {getSupportedLangs, getLanguage} from 'iso-countries-languages';
 import {getAllTags} from '../_dao/tag';
 import {profile} from '../_utils/logger';
+import { Tag, TagParams } from '../_types/tag';
 
-export function translateTags(taglist) {
+export function translateTags(taglist: Tag[]) {
 	const translations = require(join(__dirname,'../_locales/'));
 	// We need to read the detected locale in ISO639-1
 	taglist.forEach((tag, index) => {
-		let i18nString;
+		let i18nString: string;
 		if (tag.type === 5) {
 			const langdata = langs.where('2B', tag.name);
 			if (!langdata) i18nString = 'UNKNOWN_LANGUAGE';
@@ -28,7 +29,7 @@ export function translateTags(taglist) {
 	return taglist;
 }
 
-export async function formatTagList(tagList, from, count) {
+export async function formatTagList(tagList: Tag[], from: number, count: number) {
 	tagList = await translateTags(tagList);
 	return {
 		infos: {
@@ -40,10 +41,10 @@ export async function formatTagList(tagList, from, count) {
 	};
 }
 
-export async function getTags(filter, type, from, size) {
+export async function getTags(params: TagParams) {
 	profile('getTags');
-	let tags = await getAllTags(filter, type, +from, +size);
-	const ret = await formatTagList(tags.slice(from, from + size), from, tags.length);
+	const tags = await getAllTags(params);
+	const ret = await formatTagList(tags.slice(params.from, params.from + params.size), params.from, tags.length);
 	profile('getTags');
 	return ret;
 }

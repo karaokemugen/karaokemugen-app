@@ -155,10 +155,10 @@ export async function addPlayed(kid: string) {
 	}));
 }
 
-export async function addKaraToRequests(username: string, karaList: Kara[]) {
+export async function addKaraToRequests(username: string, karaList: string[]) {
 	const karas = karaList.map(kara => ([
 		username,
-		kara.kid,
+		kara,
 		new Date(),
 		getState().sessionStart
 	]));
@@ -190,6 +190,6 @@ export async function addKaraToPlaylist(karaList: PLC[]) {
 	return await db().query(query, values);
 }
 
-export async function removeKaraFromPlaylist(karas: string[], playlist_id: number) {
+export async function removeKaraFromPlaylist(karas: number[], playlist_id: number) {
 	return await db().query(sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')), [playlist_id]);
 }

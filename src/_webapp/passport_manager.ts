@@ -5,6 +5,7 @@ import LocalStrategy from 'passport-local';
 
 import {hashPassword, findUserByName} from '../_services/user';
 import {getConfig} from '../_utils/config';
+import { User } from '../_types/user';
 
 export function configurePassport() {
 	passport.use(localPassportStrategy());
@@ -13,10 +14,10 @@ export function configurePassport() {
 
 function localPassportStrategy() {
 	const localOptions = {usernameField: 'username', passwordField: 'password'};
-	return new LocalStrategy(localOptions, (username, password, done) => {
+	const strategy = new LocalStrategy(localOptions, (username: string, password: string, done: any) => {
 		const hash = hashPassword(password);
 		findUserByName(username)
-			.then((userdata) => {
+			.then((userdata: User) => {
 				//User not found
 				if (!userdata) return done(null, false);
 				//User is a guest, no password check needed
@@ -28,6 +29,7 @@ function localPassportStrategy() {
 			})
 			.catch(() => done(null, false));
 	});
+	return strategy;
 }
 
 function jwtPassportStrategy() {

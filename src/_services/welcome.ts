@@ -1,10 +1,12 @@
-import {Config, getConfig} from '../_utils/config';
-import {getState, State} from '../_utils/state';
+import {getConfig} from '../_utils/config';
+import {Config} from '../_types/config';
+import {State} from '../_types/state';
+import {getState} from '../_utils/state';
 import {editUser} from './user';
 import randomstring from 'randomstring';
 import open from 'open';
 
-function generateAdminPassword() {
+function generateAdminPassword(): string {
 	// Resets admin's password when appFirstRun is set to true.
 	// Returns the generated password.
 	const adminPassword = randomstring.generate(8);

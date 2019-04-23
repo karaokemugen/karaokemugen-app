@@ -3,8 +3,9 @@ import logger from 'winston';
 import {asyncRequired} from './files';
 import {getState} from './state';
 import {timeToSeconds} from './date';
+import { MediaInfo } from '../_types/kara';
 
-export async function extractSubtitles(videofile, extractfile) {
+export async function extractSubtitles(videofile: string, extractfile: string) {
 	await execa(getState().binPath.ffmpeg, ['-y', '-i', videofile, extractfile], {encoding: 'utf8'});
 
 	// Verify if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything
@@ -22,7 +23,7 @@ export async function createPreview(videopreview) {
 	}
 }
 
-export async function webOptimize(source, destination) {
+export async function webOptimize(source: string, destination: string) {
 	try {
 		return await execa(getState().binPath.ffmpeg, ['-y', '-i', source, '-movflags', 'faststart', '-acodec' , 'copy', '-vcodec', 'copy', destination], {encoding: 'utf8'});
 	} catch(err) {
@@ -33,7 +34,7 @@ export async function webOptimize(source, destination) {
 	}
 }
 
-export async function getMediaInfo(mediafile) {
+export async function getMediaInfo(mediafile: string): Promise<MediaInfo> {
 	try {
 		const result = await execa(getState().binPath.ffmpeg, ['-i', mediafile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 		const outputArray = result.stderr.split(' ');
@@ -57,12 +58,12 @@ export async function getMediaInfo(mediafile) {
 		}
 
 		return {
-			duration: duration,
-			audiogain: audiogain,
+			duration: +duration,
+			gain: +audiogain,
 			error: error
 		};
 	} catch(err) {
 		logger.warn(`[ffmpeg] Video '${mediafile}' probe error : '${JSON.stringify(err)}'`);
-		return { duration: 0, audiogain: 0, error: true };
+		return { duration: 0, gain: 0, error: true };
 	}
 }
