@@ -456,7 +456,7 @@ export async function run(validateOnly) {
 		emit('databaseBusy',true);
 		if (generating) throw 'A database generation is already in progress';
 		generating = true;
-
+		error = false;
 		logger.info('[Gen] Starting database generation');
 		const karaFiles = await extractAllKaraFiles();
 		const seriesFiles = await extractAllSeriesFiles();
