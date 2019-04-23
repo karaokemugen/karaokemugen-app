@@ -40,7 +40,7 @@ export async function deleteUpvote(plc_id,username) {
 		if (!plc) throw {message: 'PLC ID unknown'};
 		if (plc.username === username) throw {code: 'DOWNVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
-		const users = userList.map(u => u.login);
+		const users = userList.map(u => u.username);
 		if (!users.includes(username)) throw {code: 'DOWNVOTE_ALREADY_DONE'};
 		await removeUpvote(plc_id,username);
 		// Karaokes are not 'un-freed' when downvoted.
