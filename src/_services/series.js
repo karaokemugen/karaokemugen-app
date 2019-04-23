@@ -59,7 +59,7 @@ export async function addSerie(serieObj, opts = {refresh: true}) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) {
-		logger.warning(`Series original name already exists "${serieObj.name}"`);
+		logger.warn(`Series original name already exists "${serieObj.name}"`);
 		return serie.sid;
 	}
 	if (!serieObj.sid) serieObj.sid = uuidV4();
