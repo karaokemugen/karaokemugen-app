@@ -22,6 +22,9 @@ import logger from 'winston';
 export default function systemController(router) {
 	let upload = multer({ dest: resolve(getState().appPath, getConfig().System.Path.Temp)});
 
+	router.get('/system/config', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		res.json(getConfig());
+	});
 
 	router.put('/system/config', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
