@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import got from 'got';
 import {connect} from 'react-redux';
 import {Row, Col, Icon, Layout, Table, Input, Button} from 'antd';
-import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 import openSocket from 'socket.io-client';
 import { getLocalKaras, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../../api/local';
@@ -32,22 +30,19 @@ class KaraDownload extends Component {
 			
 		});
 		socket.on('downloadProgress', (data) => {
-			let active_download = null
-			if(this.state.karas_online)
-			{
+			let active_download = null;
+			if(this.state.karas_online) {
 				this.state.karas_online.forEach((kara,i) => {
-					if(kara.name == data.id)
-					{
+					if(kara.name == data.id) {
 						let remain = parseInt(data.total) - parseInt(data.value);
-						if(remain>0)
-						{
+						if(remain>0) {
 							active_download = {
 								index: i,
 								progress:Math.round(100 * parseInt(data.value) / parseInt(data.total)),
-							}
+							};
 						}
 					}
-				})
+				});
 				if(JSON.stringify(this.state.active_download) != JSON.stringify(active_download))
 					this.setState({active_download:active_download});
 			}
@@ -67,7 +62,7 @@ class KaraDownload extends Component {
 	}
 
 	downloadKara(kara) {
-		let downloadObject = {}
+		let downloadObject = {};
 		downloadObject.kid = kara.kid;
 		downloadObject.mediafile = kara.mediafile;
 		downloadObject.subfile = kara.subfile;
@@ -75,27 +70,25 @@ class KaraDownload extends Component {
 		downloadObject.seriefiles = kara.seriefiles;
 		downloadObject.size = kara.mediasize;
 		downloadObject.name = kara.name;
-		postToDownloadQueue('kara.moe', [downloadObject])
+		postToDownloadQueue('kara.moe', [downloadObject]);
 		this.api_read_kara_queue();
 	}
 
 	downloadAll() {
 		this.props.loading(true);
-		got(
-			`https://kara.moe/api/karas?filter=${this.state.filter}`,
-			{ json : true }
-		).then(res => {
-			let karas = res.body.content;
-			karas.forEach((kara) => { 
-				kara.name = kara.subfile.replace('.ass', '');
-				this.downloadKara(kara)
+		axios.get(`/api/system/karas?filter=${this.state.filter}&instance=kara.moe`)
+			.then(res => {
+				let karas = res.data.content;
+				karas.forEach((kara) => { 
+					kara.name = kara.subfile.replace('.ass', '');
+					this.downloadKara(kara);
+				});
+				this.props.loading(false);
 			})
-			this.props.loading(false);
-		})
-		.catch(err => {
-			this.props.loading(false);
-			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-		});
+			.catch(err => {
+				this.props.loading(false);
+				this.props.errorMessage(`${err.status}: ${err.statusText}. ${err.data}`);
+			});
 	}
 
 	async api_get_local_karas() {
@@ -107,25 +100,24 @@ class KaraDownload extends Component {
 		var p = Math.max(0,this.state.currentPage - 1);
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
-		got(
-			`https://kara.moe/api/karas?filter=${this.state.filter}&from=${pfrom}&size=${psz}`,
-			{ json : true }
-		).then(res => {
-			let karas = res.body.content;
-			karas = karas.map((kara) => { 
-				kara.name = kara.subfile.replace('.ass', '')
-				return kara;
+
+		axios.get(`/api/system/karas?filter=${this.state.filter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
+			.then(res => {
+				let karas = res.data.content;
+				karas = karas.map((kara) => { 
+					kara.name = kara.subfile.replace('.ass', '');
+					return kara;
+				});
+				this.props.loading(false);
+				this.setState({
+					karas_online: karas,
+					karas_online_count: res.data.infos.count || 0,
+				});
 			})
-			this.props.loading(false);
-			this.setState({
-				karas_online: karas,
-				karas_online_count: res.body.infos.count || 0,
+			.catch(err => {
+				this.props.loading(false);
+				this.props.errorMessage(`${err.status}: ${err.statusText}. ${err.data}`);
 			});
-		})
-		.catch(err => {
-			this.props.loading(false);
-			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-		});
 	}
 
 	async api_read_kara_queue() {
@@ -178,7 +170,7 @@ class KaraDownload extends Component {
 							columns={this.columns}
 							rowKey='kid'
 							pagination={{
-								position:"both",
+								position:'both',
 								current: this.state.currentPage || 0,
 								defaultPageSize: this.state.currentPageSize,
 								pageSize: this.state.currentPageSize,
@@ -251,24 +243,22 @@ class KaraDownload extends Component {
 		title: <span><button title="Download all retrieved karas at once" type="button" onClick={this.downloadAll.bind(this)}><Icon type='download'/></button> Download</span>,
 		key: 'download',
 		render: (text, record) => {
-			var button = null
+			var button = null;
 			if(this.is_local_kara(record))
-				button = <button disabled type="button"><Icon type='check-circle' theme="twoTone" twoToneColor="#52c41a"/></button>
+				button = <button disabled type="button"><Icon type='check-circle' theme="twoTone" twoToneColor="#52c41a"/></button>;
 			else {
 				let queue = this.is_queued_kara(record);
-				if(queue)
-				{
+				if(queue) {
 					if(queue.status=='DL_RUNNING')
-						button = <span><button disabled type="button"><Icon type="sync" spin /></button> {this.state.active_download ? this.state.active_download.progress:null}%</span>
+						button = <span><button disabled type="button"><Icon type="sync" spin /></button> {this.state.active_download ? this.state.active_download.progress:null}%</span>;
 					else if(queue.status=='DL_PLANNED')
-						button = <button disabled type="button"><Icon type='clock-circle' theme="twoTone" twoToneColor="#dc4e41"/></button>
+						button = <button disabled type="button"><Icon type='clock-circle' theme="twoTone" twoToneColor="#dc4e41"/></button>;
 					else if(queue.status=='DL_DONE') // done but not in local -> try again dude
-						button = <span><button disabled type="button"><Icon type='check-circle' theme="twoTone" twoToneColor="#4989f3"/></button></span>
-				}
-				else
-					button = <button type="button" onClick={this.downloadKara.bind(this,record)}><Icon type='download'/></button>
+						button = <span><button disabled type="button"><Icon type='check-circle' theme="twoTone" twoToneColor="#4989f3"/></button></span>;
+				} else
+					button = <button type="button" onClick={this.downloadKara.bind(this,record)}><Icon type='download'/></button>;
 			}
-			return <span>{button} {Math.round(record.mediasize/(1024*1024),1)}Mb</span>
+			return <span>{button} {Math.round(record.mediasize/(1024*1024),1)}Mb</span>;
 		}
 	}];
 }
