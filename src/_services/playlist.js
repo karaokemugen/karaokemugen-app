@@ -899,7 +899,7 @@ function smartShuffle(playlist) {
 				if ((playlist.length - user_iterator) > 6) {
 					let playlist_temp = playlist.slice(user_iterator, user_iterator + 6);
 					for (let i = 0; i < 5; i++) {
-						if (playlist_temp[i].nickname === playlist_temp[i + 1].pseudo_add) {
+						if (playlist_temp[i].nickname === playlist_temp[i + 1].nickname) {
 							if (playlist[i + 4 + user_iterator]) {
 								let a = playlist_temp[i + 1];
 								playlist[i + 1 + user_iterator] = playlist[i + 4 + user_iterator];

@@ -22,7 +22,7 @@ const seriesConstraintsV3 = {
 export async function readSeriesFile(seriesFile) {
 	let file;
 	try {
-		file = resolveFileInDirs(seriesFile, resolvedPathSeries());
+		file = await resolveFileInDirs(seriesFile, resolvedPathSeries());
 	} catch(err) {
 		throw `No series file found (${seriesFile})`;
 	}

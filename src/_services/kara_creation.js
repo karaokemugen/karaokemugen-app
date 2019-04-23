@@ -218,6 +218,7 @@ function defineFilename(data) {
 		if (data.tags.includes('TAG_WIIU')) extraTags.push('WIIU');
 		if (data.tags.includes('TAG_SWITCH')) extraTags.push('SWITCH');
 		if (data.tags.includes('TAG_VIDEOGAME')) extraTags.push('GAME');
+		if (data.tags.includes('TAG_SOUNDONLY')) extraTags.push('AUDIO');
 		let extraType = '';
 		if (extraTags.length > 0) extraType = extraTags.join(' ') + ' ';
 		const fileLang = data.lang[0].toUpperCase();
