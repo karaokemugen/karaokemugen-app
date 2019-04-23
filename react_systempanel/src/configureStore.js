@@ -2,7 +2,6 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
 
-import createSagaMiddleware from 'redux-saga';
 import navigation from './reducers/navigation';
 import auth from './reducers/auth';
 //import karas from './reducers/karas';
