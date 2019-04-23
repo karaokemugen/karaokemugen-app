@@ -2324,6 +2324,9 @@ var settingsNotUpdated;
 	// Some html & stats init
 	initApp = function() {
 
+        if(webappMode === 1) {
+            $('#restrictedHelpModal').modal('show');
+        } 
 		var locPlaylistRange = localStorage.getItem('playlistRange');
 		var locSearchPlaylist1 = localStorage.getItem('search1');
 		var locSearchPlaylist2 = localStorage.getItem('search2');
