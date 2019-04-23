@@ -194,9 +194,9 @@ export const initializationCatchphrases = [
 	'"KARAOKE SENRYAKUUUUUUU!" --Princess of the Crystal',
 	'"Fun karaokes are fun." --Yui Hirasawa',
 	'"Karaoke nano wa ikenai to omoimasu." --Mahoro',
-	'"Don\'t forget the karaoke of 3 oct 11." --Edward Elric',
+	'"Don\'t forget the karaoke of Oct 3rd 11." --Edward Elric',
 	'"I think it\'s time we sing this karaoke. Get everybody and the mic together. Ok, three, two, one, let\'s sing." --Spike Spiegel',
-	'"I don\'t sing everything, I just singing the karaoke what I know." --Tsubasa Hanekawa',
+	'"I don\'t sing everything, I\'m just singing the karaoke that I know." --Tsubasa Hanekawa',
 	'"This karaoke can only be executed a single time. Once it starts, it will be deleted. If you have chosen not to run the playlist, it will delete itself without executing. Ｒｅａｄｙ？" --YUKI.N',
 	'"We still don\'t know the name of the karaoke we sang that day." --Super Peace Buster\'s members'
 ];
