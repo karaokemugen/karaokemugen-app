@@ -85,7 +85,7 @@ export function APIControllerAdmin(router) {
  *
  */
 	router.route('/admin/shutdown')
-		.post(getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			// Sends command to shutdown the app.
 			try {
 				await shutdown();
@@ -129,7 +129,7 @@ export function APIControllerAdmin(router) {
  * }
  */
 
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
 				users: {presence: {allowEmpty: false}},
 				duration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}}
@@ -180,7 +180,7 @@ export function APIControllerAdmin(router) {
  * HTTP/1.1 500 Internal Server Error
  */
 
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// Get list of playlists
 			try {
 				const playlists = await getPlaylists(req.authToken);
@@ -219,7 +219,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// Add playlist
 			const validationErrors = check(req.body, {
 				name: {presence: {allowEmpty: false}},
@@ -294,7 +294,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			try {
@@ -334,7 +334,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// Update playlist info
 			const validationErrors = check(req.body, {
 				name: {presence: {allowEmpty: false}},
@@ -384,7 +384,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await deletePlaylist(req.params.pl_id);
 				emitWS('playlistsUpdated');
@@ -413,7 +413,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await emptyFavorites(req.params.username);
 				emitWS('favoritesUpdated', req.params.username);
@@ -466,7 +466,7 @@ export function APIControllerAdmin(router) {
  *   "code": "FAV_VIEW_ERROR"
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				const karas = await getFavorites({
 					username: req.params.username,
@@ -516,7 +516,7 @@ export function APIControllerAdmin(router) {
 *   "message": null
 * }
 */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
 				kid: {uuidArrayValidator: true}
 			});
@@ -556,7 +556,7 @@ export function APIControllerAdmin(router) {
 * @apiError FAV_DELETE_SONG_ERROR Favorites item could not be deleted.
 *
 */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 		//Delete kara from whitelist
 		// Deletion is through whitelist ID.
 			const validationErrors = check(req.body, {
@@ -725,7 +725,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await deleteUser(req.params.username);
 				emitWS('usersUpdated');
@@ -760,7 +760,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 		// Empty playlist
 			try {
 				await emptyPlaylist(req.params.pl_id);
@@ -792,7 +792,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req: any, res: any) => {
 		// Empty whitelist
 			try {
 				await emptyWhitelist();
@@ -827,7 +827,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req: any, res: any) => {
 		// Empty blacklist criterias
 			try {
 				await emptyBlacklistCriterias();
@@ -863,7 +863,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// set playlist to current
 			try {
 				await setCurrentPlaylist(req.params.pl_id);
@@ -899,7 +899,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// Empty playlist
 			try {
 				await setPublicPlaylist(req.params.pl_id);
@@ -947,7 +947,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang, +req.query.from || 0, +req.query.size || 9999999, +req.query.random || 0);
 				res.json(OKMessage(playlist));
@@ -992,7 +992,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			//add a kara to a playlist
 			const validationErrors = check(req.body, {
 				kid: {presence: true, uuidArrayValidator: true},
@@ -1054,7 +1054,7 @@ export function APIControllerAdmin(router) {
  *   "message": "Karaoke song 176 is already in playlist 2"
  * }
  */
-		.patch(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.patch(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			//add karas from a playlist to another
 			const validationErrors = check(req.body, {
 				plc_id: {presence: true, numbersArrayValidator: true},
@@ -1110,7 +1110,7 @@ export function APIControllerAdmin(router) {
  *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
  * }
  */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// Delete kara from playlist
 			// Deletion is through playlist content's ID.
 			// There is actually no need for a playlist number to be used at this moment.
@@ -1188,7 +1188,7 @@ export function APIControllerAdmin(router) {
  *   "message": "PLCID unknown!"
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
@@ -1227,7 +1227,7 @@ export function APIControllerAdmin(router) {
  *   "message": "PLCID unknown!"
  * }
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			//Update playlist's karaoke song
 			//Params: position
 
@@ -1403,7 +1403,7 @@ export function APIControllerAdmin(router) {
  * }
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req: any, res: any) => {
 			res.json(OKMessage(getConfig()));
 		})
 	/**
@@ -1464,7 +1464,7 @@ export function APIControllerAdmin(router) {
  *   "code": "MESSAGE_SEND_ERROR"
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
 				duration: {integerValidator: true},
 				message: {presence: true},
@@ -1540,7 +1540,7 @@ export function APIControllerAdmin(router) {
  *   "code": "WL_VIEW_ERROR"
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				const karas = await getWhitelistContents({
 					filter: req.query.filter,
@@ -1588,7 +1588,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No karaoke could be added, all are in whitelist already"
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
 				kid: {uuidArrayValidator: true}
 			});
@@ -1630,7 +1630,7 @@ export function APIControllerAdmin(router) {
  * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
  *
  */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			//Delete kara from whitelist
 			// Deletion is through whitelist ID.
 			const validationErrors = check(req.body, {
@@ -1695,7 +1695,7 @@ export function APIControllerAdmin(router) {
  *   "code": "BL_VIEW_ERROR"
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				const karas = await getBlacklist({
 					filter:	req.query.filter,
@@ -1742,7 +1742,7 @@ export function APIControllerAdmin(router) {
  *   "code": "BLC_VIEW_ERROR"
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req: any, res: any) => {
 			//Get list of blacklist criterias
 			try {
 				const blc = await getBlacklistCriterias();
@@ -1790,7 +1790,7 @@ export function APIControllerAdmin(router) {
  *   }
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			//Add blacklist criteria
 			const validationErrors = check(req.body, {
 				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
@@ -1843,7 +1843,7 @@ export function APIControllerAdmin(router) {
  *   "message": "BLCID 5 unknown"
  * }
  */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await deleteBlacklistCriteria(req.params.blc_id);
 				emitWS('blacklistUpdated');
@@ -1886,7 +1886,7 @@ export function APIControllerAdmin(router) {
  *   "message": "BLCID 12309 unknown"
  * }
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			//Update BLC
 			const validationErrors = check(req.body, {
 				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
@@ -1941,7 +1941,7 @@ export function APIControllerAdmin(router) {
  * }
  */
 
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			const commands = [
 				'play',
 				'pause',
@@ -2029,7 +2029,7 @@ export function APIControllerAdmin(router) {
  *   "message": "Playlist 5 unknown"
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
 				const playlist = await exportPlaylist(req.params.pl_id);
@@ -2069,7 +2069,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No header section"
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
 			const validationErrors = check(req.body, {
 				playlist: {isJSON: true}
@@ -2128,7 +2128,7 @@ export function APIControllerAdmin(router) {
  *   "message": "Playlist 10 unknown"
  * }
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
 				emitWS('playlistContentsUpdated',req.params.pl_id);
@@ -2142,7 +2142,7 @@ export function APIControllerAdmin(router) {
 
 export function APIControllerPublic(router) {
 	/*
-	router.use((req, res, next) => {
+	router.use((req: any, res: any, next) => {
 		// do logging
 		//logger.info('API_LOG',req)
 		// Logging is disabled. Enable it if you need to trace some info
@@ -2178,7 +2178,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Get list of playlists, only return the visible ones
 			try {
 				const playlists = await getPlaylists(req.authToken);
@@ -2212,7 +2212,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Get playlist, only if visible
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
@@ -2266,7 +2266,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Get playlist contents, only if visible
 			//Access :pl_id by req.params.pl_id
 			try {
@@ -2312,7 +2312,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
@@ -2466,7 +2466,7 @@ export function APIControllerPublic(router) {
  * }
  * }
  */
-		.get(async (req, res) => {
+		.get(async (_req: any, res: any) => {
 			//We don't want to return all settings.
 			res.json(OKMessage({
 				config: getPublicConfig(),
@@ -2502,7 +2502,7 @@ export function APIControllerPublic(router) {
  *    }
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const stats = await getKMStats();
 				const userData = await findUserByName(req.authToken.username);
@@ -2558,7 +2558,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			//Returns whitelist IF the settings allow public to see it
 			if (getConfig().Frontend.Permissions.AllowViewWhitelist) {
 				try {
@@ -2622,7 +2622,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			//Get list of blacklisted karas IF the settings allow public to see it
 			if (getConfig().Frontend.Permissions.AllowViewBlacklist) {
 				try {
@@ -2678,7 +2678,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
 			//Get list of blacklist criterias IF the settings allow public to see it			);
 			if (getConfig().Frontend.Permissions.AllowViewBlacklistCriterias) {
 				try {
@@ -2742,7 +2742,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
 			// Get player status
 			// What's playing, time in seconds, duration of song
 			res.json(OKMessage(getPublicState()));
@@ -2791,7 +2791,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			try {
@@ -3011,7 +3011,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const kara = await getKara(req.params.kid,req.authToken,req.lang);
 				res.json(OKMessage(kara));
@@ -3072,7 +3072,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Add Kara to the playlist currently used depending on mode
 			try {
 				const data = await addKaraToPlaylist(req.params.kid, req.authToken.username);
@@ -3110,7 +3110,7 @@ export function APIControllerPublic(router) {
  *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
  * }
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const kara = await getKaraLyrics(req.params.kid);
 				res.json(OKMessage(kara));
@@ -3143,7 +3143,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Get current Playlist
 			try {
 				const playlist = await getPlaylistInfo(getState().currentPlaylistID, req.authToken);
@@ -3196,7 +3196,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Get current Playlist
 			try {
 				const playlist = await getPlaylistContents(getState().currentPlaylistID, req.authToken, req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 999999);
@@ -3234,7 +3234,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Get public Playlist
 			try {
 				const playlist = await getPlaylistInfo(getState().publicPlaylistID,req.authToken);
@@ -3285,7 +3285,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Get public Playlist
 			try {
 				const playlist = await getPlaylistContents(getState().publicPlaylistID, req.authToken, req.query.filter, req.lang, +req.query.from || 0, +req.query.size || 999999);
@@ -3323,7 +3323,7 @@ export function APIControllerPublic(router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 */
 
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Post an upvote
 			try {
 				const kara = await vote(req.params.plc_id,req.authToken.username,req.body.downvote);
@@ -3364,7 +3364,7 @@ export function APIControllerPublic(router) {
  	 * }
  	 */
 
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const data = await deleteKaraFromPlaylist(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
@@ -3404,7 +3404,7 @@ export function APIControllerPublic(router) {
  	 * }
  	 */
 
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const data = await deleteKaraFromPlaylist(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
@@ -3462,7 +3462,7 @@ export function APIControllerPublic(router) {
 	* @apiErrorExample Error-Response:
     * HTTP/1.1 403 Forbidden
 	*/
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const tags = await getTags({
 					filter: req.query.filter,
@@ -3502,7 +3502,7 @@ export function APIControllerPublic(router) {
 		* @apiErrorExample Error-Response:
 		* HTTP/1.1 403 Forbidden
 		*/
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
 			try {
 				const years = await getYears();
 				res.json(OKMessage(years));
@@ -3575,7 +3575,7 @@ export function APIControllerPublic(router) {
 		* @apiErrorExample Error-Response:
 		* HTTP/1.1 403 Forbidden
 		*/
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const series = await getSeries({
 					filter: req.query.filter,
@@ -3634,7 +3634,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const userdata = await findUserByName(req.params.username, {public:true});
 				res.json(OKMessage(userdata));
@@ -3679,7 +3679,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(upload.single('avatarfile'), getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(upload.single('avatarfile'), getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
 				login: {presence: true},
 				nickname: {presence: true}
@@ -3756,7 +3756,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const userData = await findUserByName(req.authToken.username, {public:false});
 				updateSongsLeft(userData.login);
@@ -3787,7 +3787,7 @@ export function APIControllerPublic(router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				await deleteUser(req.authToken.username);
 				res.json(OKMessage(null,'USER_DELETED'));
@@ -3833,7 +3833,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.put(upload.single('avatarfile'), getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.put(upload.single('avatarfile'), getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
 				nickname: {presence: true}
 			});
@@ -3889,7 +3889,7 @@ export function APIControllerPublic(router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-		.post(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
 				instance: {presence: true},
 				password: {presence: true}
@@ -3939,7 +3939,7 @@ export function APIControllerPublic(router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
 				password: {presence: true}
 			});
@@ -4000,7 +4000,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited,  requireValidUser, requireRegularUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited,  requireValidUser, requireRegularUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const karas = await getFavorites({
 					username: req.authToken.username,
@@ -4049,7 +4049,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, requireRegularUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, requireRegularUser, updateUserLoginTime, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
 				kid: {uuidArrayValidator: true}
 			});
@@ -4100,7 +4100,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.delete(getLang, requireAuth, requireWebappLimited, requireValidUser, requireRegularUser, updateUserLoginTime, async (req, res) => {
+		.delete(getLang, requireAuth, requireWebappLimited, requireValidUser, requireRegularUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Delete kara from favorites
 			// Deletion is through kara ID.
 			const validationErrors = check(req.body, {
@@ -4142,7 +4142,7 @@ export function APIControllerPublic(router) {
  *   "code": "FAVORITES_EXPORT_ERROR"
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, requireRegularUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, requireRegularUser, updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
 				const favorites = await exportFavorites(req.authToken.username);
@@ -4180,7 +4180,7 @@ export function APIControllerPublic(router) {
  *   "message": "No header section"
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, requireRegularUser,updateUserLoginTime, requireWebappLimited, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, requireRegularUser,updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
 			const validationErrors = check(req.body, {
 				favorites: {isJSON: true}
@@ -4235,7 +4235,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
 			try {
 				const users = await	listUsers();
 				res.json(OKMessage(users));
@@ -4280,7 +4280,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.post(requireWebappLimitedNoAuth, async (req, res) => {
+		.post(requireWebappLimitedNoAuth, async (req: any, res: any) => {
 			//Validate form data
 			const validationErrors = check(req.body, {
 				login: {presence: true},
@@ -4310,7 +4310,7 @@ export function APIControllerPublic(router) {
 	 * @apiPermission NoAuth
 	 * @apiSuccess {Array} Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if RSS feed could not be obtained.
 	 */
-	 .get(getLang, async (req, res) => {
+	 .get(getLang, async (_req: any, res: any) => {
 			try {
 				const result = await getFeeds();
 				res.json(result);
@@ -4364,7 +4364,7 @@ export function APIControllerPublic(router) {
  *   "message": null
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const pollResult = await getPoll(req.authToken,req.lang,+req.query.from || 0, +req.query.size || 9999999);
 				res.json(OKMessage(pollResult));
@@ -4414,7 +4414,7 @@ export function APIControllerPublic(router) {
  *   "message": null
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			//Validate form data
 			const validationErrors = check(req.body, {
 				playlistcontent_id: {presence: true, numbersArrayValidator: true}

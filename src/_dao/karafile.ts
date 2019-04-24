@@ -296,7 +296,7 @@ const karaConstraintsV3 = {
 	},
 	title: {presence: {allowEmpty: true}},
 	type: {presence: true, inclusion: karaTypesArray},
-	series: (value: string, attributes: any) => {
+	series: (_value: string, attributes: any) => {
 		if (!serieRequired(attributes['type'])) {
 			return { presence: {allowEmpty: true} };
 		} else {

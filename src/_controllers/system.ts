@@ -20,11 +20,11 @@ import logger from 'winston';
 export default function systemController(router) {
 	let upload = multer({ dest: resolve(getState().appPath, getConfig().System.Path.Temp)});
 
-	router.get('/system/config', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/system/config', requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) => {
 		res.json(getConfig());
 	});
 
-	router.put('/system/config', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+	router.put('/system/config', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			const publicSettings = editSetting(req.body.setting);
 			emitWS('settingsUpdated',publicSettings);
@@ -34,41 +34,41 @@ export default function systemController(router) {
 		}
 	});
 
-	router.post('/system/config/backup', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/system/config/backup', requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) => {
 		backupConfig()
 			.then(() => res.status(200).send('Configuration file backuped to config.ini.backup'))
 			.catch(err => res.status(500).send(`Error backuping config file: ${err}`));
 	});
 
-	router.post('/system/db/regenerate', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/system/db/regenerate', requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) => {
 		generateDatabase()
 			.then(() => res.status(200).send('DB successfully regenerated'))
 			.catch(err => res.status(500).send(`Error while regenerating DB: ${err}`));
 	});
-	router.get('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		getKara(req.params.kid,req.authToken,req.lang)
 			.then(kara => res.json(kara))
 			.catch(err => res.status(500).send('Error while loading kara: ' + err));
 	});
-	router.put('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.put('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		editKara(req.body)
 			.then(() => res.status(200).send('Karas successfully edited'))
 			.catch(err => res.status(500).send(`Error while editing kara: ${err}`));
 	});
 
 	/*
-	router.post('/system/karas/generate-all', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/system/karas/generate-all', requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		karaGenerationBatch()
 			.then(() => res.status(200).send('Karas successfully generated'))
 			.catch(err => res.status(500).send(`Error while generating karas: ${err}`));
 	});
 	*/
 
-	router.post('/system/karas/importfile', upload.single('file'), (req, res) => {
+	router.post('/system/karas/importfile', upload.single('file'), (req: any, res: any) => {
 		res.status(200).send(JSON.stringify(req.file));
 	});
 
-	router.post('/system/karas', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/system/karas', requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		createKara(req.body)
 			.then(() => res.status(200).send('Kara successfully generated'))
 			.catch(err => {
@@ -76,7 +76,7 @@ export default function systemController(router) {
 			});
 	});
 
-	router.get('/system/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/system/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		getKaras(req.query.filter, req.lang, 0, 99999999999999, null, null, req.authToken)
 			.then(karas => res.json(karas))
 			.catch(err => {
@@ -84,7 +84,7 @@ export default function systemController(router) {
 			});
 	});
 
-	router.get('/system/tags', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/system/tags', requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		getTags({
 			filter: req.query.filter,
 			type: req.query.type,
@@ -95,7 +95,7 @@ export default function systemController(router) {
 			.catch(err => res.status(500).send(`Error while fetching tags: ${err}`));
 	});
 
-	router.get('/system/series', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/system/series', getLang, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		getSeries({
 			filter: req.query.filter,
 			lang: req.lang,
@@ -106,80 +106,80 @@ export default function systemController(router) {
 			.catch(err => res.status(500).send(`Error while fetching series: ${err}`));
 	});
 
-	router.delete('/system/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.delete('/system/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		deleteSerie(req.params.sid)
 			.then(() => res.status(200).send('Series deleted'))
 			.catch(err => res.status(500).send(`Error deleting series: ${err}`));
 	});
 
-	router.get('/system/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/system/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		getSerie(req.params.sid)
 			.then((series) => res.json(series))
 			.catch(err => res.status(500).send(`Error deleting series: ${err}`));
 	});
 
-	router.put('/system/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.put('/system/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		editSerie(req.params.sid,req.body)
 			.then((series) => res.json(series))
 			.catch(err => res.status(500).send(`Error editing series: ${err}`));
 	});
 
-	router.post('/system/series', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/system/series', requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		addSerie(req.body)
 			.then(() => res.status(200).send('Series added'))
 			.catch(err => res.status(500).send(`Error adding series: ${err}`));
 	});
 
-	router.get('/system/users', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/system/users', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) => {
 		listUsers()
 			.then(users => res.json(users))
 			.catch(err => res.status(500).send(`Error while fetching users: ${err}`));
 	});
 
-	router.get('/system/karas/history', requireAuth, requireValidUser, requireAdmin, (req, res) =>{
+	router.get('/system/karas/history', requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) =>{
 		getKaraHistory()
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas history: ${err}`));
 	});
 
-	router.get('/system/karas/ranking', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) =>{
+	router.get('/system/karas/ranking', getLang, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) =>{
 		getTop50(req.authToken, req.lang)
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas most requested: ${err}`));
 	});
 
-	router.get('/system/karas/viewcounts', requireAuth, requireValidUser, requireAdmin, (req, res) =>{
+	router.get('/system/karas/viewcounts', requireAuth, requireValidUser, requireAdmin, (req: any, res: any) =>{
 		getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send(`Error while fetching karas most played: ${err}`));
 	});
 
-	router.get('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		findUserByName(req.params.userLogin)
 			.then(user => res.json(user))
 			.catch(err => res.status(500).send(`Error while fetching user: ${err}`));
 
 	});
 
-	router.post('/system/users', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/system/users', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		createUser(req.body)
 			.then(res.send('OK'))
 			.catch(err => res.status(500).send(`Error while creating user: ${err}`));
 	});
 
-	router.put('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.put('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role, { editRemote: false })
 			.then(() => res.status(200).send('User edited'))
 			.catch(err => res.status(500).send(`Error editing user: ${err}`));
 	});
 
-	router.delete('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.delete('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 		deleteUser(req.params.userLogin)
 			.then(() => res.status(200).send('User deleted'))
 			.catch(err => res.status(500).send(`Error deleting user: ${err}`));
 	});
 
-	router.post('/system/db/dump', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+	router.post('/system/db/dump', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
 			await dumpPG();
 			res.status(200).send('Database dumped to karaokemugen.pgdump');
@@ -188,7 +188,7 @@ export default function systemController(router) {
 		}
 	});
 
-	router.post('/system/db/resetviewcounts', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/system/db/resetviewcounts', requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) => {
 		resetViewcounts()
 			.then(() => res.status(200).send('Viewcounts successfully reset'))
 			.catch(err => res.status(500).send(`Error resetting viewcounts: ${err}`));
@@ -196,7 +196,7 @@ export default function systemController(router) {
 	});
 
 	/*
-	router.post('/system/db/renamekaras', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+	router.post('/system/db/renamekaras', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			await renameAllKaras();
 			res.status(200).send('Karas successfully renamed');
@@ -206,7 +206,7 @@ export default function systemController(router) {
 	});
 	*/
 
-	router.post('/system/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/system/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) => {
 		runBaseUpdate()
 			.then(() => {
 				logger.info('[Updater] User-triggered update successful');

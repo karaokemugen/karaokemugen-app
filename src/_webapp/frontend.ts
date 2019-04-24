@@ -98,7 +98,7 @@ export async function initFrontend() {
 		//path for system control panel
 		if (!state.isDemo) {
 			app.use('/system', express.static(resolve(__dirname, '../../react_systempanel/build')));
-			app.get('/system/*', (req, res) => {
+			app.get('/system/*', (_req, res) => {
 				res.sendFile(resolve(__dirname, '../../react_systempanel/build/index.html'));
 			});
 		}

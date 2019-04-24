@@ -9,18 +9,7 @@ import prettyBytes from 'pretty-bytes';
 import {createClient as webdav} from 'webdav';
 import Downloader from '../_utils/downloader';
 import {emitWS} from '../_webapp/frontend';
-
-
-declare interface LocalFile {
-	name: string,
-	size: number
-}
-
-declare interface RemoteFile {
-	basename: string,
-	size: number
-}
-
+import {File} from '../_types/updater';
 
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
@@ -173,7 +162,7 @@ async function compareBases() {
 	}
 }
 
-async function compareMedias(localFiles: LocalFile[], remoteFiles: RemoteFile[]): Promise<boolean> {
+async function compareMedias(localFiles: File[], remoteFiles: File[]): Promise<boolean> {
 	const conf = getConfig();
 	let removedFiles = [];
 	let addedFiles = [];
@@ -192,23 +181,17 @@ async function compareMedias(localFiles: LocalFile[], remoteFiles: RemoteFile[])
 	});
 	for (const remoteFile of remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
-			if (localFile.name === remoteFile.basename) {
-				if (localFile.size !== remoteFile.size) updatedFiles.push({
-					name: remoteFile.basename,
-					size: remoteFile.size
-				});
+			if (localFile.name === remoteFile.name) {
+				if (localFile.size !== remoteFile.size) updatedFiles.push(remoteFile);
 				return true;
 			}
 			return false;
 		});
-		if (!filePresent) addedFiles.push({
-			name: remoteFile.basename,
-			size: remoteFile.size
-		});
+		if (!filePresent) addedFiles.push(remoteFile);
 	}
 	for (const localFile of localFiles) {
 		const filePresent = remoteFiles.some(remoteFile => {
-			return localFile.name === remoteFile.basename;
+			return localFile.name === remoteFile.name;
 		});
 		if (!filePresent) removedFiles.push(localFile.name);
 	}
@@ -241,7 +224,7 @@ async function compareMedias(localFiles: LocalFile[], remoteFiles: RemoteFile[])
 	}
 }
 
-function downloadMedias(files: LocalFile[], mediasPath: string): Promise<void> {
+function downloadMedias(files: File[], mediasPath: string): Promise<void> {
 	let list = [];
 	for (const file of files) {
 		list.push({
@@ -257,7 +240,7 @@ function downloadMedias(files: LocalFile[], mediasPath: string): Promise<void> {
 		},
 		bar: true
 	});
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve: any, reject: any) => {
 		mediaDownloads.download(fileErrors => {
 			if (fileErrors.length > 0) {
 				reject(`Error downloading these medias : ${fileErrors.toString()}`);
@@ -268,7 +251,7 @@ function downloadMedias(files: LocalFile[], mediasPath: string): Promise<void> {
 	});
 }
 
-async function listLocalMedias(): Promise<LocalFile[]> {
+async function listLocalMedias(): Promise<File[]> {
 	const conf = getConfig();
 	const mediaFiles = await asyncReadDir(resolve(getState().appPath, conf.System.Path.Medias[0]));
 	let localMedias = [];
@@ -300,7 +283,7 @@ async function updateFiles(files: string[], dirSource: string, dirDest: string, 
 	}
 }
 
-async function checkDirs() {
+async function checkDirs(): Promise<boolean> {
 	const conf = getConfig();
 	if (await isGitRepo(resolve(getState().appPath, conf.System.Path.Karas[0], '../'))) {
 		logger.warn('[Updater] Your base folder is a git repository. We cannot update it, please run "git pull" to get updates or use your git client to do it. Media files are going to be updated though.');
@@ -309,7 +292,7 @@ async function checkDirs() {
 	return true;
 }
 
-export async function runBaseUpdate() {
+export async function runBaseUpdate(): Promise<boolean> {
 	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
 	updateRunning = true;
 	try {
