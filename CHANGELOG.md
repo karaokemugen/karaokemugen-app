@@ -12,6 +12,7 @@ This is a major release.
 - Added tag COVER for cover songs (#393)
 - Added tag DRAMA for songs from TV drama shows (#393)
 - Added tag WIIU for songs from Nintendo Wii U games
+- Added tag FANDUB for fandubbed videos (#418)
 - Already present since 2.4.1 : Stats are now uploaded periodically to Karaoke Mugen Server (if the instance admin agrees) (#377)
 
 ### Improvements
@@ -44,6 +45,9 @@ This is a major release.
 - Fixed series name not translated with user's browser's locale in control panel (#384)
 - Fixed background listing taking non-image files into account in the `app/background` directory, which could cause mpv to crash.
 - Fixed delete button hidden behind menu in mobile public playlist view (#399)
+- When the interface is in restricted mode, a modal pops up to explain to the user that it cannot add songs anymore. (#404)
+- Guests don't see the favorites button anymore (#415)
+- Direct3D is not the default output video driver for mpv anymore on Windows.
 
 ## v2.4.2 "Juri Joueuse" - 13/12/2018
 

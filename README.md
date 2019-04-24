@@ -119,7 +119,7 @@ To launch the app :
 yarn start
 ```
 
-Generating a database ie required on first launch and is done automatically if the database specified in `database.json` is empty. You can trigger it manually later by connectiong to the admin panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
+Generating a database ie required on first launch and is done automatically if the database specified in `database.json` is empty. You can trigger it manually later by connecting to the admin panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
 
 On first run, the app will make you create an admin user and follow a guided tour of the control panel. You can trigger this tour/admin creation process again by adding `appFirstRun=1` to your config file.
 
@@ -156,13 +156,13 @@ Karaoke Mugen can use PostgreSQL in two ways :
 
 Binaries must be placed in the `app/bin` folder (create it if it doesn't exist already).
 
-You can also specify paths where to find those binaries in your `config.yml` file if you have them already installed elsewhere on your system and wish to use them.
+You can also specify paths where to find those binaries in your `config.yml` file if you have them already installed elsewhere on your system and wish to use them. See `config.sample.yml` for examples.
 
 ### Bianries - Linux
 
 Make sure ffmpeg/mpv are available in `/usr/bin`. If that's not the case, modify those paths in `config.yml`
 
-Make sure postgresql is launched and ready for use.
+Make sure postgres is launched and ready for use.
 
 Linux distributions often package old versions of ffmpeg/mpv, update them first via their own websites' instructions.
 
@@ -178,4 +178,4 @@ Everything's there, and if you have questions, you can come to [our Discord](htt
 
 ## Credits
 
-"Nanamin", Karaoke Mugen's mascott as well as KaraokeMugen's logo are designed by [Sedeto](http://www.sedeto.fr)
+"Nanamin", Karaoke Mugen's mascott as well as Karaoke Mugen's logo are designed by [Sedeto](http://www.sedeto.fr)
