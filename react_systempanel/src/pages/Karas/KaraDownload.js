@@ -33,7 +33,7 @@ class KaraDownload extends Component {
 			let active_download = null;
 			if(this.state.karas_online) {
 				this.state.karas_online.forEach((kara,i) => {
-					if(kara.name == data.id) {
+					if(kara.name === data.id) {
 						let remain = parseInt(data.total) - parseInt(data.value);
 						if(remain>0) {
 							active_download = {
@@ -43,7 +43,7 @@ class KaraDownload extends Component {
 						}
 					}
 				});
-				if(JSON.stringify(this.state.active_download) != JSON.stringify(active_download))
+				if(JSON.stringify(this.state.active_download) !== JSON.stringify(active_download))
 					this.setState({active_download:active_download});
 			}
 		});
@@ -192,10 +192,10 @@ class KaraDownload extends Component {
 	}
 
 	is_local_kara(kara) {
-		return this.state.karas_local.find(item => item.kid == kara.kid);
+		return this.state.karas_local.find(item => item.kid === kara.kid);
 	}
 	is_queued_kara(kara) {
-		return this.state.karas_queue.find(item => item.name == kara.name);
+		return this.state.karas_queue.find(item => item.name === kara.name);
 	}
 
 	columns = [{
@@ -249,11 +249,11 @@ class KaraDownload extends Component {
 			else {
 				let queue = this.is_queued_kara(record);
 				if(queue) {
-					if(queue.status=='DL_RUNNING')
+					if(queue.status==='DL_RUNNING')
 						button = <span><button disabled type="button"><Icon type="sync" spin /></button> {this.state.active_download ? this.state.active_download.progress:null}%</span>;
-					else if(queue.status=='DL_PLANNED')
+					else if(queue.status==='DL_PLANNED')
 						button = <button disabled type="button"><Icon type='clock-circle' theme="twoTone" twoToneColor="#dc4e41"/></button>;
-					else if(queue.status=='DL_DONE') // done but not in local -> try again dude
+					else if(queue.status==='DL_DONE') // done but not in local -> try again dude
 						button = <span><button disabled type="button"><Icon type='check-circle' theme="twoTone" twoToneColor="#4989f3"/></button></span>;
 				} else
 					button = <button type="button" onClick={this.downloadKara.bind(this,record)}><Icon type='download'/></button>;
