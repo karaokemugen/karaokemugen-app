@@ -103,11 +103,11 @@ export async function initFrontend() {
 			});
 		}
 		//Path to locales for webapp
-		app.use('/locales',express.static(__dirname + '/../_locales/'));
+		app.use('/locales', express.static(__dirname + '/../_locales/'));
 		//Path to video previews
-		app.use('/previews',express.static(resolve(state.appPath,conf.System.Path.Previews)));
+		app.use('/previews', express.static(resolve(state.appPath,conf.System.Path.Previews)));
 		//Path to user avatars
-		app.use('/avatars',express.static(resolve(state.appPath,conf.System.Path.Avatars)));
+		app.use('/avatars', express.static(resolve(state.appPath,conf.System.Path.Avatars)));
 		app.use('/admin', routerAdmin);
 		app.use('/welcome', routerWelcome);
 
