@@ -89,11 +89,11 @@ export function translateKaraInfo(karas: Kara|Kara[], lang?: string): Kara[] {
 	return karas;
 }
 
-export async function getKara(kid: string, token: Token, lang?: string): Promise<Kara> {
+export async function getKara(kid: string, token: Token, lang?: string): Promise<Kara[]> {
 	profile('getKaraInfo');
 	const kara = await getKaraDB(kid, token.username, lang, token.role);
 	if (!kara) throw `Kara ${kid} unknown`;
-	let output: Kara = translateKaraInfo(kara, lang)[0];
+	let output: Kara[] = translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].kid, output[0].mediasize);
 	if (previewfile) output[0].previewfile = previewfile;
 	profile('getKaraInfo');

@@ -18,6 +18,7 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 		const favs = await selectFavorites(params);
 		return formatKaraList(favs.slice(params.from, params.from + params.size), params.lang, params.from, favs.length);
 	} catch(err) {
+		console.log(err);
 		throw err;
 	} finally {
 		profile('getFavorites');
@@ -49,8 +50,9 @@ export async function addToFavorites(username: string, kid: any) {
 	try {
 		profile('addToFavorites');
 		let karas = [kid];
-		if (Array.isArray(kid)) karas = kid;
-		if (typeof kid === 'string') karas = kid.split(',');
+		Array.isArray(kid)
+			? karas = kid
+			: karas = kid.split(',');
 		await insertFavorites(karas, username);
 		if (username.includes('@') && getConfig().Online.Users) karas.forEach(k => manageFavoriteInInstance('POST', username, k));
 	} catch(err) {
@@ -122,9 +124,10 @@ export async function exportFavorites(username: string) {
 	const favs = await getFavorites({
 		username: username,
 		filter: null,
-		lang: null
+		lang: null,
+		from: 0,
+		size: 99999999
 	});
-	if (favs.content.length === 0) throw 'Favorites empty';
 	return {
 		Header: {
 			version: 1,
@@ -156,7 +159,9 @@ async function getAllFavorites(userList: string[]) {
 			const favs = await getFavorites({
 				username: user,
 				filter: null,
-				lang: null
+				lang: null,
+				from: 0,
+				size: 9999999
 			});
 			favs.content.forEach(f => {
 				if (!kids.includes(f.kid)) kids.push(f.kid);

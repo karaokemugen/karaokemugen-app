@@ -764,7 +764,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
 	try {
-		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
+		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist,null,2)}`);
 		let playingKara: PLC;
 		if (!playlist.Header) throw 'No Header section';
 		if (playlist.Header.description !== 'Karaoke Mugen Playlist File') throw 'Not a .kmplaylist file';
@@ -811,13 +811,13 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 			} else {
 				await emptyPlaylist(playlist_id);
 			}
-			const unknownKaras = await isAllKaras(playlist.PlaylistContents.map(plc => plc.kid));
-			const karasToImport = playlist.PlaylistContents.filter(plc => !unknownKaras.includes(plc.kid));
+			const unknownKaras = await isAllKaras(playlist.PlaylistContents.map((plc: PLC) => plc.kid));
+			const karasToImport = playlist.PlaylistContents.filter((plc: PLC) => !unknownKaras.includes(plc.kid));
 			for (const i in karasToImport) {
 				karasToImport[i].playlist_id = playlist_id;
 			}
 			await addKaraToPL(karasToImport);
-			if (playingKara.kid) {
+			if (playingKara && playingKara.kid) {
 				const plcPlaying = await getPLCByKIDUser(playingKara.kid, playingKara.username, playlist_id);
 				await setPlaying(plcPlaying.playlistcontent_id, playlist_id);
 			}

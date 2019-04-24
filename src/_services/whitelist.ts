@@ -6,7 +6,11 @@ import logger from 'winston';
 import { Token } from '../_types/user';
 import { KaraParams } from '../_types/kara';
 
-export async function addKaraToWhitelist(karas: string[], reason: string, token: Token, lang: string) {
+export async function addKaraToWhitelist(kid: string|string[], reason: string, token: Token, lang: string) {
+	let karas = [];
+	Array.isArray(kid)
+		? karas = kid
+		: karas = kid.split(',');
 	const kara = await getKara(karas[0], token, lang);
 	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara[0].title}...`);
 	try {
@@ -17,6 +21,7 @@ export async function addKaraToWhitelist(karas: string[], reason: string, token:
 		generateBlacklist();
 		return karas;
 	} catch(err) {
+		console.log(err);
 		throw {
 			message: err,
 			data: karas

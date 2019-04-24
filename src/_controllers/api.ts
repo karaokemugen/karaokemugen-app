@@ -29,7 +29,7 @@ import {convertToRemoteUser, removeRemoteUser, createUser, findUserByName, delet
 import {getPoll, addPollVote} from '../_services/poll';
 import {getSeries} from '../_services/series';
 
-const bools = [true, false, 'true', 'false'];
+const bools = [true, false, 'true', 'false', undefined];
 
 function errMessage(code: any, message?: string, args?: any) {
 	return {
@@ -995,8 +995,7 @@ export function APIControllerAdmin(router) {
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			//add a kara to a playlist
 			const validationErrors = check(req.body, {
-				kid: {presence: true, uuidArrayValidator: true},
-				pos: {integerValidator: true}
+				kid: {presence: true, uuidArrayValidator: true}
 			});
 			if (!validationErrors) {
 				try {
@@ -1057,17 +1056,21 @@ export function APIControllerAdmin(router) {
 		.patch(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			//add karas from a playlist to another
 			const validationErrors = check(req.body, {
-				plc_id: {presence: true, numbersArrayValidator: true},
-				pos: {integerValidator: true}
+				plc_id: {presence: true, numbersArrayValidator: true}
 			});
 			if (!validationErrors) {
 				try {
-					const pl_id = await	copyKaraToPlaylist(req.body.plc_id,req.params.pl_id,+req.body.pos);
-					emitWS('playlistContentsUpdated',pl_id);
+					let plc_ids = [+req.body.plc_id];
+					if (req.body.plc_id.includes(',')) {
+						plc_ids = req.body.plc_id.split(',');
+						plc_ids.forEach((e: string|number, i) => plc_ids[i] = +e)
+					}
+					const pl_id = await	copyKaraToPlaylist(plc_ids,req.params.pl_id,+req.body.pos);
+					emitWS('playlistContentsUpdated', pl_id);
 					res.statusCode = 201;
 					const args = {
-						plc_ids: req.body.plc_id.split(','),
-						playlist_id: parseInt(req.params.pl_id, 10)
+						plc_ids,
+						playlist_id: +req.params.pl_id
 					};
 					res.json(OKMessage(null,'PL_SONG_MOVED',args));
 				} catch(err) {
@@ -1119,7 +1122,12 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await deleteKaraFromPlaylist(req.body.plc_id,req.params.pl_id,req.authToken);
+					let plc_ids = [+req.body.plc_id];
+					if (req.body.plc_id.includes(',')) {
+						plc_ids = req.body.plc_id.split(',');
+						plc_ids.forEach((e: string|number, i) => plc_ids[i] = +e)
+					}
+					const data = await deleteKaraFromPlaylist(plc_ids,req.params.pl_id,req.authToken);
 					emitWS('playlistContentsUpdated',data.pl_id);
 					emitWS('playlistInfoUpdated',data.pl_id);
 					res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
@@ -1233,7 +1241,6 @@ export function APIControllerAdmin(router) {
 
 			const validationErrors = check(req.body, {
 				flag_playing: {inclusion: bools},
-				pos: {integerValidator: true},
 				flag_free: {inclusion: bools}
 			});
 			if (!validationErrors) {
@@ -1638,10 +1645,14 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await deleteKaraFromWhitelist(req.body.kid);
+					let kids: string[];
+					req.body.kid.includes(',')
+						? kids = req.body.kid.split(',')
+						: kids = [req.body.kid];
+					await deleteKaraFromWhitelist(kids);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
-					res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));
+					res.json(OKMessage(req.body.kid, 'WL_SONG_DELETED', req.body.kid));
 				} catch(err) {
 					res.status(500).json(errMessage('WL_DELETE_SONG_ERROR',err));
 				}
@@ -4146,7 +4157,6 @@ export function APIControllerPublic(router) {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
 				const favorites = await exportFavorites(req.authToken.username);
-				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
 				res.json(OKMessage(favorites));
 			} catch(err) {
 				res.status(500).json(errMessage('FAVORITES_EXPORT_ERROR',err.message,err.data));
