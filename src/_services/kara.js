@@ -2,15 +2,17 @@ import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import {ASSToLyrics} from '../_utils/ass';
-import {refreshKaras, refreshYears} from '../_dao/kara';
-import {refreshKaraSeries, refreshSeries} from '../_dao/series';
-import {refreshKaraTags, refreshTags} from '../_dao/tag';
 import {now} from '../_utils/date';
-
+import {refreshTags, refreshKaraTags} from '../_dao/tag';
+import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../_dao/series';
+import { refreshAll, compareKarasChecksum } from '../_dao/database';
 import {selectAllKaras,
+	refreshYears,
+	refreshKaras,
 	getYears as getYearsDB,
 	getKara as getKaraDB,
 	getKaraMini as getKaraMiniDB,
+	deleteKara as deleteKaraDB,
 	getASS,
 	addKara,
 	updateKara,
@@ -18,7 +20,6 @@ import {selectAllKaras,
 	getKaraHistory as getKaraHistoryDB,
 	selectAllKIDs
 } from '../_dao/kara';
-import {getState} from '../_utils/state';
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
 import langs from 'langs';
@@ -26,7 +27,11 @@ import {getLanguage} from 'iso-countries-languages';
 import {resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
-import { getOrAddSerieID } from './series';
+import { getOrAddSerieID, deleteSerie } from './series';
+import {asyncUnlink, resolveFileInDirs} from '../_utils/files';
+import {getConfig} from '../_utils/config';
+import logger from 'winston';
+import {getState} from '../_utils/state';
 
 export async function isAllKaras(karas) {
 	// Returns an array of unknown karaokes
@@ -53,6 +58,7 @@ export function translateKaraInfo(karas, lang) {
 	// Put it into an array first
 	if (!Array.isArray(karas)) karas = [karas];
 	karas.forEach((kara,index) => {
+		kara.languages = kara.languages || [];
 		if (kara.languages.length > 0) {
 			let languages = [];
 			let langdata;
@@ -89,6 +95,58 @@ export function translateKaraInfo(karas, lang) {
 	return karas;
 }
 
+export async function deleteKara(kid) {
+	const kara = await getKaraMini(kid);
+	if (!kara) throw `Unknown kara ID ${kid}`;
+
+	// If kara_ids contains only one entry, it means the series won't have any more kara attached to it, so it's safe to remove it.
+	const karas = await selectAllKaras('admin', null, null, 'search', `s:${kara.sid}`, null, null, true);
+	if (karas.length <= 1 && kara.sid.length > 0) {
+		for(const sid of kara.sid) {
+			try {
+				await deleteSerie(sid);
+			} catch(e) {
+				logger.error(`[Kara] Unable to remove all series from a karaoke : ${e}`);
+				//throw e;
+			}
+		}
+	}
+
+	// Remove files
+	const conf = getConfig();
+
+	try {
+		await asyncUnlink(await resolveFileInDirs(kara.mediafile, conf.System.Path.Medias)).catch(function(){ /* Fail silently */});
+	} catch(err) {
+		logger.warn(`[Kara] Non fatal : Removing mediafile ${kara.mediafile} failed : ${err}`);
+	}
+	try {
+		await asyncUnlink(await resolveFileInDirs(kara.karafile, conf.System.Path.Karas)).catch(function(){ /* Fail silently */});
+	} catch(err) {
+		logger.warn(`[Kara] Non fatal : Removing karafile ${kara.karafile} failed : ${err}`);
+	}
+	if (kara.subfile !== 'dummy.ass') try {
+		await asyncUnlink(await resolveFileInDirs(kara.subfile, conf.System.Path.Lyrics)).catch(function(){ /* Fail silently */});
+	} catch(err) {
+		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
+	}
+
+	compareKarasChecksum(true);
+
+	// Remove kara from database
+	await deleteKaraDB(kid);
+	logger.info(`[Kara] Song ${kara.karafile} removed`);
+
+	delayedDbRefreshViews(2000);
+}
+
+let delayedDbRefreshTimeout = null;
+
+export async function delayedDbRefreshViews(ttl=100) {
+	clearTimeout(delayedDbRefreshTimeout);
+	delayedDbRefreshTimeout = setTimeout(refreshAll,ttl);
+}
+
 export async function getKara(kid, token, lang) {
 	profile('getKaraInfo');
 	const kara = await getKaraDB(kid, token.username, lang, token.role);
@@ -114,10 +172,18 @@ export async function getKaraLyrics(kid) {
 }
 
 async function updateSeries(kara) {
+	// statements
 	if (!kara.series) return true;
 	let lang = 'und';
 	if (kara.lang) lang = kara.lang.split(',')[0];
 	let sids = [];
+
+	// Remove this when we'll update .kara file format to version 4
+	if (kara.KID)
+	{
+		kara.kid = kara.KID;
+	}
+
 	for (const s of kara.series.split(',')) {
 		let langObj = {};
 		langObj[lang] = s;
@@ -126,9 +192,10 @@ async function updateSeries(kara) {
 		};
 		seriesObj.i18n = {...langObj};
 		const sid = await getOrAddSerieID(seriesObj);
-		sids.push(sid);
-		// Remove this when we'll update .kara file format to version 4
-		if (kara.KID) kara.kid = kara.KID;
+		if(sid)
+		{
+			sids.push(sid);
+		}
 	}
 	await updateKaraSeries(kara.kid,sids);
 }
@@ -170,36 +237,26 @@ async function updateTags(kara) {
 	return await updateKaraTags(kara.kid, tags);
 }
 
-export async function createKaraInDB(kara) {
+export async function createKaraInDB(kara, opts = {
+	refresh: true
+}) {
 	await addKara(kara);
 	await Promise.all([
 		updateTags(kara),
 		updateSeries(kara)
 	]);
-	await Promise.all([
-		refreshKaraSeries(),
-		refreshKaraTags()
-	]);
-	await refreshKaras();
-	refreshSeries();
-	refreshYears();
-	refreshTags();
+	if (opts.refresh) await refreshKarasAfterDBChange();
 }
 
-export async function editKaraInDB(kara) {
-	await updateKara(kara);
+export async function editKaraInDB(kara, opts = {
+	refresh: true
+}) {
 	await Promise.all([
 		updateTags(kara),
-		updateSeries(kara)
+		updateSeries(kara),
+		updateKara(kara)
 	]);
-	await Promise.all([
-		refreshKaraSeries(),
-		refreshKaraTags()
-	]);
-	await refreshKaras();
-	refreshSeries();
-	refreshYears();
-	refreshTags();
+	if (opts.refresh) await refreshKarasAfterDBChange();
 }
 
 /**
@@ -319,7 +376,7 @@ export async function getKaras(filter, lang, from = 0, size = 999999999, searchT
 	profile('getKaras');
 	const pl = await selectAllKaras(token.username, filter, lang, searchType, searchValue, from, size, token.role === 'admin', random);
 	profile('formatList');
-	const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+	const ret = formatKaraList(pl.slice(+from, +from + +size), lang, +from, +pl.length);
 	profile('formatList');
 	profile('getKaras');
 	return ret;
@@ -335,4 +392,16 @@ export function formatKaraList(karaList, lang, from, count) {
 		},
 		content: karaList
 	};
+}
+
+export async function refreshKarasAfterDBChange() {
+	await Promise.all([
+		refreshKaraSeries(),
+		refreshKaraTags()
+	]);
+	await refreshKaras();
+	refreshKaraSeriesLang();
+	refreshSeries();
+	refreshYears();
+	refreshTags();
 }

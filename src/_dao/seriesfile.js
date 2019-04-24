@@ -1,9 +1,10 @@
 import {asyncUnlink, sanitizeFile, asyncWriteFile, asyncReadFile, resolveFileInDirs, } from '../_utils/files';
 import testJSON from 'is-valid-json';
 import {resolvedPathSeries, getConfig} from '../_utils/config';
-import {resolve} from 'path';
+import {basename, resolve} from 'path';
 import { check, initValidators } from '../_utils/validators';
 import {uuidRegexp} from '../_services/constants';
+import { addSerie, editSerie, getSerie } from '../_services/series';
 import { getState } from '../_utils/state';
 
 const header = {
@@ -37,6 +38,7 @@ export async function getDataFromSeriesFile(file) {
 	if (validationErrors) {
 		throw `Series data is not valid: ${JSON.stringify(validationErrors)}`;
 	}
+	seriesData.series.seriefile = basename(file);
 	return seriesData.series;
 }
 
@@ -73,5 +75,18 @@ export async function removeSeriesFile(name) {
 		await asyncUnlink(filename);
 	} catch(err) {
 		throw `Could not remove series file ${name} : ${err}`;
+	}
+}
+
+export async function integrateSeriesFile(file) {
+	const seriesFileData = await getDataFromSeriesFile(file);
+	try {
+		const seriesDBData = await getSerie(seriesFileData.sid);
+		await editSerie(seriesDBData.sid, seriesFileData, { refresh: false });
+		if (seriesDBData.name !== seriesFileData.name) {
+			await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().PathSeries.split('|')));
+		}
+	} catch(err) {
+		await addSerie(seriesFileData, { refresh: false });
 	}
 }

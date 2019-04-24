@@ -3,8 +3,8 @@
 export const getSeriesByName = `
 SELECT
 	name,
-	sid
-FROM all_series
+	pk_sid AS sid
+FROM serie
 WHERE name = :name
 ;`;
 
