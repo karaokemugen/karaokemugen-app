@@ -77,7 +77,7 @@ class Config extends Component {
 	refresh() {
 		axios.get('/api/system/config')
 			.then(res => this.setState({config: this.configKeyValue(res.data), error: ''}))
-			.catch(err => this.props.errorMsg('Unable to fetch configuration ' + err));
+			.catch(err => this.props.errorMessage('Unable to fetch configuration ' + err));
 	}
 
 	configKeyValue = data => {

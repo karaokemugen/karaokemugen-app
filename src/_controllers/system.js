@@ -7,13 +7,15 @@ import {requireAuth, requireValidUser, requireAdmin} from './middlewares/auth';
 import {requireNotDemo} from './middlewares/demo';
 import {getLang} from './middlewares/lang';
 import {editUser, createUser, findUserByName, listUsers, deleteUser} from '../_services/user';
-import {getKaras, getKara, getTop50, getKaraPlayed, getKaraHistory} from '../_services/kara';
+import {deleteKara, getKaras, getKara, getTop50, getKaraPlayed, getKaraHistory} from '../_services/kara';
 import {getTags} from '../_services/tag';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara';
 import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
+import {getRemoteKaras, getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads} from '../_services/download';
+import {getRepos} from '../_services/repo';
 import {dumpPG} from '../_utils/postgresql';
 import logger from 'winston';
 
@@ -50,6 +52,11 @@ export default function systemController(router) {
 			.then(kara => res.json(kara))
 			.catch(err => res.status(500).send('Error while loading kara: ' + err));
 	});
+	router.delete('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		deleteKara(req.params.kid)
+			.then(kara => res.json(kara))
+			.catch(err => res.status(500).send('Error while deleting kara: ' + err));
+	});
 	router.put('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		editKara(req.body)
 			.then(() => res.status(200).send('Karas successfully edited'))
@@ -73,12 +80,18 @@ export default function systemController(router) {
 			});
 	});
 
-	router.get('/system/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getKaras(req.query.filter, req.lang, 0, 99999999999999, null, null, req.authToken)
-			.then(karas => res.json(karas))
-			.catch(err => {
-				res.status(500).send(`Error while fetching karas: ${err}`);
-			});
+	router.get('/system/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			let karas;
+			if (req.query.instance) {
+				karas = await getRemoteKaras(req.query.instance, req.query.filter, req.query.from, req.query.size);
+			} else {
+				karas = await getKaras(req.query.filter, req.lang, req.query.from, req.query.size, null, null, req.authToken);
+			}
+			res.json(karas);
+		} catch(err) {
+			res.status(500).send(`Error while fetching karas: ${err}`);
+		}
 	});
 
 	router.get('/system/tags', requireAuth, requireValidUser, requireAdmin, (req, res) => {
@@ -145,9 +158,7 @@ export default function systemController(router) {
 		findUserByName(req.params.userLogin)
 			.then(user => res.json(user))
 			.catch(err => res.status(500).send(`Error while fetching user: ${err}`));
-
 	});
-
 	router.post('/system/users', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		createUser(req.body)
 			.then(res.send('OK'))
@@ -179,9 +190,119 @@ export default function systemController(router) {
 		resetViewcounts()
 			.then(() => res.status(200).send('Viewcounts successfully reset'))
 			.catch(err => res.status(500).send(`Error resetting viewcounts: ${err}`));
-
 	});
-
+	router.post('/db/resetviewcounts', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await resetViewcounts();
+			res.status(200).send('Viewcounts successfully reset');
+		} catch(err) {
+			res.status(500).send(`Error resetting viewcounts: ${err}`);
+		}
+	});
+	router.get('/system/repos', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const repos = await getRepos();
+			res.json(repos);
+		} catch(err) {
+			res.status(500).send(`Error getting repositories: ${err}`);
+		}
+	});
+	router.post('/system/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const msg = await addDownloads(req.body.repository,req.body.downloads);
+			res.status(200).send(msg);
+		} catch(err) {
+			res.status(500).send(`Error while adding download: ${err}`);
+		}
+	});
+	router.get('/system/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const downloads = await getDownloads();
+			res.json(downloads);
+		} catch(err) {
+			res.status(500).send(`Error getting downloads: ${err}`);
+		}
+	});
+	router.delete('/system/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await wipeDownloads();
+			res.status(200).send('Download queue emptied completely');
+		} catch(err) {
+			res.status(500).send(`Error wiping downloads: ${err}`);
+		}
+	});
+	router.delete('/system/downloads/:uuid', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await removeDownload(req.params.uuid);
+			res.status(200).send('Download removed');
+		} catch(err) {
+			res.status(500).send(`Error removing download: ${err}`);
+		}
+	});
+	router.put('/system/downloads/:uuid/retry', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await retryDownload(req.params.uuid);
+			res.status(200).send('Download back into queue');
+		} catch(err) {
+			res.status(500).send(`Error retrying download: ${err}`);
+		}
+	});
+	router.put('/system/downloads/pause', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await pauseQueue();
+			res.status(200).send('Downloads paused');
+		} catch(err) {
+			res.status(500).send(`Error pausing downloads: ${err}`);
+		}
+	});
+	router.put('/system/downloads/start', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await startDownloads();
+			res.status(200).send('Downloads starting');
+		} catch(err) {
+			res.status(500).send(`Error starting downloads: ${err}`);
+		}
+	});
+	router.get('/system/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const blc = await getDownloadBLC();
+			res.status(200).json(blc);
+		} catch(err) {
+			res.status(500).send(`Error getting download BLCs : ${err}`);
+		}
+	});
+	router.post('/system/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await addDownloadBLC(req.body.type, req.body.value);
+			res.status(200).send('Download blacklist criteria added');
+		} catch(err) {
+			res.status(500).send(`Error adding download BLC : ${err}`);
+		}
+	});
+	router.put('/system/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await editDownloadBLC(req.params.id, req.body.type, req.body.value);
+			res.status(200).send('Download blacklist criteria edited');
+		} catch(err) {
+			res.status(500).send(`Error editing download BLC : ${err}`);
+		}
+	});
+	router.delete('/system/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await removeDownloadBLC(req.params.id);
+			res.status(200).send('Download blacklist criteria removed');
+		} catch(err) {
+			res.status(500).send(`Error removing download BLC : ${err}`);
+		}
+	});
+	router.delete('/system/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await emptyDownloadBLC();
+			res.status(200).send('Download blacklist criterias emptied');
+		} catch(err) {
+			res.status(500).send(`Error emptying download BLC : ${err}`);
+		}
+	});
 	router.post('/system/db/renamekaras', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			await renameAllKaras();
@@ -190,6 +311,7 @@ export default function systemController(router) {
 			res.status(500).send(`Error renaming karas: ${err}`);
 		}
 	});
+
 
 	router.post('/system/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		runBaseUpdate()

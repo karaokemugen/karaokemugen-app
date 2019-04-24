@@ -58,7 +58,9 @@ export async function addKara(kara) {
 		gain: kara.mediagain,
 		modified_at: new Date(kara.datemodif * 1000),
 		created_at: new Date(kara.dateadded * 1000),
-		kid: kara.KID
+		kid: kara.KID,
+		//Default for now.
+		repo: 'kara.moe'
 	}));
 }
 
@@ -73,6 +75,10 @@ export async function getSongTimeSpentForUser(playlist_id,username) {
 export async function getKara(kid, username, lang, role) {
 	const res = await selectAllKaras(username, null, lang, 'kid', kid, null, null, role === 'admin');
 	return res;
+}
+
+export async function deleteKara(kid) {
+	await db().query(sql.deleteKara, [kid]);
 }
 
 export async function selectAllKaras(username, filter, lang, mode, modeValue, from = 0, size = 0, admin = true, random = 0) {

@@ -48,13 +48,9 @@ export function timeToSeconds(time) {
 
 //FormatDateString From Duration in Seconds
 export function duration(duration) {
-	if(typeof duration !== 'number'){
-		throw `The parameter ${duration} is supposed to be a number !`;
-	}
-
-	if(Math.floor(duration) !== duration || duration <= 0){
-		throw `The parameter ${duration} is supposed to be "entier" and be superior to 0`;
-	}
+	if (typeof duration !== 'number') throw `The parameter ${duration} is supposed to be a number !`;
+	if (duration === 0) return (`0 ${__('SECOND')}`);
+	if (Math.floor(duration) !== duration || duration <= 0) throw `The parameter ${duration} is supposed to be "integer" and be superior to 0`;
 
 	// calculate (and subtract) whole days
 	const days = Math.floor(duration / 86400);

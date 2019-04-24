@@ -80,7 +80,8 @@ export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, havi
   (CASE WHEN f.fk_kid IS NULL
 		THEN FALSE
 		ELSE TRUE
-  END) as flag_favorites
+  END) as flag_favorites,
+  ak.repo AS repo
 FROM all_karas AS ak
 LEFT OUTER JOIN kara_serie AS ks_main ON ks_main.fk_kid = ak.kid
 LEFT OUTER JOIN serie_lang AS sl_main ON sl_main.fk_sid = ks_main.fk_sid AND sl_main.lang = ${lang.main}
@@ -92,7 +93,7 @@ LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.kid
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid
+GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.repo, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid
 ${havingClause}
 ORDER BY ${orderClauses} ak.languages_sortable, ak.serie IS NULL, lower(unaccent(serie)), ak.songtypes_sortable DESC, ak.songorder, lower(unaccent(singers_sortable)), lower(unaccent(ak.title))
 ${limitClause}
@@ -100,9 +101,14 @@ ${offsetClause}
 `;
 
 export const getKaraMini = `
-SELECT ak.title AS title,
+SELECT
+	ak.kid AS kid,
+	ak.title AS title,
+	ak.mediafile AS mediafile,
+	ak.karafile AS karafile,
 	ak.subfile AS subfile,
-	ak.duration AS duration
+	ak.duration AS duration,
+	ak.sid AS sid
 FROM all_karas AS ak
 WHERE ak.kid = $1
 `;
@@ -119,6 +125,10 @@ SELECT ak.title AS title,
 FROM all_karas AS ak
 INNER JOIN played p ON p.fk_kid = ak.kid
 ORDER BY p.played_at DESC
+`;
+
+export const deleteKara = `
+DELETE FROM kara WHERE pk_kid = $1;
 `;
 
 export const removeKaraFromPlaylist = `
@@ -179,7 +189,8 @@ INSERT INTO kara(
 	modified_at,
 	created_at,
 	karafile,
-	pk_kid
+	pk_kid,
+	fk_repo_name
 )
 VALUES(
 	:title,
@@ -192,7 +203,8 @@ VALUES(
 	:modified_at,
 	:created_at,
 	:karafile,
-	:kid
+	:kid,
+	:repo
 );
 `;
 

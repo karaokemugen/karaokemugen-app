@@ -1,11 +1,12 @@
 import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
 import {refreshSeries, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, refreshKaraSeries} from '../_dao/series';
 import {profile} from '../_utils/logger';
+import logger from 'winston';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../_utils/files';
 import { refreshKaras } from '../_dao/kara';
-import {compareKarasChecksum} from '../_dao/database';
+import { compareKarasChecksum } from '../_dao/database';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
@@ -19,8 +20,7 @@ export async function getOrAddSerieID(serieObj) {
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) return serie.sid;
 	//Series does not exist, create it.
-	const sid = await addSerie(serieObj);
-	return sid;
+	return await addSerie(serieObj);
 }
 
 
@@ -55,24 +55,30 @@ export async function deleteSerie(sid) {
 	refreshKaraSeries().then(refreshKaras());
 }
 
-export async function addSerie(serieObj) {
+export async function addSerie(serieObj, opts = {refresh: true}) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const serie = await selectSerieByName(serieObj.name);
-	if (serie) throw 'Series original name already exists';
-	serieObj.sid = uuidV4();
-	serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
+	if (serie) {
+		logger.warn(`Series original name already exists "${serieObj.name}"`);
+		return serie.sid;
+	}
+	if (!serieObj.sid) serieObj.sid = uuidV4();
+	if (!serieObj.seriefile) serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
+
+	await insertSerie(serieObj);
 	await Promise.all([
-		insertSerie(serieObj),
 		insertSeriei18n(serieObj),
 		writeSeriesFile(serieObj)
 	]);
-	compareKarasChecksum(true);
-	await refreshSeries();
-	refreshKaraSeries().then(refreshKaras());
+
+	if (opts.refresh) {
+		compareKarasChecksum(true);
+		await refreshSeriesAfterDBChange();
+	}
 	return serieObj.sid;
 }
 
-export async function editSerie(sid, serieObj) {
+export async function editSerie(sid, serieObj, opts = { refresh: true }) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const oldSerie = await getSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
@@ -85,7 +91,13 @@ export async function editSerie(sid, serieObj) {
 		updateSerie(serieObj),
 		writeSeriesFile(serieObj)
 	]);
-	compareKarasChecksum(true);
+	if (opts.refresh) {
+		compareKarasChecksum(true);
+		await refreshSeriesAfterDBChange();
+	}
+}
+
+export async function refreshSeriesAfterDBChange() {
 	await refreshSeries();
 	refreshKaraSeries().then(refreshKaras());
 }
