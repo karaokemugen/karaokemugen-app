@@ -77,6 +77,7 @@ export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, havi
 		ELSE FALSE
   END) AS flag_dejavu,
   MAX(p.played_at) AS lastplayed_at,
+  NOW() - MAX(p.played_at) AS lastplayed_ago,
   (CASE WHEN f.fk_kid IS NULL
 		THEN FALSE
 		ELSE TRUE

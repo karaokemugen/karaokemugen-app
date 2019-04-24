@@ -277,6 +277,7 @@ SELECT
 		ELSE FALSE
   END) AS flag_dejavu,
   MAX(p.played_at) AS lastplayed_at,
+  NOW() - MAX(p.played_at) AS lastplayed_ago,
   pc.nickname AS nickname,
   pc.fk_login AS username,
   pc.pos AS pos,
