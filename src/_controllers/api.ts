@@ -4191,7 +4191,6 @@ export function APIControllerPublic(router) {
  * }
  */
 		.post(getLang, requireAuth, requireValidUser, requireRegularUser,updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
-			// Imports a playlist and its contents in an importable format (posted as JSON data)
 			const validationErrors = check(req.body, {
 				favorites: {isJSON: true}
 			});
