@@ -2787,7 +2787,8 @@ export function APIControllerPublic(router) {
  * @apiSuccess {uuid} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {Object[]} data/languages Song's languages in ISO639-2B format
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
- * @apiSuccess {Number} data/lastplayed_at When the song has been played last, in `Date()` format
+ * @apiSuccess {Date} data/lastplayed_at When the song has been played last, in `Date()` format
+ * @apiSuccess {Interval} data/lastplayed_ago When the song has been played last, in hours/minutes/seconds ago
  * @apiSuccess {Object[]} data/misc_tags Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} data/previewfile Filename of the preview file associated with the karaoke. Can be undefined if the preview hasn't been generated yet by the server.
  * @apiSuccess {String} data/requested Number of times the song has been requested.
@@ -2851,6 +2852,7 @@ export function APIControllerPublic(router) {
  *               "Anglais"
  *           ],
  *           "lastplayed_at": null,
+ *           "lastplayed_ago": null,
  *           "mediafile": "ENG - Dokidoki! PreCure - OP - Glitter Force Doki Doki Theme Song.mp4",
  * 			 "mediasize": 29375831,
  *           "misc_tags": [
