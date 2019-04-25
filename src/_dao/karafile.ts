@@ -7,15 +7,17 @@ import {now} from '../_utils/date';
 import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from '../_services/constants';
 import uuidV4 from 'uuid/v4';
 import logger from 'winston';
-import {extname, resolve} from 'path';
+import {extname, resolve, basename} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_utils/files';
+import {asyncUnlink, checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_utils/files';
 import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_utils/config';
 import {extractSubtitles, getMediaInfo} from '../_utils/ffmpeg';
-import {selectAllKaras} from './kara';
+import {getKara, selectAllKaras} from './kara';
 import {getState} from '../_utils/state';
 import { KaraFile, Kara, MediaInfo } from '../_types/kara';
 import {check, initValidators} from '../_utils/validators';
+import {createKaraInDB, editKaraInDB} from '../_services/kara';
+import {getConfig} from '../_utils/config';
 
 let error = false;
 
@@ -23,6 +25,21 @@ function strictModeError(karaData: KaraFile, data: string) {
 	delete karaData.ass;
 	logger.error(`[Kara] STRICT MODE ERROR : ${data} - Kara data read : ${JSON.stringify(karaData,null,2)}`);
 	error = true;
+}
+
+export async function integrateKaraFile(file: string) {
+	const karaFileData = await parseKara(file);
+	const karaFile = basename(file);
+	const karaData = await getDataFromKaraFile(karaFile, karaFileData)
+	const karaDB = await getKara(karaData.kid, 'admin', null, 'admin');
+	if (karaDB.length > 0) {
+		await editKaraInDB(karaData, { refresh: false });
+		if (karaDB[0].karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].karafile, getConfig().System.Path.Karas));
+		if (karaDB[0].mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].mediafile, getConfig().System.Path.Medias));
+		if (karaDB[0].subfile !== 'dummy.ass' && karaDB[0].subfile !== karaData.subfile) await asyncUnlink(await resolveFileInDirs(karaDB[0].subfile, getConfig().System.Path.Lyrics));
+	} else {
+		await createKaraInDB(karaData, { refresh: false });
+	}
 }
 
 export async function getDataFromKaraFile(karafile: string, karaData: KaraFile): Promise<Kara> {

@@ -41,6 +41,7 @@ async function emptyDatabase() {
 	TRUNCATE serie RESTART IDENTITY CASCADE;
 	TRUNCATE serie_lang RESTART IDENTITY CASCADE;
 	TRUNCATE kara RESTART IDENTITY CASCADE;
+	TRUNCATE repo CASCADE;
 	COMMIT;
 	`);
 }
@@ -134,7 +135,9 @@ function prepareKaraInsertData(kara: Kara): any[] {
 		kara.mediasize,
 		kara.mediagain,
 		kara.dateadded.toISOString(),
-		kara.datemodif.toISOString()
+		kara.datemodif.toISOString(),
+		//Setting kara.moe as default for now.
+		'kara.moe'
 	];
 }
 
@@ -458,12 +461,17 @@ export async function run(validateOnly: boolean = false) {
 		emit('databaseBusy',true);
 		if (generating) throw 'A database generation is already in progress';
 		generating = true;
-
+		error = false;
 		logger.info('[Gen] Starting database generation');
 		const karaFiles = await extractAllKaraFiles();
 		const seriesFiles = await extractAllSeriesFiles();
 		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
-		if (karaFiles.length === 0) throw 'No kara files found';
+		if (karaFiles.length === 0) {
+			// Returning early if no kara is found
+			logger.warn('[Gen] No .kara files found, ending generation');
+			await emptyDatabase();
+			return;
+		}
 		if (seriesFiles.length === 0) throw 'No series files found';
 		bar = new Bar({
 			message: 'Reading .series files',
@@ -523,6 +531,9 @@ export async function run(validateOnly: boolean = false) {
 			copyFromData('kara_serie', sqlInsertKarasSeries)
 		]);
 		bar.incr();
+		// Adding the kara.moe repository. For now it's the only one available, we'll add everything to manage multiple repos later.
+		await db().query('INSERT INTO repo VALUES(\'kara.moe\')');
+		bar.incr();
 		// Setting the pk_id_tag sequence to allow further edits during runtime
 		await db().query('SELECT SETVAL(\'tag_pk_id_tag_seq\',(SELECT MAX(pk_id_tag) FROM tag))');
 		await db().query('SELECT SETVAL(\'serie_lang_pk_id_serie_lang_seq\',(SELECT MAX(pk_id_serie_lang) FROM serie_lang))');
@@ -540,7 +551,6 @@ export async function run(validateOnly: boolean = false) {
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
-		console.log(err);
 		throw err;
 	} finally {
 		emit('databaseBusy',false);
@@ -604,6 +614,7 @@ export async function baseChecksum(opts = {silent: false}) {
 	const karaFiles = await extractAllKaraFiles();
 	const seriesFiles = await extractAllSeriesFiles();
 	let KMData = '';
+	if (karaFiles.length === 0) return null;
 	if (!opts.silent) bar = new Bar({
 		message: 'Checking .karas...   '
 	}, karaFiles.length);

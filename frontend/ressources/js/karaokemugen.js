@@ -255,7 +255,9 @@ var settingsNotUpdated;
 				$('#wlcm_disconnect').show();
 				initApp();
 			}
-		} else {
+		} else if (webappMode === 1){
+            loginGuest();
+        } else {
 			$('#loginModal').modal('show');
 
 		}
@@ -781,11 +783,12 @@ var settingsNotUpdated;
 			login(username, password);
 
 		});
-		$('#nav-login .guest').click( function() {
-			new Fingerprint2( { excludeUserAgent: true }).get(function(result, components) {
+		$('#nav-login .guest').click( loginGuest );
+        function loginGuest() {
+            new Fingerprint2( { excludeUserAgent: true }).get(function(result, components) {
 				login('', result);
 			});
-		});
+        }
 		$('#nav-signup input').focus( function(){
 			if(introManager && typeof introManager._currentStep != 'undefined') {
 				setTimeout(() => {
@@ -1435,7 +1438,7 @@ var settingsNotUpdated;
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   '<div class="infoDiv">'
                                 +   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
-                                +   (scope === 'public' && !isTouchScreen ? (  kara['flag_favorites'] || idPlaylist === -5 ? makeFavButtonSmallFav : makeFavButtonSmall ) : '')
+                                +   (scope === 'public' && logInfos.role !== 'guest' && !isTouchScreen ? (  kara['flag_favorites'] || idPlaylist === -5 ? makeFavButtonSmallFav : makeFavButtonSmall ) : '')
 								+	(scope === 'admin' ? playKara : '')
 								+	(scope !== 'admin' && dashboard.data('flag_public') ? likeKara : '')
 								+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
@@ -2111,7 +2114,7 @@ var settingsNotUpdated;
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
 		var infoKaraTemp = 'no mode specified';
 		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButtonFav : makeFavButton;
-
+        if(logInfos.role === 'guest') makeFavButtonAdapt = '';
 		if (htmlMode == 'list') {
 			var isPublic = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_public');
 			var isCurrent = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_current');
@@ -2324,6 +2327,9 @@ var settingsNotUpdated;
 	// Some html & stats init
 	initApp = function() {
 
+        if(webappMode === 1) {
+            $('#restrictedHelpModal').modal('show');
+        } 
 		var locPlaylistRange = localStorage.getItem('playlistRange');
 		var locSearchPlaylist1 = localStorage.getItem('search1');
 		var locSearchPlaylist2 = localStorage.getItem('search2');

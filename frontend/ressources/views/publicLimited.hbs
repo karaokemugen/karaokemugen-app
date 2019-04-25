@@ -73,6 +73,27 @@
             <i class="glyphicon glyphicon-info-sign infos"></i><i class="glyphicon glyphicon-subtitles lyrics"></i></a></li>
     </ul>
 </div>
+<div class="modal modalPage fade" role="dialog" type="prompt" tabindex="23" id="restrictedHelpModal" hidden>
+     <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-help" role="tab" aria-controls="nav-login" aria-selected="true"> {{i18n "WEBAPPMODE_LIMITED_NAME"}} </a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent-help">
+                <div id="nav-help" role="tabpanel" aria-labelledby="nav-help-tab" class="modal-body tab-pane fade in active">
+                    <div id="mobileHelp" class="text">
+                        {{{ i18n "CL_HELP_PUBLIC_MOBILE_RESTRICTED" }}}
+                    </div>
+                    <div class="modal-message">
+                        <button data-dismiss="modal" class="btn btn-default confirm">
+                             <i class="glyphicon glyphicon-ok"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="modalBox" role="dialog" tabindex="2">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">

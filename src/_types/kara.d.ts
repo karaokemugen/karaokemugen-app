@@ -46,7 +46,8 @@ export interface Kara {
 	type?: string,
 	error?: boolean,
 	isKaraModified?: boolean,
-	version?: number
+	version?: number,
+	repo?: string
 }
 
 export interface KaraFile {

@@ -1192,6 +1192,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 .modal.modalPage .modal-body div.text {
 	text-align: left;
+	line-height: 1.6em;
+}
+.modal.modalPage .modal-body div.text br{
 	line-height: 2.6em;
 }
 #onlineStatsModal .modal-body div.text {

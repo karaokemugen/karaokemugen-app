@@ -37,25 +37,52 @@ export default class Downloader {
 	  } else {
 			const nextUrl = this.list[this.pos].url;
 			const nextFilename = this.list[this.pos].filename;
-			const nextSize = this.list[this.pos].size;
+			const id = this.list[this.pos].id;
+			const tryURL = new Promise((resolve, reject) => {
+				// Try to run a HEAD to get the size
+				let options = {
+					method: 'HEAD',
+					auth: null
+				};
+				if (this.opts.auth) options.auth = {
+					username: this.opts.auth.user,
+					password: this.opts.auth.pass
+				};
+				got(nextUrl, options)
+					.then(response => {
+						resolve(response.headers['content-length']);
+					})
+					.catch(err => {
+						reject(err);
+					});
+			});
 			let prettySize = 'size unknown';
-			if (nextSize) prettySize = prettyBytes(nextSize);
-			this.pos = this.pos + 1;
-			logger.info(`[Download] (${this.pos}/${this.list.length}) Downloading ${basename(nextFilename)} (${prettySize})`);
-			emitWS('downloadBatchProgress', {
-				text: `Downloading file ${this.pos} of ${this.list.length}`,
-				value: this.pos,
-				total: this.list.length
-			});
-			this.DoDownload(nextUrl, nextFilename, nextSize, this.download , err => {
-				logger.error(`[Download] Error downloading ${basename(nextFilename)} : ${err}`);
-				this.fileErrors.push(basename(nextFilename));
-				this.download();
-			});
+			tryURL.then((size: any) => {
+				prettySize = prettyBytes(+size);
+				logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${basename(nextFilename)} (${prettySize})`);
+				emitWS('downloadBatchProgress', {
+					text: `Downloading file ${this.pos} of ${this.list.length}`,
+					value: this.pos,
+					total: this.list.length,
+					id: id
+				});
+				this.pos = this.pos + 1;
+				this.DoDownload(nextUrl, nextFilename, size, id, this.download, (err: string) => {
+					logger.error(`[Download] Error during download of ${basename(nextFilename)} : ${err}`);
+					this.fileErrors.push(basename(nextFilename));
+					this.download();
+				});
+			})
+				.catch((err) => {
+					logger.error(`[Download] (${this.pos+1}/${this.list.length}) Unable to start download of ${basename(nextFilename)} (${prettySize}) : ${err}`);
+					this.pos = this.pos + 1;
+					this.fileErrors.push(basename(nextFilename));
+					this.download();
+				});
 	  }
 	};
 
-	DoDownload = (url: string, filename: string, size: number, onSuccess?: any, onError?: any) => {
+	DoDownload = (url: string, filename: string, size: number, id :string, onSuccess?: any, onError?: any) => {
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
 		const HttpAgent = require('agentkeepalive');
 		const {HttpsAgent} = HttpAgent;
@@ -87,7 +114,8 @@ export default class Downloader {
 				emitWS('downloadProgress', {
 					text: `Downloading : ${basename(filename)}`,
 					value: state.transferred,
-					total: size
+					total: size,
+					id: id
 				});
 			})
 			.on('error', err => {

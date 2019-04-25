@@ -13,6 +13,7 @@ import {initDBSystem, closeDB, getStats} from '../_dao/database';
 import {initFrontend} from '../_webapp/frontend';
 import {initOnlineURLSystem} from '../_webapp/online';
 import {initPlayer, quitmpv} from './player';
+import {initDownloader} from './download';
 import {initStats} from './stats';
 import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater';
@@ -64,6 +65,7 @@ export async function initEngine() {
 	if (!state.isDemo && !state.isTest) inits.push(initPlayer());
 	inits.push(initFrontend());
 	testPlaylists();
+	initDownloader();
 	if (conf.Online.Stats === true) inits.push(initStats());
 	//Initialize engine
 	// Test if current/public playlists exist

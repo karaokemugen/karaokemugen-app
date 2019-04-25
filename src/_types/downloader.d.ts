@@ -1,7 +1,8 @@
 export interface DownloadItem {
 	url: string,
 	filename: string,
-	size: number
+	size: number,
+	id: string
 }
 
 export interface DownloadOpts {

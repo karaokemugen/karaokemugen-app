@@ -1,6 +1,7 @@
 import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
 import {refreshSeries, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, refreshKaraSeries} from '../_dao/series';
 import {profile} from '../_utils/logger';
+import logger from 'winston';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../_utils/files';
@@ -21,8 +22,7 @@ export async function getOrAddSerieID(serieObj: Series) {
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) return serie.sid;
 	//Series does not exist, create it.
-	const sid = await addSerie(serieObj);
-	return sid;
+	return await addSerie(serieObj);
 }
 
 
@@ -58,27 +58,30 @@ export async function deleteSerie(sid: string) {
 	refreshKaras();
 }
 
-export async function addSerie(serieObj: Series) {
+export async function addSerie(serieObj: Series, opts = {refresh: true}): Promise<string> {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const serie = await selectSerieByName(serieObj.name);
-	if (serie) throw 'Series original name already exists';
-	serieObj.sid = uuidV4();
-	serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
+	if (serie) {
+		logger.warn(`Series original name already exists "${serieObj.name}"`);
+		return serie.sid;
+	}
+	if (!serieObj.sid) serieObj.sid = uuidV4();
+	if (!serieObj.seriefile) serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
+
+	await insertSerie(serieObj);
 	await Promise.all([
-		insertSerie(serieObj),
 		insertSeriei18n(serieObj),
 		writeSeriesFile(serieObj)
 	]);
-	compareKarasChecksum(true);
-	await refreshSeries();
-	// Workaround for TS type bug.
-	let nextRefresh: any = () => refreshKaras();
-	refreshKaraSeries().then(nextRefresh());
 
+	if (opts.refresh) {
+		compareKarasChecksum(true);
+		await refreshSeriesAfterDBChange();
+	}
 	return serieObj.sid;
 }
 
-export async function editSerie(sid: string, serieObj: Series) {
+export async function editSerie(sid: string, serieObj: Series, opts = { refresh: true }) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const oldSerie = await getSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
@@ -91,7 +94,13 @@ export async function editSerie(sid: string, serieObj: Series) {
 		updateSerie(serieObj),
 		writeSeriesFile(serieObj)
 	]);
-	compareKarasChecksum(true);
+	if (opts.refresh) {
+		compareKarasChecksum(true);
+		await refreshSeriesAfterDBChange();
+	}
+}
+
+export async function refreshSeriesAfterDBChange() {
 	await refreshSeries();
 	// Workaround for TS type bug.
 	let nextRefresh: any = () => refreshKaras();

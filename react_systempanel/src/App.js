@@ -1,12 +1,11 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import axios from 'axios';
-import {Provider} from 'react-redux';
-import {ConnectedRouter} from 'react-router-redux';
-import {Redirect, Route, Switch} from 'react-router-dom';
-import {Layout} from 'antd';
-import {history, store} from './store';
-
+import { Provider } from 'react-redux';
+import { ConnectedRouter } from 'react-router-redux';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { Layout } from 'antd';
+import configureStore, { history } from './configureStore';
 import KMHeader from './layout/KMHeader';
 
 import AuthRequired from './components/AuthRequired';
@@ -15,8 +14,9 @@ import Home from './pages/Home';
 
 import './App.css';
 
-class App extends Component {
+const store = configureStore();
 
+class App extends Component {
 	componentWillMount() {
 		const token = localStorage.getItem('kmToken');
 		const onlineToken = localStorage.getItem('kmOnlineToken');
@@ -31,12 +31,13 @@ class App extends Component {
 			<Provider store={store}>
 				<ConnectedRouter history={history}>
 					<Layout className="layout">
-						<KMHeader/>
+						<KMHeader />
 						<Switch>
 							<Redirect exact from='/system/' to='/system/home'/>
 							<Route path='/system/home' component={Home}/>
 							<Route path='/system/login' component={DismissMessages(import('./pages/Login'))}/>
 							<Route path='/system/config' component={AuthRequired(import('./pages/Config'))}/>
+							<Route path='/system/karas/download' component={AuthRequired(import('./pages/Karas/KaraDownload'))}/>
 							<Route path='/system/karas/create' component={AuthRequired(import('./pages/Karas/KaraEdit'))}/>
 							<Route path='/system/karas/history' component={AuthRequired(import('./pages/Karas/History'))}/>
 							<Route path='/system/karas/ranking' component={AuthRequired(import('./pages/Karas/Ranking'))}/>

@@ -145,12 +145,7 @@ async function checkPaths(config: Config) {
 	const appPath: string = getState().appPath;
 
 	// If no karaoke is found, copy the samples directory if it exists
-	try {
-		await asyncReadDir(resolve(appPath, 'app/data'));
-		// Check inside karas folder too.
-		const karas = await asyncReadDir(resolve(appPath, 'app/data/karas'));
-		if (karas.length === 0) throw 'No kara files';
-	} catch(err) {
+	if (!await asyncExists(resolve(appPath, 'app/data'))) {
 		try {
 			await asyncReadDir(resolve(appPath, 'samples'));
 			logger.debug('[Launcher] Kara files are missing - copying samples');
@@ -162,6 +157,7 @@ async function checkPaths(config: Config) {
 			logger.warn('[Launcher] No samples directory found, will not copy them.');
 		}
 	}
+
 	// Emptying temp directory
 	if (await asyncExists(resolve(appPath, config.System.Path.Temp))) await asyncRemove(resolve(appPath, config.System.Path.Temp));
 	// Checking paths

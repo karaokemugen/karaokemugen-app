@@ -4,7 +4,7 @@
 
 import logger from 'winston';
 import {basename, extname, resolve} from 'path';
-import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias,} from '../_utils/config';
+import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias} from '../_utils/config';
 import {sanitizeFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, replaceExt} from '../_utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, writeKara
@@ -62,7 +62,9 @@ export async function editKara(kara: Kara, opts = {compareChecksum: true}) {
 	// Update in database
 	newKara.data.karafile = basename(newKara.file);
 	try {
+		await processSeries(newKara.data);
 		await editKaraInDB(newKara.data);
+		compareKarasChecksum(true);
 	} catch(err) {
 		const errMsg = `${newKara.data.karafile} file generation is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
 		logger.warn(`[KaraGen] ${errMsg}`);
@@ -75,6 +77,7 @@ export async function createKara(kara) {
 	const newKara = await generateKara(kara, false);
 	try {
 		newKara.data.karafile = basename(newKara.file);
+		await processSeries(newKara.data);
 		await createKaraInDB(newKara.data);
 	} catch(err) {
 		const errMsg = `.kara file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
@@ -150,7 +153,9 @@ async function generateKara(kara: Kara, overwrite: boolean) {
 		kara.creator.forEach((e,i) => kara.creator[i] = e.trim());
 		kara.author.forEach((e,i) => kara.author[i] = e.trim());
 		if (!kara.order) kara.order = '';
-		return await importKara(newMediaFile, newSubFile, kara, overwrite);
+		const newKara = await importKara(newMediaFile, newSubFile, kara, overwrite);
+		compareKarasChecksum(true);
+		return newKara;
 	} catch(err) {
 		logger.error(`[Karagen] Error during generation : ${err}`);
 		if (await asyncExists(newMediaFile)) await asyncUnlink(newMediaFile);
@@ -257,6 +262,7 @@ async function importKara(mediaFile: string, subFile: string, data: Kara, overwr
 }
 
 async function processSeries(kara: Kara) {
+	//Creates series in kara if they do not exist already.
 	for (const serie of kara.series) {
 		const serieObj = {
 			name: serie,
