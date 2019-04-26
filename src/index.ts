@@ -1,6 +1,6 @@
-import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_utils/files';
-import {getConfig, initConfig, configureBinaries} from './_utils/config';
-import {Config} from './_types/config';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './utils/files';
+import {getConfig, initConfig, configureBinaries} from './utils/config';
+import {Config} from './types/config';
 import {parseCommandLineArgs} from './args';
 import {writeFileSync, readFileSync} from 'fs';
 import {copy} from 'fs-extra';
@@ -8,11 +8,11 @@ import {join, resolve} from 'path';
 import {createServer} from 'net';
 import logger from 'winston';
 import minimist from 'minimist';
-import {exit, initEngine} from './_services/engine';
+import {exit, initEngine} from './services/engine';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
-import { setState, getState } from './_utils/state';
+import { setState, getState } from './utils/state';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);

@@ -1,4 +1,4 @@
-import {setState} from './_utils/state';
+import {setState} from './utils/state';
 import logger from 'winston';
 
 const help = `Usage :

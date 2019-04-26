@@ -1,0 +1,352 @@
+/**
+ * Tools used to manipulate .kara files : reading, extracting info, etc.
+ * These functions do not resolve paths. Arguments should be resolved already.
+ */
+
+import {now} from '../utils/date';
+import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from '../services/constants';
+import uuidV4 from 'uuid/v4';
+import logger from 'winston';
+import {extname, resolve, basename} from 'path';
+import {parse as parseini, stringify} from 'ini';
+import {asyncUnlink, checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../utils/files';
+import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../utils/config';
+import {extractSubtitles, getMediaInfo} from '../utils/ffmpeg';
+import {getKara, selectAllKaras} from './kara';
+import {getState} from '../utils/state';
+import { KaraFile, Kara, MediaInfo } from '../types/kara';
+import {check, initValidators} from '../utils/validators';
+import {createKaraInDB, editKaraInDB} from '../services/kara';
+import {getConfig} from '../utils/config';
+
+let error = false;
+
+function strictModeError(karaData: KaraFile, data: string) {
+	delete karaData.ass;
+	logger.error(`[Kara] STRICT MODE ERROR : ${data} - Kara data read : ${JSON.stringify(karaData,null,2)}`);
+	error = true;
+}
+
+export async function integrateKaraFile(file: string) {
+	const karaFileData = await parseKara(file);
+	const karaFile = basename(file);
+	const karaData = await getDataFromKaraFile(karaFile, karaFileData)
+	const karaDB = await getKara(karaData.kid, 'admin', null, 'admin');
+	if (karaDB.length > 0) {
+		await editKaraInDB(karaData, { refresh: false });
+		if (karaDB[0].karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].karafile, getConfig().System.Path.Karas));
+		if (karaDB[0].mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].mediafile, getConfig().System.Path.Medias));
+		if (karaDB[0].subfile !== 'dummy.ass' && karaDB[0].subfile !== karaData.subfile) await asyncUnlink(await resolveFileInDirs(karaDB[0].subfile, getConfig().System.Path.Lyrics));
+	} else {
+		await createKaraInDB(karaData, { refresh: false });
+	}
+}
+
+export async function getDataFromKaraFile(karafile: string, karaData: KaraFile): Promise<Kara> {
+	const state = getState();
+	karaData.error = false;
+	karaData.isKaraModified = false;
+
+	if (!karaData.KID) {
+		karaData.isKaraModified = true;
+		karaData.KID = uuidV4();
+		if (state.opt.strict) strictModeError(karaData, 'kid is missing');
+	}
+
+	if (!karaData.dateadded) {
+		karaData.isKaraModified = true;
+		karaData.dateadded = now(true);
+		if (state.opt.strict) strictModeError(karaData, 'dateadded is missing');
+	}
+	if (!karaData.datemodif) {
+		karaData.isKaraModified = true;
+		karaData.datemodif = now(true);
+		if (state.opt.strict) strictModeError(karaData, 'datemodif is missing');
+	}
+
+
+	let mediaFile: string;
+	try {
+		mediaFile = await resolveFileInDirs(karaData.mediafile, resolvedPathMedias());
+	} catch (err) {
+		logger.debug(`[Kara] Media file not found : ${karaData.mediafile}`);
+		if (state.opt.strict) strictModeError(karaData, 'mediafile');
+		if (!karaData.mediagain) karaData.mediagain = 0;
+		if (!karaData.mediasize) karaData.mediasize = 0;
+		if (!karaData.mediaduration) karaData.mediaduration = 0;
+		karaData.ass = '';
+	}
+
+	if (mediaFile || state.opt.noMedia) {
+		const subFile = await findSubFile(mediaFile, karaData.subfile, karaData.KID);
+		if (!subFile && getState().opt.strict) strictModeError(karaData, 'extracting subtitles failed');
+		if (subFile && subFile !== 'dummy.ass') {
+			const subChecksum = await extractAssInfos(subFile);
+			if (subChecksum !== karaData.subchecksum) {
+				karaData.isKaraModified = true;
+				karaData.subchecksum = subChecksum;
+				if (getState().opt.strict) strictModeError(karaData, 'subchecksum is missing or invalid');
+			}
+		}
+		const mediaInfo = await extractMediaTechInfos(mediaFile, karaData.mediasize);
+		if (mediaInfo.size === null && getState().opt.strict) strictModeError(karaData, `Media file "${mediaFile} not found`);
+		if (mediaInfo.size !== null && mediaInfo.size !== karaData.mediasize) {
+			karaData.isKaraModified = true;
+			karaData.mediasize = mediaInfo.size;
+		}
+		if (mediaInfo.error && getState().opt.strict) {
+			strictModeError(karaData, 'ffmpeg failed');
+		} else {
+			karaData.mediagain = mediaInfo.gain || karaData.mediagain;
+			karaData.mediasize = mediaInfo.size || karaData.mediasize;
+			karaData.mediaduration = mediaInfo.duration || karaData.mediaduration;
+		}
+	}
+	if (karaData.order = '') karaData.order = null;
+	return {
+		kid: karaData.KID,
+		karafile: karafile,
+		mediafile: karaData.mediafile,
+		mediagain: karaData.mediagain,
+		mediaduration: karaData.mediaduration,
+		mediasize: karaData.mediasize,
+		subfile: karaData.subfile,
+		title: karaData.title,
+		datemodif: new Date(karaData.datemodif * 1000),
+		dateadded: new Date(karaData.dateadded * 1000),
+		error: error,
+		subchecksum: karaData.subchecksum,
+		isKaraModified: karaData.isKaraModified,
+		year: karaData.year,
+		order: karaData.order,
+		series: karaData.series.split(',').filter(e => e !== ''),
+		tags: karaData.tags.split(',').filter(e => e !== ''),
+		type: karaData.type,
+		singer: karaData.singer.split(',').filter(e => e !== ''),
+		songwriter: karaData.songwriter.split(',').filter(e => e !== ''),
+		creator: karaData.creator.split(',').filter(e => e !== ''),
+		groups: karaData.groups.split(',').filter(e => e !== ''),
+		author: karaData.author.split(',').filter(e => e !== ''),
+		lang: karaData.lang.split(',').filter(e => e !== '')
+	};
+}
+
+export async function extractAssInfos(subFile: string): Promise<string> {
+	let ass: string;
+	let subChecksum: string;
+	if (subFile) {
+		ass = await asyncReadFile(subFile, {encoding: 'utf8'});
+		ass = ass.replace(/\r/g, '');
+		subChecksum = checksum(ass);
+	} else {
+		throw 'Subfile is empty';
+	}
+	return subChecksum;
+}
+
+export async function extractMediaTechInfos(mediaFile: string, size: number): Promise<MediaInfo> {
+	if (!getState().opt.noMedia) {
+		let mediaStats: any;
+		try {
+			mediaStats = await asyncStat(mediaFile);
+		} catch(err) {
+			// Return early if file isn't found
+			return {
+				size: null,
+				error: true,
+				gain: null,
+				duration: null
+			};
+		}
+
+		if (mediaStats.size !== size) {
+			const mediaData = await getMediaInfo(mediaFile);
+			if (mediaData.error) return {
+					size: null,
+					error: true,
+					duration: null,
+					gain: null,
+				}
+			return {
+				error: false,
+				size: mediaStats.size,
+				gain: mediaStats.audiogain,
+				duration: mediaStats.duration
+			};
+		}
+	}
+}
+
+export async function writeKara(karafile: string, karaData: Kara) {
+	const infosToWrite: KaraFile = formatKara(karaData);
+	if (karaData.isKaraModified === false) {
+		return;
+	}
+	infosToWrite.datemodif = now(true);
+	delete infosToWrite.karafile;
+	karaData.datemodif = new Date(infosToWrite.datemodif * 1000);
+	await asyncWriteFile(karafile, stringify(infosToWrite));
+}
+
+export async function parseKara(karaFile: string): Promise<any> {
+	let data = await asyncReadFile(karaFile, 'utf-8');
+	data = data.replace(/\r/g, '');
+	return parseini(data);
+}
+
+export async function extractVideoSubtitles(videoFile: string, kid: string): Promise<string> {
+	const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kid}.ass`);
+	try {
+		await extractSubtitles(videoFile, extractFile);
+		return extractFile;
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function findSubFile(videoFile: string, subFile: string, kid: string) {
+	if (subFile === '' && !getState().opt.noMedia) {
+		if (extname(videoFile) === '.mkv') {
+			try {
+				return await extractVideoSubtitles(videoFile, kid);
+			} catch (err) {
+				// Not blocking.
+				logger.warn(`[Kara] Could not extract subtitles from video file ${videoFile}`);
+				return null;
+			}
+		}
+	} else {
+		try {
+			if (subFile !== 'dummy.ass') return await resolveFileInDirs(subFile, resolvedPathSubs());
+		} catch (err) {
+			logger.warn(`[Kara] Could not find subfile '${subFile}' (in ${JSON.stringify(resolvedPathSubs())}).`);
+			return null;
+		}
+	}
+	// Non-blocking case if file isn't found
+	return '';
+}
+
+export async function replaceSerieInKaras(oldSerie: string, newSerie: string) {
+	logger.info(`[Kara] Replacing serie "${oldSerie}" by "${newSerie}" in .kara files`);
+	const karas = await selectAllKaras({
+		filter: null,
+		lang: null
+	});
+	const karasWithSerie = karas.map((k: any) => {
+		if (k.serie_orig && k.serie_orig.split(',').includes(oldSerie)) return k.karafile;
+	})
+	if (karasWithSerie.length > 0) logger.info(`[Kara] Replacing in ${karasWithSerie.length} files`);
+	for (const karaFile of karasWithSerie) {
+		logger.info(`[Kara] Replacing in ${karaFile}...`);
+		const karaPath = await resolveFileInDirs(karaFile, resolvedPathKaras());
+		const kara = await parseKara(karaPath);
+		let series = kara.series.split(',');
+		const index = series.indexOf(oldSerie);
+		if (index > -1)	series[index] = newSerie;
+		kara.series = series.join(',');
+		kara.datemodif = now(true);
+		await asyncWriteFile(karaFile, stringify(kara));
+	}
+}
+
+export async function removeSerieInKaras(serie: string) {
+	logger.info(`[Kara] Removing serie ${serie} in .kara files`);
+	const karas = await selectAllKaras({
+		filter: null,
+		lang: null
+	});
+	const karasWithSerie = karas.map((k: any) => {
+		if (k.serie_orig && k.serie_orig.split(',').includes(serie)) return k.karafile;
+	})
+	if (karasWithSerie.length > 0) logger.info(`[Kara] Removing in ${karasWithSerie.length} files`);
+	for (const karaFile of karasWithSerie) {
+		logger.info(`[Kara] Removing in ${karaFile}...`);
+		const karaPath = await resolveFileInDirs(karaFile, resolvedPathKaras());
+		const kara = await parseKara(karaPath);
+		const series = kara.series.split(',');
+		const newSeries = series.filter(s => s !== serie);
+		kara.series = newSeries.join(',');
+		kara.datemodif = now(true);
+		await asyncWriteFile(karaFile, stringify(kara));
+	}
+}
+
+/**
+ * Generate info to write in a .kara file from an object passed as argument by filtering out unnecessary fields and adding default values if needed.
+ */
+export function formatKara(karaData: Kara): KaraFile {
+	return {
+		mediafile: karaData.mediafile || '',
+		subfile: karaData.subfile || 'dummy.ass',
+		subchecksum: karaData.subchecksum || '',
+		title: karaData.title || '',
+		series: karaData.series.join(',') || '',
+		type: karaData.type || '',
+		order: karaData.order || '',
+		year: karaData.year || '',
+		singer: karaData.singer.join(',') || '',
+		tags: karaData.tags.join(',') || '',
+		groups: karaData.groups.join(',') || '',
+		songwriter: karaData.songwriter.join(',') || '',
+		creator: karaData.creator.join(',') || '',
+		author: karaData.author.join(',') || '',
+		lang: karaData.lang.join(',') || 'und',
+		KID: karaData.kid || uuidV4(),
+		dateadded: Math.floor(karaData.dateadded.getTime() / 1000) || now(true),
+		datemodif: Math.floor(karaData.datemodif.getTime() / 1000) || now(true),
+		mediasize: karaData.mediasize || 0,
+		mediagain: karaData.mediagain || 0,
+		mediaduration: karaData.mediaduration || 0,
+		version: karaData.version || 3
+	};
+}
+
+const karaConstraintsV3 = {
+	mediafile: {
+		presence: {allowEmpty: false},
+		format: mediaFileRegexp
+	},
+	subfile: {
+		presence: {allowEmpty: false},
+		format: subFileRegexp
+	},
+	title: {presence: {allowEmpty: true}},
+	type: {presence: true, inclusion: karaTypesArray},
+	series: (_value: string, attributes: any) => {
+		if (!serieRequired(attributes['type'])) {
+			return { presence: {allowEmpty: true} };
+		} else {
+			return { presence: {allowEmpty: false} };
+		}
+	},
+	lang: {langValidator: true},
+	order: {integerValidator: true},
+	year: {integerValidator: true},
+	KID: {presence: true, format: uuidRegexp},
+	dateadded: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	datemodif: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	mediasize: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	mediagain: {numericality: true},
+	mediaduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	version: {numericality: {onlyInteger: true, equality: 3}}
+};
+
+export function karaDataValidationErrors(karaData: KaraFile) {
+	initValidators();
+	return check(karaData, karaConstraintsV3);
+}
+
+export function verifyKaraData(karaData: KaraFile) {
+	// Version 2 is considered deprecated, so let's throw an error.
+	if (karaData.version < 3) throw 'Karaoke version 2 or lower is deprecated';
+	const validationErrors = karaDataValidationErrors(karaData);
+	if (validationErrors) {
+		throw `Karaoke data is not valid: ${JSON.stringify(validationErrors)}`;
+	}
+}
+
+/** Only MV or LIVE types don't have to have a series filled. */
+export function serieRequired(karaType: string) {
+	return karaType !== karaTypes.MV.type && karaType !== karaTypes.LIVE.type;
+}
