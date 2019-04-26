@@ -237,7 +237,7 @@
 	"ENGINEDISPLAYAVATAR": "Display avatar in karaokes",
 	"WEBAPPMODE": "Public interface mode",
 	"WEBAPPMODE_CLOSED": "Closed",
-	"WEBAPPMODE_LIMITED": "Song information and playlists only",,
+	"WEBAPPMODE_LIMITED": "Song information and playlists only",
 	"WEBAPPMODE_LIMITED_NAME": "Restricted mode",
 	"WEBAPPMODE_OPEN": "Opened (default)",
 	"WEBAPPMODE_CLOSED_API_MESSAGE": "Sorrymasen, API is disabled right now.",
