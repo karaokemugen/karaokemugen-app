@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Row, Col, Icon, Layout, Table, Input, Button} from 'antd';
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 import openSocket from 'socket.io-client';
-import { getLocalKaras, deleteDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../../api/local';
+import { getLocalKaras, deleteDownloadQueue, deleteKAraFromDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../../api/local';
 
 class KaraDownload extends Component {
 
@@ -254,7 +254,7 @@ class KaraDownload extends Component {
 					if(queue.status==='DL_RUNNING')
 						button = <span><button disabled type="button"><Icon type="sync" spin /></button> {this.state.active_download ? this.state.active_download.progress:null}%</span>;
 					else if(queue.status==='DL_PLANNED')
-						button = <button disabled type="button"><Icon type='clock-circle' theme="twoTone" twoToneColor="#dc4e41"/></button>;
+						button = <button onClick={deleteKAraFromDownloadQueue.bind(null,queue.pk_uuid)} type="button"><Icon type='clock-circle' theme="twoTone" twoToneColor="#dc4e41"/></button>;
 					else if(queue.status==='DL_DONE') // done but not in local -> try again dude
 						button = <span><button disabled type="button"><Icon type='check-circle' theme="twoTone" twoToneColor="#4989f3"/></button></span>;
 				} else

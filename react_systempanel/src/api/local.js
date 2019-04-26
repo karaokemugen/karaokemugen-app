@@ -49,13 +49,24 @@ export async function getDownloadQueue() {
 	}
 }
 
-// DELETE karas download queue
+// DELETE all karas download queue
 export async function deleteDownloadQueue() {
 	try {
 		const res = await axios.delete('/api/system/downloads');
 		return res.data;
 	} catch (e) {
 		console.log('Error from /api/local.js:deleteDownloadQueue');
+		throw e;
+	}
+}
+
+// DELETE s pecific karas download queue
+export async function deleteKAraFromDownloadQueue(kid) {
+	try {
+		const res = await axios.delete('/api/system/downloads/'+kid);
+		return res.data;
+	} catch (e) {
+		console.log('Error from /api/local.js:deleteKAraFromDownloadQueue');
 		throw e;
 	}
 }
