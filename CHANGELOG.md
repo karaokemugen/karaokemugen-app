@@ -1,6 +1,6 @@
 # Versions
 
-## v2.5.0 "Konata Karaokiste"
+## v2.5.0 "Konata Karaokiste" - 30/04/2019
 
 This is a major release.
 
