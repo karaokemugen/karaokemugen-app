@@ -80,9 +80,19 @@ export default function systemController(router) {
 		try {
 			let karas: KaraList;
 			if (req.query.instance) {
-				karas = await getRemoteKaras(req.query.instance, req.query.filter, req.query.from, req.query.size);
+				karas = await getRemoteKaras(req.query.instance, {
+					filter: req.query.filter,
+					from: +req.query.from,
+					size: +req.query.size
+				});
 			} else {
-				karas = await getKaras(req.query.filter, req.lang, req.query.from, req.query.size, null, null, req.authToken);
+				karas = await getKaras({
+					filter: req.query.filter,
+					lang: req.lang,
+					from: +req.query.from || 0,
+					size: +req.query.size || 999999999,
+					token: req.authToken
+				});
 			}
 			res.json(karas);
 		} catch(err) {
@@ -280,7 +290,7 @@ export default function systemController(router) {
 	});
 	router.post('/system/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
-			await addDownloadBLC(req.body.type, req.body.value);
+			await addDownloadBLC({ type: req.body.type, value: req.body.value});
 			res.status(200).send('Download blacklist criteria added');
 		} catch(err) {
 			res.status(500).send(`Error adding download BLC : ${err}`);
@@ -288,7 +298,7 @@ export default function systemController(router) {
 	});
 	router.put('/system/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
-			await editDownloadBLC(req.params.id, req.body.type, req.body.value);
+			await editDownloadBLC({ id: +req.params.id, type: +req.body.type, value: req.body.value});
 			res.status(200).send('Download blacklist criteria edited');
 		} catch(err) {
 			res.status(500).send(`Error editing download BLC : ${err}`);

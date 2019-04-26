@@ -9,27 +9,31 @@ import {
 import {createPreview} from '../_utils/ffmpeg';
 import {getKaras} from '../_services/kara';
 
-async function extractPreviewFiles(previewDir: string) {
+async function extractPreviewFiles(previewDir: string): Promise<string[]> {
 	const dirListing = await asyncReadDir(previewDir);
 	return dirListing.filter((file: string) => {
 		return (!file.startsWith('.') && (!file.startsWith('output')) && file.endsWith('.mp4'));
 	});
 }
 
-export async function isPreviewAvailable(kid: string, mediasize: number) {
+export async function isPreviewAvailable(kid: string, mediasize: number): Promise<string> {
 	const previewDir = resolvedPathPreviews();
-	return await asyncExists(resolve(previewDir, `${kid}.${mediasize}.mp4`));
+	if (await asyncExists(resolve(previewDir, `${kid}.${mediasize}.mp4`))) {
+		return `${kid}.${mediasize}.mp4`;
+	} else {
+		return null;
+	}
 }
 
 export async function createPreviews() {
 	logger.debug('[Previews] Starting preview generation');
-	const karas = await getKaras(undefined, undefined, undefined, undefined, undefined, undefined, {username: 'admin', role: 'admin'});
+	const karas = await getKaras({token: {username: 'admin', role: 'admin'}});
 	const previewDir = resolvedPathPreviews();
 	const previewFiles = await extractPreviewFiles(previewDir);
 	// Remove unused previewFiles
 	for (const file of previewFiles) {
 		const fileParts = file.split('.');
-		let mediasize;
+		let mediasize: number;
 		const found = karas.content.some(k => {
 			// If it returns true, we found a karaoke. We'll check mediasize of that kara to determine if we need to remove the preview and recreate it.
 			// Since .some stops after a match, mediasize will be equal to the latest kara parsed's mediafile

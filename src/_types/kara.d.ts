@@ -1,3 +1,5 @@
+import { Token } from "./user";
+
 export interface KaraParams {
 	filter?: string,
 	lang?: string,
@@ -7,7 +9,8 @@ export interface KaraParams {
 	modeValue?: string,
 	username?: string,
 	admin?: boolean,
-	random?: number
+	random?: number,
+	token?: Token
 }
 
 export interface NewKara {

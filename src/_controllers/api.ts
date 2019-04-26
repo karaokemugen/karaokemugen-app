@@ -2806,7 +2806,16 @@ export function APIControllerPublic(router) {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			try {
-				const karas = await getKaras(req.query.filter,req.lang,+req.query.from || 0, +req.query.size || 9999999,req.query.searchType, req.query.searchValue, req.authToken, req.query.random);
+				const karas = await getKaras({
+					filter: req.query.filter,
+					lang: req.lang,
+					from: +req.query.from || 0,
+					size: +req.query.size || 9999999,
+					mode: req.query.searchType,
+					modeValue: req.query.searchValue,
+					token: req.authToken,
+					random: req.query.random
+				});
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);

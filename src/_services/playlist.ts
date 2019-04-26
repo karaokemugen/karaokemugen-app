@@ -1067,7 +1067,11 @@ export async function buildDummyPlaylist() {
 	if (karaCount > 5) karaCount = 5;
 	if (karaCount > 0) {
 		logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);
-		const karas = await getKaras(null, 'en', 0, karaCount, null, null, {username: 'admin', role: 'admin'}, karaCount);
+		const karas = await getKaras({
+			size: karaCount,
+			token: {username: 'admin', role: 'admin'},
+			random: karaCount
+		});
 		karas.content.forEach(k => addKaraToPlaylist(k.kid, 'admin', state.currentPlaylistID));
 		logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
 		emitWS('playlistInfoUpdated', state.currentPlaylistID);

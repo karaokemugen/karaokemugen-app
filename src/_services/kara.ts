@@ -25,7 +25,7 @@ import {resolve} from 'path';
 import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 import {Token} from '../_types/user';
-import {Kara, KaraList} from '../_types/kara';
+import {Kara, KaraList, KaraParams} from '../_types/kara';
 import {Series} from '../_types/series';
 import { getOrAddSerieID, deleteSerie } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../_utils/files';
@@ -296,21 +296,21 @@ export async function getYears() {
 	};
 }
 
-export async function getKaras(filter: string, lang: string, from = 0, size = 999999999, mode: string, modeValue: string, token: Token, random = 0) {
+export async function getKaras(params: KaraParams): Promise<KaraList> {
 	profile('getKaras');
 	const pl = await selectAllKaras({
-		username: token.username,
-		filter: filter,
-		lang: lang,
-		mode: mode,
-		modeValue: modeValue,
-		from: from,
-		size: size,
-		admin: token.role === 'admin',
-		random: random
+		username: params.token.username,
+		filter: params.filter,
+		lang: params.lang,
+		mode: params.mode,
+		modeValue: params.modeValue,
+		from: params.from,
+		size: params.size,
+		admin: params.token.role === 'admin',
+		random: params.random
 	});
 	profile('formatList');
-	const ret = formatKaraList(pl.slice(+from, +from + +size), lang, +from, +pl.length);
+	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.lang, params.from, pl.length);
 	profile('formatList');
 	profile('getKaras');
 	return ret;

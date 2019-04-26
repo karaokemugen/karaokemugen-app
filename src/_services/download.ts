@@ -16,10 +16,13 @@ import {refreshSeriesAfterDBChange} from './series';
 import { compareKarasChecksum } from '../_dao/database';
 import { emitWS } from '../_webapp/frontend';
 import got from 'got';
+import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC } from '../_types/download';
+import { DownloadItem } from '../_types/downloader';
+import { KaraParams } from '../_types/kara';
 
 const queueOptions = {
 	id: 'uuid',
-	precondition: cb => {
+	precondition: (cb: any) => {
 		internet()
 			.then(cb(null, true))
 			.catch(cb(null, false));
@@ -28,13 +31,13 @@ const queueOptions = {
 	cancelIfRunning: true
 };
 
-let q;
+let q: any;
 
-function emitQueueStatus(status) {
+function emitQueueStatus(status: QueueStatus) {
 	emitWS('downloadQueueStatus', status);
 }
 
-function queueDownload(input, done) {
+function queueDownload(input: KaraDownload, done: any) {
 	logger.info(`[Download] Processing queue item : ${input.name}`);
 	processDownload(input)
 		.then(() => {
@@ -63,19 +66,21 @@ function initQueue() {
 		if (taskCounter >= 5) {
 			logger.debug('[Download] Triggering database refresh');
 			compareKarasChecksum(true);
-			refreshSeriesAfterDBChange().then(refreshKarasAfterDBChange());
+			let nextRefresh: any = () => refreshKarasAfterDBChange();
+			refreshSeriesAfterDBChange().then(nextRefresh());
 			taskCounter = 0;
 		}
 		emitQueueStatus('updated');
 	});
-	q.on('task_failed', (taskId, err) => {
+	q.on('task_failed', (taskId: string, err: any) => {
 		logger.error(`[Download] Task ${taskId} failed : ${err}`);
 		emitQueueStatus('updated');
 	});
 	q.on('empty', () => emitQueueStatus('updated'));
 	q.on('drain', () => {
 		logger.info('[Download] Ano ne, ano ne! I finished all my downloads!');
-		refreshSeriesAfterDBChange().then(refreshKarasAfterDBChange());
+		let nextRefresh: any = () => refreshKarasAfterDBChange();
+		refreshSeriesAfterDBChange().then(nextRefresh());
 		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
@@ -89,7 +94,7 @@ export async function startDownloads() {
 		const downloads = await selectPendingDownloads();
 		try {
 			await internet();
-			downloads.forEach(dl => q.push(dl));
+			downloads.forEach((dl: KaraDownload) => q.push(dl));
 			logger.info('[Downloader] Download queue starting up');
 			emitQueueStatus('started');
 		} catch(err) {
@@ -99,7 +104,7 @@ export async function startDownloads() {
 	}
 }
 
-async function processDownload(download) {
+async function processDownload(download: KaraDownload) {
 	const conf = getConfig();
 	const state = getState();
 	await setDownloadStatus(download.uuid, 'DL_RUNNING');
@@ -180,7 +185,7 @@ async function processDownload(download) {
 	}
 }
 
-async function downloadFiles(download, list) {
+async function downloadFiles(download: KaraDownload, list: DownloadItem[]) {
 	const downloader = new Downloader(list, {
 		bar: true
 	});
@@ -217,9 +222,9 @@ export function resumeQueue() {
 	return q.resume();
 }
 
-export async function addDownloads(repo, downloads) {
+export async function addDownloads(repo: string, downloads: KaraDownloadRequest[]): Promise<string> {
 	const currentDls = await getDownloads();
-	let dls = downloads.map(dl => {
+	let dls: KaraDownload[] = downloads.map(dl => {
 		for (const currentDl of currentDls) {
 			if (dl.name === currentDl.name && (currentDl.status === 'DL_RUNNING' || currentDl.status === 'DL_PLANNED')) return null;
 		}
@@ -269,15 +274,15 @@ export async function getDownloads() {
 	return await selectDownloads();
 }
 
-export async function getDownload(uuid) {
+export async function getDownload(uuid: string) {
 	return await selectDownload(uuid);
 }
 
-export async function setDownloadStatus(uuid, status) {
+export async function setDownloadStatus(uuid: string, status: string) {
 	return await updateDownload(uuid, status);
 }
 
-export async function retryDownload(uuid) {
+export async function retryDownload(uuid: string) {
 	const dl = await selectDownload(uuid);
 	if (!dl) throw 'Download ID unknown';
 	if (dl.status === 'DL_RUNNING') throw 'Download is already running!';
@@ -287,7 +292,7 @@ export async function retryDownload(uuid) {
 	emitQueueStatus('started');
 }
 
-export async function removeDownload(uuid) {
+export async function removeDownload(uuid: string) {
 	const dl = await selectDownload(uuid);
 	if (!dl) throw 'Download ID unknown';
 	if (dl.status !== 'DL_PLANNED') throw 'Only planned downloads can be cancelled';
@@ -307,25 +312,25 @@ export async function getDownloadBLC() {
 	return await selectDownloadBLC();
 }
 
-export async function addDownloadBLC(type, value) {
-	if (+type < 0 && +type > 1004) throw `Incorrect BLC type (${type})`;
-	if (+type === 1001 && !new RegExp(uuidRegexp).test(value)) throw `Blacklist criteria value mismatch : type ${type} must have UUID value`;
-	if ((+type === 1002 || +type === 1003 || +type > 1004) && isNaN(value)) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
-	return await insertDownloadBLC(type, value);
+export async function addDownloadBLC(blc: KaraDownloadBLC) {
+	if (blc.type < 0 && blc.type > 1004) throw `Incorrect BLC type (${blc.type})`;
+	if (blc.type === 1001 && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
+	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
+	return await insertDownloadBLC(blc);
 }
 
-export async function editDownloadBLC(id, type, value) {
+export async function editDownloadBLC(blc: KaraDownloadBLC) {
 	const dlBLC = await selectDownloadBLC();
-	if (!dlBLC.some(e => e.dlblc_id === +id)) throw 'DL BLC ID does not exist';
-	if (+type < 0 && +type > 1004) throw `Incorrect BLC type (${type})`;
-	if (+type === 1001 && !new RegExp(uuidRegexp).test(value)) throw `Blacklist criteria value mismatch : type ${type} must have UUID value`;
-	if ((+type === 1002 || +type === 1003 || +type > 1004) && isNaN(value)) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
-	return await updateDownloadBLC(id, type, value);
+	if (!dlBLC.some(e => e.dlblc_id === blc.id)) throw 'DL BLC ID does not exist';
+	if (blc.type < 0 && blc.type > 1004) throw `Incorrect BLC type (${blc.type})`;
+	if (blc.type === 1001 && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
+	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
+	return await updateDownloadBLC(blc);
 }
 
-export async function removeDownloadBLC(id) {
+export async function removeDownloadBLC(id: number) {
 	const dlBLC = await selectDownloadBLC();
-	if (!dlBLC.some(e => e.dlblc_id === +id)) throw 'DL BLC ID does not exist';
+	if (!dlBLC.some(e => e.dlblc_id === id)) throw 'DL BLC ID does not exist';
 	return await deleteDownloadBLC(id);
 }
 
@@ -333,12 +338,12 @@ export async function emptyDownloadBLC() {
 	return await truncateDownloadBLC();
 }
 
-export async function getRemoteKaras(instance, filter = '', from = 0, size = 99999999999999) {
-	const params = new URLSearchParams([
-		['filter', filter],
-		['size', size],
-		['from', from]
+export async function getRemoteKaras(instance: string, params: KaraParams) {
+	const queryParams = new URLSearchParams([
+		['filter', params.filter],
+		['size', params.size + ''],
+		['from', params.from + '']
 	]);
-	const res = await got(`https://${instance}/api/karas?${params.toString()}`);
+	const res = await got(`https://${instance}/api/karas?${queryParams.toString()}`);
 	return JSON.parse(res.body);
 }
