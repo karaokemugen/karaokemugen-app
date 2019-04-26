@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Row, Col, Icon, Layout, Table, Input, Button} from 'antd';
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 import openSocket from 'socket.io-client';
-import { getLocalKaras, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../../api/local';
+import { getLocalKaras, deleteDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../../api/local';
 
 class KaraDownload extends Component {
 
@@ -156,6 +156,8 @@ class KaraDownload extends Component {
 								/>
 							</Col>
 							<Col>
+								<Button type="primary" key="queueDelete" onClick={deleteDownloadQueue}>Cleanup</Button>
+								&nbsp;
 								<Button type="primary" key="queueStart" onClick={putToDownloadQueueStart}>Start</Button>
 								&nbsp;
 								<Button type="primary" key="queuePause" onClick={putToDownloadQueuePause}>Pause</Button>
