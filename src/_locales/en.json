@@ -237,7 +237,8 @@
 	"ENGINEDISPLAYAVATAR": "Display avatar in karaokes",
 	"WEBAPPMODE": "Public interface mode",
 	"WEBAPPMODE_CLOSED": "Closed",
-	"WEBAPPMODE_LIMITED": "Song information and playlists only",
+	"WEBAPPMODE_LIMITED": "Song information and playlists only",,
+	"WEBAPPMODE_LIMITED_NAME": "Restricted mode",
 	"WEBAPPMODE_OPEN": "Opened (default)",
 	"WEBAPPMODE_CLOSED_API_MESSAGE": "Sorrymasen, API is disabled right now.",
 	"WEBAPPMODE_CLOSED_MESSAGE": "Stop! We're closed right now.",
@@ -571,6 +572,5 @@
 	"PROFILE_ONLINE_DELETED": "Your online profile was successfuly deleted",
 	"INSTANCE_NAME": "Server name",
 	"INSTANCE_NAME_SHORT": "Server",
-	"ADD_RANDOM_KARAS": "Add random songs",
-	"WEBAPPMODE_LIMITED_NAME": "WEBAPPMODE_LIMITED_NAME"
+	"ADD_RANDOM_KARAS": "Add random songs"
 }
