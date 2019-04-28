@@ -75,12 +75,16 @@ export async function mergeConfig(newConfig, oldConfig) {
 		});
 	}
 
+	// Toggling stats
+	if (config.Online.Stats) {
+		initStats(isEqual(newConfig, oldConfig));
+	} else {
+		stopStats();
+	}
+
 	setConfig(newConfig);
 	setSongPoll(config.Karaoke.Poll.Enabled);
-	// Toggling stats
-	config.Online.Stats
-		? initStats()
-		: stopStats();
+
 	// Toggling and updating settings
 	setState({private: config.Karaoke.Private});
 	configureHost();
