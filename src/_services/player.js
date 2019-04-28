@@ -8,7 +8,7 @@ import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
 import {previousSong, nextSong, getCurrentSong} from './playlist';
-import promiseRetry from 'promise.retry';
+import retry from 'p-retry';
 
 const sleep = promisify(setTimeout);
 
@@ -20,8 +20,8 @@ async function getPlayingSong(now) {
 		try {
 			const kara = await getCurrentSong();
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
-			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length-4)}`);
-			await promiseRetry(play({
+			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
+			await retry(() => play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
 				gain: kara.gain,
@@ -29,10 +29,9 @@ async function getPlayingSong(now) {
 				avatar: kara.avatar,
 				duration: kara.duration
 			}), {
-				times: 2,
-				onerror: (err, index) => {
-					stop();
-					logger.warn(`[Player] Failed to load media (attempt ${index}): ${err}`);
+				retries: 3,
+				onFailedAttempt: error => {
+					logger.warn(`[Player] Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
 				}
 			});
 			setState({currentlyPlayingKara: kara.kid});
@@ -40,11 +39,12 @@ async function getPlayingSong(now) {
 			updateUserQuotas(kara);
 			if (getConfig().Karaoke.Poll.Enabled) startPoll();
 		} catch(err) {
-			logger.error(`[Player] Error during song playback : ${err}`);
+			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
 			if (getState().status !== 'stop') {
 				logger.warn('[Player] Skipping playback for this song');
 				next();
 			} else {
+				logger.warn('[Player] Stopping karaoke due to error');
 				stopPlayer(true);
 			}
 		} finally {
@@ -77,12 +77,9 @@ export async function playerEnding() {
 			currentlyPlayingKara: -1,
 			counterToJingle: 0
 		});
-		await promiseRetry(playJingle(), {
-			times: 2,
-			onerror: (err, index) => {
-				stop();
-				logger.warn(`[Player] Failed to load jingle (attempt ${index}): ${err}`);
-			}
+		await retry(playJingle, {
+			retries: 3,
+			onFailedAttempt: error => logger.warn(`[Player] Failed to play jingle, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`)
 		});
 	} else {
 		try {
@@ -146,7 +143,11 @@ export async function playPlayer(now) {
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
 	if (state.status === 'stop' || now) {
 		// Switch to playing mode and ask which karaoke to play next
-		await getPlayingSong(now);
+		try {
+			await getPlayingSong(now);
+		} catch(err) {
+			throw err;
+		}
 		setState({status: 'play'});
 	} else {
 		resume();
