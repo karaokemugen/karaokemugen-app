@@ -446,6 +446,7 @@ export async function createUser(user, opts) {
 	if (user.type === 2) user.flag_online = false;
 	await newUserIntegrityChecks(user);
 	if (user.login.includes('@')) {
+		user.nickname = user.login.split('@')[0];
 		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };
 		if (!+getConfig().Online.Users) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
 		if (opts.createRemote) await createRemoteUser(user);
@@ -454,6 +455,7 @@ export async function createUser(user, opts) {
 	try {
 		await db.addUser(user);
 		if (user.type < 2) logger.info(`[User] Created user ${user.login}`);
+		delete user.password;
 		logger.debug(`[User] User data : ${JSON.stringify(user, null, 2)}`);
 		return true;
 	} catch (err) {
