@@ -571,7 +571,7 @@ export async function updateSongsLeft(username, playlist_id) {
 			break;
 		case 2:
 			const time = await getSongTimeSpentForUser(playlist_id,username);
-			quotaLeft = +conf.Karaoke.Quota.Time - time.timeSpent;
+			quotaLeft = +conf.Karaoke.Quota.Time - time;
 		}
 	} else {
 		quotaLeft = -1;
