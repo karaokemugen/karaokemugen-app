@@ -77,7 +77,7 @@ export async function mergeConfig(newConfig, oldConfig) {
 
 	// Toggling stats
 	if (config.Online.Stats) {
-		initStats(isEqual(newConfig, oldConfig));
+		initStats(newConfig.Online.Stats === oldConfig.Online.Stats);
 	} else {
 		stopStats();
 	}
