@@ -63,7 +63,7 @@ function initQueue() {
 		if (taskCounter >= 5) {
 			logger.debug('[Download] Triggering database refresh');
 			compareKarasChecksum(true);
-			refreshSeriesAfterDBChange().then(refreshKarasAfterDBChange());
+			refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange());
 			taskCounter = 0;
 		}
 		emitQueueStatus('updated');
@@ -75,7 +75,7 @@ function initQueue() {
 	q.on('empty', () => emitQueueStatus('updated'));
 	q.on('drain', () => {
 		logger.info('[Download] Ano ne, ano ne! I finished all my downloads!');
-		refreshSeriesAfterDBChange().then(refreshKarasAfterDBChange());
+		refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange());
 		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');

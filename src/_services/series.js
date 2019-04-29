@@ -52,7 +52,7 @@ export async function deleteSerie(sid) {
 	]);
 	// Refreshing karas is done asynchronously
 	compareKarasChecksum(true);
-	refreshKaraSeries().then(refreshKaras());
+	refreshKaraSeries().then(() => refreshKaras());
 }
 
 export async function addSerie(serieObj, opts = {refresh: true}) {
@@ -99,6 +99,5 @@ export async function editSerie(sid, serieObj, opts = { refresh: true }) {
 
 export async function refreshSeriesAfterDBChange() {
 	await refreshSeries();
-	await refreshKaraSeries();
-	await refreshKaras();
+	refreshKaraSeries().then(() => refreshKaras());
 }
