@@ -19,7 +19,7 @@ export default class Downloader {
 	  this.onEnd = null;
 	  this.fileErrors = [];
 	  if (opts.bar)	this.bar = new _cliProgress.Bar({
-			format:  'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}',
+			format:  'Downloading {bar} {percentage}% {value}/{total} Mb',
 			stopOnComplete: true
 	  }, _cliProgress.Presets.shades_classic);
 	}
