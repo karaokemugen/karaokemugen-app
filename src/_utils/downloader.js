@@ -45,10 +45,7 @@ export default class Downloader {
 						'user-agent': `KaraokeMugen/${getState().version.number}`
 					}
 				};
-				if (this.opts.auth) options.auth = {
-					username: this.opts.auth.user,
-					password: this.opts.auth.pass
-				};
+				if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
 				got(nextUrl, options)
 					.then(response => {
 						resolve(response.headers['content-length']);
