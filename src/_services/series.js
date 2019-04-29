@@ -1,9 +1,12 @@
 import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
-import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
-import {profile} from '../_common/utils/logger';
+import {refreshSeries, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, refreshKaraSeries} from '../_dao/series';
+import {profile} from '../_utils/logger';
+import logger from 'winston';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 import uuidV4 from 'uuid/v4';
-import { sanitizeFile } from '../_common/utils/files';
+import { sanitizeFile } from '../_utils/files';
+import { refreshKaras } from '../_dao/kara';
+import { compareKarasChecksum } from '../_dao/database';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
@@ -12,6 +15,14 @@ export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
 	return ret;
 }
+
+export async function getOrAddSerieID(serieObj) {
+	const serie = await selectSerieByName(serieObj.name);
+	if (serie) return serie.sid;
+	//Series does not exist, create it.
+	return await addSerie(serieObj);
+}
+
 
 export function formatSeriesList(seriesList, from, count) {
 	return {
@@ -24,51 +35,69 @@ export function formatSeriesList(seriesList, from, count) {
 	};
 }
 
-export async function getSerie(serie_id) {
-	const serie = await selectSerie(serie_id);
+export async function getSerie(sid) {
+	const serie = await selectSerie(sid);
 	if (!serie) throw 'Series ID unknown';
 	return serie;
 }
 
-export async function deleteSerie(serie_id) {
-	//Not removing from database, a regeneration will do the trick.
-	const serie = await getSerie(serie_id);
+export async function deleteSerie(sid) {
+	const serie = await getSerie(sid);
 	if (!serie) throw 'Series ID unknown';
-	await removeSeriesFile(serie.name);
-	await removeSerieInKaras(serie.name);
-	await removeSerie(serie_id);
-}
-
-export async function getOrAddSerieID(serieObj) {
-	const series = await selectSerieByName(serieObj.name);
-	if (series) return series.serie_id;
-	//Series does not exist, create it.
-	const id = await addSerie(serieObj);
-	return id;
-}
-
-export async function addSerie(serieObj) {
-	if (await selectSerieByName(serieObj.name)) throw 'Series original name already exists';
-	serieObj.sid = uuidV4();
-	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
-	const newSerieID = await insertSerie(serieObj);
+	await removeSerie(sid);
 	await Promise.all([
-		insertSeriei18n(newSerieID, serieObj),
+		refreshSeries(),
+		removeSeriesFile(serie.name),
+		removeSerieInKaras(serie.name),
+	]);
+	// Refreshing karas is done asynchronously
+	compareKarasChecksum(true);
+	refreshKaraSeries().then(refreshKaras());
+}
+
+export async function addSerie(serieObj, opts = {refresh: true}) {
+	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
+	const serie = await selectSerieByName(serieObj.name);
+	if (serie) {
+		logger.warn(`Series original name already exists "${serieObj.name}"`);
+		return serie.sid;
+	}
+	if (!serieObj.sid) serieObj.sid = uuidV4();
+	if (!serieObj.seriefile) serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
+
+	await insertSerie(serieObj);
+	await Promise.all([
+		insertSeriei18n(serieObj),
 		writeSeriesFile(serieObj)
 	]);
-	return newSerieID;
+
+	if (opts.refresh) {
+		compareKarasChecksum(true);
+		await refreshSeriesAfterDBChange();
+	}
+	return serieObj.sid;
 }
 
-export async function editSerie(serie_id,serieObj) {
-	const oldSerie = await getSerie(serie_id);
+export async function editSerie(sid, serieObj, opts = { refresh: true }) {
+	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
+	const oldSerie = await getSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
 	if (oldSerie.name !== serieObj.name) {
 		await replaceSerieInKaras(oldSerie.name, serieObj.name);
 		await removeSeriesFile(oldSerie.name);
 	}
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
-	return Promise.all([
-		updateSerie(serie_id, serieObj),
+	await Promise.all([
+		updateSerie(serieObj),
 		writeSeriesFile(serieObj)
 	]);
+	if (opts.refresh) {
+		compareKarasChecksum(true);
+		await refreshSeriesAfterDBChange();
+	}
+}
+
+export async function refreshSeriesAfterDBChange() {
+	await refreshSeries();
+	refreshKaraSeries().then(refreshKaras());
 }

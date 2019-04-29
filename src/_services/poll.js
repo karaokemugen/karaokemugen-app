@@ -1,14 +1,14 @@
 
-import {on} from '../_common/utils/pubsub';
-import {getConfig} from '../_common/utils/config';
+import {on} from '../_utils/pubsub';
+import {getConfig} from '../_utils/config';
 import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, getPlaylistContentsMini} from '../_services/playlist';
 import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
 import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
 import logger from 'winston';
-import {timer} from '../_common/utils/timer';
-import {getState, setState} from '../_common/utils/state';
+import {timer} from '../_utils/timer';
+import {getState, setState} from '../_utils/state';
 const sleep = promisify(setTimeout);
 
 let poll = [];
@@ -23,8 +23,8 @@ on('stateUpdated', state => {
 
 export async function timerPoll() {
 	const internalDate = pollDate = new Date();
-	clock = new timer(() => {}, getConfig().EngineSongPollTimeout * 1000);
-	await sleep(getConfig().EngineSongPollTimeout * 1000);
+	clock = new timer(() => {}, getConfig().Karaoke.Poll.Timeout * 1000);
+	await sleep(getConfig().Karaoke.Poll.Timeout * 1000);
 	if (internalDate === pollDate) endPoll();
 }
 
@@ -47,21 +47,16 @@ export function stopPoll() {
 
 export async function getPollResults() {
 	logger.debug('[Poll] Getting poll results');
-	const maxVotes = Math.max.apply(Math,poll.map((choice) => {
-		return choice.votes;
-	}));
+	const maxVotes = Math.max.apply(Math, poll.map(choice => choice.votes ));
 	// We check if winner isn't the only one...
-	let winners = [];
-	for (const choice of poll) {
-		if (+choice.votes === +maxVotes) winners.push(choice);
-	}
+	let winners = poll.filter(c => +c.votes === +maxVotes);
 	let winner = sample(winners);
 	winner = translateKaraInfo(winner);
 	const playlist_id = getState().currentPlaylistID;
 	await copyKaraToPlaylist([winner[0].playlistcontent_id],playlist_id);
 	emitWS('playlistInfoUpdated',playlist_id);
 	emitWS('playlistContentsUpdated',playlist_id);
-	const kara = `${winner[0].serie} - ${winner[0].songtype_i18n_short}${winner[0].songorder} - ${winner[0].title}`;
+	const kara = `${winner[0].serie} - ${winner[0].songtypes[0].replace('TYPE_','')}${winner[0].songorder} - ${winner[0].title}`;
 	logger.info(`[Poll] Winner is "${kara}" with ${maxVotes} votes`);
 	return {
 		votes: maxVotes,
@@ -115,15 +110,15 @@ export async function startPoll() {
 		return false;
 	}
 	const availableKaras = isAllKarasInPlaylist(pubpl, curpl);
-	let pollChoices = conf.EngineSongPollChoices;
+	let pollChoices = conf.Karaoke.Poll.Choices;
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
-	poll = sampleSize(availableKaras,pollChoices);
+	poll = sampleSize(availableKaras, pollChoices);
 	//Init votes to 0 for each poll item
 	for (const index in poll) {
 		poll[index].votes = 0;
 	}
 	poll = translateKaraInfo(poll);
-	logger.debug('[Poll] New poll : '+JSON.stringify(poll));
+	logger.debug(`[Poll] New poll : ${JSON.stringify(poll)}`);
 	emitWS('newSongPoll',poll);
 	timerPoll();
 }
@@ -140,8 +135,8 @@ export async function getPoll(token, lang, from, size) {
 	return {
 		infos: {
 			count: poll.length,
-			from: parseInt(from,10),
-			to: parseInt(from,10)+parseInt(size,10)
+			from: +from,
+			to: +from + +size
 		},
 		poll: poll,
 		timeLeft: clock.getTimeLeft(),

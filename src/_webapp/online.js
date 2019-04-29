@@ -1,25 +1,30 @@
-import {configureHost, getConfig} from '../_common/utils/config';
+import {configureHost, getConfig} from '../_utils/config';
 import got from 'got';
+import logger from 'winston';
+import { getState } from '../_utils/state';
 
 export async function publishURL() {
 	configureHost();
 	const conf = getConfig();
-	const localHost = conf.EngineDisplayConnectionInfoHost || conf.osHost;
+	const localHost = conf.Karaoke.Display.ConnectionInfo.Host || getState().osHost;
 	try {
-		await got(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, {
-			body: JSON.stringify({
+		await got(`https://${conf.Online.Host}/api/shortener`, {
+			body: {
 				localIP: localHost,
-				localPort: conf.appFrontendPort,
-				IID: conf.appInstanceID
-			})
+				localPort: conf.Frontend.Port,
+				IID: conf.App.InstanceID
+			},
+			form: true
 		});
+		logger.debug('[ShortURL] Server accepted our publish');
 		configureHost();
 	} catch(err) {
-		throw `Failed publishing our IP to ${conf.OnlineHost} : ${err}`;
+		logger.error(`Failed publishing our IP to ${conf.Online.Host} : ${err}`);
 	}
 }
 
-export async function initOnlineSystem() {
+export async function initOnlineURLSystem() {
 	// This is the only thing it does for now. Will be extended later.
+	logger.debug('[ShortURL] Publishing...');
 	return await publishURL();
 }

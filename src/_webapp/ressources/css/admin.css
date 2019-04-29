@@ -31,7 +31,7 @@
     background-color: #304c725c;
     border: solid #585b65;
     border-width: 0px 0px;
-	padding: 16px 0px;
+	padding: 7px 0px;
 }
 .subCategoryGroupPanel {
     background-color: #41485e61;
@@ -116,14 +116,21 @@ span[name="checkboxKara"][checked]:before, [name="selectAllKaras"][checked]:befo
 }
 
 
-.panel[cantransferkara="false"] .actionDiv > button[name="transferKara"], 
+.plDashboard[data-playlist_id="-2"]  .actionDiv > button[name="addRandomKaras"],
+.plDashboard[data-playlist_id="-3"]  .actionDiv > button[name="addRandomKaras"],
+.plDashboard[data-playlist_id="-4"]  .actionDiv > button[name="addRandomKaras"],
+.panel[canaddkara="false"]  .actionDiv > button[name="addRandomKaras"],
+.panel[cantransferkara="false"]  .actionDiv > button[name="addRandomKaras"]  {
+	display: none;
+}
+
 .plDashboard[data-playlist_id="-1"]  .actionDiv > button[name="transferKara"],
 .plDashboard[data-playlist_id="-4"]  .actionDiv > button[name="transferKara"]{
 	display: none;
 }
 
-.panel[canaddkara="false"] .actionDiv > button[name="addKara"]
-.panel[canaddkara="false"] .actionDiv > button[name="addAllKara"] {
+.panel[canaddkara="false"] .actionDiv > button[name="addKara"],
+.panel[canaddkara="false"] .actionDiv > button[name="addAllKaras"] {
 	display: none;
 }
 
@@ -260,10 +267,10 @@ span:not(.hideCommands) {
 .panel-heading > div > div:nth-child(2) {
 	padding-left: 4px;
 }
-.plDashboard[data-flag_visible="1"] [name="flag_visible"] > i.glyphicon-eye-close {
+.plDashboard[data-flag_visible="true"] [name="flag_visible"] > i.glyphicon-eye-close {
 	display: none;
 }
-.plDashboard[data-flag_visible="0"] [name="flag_visible"] > i.glyphicon-eye-open {
+.plDashboard[data-flag_visible="false"] [name="flag_visible"] > i.glyphicon-eye-open {
 	display: none;
 }
 
@@ -280,7 +287,7 @@ span:not(.hideCommands) {
 }
 
 .plDashboard[data-playlist_id^="-"] .flagsContainer button,
-.plDashboard[data-flag_favorites="1"] .flagsContainer button {
+.plDashboard[data-flag_favorites="true"] .flagsContainer button {
 	display: none;
 }
 
@@ -306,10 +313,19 @@ span:not(.hideCommands) {
 	display: none;
 }
 
+/* supprimer ?*/
 .panel[canAddKara="false"] button[name="addAllKaras"] {
 	display: none;
 }
 
+button[name="addRandomKaras"] {
+    padding: 5px 9px;
+}
+button[name="addRandomKaras"] > img{
+    margin-top: -6px;
+    width: 18px;
+    filter: brightness(90%);
+}
 
 .plDashboard[data-playlist_id="-1"] .actionDiv > button[name="deleteKara"],
 .plDashboard[data-playlist_id="-4"] .actionDiv > button[name="deleteKara"]  {

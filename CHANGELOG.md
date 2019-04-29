@@ -1,5 +1,54 @@
 # Versions
 
+## v2.5.0 "Konata Karaokiste" - 30/04/2019
+
+This is a major release.
+
+### New features
+
+- Songs can now be downloaded individually from a Karaoke Mugen Server (like `kara.moe`) instead of updating the complete karaoke base every time. Go to the Karas -> Downloads submenu in the system panel. This feature is still in beta and we would love feedback (#339)
+- Users can now create online accounts on a Karaoke Mugen Server, which means favorites and profile info are stored online and not on the local Karaoke Mugen application. Online accounts are enabled by default. To create/login using local accounts, remove the `kara.moe` part of the Server field on the login/new account form (#303)
+- Added tag CREDITLESS for creditless songs (#382)
+- Added tag COVER for cover songs (#393)
+- Added tag DRAMA for songs from TV drama shows (#393)
+- Added tag WIIU for songs from Nintendo Wii U games
+- Added tag FANDUB for fandubbed videos (#418)
+- Already present since 2.4.1 : Stats are now uploaded periodically to Karaoke Mugen Server (if the instance admin agrees) (#377)
+
+### Improvements
+
+- Configuration storage has been completely revamped and is now a YAML file instead of the old INI format. Your old configuration file will be automatically imported at launch (#355)
+- Favorites are now handled in a simpler way. Favorites playlists are no longer used, instead Favorites are stored on a separate table in database. You can safely delete any favorites playlist after upgrading to 2.5.0 (#389)
+- Karaoke Mugen now uses a PostgreSQL database instead of a SQLite3 one, leading to cleaner code and faster response times. Your old SQLite3 database will be imported at launch (#379)
+- (Already present since 2.4.1) Initialization catchphrases(tm) are now displayed on the welcome screen (#375)
+- MP3 playback is now more dynamic with some visualization effects (#349)
+- Those who requested a song will now see their avatar next to the song information on screen at the start and end of a song. (#283)
+- Downloadable groups can now be filtered / blacklisted
+- New guest names and catchphrases!
+- Transitions between songs are now shorter as we do not reload the karaoke background image at end of song
+- Blacklist is now regenerated after a database generation to keep it consistent
+- New option `--noBaseCheck` to disable data file checks to save time (when you're sure the base has not changed)
+- New option `--reset` to reset user data. WARNING : this wipes users, stats, playlists, etc.
+- Configuration is not updated anymore in real time if you modify the config file while Karaoke Mugen is running (it caused too many problems). You'll need to modify the config file while Karaoke Mugen is stopped for your changes to take effect.
+- All communication with Karaoke Mugen Server is now done in HTTPS.
+- Executable file has been greatly reduced by replacing some packages with simpler, lighter versions with similar functionality
+- Preview generation should be more consistent now
+- When creating a new karaoke, mp4 videos are web-optimized automatically
+- Karaoke operators can now add several random karaokes to the current playlist by pressing a button on the admin interface, to fill a playlist for example (#392).
+- Users can now add a song more than once in a playlist (if the required setting is enabled) (#388)
+
+### Fixes
+
+- Fixed song search so it now also searches in series names aliases (#387)
+- Fixed Karaoke Mugen allowing users to put commas in series names (#386)
+- Fixed Karaoke Mugen adding you as an author to a karaoke you're editing if there's no author already in metadata info (#385)
+- Fixed series name not translated with user's browser's locale in control panel (#384)
+- Fixed background listing taking non-image files into account in the `app/background` directory, which could cause mpv to crash.
+- Fixed delete button hidden behind menu in mobile public playlist view (#399)
+- When the interface is in restricted mode, a modal pops up to explain to the user that it cannot add songs anymore. (#404)
+- Guests don't see the favorites button anymore (#415)
+- Direct3D is not the default output video driver for mpv anymore on Windows.
+
 ## v2.4.2 "Juri Joueuse" - 13/12/2018
 
 This is a bug fix release.

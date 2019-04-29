@@ -1,20 +1,21 @@
 import logger from 'winston';
-import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
-import {resolve} from 'path';
-import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../_common/utils/files';
+import {resolvedPathBackgrounds, getConfig} from '../_utils/config';
+import {resolve, extname} from 'path';
+import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../_utils/files';
 import sample from 'lodash.sample';
 import sizeOf from 'image-size';
 import {getSingleJingle, buildJinglesList} from './jingles';
 import {buildQRCode} from './qrcode';
-import {spawn} from 'child_process';
 import {exit} from '../_services/engine';
 import {playerEnding} from '../_services/player';
 import {getID3} from './id3tag';
 import mpv from 'node-mpv';
 import {promisify} from 'util';
 import {endPoll} from '../_services/poll';
-import {getState, setState} from '../_common/utils/state';
-
+import {getState, setState} from '../_utils/state';
+import execa from 'execa';
+import semver from 'semver';
+import { imageFileTypes } from '../_services/constants';
 
 const sleep = promisify(setTimeout);
 
@@ -51,7 +52,8 @@ async function extractAllBackgroundFiles() {
 	for (const resolvedPath of resolvedPathBackgrounds()) {
 		backgroundFiles = backgroundFiles.concat(await extractBackgroundFiles(resolvedPath));
 	}
-	return backgroundFiles;
+	// Return only files which have an extension included in the imageFileTypes array
+	return backgroundFiles.filter(f => imageFileTypes.includes(extname(f).substring(1)));
 }
 
 async function extractBackgroundFiles(backgroundDir) {
@@ -65,15 +67,14 @@ async function extractBackgroundFiles(backgroundDir) {
 	return backgroundFiles;
 }
 
-async function loadBackground(mode) {
+export async function loadBackground() {
 	const conf = getConfig();
-	if (!mode) mode = 'replace';
 	// Default background
 	let backgroundFiles = [];
-	const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
+	const defaultImageFile = resolve(getState().appPath,conf.System.Path.Temp,'default.jpg');
 	let backgroundImageFile = defaultImageFile;
-	if (conf.PlayerBackground) {
-		backgroundImageFile = resolve(conf.appPath,conf.PathBackgrounds,conf.PlayerBackground);
+	if (conf.Player.Background) {
+		backgroundImageFile = resolve(getState().appPath,conf.System.Path.Backgrounds,conf.Player.Background);
 		if (await asyncExists(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
 			logger.warn(`[Player] Unable to find background file ${backgroundImageFile}, reverting to default one`);
@@ -87,30 +88,30 @@ async function loadBackground(mode) {
 		if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);
 	}
 	backgroundImageFile = sample(backgroundFiles);
-	logger.debug('[Player] Background : '+backgroundImageFile);
+	logger.debug(`[Player] Background ${backgroundImageFile}`);
 	let videofilter = '';
-	if (+conf.EngineDisplayConnectionInfoQRCode &&
-		+conf.EngineDisplayConnectionInfo ) {
+	if (conf.Karaoke.Display.ConnectionInfo.QRCode &&
+		conf.Karaoke.Display.ConnectionInfo.Enabled ) {
+		//Positionning QR Code according to video size
 		const dimensions = sizeOf(backgroundImageFile);
-		let QRCodeWidth;
-		let QRCodeHeight;
+		let QRCodeWidth, QRCodeHeight;
 		QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.10);
 
 		const posX = Math.floor(dimensions.width*0.015);
 		const posY = Math.floor(dimensions.height*0.015);
-		const qrCode = resolve(conf.appPath,conf.PathTemp,'qrcode.png').replace(/\\/g,'/');
+		const qrCode = resolve(getState().appPath,conf.System.Path.Temp,'qrcode.png').replace(/\\/g,'/');
 		videofilter = `lavfi-complex=movie=\\'${qrCode}\\'[logo];[logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1]overlay=${posX}:${posY}[vo]`;
 	}
 	try {
-		logger.debug(`[Player] videofilter : ${videofilter}`);
-		let loads = [
-			player.load(backgroundImageFile,mode,[videofilter])
+		logger.debug(`[Player] Background videofilter : ${videofilter}`);
+		const loads = [
+			player.load(backgroundImageFile, 'replace', [videofilter])
 		];
-		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile,mode,videofilter));
+		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile, 'replace', [videofilter]));
 		await Promise.all(loads);
-		if (mode === 'replace') displayInfo();
+		displayInfo();
 	} catch(err) {
-		logger.error(`[Player] Unable to load background in ${mode} mode : ${JSON.stringify(err)}`);
+		logger.error(`[Player] Unable to load background : ${JSON.stringify(err)}`);
 	}
 }
 
@@ -119,32 +120,22 @@ export async function initPlayerSystem() {
 	playerState.fullscreen = state.fullscreen;
 	playerState.stayontop = state.ontop;
 	buildJinglesList();
-	const conf = getConfig();
-	await buildQRCode(conf.osURL);
+	await buildQRCode(state.osURL);
 	logger.debug('[Player] QRCode generated');
 	await startmpv();
 	emitPlayerState();
 	logger.debug('[Player] Player is READY');
 }
 
-function getmpvVersion(path) {
-	return new Promise((resolve) => {
-		const proc = spawn(path,['--version'], {encoding: 'utf8'});
-		let output = '';
-		proc.stdout.on('data',(data) => {
-			output += data.toString();
-		});
-		proc.on('close', () => {
-			//FIXME : test if output.split(' ')[1] is actually a valid version number
-			// using the semver format.
-			resolve (output.split(' ')[1]);
-		});
-	});
+async function getmpvVersion(path) {
+	const output = await execa(path,['--version']);
+	return semver.valid(output.stdout.split(' ')[1]);
 }
 
 async function startmpv() {
 	const conf = getConfig();
-	if (+conf.PlayerMonitor) {
+	const state = getState();
+	if (conf.Player.Monitor) {
 		monitorEnabled = true;
 	} else {
 		monitorEnabled = false;
@@ -155,75 +146,69 @@ async function startmpv() {
 		'--no-border',
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
-		'--log-file='+resolve(conf.appPath,'mpv.log'),
-		'--volume='+playerState.volume,
-		'--input-conf='+resolve(conf.appPath,conf.PathTemp,'input.conf'),
+		`--log-file=${resolve(state.appPath,'mpv.log')}`,
+		`--volume=${+playerState.volume}`,
+		`--input-conf=${resolve(state.appPath,conf.System.Path.Temp,'input.conf')}`,
 		'--autoload-files=no'
 	];
-	if (+conf.PlayerPIP) {
-		mpvOptions.push(`--autofit=${conf.PlayerPIPSize}%x${conf.PlayerPIPSize}%`);
+	if (conf.Player.PIP.Enabled) {
+		mpvOptions.push(`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`);
 		// By default, center.
 		let positionX = 50;
 		let positionY = 50;
-		if (conf.PlayerPIPPositionX === 'Left') positionX = 1;
-		if (conf.PlayerPIPPositionX === 'Center') positionX = 50;
-		if (conf.PlayerPIPPositionX === 'Right') positionX = 99;
-		if (conf.PlayerPIPPositionY === 'Top') positionY = 5;
-		if (conf.PlayerPIPPositionY === 'Center') positionY = 50;
-		if (conf.PlayerPIPPositionY === 'Bottom') positionY = 99;
+		if (conf.Player.PIP.PositionX === 'Left') positionX = 1;
+		if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
+		if (conf.Player.PIP.PositionX === 'Right') positionX = 99;
+		if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
+		if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
+		if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
 		mpvOptions.push(`--geometry=${positionX}%:${positionY}%`);
 	}
-	if (conf.mpvVideoOutput) {
-		mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
-	} else {
-		//Force direct3d for Windows users
-		//This is an issue with mpv's recent versions as direct3d bugs out some videos
-		//and backgrounds
-		//This is not a problem with the bundled 0.27 version, but is with 0.28
-		//FIXME : Remove this if a fixed mpv for windows is released and direct3d works great again
-		if (conf.os === 'win32') mpvOptions.push('--vo=direct3d');
-	}
-	if (conf.PlayerScreen) {
-		mpvOptions.push(`--screen=${conf.PlayerScreen}`);
-		mpvOptions.push(`--fs-screen=${conf.PlayerScreen}`);
+	if (conf.Player.mpvVideoOutput) mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
+	if (conf.Player.Screen) {
+		mpvOptions.push(`--screen=${conf.Player.Screen}`);
+		mpvOptions.push(`--fs-screen=${conf.Player.Screen}`);
 	}
 	// Fullscreen is disabled if pipmode is set.
-	if (+conf.PlayerFullscreen && !+conf.PlayerPIP) {
+	if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
 		mpvOptions.push('--fullscreen');
 		playerState.fullscreen = true;
 	}
-	if (+conf.PlayerStayOnTop) {
+	if (conf.Player.StayOnTop) {
 		playerState.stayontop = true;
 		mpvOptions.push('--ontop');
 	}
-	if (+conf.PlayerNoHud) mpvOptions.push('--no-osc');
-	if (+conf.PlayerNoBar) mpvOptions.push('--no-osd-bar');
-	//On all platforms, check if we're using mpv at least version 0.20 or abort saying the mpv provided is too old.
+	if (conf.Player.NoHud) mpvOptions.push('--no-osc');
+	if (conf.Player.NoBar) mpvOptions.push('--no-osd-bar');
+	//On all platforms, check if we're using mpv at least version 0.25 or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
-	const mpvVersion = await getmpvVersion(conf.BinmpvPath);
+	let mpvVersion = await getmpvVersion(state.binPath.mpv);
+	mpvVersion = mpvVersion.split('-')[0];
 	logger.debug(`[Player] mpv version : ${mpvVersion}`);
 
 	//If we're on macOS, add --no-native-fs to get a real
 	// fullscreen experience on recent macOS versions.
-	if (parseInt(mpvVersion.split('.')[1], 10) < 25) {
+	if (!semver.satisfies(mpvVersion, '>=0.25.0')) {
 		// Version is too old. Abort.
 		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
-		logger.error(`[Player] mpv binary : ${conf.BinmpvPath}`);
+		logger.error(`[Player] mpv binary : ${state.binPath.mpv}`);
 		logger.error('[Player] Exiting due to obsolete mpv version');
-		exit(1);
+		await exit(1);
 	}
-	if (conf.os === 'darwin' && parseInt(mpvVersion.split('.')[1], 10) > 26) mpvOptions.push('--no-native-fs');
+	if (state.os === 'darwin' && semver.satisfies(mpvVersion, '0.27.x')) mpvOptions.push('--no-native-fs');
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
-	logger.debug(`[Player] mpv binary : ${conf.BinmpvPath}`);
+	logger.debug(`[Player] mpv binary : ${state.binPath.mpv}`);
 	let socket;
-	if (conf.os === 'win32') socket = '\\\\.\\pipe\\mpvsocket';
-	if (conf.os === 'darwin' || conf.os === 'linux') socket = '/tmp/km-node-mpvsocket';
+	// Name socket file accordingly depending on OS.
+	state.os === 'win32'
+		? socket = '\\\\.\\pipe\\mpvsocket'
+		: socket = '/tmp/km-node-mpvsocket';
 	player = new mpv(
 		{
 			ipc_command: '--input-ipc-server',
 			auto_restart: true,
 			audio_only: false,
-			binary: conf.BinmpvPath,
+			binary: state.binPath.mpv,
 			socket: socket,
 			time_update: 1,
 			verbose: false,
@@ -241,22 +226,22 @@ async function startmpv() {
 			'--no-osc',
 			'--no-osd-bar',
 			'--geometry=1%:99%',
-			`--autofit=${conf.PlayerPIPSize}%x${conf.PlayerPIPSize}%`,
+			`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`,
 			'--autoload-files=no'
 		];
-		if (conf.mpvVideoOutput) {
-			mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
+		if (conf.Player.mpvVideoOutput) {
+			mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
 		} else {
 			//Force direct3d for Windows users
-			if (conf.os === 'win32') mpvOptions.push('--vo=direct3d');
+			if (state.os === 'win32') mpvOptions.push('--vo=direct3d');
 		}
 		playerMonitor = new mpv(
 			{
 				ipc_command: '--input-ipc-server',
 				auto_restart: true,
 				audio_only: false,
-				binary: conf.BinmpvPath,
-				socket: socket+'2',
+				binary: state.binPath.mpv,
+				socket: `${socket}2`,
 				time_update: 1,
 				verbose: false,
 				debug: false,
@@ -267,7 +252,7 @@ async function startmpv() {
 
 	// Starting up mpv
 	try {
-		let promises = [
+		const promises = [
 			player.start()
 		];
 		if (monitorEnabled) promises.push(playerMonitor.start());
@@ -280,18 +265,20 @@ async function startmpv() {
 	player.observeProperty('sub-text',13);
 	player.observeProperty('volume',14);
 	player.observeProperty('duration',15);
-	player.on('statuschange',(status) => {
+	player.observeProperty('playtime-remaining',16);
+	player.observeProperty('eof-reached',17);
+	player.on('statuschange', status => {
 		// If we're displaying an image, it means it's the pause inbetween songs
-		if (playerState._playing && status && status.filename && status.filename.match(/\.(png|jp.?g|gif)/i)) {
+		if (playerState._playing && status && ((status['playtime-remaining'] !== null && status['playtime-remaining'] >= 0 && status['playtime-remaining'] <= 1 && status.pause) || status['eof-reached']) ) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			playerState.playing = false;
 			playerState._playing = false;
 			playerState.playerstatus = 'stop';
 			player.pause();
 			if (monitorEnabled) playerMonitor.pause();
-			playerState.mediaType = 'background';
 			playerEnding();
 		}
+
 		playerState.mutestatus = status.mute;
 		playerState.duration = status.duration;
 		playerState.subtext = status['sub-text'];
@@ -313,7 +300,7 @@ async function startmpv() {
 		if (monitorEnabled) playerMonitor.play();
 		emitPlayerState();
 	});
-	player.on('timeposition',(position) => {
+	player.on('timeposition', position => {
 		// Returns the position in seconds in the current song
 		playerState.timeposition = position;
 		emitPlayerState();
@@ -327,7 +314,7 @@ async function startmpv() {
 		const conf = getConfig();
 		// Stop poll if position reaches 10 seconds before end of song
 		if (Math.floor(position) >= Math.floor(playerState.duration - 10) && playerState.mediaType === 'song' &&
-		+conf.EngineSongPoll &&
+		conf.Karaoke.Poll.Enabled &&
 		!songNearEnd) {
 			songNearEnd = true;
 			endPoll();
@@ -343,24 +330,22 @@ export async function play(mediadata) {
 	logger.debug('[Player] Play event triggered');
 	playerState.playing = true;
 	//Search for media file in the different Pathmedias
-	const PathsMedias = conf.PathMedias.split('|');
-	const PathsSubs = conf.PathSubs.split('|');
 	let mediaFile;
 	let subFile;
 	try {
-		mediaFile = await resolveFileInDirs(mediadata.media,PathsMedias);
+		mediaFile = await resolveFileInDirs(mediadata.media, conf.System.Path.Medias);
 	} catch (err) {
 		logger.debug(`[Player] Error while resolving media path : ${err}`);
 		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
-		if (conf.PathMediasHTTP) {
-			mediaFile = `${conf.PathMediasHTTP}/${encodeURIComponent(mediadata.media)}`;
-			logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.PathMediasHTTP}`);
+		if (conf.System.Path.MediasHTTP) {
+			mediaFile = `${conf.System.Path.MediasHTTP}/${encodeURIComponent(mediadata.media)}`;
+			logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.System.Path.MediasHTTP}`);
 		} else {
-			throw `No media source for ${mediadata.media} (tried in ${PathsMedias.toString()} and HTTP source)`;
+			throw `No media source for ${mediadata.media} (tried in ${conf.System.Path.Medias.toString()} and HTTP source)`;
 		}
 	}
 	try {
-		if (mediadata.subfile !== 'dummy.ass') subFile = await resolveFileInDirs(mediadata.subfile,PathsSubs);
+		if (mediadata.subfile !== 'dummy.ass') subFile = await resolveFileInDirs(mediadata.subfile, conf.System.Path.Lyrics);
 	} catch(err) {
 		logger.debug(`[Player] Error while resolving subs path : ${err}`);
 		logger.warn(`[Player] Subs NOT FOUND : ${mediadata.subfile}`);
@@ -372,15 +357,27 @@ export async function play(mediadata) {
 		options.push(`replaygain-fallback=${mediadata.gain}`) ;
 
 		if (mediaFile.endsWith('.mp3')) {
-			//options.push('lavfi-complex=[aid1]asplit[ao][a];[a]showcqt[vo]');
+			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
+			// Courtesy of @nah :)
+			if (conf.Player.VisualizationEffects) {
+				if (mediadata.avatar && conf.Karaoke.Display.Avatar) {
+					options.push(`lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt=axis=0[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl];movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[logo][ovrl]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 7},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
+				} else {
+					options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt=axis=0[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
+				}
+			}
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
-				const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
+				const defaultImageFile = resolve(getState().appPath,conf.System.Path.Temp,'default.jpg');
 				options.push(`external-file=${defaultImageFile.replace(/\\/g,'/')}`);
 				options.push('force-window=yes');
 				options.push('image-display-duration=inf');
 				options.push('vid=1');
 			}
+		} else {
+			// If video, display avatar if it's defined.
+			// Again, lavfi-complex expert @nah comes to the rescue!
+			if (mediadata.avatar && conf.Karaoke.Display.Avatar) options.push(`lavfi-complex=movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 7},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
 		}
 		let loads = [player.load(mediaFile,'replace', options)];
 		if (monitorEnabled) loads.push(playerMonitor.load(mediaFile,'replace', options));
@@ -402,7 +399,6 @@ export async function play(mediadata) {
 		// Displaying infos about current song on screen.
 		displaySongInfo(mediadata.infos);
 		playerState.currentSongInfos = mediadata.infos;
-		loadBackground('append');
 		playerState._playing = true;
 		emitPlayerState();
 		songNearEnd = false;
@@ -413,11 +409,7 @@ export async function play(mediadata) {
 
 export function setFullscreen(fsState) {
 	playerState.fullscreen = fsState;
-	if(fsState) {
-		player.fullscreen();
-	} else {
-		player.leaveFullscreen();
-	}
+	fsState ? player.fullscreen() : player.leaveFullscreen();
 	return playerState.fullscreen;
 }
 
@@ -436,6 +428,7 @@ export function stop() {
 	playerState._playing = false;
 	playerState.playerstatus = 'stop';
 	loadBackground();
+	displayInfo();
 	setState({player: playerState});
 	return playerState;
 }
@@ -501,10 +494,9 @@ export function showSubs() {
 	return playerState;
 }
 
-export async function message(message, duration) {
-	if (!getState().player.ready) throw '[Player] Player is not ready yet!';
+export async function message(message, duration = 10000) {
+	if (!getState().player.ready) throw 'Player is not ready yet!';
 	logger.info(`[Player] I have a message from another time... : ${message}`);
-	if (!duration) duration = 10000;
 	const command = {
 		command: [
 			'expand-properties',
@@ -537,12 +529,12 @@ export async function displaySongInfo(infos) {
 	displayingInfo = false;
 }
 
-export function displayInfo(duration) {
+export function displayInfo(duration = 10000000) {
 	const conf = getConfig();
-	if (!duration) duration = 100000000;
+	const ci = conf.Karaoke.Display.ConnectionInfo;
 	let text = '';
-	if (+conf.EngineDisplayConnectionInfo) text = `${conf.EngineDisplayConnectionInfoMessage} ${__('GO_TO')} ${conf.osURL} !`;
-	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://karaokes.moe`;
+	if (ci.Enabled) text = `${ci.Message} ${__('GO_TO')} ${getState().osURL} !`;
+	const version = `Karaoke Mugen ${getState().version.number} (${getState().version.name}) - http://karaokes.moe`;
 	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {
 		command: [
@@ -561,17 +553,19 @@ export async function restartmpv() {
 	logger.debug('[Player] Stopped mpv (restarting)');
 	emitPlayerState();
 	await startmpv();
-	logger.debug('[Player] restarted mpv');
+	logger.debug('[Player] Restarted mpv');
 	emitPlayerState();
 	return true;
 }
 
 export async function quitmpv() {
 	logger.debug('[Player] Quitting mpv');
+	player.stop();
 	player.quit();
 	// Destroy mpv instance.
 	player = null;
 	if (playerMonitor) {
+		playerMonitor.stop();
 		playerMonitor.quit();
 		playerMonitor = null;
 	}
@@ -595,7 +589,6 @@ export async function playJingle() {
 			if (monitorEnabled) playerMonitor.play();
 			displayInfo();
 			playerState.playerstatus = 'play';
-			loadBackground('append');
 			playerState._playing = true;
 			emitPlayerState();
 		} catch(err) {

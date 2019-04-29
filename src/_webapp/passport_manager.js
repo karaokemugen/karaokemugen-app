@@ -1,27 +1,19 @@
 
 import passport from 'passport';
-import {Strategy} from 'passport-jwt';
-import {ExtractJwt} from 'passport-jwt';
+import {Strategy, ExtractJwt} from 'passport-jwt';
 import LocalStrategy from 'passport-local';
 
-import {hashPassword,findUserByName} from '../_services/user';
-import {getConfig} from '../_common/utils/config';
+import {hashPassword, findUserByName} from '../_services/user';
+import {getConfig} from '../_utils/config';
 
 export function configurePassport(conf) {
-
-	const resolvedConf = conf || getConfig();
-
-	const localLogin = localPassportStrategy(resolvedConf);
-	const jwtLogin = jwtPassportStrategy(resolvedConf);
-
-	passport.use(jwtLogin);
-	passport.use(localLogin);
+	passport.use(localPassportStrategy());
+	passport.use(jwtPassportStrategy());
 }
 
 function localPassportStrategy() {
 	const localOptions = {usernameField: 'username', passwordField: 'password'};
-
-	return new LocalStrategy(localOptions, function (username, password, done) {
+	return new LocalStrategy(localOptions, (username, password, done) => {
 		const hash = hashPassword(password);
 		findUserByName(username)
 			.then((userdata) => {
@@ -31,21 +23,18 @@ function localPassportStrategy() {
 				if (userdata.type === 2) return done(null, username);
 				//User is not a guest, and password mismatches
 				if (hash !== userdata.password) return done(null, false);
-				delete userdata.password;
 				//Everything's daijoubu
-				done(null, username); 
-			}) 
-			.catch(() => done(null, false)); 
-	}); 
-} 
+				done(null, username);
+			})
+			.catch(() => done(null, false));
+	});
+}
 
-function jwtPassportStrategy(config) {
-
+function jwtPassportStrategy() {
 	const jwtOptions = {
 		jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-		secretOrKey: config.JwtSecret
+		secretOrKey: getConfig().App.JwtSecret
 	};
-
 	return new Strategy(jwtOptions, function (payload, done) {
 		return done(null, payload.username);
 	});

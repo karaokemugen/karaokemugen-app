@@ -1,4 +1,4 @@
-import {setConfig} from './_common/utils/config';
+import {setState} from './_utils/state';
 import logger from 'winston';
 
 const help = `Usage :
@@ -11,13 +11,15 @@ Options :
 --debug       Displays additional debug messages
 --sql         Traces SQL query at the debug log level
 --generate    Generates a new database then quits
---validate    Validates/checks/updates .kara files without writing a database then quits
+--validate    Validates kara files and modify them if needed (no generation)
 --strict      Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
 --profiling   Displays profiling information for some functions
 --test        Launches in test mode (for running unit tests)
+--reset       Reset user data (WARNING! Backup your base first!)
 --demo        Launches in demo mode (no admin panel, no password changes)
 --config file Specify a config file to use (default is config.ini)
---updateBase  Update karaoke base files (no generation)
+--updateBase  Update karaoke base files
+--noBaseCheck Disable data file checking
 --noBrowser   Do not open a browser window upon launch
 --noMedia     (generation only) Do not try to fetch data from media files
 `;
@@ -27,13 +29,22 @@ export async function parseCommandLineArgs(argv) {
 		console.log(help);
 		process.exit(0);
 	}
+	if (argv.sql) {
+		logger.info('[Launcher] SQL queries will be logged');
+		setState({opt: {sql: true}});
+	}
 	if (argv.debug) {
 		logger.info('[Launcher] Debug messages enabled on console');
+		setState({opt: {debug: true}});
 		process.env['NODE_ENV'] = 'development';
 	}
-	if (argv.sql) {
-		logger.info('[Launcher] SQL trace enabled');
-		setConfig({optSQL: true});
+	if (argv.validate) {
+		logger.info('[Launcher] Validation (no generation) requested');
+		setState({opt: {validate: true}});
+	}
+	if (argv.reset) {
+		logger.warn('[Launcher] USER DATA IS GOING TO BE RESET');
+		setState({opt: {reset: true}});
 	}
 	if (argv.version) {
 		// Version number is already displayed so we exit here.
@@ -41,45 +52,37 @@ export async function parseCommandLineArgs(argv) {
 	}
 	if (argv.profiling) {
 		logger.info('[Launcher] Profiling enabled');
-		setConfig({optProfiling: true});
+		setState({opt: {profiling: true}});
 	}
-	if (argv.generate && !argv.validate) {
+	if (argv.generate) {
 		logger.info('[Launcher] Database generation requested');
-		setConfig({optGenerateDB: true});
+		setState({opt: {generateDB: true}});
 		if (argv.noMedia) {
 			logger.info('[Launcher] Medias will not be read during generation');
-			setConfig({optNoMedia: true});
+			setState({opt: {noMedia: true}});
 		}
 	}
-	if (argv.validate && !argv.generate) {
-		logger.info('[Launcher] .kara folder validation requested');
-		setConfig({optValidateKaras: true});
-	}
-	if (argv.validate && argv.generate) {
-		console.log('Error : --validate and --generate are mutually exclusive!');
-		process.exit(1);
+	if (argv.noBaseCheck) {
+		logger.info('[Launcher] Data files will not be checked. ENABLED AT YOUR OWN RISK');
+		setState({opt: {noBaseCheck: true}});
 	}
 	if (argv.strict) {
 		logger.info('[Launcher] Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.');
-		setConfig({optStrict: true});
-	}
-	if (argv.karagen) {
-		logger.info('[Launcher] .kara generation requested');
-		setConfig({optKaragen: true});
+		setState({opt: {strict: true}});
 	}
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');
-		setConfig({optBaseUpdate: true});
+		setState({opt: {baseUpdate: true}});
 	}
 	if (argv.test) {
 		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');
-		setConfig({isTest: true});
+		setState({isTest: true});
 	}
 	if (argv.demo) {
 		logger.info('[Launcher] Demo mode enabled');
-		setConfig({isDemo: true});
+		setState({isDemo: true});
 	}
-	if (argv.noBrowser) setConfig({optNoBrowser: true});
+	if (argv.noBrowser) setState({opt: {noBrowser: true}});
 }
 
 

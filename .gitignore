@@ -1,4 +1,4 @@
-﻿.DS_Store
+.DS_Store
 .idea/
 .npmrc
 .vscode
@@ -15,6 +15,9 @@ doc/
 \.DS_Store
 *.backup
 config\.ini
+config\.ini_old
+config\.yml
+database\.json
 *.bak
 karaokemugen-app-linux
 karaokemugen-app-macos
@@ -26,6 +29,7 @@ updater/
 mpv.log
 
 # Client react
-react_client/node_modules
-react_client/coverage
-react_client/build
+react_systempanel/node_modules
+react_systempanel/coverage
+react_systempanel/build
+react_client
