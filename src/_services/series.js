@@ -99,5 +99,6 @@ export async function editSerie(sid, serieObj, opts = { refresh: true }) {
 
 export async function refreshSeriesAfterDBChange() {
 	await refreshSeries();
-	refreshKaraSeries().then(refreshKaras());
+	await refreshKaraSeries();
+	await refreshKaras();
 }
