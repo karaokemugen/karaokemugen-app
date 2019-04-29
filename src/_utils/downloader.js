@@ -7,6 +7,8 @@ import {createWriteStream} from 'fs';
 import { getState } from './state';
 import { emitWS } from '../_webapp/frontend';
 
+const HttpAgent = require('agentkeepalive');
+const {HttpsAgent} = HttpAgent;
 
 export default class Downloader {
 
@@ -34,7 +36,14 @@ export default class Downloader {
 			const tryURL = new Promise((resolve, reject) => {
 				// Try to run a HEAD to get the size
 				let options = {
-					method: 'HEAD'
+					method: 'HEAD',
+					agent: {
+						http: new HttpAgent(),
+						https: new HttpsAgent()
+					},
+					headers: {
+						'user-agent': `KaraokeMugen/${getState().version.number}`
+					}
 				};
 				if (this.opts.auth) options.auth = {
 					username: this.opts.auth.user,
@@ -77,8 +86,6 @@ export default class Downloader {
 	DoDownload = (url, filename, size, id, onSuccess, onError) => {
 
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
-		const HttpAgent = require('agentkeepalive');
-		const {HttpsAgent} = HttpAgent;
 		const options = {
 			method: 'GET',
 			retry: 20,
