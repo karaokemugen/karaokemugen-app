@@ -160,8 +160,8 @@ async function processDownload(download) {
 	try {
 		for (const serie of bundle.series) {
 			try {
-				await integrateSeriesFile(serie);
-				logger.info(`[Download] Series "${serie}" added to database`);
+				const serieName = await integrateSeriesFile(serie);
+				logger.info(`[Download] Series "${serieName}" added to database`);
 			} catch(err) {
 				logger.error(`[Download] Series "${serie}" not properly added to database`);
 				throw err;
