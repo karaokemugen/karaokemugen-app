@@ -51,10 +51,14 @@ export async function createPreviews() {
 		if (!await asyncExists(resolve(previewDir, `${kara.kid}.${kara.mediasize}.mp4`)) && !kara.mediafile.endsWith('.mp3')) {
 			logger.info(`[Previews] Creating preview for ${kara.mediafile} (${counter}/${karas.content.length})`);
 			const mediaFile = await resolveFileInDirs(kara.mediafile, resolvedPathMedias());
-			await createPreview({
-				videofile: mediaFile,
-				previewfile: resolve(previewDir, `${kara.kid}.${kara.mediasize}.mp4`)
-			});
+			try {
+				await createPreview({
+					videofile: mediaFile,
+					previewfile: resolve(previewDir, `${kara.kid}.${kara.mediasize}.mp4`)
+				});
+			} catch(err) {
+				logger.warn(`[Previews] Failed to create preview for ${kara.mediafile} : ${err}`);
+			}
 		}
 	}
 	logger.info('[Previews] Finished generating preview');
