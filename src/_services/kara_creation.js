@@ -17,7 +17,7 @@ import {now} from '../_utils/date';
 import { compareKarasChecksum } from '../_dao/database';
 import { webOptimize } from '../_utils/ffmpeg';
 
-export async function editKara(kara, opts = {compareChecksum: true}) {
+export async function editKara(kara) {
 	let newKara;
 	try {
 		const mediaFile = resolve(resolvedPathMedias()[0], kara.mediafile);
@@ -62,29 +62,24 @@ export async function editKara(kara, opts = {compareChecksum: true}) {
 	// Update in database
 	newKara.data.karafile = basename(newKara.file);
 	try {
-		await processSeries(newKara.data);
 		await editKaraInDB(newKara.data);
-		compareKarasChecksum({silent: true});
 	} catch(err) {
 		const errMsg = `${newKara.data.karafile} file generation is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	if (opts.compareChecksum) compareKarasChecksum({silent: true});
 }
 
 export async function createKara(kara) {
 	const newKara = await generateKara(kara);
 	try {
 		newKara.data.karafile = basename(newKara.file);
-		await processSeries(newKara.data);
 		await createKaraInDB(newKara.data);
 	} catch(err) {
 		const errMsg = `.kara file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	compareKarasChecksum({silent: true});
 	return newKara;
 }
 

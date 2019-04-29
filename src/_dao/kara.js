@@ -69,7 +69,7 @@ export async function getSongTimeSpentForUser(playlist_id,username) {
 		playlist_id,
 		username
 	]);
-	return res.rows[0];
+	return res.rows[0].time_spent;
 }
 
 export async function getKara(kid, username, lang, role) {

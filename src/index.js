@@ -13,13 +13,12 @@ import chalk from 'chalk';
 import {createInterface} from 'readline';
 import { setState, getState } from './_utils/state';
 
-
-process.on('uncaughtException', function (exception) {
+process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
 });
 
-process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at:', p, reason);
+process.on('unhandledRejection', (error, p) => {
+	console.log('Unhandled Rejection at:', p, error);
 });
 
 process.on('SIGINT', () => {

@@ -24,6 +24,8 @@ import isEqual from 'lodash.isequal';
 import {safeLoad, safeDump} from 'js-yaml';
 import {clearEmpties, difference} from './object_helpers';
 import cloneDeep from 'lodash.clonedeep';
+import { listUsers } from '../_dao/user';
+import { updateSongsLeft } from '../_services/user';
 
 /** Object containing all config */
 let config = {};
@@ -64,12 +66,25 @@ export async function mergeConfig(newConfig, oldConfig) {
 	}
 
 	if (newConfig.Online.URL && getState().ready) publishURL();
+
+	// Updating quotas
+	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
+		const users = await listUsers();
+		users.map(u => u.login).forEach(username => {
+			updateSongsLeft(username, getState().modePlaylistID);
+		});
+	}
+
+	// Toggling stats
+	if (config.Online.Stats) {
+		initStats(newConfig.Online.Stats === oldConfig.Online.Stats);
+	} else {
+		stopStats();
+	}
+
 	setConfig(newConfig);
 	setSongPoll(config.Karaoke.Poll.Enabled);
-	// Toggling stats
-	config.Online.Stats
-		? initStats()
-		: stopStats();
+
 	// Toggling and updating settings
 	setState({private: config.Karaoke.Private});
 	configureHost();

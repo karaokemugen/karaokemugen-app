@@ -139,7 +139,7 @@ WHERE pk_id_plcontent IN ($playlistcontent_id)
 `;
 
 export const getSongCountPerUser = `
-SELECT COUNT(1) AS count
+SELECT COUNT(1)::integer AS count
 FROM playlist_content AS pc
 WHERE pc.fk_login = $2
 	AND pc.fk_id_playlist = $1
@@ -147,7 +147,7 @@ WHERE pc.fk_login = $2
 `;
 
 export const getTimeSpentPerUser = `
-SELECT SUM(k.duration) AS timeSpent
+SELECT COALESCE(SUM(k.duration),0)::integer AS time_spent
 FROM kara AS k
 INNER JOIN playlist_content AS pc ON pc.fk_kid = k.pk_kid
 WHERE pc.fk_login = $2
