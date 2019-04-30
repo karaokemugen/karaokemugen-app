@@ -629,7 +629,7 @@ describe('Playlists', function() {
 			.then(response => {
 				playlistExport = response.body.data;
 				strictEqual(response.body.data.Header.description,'Karaoke Mugen Playlist File');
-				strictEqual(response.body.data.PlaylistContents.length, 1);
+				notStrictEqual(response.body.data.PlaylistContents.length, 0);
 			});
 	});
 
