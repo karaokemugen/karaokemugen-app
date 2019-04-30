@@ -143,7 +143,7 @@ apidoc:
   stage: deploy
   script:
     - npm install -g apidoc
-    - apidoc -i src/_controllers -o apidoc -t apidoc_template
+    - apidoc -i src/controllers -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; mkdir -p site/apidoc/$CI_COMMIT_REF_NAME; cd site/apidoc/$CI_COMMIT_REF_NAME; mirror -Rnev --parallel=10"
   only:

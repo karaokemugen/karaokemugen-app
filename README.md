@@ -1,6 +1,6 @@
 # Karaoke Mugen
 
-![logo](src/_webapp/ressources/img/Logo-final-fond-transparent.png)
+![logo](frontend/ressources/img/Logo-final-fond-transparent.png)
 
 ![presentation](img/presentation.png)
 
