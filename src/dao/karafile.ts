@@ -242,7 +242,7 @@ async function findSubFile(videoFile: string, subFile: string, kid: string) {
 		}
 	}
 	// Non-blocking case if file isn't found
-	return '';
+	return null;
 }
 
 export async function replaceSerieInKaras(oldSerie: string, newSerie: string) {
