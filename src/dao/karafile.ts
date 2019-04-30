@@ -252,20 +252,20 @@ export async function replaceSerieInKaras(oldSerie: string, newSerie: string) {
 		filter: null,
 		lang: null
 	});
-	const karasWithSerie = karas.map((k: any) => {
+	const karasWithSerie = karas.filter((k: any) => {
 		if (k.serie_orig && k.serie_orig.split(',').includes(oldSerie)) return k.karafile;
 	})
 	if (karasWithSerie.length > 0) logger.info(`[Kara] Replacing in ${karasWithSerie.length} files`);
-	for (const karaFile of karasWithSerie) {
-		logger.info(`[Kara] Replacing in ${karaFile}...`);
-		const karaPath = await resolveFileInDirs(karaFile, resolvedPathKaras());
+	for (const karaWithSerie of karasWithSerie) {
+		logger.info(`[Kara] Replacing in ${karaWithSerie.karafile}...`);
+		const karaPath = await resolveFileInDirs(karaWithSerie.karafile, resolvedPathKaras());
 		const kara = await parseKara(karaPath);
 		let series = kara.series.split(',');
 		const index = series.indexOf(oldSerie);
 		if (index > -1)	series[index] = newSerie;
 		kara.series = series.join(',');
 		kara.datemodif = now(true);
-		await asyncWriteFile(karaFile, stringify(kara));
+		await asyncWriteFile(karaPath, stringify(kara));
 	}
 }
 
@@ -275,19 +275,19 @@ export async function removeSerieInKaras(serie: string) {
 		filter: null,
 		lang: null
 	});
-	const karasWithSerie = karas.map((k: any) => {
+	const karasWithSerie = karas.filter((k: any) => {
 		if (k.serie_orig && k.serie_orig.split(',').includes(serie)) return k.karafile;
 	})
 	if (karasWithSerie.length > 0) logger.info(`[Kara] Removing in ${karasWithSerie.length} files`);
-	for (const karaFile of karasWithSerie) {
-		logger.info(`[Kara] Removing in ${karaFile}...`);
-		const karaPath = await resolveFileInDirs(karaFile, resolvedPathKaras());
+	for (const karaWithSerie of karasWithSerie) {
+		logger.info(`[Kara] Removing in ${karaWithSerie.karafile}...`);
+		const karaPath = await resolveFileInDirs(karaWithSerie.karafile, resolvedPathKaras());
 		const kara = await parseKara(karaPath);
 		const series = kara.series.split(',');
 		const newSeries = series.filter(s => s !== serie);
 		kara.series = newSeries.join(',');
 		kara.datemodif = now(true);
-		await asyncWriteFile(karaFile, stringify(kara));
+		await asyncWriteFile(karaPath, stringify(kara));
 	}
 }
 
