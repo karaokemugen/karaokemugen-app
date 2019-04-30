@@ -102,7 +102,7 @@ export async function checkPG() {
 		const options = ['status', '-D', resolve(state.appPath, conf.System.Path.DB, 'postgres/') ];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
-		await execa(binPath, options.split(' '), {
+		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			windowsVerbatimArguments: state.os === 'win32'
 		});
