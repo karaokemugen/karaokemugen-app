@@ -56,7 +56,7 @@ export default class Downloader {
 				};
 				if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
 				got(nextUrl, options)
-					.then((response: Response) => {
+					.then((response: any) => {
 						resolve(response.headers['content-length']);
 					})
 					.catch((err: any) => {

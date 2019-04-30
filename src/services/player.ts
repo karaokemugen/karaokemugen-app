@@ -209,7 +209,7 @@ export async function playerNeedsRestart() {
 	if (state.status === 'stop' && !state.playerNeedsRestart && !state.isDemo && !state.isTest) {
 		setState({ playerNeedsRestart: true });
 		logger.info('[Player] Player will restart in 5 seconds');
-		await sleep(() => {}, 5000);
+		await sleep(5000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
 	} else {

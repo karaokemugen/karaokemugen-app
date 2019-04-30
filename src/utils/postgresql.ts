@@ -45,7 +45,7 @@ export async function dumpPG() {
 	const conf = getConfig();
 	const state = getState();
 	try {
-		const options = ['-c','-E','UTF8','--if-exists','-U',conf.Database.prod.user, '-p', conf.Database.prod.port, '-f', resolve(state.appPath, 'karaokemugen.pgdump'), conf.Database.prod.database ];
+		const options = ['-c','-E','UTF8','--if-exists','-U',conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.appPath, 'karaokemugen.pgdump'), conf.Database.prod.database ];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {

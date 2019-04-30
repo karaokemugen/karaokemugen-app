@@ -66,7 +66,7 @@ export async function initEngine() {
 	inits.push(initFrontend());
 	testPlaylists();
 	initDownloader();
-	if (conf.Online.Stats === true) inits.push(initStats());
+	if (conf.Online.Stats === true) inits.push(initStats(false));
 	//Initialize engine
 	// Test if current/public playlists exist
 	try {
