@@ -273,35 +273,38 @@
 						var mast = data[2];
 						var news = [];
 						if(base.body && appli.body) {
+                            base.body = JSON.parse(base.body);
+                            appli.body = JSON.parse(appli.body);
 						news =
 							[
 								{
-									html : base.body.feed.entry[0].content[0]['_'],
-									date : base.body.feed.entry[0].updated[0],
-									dateStr : new Date(base.body.feed.entry[0].updated[0]).toLocaleDateString(),
-									title : i18n.__("BASE_UPDATE") + ' - ' + base.body.feed.entry[0].summary[0],
-									link : base.body.feed.entry[0].link[0]['$'].href,
+									html : base.body.feed.entry[0].content._text,
+									date : base.body.feed.entry[0].updated._text,
+									dateStr : new Date(base.body.feed.entry[0].updated._text).toLocaleDateString(),
+									title : i18n.__("BASE_UPDATE") + ' : ' + base.body.feed.title._text + ' - ' + base.body.feed.entry[0].summary._text,
+									link : base.body.feed.entry[0].link._attributes.href,
 									type: 'base',
 								},
 								{
-									html : appli.body.feed.entry[0].content[0]['_'],
-									date : appli.body.feed.entry[0].updated[0],
-									dateStr : new Date(appli.body.feed.entry[0].updated[0]).toLocaleDateString(),
-									title : i18n.__("APP_UPDATE") + ' - ' + appli.body.feed.entry[0].title[0] + ' - ' + appli.body.feed.entry[0].summary[0],
-									link : appli.body.feed.entry[0].link[0]['$'].href,
+									html : appli.body.feed.entry[0].content_text,
+									date : appli.body.feed.entry[0].updated_text,
+									dateStr : new Date(appli.body.feed.entry[0].updated._text).toLocaleDateString(),
+									title : i18n.__("APP_UPDATE") + ' : ' + appli.body.feed.entry[0].title._text + ' - ' + appli.body.feed.entry[0].summary._text,
+									link : appli.body.feed.entry[0].link._attributes.href,
 									type: 'app',
 								},
 							];
 						}
 
 						if(mast.body) {
+                            mast.body = JSON.parse(mast.body);
 							for(var i = 0; i<3; i++) {
 								news.push({
-									html : mast.body.rss.channel[0].item[i].description,
-									date : mast.body.rss.channel[0].item[i].pubDate[0],
-									dateStr : new Date(mast.body.rss.channel[0].item[i].pubDate[0]).toLocaleDateString(),
-									title : mast.body.rss.channel[0].item[i].title,
-									link : mast.body.rss.channel[0].item[i].link,
+									html : mast.body.rss.channel.item[i].description._text,
+									date : mast.body.rss.channel.item[i].pubDate._text,
+									dateStr : new Date(mast.body.rss.channel.item[i].pubDate._text).toLocaleDateString(),
+									title : mast.body.rss.channel.item[i].title._text,
+									link : mast.body.rss.channel.item[i].link._text,
 									type: 'mast',
 								});
 							}
