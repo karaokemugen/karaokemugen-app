@@ -345,18 +345,21 @@ var settingsNotUpdated;
 
 
 		$('.playlist-main').on('click','li.karaSuggestion', function() {
-			var search = $('#searchPlaylist1').val();
-			displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
-				var adress = 'mailto:' + settings.App.karaSuggestionMail;
-				var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
-				var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
-				setTimeout(function() {
-					displayMessage('info', i18n.__('KARA_SUGGESTION_INFO'),
-						i18n.__('KARA_SUGGESTION_LINK', 'https://lab.shelter.moe/karaokemugen/karaokebase/issues/', 'console'), '30000');
-				}, 200);
-
-				window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
-			}, search);
+            var search = $('#searchPlaylist1').val();
+            settingsUpdating.done( function() {
+                displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
+                    var adress = 'mailto:' + (settings && settings.App ? settings.App.karaSuggestionMail : 'err');
+                    var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
+                    var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
+                    setTimeout(function() {
+                        displayMessage('info', i18n.__('KARA_SUGGESTION_INFO'),
+                            i18n.__('KARA_SUGGESTION_LINK', 'https://lab.shelter.moe/karaokemugen/karaokebase/issues/', 'console'), '30000');
+                    }, 200);
+    
+                    window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
+                }, search);
+            });
+		
 		});
 
 		// (de)select all karas button
