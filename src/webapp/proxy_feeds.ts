@@ -1,6 +1,6 @@
 import got from 'got';
 import logger from 'winston';
-import {xml2json} from 'xml2js';
+import {parseString} from 'xml2js';
 import internet from 'internet-available';
 
 const feeds = [
@@ -37,7 +37,10 @@ async function fetchFeed(url: string, name: string) {
 		const response = await got(url);
 		return {
 			name: name,
-			body: xml2json(response.body, {compact: true})
+			body: parseString(response.body, {compact: true}, function (err, result) {
+				if (err) throw err;
+				return result;
+			})
 		};
 	} catch(err) {
 		logger.error(`[Feeds] Unable to fetch feed ${name}. Is this instance connected to Internet?`);
