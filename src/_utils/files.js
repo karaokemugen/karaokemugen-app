@@ -133,36 +133,48 @@ export function replaceExt(filename, newExt) {
 }
 
 async function compareFiles(file1, file2) {
-	const files = [file1, file2];
-
-	if (await Promise.all(files.some((file) => !asyncExists(file)))) return false;
-
-	const [file1data, file2data] = await Promise.all(files.map((file) => asyncReadFile(file, 'utf-8')));
-
+	if (!await asyncExists(file1) || !await asyncExists(file2)) return false;
+	const [file1data, file2data] = await Promise.all([
+		asyncReadFile(file1, 'utf-8'),
+		asyncReadFile(file2, 'utf-8')
+	]);
 	return file1data === file2data;
 }
 
 async function compareAllFiles(files, dir1, dir2) {
-	return await Promise.all(files.filter((file) => !compareFiles(resolve(dir1, file), resolve(dir2, file))));
+	let updatedFiles = [];
+	for (const file of files) {
+		if (!await compareFiles(resolve(dir1, file), resolve(dir2, file))) updatedFiles.push(file);
+	}
+	return updatedFiles;
 }
 
 export async function compareDirs(dir1, dir2) {
-
+	let newFiles = [];
+	let removedFiles = [];
+	let commonFiles = [];
 	const [dir1List, dir2List] = await Promise.all([
 		asyncReadDir(dir1),
 		asyncReadDir(dir2)
 	]);
-
-	const newFiles = dir2List.filter((file) => !dir1List.includes(file));
-	const commonFiles = dir2List.filter((file) => dir1List.includes(file));
-	const removedFiles = dir1List.filter((file) => !dir2List.includes(file));
-
+	for (const file of dir2List) {
+		if (!dir1List.includes(file)) {
+			newFiles.push(file);
+		} else {
+			commonFiles.push(file);
+		}
+	}
+	for (const file of dir1List) {
+		if (!dir2List.includes(file)) {
+			removedFiles.push(file);
+		}
+	}
 	const updatedFiles = await compareAllFiles(commonFiles, dir1, dir2);
 	return {
-		newFiles,
-		commonFiles,
-		removedFiles,
-		updatedFiles
+		updatedFiles: updatedFiles,
+		commonFiles: commonFiles,
+		removedFiles: removedFiles,
+		newFiles: newFiles
 	};
 }
 
