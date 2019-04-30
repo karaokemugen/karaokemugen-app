@@ -286,8 +286,8 @@
 									type: 'base',
 								},
 								{
-									html : appli.body.feed.entry[0].content_text,
-									date : appli.body.feed.entry[0].updated_text,
+									html : appli.body.feed.entry[0].content._text,
+									date : appli.body.feed.entry[0].updated._text,
 									dateStr : new Date(appli.body.feed.entry[0].updated._text).toLocaleDateString(),
 									title : i18n.__("APP_UPDATE") + ' : ' + appli.body.feed.entry[0].title._text + ' - ' + appli.body.feed.entry[0].summary._text,
 									link : appli.body.feed.entry[0].link._attributes.href,
