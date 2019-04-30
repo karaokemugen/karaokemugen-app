@@ -250,7 +250,7 @@ async function importKara(mediaFile: string, subFile: string, data: Kara, overwr
 	if (+data.year >= 2010 && +data.year <= 2019 && !data.groups.includes('2010s')) data.groups.push('2010s');
 
 	try {
-		if (subPath !== 'dummy.ass') data.subchecksum = await extractAssInfos(subPath);
+		if (subFile !== 'dummy.ass') data.subchecksum = await extractAssInfos(subPath);
 		await processSeries(data);
 		return await generateAndMoveFiles(mediaPath, subPath, data, overwrite);
 	} catch(err) {

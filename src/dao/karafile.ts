@@ -80,7 +80,7 @@ export async function getDataFromKaraFile(karafile: string, karaData: KaraFile):
 	if (mediaFile || !state.opt.noMedia) {
 		const subFile = await findSubFile(mediaFile, karaData.subfile, karaData.KID);
 		if (!subFile && state.opt.strict) strictModeError(karaData, 'extracting subtitles failed');
-		if (subFile && subFile !== 'dummy.ass') {
+		if (subFile && karaData.subfile !== 'dummy.ass') {
 			const subChecksum = await extractAssInfos(subFile);
 			if (subChecksum !== karaData.subchecksum) {
 				karaData.isKaraModified = true;
