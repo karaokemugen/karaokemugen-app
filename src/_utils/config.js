@@ -126,14 +126,14 @@ async function importIniFile(iniFile) {
 	if (ini.EngineAllowViewWhitelist == 0) c.Frontend.Permissions.AllowViewWhitelist = false;
 	if (ini.EngineAllowViewBlacklist == 0) c.Frontend.Permissions.AllowViewBlacklist = false;
 	if (ini.EngineAllowViewBlacklistCriterias == 0) c.Frontend.Permissions.AllowViewBlacklistCriterias = false;
-	if (ini.EngineAllowDuplicates) c.Playlist.allowDuplicates = true;
+	if (ini.EngineAllowDuplicates) c.Playlist.AllowDuplicates = true;
 	if (ini.EngineSongsPerUser && +ini.EngineSongsPerUser > 0) c.Karaoke.Quota.Songs = +ini.EngineSongsPerUser;
 	if (ini.EngineTimePerUser && +ini.EngineTimePerUser > 0) c.Karaoke.Quota.Time = +ini.EngineTimePerUser;
 	if (ini.EngineQuotaType && +ini.EngineQuotaType >= 0 && +ini.EngineQuotaType <= 2) c.Karaoke.Quota.Type = +ini.EngineQuotaType;
 	if (ini.EngineFreeAutoTime && +ini.EngineFreeAutoTime > 0) c.Karaoke.Quota.FreeAutoTime = +ini.EngineFreeAutoTime;
 	if (ini.EngineFreeUpvotes && +ini.EngineFreeUpvotes >= 0) c.Karaoke.Quota.FreeUpVotes = false;
 	if (ini.EngineFreeUpvotesRequiredPercent && +ini.EngineFreeUpvotesRequiredPercent > 1 && +ini.EngineFreeUpvotesRequiredPercent <= 100) c.Karaoke.Quota.FreeUpVotesRequiredPercent = +ini.EngineFreeUpvotesRequiredPercent;
-	if (ini.EngineFreeUpVotesRequiredMin && ini.EngineFreeUpVotesRequiredMin >= 0) c.Karaoke.Quota.FreeUpvotesRequiredMin = +ini.EngineFreeUpVotesRequiredMin;
+	if (ini.EngineFreeUpVotesRequiredMin && ini.EngineFreeUpVotesRequiredMin >= 0) c.Karaoke.Quota.FreeUpVotesRequiredMin = +ini.EngineFreeUpvotesRequiredMin;
 	if (ini.EngineAutoPlay) c.Karaoke.Autoplay = true;
 	if (ini.EngineRepeatPlaylist) c.Karaoke.Repeat = true;
 	if (ini.EngineMaxDejaVuTime && +ini.EngineMaxDejaVuTime >= 1) c.Playlist.MaxDejaVuTime = +ini.EngineMaxDejaVuTime;
