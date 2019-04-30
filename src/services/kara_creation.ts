@@ -148,6 +148,8 @@ async function generateKara(kara: Kara, overwrite: boolean) {
 		kara.tags.forEach((e,i) => kara.tags[i] = e.trim());
 		kara.creator.forEach((e,i) => kara.creator[i] = e.trim());
 		kara.author.forEach((e,i) => kara.author[i] = e.trim());
+		kara.dateadded = new Date(kara.dateadded);
+		kara.datemodif = new Date(kara.datemodif);
 		if (!kara.order) kara.order = '';
 		const newKara = await importKara(newMediaFile, newSubFile, kara, overwrite);
 		compareKarasChecksum(true);

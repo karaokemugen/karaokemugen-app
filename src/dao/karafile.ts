@@ -195,12 +195,17 @@ export async function writeKara(karafile: string, karaData: Kara) {
 }
 
 export async function parseKara(karaFile: string): Promise<any> {
-	let data = await asyncReadFile(karaFile, 'utf-8');
+	let data: string;
+	try {
+		data = await asyncReadFile(karaFile, 'utf-8');
+	} catch(err) {
+		throw `Kara file ${karaFile} is not readable`;
+	}
+	if (!data) throw `Kara file ${karaFile} is empty`
 	data = data.replace(/\r/g, '');
 	const karaData = parseini(data);
 	karaData.mediasize = +karaData.mediasize;
 	karaData.mediaduration = +karaData.mediaduration;
-	karaData.order = +karaData.order;
 	karaData.mediagain = +karaData.mediagain;
 	karaData.dateadded = +karaData.dateadded;
 	karaData.datemodif = +karaData.datemodif;
