@@ -14,8 +14,8 @@ export const getSeries = (filterClauses: string[], lang: LangClause, limitClause
 SELECT
 	aseries.name AS name,
 	COALESCE(
-		(SELECT sl.name FROM serie_lang sl WHERE sl.fk_sid = aseries.sid AND sl.lang = ${lang.main}),
-		(SELECT sl.name FROM serie_lang sl WHERE sl.fk_sid = aseries.sid AND sl.lang = ${lang.fallback}),
+		(SELECT array_to_string (array_agg(sl.name), ', ') FROM serie_lang sl WHERE sl.fk_sid = aseries.sid AND sl.lang = ${lang.main}),
+		(SELECT array_to_string (array_agg(sl.name), ', ') FROM serie_lang sl WHERE sl.fk_sid = aseries.sid AND sl.lang = ${lang.fallback}),
 		aseries.name)
 	AS i18n_name,
 	aseries.aliases AS aliases,
@@ -36,8 +36,8 @@ export const getSerieByID = (lang: LangClause) => `
 SELECT
 	aseries.name AS name,
 	COALESCE(
-		(SELECT sl.name FROM serie_lang sl WHERE sl.fk_sid = aseries.sid AND sl.lang = ${lang.main}),
-		(SELECT sl.name FROM serie_lang sl WHERE sl.fk_sid = aseries.sid AND sl.lang = ${lang.fallback}),
+		(SELECT array_to_string (array_agg(sl.name), ', ') FROM serie_lang sl WHERE sl.fk_sid = aseries.sid AND sl.lang = ${lang.main}),
+		(SELECT array_to_string (array_agg(sl.name), ', ') FROM serie_lang sl WHERE sl.fk_sid = aseries.sid AND sl.lang = ${lang.fallback}),
 		aseries.name)
 	AS i18n_name,
 	aseries.aliases AS aliases,
