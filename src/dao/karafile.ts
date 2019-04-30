@@ -97,6 +97,7 @@ export async function getDataFromKaraFile(karafile: string, karaData: KaraFile):
 				strictModeError(karaData, `Media file could not be read by ffmpeg : ${mediaFile}`);
 			}
 			karaData.error = true;
+		} else if (mediaInfo.size) {
 			karaData.isKaraModified = true;
 			karaData.mediasize = mediaInfo.size;
 			karaData.mediagain = mediaInfo.gain;
@@ -170,10 +171,10 @@ export async function extractMediaTechInfos(mediaFile: string, size: number): Pr
 			const mediaData = await getMediaInfo(mediaFile);
 			if (mediaData.error) return errorInfo;
 			return {
-				error: true,
+				error: false,
 				size: mediaStats.size,
-				gain: mediaStats.audiogain,
-				duration: mediaStats.duration
+				gain: mediaData.gain,
+				duration: mediaData.duration
 			};
 		} else {
 			return noInfo;

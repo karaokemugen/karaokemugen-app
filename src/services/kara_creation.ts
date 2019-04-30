@@ -321,6 +321,7 @@ async function generateAndMoveFiles(mediaPath: string, subPath: string, karaData
 		const mediainfo = await extractMediaTechInfos(mediaDest, karaData.mediasize);
 		karaData.mediagain = mediainfo.gain;
 		karaData.mediaduration = mediainfo.duration;
+		karaData.mediasize = mediainfo.size;
 		// Moving subfile in the first lyrics folder.
 		if (subDest) await asyncMove(subPath, subDest, { overwrite: overwrite });
 	} catch (err) {
