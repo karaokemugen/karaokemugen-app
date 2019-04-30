@@ -17,7 +17,7 @@ import {getOrAddSerieID} from '../services/series';
 import { compareKarasChecksum } from '../dao/database';
 import { webOptimize } from '../utils/ffmpeg';
 
-export async function editKara(kara: Kara, opts = {compareChecksum: true}) {
+export async function editKara(kara: Kara) {
 	let newKara: NewKara;
 	let overwrite = false;
 	try {
@@ -60,6 +60,7 @@ export async function editKara(kara: Kara, opts = {compareChecksum: true}) {
 		throw err;
 	}
 	// Update in database
+	compareKarasChecksum(true);
 	newKara.data.karafile = basename(newKara.file);
 	try {
 		await editKaraInDB(newKara.data);
@@ -68,11 +69,11 @@ export async function editKara(kara: Kara, opts = {compareChecksum: true}) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	if (opts.compareChecksum) compareKarasChecksum(true);
 }
 
 export async function createKara(kara: Kara) {
 	const newKara = await generateKara(kara, false);
+	compareKarasChecksum(true);
 	try {
 		newKara.data.karafile = basename(newKara.file);
 		await createKaraInDB(newKara.data);
@@ -148,11 +149,11 @@ async function generateKara(kara: Kara, overwrite: boolean) {
 		kara.tags.forEach((e,i) => kara.tags[i] = e.trim());
 		kara.creator.forEach((e,i) => kara.creator[i] = e.trim());
 		kara.author.forEach((e,i) => kara.author[i] = e.trim());
+		// Format dates
 		kara.dateadded = new Date(kara.dateadded);
 		kara.datemodif = new Date(kara.datemodif);
 		if (!kara.order) kara.order = '';
 		const newKara = await importKara(newMediaFile, newSubFile, kara, overwrite);
-		compareKarasChecksum(true);
 		return newKara;
 	} catch(err) {
 		logger.error(`[Karagen] Error during generation : ${err}`);
@@ -237,8 +238,8 @@ async function importKara(mediaFile: string, subFile: string, data: Kara, overwr
 	if (subFile !== 'dummy.ass') subPath = await findSubFile(mediaPath, data, subFile);
 
 	// Autocreating groups based on song year
-	if(containsVideoGameSupportTag(data.tags) && !data.tags.includes('TAG_VIDEOGAME')) data.tags.push('TAG_VIDEOGAME');
-	if(mediaFile.match('^.+\\.(ogg|m4a|mp3)$') && !data.tags.includes('TAG_SOUNDONLY')) data.tags.push('TAG_SOUNDONLY');
+	if (containsVideoGameSupportTag(data.tags) && !data.tags.includes('TAG_VIDEOGAME')) data.tags.push('TAG_VIDEOGAME');
+	if (mediaFile.match('^.+\\.(ogg|m4a|mp3)$') && !data.tags.includes('TAG_SOUNDONLY')) data.tags.push('TAG_SOUNDONLY');
 
 	if (+data.year >= 1950 && +data.year <= 1959 && !data.groups.includes('50s')) data.groups.push('50s');
 	if (+data.year >= 1960 && +data.year <= 1969 && !data.groups.includes('60s')) data.groups.push('60s');
@@ -300,7 +301,6 @@ async function findSubFile(mediaPath: string, karaData: Kara, subFile: string) {
 
 async function generateAndMoveFiles(mediaPath: string, subPath: string, karaData: Kara, overwrite: boolean): Promise<NewKara> {
 	// Generating kara file in the first kara folder
-
 	const karaFilename = replaceExt(karaData.mediafile, '.kara');
 	const karaPath = resolve(resolvedPathKaras()[0], karaFilename);
 	if (subPath === 'dummy.ass') karaData.subfile = 'dummy.ass';

@@ -18,8 +18,8 @@ process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
 });
 
-process.on('unhandledRejection', (error, p) => {
-	console.log('Unhandled Rejection at:', p, error);
+process.on('unhandledRejection', (error) => {
+	console.log('Unhandled Rejection at:', error);
 });
 
 process.on('SIGINT', () => {
