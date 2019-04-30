@@ -152,7 +152,7 @@ export const configConstraints = {
 	'Frontend.Permissions.AllowViewBlacklist': {inclusion : bools},
 	'Frontend.Permissions.AllowViewBlacklistCriterias': {inclusion : bools},
 	'Frontend.Permissions.AllowViewWhitelist': {inclusion : bools},
-	'Frontend.AuthExpireTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	'Frontend.AuthExpireTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Frontend.Mode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
 	'Frontend.SeriesLanguageMode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	'Karaoke.Autoplay': {inclusion : bools},

@@ -12,10 +12,10 @@ import cloneDeep from 'lodash.clonedeep';
 
 let intervalID: any;
 
-export async function initStats() {
+export async function initStats(sendLater) {
 	logger.debug('[Stats] Starting stats upload');
 	if (!intervalID) intervalID = setInterval(sendPayload, 3600000);
-	sendPayload();
+	if (!sendLater) sendPayload();
 }
 
 export async function stopStats() {

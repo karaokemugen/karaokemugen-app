@@ -26,6 +26,8 @@ import {clearEmpties, difference} from './object_helpers';
 import cloneDeep from 'lodash.clonedeep';
 import {version} from '../version';
 import {Config} from '../types/config';
+import { listUsers } from '../dao/user';
+import { updateSongsLeft } from '../services/user';
 
 /** Object containing all config */
 let config: Config = getDefaultConfig();
@@ -66,12 +68,25 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	}
 
 	if (newConfig.Online.URL && getState().ready) publishURL();
+
+	// Updating quotas
+	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
+		const users = await listUsers();
+		users.map(u => u.login).forEach(username => {
+			updateSongsLeft(username, getState().modePlaylistID);
+		});
+	}
+
+	// Toggling stats
+	if (config.Online.Stats) {
+		initStats(newConfig.Online.Stats === oldConfig.Online.Stats);
+	} else {
+		stopStats();
+	}
+
 	setConfig(newConfig);
 	setSongPoll(config.Karaoke.Poll.Enabled);
-	// Toggling stats
-	config.Online.Stats
-		? initStats()
-		: stopStats();
+
 	// Toggling and updating settings
 	setState({private: config.Karaoke.Private});
 	configureHost();
@@ -118,29 +133,29 @@ async function importIniFile(iniFile: string) {
 	if (ini.EngineDisplayNickname) c.Karaoke.Display.Nickname = true;
 	if (ini.EngineDisplayConnectionInfo == 0) c.Karaoke.Display.ConnectionInfo.Enabled = false;
 	if (ini.EngineDisplayConnectionQRCode == 0) c.Karaoke.Display.ConnectionInfo.QRCode = false;
-	if (ini.EngineDisplayConnectionMessage) c.Karaoke.Display.ConnectionInfo.Enabled = ini.EngineDisplayConnectionMessage;
+	if (ini.EngineDisplayConnectionMessage) c.Karaoke.Display.ConnectionInfo.Message = ini.EngineDisplayConnectionMessage;
 	if (ini.EngineDisplayConnectionInfoHost) c.Karaoke.Display.ConnectionInfo.Host = ini.EngineDisplayConnectionInfoHost;
 	if (ini.EnginePrivateMode == 0) c.Karaoke.Private = false;
 	if (ini.EngineAllowViewWhitelist == 0) c.Frontend.Permissions.AllowViewWhitelist = false;
 	if (ini.EngineAllowViewBlacklist == 0) c.Frontend.Permissions.AllowViewBlacklist = false;
 	if (ini.EngineAllowViewBlacklistCriterias == 0) c.Frontend.Permissions.AllowViewBlacklistCriterias = false;
 	if (ini.EngineAllowDuplicates) c.Playlist.AllowDuplicates = true;
-	if (ini.EngineSongsPerUser) c.Karaoke.Quota.Songs = +ini.EngineSongsPerUser;
-	if (ini.EngineTimePerUser) c.Karaoke.Quota.Time = +ini.EngineTimePerUser;
-	if (ini.EngineQuotaType) c.Karaoke.Quota.Type = +ini.EngineQuotaType;
-	if (ini.EngineFreeAutoTime) c.Karaoke.Quota.FreeAutoTime = +ini.EngineFreeAutoTime;
-	if (ini.EngineFreeUpvotes) c.Karaoke.Quota.FreeUpVotes = false;
-	if (ini.EngineFreeUpVotesRequiredPercent) c.Karaoke.Quota.FreeUpVotesRequiredPercent = +ini.EngineFreeUpVotesRequiredPercent;
-	if (ini.EngineFreeUpVotesRequiredMin) c.Karaoke.Quota.FreeUpVotesRequiredMin = +ini.EngineFreeUpVotesRequiredMin;
+	if (ini.EngineSongsPerUser && +ini.EngineSongsPerUser > 0) c.Karaoke.Quota.Songs = +ini.EngineSongsPerUser;
+	if (ini.EngineTimePerUser && +ini.EngineTimePerUser > 0) c.Karaoke.Quota.Time = +ini.EngineTimePerUser;
+	if (ini.EngineQuotaType && +ini.EngineQuotaType >= 0 && +ini.EngineQuotaType <= 2) c.Karaoke.Quota.Type = +ini.EngineQuotaType;
+	if (ini.EngineFreeAutoTime && +ini.EngineFreeAutoTime > 0) c.Karaoke.Quota.FreeAutoTime = +ini.EngineFreeAutoTime;
+	if (ini.EngineFreeUpvotes && +ini.EngineFreeUpvotes >= 0) c.Karaoke.Quota.FreeUpVotes = false;
+	if (ini.EngineFreeUpvotesRequiredPercent && +ini.EngineFreeUpvotesRequiredPercent > 1 && +ini.EngineFreeUpvotesRequiredPercent <= 100) c.Karaoke.Quota.FreeUpVotesRequiredPercent = +ini.EngineFreeUpvotesRequiredPercent;
+	if (ini.EngineFreeUpVotesRequiredMin && ini.EngineFreeUpVotesRequiredMin >= 0) c.Karaoke.Quota.FreeUpVotesRequiredMin = +ini.EngineFreeUpVotesRequiredMin;
 	if (ini.EngineAutoPlay) c.Karaoke.Autoplay = true;
 	if (ini.EngineRepeatPlaylist) c.Karaoke.Repeat = true;
-	if (ini.EngineMaxDejaVuTime) c.Playlist.MaxDejaVuTime = +ini.EngineMaxDejaVuTime;
+	if (ini.EngineMaxDejaVuTime && +ini.EngineMaxDejaVuTime >= 1) c.Playlist.MaxDejaVuTime = +ini.EngineMaxDejaVuTime;
 	if (ini.EngineSmartInsert) c.Karaoke.SmartInsert = true;
-	if (ini.EngineJinglesInterval) c.Karaoke.JinglesInterval = ini.EngineJinglesInterval;
+	if (ini.EngineJinglesInterval && +ini.EngineJinglesInterval >= 0) c.Karaoke.JinglesInterval = +ini.EngineJinglesInterval;
 	if (ini.EngineCreatePreviews) c.Karaoke.CreatePreviews = true;
 	if (ini.EngineSongPoll) c.Karaoke.Poll.Enabled = true;
-	if (ini.EngineSongPollChoices) c.Karaoke.Poll.Choices = +ini.EngineSongPollChoices;
-	if (ini.EngineSongPollTimeout) c.Karaoke.Poll.Timeout = +ini.EngineSongPollTimeout;
+	if (ini.EngineSongPollChoices && +ini.EngineSongPollChoices >= 1) c.Karaoke.Poll.Choices = +ini.EngineSongPollChoices;
+	if (ini.EngineSongPollTimeout && +ini.EngineSongPollTimeout >= 1) c.Karaoke.Poll.Timeout = +ini.EngineSongPollTimeout;
 	if (ini.EngineRemovePublicOnPlay) c.Playlist.RemovePublicOnPlay = true;
 	if (ini.PlayerBackground) c.Player.Background = ini.PlayerBackground;
 	if (ini.PlayerScreen) c.Player.Screen = +ini.PlayerScreen;
@@ -151,7 +166,7 @@ async function importIniFile(iniFile: string) {
 	if (ini.PlayerNoHud) c.Player.NoHud = false;
 	if (ini.PlayerNoBar) c.Player.NoBar = false;
 	if (ini.PlayerPIP) c.Player.PIP.Enabled = true;
-	if (ini.PlayerPIPSize) c.Player.PIP.Size = +ini.PlayerPIPSize;
+	if (ini.PlayerPIPSize && ini.PlayerPIPSize >= 1) c.Player.PIP.Size = +ini.PlayerPIPSize;
 	if (ini.PlayerPIPPositionX) c.Player.PIP.PositionX = ini.PlayerPIPPositionX;
 	if (ini.PlayerPIPPositionY) c.Player.PIP.PositionY = ini.PlayerPIPPositionY;
 	if (ini.BinPlayerWindows) c.System.Binaries.Player.Windows = ini.BinPlayerWindows;
@@ -184,9 +199,11 @@ async function importIniFile(iniFile: string) {
 	if (ini.OnlineURL) c.Online.URL = true;
 	if (ini.OnlineMode) c.Online.URL = true;
 	if (ini.OnlineHost) c.Online.Host = ini.OnlineHost;
-	if (ini.OnlineStats > -1) c.Online.Stats = ini.OnlineStats === 1;
+	if (+ini.OnlineStats === 1) c.Online.Stats = true;
+	if (+ini.OnlineStats === -1) c.Online.Stats = undefined;
+	if (+ini.OnlineStats === 0) c.Online.Stats = false;
 	if (ini.appInstanceID) c.App.InstanceID = ini.appInstanceID;
-	if (ini.appFrontendPort) c.Frontend.Port = +ini.appFrontendPort;
+	if (ini.appFrontendPort && +ini.appFrontendPort > 0) c.Frontend.Port = +ini.appFrontendPort;
 	if (ini.appFirstRun) c.App.FirstRun = false;
 	if (ini.karaSuggestionMail) c.App.karaSuggestionMail = ini.karaSuggestionMail;
 	// Phew, now we have our c object.

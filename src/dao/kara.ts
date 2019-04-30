@@ -72,7 +72,7 @@ export async function getSongTimeSpentForUser(playlist_id: number, username: str
 		playlist_id,
 		username
 	]);
-	return res.rows[0];
+	return res.rows[0].time_spent;
 }
 
 export async function getKara(kid: string, username: string, lang: string, role: Role): Promise<any[]> {

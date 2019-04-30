@@ -54,8 +54,7 @@ export async function deleteSerie(sid: string) {
 	]);
 	// Refreshing karas is done asynchronously
 	compareKarasChecksum(true);
-	await refreshKaraSeries();
-	refreshKaras();
+	refreshKaraSeries().then(() => refreshKaras());
 }
 
 export async function addSerie(serieObj: Series, opts = {refresh: true}): Promise<string> {
@@ -102,7 +101,5 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 
 export async function refreshSeriesAfterDBChange() {
 	await refreshSeries();
-	// Workaround for TS type bug.
-	let nextRefresh: any = () => refreshKaras();
-	refreshKaraSeries().then(nextRefresh());
+	refreshKaraSeries().then(() => refreshKaras());
 }

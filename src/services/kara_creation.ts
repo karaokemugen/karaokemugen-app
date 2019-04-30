@@ -62,9 +62,7 @@ export async function editKara(kara: Kara, opts = {compareChecksum: true}) {
 	// Update in database
 	newKara.data.karafile = basename(newKara.file);
 	try {
-		await processSeries(newKara.data);
 		await editKaraInDB(newKara.data);
-		compareKarasChecksum(true);
 	} catch(err) {
 		const errMsg = `${newKara.data.karafile} file generation is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
 		logger.warn(`[KaraGen] ${errMsg}`);
@@ -73,18 +71,16 @@ export async function editKara(kara: Kara, opts = {compareChecksum: true}) {
 	if (opts.compareChecksum) compareKarasChecksum(true);
 }
 
-export async function createKara(kara) {
+export async function createKara(kara: Kara) {
 	const newKara = await generateKara(kara, false);
 	try {
 		newKara.data.karafile = basename(newKara.file);
-		await processSeries(newKara.data);
 		await createKaraInDB(newKara.data);
 	} catch(err) {
 		const errMsg = `.kara file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	compareKarasChecksum(true);
 	return newKara;
 }
 

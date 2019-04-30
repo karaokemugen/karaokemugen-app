@@ -98,7 +98,7 @@ deploy_win:
     - cp -Rf ../samples .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
     - cd ..
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
   only:
     - master
     - next
@@ -108,7 +108,7 @@ latest_tag:
   stage: deploy
   script:
     - echo $CI_COMMIT_REF_NAME >latest
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put latest"
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put latest"
   only:
     - tags
 
@@ -133,7 +133,7 @@ deploy_osx:
     - cp -Rf ../samples .
     - tar cvz * >KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.tar.gz
     - cd ..
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.tar.gz"
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.tar.gz"
   only:
     - master
     - next

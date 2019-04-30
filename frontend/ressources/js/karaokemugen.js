@@ -1904,8 +1904,11 @@ var settingsNotUpdated;
 				default:
 					DEBUG && console.log('ERR : Kara status unknown : ' + status);
 				}
-			}
-			if($('input[name="lyrics"]').is(':checked') || (mode == 'mobile' || webappMode == 1) && $('#switchInfoBar').hasClass('showLyrics')) {
+            }
+            
+            if($('input[name="lyrics"]').is(':checked')
+                || (mode == 'mobile' || webappMode == 1)
+                    && $('#switchInfoBar').hasClass('showLyrics')) {
 				var text = data['subText'];
 				if (text) text = text.indexOf('\n') == -1 ? text:  text.substring(0, text.indexOf('\n') );
 				$('#karaInfo > span').html(text);
@@ -2076,17 +2079,19 @@ var settingsNotUpdated;
 		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 
-		var lastPlayed =  new Date(data['lastplayed_at']).valueOf();
+		var lastPlayed_at =  data['lastplayed_at'];
+		var lastPlayed =  data['lastplayed_ago'];
 		var lastPlayedStr = '';
-		if(lastPlayed) {
-			lastPlayed = 1000 * lastPlayed;
-			var difference = (todayDate - lastPlayed)/1000;
-			if(difference < 60 * 60 * 24) { // more than 24h ago
-				lastPlayedStr = i18n.__('DETAILS_LAST_PLAYED_2', '<span class="time">' + secondsTimeSpanToHMS(difference, 'hm') + '</span>');
-			} else {
-				lastPlayedStr = '<span class="time">' + new Date(lastPlayed).toLocaleDateString() + '</span>';
-			}
-		}
+		if(lastPlayed && !lastPlayed.days && !lastPlayed.months && !lastPlayed.years) {
+            var timeAgo = (lastPlayed.seconds ? lastPlayed.seconds : 0) + (lastPlayed.minutes ? lastPlayed.minutes * 60 : 0) + (lastPlayed.hours ? lastPlayed.hours * 3600 : 0);
+            var timeAgoStr = (lastPlayed.minutes || lastPlayed.hours) ?
+                                secondsTimeSpanToHMS(timeAgo, 'hm') : secondsTimeSpanToHMS(timeAgo, 'ms')
+
+            lastPlayedStr = i18n.__('DETAILS_LAST_PLAYED_2', '<span class="time">' + timeAgoStr + '</span>');
+        } else if (lastPlayed_at){
+            lastPlayedStr = '<span class="time">' + new Date(lastPlayed_at).toLocaleDateString() + '</span>';
+        }
+        
 		var details = {
 			  'UPVOTE_NUMBER' : data['upvotes']
 			, 'DETAILS_ADDED': 		(data['created_at'] ? i18n.__('DETAILS_ADDED_2',new Date( data['created_at']).toLocaleDateString()) : '') + (data['nickname'] ? ' ' + i18n.__('DETAILS_ADDED_3', data['nickname']) : '')

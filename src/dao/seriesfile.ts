@@ -84,6 +84,7 @@ export async function integrateSeriesFile(file) {
 		if (seriesDBData.name !== seriesFileData.name) {
 			await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().System.Path.Series));
 		}
+		return seriesDBData.name;
 	} catch(err) {
 		await addSerie(seriesFileData, { refresh: false });
 	}

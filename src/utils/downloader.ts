@@ -8,6 +8,9 @@ import { getState } from './state';
 import { emitWS } from '../webapp/frontend';
 import { DownloadItem, DownloadOpts } from '../types/downloader';
 
+const HttpAgent = require('agentkeepalive');
+const {HttpsAgent} = HttpAgent;
+
 export default class Downloader {
 
 	list: DownloadItem[];
@@ -24,7 +27,7 @@ export default class Downloader {
 	  this.onEnd = null;
 	  this.fileErrors = [];
 	  if (opts.bar)	this.bar = new _cliProgress.Bar({
-			format:  'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}',
+			format:  'Downloading {bar} {percentage}% {value}/{total} Mb',
 			stopOnComplete: true
 	  }, _cliProgress.Presets.shades_classic);
 	}
@@ -42,17 +45,21 @@ export default class Downloader {
 				// Try to run a HEAD to get the size
 				let options = {
 					method: 'HEAD',
+					agent: {
+						http: new HttpAgent(),
+						https: new HttpsAgent()
+					},
+					headers: {
+						'user-agent': `KaraokeMugen/${getState().version.number}`
+					},
 					auth: null
 				};
-				if (this.opts.auth) options.auth = {
-					username: this.opts.auth.user,
-					password: this.opts.auth.pass
-				};
+				if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
 				got(nextUrl, options)
-					.then(response => {
+					.then((response: Response) => {
 						resolve(response.headers['content-length']);
 					})
-					.catch(err => {
+					.catch((err: any) => {
 						reject(err);
 					});
 			});
@@ -84,8 +91,6 @@ export default class Downloader {
 
 	DoDownload = (url: string, filename: string, size: number, id :string, onSuccess?: any, onError?: any) => {
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
-		const HttpAgent = require('agentkeepalive');
-		const {HttpsAgent} = HttpAgent;
 		const options = {
 			method: 'GET',
 			retry: 20,
@@ -101,7 +106,7 @@ export default class Downloader {
 		let stream = createWriteStream(filename);
 		if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
 		got.stream(url, options)
-			.on('response', res => {
+			.on('response', (res: Response) => {
 				size = +res.headers['content-length'];
 				if (this.opts.bar) {
 					this.bar.start(Math.floor(size / 1000) / 1000, 0);
@@ -118,7 +123,7 @@ export default class Downloader {
 					id: id
 				});
 			})
-			.on('error', err => {
+			.on('error', (err: any) => {
 				if (this.opts.bar) {
 					this.bar.stop();
 				}

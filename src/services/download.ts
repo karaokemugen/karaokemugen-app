@@ -66,8 +66,7 @@ function initQueue() {
 		if (taskCounter >= 5) {
 			logger.debug('[Download] Triggering database refresh');
 			compareKarasChecksum(true);
-			let nextRefresh: any = () => refreshKarasAfterDBChange();
-			refreshSeriesAfterDBChange().then(nextRefresh());
+			refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange());
 			taskCounter = 0;
 		}
 		emitQueueStatus('updated');
@@ -79,8 +78,7 @@ function initQueue() {
 	q.on('empty', () => emitQueueStatus('updated'));
 	q.on('drain', () => {
 		logger.info('[Download] Ano ne, ano ne! I finished all my downloads!');
-		let nextRefresh: any = () => refreshKarasAfterDBChange();
-		refreshSeriesAfterDBChange().then(nextRefresh());
+		refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange());
 		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
@@ -165,8 +163,8 @@ async function processDownload(download: KaraDownload) {
 	try {
 		for (const serie of bundle.series) {
 			try {
-				await integrateSeriesFile(serie);
-				logger.info(`[Download] Series "${serie}" added to database`);
+				const serieName = await integrateSeriesFile(serie);
+				logger.info(`[Download] Series "${serieName}" added to database`);
 			} catch(err) {
 				logger.error(`[Download] Series "${serie}" not properly added to database`);
 				throw err;

@@ -394,7 +394,8 @@ export async function play(mediadata: MediaData) {
 			if (monitorEnabled) subs.push(playerMonitor.addSubtitles(subFile));
 			await Promise.all(subs);
 		} catch(err) {
-			logger.error(`[Player] Unable to load subtitles : ${err}`);
+			logger.error(`[Player] Unable to load subtitles : ${JSON.stringify(err)}`);
+			throw err;
 		}
 		// Displaying infos about current song on screen.
 		displaySongInfo(mediadata.infos);
@@ -404,6 +405,7 @@ export async function play(mediadata: MediaData) {
 		songNearEnd = false;
 	} catch(err) {
 		logger.error(`[Player] Error loading media ${mediadata.media} : ${JSON.stringify(err)}`);
+		throw err;
 	}
 }
 
@@ -593,6 +595,7 @@ export async function playJingle() {
 			emitPlayerState();
 		} catch(err) {
 			logger.error(`[Player] Unable to load jingle file ${jingle.file} : ${JSON.stringify(err)}`);
+			throw err;
 		}
 	} else {
 		logger.debug('[Jingles] No jingle to play.');
