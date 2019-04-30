@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {karaDataValidationErrors} from '../src/_services/kara';
+import {karaDataValidationErrors} from '../src/dao/karafile';
 
 const validKara = {
 	mediafile: 'video.mp4',
@@ -21,7 +21,9 @@ const validKara = {
 	mediasize: 0,
 	mediagain: 0,
 	mediaduration: 0,
-	version: 3
+	version: 3,
+	subchecksum: '',
+	groups: ''
 };
 
 describe('Kara validator', () => {
