@@ -112,7 +112,6 @@ async function generateKara(kara: Kara, overwrite: boolean) {
 		lang: {langValidator: true},
 		tags: {tagsValidator: true},
 		type: {typeValidator: true},
-		order: {integerValidator: true},
 		series: {arrayNoCommaValidator: true},
 		singer: {arrayNoCommaValidator: true},
 		author: {arrayNoCommaValidator: true},
