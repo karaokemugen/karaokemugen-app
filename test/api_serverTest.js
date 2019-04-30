@@ -8,6 +8,7 @@ const passwordAdmin = 'ceciestuntest';
 let token;
 let current_playlist_id;
 let current_plc_id;
+
 describe('Auth', function() {
 	it('Login / Sign in (as guest)', function() {
 		var data = {
@@ -380,7 +381,7 @@ describe('Playlists', function() {
 	var playlist = 1;
 	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 to playlist 1', function() {
 		var data = {
-			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
+			'kid': ['c28c8739-da02-49b4-889e-b15d1e9b2139'],
 			'requestedby': 'Test'
 		};
 		return request
@@ -397,7 +398,7 @@ describe('Playlists', function() {
 
 	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 again to playlist 1 to see if it fails', function() {
 		var data = {
-			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
+			'kid': ['c28c8739-da02-49b4-889e-b15d1e9b2139'],
 			'requestedby': 'Test'
 		};
 		return request
@@ -434,7 +435,7 @@ describe('Playlists', function() {
 
 	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 to an unknown playlist to see if it fails', function() {
 		var data = {
-			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
+			'kid': ['c28c8739-da02-49b4-889e-b15d1e9b2139'],
 			'requestedby': 'Test'
 		};
 		return request
@@ -628,7 +629,7 @@ describe('Playlists', function() {
 			.then(response => {
 				playlistExport = response.body.data;
 				assert.strictEqual(response.body.data.Header.description,'Karaoke Mugen Playlist File');
-				assert.strictEqual(response.body.data.PlaylistContents.length, 2);
+				assert.strictEqual(response.body.data.PlaylistContents.length, 1);
 			});
 	});
 
@@ -1054,7 +1055,6 @@ describe('Whitelist', function() {
 			});
 	});
 
-	var wlc_id;
 	it('Get whitelist', function() {
 		return request
 			.get('/api/admin/whitelist')
@@ -1064,7 +1064,6 @@ describe('Whitelist', function() {
 			.expect(200)
 			.then(response => {
 				assert.strictEqual(response.body.data.content.length, 1);
-				wlc_id = response.body.data.content[0].whitelist_id;
 			});
 	});
 
@@ -1080,7 +1079,7 @@ describe('Whitelist', function() {
 			.expect(200)
 			.then(response => {
 				assert.strictEqual(response.body.code,'WL_SONG_DELETED');
-				assert.strictEqual(response.body.data, wlc_id);
+				assert.strictEqual(response.body.data, data.kid);
 			});
 	});
 
