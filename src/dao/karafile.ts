@@ -333,18 +333,11 @@ const karaConstraintsV3 = {
 	title: {presence: {allowEmpty: true}},
 	type: {presence: true, inclusion: karaTypesArray},
 	series: (_value: string, attributes: any) => {
-		if (!serieRequired(attributes['type'])) {
-			return { presence: {allowEmpty: true} };
-		} else {
-			return { presence: {allowEmpty: false} };
-		}
+		return (!serieRequired(attributes['type'])) ?  { presence: {allowEmpty: true} } : { presence: {allowEmpty: false} };
 	},
 	lang: {langValidator: true},
-	order: {integerValidator: true},
 	year: {integerValidator: true},
-	KID: {presence: true, format: uuidRegexp},
-	dateadded: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	datemodif: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	KID: {format: uuidRegexp},
 	mediasize: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	mediagain: {numericality: true},
 	mediaduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
