@@ -1243,6 +1243,8 @@ export function APIControllerAdmin(router) {
 				flag_playing: {inclusion: bools},
 				flag_free: {inclusion: bools}
 			});
+			if (req.body.flag_playing === 'true') req.body.flag_playing = true;
+			if (req.body.flag_free === 'true') req.body.flag_free = true;
 			if (!validationErrors) {
 				try {
 					const data = await editPLC(req.params.plc_id,{
