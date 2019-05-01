@@ -165,9 +165,9 @@ async function compareBases() {
 
 async function compareMedias(localFiles: File[], remoteFiles: File[]): Promise<boolean> {
 	const conf = getConfig();
-	let removedFiles = [];
-	let addedFiles = [];
-	let updatedFiles = [];
+	let removedFiles:string[] = [];
+	let addedFiles:File[] = [];
+	let updatedFiles:File[] = [];
 	const mediasPath = resolve(getState().appPath, conf.System.Path.Medias[0]);
 	logger.info('[Updater] Comparing your medias with the current ones');
 	emitWS('downloadProgress', {
@@ -182,7 +182,7 @@ async function compareMedias(localFiles: File[], remoteFiles: File[]): Promise<b
 	});
 	for (const remoteFile of remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
-			if (localFile.name === remoteFile.name) {
+			if (localFile.basename === remoteFile.basename) {
 				if (localFile.size !== remoteFile.size) updatedFiles.push(remoteFile);
 				return true;
 			}
@@ -192,13 +192,13 @@ async function compareMedias(localFiles: File[], remoteFiles: File[]): Promise<b
 	}
 	for (const localFile of localFiles) {
 		const filePresent = remoteFiles.some(remoteFile => {
-			return localFile.name === remoteFile.name;
+			return localFile.basename === remoteFile.basename;
 		});
-		if (!filePresent) removedFiles.push(localFile.name);
+		if (!filePresent) removedFiles.push(localFile.basename);
 	}
 	// Remove files to update to start over their download
 	for (const file of updatedFiles) {
-		await asyncUnlink(resolve(mediasPath, file.name));
+		await asyncUnlink(resolve(mediasPath, file.basename));
 	}
 	const filesToDownload = addedFiles.concat(updatedFiles);
 	if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
@@ -209,7 +209,7 @@ async function compareMedias(localFiles: File[], remoteFiles: File[]): Promise<b
 	});
 	if (filesToDownload.length > 0) {
 		filesToDownload.sort((a,b) => {
-			return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
+			return (a.basename > b.basename) ? 1 : ((b.basename > a.basename) ? -1 : 0);
 		});
 		let bytesToDownload = 0;
 		for (const file of filesToDownload) {
@@ -229,8 +229,8 @@ function downloadMedias(files: File[], mediasPath: string): Promise<void> {
 	let list = [];
 	for (const file of files) {
 		list.push({
-			filename: resolve(getState().appPath, mediasPath, file.name),
-			url: `${shelter.url}/${encodeURIComponent(file.name)}`,
+			filename: resolve(getState().appPath, mediasPath, file.basename),
+			url: `${shelter.url}/${encodeURIComponent(file.basename)}`,
 			size: file.size
 		});
 	}
@@ -259,7 +259,7 @@ async function listLocalMedias(): Promise<File[]> {
 	for (const file of mediaFiles) {
 		const mediaStats = await asyncStat(resolve(getState().appPath, conf.System.Path.Medias[0], file));
 		localMedias.push({
-			name: file,
+			basename: file,
 			size: mediaStats.size
 		});
 	}

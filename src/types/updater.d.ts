@@ -1,4 +1,4 @@
 export interface File {
-	name: string,
+	basename: string,
 	size: number
 }
