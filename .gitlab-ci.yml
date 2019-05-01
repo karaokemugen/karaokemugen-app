@@ -44,6 +44,7 @@ build:
   script:
     - npm install -g modclean
     - yarn build
+    - yarn buildReact
     - yarn install --production
     - cd node_modules
     - find -name *.node -delete

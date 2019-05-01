@@ -8,9 +8,10 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node src/index.ts --files tsconfig.json",
-    "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
+	"debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
+	"qstart": "node dist/index.js",
     "test": "mocha --require ts-node/register --timeout 20000 test/*.ts",
-    "build": "npm run buildReact && rm -Rf dist && tsc --build",
+    "build": "rm -Rf dist && tsc --build",
     "setup": "yarn install && cd react_systempanel && yarn install && yarn build",
     "buildReact": "cd react_systempanel && yarn build",
     "startReact": "cd react_systempanel && yarn start",
@@ -66,7 +67,7 @@
     ],
     "assets": [
       "migrations/**",
-      "dist/_locales/*",
+      "dist/locales/*",
       "assets/*",
       "frontend/**",
       "react_systempanel/build/**"
