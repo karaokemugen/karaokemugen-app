@@ -183,7 +183,7 @@ export default function systemController(router) {
 	});
 
 	router.put('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
-		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role, { editRemote: false })
+		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role)
 			.then(() => res.status(200).send('User edited'))
 			.catch(err => res.status(500).send(`Error editing user: ${err}`));
 	});

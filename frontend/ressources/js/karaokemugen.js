@@ -35,6 +35,7 @@ var i18n;
 var introManager;
 
 /* promises */
+var statsUpdating;
 var scrollUpdating;
 var playlistsUpdating;
 var playlistContentUpdating;
@@ -344,18 +345,21 @@ var settingsNotUpdated;
 
 
 		$('.playlist-main').on('click','li.karaSuggestion', function() {
-			var search = $('#searchPlaylist1').val();
-			displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
-				var adress = 'mailto:' + settings.App.karaSuggestionMail;
-				var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
-				var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
-				setTimeout(function() {
-					displayMessage('info', i18n.__('KARA_SUGGESTION_INFO'),
-						i18n.__('KARA_SUGGESTION_LINK', 'https://lab.shelter.moe/karaokemugen/karaokebase/issues/', 'console'), '30000');
-				}, 200);
-
-				window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
-			}, search);
+            var search = $('#searchPlaylist1').val();
+            settingsUpdating.done( function() {
+                displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
+                    var adress = 'mailto:' + (settings && settings.App ? settings.App.karaSuggestionMail : 'err');
+                    var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
+                    var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
+                    setTimeout(function() {
+                        displayMessage('info', i18n.__('KARA_SUGGESTION_INFO'),
+                            i18n.__('KARA_SUGGESTION_LINK', 'https://lab.shelter.moe/karaokemugen/karaokebase/issues/', 'console'), '30000');
+                    }, 200);
+    
+                    window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
+                }, search);
+            });
+		
 		});
 
 		// (de)select all karas button
@@ -1733,57 +1737,62 @@ var settingsNotUpdated;
 			if (scope === 'admin' || settings.Frontend.Permissions.AllowViewWhitelist)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['Frontend.Permissions.AllowViewWhitelist'] == 1});
 			if (scope === 'admin' || settings.Frontend.Permissions.AllowViewBlacklistCriterias)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['Frontend.Permissions.AllowViewBlacklistCriterias'] == 1});
 			if (scope === 'admin' || settings.Frontend.Permissions.AllowViewBlacklist)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['Frontend.Permissions.AllowViewBlacklist'] == 1});
-			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'karacount' : kmStats.karas });
+            
+            statsUpdating.done( function() {
 
-			// for public interface only
-			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
-			searchOptionListHtml += '<option value="-6" data-playlist_id="-6"></option>';
-			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="true"></option>';
+                if (scope === 'admin') playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'karacount' : kmStats ? kmStats.karas : 0 });
 
-			// building the options
-			var optionListHtml = '';
-			$.each(playlistList, function (key, value) {
-				var params = dataToDataAttribute(value);
-				var optionHtml = '<option ' + params + '  value=' + value.playlist_id + '> ' + value.name + '</option>';
-				optionListHtml += optionHtml;
-
-			});
-			$('select[type="playlist_select"]').empty().html(optionListHtml);
-			if(scope === 'public') $('#selectPlaylist1').empty().html(searchOptionListHtml);
-
-			// setting the right values to newly refreshed selects
-			// for public interface, panel1Default to keep kara list, playlistToAddId to show the playlist where users can add
-			// for admin, check cookies
-			settingsUpdating.done( function() {
-				if(scope === 'public') {
-					select1.val(val1? val1 : panel1Default);
-					select2.val(val2? val2 : playlistToAddId);
-					if (webappMode == 1) {
-						var currentPlaylistId = select2.find('option[data-flag_current="true"]').attr('value');
-						select2.val(currentPlaylistId);
-					}
-				} else {
-					var plVal1Cookie = readCookie('mugenPlVal1');
-					var plVal2Cookie = readCookie('mugenPlVal2');
-					if (plVal1Cookie == plVal2Cookie) {
-						plVal2Cookie == null;
-						plVal1Cookie == null
-					}
-					select1.val(val1? val1 : plVal1Cookie ? plVal1Cookie : -1);
-					select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : playlistToAddId);
-				}
-
-				$('.plSelect .select2').select2({ theme: 'bootstrap',
-					templateResult: formatPlaylist,
-					templateSelection : formatPlaylist,
-					tags: false,
-					minimumResultsForSearch: 10
-				});
-
-				if(!select2.val() && select2.length > 0) {
-					select2[0].selectedIndex = 0;
-				}
-				deferred.resolve();
+                // for public interface only
+                var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
+                searchOptionListHtml += '<option value="-6" data-playlist_id="-6"></option>';
+                searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="true"></option>';
+    
+                // building the options
+                var optionListHtml = '';
+                $.each(playlistList, function (key, value) {
+                    var params = dataToDataAttribute(value);
+                    var optionHtml = '<option ' + params + '  value=' + value.playlist_id + '> ' + value.name + '</option>';
+                    optionListHtml += optionHtml;
+    
+                });
+                $('select[type="playlist_select"]').empty().html(optionListHtml);
+                if(scope === 'public') $('#selectPlaylist1').empty().html(searchOptionListHtml);
+    
+                // setting the right values to newly refreshed selects
+                // for public interface, panel1Default to keep kara list, playlistToAddId to show the playlist where users can add
+                // for admin, check cookies
+                settingsUpdating.done( function() {
+                    if(scope === 'public') {
+                        select1.val(val1? val1 : panel1Default);
+                        select2.val(val2? val2 : playlistToAddId);
+                        if (webappMode == 1) {
+                            var currentPlaylistId = select2.find('option[data-flag_current="true"]').attr('value');
+                            select2.val(currentPlaylistId);
+                        }
+                    } else {
+                        var plVal1Cookie = readCookie('mugenPlVal1');
+                        var plVal2Cookie = readCookie('mugenPlVal2');
+                        if (plVal1Cookie == plVal2Cookie) {
+                            plVal2Cookie == null;
+                            plVal1Cookie == null
+                        }
+                        select1.val(val1? val1 : plVal1Cookie ? plVal1Cookie : -1);
+                        select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : playlistToAddId);
+                    }
+    
+                    $('.plSelect .select2').select2({ theme: 'bootstrap',
+                        templateResult: formatPlaylist,
+                        templateSelection : formatPlaylist,
+                        tags: false,
+                        minimumResultsForSearch: 10
+                    });
+    
+                    if(!select2.val() && select2.length > 0) {
+                        select2[0].selectedIndex = 0;
+                    }
+                    deferred.resolve();
+            });
+            
 			});
 		}).fail(function (data) {
 			DEBUG && console.log(data);
@@ -2354,7 +2363,7 @@ var settingsNotUpdated;
 
 		showedLoginAfter401 = false;
 
-		$.ajax({ url: 'public/stats' }).done(function (data) {
+		statsUpdating = $.ajax({ url: 'public/stats' }).done(function (data) {
 			kmStats = data;
 			if(scope === 'public') {
 				$('#selectPlaylist1 > option[value=-1]')
