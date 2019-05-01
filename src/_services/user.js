@@ -185,7 +185,7 @@ async function editRemoteUser(user) {
 	// This includes updating remote avatar.
 	// Fetch remote token
 	const remoteToken = getRemoteToken(user.login);
-	const [instance, login] = user.login.split('@');
+	const [login, instance] = user.login.split('@');
 	const form = new formData();
 	const conf = getConfig();
 
@@ -211,7 +211,7 @@ async function editRemoteUser(user) {
 
 
 export async function editUser(username, user, avatar, role, opts = {
-	editRemote: false,
+	editRemote: true,
 	renameUser: false
 }) {
 	try {
