@@ -12,7 +12,7 @@
 	"qstart": "node dist/index.js",
     "test": "mocha --require ts-node/register --timeout 20000 test/*.ts",
     "build": "rm -Rf dist && tsc --build",
-    "setup": "yarn install && cd react_systempanel && yarn install && yarn build",
+    "setup": "yarn install && cd react_systempanel && yarn install && yarn build && yarn buildReact",
     "buildReact": "cd react_systempanel && yarn build",
     "startReact": "cd react_systempanel && yarn start",
     "migrate": "node node_modules/db-migrate/bin/db-migrate sync [all]",
