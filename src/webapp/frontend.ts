@@ -18,7 +18,6 @@ import sample from 'lodash.sample';
 // Api routes
 import systemConfigController from '../controllers/system/config';
 import authController from '../controllers/auth';
-import {APIControllerPublic, APIControllerAdmin} from '../controllers/api';
 import { getState } from '../utils/state';
 import systemDBController from '../controllers/system/database';
 import systemKaraController from '../controllers/system/kara';
@@ -26,6 +25,21 @@ import systemTagController from '../controllers/system/tag';
 import systemSeriesController from '../controllers/system/series';
 import systemUsersController from '../controllers/system/user';
 import systemDownloadController from '../controllers/system/download';
+import adminBlacklistController from '../controllers/frontend/admin/blacklist';
+import adminFavoritesController from '../controllers/frontend/admin/favorites';
+import adminMiscController from '../controllers/frontend/admin/misc';
+import adminPlayerController from '../controllers/frontend/admin/player';
+import adminPlaylistsController from '../controllers/frontend/admin/playlists';
+import adminUserController from '../controllers/frontend/admin/user';
+import adminWhitelistController from '../controllers/frontend/admin/whitelist';
+import publicBlacklistController from '../controllers/frontend/public/blacklist';
+import publicFavoritesController from '../controllers/frontend/public/favorites';
+import publicMiscController from '../controllers/frontend/public/misc';
+import publicPlaylistsController from '../controllers/frontend/public/playlists';
+import publicKaraController from '../controllers/frontend/public/kara';
+import publicPollController from '../controllers/frontend/public/poll';
+import publicUserController from '../controllers/frontend/public/user';
+import publicWhitelistController from '../controllers/frontend/public/whitelist';
 
 let ws: any;
 
@@ -48,8 +62,22 @@ function apiRouter() {
 	systemUsersController(apiRouter);
 	systemDownloadController(apiRouter);
 	// Add public/admin routes
-	APIControllerPublic(apiRouter);
-	APIControllerAdmin(apiRouter);
+	adminBlacklistController(apiRouter);
+	adminFavoritesController(apiRouter);
+	adminMiscController(apiRouter);
+	adminPlayerController(apiRouter);
+	adminPlaylistsController(apiRouter);
+	adminUserController(apiRouter);
+	adminWhitelistController(apiRouter);
+
+	publicBlacklistController(apiRouter);
+	publicFavoritesController(apiRouter);
+	publicMiscController(apiRouter);
+	publicPlaylistsController(apiRouter);
+	publicKaraController(apiRouter);
+	publicPollController(apiRouter);
+	publicUserController(apiRouter);
+	publicWhitelistController(apiRouter);
 
 	return apiRouter;
 }
