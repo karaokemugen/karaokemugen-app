@@ -16,10 +16,16 @@ import { initializationCatchphrases } from '../services/constants';
 import sample from 'lodash.sample';
 
 // Api routes
-import systemController from '../controllers/system';
+import systemConfigController from '../controllers/system/config';
 import authController from '../controllers/auth';
 import {APIControllerPublic, APIControllerAdmin} from '../controllers/api';
 import { getState } from '../utils/state';
+import systemDBController from '../controllers/system/database';
+import systemKaraController from '../controllers/system/kara';
+import systemTagController from '../controllers/system/tag';
+import systemSeriesController from '../controllers/system/series';
+import systemUsersController from '../controllers/system/user';
+import systemDownloadController from '../controllers/system/download';
 
 let ws: any;
 
@@ -33,8 +39,14 @@ function apiRouter() {
 
 	// Add auth routes
 	authController(apiRouter);
-	// Add system route
-	systemController(apiRouter);
+	// Add system routes
+	systemConfigController(apiRouter);
+	systemDBController(apiRouter);
+	systemKaraController(apiRouter);
+	systemTagController(apiRouter);
+	systemSeriesController(apiRouter);
+	systemUsersController(apiRouter);
+	systemDownloadController(apiRouter);
 	// Add public/admin routes
 	APIControllerPublic(apiRouter);
 	APIControllerAdmin(apiRouter);

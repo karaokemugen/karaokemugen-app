@@ -9,13 +9,13 @@ import {User, Token} from '../../types/user';
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
 
-export const updateUserLoginTime = (req: { get: (arg0: string) => string; }, _res: any, next: () => void) => {
+export const updateUserLoginTime = (req: any, _res: any, next: any) => {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	updateLastLoginName(token.username);
 	next();
 };
 
-export async function checkValidUser(token: { username: string; }, onlineToken: Token) {
+export async function checkValidUser(token: { username: string; }, onlineToken: Token): Promise<User> {
 	// If user is remote, see if we have a remote token ready.
 	const user = await findUserByName(token.username);
 	if (user) {
@@ -23,7 +23,7 @@ export async function checkValidUser(token: { username: string; }, onlineToken: 
 			const remoteToken = getRemoteToken(token.username);
 			if (remoteToken && remoteToken.token === onlineToken.token) {
 				// Remote token exists, no problem here
-				return true;
+				return user;
 			} else {
 				// Remote token does not exist, we're going to verify it and add it if it does work
 				try {
@@ -50,13 +50,13 @@ export async function checkValidUser(token: { username: string; }, onlineToken: 
 	}
 }
 
-export const requireRegularUser = (req: { user: { type: number; }; }, res: { status: (arg0: number) => { send: (arg0: string) => void; }; }, next: () => void) => {
+export const requireRegularUser = (req: any, res: any, next: any) => {
 	req.user.type === 2
-		? res.status(401).send('Guests cannot use favorites')
+		? res.status(401).send('Guests cannot use this function')
 		: next();
 };
 
-export const requireValidUser = (req: { get: { (arg0: string): string; (arg0: string): void; }; authToken: any; user: boolean | User; }, res: { status: (arg0: number) => { send: (arg0: string) => void; }; }, next: () => void) => {
+export const requireValidUser = (req: any, res: any, next: any) => {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	const onlineToken = req.get('onlineAuthorization');
 	req.authToken = token;
@@ -65,7 +65,7 @@ export const requireValidUser = (req: { get: { (arg0: string): string; (arg0: st
 		token: onlineToken,
 		role: 'user'
 	})
-		.then(user => {
+		.then((user: User) => {
 			req.user = user;
 			next();
 		})
