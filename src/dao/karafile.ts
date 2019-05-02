@@ -186,9 +186,7 @@ export async function extractMediaTechInfos(mediaFile: string, size: number): Pr
 
 export async function writeKara(karafile: string, karaData: Kara) {
 	const infosToWrite: KaraFile = formatKara(karaData);
-	if (karaData.isKaraModified === false) {
-		return;
-	}
+	if (karaData.isKaraModified === false) return;
 	infosToWrite.datemodif = now(true);
 	delete infosToWrite.karafile;
 	karaData.datemodif = new Date(infosToWrite.datemodif * 1000);
