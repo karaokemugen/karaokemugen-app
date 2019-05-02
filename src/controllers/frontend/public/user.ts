@@ -3,7 +3,7 @@ import { errMessage, OKMessage } from "../../common";
 import { removeRemoteUser, convertToRemoteUser, editUser, findUserByName, updateSongsLeft, createUser, listUsers } from "../../../services/user";
 import { emitWS } from "../../../webapp/frontend";
 import { check } from "../../../utils/validators";
-import { updateUserLoginTime, requireAuth, requireValidUser, requireAdmin } from "../../middlewares/auth";
+import { updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
 import { requireWebappLimited, requireWebappLimitedNoAuth } from "../../middlewares/webapp_mode";
 import { getLang } from "../../middlewares/lang";
 import multer = require("multer");
