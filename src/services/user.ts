@@ -24,8 +24,24 @@ import { fetchAndAddFavorites } from './favorites';
 import {encode, decode} from 'jwt-simple';
 import {Token, User, UserOpts, Tokens, SingleToken, Role} from '../types/user';
 import { PLC } from '../types/playlist';
+import {updateExpiredUsers as DBUpdateExpiredUsers,
+	resetGuestsPassword as DBResetGuestsPassword,
+	updateUserLastLogin as DBUpdateUserLastLogin,
+	checkNicknameExists as DBCheckNicknameExists,
+	editUser as DBEditUser,
+	updateUserPassword as DBUpdateUserPassword,
+	listGuests as DBListGuests,
+	listUsers as DBListUsers,
+	getUser as DBGetUser,
+	findFingerprint as DBFindFingerprint,
+	getRandomGuest as DBGetRandomGuest,
+	updateUserFingerprint as DBUpdateUserFingerprint,
+	addUser as DBAddUser,
+	reassignToUser as DBReassignToUser,
+	deleteUser as DBDeleteUser
+} from '../dao/user';
 
-const db = require('../dao/user');
+
 let userLoginTimes = new Map();
 let databaseBusy = false;
 
@@ -63,8 +79,8 @@ async function updateExpiredUsers() {
 	// Unflag connected accounts from database if they expired
 	try {
 		if (!databaseBusy) {
-			await db.updateExpiredUsers(now(true) - (getConfig().Frontend.AuthExpireTime * 60));
-			await db.resetGuestsPassword();
+			await DBUpdateExpiredUsers(now(true) - (getConfig().Frontend.AuthExpireTime * 60));
+			await DBResetGuestsPassword();
 		}
 	} catch(err) {
 		logger.error(`[Users] Expiring users failed (will try again in one minute) : ${err}`);
@@ -178,7 +194,7 @@ export async function updateLastLoginName(login: string) {
 	if (!userLoginTimes.has(login)) userLoginTimes.set(login, new Date());
 	if (userLoginTimes.get(login) < now(true) - 60) {
 		userLoginTimes.set(login, new Date());
-		return await db.updateUserLastLogin(login);
+		return await DBUpdateUserLastLogin(login);
 	}
 }
 
@@ -230,7 +246,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (user.type !== 0 && !user.type) user.type = currentUser.type;
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
-		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname)) throw 'Nickname already exists';
+		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw 'Nickname already exists';
 		if (avatar) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in
@@ -240,13 +256,13 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		} else {
 			user.avatar_file = currentUser.avatar_file;
 		}
-		await db.editUser(user);
+		await DBEditUser(user);
 		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);
 		if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) await editRemoteUser(user);
 		// Modifying passwords is not allowed in demo mode
 		if (user.password && !getState().isDemo) {
 			user.password = hashPassword(user.password);
-			await db.updateUserPassword(user.login,user.password);
+			await DBUpdateUserPassword(user.login,user.password);
 		}
 		return user;
 	} catch (err) {
@@ -259,11 +275,11 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 }
 
 export async function listGuests(): Promise<User[]> {
-	return await db.listGuests();
+	return await DBListGuests();
 }
 
 export async function listUsers(): Promise<User[]> {
-	return await db.listUsers();
+	return await DBListUsers();
 }
 
 async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File): Promise<string> {
@@ -288,7 +304,7 @@ export async function findUserByName(username: string, opt = {
 	public: false
 }): Promise<User> {
 	//Check if user exists in db
-	const userdata = await db.getUser(username);
+	const userdata = await DBGetUser(username);
 	if (userdata) {
 		if (!userdata.bio || opt.public) userdata.bio = null;
 		if (!userdata.url || opt.public) userdata.url = null;
@@ -313,7 +329,7 @@ export async function checkPassword(user: User, password: string): Promise<boole
 	// Access is granted only if passwords match OR user type is 2 (guest) and its password in database is empty.
 	if (user.password === hashedPassword || (user.type === 2 && !user.password)) {
 		// If password was empty for a guest, we set it to the password given on login (which is its device fingerprint).
-		if (user.type === 2 && !user.password) await db.updateUserPassword(user.login,hashedPassword);
+		if (user.type === 2 && !user.password) await DBUpdateUserPassword(user.login, hashedPassword);
 		return true;
 	}
 	return false;
@@ -323,18 +339,18 @@ export async function findFingerprint(fingerprint: string): Promise<string> {
 	// This checks database for a fingerprint.
 	// If fingerprint is present we return the login name of that user
 	// If not we find a new guest account to assign to the user.
-	let guest = await db.findFingerprint(fingerprint);
+	let guest = await DBFindFingerprint(fingerprint);
 	if (getState().isTest) logger.debug(guest);
 	if (guest) return guest.pk_login;
-	guest = await db.getRandomGuest();
+	guest = await DBGetRandomGuest();
 	if (getState().isTest) logger.debug(guest);
 	if (!guest) return null;
-	await db.updateUserPassword(guest.pk_login, hashPassword(fingerprint));
+	await DBUpdateUserPassword(guest.pk_login, hashPassword(fingerprint));
 	return guest.pk_login;
 }
 
 export async function updateUserFingerprint(username: string, fingerprint: string) {
-	return await db.updateUserFingerprint(username, fingerprint);
+	return await DBUpdateUserFingerprint(username, fingerprint);
 }
 
 export async function remoteCheckAuth(instance: string, token: string) {
@@ -458,7 +474,7 @@ export async function createUser(user: User, opts: UserOpts = {
 	}
 	if (user.password) user.password = hashPassword(user.password);
 	try {
-		await db.addUser(user);
+		await DBAddUser(user);
 		if (user.type < 2) logger.info(`[User] Created user ${user.login}`);
 		delete user.password;
 		logger.debug(`[User] User data : ${JSON.stringify(user, null, 2)}`);
@@ -474,7 +490,7 @@ async function newUserIntegrityChecks(user: User) {
 	if (user.type === 2 && user.password) throw { code: 'GUEST_WITH_PASSWORD'};
 
 	// Check if login already exists.
-	if (await db.getUser(user.login) || await db.checkNicknameExists(user.login)) {
+	if (await DBGetUser(user.login) || await DBCheckNicknameExists(user.login)) {
 		logger.error(`[User] User/nickname ${user.login} already exists, cannot create it`);
 		throw { code: 'USER_ALREADY_EXISTS', data: {username: user.login}};
 	}
@@ -486,8 +502,8 @@ export async function deleteUser(username: string) {
 		const user = await findUserByName(username);
 		if (!user) throw {code: 'USER_NOT_EXISTS'};
 		//Reassign karas and playlists owned by the user to the admin user
-		await db.reassignToUser(username,'admin');
-		await db.deleteUser(username);
+		await DBReassignToUser(username,'admin');
+		await DBDeleteUser(username);
 		logger.debug(`[User] Deleted user ${username}`);
 		return true;
 	} catch (err) {
