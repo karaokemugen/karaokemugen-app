@@ -51,8 +51,7 @@ function queueDownload(input: KaraDownload, done: any) {
 export async function initDownloader() {
 	initQueue();
 	await initDownloads();
-	//Returning early for now, we don't relaunch pending downloads on startup
-	//await startDownloads();
+	await startDownloads();
 	return;
 }
 
