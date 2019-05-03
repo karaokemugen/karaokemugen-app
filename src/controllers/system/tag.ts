@@ -4,9 +4,9 @@ import { getTags } from "../../services/tag";
 
 
 export default function systemTagController(router: Router) {
-	router.get('/system/tags', requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
+	router.get('/system/tags', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
-			const tags = getTags({
+			const tags = await getTags({
 				filter: req.query.filter,
 				type: req.query.type,
 				from: 0,
