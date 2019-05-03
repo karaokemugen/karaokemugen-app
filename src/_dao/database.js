@@ -477,6 +477,8 @@ export async function importFromSQLite() {
 			SELECT SETVAL('playlist_pk_id_playlist_seq',(SELECT MAX(pk_id_playlist) FROM playlist));
 			SELECT SETVAL('playlist_content_pk_id_plcontent_seq',(SELECT MAX(pk_id_plcontent) FROM playlist_content));
 			`);
+			// Update BLC's values when blacklisting individual songs since now we use KIDs and not old numeric IDs
+			await db().query('UPDATE blacklist_criteria SET value = uniquevalue WHERE type = 1001;');
 			await generateBlacklist();
 			logger.info('[DB] SQLite import complete');
 			await asyncUnlink(sqliteDBFile);
