@@ -104,7 +104,7 @@ export async function getDataFromKaraFile(karafile: string, karaData: KaraFile):
 			karaData.mediaduration = mediaInfo.duration;
 		}
 	}
-	if (karaData.order = '') karaData.order = null;
+	if (karaData.order === '') karaData.order = null;
 	return {
 		kid: karaData.KID,
 		karafile: karafile,
