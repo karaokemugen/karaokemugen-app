@@ -23,6 +23,7 @@ import {Query, Settings} from '../types/database';
 const sql = require('./sql/database');
 
 export async function compareKarasChecksum(silent?: boolean) {
+	logger.info('[DB] Comparing files and database data');
 	const [settings, currentChecksum] = await Promise.all([
 		getSettings(),
 		baseChecksum({silent: silent})
