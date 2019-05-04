@@ -190,6 +190,7 @@ export async function writeKara(karafile: string, karaData: Kara) {
 	infosToWrite.datemodif = now(true);
 	delete infosToWrite.karafile;
 	karaData.datemodif = new Date(infosToWrite.datemodif * 1000);
+	karaData.kid = infosToWrite.KID;
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
 
