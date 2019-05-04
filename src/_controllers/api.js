@@ -4138,7 +4138,7 @@ export function APIControllerPublic(router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await importFavorites(req.body.favorites,req.authToken.username);
+					const data = await importFavorites(JSON.parse(req.body.favorites),req.authToken.username);
 					const response = {
 						message: 'Favorites imported'
 					};
@@ -4146,11 +4146,13 @@ export function APIControllerPublic(router) {
 					emitWS('favoritesUpdated', req.authToken.username);
 					res.json(OKMessage(response,'FAVORITES_IMPORTED'));
 				} catch(err) {
+					console.log(err);
 					res.status(500).json(errMessage('FAVORITES_IMPORT_ERROR',err));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
+				console.log(validationErrors);
 				res.status(400).json(validationErrors);
 			}
 
