@@ -611,15 +611,24 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
             fr = new FileReader();
             fr.onload = function () {
                 var data = {};
-                data['playlist'] = fr['result'];
-                var name = JSON.parse(fr.result).PlaylistInformation.name;
-                ajx('POST', scope + '/playlists/import', data, function (response) {
+                var name;
+                if (file.name.includes('KaraMugen_fav')) {
+                    data['favorites'] = fr['result'];
+                    url = 'public/favorites/import';
+                    name = 'Favs';
+                } else {
+                    url = scope + '/playlists/import';
+                    data['playlist'] = fr['result'];
+                    name = JSON.parse(fr.result).PlaylistInformation.name;
+                }                
+                ajx('POST', url, data, function (response) {
                     displayMessage('success', 'Playlist importée' + ' : ', name);
-                    if (response.unknownKaras.length > 0) {
+                    if (response.unknownKaras && response.unknownKaras.length > 0) {
                         displayMessage('warning', 'Karas inconnus' + ' : ', response.unknownKaras);
                     }
+                    var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
                     playlistsUpdating.done(function () {
-                        select.val(response.playlist_id).change();
+                        select.val(playlist_id).change();
                     });
                 });
             };
@@ -648,25 +657,22 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
             data = { smartShuffle: 1 }
             ajx(type, url, data);
         } else if (name == 'export') {
+            if (idPlaylist === -5) {
+                url = 'public/favorites'
+            }
             url += '/export';
             type = 'GET';
             ajx(type, url, data, function (data) {
                 var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 4));
                 var dlAnchorElem = document.getElementById('downloadAnchorElem');
                 dlAnchorElem.setAttribute('href', dataStr);
-                dlAnchorElem.setAttribute('download', ['KaraMugen', playlistName, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+                if (idPlaylist === -5) {
+                    dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', logInfos.username, new Date().toLocaleDateString().replace('\\','-')].join('_') + '.kmplaylist');
+                } else {
+                    dlAnchorElem.setAttribute('download', ['KaraMugen', playlistName, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+                }
                 dlAnchorElem.click();
             });
-        } else if (name == 'import') {
-			/*
-			url = scope + '/playlists/import';
-			type = 'POST';
-
-			displayModal('prompt','Collez votre JSON ci-dessous', '', function(json){
-				data['playlist'] = json;
-				ajx(type, url, data);
-			});
-			*/
         } else if (name == 'editName') {
             type = 'PUT';
             $.each(['flag_current', 'flag_visible', 'flag_public'], function (k, v) {

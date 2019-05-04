@@ -1034,8 +1034,7 @@ var settingsNotUpdated;
 						if( confirm ) {
 							var data = {};
 							data['favorites'] = fr['result'];
-							ajx('POST', 'public/favorites/import', data, function(response) {
-							});
+							ajx('POST', 'public/favorites/import', data);
 						}
 					});
 				};
