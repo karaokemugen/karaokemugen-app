@@ -1033,10 +1033,8 @@ var settingsNotUpdated;
 					displayModal('confirm',i18n.__('CONFIRM_FAV_IMPORT'), '', function(confirm){
 						if( confirm ) {
 							var data = {};
-							data['playlist'] = fr['result'];
-							var name = JSON.parse(fr.result).PlaylistInformation.name;
-							ajx('POST', 'public/favorites/import', data, function(response) {
-							});
+							data['favorites'] = fr['result'];
+							ajx('POST', 'public/favorites/import', data);
 						}
 					});
 				};

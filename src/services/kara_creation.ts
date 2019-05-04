@@ -125,8 +125,12 @@ async function generateKara(kara: Kara, overwrite: boolean) {
 	// Since temp files don't have any extension anymore
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
 	let newSubFile: string;
-	if (kara.subfile && kara.subfile !== 'dummy.ass' && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
-	if (kara.subfile === 'dummy.ass') newSubFile = kara.subfile;
+	if (kara.subfile && kara.subfile !== 'dummy.ass' && kara.subfile_orig) {
+		newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
+	} else {
+		kara.subfile = 'dummy.ass';
+		newSubFile = kara.subfile;
+	}
 	// We don't need these anymore.
 	delete kara.subfile_orig;
 	delete kara.mediafile_orig;
