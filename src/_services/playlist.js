@@ -726,7 +726,9 @@ export async function exportPlaylist(playlist_id) {
 				username: plc.username,
 				serie: plc.serie,
 				title: plc.title,
-				type: plc.type,
+				songtype: plc.songtypes[0].name,
+				songorder: plc.songorder,
+				language: plc.languages[0].name,
 				flag_playing: plc.flag_playing || undefined
 			};
 		});
