@@ -718,7 +718,7 @@ export async function exportPlaylist(playlist_id: number) {
 			modified_at: pl.modified_at,
 			flag_visible: pl.flag_visible
 		};
-		const plcFiltered = plContents.map((plc: PLC) => {
+		const plcFiltered = plContents.map((plc: any) => {
 			return {
 				kid: plc.kid,
 				nickname: plc.nickname,

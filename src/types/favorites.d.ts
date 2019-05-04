@@ -4,17 +4,15 @@ export interface FavParams extends KaraParams {
 	username: string
 }
 
-interface FavExportHeader {
-	description: string,
-	version: number
-}
-
 interface FavExportContent {
 	kid: string
 }
 
 export interface FavExport {
-	Header: FavExportHeader,
+	Header: {
+		description: string,
+		version: number
+	},
 	Favorites: FavExportContent[]
 }
 

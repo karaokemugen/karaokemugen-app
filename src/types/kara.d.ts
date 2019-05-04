@@ -92,7 +92,7 @@ export interface KaraList {
 		from: number,
 		to: number
 	},
-	content: Kara[]
+	content: any[]
 }
 
 export interface MediaInfo {
