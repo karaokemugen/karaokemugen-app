@@ -133,7 +133,17 @@ export async function exportFavorites(username: string) {
 			version: 1,
 			description: 'Karaoke Mugen Favorites List File'
 		},
-		Favorites: favs.content
+		Favorites: favs.content.map(k => {
+		// Only the kid property is mandatory, the rest is just decoration so the person can know which song is which in the file
+			return {
+				kid: k.kid,
+				title: k.title,
+				songorder: k.songorder,
+				serie: k.serie,
+				songtype: k.songtype[0].name,
+				language: k.languages[0].name
+			};
+		})
 	};
 }
 

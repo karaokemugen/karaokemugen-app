@@ -116,7 +116,7 @@ export async function initFrontend() {
 		app.use(cookieParser());
 		app.use(i18n.init);
 		app.use(urlencoded({ extended: true, limit: '50mb' }));
-		app.use(json());
+		app.use(json({limit: '50mb'}));
 		app.use('/api', apiRouter());
 		// Add headers
 		app.use((req, res, next) => {

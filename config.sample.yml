@@ -57,7 +57,7 @@ Karaoke:
   SmartInsert: false
   Display:
     # Show nickname of the person who requested a song
-    Nickname: true,
+    Nickname: true
     ConnectionInfo:
       # Enable display of connection messages
       Enabled: true

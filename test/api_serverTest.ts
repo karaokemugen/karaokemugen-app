@@ -266,7 +266,7 @@ describe('Favorites', function() {
 
 	it('Import favorites', function() {
 		var data = {
-			favorites: favoritesExport
+			favorites: JSON.stringify(favoritesExport)
 		};
 		return request
 			.post('/api/public/favorites/import')

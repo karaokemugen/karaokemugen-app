@@ -233,7 +233,7 @@ export default function publicFavoritesController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await importFavorites(req.body.favorites,req.authToken.username);
+					const data = await importFavorites(JSON.parse(req.body.favorites), req.authToken.username);
 					const response = {
 						message: 'Favorites imported',
 						unknownKaras: undefined
