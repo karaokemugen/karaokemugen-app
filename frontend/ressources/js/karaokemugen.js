@@ -1540,31 +1540,39 @@ var settingsNotUpdated;
 							});
 						}
 					}
+                    tagsUpdating.done(e => {
+                        for (var k in data) {
+                            if (data.hasOwnProperty(k)) {
+                                if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
+                                    
+                                    blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
+                                }
+                                // build the blacklist criteria line
 
-					for (var k in data) {
-						if (data.hasOwnProperty(k)) {
-							if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
-								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
-							}
-							// build the blacklist criteria line
+                                    var tagsFiltered = jQuery.grep(tags, function(obj) {
+                                        return obj.tag_id == data[k].value;
+                                    });
 
-							tagsUpdating.done(e => {
-								var tagsFiltered = jQuery.grep(tags, function(obj) {
-									return obj.tag_id == data[k].value;
-								});
-								var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
-								var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
+                                    var tagText = '';
+                                    if(tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100) {
+                                    var trad = tagsFiltered[0].i18n[i18n.locale];
+                                    tagText = trad ? trad : tagsFiltered[0].name;
+                                    } else {
+                                        tagText = data[k].value
+                                    }
+                                    var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
 
-								blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
-									'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
-                                +	'<div class="actionDiv">' + html + '</div>'
-                                +	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
-                                +	'<div class="contentDiv">' + textContent + '</div>'
-                                +	'</li>');
-							})
+                                    blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
+                                        '<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
+                                    +	'<div class="actionDiv">' + html + '</div>'
+                                    +	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
+                                    +	'<div class="contentDiv">' + textContent + '</div>'
+                                    +	'</li>');
+                                
 
-						}
-					}
+                            }
+                        }
+                    })
 					//htmlContent = blacklistCriteriasHtml.html();
 					$('#playlist' + side).empty().append(blacklistCriteriasHtml);
 					if (regenSelect2) $('#bcType').select2({ theme: 'bootstrap', dropdownAutoWidth : true, minimumResultsForSearch: -1 });
