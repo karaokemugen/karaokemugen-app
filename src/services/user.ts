@@ -247,7 +247,8 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
 		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw 'Nickname already exists';
-		if (avatar) {
+		logger.debug(avatar);
+		if (avatar && avatar.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in
 			// database
