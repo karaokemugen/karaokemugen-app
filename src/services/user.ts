@@ -66,6 +66,7 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	// Renaming user locally
 	const user = await findUserByName(token.username);
 	user.login = username;
+	console.log('removeRemoteUser');
 	await editUser(token.username, user, null, 'admin', {
 		editRemote: false,
 		renameUser: true
@@ -126,6 +127,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				path: await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file)
 			};
 		}
+		console.log('fetchAndUpdateRemoteUser')
 		user = await editUser(username,{
 			bio: remoteUser.bio,
 			url: remoteUser.url,
@@ -173,6 +175,7 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 	await createRemoteUser(user);
 	const remoteUser = await remoteLogin(user.login, password);
 	upsertRemoteToken(user.login, remoteUser.token);
+	console.log('convertToRemoteUser');
 	try {
 		await editUser(token.username, user, null, token.role, {
 			editRemote: false,

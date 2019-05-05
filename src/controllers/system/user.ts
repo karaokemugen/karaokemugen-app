@@ -34,6 +34,7 @@ export default function systemUsersController(router: Router) {
 
 	router.put('/system/users/:userLogin', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
+			console.log('/system/users/:userLogin')
 			await editUser(req.body.login, req.body, req.body.avatar, req.authToken.role);
 			res.status(200).send('User edited');
 		} catch(err) {

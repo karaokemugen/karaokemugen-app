@@ -209,6 +209,7 @@ export default function publicUserController(router: Router) {
 				if (req.file) avatar = req.file;
 				//Get username
 				try {
+					console.log('EditMyAccount');
 					const userdata = await editUser(req.authToken.username,req.body,avatar,req.authToken.role);
 					emitWS('userUpdated',req.authToken.username);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));
