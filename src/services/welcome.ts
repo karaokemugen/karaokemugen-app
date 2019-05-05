@@ -10,7 +10,6 @@ function generateAdminPassword(): string {
 	// Resets admin's password when appFirstRun is set to true.
 	// Returns the generated password.
 	const adminPassword = randomstring.generate(8);
-	console.log('generateAdminPassword');
 	editUser('admin',
 		{
 			password: adminPassword,

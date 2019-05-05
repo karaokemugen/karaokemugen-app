@@ -66,7 +66,6 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	// Renaming user locally
 	const user = await findUserByName(token.username);
 	user.login = username;
-	console.log('removeRemoteUser');
 	await editUser(token.username, user, null, 'admin', {
 		editRemote: false,
 		renameUser: true
@@ -127,7 +126,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				path: await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file)
 			};
 		}
-		console.log('fetchAndUpdateRemoteUser')
+		logger.info('fetchAndUpdateRemoteUser')
 		user = await editUser(username,{
 			bio: remoteUser.bio,
 			url: remoteUser.url,
@@ -175,7 +174,6 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 	await createRemoteUser(user);
 	const remoteUser = await remoteLogin(user.login, password);
 	upsertRemoteToken(user.login, remoteUser.token);
-	console.log('convertToRemoteUser');
 	try {
 		await editUser(token.username, user, null, token.role, {
 			editRemote: false,
@@ -250,7 +248,6 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
 		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw 'Nickname already exists';
-		logger.debug(avatar);
 		if (avatar && avatar.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in
@@ -288,6 +285,8 @@ export async function listUsers(): Promise<User[]> {
 
 async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File): Promise<string> {
 	try {
+		logger.info(JSON.stringify(avatar));
+		logger.info(oldImageFile);
 		const conf = getConfig();
 		const fileType = await detectFileType(avatar.path);
 		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
