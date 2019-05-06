@@ -1,5 +1,22 @@
 # Versions
 
+## v2.5.1 "Konata Kiffante" - 06/05/2019
+
+This is a bugfix release.
+
+### Fixes
+
+- Added notice to type in your full username on system panel login page (463b62e8)
+- Fixed tag add/remove on blacklist criterias list ( de6611d4 )
+- Fixed import/export favorites from admin interface ( f2ee577e, c76941c7, 7ae9b9b9 )
+- Fixed import favorites from public interface ( 0222d592 )
+- Fixed blacklist criterias import from an older SQLite database ( 0785947 )
+- Fixed downloads not being started automatically on app startup  ( 87d68d9e )
+- Fixed public/private switch ( df949195 )
+- Fixed online profile updates ( 20a24b1e )
+- Fixed suggestion mail modal box ( 6503c363 )
+- Fixed errors with multi-series karaokes ( bfbe9eed )
+
 ## v2.5.0 "Konata Karaokiste" - 30/04/2019
 
 This is a major release.

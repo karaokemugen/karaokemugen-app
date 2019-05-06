@@ -36,6 +36,7 @@ class Login extends Component {
 				padding: '36px',
 				boxShadow: '0 0 100px rgba(0,0,0,.08)'
 			}}>
+			<p>If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field</p>
 				<Form onSubmit={this.handleSubmit} className='login-form'>
 					<Form.Item hasFeedback>
 						{getFieldDecorator('username', {
