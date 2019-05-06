@@ -4,7 +4,7 @@ import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from './logger';
 import {mediaFileRegexp, imageFileRegexp} from '../services/constants';
-import fileType from 'file-type';
+import fileType = require('file-type');
 import readChunk from 'read-chunk';
 import {createHash, HexBase64Latin1Encoding} from 'crypto';
 import sanitizeFilename from 'sanitize-filename';

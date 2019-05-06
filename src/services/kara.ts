@@ -2,7 +2,7 @@ import {tagTypes, karaTypes} from './constants';
 import {ASSToLyrics} from '../utils/ass';
 import {refreshTags, refreshKaraTags} from '../dao/tag';
 import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../dao/series';
-import { refreshAll, compareKarasChecksum } from '../dao/database';
+import { refreshAll, saveSetting } from '../dao/database';
 import {selectAllKaras,
 	refreshYears,
 	refreshKaras,
@@ -32,6 +32,7 @@ import {asyncUnlink, resolveFileInDirs} from '../utils/files';
 import {getConfig} from '../utils/config';
 import logger from 'winston';
 import {getState} from '../utils/state';
+import { removeKaraInStore, getStoreChecksum } from '../dao/dataStore';
 
 export async function isAllKaras(karas: string[]): Promise<string[]> {
 	// Returns an array of unknown karaokes
@@ -136,8 +137,8 @@ export async function deleteKara(kid: string) {
 		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
 	}
 
-	compareKarasChecksum(true);
-
+	removeKaraInStore(kara.kid);
+	saveSetting('baseChecksum', getStoreChecksum());
 	// Remove kara from database
 	await deleteKaraDB(kid);
 	logger.info(`[Kara] Song ${kara.karafile} removed`);

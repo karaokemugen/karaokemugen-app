@@ -1,8 +1,7 @@
 import logger from 'winston';
 import {basename, join} from 'path';
-import {profile} from '../utils/logger';
 import {has as hasLang} from 'langs';
-import {asyncReadFile, checksum, asyncReadDirFilter} from '../utils/files';
+import {asyncReadDirFilter} from '../utils/files';
 import {resolvedPathSeries, resolvedPathKaras} from '../utils/config';
 import {getState} from '../utils/state';
 import {getDataFromKaraFile, verifyKaraData, writeKara, parseKara} from '../dao/karafile';
@@ -607,31 +606,4 @@ export async function checkUserdbIntegrity() {
 	await generateBlacklist();
 	if (bar) bar.incr();
 	logger.debug('[Gen] Integrity checks complete, database generated');
-}
-
-export async function baseChecksum(opts = {silent: false}) {
-	profile('baseChecksum');
-	const karaFiles = await extractAllKaraFiles();
-	const seriesFiles = await extractAllSeriesFiles();
-	let KMData = '';
-	if (karaFiles.length === 0) return null;
-	if (!opts.silent) bar = new Bar({
-		message: 'Checking .karas...   '
-	}, karaFiles.length);
-	for (const karaFile of karaFiles) {
-		KMData += await asyncReadFile(karaFile, 'utf-8');
-		if (!opts.silent) bar.incr();
-	}
-	if (!opts.silent) bar.stop();
-	if (!opts.silent) bar = new Bar({
-		message: 'Checking series...   '
-	}, seriesFiles.length);
-	for (const seriesFile of seriesFiles) {
-		KMData += await asyncReadFile(seriesFile, 'utf-8');
-		if (!opts.silent) bar.incr();
-	}
-	if (!opts.silent) bar.stop();
-	const karaDataSum = checksum(KMData);
-	profile('baseChecksum');
-	return karaDataSum;
 }

@@ -1,4 +1,4 @@
-import {removeSeriesFile, writeSeriesFile} from '../dao/seriesfile';
+import {removeSeriesFile, writeSeriesFile, formatSeriesFile} from '../dao/seriesfile';
 import {refreshSeries, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, refreshKaraSeries} from '../dao/series';
 import {profile} from '../utils/logger';
 import logger from 'winston';
@@ -6,9 +6,10 @@ import {removeSerieInKaras, replaceSerieInKaras} from '../dao/karafile';
 import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../utils/files';
 import { refreshKaras } from '../dao/kara';
-import {compareKarasChecksum} from '../dao/database';
 import {Series} from '../types/series';
 import { KaraParams } from '../types/kara';
+import { removeSeriesInStore, editSeriesInStore, addSeriesToStore, sortSeriesStore, getStoreChecksum } from '../dao/dataStore';
+import { saveSetting } from '../dao/database';
 
 export async function getSeries(params: KaraParams) {
 	profile('getSeries');
@@ -53,7 +54,8 @@ export async function deleteSerie(sid: string) {
 		removeSerieInKaras(serie.name),
 	]);
 	// Refreshing karas is done asynchronously
-	compareKarasChecksum(true);
+	removeSeriesInStore(sid);
+	saveSetting('baseChecksum', getStoreChecksum());
 	refreshKaraSeries().then(() => refreshKaras());
 }
 
@@ -66,6 +68,7 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 	}
 	if (!serieObj.sid) serieObj.sid = uuidV4();
 	if (!serieObj.seriefile) serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
+	const seriefile = serieObj.seriefile;
 
 	await insertSerie(serieObj);
 	await Promise.all([
@@ -73,8 +76,13 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 		writeSeriesFile(serieObj)
 	]);
 
+	const seriesData = formatSeriesFile(serieObj).series;
+	seriesData.seriefile = seriefile;
+	addSeriesToStore(seriesData);
+	sortSeriesStore();
+	saveSetting('baseChecksum', getStoreChecksum());
+
 	if (opts.refresh) {
-		compareKarasChecksum(true);
 		await refreshSeriesAfterDBChange();
 	}
 	return serieObj.sid;
@@ -89,12 +97,16 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 		await removeSeriesFile(oldSerie.name);
 	}
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
+	const seriefile = serieObj.seriefile;
 	await Promise.all([
 		updateSerie(serieObj),
 		writeSeriesFile(serieObj)
 	]);
+	const seriesData = formatSeriesFile(serieObj).series;
+	seriesData.seriefile = seriefile;
+	editSeriesInStore(sid, seriesData);
+	saveSetting('baseChecksum', getStoreChecksum());
 	if (opts.refresh) {
-		compareKarasChecksum(true);
 		await refreshSeriesAfterDBChange();
 	}
 }

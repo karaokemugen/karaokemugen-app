@@ -7,7 +7,7 @@ import {exit} from '../services/engine';
 import {duration} from '../utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
-import {baseChecksum, run as generateDB} from '../services/generation';
+import {run as generateDB} from '../services/generation';
 import DBMigrate from 'db-migrate';
 import {join, resolve} from 'path';
 import {asyncCopy, asyncUnlink, asyncExists} from '../utils/files';
@@ -19,6 +19,7 @@ import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from './series'
 import {profile} from '../utils/logger';
 import {from as copyFrom} from 'pg-copy-streams';
 import {Query, Settings} from '../types/database';
+import { baseChecksum } from './dataStore';
 
 const sql = require('./sql/database');
 
@@ -26,8 +27,10 @@ export async function compareKarasChecksum(silent?: boolean) {
 	logger.info('[DB] Comparing files and database data');
 	const [settings, currentChecksum] = await Promise.all([
 		getSettings(),
-		baseChecksum({silent: silent})
+		baseChecksum(silent)
 	]);
+	console.log(currentChecksum);
+	console.log(settings);
 	if (settings.baseChecksum !== currentChecksum) {
 		await saveSetting('baseChecksum', currentChecksum);
 		return false;

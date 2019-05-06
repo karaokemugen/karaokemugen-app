@@ -14,8 +14,9 @@ import {createKaraInDB, editKaraInDB} from '../services/kara';
 import {Kara, NewKara} from '../types/kara';
 import {check} from '../utils/validators';
 import {getOrAddSerieID} from '../services/series';
-import { compareKarasChecksum } from '../dao/database';
 import { webOptimize } from '../utils/ffmpeg';
+import { addKaraToStore, editKaraInStore, sortKaraStore, getStoreChecksum } from '../dao/dataStore';
+import { saveSetting } from '../dao/database';
 
 export async function editKara(kara: Kara) {
 	let newKara: NewKara;
@@ -59,9 +60,10 @@ export async function editKara(kara: Kara) {
 		logger.error(`[KaraGen] Error while editing kara : ${err}`);
 		throw err;
 	}
-	// Update in database
-	compareKarasChecksum(true);
+	editKaraInStore(newKara.data.kid, newKara.fileData);
+	saveSetting('baseChecksum', getStoreChecksum());
 	newKara.data.karafile = basename(newKara.file);
+	// Update in database
 	try {
 		await editKaraInDB(newKara.data);
 	} catch(err) {
@@ -73,7 +75,9 @@ export async function editKara(kara: Kara) {
 
 export async function createKara(kara: Kara) {
 	const newKara = await generateKara(kara, false);
-	compareKarasChecksum(true);
+	addKaraToStore(newKara.fileData);
+	sortKaraStore();
+	saveSetting('baseChecksum', getStoreChecksum());
 	try {
 		newKara.data.karafile = basename(newKara.file);
 		await createKaraInDB(newKara.data);
@@ -332,9 +336,10 @@ async function generateAndMoveFiles(mediaPath: string, subPath: string, karaData
 	} catch (err) {
 		throw `Error while moving files. Maybe destination files (${mediaDest} or ${subDest} already exist? (${err})`;
 	}
-	await writeKara(karaPath, karaData);
+	const karaFileData = await writeKara(karaPath, karaData);
 	return {
 		data: karaData,
-		file: karaPath
+		file: karaPath,
+		fileData: karaFileData
 	};
 }
