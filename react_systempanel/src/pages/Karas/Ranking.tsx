@@ -3,9 +3,18 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {Button, Layout, Table} from 'antd';
 
-import {loading, errorMessage, warnMessage} from '../../actions/navigation';
+import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
+import {ReduxMappedProps} from '../../react-app-env';
 
-class KaraList extends Component {
+interface RankingProps extends ReduxMappedProps {
+}
+
+interface RankingState {
+	karas: any[],
+	kara: any,
+}
+
+class Ranking extends Component<RankingProps, RankingState> {
 
 	constructor(props) {
 		super(props);
@@ -78,8 +87,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
+	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
 	warnMessage: (message) => dispatch(warnMessage(message))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(KaraList);
+export default connect(mapStateToProps, mapDispatchToProps)(Ranking);

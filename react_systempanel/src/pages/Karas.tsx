@@ -3,7 +3,7 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {Layout, Button} from 'antd';
 
-import {errorMessage, infoMessage, loading} from '../actions/navigation';
+import {errorMessage, infoMessage, loading, warnMessage} from '../actions/navigation';
 import {ReduxMappedProps} from '../react-app-env';
 
 interface KarasProps extends ReduxMappedProps {}
@@ -41,7 +41,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
 	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message))
+	errorMessage: (message) => dispatch(errorMessage(message)),
+	warnMessage: (message) => dispatch(warnMessage(message))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Karas);

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
 import {Row, Col, Icon, Layout, Table, Input, Button} from 'antd';
-import {loading, errorMessage, warnMessage} from '../../actions/navigation';
+import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import openSocket from 'socket.io-client';
 import { getLocalKaras, deleteDownloadQueue, deleteKAraFromDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../../api/local';
 import {ReduxMappedProps} from '../../react-app-env';
@@ -286,6 +286,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
+	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
 	warnMessage: (message) => dispatch(warnMessage(message))
 });

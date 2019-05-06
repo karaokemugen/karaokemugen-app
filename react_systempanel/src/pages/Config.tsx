@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Input, Layout, Button, Table} from 'antd';
 
-import {loading, infoMessage, errorMessage} from '../actions/navigation';
+import {loading, infoMessage, errorMessage, warnMessage} from '../actions/navigation';
 import {ReduxMappedProps} from '../react-app-env';
 
 interface ConfigProps extends ReduxMappedProps {}
@@ -123,11 +123,15 @@ class Config extends Component<ConfigProps, ConfigState> {
 	}
 }
 
+const mapStateToProps = (state) => ({
+	loadingActive: state.navigation.loading
+});
+
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
 	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message))
+	errorMessage: (message) => dispatch(errorMessage(message)),
+	warnMessage: (message) => dispatch(warnMessage(message))
 });
 
-
-export default connect(null, mapDispatchToProps)(Config);
+export default connect(mapStateToProps, mapDispatchToProps)(Config);

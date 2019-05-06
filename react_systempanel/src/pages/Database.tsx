@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Progress, Modal, Button, Layout} from 'antd';
 import openSocket from 'socket.io-client';
 
-import {loading, infoMessage, errorMessage} from '../actions/navigation';
+import {loading, infoMessage, errorMessage, warnMessage} from '../actions/navigation';
 import {ReduxMappedProps} from '../react-app-env';
 
 interface DatabaseProps extends ReduxMappedProps {}
@@ -275,7 +275,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
 	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message))
+	errorMessage: (message) => dispatch(errorMessage(message)),
+	warnMessage: (message) => dispatch(warnMessage(message))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Database);

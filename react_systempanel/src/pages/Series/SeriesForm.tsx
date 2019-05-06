@@ -5,7 +5,7 @@ import langs from 'langs';
 
 interface SeriesFormProps {
 	serie: any,
-	form?: any
+	form: any
 	save: any,
 }
 

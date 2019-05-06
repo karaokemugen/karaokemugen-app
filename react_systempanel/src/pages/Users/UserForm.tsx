@@ -3,7 +3,7 @@ import {Button, Form, Icon, Input, Select} from 'antd';
 
 interface UserFormProps {
 	user: any,
-	form?: any,
+	form: any,
 	save: any,
 }
 

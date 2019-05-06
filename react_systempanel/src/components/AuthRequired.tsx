@@ -3,11 +3,19 @@ import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import Loading from './Loading';
 
+interface AuthenticationProps {
+	authenticated: boolean,
+}
+
+interface AuthenticationState {
+	c?: any,
+}
+
 export default function(ComposedComponentPromise) {
 
-	class Authentication extends Component {
+	class Authentication extends Component<AuthenticationProps, AuthenticationState> {
 
-		state = {};
+		state: AuthenticationState = {};
 
 		componentWillMount() {
 			ComposedComponentPromise.then(c => this.setState({ c: c}));

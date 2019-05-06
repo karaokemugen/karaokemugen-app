@@ -4,7 +4,7 @@ import UserForm from './UserForm';
 import axios from 'axios/index';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
-import {errorMessage, infoMessage, loading} from '../../actions/navigation';
+import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
 
 interface UserEditProps extends ReduxMappedProps {
@@ -90,9 +90,10 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-	loading: (active: boolean) => dispatch(loading(active)),
-	infoMessage: (message: string) => dispatch(infoMessage(message)),
-	errorMessage: (message: string) => dispatch(errorMessage(message)),
+	loading: (active) => dispatch(loading(active)),
+	infoMessage: (message) => dispatch(infoMessage(message)),
+	errorMessage: (message) => dispatch(errorMessage(message)),
+	warnMessage: (message) => dispatch(warnMessage(message)),
 	push: (url: string) => dispatch(push(url))
 });
 

@@ -3,7 +3,7 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {Input, Divider, Modal, Tooltip, Tag, Icon, Button, Layout, Table} from 'antd';
 import {Link} from 'react-router-dom';
-import {loading, errorMessage, warnMessage} from '../../actions/navigation';
+import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
 
 interface SeriesListProps extends ReduxMappedProps {}
@@ -158,6 +158,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
+	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
 	warnMessage: (message) => dispatch(warnMessage(message))
 });

@@ -2,7 +2,29 @@ import React, {Component} from 'react';
 import {Button, Checkbox, Form, Icon, Input, InputNumber, message, Select, Tooltip, Upload} from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
 
-class KaraForm extends Component<any, any> {
+interface KaraFormProps {
+	kara: any,
+	form: any,
+	save: any,
+}
+
+interface KaraFormState {
+	seriesRequired: boolean,
+	overwrite: boolean,
+	subfileList: any[],
+	mediafileList: any[],
+	singers: string[],
+	authors: string[],
+	tags: string[],
+	series: any[],
+	creators: string[],
+	songwriters: string[],
+	groups: string[],
+	songtype: string,
+	langs: string[],
+}
+
+class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	constructor(props) {
 		super(props);
@@ -492,5 +514,5 @@ class KaraForm extends Component<any, any> {
 	}
 }
 
-const cmp = Form.create()(KaraForm);
+const cmp: any = Form.create()(KaraForm);
 export default cmp;

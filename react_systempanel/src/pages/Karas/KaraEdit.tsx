@@ -4,7 +4,7 @@ import KaraForm from './KaraForm';
 import axios from 'axios/index';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
-import {errorMessage, infoMessage, loading} from '../../actions/navigation';
+import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
 import timestamp from 'unix-timestamp';
 import {ReduxMappedProps} from '../../react-app-env';
 
@@ -129,6 +129,7 @@ const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
 	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
+	warnMessage: (message) => dispatch(warnMessage(message)),
 	push: (url) => dispatch(push(url))
 });
 
