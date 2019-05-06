@@ -37,7 +37,6 @@ export function sortSeriesStore() {
 }
 
 export function getStoreChecksum() {
-	console.log(JSON.stringify(dataStore,null,2));
 	return checksum(JSON.stringify(dataStore));
 }
 
@@ -60,7 +59,6 @@ export function editSeriesInStore(sid: string, series: Series) {
 
 export function removeSeriesInStore(sid: string) {
 	dataStore.series = dataStore.series.filter(e => e.sid !== sid);
-	console.log(JSON.stringify(dataStore,null,2));
 	getStoreChecksum();
 }
 
@@ -91,7 +89,6 @@ export async function baseChecksum(silent?: boolean) {
 		if (!silent) bar.incr();
 	}
 	sortSeriesStore();
-	console.log(JSON.stringify(dataStore, null, 2));
 	if (!silent) bar.stop();
 	profile('baseChecksum');
 	return getStoreChecksum();
