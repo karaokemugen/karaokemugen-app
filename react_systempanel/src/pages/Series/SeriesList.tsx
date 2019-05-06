@@ -4,8 +4,19 @@ import {connect} from 'react-redux';
 import {Input, Divider, Modal, Tooltip, Tag, Icon, Button, Layout, Table} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
+import {ReduxMappedProps} from '../../react-app-env';
 
-class SeriesList extends Component {
+interface SeriesListProps extends ReduxMappedProps {}
+
+interface SeriesListState {
+	series: any[],
+	serie: any,
+	deleteModal: boolean,
+}
+
+class SeriesList extends Component<SeriesListProps, SeriesListState> {
+
+	filter: string;
 
 	constructor(props) {
 		super(props);

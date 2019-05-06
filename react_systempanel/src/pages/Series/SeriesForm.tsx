@@ -1,10 +1,23 @@
 import React, {Component} from 'react';
-import {Col, Row, message, Tag, Select, Tooltip, Button, Form, Icon, Input} from 'antd';
-import PropTypes from 'prop-types';
+import {Button, Col, Form, Icon, Input, message, Row, Select, Tag, Tooltip} from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
 import langs from 'langs';
 
-class SerieForm extends Component {
+interface SeriesFormProps {
+	serie: any,
+	form?: any
+	save: any,
+}
+
+interface SeriesFormState {
+	i18n: any[],
+	languages: any[],
+	selectVisible: boolean,
+}
+
+class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
+
+	select: any;
 
 	constructor(props) {
 		super(props);
@@ -72,7 +85,7 @@ class SerieForm extends Component {
 			const newI18n = this.state.i18n.filter(e => e !== lang);
 			this.setState({ i18n: newI18n});
 		}
-	}
+	};
 
 	render() {
 		const {getFieldDecorator} = this.props.form;
@@ -101,7 +114,6 @@ class SerieForm extends Component {
 						}],
 					})(<Input
 						placeholder='Series name'
-						label='Series name'
 					/>)}
 				</Form.Item>
 				<Form.Item
@@ -148,8 +160,8 @@ class SerieForm extends Component {
 									<Input
 										placeholder='Name in that language'
 										defaultValue={this.state[`lang_${langKey}`]}
-										label={langKey}
-									/></Col>
+									/>
+								</Col>
 							)}
 
 						 {Object.keys(this.state.i18n).length > 1 ? (
@@ -158,7 +170,6 @@ class SerieForm extends Component {
 										<Icon
 											className="dynamic-delete-button"
 											type="minus-circle-o"
-											disabled={this.state.i18n.length === 1}
 											onClick={() => this.removeLang(langKey)}
 										/></Tooltip></Col>
 							) : null}
@@ -210,9 +221,5 @@ class SerieForm extends Component {
 	}
 }
 
-SerieForm.propTypes = {
-	serie: PropTypes.object.isRequired,
-	save: PropTypes.func.isRequired
-};
-
-export default Form.create()(SerieForm);
+const cmp: any = Form.create()(SerieForm);
+export default cmp;

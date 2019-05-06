@@ -2,7 +2,11 @@ import React, {Component} from 'react';
 import {Layout} from 'antd';
 import {connect} from 'react-redux';
 
-class Home extends Component {
+interface HomeProps {}
+
+interface HomeState {}
+
+class Home extends Component<HomeProps, HomeState> {
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>

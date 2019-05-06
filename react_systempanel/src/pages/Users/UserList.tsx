@@ -5,8 +5,18 @@ import {Avatar, Button, Checkbox, Divider, Icon, Layout, Modal, Table} from 'ant
 
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 import {Link} from 'react-router-dom';
+import {ReduxMappedProps} from '../../react-app-env';
 
-class UserList extends Component {
+interface UserListProps extends ReduxMappedProps {
+}
+
+interface UserListState {
+	users: any[],
+	deleteModal: boolean,
+	user: any,
+}
+
+class UserList extends Component<UserListProps, UserListState> {
 
 	constructor(props) {
 		super(props);

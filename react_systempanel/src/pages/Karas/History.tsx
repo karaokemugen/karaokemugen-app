@@ -4,8 +4,17 @@ import {connect} from 'react-redux';
 import {Button, Layout, Table} from 'antd';
 
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
+import {ReduxMappedProps} from '../../react-app-env';
+import {ColumnProps} from 'antd/lib/table';
 
-class KaraList extends Component {
+interface KaraListProps extends ReduxMappedProps {}
+
+interface KaraListState {
+	karas: any[],
+	kara: any
+}
+
+class KaraList extends Component<KaraListProps, KaraListState> {
 
 	constructor(props) {
 		super(props);
@@ -45,7 +54,7 @@ class KaraList extends Component {
 		);
 	}
 
-	columns = [{
+	columns: ColumnProps<any>[] = [{
 		title: 'Language',
 		dataIndex: 'languages',
 		key: 'languages',

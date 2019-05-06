@@ -5,8 +5,34 @@ import {Progress, Modal, Button, Layout} from 'antd';
 import openSocket from 'socket.io-client';
 
 import {loading, infoMessage, errorMessage} from '../actions/navigation';
+import {ReduxMappedProps} from '../react-app-env';
 
-class Database extends Component {
+interface DatabaseProps extends ReduxMappedProps {}
+
+interface DatabaseState {
+	updateModal: boolean,
+	renameModal: boolean,
+	generationProgress: {
+		text: string,
+		value: number,
+		total: number,
+		percentage: number,
+	},
+	downloadProgress: {
+		text: string,
+		value: number,
+		total: number,
+		percentage: number,
+	},
+	downloadBatchProgress: {
+		text: string,
+		value: number,
+		total: number,
+		percentage: number,
+	}
+}
+
+class Database extends Component<DatabaseProps, DatabaseState> {
 
 	constructor(props) {
 		super(props);
@@ -92,7 +118,7 @@ class Database extends Component {
 				this.props.loading(false);
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
 			});
-	}
+	};
 
 	dbupdate() {
 		this.props.loading(true);
@@ -153,7 +179,7 @@ class Database extends Component {
 					<Button
 						type='primary'
 						onClick={this.dbregen}
-						active={!this.props.loadingActive}
+						disabled={this.props.loadingActive}
 					>
 						Regenerate your database (wow wow)
 					</Button>
@@ -164,7 +190,7 @@ class Database extends Component {
 						onClick={
 							() => this.setState({updateModal: true})
 						}
-						active={!this.props.loadingActive}
+						disabled={this.props.loadingActive}
 					>
 						Update your karaoke base files from Shelter
 					</Button>
@@ -173,7 +199,7 @@ class Database extends Component {
 					<Button
 						type='primary'
 						onClick={this.dbdump.bind(this)}
-						active={!this.props.loadingActive}
+						disabled={this.props.loadingActive}
 					>
 						Dump database to a file
 					</Button>
@@ -182,7 +208,7 @@ class Database extends Component {
 					<Button
 						type='primary'
 						onClick={this.dbresetviewcounts.bind(this)}
-						active={!this.props.loadingActive}
+						disabled={this.props.loadingActive}
 					>
 						Reset song viewcounts
 					</Button>
@@ -193,7 +219,7 @@ class Database extends Component {
 						onClick={
 							() => this.setState({renameModal: true})
 						}
-						active={!this.props.loadingActive}
+						disabled={this.props.loadingActive}
 					>
 						Rename all data files to KM naming convention
 					</Button>

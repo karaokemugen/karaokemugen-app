@@ -1,57 +1,70 @@
 import React, {Component} from 'react';
 import {Layout} from 'antd';
-import UserForm from './UserForm';
+import SerieForm from './SeriesForm';
 import axios from 'axios/index';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
 import {errorMessage, infoMessage, loading} from '../../actions/navigation';
 
-const newUser = {
-	type: 1,
-	login: null,
-	password: null,
-	nickname: null
+import {ReduxMappedProps} from '../../react-app-env';
+
+interface SerieEditProps extends ReduxMappedProps {
+	push: (string) => any,
+	match?: any,
+}
+
+interface SerieEditState {
+	serie: any,
+	save: any,
+}
+
+const newSerie = {
+	name: null,
+	aliases: [],
+	i18n: {}
 };
 
-class UserEdit extends Component {
+class SerieEdit extends Component<SerieEditProps, SerieEditState> {
 
 	state = {
-		user: null,
+		serie: null,
 		save: () => {}
 	};
 
 	componentDidMount() {
-		this.loadUser();
+		this.loadSerie();
 	}
 
-	saveNew = (user) => {
-		axios.post('/api/system/users', user)
+	saveNew = (serie) => {
+		axios.post('/api/system/series', serie)
 			.then(() => {
-				this.props.infoMessage('User successfully created');
-				this.props.push('/system/users');
+				this.props.infoMessage('Series successfully created');
+				this.props.push('/system/series');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
 			});
 	};
 
-	saveUpdate = (user) => {
-		axios.put(`/api/system/users/${user.id}`, user)
+	saveUpdate = (serie) => {
+		axios.put(`/api/system/series/${serie.sid}`, serie)
 			.then(() => {
-				this.props.infoMessage('User successfully edited');
-				this.props.push('/system/users');
+				this.props.infoMessage('Series successfully edited');
+				this.props.push('/system/series');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
 			});
 	};
 
-	loadUser = () => {
+	loadSerie = () => {
 		this.props.loading(true);
-		if (this.props.match && this.props.match.params.userLogin) {
-			axios.get(`/api/system/users/${this.props.match.params.userLogin}`)
+		if (this.props.match && this.props.match.params.sid) {
+			axios.get(`/api/system/series/${this.props.match.params.sid}`)
 				.then(res => {
-					this.setState({user: res.data, save: this.saveUpdate});
+					const serieData = {...res.data};
+					serieData.sid = this.props.match.params.sid;
+					this.setState({serie: serieData, save: this.saveUpdate});
 					this.props.loading(false);
 				})
 				.catch(err => {
@@ -59,7 +72,7 @@ class UserEdit extends Component {
 					this.props.loading(false);
 				});
 		} else {
-			this.setState({user: {...newUser}, save: this.saveNew});
+			this.setState({serie: {...newSerie}, save: this.saveNew});
 			this.props.loading(false);
 		}
 	};
@@ -68,7 +81,7 @@ class UserEdit extends Component {
 	render() {
 		return (
 			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.user && (<UserForm user={this.state.user} save={this.state.save} />)}
+				{this.state.serie && (<SerieForm serie={this.state.serie} save={this.state.save} />)}
 			</Layout.Content>
 		);
 	}
@@ -85,4 +98,4 @@ const mapDispatchToProps = (dispatch) => ({
 	push: (url) => dispatch(push(url))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserEdit);
+export default connect(mapStateToProps, mapDispatchToProps)(SerieEdit);
