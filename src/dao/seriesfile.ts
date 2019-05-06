@@ -6,7 +6,8 @@ import { check, initValidators } from '../utils/validators';
 import {uuidRegexp} from '../services/constants';
 import { addSerie, editSerie, getSerie } from '../services/series';
 import { getState } from '../utils/state';
-import { Series } from '../types/series';
+import { Series, SeriesFile } from '../types/series';
+import logger from 'winston';
 
 const header = {
 	version: 3,
@@ -55,6 +56,11 @@ export function findSeries(name: string, series: Series[]) {
 export async function writeSeriesFile(series: Series) {
 	const conf = getConfig();
 	const seriesFile = resolve(getState().appPath, conf.System.Path.Series[0], `${sanitizeFile(series.name)}.series.json`);
+	const seriesData = formatSeriesFile(series);
+	await asyncWriteFile(seriesFile, JSON.stringify(seriesData, null, 2), {encoding: 'utf8'});
+}
+
+export function formatSeriesFile(series: Series): SeriesFile {
 	const seriesData = {
 		header: header,
 		series: series
@@ -64,7 +70,7 @@ export async function writeSeriesFile(series: Series) {
 	delete seriesData.series.serie_id;
 	delete seriesData.series.i18n_name;
 	delete seriesData.series.seriefile;
-	return await asyncWriteFile(seriesFile, JSON.stringify(seriesData, null, 2), {encoding: 'utf8'});
+	return seriesData;
 }
 
 export async function removeSeriesFile(name: string) {
@@ -76,16 +82,21 @@ export async function removeSeriesFile(name: string) {
 	}
 }
 
-export async function integrateSeriesFile(file) {
+export async function integrateSeriesFile(file: string): Promise<string> {
 	const seriesFileData = await getDataFromSeriesFile(file);
 	try {
 		const seriesDBData = await getSerie(seriesFileData.sid);
 		await editSerie(seriesDBData.sid, seriesFileData, { refresh: false });
 		if (seriesDBData.name !== seriesFileData.name) {
-			await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().System.Path.Series));
+			try {
+				await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().System.Path.Series));
+			} catch(err) {
+				logger.warn(`[Series] Could not remove old series file ${seriesDBData.seriefile}`);
+			}
 		}
 		return seriesDBData.name;
 	} catch(err) {
 		await addSerie(seriesFileData, { refresh: false });
+		return seriesFileData.name;
 	}
 }

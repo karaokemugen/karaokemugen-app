@@ -18,6 +18,8 @@ import { KaraFile, Kara, MediaInfo } from '../types/kara';
 import {check, initValidators} from '../utils/validators';
 import {createKaraInDB, editKaraInDB} from '../services/kara';
 import {getConfig} from '../utils/config';
+import { editKaraInStore, getStoreChecksum } from './dataStore';
+import { saveSetting } from './database';
 
 let error = false;
 
@@ -40,6 +42,8 @@ export async function integrateKaraFile(file: string) {
 	} else {
 		await createKaraInDB(karaData, { refresh: false });
 	}
+	editKaraInStore(karaFileData.KID, karaFileData);
+	saveSetting('baseChecksum', getStoreChecksum());
 }
 
 export async function getDataFromKaraFile(karafile: string, karaData: KaraFile): Promise<Kara> {
@@ -192,6 +196,7 @@ export async function writeKara(karafile: string, karaData: Kara) {
 	karaData.datemodif = new Date(infosToWrite.datemodif * 1000);
 	karaData.kid = infosToWrite.KID;
 	await asyncWriteFile(karafile, stringify(infosToWrite));
+	return infosToWrite;
 }
 
 export async function parseKara(karaFile: string): Promise<any> {
@@ -209,6 +214,8 @@ export async function parseKara(karaFile: string): Promise<any> {
 	karaData.mediagain = +karaData.mediagain;
 	karaData.dateadded = +karaData.dateadded;
 	karaData.datemodif = +karaData.datemodif;
+	karaData.version = +karaData.version;
+	karaData.year = +karaData.year;
 	return karaData;
 }
 

@@ -15,7 +15,8 @@ export interface KaraParams {
 
 export interface NewKara {
 	data: Kara,
-	file: string
+	file: string,
+	fileData: KaraFile
 }
 
 export interface Kara {
