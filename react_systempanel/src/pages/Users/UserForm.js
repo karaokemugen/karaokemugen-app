@@ -4,13 +4,19 @@ import PropTypes from 'prop-types';
 
 class UserForm extends Component {
 
+	constructor(props) {
+		super(props);
+		this.state = {
+			initialLogin: this.props.user.login
+		};
+	}
+
 	passwordValidator = (rule, value, callback) => {
 		const form = this.props.form;
 		const type = form.getFieldValue('type');
-		const id = form.getFieldValue('id');
 		if (+type === 2 && value) {
 			callback('A guest cannot have a password');
-		} else if (+type < 2 && !id && !value) {
+		} else if (+type < 2 && !this.state.initialLogin && !value) {
 			callback('A user must have a password');
 		} else {
 			callback();
