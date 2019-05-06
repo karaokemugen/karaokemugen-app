@@ -6,7 +6,18 @@ import {Menu, Icon, Button} from 'antd';
 
 import {logout} from '../actions/auth';
 
-class KMMenu extends Component {
+interface KMenuProps {
+	username: string,
+	logout: () => any,
+	authenticated: boolean,
+	push: (string) => any,
+}
+
+interface KMenuState {
+
+}
+
+class KMMenu extends Component<KMenuProps, KMenuState> {
 
 	state = {
 		current: '',

@@ -3,17 +3,25 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Input, Layout, Button, Table} from 'antd';
 
-import {loading, infoMessage, errorMessage} from '../actions/navigation';
+import {loading, infoMessage, errorMessage, warnMessage} from '../actions/navigation';
+import {ReduxMappedProps} from '../react-app-env';
+
+interface ConfigProps extends ReduxMappedProps {}
+
+interface ConfigState {
+	config: any[],
+	error: string,
+}
 
 // Transforms object to dot notation
 // Transforms dot notation to object and value
 
-class Config extends Component {
+class Config extends Component<ConfigProps, ConfigState> {
 
 	dotify = obj => {
 		//Code from the package node-dotify
 		let res = {};
-		function recurse(obj, current) {
+		function recurse(obj: any, current?: any) {
 			for (var key in obj) {
 				let value = obj[key];
 				let newKey = (current ? current + '.' + key : key);  // joined key with dot
@@ -26,13 +34,14 @@ class Config extends Component {
 		}
 		recurse(obj);
 		return res;
-	}
+	};
 
 	expand = (str, val) => {
 		return str.split('.').reduceRight((acc, currentValue) => {
-			return { [currentValue]: acc }
-		}, val)
-	}
+			return { [currentValue]: acc };
+		}, val);
+	};
+
 	saveSetting(record, value) {
 		axios.put('/api/system/config', {
 			setting: this.expand(record.key, value)
@@ -56,7 +65,7 @@ class Config extends Component {
 		key: 'value',
 		render: (text, record) => (<span>
 			<Input
-				onPressEnter={(event) => this.saveSetting(record, event.target.value)}
+				onPressEnter={() => this.saveSetting(record, record.value)}
 				defaultValue={record.value}
 			/>
 		</span>)
@@ -82,7 +91,7 @@ class Config extends Component {
 
 	configKeyValue = data => {
 		return Object.entries(this.dotify(data)).map(([k,v]) => ({key: k, value: v}));
-	}
+	};
 
 	configBackup() {
 		this.props.loading(true);
@@ -114,11 +123,15 @@ class Config extends Component {
 	}
 }
 
+const mapStateToProps = (state) => ({
+	loadingActive: state.navigation.loading
+});
+
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
 	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message))
+	errorMessage: (message) => dispatch(errorMessage(message)),
+	warnMessage: (message) => dispatch(warnMessage(message))
 });
 
-
-export default connect(null, mapDispatchToProps)(Config);
+export default connect(mapStateToProps, mapDispatchToProps)(Config);

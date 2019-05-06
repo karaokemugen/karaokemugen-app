@@ -4,7 +4,18 @@ import UserForm from './UserForm';
 import axios from 'axios/index';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
-import {errorMessage, infoMessage, loading} from '../../actions/navigation';
+import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
+import {ReduxMappedProps} from '../../react-app-env';
+
+interface UserEditProps extends ReduxMappedProps {
+	push: (string) => any,
+	match?: any,
+}
+
+interface UserEditState {
+	user: any,
+	save: any,
+}
 
 const newUser = {
 	type: 1,
@@ -13,7 +24,7 @@ const newUser = {
 	nickname: null
 };
 
-class UserEdit extends Component {
+class UserEdit extends Component<UserEditProps, UserEditState> {
 
 	state = {
 		user: null,
@@ -82,7 +93,8 @@ const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
 	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
-	push: (url) => dispatch(push(url))
+	warnMessage: (message) => dispatch(warnMessage(message)),
+	push: (url: string) => dispatch(push(url))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserEdit);

@@ -4,7 +4,19 @@ import SerieForm from './SeriesForm';
 import axios from 'axios/index';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
-import {errorMessage, infoMessage, loading} from '../../actions/navigation';
+import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
+
+import {ReduxMappedProps} from '../../react-app-env';
+
+interface SerieEditProps extends ReduxMappedProps {
+	push: (string) => any,
+	match?: any,
+}
+
+interface SerieEditState {
+	serie: any,
+	save: any,
+}
 
 const newSerie = {
 	name: null,
@@ -12,7 +24,7 @@ const newSerie = {
 	i18n: {}
 };
 
-class SerieEdit extends Component {
+class SerieEdit extends Component<SerieEditProps, SerieEditState> {
 
 	state = {
 		serie: null,
@@ -83,6 +95,7 @@ const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
 	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
+	warnMessage: (message) => dispatch(warnMessage(message)),
 	push: (url) => dispatch(push(url))
 });
 

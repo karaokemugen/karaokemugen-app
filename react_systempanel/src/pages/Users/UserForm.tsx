@@ -1,8 +1,17 @@
 import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Select} from 'antd';
-import PropTypes from 'prop-types';
 
-class UserForm extends Component {
+interface UserFormProps {
+	user: any,
+	form: any,
+	save: any,
+}
+
+interface UserFormState {
+	initialLogin: string,
+}
+
+class UserForm extends Component<UserFormProps, UserFormState> {
 
 	constructor(props) {
 		super(props);
@@ -111,9 +120,5 @@ class UserForm extends Component {
 	}
 }
 
-UserForm.propTypes = {
-	user: PropTypes.object.isRequired,
-	save: PropTypes.func.isRequired
-};
-
-export default Form.create()(UserForm);
+const cmp: any = Form.create()(UserForm);
+export default cmp;

@@ -3,7 +3,20 @@ import {Button, Form, Icon, Input} from 'antd';
 import {connect} from 'react-redux';
 import {login as loginAction} from '../actions/auth';
 
-class Login extends Component {
+export interface LoginProps {
+	form: any,
+	login: any,
+	error: any,
+	authenticated: boolean,
+}
+
+export interface LoginState {
+	username: string,
+	password: string,
+	error: any,
+}
+
+class Login extends Component<LoginProps, LoginState> {
 
 	constructor(props) {
 		super(props);
@@ -36,7 +49,7 @@ class Login extends Component {
 				padding: '36px',
 				boxShadow: '0 0 100px rgba(0,0,0,.08)'
 			}}>
-			<p>If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field</p>
+				<p>If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field</p>
 				<Form onSubmit={this.handleSubmit} className='login-form'>
 					<Form.Item hasFeedback>
 						{getFieldDecorator('username', {
@@ -79,4 +92,5 @@ const mapDispatchToProps = (dispatch) => ({
 	}
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(Login));
+const cmp: any = Form.create()(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(cmp);

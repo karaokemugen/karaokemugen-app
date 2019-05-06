@@ -5,11 +5,19 @@ import {connect} from 'react-redux';
 import {dismissAll} from '../actions/navigation';
 import Loading from './Loading';
 
+interface DismissMessagesProps {
+	dismissAll: () => any,
+}
+
+interface DismissMessagesState {
+	c?: any
+}
+
 export default function(ComposedComponentPromise) {
 
-	class DismissMessages extends Component {
+	class DismissMessages extends Component<DismissMessagesProps, DismissMessagesState> {
 
-		state = {};
+		state: DismissMessagesState = {};
 
 		componentWillMount() {
 			this.props.dismissAll();

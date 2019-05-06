@@ -2,11 +2,26 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
 import {Row, Col, Icon, Layout, Table, Input, Button} from 'antd';
-import {loading, errorMessage, warnMessage} from '../../actions/navigation';
+import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import openSocket from 'socket.io-client';
 import { getLocalKaras, deleteDownloadQueue, deleteKAraFromDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../../api/local';
+import {ReduxMappedProps} from '../../react-app-env';
 
-class KaraDownload extends Component {
+interface KaraDownloadProps extends ReduxMappedProps {}
+
+interface KaraDownloadState {
+	karas_local: any[],
+	karas_online: any[],
+	karas_online_count: number,
+	karas_queue: any[],
+	active_download: any,
+	kara: any,
+	currentPage: number,
+	currentPageSize: number,
+	filter: string
+}
+
+class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 
 	constructor(props) {
 		super(props);
@@ -62,7 +77,7 @@ class KaraDownload extends Component {
 	}
 
 	downloadKara(kara) {
-		let downloadObject = {};
+		let downloadObject: any = {};
 		downloadObject.kid = kara.kid;
 		downloadObject.mediafile = kara.mediafile;
 		downloadObject.subfile = kara.subfile;
@@ -138,7 +153,7 @@ class KaraDownload extends Component {
 		localStorage.setItem('karaDownloadPage',pagination.current);
 		localStorage.setItem('karaDownloadPageSize',pagination.pageSize);
 		setTimeout(this.api_get_online_karas.bind(this),10);
-	}
+	};
 
 	render() {
 		return (
@@ -260,7 +275,7 @@ class KaraDownload extends Component {
 				} else
 					button = <button type="button" onClick={this.downloadKara.bind(this,record)}><Icon type='download'/></button>;
 			}
-			return <span>{button} {Math.round(record.mediasize/(1024*1024),1)}Mb</span>;
+			return <span>{button} {Math.round(record.mediasize/(1024*1024))}Mb</span>;
 		}
 	}];
 }
@@ -271,6 +286,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
+	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
 	warnMessage: (message) => dispatch(warnMessage(message))
 });

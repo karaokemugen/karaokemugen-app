@@ -3,19 +3,32 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {Icon, Layout, Table, Input} from 'antd';
 import {Link} from 'react-router-dom';
-import {loading, errorMessage, warnMessage} from '../../actions/navigation';
+import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import { deleteKaraByLocalId } from '../../api/local';
+import {ReduxMappedProps} from '../../react-app-env';
 
-class KaraList extends Component {
+interface KaraListProps extends ReduxMappedProps {
+}
+
+interface KaraListState {
+	karas: any[],
+	kara: any,
+	karas_removing_lastcall: number,
+	karas_removing: string[],
+	currentPage: number,
+	filter: string,
+}
+
+class KaraList extends Component<KaraListProps, KaraListState> {
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			karas: [],
 			kara: {},
-			karas_removing_lastcall:0,
-			karas_removing:[],
-			currentPage: localStorage.getItem('karaPage') || 1,
+			karas_removing_lastcall: 0,
+			karas_removing: [],
+			currentPage: +localStorage.getItem('karaPage') || 1,
 			filter: localStorage.getItem('karaFilter') || ''
 		};
 
@@ -62,17 +75,16 @@ class KaraList extends Component {
 		this.setState({
 			karas_removing:karas_removing,
 			karas_removing_lastcall:new Date().getTime()
-		})
+		});
 	}
-	deletionQueueCron()
-	{
-		if(this.state.karas_removing_lastcall > 0 && this.state.karas_removing_lastcall < new Date().getTime() - 3000)
-		{
+
+	deletionQueueCron() {
+		if(this.state.karas_removing_lastcall > 0 && this.state.karas_removing_lastcall < new Date().getTime() - 3000) {
 			this.setState({
 				karas_removing:[],
 				karas_removing_lastcall:0
-			})
-			this.refresh()
+			});
+			this.refresh();
 		}
 	}
 
@@ -163,9 +175,9 @@ class KaraList extends Component {
 		key: 'delete',
 		render: (text, record) => {
 			if(this.state.karas_removing.indexOf(record.kid)>=0)
-				return <button type="button"><Icon type="sync" spin /></button>
+				return (<button type="button"><Icon type="sync" spin /></button>);
 			else
-				return <button type="button" onClick={this.deleteKara.bind(this,record)}><Icon type='close-circle' theme="twoTone" twoToneColor="#d8493e"/></button>
+				return (<button type="button" onClick={this.deleteKara.bind(this,record)}><Icon type='close-circle' theme="twoTone" twoToneColor="#d8493e"/></button>);
 		}
 	}];
 }
@@ -176,8 +188,10 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
+	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
 	warnMessage: (message) => dispatch(warnMessage(message))
 });
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(KaraList);

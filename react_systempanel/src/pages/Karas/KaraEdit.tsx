@@ -4,10 +4,22 @@ import KaraForm from './KaraForm';
 import axios from 'axios/index';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
-import {errorMessage, infoMessage, loading} from '../../actions/navigation';
+import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
 import timestamp from 'unix-timestamp';
+import {ReduxMappedProps} from '../../react-app-env';
 
 timestamp.round = true;
+
+interface KaraEditProps extends ReduxMappedProps {
+	push: (string) => any,
+	match?: any,
+}
+
+interface KaraEditState {
+	kara: any,
+	save: any,
+}
+
 
 const newKara = {
 	kid: null,
@@ -26,7 +38,7 @@ const newKara = {
 	dateadded: null
 };
 
-class KaraEdit extends Component {
+class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 
 	state = {
 		kara: null,
@@ -117,6 +129,7 @@ const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
 	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
+	warnMessage: (message) => dispatch(warnMessage(message)),
 	push: (url) => dispatch(push(url))
 });
 

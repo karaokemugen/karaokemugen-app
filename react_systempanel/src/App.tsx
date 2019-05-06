@@ -16,7 +16,12 @@ import './App.css';
 
 const store = configureStore();
 
-class App extends Component {
+interface AppProps {}
+
+interface AppState {}
+
+class App extends Component<AppProps, AppState> {
+
 	componentWillMount() {
 		const token = localStorage.getItem('kmToken');
 		const onlineToken = localStorage.getItem('kmOnlineToken');

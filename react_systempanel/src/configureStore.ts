@@ -6,6 +6,7 @@ import navigation from './reducers/navigation';
 import auth from './reducers/auth';
 //import karas from './reducers/karas';
 
+declare var window: any;
 
 const initialState = {};
 export const history = createHistory();

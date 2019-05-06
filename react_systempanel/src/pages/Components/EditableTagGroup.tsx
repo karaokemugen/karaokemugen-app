@@ -1,11 +1,27 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import deburr from 'lodash.deburr';
-import {Checkbox, Row, Col, Button, Form, AutoComplete, Icon, Tag, Tooltip} from 'antd';
+import {AutoComplete, Button, Checkbox, Col, Form, Icon, Row, Tag, Tooltip} from 'antd';
 import axios from 'axios/index';
 import langs from 'langs';
 
-export default class EditableTagGroup extends React.Component {
+interface EditableTagGroupProps {
+	search: 'tag' | 'serie' | 'lang' | 'aliases',
+	onChange: any,
+	checkboxes?: boolean,
+	tagType?: number,
+	value?: any[],
+}
+
+interface EditableTagGroupState {
+	DS: any,
+	value: any,
+	inputVisible: boolean,
+}
+
+export default class EditableTagGroup extends React.Component<EditableTagGroupProps, EditableTagGroupState> {
+
+	input: any;
+	currentVal: any;
 
 	constructor(props) {
 		super(props);
@@ -63,20 +79,20 @@ export default class EditableTagGroup extends React.Component {
 		});
 	};
 
-	search = (val) => {
+	search = (val?: any) => {
 		if (this.props.search === 'tag') this.searchTags(val);
 		if (this.props.search === 'serie') this.searchSeries(val);
-		if (this.props.search === 'lang') this.searchLangs(val);
+		if (this.props.search === 'lang') this.searchLangs();
 	};
 
-	searchLangs = (val) => {
+	searchLangs = () => {
 		let languages = [];
 		langs.all().forEach(lang => languages.push({value: lang['2B'], text: lang.name}));
 		languages.push({value: 'mul', text: 'Multi-languages'});
 		languages.push({value: 'und', text: 'Undefined Language'});
 		languages.push({value: 'zxx', text: 'No Linguistic Content'});
 		this.setState({ DS: this.sortByProp(languages, 'text') || [] });
-	}
+	};
 
 	searchSeries = (val) => {
 		this.getSeries(val).then(series => {
@@ -84,7 +100,7 @@ export default class EditableTagGroup extends React.Component {
 		});
 	};
 
-	searchTags = (val) => {
+	searchTags = (val?: any) => {
 		this.getTags(val, this.props.tagType).then(tags => {
 			let result = tags.data.content.map(tag => {
 				// Lazyness just scored a 12 with 2d6 on me
@@ -118,7 +134,7 @@ export default class EditableTagGroup extends React.Component {
 							{
 								this.state.DS.map((tag) => {
 									return (
-										<Col align='left' span={8}>
+										<Col span={8}>
 											<Checkbox value={tag.value}>{tag.text}
 											</Checkbox>
 										</Col>
@@ -130,7 +146,6 @@ export default class EditableTagGroup extends React.Component {
 				</div>
 			);
 		} else {
-
 			return (
 				<div>
 					{
@@ -138,7 +153,7 @@ export default class EditableTagGroup extends React.Component {
 							if (!tag) tag = '';
 							const isLongTag = tag.length > 20;
 							const tagElem = (
-								<Tag key={tag} closable='true' afterClose={() => this.handleClose(tag)}>
+								<Tag key={tag} closable={true} afterClose={() => this.handleClose(tag)}>
 									{isLongTag ? `${tag.slice(0, 20)}...` : tag}
 								</Tag>
 							);
@@ -153,7 +168,10 @@ export default class EditableTagGroup extends React.Component {
 								dataSource={this.state.DS}
 								onSearch={ this.search }
 								onChange={ val => this.currentVal = val }
-								filterOption={(inputValue, option) => deburr(option.props.children.toUpperCase()).indexOf(deburr(inputValue).toUpperCase()) !== -1}
+								filterOption={(inputValue, option) => {
+									const s: any = option.props.children;
+									return deburr(s.toUpperCase()).indexOf(deburr(inputValue).toUpperCase()) !== -1;
+								}}
 							>
 							</AutoComplete>
 							<Button type='primary' onClick={() => this.handleInputConfirm(this.currentVal)}
@@ -176,10 +194,3 @@ export default class EditableTagGroup extends React.Component {
 
 	}
 }
-
-EditableTagGroup.propTypes = {
-	tagType: PropTypes.number,
-	search: PropTypes.string.isRequired,
-	onChange: PropTypes.func,
-	value: PropTypes.array
-};

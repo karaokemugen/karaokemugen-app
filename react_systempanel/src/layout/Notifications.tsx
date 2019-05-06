@@ -1,12 +1,27 @@
 import React, {Component} from 'react';
 
-import {Alert} from "antd";
+import {Alert} from 'antd';
 import {connect} from 'react-redux';
 
 import {infoMessage, warnMessage, errorMessage} from '../actions/navigation';
 import Loading from '../components/Loading';
 
-class Notifications extends Component {
+interface NotificationsProps {
+	loading: boolean,
+
+	dismissInfo: any,
+	infomsg: string,
+
+	dismissWarn: any,
+	warnmsg: string,
+
+	dismissError: any,
+	errormsg: string,
+}
+
+interface NotificationsState {}
+
+class Notifications extends Component<NotificationsProps, NotificationsState> {
 
 	info() {
 		return this.props.infomsg ? (

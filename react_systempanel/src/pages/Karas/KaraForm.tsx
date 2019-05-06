@@ -1,13 +1,42 @@
 import React, {Component} from 'react';
-import {Checkbox, message, Tooltip, Button, Form, Icon, Input, InputNumber, Select, Upload} from 'antd';
-import PropTypes from 'prop-types';
+import {Button, Checkbox, Form, Icon, Input, InputNumber, message, Select, Tooltip, Upload} from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
 
-class KaraForm extends Component {
+interface KaraFormProps {
+	kara: any,
+	form: any,
+	save: any,
+}
+
+interface KaraFormState {
+	seriesRequired: boolean,
+	overwrite: boolean,
+	subfileList: any[],
+	mediafileList: any[],
+	singers: string[],
+	authors: string[],
+	tags: string[],
+	series: any[],
+	creators: string[],
+	songwriters: string[],
+	groups: string[],
+	songtype: string,
+	langs: string[],
+}
+
+class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	constructor(props) {
 		super(props);
-		this.state = {
+
+		// If kara is being edited (already has a dateadded) author won't be automatically filled if there's no author already.
+		// If there's an author field already in the karadata, it gets filled later.
+		this.state = this.createStateFromProps(props);
+
+	}
+
+	createStateFromProps(props) {
+		const state = {
 			seriesRequired: true,
 			overwrite: false,
 			subfileList: [],
@@ -22,38 +51,39 @@ class KaraForm extends Component {
 			songtype: 'OP',
 			langs: ['jpn']
 		};
-		// If kara is being edited (already has a dateadded) author won't be automatically filled if there's no author already.
-		// If there's an author field already in the karadata, it gets filled later.
+
 		if (!this.props.kara.dateadded) {
 			this.props.kara.dateadded = new Date();
-			localStorage.getItem('username') !== 'admin' ? this.state.authors = [localStorage.getItem('username')] : this.state.authors = [];
+			localStorage.getItem('username') !== 'admin' ? state.authors = [localStorage.getItem('username')] : state.authors = [];
 		}
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
-		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singers.includes('NO_TAG')) this.state.singers = this.props.kara.singers;
-		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
-		if (this.props.kara.groups && this.props.kara.groups.length > 0 && !this.props.kara.groups.includes('NO_TAG')) this.state.groups = this.props.kara.groups;
-		if (this.props.kara.songwriters && this.props.kara.songwriters.length  > 0 && !this.props.kara.songwriters.includes('NO_TAG')) this.state.songwriters = this.props.kara.songwriters;
-		if (this.props.kara.authors && this.props.kara.authors.length > 0 && !this.props.kara.authors.includes('NO_TAG')) this.state.authors = this.props.kara.authors;
-		if (this.props.kara.langs && this.props.kara.langs.length > 0 && !this.props.kara.langs.includes('NO_TAG')) this.state.langs = this.props.kara.langs;
-		if (this.props.kara.creators && this.props.kara.creators.length > 0 && !this.props.kara.creators.includes('NO_TAG')) this.state.creators = this.props.kara.creators;
-		if (this.props.kara.songtype && this.props.kara.songtype.length > 0) this.state.songtype =  this.props.kara.songtype[0].replace('TYPE_','');
-		if (this.props.kara.tags && this.props.kara.tags.length > 0 && !this.props.kara.tags.includes('NO_TAG')) this.state.tags = this.props.kara.tags;
+		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singers.includes('NO_TAG')) state.singers = this.props.kara.singers;
+		if (this.props.kara.series) state.series = this.props.kara.series.split(',');
+		if (this.props.kara.groups && this.props.kara.groups.length > 0 && !this.props.kara.groups.includes('NO_TAG')) state.groups = this.props.kara.groups;
+		if (this.props.kara.songwriters && this.props.kara.songwriters.length  > 0 && !this.props.kara.songwriters.includes('NO_TAG')) state.songwriters = this.props.kara.songwriters;
+		if (this.props.kara.authors && this.props.kara.authors.length > 0 && !this.props.kara.authors.includes('NO_TAG')) state.authors = this.props.kara.authors;
+		if (this.props.kara.langs && this.props.kara.langs.length > 0 && !this.props.kara.langs.includes('NO_TAG')) state.langs = this.props.kara.langs;
+		if (this.props.kara.creators && this.props.kara.creators.length > 0 && !this.props.kara.creators.includes('NO_TAG')) state.creators = this.props.kara.creators;
+		if (this.props.kara.songtype && this.props.kara.songtype.length > 0) state.songtype =  this.props.kara.songtype[0].replace('TYPE_','');
+		if (this.props.kara.tags && this.props.kara.tags.length > 0 && !this.props.kara.tags.includes('NO_TAG')) state.tags = this.props.kara.tags;
 		if (this.props.kara.mediafile_old) {
-			this.state.overwrite = true;
-			this.state.mediafileList = [{
+			state.overwrite = true;
+			state.mediafileList = [{
 				uid: -1,
 				name: this.props.kara.mediafile_old,
 				status: 'done'
 			}];
 		}
 		if (this.props.kara.subfile_old) {
-			this.state.overwrite = true;
-			this.state.subfileList = [{
+			state.overwrite = true;
+			state.subfileList = [{
 				uid: -1,
 				name: this.props.kara.subfile_old,
 				status: 'done'
 			}];
 		}
+
+		return state;
 	}
 
 	componentDidMount() {
@@ -84,7 +114,7 @@ class KaraForm extends Component {
 	  		this.props.form.validateFields(['singer'], { force: true });
     	}
 		);
-	}
+	};
 
 	onMediaUploadChange = (info) => {
 		let fileList = info.fileList;
@@ -195,7 +225,6 @@ class KaraForm extends Component {
 					})(<Input
 						onPressEnter={this.handleSubmit}
 						placeholder='Song Title'
-						label='Song title'
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback
@@ -294,7 +323,6 @@ class KaraForm extends Component {
 						initialValue: this.props.kara.year || 2010,
 						rules: [{required: true}]
 					})(<InputNumber
-						onPressEnter={this.handleSubmit}
 						min={0}
 						placeholder='Year'
 						style={{ width: '100%' }}
@@ -486,9 +514,5 @@ class KaraForm extends Component {
 	}
 }
 
-KaraForm.propTypes = {
-	kara: PropTypes.object.isRequired,
-	save: PropTypes.func.isRequired
-};
-
-export default Form.create()(KaraForm);
+const cmp: any = Form.create()(KaraForm);
+export default cmp;

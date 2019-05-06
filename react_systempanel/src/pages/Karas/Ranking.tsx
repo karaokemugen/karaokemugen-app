@@ -3,9 +3,18 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {Button, Layout, Table} from 'antd';
 
-import {loading, errorMessage, warnMessage} from '../../actions/navigation';
+import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
+import {ReduxMappedProps} from '../../react-app-env';
 
-class KaraList extends Component {
+interface RankingProps extends ReduxMappedProps {
+}
+
+interface RankingState {
+	karas: any[],
+	kara: any,
+}
+
+class Ranking extends Component<RankingProps, RankingState> {
 
 	constructor(props) {
 		super(props);
@@ -21,7 +30,7 @@ class KaraList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/system/karas/history')
+		axios.get('/api/system/karas/ranking')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data});
@@ -38,7 +47,7 @@ class KaraList extends Component {
 				<Table
 					dataSource={this.state.karas}
 					columns={this.columns}
-					rowKey='viewed_at'
+					rowKey='requested'
 				/>
 				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 			</Layout.Content>
@@ -46,6 +55,11 @@ class KaraList extends Component {
 	}
 
 	columns = [{
+		title: 'Requested',
+		dataIndex: 'requested',
+		key: 'requested',
+		render: requested => requested,
+	}, {
 		title: 'Language',
 		dataIndex: 'languages',
 		key: 'languages',
@@ -54,28 +68,16 @@ class KaraList extends Component {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
 		key: 'serie',
-		render: (serie, record) => (serie || record.singers[0].name)
+		render: (serie, record) => (serie || record.singer)
 	}, {
 		title: 'Type',
-		dataIndex: 'songtypes',
-		key: 'songtypes',
+		dataIndex: 'songtype',
+		key: 'songtype',
 		render: (songtypes, record) => (songtypes[0].name.replace('TYPE_','') + ' ' + (record.songorder || ''))
 	}, {
 		title: 'Title',
 		dataIndex: 'title',
 		key: 'title'
-	}, {
-		title: 'View count',
-		dataIndex: 'played',
-		key: 'played',
-		render: played => played,
-	}, {
-		title: 'Seen on',
-		dataIndex: 'played_at',
-		key: 'played_at',
-		render: played_at => (new Date(played_at)).toLocaleString('en'),
-		defaultSortOrder: 'descend',
-		sorter: (a,b) => a.played_at - b.played_at
 	}];
 }
 
@@ -85,8 +87,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
+	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
 	warnMessage: (message) => dispatch(warnMessage(message))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(KaraList);
+export default connect(mapStateToProps, mapDispatchToProps)(Ranking);

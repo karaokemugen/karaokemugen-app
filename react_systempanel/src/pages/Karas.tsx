@@ -3,9 +3,14 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {Layout, Button} from 'antd';
 
-import {errorMessage, infoMessage, loading} from '../actions/navigation';
+import {errorMessage, infoMessage, loading, warnMessage} from '../actions/navigation';
+import {ReduxMappedProps} from '../react-app-env';
 
-class Karas extends Component {
+interface KarasProps extends ReduxMappedProps {}
+
+interface KarasState {}
+
+class Karas extends Component<KarasProps, KarasState> {
 
 	karagen() {
 		this.props.loading(true);
@@ -23,7 +28,7 @@ class Karas extends Component {
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Button type='primary' onClick={this.karagen.bind(this)} active={!this.props.loadingActive}>Generate Kara files</Button>
+				<Button type='primary' onClick={this.karagen.bind(this)} disabled={this.props.loadingActive}>Generate Kara files</Button>
 			</Layout.Content>
 		);
 	}
@@ -36,7 +41,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
 	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message))
+	errorMessage: (message) => dispatch(errorMessage(message)),
+	warnMessage: (message) => dispatch(warnMessage(message))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Karas);

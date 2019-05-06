@@ -8,7 +8,13 @@ import {checkAuth} from '../actions/auth';
 import KMMenu from './KMMenu';
 import Notifications from './Notifications';
 
-class KMHeader extends Component {
+interface KMHeaderProps {
+	alreadyConnected: () => boolean,
+}
+
+interface KMHeaderState {}
+
+class KMHeader extends Component<KMHeaderProps, KMHeaderState> {
 
 	componentWillMount() {
 		this.props.alreadyConnected();

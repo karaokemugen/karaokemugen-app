@@ -3,9 +3,19 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {Button, Layout, Table} from 'antd';
 
-import {loading, errorMessage, warnMessage} from '../../actions/navigation';
+import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
+import {ReduxMappedProps} from '../../react-app-env';
+import {ColumnProps} from 'antd/lib/table';
 
-class KaraList extends Component {
+interface ViewcountsProps extends ReduxMappedProps {
+}
+
+interface ViewcountsState {
+	karas: any[],
+	kara: any,
+}
+
+class Viewcounts extends Component<ViewcountsProps, ViewcountsState> {
 
 	constructor(props) {
 		super(props);
@@ -45,7 +55,7 @@ class KaraList extends Component {
 		);
 	}
 
-	columns = [{
+	columns: ColumnProps<any>[] = [{
 		title: 'Language',
 		dataIndex: 'languages',
 		key: 'languages',
@@ -80,8 +90,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
 	loading: (active) => dispatch(loading(active)),
+	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message)),
 	warnMessage: (message) => dispatch(warnMessage(message))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(KaraList);
+export default connect(mapStateToProps, mapDispatchToProps)(Viewcounts);
