@@ -12,8 +12,8 @@ import { integrateKaraFile } from '../_dao/karafile';
 import {getState} from '../_utils/state';
 import {uuidRegexp} from '../_services/constants';
 import {refreshKarasAfterDBChange} from './kara';
-import {refreshSeriesAfterDBChange} from './series';
-import { compareKarasChecksum } from '../_dao/database';
+import {refreshSeriesAfterDBChange, getKara, deleteKara} from './series';
+import { compareKarasChecksum, refreshAll } from '../_dao/database';
 import { emitWS } from '../_webapp/frontend';
 import got from 'got';
 
@@ -340,4 +340,43 @@ export async function getRemoteKaras(instance, filter = '', from = 0, size = 999
 	]);
 	const res = await got(`https://${instance}/api/karas?${params.toString()}`);
 	return JSON.parse(res.body);
+}
+export async function updateBase(instance) {
+	// This function can be improved later to take blacklist criterias into account
+	// Another idea would be not to download songs older than the newest song in database : for example we can assume that if a user downloaded a song added on 01/02/2019, we won't download any new songs added before that date because the user already viewed songs before that date and choose not to download them
+	logger.info('[Update] Computing songs to add/remove/update...');
+	const [local, remote] = await Promise.all([
+		getKaras({
+			token: {username: 'admin', role: 'admin'}
+		}),
+		getRemoteKaras(instance, {})
+	]);
+	const localKIDs = local.content.map(k => k.kid);
+	const remoteKIDs = remote.content.map(k => k.kid);
+	const karasToRemove = localKIDs.filter(kid => !remoteKIDs.includes(kid));
+	const karasToAdd = remoteKIDs.filter(kid => !localKIDs.includes(kid));
+	const karasToUpdate = local.content.filter(k => {
+		const rk = remote.content.find(rk => rk.kid === k.kid);
+		if (rk && rk.modified_at > k.modified_at) return true;
+	}).map(k => k.kid);
+	// Now we have a list of KIDs to remove
+	logger.info(`[Update] Removing ${karasToRemove.length} songs`);
+	for (const kid of karasToRemove) {
+		await deleteKara(kid, false);
+	}
+	refreshAll();
+	compareKarasChecksum(true);
+	const downloads = remote.content.filter(k => karasToAdd.includes(k.kid) || karasToUpdate.includes(k.kid)).map(k => {
+		return {
+			size: k.mediasize,
+			mediafile: k.mediafile,
+			subfile: k.subfile,
+			karafile: k.karafile,
+			seriefiles: k.seriefiles,
+			name: k.karafile.substring(0, k.karafile.substring - 4)
+		}
+	});
+	logger.info(`[update] Adding ${karasToAdd.length} new songs`);
+	logger.info(`[update] Updating ${karasToUpdate.length} songs`);
+	await addDownloads(instance, downloads);
 }

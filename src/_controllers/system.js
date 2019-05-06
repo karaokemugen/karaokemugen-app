@@ -14,7 +14,7 @@ import {resetViewcounts} from '../_dao/kara';
 import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
-import {getRemoteKaras, getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads} from '../_services/download';
+import {updateBase, getRemoteKaras, getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads} from '../_services/download';
 import {getRepos} from '../_services/repo';
 import {dumpPG} from '../_utils/postgresql';
 import logger from 'winston';
@@ -327,4 +327,13 @@ export default function systemController(router) {
 			});
 		res.status(200).send('Karas are being updated, check Karaoke Mugen\'s console to follow its progression');
 	});
+	router.post('/system/downloads/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await updateBase(req.body.instance);
+			res.status(200).send('Update in progress');
+		} catch(err) {
+			res.status(500).send(`Error computing update: ${err}`);
+		}
+	});
+
 }

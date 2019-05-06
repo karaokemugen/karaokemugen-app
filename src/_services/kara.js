@@ -95,7 +95,7 @@ export function translateKaraInfo(karas, lang) {
 	return karas;
 }
 
-export async function deleteKara(kid) {
+export async function deleteKara(kid, refresh) {
 	const kara = await getKaraMini(kid);
 	if (!kara) throw `Unknown kara ID ${kid}`;
 
@@ -131,13 +131,15 @@ export async function deleteKara(kid) {
 		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
 	}
 
-	compareKarasChecksum(true);
 
 	// Remove kara from database
 	await deleteKaraDB(kid);
 	logger.info(`[Kara] Song ${kara.karafile} removed`);
 
-	delayedDbRefreshViews(2000);
+	if (refresh) {
+		compareKarasChecksum(true);
+		delayedDbRefreshViews(2000);
+	}
 }
 
 let delayedDbRefreshTimeout = null;
