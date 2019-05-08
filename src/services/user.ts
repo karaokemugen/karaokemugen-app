@@ -92,7 +92,11 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 	// If this stops working, use got() and a stream: true property again
 	const res = await got.stream(`https://${instance}/avatars/${avatarFile}`);
 	const avatarPath = resolve(getState().appPath, conf.System.Path.Temp, avatarFile);
-	await writeStreamToFile(res, avatarPath);
+	try {
+		await writeStreamToFile(res, avatarPath);
+	} catch(err) {
+		logger.warn(`[User] Could not write remote avatar to local file ${avatarFile} : ${err}`);
+	}
 	return avatarPath;
 }
 
@@ -295,8 +299,18 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		const newAvatarPath = resolve(getState().appPath,conf.System.Path.Avatars, newAvatarFile);
 		const oldAvatarPath = resolve(getState().appPath,conf.System.Path.Avatars, oldImageFile);
 		if (await asyncExists(oldAvatarPath) &&
-			oldImageFile !== 'blank.png') await asyncUnlink(oldAvatarPath);
-		await asyncMove(avatar.path,newAvatarPath);
+			oldImageFile !== 'blank.png') {
+				try {
+					await asyncUnlink(oldAvatarPath);
+				} catch(err) {
+					logger.warn(`[User] Unable to unlink old avatar ${oldAvatarPath} : ${err}`);
+				}
+			}
+		try {
+			await asyncMove(avatar.path, newAvatarPath);
+		} catch(err) {
+			logger.error(`[User] Could not move new avatar ${avatar.path} to ${newAvatarPath} : ${err}`);
+		}
 		return newAvatarFile;
 	} catch (err) {
 		throw `Unable to replace avatar ${oldImageFile} with ${avatar.path} : ${err}`;
