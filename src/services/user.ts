@@ -307,7 +307,7 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 				}
 			}
 		try {
-			await asyncCopy(avatar.path, newAvatarPath);
+			await asyncCopy(avatar.path, newAvatarPath, {overwrite: true});
 		} catch(err) {
 			logger.error(`[User] Could not copy new avatar ${avatar.path} to ${newAvatarPath} : ${err}`);
 		}
