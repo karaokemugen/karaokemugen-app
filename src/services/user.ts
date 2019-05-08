@@ -2,7 +2,7 @@ import {getConfig, setConfig} from '../utils/config';
 import {Config} from '../types/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
 import {convertToRemoteFavorites} from './favorites';
-import {detectFileType, asyncMove, asyncExists, asyncUnlink, asyncReadDir} from '../utils/files';
+import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy} from '../utils/files';
 import {createHash} from 'crypto';
 import {now} from '../utils/date';
 import {resolve} from 'path';
@@ -307,9 +307,9 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 				}
 			}
 		try {
-			await asyncMove(avatar.path, newAvatarPath);
+			await asyncCopy(avatar.path, newAvatarPath);
 		} catch(err) {
-			logger.error(`[User] Could not move new avatar ${avatar.path} to ${newAvatarPath} : ${err}`);
+			logger.error(`[User] Could not copy new avatar ${avatar.path} to ${newAvatarPath} : ${err}`);
 		}
 		return newAvatarFile;
 	} catch (err) {
