@@ -21,7 +21,7 @@ I18n.prototype = {
 	setLocale: function(loc){
 		if(!loc) {
 			// locale = $("html").attr("lang");
-			loc = navigator.languages[0].substring(0, 2);
+            loc = navigator.languages[0].substring(0, 2);
 		}
 
 		if(!loc)
@@ -29,19 +29,33 @@ I18n.prototype = {
 		this.locale = loc;
 
 		if(loc in I18n.localeCache) return;
-		else this.getLocaleFileFromServer();
+        else this.getLocaleFileFromServer();
 	},
 
 	getLocaleFileFromServer: function(){
 		localeFile = null;
-
+        var dir = this.directory, loc = this.locale, ext = this.extension;
 		$.ajax({
-			url: this.directory + "/" + this.locale + this.extension,
+			url: dir + "/" + loc + ext,
 			async: false,
 			dataType: 'json',
 			success: function(data){
 				localeFile = data;
-			}
+            },
+            error: function(){
+                console.log("No lang file found for " + loc + ". Now defaulting to " + I18n.prototype.defaultLocale + ".");
+                loc = I18n.prototype.defaultLocale;
+                I18n.prototype.locale = loc;
+                
+                $.ajax({
+                    url: dir + "/" + loc + ext,
+                    async: false,
+                    dataType: 'json',
+                    success: function(data){
+                        localeFile = data;
+                    }
+              })
+            }
 		});
 
 		I18n.localeCache[this.locale] = localeFile;
