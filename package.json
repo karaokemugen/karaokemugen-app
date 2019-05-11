@@ -8,8 +8,8 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node src/index.ts --files tsconfig.json",
-	"debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
-	"qstart": "node dist/index.js",
+    "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
+    "qstart": "node dist/index.js",
     "test": "mocha --require ts-node/register --timeout 20000 test/*.ts",
     "build": "rm -Rf dist && tsc --build",
     "setup": "yarn install && yarn build && cd react_systempanel && yarn install && yarn build",
@@ -119,6 +119,7 @@
     "open": "^6.2.0",
     "os-locale": "^3.1.0",
     "p-retry": "^4.1.0",
+    "parcel": "^1.12.3",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
