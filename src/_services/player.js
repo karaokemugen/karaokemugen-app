@@ -8,7 +8,6 @@ import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
 import {previousSong, nextSong, getCurrentSong} from './playlist';
-import retry from 'p-retry';
 
 const sleep = promisify(setTimeout);
 
@@ -21,32 +20,24 @@ async function getPlayingSong(now) {
 			const kara = await getCurrentSong();
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
 			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
-			await retry(() => play({
+			await play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
 				gain: kara.gain,
 				infos: kara.infos,
 				avatar: kara.avatar,
 				duration: kara.duration
-			}), {
-				retries: 3,
-				onFailedAttempt: error => {
-					logger.warn(`[Player] Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
-				}
 			});
-			//console.log('Play passed');
 			setState({currentlyPlayingKara: kara.kid});
-			await addPlayedKara(kara.kid);
-			//console.log('Add played passed');
-			await updateUserQuotas(kara);
-			//console.log('Updated user quotas');
+			addPlayedKara(kara.kid);
+			updateUserQuotas(kara);
 			if (getConfig().Karaoke.Poll.Enabled) startPoll();
 		} catch(err) {
 			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
 			if (getState().status !== 'stop') {
 				logger.warn('[Player] Skipping playback for this song');
 				try {
-					next();
+					await next();
 				} catch(err) {
 					logger.warn('[Player] Skipping failed');
 				}
@@ -84,10 +75,11 @@ export async function playerEnding() {
 			currentlyPlayingKara: -1,
 			counterToJingle: 0
 		});
-		await retry(playJingle, {
-			retries: 3,
-			onFailedAttempt: error => logger.warn(`[Player] Failed to play jingle, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`)
-		});
+		try {
+			await playJingle();
+		} catch(err) {
+			logger.error(`[Jingle] Unable to play jingle file : ${err}`);
+		}
 	} else {
 		try {
 			state.counterToJingle++;
@@ -104,7 +96,7 @@ export async function playerEnding() {
 }
 
 async function prev() {
-	logger.info('[Player] Going to previous song');
+	logger.debug('[Player] Going to previous song');
 	try {
 		await previousSong();
 	} catch(err) {
@@ -116,7 +108,7 @@ async function prev() {
 }
 
 async function next() {
-	logger.info('[Player] Going to next song');
+	logger.debug('[Player] Going to next song');
 	try {
 		await nextSong();
 		playPlayer(true);
