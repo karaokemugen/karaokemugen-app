@@ -212,8 +212,8 @@ async function startmpv() {
 			binary: state.binPath.mpv,
 			socket: socket,
 			time_update: 1,
-			verbose: true,
-			debug: true,
+			verbose: false,
+			debug: false,
 		},
 		mpvOptions
 	);
