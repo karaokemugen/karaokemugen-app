@@ -1,7 +1,6 @@
 import {db} from './database';
 import {pg as yesql} from 'yesql';
 import { User } from '../types/user';
-import logger from 'winston';
 const sql = require('./sql/user');
 
 export async function getUser(username: string) {
@@ -113,7 +112,6 @@ export async function updateUserPassword(username: string, password: string) {
 }
 
 export function getRemoteToken(username: string) {
-	logger.info(`GetRemoteToken for ${username}. Tokens present : ${JSON.stringify(remoteTokens)}`);
 	const index = findRemoteToken(username);
 	if (index > -1) return remoteTokens[index];
 	return null;
@@ -125,7 +123,6 @@ function findRemoteToken(username: string): number {
 
 export function upsertRemoteToken(username: string, token: string) {
 	const index = findRemoteToken(username);
-	logger.info(`UpsertRemoteToken for ${username} found in index ${index}`);
 	index > -1
 		? remoteTokens[index] = {username, token}
 		: remoteTokens.push({username, token});

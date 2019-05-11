@@ -130,7 +130,6 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				path: await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file)
 			};
 		}
-		logger.info('fetchAndUpdateRemoteUser')
 		user = await editUser(username,{
 			bio: remoteUser.bio,
 			url: remoteUser.url,
