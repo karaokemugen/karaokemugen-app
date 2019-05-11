@@ -86,6 +86,8 @@ export async function playerEnding() {
 			setState({counterToJingle: state.counterToJingle});
 			if (state.status !== 'stop') {
 				await next();
+			} else {
+				await stop(true);
 			}
 		} catch(err) {
 			loadBackground();
@@ -158,10 +160,12 @@ function stopPlayer(now) {
 	if (now) {
 		logger.info('[Player] Karaoke stopping NOW');
 		stop();
+		setState({status: 'stop', currentlyPlayingKara: null});
 	} else {
 		logger.info('[Player] Karaoke stopping after current song');
+		setState({status: 'stop'});
 	}
-	setState({status: 'stop', currentlyPlayingKara: null});
+
 }
 
 function pausePlayer() {
