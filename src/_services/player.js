@@ -45,7 +45,11 @@ async function getPlayingSong(now) {
 			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
 			if (getState().status !== 'stop') {
 				logger.warn('[Player] Skipping playback for this song');
-				next();
+				try {
+					next();
+				} catch(err) {
+					logger.warn('[Player] Skipping failed');
+				}
 			} else {
 				logger.warn('[Player] Stopping karaoke due to error');
 				stopPlayer(true);
