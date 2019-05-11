@@ -2982,15 +2982,15 @@ var settingsNotUpdated;
 		}
     })
     
-    
-    var TIMEOUT = 20000;
+    /* experimental */
+    var TIMEOUT = 10000;
     var lastTime = (new Date()).getTime();
     
     setInterval(function() {
       var currentTime = (new Date()).getTime();
       if (currentTime > (lastTime + TIMEOUT + 2000)) {
         // Wake!
-        alert('hey');
+        //window.location.reload();
       }
       lastTime = currentTime;
     }, TIMEOUT);
