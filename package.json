@@ -8,6 +8,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node src/index.ts --files tsconfig.json",
+    "frontend-dev": "parcel watch ./frontend/bundle.js --out-dir ./frontend/ressources/",
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
     "qstart": "node dist/index.js",
     "test": "mocha --require ts-node/register --timeout 20000 test/*.ts",
@@ -128,6 +129,8 @@
     "pretty-bytes": "^5.2.0",
     "qrcode": "^1.3.3",
     "randomstring": "^1.1.5",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "read-chunk": "^3.2.0",
     "readline-sync": "^1.4.9",
     "sanitize-filename": "^1.6.1",
