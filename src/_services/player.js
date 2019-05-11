@@ -34,9 +34,12 @@ async function getPlayingSong(now) {
 					logger.warn(`[Player] Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
 				}
 			});
+			//console.log('Play passed');
 			setState({currentlyPlayingKara: kara.kid});
-			addPlayedKara(kara.kid);
-			updateUserQuotas(kara);
+			await addPlayedKara(kara.kid);
+			//console.log('Add played passed');
+			await updateUserQuotas(kara);
+			//console.log('Updated user quotas');
 			if (getConfig().Karaoke.Poll.Enabled) startPoll();
 		} catch(err) {
 			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
@@ -235,52 +238,58 @@ export async function sendCommand(command, options) {
 	setTimeout(function () {
 		commandInProgress = false;
 	}, 3000);
-	if (command === 'play') {
-		await playPlayer();
-	} else if (command === 'stopNow') {
-		await stopPlayer(true);
-	} else if (command === 'pause') {
-		await pausePlayer();
-	} else if (command === 'stopAfter') {
-		stopPlayer();
-		await nextSong();
-	} else if (command === 'skip') {
-		await next();
-	} else if (command === 'prev') {
-		await prev();
-	} else if (command === 'toggleFullscreen') {
-		await toggleFullScreenPlayer();
-	} else if (command === 'toggleAlwaysOnTop') {
-		await toggleOnTopPlayer();
-	} else if (command === 'mute') {
-		await mutePlayer();
-	} else if (command === 'unmute') {
-		await unmutePlayer();
-	} else if (command === 'showSubs') {
-		await showSubsPlayer();
-	} else if (command === 'hideSubs') {
-		await hideSubsPlayer();
-	} else if (command === 'seek') {
-		if (!options || isNaN(options)) {
-			commandInProgress = false;
-			throw 'Command seek must have a numeric option value';
+	try {
+		if (command === 'play') {
+			await playPlayer();
+		} else if (command === 'stopNow') {
+			await stopPlayer(true);
+		} else if (command === 'pause') {
+			await pausePlayer();
+		} else if (command === 'stopAfter') {
+			stopPlayer();
+			await nextSong();
+		} else if (command === 'skip') {
+			await next();
+		} else if (command === 'prev') {
+			await prev();
+		} else if (command === 'toggleFullscreen') {
+			await toggleFullScreenPlayer();
+		} else if (command === 'toggleAlwaysOnTop') {
+			await toggleOnTopPlayer();
+		} else if (command === 'mute') {
+			await mutePlayer();
+		} else if (command === 'unmute') {
+			await unmutePlayer();
+		} else if (command === 'showSubs') {
+			await showSubsPlayer();
+		} else if (command === 'hideSubs') {
+			await hideSubsPlayer();
+		} else if (command === 'seek') {
+			if (!options || isNaN(options)) {
+				commandInProgress = false;
+				throw 'Command seek must have a numeric option value';
+			}
+			await seekPlayer(options);
+		} else if (command === 'goTo') {
+			if (!options || isNaN(options)) {
+				commandInProgress = false;
+				throw 'Command goTo must have a numeric option value';
+			}
+			await goToPlayer(options);
+		} else if (command === 'setVolume') {
+			if (!options || isNaN(options)) {
+				commandInProgress = false;
+				throw 'Command setVolume must have a numeric option value';
+			}
+			await setVolumePlayer(options);
+		} else {// Unknown commands are not possible, they're filtered by API's validation.
 		}
-		await seekPlayer(options);
-	} else if (command === 'goTo') {
-		if (!options || isNaN(options)) {
-			commandInProgress = false;
-			throw 'Command goTo must have a numeric option value';
-		}
-		await goToPlayer(options);
-	} else if (command === 'setVolume') {
-		if (!options || isNaN(options)) {
-			commandInProgress = false;
-			throw 'Command setVolume must have a numeric option value';
-		}
-		await setVolumePlayer(options);
-	} else {// Unknown commands are not possible, they're filtered by API's validation.
+	} catch(err) {
+		logger.error(`[Player] Command ${command} failed : ${err}`);
+		throw err;
+	} finally {
+		commandInProgress = false;
 	}
-	commandInProgress = false;
 }
 
 export async function initPlayer() {
