@@ -212,8 +212,8 @@ async function startmpv() {
 			binary: state.binPath.mpv,
 			socket: socket,
 			time_update: 1,
-			verbose: false,
-			debug: false,
+			verbose: true,
+			debug: true,
 		},
 		mpvOptions
 	);
@@ -250,7 +250,6 @@ async function startmpv() {
 			mpvOptions
 		);
 	}
-
 	// Starting up mpv
 	try {
 		const promises = [
@@ -567,12 +566,12 @@ export async function restartmpv() {
 export async function quitmpv() {
 	logger.debug('[Player] Quitting mpv');
 	player.stop();
-	player.quit();
+	await player.quit();
 	// Destroy mpv instance.
 	player = null;
 	if (playerMonitor) {
 		playerMonitor.stop();
-		playerMonitor.quit();
+		await playerMonitor.quit();
 		playerMonitor = null;
 	}
 	playerState.ready = false;
