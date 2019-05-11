@@ -30,17 +30,18 @@ export async function editKara(kara) {
 		delete kara.karafile;
 		// Copying already present files in temp directory to be worked on with by generateKara
 		if (!kara.mediafile_orig) {
+			kara.noNewVideo = true;
 			kara.overwrite = true;
 			kara.mediafile_orig = kara.mediafile;
 			if (!await asyncExists(mediaFile)) throw `Mediafile ${mediaFile} does not exist! Check your base files or upload a new media`;
-			await asyncCopy(mediaFile, resolve(resolvedPathTemp(),kara.mediafile), {overwrite: true});
+			await asyncCopy(mediaFile, resolve(resolvedPathTemp(), kara.mediafile), {overwrite: true});
 		}
 		if (!kara.subfile_orig) {
 			kara.overwrite = true;
 			kara.subfile_orig = kara.subfile;
 			if (kara.subfile !== 'dummy.ass') {
 				if (!await asyncExists(subFile)) throw `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`;
-				await asyncCopy(subFile, resolve(resolvedPathTemp(),kara.subfile), {overwrite: true});
+				await asyncCopy(subFile, resolve(resolvedPathTemp(), kara.subfile), {overwrite: true});
 			}
 		}
 		kara.KID = kara.kid;
@@ -320,10 +321,11 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	if (subPath && karaData.subfile !== 'dummy.ass') subDest = resolve(resolvedPathSubs()[0], karaData.subfile);
 	try {
 		// Moving media in the first media folder.
-		if (extname(mediaDest).toLowerCase() === '.mp4') {
+		if (extname(mediaDest).toLowerCase() === '.mp4' && !karaData.noNewVideo) {
 			if (!karaData.overwrite && await asyncExists(mediaDest)) throw 'Media file already exists in destination folder';
 			await webOptimize(mediaPath, mediaDest);
 			await asyncUnlink(mediaPath);
+			delete karaData.noNewVideo;
 		} else {
 			await asyncMove(mediaPath, mediaDest, { overwrite: karaData.overwrite });
 		}
