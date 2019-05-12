@@ -77,13 +77,13 @@ const KaraokeOptions = () => {
         </div>
       </div>
       <div className="form-group settingsGroupPanel subCategoryGroupPanel">
-        <div className="col-xs-12" style="text-align: center;">
+        <div className="col-xs-12" style={{textAlign: 'center'}}>
           {'i18n ONLINESETTINGS'}
         </div>
       </div>
       <div id="nav-karaokeOnlineSettings" />
       <div className="form-group settingsGroupPanel subCategoryGroupPanel">
-        <div className="col-xs-12" style="text-align: center;">
+        <div className="col-xs-12" style={{textAlign: 'center'}}>
           {'i18n PUBLICMODESETTINGS'}
         </div>
       </div>

@@ -33,3 +33,8 @@ react_systempanel/node_modules
 react_systempanel/coverage
 react_systempanel/build
 react_client
+
+# Frontend
+.cache/
+frontend/ressources/bundle.js
+frontend/ressources/bundle.js.map
