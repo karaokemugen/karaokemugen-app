@@ -43,6 +43,7 @@ import {updateExpiredUsers as DBUpdateExpiredUsers,
 
 
 let userLoginTimes = new Map();
+let usersFetched = {};
 let databaseBusy = false;
 
 on('databaseBusy', (status: boolean) => {
@@ -130,18 +131,22 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				path: await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file)
 			};
 		}
-		user = await editUser(username,{
-			bio: remoteUser.bio,
-			url: remoteUser.url,
-			email: remoteUser.email,
-			nickname: remoteUser.nickname,
-			password: password
-		},
-		avatar_file,
-		'admin',
-		{
-			editRemote: false
-		});
+		// Checking if user has already been fetched during this session or not
+		if (!usersFetched[username]) {
+			usersFetched[username] = true;
+			user = await editUser(username,{
+				bio: remoteUser.bio,
+				url: remoteUser.url,
+				email: remoteUser.email,
+				nickname: remoteUser.nickname,
+				password: password
+			},
+			avatar_file,
+			'admin',
+			{
+				editRemote: false
+			});
+		}
 		user.onlineToken = onlineToken.token;
 		return user;
 	} else {
@@ -288,8 +293,6 @@ export async function listUsers(): Promise<User[]> {
 
 async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File): Promise<string> {
 	try {
-		logger.info(JSON.stringify(avatar));
-		logger.info(oldImageFile);
 		const conf = getConfig();
 		const fileType = await detectFileType(avatar.path);
 		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
