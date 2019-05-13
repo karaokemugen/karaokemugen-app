@@ -9,11 +9,12 @@
   "scripts": {
     "start": "ts-node src/index.ts --files tsconfig.json",
     "frontend-dev": "parcel watch ./frontend/bundle.js --out-dir ./frontend/ressources/",
+    "frontend-prod": "parcel build ./frontend/bundle.js --out-dir ./frontend/ressources/",
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
     "qstart": "node dist/index.js",
     "test": "mocha --require ts-node/register --timeout 20000 test/*.ts",
     "build": "rm -Rf dist && tsc --build",
-    "setup": "yarn install && yarn build && yarn frontend-dev && cd react_systempanel && yarn install && yarn build",
+    "setup": "yarn install && yarn build && yarn frontend-prod && cd react_systempanel && yarn install && yarn build",
     "buildReact": "cd react_systempanel && yarn build",
     "startReact": "cd react_systempanel && yarn start",
     "migrate": "node node_modules/db-migrate/bin/db-migrate sync [all]",
