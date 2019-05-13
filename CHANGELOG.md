@@ -4,6 +4,10 @@
 
 This is a bugfix release.
 
+### Enhancements
+
+- You can now force the admin password to be changed (in case you forgot it, or are running a unattended setup) with the `--forceAdminPassword <password>` flag.
+
 ### Fixes
 
 - Fixed mpv auto restart method (3ca3b6c7)

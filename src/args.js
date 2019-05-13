@@ -6,22 +6,23 @@ const help = `Usage :
 karaokemugen [options]
 
 Options :
---help        Displays this message
---version     Displays version info
---debug       Displays additional debug messages
---sql         Traces SQL query at the debug log level
---generate    Generates a new database then quits
---validate    Validates kara files and modify them if needed (no generation)
---strict      Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
---profiling   Displays profiling information for some functions
---test        Launches in test mode (for running unit tests)
---reset       Reset user data (WARNING! Backup your base first!)
---demo        Launches in demo mode (no admin panel, no password changes)
---config file Specify a config file to use (default is config.ini)
---updateBase  Update karaoke base files
---noBaseCheck Disable data file checking
---noBrowser   Do not open a browser window upon launch
---noMedia     (generation only) Do not try to fetch data from media files
+--help                          Displays this message
+--version                       Displays version info
+--debug                         Displays additional debug messages
+--sql                           Traces SQL query at the debug log level
+--generate                      Generates a new database then quits
+--validate                      Validates kara files and modify them if needed (no generation)
+--strict                        Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
+--profiling                     Displays profiling information for some functions
+--test                          Launches in test mode (for running unit tests)
+--reset                         Reset user data (WARNING! Backup your base first!)
+--demo                          Launches in demo mode (no admin panel, no password changes)
+--config file                   Specify a config file to use (default is config.yml)
+--updateBase                    Update karaoke base files
+--noBaseCheck                   Disable data file checking on startup
+--noBrowser                     Do not open a browser window upon launch
+--noMedia                       (generation only) Do not try to fetch data from media files
+--forceAdminPassword <password> Set admin account's password
 `;
 
 export async function parseCommandLineArgs(argv) {
@@ -83,6 +84,7 @@ export async function parseCommandLineArgs(argv) {
 		setState({isDemo: true});
 	}
 	if (argv.noBrowser) setState({opt: {noBrowser: true}});
+	if (argv.forceAdminPassword) setState({opt: {forceAdminPassword: argv.forceAdminPassword}});
 }
 
 
