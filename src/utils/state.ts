@@ -36,7 +36,8 @@ let state: State = {
 		profiling: false,
 		sql: false,
 		validate: false,
-		debug: false
+		debug: false,
+		forceAdminPassword: undefined
 	}
 };
 let previousState = {...state};

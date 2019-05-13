@@ -582,6 +582,7 @@ export async function initUserSystem() {
 
 	createDefaultGuests();
 	cleanupAvatars();
+	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 }
 
 async function cleanupAvatars() {
@@ -698,4 +699,19 @@ function getRole(user: User): Role {
 	if (+user.type === 0) return 'admin';
 	if (+user.type === 1) return 'user';
 	return 'guest';
+}
+
+export async function generateAdminPassword() {
+	// Resets admin's password when appFirstRun is set to true.
+	// Returns the generated password.
+	const adminPassword = getState().opt.forceAdminPassword || randomstring.generate(8);
+	await editUser('admin',
+		{
+			password: adminPassword,
+			nickname: 'Dummy Plug System',
+			type: 0
+		},
+		null,
+		'admin');
+	return adminPassword;
 }
