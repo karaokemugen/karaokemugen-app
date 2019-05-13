@@ -1,5 +1,19 @@
 # Versions
 
+## v2.5.2 "Konata 4-Koma" - 22/05/2019
+
+This is a bugfix release.
+
+### Fixes
+
+- Fixed mpv auto restart method (3ca3b6c7)
+- Fixed wallpaper not appearing anymore at the end of a song if "stop after current song" has been pressed (7330ed8a)
+- Fixed retrying to play song if loading media failed due to mpv hiccup (7f3da9ba)
+- Web interface will now request english translations from server if your browser is not set to a known locale (61082963)
+- Media files are not weboptimized anymore if you don't modify them in the karaoke edit form (4ee094bc)
+- Catch errors when switching to the next song in a playing playlist (35a86966)
+- Partly fixed edit user form errors (523a7120)
+
 ## v2.5.1 "Konata Kiffante" - 06/05/2019
 
 This is a bugfix release.
