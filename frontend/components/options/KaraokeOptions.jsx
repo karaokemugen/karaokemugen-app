@@ -1,5 +1,5 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { useTranslation } from "react-i18next";
 
 var KaraokeOptions = () => {
   const { t } = useTranslation();
@@ -8,7 +8,7 @@ var KaraokeOptions = () => {
       <div id="nav-karaokeAllMode">
         <div className="form-group">
           <label htmlFor="Karaoke.Quota.Type" className="col-xs-4 control-label">
-            {t('QUOTA_TYPE')}
+            {t("QUOTA_TYPE")}
           </label>
           <div className="col-xs-6">
             <select
@@ -16,15 +16,15 @@ var KaraokeOptions = () => {
               className="form-control"
               name="Karaoke.Quota.Type"
             >
-              <option value="0"> {t('QUOTA_TYPE_0')} </option>
-              <option value="1"> {t('QUOTA_TYPE_1')} </option>
-              <option value="2"> {t('QUOTA_TYPE_2')} </option>
+              <option value="0"> {t("QUOTA_TYPE_0")} </option>
+              <option value="1"> {t("QUOTA_TYPE_1")} </option>
+              <option value="2"> {t("QUOTA_TYPE_2")} </option>
             </select>
           </div>
         </div>
         <div className="form-group">
           <label htmlFor="Karaoke.Quota.Time" className="col-xs-4 control-label">
-            {t('TIME_BY_USER')}
+            {t("TIME_BY_USER")}
           </label>
           <div className="col-xs-6">
             <input
@@ -37,7 +37,7 @@ var KaraokeOptions = () => {
         </div>
         <div className="form-group">
           <label htmlFor="Karaoke.Quota.Songs" className="col-xs-4 control-label">
-            {t('SONGS_BY_USER')}
+            {t("SONGS_BY_USER")}
           </label>
           <div className="col-xs-6">
             <input
@@ -53,7 +53,7 @@ var KaraokeOptions = () => {
             htmlFor="Karaoke.Quota.FreeAutoTime"
             className="col-xs-4 control-label"
           >
-            {t('FREE_AUTO_TIME')}
+            {t("FREE_AUTO_TIME")}
           </label>
           <div className="col-xs-6">
             <input
@@ -66,7 +66,7 @@ var KaraokeOptions = () => {
         </div>
         <div className="form-group">
           <label htmlFor="Karaoke.JinglesInterval" className="col-xs-4 control-label">
-            {t('ENGINEJINGLESINTERVAL')}
+            {t("ENGINEJINGLESINTERVAL")}
           </label>
           <div className="col-xs-6">
             <input
@@ -79,14 +79,14 @@ var KaraokeOptions = () => {
         </div>
       </div>
       <div className="form-group settingsGroupPanel subCategoryGroupPanel">
-        <div className="col-xs-12" style={{textAlign: 'center'}}>
-          {t('ONLINESETTINGS')}
+        <div className="col-xs-12" style={{textAlign:'center'}}>
+          {t("ONLINESETTINGS")}
         </div>
       </div>
       <div id="nav-karaokeOnlineSettings" />
       <div className="form-group settingsGroupPanel subCategoryGroupPanel">
         <div className="col-xs-12" style={{textAlign: 'center'}}>
-          {t('PUBLICMODESETTINGS')}
+          {t("PUBLICMODESETTINGS")}
         </div>
       </div>
       <div id="nav-karaokePublicMode">
@@ -96,7 +96,7 @@ var KaraokeOptions = () => {
               className="col-xs-4 control-label"
               htmlFor="Karaoke.Quota.FreeUpVotesRequiredMin"
             >
-              {t('ENGINEFREEUPVOTESREQUIREDMIN')}
+              {t("ENGINEFREEUPVOTESREQUIREDMIN")}
             </label>
             <div className="col-xs-6">
               <input
@@ -111,7 +111,7 @@ var KaraokeOptions = () => {
               htmlFor="Karaoke.Quota.FreeUpVotesRequiredPercent"
               className="col-xs-4 control-label"
             >
-              {t('ENGINEFREEUPVOTESREQUIREDPERCENT')}
+              {t("ENGINEFREEUPVOTESREQUIREDPERCENT")}
             </label>
             <div className="col-xs-6">
               <input
@@ -125,7 +125,7 @@ var KaraokeOptions = () => {
         <div id="songPollSettings" className="well well-sm settingsGroupPanel">
           <div className="form-group">
             <label className="col-xs-4 control-label" htmlFor="Karaoke.Poll.Choices">
-              {t('ENGINESONGPOLLCHOICES')}
+              {t("ENGINESONGPOLLCHOICES")}
             </label>
             <div className="col-xs-6">
               <input
@@ -137,7 +137,7 @@ var KaraokeOptions = () => {
           </div>
           <div className="form-group">
             <label htmlFor="Karaoke.Poll.Timeout" className="col-xs-4 control-label">
-              {t('ENGINESONGPOLLTIMEOUT')}
+              {t("ENGINESONGPOLLTIMEOUT")}
             </label>
             <div className="col-xs-6">
               <input

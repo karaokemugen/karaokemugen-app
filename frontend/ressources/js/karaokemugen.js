@@ -2633,7 +2633,7 @@ var settingsNotUpdated;
 		});
 
 		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			var val = $(this).attr('nameCommand');
+			var val = $(this).attr('namecommand');
 			if(!val) val =  $(this).attr('name');
 
 			$.ajax({
