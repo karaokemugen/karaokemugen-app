@@ -2,7 +2,7 @@ import {getConfig, setConfig} from '../utils/config';
 import {Config} from '../types/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
 import {convertToRemoteFavorites} from './favorites';
-import {detectFileType, asyncMove, asyncExists, asyncUnlink, asyncReadDir} from '../utils/files';
+import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy} from '../utils/files';
 import {createHash} from 'crypto';
 import {now} from '../utils/date';
 import {resolve} from 'path';
@@ -43,6 +43,7 @@ import {updateExpiredUsers as DBUpdateExpiredUsers,
 
 
 let userLoginTimes = new Map();
+let usersFetched = {};
 let databaseBusy = false;
 
 on('databaseBusy', (status: boolean) => {
@@ -92,7 +93,11 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 	// If this stops working, use got() and a stream: true property again
 	const res = await got.stream(`https://${instance}/avatars/${avatarFile}`);
 	const avatarPath = resolve(getState().appPath, conf.System.Path.Temp, avatarFile);
-	await writeStreamToFile(res, avatarPath);
+	try {
+		await writeStreamToFile(res, avatarPath);
+	} catch(err) {
+		logger.warn(`[User] Could not write remote avatar to local file ${avatarFile} : ${err}`);
+	}
 	return avatarPath;
 }
 
@@ -126,19 +131,22 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				path: await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file)
 			};
 		}
-		logger.info('fetchAndUpdateRemoteUser')
-		user = await editUser(username,{
-			bio: remoteUser.bio,
-			url: remoteUser.url,
-			email: remoteUser.email,
-			nickname: remoteUser.nickname,
-			password: password
-		},
-		avatar_file,
-		'admin',
-		{
-			editRemote: false
-		});
+		// Checking if user has already been fetched during this session or not
+		if (!usersFetched[username]) {
+			usersFetched[username] = true;
+			user = await editUser(username,{
+				bio: remoteUser.bio,
+				url: remoteUser.url,
+				email: remoteUser.email,
+				nickname: remoteUser.nickname,
+				password: password
+			},
+			avatar_file,
+			'admin',
+			{
+				editRemote: false
+			});
+		}
 		user.onlineToken = onlineToken.token;
 		return user;
 	} else {
@@ -285,8 +293,6 @@ export async function listUsers(): Promise<User[]> {
 
 async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File): Promise<string> {
 	try {
-		logger.info(JSON.stringify(avatar));
-		logger.info(oldImageFile);
 		const conf = getConfig();
 		const fileType = await detectFileType(avatar.path);
 		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
@@ -295,8 +301,18 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		const newAvatarPath = resolve(getState().appPath,conf.System.Path.Avatars, newAvatarFile);
 		const oldAvatarPath = resolve(getState().appPath,conf.System.Path.Avatars, oldImageFile);
 		if (await asyncExists(oldAvatarPath) &&
-			oldImageFile !== 'blank.png') await asyncUnlink(oldAvatarPath);
-		await asyncMove(avatar.path,newAvatarPath);
+			oldImageFile !== 'blank.png') {
+				try {
+					await asyncUnlink(oldAvatarPath);
+				} catch(err) {
+					logger.warn(`[User] Unable to unlink old avatar ${oldAvatarPath} : ${err}`);
+				}
+			}
+		try {
+			await asyncCopy(avatar.path, newAvatarPath, {overwrite: true});
+		} catch(err) {
+			logger.error(`[User] Could not copy new avatar ${avatar.path} to ${newAvatarPath} : ${err}`);
+		}
 		return newAvatarFile;
 	} catch (err) {
 		throw `Unable to replace avatar ${oldImageFile} with ${avatar.path} : ${err}`;

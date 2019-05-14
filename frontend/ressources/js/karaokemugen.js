@@ -433,11 +433,16 @@ var settingsNotUpdated;
 									}
 								}).done(function () {
 									DEBUG && console.log(karaList + ' added to playlist ' + idPlaylistTo);
-
+                                    $('#modalBox').modal('hide');
+                                    $('body').removeClass('modal-open');
+                                    $('.modal-backdrop').remove();
 								});
 							},'');
 						} else {
-							console.log('Error : server could not pick any random song');
+                            console.log('Error : server could not pick any random song');
+                            $('#modalBox').modal('hide');
+                            $('body').removeClass('modal-open');
+                            $('.modal-backdrop').remove();
 						}
 					});
 				},'');
@@ -2975,7 +2980,20 @@ var settingsNotUpdated;
 		if($('.shutdown-popup').length > 0) {
 			$('.shutdown-popup > .closeParent').click();
 		}
-	})
+    })
+    
+    /* experimental */
+    var TIMEOUT = 10000;
+    var lastTime = (new Date()).getTime();
+    
+    setInterval(function() {
+      var currentTime = (new Date()).getTime();
+      if (currentTime > (lastTime + TIMEOUT + 2000)) {
+        // Wake!
+        //window.location.reload();
+      }
+      lastTime = currentTime;
+    }, TIMEOUT);
 
 	var onevent = socket.onevent;
 	socket.onevent = function (packet) {

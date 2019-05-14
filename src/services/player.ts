@@ -7,7 +7,6 @@ import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
 import {previousSong, nextSong, getCurrentSong} from './playlist';
-import retry from 'p-retry';
 import {promisify} from 'util';
 
 const sleep = promisify(setTimeout);
@@ -21,18 +20,13 @@ async function getPlayingSong(now: boolean) {
 			const kara = await getCurrentSong();
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
 			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
-			await retry(() => play({
+			await play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
 				gain: kara.gain,
 				infos: kara.infos,
 				avatar: kara.avatar,
 				duration: kara.duration
-			}), {
-				retries: 3,
-				onFailedAttempt: error => {
-					logger.warn(`[Player] Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
-				}
 			});
 			setState({currentlyPlayingKara: kara.kid});
 			addPlayedKara(kara.kid);
@@ -42,7 +36,11 @@ async function getPlayingSong(now: boolean) {
 			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
 			if (getState().status !== 'stop') {
 				logger.warn('[Player] Skipping playback for this song');
-				next();
+				try {
+					await next();
+				} catch(err) {
+					logger.warn('[Player] Skipping failed');
+				}
 			} else {
 				logger.warn('[Player] Stopping karaoke due to error');
 				stopPlayer(true);
@@ -77,16 +75,19 @@ export async function playerEnding() {
 			currentlyPlayingKara: -1,
 			counterToJingle: 0
 		});
-		await retry(playJingle, {
-			retries: 3,
-			onFailedAttempt: error => logger.warn(`[Player] Failed to play jingle, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`)
-		});
+		try {
+			await playJingle();
+		} catch(err) {
+			logger.error(`[Jingle] Unable to play jingle file : ${err}`);
+		}
 	} else {
 		try {
 			state.counterToJingle++;
 			setState({counterToJingle: state.counterToJingle});
 			if (state.status !== 'stop') {
 				await next();
+			} else {
+				await stopPlayer(true);
 			}
 		} catch(err) {
 			loadBackground();
@@ -97,7 +98,7 @@ export async function playerEnding() {
 }
 
 async function prev() {
-	logger.info('[Player] Going to previous song');
+	logger.debug('[Player] Going to previous song');
 	try {
 		await previousSong();
 	} catch(err) {
@@ -109,7 +110,7 @@ async function prev() {
 }
 
 async function next() {
-	logger.info('[Player] Going to next song');
+	logger.debug('[Player] Going to next song');
 	try {
 		await nextSong();
 		playPlayer(true);
@@ -159,10 +160,12 @@ function stopPlayer(now?: boolean) {
 	if (now) {
 		logger.info('[Player] Karaoke stopping NOW');
 		stop();
+		setState({status: 'stop', currentlyPlayingKara: null});
 	} else {
 		logger.info('[Player] Karaoke stopping after current song');
+		setState({status: 'stop'});
 	}
-	setState({status: 'stop', currentlyPlayingKara: null});
+
 }
 
 function pausePlayer() {
@@ -235,52 +238,58 @@ export async function sendCommand(command: string, options: any) {
 	setTimeout(function () {
 		commandInProgress = false;
 	}, 3000);
-	if (command === 'play') {
-		await playPlayer();
-	} else if (command === 'stopNow') {
-		await stopPlayer(true);
-	} else if (command === 'pause') {
-		await pausePlayer();
-	} else if (command === 'stopAfter') {
-		stopPlayer();
-		await nextSong();
-	} else if (command === 'skip') {
-		await next();
-	} else if (command === 'prev') {
-		await prev();
-	} else if (command === 'toggleFullscreen') {
-		await toggleFullScreenPlayer();
-	} else if (command === 'toggleAlwaysOnTop') {
-		await toggleOnTopPlayer();
-	} else if (command === 'mute') {
-		await mutePlayer();
-	} else if (command === 'unmute') {
-		await unmutePlayer();
-	} else if (command === 'showSubs') {
-		await showSubsPlayer();
-	} else if (command === 'hideSubs') {
-		await hideSubsPlayer();
-	} else if (command === 'seek') {
-		if (!options || isNaN(options)) {
-			commandInProgress = false;
-			throw 'Command seek must have a numeric option value';
+	try {
+		if (command === 'play') {
+			await playPlayer();
+		} else if (command === 'stopNow') {
+			await stopPlayer(true);
+		} else if (command === 'pause') {
+			await pausePlayer();
+		} else if (command === 'stopAfter') {
+			stopPlayer();
+			await nextSong();
+		} else if (command === 'skip') {
+			await next();
+		} else if (command === 'prev') {
+			await prev();
+		} else if (command === 'toggleFullscreen') {
+			await toggleFullScreenPlayer();
+		} else if (command === 'toggleAlwaysOnTop') {
+			await toggleOnTopPlayer();
+		} else if (command === 'mute') {
+			await mutePlayer();
+		} else if (command === 'unmute') {
+			await unmutePlayer();
+		} else if (command === 'showSubs') {
+			await showSubsPlayer();
+		} else if (command === 'hideSubs') {
+			await hideSubsPlayer();
+		} else if (command === 'seek') {
+			if (!options || isNaN(options)) {
+				commandInProgress = false;
+				throw 'Command seek must have a numeric option value';
+			}
+			await seekPlayer(options);
+		} else if (command === 'goTo') {
+			if (!options || isNaN(options)) {
+				commandInProgress = false;
+				throw 'Command goTo must have a numeric option value';
+			}
+			await goToPlayer(options);
+		} else if (command === 'setVolume') {
+			if (!options || isNaN(options)) {
+				commandInProgress = false;
+				throw 'Command setVolume must have a numeric option value';
+			}
+			await setVolumePlayer(options);
+		} else {// Unknown commands are not possible, they're filtered by API's validation.
 		}
-		await seekPlayer(options);
-	} else if (command === 'goTo') {
-		if (!options || isNaN(options)) {
-			commandInProgress = false;
-			throw 'Command goTo must have a numeric option value';
-		}
-		await goToPlayer(options);
-	} else if (command === 'setVolume') {
-		if (!options || isNaN(options)) {
-			commandInProgress = false;
-			throw 'Command setVolume must have a numeric option value';
-		}
-		await setVolumePlayer(options);
-	} else {// Unknown commands are not possible, they're filtered by API's validation.
+	} catch(err) {
+		logger.error(`[Player] Command ${command} failed : ${err}`);
+		throw err;
+	} finally {
+		commandInProgress = false;
 	}
-	commandInProgress = false;
 }
 
 export async function initPlayer() {

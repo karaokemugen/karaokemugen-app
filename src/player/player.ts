@@ -18,6 +18,7 @@ import execa from 'execa';
 import semver from 'semver';
 import { imageFileTypes } from '../services/constants';
 import {PlayerState, MediaData, mpvStatus} from '../types/player';
+import retry from 'p-retry';
 
 const sleep = promisify(setTimeout);
 
@@ -251,7 +252,6 @@ async function startmpv() {
 			mpvOptions
 		);
 	}
-
 	// Starting up mpv
 	try {
 		const promises = [
@@ -379,11 +379,14 @@ export async function play(mediadata: MediaData) {
 			// Again, lavfi-complex expert @nah comes to the rescue!
 			if (mediadata.avatar && conf.Karaoke.Display.Avatar) options.push(`lavfi-complex=movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 7},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
 		}
-		let loads = [player.load(mediaFile,'replace', options)];
-		if (monitorEnabled) loads.push(playerMonitor.load(mediaFile,'replace', options));
-		await Promise.all(loads);
+		await retry(async () => load(mediaFile, 'replace', options), {
+			retries: 3,
+			onFailedAttempt: error => {
+				logger.warn(`[Player] Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
+			}
+		});
 		playerState.mediaType = 'song';
-		player.play();
+		await player.play();
 		if (monitorEnabled) {
 			playerMonitor.play();
 			playerMonitor.mute();
@@ -562,15 +565,9 @@ export async function restartmpv() {
 
 export async function quitmpv() {
 	logger.debug('[Player] Quitting mpv');
-	player.stop();
-	player.quit();
+	await player.quit();
 	// Destroy mpv instance.
-	player = null;
-	if (playerMonitor) {
-		playerMonitor.stop();
-		playerMonitor.quit();
-		playerMonitor = null;
-	}
+	if (playerMonitor) await playerMonitor.quit();
 	playerState.ready = false;
 	return true;
 }
@@ -582,20 +579,22 @@ export async function playJingle() {
 	if (jingle) {
 		try {
 			logger.debug(`[Player] Playing jingle ${jingle.file}`);
-			let loads = [
-				player.load(jingle.file,'replace',[`replaygain-fallback=${jingle.gain}`])
-			];
-			if (monitorEnabled) loads.push(playerMonitor.load(jingle.file,'replace',[`replaygain-fallback=${jingle.gain}`]));
-			await Promise.all(loads);
-			player.play();
-			if (monitorEnabled) playerMonitor.play();
+			const options = [`replaygain-fallback=${jingle.gain}`];
+			await retry(async () => load(jingle.file, 'replace', options), {
+				retries: 3,
+				onFailedAttempt: error => {
+					logger.warn(`[Player] Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
+				}
+			});
+			await player.play();
+			if (monitorEnabled) await playerMonitor.play();
 			displayInfo();
 			playerState.playerstatus = 'play';
 			playerState._playing = true;
 			emitPlayerState();
 		} catch(err) {
 			logger.error(`[Player] Unable to load jingle file ${jingle.file} : ${JSON.stringify(err)}`);
-			throw err;
+			throw Error(err);
 		}
 	} else {
 		logger.debug('[Jingles] No jingle to play.');
@@ -607,3 +606,17 @@ export async function playJingle() {
 	}
 }
 
+async function load(file: string, mode: string, options: string[]) {
+	try {
+		await player.load(file, mode, options);
+	} catch(err) {
+		logger.error(`[mpv] Error loading file ${file} : ${err}`);
+		throw Error(err);
+	}
+	if (monitorEnabled) try {
+		await playerMonitor.load(file, mode, options);
+	} catch(err) {
+		logger.error(`[mpv Monitor] Error loading file ${file} : ${err}`);
+		throw Error(err);
+	}
+}

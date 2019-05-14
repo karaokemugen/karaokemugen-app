@@ -113,25 +113,17 @@ export async function updateUserPassword(username: string, password: string) {
 
 export function getRemoteToken(username: string) {
 	const index = findRemoteToken(username);
-	if (index !== null) return remoteTokens[index];
+	if (index > -1) return remoteTokens[index];
 	return null;
 }
 
-function findRemoteToken(username: string) {
-	let remoteTokenIndex;
-	const remoteTokenFound = remoteTokens.some((rt, index) => {
-		remoteTokenIndex = index;
-		return rt.username === username;
-	});
-	if (remoteTokenFound) return remoteTokenIndex;
-	return null;
+function findRemoteToken(username: string): number {
+	return remoteTokens.findIndex(rt => rt.username === username);
 }
 
 export function upsertRemoteToken(username: string, token: string) {
 	const index = findRemoteToken(username);
-	if (index) delete remoteTokens[index];
-	remoteTokens.push({
-		username: username,
-		token: token
-	});
+	index > -1
+		? remoteTokens[index] = {username, token}
+		: remoteTokens.push({username, token});
 }

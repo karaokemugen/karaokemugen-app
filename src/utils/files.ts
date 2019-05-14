@@ -67,6 +67,7 @@ export function sanitizeFile(file: string): string {
 export async function detectFileType(file: string): Promise<string> {
 	const buffer = await readChunk(file, 0, 4100);
 	const detected = fileType(buffer);
+	if (!detected) throw `Unable to detect filetype of ${file}`;
 	return detected.ext;
 }
 

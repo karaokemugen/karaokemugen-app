@@ -51,7 +51,8 @@ export interface Kara {
 	error?: boolean,
 	isKaraModified?: boolean,
 	version?: number,
-	repo?: string
+	repo?: string,
+	noNewVideo?: boolean
 }
 
 export interface KaraFile {

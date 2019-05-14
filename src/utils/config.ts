@@ -325,7 +325,7 @@ export function getPublicConfig() {
 export async function updateConfig(newConfig: Config) {
 	const filteredConfig = difference(newConfig, defaults);
 	clearEmpties(filteredConfig);
-	delete filteredConfig.Database;
+	if (filteredConfig.Database) delete filteredConfig.Database;
 	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
 	await asyncWriteFile(resolve(getState().appPath, configFile), safeDump(filteredConfig), 'utf-8');
 }
