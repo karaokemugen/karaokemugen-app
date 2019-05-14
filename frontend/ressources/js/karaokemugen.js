@@ -2823,11 +2823,11 @@ var settingsNotUpdated;
 			displayMessage('success', '', i18n.__('POLLENDED', [data.kara.substring(0,100), data.votes]));
 		});
 		socket.on('settingsUpdated', function(){
-			settingsUpdating.done(function () {
+			settingsUpdating && settingsUpdating.done(function () {
 				settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
 				settingsUpdating.done(function (){
 					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
-																		|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+						|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
 						playlistsUpdating.done(function() {
 							playlistsUpdating = refreshPlaylistSelects();
 						});

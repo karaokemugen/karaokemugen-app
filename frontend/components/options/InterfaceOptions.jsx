@@ -1,8 +1,9 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-var InterfaceOptions = () => {
+var InterfaceOptions = (props) => {
   const { t } = useTranslation();
+
   return (
     <>
       <div className="form-group">
@@ -10,7 +11,7 @@ var InterfaceOptions = () => {
           {t("WEBAPPMODE")}
         </label>
         <div className="col-xs-6">
-          <select type="number" className="form-control" name="Frontend.Mode">
+          <select type="number" className="form-control" id="Frontend.Mode" onChange={props.onChange}>
             <option value="0">{t("WEBAPPMODE_CLOSED")}</option>
             <option value="1">{t("WEBAPPMODE_LIMITED")}</option>
             <option value="2">{t("WEBAPPMODE_OPEN")}</option>
@@ -29,7 +30,8 @@ var InterfaceOptions = () => {
           <select
             type="number"
             className="form-control"
-            name="Frontend.SeriesLanguageMode"
+            id="Frontend.SeriesLanguageMode"
+            onChange={props.onChange}
           >
             <option value="0">{t("SERIE_NAME_MODE_ORIGINAL")}</option>
             <option value="1">{t("SERIE_NAME_MODE_SONG")}</option>

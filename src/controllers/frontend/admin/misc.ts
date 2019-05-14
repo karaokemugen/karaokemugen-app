@@ -201,7 +201,8 @@ export default function adminMiscController(router: Router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Update settings
 			try {
-				const publicSettings = await editSetting(req.body.setting);
+				var setting = typeof req.body.setting === 'string' ? JSON.parse(req.body.setting) : req.body.setting;
+				const publicSettings = await editSetting(setting);
 				emitWS('settingsUpdated',publicSettings);
 				res.json(OKMessage(publicSettings,'SETTINGS_UPDATED'));
 			} catch(err) {

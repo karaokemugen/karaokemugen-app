@@ -3,9 +3,22 @@ import { useTranslation } from 'react-i18next';
 import PlayerOptions from './PlayerOptions';
 import KaraokeOptions from './KaraokeOptions';
 import InterfaceOptions from './InterfaceOptions';
+import axios from 'axios';
 
-var Options = () => {
+var saveSettings = (event) => {
+  axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
+  axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
+
+  var data = {};
+  data[event.target.id] = event.target.value;
+  axios.put('/api/admin/settings', {
+    setting: JSON.stringify(data)
+  });
+}
+
+var Options = (props) => {
   const { t } = useTranslation();
+
   var displays = [];
   return (
     <>
@@ -65,7 +78,7 @@ var Options = () => {
               aria-labelledby="nav-interface-tab"
               className="modal-body tab-pane fade"
             >
-              <InterfaceOptions />
+              <InterfaceOptions onChange={saveSettings}/>
             </div>
             <div
               id="nav-karaoke"
