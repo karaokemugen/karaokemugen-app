@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "main": "bundle.js",
   "dependencies": {
+    "axios": "^0.18.0",
     "i18next": "^15.0.7",
     "i18next-browser-languagedetector": "^3.0.1",
     "i18next-xhr-backend": "^2.0.1",
-    "react-i18next": "^10.5.3",
     "react": "^16.0.0",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "react-i18next": "^10.5.3"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.3"
