@@ -22,10 +22,10 @@ var PlayerOptions = props => {
         <div className="col-xs-6">
           <input
             action="command"
-            switch="onoff"
             type="checkbox"
-            name="Player.StayOnTop"
+            id="Player.StayOnTop"
             namecommand="toggleAlwaysOnTop"
+            onChange={props.onChange}
           />
         </div>
       </div>
@@ -36,10 +36,10 @@ var PlayerOptions = props => {
         <div className="col-xs-6">
           <input
             action="command"
-            switch="onoff"
             type="checkbox"
-            name="Player.FullScreen"
+            id="Player.FullScreen"
             namecommand="toggleFullscreen"
+            onChange={props.onChange}
           />
         </div>
       </div>
@@ -48,67 +48,98 @@ var PlayerOptions = props => {
           {t("MONITOR_NUMBER")}
         </label>
         <div className="col-xs-6">
-          <select type="number" className="form-control" name="Player.Screen">
+          <select
+            type="number"
+            className="form-control"
+            id="Player.Screen"
+            onChange={props.onChange}
+          >
             {listdisplays}
           </select>
         </div>
       </div>
 
-      <div
-        id="connexionInfoSettings"
-        className="well well-sm settingsGroupPanel"
-      >
-        <div className="form-group">
-          <label
-            className="col-xs-4 control-label"
-            htmlFor="Karaoke.Display.ConnectionInfo.QRCode"
-          >
-            {t("ENGINEDISPLAYCONNECTIONINFOQRCODE")}
-          </label>
-          <div className="col-xs-6">
-            <input
-              name="Karaoke.Display.ConnectionInfo.QRCode"
-              type="checkbox"
-            />
-          </div>
-        </div>
-        <div className="form-group">
-          <label
-            htmlFor="Karaoke.Display.ConnectionInfo.Host"
-            className="col-xs-4 control-label"
-          >
-            {t("ENGINEDISPLAYCONNECTIONINFOHOST")}
-          </label>
-          <div className="col-xs-6">
-            <input
-              className="form-control"
-              name="Karaoke.Display.ConnectionInfo.Host"
-            />
-          </div>
-        </div>
-        <div className="form-group">
-          <label
-            htmlFor="Karaoke.Display.ConnectionInfo.Message"
-            className="col-xs-4 control-label"
-          >
-            {t("ENGINEDISPLAYCONNECTIONINFOMESSAGE")}
-          </label>
-          <div className="col-xs-6">
-            <input
-              className="form-control"
-              name="Karaoke.Display.ConnectionInfo.Message"
-            />
-          </div>
+      <div className="form-group">
+        <label
+          htmlFor="Karaoke.Display.ConnectionInfo.Enabled"
+          className="col-xs-4 control-label"
+        >
+          {t("ENGINEDISPLAYCONNECTIONINFO")}
+        </label>
+        <div className="col-xs-6">
+          {" "}
+          <input
+            type="checkbox"
+            id="Karaoke.Display.ConnectionInfo.Enabled"
+            onChange={props.onChange}
+          />
         </div>
       </div>
-      
+
+      {false ? (
+        <div
+          id="connexionInfoSettings"
+          className="well well-sm settingsGroupPanel"
+        >
+          <div className="form-group">
+            <label
+              className="col-xs-4 control-label"
+              htmlFor="Karaoke.Display.ConnectionInfo.QRCode"
+            >
+              {t("ENGINEDISPLAYCONNECTIONINFOQRCODE")}
+            </label>
+            <div className="col-xs-6">
+              <input
+                id="Karaoke.Display.ConnectionInfo.QRCode"
+                type="checkbox"
+                onChange={props.onChange}
+              />
+            </div>
+          </div>
+          <div className="form-group">
+            <label
+              htmlFor="Karaoke.Display.ConnectionInfo.Host"
+              className="col-xs-4 control-label"
+            >
+              {t("ENGINEDISPLAYCONNECTIONINFOHOST")}
+            </label>
+            <div className="col-xs-6">
+              <input
+                className="form-control"
+                id="Karaoke.Display.ConnectionInfo.Host"
+                onChange={props.onChange}
+              />
+            </div>
+          </div>
+          <div className="form-group">
+            <label
+              htmlFor="Karaoke.Display.ConnectionInfo.Message"
+              className="col-xs-4 control-label"
+            >
+              {t("ENGINEDISPLAYCONNECTIONINFOMESSAGE")}
+            </label>
+            <div className="col-xs-6">
+              <input
+                className="form-control"
+                id="Karaoke.Display.ConnectionInfo.Message"
+                onChange={props.onChange}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <div className="form-group">
         <label htmlFor="Player.PIP.Enabled" className="col-xs-4 control-label">
           {t("PLAYERPIP")}
         </label>
         <div className="col-xs-6">
           {" "}
-          <input switch="onoff" type="checkbox" name="Player.PIP.Enabled" />
+          <input
+            type="checkbox"
+            id="Player.PIP.Enabled"
+            onChange={props.onChange}
+          />
         </div>
       </div>
 
@@ -118,7 +149,11 @@ var PlayerOptions = props => {
             {t("VIDEO_SIZE")}
           </label>
           <div className="col-xs-6">
-            <input type="range" name="Player.PIP.Size" />
+            <input
+              type="range"
+              id="Player.PIP.Size"
+              onChange={props.onChange}
+            />
           </div>
         </div>
 
@@ -130,7 +165,11 @@ var PlayerOptions = props => {
             {t("VIDEO_POSITION_X")}
           </label>
           <div className="col-xs-6">
-            <select className="form-control" name="Player.PIP.PositionX">
+            <select
+              className="form-control"
+              id="Player.PIP.PositionX"
+              onChange={props.onChange}
+            >
               <option value="Left"> {t("LEFT")} </option>
               <option value="Center" default>
                 {" "}
@@ -149,7 +188,11 @@ var PlayerOptions = props => {
             {t("VIDEO_POSITION_Y")}
           </label>
           <div className="col-xs-6">
-            <select className="form-control" name="Player.PIP.PositionY">
+            <select
+              className="form-control"
+              id="Player.PIP.PositionY"
+              onChange={props.onChange}
+            >
               <option value="Bottom"> {t("BOTTOM")} </option>
               <option value="Center" default>
                 {" "}
@@ -157,6 +200,71 @@ var PlayerOptions = props => {
               </option>
               <option value="Top"> {t("TOP")} </option>
             </select>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label
+            htmlFor="Karaoke.Display.Nickname"
+            className="col-xs-4 control-label"
+          >
+            {t("ENGINEDISPLAYNICKNAME")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Karaoke.Display.Nickname"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label
+            htmlFor="Karaoke.Display.Avatar"
+            className="col-xs-4 control-label"
+          >
+            {t("ENGINEDISPLAYAVATAR")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Karaoke.Display.Avatar"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="Player.Monitor" className="col-xs-4 control-label">
+            {t("PLAYERMONITOR")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Player.Monitor"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label
+            htmlFor="Player.VisualizationEffects"
+            className="col-xs-4 control-label"
+          >
+            {t("PLAYERVISUALIZATIONEFFECTS")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Player.VisualizationEffects"
+              onChange={props.onChange}
+            />
           </div>
         </div>
       </div>

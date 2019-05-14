@@ -392,31 +392,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
     mouseDown = false;
     panel1Default = -1;
 
-    // dynamic creation of switchable settings
-    $.each(settingsOnOff, function (tab, settingsList) {
-        var htmlSettings = '';
-        $.each(settingsList, function (e, val) {
-            var customClass = '';
-            if (settingsOnOffHighlight[e]) {
-                customClass = 'settingsHighlight';
-            }
-            var htmlString = '<div class="form-group ' + customClass + '"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
-                + '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
-            if (e === 'Player.PIP.Enabled') {
-                $(htmlString).addClass('groupSettingActivator').insertBefore('#pipSettings');
-            } else if (e === 'Karaoke.Display.ConnectionInfo.Enabled') {
-                $(htmlString).addClass('groupSettingActivator').insertBefore('#connexionInfoSettings');
-            } else if (e === 'Karaoke.Quota.FreeUpVotes') {
-                $(htmlString).addClass('groupSettingActivator').insertBefore('#freeUpvotesSettings');
-            } else if (e === 'Karaoke.Poll.Enabled') {
-                $(htmlString).addClass('groupSettingActivator').insertBefore('#songPollSettings');
-            } else {
-                htmlSettings += htmlString;
-            }
-        });
-        $('#nav-' + tab).append(htmlSettings);
-    });
-
     // nameExclude = input not being updated (most likely user is on it)
     getSettings = function (nameExclude) {
         var promise = $.Deferred();

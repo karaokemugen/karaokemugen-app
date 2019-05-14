@@ -1,13 +1,16 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-var KaraokeOptions = () => {
+var KaraokeOptions = (props) => {
   const { t } = useTranslation();
   return (
     <>
       <div id="nav-karaokeAllMode">
         <div className="form-group">
-          <label htmlFor="Karaoke.Quota.Type" className="col-xs-4 control-label">
+          <label
+            htmlFor="Karaoke.Quota.Type"
+            className="col-xs-4 control-label"
+          >
             {t("QUOTA_TYPE")}
           </label>
           <div className="col-xs-6">
@@ -23,7 +26,10 @@ var KaraokeOptions = () => {
           </div>
         </div>
         <div className="form-group">
-          <label htmlFor="Karaoke.Quota.Time" className="col-xs-4 control-label">
+          <label
+            htmlFor="Karaoke.Quota.Time"
+            className="col-xs-4 control-label"
+          >
             {t("TIME_BY_USER")}
           </label>
           <div className="col-xs-6">
@@ -36,7 +42,10 @@ var KaraokeOptions = () => {
           </div>
         </div>
         <div className="form-group">
-          <label htmlFor="Karaoke.Quota.Songs" className="col-xs-4 control-label">
+          <label
+            htmlFor="Karaoke.Quota.Songs"
+            className="col-xs-4 control-label"
+          >
             {t("SONGS_BY_USER")}
           </label>
           <div className="col-xs-6">
@@ -65,7 +74,10 @@ var KaraokeOptions = () => {
           </div>
         </div>
         <div className="form-group">
-          <label htmlFor="Karaoke.JinglesInterval" className="col-xs-4 control-label">
+          <label
+            htmlFor="Karaoke.JinglesInterval"
+            className="col-xs-4 control-label"
+          >
             {t("ENGINEJINGLESINTERVAL")}
           </label>
           <div className="col-xs-6">
@@ -77,20 +89,123 @@ var KaraokeOptions = () => {
             />
           </div>
         </div>
+
+        <div className="form-group">
+          <label htmlFor="Karaoke.Repeat" className="col-xs-4 control-label">
+            {t("ENGINEREPEATPLAYLIST")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Karaoke.Repeat"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label
+            htmlFor="Karaoke.SmartInsert"
+            className="col-xs-4 control-label"
+          >
+            {t("ENGINEENABLESMARTINSERT")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Karaoke.SmartInsert"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="Karaoke.Autoplay" className="col-xs-4 control-label">
+            {t("ENGINEAUTOPLAY")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Karaoke.Autoplay"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label
+            htmlFor="Playlist.AllowDuplicates"
+            className="col-xs-4 control-label"
+          >
+            {t("ENGINEALLOWDUPLICATES")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Playlist.AllowDuplicates"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
       </div>
       <div className="form-group settingsGroupPanel subCategoryGroupPanel">
-        <div className="col-xs-12" style={{textAlign:'center'}}>
+        <div className="col-xs-12" style={{ textAlign: "center" }}>
           {t("ONLINESETTINGS")}
         </div>
       </div>
-      <div id="nav-karaokeOnlineSettings" />
+
+      <div id="nav-karaokeOnlineSettings">
+        <div className="form-group">
+          <label htmlFor="Online.URL" className="col-xs-4 control-label">
+            {t("ONLINEURL")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input type="checkbox" id="Online.URL" onChange={props.onChange} />
+          </div>
+        </div>
+        <div className="form-group">
+          <label htmlFor="Online.Users" className="col-xs-4 control-label">
+            {t("ONLINEUSERS")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Online.Users"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="Online.Stats" className="col-xs-4 control-label">
+            {t("ONLINESTATS")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Online.Stats"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
+      </div>
       <div className="form-group settingsGroupPanel subCategoryGroupPanel">
-        <div className="col-xs-12" style={{textAlign: 'center'}}>
+        <div className="col-xs-12" style={{ textAlign: "center" }}>
           {t("PUBLICMODESETTINGS")}
         </div>
       </div>
       <div id="nav-karaokePublicMode">
-        <div id="freeUpvotesSettings" className="well well-sm settingsGroupPanel">
+        <div
+          id="freeUpvotesSettings"
+          className="well well-sm settingsGroupPanel"
+        >
           <div className="form-group">
             <label
               className="col-xs-4 control-label"
@@ -122,9 +237,27 @@ var KaraokeOptions = () => {
             </div>
           </div>
         </div>
+
+        <div className="form-group">
+          <label htmlFor="Karaoke.Poll.Enabled" className="col-xs-4 control-label">
+            {t("ENGINESONGPOLL")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Karaoke.Poll.Enabled"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
+
         <div id="songPollSettings" className="well well-sm settingsGroupPanel">
           <div className="form-group">
-            <label className="col-xs-4 control-label" htmlFor="Karaoke.Poll.Choices">
+            <label
+              className="col-xs-4 control-label"
+              htmlFor="Karaoke.Poll.Choices"
+            >
               {t("ENGINESONGPOLLCHOICES")}
             </label>
             <div className="col-xs-6">
@@ -136,7 +269,10 @@ var KaraokeOptions = () => {
             </div>
           </div>
           <div className="form-group">
-            <label htmlFor="Karaoke.Poll.Timeout" className="col-xs-4 control-label">
+            <label
+              htmlFor="Karaoke.Poll.Timeout"
+              className="col-xs-4 control-label"
+            >
               {t("ENGINESONGPOLLTIMEOUT")}
             </label>
             <div className="col-xs-6">
@@ -147,6 +283,21 @@ var KaraokeOptions = () => {
               />
             </div>
           </div>
+
+          <div className="form-group">
+          <label htmlFor="Karaoke.Quota.FreeUpVote" className="col-xs-4 control-label">
+            {t("ENGINEFREEUPVOTES")}
+          </label>
+          <div className="col-xs-6">
+            {" "}
+            <input
+              type="checkbox"
+              id="Karaoke.Quota.FreeUpVote"
+              onChange={props.onChange}
+            />
+          </div>
+        </div>
+
         </div>
       </div>
       <input name="App.FirstRun" className="hideInput hidden" />

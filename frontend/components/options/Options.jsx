@@ -70,7 +70,7 @@ var Options = (props) => {
               aria-labelledby="nav-player-tab"
               className="modal-body tab-pane fade in active"
             >
-              <PlayerOptions displays={displays}/>
+              <PlayerOptions displays={displays} onChange={saveSettings}/>
             </div>
             <div
               id="nav-interface"
@@ -86,7 +86,7 @@ var Options = (props) => {
               aria-labelledby="nav-karaoke-tab"
               className="modal-body tab-pane fade"
             >
-              <KaraokeOptions />
+              <KaraokeOptions onChange={saveSettings}/>
             </div>
           </div>
         </form>
