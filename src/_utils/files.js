@@ -118,13 +118,11 @@ export async function isGitRepo(dir) {
  * Searching file in a list of folders. If the file is found, we return its complete path with resolve.
  */
 export async function resolveFileInDirs(filename, dirs) {
-	const resolvedFile = dirs
-		.map((dir) => resolve(getState().appPath, dir, filename))
-		.find((resolvedFile) => asyncExists(resolvedFile));
-
-	if (!resolvedFile) throw `File "${filename}" not found in any listed directory: ${dirs}`;
-
-	return resolvedFile;
+	for (const dir of dirs) {
+		const resolved = resolve(getState().appPath, dir, filename);
+		if (await asyncExists(resolved)) return resolved;
+	}
+	throw `File "${filename}" not found in any listed directory: ${dirs}`;
 }
 
 /** Replacing extension in filename */
