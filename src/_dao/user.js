@@ -72,7 +72,7 @@ export async function reassignToUser(oldUsername,username) {
 }
 
 export async function updateExpiredUsers(expireTime) {
-	return await db().query(sql.updateExpiredUsers, [new Date(expireTime * 1000)]);
+	return await db().query(sql.updateExpiredUsers, [expireTime]);
 }
 
 export async function updateUserFingerprint(username, fingerprint) {
