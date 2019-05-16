@@ -65,7 +65,7 @@ export async function readAllSeries(seriesFiles: string[]): Promise<SeriesInsert
 	for (const seriesFile of seriesFiles) {
 		seriesPromises.push(() => processSerieFile(seriesFile, seriesMap));
 	}
-	const seriesData = await parallel(seriesPromises, 16);
+	const seriesData = await parallel(seriesPromises, 32);
 	return { data: seriesData, map: seriesMap };
 }
 
@@ -82,7 +82,7 @@ export async function readAllKaras(karafiles: string[], seriesMap: SeriesMap): P
 	for (const karafile of karafiles) {
 		karaPromises.push(() => readAndCompleteKarafile(karafile, seriesMap));
 	}
-	const karas = await parallel(karaPromises, 16);
+	const karas = await parallel(karaPromises, 32);
 	if (karas.some((kara: Kara) => kara.error)) error = true;
 	return karas.filter((kara: Kara) => !kara.error);
 }
