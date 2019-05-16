@@ -276,7 +276,6 @@ export async function initDBSystem() {
 	}
 	if (state.opt.reset) await resetUserData();
 	if (!state.opt.noBaseCheck) {
-		logger.info('[DB] Checking data files...');
 		const karasChecksum = await compareKarasChecksum();
 		if (karasChecksum === false) {
 			logger.info('[DB] Data files have changed: database generation triggered');

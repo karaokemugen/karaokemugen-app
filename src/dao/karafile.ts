@@ -358,7 +358,7 @@ const karaConstraintsV4 = {
 	'data.authors': {arrayValidator: true},
 	'data.tags': {tagsValidator: true},
 	'data.langs': {langValidator: true},
-	'data.songorder': {integerValidator: true},
+	'data.songorder': {numericality: true},
 	'data.year': {integerValidator: true},
 	'data.kid': {presence: true, format: uuidRegexp},
 	'data.created_at': {presence: {allowEmpty: false}},
