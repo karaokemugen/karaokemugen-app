@@ -8,8 +8,8 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node src/index.ts --files tsconfig.json",
-	"debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
-	"qstart": "node dist/index.js",
+    "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
+    "qstart": "node dist/index.js",
     "test": "mocha --require ts-node/register --timeout 20000 test/*.ts",
     "build": "rm -Rf dist && tsc --build",
     "setup": "yarn install && yarn build && cd react_systempanel && yarn install && yarn build",
@@ -133,7 +133,6 @@
     "semver": "^6.0.0",
     "slugify": "^1.3.4",
     "socket.io": "^2.2.0",
-    "sqlite": "^3.0.3",
     "systeminformation": "^4.4.1",
     "uuid": "^3.3.2",
     "validate.js": "^0.12.0",
