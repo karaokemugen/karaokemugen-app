@@ -68,7 +68,6 @@ export interface MediaFile {
 
 export interface LyricsFile {
 	filename: string,
-	checksum: string,
 	default: boolean,
 	version: string,
 }
@@ -84,7 +83,7 @@ export interface KaraFileV4 {
 		sids: string[],
 		songtype: string,
 		year: number,
-		songorder: string,
+		songorder: number,
 		singers: string[],
 		tags: string[],
 		songwriters: string[],
