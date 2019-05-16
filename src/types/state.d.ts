@@ -59,12 +59,8 @@ export interface State {
 		sql?: boolean,
 		validate?: boolean,
 		debug?: boolean,
-<<<<<<< HEAD
-		forceAdminPassword?: string
-=======
 		forceAdminPassword?: string,
 		validateV3?: boolean
->>>>>>> 9e2a7f11a4071c94b1daee882876d6630e80920f
 	},
 	engine?: {
 		ontop?: boolean
