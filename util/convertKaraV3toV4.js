@@ -40,7 +40,7 @@ async function main() {
 		let data = await asyncReadFile(path.resolve(kpath, file), 'utf-8');
 		data = data.replace(/\r/g, '');
 		const content = parse(data);
-		let songorder = null;
+		let songorder = undefined;
 		if (content.order !== '') songorder = +content.order;
 		const sids = [];
 		content.series.split(',').sort().forEach(s => {
