@@ -511,7 +511,6 @@ export async function run(validateOnly: boolean = false) {
 	}
 }
 
-
 /**
  * @function run_userdb_integrity_checks
  * Get all tags and compare to the ones in the blacklist criterias, if any.

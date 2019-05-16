@@ -9,7 +9,7 @@ import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {resolve, basename} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {asyncUnlink, checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../utils/files';
+import {asyncUnlink, checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs, asyncReadDirFilter} from '../utils/files';
 import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../utils/config';
 import {extractSubtitles, getMediaInfo} from '../utils/ffmpeg';
 import {getKara, selectAllKaras} from './kara';
@@ -21,6 +21,7 @@ import {getConfig} from '../utils/config';
 import { editKaraInStore, getStoreChecksum } from './dataStore';
 import { saveSetting } from './database';
 import testJSON from 'is-valid-json';
+import parallel from 'async-await-parallel';
 
 function strictModeError(karaData: KaraFileV4, data: string) {
 	logger.error(`[Kara] STRICT MODE ERROR : ${data} - Kara data read : ${JSON.stringify(karaData,null,2)}`);
@@ -365,6 +366,30 @@ const karaConstraintsV4 = {
 	'data.modified_at': {presence: {allowEmpty: false}},
 };
 
+
+export async function validateV3() {
+	const conf = getConfig();
+	const karaPath = resolve(getState().appPath, conf.System.Path.Karas[0], '../karas');
+	const karaFiles = await asyncReadDirFilter(karaPath, '.kara');
+	const karaPromises = [];
+	for (const karaFile of karaFiles) {
+		karaPromises.push(() => validateKaraV3(karaPath, karaFile, conf));
+	}
+	await parallel(karaPromises, 32);
+}
+
+async function validateKaraV3(karaPath: string, karaFile: string, conf: any) {
+	const karaData = await asyncReadFile(resolve(karaPath, karaFile), 'utf-8');
+	const kara = parseini(karaData);
+	if (kara.subfile !== 'dummy.ass') {
+		const subFile = resolve(getState().appPath, conf.System.Path.Lyrics[0], kara.subfile);
+		const subchecksum = await extractAssInfos(subFile);
+		if (subchecksum !== kara.subchecksum) {
+			kara.subchecksum = subchecksum;
+			await asyncWriteFile(resolve(karaPath, karaFile), stringify(kara));
+		}
+	}
+}
 
 export function karaDataValidationErrors(karaData: KaraFileV4) {
 	initValidators();
