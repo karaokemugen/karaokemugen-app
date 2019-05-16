@@ -2,7 +2,7 @@ import {removeSeriesFile, writeSeriesFile, formatSeriesFile} from '../dao/series
 import {refreshSeries, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, refreshKaraSeries} from '../dao/series';
 import {profile} from '../utils/logger';
 import logger from 'winston';
-import {removeSerieInKaras, replaceSerieInKaras} from '../dao/karafile';
+import {removeSerieInKaras} from '../dao/karafile';
 import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../utils/files';
 import { refreshKaras } from '../dao/kara';
@@ -92,10 +92,7 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const oldSerie = await getSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
-	if (oldSerie.name !== serieObj.name) {
-		await replaceSerieInKaras(oldSerie.name, serieObj.name);
-		await removeSeriesFile(oldSerie.name);
-	}
+	if (oldSerie.name !== serieObj.name) await removeSeriesFile(oldSerie.name);
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	const seriefile = serieObj.seriefile;
 	await Promise.all([

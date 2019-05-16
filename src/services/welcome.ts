@@ -1,6 +1,6 @@
 import {getConfig} from '../utils/config';
 import {getState} from '../utils/state';
-import {generateAdminPassword} from '../services/user';
+import {generateAdminPassword} from './user';
 import open from 'open';
 
 export async function welcomeToYoukousoKaraokeMugen(port: number) {

@@ -126,7 +126,7 @@ export const defaults: Config = {
 			Bin: 'app/bin',
 			Import: 'app/import',
 			Jingles: ['app/jingles'],
-			Karas: ['app/data/karas'],
+			Karas: ['app/data/karaokes'],
 			Lyrics: ['app/data/lyrics'],
 			Medias: ['app/data/medias'],
 			MediasHTTP: '',

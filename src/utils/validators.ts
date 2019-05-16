@@ -2,6 +2,7 @@ import validate from 'validate.js';
 import testJSON from 'is-valid-json';
 import {has as hasLang} from 'langs';
 import {uuidRegexp, karaTypes, tags} from '../services/constants';
+import {lyricsConstraints, mediaConstraints} from '../dao/karafile';
 
 // Validators
 
@@ -21,7 +22,7 @@ function arrayNoCommaValidator(value: string[]) {
 
 
 function langValidator(value: any) {
-	if (!Array.isArray(value)) value = value.replace(/"/g, '').split(',');
+	if (!Array.isArray(value)) value = value.split(',');
 	value = value.map((value: string) => value.trim());
 
 	const firstInvalidLang = value.find((lang: string) => !(lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang)));
@@ -31,7 +32,7 @@ function langValidator(value: any) {
 }
 
 function tagsValidator(value: any) {
-	if (!Array.isArray(value)) value = value.replace(/"/g, '').split(',');
+	if (!Array.isArray(value)) value = value.split(',');
 	value = value.map((value: string) => value.trim());
 
 	const firstInvalidTag = value.find((tag: string) => !tags.includes(tag.replace(/TAG_/,'')));
@@ -80,6 +81,11 @@ export function isNumber(value: any) {
 	return !isNaN(value);
 }
 
+function arrayValidator(value: string) {
+	if (Array.isArray(value)) return null;
+	return `'${value}' is not an array`
+}
+
 function uuidArrayValidator(value: string) {
 	if(!value) return ` '${value}' is invalid (empty)`;
 	value = value.toString();
@@ -111,6 +117,28 @@ function isArray(value: any){
 	if(Array.isArray(value)) return null;
 	return `'${value}' is invalid (not an array)`;
 }
+
+function karaLyricsValidator(value: any[]) {
+	// Lyrics can be totally empty
+	if (!value) return null;
+	value.forEach((v: any) => {
+		const validationErrors = check(v, lyricsConstraints);
+		if (validationErrors) {
+			return `Karaoke Lyrics data is not valid: ${JSON.stringify(validationErrors)}`;
+		}
+	});
+}
+
+function karaMediasValidator(value: any[]) {
+	// We receive a list of media files, we'll validate them
+	value.forEach((v: any) => {
+		const validationErrors = check(v, mediaConstraints);
+		if (validationErrors) {
+			return `Karaoke Medias data is not valid: ${JSON.stringify(validationErrors)}`;
+		}
+	});
+}
+
 // Validators list
 
 const validatorsList = {
@@ -123,9 +151,12 @@ const validatorsList = {
 	tagsValidator,
 	typeValidator,
 	seriesi18nValidator,
+	arrayValidator,
 	arrayNoCommaValidator,
 	uuidArrayValidator,
 	boolUndefinedValidator,
+	karaMediasValidator,
+	karaLyricsValidator
 };
 
 // Sanitizers

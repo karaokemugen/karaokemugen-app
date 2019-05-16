@@ -1,0 +1,56 @@
+{
+  "header": {
+    "version": 4,
+    "description": "Karaoke Mugen Karaoke Data File"
+  },
+  "medias": [
+    {
+      "version": "Default",
+      "filename": "Dragon Ball Z - OP1 - Cha-la Head Cha-la.avi",
+      "audiogain": -4.57,
+      "filesize": 3213676,
+      "duration": 106,
+      "default": true,
+      "lyrics": [
+        {
+          "filename": "Dragon Ball Z - OP1 - Cha-la Head Cha-la.ass",
+          "default": true,
+          "version": "Default"
+        }
+      ]
+    }
+  ],
+  "data": {
+    "authors": [],
+    "created_at": "Wed Aug 22 2018 12:21:28 GMT+0200 (GMT+02:00)",
+    "creators": [
+      "Toei Animation"
+    ],
+    "groups": [],
+    "kid": "b5df891e-6d1f-407d-8b5a-e6bd5368c366",
+    "langs": [
+      "jpn"
+    ],
+    "modified_at": "Wed Aug 22 2018 12:21:29 GMT+0200 (GMT+02:00)",
+    "repository": "kara.moe",
+    "title": "Cha-la Head Cha-la",
+    "sids": [
+      "dd06c976-b2da-4340-8d92-fabe61305c60"
+    ],
+    "singers": [
+      "Hironobu Kageyama"
+    ],
+    "songorder": 1,
+    "songtype": "OP",
+    "songwriters": [
+      "Chiho Kiyooka",
+      "Yukinojô Mori"
+    ],
+    "tags": [
+      "TAG_ANIME",
+      "TAG_SHOUNEN",
+      "TAG_TVSHOW"
+    ],
+    "year": 1989
+  }
+}

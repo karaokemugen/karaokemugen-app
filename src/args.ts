@@ -85,6 +85,7 @@ export async function parseCommandLineArgs(argv) {
 	}
 	if (argv.noBrowser) setState({opt: {noBrowser: true}});
 	if (argv.forceAdminPassword) setState({opt: {forceAdminPassword: argv.forceAdminPassword}});
+	if (argv.validateV3) setState({opt: {validateV3: true}});
 }
 
 

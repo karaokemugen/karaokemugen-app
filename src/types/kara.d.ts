@@ -16,7 +16,7 @@ export interface KaraParams {
 export interface NewKara {
 	data: Kara,
 	file: string,
-	fileData: KaraFile
+	fileData: KaraFileV4
 }
 
 export interface Kara {
@@ -33,7 +33,7 @@ export interface Kara {
 	subfile_orig?: string,
 	subchecksum?: string,
 	karafile?: string,
-	title: string,
+	title?: string,
 	year?: number,
 	order?: any,
 	dateadded?: Date,
@@ -52,10 +52,53 @@ export interface Kara {
 	isKaraModified?: boolean,
 	version?: number,
 	repo?: string,
-	noNewVideo?: boolean
+	noNewVideo?: boolean,
+	sids?: string[]
 }
 
-export interface KaraFile {
+export interface MediaFile {
+	version: string,
+	filename: string,
+	audiogain: number,
+	duration: number,
+	filesize: number,
+	default: boolean,
+	lyrics: LyricsFile[]
+}
+
+export interface LyricsFile {
+	filename: string,
+	default: boolean,
+	version: string,
+}
+
+export interface KaraFileV4 {
+	header: {
+		version: number,
+		description: string,
+	},
+	medias: MediaFile[],
+	data: {
+		title: string,
+		sids: string[],
+		songtype: string,
+		year: number,
+		songorder: number,
+		singers: string[],
+		tags: string[],
+		songwriters: string[],
+		creators: string[],
+		authors: string[],
+		repository: string,
+		langs: string[],
+		groups: string[],
+		created_at: string,
+		modified_at: string,
+		kid: string
+	}
+}
+
+export interface KaraFileV3 {
 	ass?: string,
 	karafile?: string,
 	error?: boolean,
