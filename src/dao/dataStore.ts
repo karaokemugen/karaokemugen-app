@@ -1,4 +1,4 @@
-import { KaraFile } from "../types/kara";
+import { KaraFileV4 } from "../types/kara";
 import { Series } from "../types/series";
 import { checksum } from "../utils/files";
 import { profile } from "../utils/logger";
@@ -12,7 +12,7 @@ let dataStore = {
 	series: []
 };
 
-export function addKaraToStore(kara: KaraFile) {
+export function addKaraToStore(kara: KaraFileV4) {
 	dataStore.karas.push(kara);
 }
 
@@ -22,9 +22,9 @@ export function addSeriesToStore(series: Series) {
 
 export function sortKaraStore() {
 	dataStore.karas = dataStore.karas.sort((a, b) => {
-		if (a.KID > b.KID) return 1;
-		if (a.KID < b.KID) return -1;
-		if (a.KID === b.KID) return 0;
+		if (a.data.kid > b.data.kid) return 1;
+		if (a.data.kid < b.data.kid) return -1;
+		if (a.data.kid === b.data.kid) return 0;
 	});
 }
 
@@ -40,14 +40,14 @@ export function getStoreChecksum() {
 	return checksum(JSON.stringify(dataStore));
 }
 
-export function editKaraInStore(kid: string, kara: KaraFile) {
-	const i = dataStore.karas.find(e => e.KID === kid);
+export function editKaraInStore(kid: string, kara: KaraFileV4) {
+	const i = dataStore.karas.find(e => e.data.kid === kid);
 	dataStore.karas[i] = kara;
 	getStoreChecksum();
 }
 
 export function removeKaraInStore(kid: string) {
-	dataStore.karas = dataStore.karas.filter(e => e.KID !== kid);
+	dataStore.karas = dataStore.karas.filter(e => e.data.kid !== kid);
 	getStoreChecksum();
 }
 
