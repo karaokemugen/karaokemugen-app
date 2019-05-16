@@ -1,68 +1,69 @@
 import {expect} from 'chai';
 import {karaDataValidationErrors} from '../src/dao/karafile';
+import { KaraFileV4 } from '../src/types/kara';
 
-const validKara = {
-	mediafile: 'video.mp4',
-	subfile: 'dummy.ass',
-	title: 'title',
-	series: 'series',
-	type: 'OP',
-	order: 0,
-	year: 2018,
-	singer: '',
-	tags: '',
-	songwriter: '',
-	creator: '',
-	author: '',
-	lang: 'fre',
-	KID: '6ac74940-b90c-4aea-b038-ae261eccf4b6',
-	dateadded: 1509041312,
-	datemodif: 1509041321,
-	mediasize: 0,
-	mediagain: 0,
-	mediaduration: 0,
-	version: 3,
-	subchecksum: '',
-	groups: ''
-};
+const validKara: KaraFileV4 = {
+	"header": {
+	  "version": 4,
+	  "description": "Karaoke Mugen Karaoke Data File"
+	},
+	"medias": [
+		{
+		"version": "Default",
+		"filename": "Ken le survivant RAW MP4.mp4",
+		"audiogain": -7.3,
+		"filesize": 3902935,
+		"duration": 31,
+		"default": true,
+		"lyrics": [
+			{
+			"filename": "Ken le survivant.ass",
+			"default": true,
+			"version": "Default"
+			}
+		]
+		}
+	],
+	"data": {
+		"authors": [],
+		"created_at": "Wed Aug 22 2018 12:20:04 GMT+0200 (GMT+02:00)",
+		"creators": [
+		"Toei Animation"
+		],
+		"groups": [
+		"Génération Club Dorothée",
+		"Mainstream"
+		],
+		"kid": "c28c8739-da02-49b4-889e-b15d1e9b2139",
+		"langs": [
+		"fre"
+		],
+		"modified_at": "Wed Aug 22 2018 12:20:55 GMT+0200 (GMT+02:00)",
+		"repository": "kara.moe",
+		"title": "MP4 avec sous-titres à part",
+		"sids": [
+		"11399289-cd2c-4c7e-b90c-4d72a0db1419"
+		],
+		"singers": [
+		"Bernard Denimal"
+		],
+		"songorder": 1,
+		"songtype": "OP",
+		"songwriters": [
+		"Gérard Salesses"
+		],
+		"tags": [
+		"TAG_ANIME",
+		"TAG_TVSHOW"
+		],
+		"year": 1984
+	}
+	}
+
+;
 
 describe('Kara validator', () => {
 	it('Should valid a correct kara', () => {
 		expect(karaDataValidationErrors(validKara)).to.be.undefined;
-	});
-
-	it('Should not valid a kara with missing required infos', () => {
-		const invalidKara = { ...validKara, title: ''};
-		expect(karaDataValidationErrors(invalidKara)).to.be.undefined;
-	});
-
-	it('Should not valid a kara without series', () => {
-		const invalidKara = { ...validKara, series: ''};
-		expect(karaDataValidationErrors(invalidKara)).to.have.property('series');
-	});
-
-	it('Should valid a musical kara without series', () => {
-		const invalidKara = { ...validKara, type: 'MV', series: ''};
-		expect(karaDataValidationErrors(invalidKara)).to.be.undefined;
-	});
-
-	it('Should not valid a kara with invalid 2B lang', () => {
-		const invalidKara = { ...validKara, lang: 'france'};
-		expect(karaDataValidationErrors(invalidKara)).to.have.property('lang');
-	});
-
-	it('Should not valid a kara with real version', () => {
-		const invalidKara = { ...validKara, version: 2.1};
-		expect(karaDataValidationErrors(invalidKara)).to.have.property('version');
-	});
-
-	it('Should valid a kara with real videogain', () => {
-		const invalidKara = { ...validKara, mediagain: -7.75};
-		expect(karaDataValidationErrors(invalidKara)).to.be.undefined;
-	});
-
-	it('Should not valid a kara with invalid UUID', () => {
-		const invalidKara = { ...validKara, KID: 'rac74940-b90c-4aea-b038-ae261eccf4b6'};
-		expect(karaDataValidationErrors(invalidKara)).to.have.property('KID');
 	});
 });
