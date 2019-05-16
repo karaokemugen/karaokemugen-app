@@ -1,0 +1,51 @@
+{
+  "header": {
+    "version": 4,
+    "description": "Karaoke Mugen Karaoke Data File"
+  },
+  "medias": [
+    {
+      "version": "Default",
+      "filename": "Ken le survivant MKV.mkv",
+      "audiogain": -7.3,
+      "filesize": 3907485,
+      "duration": 31,
+      "default": true,
+      "lyrics": []
+    }
+  ],
+  "data": {
+    "authors": [],
+    "created_at": "Wed Aug 22 2018 12:20:04 GMT+0200 (GMT+02:00)",
+    "creators": [
+      "Toei Animation"
+    ],
+    "groups": [
+      "Génération Club Dorothée",
+      "Mainstream"
+    ],
+    "kid": "eae7176c-65f4-4146-82ce-a8411064c912",
+    "langs": [
+      "fre"
+    ],
+    "modified_at": "Thu Feb 14 2019 22:29:00 GMT+0100 (GMT+01:00)",
+    "repository": "kara.moe",
+    "title": "MKV avec sous-titres embarqués",
+    "sids": [
+      "11399289-cd2c-4c7e-b90c-4d72a0db1419"
+    ],
+    "singers": [
+      "Bernard Denimal"
+    ],
+    "songorder": 1,
+    "songtype": "OP",
+    "songwriters": [
+      "Gérard Salesses"
+    ],
+    "tags": [
+      "TAG_ANIME",
+      "TAG_TVSHOW"
+    ],
+    "year": 1984
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "header": {
+    "version": 4,
+    "description": "Karaoke Mugen Karaoke Data File"
+  },
+  "medias": [
+    {
+      "version": "Default",
+      "filename": "Dragon Ball - OP - Maka fushigi Adventure.avi",
+      "audiogain": -4.24,
+      "filesize": 3072541,
+      "duration": 108,
+      "default": true,
+      "lyrics": [
+        {
+          "filename": "Dragon Ball - OP - Maka fushigi Adventure.ass",
+          "default": true,
+          "version": "Default"
+        }
+      ]
+    }
+  ],
+  "data": {
+    "authors": [],
+    "created_at": "Wed Aug 22 2018 12:21:28 GMT+0200 (GMT+02:00)",
+    "creators": [
+      "Toei Animation"
+    ],
+    "groups": [],
+    "kid": "a9c17ee5-b0f1-43d7-a1e0-0babf5997bde",
+    "langs": [
+      "jpn"
+    ],
+    "modified_at": "Wed Aug 22 2018 12:21:29 GMT+0200 (GMT+02:00)",
+    "repository": "kara.moe",
+    "title": "Maka fushigi Adventure",
+    "sids": [
+      "4987f7bf-3867-4ccc-a47c-4c27f756a28b"
+    ],
+    "singers": [
+      "Hiroki Takahashi"
+    ],
+    "songorder": null,
+    "songtype": "OP",
+    "songwriters": [
+      "Takeshi Ike",
+      "Yuriko Mori"
+    ],
+    "tags": [
+      "TAG_ANIME",
+      "TAG_SHOUNEN",
+      "TAG_TVSHOW"
+    ],
+    "year": 1986
+  }
+}
