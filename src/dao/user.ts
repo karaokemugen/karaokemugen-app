@@ -18,7 +18,8 @@ const remoteTokens = [];
 
 export async function checkNicknameExists(nickname: string): Promise<string> {
 	const res = await db().query(yesql(sql.testNickname)({nickname: nickname}));
-	return res.rows[0].login;
+	if (res.rows[0]) return res.rows[0].login;
+	return null;
 }
 
 export async function deleteUser(username: string) {
@@ -86,7 +87,8 @@ export async function updateUserFingerprint(username: string, fingerprint: strin
 
 export async function getRandomGuest(): Promise<string> {
 	const res = await db().query(sql.selectRandomGuestName);
-	return res.rows[0].login;
+	if (res.rows[0]) return res.rows[0].login;
+	return null;
 }
 
 export async function findFingerprint(fingerprint: string): Promise<string> {
