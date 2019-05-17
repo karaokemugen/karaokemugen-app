@@ -451,7 +451,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		const plContents = await getPlaylistKaraIDs(playlist_id);
 		// Making a unique ID depending on if we're in public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not
-		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it wont count
+		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it won't count
 		// If no song is currently playing, plContentsBeforePlay returns all songs in playlist.
 		const playingObject = getPlayingPos(plContents);
 		const playingPos = playingObject
@@ -768,7 +768,9 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	// Playlist can end up empty if no karaokes are found in database
 	try {
 		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist,null,2)}`);
-		let playingKara: PLC;
+		let playingKara: PLC = {
+			playlist_id: null
+		};
 		if (!playlist.Header) throw 'No Header section';
 		if (playlist.Header.description !== 'Karaoke Mugen Playlist File') throw 'Not a .kmplaylist file';
 		if (playlist.Header.version > 4) throw `Cannot import this version (${playlist.Header.version})`;
@@ -1056,7 +1058,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 	//If karaoke is present in the public playlist, we're deleting it.
 	if (conf.Playlist.RemovePublicOnPlay) {
 		const playlist_id = getState().publicPlaylistID;
-		const plc = await getPLCByKIDUser(kara.kid,kara.username, playlist_id);
+		const plc = await getPLCByKIDUser(kara.kid, kara.username, playlist_id);
 		if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id], playlist_id);
 	}
 	const currentSong: CurrentSong = {...kara}
