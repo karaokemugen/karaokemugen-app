@@ -93,7 +93,7 @@ export async function getRandomGuest(): Promise<string> {
 
 export async function findFingerprint(fingerprint: string): Promise<string> {
 	const res = await db().query(sql.findFingerprint, [fingerprint] );
-	return res.rows[0].login;
+	if (res.rows[0]) return res.rows[0].login;
 }
 
 export async function resetGuestsPassword() {

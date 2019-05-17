@@ -606,7 +606,7 @@ async function cleanupAvatars() {
 export async function updateSongsLeft(username: string, playlist_id?: number) {
 	const conf = getConfig();
 	const user = await findUserByName(username);
-	let quotaLeft;
+	let quotaLeft: number;
 	if (!playlist_id) playlist_id = getState().modePlaylistID;
 	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 		switch(+conf.Karaoke.Quota.Type) {
