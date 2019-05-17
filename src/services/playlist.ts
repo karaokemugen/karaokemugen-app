@@ -457,7 +457,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		const playingPos = playingObject
 			? playingObject.plc_id_pos
 			: 0;
-		const plContentsBeforePlay = plContents.filter((plc: PLC) => plc.pos > playingPos);
+		const plContentsBeforePlay = plContents.filter((plc: PLC) => plc.pos >= playingPos);
 		if (conf.Playlist.AllowDuplicates) {
 			if (!pl.flag_public) {
 				plContentsBeforePlay.forEach((p: PLC) => p.unique_id = `${p.kid}_${p.username}`);
