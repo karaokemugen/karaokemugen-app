@@ -9,7 +9,7 @@ import { Jingle } from '../types/jingles';
 let allJingles = [];
 let currentJingles = [];
 
-async function extractAllJingleFiles() {
+async function extractAllJingleFiles(): Promise<string[]> {
 	let jingleFiles = [];
 	for (const resolvedPath of resolvedPathJingles()) {
 		jingleFiles = jingleFiles.concat(await extractJingleFiles(resolvedPath));
@@ -17,7 +17,7 @@ async function extractAllJingleFiles() {
 	return jingleFiles;
 }
 
-async function extractJingleFiles(jingleDir: string) {
+async function extractJingleFiles(jingleDir: string): Promise<string[]> {
 	const jingleFiles = [];
 	const dirListing = await asyncReadDir(jingleDir);
 	for (const file of dirListing) {
@@ -42,7 +42,7 @@ async function getAllVideoGains(jingleFiles: string[]): Promise<Jingle[]> {
 	return jinglesList;
 }
 
-export async function buildJinglesList() {
+export async function buildJinglesList(): Promise<Jingle[]> {
 	const jingleFiles = await extractAllJingleFiles();
 	const list = await getAllVideoGains(jingleFiles);
 	currentJingles = currentJingles.concat(list);
@@ -50,15 +50,15 @@ export async function buildJinglesList() {
 	return list;
 }
 
-export function getJingles() {
+export function getJingles(): Jingle[] {
 	return currentJingles;
 }
 
-export function removeJingle(jingle: Jingle) {
+export function removeJingle(jingle: string) {
 	currentJingles = currentJingles.filter(e => e.file !== jingle);
 }
 
-export function getSingleJingle() {
+export function getSingleJingle(): Jingle {
 	const jingles = getJingles();
 	if (jingles.length > 0) {
 		logger.info('[Player] Jingle time !');

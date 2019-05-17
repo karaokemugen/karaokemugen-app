@@ -21,7 +21,7 @@ const seriesConstraintsV3 = {
 	i18n: {seriesi18nValidator: true}
 };
 
-export async function readSeriesFile(seriesFile: string) {
+export async function readSeriesFile(seriesFile: string): Promise<Series> {
 	let file: string;
 	try {
 		file = await resolveFileInDirs(seriesFile, resolvedPathSeries());
@@ -31,7 +31,7 @@ export async function readSeriesFile(seriesFile: string) {
 	return await getDataFromSeriesFile(file);
 }
 
-export async function getDataFromSeriesFile(file: string) {
+export async function getDataFromSeriesFile(file: string): Promise<Series> {
 	const seriesFileData = await asyncReadFile(file, 'utf-8');
 	if (!testJSON(seriesFileData)) throw `Syntax error in file ${file}`;
 	const seriesData = JSON.parse(seriesFileData);
@@ -44,12 +44,12 @@ export async function getDataFromSeriesFile(file: string) {
 	return seriesData.series;
 }
 
-export function seriesDataValidationErrors(seriesData: Series) {
+export function seriesDataValidationErrors(seriesData: Series): {} {
 	initValidators();
 	return check(seriesData, seriesConstraintsV3);
 }
 
-export function findSeries(name: string, series: Series[]) {
+export function findSeries(name: string, series: Series[]): Series {
 	return series.find(s => s.name === name);
 }
 

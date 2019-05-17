@@ -22,6 +22,7 @@ import { editKaraInStore, getStoreChecksum } from './dataStore';
 import { saveSetting } from './database';
 import testJSON from 'is-valid-json';
 import parallel from 'async-await-parallel';
+import { Config } from '../types/config';
 
 function strictModeError(karaData: KaraFileV4, data: string) {
 	logger.error(`[Kara] STRICT MODE ERROR : ${data} - Kara data read : ${JSON.stringify(karaData,null,2)}`);
@@ -182,30 +183,16 @@ export async function writeKaraV3(karafile: string, karaData: Kara): Promise<Kar
 }
 
 
-export async function parseKara(karaFile: string): Promise<any> {
+export async function parseKara(karaFile: string): Promise<KaraFileV4> {
 	let data: string;
 	try {
 		data = await asyncReadFile(karaFile, 'utf-8');
 	} catch(err) {
-		throw `Kara file ${karaFile} is not readable`;
+		throw `Kara file ${karaFile} is not readable : ${err}`;
 	}
 	if (!data) throw `Kara file ${karaFile} is empty`
-	// JSON for v4, ini for v3
-	// Remember to remove this a month or so after 3.0.0 releases
-	if (testJSON(data)) {
-		return JSON.parse(data);
-	} else {
-		data = data.replace(/\r/g, '');
-		const karaData = parseini(data);
-		karaData.mediasize = +karaData.mediasize;
-		karaData.mediaduration = +karaData.mediaduration;
-		karaData.mediagain = +karaData.mediagain;
-		karaData.dateadded = +karaData.dateadded;
-		karaData.datemodif = +karaData.datemodif;
-		karaData.version = +karaData.version;
-		karaData.year = +karaData.year;
-		return karaData;
-	}
+	if (!testJSON(data)) throw `Kara file ${karaFile} is not valid JSON`;
+	return JSON.parse(data);
 }
 
 export async function extractVideoSubtitles(videoFile: string, kid: string): Promise<string> {
@@ -378,7 +365,7 @@ export async function validateV3() {
 	await parallel(karaPromises, 32);
 }
 
-async function validateKaraV3(karaPath: string, karaFile: string, conf: any) {
+async function validateKaraV3(karaPath: string, karaFile: string, conf: Config) {
 	const karaData = await asyncReadFile(resolve(karaPath, karaFile), 'utf-8');
 	const kara = parseini(karaData);
 	if (kara.subfile !== 'dummy.ass') {
@@ -391,7 +378,7 @@ async function validateKaraV3(karaPath: string, karaFile: string, conf: any) {
 	}
 }
 
-export function karaDataValidationErrors(karaData: KaraFileV4) {
+export function karaDataValidationErrors(karaData: KaraFileV4): {} {
 	initValidators();
 	return check(karaData, karaConstraintsV4);
 }
