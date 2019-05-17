@@ -23,7 +23,6 @@ export interface Kara {
 	kid?: string,
 	languages?: KaraLang[],
 	languages_i18n?: string[],
-	previewfile?: string,
 	mediafile?: string,
 	mediafile_orig?: string,
 	mediasize?: number,

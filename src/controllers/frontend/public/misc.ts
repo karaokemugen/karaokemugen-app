@@ -296,10 +296,10 @@ export default function publicMiscController(router: Router) {
 		*		 ...
 		*   	],
 		*       "infos": {
-			*           "count": 1000,
-			* 			"from": 0,
-			* 			"to": 120
-			*       }
+		*           "count": 1000,
+		* 			"from": 0,
+		* 			"to": 120
+		*       }
 		* }
 		* @apiError TAGS_LIST_ERROR Unable to get list of tags
 		* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.

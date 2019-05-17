@@ -140,7 +140,6 @@ async function translateBlacklistCriterias(blcList: BLC[], lang: string) {
 		if (blcList[i].type >= 2 && blcList[i].type <= 999) {
 			// We need to get the tag name and then translate it if needed
 			const tag = await getTag(blcList[i].value);
-			if (typeof tag.name !== 'string') throw 'Tag name is not a string : '+JSON.stringify(tag);
 			if (tag.name.startsWith('TAG_')) {
 				blcList[i].value_i18n = i18n.__(tag.name);
 			} else {

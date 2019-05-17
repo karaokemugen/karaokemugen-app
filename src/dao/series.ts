@@ -3,6 +3,8 @@ import {pg as yesql} from 'yesql';
 import {profile} from '../utils/logger';
 import { KaraParams } from '../types/kara';
 import { Series } from '../types/series';
+import { WhereClause } from '../types/database';
+import { DBSeries } from '../types/database/series';
 
 const sql = require('./sql/series');
 
@@ -27,7 +29,7 @@ export async function refreshKaraSeriesLang() {
 	profile('RefreshKaraSeriesLang');
 }
 
-export function buildClausesSeries(words: string) {
+export function buildClausesSeries(words: string): WhereClause {
 	const params = paramWords(words);
 	let sql = [];
 	for (const i in words.split(' ').filter(s => !('' === s))) {
@@ -42,7 +44,7 @@ export function buildClausesSeries(words: string) {
 	};
 }
 
-export async function selectAllSeries(params: KaraParams) {
+export async function selectAllSeries(params: KaraParams): Promise<DBSeries[]> {
 
 	const filterClauses = params.filter ? buildClausesSeries(params.filter) : {sql: [], params: {}};
 	let offsetClause = '';
@@ -60,7 +62,7 @@ export async function selectAllSeries(params: KaraParams) {
 	return series.rows;
 }
 
-export async function selectSerieByName(name: string) {
+export async function selectSerieByName(name: string): Promise<DBSeries> {
 	const res = await db().query(yesql(sql.getSeriesByName)({
 		name: name
 	}));

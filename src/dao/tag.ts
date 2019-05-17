@@ -3,6 +3,8 @@ import {pg as yesql} from 'yesql';
 import slugify from 'slugify';
 import {profile} from '../utils/logger';
 import { TagParams, Tag } from '../types/tag';
+import { DBTag } from '../types/database/tag';
+import { WhereClause } from '../types/database';
 const sql = require('./sql/tag');
 
 export async function refreshTags() {
@@ -26,12 +28,12 @@ export async function refreshKaraTags() {
 	profile('RefreshKaraTags');
 }
 
-export async function getTag(id: number) {
+export async function getTag(id: number): Promise<DBTag> {
 	const res = await db().query(sql.getTag, [id]);
 	return res.rows[0];
 }
 
-export async function getAllTags(params: TagParams) {
+export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 	let filterClauses = params.filter
 		? buildTagClauses(params.filter)
 		: {sql: [], params: {}};
@@ -45,7 +47,7 @@ export async function getAllTags(params: TagParams) {
 	return res.rows;
 }
 
-function buildTagClauses(words: string) {
+function buildTagClauses(words: string): WhereClause {
 	const params = paramWords(words);
 	let sql = [];
 	for (const i in words.split(' ').filter(s => !('' === s))) {
@@ -59,7 +61,7 @@ function buildTagClauses(words: string) {
 	};
 }
 
-export async function checkOrCreateTag(tag: Tag) {
+export async function checkOrCreateTag(tag: Tag): Promise<number> {
 	const tagDB = await db().query(yesql(sql.getTagByNameAndType)({
 		name: tag.tag,
 		type: tag.type

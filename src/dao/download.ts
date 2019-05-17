@@ -1,5 +1,6 @@
 import {db, transaction} from './database';
 import { KaraDownload, KaraDownloadBLC } from '../types/download';
+import { DBDownload, DBDownloadBLC } from '../types/database/download';
 const sql = require('./sql/download');
 
 export async function insertDownloads(downloads: KaraDownload[] ) {
@@ -13,12 +14,12 @@ export async function insertDownloads(downloads: KaraDownload[] ) {
 	return await transaction([{sql: sql.insertDownload, params: dls}]);
 }
 
-export async function selectDownloads(): Promise<any[]> {
+export async function selectDownloads(): Promise<DBDownload[]> {
 	const dls = await db().query(sql.selectDownloads);
 	return dls.rows;
 }
 
-export async function selectPendingDownloads(): Promise<any[]> {
+export async function selectPendingDownloads(): Promise<DBDownload[]> {
 	const dls = await db().query(sql.selectPendingDownloads);
 	return dls.rows;
 }
@@ -28,7 +29,7 @@ export async function initDownloads() {
 	await db().query(sql.deleteDoneFailedDownloads);
 }
 
-export async function selectDownload(id: string) {
+export async function selectDownload(id: string): Promise<DBDownload> {
 	const dl = await db().query(sql.selectDownload, [id]);
 	return dl.rows[0];
 }
@@ -48,7 +49,7 @@ export async function emptyDownload() {
 	return await db().query(sql.emptyDownload);
 }
 
-export async function selectDownloadBLC(): Promise<any[]> {
+export async function selectDownloadBLC(): Promise<DBDownloadBLC[]> {
 	const res = await db().query(sql.selectDownloadBLC);
 	return res.rows;
 }

@@ -112,7 +112,8 @@ SELECT pc.fk_kid AS kid,
 	pc.fk_login AS login,
 	pc.pk_id_plcontent AS playlistcontent_id,
 	pc.flag_playing AS flag_playing,
-	pc.pos AS pos
+	pc.pos AS pos,
+	pc.fk_id_playlist AS playlist_id
 FROM playlist_content AS pc
 WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos,pc.created_at DESC
@@ -454,7 +455,7 @@ WHERE pk_id_plcontent = $1;
 `;
 
 export const countPlaylistUsers = `
-SELECT COUNT(DISTINCT fk_login) AS NumberOfUsers
+SELECT COUNT(DISTINCT fk_login)::integer AS NumberOfUsers
 FROM playlist_content
 WHERE fk_id_playlist = $1;
 `;

@@ -363,12 +363,12 @@ export async function findFingerprint(fingerprint: string): Promise<string> {
 	// If not we find a new guest account to assign to the user.
 	let guest = await DBFindFingerprint(fingerprint);
 	if (getState().isTest) logger.debug(JSON.stringify(guest));
-	if (guest) return guest.pk_login;
+	if (guest) return guest;
 	guest = await DBGetRandomGuest();
 	if (getState().isTest) logger.debug(JSON.stringify(guest));
 	if (!guest) return null;
-	await DBUpdateUserPassword(guest.pk_login, hashPassword(fingerprint));
-	return guest.pk_login;
+	await DBUpdateUserPassword(guest, hashPassword(fingerprint));
+	return guest;
 }
 
 export async function updateUserFingerprint(username: string, fingerprint: string) {
@@ -613,7 +613,7 @@ export async function updateSongsLeft(username: string, playlist_id?: number) {
 		default:
 		case 1:
 			const count = await getSongCountForUser(playlist_id, username);
-			quotaLeft = +conf.Karaoke.Quota.Songs - count.count;
+			quotaLeft = +conf.Karaoke.Quota.Songs - count;
 			break;
 		case 2:
 			const time = await getSongTimeSpentForUser(playlist_id,username);

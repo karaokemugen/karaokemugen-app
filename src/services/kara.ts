@@ -33,6 +33,7 @@ import {getConfig} from '../utils/config';
 import logger from 'winston';
 import {getState} from '../utils/state';
 import { removeKaraInStore, getStoreChecksum } from '../dao/dataStore';
+import { DBKara } from '../types/database/kara';
 
 export async function isAllKaras(karas: string[]): Promise<string[]> {
 	// Returns an array of unknown karaokes
@@ -41,7 +42,7 @@ export async function isAllKaras(karas: string[]): Promise<string[]> {
 	return karas.filter(kid => !allKaras.includes(kid));
 }
 
-export function translateKaraInfo(karas: Kara|Kara[], lang?: string): Kara[] {
+export function translateKaraInfo(karas: DBKara|DBKara[], lang?: string): DBKara[] {
 	// If lang is not provided, assume we're using node's system locale
 	if (!lang) lang = getState().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
@@ -153,11 +154,11 @@ export async function delayedDbRefreshViews(ttl=100) {
 	delayedDbRefreshTimeout = setTimeout(refreshAll,ttl);
 }
 
-export async function getKara(kid: string, token: Token, lang?: string): Promise<Kara[]> {
+export async function getKara(kid: string, token: Token, lang?: string): Promise<DBKara[]> {
 	profile('getKaraInfo');
 	const kara = await getKaraDB(kid, token.username, lang, token.role);
 	if (!kara) throw `Kara ${kid} unknown`;
-	let output: Kara[] = translateKaraInfo(kara, lang);
+	let output: DBKara[] = translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].kid, output[0].mediasize);
 	if (previewfile) output[0].previewfile = previewfile;
 	profile('getKaraInfo');
@@ -317,7 +318,7 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 	return ret;
 }
 
-export function formatKaraList(karaList: Kara[], lang: string, from: number, count: number): KaraList {
+export function formatKaraList(karaList: DBKara[], lang: string, from: number, count: number): KaraList {
 	karaList = translateKaraInfo(karaList, lang);
 	return {
 		infos: {

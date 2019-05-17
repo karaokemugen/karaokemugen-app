@@ -1,8 +1,9 @@
 import {db} from './database';
 import {pg as yesql} from 'yesql';
+import { DBUpvote } from '../types/database/upvote';
 const sql = require('./sql/upvote');
 
-export async function getUpvotesByPLC(plc_id: number) {
+export async function getUpvotesByPLC(plc_id: number): Promise<DBUpvote[]> {
 	const res = await db().query(sql.selectUpvoteByPLC, [plc_id]);
 	return res.rows;
 }

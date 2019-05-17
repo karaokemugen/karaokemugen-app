@@ -3,7 +3,7 @@ SELECT name,
 	urls,
 	size,
 	status,
-	pk_uuid,
+	pk_uuid as uuid,
 	started_at
 FROM download
 ORDER BY started_at DESC
@@ -14,7 +14,7 @@ SELECT name,
 	urls,
 	size,
 	status,
-	pk_uuid,
+	pk_uuid as uuid,
 	started_at
 FROM download
 WHERE status = 'DL_PLANNED'
@@ -26,7 +26,7 @@ SELECT name,
 	urls,
 	size,
 	status,
-	pk_uuid,
+	pk_uuid as uuid,
 	started_at
 FROM download
 WHERE pk_uuid = $1

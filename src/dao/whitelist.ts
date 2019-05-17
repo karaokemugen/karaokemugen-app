@@ -1,10 +1,11 @@
 import {transaction, langSelector, buildClauses, db} from './database';
 import {pg as yesql} from 'yesql';
 import { KaraParams } from '../types/kara';
+import { DBWhitelist } from '../types/database/whitelist';
 const sql = require('./sql/whitelist');
 
 
-export async function getWhitelistContents(params: KaraParams) {
+export async function getWhitelistContents(params: KaraParams): Promise<DBWhitelist[]> {
 	const filterClauses = params.filter
 		? buildClauses(params.filter)
 		: {sql: [], params: {}};

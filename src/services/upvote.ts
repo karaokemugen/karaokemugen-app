@@ -4,7 +4,6 @@ import {listUsers, updateSongsLeft} from './user';
 import {getConfig} from '../utils/config';
 import logger from 'winston';
 import {getState} from '../utils/state';
-import { PLC } from '../types/playlist';
 import { User } from '../types/user';
 
 export async function vote(plc_id: number, username: string, downvote: boolean) {
@@ -18,7 +17,7 @@ export async function addUpvote(plc_id: number, username: string) {
 		if (!plc) throw {message: 'PLC ID unknown'};
 		if (plc.username === username) throw {code: 'UPVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
-		if (userList.some((u: PLC) => u.username === username)) throw {code: 'UPVOTE_ALREADY_DONE'};
+		if (userList.some(u => u.username === username)) throw {code: 'UPVOTE_ALREADY_DONE'};
 		await insertUpvote(plc_id,username);
 		plc.upvotes++;
 		const ret = {
@@ -42,7 +41,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 		if (!plc) throw {message: 'PLC ID unknown'};
 		if (plc.username === username) throw {code: 'DOWNVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
-		const users = userList.map((u: PLC) => u.username);
+		const users = userList.map(u => u.username);
 		if (!users.includes(username)) throw {code: 'DOWNVOTE_ALREADY_DONE'};
 		await removeUpvote(plc_id, username);
 		// Karaokes are not 'un-freed' when downvoted.

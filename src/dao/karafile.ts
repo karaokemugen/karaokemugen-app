@@ -32,7 +32,7 @@ export async function integrateKaraFile(file: string) {
 	const karaFile = basename(file);
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData)
 	const karaDB = await getKara(karaData.kid, 'admin', null, 'admin');
-	if (karaDB.length > 0) {
+	if (karaDB) {
 		await editKaraInDB(karaData, { refresh: false });
 		if (karaDB[0].karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].karafile, getConfig().System.Path.Karas));
 		if (karaDB[0].mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].mediafile, getConfig().System.Path.Medias));

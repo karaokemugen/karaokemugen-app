@@ -1,6 +1,7 @@
 import {db, transaction, langSelector, buildClauses} from './database';
 import {pg as yesql} from 'yesql';
 import { FavParams } from '../types/favorites';
+import { DBKara } from '../types/database/kara';
 const sql = require('./sql/favorites');
 
 interface Filter {
@@ -10,7 +11,7 @@ interface Filter {
 	}
 }
 
-export async function selectFavorites(params: FavParams) {
+export async function selectFavorites(params: FavParams): Promise<DBKara[]> {
 	const filterClauses: Filter = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
 	filterClauses.params.username = params.username;
 	let limitClause = '';
