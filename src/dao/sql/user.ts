@@ -1,7 +1,7 @@
 // SQL queries for user manipulation
 
 export const testNickname = `
-SELECT pk_login
+SELECT pk_login AS login
 FROM users
 WHERE nickname = :nickname
 `;
