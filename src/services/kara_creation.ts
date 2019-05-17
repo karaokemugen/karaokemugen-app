@@ -21,8 +21,6 @@ import uuidV4 from 'uuid/v4';
 
 export async function editKara(kara: Kara) {
 	let newKara: NewKara;
-	console.log('Kara received');
-	console.log(kara);
 	let overwrite = false;
 	try {
 		const mediaFile = resolve(resolvedPathMedias()[0], kara.mediafile);
@@ -64,9 +62,6 @@ export async function editKara(kara: Kara) {
 		logger.error(`[KaraGen] Error while editing kara : ${err}`);
 		throw err;
 	}
-	console.log('Kara produced');
-	console.log(newKara.data);
-	console.log(newKara.fileData);
 	editKaraInStore(newKara.data.kid, newKara.fileData);
 	saveSetting('baseChecksum', getStoreChecksum());
 	newKara.data.karafile = basename(newKara.file);
@@ -87,7 +82,6 @@ export async function createKara(kara: Kara) {
 	saveSetting('baseChecksum', getStoreChecksum());
 	try {
 		newKara.data.karafile = basename(newKara.file);
-		console.log(newKara);
 		await createKaraInDB(newKara.data);
 	} catch(err) {
 		const errMsg = `.kara.json file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
@@ -144,13 +138,9 @@ async function generateKara(kara: Kara, overwrite: boolean) {
 		kara.creator.forEach((e,i) => kara.creator[i] = e.trim());
 		kara.author.forEach((e,i) => kara.author[i] = e.trim());
 		// Format dates
-		console.log('Date added: ')
-		console.log(kara.dateadded);
 		kara.dateadded
 			? kara.dateadded = new Date(kara.dateadded)
 			: kara.dateadded = new Date()
-		console.log('Date added after edit: ')
-		console.log(kara.dateadded);
 		kara.datemodif = new Date(kara.datemodif);
 		// Generate KID if not present
 		if (!kara.kid) kara.kid = uuidV4();
