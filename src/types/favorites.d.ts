@@ -16,6 +16,11 @@ export interface FavExport {
 	Favorites: FavExportContent[]
 }
 
+export interface AutoMixPlaylistInfo {
+	playlist_id: number,
+	playlist_name: string
+}
+
 export interface AutoMixParams {
 	users: string[],
 	duration: number

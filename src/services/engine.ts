@@ -20,6 +20,7 @@ import {runBaseUpdate} from '../updater/karabase_updater';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { run } from './generation';
 import {validateV3} from '../dao/karafile';
+import { DBStats } from '../types/database/database';
 
 export async function initEngine() {
 	profile('Init');
@@ -137,6 +138,6 @@ export function shutdown() {
 	exit(0);
 }
 
-export async function getKMStats() {
+export async function getKMStats(): Promise<DBStats> {
 	return await getStats();
 }

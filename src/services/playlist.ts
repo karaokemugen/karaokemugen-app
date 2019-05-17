@@ -134,16 +134,16 @@ export async function isUserAllowedToAddKara(playlist_id: number, requester: str
 	}
 }
 
-export async function findCurrentPlaylist(): Promise<number | boolean> {
+export async function findCurrentPlaylist(): Promise<number> {
 	const res = await getCurrentPlaylist();
 	if (res) return res.playlist_id;
-	return false;
+	return undefined;
 }
 
-export async function findPublicPlaylist(): Promise<number | boolean> {
+export async function findPublicPlaylist(): Promise<number> {
 	const res = await getPublicPlaylist();
 	if (res) return res.playlist_id;
-	return false;
+	return undefined;
 }
 
 async function setPlaying(plc_id: number, playlist_id: number) {
@@ -1018,54 +1018,58 @@ async function getCurrentPlaylistContents() {
 }
 
 export async function getCurrentSong(): Promise<CurrentSong> {
-	const conf = getConfig();
-	const playlist = await getCurrentPlaylistContents();
-	// Search for currently playing song
-	let updatePlayingKara = false;
-	if (!playlist.index) {
-		playlist.index = 0;
-		updatePlayingKara = true;
-	}
-	const kara = playlist.content[playlist.index];
-	if (!kara) throw 'No karaoke found in playlist object';
-	// If there's no kara with a playing flag, we set the first one in the playlist
-	if (updatePlayingKara) await setPlaying(kara.playlistcontent_id,playlist.id);
-	// Let's add details to our object so the player knows what to do with it.
-	kara.playlist_id = playlist.id;
-	let requester: string;
-	let avatarfile: string;
-	if (conf.Karaoke.Display.Nickname) {
-		// When a kara has been added by admin/import, do not display it on screen.
-		// Escaping {} because it'll be interpreted as ASS tags below.
-		kara.nickname = kara.nickname.replace(/[\{\}]/g,'');
-		requester = `${i18n.__('REQUESTED_BY')} ${kara.nickname}`;
-		// Get user avatar
-		const user = await findUserByName(kara.username);
-		const state = getState();
-		avatarfile = resolve(state.appPath, conf.System.Path.Avatars, user.avatar_file);
-	} else {
-		requester = '';
-	}
-	if (kara.title) kara.title = ` - ${kara.title}`;
-	// If series is empty, pick singer information instead
+	try {
+		const conf = getConfig();
+		const playlist = await getCurrentPlaylistContents();
+		// Search for currently playing song
+		let updatePlayingKara = false;
+		if (!playlist.index) {
+			playlist.index = 0;
+			updatePlayingKara = true;
+		}
+		const kara = playlist.content[playlist.index];
+		if (!kara) throw 'No karaoke found in playlist object';
+		// If there's no kara with a playing flag, we set the first one in the playlist
+		if (updatePlayingKara) await setPlaying(kara.playlistcontent_id,playlist.id);
+		// Let's add details to our object so the player knows what to do with it.
+		kara.playlist_id = playlist.id;
+		let requester: string;
+		let avatarfile: string;
+		if (conf.Karaoke.Display.Nickname) {
+			// When a kara has been added by admin/import, do not display it on screen.
+			// Escaping {} because it'll be interpreted as ASS tags below.
+			kara.nickname = kara.nickname.replace(/[\{\}]/g,'');
+			requester = `${i18n.__('REQUESTED_BY')} ${kara.nickname}`;
+			// Get user avatar
+			const user = await findUserByName(kara.username);
+			const state = getState();
+			avatarfile = resolve(state.appPath, conf.System.Path.Avatars, user.avatar_file);
+		} else {
+			requester = '';
+		}
+		if (kara.title) kara.title = ` - ${kara.title}`;
+		// If series is empty, pick singer information instead
 
-	let series = kara.serie;
-	if (!kara.serie) series = kara.singers.map(s => s.name).join(', ');
+		let series = kara.serie;
+		if (!kara.serie) series = kara.singers.map(s => s.name).join(', ');
 
-	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-	let songorder: string = `${kara.songorder}`;
-	if (!kara.songorder || kara.songorder === 0) songorder = '';
-	//If karaoke is present in the public playlist, we're deleting it.
-	if (conf.Playlist.RemovePublicOnPlay) {
-		const playlist_id = getState().publicPlaylistID;
-		const plc = await getPLCByKIDUser(kara.kid, kara.username, playlist_id);
-		if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id], playlist_id);
+		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
+		let songorder: string = `${kara.songorder}`;
+		if (!kara.songorder || kara.songorder === 0) songorder = '';
+		//If karaoke is present in the public playlist, we're deleting it.
+		if (conf.Playlist.RemovePublicOnPlay) {
+			const playlist_id = getState().publicPlaylistID;
+			const plc = await getPLCByKIDUser(kara.kid, kara.username, playlist_id);
+			if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id], playlist_id);
+		}
+		const currentSong: CurrentSong = {...kara}
+		// Construct mpv message to display.
+		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' + i18n.__(kara.songtypes[0].name+'_SHORT')+songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
+		currentSong.avatar = avatarfile;
+		return currentSong;
+	} catch(err) {
+		logger.error(`[Playlist] Error selecting current song to play : ${err}`);
 	}
-	const currentSong: CurrentSong = {...kara}
-	// Construct mpv message to display.
-	currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' + i18n.__(kara.songtype[0].name+'_SHORT')+songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
-	currentSong.avatar = avatarfile;
-	return currentSong;
 }
 
 export async function buildDummyPlaylist() {

@@ -606,7 +606,7 @@ async function load(file: string, mode: string, options: string[]) {
 	try {
 		await player.load(file, mode, options);
 	} catch(err) {
-		logger.error(`[mpv] Error loading file ${file} : ${err}`);
+		logger.error(`[mpv] Error loading file ${file} : ${JSON.stringify(err)}`);
 		throw Error(err);
 	}
 	if (monitorEnabled) try {

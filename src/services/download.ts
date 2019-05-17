@@ -18,7 +18,8 @@ import { emitWS } from '../webapp/frontend';
 import got from 'got';
 import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC } from '../types/download';
 import { DownloadItem } from '../types/downloader';
-import { KaraParams } from '../types/kara';
+import { KaraParams, KaraList } from '../types/kara';
+import { DBDownload, DBDownloadBLC } from '../types/database/download';
 
 const queueOptions = {
 	id: 'uuid',
@@ -267,11 +268,11 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 	}
 }
 
-export async function getDownloads() {
+export async function getDownloads(): Promise<DBDownload[]> {
 	return await selectDownloads();
 }
 
-export async function getDownload(uuid: string) {
+export async function getDownload(uuid: string): Promise<DBDownload> {
 	return await selectDownload(uuid);
 }
 
@@ -305,7 +306,7 @@ export async function wipeDownloads() {
 	return await emptyDownload();
 }
 
-export async function getDownloadBLC() {
+export async function getDownloadBLC(): Promise<DBDownloadBLC[]> {
 	return await selectDownloadBLC();
 }
 
@@ -335,7 +336,7 @@ export async function emptyDownloadBLC() {
 	return await truncateDownloadBLC();
 }
 
-export async function getRemoteKaras(instance: string, params: KaraParams) {
+export async function getRemoteKaras(instance: string, params: KaraParams): Promise<KaraList> {
 	const queryParams = new URLSearchParams([
 		['filter', params.filter],
 		['size', params.size + ''],
