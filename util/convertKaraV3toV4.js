@@ -84,10 +84,10 @@ async function main() {
 		o.medias[0].default = true;
 		content.subfile !== 'dummy.ass'
 			? o.medias[0].lyrics = [{
-			filename: content.subfile,
-			default: true,
-			version: 'Default'
-		}]
+				filename: content.subfile,
+				default: true,
+				version: 'Default'
+			}]
 			: o.medias[0].lyrics = [];
 		o.data.title = content.title;
 

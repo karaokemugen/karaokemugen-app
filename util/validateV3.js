@@ -10,6 +10,16 @@ const parallel = require('async-await-parallel');
 const asyncReadFile = (...args) => passThroughFunction(readFile, args);
 const asyncReadDir = (...args) => passThroughFunction(readdir, args);
 const asyncWriteFile = (...args) => passThroughFunction(writeFile, args);
+const merge = require('lodash.merge');
+const defaults = {
+	System: {
+		Path: {
+			Karas: ['app/data/karaokes'],
+			Lyrics: ['app/data/lyrics'],
+			Series: ['app/data/series']
+		}
+	}
+};
 
 const passThroughFunction = (fn, args) => {
 	if(!Array.isArray(args)) args = [args];
@@ -26,7 +36,7 @@ main().then((() => console.log('Finished validation'))).catch((err) => console.l
 
 async function main() {
 	const config = await asyncReadFile('config.yml', 'utf-8');
-	const conf = safeLoad(config);
+	const conf = merge(defaults, safeLoad(config));
 	const karaPath = resolve(appPath, conf.System.Path.Karas[0], '../karas');
 	const karaFiles = await asyncReadDir(karaPath);
 	const karaPromises = [];
