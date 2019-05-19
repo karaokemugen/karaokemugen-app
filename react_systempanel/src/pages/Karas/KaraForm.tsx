@@ -54,7 +54,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 		if (!this.props.kara.dateadded) {
 			this.props.kara.dateadded = new Date();
-			localStorage.getItem('username') !== 'admin' ? state.authors = [localStorage.getItem('username')] : state.authors = [];
+			localStorage.getItem('username') !== 'admin' ? state.authors = [localStorage.getItem('username').split('@')[0]] : state.authors = [];
 		}
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
 		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singers.includes('NO_TAG')) state.singers = this.props.kara.singers;
