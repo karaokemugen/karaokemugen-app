@@ -53,7 +53,11 @@ export async function editKara(kara: Kara) {
 		const newMediaFile = resolve(resolvedPathMedias()[0],newKara.data.mediafile);
 
 		//Removing previous files if they're different from the new ones (name changed, etc.)
-		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) asyncUnlink(karaFile);
+		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) {
+			asyncUnlink(karaFile);
+			// Remove karav3 file
+			asyncUnlink(replaceExt(karaFile, '.kara'));
+		}
 		if (newSubFile.toLowerCase() !== subFile.toLowerCase() && subFile) {
 			if (await asyncExists(subFile)) asyncUnlink(subFile);
 		}
