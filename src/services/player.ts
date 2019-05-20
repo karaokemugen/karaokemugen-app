@@ -13,9 +13,9 @@ const sleep = promisify(setTimeout);
 
 let commandInProgress = false;
 
-async function getPlayingSong(now: boolean) {
+async function playCurrentSong(now: boolean) {
 	if (!getState().player.playing || now) {
-		profile('getPlayingSong');
+		profile('playCurrentSong');
 		try {
 			const kara = await getCurrentSong();
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
@@ -46,7 +46,7 @@ async function getPlayingSong(now: boolean) {
 				stopPlayer(true);
 			}
 		} finally {
-			profile('getPlayingSong');
+			profile('playCurrentSong');
 		}
 	}
 }
@@ -145,7 +145,7 @@ export async function playPlayer(now?: boolean) {
 	if (state.status === 'stop' || now) {
 		// Switch to playing mode and ask which karaoke to play next
 		try {
-			await getPlayingSong(now);
+			await playCurrentSong(now);
 		} catch(err) {
 			throw err;
 		}

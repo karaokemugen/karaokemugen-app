@@ -379,7 +379,7 @@ describe('Playlists', function() {
 	var new_playlist_public_id;
 	var plc_id;
 	var playlist = 1;
-	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 to playlist 1', function() {
+	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 to playlist '+playlist, function() {
 		var data = {
 			'kid': ['c28c8739-da02-49b4-889e-b15d1e9b2139'],
 			'requestedby': 'Test'
@@ -396,7 +396,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 again to playlist 1 to see if it fails', function() {
+	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 again to playlist '+playlist+' to see if it fails', function() {
 		var data = {
 			'kid': ['c28c8739-da02-49b4-889e-b15d1e9b2139'],
 			'requestedby': 'Test'

@@ -1,5 +1,4 @@
 //Utils
-import {uuidRegexp} from './constants';
 import {getStats} from '../dao/database';
 import {getConfig} from '../utils/config';
 import {now} from '../utils/date';
@@ -67,7 +66,10 @@ import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
 	getSongCountForUser,
 	addKaraToRequests
 } from '../dao/kara';
-import { Playlist, PLC, Pos, PlaylistOpts, PlaylistExport, PLCEditParams } from '../types/playlist';
+import { Playlist, PLC, Pos, PlaylistOpts, PlaylistExport, PLCEditParams, CurrentSong } from '../types/playlist';
+import { DBPLC } from '../types/database/playlist';
+import { bools } from './constants';
+import { check } from '../utils/validators';
 
 let databaseBusy = false;
 
@@ -109,7 +111,7 @@ export async function isUserAllowedToAddKara(playlist_id: number, requester: str
 		limit = conf.Karaoke.Quota.Songs;
 		try {
 			const count = await getSongCountForUser(playlist_id,user.login);
-			if (count.count >= limit) {
+			if (count >= limit) {
 				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit})`);
 				return false;
 			}
@@ -120,10 +122,10 @@ export async function isUserAllowedToAddKara(playlist_id: number, requester: str
 	case 2:
 		limit = conf.Karaoke.Quota.Time;
 		try {
-			const time = await getSongTimeSpentForUser(playlist_id,user.login);
-			if (!time.timeSpent) time.timeSpent = 0;
-			if ((limit - time.timeSpent - duration) < 0) {
-				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit - time.timeSpent} seconds of time credit left and tried to add ${duration} seconds)`);
+			let time = await getSongTimeSpentForUser(playlist_id,user.login);
+			if (!time) time = 0;
+			if ((limit - time - duration) < 0) {
+				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`);
 				return false;
 			}
 			return true;
@@ -133,16 +135,16 @@ export async function isUserAllowedToAddKara(playlist_id: number, requester: str
 	}
 }
 
-export async function findCurrentPlaylist(): Promise<number | boolean> {
+export async function findCurrentPlaylist(): Promise<number> {
 	const res = await getCurrentPlaylist();
 	if (res) return res.playlist_id;
-	return false;
+	return undefined;
 }
 
-export async function findPublicPlaylist(): Promise<number | boolean> {
+export async function findPublicPlaylist(): Promise<number> {
 	const res = await getPublicPlaylist();
 	if (res) return res.playlist_id;
-	return false;
+	return undefined;
 }
 
 async function setPlaying(plc_id: number, playlist_id: number) {
@@ -313,7 +315,7 @@ export async function getPlaylistInfo(playlist_id: number, token?: Token) {
 	const pl = await getPLInfo(playlist_id);
 	if (token) {
 		if (token.role === 'admin' || pl.flag_visible) return pl;
-		return false;
+		return null;
 	}
 	return pl;
 }
@@ -450,13 +452,13 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		const plContents = await getPlaylistKaraIDs(playlist_id);
 		// Making a unique ID depending on if we're in public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not
-		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it wont count
+		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it won't count
 		// If no song is currently playing, plContentsBeforePlay returns all songs in playlist.
 		const playingObject = getPlayingPos(plContents);
 		const playingPos = playingObject
 			? playingObject.plc_id_pos
 			: 0;
-		const plContentsBeforePlay = plContents.filter((plc: PLC) => plc.pos > playingPos);
+		const plContentsBeforePlay = plContents.filter((plc: PLC) => plc.pos >= playingPos);
 		if (conf.Playlist.AllowDuplicates) {
 			if (!pl.flag_public) {
 				plContentsBeforePlay.forEach((p: PLC) => p.unique_id = `${p.kid}_${p.username}`);
@@ -511,7 +513,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 				pos = -1;
 			} else {
 				// Everyone is in the queue, we will leave an empty spot for each user and place ourselves next.
-				pos = Math.min(playlistMaxPos.maxpos + 1, userMaxPosition.maxpos + numUsersInPlaylist);
+				pos = Math.min(playlistMaxPos + 1, userMaxPosition + numUsersInPlaylist);
 			}
 		}
 		// Find out position of currently playing karaoke
@@ -520,7 +522,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		if (pos) {
 			await shiftPosInPlaylist(playlist_id, pos, karas.length);
 		} else {
-			pos = playlistMaxPos.maxpos + 1;
+			pos = playlistMaxPos + 1;
 		}
 		for (const i in karaList) {
 			karaList[i].pos = pos + +i;
@@ -530,8 +532,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		// Checking if a flag_playing is present inside the playlist.
 		// If not, we'll have to set the karaoke we just added as the currently playing one. updatePlaylistDuration is done by setPlaying already.
 		if (!plContents.some((plc: PLC) => plc.flag_playing)) {
-			const plc = await getPLCIDByDate(playlist_id, date_add);
-			await setPlaying(plc.playlistcontent_id, playlist_id);
+			const plc_id = await getPLCIDByDate(playlist_id, date_add);
+			await setPlaying(plc_id, playlist_id);
 		} else {
 			await updatePlaylistDuration(playlist_id);
 		}
@@ -605,7 +607,7 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 			plcList[index].playlist_id = playlist_id;
 		}
 		// Remove karas already in playlist
-		plcList = plcList.filter(plc => !playlist.includes(plc.kid));
+		plcList = plcList.filter(plc => !playlist.map(e => e.kid).includes(plc.kid));
 		// If pos is provided, we need to update all karas above that and add
 		// karas.length to the position
 		// If pos is not provided, we need to get the maximum position in the PL
@@ -613,8 +615,8 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 		if (pos) {
 			await shiftPosInPlaylist(playlist_id, pos, plcList.length);
 		} else {
-			const res = await getMaxPosInPlaylist(playlist_id);
-			let startpos = res.maxpos + 1;
+			const maxpos = await getMaxPosInPlaylist(playlist_id);
+			let startpos = maxpos + 1;
 			for (const i in plcList) {
 				plcList[i].pos = startpos + +i;
 			};
@@ -748,6 +750,25 @@ export async function exportPlaylist(playlist_id: number) {
 	}
 }
 
+const PLImportConstraints = {
+	'Header.description': {presence: true},
+	'Header.version': {numericality: {onlyInteger: true, equalTo: 4}},
+	'PlaylistInformation.created_at': {presence: {allowEmpty: false}},
+	'PlaylistInformation.modified_at': {presence: {allowEmpty: false}},
+	'PlaylistInformation.name': {presence: {allowEmpty: false}},
+	'PlaylistInformation.flag_visible': {inclusion: bools},
+	PlaylistContents: {PLCsValidator: true}
+}
+
+export const PLCImportConstraints = {
+	kid: {presence: true, uuidArrayValidator: true},
+	created_at: {presence: {allowEmpty: false}},
+	flag_playing: {inclusion: bools},
+	pos: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	nickname: {presence: {allowEmpty: false}},
+	username: {presence: {allowEmpty: false}}
+}
+
 export async function importPlaylist(playlist: any, username: string, playlist_id?: number) {
 	// Check if format is valid :
 	// Header must contain :
@@ -766,44 +787,29 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
 	try {
-		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist,null,2)}`);
-		let playingKara: PLC;
-		if (!playlist.Header) throw 'No Header section';
-		if (playlist.Header.description !== 'Karaoke Mugen Playlist File') throw 'Not a .kmplaylist file';
-		if (playlist.Header.version > 4) throw `Cannot import this version (${playlist.Header.version})`;
-		if (!playlist.PlaylistContents) throw 'No PlaylistContents section';
-		if (!playlist.PlaylistInformation) throw 'No PlaylistInformation section';
-		if (isNaN(playlist.PlaylistInformation.created_at) && !Date.parse(playlist.PlaylistInformation.created_at)) throw 'Creation time is not valid';
-		if (isNaN(playlist.PlaylistInformation.modified_at) && !Date.parse(playlist.PlaylistInformation.modified_at)) throw 'Modification time is not valid';
-		if (playlist.PlaylistInformation.flag_visible !== true &&
-		playlist.PlaylistInformation.flag_visible !== false) throw 'Visible flag must be boolean';
-		if (!playlist.PlaylistInformation.name) throw 'Playlist name must not be empty';
-		// Convert unix timestamps to JS Dates
-		if (!isNaN(playlist.PlaylistInformation.created_at)) playlist.PlaylistInformation.created_at = new Date(+playlist.PlaylistInformation.created_at * 1000);
-		if (!isNaN(playlist.PlaylistInformation.modified_at)) playlist.PlaylistInformation.modified_at = new Date(+playlist.PlaylistInformation.modified_at * 1000);
+		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist, null, 2)}`);
+		const validationErrors = check(playlist, PLImportConstraints)
+		if (validationErrors) throw `Playlist file is invalid : ${JSON.stringify(validationErrors)}`;
+		let playingKara: PLC = {
+			playlist_id: null
+		};
 		let flag_playingDetected = false;
-		if (playlist.PlaylistContents) {
-			for (const index in playlist.PlaylistContents) {
-				const kara = playlist.PlaylistContents[index];
-				if (!new RegExp(uuidRegexp).test(kara.kid)) throw 'KID is not a valid UUID!';
-				if (isNaN(kara.created_at) && !Date.parse(kara.created_at)) throw 'Karaoke added time is not a valid date';
-				if (kara.flag_playing === true) {
-					if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
-					flag_playingDetected = true;
-					playingKara.kid = kara.kid;
-					playingKara.username = kara.username;
-				}
-				if (!isNaN(kara.created_at)) playlist.PlaylistContents[index].created_at = new Date(+kara.created_at * 1000);
-				if (isNaN(kara.pos)) throw 'Position must be a number';
-				if (!kara.nickname) throw 'All karaokes must have a nickname associated with them';
-				const user = await findUserByName(kara.username);
-				if (!user) {
-					playlist.PlaylistContents[index].username = 'admin';
-					const admin: User = await findUserByName('admin');
-					playlist.PlaylistContents[index].nickname = admin.nickname;
-				}
-			};
-		}
+		for (const index in playlist.PlaylistContents) {
+			const kara = playlist.PlaylistContents[index];
+			if (kara.flag_playing === true) {
+				if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
+				flag_playingDetected = true;
+				playingKara.kid = kara.kid;
+				playingKara.username = kara.username;
+			}
+			const user = await findUserByName(kara.username);
+			if (!user) {
+				// If user isn't found locally, replacing it with admin user
+				playlist.PlaylistContents[index].username = 'admin';
+				const admin: User = await findUserByName('admin');
+				playlist.PlaylistContents[index].nickname = admin.nickname;
+			}
+		};
 		// Validations done. First creating playlist.
 		try {
 			if (!playlist_id) {
@@ -882,7 +888,7 @@ export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: bool
 	}
 }
 
-function smartShuffle(playlist: PLC[]) {
+function smartShuffle(playlist: DBPLC[]) {
 	let userShuffleBoolean = false; // boolean to add a shuffle condition if the number of user is high enough
 	playlist = shuffle(playlist);
 	let verificator = 0;
@@ -1014,51 +1020,59 @@ async function getCurrentPlaylistContents() {
 	};
 }
 
-export async function getCurrentSong() {
-	const conf = getConfig();
-	const playlist = await getCurrentPlaylistContents();
-	// Search for currently playing song
-	let updatePlayingKara = false;
-	if (!playlist.index) {
-		playlist.index = 0;
-		updatePlayingKara = true;
-	}
-	const kara = playlist.content[playlist.index];
-	if (!kara) throw 'No karaoke found in playlist object';
-	// If there's no kara with a playing flag, we set the first one in the playlist
-	if (updatePlayingKara) await setPlaying(kara.playlistcontent_id,playlist.id);
-	// Let's add details to our object so the player knows what to do with it.
-	kara.playlist_id = playlist.id;
-	let requester: string;
-	if (conf.Karaoke.Display.Nickname) {
-		// When a kara has been added by admin/import, do not display it on screen.
-		// Escaping {} because it'll be interpreted as ASS tags below.
-		kara.nickname = kara.nickname.replace(/[\{\}]/g,'');
-		requester = `${i18n.__('REQUESTED_BY')} ${kara.nickname}`;
-		// Get user avatar
-		const user = await findUserByName(kara.username);
-		const state = getState();
-		kara.avatar = resolve(state.appPath, conf.System.Path.Avatars, user.avatar_file);
-	} else {
-		requester = '';
-	}
-	if (kara.title) kara.title = ` - ${kara.title}`;
-	// If series is empty, pick singer information instead
+export async function getCurrentSong(): Promise<CurrentSong> {
+	try {
+		const conf = getConfig();
+		const playlist = await getCurrentPlaylistContents();
+		// Search for currently playing song
+		let updatePlayingKara = false;
+		if (!playlist.index) {
+			playlist.index = 0;
+			updatePlayingKara = true;
+		}
+		const kara = playlist.content[playlist.index];
+		if (!kara) throw 'No karaoke found in playlist object';
+		// If there's no kara with a playing flag, we set the first one in the playlist
+		if (updatePlayingKara) await setPlaying(kara.playlistcontent_id,playlist.id);
+		// Let's add details to our object so the player knows what to do with it.
+		kara.playlist_id = playlist.id;
+		let requester: string;
+		let avatarfile: string;
+		if (conf.Karaoke.Display.Nickname) {
+			// When a kara has been added by admin/import, do not display it on screen.
+			// Escaping {} because it'll be interpreted as ASS tags below.
+			kara.nickname = kara.nickname.replace(/[\{\}]/g,'');
+			requester = `${i18n.__('REQUESTED_BY')} ${kara.nickname}`;
+			// Get user avatar
+			const user = await findUserByName(kara.username);
+			const state = getState();
+			avatarfile = resolve(state.appPath, conf.System.Path.Avatars, user.avatar_file);
+		} else {
+			requester = '';
+		}
+		if (kara.title) kara.title = ` - ${kara.title}`;
+		// If series is empty, pick singer information instead
 
-	let series = kara.serie;
-	if (!kara.serie) series = kara.singers.map(s => s.name).join(', ');
+		let series = kara.serie;
+		if (!kara.serie) series = kara.singers.map(s => s.name).join(', ');
 
-	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-	if (!kara.songorder || kara.songorder === 0) kara.songorder = '';
-	//If karaoke is present in the public playlist, we're deleting it.
-	if (conf.Playlist.RemovePublicOnPlay) {
-		const playlist_id = getState().publicPlaylistID;
-		const plc = await getPLCByKIDUser(kara.kid,kara.username, playlist_id);
-		if (plc) await deleteKaraFromPlaylist(plc.playlistcontent_id, playlist_id);
+		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
+		let songorder: string = `${kara.songorder}`;
+		if (!kara.songorder || kara.songorder === 0) songorder = '';
+		//If karaoke is present in the public playlist, we're deleting it.
+		if (conf.Playlist.RemovePublicOnPlay) {
+			const playlist_id = getState().publicPlaylistID;
+			const plc = await getPLCByKIDUser(kara.kid, kara.username, playlist_id);
+			if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id], playlist_id);
+		}
+		const currentSong: CurrentSong = {...kara}
+		// Construct mpv message to display.
+		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' + i18n.__(kara.songtypes[0].name+'_SHORT')+songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
+		currentSong.avatar = avatarfile;
+		return currentSong;
+	} catch(err) {
+		logger.error(`[Playlist] Error selecting current song to play : ${err}`);
 	}
-	// Construct mpv message to display.
-	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' + i18n.__(kara.songtypes[0].name+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
-	return kara;
 }
 
 export async function buildDummyPlaylist() {

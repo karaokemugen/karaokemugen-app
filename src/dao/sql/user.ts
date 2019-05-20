@@ -1,7 +1,7 @@
 // SQL queries for user manipulation
 
 export const testNickname = `
-SELECT pk_login
+SELECT pk_login AS login
 FROM users
 WHERE nickname = :nickname
 `;
@@ -28,7 +28,7 @@ WHERE u.pk_login = :username
 `;
 
 export const selectRandomGuestName = `
-SELECT pk_login
+SELECT pk_login AS login
 FROM users
 WHERE type = 2
 	AND flag_online = FALSE
@@ -52,8 +52,7 @@ SELECT
 	u.pk_login AS login,
 	u.nickname AS nickname,
 	u.last_login_at AS last_login_at,
-	u.flag_online AS flag_online,
-	u.type AS type
+	u.flag_online AS flag_online
 FROM users AS u
 ORDER BY u.flag_online DESC, u.nickname
 `;

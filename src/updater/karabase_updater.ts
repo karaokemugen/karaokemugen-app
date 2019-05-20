@@ -104,7 +104,7 @@ async function compareBases() {
 	const karasMinePath = resolve(state.appPath, conf.System.Path.Karas[0]);
 	const archive = await decompressBase();
 	const archiveWOExt = basename(archive, '.zip');
-	const karasBasePath = resolve(state.appPath, conf.System.Path.Temp, 'newbase', archiveWOExt,'karas');
+	const karasBasePath = resolve(state.appPath, conf.System.Path.Temp, 'newbase', archiveWOExt,'karaokes');
 	const lyricsBasePath = resolve(state.appPath, conf.System.Path.Temp, 'newbase', archiveWOExt, 'lyrics');
 	const seriesBasePath = resolve(state.appPath, conf.System.Path.Temp, 'newbase', archiveWOExt, 'series');
 	logger.info('[Updater] Comparing your base with the current one');

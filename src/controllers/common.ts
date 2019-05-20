@@ -1,5 +1,3 @@
-export const bools = [true, false, 'true', 'false', undefined];
-
 export function errMessage(code: any, message?: string, args?: any) {
 	return {
 		code: code,

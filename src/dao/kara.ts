@@ -8,12 +8,13 @@ import {now} from '../utils/date';
 import { Kara, KaraParams } from '../types/kara';
 import { Role } from '../types/user';
 import {PLC} from '../types/playlist';
+import { DBYear, DBKara, DBKaraHistory, DBKaraBase } from '../types/database/kara';
 
 const sql = require('./sql/kara');
 
-export async function getSongCountForUser(playlist_id: number, username: string) {
+export async function getSongCountForUser(playlist_id: number, username: string): Promise<number> {
 	const res = await db().query(sql.getSongCountPerUser, [playlist_id, username]);
-	return res.rows[0];
+	return res.rows[0].count;
 }
 
 export async function refreshKaras() {
@@ -29,7 +30,7 @@ export async function refreshYears() {
 }
 
 
-export async function getYears() {
+export async function getYears(): Promise<DBYear[]> {
 	const res = await db().query(sql.getYears);
 	return res.rows;
 }
@@ -67,7 +68,7 @@ export async function addKara(kara: Kara) {
 	}));
 }
 
-export async function getSongTimeSpentForUser(playlist_id: number, username: string) {
+export async function getSongTimeSpentForUser(playlist_id: number, username: string): Promise<number> {
 	const res = await db().query(sql.getTimeSpentPerUser,[
 		playlist_id,
 		username
@@ -75,7 +76,7 @@ export async function getSongTimeSpentForUser(playlist_id: number, username: str
 	return res.rows[0].time_spent;
 }
 
-export async function getKara(kid: string, username: string, lang: string, role: Role): Promise<any[]> {
+export async function getKara(kid: string, username: string, lang: string, role: Role): Promise<DBKara> {
 	const res = await selectAllKaras({
 		username: username,
 		filter: null,
@@ -84,15 +85,15 @@ export async function getKara(kid: string, username: string, lang: string, role:
 		modeValue: kid,
 		admin: role === 'admin'
 	 });
-	return res;
+	return res[0];
 }
 
 
-export async function deleteKara(kid) {
+export async function deleteKara(kid: string) {
 	await db().query(sql.deleteKara, [kid]);
 }
 
-export async function selectAllKaras(params: KaraParams) {
+export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	let filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
 	let typeClauses = params.mode ? buildTypeClauses(params.mode, params.modeValue) : '';
 	// Hide blacklisted songs if not admin
@@ -133,7 +134,7 @@ export async function selectAllKaras(params: KaraParams) {
 	return res.rows;
 }
 
-export async function getKaraHistory() {
+export async function getKaraHistory(): Promise<DBKaraHistory[]> {
 	const res = await db().query(sql.getKaraHistory);
 	return res.rows;
 }
@@ -142,12 +143,12 @@ export async function updateFreeOrphanedSongs(expireTime: number) {
 	return await db().query(sql.updateFreeOrphanedSongs, [new Date(expireTime * 1000)]);
 }
 
-export async function getKaraMini(kid: string) {
+export async function getKaraMini(kid: string): Promise<DBKaraBase> {
 	const res = await db().query(sql.getKaraMini, [kid]);
 	return res.rows[0];
 }
 
-export async function getASS(sub: string) {
+export async function getASS(sub: string): Promise<string> {
 	const conf = getConfig();
 	const subfile = await resolveFileInDirs(sub, conf.System.Path.Lyrics);
 	if (await asyncExists(subfile)) return await asyncReadFile(subfile, 'utf-8');
@@ -176,13 +177,13 @@ export async function resetViewcounts() {
 	return await db().query(sql.resetViewcounts);
 }
 
-export async function selectAllKIDs() {
+export async function selectAllKIDs(): Promise<string[]> {
 	const res = await db().query(sql.selectAllKIDs);
 	return res.rows.map((k: Kara) => k.kid);
 }
 
 export async function addKaraToPlaylist(karaList: PLC[]) {
-	const karas = karaList.map(kara => ([
+	const karas: any[][] = karaList.map(kara => ([
 		kara.playlist_id,
 		kara.username,
 		kara.nickname,

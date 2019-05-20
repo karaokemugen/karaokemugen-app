@@ -17,11 +17,11 @@ import {resolve} from 'path';
 import {profile} from '../utils/logger';
 import {formatKaraList} from './kara';
 import {uuidRegexp} from './constants';
-import {KaraParams} from '../types/kara';
+import {KaraParams, KaraList} from '../types/kara';
 import {BLC} from '../types/blacklist';
 import {isNumber} from '../utils/validators';
 
-export async function getBlacklist(params: KaraParams) {
+export async function getBlacklist(params: KaraParams): Promise<KaraList> {
 	profile('getBL');
 	const pl = await getBLContents(params);
 	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.lang, params.from, pl.length);
@@ -29,7 +29,7 @@ export async function getBlacklist(params: KaraParams) {
 	return ret;
 }
 
-export async function getBlacklistCriterias(lang?: string) {
+export async function getBlacklistCriterias(lang?: string): Promise<BLC[]> {
 	try {
 		profile('getBLC');
 		const blcs = await getBLC();
@@ -45,7 +45,7 @@ export async function generateBlacklist() {
 	return await generateBL();
 }
 
-async function isBLCriteria(blc_id: number) {
+async function isBLCriteria(blc_id: number): Promise<boolean> {
 	return await isBLC(blc_id);
 }
 
@@ -69,7 +69,7 @@ export async function editBlacklistCriteria(blc: BLC) {
 	profile('editBLC');
 }
 
-async function BLCgetTagName(blcList: BLC[]) {
+async function BLCgetTagName(blcList: BLC[]): Promise<BLC[]> {
 	for (const index in blcList) {
 		const res = await getTag(blcList[index].value);
 		if (res) blcList[index].uniquevalue = res.name;
@@ -115,7 +115,7 @@ export async function addBlacklistCriteria(type: number, value: any) {
 	}
 }
 
-async function translateBlacklistCriterias(blcList: BLC[], lang: string) {
+async function translateBlacklistCriterias(blcList: BLC[], lang: string): Promise<BLC[]> {
 	// If lang is not provided, assume we're using node's system locale
 	if (!lang) lang = getState().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
@@ -140,7 +140,6 @@ async function translateBlacklistCriterias(blcList: BLC[], lang: string) {
 		if (blcList[i].type >= 2 && blcList[i].type <= 999) {
 			// We need to get the tag name and then translate it if needed
 			const tag = await getTag(blcList[i].value);
-			if (typeof tag.name !== 'string') throw 'Tag name is not a string : '+JSON.stringify(tag);
 			if (tag.name.startsWith('TAG_')) {
 				blcList[i].value_i18n = i18n.__(tag.name);
 			} else {

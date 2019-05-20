@@ -3,9 +3,10 @@ import {join} from 'path';
 import {getSupportedLangs, getLanguage} from 'iso-countries-languages';
 import {getAllTags} from '../dao/tag';
 import {profile} from '../utils/logger';
-import { Tag, TagParams } from '../types/tag';
+import { TagParams } from '../types/tag';
+import { DBTag } from '../types/database/tag';
 
-export function translateTags(taglist: Tag[]) {
+export function translateTags(taglist: DBTag[]) {
 	const translations = require(join(__dirname,'../locales/'));
 	// We need to read the detected locale in ISO639-1
 	taglist.forEach((tag, index) => {
@@ -29,7 +30,7 @@ export function translateTags(taglist: Tag[]) {
 	return taglist;
 }
 
-export async function formatTagList(tagList: Tag[], from: number, count: number) {
+export async function formatTagList(tagList: DBTag[], from: number, count: number) {
 	tagList = await translateTags(tagList);
 	return {
 		infos: {

@@ -2,6 +2,7 @@ import {langSelector, buildClauses, db, transaction} from './database';
 import {pg as yesql} from 'yesql';
 import {BLC} from '../types/blacklist';
 import {KaraParams} from '../types/kara';
+import { DBBLC, DBBlacklist } from '../types/database/blacklist';
 const sql = require('./sql/blacklist');
 
 export async function emptyBlacklistCriterias() {
@@ -12,7 +13,7 @@ export async function generateBlacklist() {
 	return await db().query(sql.generateBlacklist);
 }
 
-export async function getBlacklistCriterias() {
+export async function getBlacklistCriterias(): Promise<DBBLC[]> {
 	const res = await db().query(sql.getBlacklistCriterias);
 	return res.rows;
 }
@@ -21,7 +22,7 @@ export async function deleteBlacklistCriteria(blc_id: number) {
 	return await db().query(sql.deleteBlacklistCriteria, [blc_id]);
 }
 
-export async function getBlacklistContents(params: KaraParams) {
+export async function getBlacklistContents(params: KaraParams): Promise<DBBlacklist[]> {
 	const filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
 	let limitClause = '';
 	let offsetClause = '';
@@ -33,7 +34,7 @@ export async function getBlacklistContents(params: KaraParams) {
 	return res.rows;
 }
 
-export async function isBLCriteria(blc_id: number) {
+export async function isBLCriteria(blc_id: number): Promise<boolean> {
 	const res = await db().query(sql.isBLCriteria, [blc_id]);
 	return res.rows.length > 0;
 }

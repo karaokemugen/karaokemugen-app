@@ -19,6 +19,8 @@ import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {runBaseUpdate} from '../updater/karabase_updater';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { run } from './generation';
+import {validateV3} from '../dao/karafile';
+import { DBStats } from '../types/database/database';
 
 export async function initEngine() {
 	profile('Init');
@@ -39,6 +41,15 @@ export async function initEngine() {
 		}
 	} catch (err) {
 		logger.error(`[Engine] Update failed : ${err}`);
+		await exit(1);
+	}
+	if (state.opt.validateV3) try {
+		logger.info('[Engine] V3 Validation in progress...');
+		await validateV3();
+		logger.info('[Engine] V3 Validation OK');
+		await exit(0);
+	} catch(err) {
+		logger.error(`[Engine] V3 Validation error : ${err}`);
 		await exit(1);
 	}
 	if (state.opt.validate) try {
@@ -127,6 +138,6 @@ export function shutdown() {
 	exit(0);
 }
 
-export async function getKMStats() {
+export async function getKMStats(): Promise<DBStats> {
 	return await getStats();
 }

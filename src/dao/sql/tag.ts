@@ -1,9 +1,9 @@
 // SQL for tags
 
 export const getTag = `
-SELECT name, tagtype, slug, i18n
-FROM tag
-WHERE pk_id_tag = $1
+SELECT tag_id, name, tagtype AS type, slug, i18n, karacount
+FROM all_tags
+WHERE tag_id = $1
 `;
 
 export const getAllTags = (filterClauses: string[], typeClauses: string, limitClause: string, offsetClause: string) => `

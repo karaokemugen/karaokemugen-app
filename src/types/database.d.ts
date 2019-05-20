@@ -12,3 +12,8 @@ export interface LangClause {
 	main: string
 	fallback: string
 }
+
+export interface WhereClause {
+	sql: string[],
+	params: {}
+}

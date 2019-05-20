@@ -1,9 +1,15 @@
 import {KaraParams} from './kara';
+import { DBPLCBase, DBPLC } from './database/playlist';
 
 export interface PLCEditParams {
 	flag_playing: boolean,
 	flag_free: boolean,
 	pos: number
+}
+
+export interface CurrentSong extends DBPLCBase {
+	avatar?: string,
+	infos?: string
 }
 
 export interface PLC {

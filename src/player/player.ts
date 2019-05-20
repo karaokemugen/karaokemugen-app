@@ -50,7 +50,7 @@ function emitPlayerState() {
 	setState({player: playerState});
 }
 
-async function extractAllBackgroundFiles() {
+async function extractAllBackgroundFiles(): Promise<string[]> {
 	let backgroundFiles = [];
 	for (const resolvedPath of resolvedPathBackgrounds()) {
 		backgroundFiles = backgroundFiles.concat(await extractBackgroundFiles(resolvedPath));
@@ -59,13 +59,11 @@ async function extractAllBackgroundFiles() {
 	return backgroundFiles.filter(f => imageFileTypes.includes(extname(f).substring(1)));
 }
 
-async function extractBackgroundFiles(backgroundDir: string) {
+async function extractBackgroundFiles(backgroundDir: string): Promise<string[]> {
 	const backgroundFiles = [];
 	const dirListing = await asyncReadDir(backgroundDir);
 	for (const file of dirListing) {
-		if (isImageFile(file)) {
-			backgroundFiles.push(resolve(backgroundDir, file));
-		}
+		if (isImageFile(file)) backgroundFiles.push(resolve(backgroundDir, file));
 	}
 	return backgroundFiles;
 }
@@ -130,7 +128,7 @@ export async function initPlayerSystem() {
 	logger.debug('[Player] Player is READY');
 }
 
-async function getmpvVersion(path: string) {
+async function getmpvVersion(path: string): Promise<string> {
 	const output = await execa(path,['--version']);
 	return semver.valid(output.stdout.split(' ')[1]);
 }
@@ -412,19 +410,19 @@ export async function play(mediadata: MediaData) {
 	}
 }
 
-export function setFullscreen(fsState: boolean) {
+export function setFullscreen(fsState: boolean): boolean {
 	playerState.fullscreen = fsState;
 	fsState ? player.fullscreen() : player.leaveFullscreen();
 	return playerState.fullscreen;
 }
 
-export function toggleOnTop() {
+export function toggleOnTop(): boolean {
 	playerState.stayontop = !playerState.stayontop;
 	player.command('keypress',['T']);
 	return playerState.stayontop;
 }
 
-export function stop() {
+export function stop(): PlayerState {
 	// on stop do not trigger onEnd event
 	// => setting internal playing = false prevent this behavior
 	logger.debug('[Player] Stop event triggered');
@@ -438,7 +436,7 @@ export function stop() {
 	return playerState;
 }
 
-export function pause() {
+export function pause(): PlayerState {
 	logger.debug('[Player] Pause event triggered');
 	player.pause();
 	if (monitorEnabled) playerMonitor.pause();
@@ -447,7 +445,7 @@ export function pause() {
 	return playerState;
 }
 
-export function resume() {
+export function resume(): PlayerState {
 	logger.debug('[Player] Resume event triggered');
 	player.play();
 	if (monitorEnabled) playerMonitor.play();
@@ -476,14 +474,14 @@ export function unmute() {
 	return player.unmute();
 }
 
-export function setVolume(volume: number) {
+export function setVolume(volume: number): PlayerState {
 	playerState.volume = volume;
 	player.volume(volume);
 	setState({player: playerState});
 	return playerState;
 }
 
-export function hideSubs() {
+export function hideSubs(): PlayerState {
 	player.hideSubtitles();
 	if (monitorEnabled) playerMonitor.hideSubtitles();
 	playerState.showsubs = false;
@@ -491,7 +489,7 @@ export function hideSubs() {
 	return playerState;
 }
 
-export function showSubs() {
+export function showSubs(): PlayerState {
 	player.showSubtitles();
 	if (monitorEnabled) playerMonitor.showSubtitles();
 	playerState.showsubs = true;
@@ -560,7 +558,6 @@ export async function restartmpv() {
 	await startmpv();
 	logger.debug('[Player] Restarted mpv');
 	emitPlayerState();
-	return true;
 }
 
 export async function quitmpv() {
@@ -569,7 +566,6 @@ export async function quitmpv() {
 	// Destroy mpv instance.
 	if (playerMonitor) await playerMonitor.quit();
 	playerState.ready = false;
-	return true;
 }
 
 export async function playJingle() {
@@ -610,7 +606,7 @@ async function load(file: string, mode: string, options: string[]) {
 	try {
 		await player.load(file, mode, options);
 	} catch(err) {
-		logger.error(`[mpv] Error loading file ${file} : ${err}`);
+		logger.error(`[mpv] Error loading file ${file} : ${JSON.stringify(err)}`);
 		throw Error(err);
 	}
 	if (monitorEnabled) try {

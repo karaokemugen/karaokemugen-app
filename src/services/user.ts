@@ -4,7 +4,6 @@ import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
 import {convertToRemoteFavorites} from './favorites';
 import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy} from '../utils/files';
 import {createHash} from 'crypto';
-import {now} from '../utils/date';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
@@ -80,7 +79,8 @@ async function updateExpiredUsers() {
 	// Unflag connected accounts from database if they expired
 	try {
 		if (!databaseBusy) {
-			await DBUpdateExpiredUsers(now(true) - (getConfig().Frontend.AuthExpireTime * 60));
+			const time = new Date().getTime() - (getConfig().Frontend.AuthExpireTime * 60 * 1000);
+			await DBUpdateExpiredUsers(new Date(time));
 			await DBResetGuestsPassword();
 		}
 	} catch(err) {
@@ -200,8 +200,11 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 
 export async function updateLastLoginName(login: string) {
 	// To avoid flooding database UPDATEs, only update login time every minute for a user
-	if (!userLoginTimes.has(login)) userLoginTimes.set(login, new Date());
-	if (userLoginTimes.get(login) < now(true) - 60) {
+	if (!userLoginTimes.has(login)) {
+		userLoginTimes.set(login, new Date());
+		return await DBUpdateUserLastLogin(login);
+	}
+	if (userLoginTimes.get(login) < new Date(new Date().getTime() - (60 * 1000))) {
 		userLoginTimes.set(login, new Date());
 		return await DBUpdateUserLastLogin(login);
 	}
@@ -360,12 +363,12 @@ export async function findFingerprint(fingerprint: string): Promise<string> {
 	// If not we find a new guest account to assign to the user.
 	let guest = await DBFindFingerprint(fingerprint);
 	if (getState().isTest) logger.debug(JSON.stringify(guest));
-	if (guest) return guest.pk_login;
+	if (guest) return guest;
 	guest = await DBGetRandomGuest();
 	if (getState().isTest) logger.debug(JSON.stringify(guest));
 	if (!guest) return null;
-	await DBUpdateUserPassword(guest.pk_login, hashPassword(fingerprint));
-	return guest.pk_login;
+	await DBUpdateUserPassword(guest, hashPassword(fingerprint));
+	return guest;
 }
 
 export async function updateUserFingerprint(username: string, fingerprint: string) {
@@ -582,6 +585,7 @@ export async function initUserSystem() {
 
 	createDefaultGuests();
 	cleanupAvatars();
+	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 }
 
 async function cleanupAvatars() {
@@ -602,14 +606,14 @@ async function cleanupAvatars() {
 export async function updateSongsLeft(username: string, playlist_id?: number) {
 	const conf = getConfig();
 	const user = await findUserByName(username);
-	let quotaLeft;
+	let quotaLeft: number;
 	if (!playlist_id) playlist_id = getState().modePlaylistID;
 	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 		switch(+conf.Karaoke.Quota.Type) {
 		default:
 		case 1:
 			const count = await getSongCountForUser(playlist_id, username);
-			quotaLeft = +conf.Karaoke.Quota.Songs - count.count;
+			quotaLeft = +conf.Karaoke.Quota.Songs - count;
 			break;
 		case 2:
 			const time = await getSongTimeSpentForUser(playlist_id,username);
@@ -698,4 +702,19 @@ function getRole(user: User): Role {
 	if (+user.type === 0) return 'admin';
 	if (+user.type === 1) return 'user';
 	return 'guest';
+}
+
+export async function generateAdminPassword() {
+	// Resets admin's password when appFirstRun is set to true.
+	// Returns the generated password.
+	const adminPassword = getState().opt.forceAdminPassword || randomstring.generate(8);
+	await editUser('admin',
+		{
+			password: adminPassword,
+			nickname: 'Dummy Plug System',
+			type: 0
+		},
+		null,
+		'admin');
+	return adminPassword;
 }

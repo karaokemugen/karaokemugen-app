@@ -5,6 +5,7 @@
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.ini to bypass the default value .
 import {Config} from '../types/config';
+import { bools } from '../services/constants';
 
 export const defaults: Config = {
 	App: {
@@ -126,7 +127,7 @@ export const defaults: Config = {
 			Bin: 'app/bin',
 			Import: 'app/import',
 			Jingles: ['app/jingles'],
-			Karas: ['app/data/karas'],
+			Karas: ['app/data/karaokes'],
 			Lyrics: ['app/data/lyrics'],
 			Medias: ['app/data/medias'],
 			MediasHTTP: '',
@@ -140,7 +141,6 @@ export const defaults: Config = {
 
 const horizontalPosArray = ['Left', 'Right', 'Center'];
 const verticalPosArray = ['Top', 'Bottom', 'Center'];
-const bools = [true, false, 'true', 'false'];
 
 export const configConstraints = {
 	'App.FirstRun': {inclusion : bools},

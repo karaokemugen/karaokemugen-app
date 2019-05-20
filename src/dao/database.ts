@@ -1,5 +1,4 @@
 import logger from 'winston';
-import {open} from 'sqlite';
 import {getConfig, setConfig} from '../utils/config';
 import {getState} from '../utils/state';
 import {Pool} from 'pg';
@@ -9,21 +8,20 @@ import deburr from 'lodash.deburr';
 import langs from 'langs';
 import {run as generateDB} from '../services/generation';
 import DBMigrate from 'db-migrate';
-import {join, resolve} from 'path';
-import {asyncCopy, asyncUnlink, asyncExists} from '../utils/files';
+import {join} from 'path';
 import {isShutdownPG, initPG} from '../utils/postgresql';
-import { generateBlacklist } from '../services/blacklist';
 import {refreshYears, refreshKaras} from './kara';
 import {refreshTags, refreshKaraTags} from './tag';
 import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from './series';
 import {profile} from '../utils/logger';
 import {from as copyFrom} from 'pg-copy-streams';
-import {Query, Settings} from '../types/database';
+import {Query, Settings, LangClause, WhereClause} from '../types/database';
 import { baseChecksum } from './dataStore';
+import { DBStats } from '../types/database/database';
 
 const sql = require('./sql/database');
 
-export async function compareKarasChecksum(silent?: boolean) {
+export async function compareKarasChecksum(silent?: boolean): Promise<boolean> {
 	logger.info('[DB] Comparing files and database data');
 	const [settings, currentChecksum] = await Promise.all([
 		getSettings(),
@@ -31,12 +29,13 @@ export async function compareKarasChecksum(silent?: boolean) {
 	]);
 	if (settings.baseChecksum !== currentChecksum) {
 		await saveSetting('baseChecksum', currentChecksum);
-		return false;
+		return true;
 	}
-	return currentChecksum;
+	if (currentChecksum === null) return undefined;
+	return false;
 }
 
-export function paramWords(filter: string) {
+export function paramWords(filter: string): {} {
 	//This function takes a search filter (list of words), cleans and maps them for use in SQL queries "LIKE".
 	let params = {};
 	const words = deburr(filter)
@@ -66,7 +65,7 @@ export function closeDB() {
 	database = { query: query};
 }
 
-export function buildClauses(words: string) {
+export function buildClauses(words: string): WhereClause {
 	const params = paramWords(words);
 	let sql = [];
 	for (const i in words.split(' ').filter(s => !('' === s))) {
@@ -83,7 +82,7 @@ export function buildClauses(words: string) {
 	};
 }
 
-export function langSelector(lang: string, series?: boolean) {
+export function langSelector(lang: string, series?: boolean): LangClause {
 	const conf = getConfig();
 	const state = getState();
 	const userLocale = langs.where('1',lang || state.EngineDefaultLocale);
@@ -103,15 +102,15 @@ export function langSelector(lang: string, series?: boolean) {
 // These two utility functions are used to make multiple inserts into one
 // You can do only one insert with multiple values, this helps.
 // expand returns ($1, $2), ($1, $2), ($1, $2) for (3, 2)
-export function expand(rowCount: number, columnCount: number, startAt: number = 1){
+export function expand(rowCount: number, columnCount: number, startAt: number = 1): string {
 	let index = startAt;
 	return Array(rowCount).fill(0).map(() => `(${Array(columnCount).fill(0).map(() => `$${index++}`).join(', ')})`).join(', ');
 }
 
 // flatten([[1, 2], [3, 4]]) returns [1, 2, 3, 4]
-export function flatten(arr: any[]){
+export function flatten(arr: string[][]): string[] {
 	let newArr = [];
-	arr.forEach(v => v.forEach((p: any) => newArr.push(p)));
+	arr.forEach(v => v.forEach((p: string) => newArr.push(p)));
 	return newArr;
 }
 
@@ -259,7 +258,7 @@ export async function saveSetting(setting: string, value: string) {
 	return await db().query(sql.upsertSetting, [setting, value]);
 }
 
-export async function initDBSystem() {
+export async function initDBSystem(): Promise<boolean> {
 	let doGenerate: boolean;
 	const conf = getConfig();
 	const state = getState();
@@ -279,14 +278,13 @@ export async function initDBSystem() {
 	}
 	if (state.opt.reset) await resetUserData();
 	if (!state.opt.noBaseCheck) {
-		logger.info('[DB] Checking data files...');
-		const karasChecksum = await compareKarasChecksum();
-		if (karasChecksum === false) {
+		const filesChanged = await compareKarasChecksum();
+		if (filesChanged === true) {
 			logger.info('[DB] Data files have changed: database generation triggered');
 			doGenerate = true;
 		}
 		// If karasChecksum returns null, it means there were no files to check. We run generation anyway (it'll return an empty database) to avoid making the current startup procedure any more complex.
-		if (karasChecksum === null) doGenerate = true;
+		if (filesChanged === undefined) doGenerate = true;
 	}
 	const settings = await getSettings();
 	if (!doGenerate && !settings.lastGeneration) {
@@ -299,7 +297,6 @@ export async function initDBSystem() {
 	} catch(err) {
 		logger.error(`[DB] Generation failed : ${err}`);
 	}
-	await importFromSQLite();
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
 	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
@@ -317,12 +314,12 @@ export async function resetUserData() {
 	logger.warn('[DB] User data has been reset!');
 }
 
-export async function getStats() {
+export async function getStats(): Promise<DBStats> {
 	const res = await db().query(sql.getStats);
 	return res.rows[0];
 }
 
-async function generateDatabase() {
+async function generateDatabase(): Promise<boolean> {
 	const state = getState();
 	try {
 		await generateDB();
@@ -335,14 +332,14 @@ async function generateDatabase() {
 	return true;
 }
 
-export function buildTypeClauses(mode: string, value: any) {
+export function buildTypeClauses(mode: string, value: any): string {
 	if (mode === 'search') {
 		let search = '';
 		const criterias = value.split('!');
 		for (const c of criterias) {
 			// Splitting only after the first ":"
 			const type = c.split(/:(.+)/)[0];
-			let values;
+			let values: string[];
 			if (type === 's') {
     			values = c.split(/:(.+)/)[1].split(',').map((v: string) => `'%${v}%'`);
     			search = `${search} AND sid::varchar LIKE ${values}`;
@@ -356,140 +353,6 @@ export function buildTypeClauses(mode: string, value: any) {
 	}
 	if (mode === 'kid') return ` AND kid = '${value}'`;
 	return '';
-}
-
-export async function importFromSQLite() {
-	const conf = getConfig();
-	const sqliteDBFile = resolve(getState().appPath, conf.System.Path.DB, 'userdata.sqlite3');
-	if (await asyncExists(sqliteDBFile)) {
-		logger.info('[DB] SQLite database detected. Importing...');
-		try {
-			await asyncCopy(sqliteDBFile, sqliteDBFile+'_old', { overwrite: true });
-			const sqliteDB = await open(sqliteDBFile, {verbose: true});
-			//Removing PLC without a playlist
-			await sqliteDB.run('DELETE FROM playlist_content WHERE fk_id_playlist NOT IN (SELECT pk_id_playlist FROM playlist);');
-			//Getting data
-			const [blc, p, plc, rq, up, u, vc, w, f] = await Promise.all([
-				sqliteDB.all('SELECT * FROM blacklist_criteria;'),
-				sqliteDB.all('SELECT pk_id_playlist, name,num_karas,length,created_at,modified_at,flag_visible,flag_current,flag_public,flag_favorites,time_left,u.login AS username FROM playlist, user u WHERE u.pk_id_user = fk_id_user;'),
-				sqliteDB.all('SELECT pk_id_plcontent, fk_id_playlist, kid, created_at, pos, flag_playing, pseudo_add, u.login AS username, flag_free FROM playlist_content, user u WHERE u.pk_id_user = fk_id_user;'),
-				sqliteDB.all('SELECT u.login AS username, kid, session_started_at, requested_at FROM request, user u WHERE u.pk_id_user = fk_id_user;'),
-				sqliteDB.all('SELECT fk_id_plcontent, u.login AS username FROM upvote, user u WHERE u.pk_id_user = fk_id_user;'),
-				sqliteDB.all('SELECT * FROM user;'),
-				sqliteDB.all('SELECT * FROM viewcount;'),
-				sqliteDB.all('SELECT * FROM whitelist;'),
-				sqliteDB.all('SELECT pc.kid as kid, u.login as username FROM playlist_content pc, playlist p, user u WHERE u.pk_id_user = p.fk_id_user AND p.flag_favorites = 1 AND p.pk_id_playlist = pc.fk_id_playlist;')
-			]);
-			await sqliteDB.close();
-			// Transforming data
-			const newF = f.map(e => [
-				e.username,
-				e.kid
-			]);
-			const newBLC = blc.map(e => [
-				e.pk_id_blcriteria,
-				e.type,
-				e.value,
-				e.uniquevalue
-			]);
-			const newP = p.map(e => [
-				e.pk_id_playlist,
-				e.name,
-				e.num_karas,
-				e.length,
-				new Date(e.created_at * 1000),
-				new Date(e.modified_at * 1000),
-				e.flag_visible === 1,
-				e.flag_current === 1,
-				e.flag_public === 1,
-				e.time_left,
-				e.username
-			]);
-			const newPLC = plc.map(e => [
-				e.pk_id_plcontent,
-				e.fk_id_playlist,
-				e.kid,
-				new Date(e.created_at * 1000),
-				e.pos,
-				e.flag_playing === 1,
-				e.pseudo_add,
-				e.username,
-				e.flag_free === 1
-			]);
-			const newRQ = rq.map(e => [
-				e.username,
-				e.kid,
-				new Date(e.session_started_at * 1000),
-				new Date(e.requested_at * 1000)
-			]);
-			const newUP = up.map(e => [
-				e.fk_id_plcontent,
-				e.username
-			]);
-			const newU = u.map(e => [
-				e.login,
-				e.nickname,
-				e.password,
-				e.type,
-				e.avatar_file,
-				e.bio,
-				e.url,
-				e.email,
-				e.flag_online === 1,
-				new Date(0),
-				e.fingerprint
-			]);
-			// Admin flag is not needed anymore. Instead admins have type 0
-			u.forEach((e,i) => {
-				if (e.flag_admin) newU[i][3] = 0;
-			});
-			const newVC = vc.map(e => [
-				new Date(e.session_started_at * 1000),
-				e.kid,
-				new Date(e.modified_at * 1000)
-			]);
-			const newW = w.map(e => [
-				e.kid,
-				new Date(e.created_at * 1000),
-				null
-			]);
-			await transaction([
-				{sql: 'TRUNCATE favorites;'},
-				{sql: 'TRUNCATE whitelist;'},
-				{sql: 'TRUNCATE played;'},
-				{sql: 'TRUNCATE users CASCADE;'},
-				{sql: 'TRUNCATE upvote RESTART IDENTITY;'},
-				{sql: 'TRUNCATE requested'},
-				{sql: 'TRUNCATE playlist RESTART IDENTITY CASCADE;'},
-				{sql: 'TRUNCATE playlist_content RESTART IDENTITY CASCADE;'},
-				{sql: 'TRUNCATE blacklist_criteria RESTART IDENTITY CASCADE;'}
-			]);
-			await transaction([
-				{sql: 'INSERT INTO users VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', params: newU},
-				{sql: 'INSERT INTO playlist VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)', params: newP},
-				{sql: 'INSERT INTO playlist_content VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)', params: newPLC},
-				{sql: 'INSERT INTO favorites VALUES($1,$2) ON CONFLICT DO NOTHING', params: newF},
-				{sql: 'INSERT INTO whitelist VALUES($1,$2,$3) ON CONFLICT DO NOTHING', params: newW},
-				{sql: 'INSERT INTO played VALUES($1,$2,$3) ON CONFLICT DO NOTHING', params: newVC},
-				{sql: 'INSERT INTO upvote VALUES($1,$2) ON CONFLICT DO NOTHING', params: newUP},
-				{sql: 'INSERT INTO requested VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING', params: newRQ},
-				{sql: 'INSERT INTO blacklist_criteria VALUES($1,$2,$3,$4)', params: newBLC}
-			]);
-			await db().query(`
-			SELECT SETVAL('blacklist_criteria_pk_id_blcriteria_seq',(SELECT MAX(pk_id_blcriteria) FROM blacklist_criteria));
-			SELECT SETVAL('playlist_pk_id_playlist_seq',(SELECT MAX(pk_id_playlist) FROM playlist));
-			SELECT SETVAL('playlist_content_pk_id_plcontent_seq',(SELECT MAX(pk_id_plcontent) FROM playlist_content));
-			`);
-			// Update BLC's values when blacklisting individual songs since now we use KIDs and not old numeric IDs
-			await db().query('UPDATE blacklist_criteria SET value = uniquevalue WHERE type = 1001;');
-			await generateBlacklist();
-			logger.info('[DB] SQLite import complete');
-			await asyncUnlink(sqliteDBFile);
-			setConfig({ App: { FirstRun: false }});
-		} catch(err) {
-			logger.error(`[DB] Your old SQLite database could not be imported : ${err}`);
-		}
-	}
 }
 
 export async function refreshAll() {

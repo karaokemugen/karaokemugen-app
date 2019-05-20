@@ -6,7 +6,7 @@ import {date} from '../utils/date';
 import {profile} from '../utils/logger';
 import {formatKaraList, isAllKaras} from './kara';
 import {KaraList} from '../types/kara';
-import {FavParams, FavExport, AutoMixParams} from '../types/favorites';
+import {FavParams, FavExport, AutoMixParams, AutoMixPlaylistInfo} from '../types/favorites';
 import { uuidRegexp } from './constants';
 import { getRemoteToken } from '../dao/user';
 import got from 'got';
@@ -160,7 +160,7 @@ export async function importFavorites(favs: FavExport, username: string) {
 	return { karasUnknown: karasUnknown };
 }
 
-async function getAllFavorites(userList: string[]) {
+async function getAllFavorites(userList: string[]): Promise<string[]> {
 	const kids = [];
 	for (const user of userList) {
 		if (!await findUserByName(user)) {
@@ -181,7 +181,7 @@ async function getAllFavorites(userList: string[]) {
 	return kids;
 }
 
-export async function createAutoMix(params: AutoMixParams, username: string) {
+export async function createAutoMix(params: AutoMixParams, username: string): Promise<AutoMixPlaylistInfo> {
 	// Create Playlist.
 	profile('AutoMix');
 	const favs = await getAllFavorites(params.users);

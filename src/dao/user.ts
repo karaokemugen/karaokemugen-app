@@ -1,9 +1,10 @@
 import {db} from './database';
 import {pg as yesql} from 'yesql';
 import { User } from '../types/user';
+import { DBUser, DBGuest, RemoteToken } from '../types/database/user';
 const sql = require('./sql/user');
 
-export async function getUser(username: string) {
+export async function getUser(username: string): Promise<DBUser> {
 	const res = await db().query(yesql(sql.selectUserByName)({username: username}));
 	return res.rows[0];
 }
@@ -15,21 +16,22 @@ const remoteTokens = [];
 //   token: ...
 // }
 
-export async function checkNicknameExists(nickname: string) {
+export async function checkNicknameExists(nickname: string): Promise<string> {
 	const res = await db().query(yesql(sql.testNickname)({nickname: nickname}));
-	return res.rows[0];
+	if (res.rows[0]) return res.rows[0].login;
+	return null;
 }
 
 export async function deleteUser(username: string) {
 	return await db().query(sql.deleteUser, [username]);
 }
 
-export async function listUsers() {
+export async function listUsers(): Promise<DBUser[]> {
 	const res = await db().query(sql.selectUsers);
 	return res.rows;
 }
 
-export async function listGuests() {
+export async function listGuests(): Promise<DBGuest[]> {
 	const res = await db().query(sql.selectGuests);
 	return res.rows;
 }
@@ -72,8 +74,8 @@ export async function reassignToUser(oldUsername: string, username: string) {
 	]);
 }
 
-export async function updateExpiredUsers(expireTime: number) {
-	return await db().query(sql.updateExpiredUsers, [new Date(expireTime * 1000)]);
+export async function updateExpiredUsers(expireTime: Date) {
+	return await db().query(sql.updateExpiredUsers, [expireTime]);
 }
 
 export async function updateUserFingerprint(username: string, fingerprint: string) {
@@ -83,14 +85,15 @@ export async function updateUserFingerprint(username: string, fingerprint: strin
 	}));
 }
 
-export async function getRandomGuest() {
+export async function getRandomGuest(): Promise<string> {
 	const res = await db().query(sql.selectRandomGuestName);
-	return res.rows[0];
+	if (res.rows[0]) return res.rows[0].login;
+	return null;
 }
 
-export async function findFingerprint(fingerprint: string) {
+export async function findFingerprint(fingerprint: string): Promise<string> {
 	const res = await db().query(sql.findFingerprint, [fingerprint] );
-	return res.rows[0];
+	if (res.rows[0]) return res.rows[0].login;
 }
 
 export async function resetGuestsPassword() {
@@ -111,7 +114,7 @@ export async function updateUserPassword(username: string, password: string) {
 	}));
 }
 
-export function getRemoteToken(username: string) {
+export function getRemoteToken(username: string): RemoteToken {
 	const index = findRemoteToken(username);
 	if (index > -1) return remoteTokens[index];
 	return null;

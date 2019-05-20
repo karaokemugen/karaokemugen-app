@@ -91,6 +91,7 @@ export async function initFrontend() {
 		app.engine('hbs', exphbs({
 			layoutsDir: join(__dirname, '../../frontend/ressources/views/layouts/'),
 			extname: '.hbs',
+			defaultLayout: 'publicHeader',
 			helpers: {
 			//How comes array functions do not work here?
 				i18n: function() {

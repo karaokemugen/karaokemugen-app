@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { errMessage, OKMessage, bools } from "../../common";
+import { errMessage, OKMessage } from "../../common";
 import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
 import { getLang } from "../../middlewares/lang";
 import { emitWS } from "../../../webapp/frontend";
 import { deletePlaylist, getPlaylists, editPlaylist, getPlaylistInfo, createPlaylist, emptyPlaylist, editPLC, getKaraFromPlaylist, deleteKaraFromPlaylist, copyKaraToPlaylist, addKaraToPlaylist, getPlaylistContents, setCurrentPlaylist, setPublicPlaylist, shufflePlaylist, importPlaylist, exportPlaylist } from "../../../services/playlist";
 import { check } from "../../../utils/validators";
+import { bools } from "../../../services/constants";
 
 export default function adminPlaylistsController(router: Router) {
 	router.route('/admin/playlists')
