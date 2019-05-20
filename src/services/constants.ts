@@ -9,6 +9,7 @@ export const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
 export const subFileRegexp = '^.+\\.ass$';
 export const md5Regexp = '[0-9a-f]{32}';
 export const imageFileTypes = ['jpg', 'jpeg', 'png', 'gif'];
+export const bools = [true, false, 'true', 'false', undefined];
 
 export const defaultGuestNames = [
 	'Jean-Michel Normal',

@@ -3,6 +3,7 @@ import testJSON from 'is-valid-json';
 import {has as hasLang} from 'langs';
 import {uuidRegexp, karaTypes, tags} from '../services/constants';
 import {lyricsConstraints, mediaConstraints} from '../dao/karafile';
+import { PLCImportConstraints } from '../services/playlist';
 
 // Validators
 
@@ -100,6 +101,16 @@ function uuidArrayValidator(value: string) {
 	return ` '${value}' is invalid (not a UUID)`;
 }
 
+function PLCsValidator(value: any[]) {
+	if(!value) return ` '${value}' is invalid (empty)`;
+	for (const v of value) {
+		if(!v) return ` '${value}' contains an invalid item (empty)`;
+		const errors = check(v, PLCImportConstraints)
+		if (errors) return errors;
+	}
+	return null;
+}
+
 function numbersArrayValidator(value: string) {
 	if(!value) return ` '${value}' is invalid (empty)`;
 	value = value.toString();
@@ -156,7 +167,8 @@ const validatorsList = {
 	uuidArrayValidator,
 	boolUndefinedValidator,
 	karaMediasValidator,
-	karaLyricsValidator
+	karaLyricsValidator,
+	PLCsValidator
 };
 
 // Sanitizers

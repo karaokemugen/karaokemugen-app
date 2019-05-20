@@ -1,5 +1,4 @@
 //Utils
-import {uuidRegexp} from './constants';
 import {getStats} from '../dao/database';
 import {getConfig} from '../utils/config';
 import {now} from '../utils/date';
@@ -69,6 +68,8 @@ import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
 } from '../dao/kara';
 import { Playlist, PLC, Pos, PlaylistOpts, PlaylistExport, PLCEditParams, CurrentSong } from '../types/playlist';
 import { DBPLC } from '../types/database/playlist';
+import { bools } from './constants';
+import { check } from '../utils/validators';
 
 let databaseBusy = false;
 
@@ -749,6 +750,25 @@ export async function exportPlaylist(playlist_id: number) {
 	}
 }
 
+const PLImportConstraints = {
+	'Header.description': {presence: true},
+	'Header.version': {numericality: {onlyInteger: true, equalTo: 4}},
+	'PlaylistInformation.created_at': {presence: {allowEmpty: false}},
+	'PlaylistInformation.modified_at': {presence: {allowEmpty: false}},
+	'PlaylistInformation.name': {presence: {allowEmpty: false}},
+	'PlaylistInformation.flag_visible': {inclusion: bools},
+	PlaylistContents: {PLCsValidator: true}
+}
+
+export const PLCImportConstraints = {
+	kid: {presence: true, uuidArrayValidator: true},
+	created_at: {presence: {allowEmpty: false}},
+	flag_playing: {inclusion: bools},
+	pos: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	nickname: {presence: {allowEmpty: false}},
+	username: {presence: {allowEmpty: false}}
+}
+
 export async function importPlaylist(playlist: any, username: string, playlist_id?: number) {
 	// Check if format is valid :
 	// Header must contain :
@@ -767,46 +787,29 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
 	try {
-		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist,null,2)}`);
+		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist, null, 2)}`);
+		const validationErrors = check(playlist, PLImportConstraints)
+		if (validationErrors) throw `Playlist file is invalid : ${JSON.stringify(validationErrors)}`;
 		let playingKara: PLC = {
 			playlist_id: null
 		};
-		if (!playlist.Header) throw 'No Header section';
-		if (playlist.Header.description !== 'Karaoke Mugen Playlist File') throw 'Not a .kmplaylist file';
-		if (playlist.Header.version > 4) throw `Cannot import this version (${playlist.Header.version})`;
-		if (!playlist.PlaylistContents) throw 'No PlaylistContents section';
-		if (!playlist.PlaylistInformation) throw 'No PlaylistInformation section';
-		if (isNaN(playlist.PlaylistInformation.created_at) && !Date.parse(playlist.PlaylistInformation.created_at)) throw 'Creation time is not valid';
-		if (isNaN(playlist.PlaylistInformation.modified_at) && !Date.parse(playlist.PlaylistInformation.modified_at)) throw 'Modification time is not valid';
-		if (playlist.PlaylistInformation.flag_visible !== true &&
-		playlist.PlaylistInformation.flag_visible !== false) throw 'Visible flag must be boolean';
-		if (!playlist.PlaylistInformation.name) throw 'Playlist name must not be empty';
-		// Convert unix timestamps to JS Dates
-		if (!isNaN(playlist.PlaylistInformation.created_at)) playlist.PlaylistInformation.created_at = new Date(+playlist.PlaylistInformation.created_at * 1000);
-		if (!isNaN(playlist.PlaylistInformation.modified_at)) playlist.PlaylistInformation.modified_at = new Date(+playlist.PlaylistInformation.modified_at * 1000);
 		let flag_playingDetected = false;
-		if (playlist.PlaylistContents) {
-			for (const index in playlist.PlaylistContents) {
-				const kara = playlist.PlaylistContents[index];
-				if (!new RegExp(uuidRegexp).test(kara.kid)) throw 'KID is not a valid UUID!';
-				if (isNaN(kara.created_at) && !Date.parse(kara.created_at)) throw 'Karaoke added time is not a valid date';
-				if (kara.flag_playing === true) {
-					if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
-					flag_playingDetected = true;
-					playingKara.kid = kara.kid;
-					playingKara.username = kara.username;
-				}
-				if (!isNaN(kara.created_at)) playlist.PlaylistContents[index].created_at = new Date(+kara.created_at * 1000);
-				if (isNaN(kara.pos)) throw 'Position must be a number';
-				if (!kara.nickname) throw 'All karaokes must have a nickname associated with them';
-				const user = await findUserByName(kara.username);
-				if (!user) {
-					playlist.PlaylistContents[index].username = 'admin';
-					const admin: User = await findUserByName('admin');
-					playlist.PlaylistContents[index].nickname = admin.nickname;
-				}
-			};
-		}
+		for (const index in playlist.PlaylistContents) {
+			const kara = playlist.PlaylistContents[index];
+			if (kara.flag_playing === true) {
+				if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
+				flag_playingDetected = true;
+				playingKara.kid = kara.kid;
+				playingKara.username = kara.username;
+			}
+			const user = await findUserByName(kara.username);
+			if (!user) {
+				// If user isn't found locally, replacing it with admin user
+				playlist.PlaylistContents[index].username = 'admin';
+				const admin: User = await findUserByName('admin');
+				playlist.PlaylistContents[index].nickname = admin.nickname;
+			}
+		};
 		// Validations done. First creating playlist.
 		try {
 			if (!playlist_id) {

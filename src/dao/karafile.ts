@@ -4,7 +4,7 @@
  */
 
 import {now} from '../utils/date';
-import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from '../services/constants';
+import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp, bools} from '../services/constants';
 import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {resolve, basename} from 'path';
@@ -313,7 +313,7 @@ export const mediaConstraints = {
 	audiogain: {numericality: true},
 	duration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	name: {presence: {allowEmpty: false}},
-	default: {presence: true},
+	default: {inclusion: bools},
 	lyrics: {karaLyricsValidator: true}
 };
 
