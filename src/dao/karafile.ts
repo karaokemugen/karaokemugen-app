@@ -373,14 +373,14 @@ async function validateKaraV3(karaPath: string, karaFile: string, conf: Config) 
 		const subFile = resolve(getState().appPath, conf.System.Path.Lyrics[0], kara.subfile);
 		subchecksum = await extractAssInfos(subFile);
 	}
-	const mediaInfo = await extractMediaTechInfos(resolve(getState().appPath, conf.System.Path.Medias[0], kara.mediafile), kara.mediasize);
+	const mediaInfo = await extractMediaTechInfos(resolve(getState().appPath, conf.System.Path.Medias[0], kara.mediafile), +kara.mediasize);
 	if (subchecksum !== kara.subchecksum) kara.subchecksum = subchecksum;
-	if (mediaInfo.size !== kara.mediasize) {
+	if (mediaInfo.size !== +kara.mediasize) {
 		kara.mediasize = mediaInfo.size;
 		kara.mediagain = mediaInfo.gain;
 		kara.mediaduration = mediaInfo.duration;
 	}
-	if (mediaInfo.size !== kara.mediasize || subchecksum !== kara.subchecksum) await asyncWriteFile(resolve(karaPath, karaFile), stringify(kara));
+	if (mediaInfo.size !== +kara.mediasize || subchecksum !== kara.subchecksum) await asyncWriteFile(resolve(karaPath, karaFile), stringify(kara));
 }
 
 export function karaDataValidationErrors(karaData: KaraFileV4): {} {
