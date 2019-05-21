@@ -56,7 +56,7 @@ export async function editKara(kara: Kara) {
 		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) {
 			asyncUnlink(karaFile);
 			// Remove karav3 file
-			asyncUnlink(replaceExt(karaFile, '.kara'));
+			asyncUnlink(karaFile.replace('.json',''));
 		}
 		if (newSubFile.toLowerCase() !== subFile.toLowerCase() && subFile) {
 			if (await asyncExists(subFile)) asyncUnlink(subFile);
