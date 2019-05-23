@@ -40,6 +40,7 @@ class App extends Component<AppProps, AppState> {
 						<Switch>
 							<Redirect exact from='/system/' to='/system/home'/>
 							<Route path='/system/home' component={Home}/>
+							<Route path='/system/log' component={AuthRequired(import('./pages/Log'))}/>
 							<Route path='/system/login' component={DismissMessages(import('./pages/Login'))}/>
 							<Route path='/system/config' component={AuthRequired(import('./pages/Config'))}/>
 							<Route path='/system/karas/download' component={AuthRequired(import('./pages/Karas/KaraDownload'))}/>
