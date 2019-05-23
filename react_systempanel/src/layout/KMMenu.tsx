@@ -75,6 +75,7 @@ class KMMenu extends Component<KMenuProps, KMenuState> {
 						style={{ lineHeight: '56px' }}
 					>
 						<Menu.Item key='home'><Link to='/system/home'>Home</Link></Menu.Item>
+						<Menu.Item key='log'><Link to='/system/log'>Logs</Link></Menu.Item>
 						<Menu.Item key='config'><Link to='/system/config'>Configuration</Link></Menu.Item>
 						<Menu.SubMenu key="kara-dropdown" title='Karas'>
 							<Menu.Item key='karalist'><Link to='/system/karas'>List</Link></Menu.Item>

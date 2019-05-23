@@ -2,10 +2,15 @@ import {editSetting, backupConfig, getConfig} from '../../utils/config';
 import {emitWS} from '../../webapp/frontend';
 import {requireAuth, requireValidUser, requireAdmin} from '../middlewares/auth';
 import { Router } from 'express';
+import { readLog } from '../../utils/logger';
 
 export default function systemConfigCTL(router: Router) {
 	router.get('/system/config', requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) => {
 		res.json(getConfig());
+	});
+
+	router.get('/system/log', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+		res.send(await readLog());
 	});
 
 	router.put('/system/config', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
