@@ -24,6 +24,7 @@ export interface PLC {
 	duration?: number,
 	unique_id?: string,
 	serie?: string,
+	uniqueSerieSinger?: string,
 	title?: string,
 	type?: string
 }

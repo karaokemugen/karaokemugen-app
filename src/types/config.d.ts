@@ -75,6 +75,7 @@ export interface Config {
 	},
 	Playlist: {
 		AllowDuplicates?: boolean,
+		AllowDuplicateSeries?: boolean,
 		MaxDejaVuTime?: number,
 		RemovePublicOnPlay?: boolean
 	},

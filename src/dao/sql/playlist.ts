@@ -113,8 +113,11 @@ SELECT pc.fk_kid AS kid,
 	pc.pk_id_plcontent AS playlistcontent_id,
 	pc.flag_playing AS flag_playing,
 	pc.pos AS pos,
-	pc.fk_id_playlist AS playlist_id
+	pc.fk_id_playlist AS playlist_id,
+	ak.serie AS serie_orig,
+	ak.singers AS singer
 FROM playlist_content AS pc
+INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid
 WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos,pc.created_at DESC
 `;

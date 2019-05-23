@@ -327,6 +327,7 @@ export default function publicKaraController(router: Router) {
  * }
  * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
  * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED All songs are already present in playlist
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS No duplicate series or singers are allowed
  * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED Song is blacklisted and cannot be added
  * @apiError PLAYLIST_MODE_ADD_SONG_ERROR General error while adding song
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
