@@ -73,7 +73,7 @@ pkg_osx:
     - build
   script:
     - mkdir -p bin
-    - npm install -g pkg
+    - npm install -g pkg@4.3.8
     - pkg . -d --targets node10-macos-x64 --out-path bin
   only:
     - master
