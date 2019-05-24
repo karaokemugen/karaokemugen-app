@@ -237,7 +237,6 @@ export function formatKaraV4(kara: Kara): KaraFileV4 {
 	const lyricsArr = [];
 	if (kara.subfile) lyricsArr.push({
 		filename: kara.subfile,
-		checksum: kara.subchecksum,
 		default: true,
 		version: 'Default'
 	});

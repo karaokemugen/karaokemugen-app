@@ -1,10 +1,14 @@
 import logger from 'winston';
-import {asyncCheckOrMkdir} from './files';
+import {asyncCheckOrMkdir, asyncReadFile} from './files';
 import {resolve} from 'path';
 import {date, time} from './date';
 import {getState} from './state';
 
 export default logger;
+
+export async function readLog(): Promise<string> {
+	return await asyncReadFile(resolve(getState().appPath, `logs/karaokemugen.${date(true)}.log`), 'utf-8')
+}
 
 export async function configureLogger(appPath: string, debug: boolean) {
 	const consoleLogLevel = debug ? 'debug' : 'info';
