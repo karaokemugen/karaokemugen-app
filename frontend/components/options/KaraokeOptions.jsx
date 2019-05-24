@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 
 var KaraokeOptions = props => {
   const { t } = useTranslation();
-  console.log(props)
   return (
     <>
       <div id="nav-karaokeAllMode">

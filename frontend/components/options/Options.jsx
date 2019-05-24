@@ -4,11 +4,12 @@ import PlayerOptions from './PlayerOptions';
 import KaraokeOptions from './KaraokeOptions';
 import InterfaceOptions from './InterfaceOptions';
 import axios from 'axios';
+require('babel-polyfill');
 
 axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
 axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
 
-var saveSettings = (event) => {
+function saveSettings (event) {
   var data = {};
   data[event.target.id] = event.target.value;
   axios.put('/api/admin/settings', {
@@ -16,17 +17,15 @@ var saveSettings = (event) => {
   });
 }
 
-var getSettings = async () => {
-  await axios.get('/api/admin/settings').then((data) =>{
-    return data;
-  });
+async function getSettings () {
+  const res = await axios.get('/api/admin/settings');
+  return res.data;
 }
 
 var Options = (props) => {
   const { t } = useTranslation();
   var displays = [];
-  //var settings = getSettings();
-  var settings = {};
+  var settings = getSettings();
   return (
     <>
       <div className="col-lg-2 col-xs-0" />
