@@ -1,8 +1,9 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-var KaraokeOptions = (props) => {
+var KaraokeOptions = props => {
   const { t } = useTranslation();
+  console.log(props)
   return (
     <>
       <div id="nav-karaokeAllMode">
@@ -18,6 +19,7 @@ var KaraokeOptions = (props) => {
               type="number"
               className="form-control"
               name="Karaoke.Quota.Type"
+              value={props.settings.Karaoke.Quota.Type}
             >
               <option value="0"> {t("QUOTA_TYPE_0")} </option>
               <option value="1"> {t("QUOTA_TYPE_1")} </option>
@@ -38,6 +40,7 @@ var KaraokeOptions = (props) => {
               className="form-control"
               name="Karaoke.Quota.Time"
               placeholder="1000"
+              value={props.settings.Karaoke.Quota.Time}
             />
           </div>
         </div>
@@ -54,6 +57,7 @@ var KaraokeOptions = (props) => {
               className="form-control"
               name="Karaoke.Quota.Songs"
               placeholder="1000"
+              value={props.settings.Karaoke.Quota.Songs}
             />
           </div>
         </div>
@@ -70,6 +74,7 @@ var KaraokeOptions = (props) => {
               className="form-control"
               name="Karaoke.Quota.FreeAutoTime"
               placeholder="1000"
+              value={props.settings.Karaoke.Quota.FreeAutoTime}
             />
           </div>
         </div>
@@ -86,6 +91,7 @@ var KaraokeOptions = (props) => {
               className="form-control"
               name="Karaoke.JinglesInterval"
               placeholder="20"
+              value={props.settings.Karaoke.JinglesInterval}
             />
           </div>
         </div>
@@ -100,6 +106,7 @@ var KaraokeOptions = (props) => {
               type="checkbox"
               id="Karaoke.Repeat"
               onChange={props.onChange}
+              value={props.settings.Karaoke.Repeat}
             />
           </div>
         </div>
@@ -117,6 +124,7 @@ var KaraokeOptions = (props) => {
               type="checkbox"
               id="Karaoke.SmartInsert"
               onChange={props.onChange}
+              value={props.settings.Karaoke.SmartInsert}
             />
           </div>
         </div>
@@ -131,6 +139,7 @@ var KaraokeOptions = (props) => {
               type="checkbox"
               id="Karaoke.Autoplay"
               onChange={props.onChange}
+              value={props.settings.Karaoke.Autoplay}
             />
           </div>
         </div>
@@ -148,6 +157,7 @@ var KaraokeOptions = (props) => {
               type="checkbox"
               id="Playlist.AllowDuplicates"
               onChange={props.onChange}
+              value={props.settings.Playlist.AllowDuplicates}
             />
           </div>
         </div>
@@ -165,7 +175,12 @@ var KaraokeOptions = (props) => {
           </label>
           <div className="col-xs-6">
             {" "}
-            <input type="checkbox" id="Online.URL" onChange={props.onChange} />
+            <input
+              type="checkbox"
+              id="Online.URL"
+              onChange={props.onChange}
+              value={props.settings.Online.URL}
+            />
           </div>
         </div>
         <div className="form-group">
@@ -178,6 +193,7 @@ var KaraokeOptions = (props) => {
               type="checkbox"
               id="Online.Users"
               onChange={props.onChange}
+              value={props.settings.Online.Users}
             />
           </div>
         </div>
@@ -192,6 +208,7 @@ var KaraokeOptions = (props) => {
               type="checkbox"
               id="Online.Stats"
               onChange={props.onChange}
+              value={props.settings.Online.Stats}
             />
           </div>
         </div>
@@ -218,6 +235,7 @@ var KaraokeOptions = (props) => {
                 className="form-control"
                 type="number"
                 name="Karaoke.Quota.FreeUpVotesRequiredMin"
+                value={props.settings.Quota.FreeUpVotesRequiredMin}
               />
             </div>
           </div>
@@ -233,13 +251,17 @@ var KaraokeOptions = (props) => {
                 className="form-control"
                 type="number"
                 name="Karaoke.Quota.FreeUpVotesRequiredPercent"
+                value={props.settings.Quota.FreeUpVotesRequiredPercent}
               />
             </div>
           </div>
         </div>
 
         <div className="form-group">
-          <label htmlFor="Karaoke.Poll.Enabled" className="col-xs-4 control-label">
+          <label
+            htmlFor="Karaoke.Poll.Enabled"
+            className="col-xs-4 control-label"
+          >
             {t("ENGINESONGPOLL")}
           </label>
           <div className="col-xs-6">
@@ -248,6 +270,7 @@ var KaraokeOptions = (props) => {
               type="checkbox"
               id="Karaoke.Poll.Enabled"
               onChange={props.onChange}
+              value={props.settings.Poll.Enabled}
             />
           </div>
         </div>
@@ -265,6 +288,7 @@ var KaraokeOptions = (props) => {
                 className="form-control"
                 type="number"
                 name="Karaoke.Poll.Choices"
+                value={props.settings.Poll.Choices}
               />
             </div>
           </div>
@@ -280,27 +304,35 @@ var KaraokeOptions = (props) => {
                 className="form-control"
                 type="number"
                 name="Karaoke.Poll.Timeout"
+                value={props.settings.Poll.Timeout}
               />
             </div>
           </div>
 
           <div className="form-group">
-          <label htmlFor="Karaoke.Quota.FreeUpVote" className="col-xs-4 control-label">
-            {t("ENGINEFREEUPVOTES")}
-          </label>
-          <div className="col-xs-6">
-            {" "}
-            <input
-              type="checkbox"
-              id="Karaoke.Quota.FreeUpVote"
-              onChange={props.onChange}
-            />
+            <label
+              htmlFor="Karaoke.Quota.FreeUpVote"
+              className="col-xs-4 control-label"
+            >
+              {t("ENGINEFREEUPVOTES")}
+            </label>
+            <div className="col-xs-6">
+              {" "}
+              <input
+                type="checkbox"
+                id="Karaoke.Quota.FreeUpVote"
+                onChange={props.onChange}
+                value={props.settings.Quota.FreeUpVote}
+              />
+            </div>
           </div>
         </div>
-
-        </div>
       </div>
-      <input name="App.FirstRun" className="hideInput hidden" />
+      <input
+        name="App.FirstRun"
+        className="hideInput hidden"
+        value={props.settings.App.FirstRun}
+      />
     </>
   );
 };

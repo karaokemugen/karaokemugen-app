@@ -5,10 +5,10 @@ import KaraokeOptions from './KaraokeOptions';
 import InterfaceOptions from './InterfaceOptions';
 import axios from 'axios';
 
-var saveSettings = (event) => {
-  axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
-  axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
+axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
+axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
 
+var saveSettings = (event) => {
   var data = {};
   data[event.target.id] = event.target.value;
   axios.put('/api/admin/settings', {
@@ -16,10 +16,17 @@ var saveSettings = (event) => {
   });
 }
 
+var getSettings = async () => {
+  await axios.get('/api/admin/settings').then((data) =>{
+    return data;
+  });
+}
+
 var Options = (props) => {
   const { t } = useTranslation();
-
   var displays = [];
+  //var settings = getSettings();
+  var settings = {};
   return (
     <>
       <div className="col-lg-2 col-xs-0" />
@@ -70,7 +77,7 @@ var Options = (props) => {
               aria-labelledby="nav-player-tab"
               className="modal-body tab-pane fade in active"
             >
-              <PlayerOptions displays={displays} onChange={saveSettings}/>
+              <PlayerOptions displays={displays} onChange={saveSettings} settings={settings}/>
             </div>
             <div
               id="nav-interface"
@@ -78,7 +85,7 @@ var Options = (props) => {
               aria-labelledby="nav-interface-tab"
               className="modal-body tab-pane fade"
             >
-              <InterfaceOptions onChange={saveSettings}/>
+              <InterfaceOptions onChange={saveSettings} settings={settings}/>
             </div>
             <div
               id="nav-karaoke"
@@ -86,7 +93,7 @@ var Options = (props) => {
               aria-labelledby="nav-karaoke-tab"
               className="modal-body tab-pane fade"
             >
-              <KaraokeOptions onChange={saveSettings}/>
+              <KaraokeOptions onChange={saveSettings} settings={settings}/>
             </div>
           </div>
         </form>
