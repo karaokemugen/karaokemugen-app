@@ -25,6 +25,7 @@ class KaraokeOptions extends Component {
                 type="number"
                 className="form-control"
                 name="Karaoke.Quota.Type"
+                onChange={this.props.onChange}
                 value={settings.Karaoke.Quota.Type}
               >
                 <option value="0"> {t("QUOTA_TYPE_0")} </option>
@@ -46,6 +47,7 @@ class KaraokeOptions extends Component {
                 className="form-control"
                 name="Karaoke.Quota.Time"
                 placeholder="1000"
+                onChange={this.props.onChange}
                 value={settings.Karaoke.Quota.Time}
               />
             </div>
@@ -63,6 +65,7 @@ class KaraokeOptions extends Component {
                 className="form-control"
                 name="Karaoke.Quota.Songs"
                 placeholder="1000"
+                onChange={this.props.onChange}
                 value={settings.Karaoke.Quota.Songs}
               />
             </div>
@@ -80,6 +83,7 @@ class KaraokeOptions extends Component {
                 className="form-control"
                 name="Karaoke.Quota.FreeAutoTime"
                 placeholder="1000"
+                onChange={this.props.onChange}
                 value={settings.Karaoke.Quota.FreeAutoTime}
               />
             </div>
@@ -97,6 +101,7 @@ class KaraokeOptions extends Component {
                 className="form-control"
                 name="Karaoke.JinglesInterval"
                 placeholder="20"
+                onChange={this.props.onChange}
                 value={settings.Karaoke.JinglesInterval}
               />
             </div>
@@ -241,7 +246,8 @@ class KaraokeOptions extends Component {
                   className="form-control"
                   type="number"
                   name="Karaoke.Quota.FreeUpVotesRequiredMin"
-                  value={settings.Quota.FreeUpVotesRequiredMin}
+                  onChange={this.props.onChange}
+                  value={settings.Karaoke.Quota.FreeUpVotesRequiredMin}
                 />
               </div>
             </div>
@@ -257,7 +263,8 @@ class KaraokeOptions extends Component {
                   className="form-control"
                   type="number"
                   name="Karaoke.Quota.FreeUpVotesRequiredPercent"
-                  value={settings.Quota.FreeUpVotesRequiredPercent}
+                  onChange={this.props.onChange}
+                  value={settings.Karaoke.Quota.FreeUpVotesRequiredPercent}
                 />
               </div>
             </div>
@@ -276,7 +283,7 @@ class KaraokeOptions extends Component {
                 type="checkbox"
                 id="Karaoke.Poll.Enabled"
                 onChange={this.props.onChange}
-                value={settings.Poll.Enabled}
+                value={settings.Karaoke.Poll.Enabled}
               />
             </div>
           </div>
@@ -294,7 +301,8 @@ class KaraokeOptions extends Component {
                   className="form-control"
                   type="number"
                   name="Karaoke.Poll.Choices"
-                  value={settings.Poll.Choices}
+                  onChange={this.props.onChange}
+                  value={settings.Karaoke.Poll.Choices}
                 />
               </div>
             </div>
@@ -310,7 +318,8 @@ class KaraokeOptions extends Component {
                   className="form-control"
                   type="number"
                   name="Karaoke.Poll.Timeout"
-                  value={settings.Poll.Timeout}
+                  onChange={this.props.onChange}
+                  value={settings.Karaoke.Poll.Timeout}
                 />
               </div>
             </div>
@@ -328,7 +337,7 @@ class KaraokeOptions extends Component {
                   type="checkbox"
                   id="Karaoke.Quota.FreeUpVote"
                   onChange={this.props.onChange}
-                  value={settings.Quota.FreeUpVote}
+                  value={settings.Karaoke.Quota.FreeUpVote}
                 />
               </div>
             </div>
@@ -337,6 +346,7 @@ class KaraokeOptions extends Component {
         <input
           name="App.FirstRun"
           className="hideInput hidden"
+          onChange={this.props.onChange}
           value={settings.App.FirstRun}
         />
       </> : null
