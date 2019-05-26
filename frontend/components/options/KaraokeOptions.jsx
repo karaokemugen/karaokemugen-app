@@ -111,7 +111,7 @@ class KaraokeOptions extends Component {
               <input
                 type="checkbox"
                 id="Karaoke.Repeat"
-                onChange={props.onChange}
+                onChange={this.props.onChange}
                 value={settings.Karaoke.Repeat}
               />
             </div>
@@ -129,7 +129,7 @@ class KaraokeOptions extends Component {
               <input
                 type="checkbox"
                 id="Karaoke.SmartInsert"
-                onChange={props.onChange}
+                onChange={this.props.onChange}
                 value={settings.Karaoke.SmartInsert}
               />
             </div>
@@ -144,7 +144,7 @@ class KaraokeOptions extends Component {
               <input
                 type="checkbox"
                 id="Karaoke.Autoplay"
-                onChange={props.onChange}
+                onChange={this.props.onChange}
                 value={settings.Karaoke.Autoplay}
               />
             </div>
@@ -162,7 +162,7 @@ class KaraokeOptions extends Component {
               <input
                 type="checkbox"
                 id="Playlist.AllowDuplicates"
-                onChange={props.onChange}
+                onChange={this.props.onChange}
                 value={settings.Playlist.AllowDuplicates}
               />
             </div>
@@ -184,7 +184,7 @@ class KaraokeOptions extends Component {
               <input
                 type="checkbox"
                 id="Online.URL"
-                onChange={props.onChange}
+                onChange={this.props.onChange}
                 value={settings.Online.URL}
               />
             </div>
@@ -198,7 +198,7 @@ class KaraokeOptions extends Component {
               <input
                 type="checkbox"
                 id="Online.Users"
-                onChange={props.onChange}
+                onChange={this.props.onChange}
                 value={settings.Online.Users}
               />
             </div>
@@ -213,7 +213,7 @@ class KaraokeOptions extends Component {
               <input
                 type="checkbox"
                 id="Online.Stats"
-                onChange={props.onChange}
+                onChange={this.props.onChange}
                 value={settings.Online.Stats}
               />
             </div>
@@ -275,7 +275,7 @@ class KaraokeOptions extends Component {
               <input
                 type="checkbox"
                 id="Karaoke.Poll.Enabled"
-                onChange={props.onChange}
+                onChange={this.props.onChange}
                 value={settings.Poll.Enabled}
               />
             </div>
@@ -327,7 +327,7 @@ class KaraokeOptions extends Component {
                 <input
                   type="checkbox"
                   id="Karaoke.Quota.FreeUpVote"
-                  onChange={props.onChange}
+                  onChange={this.props.onChange}
                   value={settings.Quota.FreeUpVote}
                 />
               </div>

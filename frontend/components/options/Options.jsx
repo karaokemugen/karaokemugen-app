@@ -32,8 +32,7 @@ class Options extends Component {
 
   async getSettings() {
     const res = await axios.get('/api/admin/settings');
-    this.setState({ settings: res.data })
-    console.log(this.state)
+    this.setState({ settings: res.data.data })
   }
 
   render() {
@@ -105,7 +104,7 @@ class Options extends Component {
                 aria-labelledby="nav-karaoke-tab"
                 className="modal-body tab-pane fade"
               >
-                <KaraokeOptions onChange={this.saveSettings} settings={this.state.settings} />
+                <KaraokeOptions onChange={this.saveSettings} settings={this.state.settings}/>
               </div>
             </div>
           </form>
