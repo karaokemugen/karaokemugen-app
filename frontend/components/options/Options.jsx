@@ -16,14 +16,21 @@ class Options extends Component {
     this.state = {
       settings: this.getSettings()
     };
+    this.saveSettings = this.saveSettings.bind(this);
   }
 
-  saveSettings(event) {
-    var data = {};
-    data[event.target.name] = event.target.value;
-    axios.put('/api/admin/settings', {
+	expand (str, val) {
+		return str.split('.').reduceRight((acc, currentValue) => {
+			return { [currentValue]: acc };
+		}, val);
+	};
+
+  async saveSettings(event) {
+    var data = this.expand(event.target.id, eval(event.target.value));
+    const res = await axios.put('/api/admin/settings', {
       setting: JSON.stringify(data)
     });
+    this.setState({settings: res.data.data})
   }
 
   async getSettings() {

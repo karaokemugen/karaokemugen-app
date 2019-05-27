@@ -27,7 +27,7 @@ class PlayerOptions extends Component {
             <input
               action="command"
               type="checkbox"
-              name="Player.StayOnTop"
+              id="Player.StayOnTop"
               namecommand="toggleAlwaysOnTop"
               onChange={this.props.onChange}
               value={settings.Player.StayOnTop}
@@ -42,7 +42,7 @@ class PlayerOptions extends Component {
             <input
               action="command"
               type="checkbox"
-              name="Player.FullScreen"
+              id="Player.FullScreen"
               namecommand="toggleFullscreen"
               onChange={this.props.onChange}
               value={settings.Player.FullScreen}
@@ -58,7 +58,7 @@ class PlayerOptions extends Component {
             <select
               type="number"
               className="form-control"
-              name="Player.Screen"
+              id="Player.Screen"
               onChange={this.props.onChange}
               value={settings.Player.Screen}
             >
@@ -78,7 +78,7 @@ class PlayerOptions extends Component {
             {" "}
             <input
               type="checkbox"
-              name="Karaoke.Display.ConnectionInfo.Enabled"
+              id="Karaoke.Display.ConnectionInfo.Enabled"
               onChange={this.props.onChange}
               value={settings.Karaoke.Display.ConnectionInfo.Enabled}
             />
@@ -99,7 +99,7 @@ class PlayerOptions extends Component {
               </label>
               <div className="col-xs-6">
                 <input
-                  name="Karaoke.Display.ConnectionInfo.QRCode"
+                  id="Karaoke.Display.ConnectionInfo.QRCode"
                   type="checkbox"
                   onChange={this.props.onChange}
                   value={settings.Karaoke.Display.ConnectionInfo.QRCode}
@@ -117,7 +117,7 @@ class PlayerOptions extends Component {
               <div className="col-xs-6">
                 <input
                   className="form-control"
-                  name="Karaoke.Display.ConnectionInfo.Host"
+                  id="Karaoke.Display.ConnectionInfo.Host"
                   onChange={this.props.onChange}
                   value={settings.Karaoke.Display.ConnectionInfo.Host}
                 />
@@ -134,7 +134,7 @@ class PlayerOptions extends Component {
               <div className="col-xs-6">
                 <input
                   className="form-control"
-                  name="Karaoke.Display.ConnectionInfo.Message"
+                  id="Karaoke.Display.ConnectionInfo.Message"
                   onChange={this.props.onChange}
                   value={settings.Karaoke.Display.ConnectionInfo.Message}
                 />
@@ -151,7 +151,7 @@ class PlayerOptions extends Component {
             {" "}
             <input
               type="checkbox"
-              name="Player.PIP.Enabled"
+              id="Player.PIP.Enabled"
               onChange={this.props.onChange}
               value={settings.Player.PIP.Enabled}
             />
@@ -166,7 +166,7 @@ class PlayerOptions extends Component {
               <div className="col-xs-6">
                 <input
                   type="range"
-                  name="Player.PIP.Size"
+                  id="Player.PIP.Size"
                   onChange={this.props.onChange}
                   value={settings.Player.PIP.Size}
                 />
@@ -183,7 +183,7 @@ class PlayerOptions extends Component {
               <div className="col-xs-6">
                 <select
                   className="form-control"
-                  name="Player.PIP.PositionX"
+                  id="Player.PIP.PositionX"
                   onChange={this.props.onChange}
                   value={settings.Player.PIP.PositionX}
                 >
@@ -207,7 +207,7 @@ class PlayerOptions extends Component {
               <div className="col-xs-6">
                 <select
                   className="form-control"
-                  name="Player.PIP.PositionY"
+                  id="Player.PIP.PositionY"
                   onChange={this.props.onChange}
                   value={settings.Player.PIP.PositionY}
                 >
@@ -232,7 +232,7 @@ class PlayerOptions extends Component {
                 {" "}
                 <input
                   type="checkbox"
-                  name="Karaoke.Display.Nickname"
+                  id="Karaoke.Display.Nickname"
                   onChange={this.props.onChange}
                   value={settings.Karaoke.Display.Nickname}
                 />
@@ -250,7 +250,7 @@ class PlayerOptions extends Component {
                 {" "}
                 <input
                   type="checkbox"
-                  name="Karaoke.Display.Avatar"
+                  id="Karaoke.Display.Avatar"
                   onChange={this.props.onChange}
                   value={settings.Karaoke.Display.Avatar}
                 />
@@ -265,7 +265,7 @@ class PlayerOptions extends Component {
                 {" "}
                 <input
                   type="checkbox"
-                  name="Player.Monitor"
+                  id="Player.Monitor"
                   onChange={this.props.onChange}
                   value={settings.Player.Monitor}
                 />
@@ -283,7 +283,7 @@ class PlayerOptions extends Component {
                 {" "}
                 <input
                   type="checkbox"
-                  name="Player.VisualizationEffects"
+                  id="Player.VisualizationEffects"
                   onChange={this.props.onChange}
                   value={settings.Player.VisualizationEffects}
                 />
