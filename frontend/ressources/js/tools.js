@@ -438,11 +438,10 @@ startIntro = function(mode, stepLabel){
 
 	introManager.onexit(() => {
 		if (scope === 'admin') {
-            appFirstRun = false;
-            
-			var $appFirstRun = $('#settings [name="App.FirstRun"]');
+			appFirstRun = false;
+			var $appFirstRun = $('#settings [id="App.FirstRun"]');
 			$appFirstRun.val(false);
-            setSettings($appFirstRun);
+			setSettings($appFirstRun);
 		} else {
 			createCookie('publicTuto', 'true');
 			$('#loginModal').removeClass('firstRun');

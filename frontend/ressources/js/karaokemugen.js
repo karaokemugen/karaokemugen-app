@@ -2621,7 +2621,7 @@ var settingsNotUpdated;
 				}
 			});
 
-			$('#settings input[type="checkbox"], input[name="Karaoke.Private"]').on('switchChange.bootstrapSwitch', function () {
+			$('#settings input[type="checkbox"], input[id="Karaoke.Private"]').on('switchChange.bootstrapSwitch', function () {
 				setSettings($(this));
 			});
 

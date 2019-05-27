@@ -80,21 +80,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
             );
         });
 
-        $('#settings select').change(function () {
-            setSettings($(this));
-        });
-        $('#settings input[type!="checkbox"][exclude!="true"]').blur(function () {
-            setSettings($(this));
-        });
-
-        $('#settings input').focus(function () {
-            $(this).attr('oldValue', $(this).val());
-        }).keypress(function (e) { // allow pressing enter to validate a setting
-            if (e.which == 13) {
-                $(this).blur();
-            }
-        });
-
         $('[name="searchPlaylist"]').keypress(function (e) { // allow pressing enter to validate a setting
             if (e.which == 13) {
                 $(this).blur();
