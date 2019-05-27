@@ -14,12 +14,8 @@ class Options extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      settings: {}
+      settings: this.getSettings()
     };
-  }
-
-  componentWillMount() {
-    this.getSettings();
   }
 
   saveSettings(event) {

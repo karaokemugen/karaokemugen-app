@@ -3,10 +3,6 @@ import { withTranslation } from 'react-i18next';
 
 class KaraokeOptions extends Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const t = this.props.t;
     var settings = this.props.settings;
