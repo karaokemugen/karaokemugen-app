@@ -64,7 +64,7 @@ class InterfaceOptions extends Component {
               type="checkbox"
               id="Frontend.Permissions.AllowViewBlacklist"
               onChange={this.props.onChange}
-              value={settings.Frontend.Permissions.AllowViewBlacklist}
+              checked={settings.Frontend.Permissions.AllowViewBlacklist}
             />
           </div>
         </div>
@@ -82,7 +82,7 @@ class InterfaceOptions extends Component {
               type="checkbox"
               id="Frontend.Permissions.AllowViewBlacklistCriterias"
               onChange={this.props.onChange}
-              value={settings.Frontend.Permissions.AllowViewBlacklistCriterias}
+              checked={settings.Frontend.Permissions.AllowViewBlacklistCriterias}
             />
           </div>
         </div>
@@ -100,7 +100,7 @@ class InterfaceOptions extends Component {
               type="checkbox"
               id="Frontend.Permissions.AllowViewWhitelist"
               onChange={this.props.onChange}
-              value={settings.Frontend.Permissions.AllowViewWhitelist}
+              checked={settings.Frontend.Permissions.AllowViewWhitelist}
             />
           </div>
         </div>
@@ -114,7 +114,7 @@ class InterfaceOptions extends Component {
             <input type="checkbox"
               id="Karaoke.CreatePreviews"
               onChange={this.props.onChange}
-              value={settings.Karaoke.CreatePreviews}
+              checked={settings.Karaoke.CreatePreviews}
             />
           </div>
         </div>

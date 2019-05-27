@@ -26,7 +26,8 @@ class Options extends Component {
 	};
 
   async saveSettings(event) {
-    var data = this.expand(event.target.id, eval(event.target.value));
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    var data = this.expand(event.target.id, eval(value));
     const res = await axios.put('/api/admin/settings', {
       setting: JSON.stringify(data)
     });

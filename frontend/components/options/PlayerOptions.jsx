@@ -30,7 +30,7 @@ class PlayerOptions extends Component {
               id="Player.StayOnTop"
               namecommand="toggleAlwaysOnTop"
               onChange={this.props.onChange}
-              value={settings.Player.StayOnTop}
+              checked={settings.Player.StayOnTop}
             />
           </div>
         </div>
@@ -45,7 +45,7 @@ class PlayerOptions extends Component {
               id="Player.FullScreen"
               namecommand="toggleFullscreen"
               onChange={this.props.onChange}
-              value={settings.Player.FullScreen}
+              checked={settings.Player.FullScreen}
 
             />
           </div>
@@ -80,7 +80,7 @@ class PlayerOptions extends Component {
               type="checkbox"
               id="Karaoke.Display.ConnectionInfo.Enabled"
               onChange={this.props.onChange}
-              value={settings.Karaoke.Display.ConnectionInfo.Enabled}
+              checked={settings.Karaoke.Display.ConnectionInfo.Enabled}
             />
           </div>
         </div>
@@ -102,7 +102,7 @@ class PlayerOptions extends Component {
                   id="Karaoke.Display.ConnectionInfo.QRCode"
                   type="checkbox"
                   onChange={this.props.onChange}
-                  value={settings.Karaoke.Display.ConnectionInfo.QRCode}
+                  checked={settings.Karaoke.Display.ConnectionInfo.QRCode}
                 />
               </div>
             </div>
@@ -153,7 +153,7 @@ class PlayerOptions extends Component {
               type="checkbox"
               id="Player.PIP.Enabled"
               onChange={this.props.onChange}
-              value={settings.Player.PIP.Enabled}
+              checked={settings.Player.PIP.Enabled}
             />
           </div>
         </div>
@@ -161,7 +161,7 @@ class PlayerOptions extends Component {
           <div id="pipSettings" className="well well-sm settingsGroupPanel">
             <div className="form-group">
               <label htmlFor="Player.PIP.Size" className="col-xs-4 control-label">
-                {t("VIDEO_SIZE")}
+                {t("VIDEO_SIZE")+" ("+settings.Player.PIP.Size+"%)"}
               </label>
               <div className="col-xs-6">
                 <input
@@ -234,7 +234,7 @@ class PlayerOptions extends Component {
                   type="checkbox"
                   id="Karaoke.Display.Nickname"
                   onChange={this.props.onChange}
-                  value={settings.Karaoke.Display.Nickname}
+                  checked={settings.Karaoke.Display.Nickname}
                 />
               </div>
             </div>
@@ -252,7 +252,7 @@ class PlayerOptions extends Component {
                   type="checkbox"
                   id="Karaoke.Display.Avatar"
                   onChange={this.props.onChange}
-                  value={settings.Karaoke.Display.Avatar}
+                  checked={settings.Karaoke.Display.Avatar}
                 />
               </div>
             </div>
@@ -267,7 +267,7 @@ class PlayerOptions extends Component {
                   type="checkbox"
                   id="Player.Monitor"
                   onChange={this.props.onChange}
-                  value={settings.Player.Monitor}
+                  checked={settings.Player.Monitor}
                 />
               </div>
             </div>
@@ -285,7 +285,7 @@ class PlayerOptions extends Component {
                   type="checkbox"
                   id="Player.VisualizationEffects"
                   onChange={this.props.onChange}
-                  value={settings.Player.VisualizationEffects}
+                  checked={settings.Player.VisualizationEffects}
                 />
               </div>
             </div>

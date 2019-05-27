@@ -119,7 +119,7 @@ class KaraokeOptions extends Component {
                 type="checkbox"
                 id="Karaoke.Repeat"
                 onChange={this.props.onChange}
-                value={settings.Karaoke.Repeat}
+                checked={settings.Karaoke.Repeat}
               />
             </div>
           </div>
@@ -137,7 +137,7 @@ class KaraokeOptions extends Component {
                 type="checkbox"
                 id="Karaoke.SmartInsert"
                 onChange={this.props.onChange}
-                value={settings.Karaoke.SmartInsert}
+                checked={settings.Karaoke.SmartInsert}
               />
             </div>
           </div>
@@ -152,7 +152,7 @@ class KaraokeOptions extends Component {
                 type="checkbox"
                 id="Karaoke.Autoplay"
                 onChange={this.props.onChange}
-                value={settings.Karaoke.Autoplay}
+                checked={settings.Karaoke.Autoplay}
               />
             </div>
           </div>
@@ -170,7 +170,7 @@ class KaraokeOptions extends Component {
                 type="checkbox"
                 id="Playlist.AllowDuplicates"
                 onChange={this.props.onChange}
-                value={settings.Playlist.AllowDuplicates}
+                checked={settings.Playlist.AllowDuplicates}
               />
             </div>
           </div>
@@ -192,7 +192,7 @@ class KaraokeOptions extends Component {
                 type="checkbox"
                 id="Online.URL"
                 onChange={this.props.onChange}
-                value={settings.Online.URL}
+                checked={settings.Online.URL}
               />
             </div>
           </div>
@@ -206,7 +206,7 @@ class KaraokeOptions extends Component {
                 type="checkbox"
                 id="Online.Users"
                 onChange={this.props.onChange}
-                value={settings.Online.Users}
+                checked={settings.Online.Users}
               />
             </div>
           </div>
@@ -221,7 +221,7 @@ class KaraokeOptions extends Component {
                 type="checkbox"
                 id="Online.Stats"
                 onChange={this.props.onChange}
-                value={settings.Online.Stats}
+                checked={settings.Online.Stats}
               />
             </div>
           </div>
@@ -286,7 +286,7 @@ class KaraokeOptions extends Component {
                 type="checkbox"
                 id="Karaoke.Poll.Enabled"
                 onChange={this.props.onChange}
-                value={settings.Karaoke.Poll.Enabled}
+                checked={settings.Karaoke.Poll.Enabled}
               />
             </div>
           </div>
@@ -341,7 +341,7 @@ class KaraokeOptions extends Component {
                     type="checkbox"
                     id="Karaoke.Quota.FreeUpVote"
                     onChange={this.props.onChange}
-                    value={settings.Karaoke.Quota.FreeUpVote}
+                    checked={settings.Karaoke.Quota.FreeUpVote}
                   />
                 </div>
               </div>

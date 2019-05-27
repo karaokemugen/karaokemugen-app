@@ -398,54 +398,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
         return promise.promise();
     };
-    refreshPipSizeSettingLabel = function (val) {
-        $('label[for="Player.PIP.Size"]').text(i18n.__('VIDEO_SIZE') + " (" + val + "%)");
-    };
-    $('[name="Player.PIP.Size"]').on('input', function () {
-        refreshPipSizeSettingLabel($(this).val());
-    });
-
-    /* el is the html element containing the value being updated */
-    setSettings = function (el) {
-        if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
-            settingsUpdating = getSettings(el.attr('name'));
-
-            $('#settings').promise().then(function () {
-                var settingsArray = {};
-                  var numberArray = $('#settings [type="number"], #settings [type="range"]').map(function () {
-                    return { name: this.name, value: this.value && !isNaN(this.value) ? parseInt(this.value) : 0 };
-                }).get();
-                var formArray = numberArray.concat($('#settings [type!="number"][type!="checkbox"][type!="range"]').serializeArray())
-                    .concat($('#settings input[type=checkbox]')
-                        .map(function () {
-                            return { name: this.name, value: this.checked ? true : false };
-                        })
-                        .get());
-
-                $(formArray).each(function (index, obj) {
-                    settingsArray[obj.name] = obj.value;
-                });
-                settingsArray['Karaoke.Private'] = $('input[name="Karaoke.Private"]').val() === "true";
-                settingsArray['App.FirstRun'] = $('input[name="App.FirstRun"]').val() === "true";
-                settingsArray['Player.NoHud'] = settings['Player.NoHud'];
-                settingsArray['Player.NoBar'] = settings['Player.NoBar'];
-                DEBUG && console.log('setSettings : ', settingsArray);
-                var unflattenedSettings = unflattenObject(settingsArray)
-                $.ajax({
-                    type: 'PUT',
-                    url: 'admin/settings',
-                    contentType: 'application/json',
-                    dataType: "json",
-                    data: JSON.stringify({ 'setting': unflattenedSettings })
-                }).done(function () {
-
-                }).fail(function () {
-                    el.val(el.attr('oldValue')).focus();
-                });
-            });
-        }
-    };
-
 
     /* progression bar handlers part */
 
