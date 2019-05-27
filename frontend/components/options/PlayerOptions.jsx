@@ -6,8 +6,10 @@ class PlayerOptions extends Component {
   render() {
     const t = this.props.t;
     var settings = this.props.settings;
+    if (settings.Karaoke && settings.Karaoke.Display.ConnectionInfo.Host === null)
+      settings.Karaoke.Display.ConnectionInfo.Host = '';
     const listdisplays =
-    this.props.displays.length > 0
+      this.props.displays.length > 0
         ? this.props.displays.map(display, index => (
           <option value={index} >
             {" "}
@@ -83,7 +85,7 @@ class PlayerOptions extends Component {
           </div>
         </div>
 
-        {false ? (
+        {settings.Karaoke.Display.ConnectionInfo.Enabled ? (
           <div
             id="connexionInfoSettings"
             className="well well-sm settingsGroupPanel"
@@ -104,6 +106,7 @@ class PlayerOptions extends Component {
                 />
               </div>
             </div>
+            
             <div className="form-group">
               <label
                 htmlFor="Karaoke.Display.ConnectionInfo.Host"
@@ -120,6 +123,7 @@ class PlayerOptions extends Component {
                 />
               </div>
             </div>
+
             <div className="form-group">
               <label
                 htmlFor="Karaoke.Display.ConnectionInfo.Message"
@@ -153,139 +157,139 @@ class PlayerOptions extends Component {
             />
           </div>
         </div>
-
-        <div id="pipSettings" className="well well-sm settingsGroupPanel">
-          <div className="form-group">
-            <label htmlFor="Player.PIP.Size" className="col-xs-4 control-label">
-              {t("VIDEO_SIZE")}
-            </label>
-            <div className="col-xs-6">
-              <input
-                type="range"
-                id="Player.PIP.Size"
-                onChange={this.props.onChange}
-                value={settings.Player.PIP.Size}
-              />
+        {settings.Player.PIP.Enabled ?
+          <div id="pipSettings" className="well well-sm settingsGroupPanel">
+            <div className="form-group">
+              <label htmlFor="Player.PIP.Size" className="col-xs-4 control-label">
+                {t("VIDEO_SIZE")}
+              </label>
+              <div className="col-xs-6">
+                <input
+                  type="range"
+                  id="Player.PIP.Size"
+                  onChange={this.props.onChange}
+                  value={settings.Player.PIP.Size}
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label
-              htmlFor="Player.PIP.PositionX"
-              className="col-xs-4 control-label"
-            >
-              {t("VIDEO_POSITION_X")}
-            </label>
-            <div className="col-xs-6">
-              <select
-                className="form-control"
-                id="Player.PIP.PositionX"
-                onChange={this.props.onChange}
-                value={settings.Player.PIP.PositionX}
+            <div className="form-group">
+              <label
+                htmlFor="Player.PIP.PositionX"
+                className="col-xs-4 control-label"
               >
-                <option value="Left"> {t("LEFT")} </option>
-                <option value="Center" default>
-                  {" "}
-                  {t("CENTER")}{" "}
-                </option>
-                <option value="Right"> {t("RIGHT")} </option>
-              </select>
+                {t("VIDEO_POSITION_X")}
+              </label>
+              <div className="col-xs-6">
+                <select
+                  className="form-control"
+                  id="Player.PIP.PositionX"
+                  onChange={this.props.onChange}
+                  value={settings.Player.PIP.PositionX}
+                >
+                  <option value="Left"> {t("LEFT")} </option>
+                  <option value="Center" default>
+                    {" "}
+                    {t("CENTER")}{" "}
+                  </option>
+                  <option value="Right"> {t("RIGHT")} </option>
+                </select>
+              </div>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label
-              htmlFor="Player.PIP.PositionY"
-              className="col-xs-4 control-label"
-            >
-              {t("VIDEO_POSITION_Y")}
-            </label>
-            <div className="col-xs-6">
-              <select
-                className="form-control"
-                id="Player.PIP.PositionY"
-                onChange={this.props.onChange}
-                value={settings.Player.PIP.PositionY}
+            <div className="form-group">
+              <label
+                htmlFor="Player.PIP.PositionY"
+                className="col-xs-4 control-label"
               >
-                <option value="Bottom"> {t("BOTTOM")} </option>
-                <option value="Center" default>
-                  {" "}
-                  {t("CENTER")}{" "}
-                </option>
-                <option value="Top"> {t("TOP")} </option>
-              </select>
+                {t("VIDEO_POSITION_Y")}
+              </label>
+              <div className="col-xs-6">
+                <select
+                  className="form-control"
+                  id="Player.PIP.PositionY"
+                  onChange={this.props.onChange}
+                  value={settings.Player.PIP.PositionY}
+                >
+                  <option value="Bottom"> {t("BOTTOM")} </option>
+                  <option value="Center" default>
+                    {" "}
+                    {t("CENTER")}{" "}
+                  </option>
+                  <option value="Top"> {t("TOP")} </option>
+                </select>
+              </div>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label
-              htmlFor="Karaoke.Display.Nickname"
-              className="col-xs-4 control-label"
-            >
-              {t("ENGINEDISPLAYNICKNAME")}
-            </label>
-            <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Karaoke.Display.Nickname"
-                onChange={this.props.onChange}
-                value={settings.Karaoke.Display.Nickname}
-              />
+            <div className="form-group">
+              <label
+                htmlFor="Karaoke.Display.Nickname"
+                className="col-xs-4 control-label"
+              >
+                {t("ENGINEDISPLAYNICKNAME")}
+              </label>
+              <div className="col-xs-6">
+                {" "}
+                <input
+                  type="checkbox"
+                  id="Karaoke.Display.Nickname"
+                  onChange={this.props.onChange}
+                  value={settings.Karaoke.Display.Nickname}
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label
-              htmlFor="Karaoke.Display.Avatar"
-              className="col-xs-4 control-label"
-            >
-              {t("ENGINEDISPLAYAVATAR")}
-            </label>
-            <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Karaoke.Display.Avatar"
-                onChange={this.props.onChange}
-                value={settings.Karaoke.Display.Avatar}
-              />
+            <div className="form-group">
+              <label
+                htmlFor="Karaoke.Display.Avatar"
+                className="col-xs-4 control-label"
+              >
+                {t("ENGINEDISPLAYAVATAR")}
+              </label>
+              <div className="col-xs-6">
+                {" "}
+                <input
+                  type="checkbox"
+                  id="Karaoke.Display.Avatar"
+                  onChange={this.props.onChange}
+                  value={settings.Karaoke.Display.Avatar}
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label htmlFor="Player.Monitor" className="col-xs-4 control-label">
-              {t("PLAYERMONITOR")}
-            </label>
-            <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Player.Monitor"
-                onChange={this.props.onChange}
-                value={settings.Player.Monitor}
-              />
+            <div className="form-group">
+              <label htmlFor="Player.Monitor" className="col-xs-4 control-label">
+                {t("PLAYERMONITOR")}
+              </label>
+              <div className="col-xs-6">
+                {" "}
+                <input
+                  type="checkbox"
+                  id="Player.Monitor"
+                  onChange={this.props.onChange}
+                  value={settings.Player.Monitor}
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label
-              htmlFor="Player.VisualizationEffects"
-              className="col-xs-4 control-label"
-            >
-              {t("PLAYERVISUALIZATIONEFFECTS")}
-            </label>
-            <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Player.VisualizationEffects"
-                onChange={this.props.onChange}
-                value={settings.Player.VisualizationEffects}
-              />
+            <div className="form-group">
+              <label
+                htmlFor="Player.VisualizationEffects"
+                className="col-xs-4 control-label"
+              >
+                {t("PLAYERVISUALIZATIONEFFECTS")}
+              </label>
+              <div className="col-xs-6">
+                {" "}
+                <input
+                  type="checkbox"
+                  id="Player.VisualizationEffects"
+                  onChange={this.props.onChange}
+                  value={settings.Player.VisualizationEffects}
+                />
+              </div>
             </div>
-          </div>
-        </div>
+          </div> : null}
       </> : null
     );
   }

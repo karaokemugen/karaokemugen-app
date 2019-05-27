@@ -403,46 +403,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
             checkOnlineStats(settings);
 
-            var flatSettings = flattenObject(settings);
-
-            $.each(flatSettings, function (i, val) {
-                var input = $('[name="' + i + '"]');
-                if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
-                    if (input.attr('type') !== 'checkbox' || input.hasClass('hideInput')) {
-                        input.val(val);
-                        if (input.attr('name') === 'Karaoke.Quota.Type') {
-                            var $time = $('[name="Karaoke.Quota.Time"]').closest('.form-group');
-                            var $songs = $('[name="Karaoke.Quota.Songs"]').closest('.form-group');
-                            var $free = $('[name="Karaoke.Quota.FreeAutoTime"]').closest('.form-group');
-                            $time.hide();
-                            $songs.hide();
-                            $free.hide();
-                            if (val == 1) {
-                                $songs.show();
-                                $free.show();
-                            } else if (val == 2) {
-                                $time.show();
-                                $free.show();
-                            }
-                        } else if (input.attr('name') === 'Player.PIP.Size') {
-                            refreshPipSizeSettingLabel(val);
-                        }
-                    } else { // only checkbox here
-                        input.bootstrapSwitch('state', val, true);
-                        input.val(val);
-                        if (input.attr('name') === 'Player.PIP.Enabled') {
-                            val ? $('#pipSettings').show('500') : $('#pipSettings').hide('500');
-                        } else if (input.attr('name') === 'Karaoke.Display.ConnectionInfo.Enabled') {
-                            val ? $('#connexionInfoSettings').show('500') : $('#connexionInfoSettings').hide('500');
-                        } else if (input.attr('name') === 'Karaoke.Quota.FreeUpVotes') {
-                            val ? $('#freeUpvotesSettings').show('500') : $('#freeUpvotesSettings').hide('500');
-                        } else if (input.attr('name') === 'Karaoke.Poll.Enabled') {
-                            val ? $('#songPollSettings').show('500') : $('#songPollSettings').hide('500');
-                        }
-                    }
-                }
-            });
-
             playlistToAdd = data.Karaoke.Private ? 'current' : 'public';
 
             $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {

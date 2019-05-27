@@ -30,60 +30,66 @@ class KaraokeOptions extends Component {
               </select>
             </div>
           </div>
-          <div className="form-group">
-            <label
-              htmlFor="Karaoke.Quota.Time"
-              className="col-xs-4 control-label"
-            >
-              {t("TIME_BY_USER")}
-            </label>
-            <div className="col-xs-6">
-              <input
-                type="number"
-                className="form-control"
-                name="Karaoke.Quota.Time"
-                placeholder="1000"
-                onChange={this.props.onChange}
-                value={settings.Karaoke.Quota.Time}
-              />
-            </div>
-          </div>
-          <div className="form-group">
-            <label
-              htmlFor="Karaoke.Quota.Songs"
-              className="col-xs-4 control-label"
-            >
-              {t("SONGS_BY_USER")}
-            </label>
-            <div className="col-xs-6">
-              <input
-                type="number"
-                className="form-control"
-                name="Karaoke.Quota.Songs"
-                placeholder="1000"
-                onChange={this.props.onChange}
-                value={settings.Karaoke.Quota.Songs}
-              />
-            </div>
-          </div>
-          <div className="form-group">
-            <label
-              htmlFor="Karaoke.Quota.FreeAutoTime"
-              className="col-xs-4 control-label"
-            >
-              {t("FREE_AUTO_TIME")}
-            </label>
-            <div className="col-xs-6">
-              <input
-                type="number"
-                className="form-control"
-                name="Karaoke.Quota.FreeAutoTime"
-                placeholder="1000"
-                onChange={this.props.onChange}
-                value={settings.Karaoke.Quota.FreeAutoTime}
-              />
-            </div>
-          </div>
+          {settings.Karaoke.Quota.Type === "2" ?
+            <div className="form-group">
+              <label
+                htmlFor="Karaoke.Quota.Time"
+                className="col-xs-4 control-label"
+              >
+                {t("TIME_BY_USER")}
+              </label>
+              <div className="col-xs-6">
+                <input
+                  type="number"
+                  className="form-control"
+                  name="Karaoke.Quota.Time"
+                  placeholder="1000"
+                  onChange={this.props.onChange}
+                  value={settings.Karaoke.Quota.Time}
+                />
+              </div>
+            </div> : null}
+
+          {settings.Karaoke.Quota.Type === "1" ?
+            <div className="form-group">
+              <label
+                htmlFor="Karaoke.Quota.Songs"
+                className="col-xs-4 control-label"
+              >
+                {t("SONGS_BY_USER")}
+              </label>
+              <div className="col-xs-6">
+                <input
+                  type="number"
+                  className="form-control"
+                  name="Karaoke.Quota.Songs"
+                  placeholder="1000"
+                  onChange={this.props.onChange}
+                  value={settings.Karaoke.Quota.Songs}
+                />
+              </div>
+            </div> : null}
+
+          {settings.Karaoke.Quota.Type !== "0" ?
+            <div className="form-group">
+              <label
+                htmlFor="Karaoke.Quota.FreeAutoTime"
+                className="col-xs-4 control-label"
+              >
+                {t("FREE_AUTO_TIME")}
+              </label>
+              <div className="col-xs-6">
+                <input
+                  type="number"
+                  className="form-control"
+                  name="Karaoke.Quota.FreeAutoTime"
+                  placeholder="1000"
+                  onChange={this.props.onChange}
+                  value={settings.Karaoke.Quota.FreeAutoTime}
+                />
+              </div>
+            </div> : null}
+
           <div className="form-group">
             <label
               htmlFor="Karaoke.JinglesInterval"
@@ -226,45 +232,46 @@ class KaraokeOptions extends Component {
           </div>
         </div>
         <div id="nav-karaokePublicMode">
-          <div
-            id="freeUpvotesSettings"
-            className="well well-sm settingsGroupPanel"
-          >
-            <div className="form-group">
-              <label
-                className="col-xs-4 control-label"
-                htmlFor="Karaoke.Quota.FreeUpVotesRequiredMin"
-              >
-                {t("ENGINEFREEUPVOTESREQUIREDMIN")}
-              </label>
-              <div className="col-xs-6">
-                <input
-                  className="form-control"
-                  type="number"
-                  name="Karaoke.Quota.FreeUpVotesRequiredMin"
-                  onChange={this.props.onChange}
-                  value={settings.Karaoke.Quota.FreeUpVotesRequiredMin}
-                />
+          {settings.Karaoke.Quota.FreeUpVote ?
+            <div
+              id="freeUpvotesSettings"
+              className="well well-sm settingsGroupPanel"
+            >
+              <div className="form-group">
+                <label
+                  className="col-xs-4 control-label"
+                  htmlFor="Karaoke.Quota.FreeUpVotesRequiredMin"
+                >
+                  {t("ENGINEFREEUPVOTESREQUIREDMIN")}
+                </label>
+                <div className="col-xs-6">
+                  <input
+                    className="form-control"
+                    type="number"
+                    name="Karaoke.Quota.FreeUpVotesRequiredMin"
+                    onChange={this.props.onChange}
+                    value={settings.Karaoke.Quota.FreeUpVotesRequiredMin}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="form-group">
-              <label
-                htmlFor="Karaoke.Quota.FreeUpVotesRequiredPercent"
-                className="col-xs-4 control-label"
-              >
-                {t("ENGINEFREEUPVOTESREQUIREDPERCENT")}
-              </label>
-              <div className="col-xs-6">
-                <input
-                  className="form-control"
-                  type="number"
-                  name="Karaoke.Quota.FreeUpVotesRequiredPercent"
-                  onChange={this.props.onChange}
-                  value={settings.Karaoke.Quota.FreeUpVotesRequiredPercent}
-                />
+              <div className="form-group">
+                <label
+                  htmlFor="Karaoke.Quota.FreeUpVotesRequiredPercent"
+                  className="col-xs-4 control-label"
+                >
+                  {t("ENGINEFREEUPVOTESREQUIREDPERCENT")}
+                </label>
+                <div className="col-xs-6">
+                  <input
+                    className="form-control"
+                    type="number"
+                    name="Karaoke.Quota.FreeUpVotesRequiredPercent"
+                    onChange={this.props.onChange}
+                    value={settings.Karaoke.Quota.FreeUpVotesRequiredPercent}
+                  />
+                </div>
               </div>
-            </div>
-          </div>
+            </div> : null}
 
           <div className="form-group">
             <label
@@ -284,60 +291,61 @@ class KaraokeOptions extends Component {
             </div>
           </div>
 
-          <div id="songPollSettings" className="well well-sm settingsGroupPanel">
-            <div className="form-group">
-              <label
-                className="col-xs-4 control-label"
-                htmlFor="Karaoke.Poll.Choices"
-              >
-                {t("ENGINESONGPOLLCHOICES")}
-              </label>
-              <div className="col-xs-6">
-                <input
-                  className="form-control"
-                  type="number"
-                  name="Karaoke.Poll.Choices"
-                  onChange={this.props.onChange}
-                  value={settings.Karaoke.Poll.Choices}
-                />
+          {settings.Karaoke.Poll.Enabled ?
+            <div id="songPollSettings" className="well well-sm settingsGroupPanel">
+              <div className="form-group">
+                <label
+                  className="col-xs-4 control-label"
+                  htmlFor="Karaoke.Poll.Choices"
+                >
+                  {t("ENGINESONGPOLLCHOICES")}
+                </label>
+                <div className="col-xs-6">
+                  <input
+                    className="form-control"
+                    type="number"
+                    name="Karaoke.Poll.Choices"
+                    onChange={this.props.onChange}
+                    value={settings.Karaoke.Poll.Choices}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="form-group">
-              <label
-                htmlFor="Karaoke.Poll.Timeout"
-                className="col-xs-4 control-label"
-              >
-                {t("ENGINESONGPOLLTIMEOUT")}
-              </label>
-              <div className="col-xs-6">
-                <input
-                  className="form-control"
-                  type="number"
-                  name="Karaoke.Poll.Timeout"
-                  onChange={this.props.onChange}
-                  value={settings.Karaoke.Poll.Timeout}
-                />
+              <div className="form-group">
+                <label
+                  htmlFor="Karaoke.Poll.Timeout"
+                  className="col-xs-4 control-label"
+                >
+                  {t("ENGINESONGPOLLTIMEOUT")}
+                </label>
+                <div className="col-xs-6">
+                  <input
+                    className="form-control"
+                    type="number"
+                    name="Karaoke.Poll.Timeout"
+                    onChange={this.props.onChange}
+                    value={settings.Karaoke.Poll.Timeout}
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="form-group">
-              <label
-                htmlFor="Karaoke.Quota.FreeUpVote"
-                className="col-xs-4 control-label"
-              >
-                {t("ENGINEFREEUPVOTES")}
-              </label>
-              <div className="col-xs-6">
-                {" "}
-                <input
-                  type="checkbox"
-                  id="Karaoke.Quota.FreeUpVote"
-                  onChange={this.props.onChange}
-                  value={settings.Karaoke.Quota.FreeUpVote}
-                />
+              <div className="form-group">
+                <label
+                  htmlFor="Karaoke.Quota.FreeUpVote"
+                  className="col-xs-4 control-label"
+                >
+                  {t("ENGINEFREEUPVOTES")}
+                </label>
+                <div className="col-xs-6">
+                  {" "}
+                  <input
+                    type="checkbox"
+                    id="Karaoke.Quota.FreeUpVote"
+                    onChange={this.props.onChange}
+                    value={settings.Karaoke.Quota.FreeUpVote}
+                  />
+                </div>
               </div>
-            </div>
-          </div>
+            </div> : null}
         </div>
         <input
           name="App.FirstRun"
