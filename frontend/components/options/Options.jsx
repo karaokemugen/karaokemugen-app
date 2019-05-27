@@ -20,7 +20,7 @@ class Options extends Component {
 
   saveSettings(event) {
     var data = {};
-    data[event.target.id] = event.target.value;
+    data[event.target.name] = event.target.value;
     axios.put('/api/admin/settings', {
       setting: JSON.stringify(data)
     });

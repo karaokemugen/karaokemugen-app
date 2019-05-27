@@ -17,7 +17,7 @@ class InterfaceOptions extends Component {
             <select
               type="number"
               className="form-control"
-              id="Frontend.Mode"
+              name="Frontend.Mode"
               onChange={this.props.onChange}
               value={settings.Frontend.Mode}
             >
@@ -39,7 +39,7 @@ class InterfaceOptions extends Component {
             <select
               type="number"
               className="form-control"
-              id="Frontend.SeriesLanguageMode"
+              name="Frontend.SeriesLanguageMode"
               onChange={this.props.onChange}
               value={settings.Frontend.SeriesLanguageMode}
             >
@@ -62,7 +62,7 @@ class InterfaceOptions extends Component {
             {" "}
             <input
               type="checkbox"
-              id="Frontend.Permissions.AllowViewBlacklist"
+              name="Frontend.Permissions.AllowViewBlacklist"
               onChange={this.props.onChange}
               value={settings.Frontend.Permissions.AllowViewBlacklist}
             />
@@ -80,7 +80,7 @@ class InterfaceOptions extends Component {
             {" "}
             <input
               type="checkbox"
-              id="Frontend.Permissions.AllowViewBlacklistCriterias"
+              name="Frontend.Permissions.AllowViewBlacklistCriterias"
               onChange={this.props.onChange}
               value={settings.Frontend.Permissions.AllowViewBlacklistCriterias}
             />
@@ -98,7 +98,7 @@ class InterfaceOptions extends Component {
             {" "}
             <input
               type="checkbox"
-              id="Frontend.Permissions.AllowViewWhitelist"
+              name="Frontend.Permissions.AllowViewWhitelist"
               onChange={this.props.onChange}
               value={settings.Frontend.Permissions.AllowViewWhitelist}
             />
@@ -112,7 +112,7 @@ class InterfaceOptions extends Component {
           <div className="col-xs-6">
             {" "}
             <input type="checkbox"
-              id="Karaoke.CreatePreviews"
+              name="Karaoke.CreatePreviews"
               onChange={this.props.onChange}
               value={settings.Karaoke.CreatePreviews}
             />
