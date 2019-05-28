@@ -22,7 +22,10 @@ SELECT
 	u.email AS email,
 	u.fingerprint AS fingerprint,
 	u.last_login_at AS last_login_at,
-	u.flag_online AS flag_online
+	u.flag_online AS flag_online,
+	u.series_lang_mode AS series_lang_mode,
+	u.main_series_lang AS main_series_lang,
+	u.fallback_series_lang AS fallback_series_lang
 FROM users AS u
 WHERE u.pk_login = :username
 `;
@@ -123,7 +126,10 @@ UPDATE users SET
 	bio = :bio,
 	email = :email,
 	url = :url,
-	type = :type
+	type = :type,
+	series_lang_mode = :series_lang_mode,
+	main_series_lang = :main_series_lang,
+	fallback_series_lang = :fallback_series_lang
 WHERE pk_login = :old_login
 `;
 

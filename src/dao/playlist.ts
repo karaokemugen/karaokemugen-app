@@ -6,6 +6,8 @@ import {pg as yesql} from 'yesql';
 import {Playlist, PLC, PLCParams} from '../types/playlist';
 import { QueryResult } from 'pg';
 import { DBPLC, DBPLCKID, DBPLPos, DBPLCNames, DBPLCInfo, DBPL } from '../types/database/playlist';
+import { User } from '../types/user';
+import { getUser } from './user';
 
 const sql = require('./sql/playlist');
 
@@ -137,7 +139,15 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 		)`;
 		orderClause = 'RANDOM()';
 	}
-	const query = sql.getPlaylistContents(filterClauses.sql, langSelector(params.lang), whereClause, orderClause, limitClause, offsetClause);
+	let user: User = {};
+	let userMode = -1;
+	let userLangs = {main: null, fallback: null};
+	if (params.username) user = await getUser(params.username);
+	if (user) {
+		userMode = user.series_lang_mode;
+		userLangs = {main: user.main_series_lang, fallback: user.fallback_series_lang};
+	}
+	const query = sql.getPlaylistContents(filterClauses.sql, langSelector(params.lang, userMode, userLangs), whereClause, orderClause, limitClause, offsetClause);
 	const res = await db().query(yesql(query)({
 		playlist_id: params.playlist_id,
 		username: params.username,
