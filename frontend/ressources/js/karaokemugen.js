@@ -8,8 +8,9 @@ var refreshTime;        // Int (ms) : time unit between every call
 var stopUpdate;         // Boolean : allow to stop any automatic ajax update
 var oldState;           // Object : last player state saved
 var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a flood of search
-var tags;             // Object : list of blacklist criterias tags
-var forSelectTags;             // Object : list of blacklist criterias tags for select use
+var tags;               // Object : list of blacklist criterias tags
+var forSelectTags;      // Object : list of blacklist criterias tags for select use
+var series;
 var showInfoMessage;	// Object : list of info codes to show as a toast
 var hideErrorMessage;
 var softErrorMessage;
@@ -891,7 +892,16 @@ var settingsNotUpdated;
 					});
 			}
 		});
-		/* profil stuff */
+        /* profil stuff */
+            
+        var selectIso = Object.keys(iso639).map(k => { return { "id": k, "text": iso639[k][i18n.locale][0] } });
+        $('[name="fallback_series_lang"], [name="main_series_lang"]').select2({ theme: 'bootstrap',
+            tags: false,
+            data: selectIso,
+            dropdownParent: $('#profilModal'),
+            minimumResultsForSearch: 3
+        });
+        
 		showProfil = function() {
 			$.ajax({
 				url: 'public/myaccount/',
@@ -902,14 +912,24 @@ var settingsNotUpdated;
 
 					$.each(response, function(i, k) {
 						var $element = $('.profileContent [name="' + i + '"]');
-						$element.attr('oldval', k);
-
+                        $element.attr('oldval', k);
+                        
 						if(i === 'avatar_file' && k) {
 							$element.attr('src', pathAvatar + k);
 						} else if( i === 'login') {
-							$element.text(k);
+                            $element.text(k);
 						} else if (i !== 'password') {
-							$element.val(k);
+
+                            if ( ['main_series_lang', 'fallback_series_lang'].indexOf(i) > -1 ) {
+                                $element.val(k);
+                                $element.trigger('change.select2');
+                            } else {
+                                $element.val(k);
+                            }
+
+                            if (i === 'series_lang_mode' ) {
+                                showHideLangSelects()
+                            }
 						}
 					});
 
@@ -935,7 +955,6 @@ var settingsNotUpdated;
 							$userlist.empty().append($(userlistStr));
 						});
 				});
-
 		};
 
 		$('.profileData .profileLine input').on('keypress', (e) => {
@@ -944,7 +963,7 @@ var settingsNotUpdated;
 			}
 		});
 
-		$('.profileData .profileLine input[name!="password"]').on('blur', (e) => {
+        triggerProfileUpdate = function (e) {
 			var $input = $(e.target);
 			if ($input.attr('oldval') !== $input.val()) {
 				// TODO gestion confirmation password
@@ -955,7 +974,13 @@ var settingsNotUpdated;
 					$passwordConfirmation.val('').addClass('redBorders');
 					$input.focus();
 				} else {
-					var profileData = $('.profileData .profileLine > input[name]').serialize();
+                    var profileData = {};
+                    $('.profileData .profileLine > input[name]').each((k,e) => {
+                        profileData[$(e).attr('name')] = $(e).val();
+                    });
+                    $('.profileData .profileLine select[name]').each((k,e) => {
+                        profileData[$(e).attr('name')] = ( $(e).val() ? $(e).val() : null )
+                    });
 					$.ajax({
 						url: 'public/myaccount',
 						type: 'PUT',
@@ -986,8 +1011,17 @@ var settingsNotUpdated;
 						});
 				}
 			}
-		});
+        };
+        showHideLangSelects = function(e) {
+            var langSelects = $('.profileData .profileLine select[name="main_series_lang"], .profileData .profileLine select[name="fallback_series_lang"]');
+            var langSelectParent = langSelects.parent().parent();
+            $('[name="series_lang_mode"]').val() == 4 ? langSelectParent.show() : langSelectParent.hide();
 
+        }
+        $('.profileData .profileLine input[name!="password"]').on('blur', triggerProfileUpdate);
+        $('.profileData .profileLine select[name]').on('change', triggerProfileUpdate);
+        $('.profileData .profileLine select[name="series_lang_mode"]').on('change', showHideLangSelects);
+        
 		$('#avatar').change(function() {
 			var dataFile = new FormData();
 			$.each(this.files, function(i, file) {
@@ -2465,7 +2499,7 @@ var settingsNotUpdated;
 
 				$.ajax({ url: 'public/series', }).done(function (data) {
 
-					var series = data.content;
+					series = data.content;
 					series = series.map(function(val, ind){
 						return {id:val.sid, text: val.i18n_name, type: 'serie',
 							aliases : val.aliases, karacount : val.karacount};

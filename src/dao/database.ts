@@ -5,7 +5,7 @@ import {Pool} from 'pg';
 import {exit} from '../services/engine';
 import {duration} from '../utils/date';
 import deburr from 'lodash.deburr';
-import langs from 'langs';
+import {where as whereLangs} from 'langs';
 import {run as generateDB} from '../services/generation';
 import DBMigrate from 'db-migrate';
 import {join} from 'path';
@@ -82,13 +82,15 @@ export function buildClauses(words: string): WhereClause {
 	};
 }
 
-export function langSelector(lang: string, series?: boolean): LangClause {
+export function langSelector(lang: string, userMode?: number, userLangs?: LangClause, series?: boolean): LangClause {
 	const conf = getConfig();
 	const state = getState();
-	const userLocale = langs.where('1',lang || state.EngineDefaultLocale);
-	const engineLocale = langs.where('1',state.EngineDefaultLocale);
+	const userLocale = whereLangs('1',lang || state.EngineDefaultLocale);
+	const engineLocale = whereLangs('1',state.EngineDefaultLocale);
 	//Fallback to english for cases other than 0 (original name)
-	switch(+conf.Frontend.SeriesLanguageMode) {
+	let mode = +conf.Frontend.SeriesLanguageMode;
+	if (userMode > -1) mode = userMode;
+	switch(mode) {
 	case 0: return {main: null, fallback: null};
 	default:
 	case 1:
@@ -96,6 +98,7 @@ export function langSelector(lang: string, series?: boolean): LangClause {
 		return {main: null, fallback: null};
 	case 2: return {main: `'${engineLocale['2B']}'`, fallback: '\'eng\''};
 	case 3: return {main: `'${userLocale['2B']}'`, fallback: '\'eng\''};
+	case 4: return {main: `'${userLangs.main}'`, fallback: `'${userLangs.fallback}'`};
 	}
 }
 

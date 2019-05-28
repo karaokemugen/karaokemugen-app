@@ -126,6 +126,8 @@ export async function extractAssInfos(subFile: string): Promise<string> {
 }
 
 export async function extractMediaTechInfos(mediaFile: string, size: number): Promise<MediaInfo> {
+	// noInfo is when everything about the file is fine, sizes are the same, no need to fetch media info from ffmpeg.
+	// errorInfo is when there's been an error (file not found, ffmpeg failed, etc.)
 	const noInfo = {
 		error: false,
 		size: null,
@@ -374,12 +376,14 @@ async function validateKaraV3(karaPath: string, karaFile: string, conf: Config) 
 	}
 	const mediaInfo = await extractMediaTechInfos(resolve(getState().appPath, conf.System.Path.Medias[0], kara.mediafile), +kara.mediasize);
 	if (subchecksum !== kara.subchecksum) kara.subchecksum = subchecksum;
-	if (mediaInfo.size !== +kara.mediasize) {
+	if (mediaInfo.error) {
+		throw `Error reading file ${kara.mediafile}`;
+	} else if (mediaInfo.size) {
 		kara.mediasize = mediaInfo.size;
 		kara.mediagain = mediaInfo.gain;
 		kara.mediaduration = mediaInfo.duration;
 	}
-	if (mediaInfo.size !== +kara.mediasize || subchecksum !== kara.subchecksum) await asyncWriteFile(resolve(karaPath, karaFile), stringify(kara));
+	if (mediaInfo.size || subchecksum !== kara.subchecksum) await asyncWriteFile(resolve(karaPath, karaFile), stringify(kara));
 }
 
 export function karaDataValidationErrors(karaData: KaraFileV4): {} {

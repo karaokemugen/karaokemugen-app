@@ -529,6 +529,8 @@
 	"SERIE_NAME_MODE_SONG": "Langue de la chanson",
 	"SERIE_NAME_MODE_ADMIN": "Langue de Karaoke Mugen",
 	"SERIE_NAME_MODE_USER": "Langue de l'utilisateur",
+	"SERIE_NAME_MODE_NO_PREF": "Pas de préférence",
+	"SERIE_NAME_MODE_USER_FORCE": "Forcer la langue des séries",
 	"PUBLICMODESETTINGS": "Options exclusives au mode public",
 	"_": "DO NOT MODIFY",
 	"POLLTITLE": "À vous de voter !",
@@ -573,5 +575,8 @@
 	"PROFILE_ONLINE_DELETED": "Votre profil en ligne a bien été supprimé",
     "INSTANCE_NAME": "Nom du serveur",
     "INSTANCE_NAME_SHORT": "Serveur",
-	"ADD_RANDOM_KARAS": "Ajouter une ou plusieurs chansons aléatoirement"
+	"ADD_RANDOM_KARAS": "Ajouter une ou plusieurs chansons aléatoirement",
+	"LANGUAGE": "Langues",
+	"MAIN_SERIES_LANG": "Langue des séries",
+	"FALLBACK_SERIES_LANG": "Langue de secours des séries"
 }

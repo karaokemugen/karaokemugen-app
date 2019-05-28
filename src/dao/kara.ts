@@ -6,9 +6,10 @@ import {pg as yesql} from 'yesql';
 import {profile} from '../utils/logger';
 import {now} from '../utils/date';
 import { Kara, KaraParams } from '../types/kara';
-import { Role } from '../types/user';
+import { Role, User } from '../types/user';
 import {PLC} from '../types/playlist';
 import { DBYear, DBKara, DBKaraHistory, DBKaraBase } from '../types/database/kara';
+import { getUser } from './user';
 
 const sql = require('./sql/kara');
 
@@ -124,7 +125,15 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			WHERE pc.fk_id_playlist = ${getState().modePlaylistID}
 		)`;
 	}
-	const query = sql.getAllKaras(filterClauses.sql, langSelector(params.lang), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
+	let user: User = {};
+	let userMode = -1;
+	let userLangs = {main: null, fallback: null};
+	if (params.username) user = await getUser(params.username);
+	if (user) {
+		userMode = user.series_lang_mode;
+		userLangs = {main: user.main_series_lang, fallback: user.fallback_series_lang};
+	}
+	const query = sql.getAllKaras(filterClauses.sql, langSelector(params.lang, userMode, userLangs), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
 	const queryParams = {
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 		username: params.username,
