@@ -127,13 +127,9 @@ export async function initFrontend() {
 			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 			// Request headers you wish to allow
 			res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Authorization, Accept, Key');
-			if (req.method === 'OPTIONS') {
-				res.statusCode = 200;
-				res.json();
-			} else {
-			// Pass to next layer of middleware
-				next();
-			}
+			req.method === 'OPTIONS'
+				? res.json()
+				: next();
 		});
 		app.use(express.static(__dirname + '/../../frontend/'));
 		//path for system control panel

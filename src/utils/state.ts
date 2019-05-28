@@ -61,7 +61,7 @@ export function getPublicState(): PublicState {
 }
 
 export function emitState() {
-	if (state.player.ready) emitWS('playerStatus',getPublicState());
+	if (state.player.ready) emitWS('playerStatus', getPublicState());
 };
 
 export function getState() {
