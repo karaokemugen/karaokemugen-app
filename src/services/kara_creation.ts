@@ -57,7 +57,7 @@ export async function editKara(kara: Kara) {
 			logger.info(`[KaraGen] Removing ${karaFile}`);
 			await asyncUnlink(karaFile);
 			// Remove karav3 file
-			const karaV3File = karaFile.replace('/karaokes/','/karas/').replace('.json','');
+			const karaV3File = karaFile.replace('\\karaokes\\','\\karas\\').replace('/karaokes/','/karas/').replace('.json','');
 			logger.info(`[KaraGen] Removing ${karaV3File}`);
 			await asyncUnlink(karaV3File);
 		}
