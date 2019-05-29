@@ -54,9 +54,12 @@ export async function editKara(kara: Kara) {
 
 		//Removing previous files if they're different from the new ones (name changed, etc.)
 		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) {
-			asyncUnlink(karaFile);
+			logger.info(`[KaraGen] Removing ${karaFile}`);
+			await asyncUnlink(karaFile);
 			// Remove karav3 file
-			asyncUnlink(karaFile.replace('/karaokes/','/karas/').replace('.json',''));
+			const karaV3File = karaFile.replace('/karaokes/','/karas/').replace('.json','');
+			logger.info(`[KaraGen] Removing ${karaV3File}`);
+			await asyncUnlink(karaV3File);
 		}
 		if (newSubFile.toLowerCase() !== subFile.toLowerCase() && subFile) {
 			if (await asyncExists(subFile)) asyncUnlink(subFile);
