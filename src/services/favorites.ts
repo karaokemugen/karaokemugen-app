@@ -42,7 +42,7 @@ export async function fetchAndAddFavorites(instance: string, token: string, user
 		};
 		await importFavorites(favorites, username);
 	} catch(err) {
-		logger.error(`[Favorites] Error getting remote favorites for ${username}@${instance} : ${err}`);
+		logger.error(`[Favorites] Error getting remote favorites for ${username} : ${err}`);
 	}
 }
 
