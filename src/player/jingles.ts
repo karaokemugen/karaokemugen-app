@@ -4,70 +4,50 @@ import {resolvedPathJingles} from '../utils/config';
 import {getMediaInfo} from '../utils/ffmpeg';
 import logger from 'winston';
 import sample from 'lodash.sample';
+import cloneDeep from 'lodash.clonedeep';
 import { Jingle } from '../types/jingles';
 
-let allJingles = [];
-let currentJingles = [];
+let allSeries = {};
+let currentSeries = {};
 
-async function extractAllJingleFiles(): Promise<string[]> {
-	let jingleFiles = [];
-	for (const resolvedPath of resolvedPathJingles()) {
-		jingleFiles = jingleFiles.concat(await extractJingleFiles(resolvedPath));
-	}
-	return jingleFiles;
-}
-
-async function extractJingleFiles(jingleDir: string): Promise<string[]> {
-	const jingleFiles = [];
+async function extractJingleFiles(jingleDir: string) {
 	const dirListing = await asyncReadDir(jingleDir);
 	for (const file of dirListing) {
 		if (isMediaFile(file)) {
-			jingleFiles.push(resolve(jingleDir, file));
+			getAllVideoGains(file, jingleDir);
 		}
 	}
-	return jingleFiles;
 }
 
-async function getAllVideoGains(jingleFiles: string[]): Promise<Jingle[]> {
-	let jinglesList = [];
-	for (const jinglefile of jingleFiles) {
-		const videodata = await getMediaInfo(jinglefile);
-		jinglesList.push(
-			{
-				file: jinglefile,
-				gain: videodata.gain
-			});
-		logger.debug(`[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.gain} dB`);
+async function getAllVideoGains(file: string, jingleDir: string) {
+	const jinglefile = resolve(jingleDir, file);
+	const videodata = await getMediaInfo(jinglefile);
+	const serie = file.split(' - ')[0];
+	if (!allSeries[serie]) allSeries[serie] = [];
+	allSeries[serie].push({
+		file: jinglefile,
+		gain: videodata.gain
+	});
+	logger.debug(`[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.gain} dB`);
+}
+
+export function buildJinglesList() {
+	for (const resolvedPath of resolvedPathJingles()) {
+		extractJingleFiles(resolvedPath);
 	}
-	return jinglesList;
-}
-
-export async function buildJinglesList(): Promise<Jingle[]> {
-	const jingleFiles = await extractAllJingleFiles();
-	const list = await getAllVideoGains(jingleFiles);
-	currentJingles = currentJingles.concat(list);
-	allJingles = allJingles.concat(list);
-	return list;
-}
-
-export function getJingles(): Jingle[] {
-	return currentJingles;
-}
-
-export function removeJingle(jingle: string) {
-	currentJingles = currentJingles.filter(e => e.file !== jingle);
 }
 
 export function getSingleJingle(): Jingle {
-	const jingles = getJingles();
-	if (jingles.length > 0) {
+	//If our current jingle serie files list is empty after the previous removal
+	//Fill it again with the original list.
+	if (Object.keys(currentSeries).length === 0) {
+		currentSeries = cloneDeep(allSeries);
+	} else {
 		logger.info('[Player] Jingle time !');
-		const jingle = sample(jingles);
-		//Let's remove the jingle we just selected so it won't be picked again next time.
-		removeJingle(jingle.file);
-		//If our current jingle files list is empty after the previous removal
-		//Fill it again with the original list.
-		if (currentJingles.length === 0) currentJingles = currentJingles.concat(allJingles);
+		const jinglesSeries = sample(Object.keys(currentSeries));
+		const jingle = sample(currentSeries[jinglesSeries]);
+		//Let's remove the serie of the jingle we just selected so it won't be picked again next time.
+		delete currentSeries[jinglesSeries];
 		return jingle;
 	}
 }
