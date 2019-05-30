@@ -132,7 +132,7 @@ function toggleFullScreenPlayer() {
 function toggleOnTopPlayer() {
 	let state = getState();
 	state = setState({ontop: toggleOnTop()});
-	state.engine.ontop
+	state.ontop
 		? logger.info('[Player] Player staying on top')
 		: logger.info('[Player] Player NOT staying on top');
 }

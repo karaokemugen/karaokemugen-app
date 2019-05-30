@@ -39,7 +39,7 @@ import {updateExpiredUsers as DBUpdateExpiredUsers,
 	reassignToUser as DBReassignToUser,
 	deleteUser as DBDeleteUser
 } from '../dao/user';
-
+import {has as hasLang} from 'langs';
 
 let userLoginTimes = new Map();
 let usersFetched = {};
@@ -139,7 +139,10 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				url: remoteUser.url,
 				email: remoteUser.email,
 				nickname: remoteUser.nickname,
-				password: password
+				password: password,
+				series_lang_mode: remoteUser.series_lang_mode,
+				main_series_lang: remoteUser.main_series_lang,
+				fallback_series_lang: remoteUser.fallback_series_lang
 			},
 			avatar_file,
 			'admin',
@@ -226,6 +229,8 @@ async function editRemoteUser(user: User) {
 	if (user.email) form.append('email', user.email);
 	if (user.url) form.append('url', user.url);
 	if (user.password) form.append('password', user.password);
+	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
+	if (user.fallback_series_lang) form.append('fallback_series_lang', user.fallback_series_lang);
 	try {
 		await got(`https://${instance}/api/users/${login}`, {
 			method: 'PUT',
@@ -254,6 +259,10 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
+		if (!user.series_lang_mode) user.series_lang_mode = -1;
+		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw 'Invalid series_lang_mode';
+		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw `main_series_lang is not a valid ISO639-2B code (received ${user.main_series_lang})`;
+		if (user.fallback_series_lang && !hasLang('2B', user.fallback_series_lang)) throw `fallback_series_lang is not a valid ISO639-2B code (received ${user.fallback_series_lang})`;
 		if (user.type === 0 && role !== 'admin') throw 'Admin flag permission denied';
 		if (user.type !== 0 && !user.type) user.type = currentUser.type;
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';

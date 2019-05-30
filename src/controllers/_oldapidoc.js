@@ -8501,3 +8501,138 @@
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
+ /**
+ * @api {get} /public/myaccount View own user details
+ * @apiName GetMyAccount
+ * @apiVersion 2.5.0
+ * @apiGroup Users
+ * @apiPermission own
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccess {String} data/login User's login
+ * @apiSuccess {String} data/nickname User's nickname
+ * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
+ * @apiSuccess {Number} data/flag_online Is the user an online account ?
+ * @apiSuccess {Number} data/type Type of account (`0` = admin, `1` = user, `2` = guest)
+ * @apiSuccess {Number} data/last_login_at Last login time in UNIX timestamp.
+ * @apiSuccess {Number} data/user_id User's ID in the database
+ * @apiSuccess {String} data/url User's URL in its profile
+ * @apiSuccess {String} data/fingerprint User's fingerprint
+ * @apiSuccess {String} data/bio User's bio
+ * @apiSuccess {String} data/email User's email
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "avatar_file": "",
+ *           "flag_online": false,
+ *           "type": 0,
+ *           "last_login_at": null,
+ *           "login": "admin",
+ *           "nickname": "Administrator",
+ * 			 "url": null,
+ * 			 "email": null,
+ * 			 "bio": null,
+ * 			 "fingerprint": null
+ *       },
+ *   ]
+ * }
+ * @apiError USER_VIEW_ERROR Unable to view user details
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "USER_VIEW_ERROR",
+ *   "message": null
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+	/**
+ * @api {put} /public/myaccount Edit your own account
+ * @apiName EditMyAccount
+ * @apiVersion 2.5.0
+ * @apiGroup Users
+ * @apiPermission own
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} nickname New nickname for user
+ * @apiParam {String} [password] New password. Can be empty (password won't be changed then)
+ * @apiParam {String} [bio] User's bio info. Can be empty.
+ * @apiParam {String} [email] User's mail. Can be empty.
+ * @apiParam {String} [url] User's URL. Can be empty.
+ * @apiParam {ImageFile} [avatarfile] New avatar
+ * @apiSuccess {String} args Username
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} user data edited
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "lol",
+ *   "code": "USER_UPDATED",
+ *   "data": {
+ *       "bio": "lol2",
+ *       "email": "lol3@lol.fr",
+ *       "login": "test2",
+ *       "nickname": "lol",
+ *       "url": "http://lol4"
+ *   }
+ * }
+ * @apiError USER_UPDATE_ERROR Unable to edit user
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+/**
+ * @api {get} /admin/users/:username View user details (admin)
+ * @apiName GetUserAdmin
+ * @apiVersion 2.5.0
+ * @apiGroup Users
+ * @apiPermission Admin
+ * @apiHeader authorization Auth token received from logging in
+ *
+ * @apiparam {String} username Username to get data from
+ * @apiSuccess {String} data/login User's login
+ * @apiSuccess {String} data/nickname User's nickname
+ * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
+ * @apiSuccess {Number} data/flag_online Is the user an online account ?
+ * @apiSuccess {Number} data/type Type of account (0 = admin, 1 = user, 2 = guest)
+ * @apiSuccess {Number} data/last_login Last login time in `Date()` format
+ * @apiSuccess {Number} data/user_id User's ID in the database
+ * @apiSuccess {String} data/url User's URL in its profile
+ * @apiSuccess {String} data/fingerprint User's fingerprint
+ * @apiSuccess {String} data/bio User's bio
+ * @apiSuccess {String} data/email User's email
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "avatar_file": "",
+ *           "flag_online": false,
+ *           "type": 0,
+ *           "last_login": "2019-01-01T13:34:00.000Z",
+ *           "login": "admin",
+ *           "nickname": "Administrator",
+ *           "user_id": 1,
+ * 			 "url": null,
+ * 			 "email": null,
+ * 			 "bio": null,
+ * 			 "fingerprint": null
+ *       },
+ *   ]
+ * }
+ * @apiError USER_VIEW_ERROR Unable to view user details
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "USER_VIEW_ERROR",
+ *   "message": null
+ * }
+ */

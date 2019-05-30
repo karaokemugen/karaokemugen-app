@@ -26,20 +26,24 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 }
 
 export async function fetchAndAddFavorites(instance: string, token: string, username: string) {
-	const res = await got(`https://${instance}/api/favorites`, {
-		headers: {
-			authorization: token
-		},
-		json: true
-	});
-	const favorites = {
-		Header: {
-			version: 1,
-			description: 'Karaoke Mugen Favorites List File'
-		},
-		Favorites: res.body
-	};
-	await importFavorites(favorites, username);
+	try {
+		const res = await got(`https://${instance}/api/favorites`, {
+			headers: {
+				authorization: token
+			},
+			json: true
+		});
+		const favorites = {
+			Header: {
+				version: 1,
+				description: 'Karaoke Mugen Favorites List File'
+			},
+			Favorites: res.body
+		};
+		await importFavorites(favorites, username);
+	} catch(err) {
+		logger.error(`[Favorites] Error getting remote favorites for ${username} : ${err}`);
+	}
 }
 
 export async function emptyFavorites(username: string) {

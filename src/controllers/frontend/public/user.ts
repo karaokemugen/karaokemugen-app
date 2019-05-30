@@ -73,7 +73,7 @@ export default function publicUserController(router: Router) {
 	/**
  * @api {get} /public/myaccount View own user details
  * @apiName GetMyAccount
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Users
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -88,6 +88,9 @@ export default function publicUserController(router: Router) {
  * @apiSuccess {String} data/fingerprint User's fingerprint
  * @apiSuccess {String} data/bio User's bio
  * @apiSuccess {String} data/email User's email
+ * @apiSuccess {Number} data/series_lang_mode Mode (0-4) for series' names display : -1 = Let KM settings decide, 0 = Original/internal name, 1 = Depending on song's language, 2 = Depending on KM's language, 3 = Depending on user browser's language (default), 4 = Force languages with `main_series_lang` and `fallback_series_lang`
+ * @apiSuccess {String} data/main_series_lang ISO639-2B code for language to use as main language for series names (in case of mode 4).
+ * @apiSuccess {String} data/fallback_series_lang ISO639-2B code for language to use as fallback language for series names (in case of mode 4).
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -103,7 +106,10 @@ export default function publicUserController(router: Router) {
  * 			 "url": null,
  * 			 "email": null,
  * 			 "bio": null,
- * 			 "fingerprint": null
+ * 			 "fingerprint": null,
+ * 			 "series_lang_mode": 4,
+ * 			 "main_series_lang": "fre",
+ * 			 "fallback_series_lang": "eng"
  *       },
  *   ]
  * }
@@ -160,7 +166,7 @@ export default function publicUserController(router: Router) {
 	/**
  * @api {put} /public/myaccount Edit your own account
  * @apiName EditMyAccount
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Users
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -170,6 +176,9 @@ export default function publicUserController(router: Router) {
  * @apiParam {String} [email] User's mail. Can be empty.
  * @apiParam {String} [url] User's URL. Can be empty.
  * @apiParam {ImageFile} [avatarfile] New avatar
+ * @apiParam {Number} [series_lang_mode] Mode (0-4) for series' names display : -1 = Let KM settings decide, 0 = Original/internal name, 1 = Depending on song's language, 2 = Depending on KM's language, 3 = Depending on user browser's language (default), 4 = Force languages with `main_series_lang` and `fallback_series_lang`
+ * @apiParam {String} [main_series_lang] ISO639-2B code for language to use as main language for series names (in case of mode 4).
+ * @apiParam {String} [fallback_series_lang] ISO639-2B code for language to use as fallback language for series names (in case of mode 4).
  * @apiSuccess {String} args Username
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} user data edited

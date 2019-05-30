@@ -2,6 +2,8 @@ import {db, transaction, langSelector, buildClauses} from './database';
 import {pg as yesql} from 'yesql';
 import { FavParams } from '../types/favorites';
 import { DBKara } from '../types/database/kara';
+import { User } from '../types/user';
+import { getUser } from './user';
 const sql = require('./sql/favorites');
 
 interface Filter {
@@ -19,7 +21,15 @@ export async function selectFavorites(params: FavParams): Promise<DBKara[]> {
 	//Disabled until frontend manages this
 	//if (from > 0) offsetClause = `OFFSET ${from} `;
 	//if (size > 0) limitClause = `LIMIT ${size} `;
-	const query = sql.getFavorites(filterClauses.sql, langSelector(params.lang), limitClause, offsetClause);
+	let user: User = {};
+	let userMode = -1;
+	let userLangs = {main: null, fallback: null};
+	if (params.username) user = await getUser(params.username);
+	if (user) {
+		userMode = user.series_lang_mode;
+		userLangs = {main: user.main_series_lang, fallback: user.fallback_series_lang};
+	}
+	const query = sql.getFavorites(filterClauses.sql, langSelector(params.lang, userMode, userLangs), limitClause, offsetClause);
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }

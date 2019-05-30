@@ -2,6 +2,7 @@ import got from 'got';
 import logger from 'winston';
 import {xml2json} from 'xml-js';
 import internet from 'internet-available';
+import { Feed } from '../types/feeds';
 
 const feeds = [
 	{
@@ -32,7 +33,7 @@ export async function getFeeds() {
 	return await Promise.all(feedPromises);
 }
 
-async function fetchFeed(url: string, name: string) {
+async function fetchFeed(url: string, name: string): Promise<Feed> {
 	try {
 		const response = await got(url);
 		return {

@@ -57,7 +57,10 @@ export async function editUser(user: User) {
 		url: user.url,
 		email: user.email,
 		type: user.type,
-		old_login: user.old_login
+		old_login: user.old_login,
+		series_lang_mode: user.series_lang_mode,
+		main_series_lang: user.main_series_lang,
+		fallback_series_lang: user.fallback_series_lang
 	}));
 }
 

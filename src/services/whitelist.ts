@@ -6,7 +6,7 @@ import logger from 'winston';
 import { Token } from '../types/user';
 import { KaraParams } from '../types/kara';
 
-export async function addKaraToWhitelist(kid: string|string[], reason: string, token: Token, lang: string) {
+export async function addKaraToWhitelist(kid: string|string[], reason: string, token: Token, lang: string): Promise<string[]> {
 	let karas = [];
 	Array.isArray(kid)
 		? karas = kid

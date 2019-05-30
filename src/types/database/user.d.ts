@@ -13,6 +13,9 @@ export interface DBUser extends DBUserBase {
 	fingerprint: string,
 	last_login_at: Date,
 	flag_online: boolean
+	series_lang_mode: number,
+	main_series_lang: string,
+	fallback_series_lang: string
 }
 
 export interface DBGuest extends DBUserBase {
