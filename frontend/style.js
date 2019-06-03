@@ -1,0 +1,11 @@
+require('/styles/vendors/bootstrap.min.css');
+require('/styles/vendors/bootstrap-switch.min.css');
+require('/styles/vendors/select2.min.css');
+require('/styles/vendors/select2-bootstrap.min.css');
+require('/styles/vendors/jquery-ui.min.css');
+require('/styles/vendors/perfect-scrollbar.min.css');
+require('/styles/vendors/introjs.min.css');
+require('/styles/karaokemugen.css');
+require('/styles/admin.css');
+require('/styles/main.css');
+require('/styles/public.css');

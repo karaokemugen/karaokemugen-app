@@ -36,5 +36,4 @@ react_client
 
 # Frontend
 .cache/
-frontend/ressources/bundle.js
-frontend/ressources/bundle.js.map
+frontend/build/
