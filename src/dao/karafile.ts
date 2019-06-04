@@ -171,6 +171,7 @@ export async function writeKara(karafile: string, karaData: Kara): Promise<KaraF
 	const date = new Date();
 	infosToWrite.data.modified_at = date.toString();
 	karaData.datemodif = date;
+	if (infosToWrite.data.songorder === null) infosToWrite.data.songorder = undefined;
 	await asyncWriteFile(karafile, JSON.stringify(infosToWrite, null, 2));
 	return infosToWrite;
 }

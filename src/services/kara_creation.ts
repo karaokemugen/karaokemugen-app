@@ -49,7 +49,7 @@ export async function editKara(kara: Kara) {
 		}
 		// Treat files
 		newKara = await generateKara(kara, overwrite);
-		const newSubFile = resolve(resolvedPathSubs()[0],newKara.data.subfile);
+		
 		const newMediaFile = resolve(resolvedPathMedias()[0],newKara.data.mediafile);
 
 		//Removing previous files if they're different from the new ones (name changed, etc.)
@@ -61,8 +61,11 @@ export async function editKara(kara: Kara) {
 			logger.info(`[KaraGen] Removing ${karaV3File}`);
 			await asyncUnlink(karaV3File);
 		}
-		if (newSubFile.toLowerCase() !== subFile.toLowerCase() && subFile) {
-			if (await asyncExists(subFile)) asyncUnlink(subFile);
+		if (newKara.data.subfile) {
+			const newSubFile = resolve(resolvedPathSubs()[0],newKara.data.subfile);
+			if (newSubFile.toLowerCase() !== subFile.toLowerCase() && subFile) {
+				if (await asyncExists(subFile)) asyncUnlink(subFile);
+			}
 		}
 		if (newMediaFile.toLowerCase() !== mediaFile.toLowerCase() && await asyncExists(mediaFile)) asyncUnlink(mediaFile);
 	} catch(err) {
@@ -250,7 +253,7 @@ async function importKara(mediaFile: string, subFile: string, data: Kara, overwr
 	if (+data.year >= 2010 && +data.year <= 2019 && !data.groups.includes('2010s')) data.groups.push('2010s');
 
 	try {
-		if (subFile !== 'dummy.ass') data.subchecksum = await extractAssInfos(subPath);
+		if (subFile) data.subchecksum = await extractAssInfos(subPath);
 		data.sids = await processSeries(data);
 		return await generateAndMoveFiles(mediaPath, subPath, data, overwrite);
 	} catch(err) {
