@@ -10,7 +10,7 @@
 @import './vendors/jquery-ui.min.css';
 @import './vendors/perfect-scrollbar.min.css';
 @import './vendors/introjs.min.css';
-@import './styles/karaokemugen.css';
-@import './styles/admin.css';
-@import './styles/main.css';
-@import './styles/public.css';
+@import './styles/karaokemugen.scss';
+@import './styles/admin.scss';
+@import './styles/main.scss';
+@import './styles/public.scss';
