@@ -2,6 +2,10 @@
   "name": "frontend",
   "version": "1.0.0",
   "main": "bundle.js",
+  "scripts": {
+    "dev": "npx parcel watch ./src/app.js --public-url ./ --out-dir ./build/",
+    "build": "npx parcel build ./src/app.js --public-url ./ --out-dir ./build/"
+  },
   "dependencies": {
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
