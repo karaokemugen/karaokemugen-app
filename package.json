@@ -8,8 +8,8 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node src/index.ts --files tsconfig.json",
-    "frontend-dev": "parcel watch ./frontend/app.js --out-dir ./frontend/build/",
-    "frontend-prod": "parcel build ./frontend/app.js --out-dir ./frontend/build/",
+    "frontend-dev": "cd frontend && yarn dev",
+    "frontend-prod": "cd frontend && yarn build",
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
     "qstart": "node dist/index.js",
     "test": "mocha --require ts-node/register --timeout 20000 test/*.ts",
