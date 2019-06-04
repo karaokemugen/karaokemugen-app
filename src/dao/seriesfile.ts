@@ -66,7 +66,7 @@ export function formatSeriesFile(series: Series): SeriesFile {
 		series: series
 	};
 	//Remove useless data
-	if (series.aliases && series.aliases.length === 0) delete seriesData.series.aliases;
+	if ((series.aliases && series.aliases.length === 0) || series.aliases === null) delete seriesData.series.aliases;
 	delete seriesData.series.serie_id;
 	delete seriesData.series.i18n_name;
 	delete seriesData.series.seriefile;
