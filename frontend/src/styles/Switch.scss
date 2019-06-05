@@ -5,7 +5,7 @@
 
 .switch + div {
 	vertical-align: middle;
-	width: 40px;
+	width: 35px;
 	height: 20px;
 	border-radius: 999px;
 	background-color: #00B0F2;
@@ -24,14 +24,14 @@
 }
 
 .switch:checked + div {
-	width: 94px;
+	width: 60px;
 	background-position: 0 0;
 	background-color: #3b89ec;
 }
 
 .switch + div {
-	width: 94px;
-	height: 48px;
+	width: 60px;
+	height: 30px;
 }
 
 
@@ -41,7 +41,7 @@
 
 .switch + div > div {
 	float: left;
-	width: 46px; height: 46px;
+	width: 30px; height: 28px;
 	border-radius: inherit;
 	background: #ffffff;
 	-webkit-transition-timing-function: cubic-bezier(1,0,0,1);
@@ -62,6 +62,6 @@
 }
 
 .switch:checked + div > div {
-	-webkit-transform: translate3d(46px, 0, 0);
-	transform: translate3d(46px, 0, 0);
+	-webkit-transform: translate3d(30px, 0, 0);
+	transform: translate3d(30px, 0, 0);
 }
