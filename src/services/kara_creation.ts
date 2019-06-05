@@ -134,6 +134,7 @@ async function generateKara(kara: Kara, overwrite: boolean) {
 
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
+		kara.title = kara.title.trim();
 		kara.songwriter.sort();
 		kara.singer.sort();
 		kara.groups.sort();
