@@ -1,0 +1,67 @@
+.switch  {
+	position: absolute;
+	opacity: 0;
+}
+
+.switch + div {
+	vertical-align: middle;
+	width: 40px;
+	height: 20px;
+	border-radius: 999px;
+	background-color: #00B0F2;
+	-webkit-transition-duration: .4s;
+	transition-duration: .4s;
+	-webkit-transition-property: background-color, box-shadow;
+	transition-property: background-color, box-shadow;
+	cursor: pointer;
+}
+
+.switch + div span {
+	position: absolute;
+    font-size: 1.6rem;
+    color: white;
+    margin-top: 12px;
+}
+
+.switch:checked + div {
+	width: 94px;
+	background-position: 0 0;
+	background-color: #3b89ec;
+}
+
+.switch + div {
+	width: 94px;
+	height: 48px;
+}
+
+
+.switch:checked + div {
+	background-color: #57BB00;
+}
+
+.switch + div > div {
+	float: left;
+	width: 46px; height: 46px;
+	border-radius: inherit;
+	background: #ffffff;
+	-webkit-transition-timing-function: cubic-bezier(1,0,0,1);
+	transition-timing-function: cubic-bezier(1,0,0,1);
+	-webkit-transition-duration: 0.4s;
+	transition-duration: 0.4s;
+	-webkit-transition-property: transform, background-color;
+	transition-property: transform, background-color;
+	pointer-events: none;
+	margin-top: 1px;
+	margin-left: 1px;
+}
+
+.switch:checked + div > div {
+	-webkit-transform: translate3d(20px, 0, 0);
+	transform: translate3d(20px, 0, 0);
+	background-color: #ffffff;
+}
+
+.switch:checked + div > div {
+	-webkit-transform: translate3d(46px, 0, 0);
+	transform: translate3d(46px, 0, 0);
+}

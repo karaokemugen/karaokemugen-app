@@ -1,7 +1,7 @@
 @import './fonts/Lato/stylesheet.css';
 @import './fonts/Roboto/stylesheet.css';
 
-/* css import of bootstrap from dist file - JS is still in static /ressources forlder */
+/* css import of bootstrap from dist file - JS is still in static /ressources folder */
 @import './vendors/bootstrap3/css/bootstrap.css';
 
 @import './vendors/bootstrap-switch.min.css';
@@ -14,3 +14,4 @@
 @import './styles/admin.scss';
 @import './styles/main.scss';
 @import './styles/public.scss';
+@import './styles/Switch.scss';

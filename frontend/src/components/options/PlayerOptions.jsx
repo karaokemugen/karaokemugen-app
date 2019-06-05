@@ -1,7 +1,20 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
+import Switch from '../Switch';
+import axios from 'axios';
 
 class PlayerOptions extends Component {
+  constructor(props) {
+    super(props);
+    this.putPlayerCommando = this.putPlayerCommando.bind(this);
+  }
+
+  putPlayerCommando(event) {
+    axios.put('/api/admin/player', {
+      command: event.target.getAttribute('namecommand')
+    });
+    this.props.onChange(event);
+  }
 
   render() {
     const t = this.props.t;
@@ -24,14 +37,8 @@ class PlayerOptions extends Component {
             {t("ALWAYS_ON_TOP")}
           </label>
           <div className="col-xs-6">
-            <input
-              action="command"
-              type="checkbox"
-              id="Player.StayOnTop"
-              namecommand="toggleAlwaysOnTop"
-              onChange={this.props.onChange}
-              checked={settings.Player.StayOnTop}
-            />
+            <Switch idInput="Player.StayOnTop" handleChange={this.putPlayerCommando}
+              isChecked={settings.Player.StayOnTop} nameCommand="toggleAlwaysOnTop"/>
           </div>
         </div>
         <div className="form-group">
