@@ -57,15 +57,8 @@ class PlayerOptions extends Component {
             {t("FULLSCREEN")}
           </label>
           <div className="col-xs-6">
-            <input
-              action="command"
-              type="checkbox"
-              id="Player.FullScreen"
-              namecommand="toggleFullscreen"
-              onChange={this.props.onChange}
-              checked={settings.Player.FullScreen}
-
-            />
+            <Switch idInput="Player.FullScreen" handleChange={this.putPlayerCommando}
+              isChecked={settings.Player.FullScreen} nameCommand="toggleFullscreen" />
           </div>
         </div>
         <div className="form-group">
@@ -93,13 +86,8 @@ class PlayerOptions extends Component {
             {t("ENGINEDISPLAYCONNECTIONINFO")}
           </label>
           <div className="col-xs-6">
-            {" "}
-            <input
-              type="checkbox"
-              id="Karaoke.Display.ConnectionInfo.Enabled"
-              onChange={this.props.onChange}
-              checked={settings.Karaoke.Display.ConnectionInfo.Enabled}
-            />
+            <Switch idInput="Karaoke.Display.ConnectionInfo.Enabled" handleChange={this.props.onChange}
+              isChecked={settings.Karaoke.Display.ConnectionInfo.Enabled} />
           </div>
         </div>
 
@@ -116,12 +104,8 @@ class PlayerOptions extends Component {
                 {t("ENGINEDISPLAYCONNECTIONINFOQRCODE")}
               </label>
               <div className="col-xs-6">
-                <input
-                  id="Karaoke.Display.ConnectionInfo.QRCode"
-                  type="checkbox"
-                  onChange={this.props.onChange}
-                  checked={settings.Karaoke.Display.ConnectionInfo.QRCode}
-                />
+                <Switch idInput="Karaoke.Display.ConnectionInfo.QRCode" handleChange={this.props.onChange}
+                  isChecked={settings.Karaoke.Display.ConnectionInfo.QRCode} />
               </div>
             </div>
 
@@ -166,13 +150,8 @@ class PlayerOptions extends Component {
             {t("PLAYERPIP")}
           </label>
           <div className="col-xs-6">
-            {" "}
-            <input
-              type="checkbox"
-              id="Player.PIP.Enabled"
-              onChange={this.props.onChange}
-              checked={settings.Player.PIP.Enabled}
-            />
+            <Switch idInput="Player.PIP.Enabled" handleChange={this.props.onChange}
+              isChecked={settings.Player.PIP.Enabled} />
           </div>
         </div>
         {settings.Player.PIP.Enabled ?
@@ -206,10 +185,7 @@ class PlayerOptions extends Component {
                   value={settings.Player.PIP.PositionX}
                 >
                   <option value="Left"> {t("LEFT")} </option>
-                  <option value="Center" default>
-                    {" "}
-                    {t("CENTER")}{" "}
-                  </option>
+                  <option value="Center" default>{t("CENTER")}</option>
                   <option value="Right"> {t("RIGHT")} </option>
                 </select>
               </div>
@@ -230,10 +206,7 @@ class PlayerOptions extends Component {
                   value={settings.Player.PIP.PositionY}
                 >
                   <option value="Bottom"> {t("BOTTOM")} </option>
-                  <option value="Center" default>
-                    {" "}
-                    {t("CENTER")}{" "}
-                  </option>
+                  <option value="Center" default>{t("CENTER")}</option>
                   <option value="Top"> {t("TOP")} </option>
                 </select>
               </div>
@@ -247,13 +220,8 @@ class PlayerOptions extends Component {
                 {t("ENGINEDISPLAYNICKNAME")}
               </label>
               <div className="col-xs-6">
-                {" "}
-                <input
-                  type="checkbox"
-                  id="Karaoke.Display.Nickname"
-                  onChange={this.props.onChange}
-                  checked={settings.Karaoke.Display.Nickname}
-                />
+                <Switch idInput="Karaoke.Display.Nickname" handleChange={this.props.onChange}
+                  isChecked={settings.Karaoke.Display.Nickname} />
               </div>
             </div>
 
@@ -265,13 +233,8 @@ class PlayerOptions extends Component {
                 {t("ENGINEDISPLAYAVATAR")}
               </label>
               <div className="col-xs-6">
-                {" "}
-                <input
-                  type="checkbox"
-                  id="Karaoke.Display.Avatar"
-                  onChange={this.props.onChange}
-                  checked={settings.Karaoke.Display.Avatar}
-                />
+                <Switch idInput="Karaoke.Display.Avatar" handleChange={this.props.onChange}
+                  isChecked={settings.Karaoke.Display.Avatar} />
               </div>
             </div>
 
@@ -280,13 +243,8 @@ class PlayerOptions extends Component {
                 {t("PLAYERMONITOR")}
               </label>
               <div className="col-xs-6">
-                {" "}
-                <input
-                  type="checkbox"
-                  id="Player.Monitor"
-                  onChange={this.props.onChange}
-                  checked={settings.Player.Monitor}
-                />
+                <Switch idInput="Player.Monitor" handleChange={this.props.onChange}
+                  isChecked={settings.Player.Monitor} />
               </div>
             </div>
 
@@ -298,13 +256,8 @@ class PlayerOptions extends Component {
                 {t("PLAYERVISUALIZATIONEFFECTS")}
               </label>
               <div className="col-xs-6">
-                {" "}
-                <input
-                  type="checkbox"
-                  id="Player.VisualizationEffects"
-                  onChange={this.props.onChange}
-                  checked={settings.Player.VisualizationEffects}
-                />
+                <Switch idInput="Player.VisualizationEffects" handleChange={this.props.onChange}
+                  isChecked={settings.Player.VisualizationEffects} />
               </div>
             </div>
           </div> : null}

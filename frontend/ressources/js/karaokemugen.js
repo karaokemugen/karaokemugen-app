@@ -2656,17 +2656,6 @@ var settingsNotUpdated;
 		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
 			$(this).val($(this).is(':checked') ? 'true' : 'false');
 		});
-
-		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			var val = $(this).attr('namecommand');
-			if(!val) val =  $(this).attr('name');
-
-			$.ajax({
-				url: 'admin/player',
-				type: 'PUT',
-				data: { command: val }
-			});
-		}); 
 	};
 
 	login = function(username, password) {
