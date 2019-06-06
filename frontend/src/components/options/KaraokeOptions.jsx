@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
+import Switch from '../Switch';
 
 class KaraokeOptions extends Component {
 
@@ -30,7 +31,7 @@ class KaraokeOptions extends Component {
               </select>
             </div>
           </div>
-          {settings.Karaoke.Quota.Type === "2" ?
+          {settings.Karaoke.Quota.Type === 2 ?
             <div className="form-group">
               <label
                 htmlFor="Karaoke.Quota.Time"
@@ -50,7 +51,7 @@ class KaraokeOptions extends Component {
               </div>
             </div> : null}
 
-          {settings.Karaoke.Quota.Type === "1" ?
+          {settings.Karaoke.Quota.Type === 1 ?
             <div className="form-group">
               <label
                 htmlFor="Karaoke.Quota.Songs"
@@ -70,7 +71,7 @@ class KaraokeOptions extends Component {
               </div>
             </div> : null}
 
-          {settings.Karaoke.Quota.Type !== "0" ?
+          {settings.Karaoke.Quota.Type !== 0 ?
             <div className="form-group">
               <label
                 htmlFor="Karaoke.Quota.FreeAutoTime"
@@ -114,13 +115,8 @@ class KaraokeOptions extends Component {
               {t("ENGINEREPEATPLAYLIST")}
             </label>
             <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Karaoke.Repeat"
-                onChange={this.props.onChange}
-                checked={settings.Karaoke.Repeat}
-              />
+              <Switch idInput="Karaoke.Repeat" handleChange={this.props.onChange}
+                isChecked={settings.Karaoke.Repeat} />
             </div>
           </div>
 
@@ -132,13 +128,8 @@ class KaraokeOptions extends Component {
               {t("ENGINEENABLESMARTINSERT")}
             </label>
             <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Karaoke.SmartInsert"
-                onChange={this.props.onChange}
-                checked={settings.Karaoke.SmartInsert}
-              />
+              <Switch idInput="Karaoke.SmartInsert" handleChange={this.props.onChange}
+                isChecked={settings.Karaoke.SmartInsert} />
             </div>
           </div>
 
@@ -147,13 +138,8 @@ class KaraokeOptions extends Component {
               {t("ENGINEAUTOPLAY")}
             </label>
             <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Karaoke.Autoplay"
-                onChange={this.props.onChange}
-                checked={settings.Karaoke.Autoplay}
-              />
+              <Switch idInput="Karaoke.Autoplay" handleChange={this.props.onChange}
+                isChecked={settings.Karaoke.Autoplay} />
             </div>
           </div>
 
@@ -165,13 +151,8 @@ class KaraokeOptions extends Component {
               {t("ENGINEALLOWDUPLICATES")}
             </label>
             <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Playlist.AllowDuplicates"
-                onChange={this.props.onChange}
-                checked={settings.Playlist.AllowDuplicates}
-              />
+              <Switch idInput="Playlist.AllowDuplicates" handleChange={this.props.onChange}
+                isChecked={settings.Playlist.AllowDuplicates} />
             </div>
           </div>
         </div>
@@ -187,13 +168,8 @@ class KaraokeOptions extends Component {
               {t("ONLINEURL")}
             </label>
             <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Online.URL"
-                onChange={this.props.onChange}
-                checked={settings.Online.URL}
-              />
+              <Switch idInput="Online.URL" handleChange={this.props.onChange}
+                isChecked={settings.Online.URL} />
             </div>
           </div>
           <div className="form-group">
@@ -201,13 +177,8 @@ class KaraokeOptions extends Component {
               {t("ONLINEUSERS")}
             </label>
             <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Online.Users"
-                onChange={this.props.onChange}
-                checked={settings.Online.Users}
-              />
+              <Switch idInput="Online.Users" handleChange={this.props.onChange}
+                isChecked={settings.Online.Users} />
             </div>
           </div>
 
@@ -216,13 +187,8 @@ class KaraokeOptions extends Component {
               {t("ONLINESTATS")}
             </label>
             <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Online.Stats"
-                onChange={this.props.onChange}
-                checked={settings.Online.Stats}
-              />
+              <Switch idInput="Online.Stats" handleChange={this.props.onChange}
+                isChecked={settings.Online.Stats} />
             </div>
           </div>
         </div>
@@ -281,13 +247,8 @@ class KaraokeOptions extends Component {
               {t("ENGINESONGPOLL")}
             </label>
             <div className="col-xs-6">
-              {" "}
-              <input
-                type="checkbox"
-                id="Karaoke.Poll.Enabled"
-                onChange={this.props.onChange}
-                checked={settings.Karaoke.Poll.Enabled}
-              />
+              <Switch idInput="Karaoke.Poll.Enabled" handleChange={this.props.onChange}
+                isChecked={settings.Karaoke.Poll.Enabled} />
             </div>
           </div>
 
@@ -336,13 +297,8 @@ class KaraokeOptions extends Component {
                   {t("ENGINEFREEUPVOTES")}
                 </label>
                 <div className="col-xs-6">
-                  {" "}
-                  <input
-                    type="checkbox"
-                    id="Karaoke.Quota.FreeUpVote"
-                    onChange={this.props.onChange}
-                    checked={settings.Karaoke.Quota.FreeUpVote}
-                  />
+                  <Switch idInput="Karaoke.Quota.FreeUpVote" handleChange={this.props.onChange}
+                    isChecked={settings.Karaoke.Quota.FreeUpVote} />
                 </div>
               </div>
             </div> : null}
