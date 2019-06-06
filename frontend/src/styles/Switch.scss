@@ -1,67 +1,42 @@
-.switch  {
-	position: absolute;
-	opacity: 0;
-}
+label.cmp-switch {
+	position: relative;
+	
+	.switch  {
+		// hide native input field
+		display: none;
+		
+		& + div {
+			vertical-align: middle;
+			width: 60px;
+			height: 30px;
+			border-radius: 999px;
+			background-color: #00B0F2;
+			transition-duration: .4s;
+			transition-property: background-color, box-shadow;
+			cursor: pointer;
+			
+			span {
+				font-size: 0; // hide text content
+				float: left;
+				display: inline-block;
+				width: 28px; height: 28px;
+				border-radius: inherit;
+				background: #ffffff;
+				transition-timing-function: cubic-bezier(1,0,0,1);
+				transition-duration: 0.4s;
+				transition-property: transform, background-color;
+				pointer-events: none;
+				margin-top: 1px;
+				margin-left: 1px;
+			}
+		}
 
-.switch + div {
-	vertical-align: middle;
-	width: 35px;
-	height: 20px;
-	border-radius: 999px;
-	background-color: #00B0F2;
-	-webkit-transition-duration: .4s;
-	transition-duration: .4s;
-	-webkit-transition-property: background-color, box-shadow;
-	transition-property: background-color, box-shadow;
-	cursor: pointer;
-}
-
-.switch + div span {
-	position: absolute;
-    font-size: 1.6rem;
-    color: white;
-    margin-top: 12px;
-}
-
-.switch:checked + div {
-	width: 60px;
-	background-position: 0 0;
-	background-color: #3b89ec;
-}
-
-.switch + div {
-	width: 60px;
-	height: 30px;
-}
-
-
-.switch:checked + div {
-	background-color: #57BB00;
-}
-
-.switch + div > div {
-	float: left;
-	width: 30px; height: 28px;
-	border-radius: inherit;
-	background: #ffffff;
-	-webkit-transition-timing-function: cubic-bezier(1,0,0,1);
-	transition-timing-function: cubic-bezier(1,0,0,1);
-	-webkit-transition-duration: 0.4s;
-	transition-duration: 0.4s;
-	-webkit-transition-property: transform, background-color;
-	transition-property: transform, background-color;
-	pointer-events: none;
-	margin-top: 1px;
-	margin-left: 1px;
-}
-
-.switch:checked + div > div {
-	-webkit-transform: translate3d(20px, 0, 0);
-	transform: translate3d(20px, 0, 0);
-	background-color: #ffffff;
-}
-
-.switch:checked + div > div {
-	-webkit-transform: translate3d(30px, 0, 0);
-	transform: translate3d(30px, 0, 0);
+		&:checked + div {
+			background-color: #57BB00;
+			
+			span {
+				transform: translate3d(28px, 0, 0);
+			}
+		}
+	}
 }
