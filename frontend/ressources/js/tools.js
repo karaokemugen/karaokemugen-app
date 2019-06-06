@@ -438,11 +438,13 @@ startIntro = function(mode, stepLabel){
 
 	introManager.onexit(() => {
 		if (scope === 'admin') {
-            appFirstRun = false;
-            
-			var $appFirstRun = $('#settings [name="App.FirstRun"]');
-			$appFirstRun.val(false);
-            setSettings($appFirstRun);
+			$.ajax({
+				type: 'PUT',
+				url: 'admin/settings',
+				contentType: 'application/json',
+				dataType: 'json',
+				data: JSON.stringify({ 'setting': {'App': {'FirstRun':false}} })
+			});
 		} else {
 			createCookie('publicTuto', 'true');
 			$('#loginModal').removeClass('firstRun');

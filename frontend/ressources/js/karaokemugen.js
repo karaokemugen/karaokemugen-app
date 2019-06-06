@@ -235,9 +235,13 @@ var settingsNotUpdated;
 			login('admin', query.admpwd).done(() => {
 				if(!welcomeScreen) {
 					startIntro('admin');
-					var privateMode = $('input[name="Karaoke.Private"]');
-					privateMode.val(1);
-					setSettings(privateMode);
+					$.ajax({
+						type: 'PUT',
+						url: 'admin/settings',
+						contentType: 'application/json',
+						dataType: 'json',
+						data: JSON.stringify({ 'setting': {'Karaoke': {'Private':1}} })
+					});
 				} else {
 					$('#wlcm_login > span').text(logInfos.username);
 					$('#wlcm_disconnect').show();
@@ -2556,26 +2560,6 @@ var settingsNotUpdated;
 						$('.tags').parent().find('.select2-container').addClass('value tags');
 					});
 				});
-				// ['serie', 'year'].forEach(function(dataType) {
-				// 	$.ajax({ url: 'public/' + dataType, }).done(function (data) {
-				// 		data = data.content;
-
-				// 		data = data.map(function(val, ind){
-				// 			var jsonLine;
-				// 			if(dataType === 'serie') jsonLine = {id:val.serie_id, text: val.i18n_name};
-				// 			if(dataType === 'year') jsonLine = {id:val.year, text: val.year};
-				// 			return jsonLine;
-				// 		});
-				// 		$('#' + dataType).select2({ theme: 'bootstrap',
-				// 			tags: false,
-				// 			minimumResultsForSearch: 3,
-				// 			data: data
-				// 		});
-				// 		$('#' + dataType).parent().find('.select2-container').addClass('value');
-				// 	});
-
-				// });
-
 			});
 
 
@@ -2617,7 +2601,7 @@ var settingsNotUpdated;
     * Init bootstrapSwitchs
     */
 	initSwitchs = function () {
-		$('input[switch="onoff"],[name="Karaoke.Private"],[name="kara_panel"],[name="lyrics"],#settings input[type="checkbox"]').bootstrapSwitch('destroy', true);
+		$('input[switch="onoff"],[name="Karaoke.Private"],[name="kara_panel"],[name="lyrics"]').bootstrapSwitch('destroy', true);
 
 		$('input[switch="onoff"]').bootstrapSwitch({
 			wrapperClass: 'btn btn-default',
@@ -2655,8 +2639,15 @@ var settingsNotUpdated;
 				}
 			});
 
-			$('#settings input[type="checkbox"], input[name="Karaoke.Private"]').on('switchChange.bootstrapSwitch', function () {
-				setSettings($(this));
+			$('input[name="Karaoke.Private"]').on('switchChange.bootstrapSwitch', function () {
+				const value = $(this).val() === 'on' ? true : false;
+				$.ajax({
+					type: 'PUT',
+					url: 'admin/settings',
+					contentType: 'application/json',
+					dataType: 'json',
+					data: JSON.stringify({ 'setting': {'Karaoke': {'Private': value}} })
+				});
 			});
 
 		}
@@ -2665,17 +2656,6 @@ var settingsNotUpdated;
 		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
 			$(this).val($(this).is(':checked') ? 'true' : 'false');
 		});
-
-		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			var val = $(this).attr('nameCommand');
-			if(!val) val =  $(this).attr('name');
-
-			$.ajax({
-				url: 'admin/player',
-				type: 'PUT',
-				data: { command: val }
-			});
-		}); 
 	};
 
 	login = function(username, password) {
@@ -2857,11 +2837,11 @@ var settingsNotUpdated;
 			displayMessage('success', '', i18n.__('POLLENDED', [data.kara.substring(0,100), data.votes]));
 		});
 		socket.on('settingsUpdated', function(){
-			settingsUpdating.done(function () {
+			settingsUpdating && settingsUpdating.done(function () {
 				settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
 				settingsUpdating.done(function (){
 					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
-																		|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+						|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
 						playlistsUpdating.done(function() {
 							playlistsUpdating = refreshPlaylistSelects();
 						});
