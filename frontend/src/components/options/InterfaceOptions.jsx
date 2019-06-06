@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
+import Switch from '../Switch';
 
 class InterfaceOptions extends Component {
 
@@ -59,13 +60,8 @@ class InterfaceOptions extends Component {
             {t("ENGINEALLOWVIEWBLACKLIST")}
           </label>
           <div className="col-xs-6">
-            {" "}
-            <input
-              type="checkbox"
-              id="Frontend.Permissions.AllowViewBlacklist"
-              onChange={this.props.onChange}
-              checked={settings.Frontend.Permissions.AllowViewBlacklist}
-            />
+            <Switch idInput="Frontend.Permissions.AllowViewBlacklist" handleChange={this.props.onChange}
+              isChecked={settings.Frontend.Permissions.AllowViewBlacklist} />
           </div>
         </div>
 
@@ -77,13 +73,8 @@ class InterfaceOptions extends Component {
             {t("ENGINEALLOWVIEWBLACKLISTCRITERIAS")}
           </label>
           <div className="col-xs-6">
-            {" "}
-            <input
-              type="checkbox"
-              id="Frontend.Permissions.AllowViewBlacklistCriterias"
-              onChange={this.props.onChange}
-              checked={settings.Frontend.Permissions.AllowViewBlacklistCriterias}
-            />
+            <Switch idInput="Frontend.Permissions.AllowViewBlacklistCriterias" handleChange={this.props.onChange}
+              isChecked={settings.Frontend.Permissions.AllowViewBlacklistCriterias} />
           </div>
         </div>
 
@@ -95,13 +86,8 @@ class InterfaceOptions extends Component {
             {t("ENGINEALLOWVIEWWHITELIST")}
           </label>
           <div className="col-xs-6">
-            {" "}
-            <input
-              type="checkbox"
-              id="Frontend.Permissions.AllowViewWhitelist"
-              onChange={this.props.onChange}
-              checked={settings.Frontend.Permissions.AllowViewWhitelist}
-            />
+            <Switch idInput="Frontend.Permissions.AllowViewWhitelist" handleChange={this.props.onChange}
+              isChecked={settings.Frontend.Permissions.AllowViewWhitelist} />
           </div>
         </div>
 
@@ -110,12 +96,8 @@ class InterfaceOptions extends Component {
             {t("ENGINECREATEPREVIEWS")}
           </label>
           <div className="col-xs-6">
-            {" "}
-            <input type="checkbox"
-              id="Karaoke.CreatePreviews"
-              onChange={this.props.onChange}
-              checked={settings.Karaoke.CreatePreviews}
-            />
+            <Switch idInput="Karaoke.CreatePreviews" handleChange={this.props.onChange}
+              isChecked={settings.Karaoke.CreatePreviews} />
           </div>
         </div>
       </> : null
