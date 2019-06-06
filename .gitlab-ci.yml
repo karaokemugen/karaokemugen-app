@@ -8,6 +8,8 @@ cache:
   - react_systempanel/node_modules/
   - dist/
   - react_systempanel/build/
+  - frontend/node_modules/
+  - frontend/build/
 
 stages:
   - test
