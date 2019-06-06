@@ -25,6 +25,7 @@ test:
   script:
     - yarn install --check-files --force
     - yarn installReact --check-files --force
+    - yarn installFrontend --check-files --force
     - touch mpv
     - cp -f config.CICD.yml config.yml
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
@@ -46,6 +47,7 @@ build:
     - npm install -g modclean
     - yarn build
     - yarn buildReact
+    - yarn frontend-prod
     - yarn install --production
     - cd node_modules
     - find -name *.node -delete
