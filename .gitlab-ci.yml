@@ -47,6 +47,7 @@ build:
     - npm install -g modclean
     - yarn build
     - yarn buildReact
+    - yarn global add parcel-bundler
     - yarn frontend-prod
     - yarn install --production
     - cd node_modules
