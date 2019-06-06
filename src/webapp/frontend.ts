@@ -4,7 +4,6 @@ import exphbs from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import {address} from 'ip';
-import {graphics} from 'systeminformation';
 import logger from 'winston';
 import i18n from 'i18n';
 import {getConfig} from '../utils/config';
@@ -171,18 +170,8 @@ export async function initFrontend() {
 		routerAdmin.get('/', async (req, res) => {
 			const config = getConfig();
 
-			//Get list of monitors to allow users to select one for the player
-			const data = await graphics();
-			logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
-			const displays = data.displays
-				.filter(d => d.resolutionx > 0)
-				.map(d => {
-					d.model = d.model.replace('�','e');
-					return d;
-				});
 			res.render('admin', {'layout': 'adminHeader',
 				'clientAdress'	:	`http://${address()}`,
-				'displays'		:	displays,
 				'query'			:	JSON.stringify(req.query),
 				'appFirstRun'	:	config.App.FirstRun,
 				'onlineHost'  	:	config.Online.Users ? config.Online.Host : '',

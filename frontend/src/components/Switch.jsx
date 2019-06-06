@@ -7,7 +7,7 @@ class Switch extends Component {
 
   render() {
     return (
-      <label class="cmp-switch" for={this.props.idInput}>
+      <label className="cmp-switch" htmlFor={this.props.idInput}>
         <input
           checked={this.props.isChecked}
           onChange={this.props.handleChange}

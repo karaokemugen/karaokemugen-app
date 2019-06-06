@@ -41,7 +41,6 @@ class Options extends Component {
 
   render() {
     const t = this.props.t;
-    var displays = [];
     return (
       <>
         <div className="col-lg-2 col-xs-0" />
@@ -92,7 +91,7 @@ class Options extends Component {
                 aria-labelledby="nav-player-tab"
                 className="modal-body tab-pane fade in active"
               >
-                <PlayerOptions displays={displays} onChange={this.saveSettings} settings={this.state.settings} />
+                <PlayerOptions onChange={this.saveSettings} settings={this.state.settings} />
               </div>
               <div
                 id="nav-interface"

@@ -3,6 +3,7 @@ import { getLang } from "../../middlewares/lang";
 import { requireAuth, requireValidUser, requireAdmin, updateUserLoginTime } from "../../middlewares/auth";
 import { shutdown } from "../../../services/engine";
 import { editSetting, getConfig } from "../../../utils/config";
+import { getDisplays } from "../../../utils/displays";
 import { OKMessage, errMessage } from "../../common";
 import { emitWS } from "../../../webapp/frontend";
 
@@ -208,6 +209,24 @@ export default function adminMiscController(router: Router) {
 			} catch(err) {
 				res.status(500).json(errMessage('SETTINGS_UPDATE_ERROR',err));
 			}
+		});
+
+/**
+ * @api {get} /admin/displays get displays
+ * @apiName GetDisplays
+ * @apiVersion 3.0.0
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiGroup Main
+ * @apiSuccess {Object} data contains displays.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ */
+		router.route('/admin/displays')
+		.get(getLang, requireAuth, requireValidUser, requireAdmin, async (_req:any, res:any) => {
+			const displays = await getDisplays();
+			res.json(OKMessage(displays));
 		});
 
 }

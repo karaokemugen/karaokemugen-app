@@ -2,11 +2,22 @@ import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import Switch from '../Switch';
 import axios from 'axios';
+require('babel-polyfill');
 
 class PlayerOptions extends Component {
   constructor(props) {
     super(props);
     this.putPlayerCommando = this.putPlayerCommando.bind(this);
+    this.getDisplays = this.getDisplays.bind(this);
+
+    this.state = {
+      displays: this.getDisplays()
+    };
+  }
+
+  async getDisplays() {
+    const res = await axios.get('/api/admin/displays');
+    this.setState({ displays: res.data.data })
   }
 
   putPlayerCommando(event) {
@@ -22,9 +33,9 @@ class PlayerOptions extends Component {
     if (settings.Karaoke && settings.Karaoke.Display.ConnectionInfo.Host === null)
       settings.Karaoke.Display.ConnectionInfo.Host = '';
     const listdisplays =
-      this.props.displays.length > 0
-        ? this.props.displays.map(display, index => (
-          <option value={index} >
+      this.state.displays && this.state.displays.length > 0
+        ? this.state.displays.map((display, index) => (
+          <option key={index} value={index} >
             {" "}
             ({display.resolutionx}x{display.resolutiony}) {display.model}
           </option>
@@ -38,7 +49,7 @@ class PlayerOptions extends Component {
           </label>
           <div className="col-xs-6">
             <Switch idInput="Player.StayOnTop" handleChange={this.putPlayerCommando}
-              isChecked={settings.Player.StayOnTop} nameCommand="toggleAlwaysOnTop"/>
+              isChecked={settings.Player.StayOnTop} nameCommand="toggleAlwaysOnTop" />
           </div>
         </div>
         <div className="form-group">
@@ -113,7 +124,7 @@ class PlayerOptions extends Component {
                 />
               </div>
             </div>
-            
+
             <div className="form-group">
               <label
                 htmlFor="Karaoke.Display.ConnectionInfo.Host"
@@ -168,7 +179,7 @@ class PlayerOptions extends Component {
           <div id="pipSettings" className="well well-sm settingsGroupPanel">
             <div className="form-group">
               <label htmlFor="Player.PIP.Size" className="col-xs-4 control-label">
-                {t("VIDEO_SIZE")+" ("+settings.Player.PIP.Size+"%)"}
+                {t("VIDEO_SIZE") + " (" + settings.Player.PIP.Size + "%)"}
               </label>
               <div className="col-xs-6">
                 <input
