@@ -151,6 +151,8 @@
 	"TAG_WIIU_SHORT": "NWU",
 	"TAG_SWITCH": "Nintendo Switch",
 	"TAG_SWITCH_SHORT": "SWI",
+	"TAG_N64": "Nintendo 64",
+	"TAG_N64_SHORT": "N64",
 	"TAG_SATURN": "Sega Saturn",
 	"TAG_SATURN_SHORT": "SAT",
 	"TAG_DREAMCAST": "Sega Dreamcast",

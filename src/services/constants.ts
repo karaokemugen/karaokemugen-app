@@ -297,5 +297,6 @@ export const tags = [
 	'YAOI',
 	'YURI',
 	'XBOX360',
-	'XBOXONE'
+	'XBOXONE',
+	'N64'
 ];
