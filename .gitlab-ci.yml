@@ -1,5 +1,8 @@
 image: axelterizaki/karaokemugen-ci:node-10
 
+variables:
+  GIT_SUBMODULES_STRATEGY: recursive
+
 cache:
   key: km
   paths:
