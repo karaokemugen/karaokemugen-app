@@ -1,7 +1,7 @@
 image: axelterizaki/karaokemugen-ci:node-10
 
 variables:
-  GIT_SUBMODULES_STRATEGY: recursive
+  GIT_SUBMODULE_STRATEGY: recursive
 
 cache:
   key: km
