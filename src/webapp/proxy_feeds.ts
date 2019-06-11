@@ -1,5 +1,5 @@
 import got from 'got';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 import {xml2json} from 'xml-js';
 import internet from 'internet-available';
 import { Feed } from '../types/feeds';

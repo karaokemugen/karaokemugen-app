@@ -1,32 +1,10 @@
-import {db, paramWords} from './database';
+import {db, paramWords} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import slugify from 'slugify';
-import {profile} from '../utils/logger';
-import { TagParams, Tag } from '../types/tag';
+import { TagParams, Tag } from '../lib/types/tag';
 import { DBTag } from '../types/database/tag';
 import { WhereClause } from '../types/database';
 const sql = require('./sql/tag');
-
-export async function refreshTags() {
-	profile('RefreshTags');
-	await db().query('REFRESH MATERIALIZED VIEW all_tags');
-	profile('RefreshTags');
-}
-
-export async function refreshKaraTags() {
-	profile('RefreshKaraTags');
-	await Promise.all([
-		db().query('REFRESH MATERIALIZED VIEW author'),
-		db().query('REFRESH MATERIALIZED VIEW creator'),
-		db().query('REFRESH MATERIALIZED VIEW group_tags'),
-		db().query('REFRESH MATERIALIZED VIEW language'),
-		db().query('REFRESH MATERIALIZED VIEW singer'),
-		db().query('REFRESH MATERIALIZED VIEW misc'),
-		db().query('REFRESH MATERIALIZED VIEW songtype'),
-		db().query('REFRESH MATERIALIZED VIEW songwriter')
-	]);
-	profile('RefreshKaraTags');
-}
 
 export async function getTag(id: number): Promise<DBTag> {
 	const res = await db().query(sql.getTag, [id]);

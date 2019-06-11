@@ -1,7 +1,7 @@
-import {isMediaFile, asyncReadDir} from '../utils/files';
+import {isMediaFile, asyncReadDir} from '../lib/utils/files';
 import {resolve} from 'path';
-import {resolvedPathJingles} from '../utils/config';
-import {getMediaInfo} from '../utils/ffmpeg';
+import {resolvedPathJingles} from '../lib/utils/config';
+import {getMediaInfo} from '../lib/utils/ffmpeg';
 import logger from 'winston';
 import sample from 'lodash.sample';
 import cloneDeep from 'lodash.clonedeep';

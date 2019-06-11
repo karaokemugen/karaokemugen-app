@@ -1,10 +1,10 @@
 import { getLang } from "../../middlewares/lang";
 import { requireAuth, requireValidUser, updateUserLoginTime, requireAdmin } from "../../middlewares/auth";
-import { emitWS } from "../../../webapp/frontend";
+import { emitWS } from "../../../lib/utils/ws";
 import { OKMessage, errMessage } from "../../common";
 import { getBlacklistCriterias, deleteBlacklistCriteria, editBlacklistCriteria, emptyBlacklistCriterias, getBlacklist, addBlacklistCriteria } from "../../../services/blacklist";
 import { Router } from "express";
-import { check } from "../../../utils/validators";
+import { check } from "../../../lib/utils/validators";
 
 export default function adminBlacklistController(router: Router) {
 	router.route('/admin/blacklist/criterias/empty')

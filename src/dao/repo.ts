@@ -1,4 +1,4 @@
-import {db} from './database';
+import {db} from '../lib/dao/database';
 import { DBRepo } from '../types/database/repo';
 const sql = require('./sql/repo');
 

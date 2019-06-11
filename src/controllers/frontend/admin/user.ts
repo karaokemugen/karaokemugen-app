@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { emitWS } from "../../../webapp/frontend";
+import { emitWS } from "../../../lib/utils/ws";
 import { OKMessage, errMessage } from "../../common";
 import { deleteUser, findUserByName, createUser } from "../../../services/user";
 import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
 import { getLang } from "../../middlewares/lang";
-import { check } from "../../../utils/validators";
+import { check } from "../../../lib/utils/validators";
 
 export default function adminUserController(router: Router) {
 	router.route('/admin/users')

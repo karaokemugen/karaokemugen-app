@@ -1,33 +1,11 @@
-import {langSelector, paramWords, db} from './database';
+import {langSelector, paramWords, db} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
-import {profile} from '../utils/logger';
-import { KaraParams } from '../types/kara';
-import { Series } from '../types/series';
+import { KaraParams } from '../lib/types/kara';
+import { Series } from '../lib/types/series';
 import { WhereClause } from '../types/database';
 import { DBSeries } from '../types/database/series';
 
 const sql = require('./sql/series');
-
-export async function refreshSeries() {
-	profile('RefreshSeries');
-	await db().query('REFRESH MATERIALIZED VIEW all_series');
-	profile('RefreshSeries');
-}
-
-export async function refreshKaraSeries() {
-	profile('RefreshSeriesi18n');
-	await db().query('REFRESH MATERIALIZED VIEW series_i18n');
-	profile('RefreshSeriesi18n');
-	profile('RefreshKaraSeries');
-	await db().query('REFRESH MATERIALIZED VIEW all_kara_series');
-	profile('RefreshKaraSeries');
-}
-
-export async function refreshKaraSeriesLang() {
-	profile('RefreshKaraSeriesLang');
-	await db().query('REFRESH MATERIALIZED VIEW all_kara_serie_langs');
-	profile('RefreshKaraSeriesLang');
-}
 
 export function buildClausesSeries(words: string): WhereClause {
 	const params = paramWords(words);

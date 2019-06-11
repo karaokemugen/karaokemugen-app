@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { errMessage, OKMessage } from "../../common";
-import { emitWS } from "../../../webapp/frontend";
+import { emitWS } from "../../../lib/utils/ws";
 import { createAutoMix, deleteFavorites, addToFavorites, getFavorites, emptyFavorites } from "../../../services/favorites";
-import { check } from "../../../utils/validators";
+import { check } from "../../../lib/utils/validators";
 import { updateUserLoginTime, requireAdmin, requireValidUser, requireAuth } from "../../middlewares/auth";
 import { getLang } from "../../middlewares/lang";
 

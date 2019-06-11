@@ -1,11 +1,10 @@
-import {expand, flatten, buildTypeClauses, langSelector, buildClauses, db, transaction} from './database';
-import {getConfig} from '../utils/config';
-import {asyncExists, asyncReadFile, resolveFileInDirs} from '../utils/files';
+import {expand, flatten, buildTypeClauses, langSelector, buildClauses, db, transaction} from '../lib/dao/database';
+import {getConfig} from '../lib/utils/config';
+import {asyncExists, asyncReadFile, resolveFileInDirs} from '../lib/utils/files';
 import { getState } from '../utils/state';
 import {pg as yesql} from 'yesql';
-import {profile} from '../utils/logger';
-import {now} from '../utils/date';
-import { Kara, KaraParams } from '../types/kara';
+import {now} from '../lib/utils/date';
+import { Kara, KaraParams } from '../lib/types/kara';
 import { Role, User } from '../types/user';
 import {PLC} from '../types/playlist';
 import { DBYear, DBKara, DBKaraHistory, DBKaraBase } from '../types/database/kara';
@@ -16,18 +15,6 @@ const sql = require('./sql/kara');
 export async function getSongCountForUser(playlist_id: number, username: string): Promise<number> {
 	const res = await db().query(sql.getSongCountPerUser, [playlist_id, username]);
 	return res.rows[0].count;
-}
-
-export async function refreshKaras() {
-	profile('RefreshKaras');
-	await db().query('REFRESH MATERIALIZED VIEW all_karas');
-	profile('RefreshKaras');
-}
-
-export async function refreshYears() {
-	profile('RefreshYears');
-	await db().query('REFRESH MATERIALIZED VIEW all_years');
-	profile('RefreshYears');
 }
 
 

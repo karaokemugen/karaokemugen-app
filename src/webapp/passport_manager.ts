@@ -4,7 +4,7 @@ import {Strategy, ExtractJwt} from 'passport-jwt';
 import LocalStrategy from 'passport-local';
 
 import {hashPassword, findUserByName} from '../services/user';
-import {getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
 import { User } from '../types/user';
 
 export function configurePassport() {

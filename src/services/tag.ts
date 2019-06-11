@@ -2,8 +2,8 @@ import langs from 'langs';
 import {join} from 'path';
 import {getSupportedLangs, getLanguage} from 'iso-countries-languages';
 import {getAllTags} from '../dao/tag';
-import {profile} from '../utils/logger';
-import { TagParams } from '../types/tag';
+import {profile} from '../lib/utils/logger';
+import { TagParams } from '../lib/types/tag';
 import { DBTag } from '../types/database/tag';
 
 export function translateTags(taglist: DBTag[]) {

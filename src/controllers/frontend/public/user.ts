@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { errMessage, OKMessage } from "../../common";
 import { removeRemoteUser, convertToRemoteUser, editUser, findUserByName, updateSongsLeft, createUser, listUsers } from "../../../services/user";
-import { emitWS } from "../../../webapp/frontend";
-import { check } from "../../../utils/validators";
+import { emitWS } from "../../../lib/utils/ws";
+import { check } from "../../../lib/utils/validators";
 import { updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
 import { requireWebappLimited, requireWebappLimitedNoAuth } from "../../middlewares/webapp_mode";
 import { getLang } from "../../middlewares/lang";
-import multer = require("multer");
+import multer = require('multer');
 import { resolve } from "path";
 import { getState } from "../../../utils/state";
-import { getConfig } from "../../../utils/config";
+import { getConfig } from "../../../lib/utils/config";
 import { deleteUser } from "../../../dao/user";
 
 export default function publicUserController(router: Router) {

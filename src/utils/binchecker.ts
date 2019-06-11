@@ -1,7 +1,7 @@
 // This script is here to check for paths and to provide binary paths depending on your operating system
 
 import {resolve} from 'path';
-import {asyncRequired} from './files';
+import {asyncRequired} from '../lib/utils/files';
 import {exit} from '../services/engine';
 import logger from 'winston';
 import { getState } from './state';

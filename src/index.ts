@@ -1,12 +1,13 @@
-import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './utils/files';
-import {getConfig, initConfig, configureBinaries} from './utils/config';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './lib/utils/files';
+import {getConfig, configureBinaries} from './lib/utils/config';
+import {initConfig} from './utils/config';
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './args';
 import {writeFileSync, readFileSync} from 'fs';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import {createServer} from 'net';
-import logger from 'winston';
+import logger from './lib/utils/logger';
 import minimist from 'minimist';
 import {exit, initEngine} from './services/engine';
 import {logo} from './logo';

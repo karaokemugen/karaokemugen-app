@@ -1,4 +1,4 @@
-import {getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
 import {getState} from '../utils/state';
 import {generateAdminPassword} from './user';
 import open from 'open';

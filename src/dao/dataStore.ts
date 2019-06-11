@@ -1,11 +1,11 @@
-import { KaraFileV4 } from "../types/kara";
-import { Series } from "../types/series";
-import { checksum } from "../utils/files";
-import { profile } from "../utils/logger";
-import { extractAllKaraFiles, extractAllSeriesFiles } from "../services/generation";
-import Bar from "../utils/bar";
-import { parseKara } from "./karafile";
-import { getDataFromSeriesFile } from "./seriesfile";
+import { KaraFileV4 } from "../lib/types/kara";
+import { Series } from "../lib/types/series";
+import { checksum } from "../lib/utils/files";
+import { profile } from "../lib/utils/logger";
+import { extractAllKaraFiles, extractAllSeriesFiles } from "../lib/services/generation";
+import Bar from "../lib/utils/bar";
+import { parseKara } from "../lib/dao/karafile";
+import { getDataFromSeriesFile } from "../lib/dao/seriesfile";
 
 let dataStore = {
 	karas: [],

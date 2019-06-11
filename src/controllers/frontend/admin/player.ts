@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { OKMessage, errMessage } from "../../common";
 import { message } from "../../../player/player";
-import { emitWS } from "../../../webapp/frontend";
-import { check } from "../../../utils/validators";
+import { emitWS } from "../../../lib/utils/ws";
+import { check } from "../../../lib/utils/validators";
 import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
 import { getLang } from "../../middlewares/lang";
 import { sendCommand } from "../../../services/player";

@@ -1,4 +1,4 @@
-import {db, transaction, langSelector, buildClauses} from './database';
+import {db, transaction, langSelector, buildClauses} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import { FavParams } from '../types/favorites';
 import { DBKara } from '../types/database/kara';

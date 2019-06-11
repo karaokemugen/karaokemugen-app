@@ -1,14 +1,13 @@
 import {basename, resolve} from 'path';
-import {getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
 import {getState} from '../utils/state';
-import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, asyncMkdirp, asyncExists, asyncRemove} from '../utils/files';
+import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, asyncMkdirp, asyncExists, asyncRemove, asyncCopy} from '../lib/utils/files';
 import decompress from 'decompress';
-import logger from 'winston';
-import {copy} from 'fs-extra';
+import logger from '../lib/utils/logger';
 import prettyBytes from 'pretty-bytes';
 import {createClient as webdav} from 'webdav';
 import Downloader from '../utils/downloader';
-import {emitWS} from '../webapp/frontend';
+import {emitWS} from '../lib/utils/ws';
 import {File} from '../types/updater';
 import { DownloadItem } from '../types/downloader';
 
@@ -279,7 +278,7 @@ async function updateFiles(files: string[], dirSource: string, dirDest: string, 
 	for (const file of files) {
 		let action = 'Updated';
 		if (isNew) action = 'Added';
-		await copy(resolve(dirSource, file), resolve(dirDest, file), {overwrite: true});
+		await asyncCopy(resolve(dirSource, file), resolve(dirDest, file), {overwrite: true});
 		logger.info(`[Updater] ${action} : ${file}`);
 	}
 }

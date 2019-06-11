@@ -2,15 +2,15 @@ import {selectFavorites, removeAllFavorites, removeFavorites, insertFavorites} f
 import {trimPlaylist, shufflePlaylist, createPlaylist, addKaraToPlaylist} from './playlist';
 import {findUserByName} from './user';
 import logger from 'winston';
-import {date} from '../utils/date';
-import {profile} from '../utils/logger';
+import {date} from '../lib/utils/date';
+import {profile} from '../lib/utils/logger';
 import {formatKaraList, isAllKaras} from './kara';
 import {KaraList} from '../types/kara';
 import {FavParams, FavExport, AutoMixParams, AutoMixPlaylistInfo} from '../types/favorites';
-import { uuidRegexp } from './constants';
+import { uuidRegexp } from '../lib/utils/constants';
 import { getRemoteToken } from '../dao/user';
 import got from 'got';
-import {getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
 
 export async function getFavorites(params: FavParams): Promise<KaraList> {
 	try {

@@ -1,4 +1,4 @@
-import {Series} from './series';
+import {Series} from '../lib/types/series';
 
 export type SeriesMap = Map<string, string[]>
 

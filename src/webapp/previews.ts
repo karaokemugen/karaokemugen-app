@@ -1,12 +1,12 @@
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 import {resolve} from 'path';
 import {
 	asyncUnlink, resolveFileInDirs, asyncExists, asyncReadDir
-} from '../utils/files';
+} from '../lib/utils/files';
 import {
 	resolvedPathPreviews, resolvedPathMedias
-} from '../utils/config';
-import {createPreview} from '../utils/ffmpeg';
+} from '../lib/utils/config';
+import {createPreview} from '../lib/utils/ffmpeg';
 import {getKaras} from '../services/kara';
 
 async function extractPreviewFiles(previewDir: string): Promise<string[]> {

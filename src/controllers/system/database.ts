@@ -1,5 +1,5 @@
 import {requireAuth, requireValidUser, requireAdmin} from '../middlewares/auth';
-import {run as generateDatabase} from '../../services/generation';
+import {generateDB} from '../../dao/database';
 import { Router } from 'express';
 import { dumpPG } from '../../utils/postgresql';
 import { resetViewcounts } from '../../dao/kara';
@@ -11,12 +11,12 @@ export default function systemDBController(router: Router) {
 	router.post('/system/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		res.status(200).send('Karas are being updated, check Karaoke Mugen\'s console to follow its progression');
 		await runBaseUpdate();
-		await generateDatabase();
+		await generateDB();
 	});
 
 	router.post('/system/db/regenerate', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
-			await generateDatabase();
+			await generateDB();
 			res.status(200).send('DB successfully regenerated');
 		} catch(err) {
 			res.status(500).send(`Error while regenerating DB: ${err}`);

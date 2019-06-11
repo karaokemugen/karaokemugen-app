@@ -1,4 +1,4 @@
-import {db} from './database';
+import {db} from '../lib/dao/database';
 import { DBStatsPlayed, DBStatsRequested, DBStatsFavorites } from '../types/database/stats';
 const sql = require('./sql/stats');
 
