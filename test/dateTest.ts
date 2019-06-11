@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import * as dateFunctions from '../src/utils/date';
+import * as dateFunctions from '../src/lib/utils/date';
 
 const testDate = () => it('Testing date()', () => {
 	const testRegex = /(\d{2})-(\d{2})-(\d+)/;

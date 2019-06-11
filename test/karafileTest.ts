@@ -1,6 +1,6 @@
 import {expect} from 'chai';
-import {karaDataValidationErrors} from '../src/dao/karafile';
-import { KaraFileV4 } from '../src/types/kara';
+import {karaDataValidationErrors} from '../src/lib/dao/karafile';
+import { KaraFileV4 } from '../src/lib/types/kara';
 
 const validKara: KaraFileV4 = {
 	"header": {
