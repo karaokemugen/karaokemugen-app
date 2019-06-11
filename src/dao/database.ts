@@ -29,18 +29,14 @@ export async function compareKarasChecksum(silent?: boolean): Promise<boolean> {
 	return false;
 }
 
-
-
+function errorFunction(err: any) {
+	// If shutdown is in progress for PG binary, we won't catch errors. (or we'll get connection reset messages spamming console)
+	if (!isShutdownPG()) logger.error(`[DB] Database error : ${err}`);
+}
 
 export async function initDB() {
 	const conf = getConfig();
-	await connectDB({superuser: true, db: 'postgres'});
-	// Let's grab the database object to modify it.
-	let {database} = require('../lib/dao/database');
-	database.on('error', (err: any) => {
-		// If shutdown is in progress for PG binary, we won't catch errors. (or we'll get connection reset messages spamming console)
-		if (!isShutdownPG()) logger.error(`[DB] Database error : ${err}`);
-	});
+	await connectDB({superuser: true, db: 'postgres'}, errorFunction);
 	try {
 		await db().query(`CREATE DATABASE ${conf.Database.prod.database} ENCODING 'UTF8'`);
 		logger.info('[DB] Database created');
@@ -55,7 +51,7 @@ export async function initDB() {
 	}
 	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.Database.prod.database} TO ${conf.Database.prod.user};`);
 	// We need to reconnect to create the extension on our newly created database
-	await connectDB({superuser: true, db: conf.Database.prod.database});
+	await connectDB({superuser: true, db: conf.Database.prod.database}, errorFunction);
 	try {
 		await db().query('CREATE EXTENSION unaccent;');
 	} catch(err) {
@@ -103,7 +99,7 @@ export async function initDBSystem(): Promise<boolean> {
 			await initDB();
 		}
 		logger.info('[DB] Initializing database connection');
-		await connectDB();
+		await connectDB({superuser: false, db: conf.Database.prod.database}, errorFunction);
 		await migrateDB();
 	} catch(err) {
 		throw `Database initialization failed. Check if a postgres binary is already running on that port and kill it? Error : ${err}`;
