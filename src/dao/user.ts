@@ -1,4 +1,4 @@
-import {db} from './database';
+import {db} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import { User } from '../types/user';
 import { DBUser, DBGuest, RemoteToken } from '../types/database/user';

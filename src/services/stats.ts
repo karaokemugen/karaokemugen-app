@@ -1,12 +1,12 @@
-import { getConfig } from '../utils/config';
+import { getConfig } from '../lib/utils/config';
 import { getState } from '../utils/state';
 import si from 'systeminformation';
 import { exportPlayed, exportRequests, exportFavorites } from '../dao/stats';
 import internet from 'internet-available';
 import got from 'got';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 import prettyBytes from 'pretty-bytes';
-import { asyncWriteFile } from '../utils/files';
+import { asyncWriteFile } from '../lib/utils/files';
 import {resolve} from 'path';
 import cloneDeep from 'lodash.clonedeep';
 

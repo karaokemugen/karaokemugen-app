@@ -1,11 +1,11 @@
 import _cliProgress from 'cli-progress';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 import {basename} from 'path';
 import got from 'got';
 import prettyBytes from 'pretty-bytes';
 import {createWriteStream} from 'fs';
 import { getState } from './state';
-import { emitWS } from '../webapp/frontend';
+import { emitWS } from '../lib/utils/ws';
 import { DownloadItem, DownloadOpts } from '../types/downloader';
 
 const HttpAgent = require('agentkeepalive');

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { getLang } from "../../middlewares/lang";
 import { requireAuth, requireValidUser, updateUserLoginTime } from "../../middlewares/auth";
 import { requireWebappLimited } from "../../middlewares/webapp_mode";
-import { getConfig } from "../../../utils/config";
+import { getConfig } from "../../../lib/utils/config";
 import { getWhitelistContents } from "../../../services/whitelist";
 import { OKMessage, errMessage } from "../../common";
 

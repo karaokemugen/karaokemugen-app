@@ -1,6 +1,7 @@
-import {configureHost, getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
+import {configureHost} from '../utils/config';
 import got from 'got';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 import { getState } from '../utils/state';
 
 export async function publishURL() {

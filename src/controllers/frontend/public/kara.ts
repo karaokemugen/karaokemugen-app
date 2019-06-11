@@ -4,7 +4,7 @@ import { getKaraLyrics, getKara, getKaras } from "../../../services/kara";
 import { updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
 import { requireWebappLimited, requireWebappOpen } from "../../middlewares/webapp_mode";
 import { getLang } from "../../middlewares/lang";
-import { emitWS } from "../../../webapp/frontend";
+import { emitWS } from "../../../lib/utils/ws";
 import { addKaraToPlaylist, deleteKaraFromPlaylist, getPlaylistContents, getPlaylistInfo } from "../../../services/playlist";
 import { vote } from "../../../services/upvote";
 import { getState } from "../../../utils/state";

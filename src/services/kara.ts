@@ -1,11 +1,10 @@
-import {tagTypes, karaTypes} from './constants';
+import {tagTypes, karaTypes} from '../lib/utils/constants';
 import {ASSToLyrics} from '../utils/ass';
-import {refreshTags, refreshKaraTags} from '../dao/tag';
-import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../dao/series';
-import { refreshAll, saveSetting } from '../dao/database';
+import {refreshTags, refreshKaraTags} from '../lib/dao/tag';
+import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../lib/dao/series';
+import { refreshAll, saveSetting } from '../lib/dao/database';
+import { refreshYears, refreshKaras } from '../lib/dao/kara';
 import {selectAllKaras,
-	refreshYears,
-	refreshKaras,
 	getYears as getYearsDB,
 	getKara as getKaraDB,
 	getKaraMini as getKaraMiniDB,
@@ -21,19 +20,21 @@ import {updateKaraSeries} from '../dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../dao/tag';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {resolve} from 'path';
-import {profile} from '../utils/logger';
+import {basename, resolve} from 'path';
+import {profile} from '../lib/utils/logger';
 import {isPreviewAvailable} from '../webapp/previews';
 import {Token} from '../types/user';
-import {Kara, KaraList, KaraParams} from '../types/kara';
-import {Series} from '../types/series';
+import {KaraList} from '../types/kara';
+import {Kara, KaraParams} from '../lib/types/kara';
+import {Series} from '../lib/types/series';
 import { getOrAddSerieID, deleteSerie } from './series';
-import {asyncUnlink, resolveFileInDirs} from '../utils/files';
-import {getConfig} from '../utils/config';
+import {asyncUnlink, resolveFileInDirs} from '../lib/utils/files';
+import {getConfig} from '../lib/utils/config';
 import logger from 'winston';
 import {getState} from '../utils/state';
-import { removeKaraInStore, getStoreChecksum } from '../dao/dataStore';
+import { editKaraInStore, removeKaraInStore, getStoreChecksum } from '../dao/dataStore';
 import { DBKara, DBKaraBase, DBKaraHistory } from '../types/database/kara';
+import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
 
 export async function isAllKaras(karas: string[]): Promise<string[]> {
 	// Returns an array of unknown karaokes
@@ -339,4 +340,21 @@ export async function refreshKarasAfterDBChange() {
 	refreshSeries();
 	refreshYears();
 	refreshTags();
+}
+
+export async function integrateKaraFile(file: string) {
+	const karaFileData = await parseKara(file);
+	const karaFile = basename(file);
+	const karaData = await getDataFromKaraFile(karaFile, karaFileData)
+	const karaDB = await getKaraDB(karaData.kid, 'admin', null, 'admin');
+	if (karaDB) {
+		await editKaraInDB(karaData, { refresh: false });
+		if (karaDB[0].karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].karafile, getConfig().System.Path.Karas));
+		if (karaDB[0].mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].mediafile, getConfig().System.Path.Medias));
+		if (karaDB[0].subfile !== 'dummy.ass' && karaDB[0].subfile !== karaData.subfile) await asyncUnlink(await resolveFileInDirs(karaDB[0].subfile, getConfig().System.Path.Lyrics));
+	} else {
+		await createKaraInDB(karaData, { refresh: false });
+	}
+	editKaraInStore(karaData.kid, karaFileData);
+	saveSetting('baseChecksum', getStoreChecksum());
 }

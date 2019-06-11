@@ -1,7 +1,7 @@
 import {insertUpvote,removeUpvote, getUpvotesByPLC} from '../dao/upvote';
 import {freePLC, getPLCInfoMini} from './playlist';
 import {listUsers, updateSongsLeft} from './user';
-import {getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
 import logger from 'winston';
 import {getState} from '../utils/state';
 import { User } from '../types/user';

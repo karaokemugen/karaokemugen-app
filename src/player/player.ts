@@ -1,8 +1,8 @@
 import i18n from 'i18n';
 import logger from 'winston';
-import {resolvedPathBackgrounds, getConfig} from '../utils/config';
+import {resolvedPathBackgrounds, getConfig} from '../lib/utils/config';
 import {resolve, extname} from 'path';
-import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../utils/files';
+import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../lib/utils/files';
 import sample from 'lodash.sample';
 import sizeOf from 'image-size';
 import {getSingleJingle, buildJinglesList} from './jingles';
@@ -16,7 +16,7 @@ import {endPoll} from '../services/poll';
 import {getState, setState} from '../utils/state';
 import execa from 'execa';
 import semver from 'semver';
-import { imageFileTypes } from '../services/constants';
+import { imageFileTypes } from '../lib/utils/constants';
 import {PlayerState, MediaData, mpvStatus} from '../types/player';
 import retry from 'p-retry';
 

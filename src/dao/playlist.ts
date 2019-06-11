@@ -1,7 +1,7 @@
-import {langSelector, buildClauses, db, transaction} from './database';
-import {getConfig} from '../utils/config';
+import {langSelector, buildClauses, db, transaction} from '../lib/dao/database';
+import {getConfig} from '../lib/utils/config';
 import {getState} from '../utils/state';
-import {now} from '../utils/date';
+import {now} from '../lib/utils/date';
 import {pg as yesql} from 'yesql';
 import {Playlist, PLC, PLCParams} from '../types/playlist';
 import { QueryResult } from 'pg';

@@ -1,5 +1,5 @@
 import {setState} from './utils/state';
-import logger from 'winston';
+import logger from './lib/utils/logger';
 
 const help = `Usage :
 

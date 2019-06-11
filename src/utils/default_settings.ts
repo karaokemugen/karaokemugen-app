@@ -5,7 +5,7 @@
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.ini to bypass the default value .
 import {Config} from '../types/config';
-import { bools } from '../services/constants';
+import { bools } from '../lib/utils/constants';
 
 export const defaults: Config = {
 	App: {

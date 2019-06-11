@@ -4,15 +4,16 @@ import exphbs from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import {address} from 'ip';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 import i18n from 'i18n';
-import {getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
 import {configurePassport} from './passport_manager';
 import {createServer} from 'http';
-import { initializationCatchphrases } from '../services/constants';
+import { initializationCatchphrases } from '../lib/utils/constants';
 import sample from 'lodash.sample';
+import { initWS } from '../lib/utils/ws';
 
 // Api routes
 import systemConfigController from '../controllers/system/config';
@@ -39,13 +40,6 @@ import publicKaraController from '../controllers/frontend/public/kara';
 import publicPollController from '../controllers/frontend/public/poll';
 import publicUserController from '../controllers/frontend/public/user';
 import publicWhitelistController from '../controllers/frontend/public/whitelist';
-
-let ws: any;
-
-export function emitWS(type: string, data?: any) {
-	//logger.debug( '[WS] Sending message '+type+' : '+JSON.stringify(data));
-	if (ws) ws.sockets.emit(type, data);
-}
 
 function apiRouter() {
 	const apiRouter = express.Router();
@@ -199,7 +193,7 @@ export async function initFrontend() {
 			res.type('txt').send('Not found');
 		});
 		const server = createServer(app);
-		ws = require('socket.io').listen(server);
+		initWS(server);
 		server.listen(conf.Frontend.Port, () => {
 			logger.debug(`[Webapp] Webapp is READY and listens on port ${conf.Frontend.Port}`);
 		});

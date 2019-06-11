@@ -1,10 +1,10 @@
 import passport from 'passport';
 import {decode} from 'jwt-simple';
-import {getConfig} from '../../utils/config';
+import {getConfig} from '../../lib/utils/config';
 import {findUserByName, updateLastLoginName, remoteCheckAuth, fetchAndUpdateRemoteUser} from '../../services/user';
 import { getRemoteToken, upsertRemoteToken } from '../../dao/user';
 import { fetchAndAddFavorites } from '../../services/favorites';
-import logger from 'winston';
+import logger from '../../lib/utils/logger';
 import {User, Token} from '../../types/user';
 
 export const requireAuth = passport.authenticate('jwt', { session: false });

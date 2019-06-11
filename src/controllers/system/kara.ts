@@ -4,7 +4,7 @@ import {resolve} from 'path';
 import multer from 'multer';
 import {getRemoteKaras} from '../../services/download';
 import { getState } from "../../utils/state";
-import { getConfig } from "../../utils/config";
+import { getConfig } from "../../lib/utils/config";
 import { getLang } from "../middlewares/lang";
 import {deleteKara, getKaras, getKara, getTop50, getKaraPlayed, getKaraHistory} from '../../services/kara';
 import {editKara, createKara} from '../../services/kara_creation';

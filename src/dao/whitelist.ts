@@ -1,6 +1,6 @@
-import {transaction, langSelector, buildClauses, db} from './database';
+import {transaction, langSelector, buildClauses, db} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
-import { KaraParams } from '../types/kara';
+import { KaraParams } from '../lib/types/kara';
 import { DBWhitelist } from '../types/database/whitelist';
 import { User } from '../types/user';
 import { getUser } from './user';
