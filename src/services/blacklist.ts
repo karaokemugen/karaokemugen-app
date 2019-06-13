@@ -17,8 +17,7 @@ import logger from '../lib/utils/logger';
 import {profile} from '../lib/utils/logger';
 import {formatKaraList} from './kara';
 import {uuidRegexp} from '../lib/utils/constants';
-import {KaraList} from '../types/kara';
-import {KaraParams} from '../lib/types/kara';
+import {KaraList, KaraParams} from '../lib/types/kara';
 import {BLC} from '../types/blacklist';
 import {isNumber} from '../lib/utils/validators';
 

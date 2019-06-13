@@ -5,7 +5,7 @@ import LocalStrategy from 'passport-local';
 
 import {hashPassword, findUserByName} from '../services/user';
 import {getConfig} from '../lib/utils/config';
-import { User } from '../types/user';
+import { User } from '../lib/types/user';
 
 export function configurePassport() {
 	passport.use(localPassportStrategy());

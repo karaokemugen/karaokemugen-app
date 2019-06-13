@@ -4,7 +4,7 @@ import {listUsers, updateSongsLeft} from './user';
 import {getConfig} from '../lib/utils/config';
 import logger from 'winston';
 import {getState} from '../utils/state';
-import { User } from '../types/user';
+import { User } from '../lib/types/user';
 
 export async function vote(plc_id: number, username: string, downvote: boolean) {
 	if (downvote) return await deleteUpvote(plc_id,username);

@@ -5,7 +5,7 @@ import { getState } from '../utils/state';
 import {pg as yesql} from 'yesql';
 import {now} from '../lib/utils/date';
 import { Kara, KaraParams } from '../lib/types/kara';
-import { Role, User } from '../types/user';
+import { Role, User } from '../lib/types/user';
 import {PLC} from '../types/playlist';
 import { DBYear, DBKara, DBKaraHistory, DBKaraBase } from '../types/database/kara';
 import { getUser } from './user';

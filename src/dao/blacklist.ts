@@ -4,7 +4,7 @@ import {BLC} from '../types/blacklist';
 import {KaraParams} from '../lib/types/kara';
 import { DBBLC, DBBlacklist } from '../types/database/blacklist';
 import { getUser } from './user';
-import { User } from '../types/user';
+import { User } from '../lib/types/user';
 const sql = require('./sql/blacklist');
 
 export async function emptyBlacklistCriterias() {

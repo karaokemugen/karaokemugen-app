@@ -12,7 +12,7 @@ import { KaraParams } from '../lib/types/kara';
 import { removeSeriesInStore, editSeriesInStore, addSeriesToStore, sortSeriesStore, getStoreChecksum } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import {asyncUnlink, resolveFileInDirs, } from '../lib/utils/files';
-import {getConfig} from '../lib/utils/config';
+import {getConfig, resolvedPathSeries} from '../lib/utils/config';
 import {getDataFromSeriesFile} from '../lib/dao/seriesfile';
 
 
@@ -78,7 +78,7 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 	await insertSerie(serieObj);
 	await Promise.all([
 		insertSeriei18n(serieObj),
-		writeSeriesFile(serieObj)
+		writeSeriesFile(serieObj, resolvedPathSeries()[0])
 	]);
 
 	const seriesData = formatSeriesFile(serieObj).series;
@@ -102,7 +102,7 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 	const seriefile = serieObj.seriefile;
 	await Promise.all([
 		updateSerie(serieObj),
-		writeSeriesFile(serieObj)
+		writeSeriesFile(serieObj, resolvedPathSeries()[0])
 	]);
 	const seriesData = formatSeriesFile(serieObj).series;
 	seriesData.seriefile = seriefile;

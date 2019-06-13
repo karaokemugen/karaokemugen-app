@@ -5,7 +5,7 @@ import {findUserByName, updateLastLoginName, remoteCheckAuth, fetchAndUpdateRemo
 import { getRemoteToken, upsertRemoteToken } from '../../dao/user';
 import { fetchAndAddFavorites } from '../../services/favorites';
 import logger from '../../lib/utils/logger';
-import {User, Token} from '../../types/user';
+import {User, Token} from '../../lib/types/user';
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
 

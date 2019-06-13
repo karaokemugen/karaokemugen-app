@@ -21,7 +21,8 @@ import { createReadStream } from 'fs';
 import { writeStreamToFile } from '../lib/utils/files';
 import { fetchAndAddFavorites } from './favorites';
 import {encode, decode} from 'jwt-simple';
-import {Token, User, UserOpts, Tokens, SingleToken, Role} from '../types/user';
+import {UserOpts, Tokens, SingleToken} from '../types/user';
+import {Token, Role, User} from '../lib/types/user';
 import { PLC } from '../types/playlist';
 import {updateExpiredUsers as DBUpdateExpiredUsers,
 	resetGuestsPassword as DBResetGuestsPassword,

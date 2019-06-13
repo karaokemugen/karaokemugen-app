@@ -246,10 +246,15 @@
   dependencies:
     "@types/express" "*"
 
-"@types/node@*", "@types/node@^12.0.7":
+"@types/node@*":
   version "12.0.7"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.7.tgz#4f2563bad652b2acb1722d7e7aae2b0ff62d192c"
   integrity sha512-1YKeT4JitGgE4SOzyB9eMwO0nGVNkNEsm9qlIt1Lqm/tG2QEiSMTD4kS3aO6L+w5SClLVxALmIBESK6Mk5wX0A==
+
+"@types/node@^12.0.8":
+  version "12.0.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.8.tgz#551466be11b2adc3f3d47156758f610bd9f6b1d8"
+  integrity sha512-b8bbUOTwzIY3V5vDTY1fIJ+ePKDUBqt2hC2woVGotdQQhG/2Sh62HOKHrT7ab+VerXAcPyAiTEipPu/FsreUtg==
 
 "@types/open@^6.1.0":
   version "6.1.0"
@@ -1120,7 +1125,7 @@ cuid@^2.1.1:
   resolved "https://registry.yarnpkg.com/cuid/-/cuid-2.1.6.tgz#dc3a20b5a7497d36d32c0bf8a2997524c9c796c4"
   integrity sha512-ZFp7PS6cSYMJNch9fc3tyHdE4T8TDo3Y5qAxb0KSA9mpiYDo7z9ql1CznFuuzxea9STVIDy0tJWm2lYiX2ZU1Q==
 
-cycle@1.0.x:
+cycle@1.0.x, cycle@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/cycle/-/cycle-1.0.3.tgz#21e80b2be8580f98b468f379430662b046c34ad2"
   integrity sha1-IegLK+hYD5i0aPN5QwZisEbDStI=
@@ -1130,20 +1135,20 @@ damerau-levenshtein@^1.0.4:
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.5.tgz#780cf7144eb2e8dbd1c3bb83ae31100ccc31a414"
   integrity sha512-CBCRqFnpu715iPmw1KrdOrzRqbdFwQTwAWyyyYS42+iAgHCuXZ+/TdMgQkUENPomxEz9z1BEzuQU2Xw0kUuAgA==
 
-db-migrate-base@^1.6.3:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/db-migrate-base/-/db-migrate-base-1.6.3.tgz#5fa63e2745fd353ffd90be6754a0d79b41167cd8"
-  integrity sha512-O6Kh72Yh0DfvRAKg9QKzu1KkMwI5iI0dFHO6RmDLvbiYvtRW3faFXJNFwJYeioVBx22QA3AkVFbDIcw4j4QxGw==
+db-migrate-base@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/db-migrate-base/-/db-migrate-base-2.0.0.tgz#409bf81d679a1974f39cfb87fe20f08bc1cdf4b0"
+  integrity sha512-GRZviOejHiiluJCAG59RxVTaDMzTTrPe2HWx44p48aigoBrr0N9NwMVs9CYEPclBuvZZLOLphQR0V6cQLHACqA==
   dependencies:
     bluebird "^3.1.1"
 
-db-migrate-pg@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/db-migrate-pg/-/db-migrate-pg-0.5.1.tgz#d42ca6ed497fe5aa1a39c762bd844f89e1e1e8c4"
-  integrity sha512-vbWE4uEjvddENHYgghomTcFAU/JW7sO+U7EYgNZWDl64f64KYtF2oqUr8iKHXKvCPGzhbub+88lV0s7ZCdJ8nA==
+db-migrate-pg@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/db-migrate-pg/-/db-migrate-pg-1.0.0.tgz#a644ed700b0905465e05b497dd321785e7ace183"
+  integrity sha512-mdkT1KY8uE+uEWNEznXvhYGu8xQUGLgI+LiXk+2OyDvqoSl87RWKSLF8UaJTgqtl62f6BatMUymGNTzMSSRpuA==
   dependencies:
     bluebird "^3.1.1"
-    db-migrate-base "^1.6.3"
+    db-migrate-base "^2.0.0"
     pg "^7.8.0"
     semver "^5.0.3"
 
@@ -1580,10 +1585,10 @@ eslint-module-utils@^2.4.0:
     debug "^2.6.8"
     pkg-dir "^2.0.0"
 
-eslint-plugin-flowtype@^3.10.1:
-  version "3.10.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-flowtype/-/eslint-plugin-flowtype-3.10.1.tgz#f83d4c9a4594b3444433c8efb1caf91dcc0be32a"
-  integrity sha512-TnwILo1XT5w6Fgz8j+NEqivmgsYJA7FYFnnE2jdXot/H7Pb9C2Fp+Tqdzb//O+PSVi5X2ureYqCCn7KDfon4iQ==
+eslint-plugin-flowtype@^3.10.2:
+  version "3.10.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-flowtype/-/eslint-plugin-flowtype-3.10.2.tgz#909fd52a3356553088ad8375be68fe6516926db6"
+  integrity sha512-oA56v1KJk6nORN6I4gHwA83wia0Ph7wClPbPTJENGKre9Q+BDF8uX73e1QroKVnn7Bt05VE4BN6F9OQ1RmdqDw==
   dependencies:
     lodash "^4.17.11"
 
@@ -1873,10 +1878,17 @@ file-entry-cache@^5.0.1:
   dependencies:
     flat-cache "^2.0.1"
 
-file-type@^11.1.0:
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/file-type/-/file-type-11.1.0.tgz#93780f3fed98b599755d846b99a1617a2ad063b8"
-  integrity sha512-rM0UO7Qm9K7TWTtA6AShI/t7H5BPjDeGVDaNyg9BjHAj3PysKy7+8C8D137R88jnR3rFJZQB/tFgydl5sN5m7g==
+file-stream-rotator@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/file-stream-rotator/-/file-stream-rotator-0.4.1.tgz#09f67b86d6ea589d20b7852c51c59de55d916d6d"
+  integrity sha512-W3aa3QJEc8BS2MmdVpQiYLKHj3ijpto1gMDlsgCRSKfIUe6MwkcpODGPQ3vZfb0XvCeCqlu9CBQTN7oQri2TZQ==
+  dependencies:
+    moment "^2.11.2"
+
+file-type@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/file-type/-/file-type-12.0.0.tgz#07a665fab1162aff92284f98953b56c7d74bb7fc"
+  integrity sha512-VV3aQAyoV/fHl0I9uU3/DGjItgh5nylAoJPHOXkZXHW4nFFrxJnHR2xdVqsqyw/9fqYy80m+tS+Rf77w0FTKqg==
 
 file-type@^3.8.0:
   version "3.9.0"
@@ -2556,7 +2568,7 @@ jwt-simple@^0.5.6:
     async-await-parallel "^1.0.0"
     cli-progress "^2.1.1"
     execa "^1.0.0"
-    file-type "^11.1.0"
+    file-type "^12.0.0"
     fs-extra "^8.0.1"
     i18n "^0.8.3"
     ini "^1.3.5"
@@ -2578,6 +2590,7 @@ jwt-simple@^0.5.6:
     uuid "^3.3.2"
     validate.js "^0.12.0"
     winston "^3.2.1"
+    winston-daily-rotate-file "^3.9.0"
 
 keyv@^3.0.0:
   version "3.1.0"
@@ -2759,6 +2772,17 @@ log-symbols@2.2.0:
   integrity sha512-VeIAFslyIerEJLXHziedo2basKbMKtTw3vfn5IzG0XTjhAVEJyNHnL2p7vc+wBDSdQuUpNw3M2u6xb9QsAY5Eg==
   dependencies:
     chalk "^2.0.1"
+
+logform@^1.6.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/logform/-/logform-1.10.0.tgz#c9d5598714c92b546e23f4e78147c40f1e02012e"
+  integrity sha512-em5ojIhU18fIMOw/333mD+ZLE2fis0EzXl1ZwHx4iQzmpQi6odNiY/t+ITNr33JZhT9/KEaH+UPIipr6a9EjWg==
+  dependencies:
+    colors "^1.2.1"
+    fast-safe-stringify "^2.0.4"
+    fecha "^2.3.3"
+    ms "^2.1.1"
+    triple-beam "^1.2.0"
 
 logform@^2.1.1:
   version "2.1.2"
@@ -2960,7 +2984,7 @@ mocha@^6.1.4:
     yargs-parser "13.0.0"
     yargs-unparser "1.5.0"
 
-moment@>=2.14.0:
+moment@>=2.14.0, moment@^2.11.2:
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
@@ -3114,7 +3138,7 @@ object-component@0.0.3:
   resolved "https://registry.yarnpkg.com/object-component/-/object-component-0.0.3.tgz#f0c69aa50efc95b866c186f400a33769cb2f1291"
   integrity sha1-8MaapQ78lbhmwYb0AKM3acsvEpE=
 
-object-hash@^1.1.4:
+object-hash@^1.1.4, object-hash@^1.3.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-1.3.1.tgz#fde452098a951cb145f039bb7d455449ddc126df"
   integrity sha512-OSuu/pU4ENM9kmREg0BdNrUDIl1heYa4mBZacJc+vVWz4GtAwu7jO8s4AIt2aGRUTqxykpWzI3Oqnsm13tTMDA==
@@ -4250,10 +4274,10 @@ supports-color@^5.3.0:
   dependencies:
     has-flag "^3.0.0"
 
-systeminformation@^4.9.0:
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.9.0.tgz#c95f7876bcd906a03d178c56770892a2def539b7"
-  integrity sha512-u8GLZloVStTvxec6N0M64AJDd6IGGm2h6pZzEHUKBz2WKL2emsoN/6CChPc25LTXXldvVX8U/9lYJrOYGkAiyw==
+systeminformation@^4.9.2:
+  version "4.9.2"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.9.2.tgz#df6e534d660ee438f61dc9cc08f6f826fb599406"
+  integrity sha512-J3a2Rsdtk+JhJ5cL2ByMLtW5/EZnsZ5gzE573U/Jlu7Ss+cjme9qOVeND5cDKvGcouW3b+hMBtZl5ivNb7HDFw==
 
 table@^5.2.3:
   version "5.4.0"
@@ -4580,7 +4604,28 @@ window-or-global@^1.0.1:
   resolved "https://registry.yarnpkg.com/window-or-global/-/window-or-global-1.0.1.tgz#dbe45ba2a291aabc56d62cf66c45b7fa322946de"
   integrity sha1-2+RboqKRqrxW1iz2bEW3+jIpRt4=
 
-winston-transport@^4.3.0:
+winston-compat@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/winston-compat/-/winston-compat-0.1.4.tgz#599b4ce807ffe728713ecc25ede3f6b89425b739"
+  integrity sha512-mMEfFsSm6GmkFF+f4/0UJtG4N1vSaczGmXLVJYmS/+u2zUaIPcw2ZRuwUg2TvVBjswgiraN+vNnAG8z4fRUZ4w==
+  dependencies:
+    cycle "~1.0.3"
+    logform "^1.6.0"
+    triple-beam "^1.2.0"
+
+winston-daily-rotate-file@^3.9.0:
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/winston-daily-rotate-file/-/winston-daily-rotate-file-3.9.0.tgz#2a9f4f327761b0c096c0649c275945148dd4b6f7"
+  integrity sha512-KicvoaLQapqjSDSCIUKik0dDb90vFkqx1/udUiAt6iOqAtBl2qBCrpSDNy3xp7WnT6xHCKAWEEp2XILtiN+zpQ==
+  dependencies:
+    file-stream-rotator "^0.4.1"
+    object-hash "^1.3.0"
+    semver "^5.6.0"
+    triple-beam "^1.3.0"
+    winston-compat "^0.1.4"
+    winston-transport "^4.2.0"
+
+winston-transport@^4.2.0, winston-transport@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/winston-transport/-/winston-transport-4.3.0.tgz#df68c0c202482c448d9b47313c07304c2d7c2c66"
   integrity sha512-B2wPuwUi3vhzn/51Uukcao4dIduEiPOcOt9HJ3QeaXgkJ5Z7UwpBzxS4ZGNHtrxrUvTwemsQiSys0ihOf8Mp1A==

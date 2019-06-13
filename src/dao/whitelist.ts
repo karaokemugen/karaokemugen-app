@@ -2,7 +2,7 @@ import {transaction, langSelector, buildClauses, db} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import { KaraParams } from '../lib/types/kara';
 import { DBWhitelist } from '../types/database/whitelist';
-import { User } from '../types/user';
+import { User } from '../lib/types/user';
 import { getUser } from './user';
 const sql = require('./sql/whitelist');
 

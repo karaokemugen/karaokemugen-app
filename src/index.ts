@@ -1,5 +1,5 @@
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './lib/utils/files';
-import {getConfig, configureBinaries} from './lib/utils/config';
+import {getConfig} from './lib/utils/config';
 import {initConfig} from './utils/config';
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './args';
@@ -76,9 +76,6 @@ async function main() {
 	logger.debug(`[Launcher] OS : ${state.os}`);
 	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(config, null, 2)}`);
 	logger.debug(`[Launcher] Initial state : ${JSON.stringify(state, null, 2)}`);
-
-	// Checking binaries paths.
-	await configureBinaries(config);
 
 	// Checking paths, create them if needed.
 	await checkPaths(config);

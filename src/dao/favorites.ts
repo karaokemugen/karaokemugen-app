@@ -2,7 +2,7 @@ import {db, transaction, langSelector, buildClauses} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import { FavParams } from '../types/favorites';
 import { DBKara } from '../types/database/kara';
-import { User } from '../types/user';
+import { User } from '../lib/types/user';
 import { getUser } from './user';
 const sql = require('./sql/favorites');
 

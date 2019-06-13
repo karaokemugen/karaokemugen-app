@@ -7,7 +7,6 @@ import {getState, setState} from '../utils/state';
 import {checkPG, killPG} from '../utils/postgresql';
 
 //KM Modules
-import {createPreviews} from '../webapp/previews';
 import {initUserSystem} from './user';
 import {initDBSystem, getStats} from '../dao/database';
 import {closeDB} from '../lib/dao/database';
@@ -22,6 +21,8 @@ import {initPlaylistSystem, testPlaylists} from './playlist';
 import { generateDatabase } from '../lib/services/generation';
 import {validateV3} from '../lib/dao/karafile';
 import { DBStats } from '../types/database/database';
+import { createVideoPreviews } from '../lib/utils/previews';
+import { getAllKaras } from './kara';
 
 export async function initEngine() {
 	profile('Init');
@@ -71,7 +72,7 @@ export async function initEngine() {
 	}
 	let inits = [];
 	if (conf.Karaoke.CreatePreviews) {
-		createPreviews();
+		createVideoPreviews(await getAllKaras());
 	}
 	inits.push(initPlaylistSystem());
 	if (!state.isDemo && !state.isTest) inits.push(initPlayer());

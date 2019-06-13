@@ -53,10 +53,10 @@ import {
 
 //KM Modules
 import {updateSongsLeft, findUserByName} from './user';
-import {Token, User} from '../types/user';
+import {Token, User} from '../lib/types/user';
 import {translateKaraInfo, isAllKaras, formatKaraList, getKaras} from './kara';
 import {playPlayer, playingUpdated} from './player';
-import {isPreviewAvailable} from '../webapp/previews';
+import {isPreviewAvailable} from '../lib/utils/previews';
 import {getBlacklist} from './blacklist';
 import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
 	getKaraMini,

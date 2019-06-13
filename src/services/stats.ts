@@ -72,7 +72,8 @@ async function buildInstanceStats() {
 		si.osInfo(),
 		si.diskLayout()
 	]);
-	const total_disk_size = disks.size;
+	let total_disk_size = 0;
+	disks.forEach(d => { total_disk_size += d.size});
 	return {
 		config: {...conf},
 		instance_id: conf.App.InstanceID,

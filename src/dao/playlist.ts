@@ -6,7 +6,7 @@ import {pg as yesql} from 'yesql';
 import {Playlist, PLC, PLCParams} from '../types/playlist';
 import { QueryResult } from 'pg';
 import { DBPLC, DBPLCKID, DBPLPos, DBPLCNames, DBPLCInfo, DBPL } from '../types/database/playlist';
-import { User } from '../types/user';
+import { User } from '../lib/types/user';
 import { getUser } from './user';
 
 const sql = require('./sql/playlist');

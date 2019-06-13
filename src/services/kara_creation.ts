@@ -37,7 +37,7 @@ export async function editKara(kara: Kara) {
 			}
 		}
 		// Treat files
-		newKara = await generateKara(kara, overwrite);
+		newKara = await generateKara(kara, overwrite, resolvedPathKaras()[0], resolvedPathMedias()[0], resolvedPathSubs()[0]);
 
 		const newMediaFile = resolve(resolvedPathMedias()[0],newKara.data.mediafile);
 
@@ -75,7 +75,7 @@ export async function editKara(kara: Kara) {
 }
 
 export async function createKara(kara: Kara) {
-	const newKara = await generateKara(kara, false);
+	const newKara = await generateKara(kara, false, resolvedPathKaras()[0], resolvedPathMedias()[0], resolvedPathSubs()[0]);
 	addKaraToStore(newKara.fileData);
 	sortKaraStore();
 	saveSetting('baseChecksum', getStoreChecksum());

@@ -5,7 +5,7 @@ import logger from 'winston';
 import {date} from '../lib/utils/date';
 import {profile} from '../lib/utils/logger';
 import {formatKaraList, isAllKaras} from './kara';
-import {KaraList} from '../types/kara';
+import {KaraList} from '../lib/types/kara';
 import {FavParams, FavExport, AutoMixParams, AutoMixPlaylistInfo} from '../types/favorites';
 import { uuidRegexp } from '../lib/utils/constants';
 import { getRemoteToken } from '../dao/user';

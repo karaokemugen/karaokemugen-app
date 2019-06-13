@@ -22,10 +22,7 @@ import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
 import {basename, resolve} from 'path';
 import {profile} from '../lib/utils/logger';
-import {isPreviewAvailable} from '../webapp/previews';
-import {Token} from '../types/user';
-import {KaraList} from '../types/kara';
-import {Kara, KaraParams} from '../lib/types/kara';
+import {Kara, KaraParams, KaraList} from '../lib/types/kara';
 import {Series} from '../lib/types/series';
 import { getOrAddSerieID, deleteSerie } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../lib/utils/files';
@@ -35,6 +32,8 @@ import {getState} from '../utils/state';
 import { editKaraInStore, removeKaraInStore, getStoreChecksum } from '../dao/dataStore';
 import { DBKara, DBKaraBase, DBKaraHistory } from '../types/database/kara';
 import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
+import { isPreviewAvailable } from '../lib/utils/previews';
+import { Token } from '../lib/types/user';
 
 export async function isAllKaras(karas: string[]): Promise<string[]> {
 	// Returns an array of unknown karaokes
@@ -296,6 +295,11 @@ export async function getYears(): Promise<KaraList> {
 			count: years.length
 		}
 	};
+}
+
+export async function getAllKaras(): Promise<KaraList> {
+	// Simple function to return all karaokes, compatibility with KM Server
+	return await getKaras({token: {username: 'admin', role: 'admin'}});
 }
 
 export async function getKaras(params: KaraParams): Promise<KaraList> {

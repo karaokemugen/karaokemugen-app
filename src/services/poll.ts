@@ -11,7 +11,7 @@ import {timer} from '../lib/utils/date';
 import {getState, setState} from '../utils/state';
 import {translateKaraInfo} from "./kara";
 import { State } from '../types/state';
-import { Token } from '../types/user';
+import { Token } from '../lib/types/user';
 const sleep = promisify(setTimeout);
 
 let poll = [];

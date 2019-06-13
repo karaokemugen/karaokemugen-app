@@ -4,7 +4,7 @@ import {resolve} from 'path';
 import {address} from 'ip';
 import {configureLogger} from '../lib/utils/logger';
 import logger from 'winston';
-import {asyncCopy} from '../lib/utils/files';
+import {asyncCopy, asyncRequired} from '../lib/utils/files';
 import {configureIDs, configureLocale, loadConfigFiles, setConfig, verifyConfig, getConfig, setConfigConstraints} from '../lib/utils/config';
 import {configConstraints, defaults} from './default_settings';
 import {publishURL} from '../webapp/online';
@@ -21,38 +21,8 @@ import { updateSongsLeft } from '../services/user';
 import { emitWS } from '../lib/utils/ws';
 import {version} from '../version';
 import { emit } from '../lib/utils/pubsub';
-
-/*
-const defaultConfig: Config = {
-	App: {},
-	Online: {},
-	Frontend: {
-		Permissions: {}
-	},
-	Karaoke: {
-		Display: {
-			ConnectionInfo: {}
-		},
-		Poll: {},
-		Quota: {}
-	},
-	Player: {
-		PIP: {}
-	},
-	Playlist: {},
-	System: {
-		Binaries: {
-			Player: {},
-			Postgres: {},
-			ffmpeg: {}
-		},
-		Path: {}
-	},
-	Database: {
-		prod: {}
-	}
-}
-*/
+import { BinariesConfig } from '../types/binChecker';
+import { exit } from '../services/engine';
 
 export async function editSetting(part: object) {
 	const config = getConfig();
@@ -103,6 +73,7 @@ export async function initConfig(argv: any) {
 	await configureLogger(appPath, !!argv.debug);
 	await configureLocale();
 	await loadConfigFiles(appPath, argv.config, defaults);
+	await checkBinaries(getConfig());
 	emit('configReady');
 	configureHost();
 	configureIDs();
@@ -142,4 +113,70 @@ export function getPublicConfig() {
 	delete publicSettings.Database;
 	delete publicSettings.System;
 	return publicSettings;
+}
+
+// Check if binaries are available
+// Provide their paths for runtime
+
+async function checkBinaries(config: Config): Promise<BinariesConfig> {
+
+	const binariesPath = configuredBinariesForSystem(config);
+	let requiredBinariesChecks = [];
+	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
+	if (config.Database.prod.bundledPostgresBinary) requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
+	if (!getState().isTest && !getState().isDemo) requiredBinariesChecks.push(asyncRequired(binariesPath.mpv));
+
+	try {
+		await Promise.all(requiredBinariesChecks);
+	} catch (err) {
+		binMissing(binariesPath, err);
+		await exit(1);
+	}
+
+	return binariesPath;
+}
+
+function configuredBinariesForSystem(config: Config): BinariesConfig {
+	switch (process.platform) {
+	case 'win32':
+		return {
+			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Windows),
+			mpv: resolve(getState().appPath, config.System.Binaries.Player.Windows),
+			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Windows),
+			postgres_ctl: 'pg_ctl.exe',
+			postgres_dump: 'pg_dump.exe'
+		};
+	case 'darwin':
+		return {
+			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.OSX),
+			mpv: resolve(getState().appPath, config.System.Binaries.Player.OSX),
+			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.OSX),
+			postgres_ctl: 'pg_ctl',
+			postgres_dump: 'pg_dump'
+		};
+	default:
+		return {
+			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Linux),
+			mpv: resolve(getState().appPath, config.System.Binaries.Player.Linux),
+			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Linux),
+			postgres_ctl: 'pg_ctl',
+			postgres_dump: 'pg_dump'
+		};
+	}
+}
+
+function binMissing(binariesPath: any, err: string) {
+	logger.error('[BinCheck] One or more binaries could not be found! (' + err + ')');
+	logger.error('[BinCheck] Paths searched : ');
+	logger.error('[BinCheck] ffmpeg : ' + binariesPath.ffmpeg);
+	logger.error('[BinCheck] mpv : ' + binariesPath.mpv);
+	logger.error('[BinCheck] Postgres : ' + binariesPath.postgres);
+	logger.error('[BinCheck] Exiting...');
+	console.log('\n');
+	console.log('One or more binaries needed by Karaoke Mugen could not be found.');
+	console.log('Check the paths above and make sure these are available.');
+	console.log('Edit your config.yml and set System.Binaries.ffmpeg and System.Binaries.Player variables correctly for your OS.');
+	console.log('You can download mpv for your OS from http://mpv.io/');
+	console.log('You can download postgres for your OS from http://postgresql.org/');
+	console.log('You can download ffmpeg for your OS from http://ffmpeg.org');
 }

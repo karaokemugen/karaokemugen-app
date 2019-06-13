@@ -16,8 +16,7 @@ import { emitWS } from '../lib/utils/ws';
 import got from 'got';
 import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC } from '../types/download';
 import { DownloadItem } from '../types/downloader';
-import { KaraList } from '../types/kara';
-import { KaraParams } from '../lib/types/kara';
+import { KaraList, KaraParams } from '../lib/types/kara';
 import { DBDownload, DBDownloadBLC } from '../types/database/download';
 
 const queueOptions = {
