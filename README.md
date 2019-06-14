@@ -73,13 +73,6 @@ git config push.recursesubmodules on-demand
 git config submodule.recurse true
 ```
 
-From now on you can update via `yarn pull` which will run the following commands for you :
-
-```sh
-git pull
-git submodule update --init --recursive
-```
-
 ### Dependencies
 
 Launch `yarn` to install dependencies and build the React frontend.
