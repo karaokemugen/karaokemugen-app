@@ -1,12 +1,13 @@
-import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './utils/files';
-import {getConfig, initConfig, configureBinaries} from './utils/config';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './lib/utils/files';
+import {getConfig} from './lib/utils/config';
+import {initConfig} from './utils/config';
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './args';
 import {writeFileSync, readFileSync} from 'fs';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import {createServer} from 'net';
-import logger from 'winston';
+import logger from './lib/utils/logger';
 import minimist from 'minimist';
 import {exit, initEngine} from './services/engine';
 import {logo} from './logo';
@@ -60,7 +61,7 @@ main()
 	});
 
 async function main() {
-	const argv = parseArgs();
+	const argv = minimist(process.argv.slice(2));
 	setState({os: process.platform});
 	await initConfig(argv);
 	const state = getState();
@@ -76,9 +77,6 @@ async function main() {
 	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(config, null, 2)}`);
 	logger.debug(`[Launcher] Initial state : ${JSON.stringify(state, null, 2)}`);
 
-	// Checking binaries paths.
-	await configureBinaries(config);
-
 	// Checking paths, create them if needed.
 	await checkPaths(config);
 
@@ -89,15 +87,15 @@ async function main() {
 	// See https://github.com/zeit/pkg/issues/420
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-	logger.debug('[Launcher] Copying input.conf to ' + resolve(appPath, config.System.Path.Temp));
-	let fileBuffer = readFileSync(join(__dirname, '../assets/input.conf'));
 	const tempInput = resolve(appPath, config.System.Path.Temp, 'input.conf');
+	logger.debug(`[Launcher] Copying input.conf to ${tempInput}`);
+	let fileBuffer = readFileSync(join(__dirname, '../assets/input.conf'));
 	if (await asyncExists(tempInput)) await asyncUnlink(tempInput);
 	writeFileSync(tempInput, fileBuffer);
 
-	logger.debug('[Launcher] Copying default background to ' + resolve(appPath, config.System.Path.Temp));
-	fileBuffer = readFileSync(join(__dirname, `../assets/${state.version.image}`));
 	const tempBackground = resolve(appPath, config.System.Path.Temp, 'default.jpg');
+	logger.debug(`[Launcher] Copying default background to ${tempBackground}`);
+	fileBuffer = readFileSync(join(__dirname, `../assets/${state.version.image}`));
 	if (await asyncExists(tempBackground)) await asyncUnlink(tempBackground);
 	writeFileSync(tempBackground, fileBuffer);
 
@@ -126,23 +124,10 @@ async function main() {
 
 /**
  * Checking if application paths exist.
- * Workaround for bug https://github.com/babel/babel/issues/5542
- * Delete this once the bug is resolved.
- */
-function parseArgs() {
-	if (process.argv.indexOf('--') >= 0) {
-		return minimist(process.argv.slice(3));
-	} else {
-		return minimist(process.argv.slice(2));
-	}
-}
-
-/**
- * Checking if application paths exist.
  */
 async function checkPaths(config: Config) {
 
-	const appPath: string = getState().appPath;
+	const appPath = getState().appPath;
 
 	// If no karaoke is found, copy the samples directory if it exists
 	if (!await asyncExists(resolve(appPath, 'app/data'))) {

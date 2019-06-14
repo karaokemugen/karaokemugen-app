@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { errMessage, OKMessage } from "../../common";
 import { importFavorites, exportFavorites, deleteFavorites, addToFavorites, getFavorites } from "../../../services/favorites";
-import { check } from "../../../utils/validators";
+import { check } from "../../../lib/utils/validators";
 import { requireWebappLimited } from "../../middlewares/webapp_mode";
 import { updateUserLoginTime, requireAuth, requireValidUser, requireRegularUser } from "../../middlewares/auth";
 import { getLang } from "../../middlewares/lang";
-import { emitWS } from "../../../webapp/frontend";
+import { emitWS } from "../../../lib/utils/ws";
 
 export default function publicFavoritesController(router: Router) {
 	router.route('/public/favorites')

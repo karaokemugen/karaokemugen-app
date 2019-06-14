@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { errMessage, OKMessage } from "../../common";
-import { emitWS } from "../../../webapp/frontend";
+import { emitWS } from "../../../lib/utils/ws";
 import { addPollVote, getPoll } from "../../../services/poll";
-import { check } from "../../../utils/validators";
+import { check } from "../../../lib/utils/validators";
 import { updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
 import { getLang } from "../../middlewares/lang";
 

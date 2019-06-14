@@ -2,15 +2,15 @@ import {selectFavorites, removeAllFavorites, removeFavorites, insertFavorites} f
 import {trimPlaylist, shufflePlaylist, createPlaylist, addKaraToPlaylist} from './playlist';
 import {findUserByName} from './user';
 import logger from 'winston';
-import {date} from '../utils/date';
-import {profile} from '../utils/logger';
+import {date} from '../lib/utils/date';
+import {profile} from '../lib/utils/logger';
 import {formatKaraList, isAllKaras} from './kara';
-import {KaraList} from '../types/kara';
+import {KaraList} from '../lib/types/kara';
 import {FavParams, FavExport, AutoMixParams, AutoMixPlaylistInfo} from '../types/favorites';
-import { uuidRegexp } from './constants';
+import { uuidRegexp } from '../lib/utils/constants';
 import { getRemoteToken } from '../dao/user';
 import got from 'got';
-import {getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
 
 export async function getFavorites(params: FavParams): Promise<KaraList> {
 	try {
@@ -26,20 +26,24 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 }
 
 export async function fetchAndAddFavorites(instance: string, token: string, username: string) {
-	const res = await got(`https://${instance}/api/favorites`, {
-		headers: {
-			authorization: token
-		},
-		json: true
-	});
-	const favorites = {
-		Header: {
-			version: 1,
-			description: 'Karaoke Mugen Favorites List File'
-		},
-		Favorites: res.body
-	};
-	await importFavorites(favorites, username);
+	try {
+		const res = await got(`https://${instance}/api/favorites`, {
+			headers: {
+				authorization: token
+			},
+			json: true
+		});
+		const favorites = {
+			Header: {
+				version: 1,
+				description: 'Karaoke Mugen Favorites List File'
+			},
+			Favorites: res.body
+		};
+		await importFavorites(favorites, username);
+	} catch(err) {
+		logger.error(`[Favorites] Error getting remote favorites for ${username} : ${err}`);
+	}
 }
 
 export async function emptyFavorites(username: string) {

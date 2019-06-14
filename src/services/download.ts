@@ -2,23 +2,21 @@ import {selectDownloadBLC, truncateDownloadBLC, insertDownloadBLC, updateDownloa
 import Downloader from '../utils/downloader';
 import Queue from 'better-queue';
 import uuidV4 from 'uuid/v4';
-import {getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
 import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from 'winston';
-import {asyncMove} from '../utils/files';
-import { integrateSeriesFile } from '../dao/seriesfile';
-import { integrateKaraFile } from '../dao/karafile';
+import {asyncMove} from '../lib/utils/files';
 import {getState} from '../utils/state';
-import {uuidRegexp} from '../services/constants';
-import {refreshKarasAfterDBChange} from './kara';
-import {refreshSeriesAfterDBChange} from './series';
+import {uuidRegexp} from '../lib/utils/constants';
+import {integrateKaraFile, refreshKarasAfterDBChange} from './kara';
+import {integrateSeriesFile, refreshSeriesAfterDBChange} from './series';
 import { compareKarasChecksum } from '../dao/database';
-import { emitWS } from '../webapp/frontend';
+import { emitWS } from '../lib/utils/ws';
 import got from 'got';
 import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC } from '../types/download';
 import { DownloadItem } from '../types/downloader';
-import { KaraParams, KaraList } from '../types/kara';
+import { KaraList, KaraParams } from '../lib/types/kara';
 import { DBDownload, DBDownloadBLC } from '../types/database/download';
 
 const queueOptions = {

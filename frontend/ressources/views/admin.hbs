@@ -30,6 +30,7 @@
         <div class="modal-content">
             <ul class="nav nav-tabs nav-justified modal-header">
                 <li class="modal-title active"><a data-toggle="tab" href="#nav-profil" role="tab" aria-controls="nav-profil" aria-selected="true"> {{i18n "PROFILE"}}</a></li>
+                <li class="modal-title"><a data-toggle="tab" href="#nav-lang" role="tab" aria-controls="nav-lang" aria-selected="false"> {{i18n "LANGUAGE"}}</a></li>
                 <li class="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab" aria-controls="nav-userlist" aria-selected="false"> {{i18n "USERLIST"}}</a></li>
                 <button class="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
             </ul>
@@ -41,14 +42,14 @@
 
                                 <label for="avatar" title='{{i18n "AVATAR_IMPORT"}}' class="btn btn-default plGenericButton avatar" name="import">
                                     <img class="img-circle" name="avatar_file"
-                                      src="/avatars/blank.png"
+                                     src="/avatars/blank.png"
                                      alt="User Pic">
                                     <input id="avatar" class="import-file" type="file" accept="image/*" style="display: none;"/>
                                 </label>
                                 <p name="login"></p>
                             </div>
                             <div class="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
-                                 <div class="profileLine">
+                                <div class="profileLine">
                                     <i class="glyphicon glyphicon-user"></i>
                                     <input class="form-control" name="nickname" type="text" placeholder="{{{ i18n "PROFILE_USERNAME" }}}"/>
                                 </div>
@@ -69,9 +70,9 @@
                                     <input class="form-control" name="password" type="password" placeholder="{{{ i18n "PROFILE_PASSWORD" }}}"/>
                                     <input class="form-control passwordConfirmation" type="password" placeholder="{{{ i18n "PROFILE_PASSWORDCONF" }}}" style="margin-left: 3px;"/>
                                 </div>
-                                 <div class="profileLine">
+                                <div class="profileLine">
                                     <i class="glyphicon glyphicon-star"></i>
-                                     <label for="favImport" type="button"  title='{{i18n "FAVORITES_IMPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
+                                    <label for="favImport" type="button"  title='{{i18n "FAVORITES_IMPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
                                         <i class="glyphicon glyphicon-import"></i> {{i18n "IMPORT"}}
                                         <input id="favImport" class="import-file" type="file" accept=".kmplaylist" style="display: none;"/>
                                     </label>
@@ -88,9 +89,40 @@
                                     </button>
                                 </div>
                             </div>
-
-                            <div class="col-xs-12 col-sm-12">
-
+                        </div>
+                    </div>
+                    <div id="nav-lang" role="tabpanel" aria-labelledby="nav-lang-tab" class="modal-body tab-pane fade in">
+                        <div class="profileContent">
+                            <div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 profileData">
+                                <div class="profileLine row">
+                                    <label for="series_lang_mode" class="col-xs-6 control-label">{{i18n "SERIE_NAME_MODE"}}</label>
+                                    <div class="col-xs-6">
+                                        <select type="number" class="form-control" name="series_lang_mode">
+                                                <option value="-1" default>{{i18n "SERIE_NAME_MODE_NO_PREF"}}</option>
+                                                <option value="0">{{i18n "SERIE_NAME_MODE_ORIGINAL"}}</option>
+                                                <option value="1">{{i18n "SERIE_NAME_MODE_SONG"}}</option>
+                                                <option value="2">{{i18n "SERIE_NAME_MODE_ADMIN"}}</option>
+                                                <option value="3">{{i18n "SERIE_NAME_MODE_USER"}}</option>
+                                                <option value="4">{{i18n "SERIE_NAME_MODE_USER_FORCE"}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="profileLine row">
+                                    <label for="main_series_lang" class="col-xs-6 control-label">{{i18n "MAIN_SERIES_LANG"}}</label>
+                                    <div class="col-xs-6">
+                                        <select type="number" class="form-control" name="main_series_lang">
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="profileLine row">
+                                    <label for="fallback_series_lang" class="col-xs-6 control-label">{{i18n "FALLBACK_SERIES_LANG"}}</label>
+                                    <div class="col-xs-6">
+                                        <select type="number" class="form-control" name="fallback_series_lang">
+                                                
+                                        </select>
+                                    </div>
+                                </div>  
                             </div>
                         </div>
                     </div>
@@ -100,7 +132,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                 </div>
+                        
+                    </div>
+
+                </div>
 
             </div>
         </div>
@@ -463,201 +498,7 @@
         </div>
     </div>
     <div class="row" id="manage" hidden>
-        <div class="col-lg-2 col-xs-0"></div>
-        <div class="panel col-lg-8 col-xs-12 modalPage" introStep="14"  introLabel="settings_screen">
-            <form class="form-horizontal" id="settings">
-                <ul class="nav nav-tabs nav-justified">
-                    <li class="modal-title active"><a data-toggle="tab" href="#nav-player" role="tab" aria-controls="nav-login" aria-selected="true">{{i18n "SETTINGS_PLAYER"}}</a></li>
-                    <li class="modal-title" ><a data-toggle="tab" href="#nav-karaoke" role="tab" aria-controls="nav-lokaraokegin" aria-selected="false">{{i18n "SETTINGS_KARAOKE"}}</a></li>
-                    <li class="modal-title" ><a data-toggle="tab" href="#nav-interface" role="tab" aria-controls="nav-interface" aria-selected="false">{{i18n "SETTINGS_INTERFACE"}}</a></li>
-                </ul>
 
-                <div class="tab-content">
-                    <div id="nav-player" role="tabpanel" aria-labelledby="nav-player-tab" class="modal-body tab-pane fade in active">
-                        <div class="form-group">
-                            <label for="Player.StayOnTop" class="col-xs-4 control-label">{{i18n "ALWAYS_ON_TOP"}}</label>
-                            <div class="col-xs-6">
-                                <input action="command" switch="onoff" type="checkbox" name="Player.StayOnTop" nameCommand="toggleAlwaysOnTop">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="Player.FullScreen" class="col-xs-4 control-label">{{i18n "FULLSCREEN"}}</label>
-                            <div class="col-xs-6">
-                                <input action="command" switch="onoff" type="checkbox" name="Player.FullScreen" nameCommand="toggleFullscreen">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="Player.Screen" class="col-xs-4 control-label">{{i18n "MONITOR_NUMBER"}}</label>
-                            <div class="col-xs-6">
-                                <select type="number" class="form-control" name="Player.Screen">
-                                        {{#each displays}}
-                                            <option value="{{@index}}"> ({{resolutionx}}x{{resolutiony}}) {{model}}</option>
-                                        {{/each}}
-                                    </select>
-                            </div>
-                        </div>
-
-                        <div id="connexionInfoSettings" class="well well-sm settingsGroupPanel">
-                            <div class="form-group">
-                                <label class="col-xs-4 control-label" for="Karaoke.Display.ConnectionInfo.QRCode">{{i18n "ENGINEDISPLAYCONNECTIONINFOQRCODE"}}</label>
-                                <div class="col-xs-6">
-                                    <input name="Karaoke.Display.ConnectionInfo.QRCode" type="checkbox">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="Karaoke.Display.ConnectionInfo.Host" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOHOST"}}</label>
-                                <div class="col-xs-6">
-                                    <input class="form-control" name="Karaoke.Display.ConnectionInfo.Host">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="Karaoke.Display.ConnectionInfo.Message" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOMESSAGE"}}</label>
-                                <div class="col-xs-6">
-                                    <input class="form-control" name="Karaoke.Display.ConnectionInfo.Message">
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        <div id="pipSettings" class="well well-sm settingsGroupPanel">
-                            <div class="form-group">
-                                <label for="Player.PIP.Size" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}}</label>
-                                <div class="col-xs-6">
-                                    <input type="range" name="Player.PIP.Size">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="Player.PIP.PositionX" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_X"}}</label>
-                                <div class="col-xs-6">
-                                    <select class="form-control" name="Player.PIP.PositionX">
-                                        <option value="Left" > {{i18n "LEFT"}} </option>
-                                        <option value="Center" default> {{i18n "CENTER"}} </option>
-                                        <option value="Right" > {{i18n "RIGHT"}} </option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="Player.PIP.PositionY" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_Y"}}</label>
-                                <div class="col-xs-6">
-                                    <select class="form-control" name="Player.PIP.PositionY">
-                                        <option value="Bottom" > {{i18n "BOTTOM"}} </option>
-                                        <option value="Center" default> {{i18n "CENTER"}} </option>
-                                        <option value="Top" > {{i18n "TOP"}} </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="nav-interface" role="tabpanel" aria-labelledby="nav-interface-tab" class="modal-body tab-pane fade">
-
-                        <div class="form-group">
-                            <label for="Frontend.Mode" class="col-xs-4 control-label">{{i18n "WEBAPPMODE"}}</label>
-                            <div class="col-xs-6">
-                                <select type="number" class="form-control" name="Frontend.Mode">
-                                        <option value="0">{{i18n "WEBAPPMODE_CLOSED"}}</option>
-                                        <option value="1">{{i18n "WEBAPPMODE_LIMITED"}}</option>
-                                        <option value="2">{{i18n "WEBAPPMODE_OPEN"}}</option>
-                                    </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="Frontend.SeriesLanguageMode" class="col-xs-4 control-label">{{i18n "SERIE_NAME_MODE"}}</label>
-                            <div class="col-xs-6">
-                                <select type="number" class="form-control" name="Frontend.SeriesLanguageMode">
-                                        <option value="0">{{i18n "SERIE_NAME_MODE_ORIGINAL"}}</option>
-                                        <option value="1">{{i18n "SERIE_NAME_MODE_SONG"}}</option>
-                                        <option value="2">{{i18n "SERIE_NAME_MODE_ADMIN"}}</option>
-                                        <option value="3">{{i18n "SERIE_NAME_MODE_USER"}}</option>
-                                    </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="nav-karaoke" role="tabpanel" aria-labelledby="nav-karaoke-tab" class="modal-body tab-pane fade">
-
-                        <div id="nav-karaokeAllMode">
-                            <div class="form-group">
-                                <label for="Karaoke.Quota.Type" class="col-xs-4 control-label">{{i18n "QUOTA_TYPE"}}</label>
-                                <div class="col-xs-6">
-                                    <select type="number" class="form-control" name="Karaoke.Quota.Type">
-                                            <option value="0"> {{i18n "QUOTA_TYPE_0"}} </option>
-                                            <option value="1"> {{i18n "QUOTA_TYPE_1"}} </option>
-                                            <option value="2"> {{i18n "QUOTA_TYPE_2"}} </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="Karaoke.Quota.Time" class="col-xs-4 control-label">{{i18n "TIME_BY_USER"}}</label>
-                                <div class="col-xs-6">
-                                    <input type="number" class="form-control" name="Karaoke.Quota.Time" placeholder="1000">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="Karaoke.Quota.Songs" class="col-xs-4 control-label">{{i18n "SONGS_BY_USER"}}</label>
-                                <div class="col-xs-6">
-                                    <input type="number" class="form-control" name="Karaoke.Quota.Songs" placeholder="1000">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="Karaoke.Quota.FreeAutoTime" class="col-xs-4 control-label">{{i18n "FREE_AUTO_TIME"}}</label>
-                                <div class="col-xs-6">
-                                    <input type="number" class="form-control" name="Karaoke.Quota.FreeAutoTime" placeholder="1000">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="Karaoke.JinglesInterval" class="col-xs-4 control-label">{{i18n "ENGINEJINGLESINTERVAL"}}</label>
-                                <div class="col-xs-6">
-                                    <input type="number" class="form-control" name="Karaoke.JinglesInterval" placeholder="20">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group settingsGroupPanel subCategoryGroupPanel">
-                            <div class="col-xs-12" style="text-align: center;">{{i18n "ONLINESETTINGS"}}</div>
-                        </div>
-                        <div id="nav-karaokeOnlineSettings">
-                        </div>
-                        <div class="form-group settingsGroupPanel subCategoryGroupPanel">
-                            <div class="col-xs-12" style="text-align: center;">{{i18n "PUBLICMODESETTINGS"}}</div>
-                        </div>
-                        <div id="nav-karaokePublicMode">
-                            <div id="freeUpvotesSettings" class="well well-sm settingsGroupPanel">
-                                <div class="form-group">
-                                    <label class="col-xs-4 control-label" for="Karaoke.Quota.FreeUpVotesRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
-                                    <div class="col-xs-6">
-                                        <input class="form-control" type="number" name="Karaoke.Quota.FreeUpVotesRequiredMin">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="Karaoke.Quota.FreeUpVotesRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
-                                    <div class="col-xs-6">
-                                        <input class="form-control" type="number" name="Karaoke.Quota.FreeUpVotesRequiredPercent">
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="songPollSettings" class="well well-sm settingsGroupPanel">
-                                <div class="form-group">
-                                    <label class="col-xs-4 control-label" for="Karaoke.Poll.Choices">{{i18n "ENGINESONGPOLLCHOICES"}}</label>
-                                    <div class="col-xs-6">
-                                        <input class="form-control" type="number" name="Karaoke.Poll.Choices">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="Karaoke.Poll.Timeout" class="col-xs-4 control-label">{{i18n "ENGINESONGPOLLTIMEOUT"}}</label>
-                                    <div class="col-xs-6">
-                                        <input class="form-control" type="number" name="Karaoke.Poll.Timeout">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <input name="App.FirstRun" class="hideInput hidden">
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="col-lg-2 col-xs-0"></div>
     </div>
 
 <div class="toastMessageContainer"></div>

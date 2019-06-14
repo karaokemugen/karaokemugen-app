@@ -1,4 +1,4 @@
-import {db, transaction} from './database';
+import {db, transaction} from '../lib/dao/database';
 import { KaraDownload, KaraDownloadBLC } from '../types/download';
 import { DBDownload, DBDownloadBLC } from '../types/database/download';
 const sql = require('./sql/download');

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { emitWS } from "../../../webapp/frontend";
+import { emitWS } from "../../../lib/utils/ws";
 import { OKMessage, errMessage } from "../../common";
 import { deleteUser, findUserByName, createUser } from "../../../services/user";
 import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
 import { getLang } from "../../middlewares/lang";
-import { check } from "../../../utils/validators";
+import { check } from "../../../lib/utils/validators";
 
 export default function adminUserController(router: Router) {
 	router.route('/admin/users')
@@ -75,7 +75,7 @@ export default function adminUserController(router: Router) {
 	/**
  * @api {get} /admin/users/:username View user details (admin)
  * @apiName GetUserAdmin
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Users
  * @apiPermission Admin
  * @apiHeader authorization Auth token received from logging in
@@ -92,6 +92,9 @@ export default function adminUserController(router: Router) {
  * @apiSuccess {String} data/fingerprint User's fingerprint
  * @apiSuccess {String} data/bio User's bio
  * @apiSuccess {String} data/email User's email
+ * @apiSuccess {Number} data/series_lang_mode Mode (0-4) for series' names display : -1 = Let KM settings decide, 0 = Original/internal name, 1 = Depending on song's language, 2 = Depending on KM's language, 3 = Depending on user browser's language (default), 4 = Force languages with `main_series_lang` and `fallback_series_lang`
+ * @apiSuccess {String} data/main_series_lang ISO639-2B code for language to use as main language for series names (in case of mode 4).
+ * @apiSuccess {String} data/fallback_series_lang ISO639-2B code for language to use as fallback language for series names (in case of mode 4).
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -108,7 +111,10 @@ export default function adminUserController(router: Router) {
  * 			 "url": null,
  * 			 "email": null,
  * 			 "bio": null,
- * 			 "fingerprint": null
+ * 			 "fingerprint": null,
+ * 			 "series_lang_mode": 4,
+ * 			 "main_series_lang": "fre",
+ * 			 "fallback_series_lang": "eng"
  *       },
  *   ]
  * }

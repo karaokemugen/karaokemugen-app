@@ -1,17 +1,17 @@
 
-import {on} from '../utils/pubsub';
-import {getConfig} from '../utils/config';
+import {on} from '../lib/utils/pubsub';
+import {getConfig} from '../lib/utils/config';
 import {copyKaraToPlaylist, isAllKarasInPlaylist, getPlaylistContentsMini} from './playlist';
 import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
-import {emitWS} from '../webapp/frontend';
+import {emitWS} from '../lib/utils/ws';
 import {promisify} from 'util';
-import logger from 'winston';
-import {timer} from '../utils/timer';
+import logger from '../lib/utils/logger';
+import {timer} from '../lib/utils/date';
 import {getState, setState} from '../utils/state';
 import {translateKaraInfo} from "./kara";
 import { State } from '../types/state';
-import { Token } from '../types/user';
+import { Token } from '../lib/types/user';
 const sleep = promisify(setTimeout);
 
 let poll = [];

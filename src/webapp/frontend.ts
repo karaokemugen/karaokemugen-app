@@ -4,16 +4,16 @@ import exphbs from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import {address} from 'ip';
-import {graphics} from 'systeminformation';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 import i18n from 'i18n';
-import {getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
 import {configurePassport} from './passport_manager';
 import {createServer} from 'http';
-import { initializationCatchphrases } from '../services/constants';
+import { initializationCatchphrases } from '../lib/utils/constants';
 import sample from 'lodash.sample';
+import { initWS } from '../lib/utils/ws';
 
 // Api routes
 import systemConfigController from '../controllers/system/config';
@@ -40,13 +40,6 @@ import publicKaraController from '../controllers/frontend/public/kara';
 import publicPollController from '../controllers/frontend/public/poll';
 import publicUserController from '../controllers/frontend/public/user';
 import publicWhitelistController from '../controllers/frontend/public/whitelist';
-
-let ws: any;
-
-export function emitWS(type: string, data?: any) {
-	//logger.debug( '[WS] Sending message '+type+' : '+JSON.stringify(data));
-	if (ws) ws.sockets.emit(type, data);
-}
 
 function apiRouter() {
 	const apiRouter = express.Router();
@@ -91,7 +84,7 @@ export async function initFrontend() {
 		app.engine('hbs', exphbs({
 			layoutsDir: join(__dirname, '../../frontend/ressources/views/layouts/'),
 			extname: '.hbs',
-			defaultLayout: 'publicHeader',
+			defaultLayout: 'welcomeHeader',
 			helpers: {
 			//How comes array functions do not work here?
 				i18n: function() {
@@ -127,13 +120,9 @@ export async function initFrontend() {
 			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 			// Request headers you wish to allow
 			res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Authorization, Accept, Key');
-			if (req.method === 'OPTIONS') {
-				res.statusCode = 200;
-				res.json();
-			} else {
-			// Pass to next layer of middleware
-				next();
-			}
+			req.method === 'OPTIONS'
+				? res.json()
+				: next();
 		});
 		app.use(express.static(__dirname + '/../../frontend/'));
 		//path for system control panel
@@ -175,18 +164,8 @@ export async function initFrontend() {
 		routerAdmin.get('/', async (req, res) => {
 			const config = getConfig();
 
-			//Get list of monitors to allow users to select one for the player
-			const data = await graphics();
-			logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
-			const displays = data.displays
-				.filter(d => d.resolutionx > 0)
-				.map(d => {
-					d.model = d.model.replace('�','e');
-					return d;
-				});
 			res.render('admin', {'layout': 'adminHeader',
 				'clientAdress'	:	`http://${address()}`,
-				'displays'		:	displays,
 				'query'			:	JSON.stringify(req.query),
 				'appFirstRun'	:	config.App.FirstRun,
 				'onlineHost'  	:	config.Online.Users ? config.Online.Host : '',
@@ -214,7 +193,7 @@ export async function initFrontend() {
 			res.type('txt').send('Not found');
 		});
 		const server = createServer(app);
-		ws = require('socket.io').listen(server);
+		initWS(server);
 		server.listen(conf.Frontend.Port, () => {
 			logger.debug(`[Webapp] Webapp is READY and listens on port ${conf.Frontend.Port}`);
 		});

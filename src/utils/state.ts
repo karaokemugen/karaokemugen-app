@@ -1,6 +1,6 @@
-import {emitWS} from '../webapp/frontend';
-import {emit} from './pubsub';
-import logger from 'winston';
+import {emitWS} from '../lib/utils/ws';
+import {emit} from '../lib/utils/pubsub';
+import logger from '../lib/utils/logger';
 import merge from 'lodash.merge';
 import {State, PublicState} from '../types/state';
 
@@ -61,7 +61,7 @@ export function getPublicState(): PublicState {
 }
 
 export function emitState() {
-	if (state.player.ready) emitWS('playerStatus',getPublicState());
+	if (state.player.ready) emitWS('playerStatus', getPublicState());
 };
 
 export function getState() {

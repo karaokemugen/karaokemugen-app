@@ -2,10 +2,10 @@
 
 import execa from 'execa';
 import {resolve} from 'path';
-import {asyncExists, asyncWriteFile, asyncReadFile} from './files';
-import {getConfig} from './config';
+import {asyncExists, asyncWriteFile, asyncReadFile} from '../lib/utils/files';
+import {getConfig} from '../lib/utils/config';
 import {getState} from './state';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 
 let shutdownInProgress = false;
 

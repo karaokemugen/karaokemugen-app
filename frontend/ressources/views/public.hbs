@@ -108,6 +108,7 @@
         <div class="modal-content">
             <ul class="nav nav-tabs nav-justified modal-header">
                 <li class="modal-title active"><a data-toggle="tab" href="#nav-profil" role="tab" aria-controls="nav-profil" aria-selected="true"> {{i18n "PROFILE"}}</a></li>
+                <li class="modal-title"><a data-toggle="tab" href="#nav-lang" role="tab" aria-controls="nav-lang" aria-selected="false"> {{i18n "LANGUAGE"}}</a></li>
                 <li class="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab" aria-controls="nav-userlist" aria-selected="false"> {{i18n "USERLIST"}}</a></li>
                 <button class="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
             </ul>
@@ -166,7 +167,41 @@
                                     </button>
                                 </div>
                             </div>
-
+                        </div>
+                    </div>
+                    <div id="nav-lang" role="tabpanel" aria-labelledby="nav-lang-tab" class="modal-body tab-pane fade in">
+                        <div class="profileContent">
+                            <div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 profileData">
+                                <div class="profileLine row">
+                                    <label for="series_lang_mode" class="col-xs-6 control-label">{{i18n "SERIE_NAME_MODE"}}</label>
+                                    <div class="col-xs-6">
+                                        <select type="number" class="form-control" name="series_lang_mode">
+                                                <option value="-1" default>{{i18n "SERIE_NAME_MODE_NO_PREF"}}</option>
+                                                <option value="0">{{i18n "SERIE_NAME_MODE_ORIGINAL"}}</option>
+                                                <option value="1">{{i18n "SERIE_NAME_MODE_SONG"}}</option>
+                                                <option value="2">{{i18n "SERIE_NAME_MODE_ADMIN"}}</option>
+                                                <option value="3">{{i18n "SERIE_NAME_MODE_USER"}}</option>
+                                                <option value="4">{{i18n "SERIE_NAME_MODE_USER_FORCE"}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="profileLine row">
+                                    <label for="main_series_lang" class="col-xs-6 control-label">{{i18n "MAIN_SERIES_LANG"}}</label>
+                                    <div class="col-xs-6">
+                                        <select type="number" class="form-control" name="main_series_lang">
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="profileLine row">
+                                    <label for="fallback_series_lang" class="col-xs-6 control-label">{{i18n "FALLBACK_SERIES_LANG"}}</label>
+                                    <div class="col-xs-6">
+                                        <select type="number" class="form-control" name="fallback_series_lang">
+                                                
+                                        </select>
+                                    </div>
+                                </div>  
+                            </div>
                         </div>
                     </div>
                     <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" class="modal-body tab-pane fade in">

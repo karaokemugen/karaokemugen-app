@@ -1,15 +1,15 @@
 //Utils
-import {getConfig} from '../utils/config';
-import {profile} from '../utils/logger';
+import {getConfig} from '../lib/utils/config';
+import {profile} from '../lib/utils/logger';
 import readlineSync from 'readline-sync';
 import logger from 'winston';
 import {getState, setState} from '../utils/state';
 import {checkPG, killPG} from '../utils/postgresql';
 
 //KM Modules
-import {createPreviews} from '../webapp/previews';
 import {initUserSystem} from './user';
-import {initDBSystem, closeDB, getStats} from '../dao/database';
+import {initDBSystem, getStats} from '../dao/database';
+import {closeDB} from '../lib/dao/database';
 import {initFrontend} from '../webapp/frontend';
 import {initOnlineURLSystem} from '../webapp/online';
 import {initPlayer, quitmpv} from './player';
@@ -18,9 +18,11 @@ import {initStats} from './stats';
 import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {runBaseUpdate} from '../updater/karabase_updater';
 import {initPlaylistSystem, testPlaylists} from './playlist';
-import { run } from './generation';
-import {validateV3} from '../dao/karafile';
+import { generateDatabase } from '../lib/services/generation';
+import {validateV3} from '../lib/dao/karafile';
 import { DBStats } from '../types/database/database';
+import { createVideoPreviews } from '../lib/utils/previews';
+import { getAllKaras } from './kara';
 
 export async function initEngine() {
 	profile('Init');
@@ -45,7 +47,7 @@ export async function initEngine() {
 	}
 	if (state.opt.validateV3) try {
 		logger.info('[Engine] V3 Validation in progress...');
-		await validateV3();
+		await validateV3(state.appPath);
 		logger.info('[Engine] V3 Validation OK');
 		await exit(0);
 	} catch(err) {
@@ -53,7 +55,7 @@ export async function initEngine() {
 		await exit(1);
 	}
 	if (state.opt.validate) try {
-		await run(true);
+		await generateDatabase(true, true);
 		await exit(0);
 	} catch(err) {
 		logger.error(`[Engine] Validation error : ${err}`);
@@ -70,7 +72,7 @@ export async function initEngine() {
 	}
 	let inits = [];
 	if (conf.Karaoke.CreatePreviews) {
-		createPreviews();
+		createVideoPreviews(await getAllKaras());
 	}
 	inits.push(initPlaylistSystem());
 	if (!state.isDemo && !state.isTest) inits.push(initPlayer());

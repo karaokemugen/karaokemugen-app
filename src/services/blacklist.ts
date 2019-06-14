@@ -10,16 +10,16 @@ import {emptyBlacklistCriterias as emptyBLC,
 import {getTag} from '../dao/tag';
 import {getKara} from '../dao/kara';
 import {translateKaraInfo} from './kara';
-import logger from 'winston';
 import langs from 'langs';
 import {getState} from '../utils/state';
 import {resolve} from 'path';
-import {profile} from '../utils/logger';
+import logger from '../lib/utils/logger';
+import {profile} from '../lib/utils/logger';
 import {formatKaraList} from './kara';
-import {uuidRegexp} from './constants';
-import {KaraParams, KaraList} from '../types/kara';
+import {uuidRegexp} from '../lib/utils/constants';
+import {KaraList, KaraParams} from '../lib/types/kara';
 import {BLC} from '../types/blacklist';
-import {isNumber} from '../utils/validators';
+import {isNumber} from '../lib/utils/validators';
 
 export async function getBlacklist(params: KaraParams): Promise<KaraList> {
 	profile('getBL');

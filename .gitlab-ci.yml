@@ -1,5 +1,8 @@
 image: axelterizaki/karaokemugen-ci:node-10
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 cache:
   key: km
   paths:
@@ -8,6 +11,8 @@ cache:
   - react_systempanel/node_modules/
   - dist/
   - react_systempanel/build/
+  - frontend/node_modules/
+  - frontend/build/
 
 stages:
   - test
@@ -24,6 +29,8 @@ test:
     POSTGRES_PASSWORD: musubi
   script:
     - yarn install --check-files --force
+    - yarn installReact --check-files --force
+    - yarn installFrontend --check-files --force
     - touch mpv
     - cp -f config.CICD.yml config.yml
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
@@ -31,6 +38,7 @@ test:
     - cp -f database.CICD.json database.json
     - export LANG=en_US
     - node --version
+    - node_modules/.bin/ts-node --version
     - node util/extUnaccent.ts
     - yarn start --debug --test &disown
     - bash test/run.sh
@@ -45,6 +53,8 @@ build:
     - npm install -g modclean
     - yarn build
     - yarn buildReact
+    - npm install -g parcel-bundler
+    - yarn frontend-prod
     - yarn install --production
     - cd node_modules
     - find -name *.node -delete
@@ -73,7 +83,7 @@ pkg_osx:
     - build
   script:
     - mkdir -p bin
-    - npm install -g pkg
+    - npm install -g pkg@4.3.8
     - pkg . -d --targets node10-macos-x64 --out-path bin
   only:
     - master

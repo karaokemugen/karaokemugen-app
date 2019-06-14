@@ -1,4 +1,4 @@
-import {getConfig} from '../../utils/config';
+import {getConfig} from '../../lib/utils/config';
 import {decode} from 'jwt-simple';
 
 export const requireWebappLimitedNoAuth = (_req: any, res: any, next: any) => {

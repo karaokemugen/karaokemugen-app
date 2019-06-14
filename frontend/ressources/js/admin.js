@@ -80,21 +80,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
             );
         });
 
-        $('#settings select').change(function () {
-            setSettings($(this));
-        });
-        $('#settings input[type!="checkbox"][exclude!="true"]').blur(function () {
-            setSettings($(this));
-        });
-
-        $('#settings input').focus(function () {
-            $(this).attr('oldValue', $(this).val());
-        }).keypress(function (e) { // allow pressing enter to validate a setting
-            if (e.which == 13) {
-                $(this).blur();
-            }
-        });
-
         $('[name="searchPlaylist"]').keypress(function (e) { // allow pressing enter to validate a setting
             if (e.which == 13) {
                 $(this).blur();
@@ -392,31 +377,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
     mouseDown = false;
     panel1Default = -1;
 
-    // dynamic creation of switchable settings
-    $.each(settingsOnOff, function (tab, settingsList) {
-        var htmlSettings = '';
-        $.each(settingsList, function (e, val) {
-            var customClass = '';
-            if (settingsOnOffHighlight[e]) {
-                customClass = 'settingsHighlight';
-            }
-            var htmlString = '<div class="form-group ' + customClass + '"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
-                + '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
-            if (e === 'Player.PIP.Enabled') {
-                $(htmlString).addClass('groupSettingActivator').insertBefore('#pipSettings');
-            } else if (e === 'Karaoke.Display.ConnectionInfo.Enabled') {
-                $(htmlString).addClass('groupSettingActivator').insertBefore('#connexionInfoSettings');
-            } else if (e === 'Karaoke.Quota.FreeUpVotes') {
-                $(htmlString).addClass('groupSettingActivator').insertBefore('#freeUpvotesSettings');
-            } else if (e === 'Karaoke.Poll.Enabled') {
-                $(htmlString).addClass('groupSettingActivator').insertBefore('#songPollSettings');
-            } else {
-                htmlSettings += htmlString;
-            }
-        });
-        $('#nav-' + tab).append(htmlSettings);
-    });
-
     // nameExclude = input not being updated (most likely user is on it)
     getSettings = function (nameExclude) {
         var promise = $.Deferred();
@@ -428,46 +388,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
             checkOnlineStats(settings);
 
-            var flatSettings = flattenObject(settings);
-
-            $.each(flatSettings, function (i, val) {
-                var input = $('[name="' + i + '"]');
-                if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
-                    if (input.attr('type') !== 'checkbox' || input.hasClass('hideInput')) {
-                        input.val(val);
-                        if (input.attr('name') === 'Karaoke.Quota.Type') {
-                            var $time = $('[name="Karaoke.Quota.Time"]').closest('.form-group');
-                            var $songs = $('[name="Karaoke.Quota.Songs"]').closest('.form-group');
-                            var $free = $('[name="Karaoke.Quota.FreeAutoTime"]').closest('.form-group');
-                            $time.hide();
-                            $songs.hide();
-                            $free.hide();
-                            if (val == 1) {
-                                $songs.show();
-                                $free.show();
-                            } else if (val == 2) {
-                                $time.show();
-                                $free.show();
-                            }
-                        } else if (input.attr('name') === 'Player.PIP.Size') {
-                            refreshPipSizeSettingLabel(val);
-                        }
-                    } else { // only checkbox here
-                        input.bootstrapSwitch('state', val, true);
-                        input.val(val);
-                        if (input.attr('name') === 'Player.PIP.Enabled') {
-                            val ? $('#pipSettings').show('500') : $('#pipSettings').hide('500');
-                        } else if (input.attr('name') === 'Karaoke.Display.ConnectionInfo.Enabled') {
-                            val ? $('#connexionInfoSettings').show('500') : $('#connexionInfoSettings').hide('500');
-                        } else if (input.attr('name') === 'Karaoke.Quota.FreeUpVotes') {
-                            val ? $('#freeUpvotesSettings').show('500') : $('#freeUpvotesSettings').hide('500');
-                        } else if (input.attr('name') === 'Karaoke.Poll.Enabled') {
-                            val ? $('#songPollSettings').show('500') : $('#songPollSettings').hide('500');
-                        }
-                    }
-                }
-            });
-
             playlistToAdd = data.Karaoke.Private ? 'current' : 'public';
 
             $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
@@ -478,54 +398,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
         return promise.promise();
     };
-    refreshPipSizeSettingLabel = function (val) {
-        $('label[for="Player.PIP.Size"]').text(i18n.__('VIDEO_SIZE') + " (" + val + "%)");
-    };
-    $('[name="Player.PIP.Size"]').on('input', function () {
-        refreshPipSizeSettingLabel($(this).val());
-    });
-
-    /* el is the html element containing the value being updated */
-    setSettings = function (el) {
-        if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
-            settingsUpdating = getSettings(el.attr('name'));
-
-            $('#settings').promise().then(function () {
-                var settingsArray = {};
-                  var numberArray = $('#settings [type="number"], #settings [type="range"]').map(function () {
-                    return { name: this.name, value: this.value && !isNaN(this.value) ? parseInt(this.value) : 0 };
-                }).get();
-                var formArray = numberArray.concat($('#settings [type!="number"][type!="checkbox"][type!="range"]').serializeArray())
-                    .concat($('#settings input[type=checkbox]')
-                        .map(function () {
-                            return { name: this.name, value: this.checked ? true : false };
-                        })
-                        .get());
-
-                $(formArray).each(function (index, obj) {
-                    settingsArray[obj.name] = obj.value;
-                });
-                settingsArray['Karaoke.Private'] = $('input[name="Karaoke.Private"]').val() === "true";
-                settingsArray['App.FirstRun'] = $('input[name="App.FirstRun"]').val() === "true";
-                settingsArray['Player.NoHud'] = settings['Player.NoHud'];
-                settingsArray['Player.NoBar'] = settings['Player.NoBar'];
-                DEBUG && console.log('setSettings : ', settingsArray);
-                var unflattenedSettings = unflattenObject(settingsArray)
-                $.ajax({
-                    type: 'PUT',
-                    url: 'admin/settings',
-                    contentType: 'application/json',
-                    dataType: "json",
-                    data: JSON.stringify({ 'setting': unflattenedSettings })
-                }).done(function () {
-
-                }).fail(function () {
-                    el.val(el.attr('oldValue')).focus();
-                });
-            });
-        }
-    };
-
 
     /* progression bar handlers part */
 

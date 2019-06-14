@@ -1,12 +1,11 @@
 import {formatKaraList, isAllKaras, getKara} from './kara';
 import {removeKaraFromWhitelist, getWhitelistContents as getWLContents, emptyWhitelist as emptyWL, addKaraToWhitelist as addToWL} from '../dao/whitelist';
 import {generateBlacklist} from './blacklist';
-import {profile} from '../utils/logger';
-import logger from 'winston';
-import { Token } from '../types/user';
-import { KaraParams } from '../types/kara';
+import logger, {profile} from '../lib/utils/logger';
+import { Token } from '../lib/types/user';
+import { KaraParams } from '../lib/types/kara';
 
-export async function addKaraToWhitelist(kid: string|string[], reason: string, token: Token, lang: string) {
+export async function addKaraToWhitelist(kid: string|string[], reason: string, token: Token, lang: string): Promise<string[]> {
 	let karas = [];
 	Array.isArray(kid)
 		? karas = kid

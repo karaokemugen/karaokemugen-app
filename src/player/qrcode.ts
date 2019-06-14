@@ -1,8 +1,8 @@
 import {toFile} from 'qrcode';
-import {getConfig} from '../utils/config';
+import {getConfig} from '../lib/utils/config';
 import {getState} from '../utils/state';
 import {resolve} from 'path';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 
 export async function buildQRCode(url: string) {
 	const conf = getConfig();

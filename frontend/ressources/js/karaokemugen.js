@@ -8,8 +8,9 @@ var refreshTime;        // Int (ms) : time unit between every call
 var stopUpdate;         // Boolean : allow to stop any automatic ajax update
 var oldState;           // Object : last player state saved
 var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a flood of search
-var tags;             // Object : list of blacklist criterias tags
-var forSelectTags;             // Object : list of blacklist criterias tags for select use
+var tags;               // Object : list of blacklist criterias tags
+var forSelectTags;      // Object : list of blacklist criterias tags for select use
+var series;
 var showInfoMessage;	// Object : list of info codes to show as a toast
 var hideErrorMessage;
 var softErrorMessage;
@@ -88,11 +89,11 @@ var settingsNotUpdated;
 
 		tagsGroups = {
 			'TAGCAT_FAMI':['TAG_ANIME','TAG_REAL','TAG_VIDEOGAME'],
-			'TAGCAT_SUPP':['TAG_3DS','TAG_DREAMCAST','TAG_DS','TAG_GAMECUBE','TAG_PC','TAG_PS2','TAG_PS3','TAG_PS4','TAG_PSP','TAG_PSV','TAG_PSX','TAG_SATURN','TAG_SEGACD','TAG_SWITCH','TAG_WII','TAG_WIIU','TAG_XBOX360'],
+			'TAGCAT_SUPP':['TAG_3DS','TAG_DREAMCAST','TAG_DS','TAG_GAMECUBE','TAG_PC','TAG_PS2','TAG_PS3','TAG_PS4','TAG_PSP','TAG_PSV','TAG_PSX','TAG_SATURN','TAG_SEGACD','TAG_SWITCH','TAG_WII','TAG_WIIU','TAG_XBOX360','TAG_N64'],
 			'TAGCAT_CLAS':['TAG_IDOL','TAG_MAGICALGIRL','TAG_MECHA','TAG_SHOUJO','TAG_SHOUNEN','TAG_YAOI','TAG_YURI'],
 			'TAGCAT_ORIG':['TAG_MOBAGE','TAG_DRAMA','TAG_MOVIE','TAG_ONA','TAG_OVA','TAG_TOKU','TAG_TVSHOW','TAG_VN','TAG_VOCALOID'],
 			'TAGCAT_TYPE':['TAG_DUO','TAG_HARDMODE','TAG_HUMOR','TAG_LONG','TAG_PARODY','TAG_R18','TAG_COVER','TAG_DUB','TAG_REMIX','TAG_SPECIAL','TAG_SPOIL'],
-		}
+		};
 		flattenedTagsGroups = [].concat.apply([], Object.values(tagsGroups));
 		// Once page is loaded
 		plData = {
@@ -234,9 +235,13 @@ var settingsNotUpdated;
 			login('admin', query.admpwd).done(() => {
 				if(!welcomeScreen) {
 					startIntro('admin');
-					var privateMode = $('input[name="Karaoke.Private"]');
-					privateMode.val(1);
-					setSettings(privateMode);
+					$.ajax({
+						type: 'PUT',
+						url: 'admin/settings',
+						contentType: 'application/json',
+						dataType: 'json',
+						data: JSON.stringify({ 'setting': {'Karaoke': {'Private':1}} })
+					});
 				} else {
 					$('#wlcm_login > span').text(logInfos.username);
 					$('#wlcm_disconnect').show();
@@ -891,7 +896,16 @@ var settingsNotUpdated;
 					});
 			}
 		});
-		/* profil stuff */
+        /* profil stuff */
+            
+        var selectIso = Object.keys(iso639).map(k => { return { "id": k, "text": iso639[k][i18n.locale][0] } });
+        $('[name="fallback_series_lang"], [name="main_series_lang"]').select2({ theme: 'bootstrap',
+            tags: false,
+            data: selectIso,
+            dropdownParent: $('#profilModal'),
+            minimumResultsForSearch: 3
+        });
+        
 		showProfil = function() {
 			$.ajax({
 				url: 'public/myaccount/',
@@ -902,14 +916,24 @@ var settingsNotUpdated;
 
 					$.each(response, function(i, k) {
 						var $element = $('.profileContent [name="' + i + '"]');
-						$element.attr('oldval', k);
-
+                        $element.attr('oldval', k);
+                        
 						if(i === 'avatar_file' && k) {
 							$element.attr('src', pathAvatar + k);
 						} else if( i === 'login') {
-							$element.text(k);
+                            $element.text(k);
 						} else if (i !== 'password') {
-							$element.val(k);
+
+                            if ( ['main_series_lang', 'fallback_series_lang'].indexOf(i) > -1 ) {
+                                $element.val(k);
+                                $element.trigger('change.select2');
+                            } else {
+                                $element.val(k);
+                            }
+
+                            if (i === 'series_lang_mode' ) {
+                                showHideLangSelects()
+                            }
 						}
 					});
 
@@ -935,7 +959,6 @@ var settingsNotUpdated;
 							$userlist.empty().append($(userlistStr));
 						});
 				});
-
 		};
 
 		$('.profileData .profileLine input').on('keypress', (e) => {
@@ -944,7 +967,7 @@ var settingsNotUpdated;
 			}
 		});
 
-		$('.profileData .profileLine input[name!="password"]').on('blur', (e) => {
+        triggerProfileUpdate = function (e) {
 			var $input = $(e.target);
 			if ($input.attr('oldval') !== $input.val()) {
 				// TODO gestion confirmation password
@@ -955,7 +978,13 @@ var settingsNotUpdated;
 					$passwordConfirmation.val('').addClass('redBorders');
 					$input.focus();
 				} else {
-					var profileData = $('.profileData .profileLine > input[name]').serialize();
+                    var profileData = {};
+                    $('.profileData .profileLine > input[name]').each((k,e) => {
+                        profileData[$(e).attr('name')] = $(e).val();
+                    });
+                    $('.profileData .profileLine select[name]').each((k,e) => {
+                        profileData[$(e).attr('name')] = ( $(e).val() ? $(e).val() : null )
+                    });
 					$.ajax({
 						url: 'public/myaccount',
 						type: 'PUT',
@@ -986,8 +1015,17 @@ var settingsNotUpdated;
 						});
 				}
 			}
-		});
+        };
+        showHideLangSelects = function(e) {
+            var langSelects = $('.profileData .profileLine select[name="main_series_lang"], .profileData .profileLine select[name="fallback_series_lang"]');
+            var langSelectParent = langSelects.parent().parent();
+            $('[name="series_lang_mode"]').val() == 4 ? langSelectParent.show() : langSelectParent.hide();
 
+        }
+        $('.profileData .profileLine input[name!="password"]').on('blur', triggerProfileUpdate);
+        $('.profileData .profileLine select[name]').on('change', triggerProfileUpdate);
+        $('.profileData .profileLine select[name="series_lang_mode"]').on('change', showHideLangSelects);
+        
 		$('#avatar').change(function() {
 			var dataFile = new FormData();
 			$.each(this.files, function(i, file) {
@@ -2465,7 +2503,7 @@ var settingsNotUpdated;
 
 				$.ajax({ url: 'public/series', }).done(function (data) {
 
-					var series = data.content;
+					series = data.content;
 					series = series.map(function(val, ind){
 						return {id:val.sid, text: val.i18n_name, type: 'serie',
 							aliases : val.aliases, karacount : val.karacount};
@@ -2522,26 +2560,6 @@ var settingsNotUpdated;
 						$('.tags').parent().find('.select2-container').addClass('value tags');
 					});
 				});
-				// ['serie', 'year'].forEach(function(dataType) {
-				// 	$.ajax({ url: 'public/' + dataType, }).done(function (data) {
-				// 		data = data.content;
-
-				// 		data = data.map(function(val, ind){
-				// 			var jsonLine;
-				// 			if(dataType === 'serie') jsonLine = {id:val.serie_id, text: val.i18n_name};
-				// 			if(dataType === 'year') jsonLine = {id:val.year, text: val.year};
-				// 			return jsonLine;
-				// 		});
-				// 		$('#' + dataType).select2({ theme: 'bootstrap',
-				// 			tags: false,
-				// 			minimumResultsForSearch: 3,
-				// 			data: data
-				// 		});
-				// 		$('#' + dataType).parent().find('.select2-container').addClass('value');
-				// 	});
-
-				// });
-
 			});
 
 
@@ -2583,7 +2601,7 @@ var settingsNotUpdated;
     * Init bootstrapSwitchs
     */
 	initSwitchs = function () {
-		$('input[switch="onoff"],[name="Karaoke.Private"],[name="kara_panel"],[name="lyrics"],#settings input[type="checkbox"]').bootstrapSwitch('destroy', true);
+		$('input[switch="onoff"],[name="Karaoke.Private"],[name="kara_panel"],[name="lyrics"]').bootstrapSwitch('destroy', true);
 
 		$('input[switch="onoff"]').bootstrapSwitch({
 			wrapperClass: 'btn btn-default',
@@ -2621,8 +2639,15 @@ var settingsNotUpdated;
 				}
 			});
 
-			$('#settings input[type="checkbox"], input[name="Karaoke.Private"]').on('switchChange.bootstrapSwitch', function () {
-				setSettings($(this));
+			$('input[name="Karaoke.Private"]').on('switchChange.bootstrapSwitch', function () {
+				const value = $(this).val() === 'on' ? true : false;
+				$.ajax({
+					type: 'PUT',
+					url: 'admin/settings',
+					contentType: 'application/json',
+					dataType: 'json',
+					data: JSON.stringify({ 'setting': {'Karaoke': {'Private': value}} })
+				});
 			});
 
 		}
@@ -2631,17 +2656,6 @@ var settingsNotUpdated;
 		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
 			$(this).val($(this).is(':checked') ? 'true' : 'false');
 		});
-
-		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			var val = $(this).attr('nameCommand');
-			if(!val) val =  $(this).attr('name');
-
-			$.ajax({
-				url: 'admin/player',
-				type: 'PUT',
-				data: { command: val }
-			});
-		}); 
 	};
 
 	login = function(username, password) {
@@ -2823,11 +2837,11 @@ var settingsNotUpdated;
 			displayMessage('success', '', i18n.__('POLLENDED', [data.kara.substring(0,100), data.votes]));
 		});
 		socket.on('settingsUpdated', function(){
-			settingsUpdating.done(function () {
+			settingsUpdating && settingsUpdating.done(function () {
 				settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
 				settingsUpdating.done(function (){
 					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
-																		|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+						|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
 						playlistsUpdating.done(function() {
 							playlistsUpdating = refreshPlaylistSelects();
 						});

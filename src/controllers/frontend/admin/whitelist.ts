@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { OKMessage, errMessage } from "../../common";
-import { emitWS } from "../../../webapp/frontend";
+import { emitWS } from "../../../lib/utils/ws";
 import { getWhitelistContents, emptyWhitelist, addKaraToWhitelist, deleteKaraFromWhitelist } from "../../../services/whitelist";
 import { requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from "../../middlewares/auth";
 import { getLang } from "../../middlewares/lang";
-import { check } from "../../../utils/validators";
+import { check } from "../../../lib/utils/validators";
 
 export default function adminWhitelistController(router: Router) {
 	router.route('/admin/whitelist/empty')

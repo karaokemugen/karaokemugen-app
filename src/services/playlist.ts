@@ -1,13 +1,13 @@
 //Utils
 import {getStats} from '../dao/database';
-import {getConfig} from '../utils/config';
-import {now} from '../utils/date';
-import logger from 'winston';
+import {getConfig} from '../lib/utils/config';
+import {now} from '../lib/utils/date';
+import logger from '../lib/utils/logger';
 import shuffle from 'lodash.shuffle';
-import {emitWS} from '../webapp/frontend';
-import {on} from '../utils/pubsub';
+import {emitWS} from '../lib/utils/ws';
+import {on} from '../lib/utils/pubsub';
 import {setState, getState} from '../utils/state';
-import {profile} from '../utils/logger';
+import {profile} from '../lib/utils/logger';
 import {resolve} from 'path';
 import i18n from 'i18n';
 
@@ -53,10 +53,10 @@ import {
 
 //KM Modules
 import {updateSongsLeft, findUserByName} from './user';
-import {Token, User} from '../types/user';
+import {Token, User} from '../lib/types/user';
 import {translateKaraInfo, isAllKaras, formatKaraList, getKaras, getKara} from './kara';
 import {playPlayer, playingUpdated} from './player';
-import {isPreviewAvailable} from '../webapp/previews';
+import {isPreviewAvailable} from '../lib/utils/previews';
 import {getBlacklist} from './blacklist';
 import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
 	getKaraMini,
@@ -68,8 +68,8 @@ import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
 } from '../dao/kara';
 import { Playlist, PLC, Pos, PlaylistOpts, PlaylistExport, PLCEditParams, CurrentSong } from '../types/playlist';
 import { DBPLC } from '../types/database/playlist';
-import { bools } from './constants';
-import { check } from '../utils/validators';
+import { bools } from '../lib/utils/constants';
+import { check } from '../lib/utils/validators';
 
 let databaseBusy = false;
 

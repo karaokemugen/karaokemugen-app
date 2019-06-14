@@ -10,6 +10,7 @@ This is a bugfix release.
 
 ### Fixes
 
+- Fixed file resolver when using multiple folders for karas, series, medias or lyrics files (c2e5eacf)
 - Fixed mpv auto restart method (3ca3b6c7)
 - Fixed wallpaper not appearing anymore at the end of a song if "stop after current song" has been pressed (7330ed8a)
 - Fixed retrying to play song if loading media failed due to mpv hiccup (7f3da9ba)

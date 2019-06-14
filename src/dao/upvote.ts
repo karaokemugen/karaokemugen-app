@@ -1,4 +1,4 @@
-import {db} from './database';
+import {db} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import { DBUpvote } from '../types/database/upvote';
 const sql = require('./sql/upvote');

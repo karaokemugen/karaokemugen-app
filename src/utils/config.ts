@@ -1,59 +1,37 @@
 /** Centralized configuration management for Karaoke Mugen. */
 
 import {resolve} from 'path';
-import osLocale from 'os-locale';
-import i18n from 'i18n';
 import {address} from 'ip';
-import {configureLogger} from './logger';
+import {configureLogger} from '../lib/utils/logger';
 import logger from 'winston';
-import {copy} from 'fs-extra';
-import {asyncExists, asyncReadFile, asyncRequired, asyncWriteFile} from './files';
-import {checkBinaries} from './binchecker';
-import uuidV4 from 'uuid/v4';
+import {asyncCopy, asyncRequired} from '../lib/utils/files';
+import {configureIDs, configureLocale, loadConfigFiles, setConfig, verifyConfig, getConfig, setConfigConstraints} from '../lib/utils/config';
 import {configConstraints, defaults} from './default_settings';
-import {check} from './validators';
 import {publishURL} from '../webapp/online';
 import {playerNeedsRestart} from '../services/player';
 import {getState, setState} from './state';
-import testJSON from 'is-valid-json';
 import {setSongPoll} from '../services/poll';
 import {initStats, stopStats} from '../services/stats';
 import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
-import {safeDump, safeLoad} from 'js-yaml';
-import {clearEmpties, difference} from './object_helpers';
 import cloneDeep from 'lodash.clonedeep';
-import {version} from '../version';
 import {Config} from '../types/config';
 import { listUsers } from '../dao/user';
 import { updateSongsLeft } from '../services/user';
-
-/** Object containing all config */
-let config: Config = getDefaultConfig();
-let configFile = 'config.yml';
-let configReady = false;
-
-/**
- * We return a copy of the configuration data so the original one can't be modified
- * without passing by this module's functions.
- */
-export function getConfig(): Config {
-	return {...config};
-}
+import { emitWS } from '../lib/utils/ws';
+import {version} from '../version';
+import { emit } from '../lib/utils/pubsub';
+import { BinariesConfig } from '../types/binChecker';
+import { exit } from '../services/engine';
 
 export async function editSetting(part: object) {
+	const config = getConfig();
 	const oldConfig = cloneDeep(config);
 	const newConfig = merge(config, part);
 	verifyConfig(newConfig);
 	await mergeConfig(newConfig, oldConfig);
+	emitWS('settingsUpdated', config);
 	return config;
-}
-
-export function verifyConfig(conf: Config) {
-	const validationErrors = check(conf, configConstraints);
-	if (validationErrors) {
-		throw `Config is not valid: ${JSON.stringify(validationErrors)}`;
-	}
 }
 
 export async function mergeConfig(newConfig: Config, oldConfig: Config) {
@@ -65,9 +43,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			logger.debug('[Config] Setting mpv to restart after next song');
 		}
 	}
-
 	if (newConfig.Online.URL && getState().ready) publishURL();
-
 	// Updating quotas
 	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
 		const users = await listUsers();
@@ -76,122 +52,37 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		});
 	}
 
+	const config = setConfig(newConfig);
+	setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling stats
 	if (config.Online.Stats) {
 		initStats(newConfig.Online.Stats === oldConfig.Online.Stats);
 	} else {
 		stopStats();
 	}
-
-	setConfig(newConfig);
-	setSongPoll(config.Karaoke.Poll.Enabled);
-
 	// Toggling and updating settings
 	setState({private: config.Karaoke.Private});
 	configureHost();
 }
 
-function getDefaultConfig(): Config {
-	return {
-		App: {},
-		Online: {},
-		Frontend: {
-			Permissions: {}
-		},
-		Karaoke: {
-			Display: {
-				ConnectionInfo: {}
-			},
-			Poll: {},
-			Quota: {}
-		},
-		Player: {
-			PIP: {}
-		},
-		Playlist: {},
-		System: {
-			Binaries: {
-				Player: {},
-				Postgres: {},
-				ffmpeg: {}
-			},
-			Path: {}
-		},
-		Database: {
-			prod: {}
-		}
-	};
-}
-
 /** Initializing configuration */
 export async function initConfig(argv: any) {
 	let appPath = getState().appPath;
-	if (argv.config) configFile = argv.config;
-	await configureLogger(appPath, !!argv.debug);
+	setState({ version: version });
+	setConfigConstraints(configConstraints);
+	await configureLogger(appPath, !!argv.debug, false, getState().opt.profiling);
 	await configureLocale();
-
-	await loadConfigFiles(appPath);
-	configReady = true;
+	await loadConfigFiles(appPath, argv.config, defaults);
+	const binaries = await checkBinaries(getConfig());
+	setState({binPath: binaries});
+	emit('configReady');
 	configureHost();
-	if (config.App.JwtSecret === 'Change me') setConfig({App: {JwtSecret: uuidV4() }});
-	if (config.App.InstanceID === 'Change me') setConfig({App: {InstanceID: uuidV4() }});
+	configureIDs();
 	return getConfig();
 }
 
-async function loadConfigFiles(appPath: string) {
-	const overrideConfigFile = resolve(appPath, configFile);
-	const databaseConfigFile = resolve(appPath, 'database.json');
-	config = merge(config, defaults);
-	setState({
-		appPath: appPath,
-		version: version
-	});
-	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
-	if (await asyncExists(databaseConfigFile)) {
-		const dbConfig = await loadDBConfig(databaseConfigFile);
-		config.Database = merge(config.Database, dbConfig);
-	}
-}
-
-async function loadDBConfig(configFile: string) {
-	const configData = await asyncReadFile(configFile, 'utf-8');
-	if (!testJSON(configData)) {
-		logger.error('[Config] Database config file is not valid JSON');
-		throw 'Syntax error in database.json';
-	}
-	return JSON.parse(configData);
-}
-
-async function loadConfig(configFile: string) {
-	logger.debug(`[Config] Reading configuration file ${configFile}`);
-	await asyncRequired(configFile);
-	const content = await asyncReadFile(configFile, 'utf-8');
-	const parsedContent = safeLoad(content);
-	const newConfig = merge(config, parsedContent);
-	verifyConfig(newConfig);
-	config = {...newConfig};
-}
-
-async function configureLocale() {
-	i18n.configure({
-		directory: resolve(__dirname, '../locales'),
-		defaultLocale: 'en',
-		cookie: 'locale',
-		register: global
-	});
-	let detectedLocale = await osLocale();
-	detectedLocale = detectedLocale.substring(0, 2);
-	i18n.setLocale(detectedLocale);
-	setState( {EngineDefaultLocale: detectedLocale });
-}
-
-export async function configureBinaries(config) {
-	logger.debug('[Launcher] Checking if binaries are available');
-	const binaries = await checkBinaries(config);
-	setState({binPath: binaries});
-}
-
 export function configureHost() {
+	const config = getConfig();
 	let URLPort = `:${config.Frontend.Port}`;
 	setState({osHost: address()});
 	if (+config.Online.Port === 80) URLPort = '';
@@ -206,16 +97,11 @@ export function configureHost() {
 	}
 }
 
-export async function setConfig(configPart: any) {
-	config = merge(config, configPart);
-	if (configReady) updateConfig(config);
-	return getConfig();
-}
 
 export async function backupConfig() {
 	// Create a backup of our config file. Just in case.
 	logger.debug('[Config] Making a backup of config.yml');
-	return await copy(
+	return await asyncCopy(
 		resolve(getState().appPath, 'config.yml'),
 		resolve(getState().appPath, 'config.backup.yml'),
 		{ overwrite: true }
@@ -223,59 +109,75 @@ export async function backupConfig() {
 }
 
 export function getPublicConfig() {
-	const publicSettings = {...config};
+	const publicSettings = {...getConfig()};
 	delete publicSettings.App;
 	delete publicSettings.Database;
 	delete publicSettings.System;
 	return publicSettings;
 }
 
-export async function updateConfig(newConfig: Config) {
-	const filteredConfig = difference(newConfig, defaults);
-	clearEmpties(filteredConfig);
-	if (filteredConfig.Database) delete filteredConfig.Database;
-	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
-	await asyncWriteFile(resolve(getState().appPath, configFile), safeDump(filteredConfig), 'utf-8');
+// Check if binaries are available
+// Provide their paths for runtime
+
+async function checkBinaries(config: Config): Promise<BinariesConfig> {
+
+	const binariesPath = configuredBinariesForSystem(config);
+	let requiredBinariesChecks = [];
+	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
+	if (config.Database.prod.bundledPostgresBinary) requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
+	if (!getState().isTest && !getState().isDemo) requiredBinariesChecks.push(asyncRequired(binariesPath.mpv));
+
+	try {
+		await Promise.all(requiredBinariesChecks);
+	} catch (err) {
+		binMissing(binariesPath, err);
+		await exit(1);
+	}
+
+	return binariesPath;
 }
 
-/**
- * Functions used to manipulate configuration. We can pass a optional config object.
- * In this case, the method works with the configuration passed as argument rather than the current
- * configuration.
- */
-
-export function resolvedPathKaras() {
-	return config.System.Path.Karas.map(path => resolve(getState().appPath, path));
+function configuredBinariesForSystem(config: Config): BinariesConfig {
+	switch (process.platform) {
+	case 'win32':
+		return {
+			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Windows),
+			mpv: resolve(getState().appPath, config.System.Binaries.Player.Windows),
+			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Windows),
+			postgres_ctl: 'pg_ctl.exe',
+			postgres_dump: 'pg_dump.exe'
+		};
+	case 'darwin':
+		return {
+			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.OSX),
+			mpv: resolve(getState().appPath, config.System.Binaries.Player.OSX),
+			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.OSX),
+			postgres_ctl: 'pg_ctl',
+			postgres_dump: 'pg_dump'
+		};
+	default:
+		return {
+			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Linux),
+			mpv: resolve(getState().appPath, config.System.Binaries.Player.Linux),
+			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Linux),
+			postgres_ctl: 'pg_ctl',
+			postgres_dump: 'pg_dump'
+		};
+	}
 }
 
-export function resolvedPathSeries() {
-	return config.System.Path.Series.map(path => resolve(getState().appPath, path));
-}
-
-export function resolvedPathJingles() {
-	return config.System.Path.Jingles.map(path => resolve(getState().appPath, path));
-}
-
-export function resolvedPathBackgrounds() {
-	return config.System.Path.Backgrounds.map(path => resolve(getState().appPath, path));
-}
-
-export function resolvedPathSubs() {
-	return config.System.Path.Lyrics.map(path => resolve(getState().appPath, path));
-}
-
-export function resolvedPathMedias() {
-	return config.System.Path.Medias.map(path => resolve(getState().appPath, path));
-}
-
-export function resolvedPathImport() {
-	return resolve(getState().appPath, config.System.Path.Import);
-}
-
-export function resolvedPathTemp() {
-	return resolve(getState().appPath, config.System.Path.Temp);
-}
-
-export function resolvedPathPreviews() {
-	return resolve(getState().appPath, config.System.Path.Previews);
+function binMissing(binariesPath: any, err: string) {
+	logger.error('[BinCheck] One or more binaries could not be found! (' + err + ')');
+	logger.error('[BinCheck] Paths searched : ');
+	logger.error('[BinCheck] ffmpeg : ' + binariesPath.ffmpeg);
+	logger.error('[BinCheck] mpv : ' + binariesPath.mpv);
+	logger.error('[BinCheck] Postgres : ' + binariesPath.postgres);
+	logger.error('[BinCheck] Exiting...');
+	console.log('\n');
+	console.log('One or more binaries needed by Karaoke Mugen could not be found.');
+	console.log('Check the paths above and make sure these are available.');
+	console.log('Edit your config.yml and set System.Binaries.ffmpeg and System.Binaries.Player variables correctly for your OS.');
+	console.log('You can download mpv for your OS from http://mpv.io/');
+	console.log('You can download postgres for your OS from http://postgresql.org/');
+	console.log('You can download ffmpeg for your OS from http://ffmpeg.org');
 }

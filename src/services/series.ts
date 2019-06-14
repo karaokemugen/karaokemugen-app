@@ -1,15 +1,21 @@
-import {removeSeriesFile, writeSeriesFile, formatSeriesFile} from '../dao/seriesfile';
-import {refreshSeries, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, refreshKaraSeries} from '../dao/series';
-import {profile} from '../utils/logger';
+import {removeSeriesFile, writeSeriesFile, formatSeriesFile} from '../lib/dao/seriesfile';
+import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../dao/series';
+import {refreshSeries, refreshKaraSeries} from '../lib/dao/series';
+import {profile} from '../lib/utils/logger';
 import logger from 'winston';
-import {removeSerieInKaras} from '../dao/karafile';
+import {removeSerieInKaras} from '../lib/dao/karafile';
 import uuidV4 from 'uuid/v4';
-import { sanitizeFile } from '../utils/files';
-import { refreshKaras } from '../dao/kara';
-import {Series} from '../types/series';
-import { KaraParams } from '../types/kara';
+import { sanitizeFile } from '../lib/utils/files';
+import { refreshKaras } from '../lib/dao/kara';
+import {Series} from '../lib/types/series';
+import { KaraParams } from '../lib/types/kara';
 import { removeSeriesInStore, editSeriesInStore, addSeriesToStore, sortSeriesStore, getStoreChecksum } from '../dao/dataStore';
-import { saveSetting } from '../dao/database';
+import { saveSetting } from '../lib/dao/database';
+import {asyncUnlink, resolveFileInDirs, } from '../lib/utils/files';
+import {getConfig, resolvedPathSeries} from '../lib/utils/config';
+import {getDataFromSeriesFile} from '../lib/dao/seriesfile';
+import { getAllKaras } from './kara';
+
 
 export async function getSeries(params: KaraParams) {
 	profile('getSeries');
@@ -51,7 +57,7 @@ export async function deleteSerie(sid: string) {
 	await Promise.all([
 		refreshSeries(),
 		removeSeriesFile(serie.name),
-		removeSerieInKaras(serie.name),
+		removeSerieInKaras(serie.name, await getAllKaras()),
 	]);
 	// Refreshing karas is done asynchronously
 	removeSeriesInStore(sid);
@@ -73,7 +79,7 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 	await insertSerie(serieObj);
 	await Promise.all([
 		insertSeriei18n(serieObj),
-		writeSeriesFile(serieObj)
+		writeSeriesFile(serieObj, resolvedPathSeries()[0])
 	]);
 
 	const seriesData = formatSeriesFile(serieObj).series;
@@ -97,7 +103,7 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 	const seriefile = serieObj.seriefile;
 	await Promise.all([
 		updateSerie(serieObj),
-		writeSeriesFile(serieObj)
+		writeSeriesFile(serieObj, resolvedPathSeries()[0])
 	]);
 	const seriesData = formatSeriesFile(serieObj).series;
 	seriesData.seriefile = seriefile;
@@ -111,4 +117,23 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 export async function refreshSeriesAfterDBChange() {
 	await refreshSeries();
 	refreshKaraSeries().then(() => refreshKaras());
+}
+
+export async function integrateSeriesFile(file: string): Promise<string> {
+	const seriesFileData = await getDataFromSeriesFile(file);
+	try {
+		const seriesDBData = await getSerie(seriesFileData.sid);
+		await editSerie(seriesDBData.sid, seriesFileData, { refresh: false });
+		if (seriesDBData.name !== seriesFileData.name) {
+			try {
+				await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().System.Path.Series));
+			} catch(err) {
+				logger.warn(`[Series] Could not remove old series file ${seriesDBData.seriefile}`);
+			}
+		}
+		return seriesDBData.name;
+	} catch(err) {
+		await addSerie(seriesFileData, { refresh: false });
+		return seriesFileData.name;
+	}
 }

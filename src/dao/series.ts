@@ -1,33 +1,11 @@
-import {langSelector, paramWords, db} from './database';
+import {langSelector, paramWords, db} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
-import {profile} from '../utils/logger';
-import { KaraParams } from '../types/kara';
-import { Series } from '../types/series';
+import { KaraParams } from '../lib/types/kara';
+import { Series } from '../lib/types/series';
 import { WhereClause } from '../types/database';
 import { DBSeries } from '../types/database/series';
 
 const sql = require('./sql/series');
-
-export async function refreshSeries() {
-	profile('RefreshSeries');
-	await db().query('REFRESH MATERIALIZED VIEW all_series');
-	profile('RefreshSeries');
-}
-
-export async function refreshKaraSeries() {
-	profile('RefreshSeriesi18n');
-	await db().query('REFRESH MATERIALIZED VIEW series_i18n');
-	profile('RefreshSeriesi18n');
-	profile('RefreshKaraSeries');
-	await db().query('REFRESH MATERIALIZED VIEW all_kara_series');
-	profile('RefreshKaraSeries');
-}
-
-export async function refreshKaraSeriesLang() {
-	profile('RefreshKaraSeriesLang');
-	await db().query('REFRESH MATERIALIZED VIEW all_kara_serie_langs');
-	profile('RefreshKaraSeriesLang');
-}
 
 export function buildClausesSeries(words: string): WhereClause {
 	const params = paramWords(words);
@@ -52,7 +30,7 @@ export async function selectAllSeries(params: KaraParams): Promise<DBSeries[]> {
 	//Disabled until frontend manages this
 	//if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	//if (params.size > 0) limitClause = `LIMIT ${params.size} `;
-	const query = sql.getSeries(filterClauses.sql, langSelector(params.lang, true), limitClause, offsetClause);
+	const query = sql.getSeries(filterClauses.sql, langSelector(params.lang, -1, {main: null, fallback: null}, true), limitClause, offsetClause);
 	const q = yesql(query)(filterClauses.params);
 	const series = await db().query(q);
 	for (const i in series.rows) {
@@ -110,7 +88,7 @@ export async function updateKaraSeries(kid: string, sids: string[]) {
 }
 
 export async function selectSerie(sid: string, lang?: string): Promise<Series> {
-	const query = sql.getSerieByID(langSelector(lang, true));
+	const query = sql.getSerieByID(langSelector(lang, -1, {main: null, fallback: null}, true));
 	const series = await db().query(query, [sid]);
 	return series.rows[0];
 }

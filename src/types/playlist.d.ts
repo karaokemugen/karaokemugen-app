@@ -1,4 +1,4 @@
-import {KaraParams} from './kara';
+import {KaraParams} from '../lib/types/kara';
 import { DBPLCBase, DBPLC } from './database/playlist';
 
 export interface PLCEditParams {

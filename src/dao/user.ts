@@ -1,6 +1,6 @@
-import {db} from './database';
+import {db} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
-import { User } from '../types/user';
+import { User } from '../lib/types/user';
 import { DBUser, DBGuest, RemoteToken } from '../types/database/user';
 const sql = require('./sql/user');
 
@@ -57,7 +57,10 @@ export async function editUser(user: User) {
 		url: user.url,
 		email: user.email,
 		type: user.type,
-		old_login: user.old_login
+		old_login: user.old_login,
+		series_lang_mode: user.series_lang_mode,
+		main_series_lang: user.main_series_lang,
+		fallback_series_lang: user.fallback_series_lang
 	}));
 }
 

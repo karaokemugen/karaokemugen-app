@@ -2,9 +2,11 @@ import { Router } from "express";
 import { getLang } from "../../middlewares/lang";
 import { requireAuth, requireValidUser, requireAdmin, updateUserLoginTime } from "../../middlewares/auth";
 import { shutdown } from "../../../services/engine";
-import { editSetting, getConfig } from "../../../utils/config";
+import { getConfig } from "../../../lib/utils/config";
+import { editSetting } from "../../../utils/config";
+import { getDisplays } from "../../../utils/displays";
 import { OKMessage, errMessage } from "../../common";
-import { emitWS } from "../../../webapp/frontend";
+import { emitWS } from "../../../lib/utils/ws";
 
 
 export default function adminMiscController(router: Router) {
@@ -201,12 +203,33 @@ export default function adminMiscController(router: Router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Update settings
 			try {
-				const publicSettings = await editSetting(req.body.setting);
+				const setting = typeof req.body.setting === 'string'
+					? JSON.parse(req.body.setting)
+					: req.body.setting;
+				const publicSettings = await editSetting(setting);
 				emitWS('settingsUpdated',publicSettings);
 				res.json(OKMessage(publicSettings,'SETTINGS_UPDATED'));
 			} catch(err) {
 				res.status(500).json(errMessage('SETTINGS_UPDATE_ERROR',err));
 			}
+		});
+
+/**
+ * @api {get} /admin/displays get displays
+ * @apiName GetDisplays
+ * @apiVersion 3.0.0
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiGroup Main
+ * @apiSuccess {Object} data contains displays.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ */
+		router.route('/admin/displays')
+		.get(getLang, requireAuth, requireValidUser, requireAdmin, async (_req:any, res:any) => {
+			const displays = await getDisplays();
+			res.json(OKMessage(displays));
 		});
 
 }
