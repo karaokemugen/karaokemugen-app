@@ -1,0 +1,28 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "bundle.js",
+  "scripts": {
+    "dev": "npx parcel watch ./src/app.js --public-url ./ --out-dir ./build/",
+    "build": "npx parcel build ./src/app.js --public-url ./ --out-dir ./build/"
+  },
+  "dependencies": {
+    "autoprefixer": "^9.6.0",
+    "axios": "^0.18.0",
+    "babel-polyfill": "^6.26.0",
+    "fonts": "^0.0.2",
+    "i18next": "^15.0.7",
+    "i18next-browser-languagedetector": "^3.0.1",
+    "i18next-xhr-backend": "^2.0.1",
+    "postcss-modules": "^1.4.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-i18next": "^10.5.3",
+    "styles": "^0.2.1"
+  },
+  "devDependencies": {
+    "node-sass": "^4.12.0",
+    "parcel-bundler": "^1.12.3"
+  },
+  "license": "MIT"
+}

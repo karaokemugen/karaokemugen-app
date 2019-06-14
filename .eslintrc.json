@@ -7,9 +7,8 @@
 		"node": true,
 		"mocha":true
     },
-    "extends": "react-app",
     "plugins": [
-        "react"
+        "@typescript-eslint"
     ],
     "rules": {
 		"jsx-a11y/href-no-hash": [0],
@@ -32,12 +31,8 @@
         ],
         "no-throw-literal": "off"
     },
-    "parser": "babel-eslint",
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaVersion": 2017,
-        "ecmaFeatures": {
-            "jsx": true
-        },
         "sourceType": "module"
     }
 }
