@@ -70,7 +70,7 @@ export async function initConfig(argv: any) {
 	let appPath = getState().appPath;
 	setState({ version: version });
 	setConfigConstraints(configConstraints);
-	await configureLogger(appPath, !!argv.debug);
+	await configureLogger(appPath, !!argv.debug, false, getState().opt.profiling);
 	await configureLocale();
 	await loadConfigFiles(appPath, argv.config, defaults);
 	await checkBinaries(getConfig());
