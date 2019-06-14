@@ -14,6 +14,7 @@ import { saveSetting } from '../lib/dao/database';
 import {asyncUnlink, resolveFileInDirs, } from '../lib/utils/files';
 import {getConfig, resolvedPathSeries} from '../lib/utils/config';
 import {getDataFromSeriesFile} from '../lib/dao/seriesfile';
+import { getAllKaras } from './kara';
 
 
 export async function getSeries(params: KaraParams) {
@@ -56,7 +57,7 @@ export async function deleteSerie(sid: string) {
 	await Promise.all([
 		refreshSeries(),
 		removeSeriesFile(serie.name),
-		removeSerieInKaras(serie.name),
+		removeSerieInKaras(serie.name, await getAllKaras()),
 	]);
 	// Refreshing karas is done asynchronously
 	removeSeriesInStore(sid);
