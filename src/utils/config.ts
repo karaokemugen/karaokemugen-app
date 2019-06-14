@@ -73,7 +73,8 @@ export async function initConfig(argv: any) {
 	await configureLogger(appPath, !!argv.debug, false, getState().opt.profiling);
 	await configureLocale();
 	await loadConfigFiles(appPath, argv.config, defaults);
-	await checkBinaries(getConfig());
+	const binaries = await checkBinaries(getConfig());
+	setState({binPath: binaries});
 	emit('configReady');
 	configureHost();
 	configureIDs();
