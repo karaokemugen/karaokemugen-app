@@ -135,6 +135,7 @@
     "@types/decompress": "^4.2.3",
     "@types/execa": "^0.9.0",
     "@types/express-handlebars": "^0.0.32",
+    "@types/file-type": "^10.9.1",
     "@types/form-data": "^2.2.1",
     "@types/fs-extra": "^7.0.0",
     "@types/got": "^9.4.4",
