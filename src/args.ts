@@ -1,5 +1,5 @@
 import {setState} from './utils/state';
-import logger from './lib/utils/logger';
+import logger, { enableProfiling } from './lib/utils/logger';
 
 const help = `Usage :
 
@@ -53,7 +53,7 @@ export async function parseCommandLineArgs(argv) {
 	}
 	if (argv.profiling) {
 		logger.info('[Launcher] Profiling enabled');
-		setState({opt: {profiling: true}});
+		enableProfiling();
 	}
 	if (argv.generate) {
 		logger.info('[Launcher] Database generation requested');
