@@ -65,20 +65,14 @@ If you don't have `yarn`, install it first from [Yarn's website](http://yarnpkg.
 
 Initialize some git config values either via `yarn gitconfig` or
 
+Warning : these are global. If you wish to make them local, put `local` after `config` in each command.
+
 ```sh
 git config diff.submodule log
 git config fetch.recursesubmodules on-demand
 git config status.submodulesummary true
 git config push.recursesubmodules on-demand
 git config submodule.recurse true
-```
-
-From now on you can update via `yarn pull` which will run the following commands for you :
-
-```sh
-git pull
-git submodule sync --recursive
-git submodule update --init --recursive
 ```
 
 ### Dependencies
