@@ -578,8 +578,6 @@ async function updateGuestAvatar(user: User) {
 				} , 'admin', {
 					renameUser: false,
 					editRemote: false
-				}).then(() => {
-					asyncUnlink(tempFile);
 				}).catch((err) => {
 					logger.error(`[User] Unable to change guest avatar for ${user.login} : ${JSON.stringify(err)}`);
 				});
