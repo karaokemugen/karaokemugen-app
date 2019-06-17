@@ -77,6 +77,7 @@ From now on you can update via `yarn pull` which will run the following commands
 
 ```sh
 git pull
+git submodule sync --recursive
 git submodule update --init --recursive
 ```
 
@@ -87,6 +88,8 @@ Launch `yarn` to install dependencies and build the React frontend.
 ```sh
 yarn setup
 ```
+
+This runs install on the app, system panel and frontend then builds them.
 
 ### Database setup
 
@@ -165,6 +168,8 @@ ffmpeg 3 or later is required ([ffmpeg's website](http://www.ffmpeg.org))
 #### PostgreSQL
 
 PostgreSQL 10.6 or later is required ([postgreSQL's website](https://www.postgresql.org/))
+
+Earlier PostgreSQL versions (9.x, 10.x...) should work but have not been tested.
 
 Karaoke Mugen can use PostgreSQL in two ways :
 
