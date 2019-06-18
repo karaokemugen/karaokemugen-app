@@ -8,8 +8,45 @@ import { emitWS } from "../../../lib/utils/ws";
 import { addKaraToPlaylist, deleteKaraFromPlaylist, getPlaylistContents, getPlaylistInfo } from "../../../services/playlist";
 import { vote } from "../../../services/upvote";
 import { getState } from "../../../utils/state";
+import { getConfig } from "../../../lib/utils/config";
+import { PostSuggestionToKaraBase } from "../../../services/gitlab";
 
 export default function publicKaraController(router: Router) {
+	router.route('/public/karas/suggest')
+	/**
+	 * @api {post} /public/karas/suggest Suggest a new song to your karaokebase project
+	 * @apiName SuggestKara
+	 * @apiVersion 3.0.0
+	 * @apiGroup Karaokes
+	 * @apiPermission public
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {String} karaName Name of song + series / artist
+	 * @apiSuccess {String} issueURL New issue's URL
+	 * @apiSuccessExample Success-Response:
+ 	 * HTTP/1.1 200 OK
+ 	 * {
+ 	 *   "data": {
+	 * 		 "issueURL": "https://lab.shelter.moe/xxx/issues/1234"
+	 *   }
+	 * }
+	 * @apiErrorExample Error-Response:
+ 	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+ 	 * HTTP/1.1 403 Forbidden
+	 */
+	.post(requireAuth, requireValidUser, requireWebappOpen, updateUserLoginTime, async(req: any, res: any) => {
+		try {
+			if (getConfig().Gitlab.Enabled) {
+				const url = await PostSuggestionToKaraBase(req.body.karaName, req.authToken.username);
+				res.json(OKMessage({issueURL: url}));
+			} else {
+				res.status(403).json(null);
+			}
+		} catch(err) {
+			res.status(500).json(err);
+		}
+	});
+
 	router.route('/public/karas')
 	/**
  * @api {get} /public/karas Get complete list of karaokes

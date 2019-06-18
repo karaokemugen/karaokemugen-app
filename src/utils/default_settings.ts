@@ -49,6 +49,9 @@ export const defaults: Config = {
 		},
 		SeriesLanguageMode: 3
 	},
+	Gitlab: {
+		Enabled: false
+	},
 	Karaoke: {
 		Autoplay: false,
 		CreatePreviews: false,
