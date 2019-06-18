@@ -1,3 +1,4 @@
+const locale = process.env.LANG;
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './lib/utils/files';
 import {getConfig} from './lib/utils/config';
 import {initConfig} from './utils/config';
@@ -46,7 +47,6 @@ if (process.platform === 'win32' ) {
 }
 
 // Main app begins here.
-
 let appPath: string;
 // Testing if we're in a packaged version of KM or not.
 ('pkg' in process) ? appPath = join(process['execPath'],'../') : appPath = join(__dirname,'../');
@@ -62,6 +62,7 @@ main()
 	});
 
 async function main() {
+	process.env.LANG = locale;
 	const argv = minimist(process.argv.slice(2));
 	setState({os: process.platform});
 	setState({ version: version });
