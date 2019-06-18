@@ -40,6 +40,7 @@ displayMessage = function(type, title, message, time) {
 /* display a modal (really?) */
 /* types : confirm, prompt, alert, ... */
 displayModal = function(type, title, message, callback, placeholder) {
+	window.callModal(type, title, message, callback, placeholder);
 	var modal = $('#modalBox').attr('type', type);
 	var okButton = modal.find('.modal-footer > button.ok').unbind().show();
 	var otherButton = modal.find('.modal-footer > button.other').prop('disabled', false).unbind().show();

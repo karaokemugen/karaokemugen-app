@@ -7,8 +7,11 @@ import './components/i18n';
 import './app.css'
 
 const Loader = () => (
-    <div>loading...</div>
-  );
+  <div>loading...</div>
+);
 
-document.getElementById('manage') ? ReactDOM.render(<Suspense fallback={<Loader />}><Options/></Suspense>, document.getElementById('manage')) : null;
-ReactDOM.render(<Suspense fallback={<Loader />}><Modal/></Suspense>, document.getElementById('modalBox'));
+document.getElementById('manage') ? ReactDOM.render(<Suspense fallback={<Loader />}><Options /></Suspense>, document.getElementById('manage')) : null;
+
+window.callModal = (type, title, message, callback, placeholder) => (
+  ReactDOM.render(<Suspense fallback={<Loader />}><Modal type={type} title={title} message={message} callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('modalBox'))
+);
