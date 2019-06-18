@@ -58,10 +58,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.generate) {
 		logger.info('[Launcher] Database generation requested');
 		setState({opt: {generateDB: true}});
-		if (argv.noMedia) {
-			logger.info('[Launcher] Medias will not be read during generation');
-			setState({opt: {noMedia: true}});
-		}
+	}
+	if (argv.noMedia) {
+		logger.info('[Launcher] Medias will not be read during generation');
+		setState({opt: {noMedia: true}});
 	}
 	if (argv.noBaseCheck) {
 		logger.info('[Launcher] Data files will not be checked. ENABLED AT YOUR OWN RISK');
