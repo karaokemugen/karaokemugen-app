@@ -24,6 +24,19 @@ export interface Config {
 			AllowViewBlacklistCriterias?: boolean
 		}
 	},
+	Gitlab?: {
+		Enabled?: boolean,
+		Host?: string,
+		Token?: string,
+		ProjectID?: number,
+		IssueTemplate?: {
+			Suggestion?: {
+				Description?: string,
+				Title?: string,
+				Labels?: string[]
+			}
+		}
+	}
 	Karaoke: {
 		Private?: boolean,
 		Autoplay?: boolean,
