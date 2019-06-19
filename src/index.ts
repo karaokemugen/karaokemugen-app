@@ -1,4 +1,4 @@
-const locale = process.env.LANG;
+const locale = process.env.LANG || 'fr';
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './lib/utils/files';
 import {getConfig} from './lib/utils/config';
 import {initConfig} from './utils/config';
