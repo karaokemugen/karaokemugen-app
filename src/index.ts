@@ -1,4 +1,3 @@
-const locale = process.env.LANG;
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './lib/utils/files';
 import {getConfig} from './lib/utils/config';
 import {initConfig} from './utils/config';
@@ -62,7 +61,6 @@ main()
 	});
 
 async function main() {
-	process.env.LANG = locale;
 	const argv = minimist(process.argv.slice(2));
 	setState({os: process.platform});
 	setState({ version: version });
