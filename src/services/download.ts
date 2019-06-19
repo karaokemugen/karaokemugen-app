@@ -245,8 +245,8 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 					local: dl.subfile
 				},
 				kara: {
-					remote: `http://${repo}/downloads/karas/${dl.karafile}`,
-					local: dl.karafile
+					remote: `http://${repo}/downloads/karaokes/${dl.karafile}.json`,
+					local: dl.karafile + '.json'
 				},
 				serie: seriefiles
 			},
