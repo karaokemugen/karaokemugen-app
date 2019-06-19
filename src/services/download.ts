@@ -17,6 +17,7 @@ import got from 'got';
 import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC } from '../types/download';
 import { DownloadItem } from '../types/downloader';
 import { KaraList, KaraParams } from '../lib/types/kara';
+import { TagParams } from '../lib/types/tag';
 import { DBDownload, DBDownloadBLC } from '../types/database/download';
 import { deleteKara } from '../services/kara';
 import { refreshAll } from '../lib/dao/database';
@@ -328,7 +329,7 @@ export async function editDownloadBLC(blc: KaraDownloadBLC) {
 
 export async function removeDownloadBLC(id: number) {
 	const dlBLC = await selectDownloadBLC();
-	if (!dlBLC.some(e => e.dlblc_id === id)) throw 'DL BLC ID does not exist';
+	if (!dlBLC.some(e => e.dlblc_id === id )) throw 'DL BLC ID does not exist';
 	return await deleteDownloadBLC(id);
 }
 
@@ -343,6 +344,14 @@ export async function getRemoteKaras(instance: string, params: KaraParams): Prom
 		['from', params.from + '']
 	]);
 	const res = await got(`https://${instance}/api/karas?${queryParams.toString()}`);
+	return JSON.parse(res.body);
+}
+
+export async function getRemoteTags(instance: string, params: TagParams): Promise<any> {
+	const queryParams = new URLSearchParams([
+		['type', params.type + '']
+	]);
+	const res = await got(`https://${instance}/api/karas/tags?${queryParams.toString()}`);
 	return JSON.parse(res.body);
 }
 
