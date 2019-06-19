@@ -98,7 +98,7 @@ export default function systemDownloadController(router: Router) {
 	});
 	router.delete('/system/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
-			await removeDownloadBLC(req.params.id);
+			await removeDownloadBLC(parseInt(req.params.id));
 			res.status(200).send('Download blacklist criteria removed');
 		} catch(err) {
 			res.status(500).send(`Error removing download BLC : ${err}`);
