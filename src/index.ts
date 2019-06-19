@@ -1,3 +1,4 @@
+const locale = process.env.LANG;
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './lib/utils/files';
 import {getConfig} from './lib/utils/config';
 import {initConfig} from './utils/config';
@@ -7,13 +8,14 @@ import {writeFileSync, readFileSync} from 'fs';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import {createServer} from 'net';
-import logger from './lib/utils/logger';
+import logger, { configureLogger } from './lib/utils/logger';
 import minimist from 'minimist';
 import {exit, initEngine} from './services/engine';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
 import { setState, getState } from './utils/state';
+import { version } from './version';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -45,7 +47,6 @@ if (process.platform === 'win32' ) {
 }
 
 // Main app begins here.
-
 let appPath: string;
 // Testing if we're in a packaged version of KM or not.
 ('pkg' in process) ? appPath = join(process['execPath'],'../') : appPath = join(__dirname,'../');
@@ -61,16 +62,19 @@ main()
 	});
 
 async function main() {
+	process.env.LANG = locale;
 	const argv = minimist(process.argv.slice(2));
 	setState({os: process.platform});
-	await initConfig(argv);
+	setState({ version: version });
 	const state = getState();
 	console.log(chalk.blue(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
 	console.log('================================================================');
-	await parseCommandLineArgs(argv);
+	await configureLogger(appPath, !!argv.debug, false);
+	await initConfig(argv);
 	let config = getConfig();
+	await parseCommandLineArgs(argv);
 	logger.debug(`[Launcher] SysPath : ${appPath}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);

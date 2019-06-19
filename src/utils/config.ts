@@ -2,8 +2,7 @@
 
 import {resolve} from 'path';
 import {address} from 'ip';
-import {configureLogger} from '../lib/utils/logger';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 import {asyncCopy, asyncRequired} from '../lib/utils/files';
 import {configureIDs, configureLocale, loadConfigFiles, setConfig, verifyConfig, getConfig, setConfigConstraints} from '../lib/utils/config';
 import {configConstraints, defaults} from './default_settings';
@@ -19,7 +18,6 @@ import {Config} from '../types/config';
 import { listUsers } from '../dao/user';
 import { updateSongsLeft } from '../services/user';
 import { emitWS } from '../lib/utils/ws';
-import {version} from '../version';
 import { emit } from '../lib/utils/pubsub';
 import { BinariesConfig } from '../types/binChecker';
 import { exit } from '../services/engine';
@@ -68,9 +66,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 /** Initializing configuration */
 export async function initConfig(argv: any) {
 	let appPath = getState().appPath;
-	setState({ version: version });
 	setConfigConstraints(configConstraints);
-	await configureLogger(appPath, !!argv.debug, false, getState().opt.profiling);
 	await configureLocale();
 	await loadConfigFiles(appPath, argv.config, defaults);
 	const binaries = await checkBinaries(getConfig());

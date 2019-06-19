@@ -65,19 +65,14 @@ If you don't have `yarn`, install it first from [Yarn's website](http://yarnpkg.
 
 Initialize some git config values either via `yarn gitconfig` or
 
+Warning : these are global. If you wish to make them local, put `local` after `config` in each command.
+
 ```sh
 git config diff.submodule log
 git config fetch.recursesubmodules on-demand
 git config status.submodulesummary true
 git config push.recursesubmodules on-demand
 git config submodule.recurse true
-```
-
-From now on you can update via `yarn pull` which will run the following commands for you :
-
-```sh
-git pull
-git submodule update --init --recursive
 ```
 
 ### Dependencies
@@ -87,6 +82,8 @@ Launch `yarn` to install dependencies and build the React frontend.
 ```sh
 yarn setup
 ```
+
+This runs install on the app, system panel and frontend then builds them.
 
 ### Database setup
 
@@ -165,6 +162,8 @@ ffmpeg 3 or later is required ([ffmpeg's website](http://www.ffmpeg.org))
 #### PostgreSQL
 
 PostgreSQL 10.6 or later is required ([postgreSQL's website](https://www.postgresql.org/))
+
+Earlier PostgreSQL versions (9.x, 10.x...) should work but have not been tested.
 
 Karaoke Mugen can use PostgreSQL in two ways :
 

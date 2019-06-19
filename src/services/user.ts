@@ -1,13 +1,14 @@
-import {getConfig, setConfig} from '../lib/utils/config';
+import {getConfig, setConfig, resolvedPathTemp} from '../lib/utils/config';
 import {Config} from '../types/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
 import {convertToRemoteFavorites} from './favorites';
-import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy} from '../lib/utils/files';
+import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy, asyncStat} from '../lib/utils/files';
 import {createHash} from 'crypto';
-import {resolve} from 'path';
+import {resolve, join} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
-import {imageFileTypes, defaultGuestNames} from '../lib/utils/constants';
+import {imageFileTypes} from '../lib/utils/constants';
+import {defaultGuestNames} from '../utils/constants';
 import randomstring from 'randomstring';
 import {on} from '../lib/utils/pubsub';
 import {getSongCountForUser, getSongTimeSpentForUser} from '../dao/kara';
@@ -17,7 +18,7 @@ import {getState} from '../utils/state';
 import got from 'got';
 import { getRemoteToken, upsertRemoteToken } from '../dao/user';
 import formData from 'form-data';
-import { createReadStream } from 'fs';
+import { createReadStream, writeFile, readFileSync } from 'fs';
 import { writeStreamToFile } from '../lib/utils/files';
 import { fetchAndAddFavorites } from './favorites';
 import {encode, decode} from 'jwt-simple';
@@ -41,6 +42,7 @@ import {updateExpiredUsers as DBUpdateExpiredUsers,
 	deleteUser as DBDeleteUser
 } from '../dao/user';
 import {has as hasLang} from 'langs';
+import slugify from 'slugify';
 
 let userLoginTimes = new Map();
 let usersFetched = {};
@@ -85,7 +87,7 @@ async function updateExpiredUsers() {
 			await DBResetGuestsPassword();
 		}
 	} catch(err) {
-		logger.error(`[Users] Expiring users failed (will try again in one minute) : ${err}`);
+		logger.error(`[User] Expiring users failed (will try again in one minute) : ${err}`);
 	}
 }
 
@@ -274,7 +276,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			// Let's move it to the avatar user directory and update avatar info in
 			// database
 			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
-			user.avatar_file = await replaceAvatar(currentUser.avatar_file,avatar);
+			user.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
 		} else {
 			user.avatar_file = currentUser.avatar_file;
 		}
@@ -544,6 +546,52 @@ export async function deleteUser(username: string) {
 	}
 }
 
+async function updateGuestAvatar(user: User) {
+	const bundledAvatarFile = `${slugify(user.login, {
+		lower: true,
+		remove: /['"!,\?()]/g
+	})}.jpg`;
+	const bundledAvatarPath = join(__dirname, '../../assets/guestAvatars/', bundledAvatarFile);
+	if (!await asyncExists(bundledAvatarPath)) {
+		// Bundled avatar does not exist for this user, skipping.
+		logger.warn(`[User] The user "${user.login}" does not have a matching avatar file in assets. Searched : ${bundledAvatarFile}`);
+		return false;
+	}
+	const avatarStats = await asyncStat(resolve(getState().appPath, getConfig().System.Path.Avatars, user.avatar_file));
+	const bundledAvatarStats = await asyncStat(bundledAvatarPath);
+	if (avatarStats.size !== bundledAvatarStats.size) {
+		// bundledAvatar is different from the current guest Avatar, replacing it.
+		// Since pkg is fucking up with copy(), we're going to read/write file in order to save it to a temporary directory
+		const tempFile = resolve(await resolvedPathTemp(), bundledAvatarFile);
+		let buffer = readFileSync(bundledAvatarPath);
+		writeFile(tempFile, buffer, null, () => {
+				editUser(user.login, user, {
+					fieldname: null,
+					path: tempFile,
+					originalname: null,
+					encoding: null,
+					mimetype: null,
+					destination: null,
+					filename: null,
+					buffer: null,
+					size: null
+				} , 'admin', {
+					renameUser: false,
+					editRemote: false
+				}).catch((err) => {
+					logger.error(`[User] Unable to change guest avatar for ${user.login} : ${JSON.stringify(err)}`);
+				});
+			});
+
+	}
+}
+
+async function checkGuestAvatars() {
+	logger.debug('[User] Updating default avatars');
+	const guests = await listGuests();
+	guests.forEach(u => updateGuestAvatar(u));
+}
+
 async function createDefaultGuests() {
 	const guests = await listGuests();
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
@@ -593,7 +641,7 @@ export async function initUserSystem() {
 		if (await findUserByName('adminTest')) await deleteUser('adminTest');
 	}
 
-	createDefaultGuests();
+	createDefaultGuests().then(() => checkGuestAvatars());
 	cleanupAvatars();
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 }

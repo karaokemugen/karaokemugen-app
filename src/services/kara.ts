@@ -338,9 +338,11 @@ export async function refreshKarasAfterDBChange() {
 		refreshKaraSeries(),
 		refreshKaraTags()
 	]);
-	await refreshKaras();
-	refreshKaraSeriesLang();
-	refreshSeries();
+	await Promise.all([
+		refreshKaras(),
+		refreshKaraSeriesLang(),
+		refreshSeries()
+	]);
 	refreshYears();
 	refreshTags();
 }

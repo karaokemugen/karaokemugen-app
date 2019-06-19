@@ -6,8 +6,8 @@ import InterfaceOptions from './InterfaceOptions';
 import axios from 'axios';
 require('babel-polyfill');
 
-axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
-axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
+axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
 class Options extends Component {
 

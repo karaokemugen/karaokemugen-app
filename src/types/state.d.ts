@@ -55,7 +55,6 @@ export interface State {
 		noMedia?: boolean,
 		baseUpdate?: boolean,
 		noBrowser?: boolean,
-		profiling?: boolean,
 		sql?: boolean,
 		validate?: boolean,
 		debug?: boolean,

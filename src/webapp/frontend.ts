@@ -11,7 +11,7 @@ import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
 import {configurePassport} from './passport_manager';
 import {createServer} from 'http';
-import { initializationCatchphrases } from '../lib/utils/constants';
+import { initializationCatchphrases } from '../utils/constants';
 import sample from 'lodash.sample';
 import { initWS } from '../lib/utils/ws';
 
