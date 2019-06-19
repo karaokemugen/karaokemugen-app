@@ -65,11 +65,15 @@ class Notifications extends Component<NotificationsProps, NotificationsState> {
 
 	render() {
 		return (
-			<div>
-				{this.info()}
-				{this.warn()}
-				{this.error()}
-				{this.loading()}
+			<div className="UI-notification">
+				<div className="UI-notification-message">
+					{this.info()}
+					{this.warn()}
+					{this.error()}
+				</div>
+				<div className="UI-notification-loading">
+					{this.loading()}
+				</div>
 			</div>
 		);
 	}

@@ -81,6 +81,7 @@ class KMMenu extends Component<KMenuProps, KMenuState> {
 							<Menu.Item key='karalist'><Link to='/system/karas'>List</Link></Menu.Item>
 							<Menu.Item key='karaimport'><Link to='/system/karas/create'>New</Link></Menu.Item>
 							<Menu.Item key='karadownload'><Link to='/system/karas/download'>Download</Link></Menu.Item>
+							<Menu.Item key='karablacklist'><Link to='/system/karas/blacklist'>Blacklist</Link></Menu.Item>
 							<Menu.Item key='karahistory'><Link to='/system/karas/history'>History</Link></Menu.Item>
 							<Menu.Item key='kararanking'><Link to='/system/karas/ranking'>Most requested</Link></Menu.Item>
 							<Menu.Item key='karaviewcounts'><Link to='/system/karas/viewcounts'>Most played</Link></Menu.Item>
