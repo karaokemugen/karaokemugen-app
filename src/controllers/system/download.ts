@@ -2,7 +2,7 @@
 import {requireAuth, requireValidUser, requireAdmin} from '../middlewares/auth';
 import {requireNotDemo} from '../middlewares/demo';
 
-import {getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras} from '../../services/download';
+import {getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras} from '../../services/download';
 import {getRepos} from '../../services/repo';
 import { Router } from 'express';
 
@@ -123,10 +123,17 @@ export default function systemDownloadController(router: Router) {
 	router.post('/system/downloads/all', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			await downloadAllKaras(req.body.instance);
-			res.status(200).send('Update in progress');
+			res.status(200).send('Download in progress');
 		} catch(err) {
 			res.status(500).send(`Error computing update: ${err}`);
 		}
 	});
-
+	router.post('/system/downloads/clean', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await cleanAllKaras(req.body.instance);
+			res.status(200).send('Cleanup in progress');
+		} catch(err) {
+			res.status(500).send(`Error computing update: ${err}`);
+		}
+	});
 }

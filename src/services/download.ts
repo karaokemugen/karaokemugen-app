@@ -374,6 +374,7 @@ export async function updateBase(instance: string) {
 	logger.info('[Update] Computing songs to add/remove/update...');
 	const karas = await getKaraInventory(instance);
 	await Promise.all([
+		cleanAllKaras(instance, karas.local, karas.remote),
 		updateAllKaras(instance, karas.local, karas.remote),
 		downloadAllKaras(instance, karas.local, karas.remote)
 	]);
@@ -401,6 +402,7 @@ export async function downloadAllKaras(instance: string, local?: KaraList, remot
 	let karasToAdd = remote.content.filter(k => !localKIDs.includes(k.kid));
 	const initialKarasToAddCount = karasToAdd.length;
 	// Among those karaokes, we need to establish which ones we'll filter out via the download blacklist criteria
+	logger.info('[Update] Applying blacklist (if present)');
 	const [blcs, tags] = await Promise.all([
 		getDownloadBLC(),
 		getTags({})
@@ -490,7 +492,7 @@ function filterYearYounger(k: DBKara, value: string) {
 	return k.year >= +value;
 }
 
-export async function updateAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
+export async function cleanAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
 	if (!local || !remote) {
 		const karas = await getKaraInventory(instance);
 		local = karas.local;
@@ -499,10 +501,6 @@ export async function updateAllKaras(instance: string, local?: KaraList, remote?
 	const localKIDs = local.content.map(k => k.kid);
 	const remoteKIDs = remote.content.map(k => k.kid);
 	const karasToRemove = localKIDs.filter(kid => !remoteKIDs.includes(kid));
-	const karasToUpdate = local.content.filter(k => {
-		const rk = remote.content.find(rk => rk.kid === k.kid);
-		if (rk && rk.modified_at > k.modified_at) return true;
-	}).map(k => k.kid);
 	// Now we have a list of KIDs to remove
 	logger.info(`[Update] Removing ${karasToRemove.length} songs`);
 	for (const kid of karasToRemove) {
@@ -510,6 +508,18 @@ export async function updateAllKaras(instance: string, local?: KaraList, remote?
 	}
 	refreshAll();
 	compareKarasChecksum(true);
+}
+
+export async function updateAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
+	if (!local || !remote) {
+		const karas = await getKaraInventory(instance);
+		local = karas.local;
+		remote = karas.remote;
+	}
+	const karasToUpdate = local.content.filter(k => {
+		const rk = remote.content.find(rk => rk.kid === k.kid);
+		if (rk && rk.modified_at > k.modified_at) return true;
+	}).map(k => k.kid);
 	const downloads = remote.content.filter(k => karasToUpdate.includes(k.kid)).map(k => {
 		return {
 			size: k.mediasize,
