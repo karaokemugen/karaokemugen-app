@@ -44,6 +44,7 @@ class App extends Component<AppProps, AppState> {
 							<Route path='/system/login' component={DismissMessages(import('./pages/Login'))}/>
 							<Route path='/system/config' component={AuthRequired(import('./pages/Config'))}/>
 							<Route path='/system/karas/download' component={AuthRequired(import('./pages/Karas/KaraDownload'))}/>
+							<Route path='/system/karas/blacklist' component={AuthRequired(import('./pages/Karas/KaraBlacklist'))}/>
 							<Route path='/system/karas/create' component={AuthRequired(import('./pages/Karas/KaraEdit'))}/>
 							<Route path='/system/karas/history' component={AuthRequired(import('./pages/Karas/History'))}/>
 							<Route path='/system/karas/ranking' component={AuthRequired(import('./pages/Karas/Ranking'))}/>

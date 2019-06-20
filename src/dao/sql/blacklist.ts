@@ -111,7 +111,8 @@ ${offsetClause}
 export const editBlacklistCriteria = `
 UPDATE blacklist_criteria
 SET type = :type,
-	value = :value
+	value = :value,
+	uniquevalue = :uniquevalue
 WHERE pk_id_blcriteria = :id
 `;
 

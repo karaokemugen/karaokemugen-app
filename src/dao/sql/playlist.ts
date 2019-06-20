@@ -206,7 +206,7 @@ SELECT ak.kid AS kid,
 	  (SELECT array_to_string (array_agg(name), ', ') FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.fallback}),
 		ak.serie
 	) AS serie,
-	ak.songtypes AS songtypes,
+	ak.songtypes AS songtype,
 	ak.singers AS singers,
     ak.gain AS gain,
     pc.nickname AS nickname,

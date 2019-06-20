@@ -21,3 +21,30 @@
 	line-height: normal;
 	padding: 1em;
 }
+
+.UI-notification-loading .ant-spin-nested-loading {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(255,255,255,0.5);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.UI-notification-loading .ant-spin-container {
+  display: none;
+}
+
+select {
+  display: inline-block;
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  outline: none;
+  padding: 4px 5px 5px;
+}

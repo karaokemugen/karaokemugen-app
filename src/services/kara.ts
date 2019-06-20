@@ -22,15 +22,16 @@ import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
 import {basename, resolve} from 'path';
 import {profile} from '../lib/utils/logger';
-import {Kara, KaraParams, KaraList} from '../lib/types/kara';
+import {Kara, KaraParams, KaraList, YearList} from '../lib/types/kara';
 import {Series} from '../lib/types/series';
 import { getOrAddSerieID, deleteSerie } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../lib/utils/files';
-import {getConfig} from '../lib/utils/config';
+import {getConfig, resolvedPathMedias, resolvedPathKaras, resolvedPathSubs} from '../lib/utils/config';
 import logger from 'winston';
 import {getState} from '../utils/state';
 import { editKaraInStore, removeKaraInStore, getStoreChecksum } from '../dao/dataStore';
-import { DBKara, DBKaraBase, DBKaraHistory } from '../types/database/kara';
+import { DBKaraHistory } from '../types/database/kara';
+import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
 import { isPreviewAvailable } from '../lib/utils/previews';
 import { Token } from '../lib/types/user';
@@ -97,7 +98,7 @@ export function translateKaraInfo(karas: DBKara|DBKara[], lang?: string): DBKara
 	return karas;
 }
 
-export async function deleteKara(kid: string) {
+export async function deleteKara(kid: string, refresh = true) {
 	const kara = await getKaraMini(kid);
 	if (!kara) throw `Unknown kara ID ${kid}`;
 
@@ -120,20 +121,19 @@ export async function deleteKara(kid: string) {
 	}
 
 	// Remove files
-	const conf = getConfig();
 
 	try {
-		await asyncUnlink(await resolveFileInDirs(kara.mediafile, conf.System.Path.Medias)).catch(function(){ /* Fail silently */});
+		await asyncUnlink(await resolveFileInDirs(kara.mediafile, resolvedPathMedias()));
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing mediafile ${kara.mediafile} failed : ${err}`);
 	}
 	try {
-		await asyncUnlink(await resolveFileInDirs(kara.karafile, conf.System.Path.Karas)).catch(function(){ /* Fail silently */});
+		await asyncUnlink(await resolveFileInDirs(kara.karafile, resolvedPathKaras()));
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing karafile ${kara.karafile} failed : ${err}`);
 	}
-	if (kara.subfile !== 'dummy.ass') try {
-		await asyncUnlink(await resolveFileInDirs(kara.subfile, conf.System.Path.Lyrics)).catch(function(){ /* Fail silently */});
+	if (kara.subfile) try {
+		await asyncUnlink(await resolveFileInDirs(kara.subfile, resolvedPathSubs()));
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
 	}
@@ -144,12 +144,12 @@ export async function deleteKara(kid: string) {
 	await deleteKaraDB(kid);
 	logger.info(`[Kara] Song ${kara.karafile} removed`);
 
-	delayedDbRefreshViews(2000);
+	if (refresh) delayedDbRefreshViews(2000);
 }
 
 let delayedDbRefreshTimeout = null;
 
-export async function delayedDbRefreshViews(ttl=100) {
+export async function delayedDbRefreshViews(ttl = 100) {
 	clearTimeout(delayedDbRefreshTimeout);
 	delayedDbRefreshTimeout = setTimeout(refreshAll,ttl);
 }
@@ -285,7 +285,7 @@ export async function addPlayedKara(kid: string) {
 	profile('addPlayed');
 }
 
-export async function getYears(): Promise<KaraList> {
+export async function getYears(): Promise<YearList> {
 	const years = await getYearsDB();
 	return {
 		content: years,
@@ -322,7 +322,7 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 	return ret;
 }
 
-export function formatKaraList(karaList: DBKara[], lang: string, from: number, count: number): KaraList {
+export function formatKaraList(karaList: any, lang: string, from: number, count: number): KaraList {
 	karaList = translateKaraInfo(karaList, lang);
 	return {
 		infos: {

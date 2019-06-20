@@ -16,7 +16,8 @@ export interface KaraDownload {
 export interface KaraDownloadBLC {
 	type: number,
 	value: any,
-	id?: number
+	id?: number,
+	uniquevalue?: any
 }
 
 export interface KaraDownloadRequest {
