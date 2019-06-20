@@ -7,8 +7,9 @@ import {now} from '../lib/utils/date';
 import { Kara, KaraParams } from '../lib/types/kara';
 import { Role, User } from '../lib/types/user';
 import {PLC} from '../types/playlist';
-import { DBYear, DBKara, DBKaraHistory, DBKaraBase } from '../types/database/kara';
+import { DBYear, DBKaraHistory } from '../types/database/kara';
 import { getUser } from './user';
+import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 
 const sql = require('./sql/kara');
 

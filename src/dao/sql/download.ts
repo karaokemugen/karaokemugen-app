@@ -75,7 +75,8 @@ export const selectDownloadBLC = `
 SELECT
 	pk_id_dl_blcriteria AS dlBLC_id,
 	type,
-	value
+	value,
+	uniquevalue
 FROM download_blacklist_criteria
 `;
 
@@ -91,12 +92,13 @@ TRUNCATE download_blacklist_criteria RESTART IDENTITY;
 export const insertDownloadBLC = `
 INSERT INTO download_blacklist_criteria(
 	type,
-	value
-) VALUES($1, $2)
+	value,
+	uniquevalue
+) VALUES($1, $2, $3)
 `;
 
 export const updateDownloadBLC = `
 UPDATE download_blacklist_criteria
-SET type = $2, value = $3
+SET type = $2, value = $3, uniquevalue = $4
 WHERE pk_id_dl_blcriteria = $1
 `;

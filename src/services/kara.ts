@@ -22,7 +22,7 @@ import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
 import {basename, resolve} from 'path';
 import {profile} from '../lib/utils/logger';
-import {Kara, KaraParams, KaraList} from '../lib/types/kara';
+import {Kara, KaraParams, KaraList, YearList} from '../lib/types/kara';
 import {Series} from '../lib/types/series';
 import { getOrAddSerieID, deleteSerie } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../lib/utils/files';
@@ -30,7 +30,8 @@ import {getConfig, resolvedPathMedias, resolvedPathKaras, resolvedPathSubs} from
 import logger from 'winston';
 import {getState} from '../utils/state';
 import { editKaraInStore, removeKaraInStore, getStoreChecksum } from '../dao/dataStore';
-import { DBKara, DBKaraBase, DBKaraHistory } from '../types/database/kara';
+import { DBKaraHistory } from '../types/database/kara';
+import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
 import { isPreviewAvailable } from '../lib/utils/previews';
 import { Token } from '../lib/types/user';
@@ -284,7 +285,7 @@ export async function addPlayedKara(kid: string) {
 	profile('addPlayed');
 }
 
-export async function getYears(): Promise<KaraList> {
+export async function getYears(): Promise<YearList> {
 	const years = await getYearsDB();
 	return {
 		content: years,
@@ -321,7 +322,7 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 	return ret;
 }
 
-export function formatKaraList(karaList: DBKara[], lang: string, from: number, count: number): KaraList {
+export function formatKaraList(karaList: any, lang: string, from: number, count: number): KaraList {
 	karaList = translateKaraInfo(karaList, lang);
 	return {
 		infos: {

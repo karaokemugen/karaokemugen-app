@@ -60,6 +60,7 @@ export async function editBlacklistCriteria(blc: BLC) {
 	profile('editBLC');
 	logger.info(`[Blacklist] Editing criteria ${blc.id} : ${blc.type} = ${blc.value}`);
 	if (blc.type < 0 && blc.type > 1004) throw `Blacklist criteria type error : ${blc.type} is incorrect`;
+	if (blc.type > 0 && blc.type < 1000) [blc] = await BLCgetTagName([blc]);
 	if (blc.type === 1001) {
 		if (!new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`;
 	}
@@ -69,7 +70,7 @@ export async function editBlacklistCriteria(blc: BLC) {
 	profile('editBLC');
 }
 
-async function BLCgetTagName(blcList: BLC[]): Promise<BLC[]> {
+export async function BLCgetTagName(blcList: BLC[]): Promise<BLC[]> {
 	for (const index in blcList) {
 		const res = await getTag(blcList[index].value);
 		if (res) blcList[index].uniquevalue = res.name;
