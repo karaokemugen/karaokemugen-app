@@ -2,12 +2,11 @@ import {selectDownloadBLC, truncateDownloadBLC, insertDownloadBLC, updateDownloa
 import Downloader from '../utils/downloader';
 import Queue from 'better-queue';
 import uuidV4 from 'uuid/v4';
-import {getConfig} from '../lib/utils/config';
+import {resolvedPathMedias, resolvedPathSubs, resolvedPathKaras, resolvedPathSeries, resolvedPathTemp} from '../lib/utils/config';
 import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from '../lib/utils/logger';
 import {asyncMove} from '../lib/utils/files';
-import {getState} from '../utils/state';
 import {uuidRegexp} from '../lib/utils/constants';
 import {integrateKaraFile, refreshKarasAfterDBChange, getAllKaras} from './kara';
 import {integrateSeriesFile, refreshSeriesAfterDBChange} from './series';
@@ -104,24 +103,22 @@ export async function startDownloads() {
 }
 
 async function processDownload(download: KaraDownload) {
-	const conf = getConfig();
-	const state = getState();
 	await setDownloadStatus(download.uuid, 'DL_RUNNING');
 	let list = [];
-	const localMedia = resolve(state.appPath,conf.System.Path.Medias[0],download.urls.media.local);
-	const localLyrics = resolve(state.appPath,conf.System.Path.Lyrics[0],download.urls.lyrics.local);
-	const localKara = resolve(state.appPath,conf.System.Path.Karas[0],download.urls.kara.local);
-	const localSeriesPath = resolve(state.appPath,conf.System.Path.Series[0]);
+	const localMedia = resolve(resolvedPathMedias()[0],download.urls.media.local);
+	const localLyrics = resolve(resolvedPathSubs()[0],download.urls.lyrics.local);
+	const localKara = resolve(resolvedPathKaras()[0],download.urls.kara.local);
+	const localSeriesPath = resolve(resolvedPathSeries()[0]);
 
 	let bundle = {
 		kara: localKara,
 		series: []
 	};
-
-	const tempMedia = resolve(state.appPath,conf.System.Path.Temp,download.urls.media.local);
-	const tempLyrics = resolve(state.appPath,conf.System.Path.Temp,download.urls.lyrics.local);
-	const tempKara = resolve(state.appPath,conf.System.Path.Temp,download.urls.kara.local);
-	const tempSeriesPath = resolve(state.appPath,conf.System.Path.Temp);
+	const tempDir = resolvedPathTemp();
+	const tempMedia = resolve(tempDir, download.urls.media.local);
+	const tempLyrics = resolve(tempDir, download.urls.lyrics.local);
+	const tempKara = resolve(tempDir, download.urls.kara.local);
+	const tempSeriesPath = tempDir;
 	list.push({
 		filename: tempMedia,
 		url: download.urls.media.remote,
