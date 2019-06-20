@@ -393,7 +393,7 @@ export async function updateBase(instance: string) {
 			subfile: k.subfile,
 			karafile: k.karafile,
 			seriefiles: k.seriefiles,
-			name: k.karafile.substring(0, k.karafile.substring - 4)
+			name: k.karafile.replace('.kara.json','')
 		}
 	});
 	logger.info(`[Update] Adding ${karasToAdd.length} new songs`);
