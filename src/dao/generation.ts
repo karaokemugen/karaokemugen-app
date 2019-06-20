@@ -1,4 +1,4 @@
-import {selectBLCTags, selectTags} from './sql/generation';
+import {selectBLCTags, selectTags, selectDLBLCTags} from './sql/generation';
 import { generateBlacklist } from './blacklist';
 import logger from '../lib/utils/logger';
 import { Tag } from '../lib/types/tag';
@@ -14,9 +14,11 @@ export async function checkUserDBIntegrity() {
 	const [
 		allTags,
 		blcTags,
+		dlblcTags,
 	] = await Promise.all([
 		db().query(selectTags),
 		db().query(selectBLCTags),
+		db().query(selectDLBLCTags)
 	]);
 
 	let sql = '';
@@ -36,6 +38,24 @@ export async function checkUserDBIntegrity() {
 		//If No Tag with this name and type was found in the AllTags table, delete the Tag
 		if (!tagFound) {
 			sql += `DELETE FROM blacklist_criteria WHERE uniquevalue = '${blcTag.name}' AND type = ${blcTag.type};`;
+			logger.warn(`[Gen] Deleted Tag ${blcTag.name} from blacklist criteria (type ${blcTag.type})`);
+		}
+	});
+	dlblcTags.rows.forEach((blcTag: Tag ) => {
+		let tagFound = false;
+		allTags.rows.forEach((tag: Tag) => {
+			if (tag.name === blcTag.name && tag.type === blcTag.type) {
+				// Found a matching Tagname, checking if id_tags are the same
+				if (tag.id !== blcTag.id) {
+					sql += `UPDATE download_blacklist_criteria SET value = ${tag.id}
+						WHERE uniquevalue = '${blcTag.name}' AND type = ${blcTag.type};`;
+				}
+				tagFound = true;
+			}
+		});
+		//If No Tag with this name and type was found in the AllTags table, delete the Tag
+		if (!tagFound) {
+			sql += `DELETE FROM download_blacklist_criteria WHERE uniquevalue = '${blcTag.name}' AND type = ${blcTag.type};`;
 			logger.warn(`[Gen] Deleted Tag ${blcTag.name} from blacklist criteria (type ${blcTag.type})`);
 		}
 	});
