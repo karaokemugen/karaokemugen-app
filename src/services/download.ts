@@ -6,7 +6,7 @@ import {resolvedPathMedias, resolvedPathSubs, resolvedPathKaras, resolvedPathSer
 import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from '../lib/utils/logger';
-import {asyncMove} from '../lib/utils/files';
+import {asyncMove, resolveFileInDirs, asyncStat} from '../lib/utils/files';
 import {uuidRegexp} from '../lib/utils/constants';
 import {integrateKaraFile, refreshKarasAfterDBChange, getAllKaras} from './kara';
 import {integrateSeriesFile, refreshSeriesAfterDBChange} from './series';
@@ -119,11 +119,22 @@ async function processDownload(download: KaraDownload) {
 	const tempLyrics = resolve(tempDir, download.urls.lyrics.local);
 	const tempKara = resolve(tempDir, download.urls.kara.local);
 	const tempSeriesPath = tempDir;
-	list.push({
-		filename: tempMedia,
-		url: download.urls.media.remote,
-		id: download.name
-	});
+
+	// Check if media already exists in any media dir. If it does, do not try to redownload it.
+	try {
+		const existingMediaFile = await resolveFileInDirs(download.urls.media.local, resolvedPathMedias());
+		// Check if file size are different
+		const localMediaStat = await asyncStat(existingMediaFile);
+		if (localMediaStat.size !== download.size) throw null;
+	} catch(err) {
+		// File does not exist or sizes are different, we download it.
+		list.push({
+			filename: tempMedia,
+			url: download.urls.media.remote,
+			id: download.name
+		});
+	}
+
 	if (download.urls.lyrics.local !== 'dummy.ass') list.push({
 		filename: tempLyrics,
 		url: download.urls.lyrics.remote,
@@ -136,7 +147,7 @@ async function processDownload(download: KaraDownload) {
 	});
 
 	for (const serie of download.urls.serie) {
-		if (typeof serie.local == 'string') {
+		if (typeof serie.local === 'string') {
 			list.push({
 				filename: resolve(tempSeriesPath, serie.local),
 				url: serie.remote,
