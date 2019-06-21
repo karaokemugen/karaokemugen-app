@@ -2,8 +2,7 @@ export interface Config {
 	App: {
 		JwtSecret?: string,
 		InstanceID?: string,
-		FirstRun?: boolean,
-		karaSuggestionMail?: string
+		FirstRun?: boolean
 	},
 	Online: {
 		Host?: string,
