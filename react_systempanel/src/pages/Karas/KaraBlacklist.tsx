@@ -120,7 +120,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 			this.props.errorMessage(`Critère invalide`);
 			return;
 		}
-		if(this.state.filter_type===1002 && this.state.filter_value==0)
+		if(this.state.filter_type===1002 && this.state.filter_value===0)
 		{
 			this.props.errorMessage(`Durée minimum de 1s`);
 			return;
