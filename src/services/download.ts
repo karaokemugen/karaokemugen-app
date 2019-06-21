@@ -43,7 +43,7 @@ function emitQueueStatus(status: QueueStatus) {
 }
 
 function queueDownload(input: KaraDownload, done: any) {
-	logger.info(`[Download] Processing queue item : ${input.name}`);
+	logger.info(`[Download] Processing song : ${input.name}`);
 	processDownload(input)
 		.then(() => {
 			done();
@@ -66,6 +66,7 @@ function initQueue() {
 	let taskCounter = 0;
 	q = new Queue(queueDownload, queueOptions);
 	q.on('task_finish', () => {
+		if (q.length > 0) logger.info(`[Download] ${q.length} items left in queue`);
 		taskCounter++;
 		if (taskCounter >= 5) {
 			logger.debug('[Download] Triggering database refresh');
@@ -81,7 +82,7 @@ function initQueue() {
 	});
 	q.on('empty', () => emitQueueStatus('updated'));
 	q.on('drain', () => {
-		logger.info('[Download] Ano ne, ano ne! I finished all my downloads!');
+		logger.info('[Download] No tasks left, stopping queue');
 		refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange());
 		taskCounter = 0;
 		emitQueueStatus('updated');
