@@ -896,16 +896,7 @@ var settingsNotUpdated;
 					});
 			}
 		});
-        /* profil stuff */
-            
-        var selectIso = Object.keys(iso639).map(k => { return { "id": k, "text": iso639[k][i18n.locale][0] } });
-        $('[name="fallback_series_lang"], [name="main_series_lang"]').select2({ theme: 'bootstrap',
-            tags: false,
-            data: selectIso,
-            dropdownParent: $('#profilModal'),
-            minimumResultsForSearch: 3
-        });
-        
+        /* profil stuff */        
 		showProfil = function() {
 			$.ajax({
 				url: 'public/myaccount/',

@@ -1,13 +1,20 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
+import iso639 from 'iso-639';
 
 class ProfilModal extends Component {
     constructor(props) {
         super(props)
     }
-
     render() {
         const t = this.props.t;
+        var selectIso = Object.keys(iso639.iso_639_2).map(k => { return { "id": k, "text": iso639.iso_639_2[k][this.props.i18n.language][0] } });
+        $('[name="fallback_series_lang"], [name="main_series_lang"]').select2({ theme: 'bootstrap',
+            tags: false,
+            data: selectIso,
+            dropdownParent: $('#profilModal'),
+            minimumResultsForSearch: 3
+        });
         return (
             <div className="modal-dialog modal-md">
                 <div className="modal-content">
