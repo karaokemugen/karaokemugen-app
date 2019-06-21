@@ -60,7 +60,12 @@ export async function editBlacklistCriteria(blc: BLC) {
 	profile('editBLC');
 	logger.info(`[Blacklist] Editing criteria ${blc.id} : ${blc.type} = ${blc.value}`);
 	if (blc.type < 0 && blc.type > 1004) throw `Blacklist criteria type error : ${blc.type} is incorrect`;
-	if (blc.type > 0 && blc.type < 1000) [blc] = await BLCgetTagName([blc]);
+	if (blc.type > 0 && blc.type < 1000) {
+		[blc] = await BLCgetTagName([blc]);
+	} else {
+		// Remember to define uniquevalue
+		blc.uniquevalue = null;
+	}
 	if (blc.type === 1001) {
 		if (!new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`;
 	}
