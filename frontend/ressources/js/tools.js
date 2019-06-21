@@ -41,6 +41,7 @@ displayMessage = function(type, title, message, time) {
 /* types : confirm, prompt, alert, ... */
 displayModal = function(type, title, message, callback, placeholder) {
 	window.callModal(type, title, message, callback, placeholder);
+	$('#modalBox').modal('show');
 };
 
 /* simplified ajax call */
