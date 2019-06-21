@@ -41,69 +41,6 @@ displayMessage = function(type, title, message, time) {
 /* types : confirm, prompt, alert, ... */
 displayModal = function(type, title, message, callback, placeholder) {
 	window.callModal(type, title, message, callback, placeholder);
-	var modal = $('#modalBox').attr('type', type);
-	var okButton = modal.find('.modal-footer > button.ok').unbind().show();
-	var otherButton = modal.find('.modal-footer > button.other').prop('disabled', false).unbind().show();
-	var body =  modal.find('.modal-body').show();
-	var form = body.find('.form').show();
-	var input = form.find('input').show();
-
-	body.find('.modal-message').html(message).show();
-	modal.find('.modal-title').html(title);
-    
-	if(type !== 'confirm' && type !== 'prompt') otherButton.hide();
-	if(type !== 'prompt') {
-		form.hide();
-		if(!message || message === '') body.hide();
-	} 
-
-	if(typeof callback != 'undefined') {
-		if(type === 'confirm') {
-			okButton.click(function(){
-				callback(true);
-			});
-			otherButton.click(function(){
-				callback(false);
-			});
-			if(placeholder == 'lucky') {
-				if(isTouchScreen) {
-					otherButton.prop('disabled', true);
-				} else {
-					otherButton.on('mouseenter', function(){
-						$(this).css('order', 1 - parseInt($(this).css('order')));
-					});
-				}
-			}
-		} else if ( type === 'prompt') {
-			input.val(placeholder ? placeholder : '');
-			okButton.click(function(){
-				var data = {};
-				data = input.val();
-				callback(data);
-			});
-		} else if ( type === 'custom') {
-			input.hide();
-			okButton.click(function(){
-				var data = {};
-
-				body.find('input[type="checkbox"]:checked, input[type!="checkbox"], select').map(function(k, v){
-					if(!data[v.name]) {
-						data[v.name] =  $(v).val();
-					} else {
-						data[v.name] += ',' + $(v).val();
-					}
-				});
-
-				callback(data);
-			});
-		} else {
-			okButton.click(function(){
-				callback();
-			});
-		}
-	}
-
-	modal.modal('show');
 };
 
 /* simplified ajax call */
