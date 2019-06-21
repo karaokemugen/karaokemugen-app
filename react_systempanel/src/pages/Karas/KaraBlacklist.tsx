@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Row, Col, Icon, Layout, Table, Input, InputNumber, Button, Select} from 'antd';
+import {Layout, Table, Input, InputNumber, Button, Select} from 'antd';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
-import openSocket from 'socket.io-client';
-import { getLocalKaras, deleteDownloadQueue, deleteKAraFromDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../../api/local';
 import {ReduxMappedProps} from '../../react-app-env';
 
 const { Option } = Select;
@@ -75,20 +73,20 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	handleCriteriasTypeChange(value,option) {
 		console.log('handleCriteriasTypeChange');
 		var mode = option.props['data-mode'];
-		if(mode=='tag')
+		if(mode==='tag')
 		{
 			this.setState({
 				filter_type:value,
 				filter_mode:mode,
 				filter_options: this.state.filter_options_full.map((o)=>{
-					if(o.type==value)
+					if(o.type===value)
 						return o;
 				}).filter((o)=>{ return o; }),
 				filter_value:null,
 			});
-			
+
 		}
-		else if(mode=='number')
+		else if(mode==='number')
 		{
 			this.setState({
 				filter_type:value,
@@ -166,17 +164,17 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	filter_input() {
 		console.log('filter_input');
 
-		if(this.state.filter_mode=='text')
+		if(this.state.filter_mode==='text')
 		{
 			return <Input  style={{ width:200 }} value={this.state.filter_value} onChange={this.handleCriteriaValue.bind(this)} />
 		}
-		else if(this.state.filter_mode=='number')
+		else if(this.state.filter_mode==='number')
 		{
 			return <InputNumber value={this.state.filter_value} onChange={this.handleCriteriaValue.bind(this)} />
 		}
-		else if(this.state.filter_mode=='tag' && this.state.filter_options.length)
+		else if(this.state.filter_mode==='tag' && this.state.filter_options.length)
 		{
-			return <select 
+			return <select
 				style={{ width: 200 }}
 				onChange={this.handleCriteriaValue.bind(this)}
 				>
@@ -224,7 +222,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 			dataIndex: 'type',
 			key: 'type',
 			render: type => {
-				var t = this.criteras_types.filter((t)=>{ return t.value==type})
+				var t = this.criteras_types.filter((t)=>{ return t.value===type})
 				return t.length>0 ? t[0].label : type;
 			}
 		}, {
@@ -233,11 +231,11 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 			key: 'value',
 			render: (value, record)  => {
 				var label = value
-				var t = this.criteras_types.filter((t)=>{ return t.mode=="tag" && t.value==record.type})
+				var t = this.criteras_types.filter((t)=>{ return t.mode==="tag" && t.value===record.type})
 				if(t.length>0) // c'est un tag ^^
 				{
-					var o = this.state.filter_options_full.filter((o) => { return o.tag_id==value})
-					if(o.length>0)	
+					var o = this.state.filter_options_full.filter((o) => { return o.tag_id===value})
+					if(o.length>0)
 						label = o[0].name;
 				}
 				return <span>{label} <Button type="primary" onClick={this.handleCriteriaDelete.bind(this,record.dlblc_id)}>-</Button></span>
