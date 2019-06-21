@@ -6,8 +6,6 @@ App:
   InstanceID: Change me
   # JWT secret used to salt passwords (uuid)
   JwtSecret: Change me
-  # Mail to send song suggestions to when a user can't find the song he wants in the app. Defaults to a mail which automatically creates issues on KM's base repository
-  karaSuggestionMail: shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org
 
 Online:
   # Host for your KM Server
@@ -42,6 +40,21 @@ Frontend:
   # 3 : Use user language (fallbacks to english then original)
   SeriesLanguageMode: 3
 
+Gitlab:
+  # Enable or not gitlab posting
+  Enable: false
+  # URL to your gitlab instance
+  Host: https://lab.shelter.moe
+  # Access token
+  Token: xxx
+  # Project ID where you want issues posted
+  ProjectID: 1234
+  Template:
+    Suggestion:
+      Description: Hello, please add this! Thank you, $username
+      Title: New kara suggestion - $kara
+      Labels:
+        - suggestion
 Karaoke:
   # Autostart playing songs if no song is playing and a song is added
   Autoplay: false
