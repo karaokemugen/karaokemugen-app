@@ -1,5 +1,5 @@
 import {basename, resolve} from 'path';
-import {getConfig} from '../lib/utils/config';
+import {getConfig, resolvedPathSeries, resolvedPathSubs, resolvedPathKaras, resolvedPathTemp, resolvedPathMedias} from '../lib/utils/config';
 import {getState} from '../utils/state';
 import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, asyncMkdirp, asyncExists, asyncRemove, asyncCopy} from '../lib/utils/files';
 import decompress from 'decompress';
@@ -20,8 +20,7 @@ const shelter = {
 let updateRunning = false;
 
 async function downloadBase() {
-	const conf = getConfig();
-	const dest = resolve(getState().appPath, conf.System.Path.Temp, 'archive.zip');
+	const dest = resolve(resolvedPathTemp(), 'archive.zip');
 	if (await asyncExists(dest)) await asyncRemove(dest);
 	logger.info('[Updater] Downloading current base (.kara and .ass files)...');
 	const list: DownloadItem[] = [];
@@ -43,9 +42,8 @@ async function downloadBase() {
 }
 
 async function decompressBase() {
-	const conf = getConfig();
-	const workPath = resolve(getState().appPath, conf.System.Path.Temp, 'newbase');
-	const archivePath = resolve(getState().appPath, conf.System.Path.Temp, 'archive.zip');
+	const workPath = resolve(resolvedPathTemp(), 'newbase');
+	const archivePath = resolve(resolvedPathTemp(), 'archive.zip');
 	emitWS('downloadProgress', {
 		text: 'Decompressing .kara, .ass and .series files',
 		value: 0,
@@ -96,16 +94,14 @@ async function listRemoteMedias() {
 }
 
 async function compareBases() {
-	const conf = getConfig();
-	const state = getState();
-	const seriesMinePath = resolve(state.appPath, conf.System.Path.Series[0]);
-	const lyricsMinePath = resolve(state.appPath, conf.System.Path.Lyrics[0]);
-	const karasMinePath = resolve(state.appPath, conf.System.Path.Karas[0]);
+	const seriesMinePath = resolvedPathSeries()[0];
+	const lyricsMinePath = resolvedPathSubs()[0];
+	const karasMinePath = resolvedPathKaras()[0];
 	const archive = await decompressBase();
 	const archiveWOExt = basename(archive, '.zip');
-	const karasBasePath = resolve(state.appPath, conf.System.Path.Temp, 'newbase', archiveWOExt,'karaokes');
-	const lyricsBasePath = resolve(state.appPath, conf.System.Path.Temp, 'newbase', archiveWOExt, 'lyrics');
-	const seriesBasePath = resolve(state.appPath, conf.System.Path.Temp, 'newbase', archiveWOExt, 'series');
+	const karasBasePath = resolve(resolvedPathTemp(), 'newbase', archiveWOExt,'karaokes');
+	const lyricsBasePath = resolve(resolvedPathTemp(), 'newbase', archiveWOExt, 'lyrics');
+	const seriesBasePath = resolve(resolvedPathTemp(), 'newbase', archiveWOExt, 'series');
 	logger.info('[Updater] Comparing your base with the current one');
 	emitWS('downloadProgress', {
 		text: 'Comparing your base with Karaoke Mugen\'s latest files',
@@ -157,17 +153,16 @@ async function compareBases() {
 			value: 100,
 			total: 100
 		});
-		asyncRemove(resolve(state.appPath, conf.System.Path.Temp, 'newbase'));
+		asyncRemove(resolve(resolvedPathTemp(), 'newbase'));
 		return true;
 	}
 }
 
 async function compareMedias(localFiles: File[], remoteFiles: File[]): Promise<boolean> {
-	const conf = getConfig();
 	let removedFiles:string[] = [];
 	let addedFiles:File[] = [];
 	let updatedFiles:File[] = [];
-	const mediasPath = resolve(getState().appPath, conf.System.Path.Medias[0]);
+	const mediasPath = resolve(resolvedPathMedias()[0]);
 	logger.info('[Updater] Comparing your medias with the current ones');
 	emitWS('downloadProgress', {
 		text: 'Comparing your media files with Karaoke Mugen\'s latest files',
@@ -228,7 +223,7 @@ function downloadMedias(files: File[], mediasPath: string): Promise<void> {
 	let list = [];
 	for (const file of files) {
 		list.push({
-			filename: resolve(getState().appPath, mediasPath, file.basename),
+			filename: resolve(mediasPath, file.basename),
 			url: `${shelter.url}/${encodeURIComponent(file.basename)}`,
 			size: file.size
 		});
@@ -252,11 +247,10 @@ function downloadMedias(files: File[], mediasPath: string): Promise<void> {
 }
 
 async function listLocalMedias(): Promise<File[]> {
-	const conf = getConfig();
-	const mediaFiles = await asyncReadDir(resolve(getState().appPath, conf.System.Path.Medias[0]));
+	const mediaFiles = await asyncReadDir(resolvedPathMedias()[0]);
 	let localMedias = [];
 	for (const file of mediaFiles) {
-		const mediaStats = await asyncStat(resolve(getState().appPath, conf.System.Path.Medias[0], file));
+		const mediaStats = await asyncStat(resolve(resolvedPathMedias()[0], file));
 		localMedias.push({
 			basename: file,
 			size: mediaStats.size

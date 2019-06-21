@@ -2,14 +2,13 @@ import {selectDownloadBLC, truncateDownloadBLC, insertDownloadBLC, updateDownloa
 import Downloader from '../utils/downloader';
 import Queue from 'better-queue';
 import uuidV4 from 'uuid/v4';
-import {getConfig} from '../lib/utils/config';
+import {resolvedPathMedias, resolvedPathSubs, resolvedPathKaras, resolvedPathSeries, resolvedPathTemp} from '../lib/utils/config';
 import {resolve} from 'path';
 import internet from 'internet-available';
-import logger from 'winston';
-import {asyncMove} from '../lib/utils/files';
-import {getState} from '../utils/state';
-import {uuidRegexp} from '../lib/utils/constants';
-import {integrateKaraFile, refreshKarasAfterDBChange} from './kara';
+import logger from '../lib/utils/logger';
+import {asyncMove, resolveFileInDirs, asyncStat} from '../lib/utils/files';
+import {uuidRegexp, getTagTypeName} from '../lib/utils/constants';
+import {integrateKaraFile, refreshKarasAfterDBChange, getAllKaras} from './kara';
 import {integrateSeriesFile, refreshSeriesAfterDBChange} from './series';
 import { compareKarasChecksum } from '../dao/database';
 import { emitWS } from '../lib/utils/ws';
@@ -17,7 +16,14 @@ import got from 'got';
 import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC } from '../types/download';
 import { DownloadItem } from '../types/downloader';
 import { KaraList, KaraParams } from '../lib/types/kara';
+import { TagParams } from '../lib/types/tag';
 import { DBDownload, DBDownloadBLC } from '../types/database/download';
+import { deleteKara } from '../services/kara';
+import { refreshAll } from '../lib/dao/database';
+import { DBKara } from '../lib/types/database/kara';
+import { getTags } from './tag';
+import { DBTag } from '../types/database/tag';
+import { BLCgetTagName } from './blacklist';
 
 const queueOptions = {
 	id: 'uuid',
@@ -101,29 +107,38 @@ export async function startDownloads() {
 }
 
 async function processDownload(download: KaraDownload) {
-	const conf = getConfig();
-	const state = getState();
 	await setDownloadStatus(download.uuid, 'DL_RUNNING');
 	let list = [];
-	const localMedia = resolve(state.appPath,conf.System.Path.Medias[0],download.urls.media.local);
-	const localLyrics = resolve(state.appPath,conf.System.Path.Lyrics[0],download.urls.lyrics.local);
-	const localKara = resolve(state.appPath,conf.System.Path.Karas[0],download.urls.kara.local);
-	const localSeriesPath = resolve(state.appPath,conf.System.Path.Series[0]);
+	const localMedia = resolve(resolvedPathMedias()[0],download.urls.media.local);
+	const localLyrics = resolve(resolvedPathSubs()[0],download.urls.lyrics.local);
+	const localKara = resolve(resolvedPathKaras()[0],download.urls.kara.local);
+	const localSeriesPath = resolve(resolvedPathSeries()[0]);
 
 	let bundle = {
 		kara: localKara,
 		series: []
 	};
+	const tempDir = resolvedPathTemp();
+	const tempMedia = resolve(tempDir, download.urls.media.local);
+	const tempLyrics = resolve(tempDir, download.urls.lyrics.local);
+	const tempKara = resolve(tempDir, download.urls.kara.local);
+	const tempSeriesPath = tempDir;
 
-	const tempMedia = resolve(state.appPath,conf.System.Path.Temp,download.urls.media.local);
-	const tempLyrics = resolve(state.appPath,conf.System.Path.Temp,download.urls.lyrics.local);
-	const tempKara = resolve(state.appPath,conf.System.Path.Temp,download.urls.kara.local);
-	const tempSeriesPath = resolve(state.appPath,conf.System.Path.Temp);
-	list.push({
-		filename: tempMedia,
-		url: download.urls.media.remote,
-		id: download.name
-	});
+	// Check if media already exists in any media dir. If it does, do not try to redownload it.
+	try {
+		const existingMediaFile = await resolveFileInDirs(download.urls.media.local, resolvedPathMedias());
+		// Check if file size are different
+		const localMediaStat = await asyncStat(existingMediaFile);
+		if (localMediaStat.size !== download.size) throw null;
+	} catch(err) {
+		// File does not exist or sizes are different, we download it.
+		list.push({
+			filename: tempMedia,
+			url: download.urls.media.remote,
+			id: download.name
+		});
+	}
+
 	if (download.urls.lyrics.local !== 'dummy.ass') list.push({
 		filename: tempLyrics,
 		url: download.urls.lyrics.remote,
@@ -136,7 +151,7 @@ async function processDownload(download: KaraDownload) {
 	});
 
 	for (const serie of download.urls.serie) {
-		if (typeof serie.local == 'string') {
+		if (typeof serie.local === 'string') {
 			list.push({
 				filename: resolve(tempSeriesPath, serie.local),
 				url: serie.remote,
@@ -243,8 +258,8 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 					local: dl.subfile
 				},
 				kara: {
-					remote: `http://${repo}/downloads/karas/${dl.karafile}`,
-					local: dl.karafile
+					remote: `http://${repo}/downloads/karaokes/${dl.karafile}.json`,
+					local: dl.karafile + '.json'
 				},
 				serie: seriefiles
 			},
@@ -309,7 +324,8 @@ export async function getDownloadBLC(): Promise<DBDownloadBLC[]> {
 }
 
 export async function addDownloadBLC(blc: KaraDownloadBLC) {
-	if (blc.type < 0 && blc.type > 1004) throw `Incorrect BLC type (${blc.type})`;
+	if (blc.type < 0 && blc.type > 1006) throw `Incorrect BLC type (${blc.type})`;
+	if (blc.type > 0 && blc.type < 9) [blc] = await BLCgetTagName	([blc]);
 	if (blc.type === 1001 && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
 	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
 	return await insertDownloadBLC(blc);
@@ -318,7 +334,8 @@ export async function addDownloadBLC(blc: KaraDownloadBLC) {
 export async function editDownloadBLC(blc: KaraDownloadBLC) {
 	const dlBLC = await selectDownloadBLC();
 	if (!dlBLC.some(e => e.dlblc_id === blc.id)) throw 'DL BLC ID does not exist';
-	if (blc.type < 0 && blc.type > 1004) throw `Incorrect BLC type (${blc.type})`;
+	if (blc.type < 0 && blc.type > 1006) throw `Incorrect BLC type (${blc.type})`;
+	if (blc.type > 0 && blc.type < 9) [blc] = await BLCgetTagName	([blc]);
 	if (blc.type === 1001 && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
 	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
 	return await updateDownloadBLC(blc);
@@ -326,7 +343,7 @@ export async function editDownloadBLC(blc: KaraDownloadBLC) {
 
 export async function removeDownloadBLC(id: number) {
 	const dlBLC = await selectDownloadBLC();
-	if (!dlBLC.some(e => e.dlblc_id === id)) throw 'DL BLC ID does not exist';
+	if (!dlBLC.some(e => e.dlblc_id === id )) throw 'DL BLC ID does not exist';
 	return await deleteDownloadBLC(id);
 }
 
@@ -342,4 +359,177 @@ export async function getRemoteKaras(instance: string, params: KaraParams): Prom
 	]);
 	const res = await got(`https://${instance}/api/karas?${queryParams.toString()}`);
 	return JSON.parse(res.body);
+}
+
+export async function getRemoteTags(instance: string, params: TagParams): Promise<any> {
+	const queryParams = new URLSearchParams([
+		['type', params.type + '']
+	]);
+	const res = await got(`https://${instance}/api/karas/tags?${queryParams.toString()}`);
+	return JSON.parse(res.body);
+}
+
+export async function updateBase(instance: string) {
+	// Another idea would be not to download songs older than the newest song in database : for example we can assume that if a user downloaded a song added on 01/02/2019, we won't download any new songs added before that date because the user already viewed songs before that date and choose not to download them
+	logger.info('[Update] Computing songs to add/remove/update...');
+	const karas = await getKaraInventory(instance);
+	await Promise.all([
+		cleanAllKaras(instance, karas.local, karas.remote),
+		updateAllKaras(instance, karas.local, karas.remote),
+		downloadAllKaras(instance, karas.local, karas.remote)
+	]);
+}
+
+async function getKaraInventory(instance: string) {
+	const [local, remote] = await Promise.all([
+		getAllKaras(),
+		getRemoteKaras(instance, {})
+	]);
+	return {
+		local,
+		remote
+	}
+}
+
+export async function downloadAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
+	if (!local || !remote) {
+		const karas = await getKaraInventory(instance);
+		local = karas.local;
+		remote = karas.remote;
+	}
+	const localKIDs = local.content.map(k => k.kid);
+	// Remove karas already present
+	let karasToAdd = remote.content.filter(k => !localKIDs.includes(k.kid));
+	const initialKarasToAddCount = karasToAdd.length;
+	// Among those karaokes, we need to establish which ones we'll filter out via the download blacklist criteria
+	logger.info('[Update] Applying blacklist (if present)');
+	const [blcs, tags] = await Promise.all([
+		getDownloadBLC(),
+		getTags({})
+	]);
+	for (const blc of blcs) {
+		let filterFunction: Function;
+		if (blc.type === 0) filterFunction = filterTagName;
+		if (blc.type >= 2 && blc.type <= 9) filterFunction = filterTagID;
+		if (blc.type === 1000) filterFunction = filterSeriesName;
+		if (blc.type === 1001) filterFunction = filterKID;
+		if (blc.type === 1002) filterFunction = filterDurationLonger;
+		if (blc.type === 1003) filterFunction = filterDurationShorter;
+		if (blc.type === 1004) filterFunction = filterTitle;
+		if (blc.type === 1005) filterFunction = filterYearOlder;
+		if (blc.type === 1006) filterFunction = filterYearYounger;
+		karasToAdd = karasToAdd.filter(k => filterFunction(k, blc.value, blc.type, tags.content));
+	}
+	const downloads = karasToAdd.map(k => {
+		return {
+			size: k.mediasize,
+			mediafile: k.mediafile,
+			subfile: k.subfile,
+			karafile: k.karafile,
+			seriefiles: k.seriefiles,
+			name: k.karafile.replace('.kara.json','')
+		}
+	});
+	logger.info(`[Update] Adding ${karasToAdd.length} new songs.`);
+	if (initialKarasToAddCount !== karasToAdd.length) logger.info(`[Update] ${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`);
+	await addDownloads(instance, downloads);
+}
+
+function filterTitle(k: DBKara, value: string): boolean {
+	return !k.title.includes(value);
+}
+
+function filterTagName(k: DBKara, value: string): boolean {
+	return k.authors.every(e => !e.name.includes(value)) &&
+		k.groups.every(e => !e.name.includes(value)) &&
+		k.creators.every(e => !e.name.includes(value)) &&
+		k.languages.every(e => !e.name.includes(value)) &&
+		k.misc_tags.every(e => !e.name.includes(value)) &&
+		k.singers.every(e => !e.name.includes(value)) &&
+		k.songwriters.every(e => !e.name.includes(value)) &&
+		k.songtype.every(e => !e.name.includes(value));
+}
+
+function filterKID(k: DBKara, value: string): boolean {
+	return k.kid !== value;
+}
+
+function filterSeriesName(k: DBKara, value: string): boolean {
+	return !k.serie.includes(value);
+}
+
+function filterTagID(k: DBKara, value: string, type: number, tags: DBTag[]): boolean {
+	// Find tag
+	const tag = tags.find(e => e.tag_id === +value);
+	if (tag) {
+		let typeName = getTagTypeName(type);
+		// Please don't look at this. Please.
+		if (typeName === 'misc') typeName = 'misc_tag';
+		// You can look now.
+		return k[`${typeName}s`].every(e => e.name !== tag.name)
+	} else {
+		// Tag isn't found in database, weird but could happen for some obscure reasons. We'll return true.
+		logger.warn(`[Update] Tag ${value} not found in database when trying to blacklist songs to download, will ignore it.`)
+		return true;
+	}
+}
+
+function filterDurationLonger(k: DBKara, value: string) {
+	// Remember we want to return only songs that are no longer than value
+	return k.duration <= +value;
+}
+
+function filterDurationShorter(k: DBKara, value: string) {
+	// Remember we want to return only songs that are no shorter than value
+	return k.duration >= +value;
+}
+
+function filterYearOlder(k: DBKara, value: string) {
+	return k.year <= +value;
+}
+
+function filterYearYounger(k: DBKara, value: string) {
+	return k.year >= +value;
+}
+
+export async function cleanAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
+	if (!local || !remote) {
+		const karas = await getKaraInventory(instance);
+		local = karas.local;
+		remote = karas.remote;
+	}
+	const localKIDs = local.content.map(k => k.kid);
+	const remoteKIDs = remote.content.map(k => k.kid);
+	const karasToRemove = localKIDs.filter(kid => !remoteKIDs.includes(kid));
+	// Now we have a list of KIDs to remove
+	logger.info(`[Update] Removing ${karasToRemove.length} songs`);
+	for (const kid of karasToRemove) {
+		await deleteKara(kid, false);
+	}
+	refreshAll();
+	compareKarasChecksum(true);
+}
+
+export async function updateAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
+	if (!local || !remote) {
+		const karas = await getKaraInventory(instance);
+		local = karas.local;
+		remote = karas.remote;
+	}
+	const karasToUpdate = local.content.filter(k => {
+		const rk = remote.content.find(rk => rk.kid === k.kid);
+		if (rk && rk.modified_at > k.modified_at) return true;
+	}).map(k => k.kid);
+	const downloads = remote.content.filter(k => karasToUpdate.includes(k.kid)).map(k => {
+		return {
+			size: k.mediasize,
+			mediafile: k.mediafile,
+			subfile: k.subfile,
+			karafile: k.karafile,
+			seriefiles: k.seriefiles,
+			name: k.karafile.replace('.kara.json','')
+		}
+	});
+	logger.info(`[Update] Updating ${karasToUpdate.length} songs`);
+	await addDownloads(instance, downloads);
 }

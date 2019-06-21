@@ -19,7 +19,8 @@ const validKara: KaraFileV4 = {
 			{
 			"filename": "Ken le survivant.ass",
 			"default": true,
-			"version": "Default"
+			"version": "Default",
+			"subchecksum": "lol"
 			}
 		]
 		}

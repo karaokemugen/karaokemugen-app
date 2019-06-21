@@ -17,6 +17,7 @@ export interface DBDownload {
 export interface DBDownloadBLC {
 	dlblc_id: number,
 	type: number,
-	value: string
+	value: string,
+	uniquevalue: string
 }
 

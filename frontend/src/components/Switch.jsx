@@ -16,7 +16,6 @@ class Switch extends Component {
           id={this.props.idInput}
         />
         <span className="switch-ui--control"><span></span></span>
-        <span className="switch-ui--label">Input label</span>
       </label>
     );
   }
