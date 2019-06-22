@@ -15,6 +15,7 @@ var showInfoMessage;	// Object : list of info codes to show as a toast
 var hideErrorMessage;
 var softErrorMessage;
 var logInfos;			// Object : contains all login infos : role, token, username
+window.logInfos = logInfos;
 var pseudo;
 var pathAvatar;
 var pathVideo;
@@ -888,66 +889,9 @@ var settingsNotUpdated;
 		});
         /* profil stuff */        
 		showProfil = function() {
-			window.callProfileModal(logInfos);
-			$.ajax({
-				url: 'public/myaccount/',
-				type: 'GET'})
-				.done(function (response) {
-
-					$('#profilModal').modal('show');
-
-					$.each(response, function(i, k) {
-						var $element = $('.profileContent [name="' + i + '"]');
-                        $element.attr('oldval', k);
-                        
-						if(i === 'avatar_file' && k) {
-							$element.attr('src', pathAvatar + k);
-						} else if( i === 'login') {
-                            $element.text(k);
-						} else if (i !== 'password') {
-
-                            if ( ['main_series_lang', 'fallback_series_lang'].indexOf(i) > -1 ) {
-                                $element.val(k);
-                                $element.trigger('change.select2');
-                            } else {
-                                $element.val(k);
-                            }
-
-                            if (i === 'series_lang_mode' ) {
-                                showHideLangSelects()
-                            }
-						}
-					});
-
-
-					$.ajax({
-						url: 'public/users/',
-						type: 'GET'})
-						.done(function (response) {
-							var users = [response.filter(a => a.flag_online)] //, response.filter(a => a.flag_online==false)];
-							var $userlist = $('.userlist');
-							var userlistStr = '';
-							users.forEach( (userList) => {
-								$.each(userList, function(i, k) {
-									userlistStr +=
-										'<li ' + dataToDataAttribute(k) + ' class="list-group-item' + (k.flag_online ? ' online' : '') + '">'
-									+	'<div class="userLine">'
-									+	'<span class="nickname">' + k.nickname + '</span>'
-									+	'<img class="avatar" src="' + pathAvatar + k.avatar_file + '"/>'
-									+	'</div><div class="userDetails">'
-									+	'</li>';
-								});
-							});
-							$userlist.empty().append($(userlistStr));
-						});
-				});
+			window.callProfileModal(settings.Online);
+			$('#profilModal').modal('show');
 		};
-
-		$('.profileData .profileLine input').on('keypress', (e) => {
-			if(e.which == 13) {
-				$(e.target).blur();
-			}
-		});
 
         triggerProfileUpdate = function (e) {
 			var $input = $(e.target);
@@ -998,15 +942,9 @@ var settingsNotUpdated;
 				}
 			}
         };
-        showHideLangSelects = function(e) {
-            var langSelects = $('.profileData .profileLine select[name="main_series_lang"], .profileData .profileLine select[name="fallback_series_lang"]');
-            var langSelectParent = langSelects.parent().parent();
-            $('[name="series_lang_mode"]').val() == 4 ? langSelectParent.show() : langSelectParent.hide();
 
-        }
         $('.profileData .profileLine input[name!="password"]').on('blur', triggerProfileUpdate);
         $('.profileData .profileLine select[name]').on('change', triggerProfileUpdate);
-        $('.profileData .profileLine select[name="series_lang_mode"]').on('change', showHideLangSelects);
         
 		$('#avatar').change(function() {
 			var dataFile = new FormData();
@@ -1046,34 +984,6 @@ var settingsNotUpdated;
 
 				});
 
-		});
-
-		$('.profileConvert').click(function() {
-			if(settings) {
-				displayModal('custom', i18n.__('PROFILE_CONVERT'),
-					'<label>' + i18n.__('INSTANCE_NAME') + '</label>'
-                    + '<input type="text"  name="modalLoginServ" value="' + settings.Online.Host + '"//>'
-                    + '<label>' + i18n.__('PROFILE_PASSWORD_AGAIN') + '</label>'
-                    + '<input type="password" placeholder="' + i18n.__('PASSWORD') + '" class="form-control" name="password">', function(data){
-
-						var msgData =  { instance: data.modalLoginServ, password : data.password };
-
-						ajx('POST', 'public/myaccount/online', msgData, function(response) {
-							displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
-
-							createCookie('mugenToken',  response.token, -1);
-							createCookie('mugenTokenOnline',  response.onlineToken, -1);
-
-							logInfos = parseJwt(response.token);
-							logInfos.token = response.token;
-							logInfos.onlineToken = response.onlineToken;
-							initApp();
-						});
-					}
-				);
-			} else {
-				getSettings();
-			}
 		});
 
 		/* profil stuff END */
@@ -2722,29 +2632,6 @@ var settingsNotUpdated;
 
 		$.ajax({ url: scope + '/playlists/' + playlistToAdd + '/karas/' + idPlaylistContent,
 			type: 'DELETE'
-		});
-	};
-
-	manageOnlineUsersUI = function(data) {
-		$('[name="modalLoginServ"]').val(data.Online.Users ? data.Online.Host : '');
-		DEBUG && console.log(logInfos);
-
-        settingsUpdating.done(function () {
-			if(!settings.Online.Users || !data.Online.Users || logInfos.onlineToken || logInfos.role == 'guest') {
-				$('.profileConvert').hide();
-			} else {
-				$('.profileConvert').show();
-			}
-			if(logInfos.onlineToken) {
-				$('.profileDelete').show();
-			} else {
-			    $('.profileDelete').hide();
-			}
-			if(!data.Online.Users && (Object.keys(settings).length == 0 || settings.Online.Users) && logInfos.username.includes('@')) {
-				setTimeout(function() {
-					displayMessage('warning',i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
-				}, 500);
-			}
 		});
 	};
 
