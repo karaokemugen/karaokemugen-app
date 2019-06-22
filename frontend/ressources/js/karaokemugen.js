@@ -776,18 +776,8 @@ var settingsNotUpdated;
 		});
 
 		/* login stuff */
-
-		$('#profilModal,#loginModal,#modalBox, #pollModal').on('shown.bs.modal', function (e) {
+		$('#loginModal,#modalBox, #pollModal').on('shown.bs.modal', function (e) {
 			resizeModal();
-		});
-
-		$('#profilModal').on('show.bs.modal', function (e) {
-
-			if(logInfos && logInfos.role === 'guest') {
-				$(this).find('.profileData').hide();
-			} else {
-				$(this).find('.profileData').show();
-			}
 		});
 
 		$('#nav-login .login').click( () => {
@@ -898,6 +888,7 @@ var settingsNotUpdated;
 		});
         /* profil stuff */        
 		showProfil = function() {
+			window.callProfileModal(logInfos);
 			$.ajax({
 				url: 'public/myaccount/',
 				type: 'GET'})
@@ -1056,34 +1047,6 @@ var settingsNotUpdated;
 				});
 
 		});
-		$('.favImport > input').change(function() {
-			if ( ! window.FileReader ) return alert( 'FileReader API is not supported by your browser.' );
-
-			var input = this;
-			if ( input.files && input.files[0] ) {
-				file = input.files[0];
-				fr = new FileReader();
-				fr.onload = function () {
-					displayModal('confirm',i18n.__('CONFIRM_FAV_IMPORT'), '', function(confirm){
-						if( confirm ) {
-							var data = {};
-							data['favorites'] = fr['result'];
-							ajx('POST', 'public/favorites/import', data);
-						}
-					});
-				};
-				fr.readAsText( file );
-			}
-		});
-		$('.favExport').click(function() {
-			ajx('GET', 'public/favorites/export', {}, function(data) {
-				var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data,null,4));
-				var dlAnchorElem = document.getElementById('downloadAnchorElem');
-				dlAnchorElem.setAttribute('href', dataStr);
-				dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', logInfos.username, new Date().toLocaleDateString().replace('\\','-')].join('_') + '.kmplaylist');
-				dlAnchorElem.click();
-			});
-		});
 
 		$('.profileConvert').click(function() {
 			if(settings) {
@@ -1098,31 +1061,6 @@ var settingsNotUpdated;
 						ajx('POST', 'public/myaccount/online', msgData, function(response) {
 							displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
 
-							createCookie('mugenToken',  response.token, -1);
-							createCookie('mugenTokenOnline',  response.onlineToken, -1);
-
-							logInfos = parseJwt(response.token);
-							logInfos.token = response.token;
-							logInfos.onlineToken = response.onlineToken;
-							initApp();
-						});
-					}
-				);
-			} else {
-				getSettings();
-			}
-		});
-
-		$('.profileDelete').click(function() {
-			if(settings) {
-				displayModal('custom', i18n.__('PROFILE_ONLINE_DELETE'),
-					'<label>' + i18n.__('PROFILE_PASSWORD_AGAIN') + '</label>'
-                    + '<input type="password" placeholder="' + i18n.__('PASSWORD') + '" class="form-control" name="password">', function(data){
-
-						var msgData =  { password : data.password };
-
-						ajx('DELETE', 'public/myaccount/online', msgData, function(response) {
-							displayMessage('success', '', i18n.__('PROFILE_ONLINE_DELETED'));
 							createCookie('mugenToken',  response.token, -1);
 							createCookie('mugenTokenOnline',  response.onlineToken, -1);
 
@@ -2378,8 +2316,10 @@ var settingsNotUpdated;
 		return $option;
 	};
 
+	initApp = window.initApp;
+
 	// Some html & stats init
-	initApp = function() {
+	window.initApp = function() {
 
         if(webappMode === 1) {
             $('#restrictedHelpModal').modal('show');
@@ -2580,7 +2520,7 @@ var settingsNotUpdated;
 	});
 
 	resizeModal = function() {
-		$('#profilModal,#loginModal,#modalBox, #pollModal').each( (k, modal) => {
+		$('#loginModal,#modalBox, #pollModal').each( (k, modal) => {
 			var $modal = $(modal);
 			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
 						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);

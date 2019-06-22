@@ -16,5 +16,6 @@ document.getElementById('manage') ? ReactDOM.render(<Suspense fallback={<Loader 
 window.callModal = (type, title, message, callback, placeholder) => (
   ReactDOM.render(<Suspense fallback={<Loader />}><Modal type={type} title={title} message={message} callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('modalBox'))
 );
-ReactDOM.render(<Suspense fallback={<Loader />}><ProfilModal/></Suspense>, document.getElementById('profilModal'))
-
+window.callProfileModal = (loginfos) => (
+  ReactDOM.render(<Suspense fallback={<Loader />}><ProfilModal loginfos={loginfos} /></Suspense>, document.getElementById('profilModal'))
+);
