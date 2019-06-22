@@ -867,26 +867,7 @@ var settingsNotUpdated;
 		});
 		/* login stuff END */
 
-		$('#nav-userlist').on('click', '.userlist > li', (e) => {
-			var $li = $(e.currentTarget);
-			var $details = $li.find('.userDetails');
-			var login = $li.data('login');
-			if($li.hasClass('open')) {
-				$li.removeClass('open');
-				$details.empty();
-			} else {
-				$.ajax({
-					url: 'public/users/' + login,
-					type: 'GET'})
-					.done(function (response) {
-						$li.addClass('open');
-						$details.empty().html(
-							'<div><i class="glyphicon glyphicon-envelope"></i> ' + (response.email ? response.email : '') + '</div>'
-						+	'<div><i class="glyphicon glyphicon-link"></i> ' + (response.url ? response.url : '') + '</div>'
-						+	'<div><i class="glyphicon glyphicon-leaf"></i> ' + (response.bio ? response.bio : '') + '</div>');
-					});
-			}
-		});
+
         /* profil stuff */        
 		showProfil = function() {
 			window.callProfileModal(settings.Online);
@@ -945,47 +926,7 @@ var settingsNotUpdated;
 
         $('.profileData .profileLine input[name!="password"]').on('blur', triggerProfileUpdate);
         $('.profileData .profileLine select[name]').on('change', triggerProfileUpdate);
-        
-		$('#avatar').change(function() {
-			var dataFile = new FormData();
-			$.each(this.files, function(i, file) {
-				dataFile.append('avatarfile', file);
-			});
-
-			dataFile.append('nickname', logInfos.username);
-
-			$.ajax({
-				url: 'public/myaccount',
-				type: 'PUT',
-				contentType: false,
-				processData: false,
-				data: dataFile
-			})
-				.done(function (response) {
-					$('.profileContent .profileLine > input').removeClass('redBorders');
-					$('[name="avatar_file"]').attr('src', pathAvatar + response.avatar_file);
-				})
-				.fail( (response) => {
-					var listFieldErr = Object.keys(response.responseJSON);
-					listFieldErr.forEach((v, k) => {
-						var $element = $('.profileContent [name="' + v + '"]');
-
-						if(v === 'avatar_file') {
-							// TODO
-						} else if( v === 'login') {
-							// TODO
-						} else if (v !== 'password') {
-							$element.addClass('redBorders');
-						}
-						if( k === 0 ) {
-							$element.focus();
-						}
-					});
-
-				});
-
-		});
-
+  
 		/* profil stuff END */
 		/* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
 		if(isTouchScreen) {

@@ -11,6 +11,8 @@ class ProfilModal extends Component {
         this.profileConvert = this.profileConvert.bind(this);
         this.profileDelete = this.profileDelete.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.getUserDetails = this.getUserDetails.bind(this);
+        this.importAvatar = this.importAvatar.bind(this);
         this.state = {
             pathAvatar: '/avatars/',
             users: [],
@@ -23,7 +25,7 @@ class ProfilModal extends Component {
     onChange(event) {
         const user = this.state.user;
         user[event.target.name] = event.target.value;
-        this.setState({user : user });
+        this.setState({ user: user });
         console.log(this.state.user)
     }
 
@@ -103,6 +105,27 @@ class ProfilModal extends Component {
         dlAnchorElem.click();
     }
 
+    async getUserDetails(event) {
+        const response = await axios.get('/api/public/users/' + event.currentTarget.id)
+        const responseUserDetails = response.data.data;
+        this.setState({ userDetails: { email: responseUserDetails.email, url: responseUserDetails.url, bio: responseUserDetails.bio, } });
+    }
+
+    async importAvatar(event) {
+        var dataFile = new FormData();
+        for (var i = 0; i < event.target.files.length; i++) {
+            console.log(event.target.files[i])
+            dataFile.append('avatarfile', event.target.files[i])
+        }
+        dataFile.append('nickname', window.logInfos.username);
+        console.log(window.logInfos.username)
+        console.log(dataFile)
+        const response = await axios.put('/api/public/myaccount', {data: dataFile})
+        const user = this.state.user;
+        user[avatar_file] = response.avatar_file;
+        this.setState({ user: user });
+    }
+
     render() {
         const t = this.props.t;
         var listLangs = Object.keys(iso639.iso_639_2).map(k => { return { "value": k, "text": iso639.iso_639_2[k][this.props.i18n.language][0] } });
@@ -133,7 +156,7 @@ class ProfilModal extends Component {
                                             src={this.state.user.avatar_file ? pathAvatar + this.state.user.avatar_file : pathAvatar + "blank.png"}
                                             alt="User Pic" />
                                         {window.logInfos.role !== 'guest' ?
-                                            <input id="avatar" className="import-file" type="file" accept="image/*" style={{ display: 'none' }} /> : null
+                                            <input id="avatar" className="import-file" type="file" accept="image/*" style={{ display: 'none' }} onChange={this.importAvatar} /> : null
                                         }
                                     </label>
                                     <p name="login">{this.state.user.login}</p>
@@ -142,19 +165,19 @@ class ProfilModal extends Component {
                                     <div className="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-user"></i>
-                                            <input className="form-control" name="nickname" type="text" placeholder={t("PROFILE_USERNAME")} defaultValue={this.state.user.nickname} onChange={this.onChange}/>
+                                            <input className="form-control" name="nickname" type="text" placeholder={t("PROFILE_USERNAME")} defaultValue={this.state.user.nickname} onChange={this.onChange} />
                                         </div>
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-envelope"></i>
-                                            <input className="form-control" name="email" type="text" placeholder={t("PROFILE_MAIL")} defaultValue={this.state.user.email} onChange={this.onChange}/>
+                                            <input className="form-control" name="email" type="text" placeholder={t("PROFILE_MAIL")} defaultValue={this.state.user.email} onChange={this.onChange} />
                                         </div>
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-link"></i>
-                                            <input className="form-control" name="url" type="text" placeholder={t("PROFILE_URL")} defaultValue={this.state.user.url} onChange={this.onChange}/>
+                                            <input className="form-control" name="url" type="text" placeholder={t("PROFILE_URL")} defaultValue={this.state.user.url} onChange={this.onChange} />
                                         </div>
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-leaf"></i>
-                                            <input className="form-control" name="bio" type="text" placeholder={t("PROFILE_BIO")} defaultValue={this.state.user.bio} onChange={this.onChange}/>
+                                            <input className="form-control" name="bio" type="text" placeholder={t("PROFILE_BIO")} defaultValue={this.state.user.bio} onChange={this.onChange} />
                                         </div>
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-lock"></i>
@@ -234,13 +257,18 @@ class ProfilModal extends Component {
                         <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" className="modal-body tab-pane fade in">
                             <div className="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
                                 {this.state.users.map(user => {
-                                    return <li key={user.nickname} className={user.flag_online ? "list-group-item online" : "list-group-item"}>
+                                    return <li key={user.login} className={user.flag_online ? "list-group-item online" : "list-group-item"} id={user.login} onClick={this.getUserDetails}>
                                         <div className="userLine">
                                             <span className="nickname">{user.nickname}</span>
                                             <img className="avatar" src={this.state.pathAvatar + user.avatar_file} />
                                         </div>
-                                        <div className="userDetails">
-                                        </div>
+                                        {this.state.userDetails ?
+                                            <div className="userDetails">
+                                                <div><i className="glyphicon glyphicon-envelope"></i>{this.state.userDetails.email ? this.state.userDetails.email : ''}</div>
+                                                <div><i className="glyphicon glyphicon-link"></i>{this.state.userDetails.url ? this.state.userDetails.url : ''}</div>
+                                                <div><i className="glyphicon glyphicon-leaf"></i>{this.state.userDetails.bio ? this.state.userDetails.bio : ''}</div>
+                                            </div> : null
+                                        }
                                     </li>;
                                 })}
                             </div>
