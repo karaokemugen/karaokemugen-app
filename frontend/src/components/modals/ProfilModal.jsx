@@ -10,28 +10,38 @@ class ProfilModal extends Component {
         this.favImport = this.favImport.bind(this);
         this.profileConvert = this.profileConvert.bind(this);
         this.profileDelete = this.profileDelete.bind(this);
-        this.onChange = this.onChange.bind(this);
+        this.onKeyPress = this.onKeyPress.bind(this);
         this.getUserDetails = this.getUserDetails.bind(this);
         this.importAvatar = this.importAvatar.bind(this);
         this.state = {
             pathAvatar: '/avatars/',
             users: [],
-            user: {}
+            user: {},
+            passwordDifferent: 'form-control'
         };
         this.getUser();
         this.getUserList();
     }
 
-    onChange(event) {
+    onKeyPress(event) {
         const user = this.state.user;
         user[event.target.name] = event.target.value;
         this.setState({ user: user });
-        console.log(this.state.user)
+        if (event.which === 13) {
+            if (this.state.user.password && this.state.user.password === this.state.user.passwordConfirmation || !this.state.user.password) {
+                this.setState({passwordDifferent: 'form-control'});
+                axios.put('/api/public/myaccount/', this.state.user);
+            } else {
+                this.setState({passwordDifferent: 'form-control redBorders'});
+            }
+        }
     }
 
     async getUser() {
         var response = await axios.get('/api/public/myaccount/');
-        this.setState({ user: response.data.data });
+        var user = response.data.data;
+        user.password = undefined;
+        this.setState({ user: user });
     }
 
     async getUserList() {
@@ -163,24 +173,27 @@ class ProfilModal extends Component {
                                     <div className="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-user"></i>
-                                            <input className="form-control" name="nickname" type="text" placeholder={t("PROFILE_USERNAME")} defaultValue={this.state.user.nickname} onChange={this.onChange} />
+                                            <input className="form-control" name="nickname" type="text" placeholder={t("PROFILE_USERNAME")} defaultValue={this.state.user.nickname} onKeyUp={this.onKeyPress} />
                                         </div>
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-envelope"></i>
-                                            <input className="form-control" name="email" type="text" placeholder={t("PROFILE_MAIL")} defaultValue={this.state.user.email} onChange={this.onChange} />
+                                            <input className="form-control" name="email" type="text" placeholder={t("PROFILE_MAIL")} defaultValue={this.state.user.email} onKeyUp={this.onKeyPress} />
                                         </div>
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-link"></i>
-                                            <input className="form-control" name="url" type="text" placeholder={t("PROFILE_URL")} defaultValue={this.state.user.url} onChange={this.onChange} />
+                                            <input className="form-control" name="url" type="text" placeholder={t("PROFILE_URL")} defaultValue={this.state.user.url} onKeyUp={this.onKeyPress} />
                                         </div>
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-leaf"></i>
-                                            <input className="form-control" name="bio" type="text" placeholder={t("PROFILE_BIO")} defaultValue={this.state.user.bio} onChange={this.onChange} />
+                                            <input className="form-control" name="bio" type="text" placeholder={t("PROFILE_BIO")} defaultValue={this.state.user.bio} onKeyUp={this.onKeyPress} />
                                         </div>
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-lock"></i>
-                                            <input className="form-control" name="password" type="password" placeholder={t("PROFILE_PASSWORD")} />
-                                            <input className="form-control passwordConfirmation" type="password" placeholder={t("PROFILE_PASSWORDCONF")} style={{ marginLeft: 3 + 'px' }} />
+                                            <input className={this.state.passwordDifferent} name="password" type="password"
+                                                placeholder={t("PROFILE_PASSWORD")} defaultValue={this.state.user.password} onKeyUp={this.onKeyPress} />
+                                            <input className={this.state.passwordDifferent}
+                                                name="passwordConfirmation" type="password" placeholder={t("PROFILE_PASSWORDCONF")}
+                                                defaultValue={this.state.user.passwordConfirmation} onKeyUp={this.onKeyPress} style={{ marginLeft: 3 + 'px' }} />
                                         </div>
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-star"></i>
@@ -215,7 +228,7 @@ class ProfilModal extends Component {
                                     <div className="profileLine row">
                                         <label htmlFor="series_lang_mode" className="col-xs-6 control-label">{t("SERIE_NAME_MODE")}</label>
                                         <div className="col-xs-6">
-                                            <select type="number" className="form-control" name="series_lang_mode" defaultValue={this.state.user.series_lang_mode} onChange={this.onChange}>
+                                            <select type="number" className="form-control" name="series_lang_mode" defaultValue={this.state.user.series_lang_mode} onChange={this.onKeyPress}>
                                                 <option value="-1" default>{t("SERIE_NAME_MODE_NO_PREF")}</option>
                                                 <option value="0">{t("SERIE_NAME_MODE_ORIGINAL")}</option>
                                                 <option value="1">{t("SERIE_NAME_MODE_SONG")}</option>
@@ -230,7 +243,7 @@ class ProfilModal extends Component {
                                             <div className="profileLine row">
                                                 <label htmlFor="main_series_lang" className="col-xs-6 control-label">{t("MAIN_SERIES_LANG")}</label>
                                                 <div className="col-xs-6">
-                                                    <select type="number" className="form-control" name="main_series_lang" defaultValue={this.state.user.main_series_lang} onChange={this.onChange}>
+                                                    <select type="number" className="form-control" name="main_series_lang" defaultValue={this.state.user.main_series_lang} onChange={this.onKeyPress}>
                                                         {listLangs.map(lang => {
                                                             return <option key={lang.value} value={lang.value}>{lang.text}</option>
                                                         })}
@@ -240,7 +253,7 @@ class ProfilModal extends Component {
                                             <div className="profileLine row">
                                                 <label htmlFor="fallback_series_lang" className="col-xs-6 control-label">{t("FALLBACK_SERIES_LANG")}</label>
                                                 <div className="col-xs-6">
-                                                    <select type="number" className="form-control" name="fallback_series_lang" defaultValue={this.state.user.main_series_lang} onChange={this.onChange}>
+                                                    <select type="number" className="form-control" name="fallback_series_lang" defaultValue={this.state.user.main_series_lang} onChange={this.onKeyPress}>
                                                         {listLangs.map(lang => {
                                                             return <option key={lang.value} value={lang.value}>{lang.text}</option>
                                                         })}
