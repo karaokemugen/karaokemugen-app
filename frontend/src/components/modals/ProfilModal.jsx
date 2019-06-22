@@ -114,15 +114,13 @@ class ProfilModal extends Component {
     async importAvatar(event) {
         var dataFile = new FormData();
         for (var i = 0; i < event.target.files.length; i++) {
-            console.log(event.target.files[i])
             dataFile.append('avatarfile', event.target.files[i])
         }
         dataFile.append('nickname', window.logInfos.username);
-        console.log(window.logInfos.username)
-        console.log(dataFile)
-        const response = await axios.put('/api/public/myaccount', {data: dataFile})
+
+        const response = await axios.put('/api/public/myaccount', dataFile);
         const user = this.state.user;
-        user[avatar_file] = response.avatar_file;
+        user[avatar_file] = response.data.data.avatar_file;
         this.setState({ user: user });
     }
 
