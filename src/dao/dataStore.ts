@@ -40,7 +40,6 @@ export function sortSeriesStore() {
 
 export function getStoreChecksum() {
 	const store = JSON.stringify(dataStore, null, 2);
-	console.log(store);
 	return checksum(store);
 }
 
