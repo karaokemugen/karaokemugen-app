@@ -1,4 +1,4 @@
-import { DBKara } from "../../lib/types/database/kara";
+import { DBKara, DBKaraTag } from "../../lib/types/database/kara";
 
 export interface DBPLCKID {
 	kid: string,
@@ -6,7 +6,9 @@ export interface DBPLCKID {
 	playlistcontent_id: number,
 	flag_playing: boolean
 	pos: number,
-	playlist_id: number
+	playlist_id: number,
+	serie: string,
+	singer: DBKaraTag[]
 }
 
 export interface DBPLCBase extends DBKara {

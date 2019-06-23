@@ -135,6 +135,8 @@ Player:
 Playlist:
   # Allow duplicates in current playlist
   AllowDuplicates: false
+  # Allow duplicate series or singers in current playlist
+  AllowDuplicateSeries: true
   # Time after which a song is not considered recently played anymore in minutes
   MaxDejaVuTime: 60
   # Remove songs from public playlist when they're played.

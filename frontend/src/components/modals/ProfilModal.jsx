@@ -159,7 +159,7 @@ class ProfilModal extends Component {
 
                                 <div className="col-md-3 col-lg-3 col-xs-12 col-sm-12">
 
-                                    <label htmlFor="avatar" title={t("AVATAR_IMPORT")} className="btn btn-default plGenericButton avatar" name="import">
+                                    <label title={t("AVATAR_IMPORT")} className="btn btn-default plGenericButton avatar" name="import">
                                         <img className="img-circle" name="avatar_file"
                                             src={this.state.user.avatar_file ? pathAvatar + this.state.user.avatar_file : pathAvatar + "blank.png"}
                                             alt="User Pic" />
@@ -197,7 +197,7 @@ class ProfilModal extends Component {
                                         </div>
                                         <div className="profileLine">
                                             <i className="glyphicon glyphicon-star"></i>
-                                            <label htmlFor="favImport" type="button" title={t("FAVORITES_IMPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
+                                            <label type="button" title={t("FAVORITES_IMPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
                                                 <i className="glyphicon glyphicon-import"></i> {t("IMPORT")}
                                                 <input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
                                             </label>
@@ -226,7 +226,7 @@ class ProfilModal extends Component {
                             <div className="profileContent">
                                 <div className="col-md-12 col-lg-12 col-xs-12 col-sm-12 profileData">
                                     <div className="profileLine row">
-                                        <label htmlFor="series_lang_mode" className="col-xs-6 control-label">{t("SERIE_NAME_MODE")}</label>
+                                        <label className="col-xs-6 control-label">{t("SERIE_NAME_MODE")}</label>
                                         <div className="col-xs-6">
                                             <select type="number" className="form-control" name="series_lang_mode" defaultValue={this.state.user.series_lang_mode} onChange={this.onKeyPress}>
                                                 <option value="-1" default>{t("SERIE_NAME_MODE_NO_PREF")}</option>
@@ -241,7 +241,7 @@ class ProfilModal extends Component {
                                     {this.state.user.series_lang_mode === "4" ?
                                         <React.Fragment>
                                             <div className="profileLine row">
-                                                <label htmlFor="main_series_lang" className="col-xs-6 control-label">{t("MAIN_SERIES_LANG")}</label>
+                                                <label className="col-xs-6 control-label">{t("MAIN_SERIES_LANG")}</label>
                                                 <div className="col-xs-6">
                                                     <select type="number" className="form-control" name="main_series_lang" defaultValue={this.state.user.main_series_lang} onChange={this.onKeyPress}>
                                                         {listLangs.map(lang => {
@@ -251,7 +251,7 @@ class ProfilModal extends Component {
                                                 </div>
                                             </div>
                                             <div className="profileLine row">
-                                                <label htmlFor="fallback_series_lang" className="col-xs-6 control-label">{t("FALLBACK_SERIES_LANG")}</label>
+                                                <label className="col-xs-6 control-label">{t("FALLBACK_SERIES_LANG")}</label>
                                                 <div className="col-xs-6">
                                                     <select type="number" className="form-control" name="fallback_series_lang" defaultValue={this.state.user.main_series_lang} onChange={this.onKeyPress}>
                                                         {listLangs.map(lang => {
