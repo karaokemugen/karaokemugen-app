@@ -232,6 +232,7 @@
 	"ENGINEALLOWVIEWBLACKLISTCRITERIAS": "Critères de liste noire visibles",
 	"ENGINEALLOWVIEWWHITELIST": "Liste blanche visible",
 	"ENGINEALLOWDUPLICATES": "Permettre les doublons dans les playlists",
+	"ENGINEALLOWDUPLICATESSERIES": "Permettre les doublons de séries ou chanteurs dans les playlists",
 	"ENGINECREATEPREVIEWS": "Activer la génération des aperçus vidéo",
 	"ENGINEDISPLAYNICKNAME": "Afficher les pseudos",
     "ENGINEDISPLAYAVATAR": "Afficher les avatars",

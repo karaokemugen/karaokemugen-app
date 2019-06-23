@@ -232,6 +232,7 @@
 	"ENGINEALLOWVIEWBLACKLIST": "Allow users to view blacklist",
 	"ENGINEALLOWVIEWBLACKLISTCRITERIAS": "Allow users to view blacklist criterias",
 	"ENGINEALLOWDUPLICATES": "Allow duplicate songs in playlists",
+	"ENGINEALLOWDUPLICATESSERIES": "Allow songs with duplicate series or singers in playlists",
 	"ENGINEALLOWVIEWWHITELIST": "Allow users to view whitelist",
 	"ENGINECREATEPREVIEWS": "Activate preview creation",
 	"ENGINEDISPLAYNICKNAME": "Display nicknames in karaokes",

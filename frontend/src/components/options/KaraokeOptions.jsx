@@ -134,6 +134,16 @@ class KaraokeOptions extends Component {
                 isChecked={settings.Playlist.AllowDuplicates} />
             </div>
           </div>
+
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {t("ENGINEALLOWDUPLICATESSERIES")}
+            </label>
+            <div className="col-xs-6">
+              <Switch idInput="Playlist.AllowDuplicateSeries" handleChange={this.props.onChange}
+                isChecked={settings.Playlist.AllowDuplicateSeries} />
+            </div>
+          </div>
         </div>
         <div className="form-group settingsGroupPanel subCategoryGroupPanel">
           <div className="col-xs-12" style={{ textAlign: "center" }}>
