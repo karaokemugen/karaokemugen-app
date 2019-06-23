@@ -2,8 +2,7 @@ export interface Config {
 	App: {
 		JwtSecret?: string,
 		InstanceID?: string,
-		FirstRun?: boolean,
-		karaSuggestionMail?: string
+		FirstRun?: boolean
 	},
 	Online: {
 		Host?: string,
@@ -24,6 +23,19 @@ export interface Config {
 			AllowViewBlacklistCriterias?: boolean
 		}
 	},
+	Gitlab: {
+		Enabled?: boolean,
+		Host?: string,
+		Token?: string,
+		ProjectID?: number,
+		IssueTemplate?: {
+			Suggestion?: {
+				Description?: string,
+				Title?: string,
+				Labels?: string[]
+			}
+		}
+	}
 	Karaoke: {
 		Private?: boolean,
 		Autoplay?: boolean,

@@ -1,4 +1,4 @@
-import { DBKara, DBKaraTag } from "./kara";
+import { DBKara, DBKaraTag } from "../../lib/types/database/kara";
 
 export interface DBPLCKID {
 	kid: string,

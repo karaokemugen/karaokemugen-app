@@ -36,7 +36,7 @@ function errorFunction(err: any) {
 
 export async function initDB() {
 	const conf = getConfig();
-	await connectDB({superuser: true, db: 'postgres'}, errorFunction);
+	await connectDB({superuser: true, db: 'postgres', log: getState().opt.sql}, errorFunction);
 	try {
 		await db().query(`CREATE DATABASE ${conf.Database.prod.database} ENCODING 'UTF8'`);
 		logger.info('[DB] Database created');
@@ -51,7 +51,7 @@ export async function initDB() {
 	}
 	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.Database.prod.database} TO ${conf.Database.prod.user};`);
 	// We need to reconnect to create the extension on our newly created database
-	await connectDB({superuser: true, db: conf.Database.prod.database}, errorFunction);
+	await connectDB({superuser: true, db: conf.Database.prod.database, log: getState().opt.sql}, errorFunction);
 	try {
 		await db().query('CREATE EXTENSION unaccent;');
 	} catch(err) {
@@ -99,7 +99,11 @@ export async function initDBSystem(): Promise<boolean> {
 			await initDB();
 		}
 		logger.info('[DB] Initializing database connection');
-		await connectDB({superuser: false, db: conf.Database.prod.database}, errorFunction);
+		await connectDB({
+			superuser: false,
+			db: conf.Database.prod.database,
+			log: state.opt.sql
+		}, errorFunction);
 		await migrateDB();
 	} catch(err) {
 		throw `Database initialization failed. Check if a postgres binary is already running on that port and kill it? Error : ${err}`;

@@ -2,8 +2,8 @@
 // This is used for CI/CD to drop the database contents and start anew.
 // DO NOT DO THIS AT HOME.
 
-const dbConfigFile = require('../database.json');
-const {Pool} = require('pg');
+import dbConfigFile from '../database.json';
+import {Pool} from 'pg';
 
 const dbConfig = {
 	host: dbConfigFile.prod.host,
@@ -12,6 +12,7 @@ const dbConfig = {
 	password: dbConfigFile.prod.password,
 	database: dbConfigFile.prod.database
 };
+
 async function main() {
 	const client = new Pool(dbConfig);
 	await client.connect();

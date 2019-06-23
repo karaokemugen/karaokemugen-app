@@ -1,0 +1,1 @@
+ALTER TABLE download_blacklist_criteria ADD COLUMN uniquevalue CHARACTER VARYING;

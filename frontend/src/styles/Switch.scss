@@ -1,42 +1,70 @@
-label.cmp-switch {
-	position: relative;
+.switch-ui {
+	font-family:Roboto;
+	margin-top: 5px;
 	
-	.switch  {
-		// hide native input field
-		display: none;
-		
-		& + div {
-			vertical-align: middle;
-			width: 60px;
-			height: 30px;
-			border-radius: 999px;
-			background-color: #00B0F2;
-			transition-duration: .4s;
-			transition-property: background-color, box-shadow;
-			cursor: pointer;
-			
-			span {
-				font-size: 0; // hide text content
-				float: left;
-				display: inline-block;
-				width: 28px; height: 28px;
-				border-radius: inherit;
-				background: #ffffff;
-				transition-timing-function: cubic-bezier(1,0,0,1);
-				transition-duration: 0.4s;
-				transition-property: transform, background-color;
-				pointer-events: none;
-				margin-top: 1px;
-				margin-left: 1px;
-			}
-		}
+	input { display: none; }
 
-		&:checked + div {
-			background-color: #57BB00;
-			
-			span {
-				transform: translate3d(28px, 0, 0);
-			}
-		}
+	.switch-ui--control {
+	  display: inline-block;
+	  vertical-align: middle;
+	  position:relative;
+	  background:rgba(#000,0.3);
+	  color:rgba(#fff,0.6);
+	  line-height: 1.5em;
+	  width: 4em;
+	  white-space: nowrap;
+	  overflow: hidden;
+	  border-radius:.75em;
+	  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+	  border:1px solid #fff;
+	  transition: all ease .5s;
+	  
+	  span {
+		display:block;
+		position: absolute;
+		width: 1em;
+		height: 1em;
+		border-radius:50%;
+		background:rgba(#fff,0.6);
+		top: .30em;
+		left: .25em;
+		transition: left ease .5s;
+		box-shadow: inset 1px 1px 1px 0px rgba(0,0,0,0.3);
+		transition: all ease .5s;
+	  }
+	  
+	  &:before, &:after {
+		display: inline-block;
+		width: 2.5em;
+		margin:0 0 0 0.5em;
+		transform:translateX(-100%);
+		transition: transform ease .5s;
+		vertical-align: middle;
+	  }
+	  &:before {
+		content:"ON";
+		text-align: left;
+	  }
+	  &:after {
+		content:"OFF";
+		text-align: right;
+	  }
 	}
-}
+	
+	// Active effect
+  
+	input:checked + .switch-ui--control {
+	  color:#fff;
+	  background:#57bb00;
+	  box-shadow: 0 0 5px rgba(#b7ff27,0.8);
+	  
+	  &:before, &:after {
+		transform:translateX(0);
+	  }
+	  span {
+		left: 2.65em;
+		top: 0.25em;
+		background: #fff;
+	  }
+	}
+  }

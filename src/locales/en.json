@@ -549,8 +549,6 @@
 	"VIEW_RECENT": "Latest",
 	"VIEW_POPULAR": "Popular",
 	"KARA_SUGGESTION_MAIL": "Can't find your favorite song? Click here",
-	"KARA_SUGGESTION_SUBJECT": "New Song Request: ",
-	"KARA_SUGGESTION_BODY": "Hello,%0D%0A Would you please add this song to your database?%0D%0A Thanks.%0D%0A (This is an automated message sent from a Karaoke Mugen App",
 	"KARA_SUGGESTION_NAME": "Name of the song",
 	"KARA_SUGGESTION_INFO": "Thanks for your suggestion.",
 	"KARA_SUGGESTION_LINK": "You will soon be able to see it at this address :  <a target='_blank' href='%s'>issues list</a>",

@@ -11,8 +11,7 @@ export const defaults: Config = {
 	App: {
 		FirstRun: true,
 		InstanceID: 'Change me',
-		JwtSecret: 'Change me',
-		karaSuggestionMail: 'shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org',
+		JwtSecret: 'Change me'
 	},
 	Database: {
 		'sql-file': true,
@@ -48,6 +47,9 @@ export const defaults: Config = {
 			AllowViewWhitelist: true,
 		},
 		SeriesLanguageMode: 3
+	},
+	Gitlab: {
+		Enabled: false
 	},
 	Karaoke: {
 		Autoplay: false,
@@ -191,6 +193,5 @@ export const configConstraints = {
 	'Playlist.AllowDuplicates': {inclusion : bools},
 	'Playlist.AllowDuplicateSeries': {inclusion : bools},
 	'Playlist.RemovePublicOnPlay': {inclusion : bools},
-	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
-	'App.karaSuggestionMail': {email: true}
+	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}}
 };

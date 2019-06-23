@@ -1,5 +1,5 @@
 import {setState} from './utils/state';
-import logger from './lib/utils/logger';
+import logger, { enableProfiling } from './lib/utils/logger';
 
 const help = `Usage :
 
@@ -53,15 +53,15 @@ export async function parseCommandLineArgs(argv) {
 	}
 	if (argv.profiling) {
 		logger.info('[Launcher] Profiling enabled');
-		setState({opt: {profiling: true}});
+		enableProfiling();
 	}
 	if (argv.generate) {
 		logger.info('[Launcher] Database generation requested');
 		setState({opt: {generateDB: true}});
-		if (argv.noMedia) {
-			logger.info('[Launcher] Medias will not be read during generation');
-			setState({opt: {noMedia: true}});
-		}
+	}
+	if (argv.noMedia) {
+		logger.info('[Launcher] Medias will not be read during generation');
+		setState({opt: {noMedia: true}});
 	}
 	if (argv.noBaseCheck) {
 		logger.info('[Launcher] Data files will not be checked. ENABLED AT YOUR OWN RISK');

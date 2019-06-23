@@ -7,16 +7,15 @@ class Switch extends Component {
 
   render() {
     return (
-      <label className="cmp-switch" htmlFor={this.props.idInput}>
+      <label className="switch-ui" htmlFor={this.props.idInput}>
         <input
           checked={this.props.isChecked}
           onChange={this.props.handleChange}
-          className="switch"
           type="checkbox"
           namecommand={this.props.nameCommand}
           id={this.props.idInput}
         />
-        <div arial-label={this.props.nameCommand}><span>{this.props.nameCommand}</span></div>
+        <span className="switch-ui--control"><span></span></span>
       </label>
     );
   }
