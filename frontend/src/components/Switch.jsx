@@ -7,7 +7,7 @@ class Switch extends Component {
 
   render() {
     return (
-      <label className="switch-ui" htmlFor={this.props.idInput}>
+      <label className="switch-ui">
         <input
           checked={this.props.isChecked}
           onChange={this.props.handleChange}

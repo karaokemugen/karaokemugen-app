@@ -11,7 +11,7 @@ class InterfaceOptions extends Component {
     return (settings.Frontend ?
       <>
         <div className="form-group">
-          <label htmlFor="Frontend.Mode" className="col-xs-4 control-label">
+          <label className="col-xs-4 control-label">
             {t("WEBAPPMODE")}
           </label>
           <div className="col-xs-6">
@@ -30,10 +30,7 @@ class InterfaceOptions extends Component {
         </div>
 
         <div className="form-group">
-          <label
-            htmlFor="Frontend.SeriesLanguageMode"
-            className="col-xs-4 control-label"
-          >
+          <label className="col-xs-4 control-label">
             {t("SERIE_NAME_MODE")}
           </label>
           <div className="col-xs-6">
@@ -53,10 +50,7 @@ class InterfaceOptions extends Component {
         </div>
 
         <div className="form-group">
-          <label
-            htmlFor="Frontend.Permissions.AllowViewBlacklist"
-            className="col-xs-4 control-label"
-          >
+          <label className="col-xs-4 control-label">
             {t("ENGINEALLOWVIEWBLACKLIST")}
           </label>
           <div className="col-xs-6">
@@ -66,10 +60,7 @@ class InterfaceOptions extends Component {
         </div>
 
         <div className="form-group">
-          <label
-            htmlFor="Frontend.Permissions.AllowViewBlacklistCriterias"
-            className="col-xs-4 control-label"
-          >
+          <label className="col-xs-4 control-label">
             {t("ENGINEALLOWVIEWBLACKLISTCRITERIAS")}
           </label>
           <div className="col-xs-6">
@@ -79,10 +70,7 @@ class InterfaceOptions extends Component {
         </div>
 
         <div className="form-group">
-          <label
-            htmlFor="Frontend.Permissions.AllowViewWhitelist"
-            className="col-xs-4 control-label"
-          >
+          <label className="col-xs-4 control-label">
             {t("ENGINEALLOWVIEWWHITELIST")}
           </label>
           <div className="col-xs-6">
@@ -92,7 +80,7 @@ class InterfaceOptions extends Component {
         </div>
 
         <div className="form-group">
-          <label htmlFor="Karaoke.CreatePreviews" className="col-xs-4 control-label">
+          <label className="col-xs-4 control-label">
             {t("ENGINECREATEPREVIEWS")}
           </label>
           <div className="col-xs-6">
