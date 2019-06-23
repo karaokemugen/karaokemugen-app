@@ -6,14 +6,14 @@ import {resolvedPathMedias, resolvedPathSubs, resolvedPathKaras, resolvedPathSer
 import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from '../lib/utils/logger';
-import {asyncMove, resolveFileInDirs, asyncStat} from '../lib/utils/files';
+import {asyncMove, resolveFileInDirs, asyncStat, asyncUnlink, asyncReadDir} from '../lib/utils/files';
 import {uuidRegexp, getTagTypeName} from '../lib/utils/constants';
 import {integrateKaraFile, refreshKarasAfterDBChange, getAllKaras} from './kara';
 import {integrateSeriesFile, refreshSeriesAfterDBChange} from './series';
 import { compareKarasChecksum } from '../dao/database';
 import { emitWS } from '../lib/utils/ws';
 import got from 'got';
-import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC } from '../types/download';
+import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC, File } from '../types/download';
 import { DownloadItem } from '../types/downloader';
 import { KaraList, KaraParams } from '../lib/types/kara';
 import { TagParams } from '../lib/types/tag';
@@ -24,6 +24,7 @@ import { DBKara } from '../lib/types/database/kara';
 import { getTags } from './tag';
 import { DBTag } from '../types/database/tag';
 import { BLCgetTagName } from './blacklist';
+import prettyBytes = require('pretty-bytes');
 
 const queueOptions = {
 	id: 'uuid',
@@ -127,13 +128,11 @@ async function processDownload(download: KaraDownload) {
 	const tempSeriesPath = tempDir;
 
 	// Check if media already exists in any media dir. If it does, do not try to redownload it.
-	let mediaExists = false;
 	try {
 		const existingMediaFile = await resolveFileInDirs(download.urls.media.local, resolvedPathMedias());
 		// Check if file size are different
 		const localMediaStat = await asyncStat(existingMediaFile);
 		if (localMediaStat.size !== download.size) throw null;
-		mediaExists = true;
 	} catch(err) {
 		// File does not exist or sizes are different, we download it.
 		list.push({
@@ -167,7 +166,7 @@ async function processDownload(download: KaraDownload) {
 
 	await downloadFiles(download, list);
 	// Delete files if they're already present
-	if (!mediaExists) await asyncMove(tempMedia, localMedia, {overwrite: true});
+	await asyncMove(tempMedia, localMedia, {overwrite: true});
 	if (download.urls.lyrics.local !== 'dummy.ass') await asyncMove(tempLyrics, localLyrics, {overwrite: true});
 	await asyncMove(tempKara, localKara, {overwrite: true});
 	for (const seriefile of download.urls.serie) {
@@ -574,4 +573,170 @@ export async function updateAllKaras(instance: string, local?: KaraList, remote?
 	logger.info(`[Update] Updating ${karasToUpdate.length} songs`);
 	if (karasToUpdate.length > 0) await addDownloads(instance, downloads);
 	return karasToUpdate.length;
+}
+
+let updateRunning = false;
+
+async function listRemoteMedias(instance: string): Promise<File[]> {
+	logger.info('[Updater] Fetching current media list');
+	emitWS('downloadProgress', {
+		text: 'Listing media files to download',
+		value: 0,
+		total: 100
+	});
+	emitWS('downloadBatchProgress', {
+		text: 'Updating...',
+		value: 3,
+		total: 5
+	});
+	const remote = await getRemoteKaras(instance, {});
+	return remote.content.map(k => {
+		return {
+			basename: k.mediafile,
+			size: k.mediasize
+		};
+	});
+}
+
+async function compareMedias(localFiles: File[], remoteFiles: File[], instance: string): Promise<boolean> {
+	let removedFiles:string[] = [];
+	let addedFiles:File[] = [];
+	let updatedFiles:File[] = [];
+	const mediasPath = resolvedPathMedias()[0];
+	logger.info('[Update] Comparing your medias with the current ones');
+	emitWS('downloadProgress', {
+		text: 'Comparing your media files with Karaoke Mugen\'s latest files',
+		value: 0,
+		total: 100
+	});
+	emitWS('downloadBatchProgress', {
+		text: 'Updating...',
+		value: 4,
+		total: 5
+	});
+	for (const remoteFile of remoteFiles) {
+		const filePresent = localFiles.some(localFile => {
+			if (localFile.basename === remoteFile.basename) {
+				if (localFile.size !== remoteFile.size) updatedFiles.push(remoteFile);
+				return true;
+			}
+			return false;
+		});
+		if (!filePresent) addedFiles.push(remoteFile);
+	}
+	for (const localFile of localFiles) {
+		const filePresent = remoteFiles.some(remoteFile => {
+			return localFile.basename === remoteFile.basename;
+		});
+		if (!filePresent) removedFiles.push(localFile.basename);
+	}
+	// Remove files to update to start over their download
+	for (const file of updatedFiles) {
+		await asyncUnlink(resolve(mediasPath, file.basename));
+	}
+	const filesToDownload = addedFiles.concat(updatedFiles);
+	if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
+	emitWS('downloadProgress', {
+		text: 'Comparing your base with Karaoke Mugen\'s latest files',
+		value: 100,
+		total: 100
+	});
+	if (filesToDownload.length > 0) {
+		filesToDownload.sort((a,b) => {
+			return (a.basename > b.basename) ? 1 : ((b.basename > a.basename) ? -1 : 0);
+		});
+		let bytesToDownload = 0;
+		for (const file of filesToDownload) {
+			bytesToDownload = bytesToDownload + file.size;
+		}
+		logger.info(`[Update] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);
+		await downloadMedias(filesToDownload, mediasPath, instance);
+		logger.info('[Update] Done updating medias');
+		return true;
+	} else {
+		logger.info('[Update] No new medias to download');
+		return false;
+	}
+}
+
+function downloadMedias(files: File[], mediasPath: string, instance: string): Promise<void> {
+	let list = [];
+	for (const file of files) {
+		list.push({
+			filename: resolve(mediasPath, file.basename),
+			url: `https://${instance}/downloads/medias/${encodeURIComponent(file.basename)}`,
+			size: file.size
+		});
+	}
+	const mediaDownloads = new Downloader(list, {
+		bar: true
+	});
+	return new Promise((resolve: any, reject: any) => {
+		mediaDownloads.download(fileErrors => {
+			if (fileErrors.length > 0) {
+				reject(`Error downloading these medias : ${fileErrors.toString()}`);
+			} else {
+				resolve();
+			}
+		});
+	});
+}
+
+async function listLocalMedias(): Promise<File[]> {
+	const mediaFiles = await asyncReadDir(resolvedPathMedias()[0]);
+	let localMedias = [];
+	for (const file of mediaFiles) {
+		const mediaStats = await asyncStat(resolve(resolvedPathMedias()[0], file));
+		localMedias.push({
+			basename: file,
+			size: mediaStats.size
+		});
+	}
+	logger.debug('[Updater] Listed local media files');
+	return localMedias;
+}
+
+async function removeFiles(files: string[], dir: string): Promise<void> {
+	for (const file of files) {
+		await asyncUnlink(resolve(dir, file));
+		logger.info(`[Updater] Removed : ${file}`);
+	}
+}
+
+export async function updateMedias(instance: string): Promise<boolean> {
+	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
+	updateRunning = true;
+	try {
+		const [remoteMedias, localMedias] = await Promise.all([
+			listRemoteMedias(instance),
+			listLocalMedias()
+		]);
+		const updateVideos = await compareMedias(localMedias, remoteMedias, instance);
+
+		updateRunning = false;
+		emitWS('downloadProgress', {
+			text: 'Done',
+			value: 100,
+			total: 100
+		});
+		emitWS('downloadBatchProgress', {
+			text: 'Update done!',
+			value: 100,
+			total: 100
+		});
+		return !!updateVideos;
+	} catch (err) {
+		emitWS('downloadProgress', {
+			text: 'Done',
+			value: 100,
+			total: 100
+		});
+		emitWS('downloadBatchProgress', {
+			text: 'Update failed!',
+			value: 100,
+			total: 100
+		});
+		updateRunning = false;
+		throw err;
+	}
 }

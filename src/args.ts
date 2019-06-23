@@ -19,6 +19,7 @@ Options :
 --demo                          Launches in demo mode (no admin panel, no password changes)
 --config file                   Specify a config file to use (default is config.yml)
 --updateBase                    Update karaoke base files
+--updateMedias                  Update karaoke media files only (no kara/lyrics/series files)
 --noBaseCheck                   Disable data file checking on startup
 --noBrowser                     Do not open a browser window upon launch
 --noMedia                       (generation only) Do not try to fetch data from media files
@@ -74,6 +75,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');
 		setState({opt: {baseUpdate: true}});
+	}
+	if (argv.updateMedias) {
+		logger.info('[Launcher] Media update requested');
+		setState({opt: {mediaUpdate: true}});
 	}
 	if (argv.test) {
 		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');
