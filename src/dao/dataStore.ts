@@ -67,7 +67,6 @@ export function removeSeriesInStore(sid: string) {
 
 export async function baseChecksum(silent?: boolean) {
 	profile('baseChecksum');
-	silent = true;
 	let bar: any;
 	const [karaFiles, seriesFiles] = await Promise.all([
 		extractAllKaraFiles(),
