@@ -21,6 +21,7 @@ export async function compareKarasChecksum(silent?: boolean): Promise<boolean> {
 		getSettings(),
 		baseChecksum(silent)
 	]);
+	console.log(settings.baseChecksum, currentChecksum);
 	if (settings.baseChecksum !== currentChecksum) {
 		await saveSetting('baseChecksum', currentChecksum);
 		return true;

@@ -299,24 +299,24 @@ export async function getYears(): Promise<YearList> {
 
 export async function getAllKaras(): Promise<KaraList> {
 	// Simple function to return all karaokes, compatibility with KM Server
-	return await getKaras({token: {username: 'admin', role: 'admin'}});
+	return await getKaras({from: 0, size: 99999999, token: {username: 'admin', role: 'admin'}});
 }
 
 export async function getKaras(params: KaraParams): Promise<KaraList> {
 	profile('getKaras');
 	const pl = await selectAllKaras({
 		username: params.token.username,
-		filter: params.filter,
+		filter: params.filter || '',
 		lang: params.lang,
 		mode: params.mode,
 		modeValue: params.modeValue,
-		from: params.from,
-		size: params.size,
+		from: params.from || 0,
+		size: params.size || 9999999999,
 		admin: params.token.role === 'admin',
 		random: params.random
 	});
 	profile('formatList');
-	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.lang, params.from, pl.length);
+	const ret = formatKaraList(pl.slice(params.from || 0, (params.from || 0) + (params.size || 999999999)), params.lang, (params.from || 0), pl.length);
 	profile('formatList');
 	profile('getKaras');
 	return ret;

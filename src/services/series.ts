@@ -1,5 +1,5 @@
 import {removeSeriesFile, writeSeriesFile, formatSeriesFile} from '../lib/dao/seriesfile';
-import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../dao/series';
+import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, testSerie} from '../dao/series';
 import {refreshSeries, refreshKaraSeries} from '../lib/dao/series';
 import {profile} from '../lib/utils/logger';
 import logger from 'winston';
@@ -51,7 +51,7 @@ export async function getSerie(sid: string) {
 }
 
 export async function deleteSerie(sid: string) {
-	const serie = await getSerie(sid);
+	const serie = await testSerie(sid);
 	if (!serie) throw 'Series ID unknown';
 	await removeSerie(sid);
 	await Promise.all([
@@ -96,7 +96,7 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 
 export async function editSerie(sid: string, serieObj: Series, opts = { refresh: true }) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
-	const oldSerie = await getSerie(sid);
+	const oldSerie = await testSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
 	if (oldSerie.name !== serieObj.name) await removeSeriesFile(oldSerie.name);
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
@@ -122,18 +122,20 @@ export async function refreshSeriesAfterDBChange() {
 export async function integrateSeriesFile(file: string): Promise<string> {
 	const seriesFileData = await getDataFromSeriesFile(file);
 	try {
-		const seriesDBData = await getSerie(seriesFileData.sid);
-		await editSerie(seriesDBData.sid, seriesFileData, { refresh: false });
-		if (seriesDBData.name !== seriesFileData.name) {
-			try {
-				await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().System.Path.Series));
-			} catch(err) {
-				logger.warn(`[Series] Could not remove old series file ${seriesDBData.seriefile}`);
-			}
+		const seriesDBData = await testSerie(seriesFileData.sid);
+		if (seriesDBData) {
+			await editSerie(seriesFileData.sid, seriesFileData, { refresh: false });
+			if (seriesDBData.name !== seriesFileData.name) try {
+					await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().System.Path.Series));
+				} catch(err) {
+					logger.warn(`[Series] Could not remove old series file ${seriesDBData.seriefile}`);
+				}
+			return seriesFileData.name;
+		} else {
+			await addSerie(seriesFileData, { refresh: false });
+			return seriesFileData.name;
 		}
-		return seriesDBData.name;
 	} catch(err) {
-		await addSerie(seriesFileData, { refresh: false });
-		return seriesFileData.name;
+		logger.error(`[Series] Error integrating series file "${file} : ${err}`);
 	}
 }

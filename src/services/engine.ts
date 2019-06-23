@@ -13,10 +13,9 @@ import {closeDB} from '../lib/dao/database';
 import {initFrontend} from '../webapp/frontend';
 import {initOnlineURLSystem} from '../webapp/online';
 import {initPlayer, quitmpv} from './player';
-import {initDownloader} from './download';
+import {initDownloader, updateBase} from './download';
 import {initStats} from './stats';
 import {welcomeToYoukousoKaraokeMugen} from './welcome';
-import {runBaseUpdate} from '../updater/karabase_updater';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { generateDatabase } from '../lib/services/generation';
 import {validateV3} from '../lib/dao/karafile';
@@ -33,18 +32,6 @@ export async function initEngine() {
 		ontop: conf.Player.StayOnTop,
 		private: conf.Karaoke.Private,
 	});
-	if (state.opt.baseUpdate) try {
-		if (await runBaseUpdate()) {
-			logger.info('[Engine] Done updating karaoke base');
-			setState({opt: {generateDB: true}});
-		} else {
-			logger.info('[Engine] No updates found, exiting');
-			await exit(0);
-		}
-	} catch (err) {
-		logger.error(`[Engine] Update failed : ${err}`);
-		await exit(1);
-	}
 	if (state.opt.validateV3) try {
 		logger.info('[Engine] V3 Validation in progress...');
 		await validateV3(state.appPath);
@@ -63,6 +50,14 @@ export async function initEngine() {
 	}
 	//Database system is the foundation of every other system
 	await initDBSystem();
+	if (state.opt.baseUpdate) try {
+		await updateBase('kara.moe');
+		logger.info('[Engine] Done updating karaoke base');
+		await exit(0);
+	} catch (err) {
+		logger.error(`[Engine] Update failed : ${err}`);
+		await exit(1);
+	}
 	await initUserSystem();
 	if (conf.Online.URL) try {
 		await initOnlineURLSystem();

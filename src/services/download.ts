@@ -61,12 +61,12 @@ export async function initDownloader() {
 }
 
 
-function initQueue() {
+function initQueue(drainEvent = true) {
 	// We'll compare data dir checksum and execute refresh every 5 downloads and everytime the queue is drained
 	let taskCounter = 0;
 	q = new Queue(queueDownload, queueOptions);
 	q.on('task_finish', () => {
-		if (q.length > 0) logger.info(`[Download] ${q.length} items left in queue`);
+		if (q.length > 0) logger.info(`[Download] ${q.length - 1} items left in queue`);
 		taskCounter++;
 		if (taskCounter >= 5) {
 			logger.debug('[Download] Triggering database refresh');
@@ -81,9 +81,10 @@ function initQueue() {
 		emitQueueStatus('updated');
 	});
 	q.on('empty', () => emitQueueStatus('updated'));
-	q.on('drain', () => {
+	if (drainEvent) q.on('drain', () => {
 		logger.info('[Download] No tasks left, stopping queue');
-		refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange());
+		refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange().then(() =>
+		compareKarasChecksum(true)));
 		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
@@ -126,11 +127,13 @@ async function processDownload(download: KaraDownload) {
 	const tempSeriesPath = tempDir;
 
 	// Check if media already exists in any media dir. If it does, do not try to redownload it.
+	let mediaExists = false;
 	try {
 		const existingMediaFile = await resolveFileInDirs(download.urls.media.local, resolvedPathMedias());
 		// Check if file size are different
 		const localMediaStat = await asyncStat(existingMediaFile);
 		if (localMediaStat.size !== download.size) throw null;
+		mediaExists = true;
 	} catch(err) {
 		// File does not exist or sizes are different, we download it.
 		list.push({
@@ -164,7 +167,7 @@ async function processDownload(download: KaraDownload) {
 
 	await downloadFiles(download, list);
 	// Delete files if they're already present
-	await asyncMove(tempMedia, localMedia, {overwrite: true});
+	if (!mediaExists) await asyncMove(tempMedia, localMedia, {overwrite: true});
 	if (download.urls.lyrics.local !== 'dummy.ass') await asyncMove(tempLyrics, localLyrics, {overwrite: true});
 	await asyncMove(tempKara, localKara, {overwrite: true});
 	for (const seriefile of download.urls.serie) {
@@ -178,7 +181,7 @@ async function processDownload(download: KaraDownload) {
 		for (const serie of bundle.series) {
 			try {
 				const serieName = await integrateSeriesFile(serie);
-				logger.info(`[Download] Series "${serieName}" added to database`);
+				logger.info(`[Download] Series "${serieName}" in database`);
 			} catch(err) {
 				logger.error(`[Download] Series "${serie}" not properly added to database`);
 				throw err;
@@ -353,11 +356,11 @@ export async function emptyDownloadBLC() {
 }
 
 export async function getRemoteKaras(instance: string, params: KaraParams): Promise<KaraList> {
-	const queryParams = new URLSearchParams([
-		['filter', params.filter],
-		['size', params.size + ''],
-		['from', params.from + '']
-	]);
+	const URLParams = [];
+	if (params.filter) URLParams.push(['filter', params.filter])
+	if (params.size) URLParams.push(['size', params.size + ''])
+	if (params.from) URLParams.push(['from', params.from + ''])
+	const queryParams = new URLSearchParams(URLParams);
 	const res = await got(`https://${instance}/api/karas?${queryParams.toString()}`);
 	return JSON.parse(res.body);
 }
@@ -372,15 +375,49 @@ export async function getRemoteTags(instance: string, params: TagParams): Promis
 
 export async function updateBase(instance: string) {
 	// Another idea would be not to download songs older than the newest song in database : for example we can assume that if a user downloaded a song added on 01/02/2019, we won't download any new songs added before that date because the user already viewed songs before that date and choose not to download them
+
+	// First, make sure we wipe the download queue before updating.
+	if (!q) initQueue(false);
+	await emptyDownload();
 	logger.info('[Update] Computing songs to add/remove/update...');
-	const karas = await getKaraInventory(instance);
-	await Promise.all([
-		cleanAllKaras(instance, karas.local, karas.remote),
-		updateAllKaras(instance, karas.local, karas.remote),
-		downloadAllKaras(instance, karas.local, karas.remote)
-	]);
+	try {
+		logger.info('[Update] Getting song inventory for local and remote');
+		const karas = await getKaraInventory(instance);
+		logger.info('[Update] Removing songs...');
+		await cleanAllKaras(instance, karas.local, karas.remote);
+		logger.info('[Update] Adding updated/new songs...');
+		const [updatedSongs, newSongs] = await Promise.all([
+			updateAllKaras(instance, karas.local, karas.remote),
+			downloadAllKaras(instance, karas.local, karas.remote)
+		]);
+		if (updatedSongs === 0 && newSongs === 0) return true;
+		await waitForUpdateQueueToFinish();
+		return true;
+	} catch(err) {
+		logger.error(`[Update] Base update failed : ${err}`);
+		throw err;
+	}
 }
 
+async function waitForUpdateQueueToFinish() {
+	return new Promise((resolve, reject) => {
+		// We'll redefine the drain event of the queue to resolve once the queue is drained.
+		q.on('drain', () => {
+			refreshSeriesAfterDBChange()
+			.then(() =>
+			refreshKarasAfterDBChange()
+			.then(() =>
+			compareKarasChecksum()
+			.then(() => {
+				resolve();
+			})
+			)).catch(err => {
+				logger.error(`[Download] Error while drazining queue : ${err}`);
+				reject();
+			});
+		});
+	});
+}
 async function getKaraInventory(instance: string) {
 	const [local, remote] = await Promise.all([
 		getAllKaras(),
@@ -392,18 +429,18 @@ async function getKaraInventory(instance: string) {
 	}
 }
 
-export async function downloadAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
+export async function downloadAllKaras(instance: string, local?: KaraList, remote?: KaraList): Promise<number> {
 	if (!local || !remote) {
 		const karas = await getKaraInventory(instance);
 		local = karas.local;
 		remote = karas.remote;
 	}
 	const localKIDs = local.content.map(k => k.kid);
-	// Remove karas already present
 	let karasToAdd = remote.content.filter(k => !localKIDs.includes(k.kid));
 	const initialKarasToAddCount = karasToAdd.length;
 	// Among those karaokes, we need to establish which ones we'll filter out via the download blacklist criteria
 	logger.info('[Update] Applying blacklist (if present)');
+
 	const [blcs, tags] = await Promise.all([
 		getDownloadBLC(),
 		getTags({})
@@ -433,7 +470,8 @@ export async function downloadAllKaras(instance: string, local?: KaraList, remot
 	});
 	logger.info(`[Update] Adding ${karasToAdd.length} new songs.`);
 	if (initialKarasToAddCount !== karasToAdd.length) logger.info(`[Update] ${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`);
-	await addDownloads(instance, downloads);
+	if (karasToAdd.length > 0) await addDownloads(instance, downloads);
+	return karasToAdd.length;
 }
 
 function filterTitle(k: DBKara, value: string): boolean {
@@ -507,11 +545,13 @@ export async function cleanAllKaras(instance: string, local?: KaraList, remote?:
 	for (const kid of karasToRemove) {
 		await deleteKara(kid, false);
 	}
-	refreshAll();
-	compareKarasChecksum(true);
+	if (karasToRemove.length > 0) {
+		await refreshAll();
+		compareKarasChecksum(true);
+	}
 }
 
-export async function updateAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
+export async function updateAllKaras(instance: string, local?: KaraList, remote?: KaraList): Promise<number> {
 	if (!local || !remote) {
 		const karas = await getKaraInventory(instance);
 		local = karas.local;
@@ -532,5 +572,6 @@ export async function updateAllKaras(instance: string, local?: KaraList, remote?
 		}
 	});
 	logger.info(`[Update] Updating ${karasToUpdate.length} songs`);
-	await addDownloads(instance, downloads);
+	if (karasToUpdate.length > 0) await addDownloads(instance, downloads);
+	return karasToUpdate.length;
 }
