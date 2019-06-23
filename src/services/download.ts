@@ -578,7 +578,7 @@ export async function updateAllKaras(instance: string, local?: KaraList, remote?
 let updateRunning = false;
 
 async function listRemoteMedias(instance: string): Promise<File[]> {
-	logger.info('[Updater] Fetching current media list');
+	logger.info('[Update] Fetching current media list');
 	emitWS('downloadProgress', {
 		text: 'Listing media files to download',
 		value: 0,
@@ -692,14 +692,14 @@ async function listLocalMedias(): Promise<File[]> {
 			size: mediaStats.size
 		});
 	}
-	logger.debug('[Updater] Listed local media files');
+	logger.debug('[Update] Listed local media files');
 	return localMedias;
 }
 
 async function removeFiles(files: string[], dir: string): Promise<void> {
 	for (const file of files) {
 		await asyncUnlink(resolve(dir, file));
-		logger.info(`[Updater] Removed : ${file}`);
+		logger.info(`[Update] Removed : ${file}`);
 	}
 }
 
