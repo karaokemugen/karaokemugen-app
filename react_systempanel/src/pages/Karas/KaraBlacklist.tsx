@@ -81,6 +81,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 				filter_options: this.state.filter_options_full.map((o)=>{
 					if(o.type===value)
 						return o;
+					return;
 				}).filter((o)=>{ return o; }),
 				filter_value:null,
 			});
