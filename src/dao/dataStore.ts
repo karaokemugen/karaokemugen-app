@@ -12,14 +12,20 @@ let dataStore = {
 	series: []
 };
 
+function findKaraInStore(kid: string) {
+	return dataStore.karas.find(k => k.kid === kid);
+}
+
+function findSeriesInStore(sid: string) {
+	return dataStore.series.find(s => s.sid === sid);
+}
+
 export function addKaraToStore(kara: KaraFileV4) {
-	removeKaraInStore(kara.data.kid);
-	dataStore.karas.push(kara);
+	if (!findKaraInStore(kara.data.kid)) dataStore.karas.push(kara);
 }
 
 export function addSeriesToStore(series: Series) {
-	removeSeriesInStore(series.sid);
-	dataStore.series.push(series);
+	if (!findSeriesInStore(series.sid)) dataStore.series.push(series);
 }
 
 export function sortKaraStore() {
@@ -67,7 +73,7 @@ export function removeSeriesInStore(sid: string) {
 
 export async function baseChecksum(silent?: boolean) {
 	profile('baseChecksum');
-	let bar: any;
+	 let bar: any;
 	const [karaFiles, seriesFiles] = await Promise.all([
 		extractAllKaraFiles(),
 		extractAllSeriesFiles()
