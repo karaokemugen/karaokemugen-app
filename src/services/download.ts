@@ -6,14 +6,14 @@ import {resolvedPathMedias, resolvedPathSubs, resolvedPathKaras, resolvedPathSer
 import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from '../lib/utils/logger';
-import {asyncMove, resolveFileInDirs, asyncStat} from '../lib/utils/files';
+import {asyncMove, resolveFileInDirs, asyncStat, asyncUnlink, asyncReadDir} from '../lib/utils/files';
 import {uuidRegexp, getTagTypeName} from '../lib/utils/constants';
 import {integrateKaraFile, refreshKarasAfterDBChange, getAllKaras} from './kara';
 import {integrateSeriesFile, refreshSeriesAfterDBChange} from './series';
 import { compareKarasChecksum } from '../dao/database';
 import { emitWS } from '../lib/utils/ws';
 import got from 'got';
-import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC } from '../types/download';
+import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC, File } from '../types/download';
 import { DownloadItem } from '../types/downloader';
 import { KaraList, KaraParams } from '../lib/types/kara';
 import { TagParams } from '../lib/types/tag';
@@ -24,6 +24,7 @@ import { DBKara } from '../lib/types/database/kara';
 import { getTags } from './tag';
 import { DBTag } from '../types/database/tag';
 import { BLCgetTagName } from './blacklist';
+import prettyBytes = require('pretty-bytes');
 
 const queueOptions = {
 	id: 'uuid',
@@ -43,7 +44,7 @@ function emitQueueStatus(status: QueueStatus) {
 }
 
 function queueDownload(input: KaraDownload, done: any) {
-	logger.info(`[Download] Processing queue item : ${input.name}`);
+	logger.info(`[Download] Processing song : ${input.name}`);
 	processDownload(input)
 		.then(() => {
 			done();
@@ -61,11 +62,12 @@ export async function initDownloader() {
 }
 
 
-function initQueue() {
+function initQueue(drainEvent = true) {
 	// We'll compare data dir checksum and execute refresh every 5 downloads and everytime the queue is drained
 	let taskCounter = 0;
 	q = new Queue(queueDownload, queueOptions);
 	q.on('task_finish', () => {
+		if (q.length > 0) logger.info(`[Download] ${q.length - 1} items left in queue`);
 		taskCounter++;
 		if (taskCounter >= 5) {
 			logger.debug('[Download] Triggering database refresh');
@@ -80,9 +82,10 @@ function initQueue() {
 		emitQueueStatus('updated');
 	});
 	q.on('empty', () => emitQueueStatus('updated'));
-	q.on('drain', () => {
-		logger.info('[Download] Ano ne, ano ne! I finished all my downloads!');
-		refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange());
+	if (drainEvent) q.on('drain', () => {
+		logger.info('[Download] No tasks left, stopping queue');
+		refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange().then(() =>
+		compareKarasChecksum(true)));
 		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
@@ -177,7 +180,7 @@ async function processDownload(download: KaraDownload) {
 		for (const serie of bundle.series) {
 			try {
 				const serieName = await integrateSeriesFile(serie);
-				logger.info(`[Download] Series "${serieName}" added to database`);
+				logger.info(`[Download] Series "${serieName}" in database`);
 			} catch(err) {
 				logger.error(`[Download] Series "${serie}" not properly added to database`);
 				throw err;
@@ -352,11 +355,11 @@ export async function emptyDownloadBLC() {
 }
 
 export async function getRemoteKaras(instance: string, params: KaraParams): Promise<KaraList> {
-	const queryParams = new URLSearchParams([
-		['filter', params.filter],
-		['size', params.size + ''],
-		['from', params.from + '']
-	]);
+	const URLParams = [];
+	if (params.filter) URLParams.push(['filter', params.filter])
+	if (params.size) URLParams.push(['size', params.size + ''])
+	if (params.from) URLParams.push(['from', params.from + ''])
+	const queryParams = new URLSearchParams(URLParams);
 	const res = await got(`https://${instance}/api/karas?${queryParams.toString()}`);
 	return JSON.parse(res.body);
 }
@@ -371,15 +374,49 @@ export async function getRemoteTags(instance: string, params: TagParams): Promis
 
 export async function updateBase(instance: string) {
 	// Another idea would be not to download songs older than the newest song in database : for example we can assume that if a user downloaded a song added on 01/02/2019, we won't download any new songs added before that date because the user already viewed songs before that date and choose not to download them
+
+	// First, make sure we wipe the download queue before updating.
+	if (!q) initQueue(false);
+	await emptyDownload();
 	logger.info('[Update] Computing songs to add/remove/update...');
-	const karas = await getKaraInventory(instance);
-	await Promise.all([
-		cleanAllKaras(instance, karas.local, karas.remote),
-		updateAllKaras(instance, karas.local, karas.remote),
-		downloadAllKaras(instance, karas.local, karas.remote)
-	]);
+	try {
+		logger.info('[Update] Getting song inventory for local and remote');
+		const karas = await getKaraInventory(instance);
+		logger.info('[Update] Removing songs...');
+		await cleanAllKaras(instance, karas.local, karas.remote);
+		logger.info('[Update] Adding updated/new songs...');
+		const [updatedSongs, newSongs] = await Promise.all([
+			updateAllKaras(instance, karas.local, karas.remote),
+			downloadAllKaras(instance, karas.local, karas.remote)
+		]);
+		if (updatedSongs === 0 && newSongs === 0) return true;
+		await waitForUpdateQueueToFinish();
+		return true;
+	} catch(err) {
+		logger.error(`[Update] Base update failed : ${err}`);
+		throw err;
+	}
 }
 
+async function waitForUpdateQueueToFinish() {
+	return new Promise((resolve, reject) => {
+		// We'll redefine the drain event of the queue to resolve once the queue is drained.
+		q.on('drain', () => {
+			refreshSeriesAfterDBChange()
+			.then(() =>
+			refreshKarasAfterDBChange()
+			.then(() =>
+			compareKarasChecksum()
+			.then(() => {
+				resolve();
+			})
+			)).catch(err => {
+				logger.error(`[Download] Error while drazining queue : ${err}`);
+				reject();
+			});
+		});
+	});
+}
 async function getKaraInventory(instance: string) {
 	const [local, remote] = await Promise.all([
 		getAllKaras(),
@@ -391,18 +428,18 @@ async function getKaraInventory(instance: string) {
 	}
 }
 
-export async function downloadAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
+export async function downloadAllKaras(instance: string, local?: KaraList, remote?: KaraList): Promise<number> {
 	if (!local || !remote) {
 		const karas = await getKaraInventory(instance);
 		local = karas.local;
 		remote = karas.remote;
 	}
 	const localKIDs = local.content.map(k => k.kid);
-	// Remove karas already present
 	let karasToAdd = remote.content.filter(k => !localKIDs.includes(k.kid));
 	const initialKarasToAddCount = karasToAdd.length;
 	// Among those karaokes, we need to establish which ones we'll filter out via the download blacklist criteria
 	logger.info('[Update] Applying blacklist (if present)');
+
 	const [blcs, tags] = await Promise.all([
 		getDownloadBLC(),
 		getTags({})
@@ -432,7 +469,8 @@ export async function downloadAllKaras(instance: string, local?: KaraList, remot
 	});
 	logger.info(`[Update] Adding ${karasToAdd.length} new songs.`);
 	if (initialKarasToAddCount !== karasToAdd.length) logger.info(`[Update] ${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`);
-	await addDownloads(instance, downloads);
+	if (karasToAdd.length > 0) await addDownloads(instance, downloads);
+	return karasToAdd.length;
 }
 
 function filterTitle(k: DBKara, value: string): boolean {
@@ -506,11 +544,13 @@ export async function cleanAllKaras(instance: string, local?: KaraList, remote?:
 	for (const kid of karasToRemove) {
 		await deleteKara(kid, false);
 	}
-	refreshAll();
-	compareKarasChecksum(true);
+	if (karasToRemove.length > 0) {
+		await refreshAll();
+		compareKarasChecksum(true);
+	}
 }
 
-export async function updateAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
+export async function updateAllKaras(instance: string, local?: KaraList, remote?: KaraList): Promise<number> {
 	if (!local || !remote) {
 		const karas = await getKaraInventory(instance);
 		local = karas.local;
@@ -531,5 +571,172 @@ export async function updateAllKaras(instance: string, local?: KaraList, remote?
 		}
 	});
 	logger.info(`[Update] Updating ${karasToUpdate.length} songs`);
-	await addDownloads(instance, downloads);
+	if (karasToUpdate.length > 0) await addDownloads(instance, downloads);
+	return karasToUpdate.length;
+}
+
+let updateRunning = false;
+
+async function listRemoteMedias(instance: string): Promise<File[]> {
+	logger.info('[Updater] Fetching current media list');
+	emitWS('downloadProgress', {
+		text: 'Listing media files to download',
+		value: 0,
+		total: 100
+	});
+	emitWS('downloadBatchProgress', {
+		text: 'Updating...',
+		value: 3,
+		total: 5
+	});
+	const remote = await getRemoteKaras(instance, {});
+	return remote.content.map(k => {
+		return {
+			basename: k.mediafile,
+			size: k.mediasize
+		};
+	});
+}
+
+async function compareMedias(localFiles: File[], remoteFiles: File[], instance: string): Promise<boolean> {
+	let removedFiles:string[] = [];
+	let addedFiles:File[] = [];
+	let updatedFiles:File[] = [];
+	const mediasPath = resolvedPathMedias()[0];
+	logger.info('[Update] Comparing your medias with the current ones');
+	emitWS('downloadProgress', {
+		text: 'Comparing your media files with Karaoke Mugen\'s latest files',
+		value: 0,
+		total: 100
+	});
+	emitWS('downloadBatchProgress', {
+		text: 'Updating...',
+		value: 4,
+		total: 5
+	});
+	for (const remoteFile of remoteFiles) {
+		const filePresent = localFiles.some(localFile => {
+			if (localFile.basename === remoteFile.basename) {
+				if (localFile.size !== remoteFile.size) updatedFiles.push(remoteFile);
+				return true;
+			}
+			return false;
+		});
+		if (!filePresent) addedFiles.push(remoteFile);
+	}
+	for (const localFile of localFiles) {
+		const filePresent = remoteFiles.some(remoteFile => {
+			return localFile.basename === remoteFile.basename;
+		});
+		if (!filePresent) removedFiles.push(localFile.basename);
+	}
+	// Remove files to update to start over their download
+	for (const file of updatedFiles) {
+		await asyncUnlink(resolve(mediasPath, file.basename));
+	}
+	const filesToDownload = addedFiles.concat(updatedFiles);
+	if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
+	emitWS('downloadProgress', {
+		text: 'Comparing your base with Karaoke Mugen\'s latest files',
+		value: 100,
+		total: 100
+	});
+	if (filesToDownload.length > 0) {
+		filesToDownload.sort((a,b) => {
+			return (a.basename > b.basename) ? 1 : ((b.basename > a.basename) ? -1 : 0);
+		});
+		let bytesToDownload = 0;
+		for (const file of filesToDownload) {
+			bytesToDownload = bytesToDownload + file.size;
+		}
+		logger.info(`[Update] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);
+		await downloadMedias(filesToDownload, mediasPath, instance);
+		logger.info('[Update] Done updating medias');
+		return true;
+	} else {
+		logger.info('[Update] No new medias to download');
+		return false;
+	}
+}
+
+function downloadMedias(files: File[], mediasPath: string, instance: string): Promise<void> {
+	let list = [];
+	for (const file of files) {
+		list.push({
+			filename: resolve(mediasPath, file.basename),
+			url: `https://${instance}/downloads/medias/${encodeURIComponent(file.basename)}`,
+			size: file.size
+		});
+	}
+	const mediaDownloads = new Downloader(list, {
+		bar: true
+	});
+	return new Promise((resolve: any, reject: any) => {
+		mediaDownloads.download(fileErrors => {
+			if (fileErrors.length > 0) {
+				reject(`Error downloading these medias : ${fileErrors.toString()}`);
+			} else {
+				resolve();
+			}
+		});
+	});
+}
+
+async function listLocalMedias(): Promise<File[]> {
+	const mediaFiles = await asyncReadDir(resolvedPathMedias()[0]);
+	let localMedias = [];
+	for (const file of mediaFiles) {
+		const mediaStats = await asyncStat(resolve(resolvedPathMedias()[0], file));
+		localMedias.push({
+			basename: file,
+			size: mediaStats.size
+		});
+	}
+	logger.debug('[Updater] Listed local media files');
+	return localMedias;
+}
+
+async function removeFiles(files: string[], dir: string): Promise<void> {
+	for (const file of files) {
+		await asyncUnlink(resolve(dir, file));
+		logger.info(`[Updater] Removed : ${file}`);
+	}
+}
+
+export async function updateMedias(instance: string): Promise<boolean> {
+	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
+	updateRunning = true;
+	try {
+		const [remoteMedias, localMedias] = await Promise.all([
+			listRemoteMedias(instance),
+			listLocalMedias()
+		]);
+		const updateVideos = await compareMedias(localMedias, remoteMedias, instance);
+
+		updateRunning = false;
+		emitWS('downloadProgress', {
+			text: 'Done',
+			value: 100,
+			total: 100
+		});
+		emitWS('downloadBatchProgress', {
+			text: 'Update done!',
+			value: 100,
+			total: 100
+		});
+		return !!updateVideos;
+	} catch (err) {
+		emitWS('downloadProgress', {
+			text: 'Done',
+			value: 100,
+			total: 100
+		});
+		emitWS('downloadBatchProgress', {
+			text: 'Update failed!',
+			value: 100,
+			total: 100
+		});
+		updateRunning = false;
+		throw err;
+	}
 }

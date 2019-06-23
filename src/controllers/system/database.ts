@@ -3,15 +3,15 @@ import {generateDB} from '../../dao/database';
 import { Router } from 'express';
 import { dumpPG } from '../../utils/postgresql';
 import { resetViewcounts } from '../../dao/kara';
-import { runBaseUpdate } from '../../updater/karabase_updater';
 import { requireNotDemo } from '../middlewares/demo';
+import { updateMedias } from '../../services/download';
+import { getConfig } from '../../lib/utils/config';
 
 export default function systemDBController(router: Router) {
 
 	router.post('/system/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		res.status(200).send('Karas are being updated, check Karaoke Mugen\'s console to follow its progression');
-		await runBaseUpdate();
-		await generateDB();
+		updateMedias(getConfig().Online.Host);
+		res.status(200).send('Medias are being updated, check Karaoke Mugen\'s console to follow its progression');
 	});
 
 	router.post('/system/db/regenerate', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {

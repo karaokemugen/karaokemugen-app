@@ -33,3 +33,8 @@ interface DownloadFile {
 	remote: string,
 	local: string
 }
+
+export interface File {
+	basename: string,
+	size: number
+}

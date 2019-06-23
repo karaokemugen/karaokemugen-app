@@ -45,7 +45,7 @@ export async function formatTagList(tagList: DBTag[], from: number, count: numbe
 export async function getTags(params: TagParams) {
 	profile('getTags');
 	const tags = await getAllTags(params);
-	const ret = await formatTagList(tags.slice(params.from, params.from + params.size), params.from, tags.length);
+	const ret = await formatTagList(tags.slice(params.from || 0, (params.from || 0) + params.size || 999999999), params.from || 0, tags.length);
 	profile('getTags');
 	return ret;
 }
