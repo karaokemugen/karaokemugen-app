@@ -112,7 +112,7 @@ getPublicSettings = function() {
 
         playlistToAdd = config.Karaoke.Private == 1 ? 'current' : 'public';
         
-        manageOnlineUsersUI(config);
+		$('[name="modalLoginServ"]').val(config.Online.Users ? config.Online.Host : '');
 
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
 			playlistToAddId = data.playlist_id;
