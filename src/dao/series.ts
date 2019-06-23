@@ -10,10 +10,10 @@ const sql = require('./sql/series');
 export function buildClausesSeries(words: string): WhereClause {
 	const params = paramWords(words);
 	let sql = [];
-	for (const i in words.split(' ').filter(s => !('' === s))) {
-		sql.push(` (lower(unaccent(aseries.name)) LIKE :word${i}
-				OR lower(unaccent(aseries.search)) LIKE :word${i}
-		 		OR lower(unaccent(aseries.search_aliases)) LIKE :word${i})`
+	for (const word of Object.keys(words)) {
+		sql.push(` (lower(unaccent(aseries.name)) LIKE :${word}
+				OR lower(unaccent(aseries.search)) LIKE :${word}
+		 		OR lower(unaccent(aseries.search_aliases)) LIKE :${word})`
 		);
 	}
 	return {

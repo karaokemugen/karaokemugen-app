@@ -28,9 +28,9 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 function buildTagClauses(words: string): WhereClause {
 	const params = paramWords(words);
 	let sql = [];
-	for (const i in words.split(' ').filter(s => !('' === s))) {
-		sql.push(`lower(unaccent(name)) LIKE :word${i} OR
-		lower(unaccent(i18n::varchar)) LIKE :word${i}
+	for (const word in Object.keys(words)) {
+		sql.push(`lower(unaccent(name)) LIKE :${word} OR
+		lower(unaccent(i18n::varchar)) LIKE :${word}
 		`);
 	}
 	return {
