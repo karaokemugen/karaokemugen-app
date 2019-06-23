@@ -110,9 +110,9 @@ getPublicSettings = function() {
 			window.location.reload();
 		}
 
-        playlistToAdd = config.Karaoke.Private == 1 ? 'current' : 'public';
+        playlistToAdd = config.Karaoke.Private ? 'current' : 'public';
         
-        manageOnlineUsersUI(config);
+		$('[name="modalLoginServ"]').val(config.Online.Users ? config.Online.Host : '');
 
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
 			playlistToAddId = data.playlist_id;
@@ -131,7 +131,7 @@ getPublicSettings = function() {
 		settings = config;
 			
 		$('#version').text(configAndVersiondata.version.name + ' ' + configAndVersiondata.version.number);
-		$('#mode').text(configAndVersiondata['Karaoke.Private'] == '1' ? 'Privé' : 'Public');
+		$('#mode').text(configAndVersiondata['Karaoke.Private'] ? 'Privé' : 'Public');
 	}); 
 	return promise.promise();
 };

@@ -88,88 +88,8 @@
 	</div><!-- .container close -->
 </section><!-- header close -->
 
-<div class="modal modalPage fade" id="profilModal" role="dialog" type="prompt" tabindex="21">
-	<div class="modal-dialog modal-md">
-		<div class="modal-content">
-			<ul class="nav nav-tabs nav-justified modal-header">
-				<li class="modal-title active"><a data-toggle="tab" href="#nav-profil" role="tab"
-						aria-controls="nav-profil" aria-selected="true"> {{i18n "PROFILE"}}</a></li>
-				<li class="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab"
-						aria-controls="nav-userlist" aria-selected="false"> {{i18n "USERLIST"}}</a></li>
-				<button class="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
-			</ul>
-			<div class="tab-content" id="nav-tabContent">
-				<div id="nav-profil" role="tabpanel" aria-labelledby="nav-profil-tab"
-					class="modal-body tab-pane fade in active">
-					<div class="profileContent">
+<div class="modal modalPage fade" id="profilModal" role="dialog" type="prompt" tabindex="21"></div>
 
-						<div class="col-md-3 col-lg-3 col-xs-12 col-sm-12">
-
-							<label for="avatar" title='{{i18n "AVATAR_IMPORT"}}'
-								class="btn btn-default plGenericButton avatar" name="import">
-								<img class="img-circle" name="avatar_file" src="/avatars/blank.png" alt="User Pic">
-								<input id="avatar" class="import-file" type="file" accept="image/*"
-									style="display: none;" />
-							</label>
-							<p name="login"></p>
-						</div>
-						<div class="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
-							<div class="profileLine">
-								<i class="glyphicon glyphicon-user"></i>
-								<input class="form-control" name="nickname" type="text"
-									placeholder="{{{ i18n "PROFILE_USERNAME" }}}" />
-							</div>
-							<div class="profileLine">
-								<i class="glyphicon glyphicon-envelope"></i>
-								<input class="form-control" name="email" type="text"
-									placeholder="{{{ i18n "PROFILE_MAIL" }}}" />
-							</div>
-							<div class="profileLine">
-								<i class="glyphicon glyphicon-link"></i>
-								<input class="form-control" name="url" type="text"
-									placeholder="{{{ i18n "PROFILE_URL" }}}" />
-							</div>
-							<div class="profileLine">
-								<i class="glyphicon glyphicon-leaf"></i>
-								<input class="form-control" name="bio" type="text"
-									placeholder="{{{ i18n "PROFILE_BIO" }}}" />
-							</div>
-							<div class="profileLine">
-								<i class="glyphicon glyphicon-lock"></i>
-								<input class="form-control" name="password" type="password"
-									placeholder="{{{ i18n "PROFILE_PASSWORD" }}}" />
-								<input class="form-control passwordConfirmation" type="password"
-									placeholder="{{{ i18n "PROFILE_PASSWORDCONF" }}}" style="margin-left: 3px;" />
-							</div>
-						</div>
-						<div class="profileLine">
-							<button type="button" title='{{i18n "PROFILE_CONVERT"}}'
-								class="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert">
-								<i class="glyphicon glyphicon-retweet"></i> {{i18n "PROFILE_CONVERT"}}
-							</button>
-							<button type="button" title='{{i18n "PROFILE_ONLINE_DELETE"}}'
-								class="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileDelete">
-								<i class="glyphicon glyphicon-retweet"></i> {{i18n "PROFILE_ONLINE_DELETE"}}
-							</button>
-						</div>
-					</div>
-				</div>
-				<div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab"
-					class="modal-body tab-pane fade in">
-					<div class="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
-
-					</div>
-				</div>
-				<div class="modal-footer">
-
-				</div>
-
-			</div>
-
-		</div>
-	</div>
-</div>
-</div>
 <div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
 	<div class="modal-dialog modal-sm">
 		<div class="modal-content">
@@ -265,6 +185,7 @@
 <script src="/ressources/vendors/js/perfect-scrollbar.jquery.min.js"></script>
 <script src="/ressources/vendors/js/intro.js"></script>
 <script src="/ressources/vendors/js/sprintf.min.js"></script>
+<script src="/build/app.js"></script>
 <script src="/ressources/js/karaokemugen.js"></script>
 <script src="/ressources/js/admin.js"></script>
 <script src="/ressources/js/tools.js"></script>
