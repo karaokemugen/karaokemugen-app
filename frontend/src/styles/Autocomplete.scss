@@ -1,0 +1,84 @@
+$label-color:inherit;
+
+$input-color:#333;
+$input-background:#fff;
+$input-border:#aaa;
+$input-placeholder:#aaa;
+
+$options-color:#333;
+$options-background:#fff;
+$options-border:#aaa;
+$option-hover-color:#fff;
+$option-hover-background:#999;
+$option-active-color:#fff;
+$option-active-background:#aaa;
+
+// options list display on input focus
+.UI-autocomplete-options {
+  display: none;
+}
+.UI-autocomplete-input[focus="true"] .UI-autocomplete-options {
+  display: block;
+}
+
+// theme
+.UI-autocomplete * {
+  box-sizing:border-box;
+}
+.UI-autocomplete-label {
+  color:$label-color;
+}
+.UI-autocomplete-input {
+  display: inline-block;
+  position: relative;
+}
+.UI-autocomplete-input select {
+  position: relative;
+  z-index: 1;
+  padding: 0.5em;
+  border-radius:0.25em;
+  border:1px solid $input-border;
+  color:$input-color;
+  background:$input-background;
+}
+.UI-autocomplete-input input {
+  padding: 0.5em;
+  border-radius:0.25em;
+  border:1px solid $input-border;
+  color:$input-color;
+  background:$input-background;
+  &::placeholder {
+    color:$input-placeholder;
+  }
+}
+.UI-autocomplete-options {
+  position: absolute;
+  z-index: 2;
+  top: 2.25em;
+  list-style-type: none;
+  padding: .25em;
+  margin: 0;
+  border:1px solid $options-border;
+  border-radius:0.25em;
+  color:$options-color;
+  background:$options-background;
+  min-width: 100%;
+  .UI-autocomplete-option {
+    cursor: pointer;
+    padding: .25em;
+    margin: 0;
+    &[active="true"] {
+      color:$option-active-color;
+      background:$option-active-background;
+    }
+    &:hover {
+      color:$option-hover-color;
+      background:$option-hover-background;
+    }
+  }
+}
+.UI-autocomplete-options-wrapper {
+   //10 = max options to show before scroll
+  max-height: (10 * 1.6em);
+  overflow-y: auto;
+}
