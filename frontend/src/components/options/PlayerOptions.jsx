@@ -44,7 +44,7 @@ class PlayerOptions extends Component {
     return (settings.Player ?
       <>
         <div className="form-group">
-          <label htmlFor="Player.StayOnTop" className="col-xs-4 control-label">
+          <label className="col-xs-4 control-label">
             {t("ALWAYS_ON_TOP")}
           </label>
           <div className="col-xs-6">
@@ -53,7 +53,7 @@ class PlayerOptions extends Component {
           </div>
         </div>
         <div className="form-group">
-          <label htmlFor="Player.FullScreen" className="col-xs-4 control-label">
+          <label className="col-xs-4 control-label">
             {t("FULLSCREEN")}
           </label>
           <div className="col-xs-6">
@@ -62,7 +62,7 @@ class PlayerOptions extends Component {
           </div>
         </div>
         <div className="form-group">
-          <label htmlFor="Player.Screen" className="col-xs-4 control-label">
+          <label className="col-xs-4 control-label">
             {t("MONITOR_NUMBER")}
           </label>
           <div className="col-xs-6">
@@ -79,10 +79,7 @@ class PlayerOptions extends Component {
         </div>
 
         <div className="form-group">
-          <label
-            htmlFor="Karaoke.Display.ConnectionInfo.Enabled"
-            className="col-xs-4 control-label"
-          >
+          <label className="col-xs-4 control-label">
             {t("ENGINEDISPLAYCONNECTIONINFO")}
           </label>
           <div className="col-xs-6">
@@ -97,10 +94,7 @@ class PlayerOptions extends Component {
             className="well well-sm settingsGroupPanel"
           >
             <div className="form-group">
-              <label
-                className="col-xs-4 control-label"
-                htmlFor="Karaoke.Display.ConnectionInfo.QRCode"
-              >
+              <label className="col-xs-4 control-label">
                 {t("ENGINEDISPLAYCONNECTIONINFOQRCODE")}
               </label>
               <div className="col-xs-6">
@@ -110,10 +104,7 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label
-                htmlFor="Karaoke.Display.ConnectionInfo.Host"
-                className="col-xs-4 control-label"
-              >
+              <label className="col-xs-4 control-label">
                 {t("ENGINEDISPLAYCONNECTIONINFOHOST")}
               </label>
               <div className="col-xs-6">
@@ -127,10 +118,7 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label
-                htmlFor="Karaoke.Display.ConnectionInfo.Message"
-                className="col-xs-4 control-label"
-              >
+              <label className="col-xs-4 control-label">
                 {t("ENGINEDISPLAYCONNECTIONINFOMESSAGE")}
               </label>
               <div className="col-xs-6">
@@ -146,7 +134,7 @@ class PlayerOptions extends Component {
         ) : null}
 
         <div className="form-group">
-          <label htmlFor="Player.PIP.Enabled" className="col-xs-4 control-label">
+          <label className="col-xs-4 control-label">
             {t("PLAYERPIP")}
           </label>
           <div className="col-xs-6">
@@ -157,7 +145,7 @@ class PlayerOptions extends Component {
         {settings.Player.PIP.Enabled ?
           <div id="pipSettings" className="well well-sm settingsGroupPanel">
             <div className="form-group">
-              <label htmlFor="Player.PIP.Size" className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label">
                 {t("VIDEO_SIZE") + " (" + settings.Player.PIP.Size + "%)"}
               </label>
               <div className="col-xs-6">
@@ -171,10 +159,7 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label
-                htmlFor="Player.PIP.PositionX"
-                className="col-xs-4 control-label"
-              >
+              <label className="col-xs-4 control-label">
                 {t("VIDEO_POSITION_X")}
               </label>
               <div className="col-xs-6">
@@ -192,10 +177,7 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label
-                htmlFor="Player.PIP.PositionY"
-                className="col-xs-4 control-label"
-              >
+              <label className="col-xs-4 control-label">
                 {t("VIDEO_POSITION_Y")}
               </label>
               <div className="col-xs-6">
@@ -213,10 +195,7 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label
-                htmlFor="Karaoke.Display.Nickname"
-                className="col-xs-4 control-label"
-              >
+              <label className="col-xs-4 control-label">
                 {t("ENGINEDISPLAYNICKNAME")}
               </label>
               <div className="col-xs-6">
@@ -226,10 +205,7 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label
-                htmlFor="Karaoke.Display.Avatar"
-                className="col-xs-4 control-label"
-              >
+              <label className="col-xs-4 control-label">
                 {t("ENGINEDISPLAYAVATAR")}
               </label>
               <div className="col-xs-6">
@@ -239,7 +215,7 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label htmlFor="Player.Monitor" className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label">
                 {t("PLAYERMONITOR")}
               </label>
               <div className="col-xs-6">
@@ -249,10 +225,7 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label
-                htmlFor="Player.VisualizationEffects"
-                className="col-xs-4 control-label"
-              >
+              <label className="col-xs-4 control-label">
                 {t("PLAYERVISUALIZATIONEFFECTS")}
               </label>
               <div className="col-xs-6">

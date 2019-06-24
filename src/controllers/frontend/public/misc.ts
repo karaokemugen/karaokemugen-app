@@ -32,8 +32,7 @@ export default function publicMiscController(router: Router) {
  *	 App: {
  *		FirstRun: true,
  *		InstanceID: 'Change me',
- *		JwtSecret: 'Change me',
- *		karaSuggestionMail: 'shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org',
+ *		JwtSecret: 'Change me'
  *	},
  *	Database: {
  *		'sql-file': true,

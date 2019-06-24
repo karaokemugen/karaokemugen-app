@@ -2,7 +2,7 @@
 import {requireAuth, requireValidUser, requireAdmin} from '../middlewares/auth';
 import {requireNotDemo} from '../middlewares/demo';
 
-import {getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads} from '../../services/download';
+import {getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras} from '../../services/download';
 import {getRepos} from '../../services/repo';
 import { Router } from 'express';
 
@@ -98,7 +98,7 @@ export default function systemDownloadController(router: Router) {
 	});
 	router.delete('/system/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
-			await removeDownloadBLC(req.params.id);
+			await removeDownloadBLC(parseInt(req.params.id));
 			res.status(200).send('Download blacklist criteria removed');
 		} catch(err) {
 			res.status(500).send(`Error removing download BLC : ${err}`);
@@ -112,6 +112,28 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error emptying download BLC : ${err}`);
 		}
 	});
-
-
+	router.post('/system/downloads/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await updateAllKaras(req.body.instance);
+			res.status(200).send('Update in progress');
+		} catch(err) {
+			res.status(500).send(`Error computing update: ${err}`);
+		}
+	});
+	router.post('/system/downloads/all', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await downloadAllKaras(req.body.instance);
+			res.status(200).send('Download in progress');
+		} catch(err) {
+			res.status(500).send(`Error computing update: ${err}`);
+		}
+	});
+	router.post('/system/downloads/clean', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await cleanAllKaras(req.body.instance);
+			res.status(200).send('Cleanup in progress');
+		} catch(err) {
+			res.status(500).send(`Error computing update: ${err}`);
+		}
+	});
 }

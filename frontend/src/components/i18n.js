@@ -3,6 +3,8 @@ import { initReactI18next } from 'react-i18next';
 
 import Backend from 'i18next-xhr-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
+const en = require('./locales/en.json');
+const fr = require('./locales/fr.json');
 
 i18n
   // load translation using xhr -> see /public/locales
@@ -17,12 +19,17 @@ i18n
   // for all options read: https://www.i18next.com/overview/configuration-options
   .init({
     fallbackLng: 'en',
-  
+
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
-    backend: {
-      loadPath: '../locales/{{lng}}.json'
+    resources: {
+      en: {
+        translation : en
+      },
+      fr: {
+        translation : fr
+      }
     }
   });
 

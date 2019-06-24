@@ -2,8 +2,7 @@ export interface Config {
 	App: {
 		JwtSecret?: string,
 		InstanceID?: string,
-		FirstRun?: boolean,
-		karaSuggestionMail?: string
+		FirstRun?: boolean
 	},
 	Online: {
 		Host?: string,
@@ -24,7 +23,7 @@ export interface Config {
 			AllowViewBlacklistCriterias?: boolean
 		}
 	},
-	Gitlab?: {
+	Gitlab: {
 		Enabled?: boolean,
 		Host?: string,
 		Token?: string,
@@ -88,6 +87,7 @@ export interface Config {
 	},
 	Playlist: {
 		AllowDuplicates?: boolean,
+		AllowDuplicateSeries?: boolean,
 		MaxDejaVuTime?: number,
 		RemovePublicOnPlay?: boolean
 	},

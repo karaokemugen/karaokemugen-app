@@ -54,7 +54,7 @@ import {
 //KM Modules
 import {updateSongsLeft, findUserByName} from './user';
 import {Token, User} from '../lib/types/user';
-import {translateKaraInfo, isAllKaras, formatKaraList, getKaras} from './kara';
+import {translateKaraInfo, isAllKaras, formatKaraList, getKaras, getKara} from './kara';
 import {playPlayer, playingUpdated} from './player';
 import {isPreviewAvailable} from '../lib/utils/previews';
 import {getBlacklist} from './blacklist';
@@ -442,7 +442,6 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			};
 		});
 
-
 		const [userMaxPosition, numUsersInPlaylist, playlistMaxPos] =
 			await Promise.all([
 				getMaxPosInPlaylistForUser(playlist_id, user.login),
@@ -487,10 +486,26 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		}
 		if (removeDuplicates) {
 			karaList = isAllKarasInPlaylist(karaList, plContentsBeforePlay);
+		}
+		// If AllowDuplicateSeries is set to false, remove all songs with the same SIDs
+		if (!conf.Playlist.AllowDuplicateSeries && !addByAdmin) {
+			const seriesSingersInPlaylist = plContentsBeforePlay.map(plc => {
+				if (plc.serie) return plc.serie
+				return plc.singer[0].name;
+			});
+			for (const i in karaList) {
+				const karaInfo = await getKara(karaList[i].kid, {username: 'admin', role: 'admin'});
+				karaInfo[0].serie
+					? karaList[i].uniqueSerieSinger = karaInfo[0].serie
+					: karaList[i].uniqueSerieSinger = karaInfo[0].singers[0].name
+			}
+			karaList = karaList.filter(k => {
+				return !seriesSingersInPlaylist.includes(k.uniqueSerieSinger);
+			});
 			if (karaList.length === 0) throw {
-				code: 4,
-				msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`
-			};
+				code: 5,
+				msg: `Adding karaokes from the same series / singer is not allowed`
+			}
 		}
 		if (karaList.length === 0) throw {
 			code: 4,
@@ -553,6 +568,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 	} catch(err) {
 		logger.error(`[Playlist] Unable to add karaokes : ${JSON.stringify(err)}`);
 		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
+		if (err.code === 5) errorCode =
+		'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
 		let plname : string;
 		pl ? plname = pl.name : plname = 'Unknown';
 		throw {
@@ -729,7 +746,7 @@ export async function exportPlaylist(playlist_id: number) {
 				username: plc.username,
 				serie: plc.serie,
 				title: plc.title,
-				songtype: plc.songtypes[0].name,
+				songtype: plc.songtype[0].name,
 				songorder: plc.songorder,
 				language: plc.languages[0].name,
 				flag_playing: plc.flag_playing || undefined
@@ -1067,7 +1084,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		}
 		const currentSong: CurrentSong = {...kara}
 		// Construct mpv message to display.
-		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' + i18n.__(kara.songtypes[0].name+'_SHORT')+songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
+		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' + i18n.__(kara.songtype[0].name+'_SHORT')+songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 		currentSong.avatar = avatarfile;
 		return currentSong;
 	} catch(err) {

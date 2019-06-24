@@ -32,6 +32,7 @@ let state: State = {
 		strict: false,
 		noMedia: false,
 		baseUpdate: false,
+		mediaUpdate: false,
 		noBrowser: false,
 		sql: false,
 		validate: false,

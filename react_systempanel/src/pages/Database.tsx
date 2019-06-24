@@ -192,7 +192,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 						}
 						disabled={this.props.loadingActive}
 					>
-						Update your karaoke base files from Shelter
+						Update your media files from your configured instance (Karaoke base git users only)
 					</Button>
 				</div>
 				<div>
@@ -213,17 +213,6 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 						Reset song viewcounts
 					</Button>
 				</div>
-				<div>
-					<Button
-						type='primary'
-						onClick={
-							() => this.setState({renameModal: true})
-						}
-						disabled={this.props.loadingActive}
-					>
-						Rename all data files to KM naming convention
-					</Button>
-				</div>
 				<Modal
 					title='Confirm update'
 					visible={this.state.updateModal}
@@ -237,21 +226,6 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 				>
 					<p>WARNING: Updating will delete <b>any file not in the official Karaoke Mugen repository</b>.</p>
 					<p>If you created karaokes but did not upload them, they will be deleted.</p>
-					<p>Are you sure?</p>
-				</Modal>
-				<Modal
-					title='Confirm renaming'
-					visible={this.state.renameModal}
-					onOk={() => {
-						this.dbrenameallkaras();
-						this.setState({renameModal: false});
-					}}
-					onCancel={() => this.setState({renameModal: false})}
-					okText='Yes, do it!'
-					cancelText='No'
-				>
-					<p>WARNING: Renaming all files to KM convention is not undo-able.</p>
-					<p>You can check progress in the Karaoke Mugen console window</p>
 					<p>Are you sure?</p>
 				</Modal>
 				<h1>Progress</h1>

@@ -54,6 +54,7 @@ export interface State {
 		strict?: boolean,
 		noMedia?: boolean,
 		baseUpdate?: boolean,
+		mediaUpdate?: boolean,
 		noBrowser?: boolean,
 		sql?: boolean,
 		validate?: boolean,

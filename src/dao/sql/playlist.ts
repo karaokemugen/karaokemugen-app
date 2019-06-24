@@ -113,8 +113,11 @@ SELECT pc.fk_kid AS kid,
 	pc.pk_id_plcontent AS playlistcontent_id,
 	pc.flag_playing AS flag_playing,
 	pc.pos AS pos,
-	pc.fk_id_playlist AS playlist_id
+	pc.fk_id_playlist AS playlist_id,
+	ak.serie AS serie_orig,
+	ak.singers AS singer
 FROM playlist_content AS pc
+INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid
 WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos,pc.created_at DESC
 `;
@@ -206,7 +209,7 @@ SELECT ak.kid AS kid,
 	  (SELECT array_to_string (array_agg(name), ', ') FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.fallback}),
 		ak.serie
 	) AS serie,
-	ak.songtypes AS songtypes,
+	ak.songtypes AS songtype,
 	ak.singers AS singers,
     ak.gain AS gain,
     pc.nickname AS nickname,

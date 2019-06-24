@@ -11,10 +11,7 @@ class KaraokeOptions extends Component {
       <>
         <div id="nav-karaokeAllMode">
           <div className="form-group">
-            <label
-              htmlFor="Karaoke.Quota.Type"
-              className="col-xs-4 control-label"
-            >
+            <label className="col-xs-4 control-label">
               {t("QUOTA_TYPE")}
             </label>
             <div className="col-xs-6">
@@ -33,10 +30,7 @@ class KaraokeOptions extends Component {
           </div>
           {settings.Karaoke.Quota.Type === 2 ?
             <div className="form-group">
-              <label
-                htmlFor="Karaoke.Quota.Time"
-                className="col-xs-4 control-label"
-              >
+              <label className="col-xs-4 control-label">
                 {t("TIME_BY_USER")}
               </label>
               <div className="col-xs-6">
@@ -53,10 +47,7 @@ class KaraokeOptions extends Component {
 
           {settings.Karaoke.Quota.Type === 1 ?
             <div className="form-group">
-              <label
-                htmlFor="Karaoke.Quota.Songs"
-                className="col-xs-4 control-label"
-              >
+              <label className="col-xs-4 control-label">
                 {t("SONGS_BY_USER")}
               </label>
               <div className="col-xs-6">
@@ -73,10 +64,7 @@ class KaraokeOptions extends Component {
 
           {settings.Karaoke.Quota.Type !== 0 ?
             <div className="form-group">
-              <label
-                htmlFor="Karaoke.Quota.FreeAutoTime"
-                className="col-xs-4 control-label"
-              >
+              <label className="col-xs-4 control-label">
                 {t("FREE_AUTO_TIME")}
               </label>
               <div className="col-xs-6">
@@ -92,10 +80,7 @@ class KaraokeOptions extends Component {
             </div> : null}
 
           <div className="form-group">
-            <label
-              htmlFor="Karaoke.JinglesInterval"
-              className="col-xs-4 control-label"
-            >
+            <label className="col-xs-4 control-label">
               {t("ENGINEJINGLESINTERVAL")}
             </label>
             <div className="col-xs-6">
@@ -111,7 +96,7 @@ class KaraokeOptions extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="Karaoke.Repeat" className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label">
               {t("ENGINEREPEATPLAYLIST")}
             </label>
             <div className="col-xs-6">
@@ -121,10 +106,7 @@ class KaraokeOptions extends Component {
           </div>
 
           <div className="form-group">
-            <label
-              htmlFor="Karaoke.SmartInsert"
-              className="col-xs-4 control-label"
-            >
+            <label className="col-xs-4 control-label">
               {t("ENGINEENABLESMARTINSERT")}
             </label>
             <div className="col-xs-6">
@@ -134,7 +116,7 @@ class KaraokeOptions extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="Karaoke.Autoplay" className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label">
               {t("ENGINEAUTOPLAY")}
             </label>
             <div className="col-xs-6">
@@ -144,15 +126,22 @@ class KaraokeOptions extends Component {
           </div>
 
           <div className="form-group">
-            <label
-              htmlFor="Playlist.AllowDuplicates"
-              className="col-xs-4 control-label"
-            >
+            <label className="col-xs-4 control-label">
               {t("ENGINEALLOWDUPLICATES")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Playlist.AllowDuplicates" handleChange={this.props.onChange}
                 isChecked={settings.Playlist.AllowDuplicates} />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {t("ENGINEALLOWDUPLICATESSERIES")}
+            </label>
+            <div className="col-xs-6">
+              <Switch idInput="Playlist.AllowDuplicateSeries" handleChange={this.props.onChange}
+                isChecked={settings.Playlist.AllowDuplicateSeries} />
             </div>
           </div>
         </div>
@@ -164,7 +153,7 @@ class KaraokeOptions extends Component {
 
         <div id="nav-karaokeOnlineSettings">
           <div className="form-group">
-            <label htmlFor="Online.URL" className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label">
               {t("ONLINEURL")}
             </label>
             <div className="col-xs-6">
@@ -173,7 +162,7 @@ class KaraokeOptions extends Component {
             </div>
           </div>
           <div className="form-group">
-            <label htmlFor="Online.Users" className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label">
               {t("ONLINEUSERS")}
             </label>
             <div className="col-xs-6">
@@ -183,7 +172,7 @@ class KaraokeOptions extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="Online.Stats" className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label">
               {t("ONLINESTATS")}
             </label>
             <div className="col-xs-6">
@@ -204,10 +193,7 @@ class KaraokeOptions extends Component {
               className="well well-sm settingsGroupPanel"
             >
               <div className="form-group">
-                <label
-                  className="col-xs-4 control-label"
-                  htmlFor="Karaoke.Quota.FreeUpVotesRequiredMin"
-                >
+                <label className="col-xs-4 control-label">
                   {t("ENGINEFREEUPVOTESREQUIREDMIN")}
                 </label>
                 <div className="col-xs-6">
@@ -221,10 +207,7 @@ class KaraokeOptions extends Component {
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  htmlFor="Karaoke.Quota.FreeUpVotesRequiredPercent"
-                  className="col-xs-4 control-label"
-                >
+                <label className="col-xs-4 control-label">
                   {t("ENGINEFREEUPVOTESREQUIREDPERCENT")}
                 </label>
                 <div className="col-xs-6">
@@ -240,10 +223,7 @@ class KaraokeOptions extends Component {
             </div> : null}
 
           <div className="form-group">
-            <label
-              htmlFor="Karaoke.Poll.Enabled"
-              className="col-xs-4 control-label"
-            >
+            <label className="col-xs-4 control-label">
               {t("ENGINESONGPOLL")}
             </label>
             <div className="col-xs-6">
@@ -255,10 +235,7 @@ class KaraokeOptions extends Component {
           {settings.Karaoke.Poll.Enabled ?
             <div id="songPollSettings" className="well well-sm settingsGroupPanel">
               <div className="form-group">
-                <label
-                  className="col-xs-4 control-label"
-                  htmlFor="Karaoke.Poll.Choices"
-                >
+                <label className="col-xs-4 control-label">
                   {t("ENGINESONGPOLLCHOICES")}
                 </label>
                 <div className="col-xs-6">
@@ -272,10 +249,7 @@ class KaraokeOptions extends Component {
                 </div>
               </div>
               <div className="form-group">
-                <label
-                  htmlFor="Karaoke.Poll.Timeout"
-                  className="col-xs-4 control-label"
-                >
+                <label className="col-xs-4 control-label">
                   {t("ENGINESONGPOLLTIMEOUT")}
                 </label>
                 <div className="col-xs-6">
@@ -290,10 +264,7 @@ class KaraokeOptions extends Component {
               </div>
 
               <div className="form-group">
-                <label
-                  htmlFor="Karaoke.Quota.FreeUpVote"
-                  className="col-xs-4 control-label"
-                >
+                <label className="col-xs-4 control-label">
                   {t("ENGINEFREEUPVOTES")}
                 </label>
                 <div className="col-xs-6">

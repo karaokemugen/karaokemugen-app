@@ -1,7 +1,7 @@
 import { KaraFileV4 } from "../lib/types/kara";
 import { Series } from "../lib/types/series";
 import { checksum } from "../lib/utils/files";
-import { profile } from "../lib/utils/logger";
+import logger, { profile } from "../lib/utils/logger";
 import { extractAllKaraFiles, extractAllSeriesFiles } from "../lib/services/generation";
 import Bar from "../lib/utils/bar";
 import { parseKara } from "../lib/dao/karafile";
@@ -12,12 +12,20 @@ let dataStore = {
 	series: []
 };
 
+function findKaraInStore(kid: string) {
+	return dataStore.karas.find(k => k.kid === kid);
+}
+
+function findSeriesInStore(sid: string) {
+	return dataStore.series.find(s => s.sid === sid);
+}
+
 export function addKaraToStore(kara: KaraFileV4) {
-	dataStore.karas.push(kara);
+	if (!findKaraInStore(kara.data.kid)) dataStore.karas.push(kara);
 }
 
 export function addSeriesToStore(series: Series) {
-	dataStore.series.push(series);
+	if (!findSeriesInStore(series.sid)) dataStore.series.push(series);
 }
 
 export function sortKaraStore() {
@@ -37,7 +45,8 @@ export function sortSeriesStore() {
 }
 
 export function getStoreChecksum() {
-	return checksum(JSON.stringify(dataStore));
+	const store = JSON.stringify(dataStore, null, 2);
+	return checksum(store);
 }
 
 export function editKaraInStore(kid: string, kara: KaraFileV4) {
@@ -64,14 +73,15 @@ export function removeSeriesInStore(sid: string) {
 
 export async function baseChecksum(silent?: boolean) {
 	profile('baseChecksum');
-	let bar: any;
+	 let bar: any;
 	const [karaFiles, seriesFiles] = await Promise.all([
 		extractAllKaraFiles(),
 		extractAllSeriesFiles()
 	]);
 	if (karaFiles.length === 0) return null;
+	logger.info(`[Store] Found ${karaFiles.length} kara files and ${seriesFiles.length} series files`)
 	if (!silent) bar = new Bar({
-		message: 'Checking .karas...   '
+		message: 'Checking karas...    '
 	}, karaFiles.length);
 	for (const karaFile of karaFiles) {
 		const data = await parseKara(karaFile);
