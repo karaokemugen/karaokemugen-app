@@ -253,7 +253,7 @@ class ProfilModal extends Component {
                                             <div className="profileLine row">
                                                 <label className="col-xs-6 control-label">{t("FALLBACK_SERIES_LANG")}</label>
                                                 <div className="col-xs-6">
-                                                    <select type="number" className="form-control" name="fallback_series_lang" defaultValue={this.state.user.main_series_lang} onChange={this.onKeyPress}>
+                                                    <select type="number" className="form-control" name="fallback_series_lang" defaultValue={this.state.user.fallback_series_lang} onChange={this.onKeyPress}>
                                                         {listLangs.map(lang => {
                                                             return <option key={lang.value} value={lang.value}>{lang.text}</option>
                                                         })}
