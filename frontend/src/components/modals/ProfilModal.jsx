@@ -38,6 +38,18 @@ class ProfilModal extends Component {
         }
     }
 
+    onClick(name, value) {
+        const user = this.state.user;
+        user[name] = value;
+        this.setState({ user: user });
+        if (this.state.user.password && this.state.user.password === this.state.user.passwordConfirmation || !this.state.user.password) {
+            this.setState({passwordDifferent: 'form-control'});
+            axios.put('/api/public/myaccount/', this.state.user);
+        } else {
+            this.setState({passwordDifferent: 'form-control redBorders'});
+        }
+    }
+
     async getUser() {
         var response = await axios.get('/api/public/myaccount/');
         var user = response.data.data;
@@ -244,13 +256,13 @@ class ProfilModal extends Component {
                                             <div className="profileLine row">
                                                 <label className="col-xs-6 control-label">{t("MAIN_SERIES_LANG")}</label>
                                                 <div className="col-xs-6">
-                                                    <Autocomplete className="form-control" name="main_series_lang" value={this.state.user.main_series_lang} options={listLangs} onChange={this.onKeyPress}/>
+                                                    <Autocomplete className="form-control" name="main_series_lang" value={this.state.user.main_series_lang} options={listLangs} onChange={(value) => this.onClick("main_series_lang", value)}/>
                                                 </div>
                                             </div>
                                             <div className="profileLine row">
                                                 <label className="col-xs-6 control-label">{t("FALLBACK_SERIES_LANG")}</label>
                                                 <div className="col-xs-6">
-                                                    <Autocomplete className="form-control" name="fallback_series_lang" value={this.state.user.fallback_series_lang} options={listLangs} onChange={this.onKeyPress}/>
+                                                    <Autocomplete className="form-control" name="fallback_series_lang" value={this.state.user.fallback_series_lang} options={listLangs} onChange={(value) => this.onClick("fallback_series_lang", value)}/>
                                                 </div>
                                             </div>
                                         </React.Fragment> : null
