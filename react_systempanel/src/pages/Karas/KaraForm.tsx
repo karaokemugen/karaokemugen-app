@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Checkbox, Form, Icon, Input, InputNumber, message, Select, Tooltip, Upload} from 'antd';
+import {Button, Form, Icon, Input, InputNumber, message, Select, Tooltip, Upload} from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
 
 interface KaraFormProps {
