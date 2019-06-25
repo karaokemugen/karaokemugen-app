@@ -10,7 +10,6 @@ import logger from '../lib/utils/logger';
 
 export async function editKara(kara: Kara) {
 	let newKara: NewKara;
-	let overwrite = false;
 	try {
 		const mediaFile = resolve(resolvedPathMedias()[0], kara.mediafile);
 		let subFile: string;
@@ -22,14 +21,12 @@ export async function editKara(kara: Kara) {
 		delete kara.karafile;
 		// Copying already present files in temp directory to be worked on with by generateKara
 		if (!kara.mediafile_orig) {
-			overwrite = true;
 			kara.noNewVideo = true;
 			kara.mediafile_orig = kara.mediafile;
 			if (!await asyncExists(mediaFile)) throw `Mediafile ${mediaFile} does not exist! Check your base files or upload a new media`;
 			await asyncCopy(mediaFile, resolve(resolvedPathTemp(), kara.mediafile), {overwrite: true});
 		}
 		if (!kara.subfile_orig) {
-			overwrite = true;
 			kara.subfile_orig = kara.subfile;
 			if (kara.subfile) {
 				if (!await asyncExists(subFile)) throw `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`;
@@ -37,7 +34,7 @@ export async function editKara(kara: Kara) {
 			}
 		}
 		// Treat files
-		newKara = await generateKara(kara, overwrite, resolvedPathKaras()[0], resolvedPathMedias()[0], resolvedPathSubs()[0]);
+		newKara = await generateKara(kara, resolvedPathKaras()[0], resolvedPathMedias()[0], resolvedPathSubs()[0]);
 
 		const newMediaFile = resolve(resolvedPathMedias()[0],newKara.data.mediafile);
 
@@ -75,7 +72,7 @@ export async function editKara(kara: Kara) {
 }
 
 export async function createKara(kara: Kara) {
-	const newKara = await generateKara(kara, false, resolvedPathKaras()[0], resolvedPathMedias()[0], resolvedPathSubs()[0]);
+	const newKara = await generateKara(kara, resolvedPathKaras()[0], resolvedPathMedias()[0], resolvedPathSubs()[0]);
 	addKaraToStore(newKara.fileData);
 	sortKaraStore();
 	saveSetting('baseChecksum', getStoreChecksum());

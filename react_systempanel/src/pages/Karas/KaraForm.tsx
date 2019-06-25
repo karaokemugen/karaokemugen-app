@@ -10,7 +10,6 @@ interface KaraFormProps {
 
 interface KaraFormState {
 	seriesRequired: boolean,
-	overwrite: boolean,
 	subfileList: any[],
 	mediafileList: any[],
 	singers: string[],
@@ -38,7 +37,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	createStateFromProps(props) {
 		const state = {
 			seriesRequired: true,
-			overwrite: false,
 			subfileList: [],
 			mediafileList: [],
 			singers: [],
@@ -67,7 +65,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		if (this.props.kara.songtype && this.props.kara.songtype.length > 0) state.songtype =  this.props.kara.songtype[0].replace('TYPE_','');
 		if (this.props.kara.tags && this.props.kara.tags.length > 0 && !this.props.kara.tags.includes('NO_TAG')) state.tags = this.props.kara.tags;
 		if (this.props.kara.mediafile_old) {
-			state.overwrite = true;
 			state.mediafileList = [{
 				uid: -1,
 				name: this.props.kara.mediafile_old,
@@ -75,7 +72,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			}];
 		}
 		if (this.props.kara.subfile_old) {
-			state.overwrite = true;
 			state.subfileList = [{
 				uid: -1,
 				name: this.props.kara.subfile_old,
@@ -100,10 +96,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	isMediaFile = (filename) => {
 		return new RegExp('^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg|ogg|m4a|mp3)$').test(filename);
-	};
-
-	onChangeOverwrite = (e) => {
-		this.props.form.setFieldsValue({ overwrite: e.target.checked});
 	};
 
 	onChangeType = (e) => {
@@ -440,18 +432,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						search={'tag'}
 						onChange={ (tags) => this.props.form.setFieldsValue({ groups: tags.join(',') }) }
 					/>)}
-				</Form.Item>
-				<Form.Item hasFeedback
-					label="Overwrite files"
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 7, offset: 0 }}
-				>
-					<Checkbox onChange={this.onChangeOverwrite}>WARNING : any existing media or subfile will be overwritten!</Checkbox>
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('overwrite', {
-						initialValue: this.state.overwrite
-					})(<Input type="hidden" />)}
 				</Form.Item>
 				<Form.Item
 					label='Creation date'
