@@ -4,10 +4,11 @@
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 
-const {useState, useRef, useEffect, Component} = React;
+import React, {useState, useRef, useEffect, Component} from  'react';
 
 function Autocomplete(props){
  
+  const node = useRef();
   const [label, setLabel] = useState(props.label || null);
   const [placeholder, setPlaceholder] = useState(props.placeholder || null);
   const [selectedValue, setSelectedValue] = useState(props.value || "");
@@ -28,10 +29,8 @@ function Autocomplete(props){
   
   // INPUT USER EVENT
   const handleInputFocus = (e) => {
-    clearTimeout(blurDelay); // avoid panel close on multiple click on select field
-    setFocus(false);
     setSearchValue("");
-    setTimeout(() => setFocus(true),10);
+    setFocus(true);
   };
   const handleInputChange = (e) => {
     updateSelectedValue(e.target.value);
@@ -43,14 +42,12 @@ function Autocomplete(props){
     setSearchValue(e.target.value);
     setActiveIndex(0);
   };
-  const handleSearchBlur = (e) => {
-    blurDelay = setTimeout(() => setFocus(false),100);
-  };
   const handleSearchKeyUp = (e) => {
+    var fo = filteredOptions();
     if(e.keyCode===13) { 
       //RETURN
       setFocus(false);
-      let o = filteredOptions()[activeIndex]
+      let o = fo[activeIndex]
       if(o)
       {
         updateSelectedValue(o.value)
@@ -59,9 +56,9 @@ function Autocomplete(props){
     else if(e.keyCode===27) //ESC
       setFocus(false);
     else if(e.keyCode===40) //DOWN
-      setActiveIndex(options.length > 0 ? (activeIndex+1)%options.length : 0)
+      setActiveIndex(fo.length > 0 ? Math.min(activeIndex+1, fo.length-1) : 0)
     else if(e.keyCode===38) //UP
-      setActiveIndex(options.length > 0 ? (activeIndex-1)%options.length : 0)
+      setActiveIndex(fo.length > 0 ? Math.max(activeIndex-1, 0) : 0)
   };
   
   const handleOptionSelection = (o) => {
@@ -74,14 +71,28 @@ function Autocomplete(props){
       || o.value.toLowerCase().match(searchValue.toLowerCase())
   });
 
+  const handleClick = e => {
+    if (node.current.contains(e.target)) {
+      // inside click
+      return;
+    }
+    // outside click 
+    setFocus(false)
+  };
+
   useEffect(() => {
-    // call on render
     if(focus)
       searchInputRef.current.focus();
-  });
+    // add when mounted
+    document.addEventListener("mousedown", handleClick);
+    // return function to be called when unmounted
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, [focus]); // executé au démarrage puis en cas de mise à jour de focus
   
   return (
-    <div className="UI-autocomplete">
+    <div className="UI-autocomplete" ref={node}>
       {
         typeof label === "string" && label.length>0 
           ? <label className="UI-autocomplete-label">{label} </label>
@@ -101,11 +112,10 @@ function Autocomplete(props){
             <input type="text" ref={searchInputRef} value={searchValue} placeholder={placeholder}
               onChange={handleSearchChange}
               onKeyUp={handleSearchKeyUp}
-              onBlur={handleSearchBlur}
               />
           </li>
           <div className="UI-autocomplete-options-wrapper">
-            {filteredOptions().map((o,index) => <li class="UI-autocomplete-option" index={index} active={index==activeIndex ? 'true':'false'} key={index} onClick={() => handleOptionSelection(o)}>{o.label}</li>)}
+            {filteredOptions().map((o,index) => <li className="UI-autocomplete-option" index={index} active={index==activeIndex ? 'true':'false'} key={index} onClick={() => handleOptionSelection(o)}>{o.label}</li>)}
           </div>
         </ul>
       </div>

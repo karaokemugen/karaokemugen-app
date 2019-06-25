@@ -1,17 +1,17 @@
 $label-color:inherit;
 
-$input-color:#333;
-$input-background:#fff;
+$input-color:#fff;
+$input-background:#333;
 $input-border:#aaa;
 $input-placeholder:#aaa;
 
-$options-color:#333;
-$options-background:#fff;
+$options-color:#fff;
+$options-background:#333;
 $options-border:#aaa;
 $option-hover-color:#fff;
-$option-hover-background:#999;
+$option-hover-background:#666;
 $option-active-color:#fff;
-$option-active-background:#aaa;
+$option-active-background:#00b0ed;
 
 // options list display on input focus
 .UI-autocomplete-options {
@@ -31,38 +31,42 @@ $option-active-background:#aaa;
 .UI-autocomplete-input {
   display: inline-block;
   position: relative;
+  max-width: 100%;
 }
 .UI-autocomplete-input select {
   position: relative;
   z-index: 1;
   padding: 0.5em;
-  border-radius:0.25em;
   border:1px solid $input-border;
   color:$input-color;
   background:$input-background;
+  max-width: 100%;
 }
 .UI-autocomplete-input input {
-  padding: 0.5em;
-  border-radius:0.25em;
+  padding: 0.25em;
   border:1px solid $input-border;
   color:$input-color;
   background:$input-background;
+  height: auto !important;
+  line-height: 1em !important;
+  width: 100% !important;
   &::placeholder {
     color:$input-placeholder;
   }
+  &:focus {
+    background:$input-background;
+    color:$input-color;
+  }
 }
 .UI-autocomplete-options {
-  position: absolute;
+  position: fixed;
   z-index: 2;
-  top: 2.25em;
   list-style-type: none;
   padding: .25em;
   margin: 0;
   border:1px solid $options-border;
-  border-radius:0.25em;
   color:$options-color;
   background:$options-background;
-  min-width: 100%;
   .UI-autocomplete-option {
     cursor: pointer;
     padding: .25em;
