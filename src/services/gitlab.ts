@@ -11,7 +11,7 @@ export async function PostSuggestionToKaraBase(karaName: string, username: strin
 	const user = await findUserByName(username);
 	desc = desc.replace('$username', user.nickname)
 	try {
-		return await gitlabPostNewIssue(title, desc);
+		return await gitlabPostNewIssue(title, desc, conf.Gitlab.IssueTemplate.Suggestion.Labels);
 	} catch(err) {
 		logger.error(`[Gitlab] Call to Gitlab API failed : ${err}`);
 	}
