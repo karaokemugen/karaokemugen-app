@@ -34,6 +34,9 @@
     "@types/react-router-redux": "^5.0.18",
     "typescript": "^3.4.3"
   },
+  "resolutions": {
+    "react-scripts/**/fsevents": "1.2.9"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
