@@ -115,6 +115,7 @@ export async function addBlacklistCriteria(type: number, value: any) {
 		await addBLC(blcList);
 		return await generateBlacklist();
 	} catch(err) {
+		logger.error(`[Blacklist] Error adding criteria : ${JSON.stringify(err)}`)
 		throw err;
 	} finally {
 		profile('addBLC');
