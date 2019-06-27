@@ -1,4 +1,4 @@
-import {getConfig, setConfig, resolvedPathTemp} from '../lib/utils/config';
+import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars} from '../lib/utils/config';
 import {Config} from '../types/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
 import {convertToRemoteFavorites} from './favorites';
@@ -557,7 +557,13 @@ async function updateGuestAvatar(user: User) {
 		logger.warn(`[User] The user "${user.login}" does not have a matching avatar file in assets. Searched : ${bundledAvatarFile}`);
 		return false;
 	}
-	const avatarStats = await asyncStat(resolve(getState().appPath, getConfig().System.Path.Avatars, user.avatar_file));
+	let avatarStats: any = {};
+	try {
+		avatarStats = await asyncStat(resolve(getState().appPath, getConfig().System.Path.Avatars, user.avatar_file));
+	} catch(err) {
+		// It means one avatar has disappeared, we'll put a 0 size on it so the replacement is triggered later
+		avatarStats.size = 0;
+	}
 	const bundledAvatarStats = await asyncStat(bundledAvatarPath);
 	if (avatarStats.size !== bundledAvatarStats.size) {
 		// bundledAvatar is different from the current guest Avatar, replacing it.
@@ -653,10 +659,9 @@ async function cleanupAvatars() {
 	for (const user of users) {
 		if (!avatars.includes(user.avatar_file)) avatars.push(user.avatar_file);
 	}
-	const conf = getConfig();
-	const avatarFiles = await asyncReadDir(resolve(getState().appPath, conf.System.Path.Avatars));
+	const avatarFiles = await asyncReadDir(resolvedPathAvatars());
 	for (const file of avatarFiles) {
-		if (!avatars.includes(file) && file !== 'blank.png') asyncUnlink(resolve(getState().appPath, conf.System.Path.Avatars, file));
+		if (!avatars.includes(file) && file !== 'blank.png') asyncUnlink(resolve(resolvedPathAvatars(), file));
 	}
 	return true;
 }
