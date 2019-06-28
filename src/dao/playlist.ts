@@ -122,7 +122,7 @@ export async function getPlaylistContentsMini(id: number, lang?: string): Promis
 }
 
 export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
-	const filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
+	const filterClauses = params.filter ? buildClauses(params.filter, true) : {sql: [], params: {}};
 	let limitClause = '';
 	let offsetClause = '';
 	let orderClause = 'pc.pos';
