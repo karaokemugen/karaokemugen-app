@@ -1,5 +1,14 @@
 # Versions
 
+## v2.5.3 "Konata Kimono" - 30/06/2019
+
+This is a bugfix release.
+
+### Fixes
+
+- Fixed Downloads submenu in the system panel not working with V4 kara format in KM Server (28236d09)
+- Fixed toggleOnTop setting not working (770cc4bd)
+
 ## v2.5.2 "Konata 4-Koma" - 22/05/2019
 
 This is a bugfix release.
