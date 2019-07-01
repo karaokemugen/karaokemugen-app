@@ -1,7 +1,7 @@
 
 import {on} from '../lib/utils/pubsub';
 import {getConfig} from '../lib/utils/config';
-import {copyKaraToPlaylist, isAllKarasInPlaylist, getPlaylistContentsMini} from './playlist';
+import {copyKaraToPlaylist, getPlaylistContentsMini} from './playlist';
 import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
 import {emitWS} from '../lib/utils/ws';
@@ -112,7 +112,7 @@ export async function startPoll() {
 		logger.info('[Poll] Public playlist is empty, cannot select songs for poll');
 		return false;
 	}
-	const availableKaras = isAllKarasInPlaylist(pubpl, curpl);
+	const availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
 	let pollChoices = conf.Karaoke.Poll.Choices;
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
 	poll = sampleSize(availableKaras, pollChoices);
