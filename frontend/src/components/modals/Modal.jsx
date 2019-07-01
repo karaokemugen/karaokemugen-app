@@ -40,7 +40,7 @@ class Modal extends Component {
 			<div className="modal-dialog modal-sm">
 				<div className="modal-content">
 					<div className="modal-header">
-						<h4 className="modal-title">{this.props.title}</h4>
+						<h4 className="modal-title" dangerouslySetInnerHTML={{ __html: this.props.title}}></h4>
 					</div>
 					{this.props.type === 'prompt' || (this.props.message && this.props.message !== '') ?
 						<div className="modal-body">
