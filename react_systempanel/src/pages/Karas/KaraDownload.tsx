@@ -94,8 +94,8 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		axios.get(`/api/system/karas?filter=${this.state.filter}&instance=kara.moe`)
 			.then(res => {
 				let karas = res.data.content;
-				karas.forEach((kara) => { 
-					kara.name = kara.subfile.replace('.ass', '');
+				karas.forEach((kara) => {
+					kara.name = kara.karafile.replace('.kara.json', '');
 					this.downloadKara(kara);
 				});
 				this.props.loading(false);
@@ -119,8 +119,8 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		axios.get(`/api/system/karas?filter=${this.state.filter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
 			.then(res => {
 				let karas = res.data.content;
-				karas = karas.map((kara) => { 
-					kara.name = kara.subfile.replace('.ass', '');
+				karas = karas.map((kara) => {
+					kara.name = kara.karafile.replace('.kara.json', '');
 					return kara;
 				});
 				this.props.loading(false);
