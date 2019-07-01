@@ -30,7 +30,7 @@ var saveLastDetailsKara;    // Matrice saving the differents opened kara details
 var playlistToAdd;          // Int : id of playlist users are adding their kara to
 var isTouchScreen;
 var showedLoginAfter401; // to only show the login once after login error
-var socket;
+var socket = window.socket;
 var settings;
 var kmStats;
 var i18n;
@@ -889,8 +889,6 @@ var settingsNotUpdated;
 		locale: navigator.languages[0].substring(0, 2),
 		extension: '.json'
 	});
-
-	socket = io();
 
 	isTouchScreen =  'ontouchstart' in document.documentElement || query.TOUCHSCREEN != undefined;
 	if(isTouchScreen) $('body').addClass('touch');

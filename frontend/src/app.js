@@ -4,12 +4,14 @@ import Options from './components/options/Options';
 import Modal from './components/modals/Modal';
 import ProfilModal from './components/modals/ProfilModal';
 import './components/i18n';
-
+import io from 'socket.io-client';
 import './app.css'
 
 const Loader = () => (
   <div>loading...</div>
 );
+
+window.socket = io();
 
 document.getElementById('manage') ? ReactDOM.render(<Suspense fallback={<Loader />}><Options /></Suspense>, document.getElementById('manage')) : null;
 
