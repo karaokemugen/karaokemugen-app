@@ -7044,7 +7044,7 @@
 		* @api {get} /public/series Get series list
 		* @apiName GetSeries
 		* @apiVersion 2.3.0
-		* @apiGroup Karas
+		* @apiGroup Karaokes
 		* @apiPermission public
 		* @apiHeader authorization Auth token received from logging in
 		* @apiParam {String} [filter] Text filter to search series for
