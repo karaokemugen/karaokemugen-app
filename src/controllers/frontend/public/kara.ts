@@ -672,7 +672,7 @@ export default function publicKaraController(router: Router) {
 
 			.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 				try {
-					const data = await deleteKaraFromPlaylist(req.params.plc_id,null,req.authToken);
+					const data = await deleteKaraFromPlaylist([req.params.plc_id], null, req.authToken);
 					emitWS('playlistContentsUpdated', data.pl_id);
 					emitWS('playlistInfoUpdated', data.pl_id);
 					res.json(OKMessage(null, 'PL_SONG_DELETED', data.pl_name));
@@ -712,7 +712,7 @@ export default function publicKaraController(router: Router) {
 
 			.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 				try {
-					const data = await deleteKaraFromPlaylist(req.params.plc_id, null, req.authToken);
+					const data = await deleteKaraFromPlaylist([req.params.plc_id], null, req.authToken);
 					emitWS('playlistContentsUpdated', data.pl_id);
 					emitWS('playlistInfoUpdated', data.pl_id);
 					res.json(OKMessage(null, 'PL_SONG_DELETED', data.pl_name));

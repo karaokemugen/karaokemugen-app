@@ -655,7 +655,7 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 	}
 }
 
-export async function deleteKaraFromPlaylist(plcs: number[], playlist_id, token?: Token) {
+export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number, token?: Token) {
 	// If playlist_id is null, set it to current/public PL ID
 	profile('deleteKara');
 	if (!playlist_id) playlist_id = getState().modePlaylistID;
