@@ -1,5 +1,4 @@
 
-import {on} from '../lib/utils/pubsub';
 import {getConfig} from '../lib/utils/config';
 import {copyKaraToPlaylist, getPlaylistContentsMini} from './playlist';
 import sample from 'lodash.sample';
@@ -10,7 +9,6 @@ import logger from '../lib/utils/logger';
 import {timer} from '../lib/utils/date';
 import {getState, setState} from '../utils/state';
 import {translateKaraInfo} from "./kara";
-import { State } from '../types/state';
 import { Token } from '../lib/types/user';
 const sleep = promisify(setTimeout);
 
@@ -19,10 +17,6 @@ let voters = [];
 let pollDate: Date;
 let pollEnding = false;
 let clock: any;
-
-on('stateUpdated', (state: State) => {
-	if (!state.songPoll && poll.length > 0) stopPoll();
-});
 
 export async function timerPoll() {
 	const internalDate = pollDate = new Date();
@@ -59,7 +53,7 @@ export async function getPollResults() {
 	await copyKaraToPlaylist([winner[0].playlistcontent_id],playlist_id);
 	emitWS('playlistInfoUpdated',playlist_id);
 	emitWS('playlistContentsUpdated',playlist_id);
-	const kara = `${winner[0].serie} - ${winner[0].songtype[0].replace('TYPE_','')}${winner[0].songorder} - ${winner[0].title}`;
+	const kara = `${winner[0].serie} - ${winner[0].songtype[0].name.replace('TYPE_','')}${winner[0].songorder ? winner[0].songorder : ''} - ${winner[0].title}`;
 	logger.info(`[Poll] Winner is "${kara}" with ${maxVotes} votes`);
 	return {
 		votes: maxVotes,
