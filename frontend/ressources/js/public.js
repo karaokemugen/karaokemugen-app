@@ -29,7 +29,7 @@ $(document).ready(function () {
 	});
 
 	$('.showSettings').click(function(){
-		$('#settingsPublic').modal('show');
+		$('#helpModal').modal('show');
 	});
 	$('.showPoll').click(function(){
 		$('#pollModal').modal('show');
@@ -69,7 +69,7 @@ $(document).ready(function () {
 	});
 	$('.tourAgain').click(() => {
 		startIntro('public', 'afterLogin');
-		$('#settingsPublic').modal('hide')
+		$('#helpModal').modal('hide');
 	});
 	$('#switchInfoBar').click(function(){
 		$(this).toggleClass('showLyrics');

@@ -64,68 +64,8 @@
 
 <div class="modal modalPage fade" id="profilModal" role="dialog" type="prompt" tabindex="21"></div>
 
-<div class="modal modalPage fade" role="dialog" type="prompt" tabindex="22" id="settingsPublic" hidden>
-     <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <ul class="nav nav-tabs nav-justified modal-header">
-                <li class="modal-title active"><a data-toggle="tab" href="#nav-help" role="tab" aria-controls="nav-login" aria-selected="true"> {{i18n "CL_HELP"}} </a></li>
-                <button class="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
-            </ul>
-            <div class="tab-content" id="nav-tabContent-help">
-                <div id="nav-help" role="tabpanel" aria-labelledby="nav-help-tab" class="modal-body tab-pane fade in active">
-                        <div id="mobileHelp" class="text">
-                            {{{ i18n "CL_HELP_PUBLIC_MOBILE" }}}
-                        </div>
-                        <div class="text">
-                            {{{ i18n "CL_HELP_DISCORD" }}}   
-                            <br/>   
-                        </div> 
-                        <div class="modal-message tour">
-                            <button class="btn btn-default tourAgain">
-                                    {{i18n "FOLLOW_TOUR"}}
-                            </button>
-                        </div>
-                            <hr>
-                        <div class="col-lg-3 col-xs-3">
-                            <b>{{i18n "MODE"}}</b>
-                            <br/>
-                            <b>{{i18n "VERSION"}}</b>
-                            <br/>
-                        </div>
-                        <div class="col-lg-9 col-xs-9">
-                            <span id="mode"></span>
-                            <br/>
-                                <span id="version"></span>
-                            <br/>
-                        </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal modalPage fade" role="dialog" type="prompt" tabindex="23" id="helpModal" hidden>
-     <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <ul class="nav nav-tabs nav-justified modal-header">
-                <li class="modal-title active"><a data-toggle="tab" href="#nav-help" role="tab" aria-controls="nav-login" aria-selected="true"> {{i18n "CL_HELP_INSTRUCTIONS"}} </a></li>
-            </ul>
-            <div class="tab-content" id="nav-tabContent-help">
-                <div id="nav-help" role="tabpanel" aria-labelledby="nav-help-tab" class="modal-body tab-pane fade in active">
-                    <div id="mobileHelp" class="text">
-                        {{{ i18n "CL_HELP_PUBLIC_MOBILE" }}}
-                        <br/>
-                        {{{ i18n "CL_HELP_HELP" }}}
-                    </div>
-                    <div class="modal-message">
-                        <button data-dismiss="modal" class="btn btn-default confirm">
-                             <i class="glyphicon glyphicon-ok"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="modal modalPage fade" role="dialog" type="prompt" tabindex="22" id="helpModal" hidden></div>
+
 <div id="progressBar" class="underHeader" introStep="5" introLabel="progressbar">
     <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
     <div id="progressBarColor" class="cssTransform"></div>

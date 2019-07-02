@@ -69,7 +69,6 @@ var tagsTypesList;
 var plData;
 var tagsGroups;
 var flattenedTagsGroups;
-var settingsNotUpdated;
 
 (function (yourcode) {
 	yourcode(window.jQuery, window, document);
@@ -975,13 +974,10 @@ var settingsNotUpdated;
 		'USER_CREATED',
 		'PL_SONG_ADDED',
 		'PL_SONG_DELETED',
-		'PLAYLIST_MODE_SONG_ADDED',
-		'FAV_IMPORTED'];
+		'PLAYLIST_MODE_SONG_ADDED'];
 	hideErrorMessage = ['POLL_NOT_ACTIVE'];
 	softErrorMessage = [
 		'PLAYLIST_MODE_ADD_SONG_ERROR'];
-
-	settingsNotUpdated= [];
 
 	/* touchscreen event handling part */
 
@@ -2120,12 +2116,6 @@ var settingsNotUpdated;
 		if(settingsUpdating) {
 			settingsUpdating.done( function() {
 
-				if(scope === 'public' && settings.Karaoke.Poll.Enabled) {
-					ajx('GET', 'public/songpoll', {}, function(data) {
-						$('.showPoll').toggleClass('hidden');
-					});
-				}
-				settingsNotUpdated = ['Player.StayOnTop', 'Player.FullScreen'];
 				playlistsUpdating = refreshPlaylistSelects();
 				playlistsUpdating.done(function () {
 					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);

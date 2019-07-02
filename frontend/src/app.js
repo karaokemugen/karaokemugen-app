@@ -5,6 +5,7 @@ import Modal from './components/modals/Modal';
 import ProfilModal from './components/modals/ProfilModal';
 import PollModal from './components/modals/PollModal';
 import RestrictedHelpModal from './components/modals/RestrictedHelpModal';
+import HelpModal from './components/modals/HelpModal';
 import './components/i18n';
 import io from 'socket.io-client';
 import './app.css'
@@ -27,3 +28,4 @@ window.callPollModal = () => {
   document.getElementById('pollModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><PollModal/></Suspense>, document.getElementById('pollModal')) : null;
 };
 document.getElementById('restrictedHelpModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><RestrictedHelpModal /></Suspense>, document.getElementById('restrictedHelpModal')) : null;
+document.getElementById('helpModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><HelpModal /></Suspense>, document.getElementById('helpModal')) : null;
