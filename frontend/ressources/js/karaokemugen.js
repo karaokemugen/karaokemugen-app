@@ -2488,7 +2488,7 @@ var settingsNotUpdated;
 			$('.showPoll').toggleClass('hidden');
 		});
 		socket.on('songPollEnded', function(data){
-			//$('#pollModal').modal('hide');
+			$('#pollModal').modal('hide');
 			$('.showPoll').toggleClass('hidden');
 		});
 		
