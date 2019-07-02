@@ -30,7 +30,7 @@ var saveLastDetailsKara;    // Matrice saving the differents opened kara details
 var playlistToAdd;          // Int : id of playlist users are adding their kara to
 var isTouchScreen;
 var showedLoginAfter401; // to only show the login once after login error
-var socket;
+var socket = window.socket;
 var settings;
 var kmStats;
 var i18n;
@@ -777,7 +777,7 @@ var settingsNotUpdated;
 		});
 
 		/* login stuff */
-		$('#loginModal,#modalBox, #pollModal').on('shown.bs.modal', function (e) {
+		$('#loginModal,#modalBox').on('shown.bs.modal', function (e) {
 			resizeModal();
 		});
 
@@ -889,8 +889,6 @@ var settingsNotUpdated;
 		locale: navigator.languages[0].substring(0, 2),
 		extension: '.json'
 	});
-
-	socket = io();
 
 	isTouchScreen =  'ontouchstart' in document.documentElement || query.TOUCHSCREEN != undefined;
 	if(isTouchScreen) $('body').addClass('touch');
@@ -1812,6 +1810,7 @@ var settingsNotUpdated;
 		}
 		return titleText;
 	};
+	window.buildKaraTitle = buildKaraTitle;
 
 	toggleDetailsKara = function (el) {
 		var liKara = el.closest('li');
@@ -2017,52 +2016,6 @@ var settingsNotUpdated;
 			$('#onlineStatsModal').modal('show');
 		}
 	};
-
-	/*
-	*	Build the modal pool from a kara list
-	*	data  {Object} : list of karas going in the poll
-	*	show {Boolean} : if modal is shown once built
-	*/
-	buildAndShowPoll = function(data, show, timer) {
-		var karaNumber = data.length;
-		var $pollModal = $('#pollModal');
-		var $timer = $('#pollModal .timer');
-		var randArray = Array.from(Array(15).keys());
-
-		$('#nav-poll').empty();
-		$.each(data, function(index, kara) {
-			var randColor = '42';
-			var drawIndex = Math.floor(randArray.length * Math.random());
-			var drawn = randArray.splice(drawIndex, 1);
-			if(drawn) var randColor = drawn * 24;
-
-			var karaTitle = '';
-			if (isSmall) {
-				karaTitle = buildKaraTitle(kara, { 'mode' : 'doubleline'});
-			} else {
-				karaTitle = buildKaraTitle(kara);
-			}
-			$('#nav-poll').append('<div class="modal-message">'
-							+	'	<button class="btn btn-default tour poll" value="' + kara.playlistcontent_id + '"'
-							+	'	style="background-color:hsl(' + randColor + ', 20%, 26%)">'
-							+	karaTitle
-							+	'	</button>'
-							+	'</div>');
-		});
-
-		if(show) {
-			$pollModal.modal('show');
-		}
-		if(!timer) timer = settings.Karaoke.Poll.Timeout*1000;
-		$timer.finish().width('100%').animate({ width : '0%' }, timer, 'linear');
-
-	};
-	buildPollFromApi = function() {
-		ajx('GET', 'public/songpoll', {}, function(data) {
-			buildAndShowPoll(data.poll, false, data.timeLeft);
-		});
-	}
-
 
 	/*
 	*	Manage memory of opened kara details
@@ -2318,7 +2271,7 @@ var settingsNotUpdated;
 	});
 
 	resizeModal = function() {
-		$('#loginModal,#modalBox, #pollModal').each( (k, modal) => {
+		$('#loginModal,#modalBox').each( (k, modal) => {
 			var $modal = $(modal);
 			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
 						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);
@@ -2531,14 +2484,14 @@ var settingsNotUpdated;
 		});
 
 		socket.on('newSongPoll', function(data){
-			buildAndShowPoll(data, true);
+			window.callPollModal();
 			$('.showPoll').toggleClass('hidden');
 		});
 		socket.on('songPollEnded', function(data){
 			$('#pollModal').modal('hide');
 			$('.showPoll').toggleClass('hidden');
-
 		});
+		
 		socket.on('songPollResult', function(data){
 			displayMessage('success', '', i18n.__('POLLENDED', [data.kara.substring(0,100), data.votes]));
 		});

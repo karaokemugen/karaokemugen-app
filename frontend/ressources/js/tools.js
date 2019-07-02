@@ -113,49 +113,6 @@ parseJwt = function(token) {
 	var base64 = base64Url.replace('-', '+').replace('_', '/');
 	return JSON.parse(window.atob(base64));
 };
-/* BOOM */
-endOfTheWorldAsWeKnowIt = function() {
-  
-	displayMessage('danger', '', '<center>Oh no</center>');
-	$('html').attr('style', 'background-color: hsla(39, 100%, 34%, 0.86); opacity: .1;z-index: 99999;transition: all 5s linear');
-	$('body').css('background-color','#4E5154');
-	$('body').css('opacity','.95');
-	setTimeout(function(){
-		$('html').attr('style', 'background-color: hsla(39, 100%, 34%, 0.96); opacity: 0.95;  z-index: 99999;transition: all 5s linear');
-	}, 3000);
-  
-	setInterval(function () {
-     
-		endOfTheWorldAsWeKnowItloop();
-       
-	}, 50);
-};
-  
-endOfTheWorldAsWeKnowItloop = function(){
-	var things = $('body *');
-	var randomColor = Math.floor(Math.random()*16777215).toString(16);
-	var random = Math.floor(Math.random()*things.length);
-	el = things.eq(random);
-	el.css({'transition': 'all 5s linear',
-		'width': Math.floor(Math.random()*400),
-		'height': Math.floor(Math.random()*400),
-		'position': 'fixed',
-		'top': Math.floor(Math.random()*$(window).height() ),
-		'left': Math.floor(Math.random()*$(window).width() ),
-		'opacity': Math.random()/2 + .4 });
-    
-	if(Math.random() > .85) el.css('background-color', '#' + randomColor );  
-	if(Math.random() > .992) el.css({'background': 'url(/ressources/img/4thimpact.png) no-repeat',
-		'background-color': 'transparent',
-		'background-size': 'contain'});
-  
-    
-	el.draggable({
-		container: 'body',
-		appendTo: 'body',
-      
-	});
-};
 
 isVisible = function( element, container ){
 	

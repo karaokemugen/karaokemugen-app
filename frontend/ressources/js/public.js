@@ -32,18 +32,7 @@ $(document).ready(function () {
 		$('#settingsPublic').modal('show');
 	});
 	$('.showPoll').click(function(){
-		buildPollFromApi();
 		$('#pollModal').modal('show');
-	});
-	$('#pollModal').on('click', 'button.poll', (e) => {
-		var playlistcontent_id = $(e.target).val();
-		
-		$.ajax({ url: 'public/songpoll/',
-			type: 'POST',
-			data: { playlistcontent_id : playlistcontent_id }
-		}).done(function() {
-			$('#pollModal').modal('hide');
-		});
 	});
 
 	$('input[name="lyrics"]').on('switchChange.bootstrapSwitch', function () {
