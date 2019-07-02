@@ -4,6 +4,7 @@ import Options from './components/options/Options';
 import Modal from './components/modals/Modal';
 import ProfilModal from './components/modals/ProfilModal';
 import PollModal from './components/modals/PollModal';
+import RestrictedHelpModal from './components/modals/RestrictedHelpModal';
 import './components/i18n';
 import io from 'socket.io-client';
 import './app.css'
@@ -25,3 +26,4 @@ window.callProfileModal = (settingsOnline) => (
 window.callPollModal = () => {
   document.getElementById('pollModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><PollModal/></Suspense>, document.getElementById('pollModal')) : null;
 };
+document.getElementById('restrictedHelpModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><RestrictedHelpModal /></Suspense>, document.getElementById('restrictedHelpModal')) : null;
