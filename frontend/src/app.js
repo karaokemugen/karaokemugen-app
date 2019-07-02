@@ -22,6 +22,6 @@ window.callModal = (type, title, message, callback, placeholder) => (
 window.callProfileModal = (settingsOnline) => (
   ReactDOM.render(<Suspense fallback={<Loader />}><ProfilModal settingsOnline={settingsOnline}/></Suspense>, document.getElementById('profilModal'))
 );
-window.callPollModal = (data, apiCall, timer) => {
-  document.getElementById('pollModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><PollModal data={data} apiCall={apiCall} timer={timer}/></Suspense>, document.getElementById('pollModal')) : null;
+window.callPollModal = () => {
+  document.getElementById('pollModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><PollModal/></Suspense>, document.getElementById('pollModal')) : null;
 };

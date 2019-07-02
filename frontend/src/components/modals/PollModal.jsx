@@ -6,30 +6,22 @@ class PollModal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            poll: {}
+            poll: []
         };
-        if (this.props.apiCall) {
-            this.getSongPoll();
-        } else {
-            this.state = {
-                poll: this.props.data
-            };
-            $('#pollModal').modal('show');
-            //$('#pollModal .timer').finish().width('100%').animate({ width: '0%' }, this.props.timer, 'linear');
-        }
+        this.getSongPoll();
     }
 
     async getSongPoll() {
         var response = await axios.get('/api/public/songpoll');
         this.setState({ poll: response.data.data.poll });
         $('#pollModal').modal('show');
-        //$('#pollModal .timer').finish().width('100%').animate({ width: '0%' }, response.data.data.timeLeft, 'linear');
+        $('#pollModal .timer').finish().width('100%').animate({ width: '0%' }, response.data.data.timeLeft, 'linear');
     }
 
-    postSong(playlistcontent_id) {
-        axios.post('/api/public/songpoll', { playlistcontent_id : playlistcontent_id });
+    postSong(event) {
+        axios.post('/api/public/songpoll', { playlistcontent_id: event.target.value });
         $('#pollModal').modal('hide');
-	}
+    }
 
     render() {
         const t = this.props.t;
@@ -46,11 +38,12 @@ class PollModal extends Component {
 
                     </ul>
                     <div className="tab-content" id="nav-tabContent">
-                        <div id="nav-poll" role="tabpanel" aria-labelledby="nav-poll-tab" className="modal-body tab-pane fade in active">
+                        <div id="nav-poll" role="tabpanel" aria-labelledby="nav-poll-tab"
+                            className="modal-body tab-pane fade in active" style={{ height: 3*this.state.poll.length+'em'}}>
                             <div className="modal-message">
                                 {this.state.poll.map(kara => {
                                     return <button className="btn btn-default tour poll" key={kara.playlistcontent_id} value={kara.playlistcontent_id}
-                                        onClick={(kara) => this.postSong(kara.playlistcontent_id)}
+                                        onClick={this.postSong}
                                         style={{
                                             backgroundColor: 'hsl('
                                                 + Math.floor(Math.random() * 256)

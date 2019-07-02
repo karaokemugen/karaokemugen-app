@@ -32,7 +32,7 @@ $(document).ready(function () {
 		$('#settingsPublic').modal('show');
 	});
 	$('.showPoll').click(function(){
-		window.callPollModal(null, true, 0);
+		window.callPollModal();
 	});
 
 	$('input[name="lyrics"]').on('switchChange.bootstrapSwitch', function () {

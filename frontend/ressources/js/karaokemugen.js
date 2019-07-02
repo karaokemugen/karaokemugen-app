@@ -2484,7 +2484,7 @@ var settingsNotUpdated;
 		});
 
 		socket.on('newSongPoll', function(data){
-			window.callPollModal(data, false, settings.Karaoke.Poll.Timeout*1000);
+			window.callPollModal();
 			$('.showPoll').toggleClass('hidden');
 		});
 		socket.on('songPollEnded', function(data){
