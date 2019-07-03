@@ -194,7 +194,7 @@
 	});
 	$('#wlcm_login').click(() => {
 		if (!logInfos.username) {
-			window.callLoginModal(scope==='admin');
+			window.callLoginModal(scope);
 		} else {
 			window.callProfileModal(true);
 		}

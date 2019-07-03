@@ -35,6 +35,7 @@ var settings;
 var kmStats;
 var i18n;
 var introManager;
+window.introManager = introManager;
 
 /* promises */
 var statsUpdating;
@@ -193,7 +194,7 @@ var flattenedTagsGroups;
 					} else if(res.status == 401) {
 						errMessage = i18n.__('UNAUTHORIZED');
 						if(!showedLoginAfter401) {
-							window.callLoginModal(scope==='admin');
+							window.callLoginModal(scope);
 							showedLoginAfter401 = true;
 						}
 					} else {
@@ -219,7 +220,7 @@ var flattenedTagsGroups;
 			if(logInfos.token && !showedLoginAfter401) {
 				showProfil();
 			} else {
-				window.callLoginModal(scope==='admin');
+				window.callLoginModal(scope);
 			}
 		});
 
@@ -255,7 +256,7 @@ var flattenedTagsGroups;
 				logInfos.onlineToken = mugenTokenOnline;
 			}
 			if(scope === 'admin' && logInfos.role !== 'admin') {
-				window.callLoginModal(scope==='admin');
+				window.callLoginModal(scope);
 			} else {
 				$('#wlcm_login > span').text(logInfos.username);
 				$('#wlcm_disconnect').show();
@@ -264,7 +265,7 @@ var flattenedTagsGroups;
 		} else if (webappMode === 1){
             loginGuest();
         } else {
-			window.callLoginModal(scope==='admin');
+			window.callLoginModal(scope);
 
 		}
 
@@ -766,18 +767,6 @@ var flattenedTagsGroups;
 		});
 
 		/* login stuff */
-		$('#loginModal').on('shown.bs.modal', function (e) {
-			resizeModal();
-		});
-
-		$('#nav-login .login').click( () => {
-			var servername = $('#loginServ').val();
-			var username = $('#login').val() + (servername ? '@' + servername : '');
-			var password = $('#password').val();
-			login(username, password);
-
-		});
-
 		$('#nav-signup input').focus( function(){
 			if(introManager && typeof introManager._currentStep != 'undefined') {
 				setTimeout(() => {
@@ -2154,8 +2143,6 @@ var flattenedTagsGroups;
 		var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
 		var topHeight2 = $('#panel2 .panel-heading.container-fluid').outerHeight();
 
-		resizeModal();
-
 		if(!isTouchScreen) {
 			$('#nav-profil,#nav-userlist, #nav-poll').perfectScrollbar();
 			$('.playlistContainer, #manage > .panel').perfectScrollbar();
@@ -2164,15 +2151,6 @@ var flattenedTagsGroups;
 		}
 	});
 
-	resizeModal = function() {
-		$('#loginModal').each( (k, modal) => {
-			var $modal = $(modal);
-			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
-						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);
-			$modal.find('.modal-body').css('max-height', $('body').height() - shrink - 15 + 'px');
-		});
-
-	};
 	/**
     * Init bootstrapSwitchs
     */
@@ -2232,63 +2210,6 @@ var flattenedTagsGroups;
 		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
 			$(this).val($(this).is(':checked') ? 'true' : 'false');
 		});
-	};
-
-	login = function(username, password) {
-		var deferred = $.Deferred();
-		var url = 'auth/login';
-		var data = { username: username, password: password};
-
-		if(!username) {
-			url = 'auth/login/guest';
-			data = { fingerprint : password };
-		} else if(scope === 'admin' && typeof appFirstRun != "undefined" && appFirstRun && username !== 'admin') {
-		    url = 'admin/users/login';
-		}
-
-		$.ajax({
-			url: url,
-			type: 'POST',
-			data: data })
-			.done(function (response) {
-				if(scope === 'admin' && response.role !== 'admin') {
-					displayMessage('warning','', i18n.__('ADMIN_PLEASE'));
-					return deferred.reject();
-				}
-				var token;
-				$('#loginModal').modal('hide');
-				$('#password, #login').removeClass('redBorders');
-
-				createCookie('mugenToken',  response.token, -1);
-				if(response.onlineToken) {
-					createCookie('mugenTokenOnline',  response.onlineToken, -1);
-				} else if (!username.includes('@')) {
-					eraseCookie('mugenTokenOnline');
-				}
-
-				logInfos = response;
-				displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
-				initApp();
-
-				if(introManager && typeof introManager._currentStep !== 'undefined') {
-					introManager.nextStep();
-				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
-					window.callHelpModal();
-				}
-
-				if (welcomeScreen) {
-					logInfos = parseJwt(response.token);
-					$('#wlcm_login > span').text(logInfos.username);
-					$('#wlcm_disconnect').show();
-				}
-
-				deferred.resolve();
-			}).fail(function(response) {
-				window.callLoginModal(scope==='admin');
-				$('#password').val('').focus();
-				$('#password, #login').addClass('redBorders');
-			});
-		return deferred;
 	};
 
 	/* opposite sideber of playlist : 1 or 2 */
