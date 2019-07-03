@@ -165,7 +165,7 @@ startIntro = function(mode, stepLabel){
 			intro: i18n.__(prefix + 'INTROFINAL'), 
 		}];
 
-		$('#loginModal').modal('show');
+		window.callLoginModal(scope==='admin');
 		$('.nav-tabs a[href="#nav-signup"]').tab('show');			
 		$('#signupRole').val('admin');
 
@@ -274,7 +274,7 @@ startIntro = function(mode, stepLabel){
 		var label = introManager._introItems[this._currentStep].label;
 		console.log(label);
 		if(label == 'preLogin') {
-			$('#loginModal').modal('show');
+			window.callLoginModal(scope==='admin');
 			
 			if(mode === 'public') {
 				$('#loginModal').removeClass('firstRun');

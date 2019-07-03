@@ -193,7 +193,7 @@ var flattenedTagsGroups;
 					} else if(res.status == 401) {
 						errMessage = i18n.__('UNAUTHORIZED');
 						if(!showedLoginAfter401) {
-							$('#loginModal').modal('show');
+							window.callLoginModal(scope==='admin');
 							showedLoginAfter401 = true;
 						}
 					} else {
@@ -219,7 +219,7 @@ var flattenedTagsGroups;
 			if(logInfos.token && !showedLoginAfter401) {
 				showProfil();
 			} else {
-				$('#loginModal').modal('show');
+				window.callLoginModal(scope==='admin');
 			}
 		});
 
@@ -255,7 +255,7 @@ var flattenedTagsGroups;
 				logInfos.onlineToken = mugenTokenOnline;
 			}
 			if(scope === 'admin' && logInfos.role !== 'admin') {
-				$('#loginModal').modal('show');
+				window.callLoginModal(scope==='admin');
 			} else {
 				$('#wlcm_login > span').text(logInfos.username);
 				$('#wlcm_disconnect').show();
@@ -264,7 +264,7 @@ var flattenedTagsGroups;
 		} else if (webappMode === 1){
             loginGuest();
         } else {
-			$('#loginModal').modal('show');
+			window.callLoginModal(scope==='admin');
 
 		}
 
@@ -859,7 +859,7 @@ var flattenedTagsGroups;
 
         /* profil stuff */        
 		showProfil = function() {
-			window.callProfileModal(settings.Online);
+			window.callProfileModal();
 		};
 
 		/* profil stuff END */
@@ -2278,7 +2278,7 @@ var flattenedTagsGroups;
 				if(introManager && typeof introManager._currentStep !== 'undefined') {
 					introManager.nextStep();
 				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
-					window.callHelpModal(settings.Karaoke.Private, window.version);
+					window.callHelpModal();
 				}
 
 				if (welcomeScreen) {
@@ -2289,7 +2289,7 @@ var flattenedTagsGroups;
 
 				deferred.resolve();
 			}).fail(function(response) {
-				$('#loginModal').modal('show');
+				window.callLoginModal(scope==='admin');
 				$('#password').val('').focus();
 				$('#password, #login').addClass('redBorders');
 			});
