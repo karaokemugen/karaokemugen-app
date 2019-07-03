@@ -18,16 +18,18 @@ window.socket = io();
 
 document.getElementById('manage') ? ReactDOM.render(<Suspense fallback={<Loader />}><Options /></Suspense>, document.getElementById('manage')) : null;
 
-window.callModal = (type, title, message, callback, placeholder) => (
-  ReactDOM.render(<Suspense fallback={<Loader />}><Modal type={type} title={title} message={message} callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('modalBox'))
-);
-window.callProfileModal = (settingsOnline) => (
-  ReactDOM.render(<Suspense fallback={<Loader />}><ProfilModal settingsOnline={settingsOnline}/></Suspense>, document.getElementById('profilModal'))
-);
-window.callPollModal = () => {
-  document.getElementById('pollModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><PollModal/></Suspense>, document.getElementById('pollModal')) : null;
+window.callModal = (type, title, message, callback, placeholder) => {
+  ReactDOM.render(<Suspense fallback={<Loader />}><Modal type={type} title={title} message={message} callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('root'));
+  $('#modalBox').modal('show');
 };
-document.getElementById('restrictedHelpModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><RestrictedHelpModal /></Suspense>, document.getElementById('restrictedHelpModal')) : null;
+window.callProfileModal = (settingsOnline) => {
+  ReactDOM.render(<Suspense fallback={<Loader />}><ProfilModal settingsOnline={settingsOnline}/></Suspense>, document.getElementById('root'));
+  $('#profilModal').modal('show');
+};
+window.callPollModal = () => {
+  ReactDOM.render(<Suspense fallback={<Loader />}><PollModal/></Suspense>, document.getElementById('root'));
+};
+ReactDOM.render(<Suspense fallback={<Loader />}><RestrictedHelpModal /></Suspense>, document.getElementById('root'));
 window.callHelpModal = (mode, version) => {
   ReactDOM.render(<Suspense fallback={<Loader />}><HelpModal mode={mode} version={version}/></Suspense>, document.getElementById('root'));
   $('#helpModal').modal('show');

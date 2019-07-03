@@ -30,10 +30,10 @@ class ProfilModal extends Component {
         this.setState({ user: user });
         if (event.which === 13) {
             if (this.state.user.password && this.state.user.password === this.state.user.passwordConfirmation || !this.state.user.password) {
-                this.setState({passwordDifferent: 'form-control'});
+                this.setState({ passwordDifferent: 'form-control' });
                 axios.put('/api/public/myaccount/', this.state.user);
             } else {
-                this.setState({passwordDifferent: 'form-control redBorders'});
+                this.setState({ passwordDifferent: 'form-control redBorders' });
             }
         }
     }
@@ -43,10 +43,10 @@ class ProfilModal extends Component {
         user[name] = value;
         this.setState({ user: user });
         if (this.state.user.password && this.state.user.password === this.state.user.passwordConfirmation || !this.state.user.password) {
-            this.setState({passwordDifferent: 'form-control'});
+            this.setState({ passwordDifferent: 'form-control' });
             axios.put('/api/public/myaccount/', this.state.user);
         } else {
-            this.setState({passwordDifferent: 'form-control redBorders'});
+            this.setState({ passwordDifferent: 'form-control redBorders' });
         }
     }
 
@@ -156,145 +156,147 @@ class ProfilModal extends Component {
             }, 500);
         }
         return (
-            <div className="modal-dialog modal-md">
-                <div className="modal-content">
-                    <ul className="nav nav-tabs nav-justified modal-header">
-                        <li className="modal-title active"><a data-toggle="tab" href="#nav-profil" role="tab" aria-controls="nav-profil" aria-selected="true"> {t("PROFILE")}</a></li>
-                        {window.logInfos.role !== 'guest' ?
-                            <li className="modal-title"><a data-toggle="tab" href="#nav-lang" role="tab" aria-controls="nav-lang" aria-selected="false"> {t("LANGUAGE")}</a></li> : null
-                        }
-                        <li className="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab" aria-controls="nav-userlist" aria-selected="false"> {t("USERLIST")}</a></li>
-                        <button className="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
-                    </ul>
-                    <div className="tab-content" id="nav-tabContent">
-                        <div id="nav-profil" role="tabpanel" aria-labelledby="nav-profil-tab" className="modal-body tab-pane fade in active">
-                            <div className="profileContent">
+            <div className="modal modalPage fade" id="profilModal" tabIndex="21">
+                <div className="modal-dialog modal-md">
+                    <div className="modal-content">
+                        <ul className="nav nav-tabs nav-justified modal-header">
+                            <li className="modal-title active"><a data-toggle="tab" href="#nav-profil" role="tab" aria-controls="nav-profil" aria-selected="true"> {t("PROFILE")}</a></li>
+                            {window.logInfos.role !== 'guest' ?
+                                <li className="modal-title"><a data-toggle="tab" href="#nav-lang" role="tab" aria-controls="nav-lang" aria-selected="false"> {t("LANGUAGE")}</a></li> : null
+                            }
+                            <li className="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab" aria-controls="nav-userlist" aria-selected="false"> {t("USERLIST")}</a></li>
+                            <button className="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
+                        </ul>
+                        <div className="tab-content" id="nav-tabContent">
+                            <div id="nav-profil" role="tabpanel" aria-labelledby="nav-profil-tab" className="modal-body tab-pane fade in active">
+                                <div className="profileContent">
 
-                                <div className="col-md-3 col-lg-3 col-xs-12 col-sm-12">
+                                    <div className="col-md-3 col-lg-3 col-xs-12 col-sm-12">
 
-                                    <label title={t("AVATAR_IMPORT")} className="btn btn-default plGenericButton avatar" name="import">
-                                        <img className="img-circle" name="avatar_file"
-                                            src={this.state.user.avatar_file ? pathAvatar + this.state.user.avatar_file : pathAvatar + "blank.png"}
-                                            alt="User Pic" />
-                                        {window.logInfos.role !== 'guest' ?
-                                            <input id="avatar" className="import-file" type="file" accept="image/*" style={{ display: 'none' }} onChange={this.importAvatar} /> : null
-                                        }
-                                    </label>
-                                    <p name="login">{this.state.user.login}</p>
-                                </div>
-                                {window.logInfos.role !== 'guest' ?
-                                    <div className="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
-                                        <div className="profileLine">
-                                            <i className="glyphicon glyphicon-user"></i>
-                                            <input className="form-control" name="nickname" type="text" placeholder={t("PROFILE_USERNAME")} defaultValue={this.state.user.nickname} onKeyUp={this.onKeyPress} />
-                                        </div>
-                                        <div className="profileLine">
-                                            <i className="glyphicon glyphicon-envelope"></i>
-                                            <input className="form-control" name="email" type="text" placeholder={t("PROFILE_MAIL")} defaultValue={this.state.user.email} onKeyUp={this.onKeyPress} />
-                                        </div>
-                                        <div className="profileLine">
-                                            <i className="glyphicon glyphicon-link"></i>
-                                            <input className="form-control" name="url" type="text" placeholder={t("PROFILE_URL")} defaultValue={this.state.user.url} onKeyUp={this.onKeyPress} />
-                                        </div>
-                                        <div className="profileLine">
-                                            <i className="glyphicon glyphicon-leaf"></i>
-                                            <input className="form-control" name="bio" type="text" placeholder={t("PROFILE_BIO")} defaultValue={this.state.user.bio} onKeyUp={this.onKeyPress} />
-                                        </div>
-                                        <div className="profileLine">
-                                            <i className="glyphicon glyphicon-lock"></i>
-                                            <input className={this.state.passwordDifferent} name="password" type="password"
-                                                placeholder={t("PROFILE_PASSWORD")} defaultValue={this.state.user.password} onKeyUp={this.onKeyPress} />
-                                            <input className={this.state.passwordDifferent}
-                                                name="passwordConfirmation" type="password" placeholder={t("PROFILE_PASSWORDCONF")}
-                                                defaultValue={this.state.user.passwordConfirmation} onKeyUp={this.onKeyPress} style={{ marginLeft: 3 + 'px' }} />
-                                        </div>
-                                        <div className="profileLine">
-                                            <i className="glyphicon glyphicon-star"></i>
-                                            <label type="button" title={t("FAVORITES_IMPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
-                                                <i className="glyphicon glyphicon-import"></i> {t("IMPORT")}
-                                                <input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
-                                            </label>
-                                            <button type="button" title={t("FAVORITES_EXPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favExport" onClick={this.favExport}>
-                                                <i className="glyphicon glyphicon-export"></i> {t("EXPORT")}
-                                            </button>
-                                        </div>
-                                        {this.props.settingsOnline.Users && window.logInfos.role !== 'guest' ?
-                                            <div className="profileLine">
-                                                {window.logInfos.onlineToken ?
-                                                    <button type="button" title={t("PROFILE_ONLINE_DELETE")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileDelete" onClick={this.profileDelete}>
-                                                        <i className="glyphicon glyphicon-retweet"></i> {t("PROFILE_ONLINE_DELETE")}
-                                                    </button>
-                                                    :
-                                                    <button type="button" title={t("PROFILE_CONVERT")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert">
-                                                        <i className="glyphicon glyphicon-retweet"></i> {t("PROFILE_CONVERT")}
-                                                    </button>
-                                                }
-                                            </div> : null
-                                        }
-                                    </div> : null
-                                }
-                            </div>
-                        </div>
-                        <div id="nav-lang" role="tabpanel" aria-labelledby="nav-lang-tab" className="modal-body tab-pane fade in">
-                            <div className="profileContent">
-                                <div className="col-md-12 col-lg-12 col-xs-12 col-sm-12 profileData">
-                                    <div className="profileLine row">
-                                        <label className="col-xs-6 control-label">{t("SERIE_NAME_MODE")}</label>
-                                        <div className="col-xs-6">
-                                            <select type="number" className="form-control" name="series_lang_mode" defaultValue={this.state.user.series_lang_mode} onChange={this.onKeyPress}>
-                                                <option value="-1" default>{t("SERIE_NAME_MODE_NO_PREF")}</option>
-                                                <option value="0">{t("SERIE_NAME_MODE_ORIGINAL")}</option>
-                                                <option value="1">{t("SERIE_NAME_MODE_SONG")}</option>
-                                                <option value="2">{t("SERIE_NAME_MODE_ADMIN")}</option>
-                                                <option value="3">{t("SERIE_NAME_MODE_USER")}</option>
-                                                <option value="4">{t("SERIE_NAME_MODE_USER_FORCE")}</option>
-                                            </select>
-                                        </div>
+                                        <label title={t("AVATAR_IMPORT")} className="btn btn-default plGenericButton avatar" name="import">
+                                            <img className="img-circle" name="avatar_file"
+                                                src={this.state.user.avatar_file ? pathAvatar + this.state.user.avatar_file : pathAvatar + "blank.png"}
+                                                alt="User Pic" />
+                                            {window.logInfos.role !== 'guest' ?
+                                                <input id="avatar" className="import-file" type="file" accept="image/*" style={{ display: 'none' }} onChange={this.importAvatar} /> : null
+                                            }
+                                        </label>
+                                        <p name="login">{this.state.user.login}</p>
                                     </div>
-                                    {this.state.user.series_lang_mode === "4" ?
-                                        <React.Fragment>
-                                            <div className="profileLine row">
-                                                <label className="col-xs-6 control-label">{t("MAIN_SERIES_LANG")}</label>
-                                                <div className="col-xs-6">
-                                                    <Autocomplete className="form-control" name="main_series_lang" value={this.state.user.main_series_lang} options={listLangs} onChange={(value) => this.onClick("main_series_lang", value)}/>
-                                                </div>
+                                    {window.logInfos.role !== 'guest' ?
+                                        <div className="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
+                                            <div className="profileLine">
+                                                <i className="glyphicon glyphicon-user"></i>
+                                                <input className="form-control" name="nickname" type="text" placeholder={t("PROFILE_USERNAME")} defaultValue={this.state.user.nickname} onKeyUp={this.onKeyPress} />
                                             </div>
-                                            <div className="profileLine row">
-                                                <label className="col-xs-6 control-label">{t("FALLBACK_SERIES_LANG")}</label>
-                                                <div className="col-xs-6">
-                                                    <Autocomplete className="form-control" name="fallback_series_lang" value={this.state.user.fallback_series_lang} options={listLangs} onChange={(value) => this.onClick("fallback_series_lang", value)}/>
-                                                </div>
+                                            <div className="profileLine">
+                                                <i className="glyphicon glyphicon-envelope"></i>
+                                                <input className="form-control" name="email" type="text" placeholder={t("PROFILE_MAIL")} defaultValue={this.state.user.email} onKeyUp={this.onKeyPress} />
                                             </div>
-                                        </React.Fragment> : null
+                                            <div className="profileLine">
+                                                <i className="glyphicon glyphicon-link"></i>
+                                                <input className="form-control" name="url" type="text" placeholder={t("PROFILE_URL")} defaultValue={this.state.user.url} onKeyUp={this.onKeyPress} />
+                                            </div>
+                                            <div className="profileLine">
+                                                <i className="glyphicon glyphicon-leaf"></i>
+                                                <input className="form-control" name="bio" type="text" placeholder={t("PROFILE_BIO")} defaultValue={this.state.user.bio} onKeyUp={this.onKeyPress} />
+                                            </div>
+                                            <div className="profileLine">
+                                                <i className="glyphicon glyphicon-lock"></i>
+                                                <input className={this.state.passwordDifferent} name="password" type="password"
+                                                    placeholder={t("PROFILE_PASSWORD")} defaultValue={this.state.user.password} onKeyUp={this.onKeyPress} />
+                                                <input className={this.state.passwordDifferent}
+                                                    name="passwordConfirmation" type="password" placeholder={t("PROFILE_PASSWORDCONF")}
+                                                    defaultValue={this.state.user.passwordConfirmation} onKeyUp={this.onKeyPress} style={{ marginLeft: 3 + 'px' }} />
+                                            </div>
+                                            <div className="profileLine">
+                                                <i className="glyphicon glyphicon-star"></i>
+                                                <label type="button" title={t("FAVORITES_IMPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
+                                                    <i className="glyphicon glyphicon-import"></i> {t("IMPORT")}
+                                                    <input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
+                                                </label>
+                                                <button type="button" title={t("FAVORITES_EXPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favExport" onClick={this.favExport}>
+                                                    <i className="glyphicon glyphicon-export"></i> {t("EXPORT")}
+                                                </button>
+                                            </div>
+                                            {this.props.settingsOnline.Users && window.logInfos.role !== 'guest' ?
+                                                <div className="profileLine">
+                                                    {window.logInfos.onlineToken ?
+                                                        <button type="button" title={t("PROFILE_ONLINE_DELETE")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileDelete" onClick={this.profileDelete}>
+                                                            <i className="glyphicon glyphicon-retweet"></i> {t("PROFILE_ONLINE_DELETE")}
+                                                        </button>
+                                                        :
+                                                        <button type="button" title={t("PROFILE_CONVERT")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert">
+                                                            <i className="glyphicon glyphicon-retweet"></i> {t("PROFILE_CONVERT")}
+                                                        </button>
+                                                    }
+                                                </div> : null
+                                            }
+                                        </div> : null
                                     }
                                 </div>
                             </div>
-                        </div>
-                        <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" className="modal-body tab-pane fade in">
-                            <div className="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
-                                {this.state.users.map(user => {
-                                    return <li key={user.login} className={user.flag_online ? "list-group-item online" : "list-group-item"} id={user.login} onClick={this.getUserDetails}>
-                                        <div className="userLine">
-                                            <span className="nickname">{user.nickname}</span>
-                                            <img className="avatar" src={this.state.pathAvatar + user.avatar_file} />
+                            <div id="nav-lang" role="tabpanel" aria-labelledby="nav-lang-tab" className="modal-body tab-pane fade in">
+                                <div className="profileContent">
+                                    <div className="col-md-12 col-lg-12 col-xs-12 col-sm-12 profileData">
+                                        <div className="profileLine row">
+                                            <label className="col-xs-6 control-label">{t("SERIE_NAME_MODE")}</label>
+                                            <div className="col-xs-6">
+                                                <select type="number" className="form-control" name="series_lang_mode" defaultValue={this.state.user.series_lang_mode} onChange={this.onKeyPress}>
+                                                    <option value="-1" default>{t("SERIE_NAME_MODE_NO_PREF")}</option>
+                                                    <option value="0">{t("SERIE_NAME_MODE_ORIGINAL")}</option>
+                                                    <option value="1">{t("SERIE_NAME_MODE_SONG")}</option>
+                                                    <option value="2">{t("SERIE_NAME_MODE_ADMIN")}</option>
+                                                    <option value="3">{t("SERIE_NAME_MODE_USER")}</option>
+                                                    <option value="4">{t("SERIE_NAME_MODE_USER_FORCE")}</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                        {this.state.userDetails ?
-                                            <div className="userDetails">
-                                                <div><i className="glyphicon glyphicon-envelope"></i>{this.state.userDetails.email ? this.state.userDetails.email : ''}</div>
-                                                <div><i className="glyphicon glyphicon-link"></i>{this.state.userDetails.url ? this.state.userDetails.url : ''}</div>
-                                                <div><i className="glyphicon glyphicon-leaf"></i>{this.state.userDetails.bio ? this.state.userDetails.bio : ''}</div>
-                                            </div> : null
+                                        {this.state.user.series_lang_mode === "4" ?
+                                            <React.Fragment>
+                                                <div className="profileLine row">
+                                                    <label className="col-xs-6 control-label">{t("MAIN_SERIES_LANG")}</label>
+                                                    <div className="col-xs-6">
+                                                        <Autocomplete className="form-control" name="main_series_lang" value={this.state.user.main_series_lang} options={listLangs} onChange={(value) => this.onClick("main_series_lang", value)} />
+                                                    </div>
+                                                </div>
+                                                <div className="profileLine row">
+                                                    <label className="col-xs-6 control-label">{t("FALLBACK_SERIES_LANG")}</label>
+                                                    <div className="col-xs-6">
+                                                        <Autocomplete className="form-control" name="fallback_series_lang" value={this.state.user.fallback_series_lang} options={listLangs} onChange={(value) => this.onClick("fallback_series_lang", value)} />
+                                                    </div>
+                                                </div>
+                                            </React.Fragment> : null
                                         }
-                                    </li>;
-                                })}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="modal-footer">
+                            <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" className="modal-body tab-pane fade in">
+                                <div className="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
+                                    {this.state.users.map(user => {
+                                        return <li key={user.login} className={user.flag_online ? "list-group-item online" : "list-group-item"} id={user.login} onClick={this.getUserDetails}>
+                                            <div className="userLine">
+                                                <span className="nickname">{user.nickname}</span>
+                                                <img className="avatar" src={this.state.pathAvatar + user.avatar_file} />
+                                            </div>
+                                            {this.state.userDetails ?
+                                                <div className="userDetails">
+                                                    <div><i className="glyphicon glyphicon-envelope"></i>{this.state.userDetails.email ? this.state.userDetails.email : ''}</div>
+                                                    <div><i className="glyphicon glyphicon-link"></i>{this.state.userDetails.url ? this.state.userDetails.url : ''}</div>
+                                                    <div><i className="glyphicon glyphicon-leaf"></i>{this.state.userDetails.bio ? this.state.userDetails.bio : ''}</div>
+                                                </div> : null
+                                            }
+                                        </li>;
+                                    })}
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+
+                            </div>
 
                         </div>
 
                     </div>
-
                 </div>
             </div>
         )

@@ -757,16 +757,6 @@ var flattenedTagsGroups;
 			}
 		});
 
-		$('#modalBox').on('shown.bs.modal', function () {
-			input = $('#modalInput');
-			if(input.is(':visible')) $('#modalInput').focus();
-			else $('#modalBox').find('button.ok').focus();
-		});
-		$('#modalBox').on('keydown', function(e) {
-			var keyCode = e.keyCode || e.which;
-			if (keyCode == '13') $(this).find('button.ok').click();
-		});
-
 		/* close closable popup */
 		$('body').on('click', '.closePopupParent', function () {
 			var el = $(this);
@@ -776,7 +766,7 @@ var flattenedTagsGroups;
 		});
 
 		/* login stuff */
-		$('#loginModal,#modalBox').on('shown.bs.modal', function (e) {
+		$('#loginModal').on('shown.bs.modal', function (e) {
 			resizeModal();
 		});
 
@@ -870,7 +860,6 @@ var flattenedTagsGroups;
         /* profil stuff */        
 		showProfil = function() {
 			window.callProfileModal(settings.Online);
-			$('#profilModal').modal('show');
 		};
 
 		/* profil stuff END */
@@ -2240,7 +2229,6 @@ var flattenedTagsGroups;
 	};
 
 	$(window).resize(function () {
-		isSmall = $(window).width() < 1025;
 		var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
 		var topHeight2 = $('#panel2 .panel-heading.container-fluid').outerHeight();
 
@@ -2252,16 +2240,10 @@ var flattenedTagsGroups;
 			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
 			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
 		}
-
-		if(!isSmall) {
-			$('#modalBox').find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
-		} else {
-			$('#modalBox').find('.modal-dialog').addClass('modal-sm').removeClass('modal-md');
-		}
 	});
 
 	resizeModal = function() {
-		$('#loginModal,#modalBox').each( (k, modal) => {
+		$('#loginModal').each( (k, modal) => {
 			var $modal = $(modal);
 			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
 						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);

@@ -88,8 +88,6 @@
 	</div><!-- .container close -->
 </section><!-- header close -->
 
-<div class="modal modalPage fade" id="profilModal" role="dialog" type="prompt" tabindex="21"></div>
-
 <div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
 	<div class="modal-dialog modal-sm">
 		<div class="modal-content">
@@ -267,7 +265,7 @@
 		if (!logInfos.username) {
 			$('#loginModal').modal('show');
 		} else {
-			$('#profilModal').modal('show');
+			window.callProfileModal(true);
 		}
 	});
 
