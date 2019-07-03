@@ -28,4 +28,7 @@ window.callPollModal = () => {
   document.getElementById('pollModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><PollModal/></Suspense>, document.getElementById('pollModal')) : null;
 };
 document.getElementById('restrictedHelpModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><RestrictedHelpModal /></Suspense>, document.getElementById('restrictedHelpModal')) : null;
-document.getElementById('helpModal') ? ReactDOM.render(<Suspense fallback={<Loader />}><HelpModal /></Suspense>, document.getElementById('helpModal')) : null;
+window.callHelpModal = (mode, version) => {
+  ReactDOM.render(<Suspense fallback={<Loader />}><HelpModal mode={mode} version={version}/></Suspense>, document.getElementById('root'));
+  $('#helpModal').modal('show');
+};

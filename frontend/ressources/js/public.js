@@ -29,7 +29,7 @@ $(document).ready(function () {
 	});
 
 	$('.showSettings').click(function(){
-		$('#helpModal').modal('show');
+		window.callHelpModal(settings.Karaoke.Private, window.version);
 	});
 	$('.showPoll').click(function(){
 		$('#pollModal').modal('show');
@@ -118,9 +118,7 @@ getPublicSettings = function() {
 
         // Init with player infos, set the playlist's id where users can add their karas
 		settings = config;
-			
-		$('#version').text(configAndVersiondata.version.name + ' ' + configAndVersiondata.version.number);
-		$('#mode').text(configAndVersiondata['Karaoke.Private'] ? 'Privé' : 'Public');
+		window.version = configAndVersiondata.version;
 	}); 
 	return promise.promise();
 };

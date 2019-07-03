@@ -2369,7 +2369,7 @@ var flattenedTagsGroups;
 				if(introManager && typeof introManager._currentStep !== 'undefined') {
 					introManager.nextStep();
 				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
-					$('#helpModal').modal('show');
+					window.callHelpModal(settings.Karaoke.Private, window.version);
 				}
 
 				if (welcomeScreen) {
@@ -2386,10 +2386,6 @@ var flattenedTagsGroups;
 			});
 		return deferred;
 	};
-
-	$('#helpModal .confirm').click(function(){
-		createCookie('mugenTouchscreenHelp', true, -1);
-	});
 
 	/* opposite sideber of playlist : 1 or 2 */
 	non = function (side) {
