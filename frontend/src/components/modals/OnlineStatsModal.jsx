@@ -1,0 +1,86 @@
+import React, { Component } from "react";
+import { withTranslation } from 'react-i18next';
+import axios from 'axios';
+
+class OnlineStatsModal extends Component {
+    constructor(props) {
+        super(props)
+        this.onClick = this.onClick.bind(this);
+    }
+
+    expand(str, val) {
+        return str.split('.').reduceRight((acc, currentValue) => {
+            return { [currentValue]: acc };
+        }, val);
+    };
+
+    onClick(e) {
+        var data = this.expand("Online.Stats", eval(e.target.value));
+        axios.put('/api/admin/settings', {
+            setting: JSON.stringify(data)
+        });
+        $('#onlineStatsModal').modal('hide');
+    }
+
+    render() {
+        const t = this.props.t;
+        return (
+            <div className="modal modalPage fade" id="onlineStatsModal" role="dialog">
+                <div className="modal-dialog modal-md">
+                    <div className="modal-content">
+                        <ul className="nav nav-tabs nav-justified modal-header">
+                            <li className="modal-title stats"><a data-toggle="tab" href="#nav-stats" role="tab" aria-controls="nav-stats" aria-selected="true" aria-expanded="true">
+                                {t('ONLINE_STATS.TITLE')} </a>
+                            </li>
+                        </ul>
+                        <div className="tab-content" id="nav-stats-tab">
+                            <div id="nav-stats" role="tabpanel" aria-labelledby="nav-stats-tab" className="modal-body tab-pane fade active in">
+                                <div className="modal-message text">
+                                    <p>{t('ONLINE_STATS.INTRO')}</p>
+                                </div>
+                                <div className="accordion text" id="accordionDetails">
+                                    <div className="card">
+                                        <div className="card-header" id="headingOne">
+                                            <h5 className="mb-0">
+                                                <a className="btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                    {t('ONLINE_STATS.DETAILS.TITLE')}
+                                                </a>
+                                            </h5>
+                                        </div>
+                                        <div id="collapseOne" className="collapse" aria-labelledby="headingOne" data-parent="#accordionDetails">
+                                            <div className="card-body">
+
+                                                {'- ' + t('ONLINE_STATS.DETAILS.1')}<br />
+                                                {'- ' + t('ONLINE_STATS.DETAILS.2')}<br />
+                                                {'- ' + t('ONLINE_STATS.DETAILS.3')}<br />
+                                                {'- ' + t('ONLINE_STATS.DETAILS.4')}<br />
+                                                {'- ' + t('ONLINE_STATS.DETAILS.5')}<br /><br />
+
+                                                <p>{t('ONLINE_STATS.DETAILS.OUTRO')}</p>
+                                            </div>
+                                        </div>
+                                    </div >
+                                    <div className="modal-message text">
+                                        <p>{t('ONLINE_STATS.CHANGE')}</p>
+                                        <p>{t('ONLINE_STATS.QUESTION')}</p>
+                                    </div>
+                                    <div></div>
+                                    <div>
+                                        <button type="button" value={true} className="onlineStatsBtn btn btn-default btn-primary col-xs-6" onClick={this.onClick}>
+                                            {t('YES')}
+                                        </button>
+                                        <button type="button" value={false} className="onlineStatsBtn btn btn-default col-xs-6" onClick={this.onClick}>
+                                            {t('NO')}
+                                        </button>
+                                    </div>
+                                </div >
+                            </div >
+                        </div >
+                    </div >
+                </div >
+            </div >
+        )
+    }
+}
+
+export default withTranslation()(OnlineStatsModal);

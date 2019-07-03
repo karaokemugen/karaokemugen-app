@@ -6,6 +6,7 @@ import ProfilModal from './components/modals/ProfilModal';
 import PollModal from './components/modals/PollModal';
 import RestrictedHelpModal from './components/modals/RestrictedHelpModal';
 import HelpModal from './components/modals/HelpModal';
+import OnlineStatsModal from './components/modals/OnlineStatsModal'
 import './components/i18n';
 import io from 'socket.io-client';
 import './app.css'
@@ -33,4 +34,8 @@ ReactDOM.render(<Suspense fallback={<Loader />}><RestrictedHelpModal /></Suspens
 window.callHelpModal = (mode, version) => {
   ReactDOM.render(<Suspense fallback={<Loader />}><HelpModal mode={mode} version={version}/></Suspense>, document.getElementById('root'));
   $('#helpModal').modal('show');
+};
+window.callOnlineStatsModal = () => {
+  ReactDOM.render(<Suspense fallback={<Loader />}><OnlineStatsModal /></Suspense>, document.getElementById('root'));
+  $('#onlineStatsModal').modal('show');
 };
