@@ -29,27 +29,6 @@ export default function publicMiscController(router: Router) {
  * {
  *    "data": {
  *	"config": {
- *	 App: {
- *		FirstRun: true,
- *		InstanceID: 'Change me',
- *		JwtSecret: 'Change me'
- *	},
- *	Database: {
- *		'sql-file': true,
- *		defaultEnv: 'prod',
- *		prod: {
- *			driver: 'pg',
- *			user: 'karaokemugen_app',
- *			password: 'musubi',
- *			host: 'localhost',
- *			port: 6559,
- *			database: 'karaokemugen_app',
- *			schema: 'public',
- *			superuser: 'postgres',
- *			superuserPassword: null,
- *			bundledPostgresBinary: true
- *		}
- *	},
  *	Online: {
  *		Host: 'kara.moe',
  *		Stats: undefined,
@@ -117,40 +96,6 @@ export default function publicMiscController(router: Router) {
  *		MaxDejaVuTime: 60,
  *		RemovePublicOnPlay: false
  *	},
- *	System: {
- *		Binaries: {
- *			Player: {
- *				Linux: '/usr/bin/mpv',
- *				OSX: 'app/bin/mpv.app/Contents/MacOS/mpv',
- *				Windows: 'app/bin/mpv.exe'
- *			},
- *			ffmpeg: {
- *				Linux: '/usr/bin/ffmpeg',
- *				OSX: 'app/bin/ffmpeg',
- *				Windows: 'app/bin/ffmpeg.exe'
- *			},
- *			Postgres: {
- *				Windows: 'app/bin/postgres/bin/',
- *				OSX: 'app/bin/postgres/bin/',
- *				Linux: 'app/bin/postgres/bin/',
- *			}
- *		},
- *		Path: {
- *			Avatars: 'app/avatars',
- *			Backgrounds: 'app/backgrounds',
- *			Bin: 'app/bin',
- *			Import: 'app/import',
- *			Jingles: 'app/jingles',
- *			Karas: 'app/data/karas',
- *			Medias: 'app/data/medias',
- *			MediasHTTP: '',
- *			Previews: 'app/previews',
- *			Series: 'app/data/series',
- *			Subs: 'app/data/lyrics',
- * 			Temp: 'app/temp',
- *			DB: 'app/db'
- *		}
- *	}
  * },
  * version: {
  * 		number: '2.5-next',
