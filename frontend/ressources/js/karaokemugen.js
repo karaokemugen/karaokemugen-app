@@ -777,12 +777,7 @@ var flattenedTagsGroups;
 			login(username, password);
 
 		});
-		$('#nav-login .guest').click( loginGuest );
-        function loginGuest() {
-            new Fingerprint2( { excludeUserAgent: true }).get(function(result, components) {
-				login('', result);
-			});
-        }
+
 		$('#nav-signup input').focus( function(){
 			if(introManager && typeof introManager._currentStep != 'undefined') {
 				setTimeout(() => {

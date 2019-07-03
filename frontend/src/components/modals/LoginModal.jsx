@@ -1,9 +1,14 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
+import Fingerprint2 from 'fingerprintjs2'
 
 class LoginModal extends Component {
     constructor(props) {
         super(props)
+    loginGuest() {
+        new Fingerprint2({ excludeUserAgent: true }).get(function (result) {
+            login('', result);
+        });
     }
 
     render() {
