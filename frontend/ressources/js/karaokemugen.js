@@ -69,7 +69,6 @@ var tagsTypesList;
 var plData;
 var tagsGroups;
 var flattenedTagsGroups;
-var settingsNotUpdated;
 
 (function (yourcode) {
 	yourcode(window.jQuery, window, document);
@@ -758,16 +757,6 @@ var settingsNotUpdated;
 			}
 		});
 
-		$('#modalBox').on('shown.bs.modal', function () {
-			input = $('#modalInput');
-			if(input.is(':visible')) $('#modalInput').focus();
-			else $('#modalBox').find('button.ok').focus();
-		});
-		$('#modalBox').on('keydown', function(e) {
-			var keyCode = e.keyCode || e.which;
-			if (keyCode == '13') $(this).find('button.ok').click();
-		});
-
 		/* close closable popup */
 		$('body').on('click', '.closePopupParent', function () {
 			var el = $(this);
@@ -777,7 +766,7 @@ var settingsNotUpdated;
 		});
 
 		/* login stuff */
-		$('#loginModal,#modalBox').on('shown.bs.modal', function (e) {
+		$('#loginModal').on('shown.bs.modal', function (e) {
 			resizeModal();
 		});
 
@@ -871,7 +860,6 @@ var settingsNotUpdated;
         /* profil stuff */        
 		showProfil = function() {
 			window.callProfileModal(settings.Online);
-			$('#profilModal').modal('show');
 		};
 
 		/* profil stuff END */
@@ -975,13 +963,10 @@ var settingsNotUpdated;
 		'USER_CREATED',
 		'PL_SONG_ADDED',
 		'PL_SONG_DELETED',
-		'PLAYLIST_MODE_SONG_ADDED',
-		'FAV_IMPORTED'];
+		'PLAYLIST_MODE_SONG_ADDED'];
 	hideErrorMessage = ['POLL_NOT_ACTIVE'];
 	softErrorMessage = [
 		'PLAYLIST_MODE_ADD_SONG_ERROR'];
-
-	settingsNotUpdated= [];
 
 	/* touchscreen event handling part */
 
@@ -2120,12 +2105,6 @@ var settingsNotUpdated;
 		if(settingsUpdating) {
 			settingsUpdating.done( function() {
 
-				if(scope === 'public' && settings.Karaoke.Poll.Enabled) {
-					ajx('GET', 'public/songpoll', {}, function(data) {
-						$('.showPoll').toggleClass('hidden');
-					});
-				}
-				settingsNotUpdated = ['Player.StayOnTop', 'Player.FullScreen'];
 				playlistsUpdating = refreshPlaylistSelects();
 				playlistsUpdating.done(function () {
 					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
@@ -2250,7 +2229,6 @@ var settingsNotUpdated;
 	};
 
 	$(window).resize(function () {
-		isSmall = $(window).width() < 1025;
 		var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
 		var topHeight2 = $('#panel2 .panel-heading.container-fluid').outerHeight();
 
@@ -2262,16 +2240,10 @@ var settingsNotUpdated;
 			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
 			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
 		}
-
-		if(!isSmall) {
-			$('#modalBox').find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
-		} else {
-			$('#modalBox').find('.modal-dialog').addClass('modal-sm').removeClass('modal-md');
-		}
 	});
 
 	resizeModal = function() {
-		$('#loginModal,#modalBox').each( (k, modal) => {
+		$('#loginModal').each( (k, modal) => {
 			var $modal = $(modal);
 			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
 						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);
@@ -2379,7 +2351,7 @@ var settingsNotUpdated;
 				if(introManager && typeof introManager._currentStep !== 'undefined') {
 					introManager.nextStep();
 				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
-					$('#helpModal').modal('show');
+					window.callHelpModal(settings.Karaoke.Private, window.version);
 				}
 
 				if (welcomeScreen) {
@@ -2396,10 +2368,6 @@ var settingsNotUpdated;
 			});
 		return deferred;
 	};
-
-	$('#helpModal .confirm').click(function(){
-		createCookie('mugenTouchscreenHelp', true, -1);
-	});
 
 	/* opposite sideber of playlist : 1 or 2 */
 	non = function (side) {

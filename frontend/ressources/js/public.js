@@ -29,7 +29,7 @@ $(document).ready(function () {
 	});
 
 	$('.showSettings').click(function(){
-		$('#settingsPublic').modal('show');
+		window.callHelpModal(settings.Karaoke.Private, window.version);
 	});
 	$('.showPoll').click(function(){
 		$('#pollModal').modal('show');
@@ -69,7 +69,7 @@ $(document).ready(function () {
 	});
 	$('.tourAgain').click(() => {
 		startIntro('public', 'afterLogin');
-		$('#settingsPublic').modal('hide')
+		$('#helpModal').modal('hide');
 	});
 	$('#switchInfoBar').click(function(){
 		$(this).toggleClass('showLyrics');
@@ -118,9 +118,7 @@ getPublicSettings = function() {
 
         // Init with player infos, set the playlist's id where users can add their karas
 		settings = config;
-			
-		$('#version').text(configAndVersiondata.version.name + ' ' + configAndVersiondata.version.number);
-		$('#mode').text(configAndVersiondata['Karaoke.Private'] ? 'Privé' : 'Public');
+		window.version = configAndVersiondata.version;
 	}); 
 	return promise.promise();
 };
