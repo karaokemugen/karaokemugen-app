@@ -29,6 +29,9 @@ export default function publicMiscController(router: Router) {
  * {
  *    "data": {
  *	"config": {
+ *	 App: {
+ *		FirstRun: true
+ *	},
  *	Online: {
  *		Host: 'kara.moe',
  *		Stats: undefined,
