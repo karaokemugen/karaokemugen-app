@@ -240,7 +240,7 @@ var flattenedTagsGroups;
 						url: 'admin/settings',
 						contentType: 'application/json',
 						dataType: 'json',
-						data: JSON.stringify({ 'setting': {'Karaoke': {'Private':1}} })
+						data: JSON.stringify({ 'setting': {'Karaoke': {'Private':true}} })
 					});
 				} else {
 					$('#wlcm_login > span').text(logInfos.username);
