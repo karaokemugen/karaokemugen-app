@@ -20,7 +20,7 @@ export default function publicMiscController(router: Router) {
  * @apiVersion 2.5.0
  * @apiGroup Main
  * @apiPermission public
- * @apiHeader authorization Auth token received from logging in
+ * @apiHeader none
  * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries and other internal settings.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
