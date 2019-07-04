@@ -24,12 +24,8 @@ $(document).ready(function () {
 		}
 	});
 	
-	$('.btn.tour').click(function(){
-		startIntro('public');
-	});
-
 	$('.showSettings').click(function(){
-		window.callHelpModal(settings.Karaoke.Private, window.version);
+		window.callHelpModal();
 	});
 	$('.showPoll').click(function(){
 		$('#pollModal').modal('show');
@@ -67,10 +63,7 @@ $(document).ready(function () {
     
 		$(this).data('opened', opened);
 	});
-	$('.tourAgain').click(() => {
-		startIntro('public', 'afterLogin');
-		$('#helpModal').modal('hide');
-	});
+
 	$('#switchInfoBar').click(function(){
 		$(this).toggleClass('showLyrics');
 		if(  $(this).hasClass('showLyrics') ) {
@@ -118,7 +111,6 @@ getPublicSettings = function() {
 
         // Init with player infos, set the playlist's id where users can add their karas
 		settings = config;
-		window.version = configAndVersiondata.version;
 	}); 
 	return promise.promise();
 };
@@ -155,11 +147,6 @@ swipeManager.on('swipe', function (e) {
 
 
 if(webappMode == 2) {
-
-	var publicTuto = readCookie('publicTuto');
-	if(!publicTuto) {
-		$('#loginModal').addClass('firstRun');
-	}
 
 	// for each side
 	[1,2].forEach(function(side){

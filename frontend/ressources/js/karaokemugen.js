@@ -35,6 +35,7 @@ var settings;
 var kmStats;
 var i18n;
 var introManager;
+window.introManager = introManager;
 
 /* promises */
 var statsUpdating;
@@ -75,6 +76,7 @@ var flattenedTagsGroups;
 }(function ($, window, document) {
 	$(function () {
 
+		window.startIntro = startIntro;
 
 		var perf = sessionStorage.getItem('perf');
 		if (!perf) {
@@ -193,7 +195,7 @@ var flattenedTagsGroups;
 					} else if(res.status == 401) {
 						errMessage = i18n.__('UNAUTHORIZED');
 						if(!showedLoginAfter401) {
-							$('#loginModal').modal('show');
+							window.callLoginModal(scope);
 							showedLoginAfter401 = true;
 						}
 					} else {
@@ -219,7 +221,7 @@ var flattenedTagsGroups;
 			if(logInfos.token && !showedLoginAfter401) {
 				showProfil();
 			} else {
-				$('#loginModal').modal('show');
+				window.callLoginModal(scope);
 			}
 		});
 
@@ -231,23 +233,9 @@ var flattenedTagsGroups;
 			$('#wlcm_disconnect').hide();
 		}
 
-		if(query.admpwd && scope === 'admin' && typeof appFirstRun != "undefined" && appFirstRun) { // app first run admin
-			login('admin', query.admpwd).done(() => {
-				if(!welcomeScreen) {
-					startIntro('admin');
-					$.ajax({
-						type: 'PUT',
-						url: 'admin/settings',
-						contentType: 'application/json',
-						dataType: 'json',
-						data: JSON.stringify({ 'setting': {'Karaoke': {'Private':true}} })
-					});
-				} else {
-					$('#wlcm_login > span').text(logInfos.username);
-					$('#wlcm_disconnect').show();
-					initApp();
-				}
-			});
+		// app first run admin
+		if(query.admpwd && scope !== 'public' && typeof appFirstRun != 'undefined' && appFirstRun) {
+			window.callLoginModal('admin', query.admpwd);
 		} else if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
@@ -255,16 +243,16 @@ var flattenedTagsGroups;
 				logInfos.onlineToken = mugenTokenOnline;
 			}
 			if(scope === 'admin' && logInfos.role !== 'admin') {
-				$('#loginModal').modal('show');
+				window.callLoginModal(scope);
 			} else {
 				$('#wlcm_login > span').text(logInfos.username);
 				$('#wlcm_disconnect').show();
 				initApp();
 			}
 		} else if (webappMode === 1){
-            loginGuest();
-        } else {
-			$('#loginModal').modal('show');
+			loginGuest();
+		} else {
+			window.callLoginModal(scope);
 
 		}
 
@@ -766,23 +754,6 @@ var flattenedTagsGroups;
 		});
 
 		/* login stuff */
-		$('#loginModal').on('shown.bs.modal', function (e) {
-			resizeModal();
-		});
-
-		$('#nav-login .login').click( () => {
-			var servername = $('#loginServ').val();
-			var username = $('#login').val() + (servername ? '@' + servername : '');
-			var password = $('#password').val();
-			login(username, password);
-
-		});
-		$('#nav-login .guest').click( loginGuest );
-        function loginGuest() {
-            new Fingerprint2( { excludeUserAgent: true }).get(function(result, components) {
-				login('', result);
-			});
-        }
 		$('#nav-signup input').focus( function(){
 			if(introManager && typeof introManager._currentStep != 'undefined') {
 				setTimeout(() => {
@@ -798,56 +769,6 @@ var flattenedTagsGroups;
 				}, 200);
 			}
 		});
-		$('#nav-signup .login').click( () => {
-			var servername = $('#signupServ').val();
-			var username = $('#signupLogin').val();
-			if(username.includes('@')) {
-				$('#signupLogin').addClass('errorBackground')
-				displayMessage('warning','', i18n.__('CHAR_NOT_ALLOWED', '@'));
-				$('#signupLogin').focus();
-				return;
-			} else {
-				$('#signupLogin').removeClass('errorBackground')
-			}
-			var username = username + (servername ? '@' + servername : '');
-			var password = $('#signupPassword').val();
-			var passwordConfirmation = $('#signupPasswordConfirmation').val();
-			if(password !== passwordConfirmation) {
-				$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
-				$('#signupPassword').focus();
-			} else {
-				var data = { login: username, password: password};
-
-				if(scope === 'admin') {
-					data.role =  $('#signupRole').val();
-				}
-
-				$.ajax({
-					url: scope + '/users',
-					type: 'POST',
-					data: data })
-					.done(function (response) {
-						if(response == true) {
-							displayMessage('info', 'Info',  i18n.__('CL_NEW_USER', username));
-						}
-
-						$('#loginModal').modal('hide');
-						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
-
-						if(scope === 'public' || introManager &&  typeof introManager._currentStep !== 'undefined') login(username, password);
-
-					}).fail(function(response) {
-						$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
-						$('#signupPassword').focus();
-					});
-			}
-		});
-
-		$('#password, #signupPasswordConfirmation').on('keypress', (e) => {
-			if(e.which == 13) {
-				$(e.target).parent().parent().find('.login').click();
-			}
-		});
 
 		$('.logout, .btn[action="logout"]').click( () => {
 			eraseCookie('mugenToken');
@@ -859,7 +780,7 @@ var flattenedTagsGroups;
 
         /* profil stuff */        
 		showProfil = function() {
-			window.callProfileModal(settings.Online);
+			window.callProfileModal();
 		};
 
 		/* profil stuff END */
@@ -2159,8 +2080,6 @@ var flattenedTagsGroups;
 		var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
 		var topHeight2 = $('#panel2 .panel-heading.container-fluid').outerHeight();
 
-		resizeModal();
-
 		if(!isTouchScreen) {
 			$('#nav-profil,#nav-userlist, #nav-poll').perfectScrollbar();
 			$('.playlistContainer, #manage > .panel').perfectScrollbar();
@@ -2169,15 +2088,6 @@ var flattenedTagsGroups;
 		}
 	});
 
-	resizeModal = function() {
-		$('#loginModal').each( (k, modal) => {
-			var $modal = $(modal);
-			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
-						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);
-			$modal.find('.modal-body').css('max-height', $('body').height() - shrink - 15 + 'px');
-		});
-
-	};
 	/**
     * Init bootstrapSwitchs
     */
@@ -2237,63 +2147,6 @@ var flattenedTagsGroups;
 		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
 			$(this).val($(this).is(':checked') ? 'true' : 'false');
 		});
-	};
-
-	login = function(username, password) {
-		var deferred = $.Deferred();
-		var url = 'auth/login';
-		var data = { username: username, password: password};
-
-		if(!username) {
-			url = 'auth/login/guest';
-			data = { fingerprint : password };
-		} else if(scope === 'admin' && typeof appFirstRun != "undefined" && appFirstRun && username !== 'admin') {
-		    url = 'admin/users/login';
-		}
-
-		$.ajax({
-			url: url,
-			type: 'POST',
-			data: data })
-			.done(function (response) {
-				if(scope === 'admin' && response.role !== 'admin') {
-					displayMessage('warning','', i18n.__('ADMIN_PLEASE'));
-					return deferred.reject();
-				}
-				var token;
-				$('#loginModal').modal('hide');
-				$('#password, #login').removeClass('redBorders');
-
-				createCookie('mugenToken',  response.token, -1);
-				if(response.onlineToken) {
-					createCookie('mugenTokenOnline',  response.onlineToken, -1);
-				} else if (!username.includes('@')) {
-					eraseCookie('mugenTokenOnline');
-				}
-
-				logInfos = response;
-				displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
-				initApp();
-
-				if(introManager && typeof introManager._currentStep !== 'undefined') {
-					introManager.nextStep();
-				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
-					window.callHelpModal(settings.Karaoke.Private, window.version);
-				}
-
-				if (welcomeScreen) {
-					logInfos = parseJwt(response.token);
-					$('#wlcm_login > span').text(logInfos.username);
-					$('#wlcm_disconnect').show();
-				}
-
-				deferred.resolve();
-			}).fail(function(response) {
-				$('#loginModal').modal('show');
-				$('#password').val('').focus();
-				$('#password, #login').addClass('redBorders');
-			});
-		return deferred;
 	};
 
 	/* opposite sideber of playlist : 1 or 2 */

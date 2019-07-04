@@ -12,6 +12,11 @@ class HelpModal extends Component {
         createCookie('mugenTouchscreenHelp', true, -1);
     }
 
+    tourAgain() {
+		window.startIntro('public', 'afterLogin');
+		$('#helpModal').modal('hide');
+	}
+
     render() {
         const t = this.props.t;
         return (
@@ -36,7 +41,7 @@ class HelpModal extends Component {
                                 <br />
 
                                 <div className="modal-message tour">
-                                    <button className="btn btn-default tourAgain">
+                                    <button className="btn btn-default tourAgain" onClick={this.tourAgain}>
                                         {t("FOLLOW_TOUR")}
                                     </button>
                                 </div>
