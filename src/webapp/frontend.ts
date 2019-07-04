@@ -157,7 +157,6 @@ export async function initFrontend() {
 			res.render(view, {'layout': 'publicHeader',
 				'clientAdress'	:	`http://${url}`,
 				'webappMode'	:	+config.Frontend.Mode,
-				'onlineHost'  	:	config.Online.Users ? config.Online.Host : '',
 				'query'			:	JSON.stringify(req.query)
 			});
 		});
@@ -168,7 +167,6 @@ export async function initFrontend() {
 				'clientAdress'	:	`http://${address()}`,
 				'query'			:	JSON.stringify(req.query),
 				'appFirstRun'	:	config.App.FirstRun,
-				'onlineHost'  	:	config.Online.Users ? config.Online.Host : '',
 				'webappMode'	:	config.Frontend.Mode
 			});
 		});
