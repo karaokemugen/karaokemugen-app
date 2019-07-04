@@ -24,10 +24,6 @@ $(document).ready(function () {
 		}
 	});
 	
-	$('.btn.tour').click(function(){
-		startIntro('public');
-	});
-
 	$('.showSettings').click(function(){
 		window.callHelpModal();
 	});
@@ -67,10 +63,7 @@ $(document).ready(function () {
     
 		$(this).data('opened', opened);
 	});
-	$('.tourAgain').click(() => {
-		startIntro('public', 'afterLogin');
-		$('#helpModal').modal('hide');
-	});
+
 	$('#switchInfoBar').click(function(){
 		$(this).toggleClass('showLyrics');
 		if(  $(this).hasClass('showLyrics') ) {

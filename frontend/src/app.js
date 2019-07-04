@@ -50,7 +50,7 @@ window.callOnlineStatsModal = () => {
   ReactDOM.render(<Suspense fallback={<Loader />}><OnlineStatsModal /></Suspense>, document.getElementById('root'));
   $('#onlineStatsModal').modal('show');
 };
-window.callLoginModal = (scope) => {
-  ReactDOM.render(<Suspense fallback={<Loader />}><LoginModal scope={scope} config={settings.config} /></Suspense>, document.getElementById('root'));
-  $('#loginModal').modal('show');
+window.callLoginModal = (scope, admpwd) => {
+  ReactDOM.render(<Suspense fallback={<Loader />}><LoginModal scope={scope} config={settings.config} admpwd={admpwd} /></Suspense>, document.getElementById('root'));
+  if (!admpwd) $('#loginModal').modal('show');
 }

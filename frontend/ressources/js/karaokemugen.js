@@ -76,6 +76,7 @@ var flattenedTagsGroups;
 }(function ($, window, document) {
 	$(function () {
 
+		window.startIntro = startIntro;
 
 		var perf = sessionStorage.getItem('perf');
 		if (!perf) {
@@ -232,23 +233,9 @@ var flattenedTagsGroups;
 			$('#wlcm_disconnect').hide();
 		}
 
-		if(query.admpwd && scope === 'admin' && typeof appFirstRun != "undefined" && appFirstRun) { // app first run admin
-			login('admin', query.admpwd).done(() => {
-				if(!welcomeScreen) {
-					startIntro('admin');
-					$.ajax({
-						type: 'PUT',
-						url: 'admin/settings',
-						contentType: 'application/json',
-						dataType: 'json',
-						data: JSON.stringify({ 'setting': {'Karaoke': {'Private':true}} })
-					});
-				} else {
-					$('#wlcm_login > span').text(logInfos.username);
-					$('#wlcm_disconnect').show();
-					initApp();
-				}
-			});
+		// app first run admin
+		if(query.admpwd && scope === 'admin' && typeof appFirstRun != 'undefined' && appFirstRun) {
+			window.callLoginModal('admin', query.admpwd);
 		} else if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;

@@ -14,6 +14,9 @@ class LoginModal extends Component {
             redBorders: '',
             serv: this.props.config.Online.Host
         }
+        if (this.props.admpwd) {
+            this.login('admin', this.props.admpwd);
+        }
     }
 
     async login(username, password) {
@@ -27,8 +30,8 @@ class LoginModal extends Component {
             url = '/api/admin/users/login';
         }
 
-        await axios.post(url, data).then(response => {
-            console.log(response)
+        await axios.post(url, data).then(result => {
+            var response = result.data;
             if (this.props.scope === 'admin' && response.role !== 'admin') {
                 window.displayMessage('warning', '', i18n.__('ADMIN_PLEASE'));
             }
@@ -56,6 +59,11 @@ class LoginModal extends Component {
                 window.logInfos = parseJwt(response.token);
                 $('#wlcm_login > span').text(window.logInfos.username);
                 $('#wlcm_disconnect').show();
+            } else if (this.props.admpwd) {
+                window.startIntro('admin');
+                axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                axios.put('/api/admin/settings', JSON.stringify({ 'setting': {'Karaoke': {'Private':true}} }));
             }
         })
             .catch(err => {
@@ -99,7 +107,7 @@ class LoginModal extends Component {
                                             {t("FIRST_PUBLIC_RUN_WELCOME")}
                                         </div>
                                         <div className="modal-message tour">
-                                            <button className="btn btn-default tour">
+                                            <button className="btn btn-default tour" onClick={()=> window.startIntro('public')}>
                                                 {t("FOLLOW_TOUR")}
                                             </button>
                                         </div>
