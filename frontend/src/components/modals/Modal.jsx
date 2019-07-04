@@ -6,6 +6,9 @@ class Modal extends Component {
 		this.confirmModal = this.confirmModal.bind(this);
 		this.abortModal = this.abortModal.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
+		this.state = {
+			promptText: this.props.placeholder
+		}
 	}
 
 	confirmModal() {
@@ -13,7 +16,7 @@ class Modal extends Component {
 			if (this.props.type === 'confirm') {
 				this.props.callback(true);
 			} else if (this.props.type === 'prompt') {
-				this.props.callback(this.props.placeholder);
+				this.props.callback(this.state.promptText);
 			} else if (this.props.type === 'custom') {
 				var data = {};
 				$('#modalBox').find('.modal-body').find('input[type="checkbox"]:checked, input[type!="checkbox"], select').map(function (k, v) {
@@ -38,10 +41,12 @@ class Modal extends Component {
 
 	onKeyDown(e) {
 		var keyCode = e.keyCode || e.which;
-		if (keyCode == '13') this.confirmModal();
-		$('#modalBox').modal('hide');
-		$('body').removeClass('modal-open');
-		$('.modal-backdrop').remove();
+		if (keyCode == '13') {
+			this.confirmModal();
+			$('#modalBox').modal('hide');
+			$('body').removeClass('modal-open');
+			$('.modal-backdrop').remove();
+		}
 	}
 
 	render() {
@@ -58,7 +63,8 @@ class Modal extends Component {
 								<div className="modal-message" dangerouslySetInnerHTML={{ __html: this.props.message }}></div>
 								{this.props.type === 'prompt' ?
 									<div className="form">
-										<input type="text" className="form-control" id="modalInput" name="modalInput" defaultValue={this.props.placeholder} />
+										<input type="text" className="form-control" id="modalInput" name="modalInput" 
+											defaultValue={this.state.promptText} onChange={(event) => this.setState({ promptText: event.target.value })} />
 									</div> : null
 								}
 							</div> : null
