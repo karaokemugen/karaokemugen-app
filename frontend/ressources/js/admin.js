@@ -381,8 +381,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
     getSettings = function (nameExclude) {
         var promise = $.Deferred();
         $.ajax({ url: 'admin/settings' }).done(function (data) {
-            $('[name="modalLoginServ"]').val(data.Online.Users ? data.Online.Host : '');
-
             settings = data;
 
             if(settings.Online.Stats === undefined) {

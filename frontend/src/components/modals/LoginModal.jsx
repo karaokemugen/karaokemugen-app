@@ -15,7 +15,7 @@ class LoginModal extends Component {
         this.state = {
             redBorders: '',
             errorBackground: '',
-            serv: this.props.config.Online.Host,
+            serv: this.props.config.Online.Users ? this.props.config.Online.Host : '',
             role: 'user'
         }
         if (this.props.admpwd) {
