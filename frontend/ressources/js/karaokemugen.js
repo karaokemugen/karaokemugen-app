@@ -234,7 +234,7 @@ var flattenedTagsGroups;
 		}
 
 		// app first run admin
-		if(query.admpwd && scope === 'admin' && typeof appFirstRun != 'undefined' && appFirstRun) {
+		if(query.admpwd && scope !== 'public' && typeof appFirstRun != 'undefined' && appFirstRun) {
 			window.callLoginModal('admin', query.admpwd);
 		} else if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
@@ -250,8 +250,8 @@ var flattenedTagsGroups;
 				initApp();
 			}
 		} else if (webappMode === 1){
-            loginGuest();
-        } else {
+			loginGuest();
+		} else {
 			window.callLoginModal(scope);
 
 		}
