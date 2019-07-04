@@ -11,8 +11,6 @@ import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
 import {configurePassport} from './passport_manager';
 import {createServer} from 'http';
-import { initializationCatchphrases } from '../utils/constants';
-import sample from 'lodash.sample';
 import { initWS } from '../lib/utils/ws';
 
 // Api routes
@@ -174,7 +172,6 @@ export async function initFrontend() {
 			const config = getConfig();
 			res.render('welcome', {
 				'appFirstRun'	:	config.App.FirstRun,
-				'catchphrases'	:	sample(initializationCatchphrases),
 				'clientAdress'	:	`http://${address()}`,
 				'query'			:	JSON.stringify(req.query),
 			});

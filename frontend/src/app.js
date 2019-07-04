@@ -12,6 +12,7 @@ import './components/i18n';
 import io from 'socket.io-client';
 import './app.css'
 import axios from 'axios';
+import WelcomePage from './components/WelcomePage';
 
 const Loader = () => (
   <div>loading...</div>
@@ -53,4 +54,7 @@ window.callOnlineStatsModal = () => {
 window.callLoginModal = (scope, admpwd) => {
   ReactDOM.render(<Suspense fallback={<Loader />}><LoginModal scope={scope} config={settings.config} admpwd={admpwd} /></Suspense>, document.getElementById('root'));
   if (!admpwd) $('#loginModal').modal('show');
+}
+window.welcomePage = () => {
+  ReactDOM.render(<Suspense fallback={<Loader />}><WelcomePage /></Suspense>, document.getElementById('welcomepage'));
 }
