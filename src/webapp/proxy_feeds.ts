@@ -36,9 +36,13 @@ export async function getFeeds() {
 async function fetchFeed(url: string, name: string): Promise<Feed> {
 	try {
 		const response = await got(url);
+		const feed = JSON.parse(xml2json(response.body, {compact: true}));
+		if (name === 'mastodon') {
+			feed.rss.channel.item = feed.rss.channel.item.filter((item: any) => !item.description._text.includes('UnJourUnKaraoke'));
+		}
 		return {
 			name: name,
-			body: xml2json(response.body, {compact: true})
+			body: JSON.stringify(feed)
 		};
 	} catch(err) {
 		logger.error(`[Feeds] Unable to fetch feed ${name}. Is this instance connected to Internet?`);
