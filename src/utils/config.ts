@@ -105,7 +105,7 @@ export async function backupConfig() {
 }
 
 export function getPublicConfig() {
-	const publicSettings = {...getConfig()};
+	const publicSettings = cloneDeep(getConfig());
 	delete publicSettings.App.InstanceID;
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.Database;
