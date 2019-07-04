@@ -10,9 +10,13 @@ class LoginModal extends Component {
         this.login = this.login.bind(this);
         this.loginGuest = this.loginGuest.bind(this);
         this.loginUser = this.loginUser.bind(this);
+        this.onKeyPress = this.onKeyPress.bind(this);
+        this.signup = this.signup.bind(this);
         this.state = {
             redBorders: '',
-            serv: this.props.config.Online.Host
+            errorBackground: '',
+            serv: this.props.config.Online.Host,
+            role: 'user'
         }
         if (this.props.admpwd) {
             this.login('admin', this.props.admpwd);
@@ -63,12 +67,11 @@ class LoginModal extends Component {
                 window.startIntro('admin');
                 axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
                 axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-                axios.put('/api/admin/settings', JSON.stringify({ 'setting': {'Karaoke': {'Private':true}} }));
+                axios.put('/api/admin/settings', JSON.stringify({ 'setting': { 'Karaoke': { 'Private': true } } }));
             }
         })
             .catch(err => {
-                $('#password').val('').focus();
-                this.setState({ redBorders: 'redBorders' });
+                this.setState({ redBorders: 'redBorders', password: '' });
             });
     };
 
@@ -85,11 +88,50 @@ class LoginModal extends Component {
         this.login(username, this.state.password);
     }
 
+    signup() {
+        if (this.state.login.includes('@')) {
+            this.setState({ errorBackground: 'errorBackground' });
+            window.displayMessage('warning', '', i18n.__('CHAR_NOT_ALLOWED', '@'));
+            return;
+        } else {
+            this.setState({ errorBackground: '' });
+        }
+        var username = this.state.login + (this.state.serv ? '@' + this.state.serv : '');
+        if (this.state.password !== this.state.passwordConfirmation) {
+            this.setState({ redBorders: 'redBorders' });
+        } else {
+            var data = { login: username, password: this.state.password };
+
+            if (this.props.scope === 'admin') {
+                data.role = this.state.role;
+            }
+            var apiPublic = this.props.scope === 'welcome' ? 'public' : this.props.scope;
+            axios.post('/api/' + apiPublic + '/users', data)
+                .then(response => {
+                    window.displayMessage('info', 'Info', i18n.__('CL_NEW_USER', username));
+
+                    $('#loginModal').modal('hide');
+                    this.setState({ redBorders: '' });
+
+                    if (this.props.scope === 'public' || window.introManager && typeof window.introManager._currentStep !== 'undefined') this.login(username, password);
+                })
+                .catch(err => {
+                    this.setState({ redBorders: 'redBorders' });
+                });
+        }
+    }
+
+    onKeyPress(e) {
+        if (e.which == 13) {
+            this.signup();
+        }
+    }
+
     render() {
         const t = this.props.t;
         var loginModalClassName = readCookie('publicTuto') ? "modal modalPage fade" : "modal modalPage fade firstRun";
         return (
-            <div className={loginModalClassName} id="loginModal"  tabIndex="20">
+            <div className={loginModalClassName} id="loginModal" tabIndex="20">
                 <div className="modal-dialog modal-sm">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
@@ -107,7 +149,7 @@ class LoginModal extends Component {
                                             {t("FIRST_PUBLIC_RUN_WELCOME")}
                                         </div>
                                         <div className="modal-message tour">
-                                            <button className="btn btn-default tour" onClick={()=> window.startIntro('public')}>
+                                            <button className="btn btn-default tour" onClick={() => window.startIntro('public')}>
                                                 {t("FOLLOW_TOUR")}
                                             </button>
                                         </div>
@@ -129,7 +171,7 @@ class LoginModal extends Component {
                                     </React.Fragment>
                                 }
                                 <div className="modal-message loginRelated">
-                                    <input type="text" className={this.state.redBorders} id="login" name="modalLogin" placeholder={t("NICKNAME")}
+                                    <input type="text" id="login" name="modalLogin" placeholder={t("NICKNAME")}
                                         defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
                                     <input type="text" id="loginServ" name="modalLoginServ" placeholder={t("INSTANCE_NAME_SHORT")}
                                         defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} />
@@ -145,14 +187,19 @@ class LoginModal extends Component {
                             </div>
                             <div id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" className="modal-body tab-pane fade">
                                 <div>
-                                    <input type="text" id="signupLogin" name="modalLogin" placeholder={t("NICKNAME")} required autoFocus />
-                                    <input type="text" id="signupServ" name="modalLoginServ" placeholder={t("INSTANCE_NAME_SHORT")} defaultValue={this.state.serv} />
-                                    <input type="password" id="signupPassword" name="modalPassword" placeholder={t("PASSWORD")} required />
-                                    <input type="password" id="signupPasswordConfirmation" name="modalPassword" placeholder={t("PASSWORDCONF")} required />
+                                    <input type="text" id="signupLogin" className={this.state.errorBackground} name="modalLogin" placeholder={t("NICKNAME")}
+                                        defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
+                                    <input type="text" id="signupServ" name="modalLoginServ" placeholder={t("INSTANCE_NAME_SHORT")}
+                                        defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} />
+                                    <input type="password" className={this.state.redBorders} id="signupPassword" name="modalPassword" placeholder={t("PASSWORD")}
+                                        required onKeyPress={this.onKeyPress} defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
+                                    <input type="password" className={this.state.redBorders} id="signupPasswordConfirmation" name="modalPassword" placeholder={t("PASSWORDCONF")}
+                                        required onKeyPress={this.onKeyPress} defaultValue={this.state.passwordConfirmation} required onChange={(event) => this.setState({ passwordConfirmation: event.target.value })} />
                                     {this.props.scope === 'admin' ?
                                         <React.Fragment>
                                             <br />
-                                            <select className="form-control" id="signupRole" name="modalRole" defaultValue="user">
+                                            <select className="form-control" id="signupRole" name="modalRole"
+                                                defaultValue={this.state.role} onChange={(event) => this.setState({ role: event.target.value })} >
                                                 <option value="user">{t("USER")}</option>
                                                 <option value="admin">{t("ADMIN")}</option>
                                             </select>
@@ -160,7 +207,7 @@ class LoginModal extends Component {
                                     }
                                 </div>
                                 <div>
-                                    <button id="signup" type="button" className="btn btn-default login" data-dismiss="xxxmodalxxx">
+                                    <button id="signup" type="button" className="btn btn-default login" data-dismiss="xxxmodalxxx" onClick={this.signup}>
                                         {t("SIGN_UP")}
                                     </button>
                                 </div>

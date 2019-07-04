@@ -769,56 +769,6 @@ var flattenedTagsGroups;
 				}, 200);
 			}
 		});
-		$('#nav-signup .login').click( () => {
-			var servername = $('#signupServ').val();
-			var username = $('#signupLogin').val();
-			if(username.includes('@')) {
-				$('#signupLogin').addClass('errorBackground')
-				displayMessage('warning','', i18n.__('CHAR_NOT_ALLOWED', '@'));
-				$('#signupLogin').focus();
-				return;
-			} else {
-				$('#signupLogin').removeClass('errorBackground')
-			}
-			var username = username + (servername ? '@' + servername : '');
-			var password = $('#signupPassword').val();
-			var passwordConfirmation = $('#signupPasswordConfirmation').val();
-			if(password !== passwordConfirmation) {
-				$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
-				$('#signupPassword').focus();
-			} else {
-				var data = { login: username, password: password};
-
-				if(scope === 'admin') {
-					data.role =  $('#signupRole').val();
-				}
-
-				$.ajax({
-					url: scope + '/users',
-					type: 'POST',
-					data: data })
-					.done(function (response) {
-						if(response == true) {
-							displayMessage('info', 'Info',  i18n.__('CL_NEW_USER', username));
-						}
-
-						$('#loginModal').modal('hide');
-						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
-
-						if(scope === 'public' || introManager &&  typeof introManager._currentStep !== 'undefined') login(username, password);
-
-					}).fail(function(response) {
-						$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
-						$('#signupPassword').focus();
-					});
-			}
-		});
-
-		$('#password, #signupPasswordConfirmation').on('keypress', (e) => {
-			if(e.which == 13) {
-				$(e.target).parent().parent().find('.login').click();
-			}
-		});
 
 		$('.logout, .btn[action="logout"]').click( () => {
 			eraseCookie('mugenToken');
