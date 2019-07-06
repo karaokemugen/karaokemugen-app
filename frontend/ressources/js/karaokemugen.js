@@ -26,7 +26,6 @@ var isChrome;
 
 var dragAndDrop;        // Boolean : allowing drag&drop
 var pageSize;        // Int : number of karas disaplyed per "page" (per chunk)
-var saveLastDetailsKara;    // Matrice saving the differents opened kara details to display them again when needed
 var playlistToAdd;          // Int : id of playlist users are adding their kara to
 var isTouchScreen;
 var showedLoginAfter401; // to only show the login once after login error
@@ -811,7 +810,6 @@ var flattenedTagsGroups;
 
 	pageSize = isTouchScreen ? 170 : 270;
 
-	saveLastDetailsKara = [[]];
 	playlistRange = {};
 	ajaxSearch = {}, timer;
 	oldState = {};
@@ -1112,7 +1110,7 @@ var flattenedTagsGroups;
 								+	'<div>' + buildKaraTitle(kara, {'search' : filter}) + '</div>'
 								+	'<div>' + badges + '</div>'
 								+   '</div>'
-								+   (saveDetailsKara(idPlaylist, kara.kid) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
+								+   buildKaraDetails(kara, mode)
 								+   '</li>';
 							}
 						}
@@ -1658,7 +1656,6 @@ var flattenedTagsGroups;
 
 					detailsHtml.fadeIn(animTime);
 					liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
-					saveDetailsKara(idPlaylist, idKara, 'add');
 
 					liKara.removeClass('loading');
 
@@ -1667,11 +1664,9 @@ var flattenedTagsGroups;
 					liKara.removeClass('loading');
 				});
 			} else if (infoKara.is(':visible')) {
-				saveDetailsKara(idPlaylist, idKara, 'remove');
 				infoKara.add(liKara.find('.lyricsKara')).fadeOut(animTime);
 				liKara.find('[name="infoKara"]').css('border-color', '');
 			} else {
-				saveDetailsKara(idPlaylist, idKara, 'add');
 				infoKara.fadeIn(animTime);
 				liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
 			}
@@ -1769,26 +1764,6 @@ var flattenedTagsGroups;
 			$('.karaCard > div').show();
 		}
 		return infoKaraTemp;
-	};
-
-	/*
-	*	Manage memory of opened kara details
-	*	idPlaylist {Int} : id of the playlist the details are opened/closed in
-	*	idKara {Int} : id of the kara having his details opened
-	*	command {Int} : command to execute, "add"/"remove" to add/remove to/from the list, nothing to just know if the details are opened
-	*/
-	saveDetailsKara = function(idPlaylist, idKara, command) {
-		if(isNaN(idPlaylist) || isNaN(idKara)) return false;
-		idPlaylist = parseInt(idPlaylist);
-		idKara = idKara;
-		if(saveLastDetailsKara[idPlaylist + 1000] == undefined) saveLastDetailsKara[idPlaylist + 1000] = [];
-		if(command == 'add') {
-			saveLastDetailsKara[idPlaylist + 1000].push(idKara);
-		} else if(command == 'remove') {
-			saveLastDetailsKara[idPlaylist + 1000].pop(idKara);
-		} else {
-			return (-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000]));
-		}
 	};
 
 	formatPlaylist = function (playlist) {
