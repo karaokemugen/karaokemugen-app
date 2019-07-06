@@ -39,6 +39,10 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 		const feed = JSON.parse(xml2json(response.body, {compact: true}));
 		if (name === 'mastodon') {
 			feed.rss.channel.item = feed.rss.channel.item.filter((item: any) => !item.description._text.includes('UnJourUnKaraoke'));
+		} else {
+			feed.feed.entry.forEach((element: any) => {
+				element.content._text = element.content._text.replace(/href=\"\//g, 'href=\"https://lab.shelter.moe/');
+			});
 		}
 		return {
 			name: name,
