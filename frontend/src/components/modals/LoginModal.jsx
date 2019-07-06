@@ -71,7 +71,6 @@ class LoginModal extends Component {
             }
         })
             .catch(err => {
-                console.log(err)
                 this.setState({ redBorders: 'redBorders', password: '' });
             });
     };
