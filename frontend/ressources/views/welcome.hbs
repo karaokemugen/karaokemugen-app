@@ -11,7 +11,6 @@
 <script src="/ressources/vendors/js/select2.min.js"></script>
 <script src="/ressources/vendors/js/bootstrap.min.js"></script>
 <script src="/ressources/vendors/js/i18n.js"></script>
-
 <script src="/ressources/vendors/js/assignIE.js"></script>
 <script src="/ressources/vendors/js/bootstrap-switch.min.js"></script>
 <script src="/ressources/vendors/js/jquery-ui.min.js"></script>
@@ -26,52 +25,4 @@
 <script src="/ressources/js/karaokemugen.js"></script>
 <script src="/ressources/js/admin.js"></script>
 <script src="/ressources/js/tools.js"></script>
-<script>
-	window.welcomePage();
-	
-	if (window.location.search.indexOf('admpwd') > -1) {
-		$('.manage').addClass('tutorial');
-	}
-	$('#admin').click(() => {
-		window.open('/admin' + window.location.search, '_blank');
-	});
-	$('#wlcm_login').click(() => {
-		if (!logInfos.username) {
-			window.callLoginModal(scope);
-		} else {
-			window.callProfileModal(true);
-		}
-	});
-
-	$('#welcome_dashboard').on('click', 'li', (e, k) => {
-		var index = $(e.currentTarget).index();
-
-		switch (index) {
-			case 0: window.open('/admin' + window.location.search, '_blank');
-				break;
-			case 1: window.open('/system', '_blank');
-				break;
-			case 4: window.open('http://mugen.karaokes.moe/docs/', '_blank');
-				break;
-			case 2: window.open('/' + window.location.search, '_blank');
-				break;
-		}
-
-	});
-
-	$('.news').on('click', '.new', function (e) {
-		var $target = $(e.target);
-		if (!$target.is('a')) {
-			var $this = $(this);
-			$this.toggleClass('open');
-		} else {
-			// TODO make something more generic
-			if ($target.attr('href').indexOf('/') === 0) {
-				e.preventDefault();
-				e.stopPropagation();
-				window.open('https://lab.shelter.moe' + $target.attr('href'));
-			}
-		}
-	});
-
-</script>
+<script>window.welcomePage();</script>

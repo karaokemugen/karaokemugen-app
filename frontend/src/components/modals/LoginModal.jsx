@@ -51,19 +51,19 @@ class LoginModal extends Component {
 
             window.logInfos = response;
             window.displayMessage('info', '', i18n.__('LOG_SUCCESS', window.logInfos.username));
+            if (this.props.scope !== 'welcome') {
             window.initApp();
+            }
 
             if (window.introManager && typeof window.introManager._currentStep !== 'undefined') {
                 window.introManager.nextStep();
-            } else if (is_touch_device && !readCookie('mugenTouchscreenHelp')) {
+            } else if (is_touch_device() && !readCookie('mugenTouchscreenHelp')) {
                 window.callHelpModal();
             }
-
-            if (this.props.scope === 'welcome') {
-                window.logInfos = parseJwt(response.token);
-                $('#wlcm_login > span').text(window.logInfos.username);
-                $('#wlcm_disconnect').show();
-            } else if (this.props.admpwd) {
+            if (this.props.callback) {
+                this.props.callback(window.logInfos.username);
+            }
+            if (this.props.admpwd) {
                 window.startIntro('admin');
                 axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
                 axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
@@ -71,6 +71,7 @@ class LoginModal extends Component {
             }
         })
             .catch(err => {
+                console.log(err)
                 this.setState({ redBorders: 'redBorders', password: '' });
             });
     };
