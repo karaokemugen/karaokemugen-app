@@ -397,7 +397,6 @@ var flattenedTagsGroups;
 						data : { random : nbOfRandoms},
 						type: 'GET'
 					}).done(function (randomKaras) {
-						// console.log(randomKaras);
 						if(randomKaras.content.length > 0) {
 
 							let textContent = randomKaras.content.map(e => buildKaraTitle(e)).join('<br/><br/>');
@@ -575,7 +574,6 @@ var flattenedTagsGroups;
 					if(results && results.length > 0 && detailsUrl === ""){
 						var pageId = results[0].pageid;
 						externalUrl= 'https://' + searchLanguage  + '.wikipedia.org/?curid=' + pageId;
-						//newWindows.location = externalUrl
 						detailsUrl = 'https://' + searchLanguage + '.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&prop=extracts&exintro=&explaintext=&pageids=' + pageId;
 						xhttp.open("GET", detailsUrl , true);
 						xhttp.send();
@@ -1055,9 +1053,6 @@ var flattenedTagsGroups;
 			type: 'GET', async: async,
 			dataType: 'json' })
 			.done(function (response) {
-				//DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
-				//var end = window.performance.now();
-				//alert(end - start);
 				var htmlContent = '', data;
 
 				if(idPlaylist != -4) {	// general case
@@ -1104,7 +1099,6 @@ var flattenedTagsGroups;
 
 								// TODO add fav button next to info for public pc interface
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
-								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   '<div class="infoDiv">'
@@ -1125,14 +1119,10 @@ var flattenedTagsGroups;
 					}
 					var count = response.infos ? response.infos.count : 0;
 
-
 					/* adding artificial last line */
 					if(settings.Gitlab.Enabled && idPlaylist === -1 && count === response.infos.from + data.length) {
-						// count++;
 						htmlContent +=	karaSuggestionHtml;
 					}
-
-
 
 					// creating filler space for dyanmic scrolling
 					var fillerTopH = Math.min(response.infos.from * 34, container.height()/1.5);
@@ -1161,7 +1151,6 @@ var flattenedTagsGroups;
 						document.getElementById('playlist' + side).innerHTML = htmlContent;
 						deferred.resolve();
 						refreshContentInfos(side);
-						//window.requestAnimationFrame( function() {
 						var y = container.scrollTop();
 						if(scrollingType) {
 
@@ -1186,7 +1175,6 @@ var flattenedTagsGroups;
 							Math.min(playlist.height() - fillerBottomH - container.height(),
 								Math.max(fillerTopH, y)));
 						container.attr('flagScroll', false);
-						//});
 					});
 
 				} else {
@@ -1254,46 +1242,10 @@ var flattenedTagsGroups;
 				// depending on the playlist we're in, notify if the other playlist can add & transfer to us
 				$('#panel' + non(side)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
 
-				//var time = console.timeEnd('html'); DEBUG && console.log(data.length);
-
 				// drag & drop part
 				// TODO revoir pour bien définir le drag&drop selon les droits
 				if (dragAndDrop && scope === 'public' && mode != 'mobile' && !isTouchScreen) {
-					/*
-					var draggableLi =  isTouchScreen  ? $('#playlist' + 1 + ' > li .dragHandle') : $('#playlist' + 1 + ' > li');
-					var dropZone = $('#playlist' + non(1)).parent();
-					if(draggableLi.draggable('instance') != undefined) {
-						if($('#panel' + 1).attr('canaddkara') == 'true')  {
-							draggableLi.draggable('enable');
-							dropZone.droppable('enable');
-						} else {
-							draggableLi.draggable('disable');
-							dropZone.droppable('disable');
-						}
-					} else if( $('#panel' + 1).attr('canaddkara') == 'true') {
-						draggableLi.draggable({
-							cursorAt: { top: 20, right: 15 },
-							helper:  function(){
-								var li = $(this).closest('li');
-								return $('<div class="list-group-item dragged"></div>')
-									.append(li.find('.dragHandle').clone(),li.find('.contentDiv').clone());
-							},
-							appendTo: dropZone,
-							zIndex: 9999,
-							delay: 0,
-							distance: 0
-						});
-						dropZone.droppable({
-							classes: {
-								'ui-droppable-hover': 'highlight-hover',
-								'ui-droppable-active': 'highlight-active'
-							},
-							drop : function(e, ui){
-								$(ui.draggable).closest('li').find('.actionDiv > [name=addKara]').click();
-							}
-						});
-					}
-					*/
+
 				} else if(dragAndDrop && scope === 'admin') {
 					var sortableUl = $('#playlist' + side);
 					if(idPlaylist > 0) {
@@ -1316,29 +1268,6 @@ var flattenedTagsGroups;
 					} else if(sortableUl.hasClass('ui-sortable')) {
 						sortableUl.sortable('disable');
 					}
-					/*
-                if ($('#selectPlaylist' + non(side)).val() > 0) {
-                    var sortableUl2 = $("#playlist" + non(side));
-                    sortableUl2.sortable({
-                        appendTo: sortableUl2,
-                        helper : isTouchScreen ? ".dragHandle" : false,
-                        update: function(event, ui) { changeKaraPos(ui.item) },
-                       // connectWith: sortableUl,
-                       axis : "y"
-                    });
-                }
-                    */
-					/*
-                helper: function(event, ui){
-                    var li = $(ui);
-                    li.find('.detailsKara, .lyricsKara').remove();
-                    li.css('height', 'auto');
-                    return li.clone()},
-                    start: function(e, ui){
-                        ui.placeholder.height(ui.item.height());
-                    },
-                    */
-
 				}
 			});
 
@@ -1355,9 +1284,6 @@ var flattenedTagsGroups;
 		var element = parent.find('li[idkara="' + idKara + '"]');
 
 		if (element.length > 0) {
-			/*var willParentSroll = parent[0].scrollTop != parent[0].clientTop|| (parent[0].clientHeight != parent[0].scrollHeight
-									&& parent.scrollTop() + element.offset().top - parent.offset().top != 0);*/
-			// DEBUG && console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
 			var willParentSroll =  element.offset().top > parent.height() + parent.offset().top || element.offset().top < parent.offset().top;
 			parent.animate({
 				scrollTop: willParentSroll ? parent.scrollTop() + element.offset().top - parent.offset().top : parent.scrollTop()
@@ -2405,8 +2331,6 @@ var flattenedTagsGroups;
     setInterval(function() {
       var currentTime = (new Date()).getTime();
       if (currentTime > (lastTime + TIMEOUT + 2000)) {
-        // Wake!
-        //window.location.reload();
       }
       lastTime = currentTime;
     }, TIMEOUT);
