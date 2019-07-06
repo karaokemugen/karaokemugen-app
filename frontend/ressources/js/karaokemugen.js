@@ -228,13 +228,8 @@ var flattenedTagsGroups;
 		var mugenToken = readCookie('mugenToken');
 		var mugenTokenOnline = readCookie('mugenTokenOnline');
 
-		if(welcomeScreen) {
-			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
-			$('#wlcm_disconnect').hide();
-		}
-
 		// app first run admin
-		if(query.admpwd && scope !== 'public' && typeof appFirstRun != 'undefined' && appFirstRun) {
+		if(query.admpwd && scope === 'admin' && typeof appFirstRun != 'undefined' && appFirstRun) {
 			window.callLoginModal('admin', query.admpwd);
 		} else if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
@@ -251,7 +246,7 @@ var flattenedTagsGroups;
 			}
 		} else if (webappMode === 1){
 			loginGuest();
-		} else {
+		} else if (scope !== 'welcome'){
 			window.callLoginModal(scope);
 
 		}

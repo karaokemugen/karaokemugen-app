@@ -11,6 +11,8 @@ import { getSeries } from "../../../services/series";
 import { getYears } from "../../../services/kara";
 import { getTags } from "../../../services/tag";
 import { getFeeds } from "../../../webapp/proxy_feeds";
+import { initializationCatchphrases } from '../../../utils/constants';
+import sample from 'lodash.sample';
 
 export default function publicMiscController(router: Router) {
 	router.route('/public/settings')
@@ -395,5 +397,18 @@ export default function publicMiscController(router: Router) {
 			} catch(err) {
 				res.status(500).send(err);
 			}
+		});
+
+		router.route('/public/catchphrase')
+		/**
+	 * @api {get} /public/catchphrase Get a random Catchphrase
+	 * @apiName GetCatchPhrase
+	 * @apiVersion 3.0.0
+	 * @apiGroup Misc
+	 * @apiPermission NoAuth
+	 * @apiSuccess a random catchphrase
+	 */
+	 .get(getLang, async (_req: any, res: any) => {
+			res.json(sample(initializationCatchphrases));
 		});
 }

@@ -12,6 +12,7 @@ import './components/i18n';
 import io from 'socket.io-client';
 import './app.css'
 import axios from 'axios';
+import WelcomePage from './components/WelcomePage';
 
 const Loader = () => (
   <div>loading...</div>
@@ -34,14 +35,15 @@ window.callModal = (type, title, message, callback, placeholder) => {
   ReactDOM.render(<Suspense fallback={<Loader />}><Modal type={type} title={title} message={message} callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('root'));
   $('#modalBox').modal('show');
 };
-window.callProfileModal = () => {
+var callProfileModal = () => {
   ReactDOM.render(<Suspense fallback={<Loader />}><ProfilModal settingsOnline={settings.config.Online} /></Suspense>, document.getElementById('root'));
   $('#profilModal').modal('show');
 };
+window.callProfileModal = callProfileModal;
 window.callPollModal = () => {
   ReactDOM.render(<Suspense fallback={<Loader />}><PollModal /></Suspense>, document.getElementById('root'));
 };
-ReactDOM.render(<Suspense fallback={<Loader />}><RestrictedHelpModal /></Suspense>, document.getElementById('root'));
+document.getElementById('root') ? ReactDOM.render(<Suspense fallback={<Loader />}><RestrictedHelpModal /></Suspense>, document.getElementById('root')) : null;
 window.callHelpModal = () => {
   ReactDOM.render(<Suspense fallback={<Loader />}><HelpModal mode={settings.Karaoke.Private} version={settings.version} /></Suspense>, document.getElementById('root'));
   $('#helpModal').modal('show');
@@ -50,7 +52,13 @@ window.callOnlineStatsModal = () => {
   ReactDOM.render(<Suspense fallback={<Loader />}><OnlineStatsModal /></Suspense>, document.getElementById('root'));
   $('#onlineStatsModal').modal('show');
 };
-window.callLoginModal = (scope, admpwd) => {
-  ReactDOM.render(<Suspense fallback={<Loader />}><LoginModal scope={scope} config={settings.config} admpwd={admpwd} /></Suspense>, document.getElementById('root'));
+var callLoginModal = (scope, admpwd, callback) => {
+  ReactDOM.render(<Suspense fallback={<Loader />}><LoginModal scope={scope} config={settings.config} admpwd={admpwd} callback={callback} /></Suspense>, document.getElementById('root'));
   if (!admpwd) $('#loginModal').modal('show');
+}
+window.callLoginModal = callLoginModal;
+window.welcomePage = () => {
+  ReactDOM.render(<Suspense fallback={<Loader />}>
+      <WelcomePage loginModal={callLoginModal} profileModal={callProfileModal}/>
+    </Suspense>, document.getElementById('welcomepage'));
 }

@@ -401,7 +401,6 @@
 	"WLCM_KARAMANAGER": "MANAGE KARAOKE",
 	"WLCM_ADMINISTRATION": "SYSTEM",
 	"WLCM_HELP": "Online help",
-	"WLCM_UPDATE": "UPDATE",
 	"WLCM_SITE": "Website",
 	"WLCM_PUBLIC": "PUBLIC INTERFACE",
 	"INTRO_ADMIN_INTRO1": "Welcome to Karaoke Mugen!<br/><br/>Before we begin, write down the <b>admin</b> account password somewhere: <br/>%s<br/><br/>This account can't be deleted and will allow you to login in case there's a problem with the account we are going to create next.<br/>",
