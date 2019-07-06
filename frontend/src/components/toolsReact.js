@@ -45,3 +45,26 @@ export function is_touch_device() {
 	var query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('');
 	return mq(query);
 };
+
+
+/* format seconds to Hour Minute Second */
+export function secondsTimeSpanToHMS (s, format) {
+	var d = Math.floor(s/(3600 * 24));
+	if (format === '24h' || format === 'dhm') {
+		s -= d * 3600 * 24;
+	}
+	var h = Math.floor(s/3600);
+	if (format !== 'ms') {
+		s -= h * 3600;
+	}
+	var m = Math.floor(s/60);
+	s -= m * 60;
+
+	var result = (h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m'+(s < 10 ? '0'+s : s ) + 's';
+	if (format === 'ms') result = (m > 0 ? m+'m' : '')+(s < 10 && m > 0 ? '0'+s : s ) + 's';
+	if (format === 'hm') result = (h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
+	if (format === 'dhm') {
+		result = (d > 0 ? d+'d' : '')+(h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
+	}
+	return result; 
+};

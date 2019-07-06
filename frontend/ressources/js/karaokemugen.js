@@ -54,15 +54,12 @@ var checkboxKaraHtml;
 var likeKaraHtml;
 var closeButton;
 var closeButtonBottom;
-var showFullTextButton;
-var showVideoButton;
 var makeFavButton;
 var makeFavButtonFav;
 var	makeFavButtonSmall;
 var	makeFavButtonSmallFav;
 var dragHandleHtml;
 var playKaraHtml;
-var serieMoreInfoButton;
 
 var listTypeBlc;
 var tagsTypesList;
@@ -436,7 +433,7 @@ var flattenedTagsGroups;
 			}
 		});
 
-		if(mode != 'mobile' && !(isTouchScreen && scope === 'public')) {
+		if(!(isTouchScreen && scope === 'public')) {
 			$('.playlist-main').on('click', '.infoDiv > button[name="infoKara"], .detailsKara > button.closeParent', function() {
 				toggleDetailsKara($(this));
 			});
@@ -829,16 +826,12 @@ var flattenedTagsGroups;
 	closeButton = '<button title="' + i18n.__('TOOLTIP_CLOSEPARENT') + '" class="closeParent btn btn-action"></button>';
 	closeButtonBottom = '<button title="' + i18n.__('TOOLTIP_CLOSEPARENT') + '" class="closeParent bottom btn btn-action"></button>';
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
-	showFullTextButton = '<button title="' + i18n.__('TOOLTIP_SHOWLYRICS') + '" class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
-	showVideoButton = '<button title="' + i18n.__('TOOLTIP_SHOWVIDEO') + '" class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	makeFavButton = '<button title="' + i18n.__('TOOLTIP_FAV') + '" class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	makeFavButtonFav = makeFavButton.replace('makeFav','makeFav currentFav');
 	makeFavButtonSmall = makeFavButton.replace('btn btn-action','btn btn-sm btn-action');
 	makeFavButtonSmallFav = makeFavButtonFav.replace('btn btn-action','btn btn-sm btn-action');
-	likeFreeButton = '<button title="' + i18n.__('TOOLTIP_UPVOTE') + '" class="likeFreeButton btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button title="' + i18n.__('TOOLTIP_PLAYKARA') + '" class="btn btn-sm btn-action playKara"></btn>';
-	serieMoreInfoButton = '<button class="moreInfo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	karaSuggestionHtml = '<li class="list-group-item karaSuggestion">' + i18n.__('KARA_SUGGESTION_MAIL') +	'</li>';
 	buttonHtmlPublic = '';
 
@@ -1110,7 +1103,7 @@ var flattenedTagsGroups;
 								+	'<div>' + buildKaraTitle(kara, {'search' : filter}) + '</div>'
 								+	'<div>' + badges + '</div>'
 								+   '</div>'
-								+   buildKaraDetails(kara, mode)
+								+   '<div id="karadetails"></div>'
 								+   '</li>';
 							}
 						}
@@ -1242,7 +1235,7 @@ var flattenedTagsGroups;
 
 				// drag & drop part
 				// TODO revoir pour bien définir le drag&drop selon les droits
-				if (dragAndDrop && scope === 'public' && mode != 'mobile' && !isTouchScreen) {
+				if (dragAndDrop && scope === 'public' && !isTouchScreen) {
 
 				} else if(dragAndDrop && scope === 'admin') {
 					var sortableUl = $('#playlist' + side);
@@ -1550,7 +1543,7 @@ var flattenedTagsGroups;
 						$('#karaInfo > span').data('text', buildKaraTitle(kara) );
 
 						if(webappMode === 1) {
-							buildKaraDetails(kara, 'karaCard');
+							window.buildKaraDetails(kara, 'karaCard', $('.karaCard .details'), false);
 						}
 					});
 				}
@@ -1643,26 +1636,19 @@ var flattenedTagsGroups;
 		var idPlc = parseInt(liKara.attr('idplaylistcontent'));
 		var idPlaylist = parseInt( el.closest('.panel').find('.plDashboard').data('playlist_id'));
 		var infoKara = liKara.find('.detailsKara');
-
-		if(!liKara.hasClass('loading')) { // if we're already loading the div, don't do anything
 			if (!infoKara.is(':visible') ) {
 				var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
-				liKara.addClass('loading');
 				$.ajax({ url: urlInfoKara }).done(function (data) {
-					var detailsHtml = buildKaraDetails(data[0], mode);
-					detailsHtml = $(detailsHtml).hide();
-					liKara.find('.contentDiv').after(detailsHtml);
-					$(detailsHtml).data(data[0]);
-
-					detailsHtml.fadeIn(animTime);
+					var plDashboard = $('li[idplaylistcontent="' + idPlc + '"]')
+						.closest(".panel")
+						.find(".plDashboard");
+					var publicOuCurrent = plDashboard.data("flag_public") ||  plDashboard.data("flag_current");
+					window.buildKaraDetails(data[0], mode, liKara.find('#karadetails')[0], publicOuCurrent);
+					infoKara.show();
 					liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
 
-					liKara.removeClass('loading');
-
 					if(introManager && introManager._currentStep) introManager.nextStep();
-				}).always(function (data) {
-					liKara.removeClass('loading');
-				});
+				})
 			} else if (infoKara.is(':visible')) {
 				infoKara.add(liKara.find('.lyricsKara')).fadeOut(animTime);
 				liKara.find('[name="infoKara"]').css('border-color', '');
@@ -1670,100 +1656,6 @@ var flattenedTagsGroups;
 				infoKara.fadeIn(animTime);
 				liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
 			}
-		}
-	};
-
-	/**
-    * Build kara details depending on the data
-    * @param {Object} data - data from the kara
-    * @param {String} mode - html mode
-    * @return {String} the details, as html
-    */
-	buildKaraDetails = function(data, htmlMode) {
-		var todayDate = Date.now();
-		var playTime = new Date(todayDate + data['time_before_play']*1000);
-		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
-
-		var lastPlayed_at =  data['lastplayed_at'];
-		var lastPlayed =  data['lastplayed_ago'];
-		var lastPlayedStr = '';
-		if(lastPlayed && !lastPlayed.days && !lastPlayed.months && !lastPlayed.years) {
-            var timeAgo = (lastPlayed.seconds ? lastPlayed.seconds : 0) + (lastPlayed.minutes ? lastPlayed.minutes * 60 : 0) + (lastPlayed.hours ? lastPlayed.hours * 3600 : 0);
-            var timeAgoStr = (lastPlayed.minutes || lastPlayed.hours) ?
-                                secondsTimeSpanToHMS(timeAgo, 'hm') : secondsTimeSpanToHMS(timeAgo, 'ms')
-
-            lastPlayedStr = i18n.__('DETAILS_LAST_PLAYED_2', '<span class="time">' + timeAgoStr + '</span>');
-        } else if (lastPlayed_at){
-            lastPlayedStr = '<span class="time">' + new Date(lastPlayed_at).toLocaleDateString() + '</span>';
-        }
-        
-		var details = {
-			  'UPVOTE_NUMBER' : data['upvotes']
-			, 'DETAILS_ADDED': 		(data['created_at'] ? i18n.__('DETAILS_ADDED_2',new Date( data['created_at']).toLocaleDateString()) : '') + (data['nickname'] ? ' ' + i18n.__('DETAILS_ADDED_3', data['nickname']) : '')
-			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
-			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
-			, 'BLCTYPE_6': 			data['authors'].map(e => e.name).join(', ')
-			, 'DETAILS_VIEWS':		data['played']
-			, 'BLCTYPE_4':			data['creators'].map(e => e.name).join(', ')
-			, 'DETAILS_DURATION':	data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
-			, 'DETAILS_LANGUAGE':	data['languages_i18n'].join(', ')
-			, 'BLCTYPE_7':			data['misc_tags'].map(e => i18n.__(e.name)).join(', ')
-			, 'DETAILS_SERIE':		data['serie']
-			, 'DETAILS_SERIE_ORIG':		data['serie_orig']
-			, 'BLCTYPE_2':			data['singers'].map(e => e.name).join(', ')
-			, 'DETAILS_TYPE ':		i18n.__(data['songtype'][0].name) + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
-			, 'DETAILS_YEAR':		data['year']
-			, 'BLCTYPE_8':			data['songwriters'].map(e => e.name).join(', ')
-		};
-		var htmlDetails = Object.keys(details).map(function (k) {
-			if(details[k] && details[k] !== 'NO_TAG' && details[k] !== i18n.__('NO_TAG')) {
-				var detailsLine = details[k].toString().replace(/,/g, ', ');
-				return '<tr><td>' + i18n.__(k) + '</td><td>' + detailsLine + '</td><tr/>';
-			} else return '';
-		});
-		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
-		var infoKaraTemp = 'no mode specified';
-		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButtonFav : makeFavButton;
-        if(logInfos.role === 'guest') makeFavButtonAdapt = '';
-		if (htmlMode == 'list') {
-			var isPublic = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_public');
-			var isCurrent = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_current');
-			var likeFreeButtonHtml = data['flag_free'] ? likeFreeButton.replace('likeFreeButton', 'likeFreeButton free btn-primary') : likeFreeButton;
-
-			infoKaraTemp = '<div class="detailsKara alert alert-info">'
-				+ '<div class="topRightButtons">'
-				+ (isTouchScreen ? '' : closeButton)
-				+ (scope === 'public' && !isTouchScreen ? '' : makeFavButtonAdapt)
-				+ showFullTextButton
-				+ (data['previewfile'] ? showVideoButton : '')
-				+ (data['serie'] ? ' ' + serieMoreInfoButton : '')
-				+ (scope === 'admin' && (isCurrent || isPublic) ? likeFreeButtonHtml : '')
-				+ '</div>'
-				+ htmlTable
-				+ '</div>';
-		} else if (htmlMode == 'mobile') {
-			infoKaraTemp = '<div class="detailsKara z-depth-1">'
-				+ '<div class="topRightButtons">'
-				+ makeFavButtonAdapt
-				+ showFullTextButton
-				+ (data['previewfile'] ? showVideoButton : '')
-				+ '</div>'
-				+ htmlTable
-				+ '</div>';
-		} else if (htmlMode == 'karaCard') {
-			$.ajax({ url: 'public/karas/' + data.kid + '/lyrics' }).done(function (data) {
-				var lyrics = i18n.__('NOLYRICS');
-				if (typeof data === 'object') {
-					lyrics =  data.join('<br/>');
-				}
-				$('.karaCard .lyricsKara').html(lyrics);
-			});
-			infoKaraTemp = '<div class="topRightButtons">' + makeFavButtonAdapt + '</div>' + htmlTable;
-			$('.karaCard .details').html(infoKaraTemp);
-			$('.karaCard > div').show();
-		}
-		return infoKaraTemp;
 	};
 
 	formatPlaylist = function (playlist) {

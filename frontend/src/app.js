@@ -13,6 +13,7 @@ import io from 'socket.io-client';
 import './app.css'
 import axios from 'axios';
 import WelcomePage from './components/WelcomePage';
+import KaraDetail from './components/KaraDetail';
 
 const Loader = () => (
   <div>loading...</div>
@@ -62,3 +63,9 @@ window.welcomePage = () => {
       <WelcomePage loginModal={callLoginModal} profileModal={callProfileModal}/>
     </Suspense>, document.getElementById('welcomepage'));
 }
+
+window.buildKaraDetails = (data, mode, element, publicOuCurrent) => {
+  ReactDOM.render(<Suspense fallback={<Loader />}>
+    <KaraDetail data={data} mode={mode} publicOuCurrent={publicOuCurrent}/>
+  </Suspense>, element);
+} 
