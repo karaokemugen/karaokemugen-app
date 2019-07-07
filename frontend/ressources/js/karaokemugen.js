@@ -1417,7 +1417,7 @@ var flattenedTagsGroups;
 						$('#karaInfo > span').data('text', buildKaraTitle(kara) );
 
 						if(webappMode === 1) {
-							window.buildKaraDetails(kara, 'karaCard', $('.karaCard .details'), false);
+							window.buildKaraDetails(kara, 'karaCard', document.getElementById('karaCard'), false);
 						}
 					});
 				}

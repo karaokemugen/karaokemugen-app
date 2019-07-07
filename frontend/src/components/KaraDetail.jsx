@@ -323,7 +323,7 @@ class KaraDetail extends Component {
       if (data.subfile) {
         axios.get("/api/public/karas/" + data.kid + "/lyrics")
         .then(response => {
-            lyrics = response.data.data.join("<br/>");
+          var lyrics = response.data.data.join("<br/>");
           $(".karaCard .lyricsKara").html(lyrics);
         });
       }
