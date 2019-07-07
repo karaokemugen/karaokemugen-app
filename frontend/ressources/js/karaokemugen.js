@@ -1198,21 +1198,6 @@ var flattenedTagsGroups;
 	};
 
 	/**
-    * Generic function scrolling to an element in its parent
-    * @param {Element} parent - parent of the element
-    * @param {Element} element - element to scroll to
-    * @param {Boolean} highlight - to highlight the element [discarded, see scrollToKara]
-    */
-	scrollToElement = function (parent, element, anchorElement) {
-		var willParentSroll =  anchorElement.offset().top > parent.height() + parent.offset().top || anchorElement.offset().top < parent.offset().top;
-		if(willParentSroll) {
-			parent.animate({
-				scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
-			}, 400 );
-		}
-	};
-
-	/**
     * refresh playlist lists
     */
 	refreshPlaylistSelects = function () {

@@ -11,6 +11,7 @@ class KaraDetail extends Component {
     this.moreInfo = this.moreInfo.bind(this);
     this.showVideo = this.showVideo.bind(this);
     this.showFullLyrics = this.showFullLyrics.bind(this);
+    this.fullLyricsRef = React.createRef();
   }
 
   getLastPlayed(lastPlayed_at, lastPlayed) {
@@ -138,17 +139,11 @@ class KaraDetail extends Component {
    */
 
   showFullLyrics() {
-    var playlist = $(this).closest("ul");
-    var liKara = $(this).closest("li");
-    var lyricsKara = liKara.find(".lyricsKara");
-    var detailsKara = liKara.find(".detailsKara");
-
     axios
       .get("/api/public/karas/" + this.props.data.kid + "/lyrics")
       .then(response => {
-        console.log(response.data.data);
         this.setState({ lyrics: response.data.data });
-        //scrollToElement(playlist.parent(), detailsKara, lyricsKara);
+        this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });
       });
   }
 
@@ -228,28 +223,29 @@ class KaraDetail extends Component {
       />
     );
 
-    var lyricsKara = this.state.lyrics ? (
-      <div className="lyricsKara alert alert-info">
-        <button
-          title={t("TOOLTIP_CLOSEPARENT")}
-          className="closeParent btn btn-action"
-        />
-        <div className="lyricsKaraLoad">
-          {this.state.lyrics.map(ligne => {
-            return (
-              <React.Fragment key={Math.random()}>
-                {ligne}
-                <br />
-              </React.Fragment>
-            );
-          })}
+    var lyricsKara =
+      data.subfile && this.state.lyrics ? (
+        <div className="lyricsKara alert alert-info" ref={this.fullLyricsRef}>
+          <button
+            title={t("TOOLTIP_CLOSEPARENT")}
+            className="closeParent btn btn-action"
+          />
+          <div className="lyricsKaraLoad">
+            {this.state.lyrics.map(ligne => {
+              return (
+                <React.Fragment key={Math.random()}>
+                  {ligne}
+                  <br />
+                </React.Fragment>
+              );
+            })}
+          </div>
+          <button
+            title={t("TOOLTIP_CLOSEPARENT")}
+            className="closeParent bottom btn btn-action"
+          />
         </div>
-        <button
-          title={t("TOOLTIP_CLOSEPARENT")}
-          className="closeParent bottom btn btn-action"
-        />
-      </div>
-    ) : null;
+      ) : null;
 
     var infoKaraTemp;
     if (this.props.mode == "list") {
@@ -267,13 +263,16 @@ class KaraDetail extends Component {
               window.logInfos.role === "guest"
                 ? null
                 : makeFavButton}
-              <button
-                title={t("TOOLTIP_SHOWLYRICS")}
-                className={
-                  "fullLyrics btn btn-action " + (isTouchScreen ? "mobile" : "")
-                }
-                onClick={this.showFullLyrics}
-              />
+              {data.subfile ? (
+                <button
+                  title={t("TOOLTIP_SHOWLYRICS")}
+                  className={
+                    "fullLyrics btn btn-action " +
+                    (isTouchScreen ? "mobile" : "")
+                  }
+                  onClick={this.showFullLyrics}
+                />
+              ) : null}
               {data["previewfile"] ? (
                 <button
                   title={t("TOOLTIP_SHOWVIDEO")}
@@ -311,15 +310,13 @@ class KaraDetail extends Component {
         </React.Fragment>
       );
     } else if (this.props.mode == "karaCard") {
-      $.ajax({ url: "public/karas/" + data.kid + "/lyrics" }).done(function(
-        data
-      ) {
-        var lyrics = t("NOLYRICS");
-        if (typeof data === "object") {
-          lyrics = data.join("<br/>");
-        }
-        $(".karaCard .lyricsKara").html(lyrics);
-      });
+      if (data.subfile) {
+        axios.get("/api/public/karas/" + data.kid + "/lyrics")
+        .then(response => {
+            lyrics = response.data.data.join("<br/>");
+          $(".karaCard .lyricsKara").html(lyrics);
+        });
+      }
       infoKaraTemp = (
         <div>
           <div className="topRightButtons">
