@@ -245,7 +245,7 @@ var flattenedTagsGroups;
 				initApp();
 			}
 		} else if (webappMode === 1){
-			loginGuest();
+			window.callLoginModal(scope, 'guest');
 		} else if (scope !== 'welcome'){
 			window.callLoginModal(scope);
 

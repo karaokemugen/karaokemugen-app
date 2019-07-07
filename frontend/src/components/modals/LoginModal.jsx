@@ -18,7 +18,9 @@ class LoginModal extends Component {
             serv: this.props.config.Online.Users ? this.props.config.Online.Host : '',
             role: 'user'
         }
-        if (this.props.admpwd) {
+        if (this.props.admpwd === 'guest') {
+            this.loginGuest();
+        } else if (this.props.admpwd) {
             this.login('admin', this.props.admpwd);
         }
     }
@@ -63,7 +65,7 @@ class LoginModal extends Component {
             if (this.props.callback) {
                 this.props.callback(window.logInfos.username);
             }
-            if (this.props.admpwd) {
+            if (this.props.admpwd && this.props.admpwd !== 'guest') {
                 window.startIntro('admin');
                 axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
                 axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
