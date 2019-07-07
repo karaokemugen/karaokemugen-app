@@ -436,27 +436,6 @@ var flattenedTagsGroups;
 			$('.playlist-main').on('click', '.infoDiv > button[name="infoKara"], .detailsKara > button.closeParent', function() {
 				toggleDetailsKara($(this));
 			});
-			// show full lyrics of a given kara
-			$('.playlist-main').on('click', '.fullLyrics', function () {
-				var playlist = $(this).closest('ul');
-				var liKara = $(this).closest('li');
-				var lyricsKara = liKara.find('.lyricsKara');
-				var idKara = liKara.attr('idkara');
-				var detailsKara = liKara.find('.detailsKara');
-
-				if(lyricsKara.length == 0) {
-					liKara.append($('<div class="lyricsKara alert alert-info">' + closeButton + '<div class="lyricsKaraLoad">...</div>' + closeButtonBottom + '</div>')
-						.hide().fadeIn(animTime));
-				} else if (!lyricsKara.is(':visible')) {
-					lyricsKara.fadeIn(animTime);
-				} else {
-					lyricsKara.fadeOut(animTime);
-				}
-				$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-					liKara.find('.lyricsKaraLoad').html(data.join('<br/>'));
-					scrollToElement(playlist.parent(), detailsKara,  liKara.find('.lyricsKara'));
-				});
-			});
 
 			$('.playlist-main').on('click', '.makeFav', function() {
 				var liKara = $(this).closest('li');

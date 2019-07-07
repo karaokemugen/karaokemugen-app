@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
 import { is_touch_device, secondsTimeSpanToHMS } from "./toolsReact";
+import axios from "axios";
 
 class KaraDetail extends Component {
   constructor(props) {
@@ -9,6 +10,7 @@ class KaraDetail extends Component {
     this.getLastPlayed = this.getLastPlayed.bind(this);
     this.moreInfo = this.moreInfo.bind(this);
     this.showVideo = this.showVideo.bind(this);
+    this.showFullLyrics = this.showFullLyrics.bind(this);
   }
 
   getLastPlayed(lastPlayed_at, lastPlayed) {
@@ -33,19 +35,27 @@ class KaraDetail extends Component {
     }
   }
 
-  async moreInfo () {
-    var openExternalPageButton = '<i class="glyphicon glyphicon-new-window"></i>';
-    var externalUrl = '';
+  async moreInfo() {
+    var openExternalPageButton =
+      '<i class="glyphicon glyphicon-new-window"></i>';
+    var externalUrl = "";
     var serie = this.props.data["serie"];
     var extraSearchInfo = "";
     var searchLanguage = navigator.languages[0];
     searchLanguage = searchLanguage.substring(0, 2);
-    if(!this.props.data["misc_tags"] || 
-    (this.props.data["misc_tags"].find(e => e.name == 'TAG_VIDEOGAME')
-    && this.props.data["misc_tags"].find(e => e.name == 'TAG_MOVIE'))) {
-      extraSearchInfo = 'anime ';
+    if (
+      !this.props.data["misc_tags"] ||
+      (this.props.data["misc_tags"].find(e => e.name == "TAG_VIDEOGAME") &&
+        this.props.data["misc_tags"].find(e => e.name == "TAG_MOVIE"))
+    ) {
+      extraSearchInfo = "anime ";
     }
-    var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + extraSearchInfo + serie;
+    var searchUrl =
+      "https://" +
+      searchLanguage +
+      ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" +
+      extraSearchInfo +
+      serie;
     var detailsUrl = "";
 
     var xhttp = new XMLHttpRequest();
@@ -56,41 +66,92 @@ class KaraDetail extends Component {
         var contentResult = json.query.pages;
         var searchInfo = json.query.searchinfo;
 
-        if(results && results.length > 0 && detailsUrl === ""){
+        if (results && results.length > 0 && detailsUrl === "") {
           var pageId = results[0].pageid;
-          externalUrl= 'https://' + searchLanguage  + '.wikipedia.org/?curid=' + pageId;
-          detailsUrl = 'https://' + searchLanguage + '.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&prop=extracts&exintro=&explaintext=&pageids=' + pageId;
-          xhttp.open("GET", detailsUrl , true);
+          externalUrl =
+            "https://" + searchLanguage + ".wikipedia.org/?curid=" + pageId;
+          detailsUrl =
+            "https://" +
+            searchLanguage +
+            ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&prop=extracts&exintro=&explaintext=&pageids=" +
+            pageId;
+          xhttp.open("GET", detailsUrl, true);
           xhttp.send();
-        } else if (contentResult && contentResult.length > 0 && detailsUrl !== "") {
+        } else if (
+          contentResult &&
+          contentResult.length > 0 &&
+          detailsUrl !== ""
+        ) {
           var extract = contentResult[0].extract;
-          extract = extract.replace(/\n/g, '<br /><br />');
-          extract = extract.replace(serie, '<b>' + serie + '</b>');
-          extract = extract.replace('anime', '<b>anime</b>');
-          window.callModal('alert', '<a target="_blank" href="' + externalUrl + '">' + serie + ' ' + openExternalPageButton + '</a>', extract);
-        } else if (searchInfo && searchInfo.totalhits === 0 && searchInfo.suggestion) {
-          var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + searchInfo.suggestion;
-          xhttp.open("GET", searchUrl , true);
+          extract = extract.replace(/\n/g, "<br /><br />");
+          extract = extract.replace(serie, "<b>" + serie + "</b>");
+          extract = extract.replace("anime", "<b>anime</b>");
+          window.callModal(
+            "alert",
+            '<a target="_blank" href="' +
+              externalUrl +
+              '">' +
+              serie +
+              " " +
+              openExternalPageButton +
+              "</a>",
+            extract
+          );
+        } else if (
+          searchInfo &&
+          searchInfo.totalhits === 0 &&
+          searchInfo.suggestion
+        ) {
+          var searchUrl =
+            "https://" +
+            searchLanguage +
+            ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" +
+            searchInfo.suggestion;
+          xhttp.open("GET", searchUrl, true);
           xhttp.send();
         } else {
-          window.displayMessage('warning', '', this.props.t('NO_EXT_INFO', serie));
+          window.displayMessage(
+            "warning",
+            "",
+            this.props.t("NO_EXT_INFO", serie)
+          );
         }
       }
     };
-    xhttp.open("GET", searchUrl , true);
+    xhttp.open("GET", searchUrl, true);
     xhttp.send();
-  };
+  }
 
-  showVideo () {
+  showVideo() {
     var previewFile = this.props.data["previewfile"];
-    if(previewFile) {
+    if (previewFile) {
       setTimeout(function() {
-        $('#video').attr('src', '/previews/' + previewFile);
-        $('#video')[0].play();
-        $('.overlay').show();
+        $("#video").attr("src", "/previews/" + previewFile);
+        $("#video")[0].play();
+        $(".overlay").show();
       }, 1);
     }
   }
+
+  /**
+   * show full lyrics of a given kara
+   */
+
+  showFullLyrics() {
+    var playlist = $(this).closest("ul");
+    var liKara = $(this).closest("li");
+    var lyricsKara = liKara.find(".lyricsKara");
+    var detailsKara = liKara.find(".detailsKara");
+
+    axios
+      .get("/api/public/karas/" + this.props.data.kid + "/lyrics")
+      .then(response => {
+        console.log(response.data.data);
+        this.setState({ lyrics: response.data.data });
+        //scrollToElement(playlist.parent(), detailsKara, lyricsKara);
+      });
+  }
+
   /**
    * Build kara details depending on the data
    * @param {Object} data - data from the kara
@@ -167,60 +228,87 @@ class KaraDetail extends Component {
       />
     );
 
+    var lyricsKara = this.state.lyrics ? (
+      <div className="lyricsKara alert alert-info">
+        <button
+          title={t("TOOLTIP_CLOSEPARENT")}
+          className="closeParent btn btn-action"
+        />
+        <div className="lyricsKaraLoad">
+          {this.state.lyrics.map(ligne => {
+            return (
+              <React.Fragment key={Math.random()}>
+                {ligne}
+                <br />
+              </React.Fragment>
+            );
+          })}
+        </div>
+        <button
+          title={t("TOOLTIP_CLOSEPARENT")}
+          className="closeParent bottom btn btn-action"
+        />
+      </div>
+    ) : null;
+
     var infoKaraTemp;
     if (this.props.mode == "list") {
       infoKaraTemp = (
-        <div className="detailsKara">
-          <div className="topRightButtons">
-            {is_touch_device() ? null : (
+        <React.Fragment>
+          <div className="detailsKara">
+            <div className="topRightButtons">
+              {is_touch_device() ? null : (
+                <button
+                  title={t("TOOLTIP_CLOSEPARENT")}
+                  className="closeParent btn btn-action"
+                />
+              )}
+              {(scope === "public" && !is_touch_device()) ||
+              window.logInfos.role === "guest"
+                ? null
+                : makeFavButton}
               <button
-                title={t("TOOLTIP_CLOSEPARENT")}
-                className="closeParent btn btn-action"
-              />
-            )}
-            {(scope === "public" && !is_touch_device()) ||
-            window.logInfos.role === "guest"
-              ? null
-              : makeFavButton}
-            <button
-              title={t("TOOLTIP_SHOWLYRICS")}
-              className={
-                "fullLyrics btn btn-action " + (isTouchScreen ? "mobile" : "")
-              }
-            />
-            {data["previewfile"] ? (
-              <button
-                title={t("TOOLTIP_SHOWVIDEO")}
+                title={t("TOOLTIP_SHOWLYRICS")}
                 className={
-                  "showVideo btn btn-action" +
-                  (is_touch_device() ? "mobile" : "")
+                  "fullLyrics btn btn-action " + (isTouchScreen ? "mobile" : "")
                 }
-                onClick={this.showVideo}
+                onClick={this.showFullLyrics}
               />
-            ) : null}
-            {data["serie"] ? (
-              <button
-                className={
-                  "moreInfo btn btn-action" + (isTouchScreen ? "mobile" : "")
-                }
-                onClick={this.moreInfo}
-              />
-            ) : null}
-            {scope === "admin" && this.props.publicOuCurrent ? (
-              <button
-                title={t("TOOLTIP_UPVOTE")}
-                className={
-                  data["flag_free"]
-                    ? "free btn-primary"
-                    : "" + " likeFreeButton btn btn-action"
-                }
-              />
-            ) : null}
+              {data["previewfile"] ? (
+                <button
+                  title={t("TOOLTIP_SHOWVIDEO")}
+                  className={
+                    "showVideo btn btn-action" +
+                    (is_touch_device() ? "mobile" : "")
+                  }
+                  onClick={this.showVideo}
+                />
+              ) : null}
+              {data["serie"] ? (
+                <button
+                  className={
+                    "moreInfo btn btn-action" + (isTouchScreen ? "mobile" : "")
+                  }
+                  onClick={this.moreInfo}
+                />
+              ) : null}
+              {scope === "admin" && this.props.publicOuCurrent ? (
+                <button
+                  title={t("TOOLTIP_UPVOTE")}
+                  className={
+                    data["flag_free"]
+                      ? "free btn-primary"
+                      : "" + " likeFreeButton btn btn-action"
+                  }
+                />
+              ) : null}
+            </div>
+            <table>
+              <tbody>{htmlDetails}</tbody>
+            </table>
           </div>
-          <table>
-            <tbody>{htmlDetails}</tbody>
-          </table>
-        </div>
+          {lyricsKara}
+        </React.Fragment>
       );
     } else if (this.props.mode == "karaCard") {
       $.ajax({ url: "public/karas/" + data.kid + "/lyrics" }).done(function(
