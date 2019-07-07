@@ -7,6 +7,8 @@ class KaraDetail extends Component {
     super(props);
     this.state = {};
     this.getLastPlayed = this.getLastPlayed.bind(this);
+    this.moreInfo = this.moreInfo.bind(this);
+    this.showVideo = this.showVideo.bind(this);
   }
 
   getLastPlayed(lastPlayed_at, lastPlayed) {
@@ -31,6 +33,64 @@ class KaraDetail extends Component {
     }
   }
 
+  async moreInfo () {
+    var openExternalPageButton = '<i class="glyphicon glyphicon-new-window"></i>';
+    var externalUrl = '';
+    var serie = this.props.data["serie"];
+    var extraSearchInfo = "";
+    var searchLanguage = navigator.languages[0];
+    searchLanguage = searchLanguage.substring(0, 2);
+    if(!this.props.data["misc_tags"] || 
+    (this.props.data["misc_tags"].find(e => e.name == 'TAG_VIDEOGAME')
+    && this.props.data["misc_tags"].find(e => e.name == 'TAG_MOVIE'))) {
+      extraSearchInfo = 'anime ';
+    }
+    var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + extraSearchInfo + serie;
+    var detailsUrl = "";
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var json = JSON.parse(this.response);
+        var results = json.query.search;
+        var contentResult = json.query.pages;
+        var searchInfo = json.query.searchinfo;
+
+        if(results && results.length > 0 && detailsUrl === ""){
+          var pageId = results[0].pageid;
+          externalUrl= 'https://' + searchLanguage  + '.wikipedia.org/?curid=' + pageId;
+          detailsUrl = 'https://' + searchLanguage + '.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&prop=extracts&exintro=&explaintext=&pageids=' + pageId;
+          xhttp.open("GET", detailsUrl , true);
+          xhttp.send();
+        } else if (contentResult && contentResult.length > 0 && detailsUrl !== "") {
+          var extract = contentResult[0].extract;
+          extract = extract.replace(/\n/g, '<br /><br />');
+          extract = extract.replace(serie, '<b>' + serie + '</b>');
+          extract = extract.replace('anime', '<b>anime</b>');
+          window.callModal('alert', '<a target="_blank" href="' + externalUrl + '">' + serie + ' ' + openExternalPageButton + '</a>', extract);
+        } else if (searchInfo && searchInfo.totalhits === 0 && searchInfo.suggestion) {
+          var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + searchInfo.suggestion;
+          xhttp.open("GET", searchUrl , true);
+          xhttp.send();
+        } else {
+          window.displayMessage('warning', '', this.props.t('NO_EXT_INFO', serie));
+        }
+      }
+    };
+    xhttp.open("GET", searchUrl , true);
+    xhttp.send();
+  };
+
+  showVideo () {
+    var previewFile = this.props.data["previewfile"];
+    if(previewFile) {
+      setTimeout(function() {
+        $('#video').attr('src', '/previews/' + previewFile);
+        $('#video')[0].play();
+        $('.overlay').show();
+      }, 1);
+    }
+  }
   /**
    * Build kara details depending on the data
    * @param {Object} data - data from the kara
@@ -135,6 +195,7 @@ class KaraDetail extends Component {
                   "showVideo btn btn-action" +
                   (is_touch_device() ? "mobile" : "")
                 }
+                onClick={this.showVideo}
               />
             ) : null}
             {data["serie"] ? (
@@ -142,6 +203,7 @@ class KaraDetail extends Component {
                 className={
                   "moreInfo btn btn-action" + (isTouchScreen ? "mobile" : "")
                 }
+                onClick={this.moreInfo}
               />
             ) : null}
             {scope === "admin" && this.props.publicOuCurrent ? (

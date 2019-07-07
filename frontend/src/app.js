@@ -32,10 +32,12 @@ window.socket.on('settingsUpdated', getSettings);
 
 document.getElementById('manage') ? ReactDOM.render(<Suspense fallback={<Loader />}><Options /></Suspense>, document.getElementById('manage')) : null;
 
-window.callModal = (type, title, message, callback, placeholder) => {
+var callModal = (type, title, message, callback, placeholder) => {
   ReactDOM.render(<Suspense fallback={<Loader />}><Modal type={type} title={title} message={message} callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('root'));
   $('#modalBox').modal('show');
 };
+window.callModal = callModal;
+
 var callProfileModal = () => {
   ReactDOM.render(<Suspense fallback={<Loader />}><ProfilModal settingsOnline={settings.config.Online} /></Suspense>, document.getElementById('root'));
   $('#profilModal').modal('show');

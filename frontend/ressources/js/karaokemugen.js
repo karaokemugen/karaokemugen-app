@@ -18,7 +18,6 @@ var logInfos;			// Object : contains all login infos : role, token, username
 window.logInfos = logInfos;
 var pseudo;
 var pathAvatar;
-var pathVideo;
 
 var DEBUG;
 var SOCKETDEBUG;
@@ -459,10 +458,6 @@ var flattenedTagsGroups;
 				});
 			});
 
-			$('.playlist-main').on('click', '.showVideo', function() {
-				showVideo($(this));
-			});
-
 			$('.playlist-main').on('click', '.makeFav', function() {
 				var liKara = $(this).closest('li');
 				var idKara = liKara.attr('idkara');
@@ -471,10 +466,6 @@ var flattenedTagsGroups;
 
 			$('.playlist-main').on('click', '.likeKara', function() {
 				likeKara(!$(this).hasClass('currentLike'), $(this));
-			});
-
-			$('.playlist-main').on('click', '.moreInfo', function() {
-				moreInfo($(this));
 			});
 		}
 
@@ -531,66 +522,6 @@ var flattenedTagsGroups;
 					}
 				}).fail(function(response) {
 				});
-		};
-		showVideo = function(el) {
-			var previewFile = el.closest('.detailsKara').data('previewfile');
-			if(previewFile) {
-				setTimeout(function() {
-					$('#video').attr('src', pathVideo + previewFile);
-					$('#video')[0].play();
-					$('.overlay').show();
-				}, 1);
-			}
-		};
-		moreInfo = function(el) {
-			var openExternalPageButton = '<i class="glyphicon glyphicon-new-window"></i>';
-			var externalUrl = '';
-			var details = el.closest('.detailsKara');
-			var serie = details.data('serie');
-			var extraSearchInfo = "";
-			var searchLanguage = navigator.languages[0];
-			searchLanguage = searchLanguage.substring(0, 2);
-			if(!details.data('misc_tags') || (
-				details.data('misc_tags').find(e => e.name == 'TAG_VIDEOGAME')
-                && details.data('misc_tags').find(e => e.name == 'TAG_MOVIE')
-			)) {
-				extraSearchInfo = 'anime ';
-			}
-			var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + extraSearchInfo + serie;
-			var detailsUrl = "";
-
-			var xhttp = new XMLHttpRequest();
-			xhttp.onreadystatechange = function() {
-			  if (this.readyState == 4 && this.status == 200) {
-					var json = JSON.parse(this.response);
-					var results = json.query.search;
-					var contentResult = json.query.pages;
-					var searchInfo = json.query.searchinfo;
-
-					if(results && results.length > 0 && detailsUrl === ""){
-						var pageId = results[0].pageid;
-						externalUrl= 'https://' + searchLanguage  + '.wikipedia.org/?curid=' + pageId;
-						detailsUrl = 'https://' + searchLanguage + '.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&prop=extracts&exintro=&explaintext=&pageids=' + pageId;
-						xhttp.open("GET", detailsUrl , true);
-						xhttp.send();
-					} else if (contentResult && contentResult.length > 0 && detailsUrl !== "") {
-						var extract = contentResult[0].extract;
-						extract = extract.replace(/\n/g, '<br /><br />');
-						extract = extract.replace(serie, '<b>' + serie + '</b>');
-						extract = extract.replace('anime', '<b>anime</b>');
-						displayModal('alert', '<a target="_blank" href="' + externalUrl + '">' + serie + ' ' + openExternalPageButton + '</a>', extract);
-					} else if (searchInfo && searchInfo.totalhits === 0 && searchInfo.suggestion) {
-						var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + searchInfo.suggestion;
-						xhttp.open("GET", searchUrl , true);
-						xhttp.send();
-					} else {
-						displayMessage('warning', '', i18n.__('NO_EXT_INFO', serie));
-					}
-			  }
-			};
-			xhttp.open("GET", searchUrl , true);
-			xhttp.send();
-
 		};
 
 		likeKara = function(like, $el) {
@@ -796,8 +727,6 @@ var flattenedTagsGroups;
 	mode = 'list';
 	logInfos = { username : null, role : null };
 	pathAvatar = '/avatars/';
-	pathVideo = '/previews/';
-
 
 	DEBUG =  query.DEBUG != undefined;
 	SOCKETDEBUG =  query.SOCKETDEBUG != undefined;
@@ -897,7 +826,7 @@ var flattenedTagsGroups;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			var $this = $(e.target).closest('.moreInfo, .fullLyrics, .showVideo, .makeFav, .likeKara, [name="deleteKara"]');
+			var $this = $(e.target).closest('.fullLyrics, .makeFav, .likeKara, [name="deleteKara"]');
 
 			if($this.length > 0 && $this.closest('.playlistContainer').length > 0) {
 				e.preventDefault();
@@ -917,10 +846,6 @@ var flattenedTagsGroups;
 							displayMessage('warning','', i18n.__('NOLYRICS'));
 						}
 					});
-				} else if($this.hasClass('showVideo')) {
-					showVideo($this);
-				} else if($this.hasClass('moreInfo')) {
-					moreInfo($this);
 				} else if($this.hasClass('makeFav')) {
 					makeFav(idKara, !$this.hasClass('currentFav'), $this);
 				} else if($this.hasClass('likeKara')) {
