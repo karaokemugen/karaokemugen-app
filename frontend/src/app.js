@@ -13,6 +13,7 @@ import io from 'socket.io-client';
 import './app.css'
 import axios from 'axios';
 import WelcomePage from './components/WelcomePage';
+import KaraDetail from './components/KaraDetail';
 
 const Loader = () => (
   <div>loading...</div>
@@ -31,10 +32,12 @@ window.socket.on('settingsUpdated', getSettings);
 
 document.getElementById('manage') ? ReactDOM.render(<Suspense fallback={<Loader />}><Options /></Suspense>, document.getElementById('manage')) : null;
 
-window.callModal = (type, title, message, callback, placeholder) => {
+var callModal = (type, title, message, callback, placeholder) => {
   ReactDOM.render(<Suspense fallback={<Loader />}><Modal type={type} title={title} message={message} callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('root'));
   $('#modalBox').modal('show');
 };
+window.callModal = callModal;
+
 var callProfileModal = () => {
   ReactDOM.render(<Suspense fallback={<Loader />}><ProfilModal settingsOnline={settings.config.Online} /></Suspense>, document.getElementById('root'));
   $('#profilModal').modal('show');
@@ -62,3 +65,9 @@ window.welcomePage = () => {
       <WelcomePage loginModal={callLoginModal} profileModal={callProfileModal}/>
     </Suspense>, document.getElementById('welcomepage'));
 }
+
+window.buildKaraDetails = (data, mode, element, publicOuCurrent) => {
+  ReactDOM.render(<Suspense fallback={<Loader />}>
+    <KaraDetail data={data} mode={mode} publicOuCurrent={publicOuCurrent}/>
+  </Suspense>, element);
+} 

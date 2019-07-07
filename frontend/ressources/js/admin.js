@@ -246,13 +246,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                         playlistContentUpdating.done(function () {
                             scrollToKara(non(side), idKara);
                         });
-                        var ajout = clusterAction ? li.length + ' karas'
-                            : '"' + li.find('.contentDiv').text() + '"';
                         if (clusterAction) li.find('span[name="checkboxKara"][checked]').attr('checked', false);
-                    	/*
-						displayMessage('success', ajout, ' ajouté' +  (clusterAction ? 's' : '')
-							+ ' à la playlist <i>' +$('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').data('name') + '</i>.');
-						*/
                         DEBUG && console.log('Kara ' + idKara + ' to playlist (' + idPlaylistTo + ') '
                             + $('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').text() + '.');
                     }).fail(function () {
