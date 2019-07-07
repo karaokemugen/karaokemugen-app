@@ -11,6 +11,7 @@ class KaraDetail extends Component {
     this.moreInfo = this.moreInfo.bind(this);
     this.showVideo = this.showVideo.bind(this);
     this.showFullLyrics = this.showFullLyrics.bind(this);
+    this.closeKaraDetail = this.closeKaraDetail.bind(this);
     this.fullLyricsRef = React.createRef();
   }
 
@@ -147,6 +148,10 @@ class KaraDetail extends Component {
       });
   }
 
+  closeKaraDetail() {
+    this.setState({open: !this.state.open})
+  }
+
   /**
    * Build kara details depending on the data
    * @param {Object} data - data from the kara
@@ -251,12 +256,13 @@ class KaraDetail extends Component {
     if (this.props.mode == "list") {
       infoKaraTemp = (
         <React.Fragment>
-          <div className="detailsKara">
+          <div className="detailsKara" style={this.state.open ? {} : {display: 'none'}}>
             <div className="topRightButtons">
               {is_touch_device() ? null : (
                 <button
                   title={t("TOOLTIP_CLOSEPARENT")}
                   className="closeParent btn btn-action"
+                  onClick={this.closeKaraDetail}
                 />
               )}
               {(scope === "public" && !is_touch_device()) ||

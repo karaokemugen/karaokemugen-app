@@ -433,7 +433,7 @@ var flattenedTagsGroups;
 		});
 
 		if(!(isTouchScreen && scope === 'public')) {
-			$('.playlist-main').on('click', '.infoDiv > button[name="infoKara"], .detailsKara > button.closeParent', function() {
+			$('.playlist-main').on('click', '.infoDiv > button[name="infoKara"]', function() {
 				toggleDetailsKara($(this));
 			});
 
