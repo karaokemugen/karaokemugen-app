@@ -63,7 +63,7 @@ class ProfilModal extends Component {
     }
 
     profileConvert() {
-        displayModal('custom', i18n.__('PROFILE_CONVERT'),
+        window.callModal('custom', i18n.__('PROFILE_CONVERT'),
             '<label>' + i18n.__('INSTANCE_NAME') + '</label>'
             + '<input type="text"  name="modalLoginServ" value="' + this.props.settingsOnline.Host + '"//>'
             + '<label>' + i18n.__('PROFILE_PASSWORD_AGAIN') + '</label>'
@@ -84,7 +84,7 @@ class ProfilModal extends Component {
 
     profileDelete() {
         var t = this.props.t;
-        displayModal('custom', t('PROFILE_ONLINE_DELETE'),
+        window.callModal('custom', t('PROFILE_ONLINE_DELETE'),
             '<label>' + t('PROFILE_PASSWORD_AGAIN') + '</label>'
             + '<input type="password" placeholder="' + t('PASSWORD') + '" className="form-control" name="password">', function (data) {
                 var response = axios.delete('/api/public/myaccount/online', { password: data.password });
@@ -107,7 +107,7 @@ class ProfilModal extends Component {
             var file = input.files[0];
             var fr = new FileReader();
             fr.onload = () => {
-                displayModal('confirm', this.props.t('CONFIRM_FAV_IMPORT'), '', function (confirm) {
+                window.callModal('confirm', this.props.t('CONFIRM_FAV_IMPORT'), '', function (confirm) {
                     if (confirm) {
                         var data = {};
                         data['favorites'] = fr['result'];
