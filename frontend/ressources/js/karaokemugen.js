@@ -796,8 +796,6 @@ var flattenedTagsGroups;
 
 	if (isTouchScreen && scope === 'public') {
 
-		/* tap on full lyrics */
-
 		var elem = $('.playlist-main');
 		var manager2 = new Hammer.Manager(elem[0],{
 			prevent_default: false
@@ -805,27 +803,14 @@ var flattenedTagsGroups;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			var $this = $(e.target).closest('.fullLyrics, .makeFav, .likeKara, [name="deleteKara"]');
+			var $this = $(e.target).closest('.makeFav, .likeKara, [name="deleteKara"]');
 
 			if($this.length > 0 && $this.closest('.playlistContainer').length > 0) {
 				e.preventDefault();
 
 				var liKara = $this.closest('li');
 				var idKara = liKara.attr('idkara');
-				if($this.hasClass('fullLyrics')) {
-					$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-						if (typeof data === 'object') {
-							if (mode == 'mobile') {
-								$('#lyricsModalText').html(data.join('<br/>'));
-								$('#lyricsModal').modal('open');
-							} else {
-								displayModal('alert',i18n.__('LYRICS'), '<center>' + data.join('<br/>') + '</center');
-							}
-						} else {
-							displayMessage('warning','', i18n.__('NOLYRICS'));
-						}
-					});
-				} else if($this.hasClass('makeFav')) {
+				if($this.hasClass('makeFav')) {
 					makeFav(idKara, !$this.hasClass('currentFav'), $this);
 				} else if($this.hasClass('likeKara')) {
 					likeKara(!$this.hasClass('currentLike'), $this);

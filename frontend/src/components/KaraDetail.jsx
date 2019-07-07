@@ -143,8 +143,12 @@ class KaraDetail extends Component {
     axios
       .get("/api/public/karas/" + this.props.data.kid + "/lyrics")
       .then(response => {
-        this.setState({ lyrics: response.data.data });
-        this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });
+        if (is_touch_device()) {
+          window.callModal('alert',this.props.t('LYRICS'), '<center>' + response.data.data.join('<br/>') + '</center');
+        } else {
+          this.setState({ lyrics: response.data.data });
+          this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });
+        }
       });
   }
 
