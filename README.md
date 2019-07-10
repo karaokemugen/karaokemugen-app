@@ -1,6 +1,6 @@
 # Karaoke Mugen
 
-![logo](src/_webapp/ressources/img/Logo-final-fond-transparent.png)
+![logo](frontend/ressources/img/Logo-final-fond-transparent.png)
 
 ![presentation](img/presentation.png)
 
@@ -47,7 +47,7 @@ Karaoke Mugen works offline and does not require an Internet connection, but a f
 
 In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's over 200Gb big once the videos have been downloaded.
 
-For more information, check out the [documentation site!](http://mugen.karaokes.moe/docs/)
+For more information, check out the [documentation site!](http://docs.karaokes.moe)
 
 ## Install
 
@@ -55,19 +55,35 @@ If you don't want to install manually, binaries are available [on the website](h
 
 ### Download
 
-To install, git clone this repository or download a copy as ZIP.
+To install, git clone this repository with the `--recursive` flag since it uses git submodules.
 
 ### Yarn
 
 If you don't have `yarn`, install it first from [Yarn's website](http://yarnpkg.com)
 
+### Git submodules
+
+Initialize some git config values either via `yarn gitconfig` or
+
+Warning : these are global. If you wish to make them local, put `local` after `config` in each command.
+
+```sh
+git config diff.submodule log
+git config fetch.recursesubmodules on-demand
+git config status.submodulesummary true
+git config push.recursesubmodules on-demand
+git config submodule.recurse true
+```
+
 ### Dependencies
 
-Then launch `yarn` to install dependencies and build the React frontend.
+Launch `yarn` to install dependencies and build the React frontend.
 
 ```sh
 yarn setup
 ```
+
+This runs install on the app, system panel and frontend then builds them.
 
 ### Database setup
 
@@ -94,7 +110,7 @@ Use the supplied `database.sample.json` file and copy it to `database.json`. Edi
 }
 ```
 
-As a superuser on PostgreSQL, you need to create the database properly. Use the `psql` command-line tool to connect to your PostgreSQL database. Example with the `database.json` above :
+As a superuser on PostgreSQL, you need to create the database properly. Use the `psql` command-line tool to connect to your PostgreSQL cluster and create the needed database and extension. Example with the `database.json` above :
 
 ```SQL
 CREATE DATABASE karaokemugen_app ENCODING 'UTF8';
@@ -121,11 +137,11 @@ yarn start
 
 Generating a database ie required on first launch and is done automatically if the database specified in `database.json` is empty. You can trigger it manually later by connecting to the admin panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
 
-On first run, the app will make you create an admin user and follow a guided tour of the control panel. You can trigger this tour/admin creation process again by adding `appFirstRun=1` to your config file.
+On first run, the app will make you create an admin user and follow a guided tour of the control panel. You can trigger this tour/admin creation process again by setting `FirstRun` to `true` in your config file. Check the sample config file for example.
 
 ## System requirements
 
-The app is multi-platform and works on Linux/Windows/OSX.
+The app is multi-platform and works on Linux/Windows/macOS.
 
 It requires nodeJS 10.9 or above.
 
@@ -146,6 +162,8 @@ ffmpeg 3 or later is required ([ffmpeg's website](http://www.ffmpeg.org))
 #### PostgreSQL
 
 PostgreSQL 10.6 or later is required ([postgreSQL's website](https://www.postgresql.org/))
+
+Earlier PostgreSQL versions (9.x, 10.x...) should work but have not been tested.
 
 Karaoke Mugen can use PostgreSQL in two ways :
 

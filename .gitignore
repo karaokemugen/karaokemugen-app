@@ -4,7 +4,7 @@
 .vscode
 node_modules
 app/
-package-lock.json
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -33,3 +33,7 @@ react_systempanel/node_modules
 react_systempanel/coverage
 react_systempanel/build
 react_client
+
+# Frontend
+.cache/
+frontend/build/

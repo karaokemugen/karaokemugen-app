@@ -1,12 +1,57 @@
 # Versions
 
-## v2.5.0 "Konata Karaokiste"
+## v2.5.3 "Konata Kimono" - 30/06/2019
+
+This is a bugfix release.
+
+### Fixes
+
+- Fixed Downloads submenu in the system panel not working with V4 kara format in KM Server (28236d09)
+- Fixed toggleOnTop setting not working (770cc4bd)
+
+## v2.5.2 "Konata 4-Koma" - 22/05/2019
+
+This is a bugfix release.
+
+### Enhancements
+
+- You can now force the admin password to be changed (in case you forgot it, or are running a unattended setup) with the `--forceAdminPassword <password>` flag.
+
+### Fixes
+
+- Fixed file resolver when using multiple folders for karas, series, medias or lyrics files (c2e5eacf)
+- Fixed mpv auto restart method (3ca3b6c7)
+- Fixed wallpaper not appearing anymore at the end of a song if "stop after current song" has been pressed (7330ed8a)
+- Fixed retrying to play song if loading media failed due to mpv hiccup (7f3da9ba)
+- Web interface will now request english translations from server if your browser is not set to a known locale (61082963)
+- Media files are not weboptimized anymore if you don't modify them in the karaoke edit form (4ee094bc)
+- Catch errors when switching to the next song in a playing playlist (35a86966)
+- Partly fixed edit user form errors (523a7120)
+
+## v2.5.1 "Konata Kiffante" - 06/05/2019
+
+This is a bugfix release.
+
+### Fixes
+
+- Added notice to type in your full username on system panel login page (463b62e8)
+- Fixed tag add/remove on blacklist criterias list ( de6611d4 )
+- Fixed import/export favorites from admin interface ( f2ee577e, c76941c7, 7ae9b9b9 )
+- Fixed import favorites from public interface ( 0222d592 )
+- Fixed blacklist criterias import from an older SQLite database ( 0785947 )
+- Fixed downloads not being started automatically on app startup  ( 87d68d9e )
+- Fixed public/private switch ( df949195 )
+- Fixed online profile updates ( 20a24b1e )
+- Fixed suggestion mail modal box ( 6503c363 )
+- Fixed errors with multi-series karaokes ( bfbe9eed )
+
+## v2.5.0 "Konata Karaokiste" - 30/04/2019
 
 This is a major release.
 
 ### New features
 
-- Songs can now be downloaded individually from a Karaoke Mugen Server (like `kara.moe`) instead of updating the complete karaoke base every time. Go to the Karas -> Downloads submenu in the system panel (#339)
+- Songs can now be downloaded individually from a Karaoke Mugen Server (like `kara.moe`) instead of updating the complete karaoke base every time. Go to the Karas -> Downloads submenu in the system panel. This feature is still in beta and we would love feedback (#339)
 - Users can now create online accounts on a Karaoke Mugen Server, which means favorites and profile info are stored online and not on the local Karaoke Mugen application. Online accounts are enabled by default. To create/login using local accounts, remove the `kara.moe` part of the Server field on the login/new account form (#303)
 - Added tag CREDITLESS for creditless songs (#382)
 - Added tag COVER for cover songs (#393)

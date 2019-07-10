@@ -1,0 +1,79 @@
+<div id="progressBar" class="underHeader mode1">
+    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
+    <div id="progressBarColor" class="cssTransform"></div>
+</div>
+<div id="underHeader" class="underHeader container-fluid mode1">
+     <div class="playlist-main row" id="playlist">
+        <div class="panel col-lg-4 col-md-5 col-msm-12 col-sm-12 col-xs-12" id="panel1" side="1">
+            <div class="playlistContainer">
+                <ul id="playlist1" side="1" class="list-group">
+                    <li class="list-group-item karaCard" >
+                        <div class="details z-depth-1" id="karaCard"></div>
+                        <div class="lyricsKara alert alert-info"></div>
+                    </li>
+                </ul>
+           </div>
+        </div>
+         
+        <div class="panel col-lg-8 col-md-7 col-msm-12 col-sm-12 col-xs-12" id="panel2" side="2">
+           <div class="panel-heading container-fluid plDashboard">
+                <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6 plSelect hidden">
+                    <select id="selectPlaylist2" side="2" type="playlist_select" class="select2 form-control">
+                        <option value="" selected>...</option>
+                    </select>
+                </div>
+                <div class="flagsContainer hidden">
+                    <div class="btn-group plCommands flags hidden" id="flag2">
+                        <button class="btn btn-lg btn-default" name="export">
+                            <i class="glyphicon glyphicon-export"></i>
+                        </button>
+                        <button class="btn btn-lg btn-default" name="flag_current">
+                            <i class="glyphicon glyphicon-facetime-video"></i>
+                        </button>
+                        <button class="btn btn-lg btn-default" name="flag_public">
+                            <i class="glyphicon glyphicon-globe"></i>
+                        </button>
+                        <button class="btn btn-lg btn-default" name="flag_visible">
+                            <i class="glyphicon glyphicon-eye-close"></i>
+                        </button>
+                    </div>
+                </div>
+                 <div class="pull-left plSearch">
+                    <input type="text" class="form-control input-md" side="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
+                </div>
+                
+            </div>
+            
+            <div class="playlistContainer">
+                <ul id="playlist2" side="2" class="list-group">
+                    <li class="list-group-item"></li>
+                </ul>
+            </div>
+             <div class="plFooter">
+                <div class="plBrowse">
+                    <button title="{{i18n "GOTO_TOP"}}" class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
+                    <button title="{{i18n "GOTO_PLAYING"}}" class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
+                    <button title="{{i18n "GOTO_BOTTOM"}}" class="btn btn-sm btn-action" action="goTo" value="bottom"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
+                </div>
+                <div class="plInfos"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="toastMessageContainer">
+</div>
+<div class="fixed-action-btn right click-to-toggle mode1" id="mobileActions">
+    <a class="btn-floating btn-large waves-effect z-depth-3 klogo" id="menuMobile"  style="background-color:#123456" data-opened=false>
+    </a>
+    <ul style="opacity: 0; display: none;">
+        <li><a class="z-depth-3 btn-floating btn-large showSettings" style="background-color:#613114"><i class="glyphicon glyphicon-question-sign"></i></a></li>
+        <li><a class="z-depth-3 btn-floating btn-large changePseudo" id="changePseudo" style="background-color:#431b50"><i class="glyphicon glyphicon-user"></i></a></li>
+        <li><a class="z-depth-3 btn-floating btn-large" id="switchInfoBar" style="background-color:#125633">
+            <i class="glyphicon glyphicon-info-sign infos"></i><i class="glyphicon glyphicon-subtitles lyrics"></i></a></li>
+    </ul>
+</div>
+
+<div class="overlay">
+     <video id="video" type="video/mp4" autoplay>
+    </video>
+</div>

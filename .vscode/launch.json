@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Launch KM",
+            "type": "node",
+            "request": "launch",
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register"
+            ],
+            "args": [
+                "${workspaceFolder}/src/index.ts"
+            ]
+        }
+    ]
+}
