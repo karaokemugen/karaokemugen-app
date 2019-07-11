@@ -63,7 +63,6 @@ export const defaults: Config = {
 			Nickname: true,
 			ConnectionInfo: {
 				Enabled: true,
-				QRCode: true,
 				Message: '',
 				Host: null
 			}

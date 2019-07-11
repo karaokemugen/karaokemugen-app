@@ -48,7 +48,6 @@ export interface Config {
 			Nickname?: boolean,
 			ConnectionInfo?: {
 				Enabled?: boolean,
-				QRCode?: boolean,
 				Host?: string,
 				Message?: string
 			}
