@@ -95,16 +95,6 @@ class PlayerOptions extends Component {
           >
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {t("ENGINEDISPLAYCONNECTIONINFOQRCODE")}
-              </label>
-              <div className="col-xs-6">
-                <Switch idInput="Karaoke.Display.ConnectionInfo.QRCode" handleChange={this.props.onChange}
-                  isChecked={settings.Karaoke.Display.ConnectionInfo.QRCode} />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="col-xs-4 control-label">
                 {t("ENGINEDISPLAYCONNECTIONINFOHOST")}
               </label>
               <div className="col-xs-6">
