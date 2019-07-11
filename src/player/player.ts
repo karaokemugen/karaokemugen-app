@@ -4,7 +4,6 @@ import {resolvedPathBackgrounds, getConfig} from '../lib/utils/config';
 import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../lib/utils/files';
 import sample from 'lodash.sample';
-import sizeOf from 'image-size';
 import {getSingleJingle, buildJinglesList} from './jingles';
 import {exit} from '../services/engine';
 import {playerEnding} from '../services/player';
@@ -93,7 +92,7 @@ export async function loadBackground() {
 		const loads = [
 			player.load(backgroundImageFile, 'replace')
 		];
-		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile, 'replace', [videofilter]));
+		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile, 'replace'));
 		await Promise.all(loads);
 		displayInfo();
 	} catch(err) {
