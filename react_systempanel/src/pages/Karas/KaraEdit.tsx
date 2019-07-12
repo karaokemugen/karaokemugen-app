@@ -3,12 +3,9 @@ import {Layout} from 'antd';
 import KaraForm from './KaraForm';
 import axios from 'axios/index';
 import {connect} from 'react-redux';
-import {push} from 'react-router-redux';
+import {push} from 'connected-react-router';
 import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
-import timestamp from 'unix-timestamp';
 import {ReduxMappedProps} from '../../react-app-env';
-
-timestamp.round = true;
 
 interface KaraEditProps extends ReduxMappedProps {
 	push: (string) => any,
@@ -19,7 +16,6 @@ interface KaraEditState {
 	kara: any,
 	save: any,
 }
-
 
 const newKara = {
 	kid: null,

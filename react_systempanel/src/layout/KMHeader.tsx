@@ -9,7 +9,7 @@ import KMMenu from './KMMenu';
 import Notifications from './Notifications';
 
 interface KMHeaderProps {
-	alreadyConnected: () => boolean,
+	alreadyConnected: () => void,
 }
 
 interface KMHeaderState {}

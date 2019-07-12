@@ -1,6 +1,5 @@
 import axios from 'axios';
-import {stringify} from 'qs';
-import {goBack} from 'react-router-redux';
+import {goBack} from 'connected-react-router';
 
 export const AUTH_USER = 'auth_user';
 export const UNAUTH_USER = 'unauth_user';
@@ -9,9 +8,9 @@ export const AUTH_ERROR = 'auth_error';
 export function login(username, password) {
 	return function(dispatch) {
 		axios.post('/api/auth/login',
-			stringify({username: username, password: password}),
 			{
-				headers: { 'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8' }
+				username,
+				password
 			}
 		)
 			.then(response => {

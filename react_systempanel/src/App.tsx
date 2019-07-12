@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 
 import axios from 'axios';
 import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'react-router-redux';
+import { ConnectedRouter } from 'connected-react-router';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { Layout } from 'antd';
-import configureStore, { history } from './configureStore';
+import {configureStore, history } from './configureStore';
 import KMHeader from './layout/KMHeader';
 
 import AuthRequired from './components/AuthRequired';
