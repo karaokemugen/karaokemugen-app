@@ -17,6 +17,7 @@ import semver from 'semver';
 import { imageFileTypes } from '../lib/utils/constants';
 import {PlayerState, MediaData, mpvStatus} from '../types/player';
 import retry from 'p-retry';
+import { initializationCatchphrases } from '../utils/constants';
 
 const sleep = promisify(setTimeout);
 
@@ -520,7 +521,9 @@ export function displayInfo(duration: number = 10000000) {
 	let text = '';
 	if (ci.Enabled) text = `${ci.Message} ${i18n.__('GO_TO')} ${getState().osURL} !`;
 	const version = `Karaoke Mugen ${getState().version.number} (${getState().version.name}) - http://karaokes.moe`;
-	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
+	console.log(text);
+	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+sample(initializationCatchphrases);
+	console.log(message);
 	const command = {
 		command: [
 			'expand-properties',
