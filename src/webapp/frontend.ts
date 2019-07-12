@@ -6,7 +6,7 @@ import compression from 'compression';
 import {address} from 'ip';
 import logger from '../lib/utils/logger';
 import i18n from 'i18n';
-import {getConfig} from '../lib/utils/config';
+import {getConfig, resolvedPathPreviews, resolvedPathAvatars} from '../lib/utils/config';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
 import {configurePassport} from './passport_manager';
@@ -39,6 +39,7 @@ import publicPollController from '../controllers/frontend/public/poll';
 import publicUserController from '../controllers/frontend/public/user';
 import publicWhitelistController from '../controllers/frontend/public/whitelist';
 
+/** Declare all routers for API types */
 function apiRouter() {
 	const apiRouter = express.Router();
 
@@ -73,7 +74,7 @@ function apiRouter() {
 	return apiRouter;
 }
 
-
+/** Initialize frontend express server */
 export async function initFrontend() {
 	try {
 		const conf = getConfig();
@@ -124,6 +125,7 @@ export async function initFrontend() {
 		});
 		app.use(express.static(__dirname + '/../../frontend/'));
 		//path for system control panel
+		// System is not served in demo mode.
 		if (!state.isDemo) {
 			app.use('/system', express.static(resolve(__dirname, '../../react_systempanel/build')));
 			app.get('/system/*', (_req, res) => {
@@ -133,9 +135,9 @@ export async function initFrontend() {
 		//Path to locales for webapp
 		app.use('/locales', express.static(__dirname + '/../locales/'));
 		//Path to video previews
-		app.use('/previews', express.static(resolve(state.appPath,conf.System.Path.Previews)));
+		app.use('/previews', express.static(resolvedPathPreviews()));
 		//Path to user avatars
-		app.use('/avatars', express.static(resolve(state.appPath,conf.System.Path.Avatars)));
+		app.use('/avatars', express.static(resolvedPathAvatars()));
 		app.use('/admin', routerAdmin);
 		app.use('/welcome', routerWelcome);
 
@@ -158,7 +160,7 @@ export async function initFrontend() {
 				'query'			:	JSON.stringify(req.query)
 			});
 		});
-		routerAdmin.get('/', async (req, res) => {
+		routerAdmin.get('/', (req, res) => {
 			const config = getConfig();
 
 			res.render('admin', {'layout': 'adminHeader',
@@ -193,7 +195,6 @@ export async function initFrontend() {
 			logger.debug(`[Webapp] Webapp is READY and listens on port ${conf.Frontend.Port}`);
 		});
 	}catch(err) {
-		console.log(err);
 		throw err;
 	}
 }

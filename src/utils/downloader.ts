@@ -11,6 +11,10 @@ import { DownloadItem, DownloadOpts } from '../types/downloader';
 const HttpAgent = require('agentkeepalive');
 const {HttpsAgent} = HttpAgent;
 
+/** Downloader class, to download one or more file, complete with a progress bar and crepes. */
+
+// TODO: Rewrite the chain with better-queue instead
+
 export default class Downloader {
 
 	list: DownloadItem[];
@@ -32,7 +36,7 @@ export default class Downloader {
 	  }, _cliProgress.Presets.shades_classic);
 	}
 
-	// Triggers the download chain
+	/** Triggers the download chain */
 	download = (onEnd?: (this: void, errors: string[]) => void)  => {
 	  if (onEnd) this.onEnd = onEnd;
 	  if (this.pos >= this.list.length) {
@@ -89,6 +93,7 @@ export default class Downloader {
 	  }
 	};
 
+	/** The real function that does the download dance */
 	DoDownload = (url: string, filename: string, size: number, id :string, onSuccess?: any, onError?: any) => {
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
 		const options = {

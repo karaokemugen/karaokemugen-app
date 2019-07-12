@@ -3,10 +3,11 @@
 // Karaoke Mugen default configuration file
 
 // this file is overwritten during updates, editing is ill-advised .
-// you can change the default settings by using config.ini to bypass the default value .
+// you can change the default settings by using config.yml to bypass the default values.
 import {Config} from '../types/config';
 import { bools } from '../lib/utils/constants';
 
+/** Default configuration */
 export const defaults: Config = {
 	App: {
 		FirstRun: true,
@@ -144,6 +145,7 @@ export const defaults: Config = {
 const horizontalPosArray = ['Left', 'Right', 'Center'];
 const verticalPosArray = ['Top', 'Bottom', 'Center'];
 
+/** Config constraints. */
 export const configConstraints = {
 	'App.FirstRun': {inclusion : bools},
 	'Online.Stats': {boolUndefinedValidator: true},
