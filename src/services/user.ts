@@ -52,6 +52,7 @@ on('databaseBusy', (status: boolean) => {
 	databaseBusy = status;
 });
 
+/** Converts a online user to a local one by removing its online account from KM Server */
 export async function removeRemoteUser(token: Token, password: string): Promise<SingleToken> {
 	// Function used when asking for user deletion on Karaoke Mugen Server
 	const instance = token.username.split('@')[1];
@@ -78,8 +79,8 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	};
 }
 
+/** Unflag connected accounts from database if they expired	 */
 async function updateExpiredUsers() {
-	// Unflag connected accounts from database if they expired
 	try {
 		if (!databaseBusy) {
 			const time = new Date().getTime() - (getConfig().Frontend.AuthExpireTime * 60 * 1000);
@@ -91,11 +92,11 @@ async function updateExpiredUsers() {
 	}
 }
 
+/** Get remote avatar from KM Server */
 export async function fetchRemoteAvatar(instance: string, avatarFile: string): Promise<string> {
-	const conf = getConfig();
 	// If this stops working, use got() and a stream: true property again
 	const res = await got.stream(`https://${instance}/avatars/${avatarFile}`);
-	const avatarPath = resolve(getState().appPath, conf.System.Path.Temp, avatarFile);
+	const avatarPath = resolve(resolvedPathTemp(), avatarFile);
 	try {
 		await writeStreamToFile(res, avatarPath);
 	} catch(err) {
@@ -104,6 +105,7 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 	return avatarPath;
 }
 
+/** Login as online user on KM Server and fetch profile data, avatar, favorites and such and upserts them in local database */
 export async function fetchAndUpdateRemoteUser(username: string, password: string, onlineToken?: Token): Promise<User> {
 	// We try to login to KM Server using the provided login password.
 	// If login is successful, we get user profile data and create user if it doesn't exist already in our local database.
@@ -137,32 +139,35 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		// Checking if user has already been fetched during this session or not
 		if (!usersFetched[username]) {
 			usersFetched[username] = true;
-			user = await editUser(username,{
-				bio: remoteUser.bio,
-				url: remoteUser.url,
-				email: remoteUser.email,
-				nickname: remoteUser.nickname,
-				password: password,
-				series_lang_mode: remoteUser.series_lang_mode,
-				main_series_lang: remoteUser.main_series_lang,
-				fallback_series_lang: remoteUser.fallback_series_lang
-			},
-			avatar_file,
-			'admin',
-			{
-				editRemote: false
-			});
+			user = await editUser(
+				username,
+				{
+					bio: remoteUser.bio,
+					url: remoteUser.url,
+					email: remoteUser.email,
+					nickname: remoteUser.nickname,
+					password: password,
+					series_lang_mode: remoteUser.series_lang_mode,
+					main_series_lang: remoteUser.main_series_lang,
+					fallback_series_lang: remoteUser.fallback_series_lang
+				},
+				avatar_file,
+				'admin',
+				{ editRemote: false	}
+			);
 		}
 		user.onlineToken = onlineToken.token;
 		return user;
 	} else {
 		//Onlinetoken was not provided : KM Server might be offline
+		//We'll try to find user in local database. If failure return an error
 		let user = await findUserByName(username);
 		if (!user) throw {code: 'USER_LOGIN_ERROR'};
 		return user;
 	}
 }
 
+/** Create JSON Web Token from timestamp, JWT Secret, role and username */
 export function createJwtToken(username: string, role: string, config?: Config): string {
 	const conf = config || getConfig();
 	const timestamp = new Date().getTime();
@@ -172,23 +177,24 @@ export function createJwtToken(username: string, role: string, config?: Config):
 	);
 }
 
+/** Decode token to see if it matches */
 export function decodeJwtToken(token: string, config?: Config) {
 	const conf = config || getConfig();
 	return decode(token, conf.App.JwtSecret);
 }
 
+/** Converting a local account to a online one.	*/
 export async function convertToRemoteUser(token: Token, password: string , instance: string): Promise<Tokens> {
-	// Converting a local account to a online one.
 	if (token.username === 'admin') throw 'Admin user cannot be converted to an online account';
 	const user = await findUserByName(token.username);
 	if (!user) throw 'User unknown';
 	if (!await checkPassword(user, password)) throw 'Wrong password';
 	user.login = `${token.username}@${instance}`;
 	user.password = password;
-	await createRemoteUser(user);
-	const remoteUser = await remoteLogin(user.login, password);
-	upsertRemoteToken(user.login, remoteUser.token);
 	try {
+		await createRemoteUser(user);
+		const remoteUser = await remoteLogin(user.login, password);
+		upsertRemoteToken(user.login, remoteUser.token);
 		await editUser(token.username, user, null, token.role, {
 			editRemote: false,
 			renameUser: true
@@ -203,9 +209,8 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 	}
 }
 
-
+/** To avoid flooding database UPDATEs, only update login time every minute for a user */
 export async function updateLastLoginName(login: string) {
-	// To avoid flooding database UPDATEs, only update login time every minute for a user
 	if (!userLoginTimes.has(login)) {
 		userLoginTimes.set(login, new Date());
 		return await DBUpdateUserLastLogin(login);
@@ -216,9 +221,8 @@ export async function updateLastLoginName(login: string) {
 	}
 }
 
+/** Edit online user's profile, including avatar. */
 async function editRemoteUser(user: User) {
-	// Edit online user's profile.
-	// This includes updating remote avatar.
 	// Fetch remote token
 	const remoteToken = getRemoteToken(user.login);
 	const [login, instance] = user.login.split('@');
@@ -247,7 +251,7 @@ async function editRemoteUser(user: User) {
 	}
 }
 
-
+/** Edit local user profile */
 export async function editUser(username: string, user: User, avatar: Express.Multer.File, role: string, opts: UserOpts = {
 	editRemote: true,
 	renameUser: false,
@@ -273,8 +277,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw 'Nickname already exists';
 		if (avatar && avatar.path) {
 			// If a new avatar was sent, it is contained in the avatar object
-			// Let's move it to the avatar user directory and update avatar info in
-			// database
+			// Let's move it to the avatar user directory and update avatar info in database
 			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
 			user.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
 		} else {
@@ -298,31 +301,33 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 	}
 }
 
+/** Get all guest users */
 export async function listGuests(): Promise<User[]> {
 	return await DBListGuests();
 }
 
+/** Get all users (including guests) */
 export async function listUsers(): Promise<User[]> {
 	return await DBListUsers();
 }
 
+/** Replace old avatar image by new one sent from editUser or createUser */
 async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File): Promise<string> {
 	try {
-		const conf = getConfig();
 		const fileType = await detectFileType(avatar.path);
 		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
 		// Construct the name of the new avatar file with its ID and filetype.
 		const newAvatarFile = `${uuidV4()}.${fileType}`;
-		const newAvatarPath = resolve(getState().appPath,conf.System.Path.Avatars, newAvatarFile);
-		const oldAvatarPath = resolve(getState().appPath,conf.System.Path.Avatars, oldImageFile);
+		const newAvatarPath = resolve(resolvedPathAvatars(), newAvatarFile);
+		const oldAvatarPath = resolve(resolvedPathAvatars(), oldImageFile);
 		if (await asyncExists(oldAvatarPath) &&
 			oldImageFile !== 'blank.png') {
-				try {
-					await asyncUnlink(oldAvatarPath);
-				} catch(err) {
-					logger.warn(`[User] Unable to unlink old avatar ${oldAvatarPath} : ${err}`);
-				}
+			try {
+				await asyncUnlink(oldAvatarPath);
+			} catch(err) {
+				logger.warn(`[User] Unable to unlink old avatar ${oldAvatarPath} : ${err}`);
 			}
+		}
 		try {
 			await asyncCopy(avatar.path, newAvatarPath, {overwrite: true});
 		} catch(err) {
@@ -334,6 +339,7 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 	}
 }
 
+/** Get user by its name, with non-public info like password and mail removed (or not) */
 export async function findUserByName(username: string, opt = {
 	public: false
 }): Promise<User> {
@@ -352,15 +358,16 @@ export async function findUserByName(username: string, opt = {
 	return null;
 }
 
+/** Hash passwords with sha256 */
 export function hashPassword(password: string): string {
 	const hash = createHash('sha256');
 	hash.update(password);
 	return hash.digest('hex');
 }
 
+/** Check if password matches or if user type is 2 (guest) and password in database is empty. */
 export async function checkPassword(user: User, password: string): Promise<boolean> {
 	const hashedPassword = hashPassword(password);
-	// Access is granted only if passwords match OR user type is 2 (guest) and its password in database is empty.
 	if (user.password === hashedPassword || (user.type === 2 && !user.password)) {
 		// If password was empty for a guest, we set it to the password given on login (which is its device fingerprint).
 		if (user.type === 2 && !user.password) await DBUpdateUserPassword(user.login, hashedPassword);
@@ -369,8 +376,8 @@ export async function checkPassword(user: User, password: string): Promise<boole
 	return false;
 }
 
+/** checks database for a user's fingerprint  */
 export async function findFingerprint(fingerprint: string): Promise<string> {
-	// This checks database for a fingerprint.
 	// If fingerprint is present we return the login name of that user
 	// If not we find a new guest account to assign to the user.
 	let guest = await DBFindFingerprint(fingerprint);
@@ -383,13 +390,13 @@ export async function findFingerprint(fingerprint: string): Promise<string> {
 	return guest;
 }
 
+/** Update a guest user's fingerprint */
 export async function updateUserFingerprint(username: string, fingerprint: string) {
 	return await DBUpdateUserFingerprint(username, fingerprint);
 }
 
+/** Check if the online token we have is still valid on KM Server */
 export async function remoteCheckAuth(instance: string, token: string) {
-	// Just checking that the online token we have is still valid on
-	// KM Server.
 	try {
 		const res = await got.get(`https://${instance}/api/auth/check`, {
 			headers: {
@@ -403,8 +410,8 @@ export async function remoteCheckAuth(instance: string, token: string) {
 	}
 }
 
+/** Function called when you enter a login/password and login contains an @. We're checking login/password pair against KM Server  */
 export async function remoteLogin(username: string, password: string): Promise<Token> {
-	// Function called when you enter a login/password and login contains an @. We're checking login/password pair against KM Server.
 	const [login, instance] = username.split('@');
 	try {
 		const res = await got(`https://${instance}/api/auth/login`, {
@@ -428,6 +435,7 @@ export async function remoteLogin(username: string, password: string): Promise<T
 	}
 }
 
+/** Get all users from KM Server */
 async function getAllRemoteUsers(instance: string): Promise<User[]> {
 	try {
 		const users = await got(`https://${instance}/api/users`,
@@ -444,6 +452,7 @@ async function getAllRemoteUsers(instance: string): Promise<User[]> {
 	}
 }
 
+/** Create a user on KM Server */
 async function createRemoteUser(user: User) {
 	const [login, instance] = user.login.split('@');
 	const users = await getAllRemoteUsers(instance);
@@ -468,6 +477,7 @@ async function createRemoteUser(user: User) {
 	}
 }
 
+/** Get user data from KM Server */
 export async function getRemoteUser(username: string, token: string): Promise<User> {
 	const [login, instance] = username.split('@');
 	try {
@@ -484,6 +494,7 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 	}
 }
 
+/** Create new user (either local or online. Defaults to online) */
 export async function createUser(user: User, opts: UserOpts = {
 	admin: false,
 	createRemote: true
@@ -519,6 +530,7 @@ export async function createUser(user: User, opts: UserOpts = {
 	}
 }
 
+/** Checks if a user can be created */
 async function newUserIntegrityChecks(user: User) {
 	if (user.type < 2 && !user.password) throw { code: 'USER_EMPTY_PASSWORD'};
 	if (user.type === 2 && user.password) throw { code: 'GUEST_WITH_PASSWORD'};
@@ -530,13 +542,14 @@ async function newUserIntegrityChecks(user: User) {
 	}
 }
 
+/** Remove a user from database */
 export async function deleteUser(username: string) {
 	try {
 		if (username === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
 		const user = await findUserByName(username);
 		if (!user) throw {code: 'USER_NOT_EXISTS'};
 		//Reassign karas and playlists owned by the user to the admin user
-		await DBReassignToUser(username,'admin');
+		await DBReassignToUser(username, 'admin');
 		await DBDeleteUser(username);
 		logger.debug(`[User] Deleted user ${username}`);
 		return true;
@@ -546,6 +559,7 @@ export async function deleteUser(username: string) {
 	}
 }
 
+/** Updates all guest avatars with those present in KM's codebase in the assets folder */
 async function updateGuestAvatar(user: User) {
 	const bundledAvatarFile = `${slugify(user.login, {
 		lower: true,
@@ -559,7 +573,7 @@ async function updateGuestAvatar(user: User) {
 	}
 	let avatarStats: any = {};
 	try {
-		avatarStats = await asyncStat(resolve(getState().appPath, getConfig().System.Path.Avatars, user.avatar_file));
+		avatarStats = await asyncStat(resolve(resolvedPathAvatars(), user.avatar_file));
 	} catch(err) {
 		// It means one avatar has disappeared, we'll put a 0 size on it so the replacement is triggered later
 		avatarStats.size = 0;
@@ -592,12 +606,14 @@ async function updateGuestAvatar(user: User) {
 	}
 }
 
+/** Check all guests to see if we need to replace their avatars with built-in ones */
 async function checkGuestAvatars() {
 	logger.debug('[User] Updating default avatars');
 	const guests = await listGuests();
 	guests.forEach(u => updateGuestAvatar(u));
 }
 
+/** Create default guest accounts */
 async function createDefaultGuests() {
 	const guests = await listGuests();
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
@@ -617,8 +633,8 @@ async function createDefaultGuests() {
 	logger.debug('[User] Default guest accounts created');
 }
 
+/** Initializing user auth module */
 export async function initUserSystem() {
-	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
 	updateExpiredUsers();
 	setInterval(updateExpiredUsers, 60000);
@@ -652,8 +668,8 @@ export async function initUserSystem() {
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 }
 
+/** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
 async function cleanupAvatars() {
-	// This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up.
 	const users = await listUsers();
 	const avatars = [];
 	for (const user of users) {
@@ -666,6 +682,7 @@ async function cleanupAvatars() {
 	return true;
 }
 
+/** Update song quotas for a user */
 export async function updateSongsLeft(username: string, playlist_id?: number) {
 	const conf = getConfig();
 	const user = await findUserByName(username);
@@ -692,6 +709,7 @@ export async function updateSongsLeft(username: string, playlist_id?: number) {
 	});
 }
 
+/** Update all user quotas affected by a PLC getting freed/played */
 export async function updateUserQuotas(kara: PLC) {
 	// If karaokes are present in the public playlist, we're marking them free.
 	// First find which KIDs are to be freed. All those before the currently playing kara
@@ -724,6 +742,7 @@ export async function updateUserQuotas(kara: PLC) {
 	profile('updateUserQuotas');
 }
 
+/** Check login and authenticates users */
 export async function checkLogin(username: string, password: string): Promise<Token> {
 	const conf = getConfig();
 	let user: User = {};
@@ -760,6 +779,7 @@ export async function checkLogin(username: string, password: string): Promise<To
 	};
 }
 
+/** Get role depending on user type */
 function getRole(user: User): Role {
 	if (+user.type === 2) return 'guest';
 	if (+user.type === 0) return 'admin';
@@ -767,9 +787,8 @@ function getRole(user: User): Role {
 	return 'guest';
 }
 
-export async function generateAdminPassword() {
-	// Resets admin's password when appFirstRun is set to true.
-	// Returns the generated password.
+/** Resets admin's password when appFirstRun is set to true. */
+export async function generateAdminPassword(): Promise<string> {
 	const adminPassword = getState().opt.forceAdminPassword || randomstring.generate(8);
 	await editUser('admin',
 		{

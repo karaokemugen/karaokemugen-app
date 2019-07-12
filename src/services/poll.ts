@@ -10,6 +10,7 @@ import {timer} from '../lib/utils/date';
 import {getState, setState} from '../utils/state';
 import {translateKaraInfo} from "./kara";
 import { Token } from '../lib/types/user';
+import { PollResults } from '../types/poll';
 const sleep = promisify(setTimeout);
 
 let poll = [];
@@ -18,6 +19,7 @@ let pollDate: Date;
 let pollEnding = false;
 let clock: any;
 
+/** Create poll timer so it ends after a time */
 export async function timerPoll() {
 	const internalDate = pollDate = new Date();
 	clock = new timer(() => {}, getConfig().Karaoke.Poll.Timeout * 1000);
@@ -25,15 +27,17 @@ export async function timerPoll() {
 	if (internalDate === pollDate) endPoll();
 }
 
+/** Ends poll and emits results through websockets */
 export function endPoll() {
 	if (poll.length > 0) getPollResults().then(winner => {
 		pollEnding = true;
 		logger.debug(`[Poll] Ending poll with ${JSON.stringify(winner)}`);
-		emitWS('songPollResult',winner);
+		emitWS('songPollResult', winner);
 		stopPoll();
 	});
 }
 
+/** Stop polls completely */
 export function stopPoll() {
 	logger.debug('[Poll] Stopping poll');
 	poll = [];
@@ -42,7 +46,8 @@ export function stopPoll() {
 	emitWS('songPollEnded');
 }
 
-export async function getPollResults() {
+/** Get poll results once a poll has ended */
+export async function getPollResults(): Promise<PollResults> {
 	logger.debug('[Poll] Getting poll results');
 	const maxVotes = Math.max.apply(Math, poll.map(choice => choice.votes ));
 	// We check if winner isn't the only one...
@@ -61,6 +66,7 @@ export async function getPollResults() {
 	};
 }
 
+/** Add a vote to a poll option */
 export async function addPollVote(playlistcontent_id: number, token: Token) {
 	if (poll.length === 0 || pollEnding) throw {
 		code: 'POLL_NOT_ACTIVE'
@@ -86,6 +92,7 @@ export async function addPollVote(playlistcontent_id: number, token: Token) {
 	};
 }
 
+/** Start poll system */
 export async function startPoll() {
 	const conf = getConfig();
 	if (poll.length > 0) {
@@ -120,10 +127,12 @@ export async function startPoll() {
 	timerPoll();
 }
 
-function hasUserVoted(username: string) {
+/** Checks if a user has voted or not already */
+function hasUserVoted(username: string): boolean {
 	return voters.includes(username);
 }
 
+/** Get current poll options */
 export async function getPoll(token: Token, lang: string, from: number, size: number) {
 	if (poll.length === 0) throw {
 		code: 'POLL_NOT_ACTIVE'
@@ -141,6 +150,7 @@ export async function getPoll(token: Token, lang: string, from: number, size: nu
 	};
 }
 
+/** Toggle song poll on/off */
 export function setSongPoll(enabled: boolean) {
 	const state = getState();
 	const oldState = state.songPoll;

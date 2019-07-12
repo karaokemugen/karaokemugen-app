@@ -5,6 +5,7 @@ import logger, {profile} from '../lib/utils/logger';
 import { Token } from '../lib/types/user';
 import { KaraParams } from '../lib/types/kara';
 
+/** Add a KID or KID array to the whitelist */
 export async function addKaraToWhitelist(kid: string|string[], reason: string, token: Token, lang: string): Promise<string[]> {
 	let karas = [];
 	Array.isArray(kid)
@@ -30,6 +31,7 @@ export async function addKaraToWhitelist(kid: string|string[], reason: string, t
 	}
 }
 
+/** Get whitelist contents as a regular kara list */
 export async function getWhitelistContents(params: KaraParams) {
 	profile('getWL');
 	const pl = await getWLContents(params);
@@ -38,6 +40,7 @@ export async function getWhitelistContents(params: KaraParams) {
 	return ret;
 }
 
+/** Remove KIDs from the whitelist */
 export async function deleteKaraFromWhitelist(karas: string[]) {
 	try {
 		profile('deleteWLC');
@@ -51,6 +54,7 @@ export async function deleteKaraFromWhitelist(karas: string[]) {
 	}
 }
 
+/** Wipe whitelist clean, so it's whiter than white. */
 export async function emptyWhitelist() {
 	logger.info('[Whitelist] Wiping whitelist');
 	await emptyWL();
