@@ -39,7 +39,7 @@ class SerieEdit extends Component<SerieEditProps, SerieEditState> {
 		axios.post('/api/system/series', serie)
 			.then(() => {
 				this.props.infoMessage('Series successfully created');
-				this.props.push('/system/series');
+				this.props.push('/system/km/series');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -50,7 +50,7 @@ class SerieEdit extends Component<SerieEditProps, SerieEditState> {
 		axios.put(`/api/system/series/${serie.sid}`, serie)
 			.then(() => {
 				this.props.infoMessage('Series successfully edited');
-				this.props.push('/system/series');
+				this.props.push('/system/km/series');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);

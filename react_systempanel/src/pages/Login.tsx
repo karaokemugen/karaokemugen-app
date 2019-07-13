@@ -5,7 +5,7 @@ import { FormComponentProps } from 'antd/lib/form';
 import {login, isAlreadyLogged} from '../actions/auth';
 import styles from '../App.module.css';
 import logo from '../assets/Logo-final-fond-transparent-control-panel.png';
-import { history } from '../store';
+import { push } from 'connected-react-router';
 
 interface LoginForm {
   username: string;
@@ -15,6 +15,7 @@ interface LoginForm {
 interface LoginProps extends FormComponentProps<LoginForm> {
   login: (username, password) => Promise<void>;
   isAlreadyLogged: () => Promise<void>;
+  push: (url: string) => void;
   authError: string;
 }
 
@@ -33,7 +34,7 @@ class Login extends Component<LoginProps, LoginState> {
 
   componentDidMount() {
     this.props.isAlreadyLogged()
-      .then(() => history.push('/system'))
+      .then(() => this.props.push('/system/km'))
       .catch(() => this.setState({shouldRenderLoginForm: true}));
   }
 
@@ -42,7 +43,7 @@ class Login extends Component<LoginProps, LoginState> {
     this.props.form.validateFields((error, values) => {
       if (!error) {
         this.props.login(values.username, values.password)
-          .then(() => history.push('/system'))
+          .then(() => this.props.push('/system/km'))
           .catch(() => {
             message.error(this.props.authError)
           });
@@ -113,8 +114,9 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  login: (username, password) => login(username, password, dispatch),
-  isAlreadyLogged: () => isAlreadyLogged(dispatch)
+  login: (username: string, password: string) => login(username, password, dispatch),
+  isAlreadyLogged: () => isAlreadyLogged(dispatch),
+  push: (url: string) => dispatch(push(url))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(Login));

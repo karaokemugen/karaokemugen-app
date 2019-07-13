@@ -168,7 +168,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/karas/${record.kid}`}><Icon type='edit'/></Link>
+			<Link to={`/system/km/karas/${record.kid}`}><Icon type='edit'/></Link>
 		</span>)
 	}, {
 		title: 'Delete',

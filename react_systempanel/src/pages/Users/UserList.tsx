@@ -107,13 +107,13 @@ class UserList extends Component<UserListProps, UserListState> {
 		title: 'Username',
 		dataIndex: 'login',
 		key: 'login',
-		render: (text, record) => <Link to={`/system/users/${record.user_id}`}>{text}</Link>,
+		render: (text, record) => <Link to={`/system/km/users/${record.user_id}`}>{text}</Link>,
 		sorter: (a, b) => a.login.localeCompare(b.login)
 	}, {
 		title: 'Nickname',
 		dataIndex: 'nickname',
 		key: 'nickname',
-		render: (text, record) => <Link to={`/system/users/${record.user_id}`}>{text}</Link>,
+		render: (text, record) => <Link to={`/system/km/users/${record.user_id}`}>{text}</Link>,
 		sorter: (a, b) => a.nickname.localeCompare(b.nickname)
 	}, {
 		title: 'Last seen on',
@@ -136,7 +136,7 @@ class UserList extends Component<UserListProps, UserListState> {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/users/${record.login}`}><Icon type='edit'/></Link>
+			<Link to={`/system/km/users/${record.login}`}><Icon type='edit'/></Link>
 			<Divider type="vertical"/>
 			<Button type='danger' icon='delete' onClick={
 				() => this.setState({deleteModal: true, user: record})

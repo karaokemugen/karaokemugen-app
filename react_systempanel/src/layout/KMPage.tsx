@@ -28,31 +28,31 @@ class KMPage extends Component<{}, {}> {
       <Layout className={styles.pageLayout}>
         <KMHeader />
         <Switch>
-          <Redirect from='/system' exact to='/system/home'></Redirect>	
-          <Route path='/system/home' component={Home}/>   
+          <Redirect from='/system/km' exact to='/system/km/home'></Redirect>	
+          <Route path='/system/km/home' component={Home}/>   
 
-          <Route path='/system/log' component={Log}/>
+          <Route path='/system/km/log' component={Log}/>
 
-          <Route path='/system/config' component={Config}/>
+          <Route path='/system/km/config' component={Config}/>
 
-          <Route path='/system/karas/download' component={KaraDownload}/>
-          <Route path='/system/karas/blacklist' component={KaraBlacklist}/>
-          <Route path='/system/karas/create' component={KaraEdit}/>
-          <Route path='/system/karas/history' component={KaraHistory}/>
-          <Route path='/system/karas/ranking' component={KaraRanking}/>
-          <Route path='/system/karas/viewcounts' component={KaraViewcounts}/>
-          <Route path='/system/karas/:kid' component={KaraEdit}/>
-          <Route path='/system/karas' component={KaraList}/>
+          <Route path='/system/km/karas/download' component={KaraDownload}/>
+          <Route path='/system/km/karas/blacklist' component={KaraBlacklist}/>
+          <Route path='/system/km/karas/create' component={KaraEdit}/>
+          <Route path='/system/km/karas/history' component={KaraHistory}/>
+          <Route path='/system/km/karas/ranking' component={KaraRanking}/>
+          <Route path='/system/km/karas/viewcounts' component={KaraViewcounts}/>
+          <Route path='/system/km/karas/:kid' component={KaraEdit}/>
+          <Route path='/system/km/karas' component={KaraList}/>
 
-          <Route path='/system/series/new' component={SeriesEdit}/>
-          <Route path='/system/series/:sid' component={SeriesEdit}/>
-          <Route path='/system/series' component={SeriesList}/>
+          <Route path='/system/km/series/new' component={SeriesEdit}/>
+          <Route path='/system/km/series/:sid' component={SeriesEdit}/>
+          <Route path='/system/km/series' component={SeriesList}/>
 
-          <Route path='/system/db' component={Database}/>
+          <Route path='/system/km/db' component={Database}/>
 
-          <Route path='/system/users/create' component={UserEdit}/>
-          <Route path='/system/users/:userLogin' component={UserEdit}/>
-          <Route path='/system/users' component={UserList}/>
+          <Route path='/system/km/users/create' component={UserEdit}/>
+          <Route path='/system/km/users/:userLogin' component={UserEdit}/>
+          <Route path='/system/km/users' component={UserList}/>
         </Switch>
       </Layout>
 		);

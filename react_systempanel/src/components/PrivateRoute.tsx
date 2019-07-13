@@ -12,7 +12,7 @@ class PrivateRoute extends Component<PrivateRouteProps, {}> {
 
   render() {
     const LoggedRoute = <Route {...this.props}></Route>
-    const NotLoggedRoute = <Redirect to='/login'/>
+    const NotLoggedRoute = <Redirect to='/system/login'/>
     const NextRoute = this.props.isAuthenticated ? LoggedRoute : NotLoggedRoute;
     return (
       NextRoute

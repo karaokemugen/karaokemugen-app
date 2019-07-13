@@ -39,7 +39,7 @@ class UserEdit extends Component<UserEditProps, UserEditState> {
 		axios.post('/api/system/users', user)
 			.then(() => {
 				this.props.infoMessage('User successfully created');
-				this.props.push('/system/users');
+				this.props.push('/system/km/users');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -50,7 +50,7 @@ class UserEdit extends Component<UserEditProps, UserEditState> {
 		axios.put(`/api/system/users/${user.id}`, user)
 			.then(() => {
 				this.props.infoMessage('User successfully edited');
-				this.props.push('/system/users');
+				this.props.push('/system/km/users');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);

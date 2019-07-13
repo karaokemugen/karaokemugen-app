@@ -49,7 +49,7 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 		axios.post('/api/system/karas', kara)
 			.then(() => {
 				this.props.infoMessage('Kara successfully created');
-				this.props.push('/system/karas');
+				this.props.push('/system/km/karas');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -60,7 +60,7 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 		axios.put(`/api/system/karas/${kara.kid}`, kara)
 			.then(() => {
 				this.props.infoMessage('Kara successfully edited');
-				this.props.push('/system/karas');
+				this.props.push('/system/km/karas');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
