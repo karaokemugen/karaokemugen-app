@@ -3,23 +3,10 @@ import {connect} from 'react-redux';
 
 import {Layout} from 'antd';
 
-import {checkAuth} from '../actions/auth';
-
 import KMMenu from './KMMenu';
 import Notifications from './Notifications';
 
-interface KMHeaderProps {
-	alreadyConnected: () => void,
-}
-
-interface KMHeaderState {}
-
-class KMHeader extends Component<KMHeaderProps, KMHeaderState> {
-
-	componentWillMount() {
-		this.props.alreadyConnected();
-	}
-
+class KMHeader extends Component<{}, {}> {
 	render() {
 		return (
 			<div>
@@ -32,8 +19,4 @@ class KMHeader extends Component<KMHeaderProps, KMHeaderState> {
 	}
 }
 
-const mapDispatchToProps = (dispatch) => ({
-	alreadyConnected: () => checkAuth()(dispatch)
-});
-
-export default connect(null, mapDispatchToProps)(KMHeader);
+export default connect(null, null)(KMHeader);

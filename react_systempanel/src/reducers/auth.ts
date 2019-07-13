@@ -1,24 +1,50 @@
-import { AUTH_USER, UNAUTH_USER, AUTH_ERROR } from '../actions/auth';
+import { AuthStore, LoginSuccess, LoginFailure, LogoutUser, AuthAction } from '../types/auth';
 
-export default function(state = {}, action) {
+const initialState: AuthStore = {
+  data: {
+    token: '',
+    onlineToken: '',
+    role: '',
+    username: ''
+  },
+  isAuthenticated: false,
+  error: ''
+}
+
+export default function(state = initialState, action: LoginSuccess | LoginFailure | LogoutUser) {
 	switch (action.type) {
-	case AUTH_USER:
+	case AuthAction.LOGIN_SUCCESS:
 		return {
 			...state,
-			error: '',
-			authenticated: true,
-			username: action.username,
-			role: action.role
+      isAuthenticated: true,
+      data: {
+        ...action.payload
+      },
+      error: ''
 		};
-	case UNAUTH_USER:
-		return { ...state, authenticated: false, username: '', role: '' };
-	case AUTH_ERROR:
+	case AuthAction.LOGIN_FAILURE:
 		return {
-			...state,
-			authenticated: false,
-			username: '',
-			role: '',
-			error: action.payload
+      ...state,
+      isAuthenticated: false,
+      data: {
+        token: '',
+        onlineToken: '',
+        role: '',
+        username: ''
+      },
+      error: action.payload.error
+		};
+    case AuthAction.LOGOUT_USER:
+		return {
+      ...state,
+      isAuthenticated: false,
+      data: {
+        token: '',
+        onlineToken: '',
+        role: '',
+        username: ''
+      },
+      error: ''
 		};
 	default:
 		return state;

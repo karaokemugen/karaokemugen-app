@@ -1,96 +1,120 @@
-import React, {Component} from 'react';
-import {Button, Form, Icon, Input} from 'antd';
+import React, {Component, FormEvent, ReactNode} from 'react';
 import {connect} from 'react-redux';
-import {login as loginAction} from '../actions/auth';
+import {Form, Input, Icon, Button, message, Layout} from 'antd';
+import { FormComponentProps } from 'antd/lib/form';
+import {login, isAlreadyLogged} from '../actions/auth';
+import styles from '../App.module.css';
+import logo from '../assets/Logo-final-fond-transparent-control-panel.png';
+import { history } from '../store';
 
-export interface LoginProps {
-	form: any,
-	login: any,
-	error: any,
-	authenticated: boolean,
+interface LoginForm {
+  username: string;
+  password: string;
 }
 
-export interface LoginState {
-	username: string,
-	password: string,
-	error: any,
+interface LoginProps extends FormComponentProps<LoginForm> {
+  login: (username, password) => Promise<void>;
+  isAlreadyLogged: () => Promise<void>;
+  authError: string;
+}
+
+interface LoginState {
+  shouldRenderLoginForm: boolean; // Make sure to display the form only if you don't have already credential (F5 issue)
 }
 
 class Login extends Component<LoginProps, LoginState> {
 
-	constructor(props) {
-		super(props);
-		this.state = {
-			username: '',
-			password: '',
-			error: ''
-		};
-	}
+  constructor(props) {
+    super(props);
+    this.state = {
+      shouldRenderLoginForm: false
+    };
+  }
 
-	handleSubmit = (e) => {
-		e.preventDefault();
-		this.props.form.validateFields((err, values) => {
-			if (!err) {
-				this.props.login(values.username, values.password);
-			}
-		});
-	};
+  componentDidMount() {
+    this.props.isAlreadyLogged()
+      .then(() => history.push('/system'))
+      .catch(() => this.setState({shouldRenderLoginForm: true}));
+  }
+
+  handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    this.props.form.validateFields((error, values) => {
+      if (!error) {
+        this.props.login(values.username, values.password)
+          .then(() => history.push('/system'))
+          .catch(() => {
+            message.error(this.props.authError)
+          });
+      }
+    })
+  }
 
 	render() {
-		const { getFieldDecorator } = this.props.form;
-		return (
-			<div style={{
-				position: 'absolute',
-				top: '50%',
-				left: '50%',
-				margin: '-160px 0 0 -160px',
-				width: '320px',
-				height: '240px',
-				padding: '36px',
-				boxShadow: '0 0 100px rgba(0,0,0,.08)'
-			}}>
-				<p>If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field</p>
-				<Form onSubmit={this.handleSubmit} className='login-form'>
-					<Form.Item hasFeedback>
-						{getFieldDecorator('username', {
-							rules: [{ required: true}],
-						})(<Input
-							prefix={<Icon type='user'/>}
-							onPressEnter={this.handleSubmit}
-							placeholder='Username'
-						/>)}
-					</Form.Item>
-					<Form.Item hasFeedback>
-						{getFieldDecorator('password', {
-							rules: [{required: true}],
-						})(<Input
-							prefix={<Icon type='lock'/>}
-							type='password'
-							onPressEnter={this.handleSubmit}
-							placeholder='Password'
-						/>)}
-					</Form.Item>
-					<Form.Item>
-						<Button type='primary' htmlType='submit' className='login-form-button'>
-							Log In
-						</Button>
-					</Form.Item>
-				</Form>
-			</div>
-		);
-	}
+    const { getFieldDecorator } = this.props.form;
+
+    const loginFormDecorator = (field: string, message: string, reactNode: ReactNode) => getFieldDecorator(field, {
+      rules: [{ required: true, message: message }],
+    })(reactNode);
+
+    const UsernameFormItem = (
+      <Form.Item>
+        {loginFormDecorator('username', 'Please input your username!',
+          <Input
+            prefix={<Icon type='user' className={styles.loginIconColor} />}
+            placeholder='Username'
+          />,
+        )}
+      </Form.Item>
+    );
+
+    const PasswordFormItem = (
+      <Form.Item>
+        {loginFormDecorator('password', 'Please input your password!',
+          <Input
+            prefix={<Icon type='lock' className={styles.loginIconColor} />}
+            type='password'
+            placeholder='Password'
+          />,
+        )}
+      </Form.Item>
+    );
+
+    const SubmitButtonFormItem = (
+      <Form.Item>
+        <Button type='primary' htmlType='submit' className={styles.loginFormButton}>
+          Log in
+        </Button>
+      </Form.Item>
+    );
+
+    const LoginForm = (
+      <Layout className={styles.loginLayout}>
+        <img src={logo} className={styles.loginImage} alt='logo'></img>
+        <div className={styles.loginForm}>
+          <p>If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field</p>
+          <Form onSubmit={this.handleSubmit}>
+            {UsernameFormItem}
+            {PasswordFormItem}
+            {SubmitButtonFormItem}
+          </Form>
+        </div>
+      </Layout>
+    )
+
+    return (
+      this.state.shouldRenderLoginForm && LoginForm
+    );
+  }
 }
 
 const mapStateToProps = (state) => ({
-	error: state.auth.error,
-	authenticated: state.auth.authenticated
+  authError: state.auth.error
 });
 
 const mapDispatchToProps = (dispatch) => ({
-	login: (username, password) => {
-		loginAction(username, password)(dispatch);
-	}
+  login: (username, password) => login(username, password, dispatch),
+  isAlreadyLogged: () => isAlreadyLogged(dispatch)
 });
 
-const cmp: any = Form.create()(Login);
-export default connect(mapStateToProps, mapDispatchToProps)(cmp);
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(Login));

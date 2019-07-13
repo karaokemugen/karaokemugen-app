@@ -1,0 +1,36 @@
+.loginLayout {
+  height: 100%;
+  overflow: auto;
+  padding: 10px;
+}
+
+.loginForm {
+  margin: 0 auto;
+  width: 400px;
+}
+
+.loginImage {
+  flex: none; /* Fix image resize to keep it with the good ratio */
+  margin: 0 auto;
+  width: 100%;
+  min-width: 400px;
+  max-width: 800px;
+  height: auto;
+}
+
+.loginIconColor {
+  color: rgba(0,0,0,.25)
+}
+
+.loginFormButton {
+  width: 100%;
+}
+
+.pageLayout {
+  height: 100%;
+  overflow: auto;
+}
+
+.menuItemInactive {
+  pointer-events:none;
+}

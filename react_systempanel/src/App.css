@@ -1,5 +1,9 @@
 @import '~antd/dist/antd.css';
 
+#root {
+  height: 100%;
+}
+
 .dynamic-delete-button {
   cursor: pointer;
   position: relative;
@@ -14,6 +18,10 @@
 .dynamic-delete-button[disabled] {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.ant-layout-header {
+  padding: 0;
 }
 
 .ant-layout-content .ant-layout-header {
