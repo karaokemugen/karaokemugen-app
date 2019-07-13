@@ -1,15 +1,13 @@
-import React, { Component } from 'react';
-
 import axios from 'axios';
-import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
+import React, { Component } from 'react';
+import { Provider } from 'react-redux';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import {store, history } from './store';
-
 import './App.css';
+import PrivateRoute from './components/PrivateRoute';
 import KMPage from './layout/KMPage';
 import Login from './pages/Login';
-import PrivateRoute from './components/PrivateRoute';
+import { history, store } from './store';
 
 class App extends Component<{}, {}> {
 

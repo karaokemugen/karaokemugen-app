@@ -1,11 +1,11 @@
-import React, {Component, FormEvent, ReactNode} from 'react';
-import {connect} from 'react-redux';
-import {Form, Input, Icon, Button, message, Layout} from 'antd';
+import { Button, Form, Icon, Input, Layout, message } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import {login, isAlreadyLogged} from '../actions/auth';
+import { push } from 'connected-react-router';
+import React, { Component, FormEvent, ReactNode } from 'react';
+import { connect } from 'react-redux';
+import { isAlreadyLogged, login } from '../actions/auth';
 import styles from '../App.module.css';
 import logo from '../assets/Logo-final-fond-transparent-control-panel.png';
-import { push } from 'connected-react-router';
 
 interface LoginForm {
   username: string;

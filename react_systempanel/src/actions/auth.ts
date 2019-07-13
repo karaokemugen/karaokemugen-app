@@ -1,7 +1,7 @@
-import { AuthAction, LoginSuccess, LoginFailure, LogoutUser } from '../types/auth';
+import axios from 'axios';
 import { Dispatch } from 'react';
 import { AuthentifactionApi } from '../api/authentication.api';
-import axios from 'axios';
+import { AuthAction, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
 
 export async function login(username: string, password: string, dispatch: Dispatch<LoginSuccess | LoginFailure>): Promise<void>  {
     try {

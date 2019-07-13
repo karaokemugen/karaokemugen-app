@@ -1,26 +1,25 @@
-import React from 'react';
-import {Component} from 'react';
-import {connect} from 'react-redux';
-import { Route, Redirect, Switch} from 'react-router-dom';
-import KMHeader from './KMHeader';
-import {Layout} from 'antd';
+import { Layout } from 'antd';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import styles from '../App.module.css';
-
-import Home from '../pages/Home';
-import Log from '../pages/Log';
 import Config from '../pages/Config';
-import KaraDownload from '../pages/Karas/KaraDownload';
-import KaraBlacklist from '../pages/Karas/KaraBlacklist';
-import KaraEdit from '../pages/Karas/KaraEdit';
+import Database from '../pages/Database';
+import Home from '../pages/Home';
 import KaraHistory from '../pages/Karas/History';
+import KaraBlacklist from '../pages/Karas/KaraBlacklist';
+import KaraDownload from '../pages/Karas/KaraDownload';
+import KaraEdit from '../pages/Karas/KaraEdit';
+import KaraList from '../pages/Karas/KaraList';
 import KaraRanking from '../pages/Karas/Ranking';
 import KaraViewcounts from '../pages/Karas/Viewcounts';
-import KaraList from '../pages/Karas/KaraList';
+import Log from '../pages/Log';
 import SeriesEdit from '../pages/Series/SeriesEdit';
 import SeriesList from '../pages/Series/SeriesList';
-import Database from '../pages/Database';
 import UserEdit from '../pages/Users/UserEdit';
 import UserList from '../pages/Users/UserList';
+import KMHeader from './KMHeader';
+
 
 class KMPage extends Component<{}, {}> {
 	render() {
