@@ -55,7 +55,7 @@ build:
     - yarn buildReact
     - npm install -g parcel-bundler
     - yarn frontend-prod
-    - npm install --production
+    - yarn install --production
     - cd node_modules
     - find -name *.node -delete
     - modclean -r
