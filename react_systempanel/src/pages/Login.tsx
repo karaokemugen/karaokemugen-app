@@ -5,7 +5,7 @@ import React, { Component, FormEvent, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { isAlreadyLogged, login } from '../actions/auth';
 import styles from '../App.module.css';
-import logo from '../assets/Logo-final-fond-transparent-control-panel.png';
+import logo from '../assets/Logo-fond-transp.png';
 
 interface LoginForm {
   username: string;

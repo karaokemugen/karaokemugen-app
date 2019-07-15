@@ -1,5 +1,11 @@
 @import '~antd/dist/antd.css';
 
+/* Add font used by KaraokeMugen logo */
+@font-face {
+  font-family: "07NikumaruFont";
+  src: url("./assets/07NikumaruFont.woff") format("woff");
+}
+
 #root {
   height: 100%;
 }

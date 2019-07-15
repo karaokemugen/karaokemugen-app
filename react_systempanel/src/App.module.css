@@ -2,17 +2,23 @@
   height: 100%;
   overflow: auto;
   padding: 10px;
+  align-items: center;
+}
+
+.loginAppName {
+  font-family: '07NikumaruFont';
+  font-size: 40px;
+  color: #26aacc;
+  text-shadow: 0px 0px 10px rgba(38,170,204, 0.7);
 }
 
 .loginForm {
-  margin: 0 auto;
   width: 400px;
 }
 
 .loginImage {
   flex: none; /* Fix image resize to keep it with the good ratio */
-  margin: 0 auto;
-  width: 100%;
+  width: 70%;
   min-width: 400px;
   max-width: 800px;
   height: auto;

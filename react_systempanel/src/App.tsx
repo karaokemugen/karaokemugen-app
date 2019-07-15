@@ -26,6 +26,8 @@ class App extends Component<{}, {}> {
 			<Provider store={store}>
 				<ConnectedRouter history={history}>
 					<Switch>
+						{/* The first redirect is needed only for dev, as in production the root is /system, whereas in dev is / */}
+						<Redirect from='/' exact to='/system/login'></Redirect>
 						<Redirect from='/system' exact to='/system/login'></Redirect>
 						<PrivateRoute path='/system/km' component={KMPage} />
 						<Route path='/system/login' component={Login} />
