@@ -9,10 +9,12 @@ import logger from '../lib/utils/logger';
 
 let shutdownInProgress = false;
 
+/** Is postgreSQL is being shutdown? */
 export function isShutdownPG(): boolean {
 	return shutdownInProgress;
 }
 
+/** Kill bundled postgreSQL server */
 export async function killPG() {
 	shutdownInProgress = true;
 	const state = getState();
@@ -26,6 +28,7 @@ export async function killPG() {
 	});
 }
 
+/** Set a particular config value in bundled postgreSQL server config */
 function setConfig(config: string, setting: string, value: any): string {
 	const pgConfArr = config.split('\n');
 	const found = pgConfArr.some(l => {
@@ -41,6 +44,7 @@ function setConfig(config: string, setting: string, value: any): string {
 	return pgConfArr.join('\n');
 }
 
+/** Dump postgreSQL database to file */
 export async function dumpPG() {
 	const conf = getConfig();
 	const state = getState();
@@ -57,6 +61,7 @@ export async function dumpPG() {
 	}
 }
 
+/** Initialize postgreSQL data directory if it doesn't exist */
 export async function initPGData() {
 	const conf = getConfig();
 	const state = getState();
@@ -75,7 +80,7 @@ export async function initPGData() {
 	}
 }
 
-
+/** Update postgreSQL configuration */
 export async function updatePGConf() {
 	// Editing port in postgresql.conf
 	const conf = getConfig();
@@ -94,6 +99,7 @@ export async function updatePGConf() {
 	await asyncWriteFile(pgConfFile, pgConf, 'utf-8');
 }
 
+/** Check if bundled postgreSQL is running or not. It won't launch another one if it's already running, and will instead connect to it. */
 export async function checkPG() {
 	const conf = getConfig();
 	const state = getState();
@@ -114,6 +120,7 @@ export async function checkPG() {
 	}
 }
 
+/** Initialize bundled PostgreSQL server and data if necessary */
 export async function initPG() {
 	const conf = getConfig();
 	const state = getState();

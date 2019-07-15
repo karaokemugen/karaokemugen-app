@@ -77,13 +77,14 @@ on('databaseBusy', (status: boolean) => {
 	databaseBusy = status;
 });
 
+/** Test if basic playlists exist */
 export async function testPlaylists() {
 	await testCurrentPlaylist();
 	await testPublicPlaylist();
 }
 
+/** Getting position of the currently playing karaoke in a playlist */
 function getPlayingPos(playlist: PLC[]): Pos {
-	// Getting position of the currently playing karaoke in a playlist
 	const index = playlist.findIndex(e => e.flag_playing);
 	if (index > -1) return {
 		plc_id_pos: playlist[index].pos,
@@ -92,14 +93,17 @@ function getPlayingPos(playlist: PLC[]): Pos {
 	return undefined;
 }
 
+/** Set PLC's flag_free to enabled */
 export async function freePLC(plc_id: number) {
 	return await setPLCFree(plc_id);
 }
 
+/** Free all PLCs before a certain position in a playlist */
 export async function freePLCBeforePos(pos: number, playlist_id: number) {
 	return await setPLCFreeBeforePos(pos, playlist_id);
 }
 
+/** Checks if user is allowed to add a song (quota) */
 export async function isUserAllowedToAddKara(playlist_id: number, requester: string, duration: number): Promise<boolean> {
 	const conf = getConfig();
 	if (+conf.Karaoke.Quota.Type === 0) return true;
@@ -112,7 +116,7 @@ export async function isUserAllowedToAddKara(playlist_id: number, requester: str
 		try {
 			const count = await getSongCountForUser(playlist_id,user.login);
 			if (count >= limit) {
-				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit})`);
+				logger.debug(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit})`);
 				return false;
 			}
 			return true;
@@ -125,7 +129,7 @@ export async function isUserAllowedToAddKara(playlist_id: number, requester: str
 			let time = await getSongTimeSpentForUser(playlist_id,user.login);
 			if (!time) time = 0;
 			if ((limit - time - duration) < 0) {
-				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`);
+				logger.debug(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`);
 				return false;
 			}
 			return true;
@@ -135,18 +139,21 @@ export async function isUserAllowedToAddKara(playlist_id: number, requester: str
 	}
 }
 
+/** Find out which ID is the Current Playlist */
 export async function findCurrentPlaylist(): Promise<number> {
 	const res = await getCurrentPlaylist();
 	if (res) return res.playlist_id;
 	return undefined;
 }
 
+/** Find out which ID is the Public Playlist */
 export async function findPublicPlaylist(): Promise<number> {
 	const res = await getPublicPlaylist();
 	if (res) return res.playlist_id;
 	return undefined;
 }
 
+/** Set a PLC flag_playing to enabled */
 async function setPlaying(plc_id: number, playlist_id: number) {
 	await unsetPlayingFlag(playlist_id);
 	if (plc_id) await setPlayingFlag(plc_id);
@@ -157,10 +164,12 @@ async function setPlaying(plc_id: number, playlist_id: number) {
 	updatePlaylistDuration(playlist_id);
 }
 
+/** Get PLC IDs by a particular date added */
 async function getPLCIDByDate(playlist_id: number, date_added: Date) {
 	return await getPLCByDate(playlist_id, date_added);
 }
 
+/** Trim playlist after a certain duration */
 export async function trimPlaylist(playlist_id: number, duration: number) {
 	const durationSecs = duration * 60;
 	let durationPL = 0;
@@ -181,6 +190,7 @@ export async function trimPlaylist(playlist_id: number, duration: number) {
 	updatePlaylistLastEditTime(playlist_id);
 }
 
+/** Set playlist as current */
 export async function setCurrentPlaylist(playlist_id: number) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw 'Playlist unknown';
@@ -203,16 +213,19 @@ export async function setCurrentPlaylist(playlist_id: number) {
 	}
 }
 
+/** Set playlist as visible to regular users */
 export async function setVisiblePlaylist(playlist_id: number) {
 	await setVisiblePL(playlist_id);
 	updatePlaylistLastEditTime(playlist_id);
 }
 
+/** Set playlist as invisible to regular users */
 export async function unsetVisiblePlaylist(playlist_id: number) {
 	await unsetVisiblePL(playlist_id);
 	updatePlaylistLastEditTime(playlist_id);
 }
 
+/** Set playlist as public */
 export async function setPublicPlaylist(playlist_id: number) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw 'Playlist unknown';
@@ -235,6 +248,7 @@ export async function setPublicPlaylist(playlist_id: number) {
 	}
 }
 
+/** Remove playlist entirely */
 export async function deletePlaylist(playlist_id: number) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw {message: `Playlist ${playlist_id} unknown`};
@@ -254,7 +268,8 @@ export async function deletePlaylist(playlist_id: number) {
 	}
 }
 
-export async function emptyPlaylist(playlist_id: number) {
+/** Empty playlist completely */
+export async function emptyPlaylist(playlist_id: number): Promise<number> {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw 'Playlist unknown';
 	try {
@@ -277,6 +292,7 @@ export async function emptyPlaylist(playlist_id: number) {
 	}
 }
 
+/** Edit playlist properties */
 export async function editPlaylist(playlist_id: number, playlist: Playlist) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
@@ -296,6 +312,7 @@ export async function editPlaylist(playlist_id: number, playlist: Playlist) {
 	}
 }
 
+/** Create new playlist */
 export async function createPlaylist(name: string, opts: PlaylistOpts,username: string) {
 	if (+opts.current && +opts.public) throw 'A playlist cannot be current and public at the same time!';
 	if (+opts.public) await unsetPublicAllPlaylists();
@@ -311,6 +328,7 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 	});
 }
 
+/** Get playlist properties */
 export async function getPlaylistInfo(playlist_id: number, token?: Token) {
 	const pl = await getPLInfo(playlist_id);
 	if (token) {
@@ -320,6 +338,7 @@ export async function getPlaylistInfo(playlist_id: number, token?: Token) {
 	return pl;
 }
 
+/** Get all playlists properties */
 export async function getPlaylists(token: Token) {
 	profile('getPlaylists');
 	let seenFromUser = true;
@@ -329,18 +348,22 @@ export async function getPlaylists(token: Token) {
 	return ret;
 }
 
+/** Remove public property from all playlists */
 async function unsetPublicAllPlaylists() {
 	return await unsetPublicPlaylist();
 }
 
+/** Remove current property from all playlists */
 async function unsetCurrentAllPlaylists() {
 	return await unsetCurrentPlaylist();
 }
 
+/** Get playlist contents in a smaller format to speed up fetching data for internal use */
 export async function getPlaylistContentsMini(playlist_id: number) {
 	return await getPLContentsMini(playlist_id);
 }
 
+/** Get playlist contents */
 export async function getPlaylistContents(playlist_id: number, token: Token, filter: string, lang: string, from = 0, size = 99999999999, random = 0) {
 	const plInfo = await getPlaylistInfo(playlist_id, token);
 	try {
@@ -368,6 +391,7 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 	}
 }
 
+/** Get song information from a particular PLC */
 export async function getKaraFromPlaylist(plc_id: number, lang: string, token: Token) {
 	profile('getPLCInfo');
 	const kara = await getPLCInfo(plc_id, token.role === 'user', token.username);
@@ -385,14 +409,17 @@ export async function getKaraFromPlaylist(plc_id: number, lang: string, token: T
 	return output;
 }
 
+/** Get PLC by KID and Username */
 async function getPLCByKIDUser(kid: string, username: string, playlist_id: number) {
 	return await getPLCByKIDAndUser(kid, username, playlist_id);
 }
 
+/** Return all songs not present in specified playlist */
 export function isAllKarasInPlaylist(karas: PLC[], karasToRemove: PLC[]) {
 	return karas.filter(k => !karasToRemove.map(ktr => ktr.unique_id).includes(k.unique_id));
 }
 
+/** Add song to playlist */
 export async function addKaraToPlaylist(kids: string|string[], requester: string, playlist_id?: number, pos?: number) {
 	let addByAdmin = true;
 	const conf = getConfig();
@@ -412,7 +439,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		if (!pl) throw {code: 1, msg: `Playlist ${playlist_id} unknown`};
 		const karasUnknown = await isAllKaras(karas);
 		if (karasUnknown.length > 0) throw {code: 3, msg: 'One of the karaokes does not exist'};
-		logger.info(`[Playlist] Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`);
+		logger.debug(`[Playlist] Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`);
 
 		if (!addByAdmin) {
 			// Check user quota first
@@ -429,6 +456,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 				throw 'Song is blacklisted';
 			}
 		}
+		// Everything's daijokay, user is allowed to add a song.
+		// User should exist, but we need its profile anyway.
 		const user: User = await findUserByName(requester);
 		if (!user) throw {code: 2, msg: 'User does not exist'};
 		const date_add = new Date();
@@ -442,8 +471,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			};
 		});
 
-		const [userMaxPosition, numUsersInPlaylist, playlistMaxPos] =
-			await Promise.all([
+		const [userMaxPosition, numUsersInPlaylist, playlistMaxPos] = await Promise.all([
 				getMaxPosInPlaylistForUser(playlist_id, user.login),
 				countPlaylistUsers(playlist_id),
 				getMaxPosInPlaylist(playlist_id),
@@ -452,11 +480,11 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		// Making a unique ID depending on if we're in public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not
 		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it won't count
-		// If no song is currently playing, plContentsBeforePlay returns all songs in playlist.
 		const playingObject = getPlayingPos(plContents);
 		const playingPos = playingObject
 			? playingObject.plc_id_pos
 			: 0;
+		// If no song is currently playing, plContentsBeforePlay returns all songs in playlist. These are all songs not played yet.
 		const plContentsBeforePlay = plContents.filter((plc: PLC) => plc.pos >= playingPos);
 		if (conf.Playlist.AllowDuplicates) {
 			if (!pl.flag_public) {
@@ -473,7 +501,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		let removeDuplicates = false;
 		if (addByAdmin) {
 			if (conf.Playlist.AllowDuplicates) {
-				// Adding duplicates is not allowed on public & favorites playlists
+				// Adding duplicates is not allowed on public playlists
 				if (pl.flag_public) removeDuplicates = true;
 				// Don't remove duplicates if it's another playlist type. Admin can add a song multiple times in the current or any other playlist, even by the same user
 			} else {
@@ -511,12 +539,12 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			code: 4,
 			msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`
 		};
-		// Song requests by admins are ignored.
+		// Song requests by admins are ignored and not added to requests stats
 		if (!addByAdmin) addKaraToRequests(user.login, karaList.map(k => k.kid));
 		// If pos is provided, we need to update all karas above that and add
 		// karas.length to the position
 		// If pos is not provided, we need to get the maximum position in the PL
-		// And use that +1 to set our playlist position.
+		// And use that +1 to set our song's playlist position.
 		// If pos is -1, we must add it after the currently flag_playing karaoke.
 		// Position management here :
 		if (conf.Karaoke.SmartInsert && user.type !== 0) {
@@ -586,14 +614,17 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 	}
 }
 
+/** Get PLC information from database */
 export async function getPLCInfo(plc_id: number, forUser: boolean, username: string) {
 	return await getPLCInfoDB(plc_id, forUser, username);
 }
 
+/** Get a small amount of data from a PLC */
 export async function getPLCInfoMini(plc_id: number) {
 	return await getPLCInfoMiniDB(plc_id);
 }
 
+/** Copy song from one playlist to another */
 export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, pos?: number) {
 	const [plcData, pl] = await Promise.all([
 		getPLCInfoMini(plc_id[0]),
@@ -655,16 +686,18 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 	}
 }
 
+/** Remove song from a playlist */
 export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number, token?: Token) {
 	// If playlist_id is null, set it to current/public PL ID
+	// It's called from the public interface if null.
 	profile('deleteKara');
 	if (!playlist_id) playlist_id = getState().modePlaylistID;
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
-	//If we get a single song, it's a user deleting it (most probably)
+	// If we get a single song, it's a user deleting it (most probably)
 	const plcData = await getPLCInfoMini(plcs[0]);
 	if (!plcData) throw 'At least one playlist content is unknown'	;
-	logger.info(`[Playlist] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);
+	logger.debug(`[Playlist] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);
 	try {
 		//If token is present, a user is trying to remove a karaoke
 		if (token && token.role !== 'admin' && plcData.username !== token.username) throw 'You cannot delete a song you did not add';
@@ -692,6 +725,7 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 
 }
 
+/** Edit PLC's properties in a playlist */
 export async function editPLC(plc_id: number, params: PLCEditParams, token: Token) {
 	profile('editPLC');
 	if (params.flag_playing === false) throw 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one';
@@ -720,10 +754,12 @@ export async function editPLC(plc_id: number, params: PLCEditParams, token: Toke
 	};
 }
 
+/** Reorders playlist with positions */
 export async function reorderPlaylist(playlist_id: number) {
 	return await reorderPL(playlist_id);
 }
 
+/** Export playlist as JSON */
 export async function exportPlaylist(playlist_id: number) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
@@ -786,6 +822,7 @@ export const PLCImportConstraints = {
 	username: {presence: {allowEmpty: false}}
 }
 
+/** Import playlist from JSON */
 export async function importPlaylist(playlist: any, username: string, playlist_id?: number) {
 	// Check if format is valid :
 	// Header must contain :
@@ -859,6 +896,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	}
 }
 
+/** Shuffle (smartly or not) a playlist */
 export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: boolean) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
@@ -905,6 +943,7 @@ export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: bool
 	}
 }
 
+/** Smart shuffle */
 function smartShuffle(playlist: DBPLC[]) {
 	let userShuffleBoolean = false; // boolean to add a shuffle condition if the number of user is high enough
 	playlist = shuffle(playlist);
@@ -979,6 +1018,7 @@ function smartShuffle(playlist: DBPLC[]) {
 	return playlist;
 }
 
+/** Move to previous song */
 export async function previousSong() {
 	const playlist_id = getState().currentPlaylistID;
 	const playlist = await getPlaylistContentsMini(playlist_id);
@@ -996,6 +1036,7 @@ export async function previousSong() {
 	await setPlaying(kara.playlistcontent_id, playlist_id);
 }
 
+/** Move to next song */
 export async function nextSong() {
 	const conf = getConfig();
 	const playlist = await getCurrentPlaylistContents();
@@ -1016,6 +1057,7 @@ export async function nextSong() {
 	}
 }
 
+/** Get current playlist contents */
 async function getCurrentPlaylistContents() {
 	// Returns current playlist contents and where we're at.
 	const playlist_id = getState().currentPlaylistID;
@@ -1037,6 +1079,7 @@ async function getCurrentPlaylistContents() {
 	};
 }
 
+/** Get currently playing song's data */
 export async function getCurrentSong(): Promise<CurrentSong> {
 	try {
 		const conf = getConfig();
@@ -1092,6 +1135,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 	}
 }
 
+/** Build initial dummy playlist */
 export async function buildDummyPlaylist() {
 	const stats = await getStats();
 	const state = getState();
@@ -1116,8 +1160,8 @@ export async function buildDummyPlaylist() {
 	}
 }
 
+/** Flag songs as free if they are older than X minutes */
 async function updateFreeOrphanedSongs() {
-	// Flag songs as free if they are older than X minutes
 	try {
 		if (!databaseBusy) await updateFreeOrphanedSongsDB(now(true) - (getConfig().Karaoke.Quota.FreeAutoTime * 60));
 	} catch(err) {
@@ -1125,10 +1169,12 @@ async function updateFreeOrphanedSongs() {
 	}
 }
 
+/** Initialize playlist tasks */
 export async function initPlaylistSystem() {
 	setInterval(updateFreeOrphanedSongs, 60 * 1000);
 }
 
+/** Create current playlist if it doesn't exist */
 export async function testCurrentPlaylist() {
 	const currentPL_id = await findCurrentPlaylist();
 	if (currentPL_id) {
@@ -1144,6 +1190,7 @@ export async function testCurrentPlaylist() {
 	}
 }
 
+/** Create public playlist if it doesn't exist */
 export async function testPublicPlaylist() {
 	const publicPL_id = await findPublicPlaylist();
 	if (publicPL_id) {

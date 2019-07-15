@@ -6,11 +6,13 @@ import logger from 'winston';
 import {getState} from '../utils/state';
 import { User } from '../lib/types/user';
 
+/** (Up|Down)vote a song. */
 export async function vote(plc_id: number, username: string, downvote: boolean) {
 	if (downvote) return await deleteUpvote(plc_id,username);
 	return await addUpvote(plc_id,username);
 }
 
+/** Upvotes a song */
 export async function addUpvote(plc_id: number, username: string) {
 	try {
 		const plc = await getPLCInfoMini(plc_id);
@@ -35,6 +37,7 @@ export async function addUpvote(plc_id: number, username: string) {
 	}
 }
 
+/** Downvote a song */
 export async function deleteUpvote(plc_id: number, username: string) {
 	try {
 		const plc = await getPLCInfoMini(plc_id);
@@ -57,6 +60,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 	}
 }
 
+/** Free song if it's sufficiently upvotes */
 async function tryToFreeKara(plc_id :number, upvotes: number, username: string, playlist_id: number) {
 	const allUsersList: User[] = await listUsers();
 	const onlineUsers = allUsersList.filter((user: User) => user.flag_online);

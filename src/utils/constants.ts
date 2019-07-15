@@ -1,3 +1,4 @@
+/** Default guest names used to fill up the database */
 export const defaultGuestNames = [
 	'Jean-Michel Normal',
 	'Sakura du 93',
@@ -145,6 +146,7 @@ export const defaultGuestNames = [
 	'Raphtalia > Holo'
 ];
 
+/** Initialization catchphrases. We need more of them. And we also need a better way to use them. */
 export const initializationCatchphrases = [
 	'"Karaoke Mugen is combat-ready!" --Nanami-chan',
 	'"Karaoke Mugen, ikôzo!" --Nanami-chan',

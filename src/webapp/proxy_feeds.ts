@@ -20,6 +20,7 @@ const feeds = [
 	}
 ];
 
+/** Get Karaoke Mugen main news feeds */
 export async function getFeeds() {
 	try {
 		await internet();
@@ -33,10 +34,12 @@ export async function getFeeds() {
 	return await Promise.all(feedPromises);
 }
 
+/** Fetch and process a RSS feed */
 async function fetchFeed(url: string, name: string): Promise<Feed> {
 	try {
 		const response = await got(url);
 		const feed = JSON.parse(xml2json(response.body, {compact: true}));
+		// For Mastodon, we filter out UnJourUnKaraoke toots because we don't want to be spammed.
 		if (name === 'mastodon') {
 			feed.rss.channel.item = feed.rss.channel.item.filter((item: any) => !item.description._text.includes('UnJourUnKaraoke'));
 		} else {
@@ -49,7 +52,7 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 			body: JSON.stringify(feed)
 		};
 	} catch(err) {
-		logger.error(`[Feeds] Unable to fetch feed ${name}. Is this instance connected to Internet?`);
+		logger.error(`[Feeds] Unable to fetch feed ${name} : ${err}`);
 		return {
 			name: name,
 			body: null

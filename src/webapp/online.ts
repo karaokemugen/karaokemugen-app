@@ -4,6 +4,7 @@ import got from 'got';
 import logger from '../lib/utils/logger';
 import { getState } from '../utils/state';
 
+/** Send IP to KM Server's URL shortener */
 export async function publishURL() {
 	configureHost();
 	const conf = getConfig();
@@ -24,6 +25,7 @@ export async function publishURL() {
 	}
 }
 
+/** Initialize online shortener system */
 export async function initOnlineURLSystem() {
 	// This is the only thing it does for now. Will be extended later.
 	logger.debug('[ShortURL] Publishing...');

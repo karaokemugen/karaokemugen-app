@@ -22,6 +22,7 @@ import { emit } from '../lib/utils/pubsub';
 import { BinariesConfig } from '../types/binChecker';
 import { exit } from '../services/engine';
 
+/** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editSetting(part: object) {
 	const config = getConfig();
 	const oldConfig = cloneDeep(config);
@@ -32,6 +33,7 @@ export async function editSetting(part: object) {
 	return config;
 }
 
+/** Merge and act according to config changes */
 export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Determine if mpv needs to be restarted
 	if (!isEqual(oldConfig.Player, newConfig.Player)) {
@@ -77,6 +79,7 @@ export async function initConfig(argv: any) {
 	return getConfig();
 }
 
+/** Detect and set hostname and local IP */
 export function configureHost() {
 	const config = getConfig();
 	let URLPort = `:${config.Frontend.Port}`;
@@ -93,9 +96,8 @@ export function configureHost() {
 	}
 }
 
-
+/** Create a backup of our config file. Just in case. */
 export async function backupConfig() {
-	// Create a backup of our config file. Just in case.
 	logger.debug('[Config] Making a backup of config.yml');
 	return await asyncCopy(
 		resolve(getState().appPath, 'config.yml'),
@@ -104,6 +106,7 @@ export async function backupConfig() {
 	);
 }
 
+/** Return public configuration (without sensitive data) */
 export function getPublicConfig() {
 	const publicSettings = cloneDeep(getConfig());
 	delete publicSettings.App.InstanceID;
@@ -113,9 +116,7 @@ export function getPublicConfig() {
 	return publicSettings;
 }
 
-// Check if binaries are available
-// Provide their paths for runtime
-
+/** Check if binaries are available. Provide their paths for runtime */
 async function checkBinaries(config: Config): Promise<BinariesConfig> {
 
 	const binariesPath = configuredBinariesForSystem(config);
@@ -134,6 +135,7 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	return binariesPath;
 }
 
+/** Return all configured paths for binaries */
 function configuredBinariesForSystem(config: Config): BinariesConfig {
 	switch (process.platform) {
 	case 'win32':
@@ -163,6 +165,7 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 	}
 }
 
+/** Error out on missing binaries */
 function binMissing(binariesPath: any, err: string) {
 	logger.error('[BinCheck] One or more binaries could not be found! (' + err + ')');
 	logger.error('[BinCheck] Paths searched : ');
@@ -173,8 +176,8 @@ function binMissing(binariesPath: any, err: string) {
 	console.log('\n');
 	console.log('One or more binaries needed by Karaoke Mugen could not be found.');
 	console.log('Check the paths above and make sure these are available.');
-	console.log('Edit your config.yml and set System.Binaries.ffmpeg and System.Binaries.Player variables correctly for your OS.');
+	console.log('Edit your config.yml and set System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres variables correctly for your OS.');
 	console.log('You can download mpv for your OS from http://mpv.io/');
-	console.log('You can download postgres for your OS from http://postgresql.org/');
+	console.log('You can download postgreSQL for your OS from http://postgresql.org/');
 	console.log('You can download ffmpeg for your OS from http://ffmpeg.org');
 }

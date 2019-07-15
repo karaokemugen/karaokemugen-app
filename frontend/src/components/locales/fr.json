@@ -266,7 +266,6 @@
 	"ENGINEENABLESMARTINSERT": "Activer l'insertion intelligente pour éviter les monopoles",
 	"ENGINEAUTOPLAY": "Lecture automatique sur 1er ajout",
 	"ENGINEJINGLESINTERVAL": "Intervalle entre jingles (karas)",
-	"ENGINEDISPLAYCONNECTIONINFOQRCODE": "Afficher QR code",
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Nom d'hôte (pour l'URL à afficher)",
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message à afficher avant l'URL",
 	"ENGINEDISPLAYCONNECTIONINFO": "Afficher les informations de connexion",

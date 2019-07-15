@@ -8,7 +8,7 @@ import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../lib/utils/files';
 import { refreshKaras } from '../lib/dao/kara';
 import {Series} from '../lib/types/series';
-import { KaraParams } from '../lib/types/kara';
+import { KaraParams, KaraList } from '../lib/types/kara';
 import { removeSeriesInStore, editSeriesInStore, addSeriesToStore, sortSeriesStore, getStoreChecksum } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import {asyncUnlink, resolveFileInDirs, } from '../lib/utils/files';
@@ -16,7 +16,7 @@ import {getConfig, resolvedPathSeries} from '../lib/utils/config';
 import {getDataFromSeriesFile} from '../lib/dao/seriesfile';
 import { getAllKaras } from './kara';
 
-
+/** Get all series */
 export async function getSeries(params: KaraParams) {
 	profile('getSeries');
 	const series = await selectAllSeries(params);
@@ -25,7 +25,8 @@ export async function getSeries(params: KaraParams) {
 	return ret;
 }
 
-export async function getOrAddSerieID(serieObj: Series) {
+/** Get SID from database for a particular series name, or add it if it doesn't exist. */
+export async function getOrAddSerieID(serieObj: Series): Promise<string> {
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) return serie.sid;
 	//Series does not exist, create it.
@@ -33,7 +34,7 @@ export async function getOrAddSerieID(serieObj: Series) {
 }
 
 
-export function formatSeriesList(seriesList: any[], from: number, count: number) {
+export function formatSeriesList(seriesList: any[], from: number, count: number): KaraList {
 	return {
 		infos: {
 			count: count,
@@ -44,12 +45,14 @@ export function formatSeriesList(seriesList: any[], from: number, count: number)
 	};
 }
 
-export async function getSerie(sid: string) {
+/** Get a single series */
+export async function getSerie(sid: string): Promise<Series> {
 	const serie = await selectSerie(sid);
 	if (!serie) throw 'Series ID unknown';
 	return serie;
 }
 
+/** Remove series from database and files */
 export async function deleteSerie(sid: string) {
 	const serie = await testSerie(sid);
 	if (!serie) throw 'Series ID unknown';
@@ -65,6 +68,7 @@ export async function deleteSerie(sid: string) {
 	refreshKaraSeries().then(() => refreshKaras());
 }
 
+/** Add a new series */
 export async function addSerie(serieObj: Series, opts = {refresh: true}): Promise<string> {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const serie = await selectSerieByName(serieObj.name);
@@ -94,6 +98,7 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 	return serieObj.sid;
 }
 
+/** Edit series */
 export async function editSerie(sid: string, serieObj: Series, opts = { refresh: true }) {
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const oldSerie = await testSerie(sid);
@@ -114,14 +119,16 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 	}
 }
 
+/** Refreshes materialized views for series in an async manner to avoid long pause times */
 export async function refreshSeriesAfterDBChange() {
 	await refreshSeries();
 	refreshKaraSeries().then(() => refreshKaras());
 }
 
+/** Integrate downloaded series file into database */
 export async function integrateSeriesFile(file: string): Promise<string> {
-	const seriesFileData = await getDataFromSeriesFile(file);
 	try {
+		const seriesFileData = await getDataFromSeriesFile(file);
 		const seriesDBData = await testSerie(seriesFileData.sid);
 		if (seriesDBData) {
 			await editSerie(seriesFileData.sid, seriesFileData, { refresh: false });

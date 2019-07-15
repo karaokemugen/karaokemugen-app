@@ -42,6 +42,7 @@ let state: State = {
 };
 let previousState = {...state};
 
+/** Get public state (to send to webapp users) */
 export function getPublicState(): PublicState {
 	return {
 		playing: state.player.playing,
@@ -60,14 +61,17 @@ export function getPublicState(): PublicState {
 	};
 }
 
+/** Emit via websockets the public state */
 export function emitState() {
 	if (state.player.ready) emitWS('playerStatus', getPublicState());
 };
 
+/** Get current app state object */
 export function getState() {
 	return {...state};
 }
 
+/** Set one or more settings in app state */
 export function setState(part: object) {
 	state = merge(state, part);
 	manageMode();
@@ -77,6 +81,7 @@ export function setState(part: object) {
 	return getState();
 }
 
+/** Change and display which karaoke mode we're on */
 function manageMode() {
 	state.private
 		? state.modePlaylistID = state.currentPlaylistID

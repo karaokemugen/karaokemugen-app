@@ -4,9 +4,7 @@ import {resolvedPathBackgrounds, getConfig} from '../lib/utils/config';
 import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../lib/utils/files';
 import sample from 'lodash.sample';
-import sizeOf from 'image-size';
 import {getSingleJingle, buildJinglesList} from './jingles';
-import {buildQRCode} from './qrcode';
 import {exit} from '../services/engine';
 import {playerEnding} from '../services/player';
 import {getID3} from './id3tag';
@@ -19,6 +17,7 @@ import semver from 'semver';
 import { imageFileTypes } from '../lib/utils/constants';
 import {PlayerState, MediaData, mpvStatus} from '../types/player';
 import retry from 'p-retry';
+import { initializationCatchphrases } from '../utils/constants';
 
 const sleep = promisify(setTimeout);
 
@@ -90,25 +89,11 @@ export async function loadBackground() {
 	}
 	backgroundImageFile = sample(backgroundFiles);
 	logger.debug(`[Player] Background ${backgroundImageFile}`);
-	let videofilter = '';
-	if (conf.Karaoke.Display.ConnectionInfo.QRCode &&
-		conf.Karaoke.Display.ConnectionInfo.Enabled ) {
-		//Positionning QR Code according to video size
-		const dimensions = sizeOf(backgroundImageFile);
-		let QRCodeWidth, QRCodeHeight;
-		QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.10);
-
-		const posX = Math.floor(dimensions.width*0.015);
-		const posY = Math.floor(dimensions.height*0.015);
-		const qrCode = resolve(getState().appPath,conf.System.Path.Temp,'qrcode.png').replace(/\\/g,'/');
-		videofilter = `lavfi-complex=movie=\\'${qrCode}\\'[logo];[logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1]overlay=${posX}:${posY}[vo]`;
-	}
 	try {
-		logger.debug(`[Player] Background videofilter : ${videofilter}`);
 		const loads = [
-			player.load(backgroundImageFile, 'replace', [videofilter])
+			player.load(backgroundImageFile, 'replace')
 		];
-		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile, 'replace', [videofilter]));
+		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile, 'replace'));
 		await Promise.all(loads);
 		displayInfo();
 	} catch(err) {
@@ -121,8 +106,6 @@ export async function initPlayerSystem() {
 	playerState.fullscreen = state.fullscreen;
 	playerState.stayontop = state.ontop;
 	buildJinglesList();
-	await buildQRCode(state.osURL);
-	logger.debug('[Player] QRCode generated');
 	await startmpv();
 	emitPlayerState();
 	logger.debug('[Player] Player is READY');
@@ -538,7 +521,9 @@ export function displayInfo(duration: number = 10000000) {
 	let text = '';
 	if (ci.Enabled) text = `${ci.Message} ${i18n.__('GO_TO')} ${getState().osURL} !`;
 	const version = `Karaoke Mugen ${getState().version.number} (${getState().version.name}) - http://karaokes.moe`;
-	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
+	console.log(text);
+	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+sample(initializationCatchphrases);
+	console.log(message);
 	const command = {
 		command: [
 			'expand-properties',
