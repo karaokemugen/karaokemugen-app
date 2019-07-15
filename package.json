@@ -66,14 +66,13 @@
   "pkg": {
     "scripts": [
       "node_modules/db-migrate/lib/commands/**",
-      "node_modules/image-size/lib/types/*.js",
       "dist/**/*.js"
     ],
     "assets": [
       "migrations/**",
       "dist/locales/*",
       "assets/**",
-      "frontend/**",
+      "frontend/build/**",
       "react_systempanel/build/**"
     ]
   },
