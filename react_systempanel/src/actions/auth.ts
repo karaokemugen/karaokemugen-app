@@ -1,60 +1,73 @@
 import axios from 'axios';
-import {stringify} from 'qs';
-import {goBack} from 'react-router-redux';
+import { Dispatch } from 'react';
+import { AuthentifactionApi } from '../api/authentication.api';
+import { AuthAction, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
 
-export const AUTH_USER = 'auth_user';
-export const UNAUTH_USER = 'unauth_user';
-export const AUTH_ERROR = 'auth_error';
+export async function login(username: string, password: string, dispatch: Dispatch<LoginSuccess | LoginFailure>): Promise<void>  {
+    try {
+      const info = await AuthentifactionApi.login(username, password)
 
-export function login(username, password) {
-	return function(dispatch) {
-		axios.post('/api/auth/login',
-			stringify({username: username, password: password}),
-			{
-				headers: { 'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8' }
-			}
-		)
-			.then(response => {
-				localStorage.setItem('kmToken', response.data.token);
-				localStorage.setItem('kmOnlineToken', response.data.onlineToken);
-				localStorage.setItem('username', response.data.username);
-				axios.defaults.headers.common['authorization'] = response.data.token;
-				axios.defaults.headers.common['onlineAuthorization'] = response.data.onlineToken;
-				dispatch({
-					type: AUTH_USER,
-					username: response.data.username,
-					role: response.data.role
-				});
-				dispatch(goBack()); // Retour à la page précédente.
-			})
-			.catch(err => dispatch(authError('Bad login info: ' + err)));
-	};
+      // Store data, should be managed in a service and item should be enum and not string
+      localStorage.setItem('kmToken', info.token);
+      localStorage.setItem('kmOnlineToken', info.onlineToken);
+      localStorage.setItem('username', info.username);
+      axios.defaults.headers.common['authorization'] = info.token;
+      axios.defaults.headers.common['onlineAuthorization'] = info.onlineToken;
+
+      dispatch({
+        type: AuthAction.LOGIN_SUCCESS,
+        payload: info
+      });
+    } catch (error) {
+      dispatch({
+        type: AuthAction.LOGIN_FAILURE,
+        payload: {
+          error: 'Bad login info: ' + error
+        }
+      });
+
+      throw error;
+    }
 }
 
-export function checkAuth() {
-	return function(dispatch) {
-		axios.get('/api/auth/checkauth')
-			.then(response => {
-				localStorage.setItem('username', response.data.username);
-				dispatch({
-					type: AUTH_USER,
-					username: response.data.username,
-					role: response.data.role
-				});
-			})
-			.catch(err => dispatch({ type: UNAUTH_USER }));
-	};
+export function logout(dispatch: Dispatch<LogoutUser>): void{
+  localStorage.removeItem('kmToken');
+  localStorage.removeItem('kmOnlineToken');
+  localStorage.removeItem('username');
+  delete axios.defaults.headers.common['authorization'];
+  delete axios.defaults.headers.common['onlineAuthorization'];
+
+  dispatch({
+    type: AuthAction.LOGOUT_USER
+  });
 }
 
-export function authError(error) {
-	return {
-		type: AUTH_ERROR,
-		payload: error
-	};
-}
+export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFailure>) {
+  const kmToken = localStorage.getItem('kmToken');
+  const kmOnlineToken = localStorage.getItem('kmOnlineToken');
 
-export function logout() {
-	localStorage.removeItem('kmToken');
-	delete axios.defaults.headers.common['authorization'];
-	return { type: UNAUTH_USER };
+  axios.defaults.headers.common['authorization'] = kmToken;
+  axios.defaults.headers.common['onlineAuthorization'] = kmOnlineToken;
+
+  try {
+    const verification = await AuthentifactionApi.isAuthenticated();
+    dispatch({
+      type: AuthAction.LOGIN_SUCCESS,
+      payload: {
+        username: verification.username,
+        role: verification.role,
+        token: kmToken,
+        onlineToken: kmOnlineToken
+      }
+    })
+  } catch (error) {
+    dispatch({
+      type: AuthAction.LOGIN_FAILURE,
+      payload: {
+        error: ''
+      }
+    });
+
+    throw error;
+  }
 }
