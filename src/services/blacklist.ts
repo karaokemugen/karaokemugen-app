@@ -1,6 +1,5 @@
 import {emptyBlacklistCriterias as emptyBLC,
 	isBLCriteria as isBLC,
-	editBlacklistCriteria as editBLC,
 	deleteBlacklistCriteria as deleteBLC,
 	generateBlacklist as generateBL,
 	addBlacklistCriteria as addBLC,
@@ -53,26 +52,6 @@ export async function emptyBlacklistCriterias() {
 	logger.info('[Blacklist] Wiping criterias');
 	await emptyBLC();
 	return await generateBlacklist();
-}
-
-export async function editBlacklistCriteria(blc: BLC) {
-	if (!await isBLCriteria(blc.id)) throw `BLC ID ${blc.id} unknown`;
-	profile('editBLC');
-	logger.info(`[Blacklist] Editing criteria ${blc.id} : ${blc.type} = ${blc.value}`);
-	if (blc.type < 0 && blc.type > 1004) throw `Blacklist criteria type error : ${blc.type} is incorrect`;
-	if (blc.type > 0 && blc.type < 1000) {
-		[blc] = await BLCgetTagName([blc]);
-	} else {
-		// Remember to define uniquevalue
-		blc.uniquevalue = null;
-	}
-	if (blc.type === 1001) {
-		if (!new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`;
-	}
-	if (((blc.type > 1001 && blc.type <= 1003) || (blc.type > 0 && blc.type < 999)) && (isNaN(blc.value))) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
-	await editBLC(blc);
-	await generateBlacklist();
-	profile('editBLC');
 }
 
 export async function BLCgetTagName(blcList: BLC[]): Promise<BLC[]> {

@@ -8636,3 +8636,37 @@
  *   "message": null
  * }
  */
+
+ /**
+	 * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
+	 * @apiName PutBlacklistCriterias
+	 * @apiVersion 2.1.0
+	 * @apiGroup Blacklist
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {Number} blc_id Blacklist criteria's ID to delete
+	 * @apiParam {Number} blcriteria_type New blacklist criteria's type
+	 * @apiParam {String} blcriteria_value New blacklist criteria's value
+	 * @apiSuccess {String} code Message to display
+	 * @apiSuccess {String} args arguments for the message
+	 * @apiSuccess {String} data Data returned from API
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "args": "6",
+	 *   "code": "BLC_UPDATED",
+	 *   "data": {
+	 *       "blcriteria_type": "8",
+	 *       "blcriteria_value": "750"
+	 *   }
+	 * }
+	 * @apiError BLC_UPDATE_ERROR Unable to update Blacklist criteria
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * {
+	 *   "code": "BLC_UPDATE_ERROR",
+	 *   "message": "BLCID 12309 unknown"
+	 * }
+	 */

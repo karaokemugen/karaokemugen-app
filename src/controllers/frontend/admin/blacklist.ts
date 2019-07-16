@@ -2,7 +2,7 @@ import { getLang } from "../../middlewares/lang";
 import { requireAuth, requireValidUser, updateUserLoginTime, requireAdmin } from "../../middlewares/auth";
 import { emitWS } from "../../../lib/utils/ws";
 import { OKMessage, errMessage } from "../../common";
-import { getBlacklistCriterias, deleteBlacklistCriteria, editBlacklistCriteria, emptyBlacklistCriterias, getBlacklist, addBlacklistCriteria } from "../../../services/blacklist";
+import { getBlacklistCriterias, deleteBlacklistCriteria, emptyBlacklistCriterias, getBlacklist, addBlacklistCriteria } from "../../../services/blacklist";
 import { Router } from "express";
 import { check } from "../../../lib/utils/validators";
 
@@ -234,65 +234,6 @@ export default function adminBlacklistController(router: Router) {
 				} catch(err) {
 					res.status(500).json(errMessage('BLC_DELETE_ERROR',err));
 				}
-			})
-		/**
-	 * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
-	 * @apiName PutBlacklistCriterias
-	 * @apiVersion 2.1.0
-	 * @apiGroup Blacklist
-	 * @apiPermission admin
-	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {Number} blc_id Blacklist criteria's ID to delete
-	 * @apiParam {Number} blcriteria_type New blacklist criteria's type
-	 * @apiParam {String} blcriteria_value New blacklist criteria's value
-	 * @apiSuccess {String} code Message to display
-	 * @apiSuccess {String} args arguments for the message
-	 * @apiSuccess {String} data Data returned from API
-	 *
-	 * @apiSuccessExample Success-Response:
-	 * HTTP/1.1 200 OK
-	 * {
-	 *   "args": "6",
-	 *   "code": "BLC_UPDATED",
-	 *   "data": {
-	 *       "blcriteria_type": "8",
-	 *       "blcriteria_value": "750"
-	 *   }
-	 * }
-	 * @apiError BLC_UPDATE_ERROR Unable to update Blacklist criteria
-	 *
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
-	 * {
-	 *   "code": "BLC_UPDATE_ERROR",
-	 *   "message": "BLCID 12309 unknown"
-	 * }
-	 */
-			.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-				//Update BLC
-				const validationErrors = check(req.body, {
-					blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
-					blcriteria_value: {presence: {allowEmpty: false}}
-				});
-				if (!validationErrors) {
-					try {
-						await editBlacklistCriteria({
-							id: +req.params.blc_id,
-							type: +req.body.blcriteria_type,
-							value: req.body.blcriteria_value
-						});
-
-						emitWS('blacklistUpdated');
-						res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
-					} catch(err) {
-						res.status(500).json(errMessage('BLC_UPDATE_ERROR',err));
-					}
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.status(400).json(validationErrors);
-				}
-
 			});
 
 }

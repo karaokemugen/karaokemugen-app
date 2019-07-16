@@ -108,14 +108,6 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const editBlacklistCriteria = `
-UPDATE blacklist_criteria
-SET type = :type,
-	value = :value,
-	uniquevalue = :uniquevalue
-WHERE pk_id_blcriteria = :id
-`;
-
 export const isBLCriteria = `
 SELECT pk_id_blcriteria
 FROM blacklist_criteria
