@@ -20,7 +20,7 @@ Many things have changed, both in database schemas, code base, frontend, and eve
   - Tags (languages, songwriters, singers, creators, etc.) are now files in the Karaoke Base, which means they're not tied to the application's version anymore. Anyone can add its own tags if need be.
   - New tag types : Misc (formerly "Tags"), Genres, Origins, Platforms and Families
   - New tags have been added to the Karaoke Base as a result : Fanworks for dojin songs/videos
-  - WARNING : As a result, blacklists criterias relying on tags won't bevalid anymore and are going to be removed from your blacklist criterias.
+  - WARNING : As a result, blacklists criterias relying on tags won't be valid anymore and are going to be removed from your blacklist criterias.
 - Mystery karaoke toggle (#441)
   - You can flag a song as visible or invisible. Invisible songs will be marked as ??? to the public, which means they won't know in advance what that song is in the playlist. Good for surprises and troll songs.
 - Classic Karaoke Mode (#432)
