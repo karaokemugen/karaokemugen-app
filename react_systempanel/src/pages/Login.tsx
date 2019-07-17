@@ -91,7 +91,9 @@ class Login extends Component<LoginProps, LoginState> {
 
     const LoginForm = (
       <Layout className={styles.loginLayout}>
-        <img src={logo} className={styles.loginImage} alt='logo'></img>
+        <div className={styles.loginImageContainer}>
+          <img src={logo} className={styles.loginImage} alt='logo'></img>
+        </div>
         <div className={styles.loginForm}>
           <p>If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field</p>
           <Form onSubmit={this.handleSubmit}>

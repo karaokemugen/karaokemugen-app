@@ -16,12 +16,13 @@
   width: 400px;
 }
 
-.loginImage {
-  flex: none; /* Fix image resize to keep it with the good ratio */
-  width: 70%;
+.loginImageContainer {
   min-width: 400px;
-  max-width: 800px;
-  height: auto;
+  max-width: 750px;
+}
+
+.loginImage {
+  width: 100%;
 }
 
 .loginIconColor {
