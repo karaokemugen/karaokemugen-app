@@ -124,7 +124,7 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/tags/${record.tid}`}><Icon type='edit'/></Link>
+			<Link to={`/system/km/tags/${record.tid}`}><Icon type='edit'/></Link>
 			<Divider type="vertical"/>
 			<Button type='danger' icon='delete' onClick={
 				() => this.setState({deleteModal: true, tag: record})

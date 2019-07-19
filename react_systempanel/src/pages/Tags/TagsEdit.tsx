@@ -39,7 +39,7 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 		axios.post('/api/system/tags', tag)
 			.then(() => {
 				this.props.infoMessage('Tags successfully created');
-				this.props.push('/system/tags');
+				this.props.push('/system/km/tags');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -50,7 +50,7 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 		axios.put(`/api/system/tags/${tag.tid}`, tag)
 			.then(() => {
 				this.props.infoMessage('Tags successfully edited');
-				this.props.push('/system/tags');
+				this.props.push('/system/km/tags');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
