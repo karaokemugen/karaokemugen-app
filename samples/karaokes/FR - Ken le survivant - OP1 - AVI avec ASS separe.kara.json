@@ -15,7 +15,8 @@
         {
           "filename": "Ken le survivant.ass",
           "default": true,
-          "version": "Default"
+          "version": "Default",
+          "subchecksum": "8e67c3b24b67ccad21b3b7e17e003fd4"
         }
       ]
     }
@@ -23,15 +24,13 @@
   "data": {
     "created_at": "Wed Aug 22 2018 12:20:04 GMT+0200 (GMT+02:00)",
     "kid": "a07a32f7-63eb-46a6-8158-09bf4b06f1c7",
-    "modified_at": "Wed Aug 22 2018 12:20:56 GMT+0200 (GMT+02:00)",
+    "modified_at": "Fri Jul 19 2019 11:20:44 GMT+0200 (GMT+02:00)",
     "repository": "kara.moe",
-    "title": "AVI + sous-titres",
     "sids": [
       "11399289-cd2c-4c7e-b90c-4d72a0db1419"
     ],
     "songorder": 1,
     "tags": {
-      "authors": [],
       "creators": [
         "f694bf43-b427-4244-9744-9d3f84fd8a31"
       ],
@@ -58,6 +57,7 @@
         "1424031c-2f68-4b37-9a5a-dfd8ba299f2f"
       ]
     },
+    "title": "AVI + sous-titres",
     "year": 1984
   }
 }
