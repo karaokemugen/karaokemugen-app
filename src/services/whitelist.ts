@@ -12,7 +12,7 @@ export async function addKaraToWhitelist(kid: string|string[], reason: string, t
 		? karas = kid
 		: karas = kid.split(',');
 	const kara = await getKara(karas[0], token, lang);
-	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara[0].title}...`);
+	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
 	try {
 		profile('addKaraToWL');
 		const karasUnknown = await isAllKaras(karas);
@@ -21,7 +21,6 @@ export async function addKaraToWhitelist(kid: string|string[], reason: string, t
 		generateBlacklist();
 		return karas;
 	} catch(err) {
-		console.log(err);
 		throw {
 			message: err,
 			data: karas
