@@ -295,7 +295,7 @@ describe('Karas information', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.length, 1);
+				strictEqual(response.body.data.kid, 'f4c8b1a5-f59a-4142-ae46-b43037a9d75b');
 			});
 	});
 
