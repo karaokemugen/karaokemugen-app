@@ -26,37 +26,39 @@ const validKara: KaraFileV4 = {
 		}
 	],
 	"data": {
-		"authors": [],
 		"created_at": "Wed Aug 22 2018 12:20:04 GMT+0200 (GMT+02:00)",
-		"creators": [
-		"Toei Animation"
-		],
-		"groups": [
-		"Génération Club Dorothée",
-		"Mainstream"
-		],
+		"tags": {
+			"authors": [],
+			"creators": [
+				"Toei Animation"
+				],
+			"groups": [
+				"Génération Club Dorothée",
+				"Mainstream"
+				],
+			"langs": [
+				"fre"
+			],
+			"singers": [
+				"Bernard Denimal"
+			],
+			"songtypes": ["OP"],
+			"songwriters": [
+				"Gérard Salesses"
+			],
+			"misc": [
+				"TAG_ANIME",
+				"TAG_TVSHOW"
+			],
+		},
 		"kid": "c28c8739-da02-49b4-889e-b15d1e9b2139",
-		"langs": [
-		"fre"
-		],
 		"modified_at": "Wed Aug 22 2018 12:20:55 GMT+0200 (GMT+02:00)",
 		"repository": "kara.moe",
 		"title": "MP4 avec sous-titres à part",
 		"sids": [
 		"11399289-cd2c-4c7e-b90c-4d72a0db1419"
 		],
-		"singers": [
-		"Bernard Denimal"
-		],
 		"songorder": 1,
-		"songtype": "OP",
-		"songwriters": [
-		"Gérard Salesses"
-		],
-		"tags": [
-		"TAG_ANIME",
-		"TAG_TVSHOW"
-		],
 		"year": 1984
 	}
 	}
