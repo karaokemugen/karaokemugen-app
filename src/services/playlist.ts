@@ -520,9 +520,9 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			});
 			for (const i in karaList) {
 				const karaInfo = await getKara(karaList[i].kid, {username: 'admin', role: 'admin'});
-				karaInfo[0].serie
-					? karaList[i].uniqueSerieSinger = karaInfo[0].serie
-					: karaList[i].uniqueSerieSinger = karaInfo[0].singers[0].name
+				karaInfo.serie
+					? karaList[i].uniqueSerieSinger = karaInfo.serie
+					: karaList[i].uniqueSerieSinger = karaInfo.singers[0].name
 			}
 			karaList = karaList.filter(k => {
 				return !seriesSingersInPlaylist.includes(k.uniqueSerieSinger);
