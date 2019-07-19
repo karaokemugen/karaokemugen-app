@@ -8,6 +8,7 @@ import { parseKara } from "../lib/dao/karafile";
 import { getDataFromSeriesFile } from "../lib/dao/seriesfile";
 import { Tag } from "../lib/types/tag";
 import { getDataFromTagFile } from "../lib/dao/tagfile";
+import parallel from 'async-await-parallel';
 
 let dataStore = {
 	karas: [],
@@ -101,6 +102,13 @@ export function removeSeriesInStore(sid: string) {
 	getStoreChecksum();
 }
 
+async function processDataFile(file: string, silent?: boolean, bar?: any) {
+	if (file.endsWith('kara.json')) addKaraToStore(await parseKara(file));
+	if (file.endsWith('series.json')) addSeriesToStore(await getDataFromSeriesFile(file));
+	if (file.endsWith('tag.json')) addTagToStore(await getDataFromTagFile(file));
+	if (!silent) bar.incr();
+}
+
 export async function baseChecksum(silent?: boolean) {
 	profile('baseChecksum');
 	 let bar: any;
@@ -109,36 +117,18 @@ export async function baseChecksum(silent?: boolean) {
 		extractAllSeriesFiles(),
 		extractAllTagFiles()
 	]);
+	const fileCount = karaFiles.length + seriesFiles.length + tagFiles.length
 	if (karaFiles.length === 0) return null;
 	logger.info(`[Store] Found ${karaFiles.length} kara files, ${seriesFiles.length} series files and ${tagFiles.length} tag files`)
 	if (!silent) bar = new Bar({
-		message: 'Checking karas...    '
-	}, karaFiles.length);
-	for (const karaFile of karaFiles) {
-		const data = await parseKara(karaFile);
-		addKaraToStore(data);
-		if (!silent) bar.incr();
-	}
+		message: 'Checking files...    '
+	}, fileCount);
+	const files = [].concat(karaFiles, seriesFiles, tagFiles);
+	const promises = [];
+	files.forEach(f => promises.push(() => processDataFile(f, silent, bar)));
+	await parallel(promises, 32);
 	sortKaraStore();
-	if (!silent) bar.stop();
-	if (!silent) bar = new Bar({
-		message: 'Checking series...   '
-	}, seriesFiles.length);
-	for (const seriesFile of seriesFiles) {
-		const data = await getDataFromSeriesFile(seriesFile);
-		addSeriesToStore(data);
-		if (!silent) bar.incr();
-	}
 	sortSeriesStore();
-	if (!silent) bar.stop();
-	if (!silent) bar = new Bar({
-		message: 'Checking tags...     '
-	}, tagFiles.length);
-	for (const tagFile of tagFiles) {
-		const data = await getDataFromTagFile(tagFile);
-		addTagToStore(data);
-		if (!silent) bar.incr();
-	}
 	sortTagsStore();
 	if (!silent) bar.stop();
 	profile('baseChecksum');
