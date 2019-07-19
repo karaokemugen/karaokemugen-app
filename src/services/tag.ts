@@ -74,7 +74,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 	const oldTag = await getTag(tid);
 	if (!oldTag) throw 'Tag ID unknown';
 	if (oldTag.name !== tagObj.name) await removeTagFile(oldTag.name, tid);
-	tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 7)}.tag.json`;
+	tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
 	const tagfile = tagObj.tagfile;
 	await Promise.all([
 		updateTag(tagObj),
