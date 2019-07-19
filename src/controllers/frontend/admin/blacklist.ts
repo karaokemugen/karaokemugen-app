@@ -43,7 +43,7 @@ export default function adminBlacklistController(router: Router) {
 		/**
 	 * @api {get} /admin/blacklist Get blacklist
 	 * @apiName GetBlacklist
-	 * @apiVersion 2.3.1
+	 * @apiVersion 3.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -61,11 +61,18 @@ export default function adminBlacklistController(router: Router) {
 	 *   "data": {
 	 *       "content": [
 	 *           {
-	 * 				<see public/karas/[id]>,
+	 * 				<see public/karas/[id] without i18n tag>,
 	 * 				"blacklisted_at": "2019-01-01T21:21:00.000Z",
 	 * 				"reason": "Your waifu is shit"
 	 *           }
 	 *       ],
+	 * 		 "i18n": {
+ 	 * 			 "<tag UUID>": {
+ 	 * 				"eng": "English version",
+ 	 * 				"fre": "Version française"
+ 	 * 			 }
+ 	 * 			 ...
+ 	 * 		 },
 	 *       "infos": {
 	 *           "count": 1,
 	 *           "from": 0,
@@ -98,13 +105,13 @@ export default function adminBlacklistController(router: Router) {
 		/**
 	 * @api {get} /admin/blacklist/criterias Get list of blacklist criterias
 	 * @apiName GetBlacklistCriterias
-	 * @apiVersion 2.1.0
+	 * @apiVersion 3.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
 	 * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
-	 * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
+	 * @apiSuccess {Number} data/value Value associated to blacklist criteria (what is being blacklisted). For tags or karas it's going to be a UUID for example.
 	 * @apiSuccess {String} data/value_i18n Translated value to display on screen.
 	 *
 	 * @apiSuccessExample Success-Response:
@@ -114,7 +121,7 @@ export default function adminBlacklistController(router: Router) {
 	 *       {
 	 *           "blcriteria_id": 2,
 	 *           "type": 6,
-	 *           "value": "241",
+	 *           "value": "500030d3-8600-4728-b367-79ff029ea7c9",
 	 *           "value_i18n": "Jean-Jacques Debout"
 	 *       }
 	 *   ]

@@ -222,7 +222,7 @@ class WelcomePage extends Component {
                   </li>
                 </ul>
               </div>
-              <div className="col-md-12 wow block zoomIn perfectScrollbar">
+              <div className="col-md-12 wow block zoomIn">
                 <ul className="news">
                   {this.state.news.map(e => {
                     return <NewsArticle key={Math.random()} new={e}/>;

@@ -121,6 +121,7 @@ export interface Config {
 			Previews?: string,
 			Import?: string,
 			Avatars?: string,
+			Tags?: string[],
 			MediasHTTP?: string
 		}
 	},

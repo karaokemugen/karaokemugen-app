@@ -37,7 +37,7 @@ class PlayerOptions extends Component {
         ? this.state.displays.map((display, index) => (
           <option key={index} value={index} >
             {" "}
-            ({display.resolutionx}x{display.resolutiony}) {display.model}
+            {index+1} - ({display.resolutionx}x{display.resolutiony}) {display.model}
           </option>
         ))
         : null;

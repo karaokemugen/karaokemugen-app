@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "XBOX 360"
+    },
+    "name": "XBOX 360",
+    "tid": "d56f8d9d-9ccd-4ac8-a164-da0e62d1c060",
+    "types": [
+      "platforms"
+    ],
+    "short": "360"
+  }
+}

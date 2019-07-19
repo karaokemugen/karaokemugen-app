@@ -17,6 +17,7 @@
 
 <body scope="admin">
     <div id="root"></div>
+    <div id="adminHeader"></div>
 	{{{ body }}}
     <a id="downloadAnchorElem"></a>
 </body>
@@ -34,10 +35,7 @@
     <script src="/ressources/vendors/js/bootstrap-switch.min.js"></script>
     <script src="/ressources/vendors/js/jquery-ui.min.js"></script>
     <script src="/ressources/vendors/js/jquery.ui.touch-punch.min.js"></script>
-    <script src="/ressources/vendors/js/hammer.min.js"></script>
-    <script src="/ressources/vendors/js/hammer-time.min.js"></script>
     <script src="/ressources/vendors/js/velocity.min.js"></script>
-    <script src="/ressources/vendors/js/perfect-scrollbar.jquery.min.js"></script> 
     <script src="/ressources/vendors/js/i18n.js"></script>
     <script src="/ressources/vendors/js/intro.js"></script>
     <script src="/ressources/vendors/js/sprintf.min.js"></script>
@@ -45,4 +43,5 @@
     <script src="/ressources/js/karaokemugen.js"></script>
     <script src="/ressources/js/tools.js"></script>
     <script src="/ressources/js/admin.js"></script>
+    <script>window.adminHeader();</script>
 </html>

@@ -53,9 +53,9 @@ export default function publicPollController(router: Router) {
  *   "message": null
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
-				const pollResult = await getPoll(req.authToken,req.lang,+req.query.from || 0, +req.query.size || 9999999);
+				const pollResult = await getPoll(req.authToken, +req.query.from || 0, +req.query.size || 9999999);
 				res.json(OKMessage(pollResult));
 			} catch(err) {
 				res.status(500).json(errMessage(err.code));
@@ -64,7 +64,7 @@ export default function publicPollController(router: Router) {
 	/**
  * @api {post} /public/songpoll Vote in a poll
  * @apiName PostPoll
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Song Poll
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -83,9 +83,16 @@ export default function publicPollController(router: Router) {
  *           "from": 0,
  *           "to": 999999
  *       },
+ * 		 "i18n": {
+ * 			 "<tag UUID>": {
+ * 				"eng": "English version",
+ * 				"fre": "Version française"
+ * 			 }
+ * 			 ...
+ * 		 },
  *       "poll": [
  *           {
- * 				<See admin/playlists/[id]/karas/[plc_id] object>
+ * 				<See admin/playlists/[id]/karas/[plc_id] object without i18n in tags>
  *               "votes": 1,
  *           },
  *           ...

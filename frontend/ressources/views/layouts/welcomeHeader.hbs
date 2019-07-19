@@ -21,5 +21,29 @@
     <a id="downloadAnchorElem"></a>
     <div class="toastMessageContainer"></div>
 </body>
+<script>
+
+	var query = {{{ query }}};
+	var scope = 'welcome';
+	var appFirstRun = {{ appFirstRun }} == true;
+	var webappMode = 2;
+	welcomeScreen = true;
+</script>
+<script src="/ressources/vendors/js/jquery-3.2.1.min.js"></script>
+<script src="/ressources/vendors/js/select2.min.js"></script>
+<script src="/ressources/vendors/js/bootstrap.min.js"></script>
+<script src="/ressources/vendors/js/i18n.js"></script>
+<script src="/ressources/vendors/js/assignIE.js"></script>
+<script src="/ressources/vendors/js/bootstrap-switch.min.js"></script>
+<script src="/ressources/vendors/js/jquery-ui.min.js"></script>
+<script src="/ressources/vendors/js/jquery.ui.touch-punch.min.js"></script>
+<script src="/ressources/vendors/js/velocity.min.js"></script>
+<script src="/ressources/vendors/js/intro.js"></script>
+<script src="/ressources/vendors/js/sprintf.min.js"></script>
+<script src="/build/app.js"></script>
+<script src="/ressources/js/karaokemugen.js"></script>
+<script src="/ressources/js/admin.js"></script>
+<script src="/ressources/js/tools.js"></script>
+<script>window.welcomePage();</script>
 
 </html>

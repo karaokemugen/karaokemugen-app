@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Audio Only"
+    },
+    "name": "Audio Only",
+    "tid": "805c8340-d6a3-4e91-af9a-e7866f2a6654",
+    "types": [
+      "misc"
+    ],
+    "short": "MP3"
+  }
+}

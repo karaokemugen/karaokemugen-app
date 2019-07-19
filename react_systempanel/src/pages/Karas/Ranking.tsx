@@ -5,6 +5,7 @@ import {Button, Layout, Table} from 'antd';
 
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
+import {getNameTagInLocaleList} from "../../utils/kara";
 
 interface RankingProps extends ReduxMappedProps {
 }
@@ -61,19 +62,19 @@ class Ranking extends Component<RankingProps, RankingState> {
 		render: requested => requested,
 	}, {
 		title: 'Language',
-		dataIndex: 'languages',
-		key: 'languages',
-		render: languages => (languages[0].name.toUpperCase())
+		dataIndex: 'langs',
+		key: 'langs',
+		render: langs => getNameTagInLocaleList(langs).join(', ')
 	}, {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
 		key: 'serie',
-		render: (serie, record) => (serie || record.singer)
+		render: (serie, record) => serie || getNameTagInLocaleList(record.singers).join(', ')
 	}, {
 		title: 'Type',
-		dataIndex: 'songtype',
-		key: 'songtype',
-		render: (songtypes, record) => (songtypes[0].name.replace('TYPE_','') + ' ' + (record.songorder || ''))
+		dataIndex: 'songtypes',
+		key: 'songtypes',
+		render: (songtypes, record) => getNameTagInLocaleList(songtypes)[0] + ' ' + (record.songorder || '')
 	}, {
 		title: 'Title',
 		dataIndex: 'title',

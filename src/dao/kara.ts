@@ -34,7 +34,7 @@ export async function updateKara(kara: Kara) {
 		songorder: kara.order || null,
 		duration: kara.mediaduration,
 		gain: kara.mediagain,
-		modified_at: kara.datemodif,
+		modified_at: kara.modified_at,
 		kid: kara.kid
 	}));
 }
@@ -49,8 +49,8 @@ export async function addKara(kara: Kara) {
 		songorder: kara.order || null,
 		duration: kara.mediaduration,
 		gain: kara.mediagain,
-		modified_at: kara.datemodif,
-		created_at: kara.dateadded,
+		modified_at: kara.modified_at,
+		created_at: kara.created_at,
 		kid: kara.kid,
 		//Default for now.
 		repo: 'kara.moe'

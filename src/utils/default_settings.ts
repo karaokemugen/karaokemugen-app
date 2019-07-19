@@ -136,6 +136,7 @@ export const defaults: Config = {
 			MediasHTTP: '',
 			Previews: 'app/previews',
 			Series: ['app/data/series'],
+			Tags: ['app/data/tags'],
 			Temp: 'app/temp',
 			DB: 'app/db'
 		}

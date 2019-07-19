@@ -44,7 +44,7 @@ export default function adminWhitelistController(router: Router) {
 	/**
  * @api {get} /admin/whitelist Get whitelist
  * @apiName GetWhitelist
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -63,11 +63,18 @@ export default function adminWhitelistController(router: Router) {
  *   "data": {
  *       "content": [
  *           {
- * 				<see Kara object>,
+ * 				<see Kara object without i18n in tags>,
  * 				 "reason": "No reason",
  * 				 "whitelisted_at": "2019-01-01T01:01:01.000Z"
  *           }
  *       ],
+ * 		 "i18n": {
+ * 			 "<tag UUID>": {
+ * 				"eng": "English version",
+ * 				"fre": "Version française"
+ * 			 }
+ * 			 ...
+ * 		 },
  *       "infos": {
  *           "count": 1,
  *           "from": 0,

@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Wii U"
+    },
+    "name": "Wii U",
+    "tid": "293e4786-9ac8-4c83-84f2-2e6cd14b5e8d",
+    "types": [
+      "platforms"
+    ],
+    "short": "WIU"
+  }
+}

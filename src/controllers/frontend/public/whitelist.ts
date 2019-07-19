@@ -12,7 +12,7 @@ export default function publicWhitelistController(router: Router) {
 	/**
  * @api {get} /public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Whitelist
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -34,6 +34,13 @@ export default function publicWhitelistController(router: Router) {
  * 				 <See admin/whitelist object>
  *           }
  *       ],
+ * 		 "i18n": {
+ * 			 "<tag UUID>": {
+ * 				"eng": "English version",
+ * 				"fre": "Version française"
+ * 			 }
+ * 			 ...
+ * 		 },
  *       "infos": {
  *           "count": 1,
  *           "from": 0,

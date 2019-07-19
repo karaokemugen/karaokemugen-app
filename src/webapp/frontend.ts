@@ -9,7 +9,7 @@ import i18n from 'i18n';
 import {getConfig, resolvedPathPreviews, resolvedPathAvatars} from '../lib/utils/config';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
-import {configurePassport} from './passport_manager';
+import {configurePassport} from '../lib/utils/passport_manager';
 import {createServer} from 'http';
 import { initWS } from '../lib/utils/ws';
 

@@ -6,9 +6,9 @@ export const emptyBlacklistCriterias = 'DELETE FROM blacklist_criteria;';
 export const generateBlacklist = `
 TRUNCATE blacklist;
 INSERT INTO blacklist (fk_kid, created_at, reason)
-	SELECT kt.fk_kid, now() ,'Blacklisted Tag : ' || t.name || ' (type ' || t.tagtype || ')'
+	SELECT kt.fk_kid, now() ,'Blacklisted Tag : ' || t.name || ' (type ' || blc.type || ')'
 	FROM blacklist_criteria AS blc
-	INNER JOIN tag t ON blc.type = t.tagtype AND CAST(blc.value AS INTEGER) = t.pk_id_tag
+	INNER JOIN tag t ON blc.type @> ARRAY[t.types] AND CAST(blc.value AS INTEGER) = t.pk_id_tag
 	INNER JOIN kara_tag kt ON t.pk_id_tag = kt.fk_id_tag
 	WHERE blc.type BETWEEN 1 and 999
 		AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
@@ -64,10 +64,9 @@ FROM blacklist_criteria;
 export const addBlacklistCriteria = `
 INSERT INTO blacklist_criteria(
 	value,
-	type,
-	uniquevalue
+	type
 )
-VALUES ($1,$2,$3);
+VALUES ($1,$2);
 `;
 
 export const deleteBlacklistCriteria = `
@@ -86,14 +85,18 @@ SELECT
 	  ak.serie) AS serie,
   ak.serie AS serie_orig,
   ak.serie_altname AS serie_altname,
-  ak.singers AS singers,
-  ak.songtypes AS songtype,
-  ak.creators AS creators,
-  ak.songwriters AS songwriters,
+  COALESCE(ak.singers, '[]'::jsonb) AS singers,
+  COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
+  COALESCE(ak.creators, '[]'::jsonb) AS creators,
+  COALESCE(ak.songwriters, '[]'::jsonb) AS songwriters,
   ak.year AS year,
-  ak.languages AS languages,
-  ak.authors AS authors,
-  ak.misc_tags AS misc_tags,
+  COALESCE(ak.languages, '[]'::jsonb) AS langs,
+  COALESCE(ak.authors, '[]'::jsonb) AS authors,
+  COALESCE(ak.misc, '[]'::jsonb) AS misc,
+  COALESCE(ak.origins, '[]'::jsonb) AS origins,
+  COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
+  COALESCE(ak.families, '[]'::jsonb) AS families,
+  COALESCE(ak.genres, '[]'::jsonb) AS genres,
   ak.duration AS duration,
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,

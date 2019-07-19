@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Idol"
+    },
+    "name": "Idol",
+    "tid": "caa86df2-0d59-474b-885c-f240a9e891b0",
+    "types": [
+      "genres"
+    ],
+    "short": "IDL"
+  }
+}

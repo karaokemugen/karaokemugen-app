@@ -1,0 +1,16 @@
+{
+  "name": "createtags",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "iso-countries-languages": "^0.3.0",
+    "langs": "^2.0.0",
+    "uuid": "^3.3.2"
+  }
+}

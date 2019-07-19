@@ -40,6 +40,12 @@ body[scope="admin"] {
 	}
 	.header > .btn-group.switchs {
 		height: calc(100% - 0px);
+		width: 10em;
+		display: flex;
+		flex-direction: column;
+		> * {
+			flex:1;
+		}
 	}
 	.header, .header .btn, #manageButton li, .header input[type=range]  {
 		max-height: 7.4vw;
@@ -162,6 +168,13 @@ body[scope="admin"] {
 	}
 	#mutestatus[name="unmute"] > i.unmute {
 		display: none;
+	}
+
+	.btn-left {
+		height: 2em;
+		background-color: #f4f4f4;
+		color: #1E2124;
+		border-color: #9e9e9e;
 	}
 
 	.btn-stop {
@@ -386,7 +399,7 @@ body[scope="admin"] {
 	}
 
 
-	.panel[side="2"] .advanced .actionDivContainer {
+	#panel2 .advanced .actionDivContainer {
 		__order: -1;
 	}
 	.plSearch {

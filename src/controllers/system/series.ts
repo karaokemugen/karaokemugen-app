@@ -32,7 +32,7 @@ export default function systemSeriesController(router: Router) {
 			const series = await getSerie(req.params.sid);
 			res.json(series);
 		} catch(err) {
-			res.status(500).send(`Error deleting series: ${err}`)
+			res.status(500).send(`Error getting series: ${err}`)
 		}
 	});
 

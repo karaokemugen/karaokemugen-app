@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Creditless"
+    },
+    "name": "Creditless",
+    "tid": "fe819ff1-9db8-4a0f-85dc-0e322c9126c4",
+    "types": [
+      "misc"
+    ],
+    "short": "CRE"
+  }
+}

@@ -47,14 +47,13 @@ import {
 	updatePlaylistKaraCount,
 	updatePlaylistLastEditTime,
 	unsetCurrentPlaylist,
-	unsetPlaying as unsetPlayingFlag,
 	unsetPublicPlaylist,
 } from '../dao/playlist';
 
 //KM Modules
 import {updateSongsLeft, findUserByName} from './user';
 import {Token, User} from '../lib/types/user';
-import {translateKaraInfo, isAllKaras, formatKaraList, getKaras, getKara} from './kara';
+import { isAllKaras, formatKaraList, getKaras, getKara} from './kara';
 import {playPlayer, playingUpdated} from './player';
 import {isPreviewAvailable} from '../lib/utils/previews';
 import {getBlacklist} from './blacklist';
@@ -155,8 +154,7 @@ export async function findPublicPlaylist(): Promise<number> {
 
 /** Set a PLC flag_playing to enabled */
 async function setPlaying(plc_id: number, playlist_id: number) {
-	await unsetPlayingFlag(playlist_id);
-	if (plc_id) await setPlayingFlag(plc_id);
+	if (plc_id) await setPlayingFlag(plc_id, playlist_id);
 	emitWS('playingUpdated',{
 		playlist_id: playlist_id,
 		plc_id: plc_id,
@@ -383,7 +381,7 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 				: from = 0;
 		}
 		profile('getPLC');
-		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+		return formatKaraList(pl.slice(from, from + size), from, pl.length);
 	} catch(err) {
 		throw {
 			message: err
@@ -392,21 +390,20 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 }
 
 /** Get song information from a particular PLC */
-export async function getKaraFromPlaylist(plc_id: number, lang: string, token: Token) {
+export async function getKaraFromPlaylist(plc_id: number, token: Token) {
 	profile('getPLCInfo');
-	const kara = await getPLCInfo(plc_id, token.role === 'user', token.username);
+	let kara = await getPLCInfo(plc_id, token.role === 'user', token.username);
 	if (!kara) throw 'PLCID unknown';
-	let output = translateKaraInfo([kara], lang);
 	try {
 		profile('previewCheck');
-		const previewfile = await isPreviewAvailable(output[0].kid, output[0].mediasize);
-		if (previewfile) output[0].previewfile = previewfile;
+		const previewfile = await isPreviewAvailable(kara[0].kid, kara[0].mediasize);
+		if (previewfile) kara[0].previewfile = previewfile;
 		profile('previewCheck');
 	} catch(err) {
 		logger.warn(`[Previews] Error detecting previews : ${err}`);
 	}
 	profile('getPLCInfo');
-	return output;
+	return kara;
 }
 
 /** Get PLC by KID and Username */
@@ -1127,7 +1124,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		}
 		const currentSong: CurrentSong = {...kara}
 		// Construct mpv message to display.
-		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' + i18n.__(kara.songtype[0].name+'_SHORT')+songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
+		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes[0].name+songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 		currentSong.avatar = avatarfile;
 		return currentSong;
 	} catch(err) {
