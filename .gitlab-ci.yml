@@ -39,7 +39,7 @@ test:
     - export LANG=en_US
     - node --version
     - node_modules/.bin/ts-node --version
-    - node util/extUnaccent.ts
+    - node util/extUnaccent.js
     - yarn start --debug --test &disown
     - bash test/run.sh
   only:
