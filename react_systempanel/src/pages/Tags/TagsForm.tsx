@@ -74,7 +74,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						delete values[`lang_${lang}`];
 					});
 					values.i18n = i18nField;
-					values.types = [values.types];
 					this.props.save(values);
 				}
 			});
@@ -161,10 +160,9 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 					{getFieldDecorator("types", {
 						rules: [{ required: true }],
-						initialValue: this.props.tag.types ? this.props.tag.types[0] : []
+						initialValue: this.props.tag.types ? this.props.tag.types : []
 					})(
-
-						<Select placeholder={"Tag type"}>
+						<Select mode="multiple" placeholder={"Tag type"}>
 							{Object.keys(tagTypes).map(type => {
 								const value = tagTypes[type];
 								return <Select.Option key={value} value={value}>{type}</Select.Option>
