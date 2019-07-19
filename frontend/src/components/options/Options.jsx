@@ -4,6 +4,7 @@ import PlayerOptions from './PlayerOptions';
 import KaraokeOptions from './KaraokeOptions';
 import InterfaceOptions from './InterfaceOptions';
 import axios from 'axios';
+import {expand} from '../toolsReact';
 require('babel-polyfill');
 
 axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
@@ -19,15 +20,9 @@ class Options extends Component {
     this.saveSettings = this.saveSettings.bind(this);
   }
 
-	expand (str, val) {
-		return str.split('.').reduceRight((acc, currentValue) => {
-			return { [currentValue]: acc };
-		}, val);
-	};
-
   async saveSettings(event) {
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    var data = this.expand(event.target.id, eval(value));
+    var data = expand(event.target.id, eval(value));
     const res = await axios.put('/api/admin/settings', {
       setting: JSON.stringify(data)
     });

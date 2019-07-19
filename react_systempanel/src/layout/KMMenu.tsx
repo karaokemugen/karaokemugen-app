@@ -48,6 +48,10 @@ class KMMenu extends Component<KMenuProps, {}> {
 						<Menu.Item key='seriesmanage'><Link to='/system/km/series'>List</Link></Menu.Item>
 						<Menu.Item key='seriesnew'><Link to='/system/km/series/new'>New</Link></Menu.Item>
 					</Menu.SubMenu>
+					<Menu.SubMenu key="tags-dropdown" title='Tags'>
+						<Menu.Item key='tagsmanage'><Link to='/system/km/tags'>List</Link></Menu.Item>
+						<Menu.Item key='tagsnew'><Link to='/system/km/tags/new'>New</Link></Menu.Item>
+					</Menu.SubMenu>
 					<Menu.Item key='db'><Link to='/system/km/db'>Database</Link></Menu.Item>
 					<Menu.SubMenu key="user-dropdown" title='Users'>
 						<Menu.Item key='userlist'><Link to='/system/km/users'>User list</Link></Menu.Item>

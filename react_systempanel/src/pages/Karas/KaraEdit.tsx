@@ -20,18 +20,22 @@ interface KaraEditState {
 const newKara = {
 	kid: null,
 	songorder: null,
-	songtype: null,
+	songtypes: null,
 	serie: null,
 	title: null,
-	lang: 'jpn',
+	langs: null,
 	singers: null,
-	songwriter: null,
+	songwriters: null,
 	year: null,
-	creator: null,
+	creators: null,
 	authors: null,
 	misc: null,
 	groups: null,
-	dateadded: null
+	created_at: null,
+	families: null,
+	platforms: null,
+	genres: null,
+	origins: null
 };
 
 class KaraEdit extends Component<KaraEditProps, KaraEditState> {
@@ -72,29 +76,8 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 		if (this.props.match && this.props.match.params.kid) {
 			axios.get(`/api/system/karas/${this.props.match.params.kid}`)
 				.then(res => {
-					const karaData = {
-						authors: res.data[0].authors ? res.data[0].authors.map(e => e.name) : [],
-						creators: res.data[0].creators ? res.data[0].creators.map(e => e.name) : [],
-						kid: res.data[0].kid,
-						langs: res.data[0].languages ? res.data[0].languages.map(e => e.name) : [],
-						mediafile_old: res.data[0].mediafile,
-						mediafile: res.data[0].mediafile,
-						tags: res.data[0].misc_tags ? res.data[0].misc_tags.map(e => e.name) : [],
-						series: res.data[0].serie_orig,
-						singers: res.data[0].singers ? res.data[0].singers.map(e => e.name) : [],
-						groups: res.data[0].groups ? res.data[0].groups.map(e => e.name) : [],
-						songwriters: res.data[0].songwriters ? res.data[0].songwriters.map(e => e.name) : [],
-						subfile: res.data[0].subfile,
-						subfile_old: res.data[0].subfile,
-						karafile: res.data[0].karafile,
-						title: res.data[0].title,
-						year: res.data[0].year,
-						order: res.data[0].songorder,
-						songtype: res.data[0].songtype ? res.data[0].songtype.map(e => e.name) : [],
-						dateadded: res.data[0].created_at,
-						datemodif: res.data[0].modified_at
-					};
-					this.setState({kara: karaData, save: this.saveUpdate});
+					var kara = res.data;
+					this.setState({kara: kara, save: this.saveUpdate});
 					this.props.loading(false);
 				})
 				.catch(err => {
@@ -106,7 +89,7 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 			this.props.loading(false);
 		}
 	};
-
+	
 
 	render() {
 		return (

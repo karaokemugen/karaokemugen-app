@@ -16,9 +16,8 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 	try {
 		profile('getFavorites');
 		const favs = await selectFavorites(params);
-		return formatKaraList(favs.slice(params.from, params.from + params.size), params.lang, params.from, favs.length);
+		return formatKaraList(favs.slice(params.from, params.from + params.size), params.from, favs.length);
 	} catch(err) {
-		console.log(err);
 		throw err;
 	} finally {
 		profile('getFavorites');
@@ -144,8 +143,8 @@ export async function exportFavorites(username: string) {
 				title: k.title,
 				songorder: k.songorder,
 				serie: k.serie,
-				songtype: k.songtype[0].name,
-				language: k.languages[0].name
+				songtype: k.songtypes[0].name,
+				language: k.langs[0].name
 			};
 		})
 	};

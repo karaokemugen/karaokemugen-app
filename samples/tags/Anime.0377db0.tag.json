@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Anime"
+    },
+    "name": "Anime",
+    "tid": "0377db02-3af6-43b8-9b08-c759df3d25c3",
+    "types": [
+      "families"
+    ],
+    "short": "ANI"
+  }
+}

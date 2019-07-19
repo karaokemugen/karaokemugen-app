@@ -62,8 +62,7 @@ main()
 
 async function main() {
 	const argv = minimist(process.argv.slice(2));
-	setState({os: process.platform});
-	setState({ version: version });
+	setState({ os: process.platform, version: version });
 	const state = getState();
 	console.log(chalk.blue(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
@@ -150,6 +149,7 @@ async function checkPaths(config: Config) {
 	// Checking paths
 	let checks = [];
 	config.System.Path.Karas.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.System.Path.Tags.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.System.Path.Series.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.System.Path.Lyrics.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.System.Path.Medias.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));

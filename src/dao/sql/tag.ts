@@ -1,47 +1,48 @@
 // SQL for tags
 
 export const getTag = `
-SELECT tag_id, name, tagtype AS type, slug, i18n, karacount
+SELECT tid, name, types, short, aliases, i18n, karacount, tagfile
 FROM all_tags
-WHERE tag_id = $1
+WHERE tid = $1
 `;
 
 export const getAllTags = (filterClauses: string[], typeClauses: string, limitClause: string, offsetClause: string) => `
-SELECT tag_id,
-	tagtype AS type,
+SELECT tid,
+	types,
 	name,
-	slug,
+	short,
+	aliases,
 	i18n,
-	karacount
+	karacount,
+	tagfile
 FROM all_tags
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-ORDER BY tagtype, name
+ORDER BY name
 ${limitClause}
 ${offsetClause}
 `;
 
-export const getTagByNameAndType = `
-SELECT pk_id_tag AS tag_id
-FROM tag
-WHERE name = :name
-	AND tagtype = :type
-`;
-
 export const insertTag = `
 INSERT INTO tag(
+	tid,
 	name,
-	tagtype,
-	slug,
-	i18n
+	types,
+	short,
+	i18n,
+	aliases,
+	tagfile
 )
 VALUES(
+	:tid
 	:name,
-	:type,
-	:slug,
-	:i18n
-) RETURNING *
+	:types,
+	:short,
+	:i18n,
+	:aliases,
+	:tagfile
+)
 `;
 
 export const deleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_kid = $1';
@@ -49,10 +50,35 @@ export const deleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_kid = $1';
 export const insertKaraTags = `
 INSERT INTO kara_tag(
 	fk_kid,
-	fk_id_tag
+	fk_tid,
+	type
 )
 VALUES(
 	:kid,
-	:tag_id
+	:tid,
+	:type
 );
 `;
+
+export const getTagByNameAndType = `
+SELECT
+	name,
+	pk_tid AS tid
+FROM tag
+WHERE name = :name
+  AND types = :types
+;`;
+
+export const updateTag = `
+UPDATE tag
+SET
+	name = :name,
+	aliases = :aliases,
+	tagfile = :tagfile,
+	short = :short,
+	types = :types,
+	i18n = :i18n
+WHERE pk_tid = :tid;
+`;
+
+export const deleteTag = 'DELETE FROM tag WHERE pk_tid = $1';

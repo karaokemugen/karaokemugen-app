@@ -213,7 +213,7 @@ export default function publicMiscController(router: Router) {
 		/**
 		* @api {get} /public/tags Get tag list
 		* @apiName GetTags
-		* @apiVersion 2.5.0
+		* @apiVersion 3.0.0
 		* @apiGroup Tags
 		* @apiPermission public
 		* @apiHeader authorization Auth token received from logging in
@@ -222,9 +222,9 @@ export default function publicMiscController(router: Router) {
 		* @apiParam {Number} [from] Where to start listing from
 		* @apiParam {Number} [size] How many records to get.
 		* @apiSuccess {String} data/name Name of tag
-		* @apiSuccess {Number} data/tag_id Tag ID number
-		* @apiSuccess {Number} data/type Tag type number
-		* @apiSuccess {String} data/slug Slugified version of the tag
+		* @apiSuccess {Number} data/tid Tag ID (UUID)
+		* @apiSuccess {Number} data/types Tag types numbers in an array
+		* @apiSuccess {String} data/short Short version of the tag, max 3 chracters. Used to display next to a song item
 		* @apiSuccess {Object} data/i18n Translations in case of misc, languages and song type tags
 		*
 		* @apiSuccessExample Success-Response:
@@ -234,13 +234,13 @@ export default function publicMiscController(router: Router) {
 		*		content: [
 		*        {
 		*            "i18n": {
-		* 				"en": "TV Show",
-		*				"fr": "Série TV"
+		* 				"eng": "TV Show",
+		*				"fre": "Série TV"
 		*			 },
-		*            "name": "TAG_TVSHOW",
-		*            "slug": "tag_tvshow",
-		*            "tag_id": 2090,
-		*            "type": 2
+		*            "name": "TV Show",
+		*            "short": "TV"
+		*            "tid": "13cb4509-6cb4-43e4-a1ad-417d6ffb75d0",
+		*            "types": [2]
 		*        },
 		*		 ...
 		*   	],

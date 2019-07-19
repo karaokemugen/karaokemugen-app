@@ -8,7 +8,6 @@ import {promisify} from 'util';
 import logger from '../lib/utils/logger';
 import {timer} from '../lib/utils/date';
 import {getState, setState} from '../utils/state';
-import {translateKaraInfo} from "./kara";
 import { Token } from '../lib/types/user';
 import { PollResults } from '../types/poll';
 const sleep = promisify(setTimeout);
@@ -53,7 +52,6 @@ export async function getPollResults(): Promise<PollResults> {
 	// We check if winner isn't the only one...
 	let winners = poll.filter(c => +c.votes === +maxVotes);
 	let winner = sample(winners);
-	winner = translateKaraInfo(winner);
 	const playlist_id = getState().currentPlaylistID;
 	await copyKaraToPlaylist([winner[0].playlistcontent_id],playlist_id);
 	emitWS('playlistInfoUpdated',playlist_id);
@@ -121,7 +119,6 @@ export async function startPoll() {
 	for (const index in poll) {
 		poll[index].votes = 0;
 	}
-	poll = translateKaraInfo(poll);
 	logger.debug(`[Poll] New poll : ${JSON.stringify(poll)}`);
 	emitWS('newSongPoll',poll);
 	timerPoll();
@@ -133,11 +130,10 @@ function hasUserVoted(username: string): boolean {
 }
 
 /** Get current poll options */
-export async function getPoll(token: Token, lang: string, from: number, size: number) {
+export async function getPoll(token: Token, from: number, size: number) {
 	if (poll.length === 0) throw {
 		code: 'POLL_NOT_ACTIVE'
 	};
-	poll = translateKaraInfo(poll, lang);
 	return {
 		infos: {
 			count: poll.length,

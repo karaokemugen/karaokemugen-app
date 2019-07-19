@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Original Video Animation"
+    },
+    "name": "OVA",
+    "tid": "2a6ef087-a000-4f8e-aeb5-9a7968756a36",
+    "types": [
+      "origins"
+    ],
+    "short": "OVA"
+  }
+}

@@ -12,7 +12,7 @@ import { KaraParams, KaraList } from '../lib/types/kara';
 import { removeSeriesInStore, editSeriesInStore, addSeriesToStore, sortSeriesStore, getStoreChecksum } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import {asyncUnlink, resolveFileInDirs, } from '../lib/utils/files';
-import {getConfig, resolvedPathSeries} from '../lib/utils/config';
+import {resolvedPathSeries} from '../lib/utils/config';
 import {getDataFromSeriesFile} from '../lib/dao/seriesfile';
 import { getAllKaras } from './kara';
 
@@ -73,7 +73,7 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) {
-		logger.warn(`Series original name already exists "${serieObj.name}"`);
+		logger.warn(`[Series] Series original name already exists "${serieObj.name}"`);
 		return serie.sid;
 	}
 	if (!serieObj.sid) serieObj.sid = uuidV4();
@@ -133,7 +133,7 @@ export async function integrateSeriesFile(file: string): Promise<string> {
 		if (seriesDBData) {
 			await editSerie(seriesFileData.sid, seriesFileData, { refresh: false });
 			if (seriesDBData.name !== seriesFileData.name) try {
-					await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().System.Path.Series));
+					await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, resolvedPathSeries()));
 				} catch(err) {
 					logger.warn(`[Series] Could not remove old series file ${seriesDBData.seriefile}`);
 				}

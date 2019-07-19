@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Special"
+    },
+    "name": "Special",
+    "tid": "65f74288-49a5-47b0-82f5-8cd84d1e3dc0",
+    "types": [
+      "origins"
+    ],
+    "short": "SPE"
+  }
+}

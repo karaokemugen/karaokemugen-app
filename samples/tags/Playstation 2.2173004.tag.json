@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Playstation 2"
+    },
+    "name": "Playstation 2",
+    "tid": "2173004e-21da-45c9-9dfb-26014423c566",
+    "types": [
+      "platforms"
+    ],
+    "short": "PS2"
+  }
+}

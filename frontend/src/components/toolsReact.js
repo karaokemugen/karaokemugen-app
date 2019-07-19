@@ -47,6 +47,14 @@ export function is_touch_device() {
 };
 
 
+export function expand (str, val) {
+	return str.split('.').reduceRight((acc, currentValue) => {
+		return { [currentValue]: acc };
+	}, val);
+};
+
+
+
 /* format seconds to Hour Minute Second */
 export function secondsTimeSpanToHMS (s, format) {
 	var d = Math.floor(s/(3600 * 24));

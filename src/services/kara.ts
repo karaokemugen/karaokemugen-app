@@ -1,4 +1,4 @@
-import {tagTypes, karaTypes} from '../lib/utils/constants';
+import {tagTypes} from '../lib/utils/constants';
 import {ASSToLyrics} from '../utils/ass';
 import {refreshTags, refreshKaraTags} from '../lib/dao/tag';
 import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../lib/dao/series';
@@ -17,10 +17,8 @@ import {selectAllKaras,
 	selectAllKIDs
 } from '../dao/kara';
 import {updateKaraSeries} from '../dao/series';
-import {updateKaraTags, checkOrCreateTag} from '../dao/tag';
-import langs from 'langs';
-import {getLanguage} from 'iso-countries-languages';
-import {basename, resolve} from 'path';
+import {updateKaraTags} from '../dao/tag';
+import {basename} from 'path';
 import {profile} from '../lib/utils/logger';
 import {Kara, KaraParams, KaraList, YearList} from '../lib/types/kara';
 import {Series} from '../lib/types/series';
@@ -28,74 +26,19 @@ import { getOrAddSerieID, deleteSerie } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../lib/utils/files';
 import {getConfig, resolvedPathMedias, resolvedPathKaras, resolvedPathSubs} from '../lib/utils/config';
 import logger from 'winston';
-import {getState} from '../utils/state';
 import { editKaraInStore, removeKaraInStore, getStoreChecksum } from '../dao/dataStore';
 import { DBKaraHistory } from '../types/database/kara';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
 import { isPreviewAvailable } from '../lib/utils/previews';
 import { Token } from '../lib/types/user';
+import { consolidatei18n } from '../lib/services/kara';
 
 export async function isAllKaras(karas: string[]): Promise<string[]> {
 	// Returns an array of unknown karaokes
 	// If array is empty, all songs in "karas" are present in database
 	const allKaras = await selectAllKIDs();
 	return karas.filter(kid => !allKaras.includes(kid));
-}
-
-export function translateKaraInfo(karas: DBKara|DBKara[], lang?: string): DBKara[] {
-	// If lang is not provided, assume we're using node's system locale
-	if (!lang) lang = getState().EngineDefaultLocale;
-	// Test if lang actually exists in ISO639-1 format
-	if (!langs.has('1',lang)) throw `Unknown language : ${lang}`;
-	// Instanciate a translation object for our needs with the correct language.
-	const i18n = require('i18n'); // Needed for its own translation instance
-	i18n.configure({
-		directory: resolve(__dirname,'../locales'),
-	});
-	i18n.setLocale(lang);
-
-	// We need to read the detected locale in ISO639-1
-	const detectedLocale = langs.where('1',lang);
-	// If the kara list provided is not an array (only a single karaoke)
-	// Put it into an array first
-	if (!Array.isArray(karas)) karas = [karas];
-	karas.forEach((kara, index) => {
-		kara.languages = kara.languages || [];
-		if (kara.languages.length > 0) {
-			let languages = [];
-			let langdata: any;
-			kara.languages.forEach(karalang => {
-				// Special case : und
-				// Undefined language
-				// In this case we return something different.
-				// Special case 2 : mul
-				// mul is for multilanguages, when a karaoke has too many languages to list.
-				switch (karalang.name) {
-				case 'und':
-					languages.push(i18n.__('UNDEFINED_LANGUAGE'));
-					break;
-				case 'mul':
-					languages.push(i18n.__('MULTI_LANGUAGE'));
-					break;
-				case 'zxx':
-					languages.push(i18n.__('NO_LANGUAGE'));
-					break;
-				default:
-					// We need to convert ISO639-2B to ISO639-1 to get its language
-					langdata = langs.where('2B', karalang.name);
-					if (langdata === undefined) {
-						languages.push(i18n.__('UNKNOWN_LANGUAGE'));
-					} else {
-						languages.push(getLanguage(detectedLocale[1],langdata[1]));
-					}
-					break;
-				}
-			});
-			karas[index].languages_i18n = languages;
-		}
-	});
-	return karas;
 }
 
 export async function deleteKara(kid: string, refresh = true) {
@@ -154,15 +97,14 @@ export async function delayedDbRefreshViews(ttl = 100) {
 	delayedDbRefreshTimeout = setTimeout(refreshAll,ttl);
 }
 
-export async function getKara(kid: string, token: Token, lang?: string): Promise<DBKara[]> {
+export async function getKara(kid: string, token: Token, lang?: string): Promise<DBKara> {
 	profile('getKaraInfo');
-	const kara = await getKaraDB(kid, token.username, lang, token.role);
+	let kara = await getKaraDB(kid, token.username, lang, token.role);
 	if (!kara) throw `Kara ${kid} unknown`;
-	let output: DBKara[] = translateKaraInfo(kara, lang);
-	const previewfile = await isPreviewAvailable(output[0].kid, output[0].mediasize);
-	if (previewfile) output[0].previewfile = previewfile;
+	const previewfile = await isPreviewAvailable(kara.kid, kara.mediasize);
+	if (previewfile) kara.previewfile = previewfile;
 	profile('getKaraInfo');
-	return output;
+	return kara;
 }
 
 export async function getKaraMini(kid: string): Promise<DBKaraBase> {
@@ -181,7 +123,7 @@ export async function getKaraLyrics(kid: string): Promise<string[]> {
 async function updateSeries(kara: Kara) {
 	if (!kara.series) return true;
 	let lang = 'und';
-	if (kara.lang) lang = kara.lang[0];
+	if (kara.langs) lang = kara.langs[0].name;
 	let sids = [];
 	for (const s of kara.series) {
 		let langObj = {};
@@ -193,43 +135,17 @@ async function updateSeries(kara: Kara) {
 		const sid = await getOrAddSerieID(seriesObj);
 		if (sid) sids.push(sid);
 	}
-	await updateKaraSeries(kara.kid,sids);
+	await updateKaraSeries(kara.kid, sids);
 }
 
-async function updateTags(kara: Kara) {
-	// Create an array of tags to add for our kara
-	let tags = [];
-	// Remove this when we'll update .kara file format to version 4
-	kara.singer
-		? kara.singer.forEach(t => tags.push({tag: t, type: tagTypes.singer}))
-		: tags.push({tag: 'NO_TAG', type: tagTypes.singer});
-	kara.tags
-		? kara.tags.forEach(t => tags.push({tag: t, type: tagTypes.misc}))
-		: tags.push({tag: 'NO_TAG', type: tagTypes.misc});
-	kara.songwriter
-		? kara.songwriter.forEach(t => tags.push({tag: t, type: tagTypes.songwriter}))
-		: tags.push({tag: 'NO_TAG', type: tagTypes.songwriter});
-	kara.creator
-		? kara.creator.forEach(t => tags.push({tag: t, type: tagTypes.creator}))
-		: tags.push({tag: 'NO_TAG', type: tagTypes.creator});
-	kara.author
-		? kara.author.forEach(t => tags.push({tag: t, type: tagTypes.author}))
-		: tags.push({tag: 'NO_TAG', type: tagTypes.author});
-	kara.lang
-		? kara.lang.forEach(t => tags.push({tag: t, type: tagTypes.lang}))
-		: tags.push({tag: 'NO_TAG', type: tagTypes.lang});
-	kara.groups
-		? kara.groups.forEach(t => tags.push({tag: t, type: tagTypes.group}))
-		: tags.push({tag: 'NO_TAG', type: tagTypes.group});
-
-	//Songtype is a little specific.
-	tags.push({tag: karaTypes[kara.type].dbType, type: tagTypes.songtype});
-
-	if (tags.length === 0) return true;
-	for (const i in tags) {
-		tags[i].id = await checkOrCreateTag(tags[i]);
+export async function updateTags(kara: Kara) {
+	const tagsAndTypes = [];
+	for (const type of Object.keys(tagTypes)) {
+		if (kara[type]) for (const tag of kara[type]) {
+			tagsAndTypes.push({tid: tag.tid, type: tagTypes[type]});
+		}
 	}
-	return await updateKaraTags(kara.kid, tags);
+	await updateKaraTags(kara.kid, tagsAndTypes);
 }
 
 export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
@@ -316,21 +232,23 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 		random: params.random
 	});
 	profile('formatList');
-	const ret = formatKaraList(pl.slice(params.from || 0, (params.from || 0) + (params.size || 999999999)), params.lang, (params.from || 0), pl.length);
+	const ret = formatKaraList(pl.slice(params.from || 0, (params.from || 0) + (params.size || 999999999)), (params.from || 0), pl.length);
 	profile('formatList');
 	profile('getKaras');
 	return ret;
 }
 
-export function formatKaraList(karaList: any, lang: string, from: number, count: number): KaraList {
-	karaList = translateKaraInfo(karaList, lang);
+export function formatKaraList(karaList: any, from: number, count: number): KaraList {
+	// Get i18n from all tags found in all elements, and remove it
+	const {i18n, data} = consolidatei18n(karaList);
 	return {
 		infos: {
 			count: count,
 			from: from,
-			to: from + karaList.length
+			to: from + data.length
 		},
-		content: karaList
+		i18n: i18n,
+		content: data
 	};
 }
 

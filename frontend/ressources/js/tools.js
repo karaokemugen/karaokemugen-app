@@ -125,13 +125,6 @@ isVisible = function( element, container ){
 		&& ((elementTop - containerTop) < containerHeight));
 };
 
-dataToDataAttribute = function(data) {
-	var result = Object.keys(data).map(function (k) {
-		return 'data-' + k + '="' +  data[k] + '"';
-	}).join(' ');
-	return result;
-};
-
 startIntro = function(mode, stepLabel){
 	introManager = introJs();
 
