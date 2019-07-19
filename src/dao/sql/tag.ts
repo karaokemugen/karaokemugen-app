@@ -26,7 +26,7 @@ ${offsetClause}
 
 export const insertTag = `
 INSERT INTO tag(
-	tid,
+	pk_tid,
 	name,
 	types,
 	short,
@@ -35,13 +35,13 @@ INSERT INTO tag(
 	tagfile
 )
 VALUES(
-	:tid
-	:name,
-	:types,
-	:short,
-	:i18n,
-	:aliases,
-	:tagfile
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7
 )
 `;
 

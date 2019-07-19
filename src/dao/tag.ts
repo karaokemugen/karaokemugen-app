@@ -40,15 +40,15 @@ function buildTagClauses(words: string): WhereClause {
 }
 
 export async function insertTag(tag: Tag) {
-	return await db().query(yesql(sql.insertTag)({
-		tid: tag.tid,
-		name: tag.name,
-		types: tag.types,
-		short: tag.short || null,
-		i18n: tag.i18n || {},
-		aliases: tag.aliases || null,
-		tagfile: tag.tagfile
-	}));
+	return await db().query(sql.insertTag, [
+		tag.tid,
+		tag.name,
+		tag.types,
+		tag.short || null,
+		tag.i18n || {},
+		JSON.stringify(tag.aliases) || null,
+		tag.tagfile
+	]);
 }
 
 export async function updateKaraTags(kid: string, tags: TagAndType[]) {
