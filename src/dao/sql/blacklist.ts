@@ -8,15 +8,15 @@ TRUNCATE blacklist;
 INSERT INTO blacklist (fk_kid, created_at, reason)
 	SELECT kt.fk_kid, now() ,'Blacklisted Tag : ' || t.name || ' (type ' || blc.type || ')'
 	FROM blacklist_criteria AS blc
-	INNER JOIN tag t ON blc.type @> ARRAY[t.types] AND CAST(blc.value AS INTEGER) = t.pk_id_tag
-	INNER JOIN kara_tag kt ON t.pk_id_tag = kt.fk_id_tag
+	INNER JOIN tag t ON t.types @> ARRAY[blc.type] AND blc.value = t.pk_tid::varchar
+	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
 	WHERE blc.type BETWEEN 1 and 999
 		AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
 UNION
 	SELECT kt.fk_kid, now() ,'Blacklisted Tag by name : ' || blc.value
 	FROM blacklist_criteria blc
 	INNER JOIN tag t ON unaccent(t.name) LIKE ('%' || blc.value || '%')
-	INNER JOIN kara_tag kt ON t.pk_id_tag = kt.fk_id_tag
+	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
 	WHERE blc.type = 0
 	AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
 UNION
