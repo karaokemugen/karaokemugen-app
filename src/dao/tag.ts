@@ -65,7 +65,7 @@ export async function updateKaraTags(kid: string, tags: TagAndType[]) {
 export async function selectTagByNameAndType(name: string, type: number): Promise<DBTag> {
 	const res = await db().query(sql.getTagByNameAndType, [
 		name,
-		type
+		[type]
 	]);
 	return res.rows[0];
 }
