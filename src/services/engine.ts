@@ -22,7 +22,6 @@ import {validateV3} from '../lib/dao/karafile';
 import { DBStats } from '../types/database/database';
 import { createVideoPreviews } from '../lib/utils/previews';
 import { getAllKaras } from './kara';
-import { selectTagByNameAndType } from '../dao/tag';
 
 export async function initEngine() {
 	profile('Init');
