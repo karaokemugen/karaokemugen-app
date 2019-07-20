@@ -71,15 +71,15 @@ export async function selectTagByNameAndType(name: string, types: number[]): Pro
 }
 
 export async function updateTag(tag: Tag) {
-	return await db().query(yesql(sql.updateTag)({
-		tid: tag.tid,
-		name: tag.name,
-		aliases: JSON.stringify(tag.aliases),
-		tagfile: tag.tagfile,
-		short: tag.short,
-		types: tag.types,
-		i18n: tag.i18n
-	}));
+	return await db().query(sql.updateTag, [
+		tag.name,
+		JSON.stringify(tag.aliases) || null,
+		tag.tagfile,
+		tag.short || null,
+		tag.types,
+		tag.i18n || {},
+		tag.tid,
+	]);
 }
 
 export async function removeTag(tid: string) {

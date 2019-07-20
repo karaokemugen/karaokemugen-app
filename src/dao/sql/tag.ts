@@ -72,13 +72,13 @@ WHERE name = :name
 export const updateTag = `
 UPDATE tag
 SET
-	name = :name,
-	aliases = :aliases,
-	tagfile = :tagfile,
-	short = :short,
-	types = :types,
-	i18n = :i18n
-WHERE pk_tid = :tid;
+	name = $1,
+	aliases = $2,
+	tagfile = $3,
+	short = $4,
+	types = $5,
+	i18n = $6
+WHERE pk_tid = $7;
 `;
 
 export const deleteTag = 'DELETE FROM tag WHERE pk_tid = $1';
