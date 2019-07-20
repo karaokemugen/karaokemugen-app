@@ -73,7 +73,7 @@ export async function refreshTagsAfterDBChange() {
 export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }) {
 	const oldTag = await getTag(tid);
 	if (!oldTag) throw 'Tag ID unknown';
-	if (oldTag.name !== tagObj.name) await removeTagFile(oldTag.name, tid);
+	if (oldTag.name !== tagObj.name) await removeTagFile(oldTag.tagfile);
 	tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
 	const tagfile = tagObj.tagfile;
 	await Promise.all([
@@ -93,7 +93,7 @@ export async function deleteTag(tid: string) {
 	await removeTag(tid);
 	await Promise.all([
 		refreshTags(),
-		removeTagFile(tag.name, tid),
+		removeTagFile(tag.tagfile),
 		removeTagInKaras(tag.name, await getAllKaras()),
 	]);
 	// Refreshing karas is done asynchronously

@@ -67,9 +67,9 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		var tag = this.state.DS.filter(tag => val === tag.value);
 		if (tags.filter(tag => val === tag.tid).length === 0) {
 			if (tag.length > 0) {
-				tags = [...tags, [tag[0].value, tag[0].text]];
+				tags.push([tag[0].value, tag[0].text]);
 			} else {
-				tags = [...tags, [null, val]];
+				tags.push([null, val]);
 			}
 		}
 		this.setState({
@@ -124,7 +124,12 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	};
 
 	onCheck = (val) => {
-		this.props.onChange && this.props.onChange(val);
+		var tags = []
+		val.forEach(element => {
+			var tag = this.state.DS.filter(tag => element === tag.value);
+			tags.push([tag[0].value, tag[0].text]);
+		});
+		this.props.onChange && this.props.onChange(tags);
 	};
 
 	sortByProp = (array, val) => {
