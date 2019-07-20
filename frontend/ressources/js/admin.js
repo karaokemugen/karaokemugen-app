@@ -214,19 +214,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
             }
         });
 
-        $('.playlist-main').on('click', '.infoDiv > button.playKara', function () {
-            var liKara = $(this).closest('li');
-            var idPlc = parseInt(liKara.attr('idplaylistcontent'));
-            var idPlaylist = parseInt($('#selectPlaylist' + $(this).closest('ul').attr('side')).val());
-
-            $.ajax({
-                type: 'PUT',
-                url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
-                data: { flag_playing: true }
-            }).done(function () {
-                DEBUG && console.log('Kara plc_id ' + idPlc + ' flag_playing set to true');
-            });
-        });
         $('.playlist-main').on('click', 'button.showPlaylistCommands', function () {
             $(this).closest('.plDashboard').toggleClass('advanced');
             $(window).resize();

@@ -19,6 +19,9 @@ class KaraLine extends Component {
     this.getTagInLocale = this.getTagInLocale.bind(this);
     this.handleSwipe = this.handleSwipe.bind(this);
     this.handleStart = this.handleStart.bind(this);
+    this.playKara = this.playKara.bind(this);
+    this.deleteKara = this.deleteKara.bind(this);
+    this.likeKara = this.likeKara.bind(this);
   }
 
   addKara() {
@@ -96,6 +99,11 @@ class KaraLine extends Component {
     axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + kara.playlistcontent_id);
   }
 
+  
+  playKara() {
+    axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_playing: true });
+  }
+
   render() {
     const t = this.props.t;
     var kara = this.props.kara;
@@ -123,7 +131,7 @@ class KaraLine extends Component {
                 + (is_touch_device() ? 'mobile' : '')
                 + (kara.flag_favorites || idPlaylist === -5 ? 'currentFav' : '')}>
             </button> : null}
-          {scope === 'admin' && idPlaylist > 0 ? <button title={t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara"></button> : null}
+          {scope === 'admin' && idPlaylist > 0 ? <button title={t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara" onClick={this.playKara}></button> : null}
           {scope !== 'admin' && flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? 'currentLike' : ''} onClick={this.likeKara}></button> : null}
           {scope !== 'admin' && kara.username == window.logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
             <button title={t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}></button> : null}
@@ -153,7 +161,7 @@ class KaraLine extends Component {
         </div>
         {this.state.karaDetailState ?
           <KaraDetail kara={this.props.kara} scope={this.props.scope} idPlaylist={this.props.idPlaylist} mode='list'
-            publicOuCurrent={this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public} toggleKaraDetail={this.toggleKaraDetail}
+            publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)} toggleKaraDetail={this.toggleKaraDetail}
             karaDetailState={this.state.karaDetailState} makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite}
             getTagInLocale={this.getTagInLocale}></KaraDetail> : null
         }
