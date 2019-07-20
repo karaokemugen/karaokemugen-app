@@ -32,13 +32,13 @@ export async function getTags(params: TagParams) {
 }
 
 export async function getOrAddTagID(tagObj: Tag): Promise<Tag> {
-	var tag:Tag= await selectTagByNameAndType(tagObj.name, tagObj.types);
+	let tag:Tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
 	if (!tag) tag = await addTag(tagObj);
 	return tag;
 }
 
 export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> {
-	const tag = await selectTagByNameAndType(tagObj.name, tagObj.types);
+	const tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
 	if (tag) {
 		logger.warn(`[Tag] Tag original name already exists "${tagObj.name} and ${tagObj.types}"`);
 		return tag;

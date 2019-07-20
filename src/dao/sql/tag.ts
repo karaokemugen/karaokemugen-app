@@ -65,8 +65,8 @@ SELECT
 	name,
 	pk_tid AS tid
 FROM tag
-WHERE name = :name
-  AND types = :types
+WHERE name = $1
+  AND types @> ARRAY [$2]
 ;`;
 
 export const updateTag = `
