@@ -250,7 +250,7 @@ class Playlist extends Component {
           this.state.data.infos.count +
           (!is_touch_device() ? " karas" : "")
           : "") +
-        (this.state.idPlaylist > -1
+        (this.state.idPlaylist > -1 && this.state.playlistInfo
           ? " ~ dur. " +
           secondsTimeSpanToHMS(this.state.playlistInfo.duration, "hm") +
           " / re. " +

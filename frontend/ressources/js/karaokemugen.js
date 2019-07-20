@@ -32,9 +32,7 @@ var introManager;
 window.introManager = introManager;
 
 /* promises */
-var scrollUpdating;
 var playlistsUpdating;
-var playlistContentUpdating;
 var settingsUpdating;
 var tagsUpdating;
 
@@ -379,10 +377,6 @@ var plData;
 								url: 'public/karas/' + chosenOne,
 								type: 'POST',
 								data: { requestedby : logInfos.username }
-							}).done(function () {
-								playlistContentUpdating.done( function() {
-									scrollToKara(2, chosenOne);
-								});
 							});
 						},'lucky');
 					});
@@ -630,11 +624,6 @@ var plData;
 			$('#bcType').change();
 			deferred.resolve();
 		}
-
-
-
-		// depending on the playlist we're in, notify if the other playlist can add & transfer to us
-		$('#panel' + non(side)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
 
 		// drag & drop part
 		// TODO revoir pour bien définir le drag&drop selon les droits

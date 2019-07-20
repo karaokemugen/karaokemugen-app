@@ -162,25 +162,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                     data.pos = -1;
                 }
 
-                DEBUG && console.log('ACTION : ', idPlaylistTo, url, type, data);
-                if (url !== '') {
-                    $.ajax({
-                        url: url,
-                        type: type,
-                        data: data
-                    }).done(function (data) {
-                        DEBUG && console.log(data);
-                        promise.resolve();
-                        playlistContentUpdating.done(function () {
-                            scrollToKara(non(side), idKara);
-                        });
-                        if (clusterAction) li.find('span[name="checkboxKara"][checked]').attr('checked', false);
-                        DEBUG && console.log('Kara ' + idKara + ' to playlist (' + idPlaylistTo + ') '
-                            + $('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').text() + '.');
-                    }).fail(function () {
-                        scrollToKara(non(side), idKara);
-                    });
-                }
+                promise.resolve();
             } else {
                 promise.resolve();
             }

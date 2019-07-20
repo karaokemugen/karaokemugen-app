@@ -22,6 +22,7 @@ class KaraLine extends Component {
     this.playKara = this.playKara.bind(this);
     this.deleteKara = this.deleteKara.bind(this);
     this.likeKara = this.likeKara.bind(this);
+    this.addKara = this.addKara.bind(this);
   }
 
   addKara() {
