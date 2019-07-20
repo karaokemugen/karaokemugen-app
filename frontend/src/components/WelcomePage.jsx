@@ -71,8 +71,9 @@ class WelcomePage extends Component {
 
     if (mast.body) {
       mast.body = JSON.parse(mast.body);
-      for (var i = 0; i < 3; i++) {
-        news.push({
+      var max = mast.body.rss.channel.item.length > 3 ? 3 : mast.body.rss.channel.item.length;
+      for (var i = 0; i < max; i++) {
+          news.push({
           html: mast.body.rss.channel.item[i].description._text,
           date: mast.body.rss.channel.item[i].pubDate._text,
           dateStr: new Date(

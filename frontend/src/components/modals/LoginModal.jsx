@@ -15,7 +15,7 @@ class LoginModal extends Component {
         this.state = {
             redBorders: '',
             errorBackground: '',
-            serv: this.props.config.Online.Users ? this.props.config.Online.Host : '',
+            serv: (this.props.config && this.props.config.Online.Users) ? this.props.config.Online.Host : '',
             role: 'user'
         }
         if (this.props.admpwd === 'guest') {
@@ -32,7 +32,7 @@ class LoginModal extends Component {
         if (!username) {
             url = '/api/auth/login/guest';
             data = { fingerprint: password };
-        } else if (this.props.scope === 'admin' && this.props.config.App.FirstRun && username !== 'admin') {
+        } else if (this.props.scope === 'admin' && this.props.config && this.props.config.App.FirstRun && username !== 'admin') {
             url = '/api/admin/users/login';
         }
 

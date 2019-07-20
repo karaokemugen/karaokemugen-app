@@ -78,8 +78,12 @@ class KaraLine extends Component {
   };
 
   getTagInLocale(tag) {
-    const i18nTag = this.props.i18nTag[tag.tid];
-    return i18nTag[this.props.navigatorLanguage] ? i18nTag[this.props.navigatorLanguage] : i18nTag['eng'];
+    if (this.props.i18nTag && this.props.i18nTag[tag.tid]) {
+      let i18nTag = this.props.i18nTag[tag.tid];
+      return i18nTag[this.props.navigatorLanguage] ? i18nTag[this.props.navigatorLanguage] : i18nTag['eng'];
+    } else {
+      return tag.name;
+    }
   }
 
   likeKara() {
