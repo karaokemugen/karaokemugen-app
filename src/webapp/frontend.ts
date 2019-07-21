@@ -1,11 +1,8 @@
-import {join, resolve} from 'path';
+import {resolve} from 'path';
 import express from 'express';
-import exphbs from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
-import {address} from 'ip';
 import logger from '../lib/utils/logger';
-import i18n from 'i18n';
 import {getConfig, resolvedPathPreviews, resolvedPathAvatars} from '../lib/utils/config';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
@@ -80,34 +77,12 @@ export async function initFrontend() {
 		const conf = getConfig();
 		const state = getState();
 		const app = express();
-		app.engine('hbs', exphbs({
-			layoutsDir: join(__dirname, '../../frontend/ressources/views/layouts/'),
-			extname: '.hbs',
-			defaultLayout: 'welcomeHeader',
-			helpers: {
-			//How comes array functions do not work here?
-				i18n: function() {
-					const args = Array.prototype.slice.call(arguments);
-					const options = args.pop();
-					return i18n.__.apply(options.data.root, args);
-				},
-				if_eq: (a: any, b: any, opts: any) => {
-					if(a === b)
-						return opts.fn(this);
-					else
-						return opts.inverse(this);
-				}
-			}
-		}));
 		const routerAdmin = express.Router();
 		const routerWelcome = express.Router();
 		app.use(passport.initialize());
 		configurePassport();
-		app.set('view engine', 'hbs');
-		app.set('views', join(__dirname, '/../../frontend/ressources/views/'));
 		app.use(compression());
 		app.use(cookieParser());
-		app.use(i18n.init);
 		app.use(urlencoded({ extended: true, limit: '50mb' }));
 		app.use(json({limit: '50mb'}));
 		app.use('/api', apiRouter());
@@ -123,7 +98,6 @@ export async function initFrontend() {
 				? res.json()
 				: next();
 		});
-		app.use(express.static(__dirname + '/../../frontend/'));
 		//path for system control panel
 		// System is not served in demo mode.
 		if (!state.isDemo) {
@@ -132,8 +106,11 @@ export async function initFrontend() {
 				res.sendFile(resolve(__dirname, '../../react_systempanel/build/index.html'));
 			});
 		}
-		//Path to locales for webapp
-		app.use('/locales', express.static(__dirname + '/../locales/'));
+		app.use(express.static(__dirname + '/../../frontend/build'));
+		app.get('/*', (_req, res) => {
+			res.sendFile(resolve(__dirname, '../../frontend/build/index.html'));
+		});
+
 		//Path to video previews
 		app.use('/previews', express.static(resolvedPathPreviews()));
 		//Path to user avatars
@@ -141,54 +118,6 @@ export async function initFrontend() {
 		app.use('/admin', routerAdmin);
 		app.use('/welcome', routerWelcome);
 
-		app.get('/', (req, res) => {
-			const config = getConfig();
-			let view = 'public';
-			if (+config.Frontend.Mode === 0) {
-				view = 'publicClosed';
-			} else if (+config.Frontend.Mode === 1) {
-				view = 'publicLimited';
-			}
-			let url: string;
-			config.Karaoke.Display.ConnectionInfo.Host
-				? url = config.Karaoke.Display.ConnectionInfo.Host
-				: url = address();
-
-			res.render(view, {'layout': 'publicHeader',
-				'clientAdress'	:	`http://${url}`,
-				'webappMode'	:	+config.Frontend.Mode,
-				'query'			:	JSON.stringify(req.query)
-			});
-		});
-		routerAdmin.get('/', (req, res) => {
-			const config = getConfig();
-
-			res.render('admin', {'layout': 'adminHeader',
-				'clientAdress'	:	`http://${address()}`,
-				'query'			:	JSON.stringify(req.query),
-				'appFirstRun'	:	config.App.FirstRun,
-				'webappMode'	:	config.Frontend.Mode
-			});
-		});
-		routerWelcome.get('/', (req, res) => {
-			const config = getConfig();
-			res.render('welcome', {
-				'appFirstRun'	:	config.App.FirstRun,
-				'clientAdress'	:	`http://${address()}`,
-				'query'			:	JSON.stringify(req.query),
-			});
-		});
-
-		app.use((req, res) => {
-			res.status(404);
-			// respond with html page
-			if (req.accepts('html')) {
-				res.render('404', {url: req.url});
-				return;
-			}
-			// default to plain-text. send()
-			res.type('txt').send('Not found');
-		});
 		const server = createServer(app);
 		initWS(server);
 		server.listen(conf.Frontend.Port, () => {

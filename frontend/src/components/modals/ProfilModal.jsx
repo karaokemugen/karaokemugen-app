@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import iso639 from 'iso-639';
 import axios from 'axios';
-import { parseJwt, createCookie } from '../toolsReact.js'
 import Autocomplete from '../Autocomplete'
-
+import blankAvatar from '../../assets/blank.png'
+require("babel-polyfill");
 class ProfilModal extends Component {
     constructor(props) {
         super(props)
@@ -20,6 +20,9 @@ class ProfilModal extends Component {
             user: {},
             passwordDifferent: 'form-control'
         };
+    }
+
+    async componentDidMount() {
         this.getUser();
         this.getUserList();
     }
@@ -63,21 +66,14 @@ class ProfilModal extends Component {
     }
 
     profileConvert() {
-        window.callModal('custom', i18n.__('PROFILE_CONVERT'),
-            '<label>' + i18n.__('INSTANCE_NAME') + '</label>'
+        window.callModal('custom', this.props.t('PROFILE_CONVERT'),
+            '<label>' + this.props.t('INSTANCE_NAME') + '</label>'
             + '<input type="text"  name="modalLoginServ" value="' + this.props.settingsOnline.Host + '"//>'
-            + '<label>' + i18n.__('PROFILE_PASSWORD_AGAIN') + '</label>'
-            + '<input type="password" placeholder="' + i18n.__('PASSWORD') + '" className="form-control" name="password">', function (data) {
+            + '<label>' + this.props.t('PROFILE_PASSWORD_AGAIN') + '</label>'
+            + '<input type="password" placeholder="' + this.props.t('PASSWORD') + '" className="form-control" name="password">', function (data) {
                 var response = axios.post('/api/public/myaccount/online', { instance: data.modalLoginServ, password: data.password });
-                displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
-
-                createCookie('mugenToken', response.token, -1);
-                createCookie('mugenTokenOnline', response.onlineToken, -1);
-
-                window.logInfos = parseJwt(response.token);
-                window.logInfos.token = response.token;
-                window.logInfos.onlineToken = response.onlineToken;
-                window.initApp();
+                displayMessage('success', '', this.props.t('PROFILE_CONVERTED'));
+                this.props.updateLogInfos(response);
             }
         );
     }
@@ -89,13 +85,7 @@ class ProfilModal extends Component {
             + '<input type="password" placeholder="' + t('PASSWORD') + '" className="form-control" name="password">', function (data) {
                 var response = axios.delete('/api/public/myaccount/online', { password: data.password });
                 displayMessage('success', '', t('PROFILE_ONLINE_DELETED'));
-                createCookie('mugenToken', response.token, -1);
-                createCookie('mugenTokenOnline', response.onlineToken, -1);
-
-                window.logInfos = parseJwt(response.token);
-                window.logInfos.token = response.token;
-                window.logInfos.onlineToken = response.onlineToken;
-                window.initApp();
+                this.props.updateLogInfos(response);
             }
         );
     }
@@ -124,7 +114,7 @@ class ProfilModal extends Component {
         var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
         var dlAnchorElem = document.getElementById('downloadAnchorElem');
         dlAnchorElem.setAttribute('href', dataStr);
-        dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', window.logInfos.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+        dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.props.logInfos.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
         dlAnchorElem.click();
     }
 
@@ -139,7 +129,7 @@ class ProfilModal extends Component {
         for (var i = 0; i < event.target.files.length; i++) {
             dataFile.append('avatarfile', event.target.files[i])
         }
-        dataFile.append('nickname', window.logInfos.username);
+        dataFile.append('nickname', this.props.logInfos.username);
 
         const response = await axios.put('/api/public/myaccount', dataFile);
         const user = this.state.user;
@@ -150,18 +140,18 @@ class ProfilModal extends Component {
     render() {
         const t = this.props.t;
         var listLangs = Object.keys(iso639.iso_639_2).map(k => { return { "label": iso639.iso_639_2[k][this.props.i18n.languages[0]][0], "value": k } });
-        if (!this.props.settingsOnline.Users && logInfos.username.includes('@')) {
+        if (!this.props.settingsOnline.Users && this.props.logInfos.username.includes('@')) {
             setTimeout(function () {
-                displayMessage('warning', i18n.__('LOG_OFFLINE.TITLE') + '<br/>', i18n.__('LOG_OFFLINE.MESSAGE'), 8000);
+                displayMessage('warning', this.props.t('LOG_OFFLINE.TITLE') + '<br/>', this.props.t('LOG_OFFLINE.MESSAGE'), 8000);
             }, 500);
         }
         return (
-            <div className="modal modalPage fade" id="profilModal" tabIndex="21">
+            <div className="modal modalPage" id="profilModal" tabIndex="21">
                 <div className="modal-dialog modal-md">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
                             <li className="modal-title active"><a data-toggle="tab" href="#nav-profil" role="tab" aria-controls="nav-profil" aria-selected="true"> {t("PROFILE")}</a></li>
-                            {window.logInfos.role !== 'guest' ?
+                            {this.props.logInfos.role !== 'guest' ?
                                 <li className="modal-title"><a data-toggle="tab" href="#nav-lang" role="tab" aria-controls="nav-lang" aria-selected="false"> {t("LANGUAGE")}</a></li> : null
                             }
                             <li className="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab" aria-controls="nav-userlist" aria-selected="false"> {t("USERLIST")}</a></li>
@@ -175,15 +165,15 @@ class ProfilModal extends Component {
 
                                         <label title={t("AVATAR_IMPORT")} className="btn btn-default plGenericButton avatar" name="import">
                                             <img className="img-circle" name="avatar_file"
-                                                src={this.state.user.avatar_file ? pathAvatar + this.state.user.avatar_file : pathAvatar + "blank.png"}
+                                                src={this.state.user.avatar_file ? this.state.pathAvatar + this.state.user.avatar_file : {blankAvatar}}
                                                 alt="User Pic" />
-                                            {window.logInfos.role !== 'guest' ?
+                                            {this.props.logInfos.role !== 'guest' ?
                                                 <input id="avatar" className="import-file" type="file" accept="image/*" style={{ display: 'none' }} onChange={this.importAvatar} /> : null
                                             }
                                         </label>
                                         <p name="login">{this.state.user.login}</p>
                                     </div>
-                                    {window.logInfos.role !== 'guest' ?
+                                    {this.props.logInfos.role !== 'guest' ?
                                         <div className="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
                                             <div className="profileLine">
                                                 <i className="glyphicon glyphicon-user"></i>
@@ -219,9 +209,9 @@ class ProfilModal extends Component {
                                                     <i className="glyphicon glyphicon-export"></i> {t("EXPORT")}
                                                 </button>
                                             </div>
-                                            {this.props.settingsOnline.Users && window.logInfos.role !== 'guest' ?
+                                            {this.props.settingsOnline.Users && this.props.logInfos.role !== 'guest' ?
                                                 <div className="profileLine">
-                                                    {window.logInfos.onlineToken ?
+                                                    {this.props.logInfos.onlineToken ?
                                                         <button type="button" title={t("PROFILE_ONLINE_DELETE")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileDelete" onClick={this.profileDelete}>
                                                             <i className="glyphicon glyphicon-retweet"></i> {t("PROFILE_ONLINE_DELETE")}
                                                         </button>

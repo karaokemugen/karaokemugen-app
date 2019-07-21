@@ -4,7 +4,6 @@ import PlaylistHeader from "./PlaylistHeader";
 import KaraDetail from "./KaraDetail";
 import KaraLine from "./KaraLine";
 import axios from "axios";
-import langs from "langs";
 import {
   readCookie,
   createCookie,
@@ -15,10 +14,9 @@ import {
 class Playlist extends Component {
   constructor(props) {
     super(props);
-    this.getSettings = this.getSettings.bind(this);
     this.state = {
-      navigatorLanguage: this.getNavigatorLanguage(),
-      searchValue: ""
+      searchValue: "",
+      playlistCommands: false
     };
     this.getIdPlaylist = this.getIdPlaylist.bind(this);
     this.changeIdPlaylist = this.changeIdPlaylist.bind(this);
@@ -30,11 +28,12 @@ class Playlist extends Component {
     this.handleScroll = this.handleScroll.bind(this);
     this.scrollToBottom = this.scrollToBottom.bind(this);
     this.scrollToPlaying = this.scrollToPlaying.bind(this);
+    this.updateQuotaAvailable = this.updateQuotaAvailable.bind(this);
+    this.togglePlaylistCommands = this.togglePlaylistCommands.bind(this);
     this.playlistRef = React.createRef();
   }
 
   async componentDidMount() {
-    await this.getSettings();
     await this.getPlaylistToAddId();
     await this.getPlaylistList();
     await this.getIdPlaylist();
@@ -57,19 +56,23 @@ class Playlist extends Component {
     window.socket.on("playlistInfoUpdated", idPlaylist => {
       if (this.state.idPlaylist === idPlaylist) this.getPlaylistInfo();
     });
+    window.socket.on('quotaAvailableUpdated', this.updateQuotaAvailable);
   }
 
-  getNavigatorLanguage() {
-    var navigatorLanguage;
-    var languages = langs.all();
-    var index = 0;
-    while (!navigatorLanguage && index < languages.length) {
-      if (navigator.languages[0].substring(0, 2) === languages[index]["1"]) {
-        navigatorLanguage = languages[index]["2B"];
+
+  updateQuotaAvailable(data) {
+    if (this.props.logInfos.username === data.username) {
+      var quotaString = '';
+      if (data.quotaType == 1) {
+        quotaString = data.quotaLeft;
+      } else if (data.quotaType == 2) {
+        quotaString = secondsTimeSpanToHMS(data.quotaLeft, 'ms');
       }
-      index++;
+      if (data.quotaLeft == -1) {
+        quotaString = '\u221e';
+      }
+      this.setState({quotaString: quotaString})
     }
-    return navigatorLanguage;
   }
 
   async getPlaylistList() {
@@ -79,8 +82,8 @@ class Playlist extends Component {
     const kmStats = await axios.get("/api/public/stats");
     var playlistList = response.data.data;
     if (
-      scope === "admin" ||
-      this.state.config.Frontend.Permissions.AllowViewBlacklist
+      this.props.scope === "admin" ||
+      this.props.config.Frontend.Permissions.AllowViewBlacklist
     )
       playlistList.push({
         playlist_id: -2,
@@ -88,8 +91,8 @@ class Playlist extends Component {
         flag_visible: true
       });
     if (
-      scope === "admin" ||
-      this.state.config.Frontend.Permissions.AllowViewBlacklistCriterias
+      this.props.scope === "admin" ||
+      this.props.config.Frontend.Permissions.AllowViewBlacklistCriterias
     )
       playlistList.push({
         playlist_id: -4,
@@ -97,21 +100,20 @@ class Playlist extends Component {
         flag_visible: true
       });
     if (
-      scope === "admin" ||
-      this.state.config.Frontend.Permissions.AllowViewWhitelist
+      this.props.scope === "admin" ||
+      this.props.config.Frontend.Permissions.AllowViewWhitelist
     )
       playlistList.push({
         playlist_id: -3,
         name: "Whitelist",
         flag_visible: true
       });
-    if (scope === "admin")
+    if (this.props.scope === "admin")
       playlistList.push({
         playlist_id: -5,
-        name: "Favs",
-        flag_favorites: true
+        name: "Favs"
       });
-    if (scope === "admin")
+    if (this.props.scope === "admin")
       playlistList.push({
         playlist_id: -1,
         name: "Karas",
@@ -121,16 +123,11 @@ class Playlist extends Component {
   }
 
   async getPlaylistToAddId() {
-    var playlistToAdd = this.state.config.Karaoke.Private
+    var playlistToAdd = this.props.config.Karaoke.Private
       ? "current"
       : "public";
     const response = await axios.get("/api/public/playlists/" + playlistToAdd);
     this.setState({ playlistToAddId: response.data.data.playlist_id });
-  }
-
-  async getSettings() {
-    const res = await axios.get("/api/public/settings");
-    this.setState({ config: res.data.data.config });
   }
 
   getIdPlaylist() {
@@ -177,12 +174,12 @@ class Playlist extends Component {
 
   async getPlaylistInfo() {
     var response = await axios.get(
-      "/api/" + scope + "/playlists/" + this.state.idPlaylist
+      "/api/" + this.props.scope + "/playlists/" + this.state.idPlaylist
     );
     this.setState({ playlistInfo: response.data.data });
   }
 
-  async getPlaylist() {
+  getPlaylistUrl() {
     var url;
     if (this.state.idPlaylist >= 0) {
       url =
@@ -191,7 +188,6 @@ class Playlist extends Component {
         "/playlists/" +
         this.state.idPlaylist +
         "/karas";
-      this.getPlaylistInfo();
     } else if (this.state.idPlaylist === -1) {
       url = "/api/public/karas";
     } else if (this.state.idPlaylist === -2) {
@@ -204,6 +200,14 @@ class Playlist extends Component {
       url = "/api/public/favorites";
     } else if (this.state.idPlaylist === -6) {
       url = "/api/public/karas/recent";
+    }
+    return url;
+  }
+
+  async getPlaylist() {
+    var url = this.getPlaylistUrl();
+    if (this.state.idPlaylist >= 0) {
+      this.getPlaylistInfo();
     }
     url =
       url +
@@ -294,11 +298,15 @@ class Playlist extends Component {
     ref.current.scrollIntoView({ behavior: "smooth" });
   }
 
+  togglePlaylistCommands() {
+    this.setState({playlistCommands: !this.state.playlistCommands});
+  }
+
   render() {
     const t = this.props.t;
     return this.props.scope === "public" &&
-      this.props.side === 1 && this.state.config &&
-      this.state.config.Frontend.Mode === 1 ? (
+      this.props.side === 1 && this.props.config &&
+      this.props.config.Frontend.Mode === 1 ? (
         <div class="playlistContainer">
           <ul id="playlist1" side="1" class="list-group">
             <li class="list-group-item">
@@ -318,6 +326,9 @@ class Playlist extends Component {
             searchValue={this.state.searchValue}
             playlistInfo={this.state.playlistInfo}
             changeSearchValue={this.changeSearchValue}
+            getPlaylistUrl={this.getPlaylistUrl}
+            togglePlaylistCommands = {this.togglePlaylistCommands}
+            playlistCommands={this.state.playlistCommands}
           />
           <div
             className="playlistContainer"
@@ -329,23 +340,25 @@ class Playlist extends Component {
                 this.state.data.content.map(kara => {
                   // build the kara line
                   return (
-                      //<div ref={kara.karaRef} key={Math.random()}></div>
-                      <KaraLine
-                        key={kara.kid}
-                        kara={kara}
-                        scope={this.props.scope}
-                        idPlaylist={this.state.idPlaylist}
-                        playlistInfo={this.state.playlistInfo}
-                        i18nTag={this.state.data.i18n}
-                        navigatorLanguage={this.state.navigatorLanguage}
-                        playlistToAddId={this.state.playlistToAddId}
-                        side={this.props.side}
-                        mode={this.state.config.Frontend.Mode}
-                      />
+                    //<div ref={kara.karaRef} key={Math.random()}></div>
+                    <KaraLine
+                      key={kara.kid}
+                      kara={kara}
+                      scope={this.props.scope}
+                      idPlaylist={this.state.idPlaylist}
+                      playlistInfo={this.state.playlistInfo}
+                      i18nTag={this.state.data.i18n}
+                      navigatorLanguage={this.props.navigatorLanguage}
+                      playlistToAddId={this.state.playlistToAddId}
+                      side={this.props.side}
+                      mode={this.props.config.Frontend.Mode}
+                      logInfos={this.props.logInfos}
+                      playlistCommands={this.state.playlistCommands}
+                    />
                   );
                 })}
-              {this.state.config &&
-                this.state.config.Gitlab.Enabled &&
+              {this.props.config &&
+                this.props.config.Gitlab.Enabled &&
                 this.state.idPlaylist === -1 &&
                 this.state.data.infos.count === this.state.data.infos.from + 400 ? (
                   <li className="list-group-item karaSuggestion">
@@ -355,11 +368,7 @@ class Playlist extends Component {
             </ul>
           </div>
           <div
-            className="plFooter"
-            {...(this.props.side === 1
-              ? { introstep: "13", introlabel: "footer", introposition: "right" }
-              : {})}
-          >
+            className="plFooter">
             <div className="plBrowse">
               <button
                 title={t("GOTO_TOP")}
@@ -386,9 +395,11 @@ class Playlist extends Component {
               </button>
             </div>
             <div className="plInfos">{this.getPlInfosElement()}</div>
-            {this.props.side === 1 ? (
-              <div id="plQuota" className="plQuota right" />
-            ) : null}
+            {this.props.side === 1 && this.state.quotaString ? 
+              <div id="plQuota" className="plQuota right">
+                {this.props.t('QUOTA')}{this.state.quotaString}
+              </div> : null
+            }
           </div>
         </React.Fragment>
       );

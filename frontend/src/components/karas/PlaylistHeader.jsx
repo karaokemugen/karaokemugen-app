@@ -1,11 +1,31 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
+import axios from "axios";
+import getLucky from "../../assets/clover.png"
 
 class PlaylistHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {
     };
+    this.addRandomKaras = this.addRandomKaras.bind(this);
+  }
+
+  addRandomKaras() {
+    window.displayModal('prompt', this.props.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
+      axios.get(this.props.getPlaylistUrl(), { random: nbOfRandoms }).then(randomKaras => {
+        if (randomKaras.content.length > 0) {
+          let textContent = randomKaras.content.map(e => window.buildKaraTitle(e)).join('<br/><br/>');
+          window.displayModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD') + '<br/><br/>' + textContent, () => {
+            var karaList = randomKaras.content.map(a => {
+              return a.kid;
+            }).join();
+            var urlPost = this.props.getPlaylistUrl();
+            axios.post(urlPost, { kid: karaList });
+          }, '');
+        }
+      });
+    }, '');
   }
 
   getActionDivContainer() {
@@ -34,13 +54,18 @@ class PlaylistHeader extends Component {
 
     const actionDivContainer = (
       <div className="btn-group plCommands actionDiv">
-        <button title={this.props.t("ADD_RANDOM_KARAS")} name="addRandomKaras" className="btn btn-default clusterAction">
-          <img src="/ressources/img/clover.png" />
-        </button>
-        <button title={this.props.t("ADD_ALL_KARAS")} name="addAllKaras" className="btn btn-danger clusterAction">
-          <i className="glyphicon glyphicon-share"></i>
-        </button>,
-      <button title={this.props.t("EMPTY_LIST")} name="deleteAllKaras" className="btn btn-danger clusterAction">
+        {this.props.playlistToAddId >= 0 ?
+          <React.Fragment>
+            <button title={this.props.t("ADD_RANDOM_KARAS")} name="addRandomKaras" className="btn btn-default clusterAction">
+              <img src={getLucky} />
+            </button>
+            <button title={this.props.t("ADD_ALL_KARAS")} name="addAllKaras" className="btn btn-danger clusterAction">
+              <i className="glyphicon glyphicon-share"></i>
+            </button>
+          </React.Fragment>
+          : null
+        }
+        <button title={this.props.t("EMPTY_LIST")} name="deleteAllKaras" className="btn btn-danger clusterAction">
           <i className="glyphicon glyphicon-erase"></i>
         </button>,
       <button title={this.props.t("ADD_KARA")} name="addKara" className="btn btn-default">
@@ -54,7 +79,7 @@ class PlaylistHeader extends Component {
       </div>);
 
     return (
-      this.props.scope === 'admin' ?
+      this.props.scope === 'admin' && this.props.playlistCommands && this.props.idPlaylist !== -4 ?
         <div className="plCommandsContainer actionDivContainer">
           {this.props.side === 1 ?
             <React.Fragment>{commandsControls} {actionDivContainer}</React.Fragment> :
@@ -65,6 +90,7 @@ class PlaylistHeader extends Component {
 
   getFlagsContainer() {
     return (
+    this.props.idPlaylist !== -5 ?
       <div className={"flagsContainer " + (this.props.scope === "public" ? "hidden" : "")} >
         <div className={"btn-group plCommands flags " + (this.props.scope === "public" ? "hidden" : "")}
           id={"flag" + this.props.side}>
@@ -78,7 +104,8 @@ class PlaylistHeader extends Component {
             <i className="glyphicon glyphicon-eye-close"></i><i className="glyphicon glyphicon-eye-open"></i>
           </button>
         </div>
-      </div>);
+      </div> : null
+      );
   }
 
   getPlSearch() {
@@ -101,16 +128,16 @@ class PlaylistHeader extends Component {
     return (
       <React.Fragment>
         {this.props.scope !== "public" || this.props.side !== 1 ?
-          <div className="panel-heading container-fluid plDashboard">
+          <div className={"panel-heading container-fluid plDashboard"+(this.props.playlistCommands ? " advanced":"")}>
             {this.props.scope === "admin" || this.props.mode !== 1 ?
               <div className={(this.props.scope !== "public" ? "col-lg-8 col-md-7 col-sm-6 col-xs-6 " : "") + "plSelect"}>
                 {this.props.scope === "admin" ?
-                  <button title={t("PLAYLIST_COMMANDS")} className="btn btn-default pull-left showPlaylistCommands" side="1"
-                    introstep="11" introlabel="playlists_manage_button">
+                  <button title={t("PLAYLIST_COMMANDS")} onClick={this.props.togglePlaylistCommands}
+                    className={"btn btn-default pull-left showPlaylistCommands"+(this.props.playlistCommands ? " btn-primary" : "")}>
                     <i className="glyphicon glyphicon-wrench"></i>
                   </button> : null
                 }
-                <select id={"selectPlaylist" + this.props.side} side={this.props.side} type="playlist_select" className="select2 form-control"
+                <select id={"selectPlaylist" + this.props.side} side={this.props.side} type="playlist_select" className="form-control"
                   value={this.props.idPlaylist} onChange={this.props.changeIdPlaylist}>
                   {(this.props.scope === 'public' && this.props.side === 1 && this.props.mode === 1) ?
                     <option value={this.props.playlistToAddId} data-playlist_id={this.props.playlistToAddId}></option> :
@@ -118,7 +145,7 @@ class PlaylistHeader extends Component {
                       <React.Fragment>
                         <option value="-1" data-playlist_id="-1"></option>
                         <option value="-6" data-playlist_id="-6"></option>
-                        <option value="-5" data-playlist_id="-5" data-flag_favorites="true"></option>
+                        <option value="-5" data-playlist_id="-5"></option>
                       </React.Fragment>) :
                       this.props.playlistList && this.props.playlistList.map(playlist => {
                         return <option key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}</option>;
@@ -162,11 +189,11 @@ class PlaylistHeader extends Component {
                 <li val="-1" searchtype="search" className="tagFilter">
                   <span className='value'>
                     <span className="tagsTypesContainer">
-                      <select type="text" className="tagsTypes form-control select2 value" placeholder="Search">
+                      <select type="text" className="tagsTypes form-control value" placeholder="Search">
                       </select>
                     </span>
                     <span className="tagsContainer">
-                      <select type="text" className="tags form-control select2 value" placeholder="Search">
+                      <select type="text" className="tags form-control value" placeholder="Search">
                       </select>
                     </span>
                   </span>

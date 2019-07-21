@@ -1,18 +1,13 @@
 var mouseDown;          // Boolean : capture if the mouse is pressed
 
-
 (function (yourcode) {
     yourcode(window.jQuery, window, document);
 }(function ($, window, document) {
+
+    scope = 'admin';
     // The $ is now locally scoped
     // Listen for the jQuery ready event on the document
     $(function () {
-
-        $('[name="searchPlaylist"]').keypress(function (e) { // allow pressing enter to validate a setting
-            if (e.which == 13) {
-                $(this).blur();
-            }
-        });
 
         $('.playlist-main').on('keypress', '#bcVal', function (e) {
             if (e.which == 13) {
@@ -68,8 +63,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                         $('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
 
                     }
-                } else {
-                    console.log("Err: tags empty");
                 }
             })
         });
@@ -122,7 +115,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 idKara = Array.prototype.slice.apply(idKaraList).join();
                 idKaraPlaylist = Array.prototype.slice.apply(idKaraPlaylistList).join();
                 if (!idKara && !idKaraPlaylist) {
-                    DEBUG && console.log('No kara selected');
                     return false;
                 }
             } else {
@@ -131,7 +123,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
             }
 
             var action = $(this).attr('name');
-            DEBUG && console.log(action, side, idPlaylistFrom, idPlaylistTo, idKara);
 
             var promise = $.Deferred();
             var url, data, type;
@@ -148,8 +139,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                         var requestedby = idPlaylistFrom == -1 || li.data('username') == undefined ? logInfos.username : li.data('username');
                         data = { requestedby: requestedby, kid: idKara };
                     }
-                } else if (idPlaylistTo == -1) {
-                    DEBUG && console.log('ERR: can\'t add kara to the kara list from database');
                 } else if (idPlaylistTo == -2 || idPlaylistTo == -4) {
                     url = scope + '/blacklist/criterias';
                     data = { blcriteria_type: 1001, blcriteria_value: idKara };
@@ -175,10 +164,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                     if (idPlaylistFrom > 0) {
                         url = scope + '/playlists/' + idPlaylistFrom + '/karas/';
                         data['plc_id'] = idKaraPlaylist;
-                    } else if (idPlaylistFrom == -1) {
-                        DEBUG && console.log('ERR: can\'t delete kara from the kara list from database');
-                    } else if (idPlaylistFrom == -2) {
-                        DEBUG && console.log('ERR: can\'t delete kara directly from the blacklist');
                     } else if (idPlaylistFrom == -3) {
                         url = scope + '/whitelist';
                         data['wlc_id'] = idKaraPlaylist;
@@ -193,23 +178,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                         });
                     }
                 });
-            }
-        });
-
-        $('.playlist-main').on('click', 'button.showPlaylistCommands', function () {
-            $(this).closest('.plDashboard').toggleClass('advanced');
-            $(window).resize();
-
-            if ($('.plDashboard').hasClass('advanced') && ($('#playlist1').parent().height() < 200 || $('#playlist2').parent().height() < 200)) {
-                $('body').addClass('hiddenHeader');
-            } else if (!$('.plDashboard').hasClass('advanced')) {
-                $('body').removeClass('hiddenHeader');
-            }
-
-            $(this).toggleClass('btn-primary');
-
-            if (introManager && introManager._currentStep) {
-                introManager.nextStep();
             }
         });
 
@@ -263,16 +231,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
     mouseDown = false;
 
-    getSettings = function () {
-        var promise = $.Deferred();
-        $.ajax({ url: 'admin/settings' }).done(function (data) {
-            settings = data;
-            promise.resolve();
-        });
-
-        return promise.promise();
-    };
-
     /* progression bar handlers part */
 
     goToPosition = function (e) {
@@ -323,7 +281,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 data = { name: namePlaylist, flag_visible: setTo };
             } else {
                 var list = { '-2': 'Blacklist', '-3': 'Whitelist', '-4': 'BlacklistCriterias' };
-                $('input[name="Frontend.Permissions.AllowView' + list[idPlaylist] + '"]').val(1).bootstrapSwitch('state', setTo);
+                //$('input[name="Frontend.Permissions.AllowView' + list[idPlaylist] + '"]').val(1).bootstrapSwitch('state', setTo);
                 return false;
             }
         } else {
@@ -368,9 +326,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                     name = JSON.parse(fr.result).PlaylistInformation.name;
                 }                
                 ajx('POST', url, data, function (response) {
-                    displayMessage('success', 'Playlist importée' + ' : ', name);
+                    window.displayMessage('success', 'Playlist importée' + ' : ', name);
                     if (response.unknownKaras && response.unknownKaras.length > 0) {
-                        displayMessage('warning', 'Karas inconnus' + ' : ', response.unknownKaras);
+                        window.displayMessage('warning', 'Karas inconnus' + ' : ', response.unknownKaras);
                     }
                     var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
                     playlistsUpdating.done(function () {
@@ -425,7 +383,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 data[v] = selectedOption.data(v);
             });
 
-            displayModal('prompt', i18n.__('CL_RENAME_PLAYLIST', playlistName), '', function (newName) {
+            window.callModal('prompt', window.t('CL_RENAME_PLAYLIST', playlistName), '', function (newName) {
                 data['name'] = newName;
                 ajx(type, url, data);
             }, playlistName);
@@ -433,7 +391,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
             type = 'POST';
             url = 'admin/playlists';
 
-            displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST'), '',
+            window.callModal('prompt', window.t('CL_CREATE_PLAYLIST'), '',
                 function (playlistName) {
                     data = { name: playlistName, flag_visible: false, flag_current: false, flag_public: false };
                     ajx(type, url, data, function (idNewPlaylist) {
@@ -446,7 +404,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
         } else if (name == 'delete') {
             url += '';
             type = 'DELETE';
-            displayModal('confirm', i18n.__('CL_DELETE_PLAYLIST', playlistName), '', function (confirm) {
+            window.callModal('confirm', window.t('CL_DELETE_PLAYLIST', playlistName), '', function (confirm) {
                 if (confirm) {
                     ajx(type, url, data, function () {
                         playlistsUpdating.done(function () {
@@ -473,7 +431,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                     });
                     userlistStr += '</div>';
 
-                    displayModal('custom', i18n.__('START_FAV_MIX'),
+                    window.callModal('custom', window.t('START_FAV_MIX'),
                         userlistStr + '<input type="text"name="duration" placeholder="200 (min)"/>',
                         function (data) {
                             if (!data.duration) data.duration = 200;
@@ -508,7 +466,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
         if (posFromPrev != posFromNext || isNaN(posFromPrev) && isNaN(posFromNext)) {
             console.log('Positions in the list are fucked up');
-            displayMessage('warning', 'Err:', i18n.__('CL_WRONG_KARA_ORDER'));
+            window.displayMessage('warning', 'Err:', window.t('CL_WRONG_KARA_ORDER'));
             return false;
         } else {
             console.log('Preparing for the PUT...');
@@ -521,15 +479,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 type: 'PUT',
                 url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
                 data: { pos: posFromPrev }
-            }).done(function () {
-                console.log('NICE');
-                DEBUG && console.log('Kara plc_id ' + posFromPrev + ' pos changed');
-            }).fail(function () {
-                console.log('FAIL');
             }).always(() => {
                 liKara.parent().removeClass('disabled');
             });
-            scrollToKara(side, idKara, .55);
         }
     };
 }));

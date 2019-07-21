@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export function parseJwt(token) {
 	var base64Url = token.split('.')[1];
 	var base64 = base64Url.replace('-', '+').replace('_', '/');
@@ -75,4 +77,12 @@ export function secondsTimeSpanToHMS (s, format) {
 		result = (d > 0 ? d+'d' : '')+(h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
 	}
 	return result; 
+};
+
+export function startIntro (scope){
+	if (scope === 'admin') {
+		axios.put('/api/admin/settings', JSON.stringify({ 'setting': {'App': {'FirstRun':false}} }));
+	} else {
+		createCookie('publicTuto', 'true');
+	}
 };

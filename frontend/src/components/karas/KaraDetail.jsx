@@ -6,7 +6,9 @@ import axios from "axios";
 class KaraDetail extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      showLyrics: false
+    };
     this.getLastPlayed = this.getLastPlayed.bind(this);
     this.moreInfo = this.moreInfo.bind(this);
     this.showVideo = this.showVideo.bind(this);
@@ -151,7 +153,7 @@ class KaraDetail extends Component {
         if (is_touch_device()) {
           window.callModal('alert', this.props.t('LYRICS'), '<center>' + response.data.data.join('<br/>') + '</center');
         } else {
-          this.setState({ lyrics: response.data.data });
+          this.setState({ lyrics: response.data.data, showLyrics:true });
           this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });
         }
       });
@@ -175,7 +177,6 @@ class KaraDetail extends Component {
    */
   render() {
     if (this.state.kara) {
-      if (window.introManager && window.introManager._currentStep) window.introManager.nextStep();
       const t = this.props.t;
       var data = this.state.kara;
       var todayDate = Date.now();
@@ -244,11 +245,12 @@ class KaraDetail extends Component {
       );
 
       var lyricsKara =
-        data.subfile && this.state.lyrics ? (
+        data.subfile && this.state.showLyrics ? (
           <div className="lyricsKara alert alert-info" ref={this.fullLyricsRef}>
             <button
               title={t("TOOLTIP_CLOSEPARENT")}
               className="closeParent btn btn-action"
+              onClick={() => this.setState({showLyrics: false})}
             />
             <div className="lyricsKaraLoad">
               {this.state.lyrics.map(ligne => {
@@ -263,6 +265,7 @@ class KaraDetail extends Component {
             <button
               title={t("TOOLTIP_CLOSEPARENT")}
               className="closeParent bottom btn btn-action"
+              onClick={() => this.setState({showLyrics: false})}
             />
           </div>
         ) : null;
@@ -281,7 +284,7 @@ class KaraDetail extends Component {
                   />
                 )}
                 {(this.props.scope === "public" && !is_touch_device()) ||
-                  window.logInfos.role === "guest"
+                  this.props.logInfos.role === "guest"
                   ? null
                   : makeFavButton}
                 {data.subfile ? (
@@ -289,7 +292,7 @@ class KaraDetail extends Component {
                     title={t("TOOLTIP_SHOWLYRICS")}
                     className={
                       "fullLyrics btn btn-action " +
-                      (isTouchScreen ? "mobile" : "")
+                      (is_touch_device() ? "mobile" : "")
                     }
                     onClick={this.showFullLyrics}
                   />
@@ -307,7 +310,7 @@ class KaraDetail extends Component {
                 {data.serie ? (
                   <button
                     className={
-                      "moreInfo btn btn-action" + (isTouchScreen ? "mobile" : "")
+                      "moreInfo btn btn-action" + (is_touch_device() ? "mobile" : "")
                     }
                     onClick={this.moreInfo}
                   />
@@ -336,7 +339,7 @@ class KaraDetail extends Component {
           <React.Fragment>
             <div class="details z-depth-1" id="karaCard">
               <div className="topRightButtons">
-                {window.logInfos.role === "guest" ? null : makeFavButton}
+                {this.props.logInfos === "guest" ? null : makeFavButton}
               </div>
               <table>
                 <tbody>{htmlDetails}</tbody>
