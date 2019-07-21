@@ -160,7 +160,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 					</Checkbox.Group>
 				</div>
 			);
-		} else if (this.props.search === 'serie') {
+		} else if (this.props.search === 'serie' || this.props.search === 'aliases') {
 			return (
 				<div>
 					{

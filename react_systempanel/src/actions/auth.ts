@@ -10,7 +10,6 @@ export async function login(username: string, password: string, dispatch: Dispat
       // Store data, should be managed in a service and item should be enum and not string
       localStorage.setItem('kmToken', info.token);
       localStorage.setItem('kmOnlineToken', info.onlineToken);
-      localStorage.setItem('username', info.username);
       axios.defaults.headers.common['authorization'] = info.token;
       axios.defaults.headers.common['onlineAuthorization'] = info.onlineToken;
 
@@ -33,7 +32,6 @@ export async function login(username: string, password: string, dispatch: Dispat
 export function logout(dispatch: Dispatch<LogoutUser>): void{
   localStorage.removeItem('kmToken');
   localStorage.removeItem('kmOnlineToken');
-  localStorage.removeItem('username');
   delete axios.defaults.headers.common['authorization'];
   delete axios.defaults.headers.common['onlineAuthorization'];
 

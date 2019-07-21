@@ -77,9 +77,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				]
 				: null,
 			singers: this.getTagArray(kara.singers),
-			authors: localStorage.getItem("username") !== "admin"
-				? [localStorage.getItem("username").split("@")[0]]
-				: this.getTagArray(kara.authors),
+			authors: this.getTagArray(kara.authors),
 			misc: this.getTagArray(kara.misc),
 			serie_orig: kara.serie_orig ? [kara.serie_orig] : [],
 			creators: this.getTagArray(kara.creators),
