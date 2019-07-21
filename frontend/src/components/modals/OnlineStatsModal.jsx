@@ -14,7 +14,7 @@ class OnlineStatsModal extends Component {
         axios.put('/api/admin/settings', {
             setting: JSON.stringify(data)
         });
-        $('#onlineStatsModal').modal('hide');
+        this.props.toggleOnlineStatsModal();
     }
 
     render() {

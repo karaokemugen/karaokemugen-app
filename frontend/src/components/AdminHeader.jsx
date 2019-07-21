@@ -8,12 +8,10 @@ class AdminHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      privateMode: this.props.config && this.props.config.Karaoke.Private,
-      options: false,
+      privateMode: this.props.config.Karaoke.Private,
       statusPlayer: {}
     };
     this.saveMode = this.saveMode.bind(this);
-    this.setOptionMode = this.setOptionMode.bind(this);
     this.adminMessage = this.adminMessage.bind(this);
     window.socket.on("playerStatus", data => {
       var val = parseInt(data.volume);
@@ -56,41 +54,17 @@ class AdminHeader extends Component {
     axios.put("/api/admin/player", data);
   }
 
-  setOptionMode(mode) {
-    // mode have to be a boolean [true,false]
-    if(typeof mode =='object') // if we receive an event => toggle current state
-      mode = !this.state.options;
-
-    this.setState({ options: mode });
-    // setState is an asynchrone action ... value is not yet set in "this.state.options"
-    // this is why I use an internal var all along
-    if (!mode) {
-      $("#playlist").show();
-      $("#manage").hide();
-    } else {
-      $("#playlist").hide();
-      $("#manage").show();
-      if (window.introManager && window.introManager._currentStep) {
-        window.introManager.nextStep();
-      }
-    }
-  }
-
-  poweroff() {
-    axios.post("/api/admin/shutdown");
-  }
-
   adminMessage() {
     this.props.callModal(
       "custom",
       "Message indispensable",
       '<select class="form-control" name="destination"><option value="screen">' +
-        i18n.__("CL_SCREEN") +
+        this.props.t("CL_SCREEN") +
         "</option>" +
         '<option value="users">' +
-        i18n.__("CL_USERS") +
+        this.props.t("CL_USERS") +
         '</option><option value="all">' +
-        i18n.__("CL_ALL") +
+        this.props.t("CL_ALL") +
         "</option></select>" +
         '<input type="text"name="duration" placeholder="5000 (ms)"/>' +
         '<input type="text" placeholder="Message" class="form-control" id="message" name="message">',
@@ -109,25 +83,13 @@ class AdminHeader extends Component {
     );
   }
 
-  logout() {
-    eraseCookie('mugenToken');
-    eraseCookie('mugenTokenOnline');
-    window.location.reload();
-  }
-
   render() {
     const t = this.props.t;
-    if (this.props.config && this.props.config.Online.Stats === undefined) {
-      window.callOnlineStatsModal();
-    }
     return (
       <React.Fragment>
         <div
           id="header"
           className="header"
-          introstep="6"
-          introlabel="lecteur"
-          introtooltipclass="_introBottom"
         >
           <div
             className="dropdown btn btn-default btn-dark pull-right"
@@ -146,21 +108,20 @@ class AdminHeader extends Component {
                 title={t("ACCOUNT")}
                 action="account"
                 className="btn btn-default btn-dark"
-                onClick={this.props.profileModal}
+                onClick={this.props.toggleProfileModal}
               >
                 <i className="glyphicon glyphicon-user" />
               </li>
               <li
-                title={t("LOGOUT")}
+                title={t("LOGOUT")} onClick={this.props.logOut}
                 className="btn btn-default btn-dark"
-                onClick={this.logout}
               >
                 <i className="glyphicon glyphicon-log-out" />
               </li>
               <li
                 title={t("SHUTDOWN")}
                 className="btn btn-default btn-dark"
-                onClick={this.poweroff}
+                onClick={this.props.powerOff}
               >
                 <i className="glyphicon glyphicon-off" />
               </li>
@@ -218,20 +179,18 @@ class AdminHeader extends Component {
           <div className="pull-left btn-group switchs">
             <RadioButton
               title={t("SWITCH_PRIVATE")}
-              data-introstep="7"
-              data-introlabel="mode"
               name="Karaoke.Private"
               buttons={[
                 {
                   label:t("PRIVATE"),
-                  active:this.props.config && this.state.privateMode,
+                  active:this.state.privateMode,
                   activeColor:"#994240",
                   onClick:() => this.saveMode(true),
                   
                 },
                 {
                   label:t("PUBLIC"),
-                  active:!(this.props.config && this.state.privateMode),
+                  active:!this.state.privateMode,
                   activeColor:"#57bb00",
                   onClick:() => this.saveMode(false),
                   
@@ -241,19 +200,17 @@ class AdminHeader extends Component {
 
             <RadioButton
               title={t("SWITCH_OPTIONS")}
-              data-introstep="13"
-              data-introlabel="settings"
               name="optionsButton"
               buttons={[
                 {
                   label:t("CL_PLAYLISTS"),
-                  active:!(this.props.config && this.state.options),
-                  onClick:() => this.setOptionMode(false),
+                  active:!this.state.options,
+                  onClick:this.props.setOptionMode,
                 },
                 {
                   label:t("OPTIONS"),
-                  active:this.props.config && this.state.options,
-                  onClick:() => this.setOptionMode(true),
+                  active:this.state.options,
+                  onClick:this.props.setOptionMode,
                   
                 }
               ]}

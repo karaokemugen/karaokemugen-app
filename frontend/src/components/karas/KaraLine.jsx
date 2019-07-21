@@ -26,7 +26,7 @@ class KaraLine extends Component {
   }
 
   addKara() {
-    axios.post('/api/public/karas/' + this.props.kara.kid, { requestedby: window.logInfos.username });
+    axios.post('/api/public/karas/' + this.props.kara.kid, { requestedby: this.props.logInfos.token ? this.props.logInfos.username : '' });
   }
 
   handleSwipe(e) {
@@ -37,10 +37,8 @@ class KaraLine extends Component {
       this.addKara();
     } else if (this.props.side === 1 && e.changedTouches[0].clientX < this.state.startSwipeX - 50) {
       elem.css({ transform: 'translateX(' + -1 * panelWidth + 'px)' });
-      if (window.introManager && window.introManager._currentStep) window.introManager.goToStepNumber(19);
     } else if (this.props.side === 2 && e.changedTouches[0].clientX > this.state.startSwipeX + 50) {
       elem.css({ transform: 'translateX(0)' });
-      if (window.introManager && window.introManager._currentStep) window.introManager.goToStepNumber(27);
     }
     e.preventDefault();
   }
@@ -50,7 +48,7 @@ class KaraLine extends Component {
   }
 
   getActionsDiv() {
-    var addKaraButton = (<button title={this.props.t('TOOLTIP_ADDKARA') + (scope == 'admin' ? ' - ' + this.props.t('TOOLTIP_ADDKARA_ADMIN') : '')}
+    var addKaraButton = (<button title={this.props.t('TOOLTIP_ADDKARA') + (this.props.scope == 'admin' ? ' - ' + this.props.t('TOOLTIP_ADDKARA_ADMIN') : '')}
       name="addKara" className="btn btn-sm btn-action" onClick={this.addKara} ></button>);
     if (this.props.scope === 'admin' && (this.props.idPlaylist >= 0 || this.props.idPlaylist === -3)) {
       // Admin et playlist standard ou Whitelist
@@ -121,12 +119,12 @@ class KaraLine extends Component {
             {is_touch_device() && scope == 'admin' && idPlaylist > 0 ? <span className="dragHandle"><i className="glyphicon glyphicon-option-vertical"></i></span> : null}
           </div>
         }
-        {scope == 'admin' ? <span name="checkboxKara"></span> : null}
+        {scope == 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ? <span name="checkboxKara"></span> : null}
         <div className="infoDiv">
           {scope === 'admin' || !is_touch_device() ? <button title={t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
             style={this.state.karaDetailState ? { borderColor: '#8aa9af' } : {}} onClick={this.toggleKaraDetail}
           ></button> : null}
-          {scope === 'public' && window.logInfos.role !== 'guest' && !is_touch_device() ?
+          {scope === 'public' && this.props.logInfos.role !== 'guest' && !is_touch_device() ?
             <button title={t('TOOLTIP_FAV')} onClick={this.makeFavorite}
               className={"makeFav btn-sm btn btn-action "
                 + (is_touch_device() ? 'mobile' : '')
@@ -134,7 +132,7 @@ class KaraLine extends Component {
             </button> : null}
           {scope === 'admin' && idPlaylist > 0 ? <button title={t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara" onClick={this.playKara}></button> : null}
           {scope !== 'admin' && flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? 'currentLike' : ''} onClick={this.likeKara}></button> : null}
-          {scope !== 'admin' && kara.username == window.logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
+          {scope !== 'admin' && kara.username == this.props.logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
             <button title={t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}></button> : null}
         </div>
         <div className="contentDiv">
@@ -164,7 +162,7 @@ class KaraLine extends Component {
           <KaraDetail kara={this.props.kara} scope={this.props.scope} idPlaylist={this.props.idPlaylist} mode='list'
             publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)} toggleKaraDetail={this.toggleKaraDetail}
             karaDetailState={this.state.karaDetailState} makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite}
-            getTagInLocale={this.getTagInLocale}></KaraDetail> : null
+            getTagInLocale={this.getTagInLocale} logInfos={this.props.logInfos}></KaraDetail> : null
         }
       </li>)
   }

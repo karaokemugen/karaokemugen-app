@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import Fingerprint2 from 'fingerprintjs2'
 import axios from "axios";
-import { createCookie, eraseCookie, is_touch_device } from '../toolsReact';
+import { is_touch_device,startIntro,readCookie  } from '../toolsReact';
 
 class LoginModal extends Component {
     constructor(props) {
@@ -18,9 +18,10 @@ class LoginModal extends Component {
             serv: (this.props.config && this.props.config.Online.Users) ? this.props.config.Online.Host : '',
             role: 'user'
         }
-        if (this.props.admpwd === 'guest') {
-            this.loginGuest();
-        } else if (this.props.admpwd) {
+    }
+
+    async componentDidMount() {
+        if (this.props.admpwd) {
             this.login('admin', this.props.admpwd);
         }
     }
@@ -38,43 +39,21 @@ class LoginModal extends Component {
 
         await axios.post(url, data).then(result => {
             var response = result.data;
+            this.props.toggleLoginModal();
             if (this.props.scope === 'admin' && response.role !== 'admin') {
-                window.displayMessage('warning', '', i18n.__('ADMIN_PLEASE'));
+                window.displayMessage('warning', '', this.props.t('ADMIN_PLEASE'));
             }
-            $('#loginModal').modal('hide');
-            this.setState({ redBorders: '' });
+            this.props.updateLogInfos(response);
+            window.displayMessage('info', '', this.props.t('LOG_SUCCESS', username));
 
-            createCookie('mugenToken', response.token, -1);
-            if (response.onlineToken) {
-                createCookie('mugenTokenOnline', response.onlineToken, -1);
-            } else if (!username.includes('@')) {
-                eraseCookie('mugenTokenOnline');
+            if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
+                this.props.toggleHelpModal();
             }
-
-            window.logInfos = response;
-            window.displayMessage('info', '', i18n.__('LOG_SUCCESS', window.logInfos.username));
-            if (this.props.scope !== 'welcome') {
-            window.initApp();
-            }
-
-            if (window.introManager && typeof window.introManager._currentStep !== 'undefined') {
-                window.introManager.nextStep();
-            } else if (is_touch_device() && !readCookie('mugenTouchscreenHelp')) {
-                window.callHelpModal();
-            }
-            if (this.props.callback) {
-                this.props.callback(window.logInfos.username);
-            }
-            if (this.props.admpwd && this.props.admpwd !== 'guest') {
-                window.startIntro('admin');
-                axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-                axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            if (this.props.admpwd && this.props.config.App.FirstRun) {
+                startIntro('admin');
                 axios.put('/api/admin/settings', JSON.stringify({ 'setting': { 'Karaoke': { 'Private': true } } }));
             }
-        })
-            .catch(err => {
-                this.setState({ redBorders: 'redBorders', password: '' });
-            });
+        });
     };
 
     loginGuest() {
@@ -93,7 +72,7 @@ class LoginModal extends Component {
     signup() {
         if (this.state.login.includes('@')) {
             this.setState({ errorBackground: 'errorBackground' });
-            window.displayMessage('warning', '', i18n.__('CHAR_NOT_ALLOWED', '@'));
+            window.displayMessage('warning', '', this.props.t('CHAR_NOT_ALLOWED', '@'));
             return;
         } else {
             this.setState({ errorBackground: '' });
@@ -110,12 +89,10 @@ class LoginModal extends Component {
             var apiPublic = this.props.scope === 'welcome' ? 'public' : this.props.scope;
             axios.post('/api/' + apiPublic + '/users', data)
                 .then(response => {
-                    window.displayMessage('info', 'Info', i18n.__('CL_NEW_USER', username));
-
-                    $('#loginModal').modal('hide');
+                    window.displayMessage('info', 'Info', this.props.t('CL_NEW_USER', username));
                     this.setState({ redBorders: '' });
 
-                    if (this.props.scope === 'public' || window.introManager && typeof window.introManager._currentStep !== 'undefined') this.login(username, password);
+                    if (this.props.scope === 'public') this.login(username, password);
                 })
                 .catch(err => {
                     this.setState({ redBorders: 'redBorders' });
@@ -131,7 +108,7 @@ class LoginModal extends Component {
 
     render() {
         const t = this.props.t;
-        var loginModalClassName = readCookie('publicTuto') ? "modal modalPage fade" : "modal modalPage fade firstRun";
+        var loginModalClassName = readCookie('publicTuto') ? "modal modalPage" : "modal modalPage firstRun";
         return (
             <div className={loginModalClassName} id="loginModal" tabIndex="20">
                 <div className="modal-dialog modal-sm">
@@ -141,26 +118,26 @@ class LoginModal extends Component {
                                 <a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">{this.props.scope === 'admin' ? 'Login admin' : t("LOGIN")}</a>
                             </li>
                             <li className="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {t("NEW_ACCOUNT")}</a></li>
-                            <button className="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
+                            <button className="closeModal btn btn-action" data-dismiss="modal" aria-label="Close" onClick={this.props.toggleLoginModal}></button>
                         </ul>
                         <div className="tab-content" id="nav-tabContent">
                             <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" className="modal-body tab-pane fade in active">
-                                {!this.props.scope === 'admin' && this.props.config.Frontend.Mode === 2 ? null :
+                                {this.props.scope !== 'admin' && this.props.config.Frontend.Mode === 2 ? 
                                     <React.Fragment>
                                         <div className="tour hidden">
                                             {t("FIRST_PUBLIC_RUN_WELCOME")}
                                         </div>
                                         <div className="modal-message tour">
-                                            <button className="btn btn-default tour" onClick={() => window.startIntro('public')}>
+                                            <button className="btn btn-default tour" onClick={() => startIntro('public')}>
                                                 {t("FOLLOW_TOUR")}
                                             </button>
                                         </div>
                                         <div className="tour">
                                             {t("OR")}
                                         </div>
-                                    </React.Fragment>
+                                    </React.Fragment> : null
                                 }
-                                {!this.props.scope === 'admin' ? null :
+                                {this.props.scope !== 'admin' ?
                                     <React.Fragment>
                                         <div className="modal-message">
                                             <button className="btn btn-default guest" onClick={this.loginGuest}>
@@ -170,7 +147,7 @@ class LoginModal extends Component {
                                         <div className="loginRelated">
                                             {t("OR")}
                                         </div>
-                                    </React.Fragment>
+                                    </React.Fragment> : null
                                 }
                                 <div className="modal-message loginRelated">
                                     <input type="text" id="login" name="modalLogin" placeholder={t("NICKNAME")}
