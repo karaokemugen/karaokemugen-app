@@ -43,6 +43,8 @@ VALUES(
 	$6,
 	$7
 )
+ON CONFLICT (pk_tid) DO UPDATE SET
+	types = $3
 `;
 
 export const deleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_kid = $1';

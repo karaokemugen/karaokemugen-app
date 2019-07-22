@@ -1,4 +1,4 @@
-import {getAllTags, selectTagByNameAndType, insertTag, getTag, updateTag, removeTag} from '../dao/tag';
+import {getAllTags, selectTagByNameAndType, insertTag, selectTag, updateTag, removeTag} from '../dao/tag';
 import logger, {profile} from '../lib/utils/logger';
 import { TagParams, Tag } from '../lib/types/tag';
 import { DBTag } from '../lib/types/database/tag';
@@ -29,12 +29,6 @@ export async function getTags(params: TagParams) {
 	const ret = formatTagList(tags.slice(params.from || 0, (params.from || 0) + params.size || 999999999), params.from || 0, tags.length);
 	profile('getTags');
 	return ret;
-}
-
-export async function getOrAddTagID(tagObj: Tag): Promise<Tag> {
-	let tag:Tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
-	if (!tag) tag = await addTag(tagObj);
-	return tag;
 }
 
 export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> {
@@ -68,6 +62,10 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 export async function refreshTagsAfterDBChange() {
 	await refreshTags();
 	refreshKaraTags().then(() => refreshKaras());
+}
+
+export async function getTag(tid: string) {
+	return await selectTag(tid);
 }
 
 export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }) {

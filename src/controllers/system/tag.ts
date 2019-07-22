@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { requireAdmin, requireValidUser, requireAuth } from "../middlewares/auth";
 import {getRemoteTags} from '../../services/download';
-import { getTags, deleteTag, editTag, addTag } from "../../services/tag";
-import { getTag } from "../../dao/tag";
+import { getTag, getTags, deleteTag, editTag, addTag } from "../../services/tag";
 
 
 export default function systemTagController(router: Router) {

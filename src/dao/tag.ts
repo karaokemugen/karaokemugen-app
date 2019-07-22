@@ -5,7 +5,7 @@ import { DBTag } from '../lib/types/database/tag';
 import { WhereClause } from '../types/database';
 const sql = require('./sql/tag');
 
-export async function getTag(id: string): Promise<DBTag> {
+export async function selectTag(id: string): Promise<DBTag> {
 	const res = await db().query(sql.getTag, [id]);
 	return res.rows[0];
 }

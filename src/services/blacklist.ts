@@ -6,7 +6,7 @@ import {emptyBlacklistCriterias as emptyBLC,
 	getBlacklistContents as getBLContents,
 	getBlacklistCriterias as getBLC,
 } from '../dao/blacklist';
-import {getTag} from '../dao/tag';
+import {getTag} from './tag';
 import {getKara} from '../dao/kara';
 import langs from 'langs';
 import {getState} from '../utils/state';
