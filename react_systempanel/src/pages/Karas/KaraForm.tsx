@@ -346,7 +346,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					wrapperCol={{ span: 1, offset: 0 }}
 				>
 					{getFieldDecorator('order', {
-						initialValue: this.props.kara.order
+						initialValue: this.props.kara.songorder
 					})(<InputNumber
 						min={0}
 						style={{ width: '100%' }}

@@ -141,10 +141,11 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	render() {
 		const { value, inputVisible } = this.state;
 		if (this.props.checkboxes) {
+			var tids = this.state.value.map(objectTag => {return objectTag[0]});
 			return (
 				<div>
 
-					<Checkbox.Group defaultValue={this.state.value[0]} style={{ width: '100%' }} onChange={this.onCheck}>
+					<Checkbox.Group value={tids} style={{ width: '100%' }} onChange={this.onCheck}>
 						<Row>
 							{
 								this.state.DS.map((tag) => {
