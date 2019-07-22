@@ -94,7 +94,7 @@ export async function deleteTag(tid: string) {
 	await Promise.all([
 		refreshTags(),
 		removeTagFile(tag.tagfile),
-		removeTagInKaras(tag.name, await getAllKaras()),
+		removeTagInKaras(tid, await getAllKaras()),
 	]);
 	// Refreshing karas is done asynchronously
 	removeTagInStore(tid);
