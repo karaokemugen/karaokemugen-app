@@ -1,4 +1,4 @@
-import {getAllTags, selectTagByNameAndType, insertTag, selectTag, updateTag, removeTag} from '../dao/tag';
+import {getAllTags, selectTagByNameAndType, insertTag, selectTag, updateTag, removeTag, updateKaraTagsTID} from '../dao/tag';
 import logger, {profile} from '../lib/utils/logger';
 import { TagParams, Tag } from '../lib/types/tag';
 import { DBTag } from '../lib/types/database/tag';
@@ -10,7 +10,8 @@ import { sanitizeFile, asyncUnlink, resolveFileInDirs } from '../lib/utils/files
 import { writeTagFile, formatTagFile, removeTagFile, removeTagInKaras, getDataFromTagFile } from '../lib/dao/tagfile';
 import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
 import { refreshKaras } from '../lib/dao/kara';
-import { getAllKaras } from './kara';
+import { getAllKaras, getKaras } from './kara';
+import { writeKara } from '../lib/dao/karafile';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
@@ -66,6 +67,37 @@ export async function refreshTagsAfterDBChange() {
 
 export async function getTag(tid: string) {
 	return await selectTag(tid);
+}
+
+export async function mergeTags(tid1: string, tid2: string) {
+	try {
+		const [tag1, tag2] = await Promise.all([
+			getTag(tid1),
+			getTag(tid2)
+		]);
+		const types = [].concat(tag1.types, tag2.types);
+		const aliases = [].concat(tag1.aliases, tag2.aliases);
+		const i18n = {...tag1.i18n, ...tag2.i18n};
+		const tagObj: Tag = {
+			tid: uuidV4(),
+			name: tag1.name,
+			types: types,
+			i18n: i18n,
+			short: tag1.short,
+			aliases: aliases
+		};
+		await insertTag(tagObj);
+		await Promise.all([
+			updateKaraTagsTID(tid1, tagObj.tid),
+			updateKaraTagsTID(tid2, tagObj.tid)
+		]);
+		const affectedKaras = await getKaras({mode: 'search', modeValue: `t:${tagObj.tid}`, admin: true});
+		const karaEdits = [refreshTagsAfterDBChange()];
+		affectedKaras.content.forEach(kara => karaEdits.push(writeKara(kara.karafile, kara)));
+		await Promise.all(karaEdits);
+	} catch(err) {
+		logger.error(`[Tags] Error merging tag ${tid1} and ${tid2} : ${err}`);
+	}
 }
 
 export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }) {

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { requireAdmin, requireValidUser, requireAuth } from "../middlewares/auth";
 import {getRemoteTags} from '../../services/download';
-import { getTag, getTags, deleteTag, editTag, addTag } from "../../services/tag";
+import { getTag, getTags, deleteTag, editTag, addTag, mergeTags } from "../../services/tag";
 
 
 export default function systemTagController(router: Router) {
@@ -26,6 +26,14 @@ export default function systemTagController(router: Router) {
 			res.json(tags);
 		} catch(err) {
 			res.status(500).send(`Error while fetching tags: ${err}`);
+		}
+	});
+	router.get('/system/tags/merge', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+		try {
+			await mergeTags(req.body.tid1, req.body.tid2);
+			res.send('Tags merged');
+		} catch(err) {
+			res.status(500).send(`Error while merging tags: ${err}`);
 		}
 	});
 	router.delete('/system/tags/:tid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {

@@ -51,6 +51,13 @@ export async function insertTag(tag: Tag) {
 	]);
 }
 
+export async function updateKaraTagsTID(oldTID: string, newTID: string) {
+	return await db().query(sql.updateKaraTagsTID, [
+		oldTID,
+		newTID
+	]);
+}
+
 export async function updateKaraTags(kid: string, tags: TagAndType[]) {
 	await db().query(sql.deleteTagsByKara, [kid]);
 	for (const tag of tags) {
