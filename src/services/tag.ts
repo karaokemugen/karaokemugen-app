@@ -74,6 +74,13 @@ export async function getTag(tid: string) {
 	return await selectTag(tid);
 }
 
+export async function getOrAddTagID(tagObj: Tag): Promise<Tag> {
+	let tag:Tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
+	if (!tag) tag = await addTag(tagObj);
+	return tag;
+}
+
+
 export async function mergeTags(tid1: string, tid2: string) {
 	try {
 		const [tag1, tag2] = await Promise.all([
@@ -84,7 +91,6 @@ export async function mergeTags(tid1: string, tid2: string) {
 		let aliases = [].concat(tag1.aliases, tag2.aliases);
 		types = types.filter((e, pos) => types.indexOf(e) === pos);
 		aliases = aliases.filter((e, pos) => aliases.indexOf(e) === pos);
-
 		const i18n = {...tag2.i18n, ...tag1.i18n};
 		const tid = uuidV4();
 		const tagObj: Tag = {
