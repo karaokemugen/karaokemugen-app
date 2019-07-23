@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "fre": "Langue inconnue",
+      "eng": "Undefined language"
+    },
+    "name": "und",
+    "tid": "12bce133-e896-4ea8-9c43-e06a4288ddfc",
+    "types": [
+      "langs"
+    ]
+  }
+}

@@ -4,39 +4,20 @@ import PlayerOptions from './PlayerOptions';
 import KaraokeOptions from './KaraokeOptions';
 import InterfaceOptions from './InterfaceOptions';
 import axios from 'axios';
-require('babel-polyfill');
-
-axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+import {expand} from '../toolsReact';
 
 class Options extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      settings: this.getSettings()
-    };
-    this.saveSettings = this.saveSettings.bind(this);
   }
-
-	expand (str, val) {
-		return str.split('.').reduceRight((acc, currentValue) => {
-			return { [currentValue]: acc };
-		}, val);
-	};
 
   async saveSettings(event) {
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    var data = this.expand(event.target.id, eval(value));
+    var data = expand(event.target.id, eval(value));
     const res = await axios.put('/api/admin/settings', {
       setting: JSON.stringify(data)
     });
-    this.setState({settings: res.data.data})
-  }
-
-  async getSettings() {
-    const res = await axios.get('/api/admin/settings');
-    this.setState({ settings: res.data.data })
   }
 
   render() {
@@ -91,7 +72,7 @@ class Options extends Component {
                 aria-labelledby="nav-player-tab"
                 className="modal-body tab-pane fade in active"
               >
-                <PlayerOptions onChange={this.saveSettings} settings={this.state.settings} />
+                <PlayerOptions onChange={this.saveSettings} settings={this.props.settings.config} />
               </div>
               <div
                 id="nav-interface"
@@ -99,7 +80,7 @@ class Options extends Component {
                 aria-labelledby="nav-interface-tab"
                 className="modal-body tab-pane fade"
               >
-                <InterfaceOptions onChange={this.saveSettings} settings={this.state.settings} />
+                <InterfaceOptions onChange={this.saveSettings} settings={this.props.settings.config} />
               </div>
               <div
                 id="nav-karaoke"
@@ -107,7 +88,7 @@ class Options extends Component {
                 aria-labelledby="nav-karaoke-tab"
                 className="modal-body tab-pane fade"
               >
-                <KaraokeOptions onChange={this.saveSettings} settings={this.state.settings}/>
+                <KaraokeOptions onChange={this.saveSettings} settings={this.props.settings.config}/>
               </div>
             </div>
           </form>

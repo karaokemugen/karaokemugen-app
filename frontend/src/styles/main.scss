@@ -1,5 +1,6 @@
-body[scope="welcome"] {
-
+#welcomePage {
+    height:100vh;
+    
     html,  body, #center-area {
         height: 100%;
     }
@@ -225,8 +226,6 @@ body[scope="welcome"] {
         font-weight: 400;
         font-size: 14px;
     }
-    #center-area .block {
-    }
     #center-area a {
         color: hsla(208, 91%, 79%, 1);
     }
@@ -376,9 +375,5 @@ body[scope="welcome"] {
         position: relative;
         overflow: hidden;
         height: 60px;
-    }
-
-    .dash_title {
-        text-transform: uppercase;
     }
 }

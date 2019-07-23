@@ -48,7 +48,6 @@ export interface Config {
 			Nickname?: boolean,
 			ConnectionInfo?: {
 				Enabled?: boolean,
-				QRCode?: boolean,
 				Host?: string,
 				Message?: string
 			}
@@ -122,6 +121,7 @@ export interface Config {
 			Previews?: string,
 			Import?: string,
 			Avatars?: string,
+			Tags?: string[],
 			MediasHTTP?: string
 		}
 	},

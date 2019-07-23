@@ -1,28 +1,18 @@
-import React, { Component } from 'react';
-
 import axios from 'axios';
+import { ConnectedRouter } from 'connected-react-router';
+import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'react-router-redux';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { Layout } from 'antd';
-import configureStore, { history } from './configureStore';
-import KMHeader from './layout/KMHeader';
-
-import AuthRequired from './components/AuthRequired';
-import DismissMessages from './components/DismissMessages';
-import Home from './pages/Home';
-
 import './App.css';
+import PrivateRoute from './components/PrivateRoute';
+import KMPage from './layout/KMPage';
+import Login from './pages/Login';
+import { history, store } from './store';
 
-const store = configureStore();
+class App extends Component<{}, {}> {
 
-interface AppProps {}
-
-interface AppState {}
-
-class App extends Component<AppProps, AppState> {
-
-	componentWillMount() {
+	constructor(props) {
+		super(props);
 		const token = localStorage.getItem('kmToken');
 		const onlineToken = localStorage.getItem('kmOnlineToken');
 		if (token) {
@@ -35,31 +25,13 @@ class App extends Component<AppProps, AppState> {
 		return (
 			<Provider store={store}>
 				<ConnectedRouter history={history}>
-					<Layout className="layout">
-						<KMHeader />
-						<Switch>
-							<Redirect exact from='/system/' to='/system/home'/>
-							<Route path='/system/home' component={Home}/>
-							<Route path='/system/log' component={AuthRequired(import('./pages/Log'))}/>
-							<Route path='/system/login' component={DismissMessages(import('./pages/Login'))}/>
-							<Route path='/system/config' component={AuthRequired(import('./pages/Config'))}/>
-							<Route path='/system/karas/download' component={AuthRequired(import('./pages/Karas/KaraDownload'))}/>
-							<Route path='/system/karas/blacklist' component={AuthRequired(import('./pages/Karas/KaraBlacklist'))}/>
-							<Route path='/system/karas/create' component={AuthRequired(import('./pages/Karas/KaraEdit'))}/>
-							<Route path='/system/karas/history' component={AuthRequired(import('./pages/Karas/History'))}/>
-							<Route path='/system/karas/ranking' component={AuthRequired(import('./pages/Karas/Ranking'))}/>
-							<Route path='/system/karas/viewcounts' component={AuthRequired(import('./pages/Karas/Viewcounts'))}/>
-							<Route path='/system/karas/:kid' component={AuthRequired(import('./pages/Karas/KaraEdit'))}/>
-							<Route path='/system/karas' component={AuthRequired(import('./pages/Karas/KaraList'))}/>
-							<Route path='/system/series/new' component={AuthRequired(import('./pages/Series/SeriesEdit'))}/>
-							<Route path='/system/series/:sid' component={AuthRequired(import('./pages/Series/SeriesEdit'))}/>
-							<Route path='/system/series' component={AuthRequired(import('./pages/Series/SeriesList'))}/>
-							<Route path='/system/db' component={AuthRequired(import('./pages/Database'))}/>
-							<Route path='/system/users/create' component={AuthRequired(import('./pages/Users/UserEdit'))}/>
-							<Route path='/system/users/:userLogin' component={AuthRequired(import('./pages/Users/UserEdit'))}/>
-							<Route path='/system/users' component={AuthRequired(import('./pages/Users/UserList'))}/>
-						</Switch>
-					</Layout>
+					<Switch>
+						{/* The first redirect is needed only for dev, as in production the root is /system, whereas in dev is / */}
+						<Redirect from='/' exact to='/system/login'></Redirect>
+						<Redirect from='/system' exact to='/system/login'></Redirect>
+						<PrivateRoute path='/system/km' component={KMPage} />
+						<Route path='/system/login' component={Login} />
+					</Switch>
 				</ConnectedRouter>
 			</Provider>
 		);

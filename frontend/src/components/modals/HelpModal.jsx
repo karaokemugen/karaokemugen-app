@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import { createCookie } from '../toolsReact';
-import { is_touch_device } from '../toolsReact';
+import { is_touch_device,startIntro } from '../toolsReact';
 
 class HelpModal extends Component {
     constructor(props) {
@@ -13,7 +13,7 @@ class HelpModal extends Component {
     }
 
     tourAgain() {
-		window.startIntro('public', 'afterLogin');
+		startIntro('public', 'afterLogin');
 		$('#helpModal').modal('hide');
 	}
 

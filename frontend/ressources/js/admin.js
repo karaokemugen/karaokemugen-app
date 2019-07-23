@@ -1,90 +1,13 @@
 var mouseDown;          // Boolean : capture if the mouse is pressed
 
-
 (function (yourcode) {
     yourcode(window.jQuery, window, document);
 }(function ($, window, document) {
+
+    scope = 'admin';
     // The $ is now locally scoped
     // Listen for the jQuery ready event on the document
     $(function () {
-
-        // handling small touchscreen screens with big virtual keyboard
-
-        $('select[type="playlist_select"]').on('select2:open', function () {
-            $('.select2-dropdown').css('z-index', '9999');
-        });
-
-        $('select[type="playlist_select"]').on('select2:close', function () {
-            $('.select2-dropdown').css('z-index', '1051');
-            document.body.scrollTop = 0; // For Chrome, Safari and Opera
-            document.documentElement.scrollTop = 0; // For IE and Firefox
-        });
-
-        $('#volume').on('mouseleave', () => {
-            $('#volume').click();
-        });
-        $('button[action="command"], a[action="command"]').click(function (e) {
-            var name = $(this).attr('name');
-            var dataAjax = { command: name };
-
-            if ($(this).val() != '') dataAjax['options'] = $(this).val();
-
-            if (e.target.name == 'setVolume') {
-                var btn = $(e.target);
-                var val = parseInt(btn.val()), base = 100, pow = .76;
-                val = Math.pow(val, pow) / Math.pow(base, pow);
-                val = val * base;
-                dataAjax = { command: btn.attr('name'), options: val };
-            }
-
-            // ask for the kara list from given playlist
-            if (ajaxSearch[name]) ajaxSearch[name].abort();
-            ajaxSearch[name] = $.ajax({
-                url: 'admin/player',
-                type: 'PUT',
-                data: dataAjax
-            });
-        });
-
-
-        $('.btn[action="account"]').click(function () {
-            showProfil();
-        });
-
-        $('.btn[action="poweroff"]').click(function () {
-            $.ajax({
-                url: 'admin/shutdown',
-                type: 'POST',
-            }).done(function () {
-                DEBUG && console.log('Shutdown');
-                stopUpdate = true;
-            });
-        });
-
-        $('#adminMessage').click(function () {
-            displayModal('custom', 'Message indispensable',
-                '<select class="form-control" name="destination"><option value="screen">' + i18n.__('CL_SCREEN') + '</option>'
-                + '<option value="users">' + i18n.__('CL_USERS') + '</option><option value="all">' + i18n.__('CL_ALL') + '</option></select>'
-                + '<input type="text"name="duration" placeholder="5000 (ms)"/>'
-                + '<input type="text" placeholder="Message" class="form-control" id="message" name="message">', function (data)
-                {
-                    var defaultDuration = 5000;
-                    var msgData =   {
-                                        message: data.message,
-                                        destination: data.destination,
-                                        duration: !data.duration || isNaN(data.duration) ? defaultDuration : data.duration
-                                    };
-
-                    ajx('POST', 'admin/player/message', msgData);
-                }
-            );
-        });
-
-        $('[name="searchPlaylist"]').keypress(function (e) { // allow pressing enter to validate a setting
-            if (e.which == 13) {
-                $(this).blur();
-            }
-        });
 
         $('.playlist-main').on('keypress', '#bcVal', function (e) {
             if (e.which == 13) {
@@ -140,8 +63,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                         $('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
 
                     }
-                } else {
-                    console.log("Err: tags empty");
                 }
             })
         });
@@ -194,7 +115,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 idKara = Array.prototype.slice.apply(idKaraList).join();
                 idKaraPlaylist = Array.prototype.slice.apply(idKaraPlaylistList).join();
                 if (!idKara && !idKaraPlaylist) {
-                    DEBUG && console.log('No kara selected');
                     return false;
                 }
             } else {
@@ -203,7 +123,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
             }
 
             var action = $(this).attr('name');
-            DEBUG && console.log(action, side, idPlaylistFrom, idPlaylistTo, idKara);
 
             var promise = $.Deferred();
             var url, data, type;
@@ -220,8 +139,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                         var requestedby = idPlaylistFrom == -1 || li.data('username') == undefined ? logInfos.username : li.data('username');
                         data = { requestedby: requestedby, kid: idKara };
                     }
-                } else if (idPlaylistTo == -1) {
-                    DEBUG && console.log('ERR: can\'t add kara to the kara list from database');
                 } else if (idPlaylistTo == -2 || idPlaylistTo == -4) {
                     url = scope + '/blacklist/criterias';
                     data = { blcriteria_type: 1001, blcriteria_value: idKara };
@@ -234,25 +151,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                     data.pos = -1;
                 }
 
-                DEBUG && console.log('ACTION : ', idPlaylistTo, url, type, data);
-                if (url !== '') {
-                    $.ajax({
-                        url: url,
-                        type: type,
-                        data: data
-                    }).done(function (data) {
-                        DEBUG && console.log(data);
-                        promise.resolve();
-                        playlistContentUpdating.done(function () {
-                            scrollToKara(non(side), idKara);
-                        });
-                        if (clusterAction) li.find('span[name="checkboxKara"][checked]').attr('checked', false);
-                        DEBUG && console.log('Kara ' + idKara + ' to playlist (' + idPlaylistTo + ') '
-                            + $('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').text() + '.');
-                    }).fail(function () {
-                        scrollToKara(non(side), idKara);
-                    });
-                }
+                promise.resolve();
             } else {
                 promise.resolve();
             }
@@ -265,10 +164,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                     if (idPlaylistFrom > 0) {
                         url = scope + '/playlists/' + idPlaylistFrom + '/karas/';
                         data['plc_id'] = idKaraPlaylist;
-                    } else if (idPlaylistFrom == -1) {
-                        DEBUG && console.log('ERR: can\'t delete kara from the kara list from database');
-                    } else if (idPlaylistFrom == -2) {
-                        DEBUG && console.log('ERR: can\'t delete kara directly from the blacklist');
                     } else if (idPlaylistFrom == -3) {
                         url = scope + '/whitelist';
                         data['wlc_id'] = idKaraPlaylist;
@@ -283,36 +178,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                         });
                     }
                 });
-            }
-        });
-
-        $('.playlist-main').on('click', '.infoDiv > button.playKara', function () {
-            var liKara = $(this).closest('li');
-            var idPlc = parseInt(liKara.attr('idplaylistcontent'));
-            var idPlaylist = parseInt($('#selectPlaylist' + $(this).closest('ul').attr('side')).val());
-
-            $.ajax({
-                type: 'PUT',
-                url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
-                data: { flag_playing: true }
-            }).done(function () {
-                DEBUG && console.log('Kara plc_id ' + idPlc + ' flag_playing set to true');
-            });
-        });
-        $('.playlist-main').on('click', 'button.showPlaylistCommands', function () {
-            $(this).closest('.plDashboard').toggleClass('advanced');
-            $(window).resize();
-
-            if ($('.plDashboard').hasClass('advanced') && ($('#playlist1').parent().height() < 200 || $('#playlist2').parent().height() < 200)) {
-                $('body').addClass('hiddenHeader');
-            } else if (!$('.plDashboard').hasClass('advanced')) {
-                $('body').removeClass('hiddenHeader');
-            }
-
-            $(this).toggleClass('btn-primary');
-
-            if (introManager && introManager._currentStep) {
-                introManager.nextStep();
             }
         });
 
@@ -359,38 +224,12 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
         setStopUpdate = function (stop) {
             stopUpdate = stop;
         };
-        $('select[name="Player.Screen"] > option').each(function (i) {
-            $(this).text(i + 1 + ' - ' + $(this).text());
-        });
-
     });
 
     /*** INITIALISATION ***/
     /* variables & ajax setup */
 
     mouseDown = false;
-    panel1Default = -1;
-
-    // nameExclude = input not being updated (most likely user is on it)
-    getSettings = function (nameExclude) {
-        var promise = $.Deferred();
-        $.ajax({ url: 'admin/settings' }).done(function (data) {
-            settings = data;
-
-            if(settings.Online.Stats === undefined) {
-                window.callOnlineStatsModal();
-            }
-
-            playlistToAdd = data.Karaoke.Private ? 'current' : 'public';
-
-            $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
-                playlistToAddId = data.playlist_id;
-                promise.resolve();
-            });
-        });
-
-        return promise.promise();
-    };
 
     /* progression bar handlers part */
 
@@ -442,7 +281,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 data = { name: namePlaylist, flag_visible: setTo };
             } else {
                 var list = { '-2': 'Blacklist', '-3': 'Whitelist', '-4': 'BlacklistCriterias' };
-                $('input[name="Frontend.Permissions.AllowView' + list[idPlaylist] + '"]').val(1).bootstrapSwitch('state', setTo);
+                //$('input[name="Frontend.Permissions.AllowView' + list[idPlaylist] + '"]').val(1).bootstrapSwitch('state', setTo);
                 return false;
             }
         } else {
@@ -487,9 +326,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                     name = JSON.parse(fr.result).PlaylistInformation.name;
                 }                
                 ajx('POST', url, data, function (response) {
-                    displayMessage('success', 'Playlist importée' + ' : ', name);
+                    window.displayMessage('success', 'Playlist importée' + ' : ', name);
                     if (response.unknownKaras && response.unknownKaras.length > 0) {
-                        displayMessage('warning', 'Karas inconnus' + ' : ', response.unknownKaras);
+                        window.displayMessage('warning', 'Karas inconnus' + ' : ', response.unknownKaras);
                     }
                     var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
                     playlistsUpdating.done(function () {
@@ -544,7 +383,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 data[v] = selectedOption.data(v);
             });
 
-            displayModal('prompt', i18n.__('CL_RENAME_PLAYLIST', playlistName), '', function (newName) {
+            window.callModal('prompt', window.t('CL_RENAME_PLAYLIST', playlistName), '', function (newName) {
                 data['name'] = newName;
                 ajx(type, url, data);
             }, playlistName);
@@ -552,7 +391,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
             type = 'POST';
             url = 'admin/playlists';
 
-            displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST'), '',
+            window.callModal('prompt', window.t('CL_CREATE_PLAYLIST'), '',
                 function (playlistName) {
                     data = { name: playlistName, flag_visible: false, flag_current: false, flag_public: false };
                     ajx(type, url, data, function (idNewPlaylist) {
@@ -565,7 +404,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
         } else if (name == 'delete') {
             url += '';
             type = 'DELETE';
-            displayModal('confirm', i18n.__('CL_DELETE_PLAYLIST', playlistName), '', function (confirm) {
+            window.callModal('confirm', window.t('CL_DELETE_PLAYLIST', playlistName), '', function (confirm) {
                 if (confirm) {
                     ajx(type, url, data, function () {
                         playlistsUpdating.done(function () {
@@ -592,7 +431,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                     });
                     userlistStr += '</div>';
 
-                    displayModal('custom', i18n.__('START_FAV_MIX'),
+                    window.callModal('custom', window.t('START_FAV_MIX'),
                         userlistStr + '<input type="text"name="duration" placeholder="200 (min)"/>',
                         function (data) {
                             if (!data.duration) data.duration = 200;
@@ -627,8 +466,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
         if (posFromPrev != posFromNext || isNaN(posFromPrev) && isNaN(posFromNext)) {
             console.log('Positions in the list are fucked up');
-            displayMessage('warning', 'Err:', i18n.__('CL_WRONG_KARA_ORDER'));
-            fillPlaylist(side);
+            window.displayMessage('warning', 'Err:', window.t('CL_WRONG_KARA_ORDER'));
             return false;
         } else {
             console.log('Preparing for the PUT...');
@@ -641,32 +479,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 type: 'PUT',
                 url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
                 data: { pos: posFromPrev }
-            }).done(function () {
-                console.log('NICE');
-                DEBUG && console.log('Kara plc_id ' + posFromPrev + ' pos changed');
-            }).fail(function () {
-                console.log('FAIL');
-                fillPlaylist(side);
             }).always(() => {
                 liKara.parent().removeClass('disabled');
             });
-            scrollToKara(side, idKara, .55);
         }
     };
-
-
-    // you know what it is
-    var k = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65], n = 0;
-    $(document).keydown(function (e) {
-        if (e.keyCode === k[n++]) {
-            if (n === k.length) {
-                displayModal('alert', '<span style="color:red">World destruction panel</span>',
-                    '<button class="btn btn-danger"> rip </button>');
-                n = 0;
-                return false;
-            }
-        } else {
-            n = 0;
-        }
-    });
 }));

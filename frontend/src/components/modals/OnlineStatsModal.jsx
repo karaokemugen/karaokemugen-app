@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import axios from 'axios';
+import {expand} from '../toolsReact';
 
 class OnlineStatsModal extends Component {
     constructor(props) {
@@ -8,18 +9,12 @@ class OnlineStatsModal extends Component {
         this.onClick = this.onClick.bind(this);
     }
 
-    expand(str, val) {
-        return str.split('.').reduceRight((acc, currentValue) => {
-            return { [currentValue]: acc };
-        }, val);
-    };
-
     onClick(e) {
-        var data = this.expand("Online.Stats", eval(e.target.value));
+        var data = expand("Online.Stats", eval(e.target.value));
         axios.put('/api/admin/settings', {
             setting: JSON.stringify(data)
         });
-        $('#onlineStatsModal').modal('hide');
+        this.props.toggleOnlineStatsModal();
     }
 
     render() {

@@ -33,6 +33,13 @@ export default function publicBlacklistController(router: Router) {
  *              <See admin/blacklist object>
  *           }
  *       ],
+ * 		 "i18n": {
+ * 			 "<tag UUID>": {
+ * 				"eng": "English version",
+ * 				"fre": "Version française"
+ * 			 }
+ * 			 ...
+ * 		 },
  *       "infos": {
  *           "count": 1,
  *           "from": 0,

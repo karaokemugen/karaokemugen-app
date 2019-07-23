@@ -49,15 +49,10 @@ export async function isBLCriteria(blc_id: number): Promise<boolean> {
 	return res.rows.length > 0;
 }
 
-export async function editBlacklistCriteria(blc: BLC) {
-	return await db().query(yesql(sql.editBlacklistCriteria)(blc));
-}
-
 export async function addBlacklistCriteria(blcList: BLC[]) {
 	const blc = blcList.map((blcItem) => ([
 		blcItem.value,
-		blcItem.type,
-		blcItem.uniquevalue
+		blcItem.type
 	]));
 	return await transaction([{params: blc, sql: sql.addBlacklistCriteria}]);
 }

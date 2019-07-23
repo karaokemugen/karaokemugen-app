@@ -6,6 +6,7 @@ import {Button, Layout, Table} from 'antd';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
 import {ColumnProps} from 'antd/lib/table';
+import {getNameTagInLocaleList} from "../../utils/kara";
 
 interface KaraListProps extends ReduxMappedProps {}
 
@@ -47,7 +48,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 				<Table
 					dataSource={this.state.karas}
 					columns={this.columns}
-					rowKey='viewed_at'
+					rowKey='played_at'
 				/>
 				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 			</Layout.Content>
@@ -56,19 +57,19 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 
 	columns: ColumnProps<any>[] = [{
 		title: 'Language',
-		dataIndex: 'languages',
-		key: 'languages',
-		render: languages => (languages[0].name.toUpperCase())
+		dataIndex: 'langs',
+		key: 'langs',
+		render: langs => getNameTagInLocaleList(langs).join(', ')
 	}, {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
 		key: 'serie',
-		render: (serie, record) => (serie || record.singers[0].name)
+		render: (serie, record) => serie || getNameTagInLocaleList(record.singers).join(', ')
 	}, {
 		title: 'Type',
 		dataIndex: 'songtypes',
 		key: 'songtypes',
-		render: (songtypes, record) => (songtypes[0].name.replace('TYPE_','') + ' ' + (record.songorder || ''))
+		render: (songtypes, record) => getNameTagInLocaleList(songtypes)[0] + ' ' + (record.songorder || '')
 	}, {
 		title: 'Title',
 		dataIndex: 'title',

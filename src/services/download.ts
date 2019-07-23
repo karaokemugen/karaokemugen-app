@@ -2,7 +2,7 @@ import {selectDownloadBLC, truncateDownloadBLC, insertDownloadBLC, updateDownloa
 import Downloader from '../utils/downloader';
 import Queue from 'better-queue';
 import uuidV4 from 'uuid/v4';
-import {resolvedPathMedias, resolvedPathSubs, resolvedPathKaras, resolvedPathSeries, resolvedPathTemp} from '../lib/utils/config';
+import {resolvedPathMedias, resolvedPathSubs, resolvedPathKaras, resolvedPathSeries, resolvedPathTemp, resolvedPathTags} from '../lib/utils/config';
 import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from '../lib/utils/logger';
@@ -16,14 +16,13 @@ import got from 'got';
 import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC, File } from '../types/download';
 import { DownloadItem } from '../types/downloader';
 import { KaraList, KaraParams } from '../lib/types/kara';
-import { TagParams } from '../lib/types/tag';
+import { TagParams, Tag } from '../lib/types/tag';
 import { DBDownload, DBDownloadBLC } from '../types/database/download';
 import { deleteKara } from '../services/kara';
 import { refreshAll } from '../lib/dao/database';
 import { DBKara } from '../lib/types/database/kara';
-import { getTags } from './tag';
-import { DBTag } from '../types/database/tag';
-import { BLCgetTagName } from './blacklist';
+import { getTags, refreshTagsAfterDBChange, integrateTagFile } from './tag';
+import { DBTag } from '../lib/types/database/tag';
 import prettyBytes = require('pretty-bytes');
 
 const queueOptions = {
@@ -85,7 +84,8 @@ function initQueue(drainEvent = true) {
 	if (drainEvent) q.on('drain', () => {
 		logger.info('[Download] No tasks left, stopping queue');
 		refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange().then(() =>
-		compareKarasChecksum(true)));
+		refreshTagsAfterDBChange().then(() =>
+		compareKarasChecksum(true))));
 		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
@@ -116,16 +116,19 @@ async function processDownload(download: KaraDownload) {
 	const localLyrics = resolve(resolvedPathSubs()[0],download.urls.lyrics.local);
 	const localKara = resolve(resolvedPathKaras()[0],download.urls.kara.local);
 	const localSeriesPath = resolve(resolvedPathSeries()[0]);
+	const localTagsPath = resolve(resolvedPathTags()[0]);
 
 	let bundle = {
 		kara: localKara,
-		series: []
+		series: [],
+		tags: []
 	};
 	const tempDir = resolvedPathTemp();
 	const tempMedia = resolve(tempDir, download.urls.media.local);
 	const tempLyrics = resolve(tempDir, download.urls.lyrics.local);
 	const tempKara = resolve(tempDir, download.urls.kara.local);
 	const tempSeriesPath = tempDir;
+	const tempTagsPath = tempDir;
 
 	// Check if media already exists in any media dir. If it does, do not try to redownload it.
 	try {
@@ -163,6 +166,16 @@ async function processDownload(download: KaraDownload) {
 			bundle.series.push(resolve(localSeriesPath, serie.local));
 		}
 	}
+	for (const tag of download.urls.tag) {
+		if (typeof tag.local === 'string') {
+			list.push({
+				filename: resolve(tempTagsPath, tag.local),
+				url: tag.remote,
+				id: download.name
+			});
+			bundle.tags.push(resolve(localTagsPath, tag.local));
+		}
+	}
 
 	await downloadFiles(download, list);
 	// Delete files if they're already present
@@ -174,6 +187,11 @@ async function processDownload(download: KaraDownload) {
 			await asyncMove(resolve(tempSeriesPath, seriefile.local), resolve(localSeriesPath, seriefile.local), {overwrite: true});
 		}
 	}
+	for (const tagfile of download.urls.tag) {
+		if (typeof tagfile.local == 'string') {
+			await asyncMove(resolve(tempTagsPath, tagfile.local), resolve(localTagsPath, tagfile.local), {overwrite: true});
+		}
+	}
 	logger.info(`[Download] Finished downloading item "${download.name}"`);
 	// Now adding our newly downloaded kara
 	try {
@@ -183,6 +201,15 @@ async function processDownload(download: KaraDownload) {
 				logger.info(`[Download] Series "${serieName}" in database`);
 			} catch(err) {
 				logger.error(`[Download] Series "${serie}" not properly added to database`);
+				throw err;
+			}
+		}
+		for (const tag of bundle.tags) {
+			try {
+				const tagName = await integrateTagFile(tag);
+				logger.info(`[Download] Tag "${tagName}" in database`);
+			} catch(err) {
+				logger.error(`[Download] Tag "${tag}" not properly added to database`);
 				throw err;
 			}
 		}
@@ -249,6 +276,13 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 				local: serie
 			});
 		}
+		let tagfiles = [];
+		for (const tag of dl.tagfiles) {
+			tagfiles.push({
+				remote: `http://${repo}/downloads/tags/${tag}`,
+				local: tag
+			});
+		}
 		return {
 			uuid: uuidV4(),
 			urls: {
@@ -264,7 +298,8 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 					remote: `http://${repo}/downloads/karaokes/${dl.karafile}`,
 					local: dl.karafile
 				},
-				serie: seriefiles
+				serie: seriefiles,
+				tag: tagfiles
 			},
 			name: dl.name,
 			size: dl.size,
@@ -328,7 +363,6 @@ export async function getDownloadBLC(): Promise<DBDownloadBLC[]> {
 
 export async function addDownloadBLC(blc: KaraDownloadBLC) {
 	if (blc.type < 0 && blc.type > 1006) throw `Incorrect BLC type (${blc.type})`;
-	if (blc.type > 0 && blc.type < 9) [blc] = await BLCgetTagName	([blc]);
 	if (blc.type === 1001 && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
 	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
 	return await insertDownloadBLC(blc);
@@ -338,7 +372,6 @@ export async function editDownloadBLC(blc: KaraDownloadBLC) {
 	const dlBLC = await selectDownloadBLC();
 	if (!dlBLC.some(e => e.dlblc_id === blc.id)) throw 'DL BLC ID does not exist';
 	if (blc.type < 0 && blc.type > 1006) throw `Incorrect BLC type (${blc.type})`;
-	if (blc.type > 0 && blc.type < 9) [blc] = await BLCgetTagName	([blc]);
 	if (blc.type === 1001 && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
 	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
 	return await updateDownloadBLC(blc);
@@ -464,6 +497,7 @@ export async function downloadAllKaras(instance: string, local?: KaraList, remot
 			subfile: k.subfile,
 			karafile: k.karafile,
 			seriefiles: k.seriefiles,
+			tagfiles: k.tagfiles,
 			name: k.karafile.replace('.kara.json','')
 		}
 	});
@@ -478,14 +512,7 @@ function filterTitle(k: DBKara, value: string): boolean {
 }
 
 function filterTagName(k: DBKara, value: string): boolean {
-	return k.authors.every(e => !e.name.includes(value)) &&
-		k.groups.every(e => !e.name.includes(value)) &&
-		k.creators.every(e => !e.name.includes(value)) &&
-		k.languages.every(e => !e.name.includes(value)) &&
-		k.misc_tags.every(e => !e.name.includes(value)) &&
-		k.singers.every(e => !e.name.includes(value)) &&
-		k.songwriters.every(e => !e.name.includes(value)) &&
-		k.songtype.every(e => !e.name.includes(value));
+	return !k.tag_names.includes(value);
 }
 
 function filterKID(k: DBKara, value: string): boolean {
@@ -498,13 +525,10 @@ function filterSeriesName(k: DBKara, value: string): boolean {
 
 function filterTagID(k: DBKara, value: string, type: number, tags: DBTag[]): boolean {
 	// Find tag
-	const tag = tags.find(e => e.tag_id === +value);
+	const tag = tags.find(e => e.tid === value);
 	if (tag) {
 		let typeName = getTagTypeName(type);
-		// Please don't look at this. Please.
-		if (typeName === 'misc') typeName = 'misc_tag';
-		// You can look now.
-		return k[`${typeName}s`].every(e => e.name !== tag.name)
+		return k[typeName].every((e: Tag) => !e.tid.includes(tag.tid));
 	} else {
 		// Tag isn't found in database, weird but could happen for some obscure reasons. We'll return true.
 		logger.warn(`[Update] Tag ${value} not found in database when trying to blacklist songs to download, will ignore it.`)
@@ -567,6 +591,7 @@ export async function updateAllKaras(instance: string, local?: KaraList, remote?
 			subfile: k.subfile,
 			karafile: k.karafile,
 			seriefiles: k.seriefiles,
+			tagfiles: k.tagfiles,
 			name: k.karafile.replace('.kara.json','')
 		}
 	});

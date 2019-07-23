@@ -250,12 +250,11 @@ export async function unsetPublicPlaylist() {
 	return await db().query(sql.unsetPublicPlaylist);
 }
 
-export async function unsetPlaying(id: number) {
-	return await db().query(sql.unsetPlaying, [id]);
-}
-
-export async function setPlaying(plc_id: number) {
-	return await db().query(sql.setPlaying, [plc_id]);
+export async function setPlaying(plc_id: number, playlist_id: number) {
+	return await Promise.all([
+		db().query(sql.setPlaying, [plc_id]),
+		db().query(sql.unsetPlaying, [plc_id, playlist_id])
+	]);
 }
 
 export async function countPlaylistUsers(playlist_id: number): Promise<number> {

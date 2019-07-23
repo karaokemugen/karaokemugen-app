@@ -1,5 +1,5 @@
 // SQL for kara management
-import {LangClause} from '../../types/database';
+import {LangClause} from '../../lib/types/database';
 
 export const addKaraToPlaylist = (values:string) => `
 INSERT INTO playlist_content(
@@ -55,14 +55,19 @@ export const getAllKaras = (filterClauses: string[], lang: LangClause, typeClaus
   ak.seriefiles AS seriefiles,
   ak.sid AS sid,
   ak.subfile AS subfile,
-  ak.singers AS singers,
-  ak.songtypes AS songtype,
-  ak.creators AS creators,
-  ak.songwriters AS songwriters,
+  COALESCE(ak.singers, '[]'::jsonb) AS singers,
+  COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
+  COALESCE(ak.creators, '[]'::jsonb) AS creators,
+  COALESCE(ak.songwriters, '[]'::jsonb) AS songwriters,
   ak.year AS year,
-  ak.languages AS languages,
-  ak.authors AS authors,
-  ak.misc_tags AS misc_tags,
+  COALESCE(ak.languages, '[]'::jsonb) AS langs,
+  COALESCE(ak.authors, '[]'::jsonb) AS authors,
+  COALESCE(ak.groups, '[]'::jsonb) AS groups,
+  COALESCE(ak.misc, '[]'::jsonb) AS misc,
+  COALESCE(ak.origins, '[]'::jsonb) AS origins,
+  COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
+  COALESCE(ak.families, '[]'::jsonb) AS families,
+  COALESCE(ak.genres, '[]'::jsonb) AS genres,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -70,7 +75,6 @@ export const getAllKaras = (filterClauses: string[], lang: LangClause, typeClaus
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
   ak.mediasize AS mediasize,
-  ak.groups AS groups,
   COUNT(p.*)::integer AS played,
   COUNT(rq.*)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
@@ -83,7 +87,9 @@ export const getAllKaras = (filterClauses: string[], lang: LangClause, typeClaus
 		THEN FALSE
 		ELSE TRUE
   END) as flag_favorites,
-  ak.repo AS repo
+  ak.repo AS repo,
+  ak.tag_names AS tag_names,
+  ak.tid AS tid
 FROM all_karas AS ak
 LEFT OUTER JOIN kara_serie AS ks_main ON ks_main.fk_kid = ak.kid
 LEFT OUTER JOIN serie_lang AS sl_main ON sl_main.fk_sid = ks_main.fk_sid AND sl_main.lang = ${lang.main}
@@ -95,7 +101,7 @@ LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.kid
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_singer_sortable, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.repo, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid
+GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_singer_sortable, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.groups, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.repo, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid, ak.tag_names, ak.tid
 ${havingClause}
 ORDER BY ${orderClauses} ak.languages_sortable, ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, lower(unaccent(ak.title))
 ${limitClause}
@@ -121,7 +127,7 @@ SELECT ak.title AS title,
 	ak.serie AS serie,
 	ak.singers AS singers,
 	ak.songtypes AS songtypes,
-    ak.languages AS languages,
+    ak.languages AS langs,
     (SELECT COUNT(fk_kid) AS played FROM played WHERE fk_kid = ak.kid)::integer AS played,
     p.played_at AS played_at
 FROM all_karas AS ak

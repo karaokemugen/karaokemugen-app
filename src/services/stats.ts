@@ -12,16 +12,19 @@ import cloneDeep from 'lodash.clonedeep';
 
 let intervalID: any;
 
+/** Initialize stats upload */
 export async function initStats(sendLater: boolean) {
 	if (!intervalID) intervalID = setInterval(sendPayload, 3600000);
 	if (!sendLater) sendPayload();
 }
 
+/** Stop stats upload */
 export async function stopStats() {
 	if (intervalID) clearInterval(intervalID);
 	intervalID = undefined;
 }
 
+/** Send stats payload to KM Server */
 export async function sendPayload() {
 	try {
 		try {
@@ -49,6 +52,7 @@ export async function sendPayload() {
 
 }
 
+/** Create stats payload */
 async function buildPayload() {
 	return {
 		payloadVersion: 2,
@@ -59,6 +63,7 @@ async function buildPayload() {
 	};
 }
 
+/** Create system information stats */
 async function buildInstanceStats() {
 	const conf = cloneDeep(getConfig());
 	const state = getState();

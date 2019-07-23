@@ -6,7 +6,8 @@ export interface KaraDownload {
 		media: DownloadFile,
 		lyrics: DownloadFile,
 		kara: DownloadFile,
-		serie: DownloadFile[]
+		serie: DownloadFile[],
+		tag: DownloadFile[]
 	}
 	size: number,
 	uuid: string
@@ -22,6 +23,7 @@ export interface KaraDownloadBLC {
 
 export interface KaraDownloadRequest {
 	seriefiles: string[],
+	tagfiles: string[],
 	karafile: string,
 	mediafile: string,
 	subfile: string,

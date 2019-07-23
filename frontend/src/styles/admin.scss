@@ -1,18 +1,10 @@
-body[scope="admin"] {
-	.underHeader {
-		height: calc(100% - 95px);
-	}
+#adminPage {
+	height:100vh;
+
 	.playlist-main, .panel  {
 		height: 100%;
 	}
 
-	#manage .bootstrap-switch-container > span {
-		line-height: 2.25;
-	}
-	#manage .groupSettingActivator .bootstrap-switch-handle-on.bootstrap-switch-primary {
-		background-color: hsla(214, 28%, 45%, 1);
-		color: #e9e9e9;
-	}
 	#manage, #manage > .panel  {
 		height: 100%;
 	}
@@ -23,9 +15,6 @@ body[scope="admin"] {
 	#settings {
 		background-color: #2d2d2f;
 		padding: 0;
-	}
-	#settings .form-group.settingsHighlight .bootstrap-switch-btn{
-		border: 2px solid #b8a047e6;
 	}
 	.settingsGroupPanel {
 		padding: 16px 0px;
@@ -39,20 +28,15 @@ body[scope="admin"] {
 		border-width: 1px 0px;
 	}
 	.header > .btn-group.switchs {
-		height: calc(100% - 0px);
+		width: 10em;
+		display: flex;
+		flex-direction: column;
+		> * {
+			flex:1;
+		}
 	}
 	.header, .header .btn, #manageButton li, .header input[type=range]  {
 		max-height: 7.4vw;
-	}
-	.hiddenHeader .header {
-		display: none;
-	}
-	.hiddenHeader #progressBar {
-		top: 0;
-	}
-	.hiddenHeader #underHeader {
-		top: 24px;
-		height: calc(100% - 24px);
 	}
 
 	.list-group > li > button {
@@ -60,7 +44,6 @@ body[scope="admin"] {
 		right: 0;
 		height: 100%;
 		top: 0;
-		__display: none;
 	}
 
 	#playlist2.list-group > li > button {
@@ -103,28 +86,6 @@ body[scope="admin"] {
 		content:"\e067";
 	}
 
-	.plDashboard:not(.advanced) + nav + .playlistContainer span[name="checkboxKara"] { 
-		display: none;
-	}
-
-	.plDashboard[data-playlist_id="-2"] + nav + .playlistContainer span[name="checkboxKara"],
-	.plDashboard[data-playlist_id="-4"] + nav + .playlistContainer span[name="checkboxKara"] { 
-		display: none;
-	}
-
-	.plDashboard.advanced:not([data-playlist_id="-4"])  + .playlistContainer .actionDiv { 
-		display: none;
-	}
-
-
-	.plDashboard[data-playlist_id="-2"]  .actionDiv > button[name="addRandomKaras"],
-	.plDashboard[data-playlist_id="-3"]  .actionDiv > button[name="addRandomKaras"],
-	.plDashboard[data-playlist_id="-4"]  .actionDiv > button[name="addRandomKaras"],
-	.panel[canaddkara="false"]  .actionDiv > button[name="addRandomKaras"],
-	.panel[cantransferkara="false"]  .actionDiv > button[name="addRandomKaras"]  {
-		display: none;
-	}
-
 	.plDashboard[data-playlist_id="-1"]  .actionDiv > button[name="transferKara"],
 	.plDashboard[data-playlist_id="-4"]  .actionDiv > button[name="transferKara"]{
 		display: none;
@@ -164,6 +125,13 @@ body[scope="admin"] {
 		display: none;
 	}
 
+	.btn-left {
+		height: 2em;
+		background-color: #f4f4f4;
+		color: #1E2124;
+		border-color: #9e9e9e;
+	}
+
 	.btn-stop {
 		height: 100%;
 	}
@@ -192,23 +160,11 @@ body[scope="admin"] {
 		color: white;
 	}
 
-	div.bootstrap-switch-large{
-		width: 100%;
-		height: 50%;
-		background-color: #9e9e9e; ;
-	}
-
-
 	.playlist-main .list-group-item.ui-sortable-helper {
 		background-color: #222;
 	}
 	.playlist-main li.list-group-item.deleted {
 		opacity: .2;
-	}
-
-
-	.plDashboard:not(.advanced) .plCommandsContainer {
-		display: none;    
 	}
 
 	.playlistCommands {
@@ -287,11 +243,6 @@ body[scope="admin"] {
 		display: none;
 	}
 
-	.plDashboard[data-playlist_id^="-"] .flagsContainer button,
-	.plDashboard[data-flag_favorites="true"] .flagsContainer button {
-		display: none;
-	}
-
 	.plDashboard[data-playlist_id="-2"] button[name="flag_visible"],
 	.plDashboard[data-playlist_id="-3"] button[name="flag_visible"],
 	.plDashboard[data-playlist_id="-4"] button[name="flag_visible"]
@@ -335,8 +286,6 @@ body[scope="admin"] {
 
 	button[name="smartShuffle"] > i {
 		font-weight: bold;
-		/* color: hsla(2, 22%, 52%, 1); */
-		/* color: hsla(211, 47%, 59%, 1); */
 		color: black;
 		text-shadow: -1px -1px 0 hsla(0, 0%, 100%, .85), 1px -1px 0 hsla(0, 0%, 100%, .85), -1px 1px 0 hsla(0, 0%, 100%, .85), 0.5px 0.5px 0 hsla(0, 0%, 100%, .85);
 	}
@@ -385,10 +334,6 @@ body[scope="admin"] {
 		display: none;	
 	}
 
-
-	.panel[side="2"] .advanced .actionDivContainer {
-		__order: -1;
-	}
 	.plSearch {
 		order: 2;
 	}
@@ -402,11 +347,6 @@ body[scope="admin"] {
 	.automixUserlist {
 		max-height: 200px;
 		overflow-y: auto;
-	}
-
-	.toastMessageContainer {
-		__top: auto;
-		__bottom: 0;
 	}
 
 	.disabled {

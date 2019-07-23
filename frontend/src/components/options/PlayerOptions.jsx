@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import Switch from '../Switch';
 import axios from 'axios';
-require('babel-polyfill');
 
 class PlayerOptions extends Component {
   constructor(props) {
@@ -37,7 +36,7 @@ class PlayerOptions extends Component {
         ? this.state.displays.map((display, index) => (
           <option key={index} value={index} >
             {" "}
-            ({display.resolutionx}x{display.resolutiony}) {display.model}
+            {index+1} - ({display.resolutionx}x{display.resolutiony}) {display.model}
           </option>
         ))
         : null;
@@ -93,16 +92,6 @@ class PlayerOptions extends Component {
             id="connexionInfoSettings"
             className="well well-sm settingsGroupPanel"
           >
-            <div className="form-group">
-              <label className="col-xs-4 control-label">
-                {t("ENGINEDISPLAYCONNECTIONINFOQRCODE")}
-              </label>
-              <div className="col-xs-6">
-                <Switch idInput="Karaoke.Display.ConnectionInfo.QRCode" handleChange={this.props.onChange}
-                  isChecked={settings.Karaoke.Display.ConnectionInfo.QRCode} />
-              </div>
-            </div>
-
             <div className="form-group">
               <label className="col-xs-4 control-label">
                 {t("ENGINEDISPLAYCONNECTIONINFOHOST")}

@@ -6,6 +6,7 @@ import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import { deleteKaraByLocalId } from '../../api/local';
 import {ReduxMappedProps} from '../../react-app-env';
+import {getTagInLocaleList} from "../../utils/kara";
 
 interface KaraListProps extends ReduxMappedProps {
 }
@@ -17,6 +18,7 @@ interface KaraListState {
 	karas_removing: string[],
 	currentPage: number,
 	filter: string,
+	i18nTag: any[]
 }
 
 class KaraList extends Component<KaraListProps, KaraListState> {
@@ -29,7 +31,8 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 			karas_removing_lastcall: 0,
 			karas_removing: [],
 			currentPage: +localStorage.getItem('karaPage') || 1,
-			filter: localStorage.getItem('karaFilter') || ''
+			filter: localStorage.getItem('karaFilter') || '',
+			i18nTag: []
 		};
 
 	}
@@ -41,11 +44,12 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 	}
 
 	refresh() {
-		//this.props.loading(true);
 		axios.get('/api/system/karas', { params: { filter: this.state.filter,  }})
 			.then(res => {
 				this.props.loading(false);
-				this.setState({karas: res.data.content});
+				res.data.content.forEach(kara => {
+				});
+				this.setState({karas: res.data.content, i18nTag: res.data.i18n});
 			})
 			.catch(err => {
 				this.props.loading(false);
@@ -106,7 +110,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 						<Table
 							dataSource={this.state.karas}
 							columns={this.columns}
-							rowKey='kara_id'
+							rowKey='kid'
 							pagination={{
 								current: this.state.currentPage,
 								defaultPageSize: 100,
@@ -131,34 +135,25 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 
 	columns = [{
 		title: 'Language(s)',
-		dataIndex: 'languages',
-		key: 'languages',
-		render: languages => {
-			const ret = languages ? languages.map(e => {
-				return e.name;
-			}) : [];
-			return ret.join(', ').toUpperCase();
+		dataIndex: 'langs',
+		key: 'langs',
+		render: langs => {
+			return getTagInLocaleList(this.state.i18nTag, langs).join(', ')
 		}
 	}, {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
 		key: 'serie',
 		render: (serie, record) => {
-			const singers = record.singers ? record.singers.map(e => {
-				return e.name;
-			}) : [];
-			return serie || singers.join(', ');
+			return serie || getTagInLocaleList(this.state.i18nTag, record.singers).join(', ');
 		}
 	}, {
 		title: 'Type',
-		dataIndex: 'songtype',
-		key: 'songtype',
+		dataIndex: 'songtypes',
+		key: 'songtypes',
 		render: (songtypes, record) => {
-			const types = songtypes ? songtypes.map(e => {
-				return e.name;
-			}) : [];
 			const songorder = record.songorder || '';
-			return types.join(', ').replace('TYPE_','') + ' ' + songorder || '';
+			return getTagInLocaleList(this.state.i18nTag, songtypes) + ' ' + songorder || '';
 		}
 	}, {
 		title: 'Title',
@@ -168,7 +163,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/karas/${record.kid}`}><Icon type='edit'/></Link>
+			<Link to={`/system/km/karas/${record.kid}`}><Icon type='edit'/></Link>
 		</span>)
 	}, {
 		title: 'Delete',

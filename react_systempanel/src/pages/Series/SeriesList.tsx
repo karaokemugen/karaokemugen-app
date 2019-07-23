@@ -143,7 +143,7 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/series/${record.sid}`}><Icon type='edit'/></Link>
+			<Link to={`/system/km/series/${record.sid}`}><Icon type='edit'/></Link>
 			<Divider type="vertical"/>
 			<Button type='danger' icon='delete' onClick={
 				() => this.setState({deleteModal: true, serie: record})

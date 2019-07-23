@@ -356,7 +356,7 @@ export default function adminPlaylistsController(router: Router) {
 		/**
 	 * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
 	 * @apiName GetPlaylistKaras
-	 * @apiVersion 2.5.0
+	 * @apiVersion 3.0.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -376,8 +376,15 @@ export default function adminPlaylistsController(router: Router) {
 	 * {
 	 *   "data": {
 	 *       "content": [
-	 *           <see admin/playlists/[id]/karas/[plc_id] for example>
+	 *           <see admin/playlists/[id]/karas/[plc_id] for example without i18n tag data>
 	 *       ],
+	 * 		 "i18n": {
+ 	 * 			 "<tag UUID>": {
+ 	 * 				"eng": "English version",
+ 	 * 				"fre": "Version française"
+ 	 * 			 }
+ 	 * 			 ...
+ 	 * 		 },
 	 *       "infos": {
 	 *           "count": 3,
 	 * 			 "from": 0,
@@ -639,9 +646,9 @@ export default function adminPlaylistsController(router: Router) {
 	 *   "message": "PLCID unknown!"
 	 * }
 	 */
-			.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 				try {
-					const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
+					const kara = await getKaraFromPlaylist(req.params.plc_id,req.authToken);
 					res.json(OKMessage(kara));
 				} catch(err) {
 					res.status(500).json(errMessage('PL_VIEW_CONTENT_ERROR',err));

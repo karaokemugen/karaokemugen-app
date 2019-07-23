@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export function parseJwt(token) {
 	var base64Url = token.split('.')[1];
 	var base64 = base64Url.replace('-', '+').replace('_', '/');
@@ -47,6 +49,14 @@ export function is_touch_device() {
 };
 
 
+export function expand (str, val) {
+	return str.split('.').reduceRight((acc, currentValue) => {
+		return { [currentValue]: acc };
+	}, val);
+};
+
+
+
 /* format seconds to Hour Minute Second */
 export function secondsTimeSpanToHMS (s, format) {
 	var d = Math.floor(s/(3600 * 24));
@@ -67,4 +77,12 @@ export function secondsTimeSpanToHMS (s, format) {
 		result = (d > 0 ? d+'d' : '')+(h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
 	}
 	return result; 
+};
+
+export function startIntro (scope){
+	if (scope === 'admin') {
+		axios.put('/api/admin/settings', JSON.stringify({ 'setting': {'App': {'FirstRun':false}} }));
+	} else {
+		createCookie('publicTuto', 'true');
+	}
 };

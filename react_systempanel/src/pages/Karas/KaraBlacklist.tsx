@@ -41,7 +41,6 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	}
 
 	componentDidMount() {
-		console.log('componentDidMount');
 		this.props.loading(true);
 		axios.get('/api/system/tags?instance=kara.moe')
 			.then(res => {
@@ -58,7 +57,6 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	}
 
 	refresh() {
-		console.log('refresh');
 		axios.get('/api/system/downloads/blacklist/criterias')
 			.then(res => {
 				this.setState({criterias: res.data});
@@ -71,7 +69,6 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	}
 
 	handleCriteriasTypeChange(value,option) {
-		console.log('handleCriteriasTypeChange');
 		var mode = option.props['data-mode'];
 		if(mode==='tag')
 		{
@@ -106,7 +103,6 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	}
 
 	handleCriteriaValue(value) {
-		console.log('handleCriteriaValue');
 		if(value.target)
 			value = value.target.value;
 		this.setState({
@@ -115,7 +111,6 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	}
 
 	handleCriteriaSubmit() {
-		console.log('handleCriteriaSubmit');
 		if(this.state.filter_value===null || this.state.filter_value==='')
 		{
 			this.props.errorMessage(`Critère invalide`);
@@ -149,7 +144,6 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	}
 
 	handleCriteriaDelete(id){
-		console.log('handleCriteriaDelete');
 		this.props.loading(true);
 		axios.delete('/api/system/downloads/blacklist/criterias/'+id)
 			.then(res => {
@@ -163,8 +157,6 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	}
 
 	filter_input() {
-		console.log('filter_input');
-
 		if(this.state.filter_mode==='text')
 		{
 			return <Input  style={{ width:200 }} value={this.state.filter_value} onChange={this.handleCriteriaValue.bind(this)} />
@@ -190,7 +182,6 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	}
 
 	render() {
-		console.log('render');
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Layout>

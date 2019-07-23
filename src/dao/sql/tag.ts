@@ -1,47 +1,59 @@
 // SQL for tags
 
 export const getTag = `
-SELECT tag_id, name, tagtype AS type, slug, i18n, karacount
+SELECT tid, name, types, short, aliases, i18n, karacount, tagfile
 FROM all_tags
-WHERE tag_id = $1
+WHERE tid = $1
+`;
+
+export const selectDuplicateTags = `
+SELECT * FROM all_tags ou
+WHERE (SELECT COUNT(*) FROM all_tags inr WHERE inr.name = ou.name) > 1
 `;
 
 export const getAllTags = (filterClauses: string[], typeClauses: string, limitClause: string, offsetClause: string) => `
-SELECT tag_id,
-	tagtype AS type,
+SELECT tid,
+	types,
 	name,
-	slug,
+	short,
+	aliases,
 	i18n,
-	karacount
+	karacount,
+	tagfile
 FROM all_tags
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-ORDER BY tagtype, name
+ORDER BY name
 ${limitClause}
 ${offsetClause}
 `;
 
-export const getTagByNameAndType = `
-SELECT pk_id_tag AS tag_id
-FROM tag
-WHERE name = :name
-	AND tagtype = :type
-`;
-
 export const insertTag = `
 INSERT INTO tag(
+	pk_tid,
 	name,
-	tagtype,
-	slug,
-	i18n
+	types,
+	short,
+	i18n,
+	aliases,
+	tagfile
 )
 VALUES(
-	:name,
-	:type,
-	:slug,
-	:i18n
-) RETURNING *
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7
+)
+ON CONFLICT (pk_tid) DO UPDATE SET
+	types = $3
+`;
+
+export const updateKaraTagTID = `
+UPDATE kara_tag SET fk_tid = $2 WHERE fk_tid = $1;
 `;
 
 export const deleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_kid = $1';
@@ -49,10 +61,35 @@ export const deleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_kid = $1';
 export const insertKaraTags = `
 INSERT INTO kara_tag(
 	fk_kid,
-	fk_id_tag
+	fk_tid,
+	type
 )
 VALUES(
 	:kid,
-	:tag_id
+	:tid,
+	:type
 );
 `;
+
+export const getTagByNameAndType = `
+SELECT
+	name,
+	pk_tid AS tid
+FROM tag
+WHERE name = $1
+  AND types @> $2
+;`;
+
+export const updateTag = `
+UPDATE tag
+SET
+	name = $1,
+	aliases = $2,
+	tagfile = $3,
+	short = $4,
+	types = $5,
+	i18n = $6
+WHERE pk_tid = $7;
+`;
+
+export const deleteTag = 'DELETE FROM tag WHERE pk_tid = $1';

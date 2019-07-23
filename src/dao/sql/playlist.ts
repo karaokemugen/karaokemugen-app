@@ -136,15 +136,19 @@ SELECT
   ak.seriefiles AS seriefiles,
   ak.sid AS sid,
   ak.subfile AS subfile,
-  ak.singers AS singers,
-  ak.songtypes AS songtype,
-  ak.creators AS creators,
-  ak.songwriters AS songwriters,
+  COALESCE(ak.singers, '[]'::jsonb) AS singers,
+  COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
+  COALESCE(ak.creators, '[]'::jsonb) AS creators,
+  COALESCE(ak.songwriters, '[]'::jsonb) AS songwriters,
   ak.year AS year,
-  ak.languages AS languages,
-  ak.authors AS authors,
-  ak.misc_tags AS misc_tags,
-  ak.mediafile AS mediafile,
+  COALESCE(ak.languages, '[]'::jsonb) AS langs,
+  COALESCE(ak.authors, '[]'::jsonb) AS authors,
+  COALESCE(ak.groups, '[]'::jsonb) AS groups,
+  COALESCE(ak.misc, '[]'::jsonb) AS misc,
+  COALESCE(ak.origins, '[]'::jsonb) AS origins,
+  COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
+  COALESCE(ak.families, '[]'::jsonb) AS families,
+  COALESCE(ak.genres, '[]'::jsonb) AS genres,  ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
   ak.gain AS gain,
@@ -193,7 +197,7 @@ LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
 WHERE pc.fk_id_playlist = :playlist_id
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${whereClause}
-GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
+GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres, ak.platforms, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
 ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}
@@ -201,7 +205,7 @@ ${offsetClause}
 
 export const getPlaylistContentsMini = (lang: LangClause) => `
 SELECT ak.kid AS kid,
-    ak.languages AS languages,
+    ak.languages AS langs,
 	ak.title AS title,
 	ak.songorder AS songorder,
 	COALESCE(
@@ -209,7 +213,7 @@ SELECT ak.kid AS kid,
 	  (SELECT array_to_string (array_agg(name), ', ') FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.fallback}),
 		ak.serie
 	) AS serie,
-	ak.songtypes AS songtype,
+	ak.songtypes AS songtypes,
 	ak.singers AS singers,
     ak.gain AS gain,
     pc.nickname AS nickname,
@@ -259,14 +263,19 @@ SELECT
   ak.serie_altname AS serie_altname,
   ak.seriefiles AS seriefiles,
   ak.subfile AS subfile,
-  ak.singers AS singers,
-  ak.songtypes AS songtype,
-  ak.creators AS creators,
-  ak.songwriters AS songwriters,
+  COALESCE(ak.singers, '[]'::jsonb) AS singers,
+  COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
+  COALESCE(ak.creators, '[]'::jsonb) AS creators,
+  COALESCE(ak.songwriters, '[]'::jsonb) AS songwriters,
   ak.year AS year,
-  ak.languages AS languages,
-  ak.authors AS authors,
-  ak.misc_tags AS misc_tags,
+  COALESCE(ak.languages, '[]'::jsonb) AS langs,
+  COALESCE(ak.authors, '[]'::jsonb) AS authors,
+  COALESCE(ak.groups, '[]'::jsonb) AS groups,
+  COALESCE(ak.misc, '[]'::jsonb) AS misc,
+  COALESCE(ak.origins, '[]'::jsonb) AS origins,
+  COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
+  COALESCE(ak.families, '[]'::jsonb) AS families,
+  COALESCE(ak.genres, '[]'::jsonb) AS genres,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -310,7 +319,7 @@ LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc
 LEFT OUTER JOIN kara AS plc_before_karas ON plc_before_karas.pk_kid = plc_before.fk_kid
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
+GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
 `;
 
 export const getPLCInfoMini = `
@@ -444,17 +453,16 @@ SET flag_public = TRUE
 WHERE pk_id_playlist = $1;
 `;
 
-export const unsetPlaying = `
-UPDATE playlist_content
-SET flag_playing = FALSE
-WHERE fk_id_playlist = $1
-	AND flag_playing = TRUE;
-`;
-
 export const setPlaying = `
 UPDATE playlist_content
 SET flag_playing = TRUE
 WHERE pk_id_plcontent = $1;
+`;
+
+export const unsetPlaying = `
+UPDATE playlist_content
+SET flag_playing = FALSE
+WHERE pk_id_plcontent != $1 AND fk_id_playlist = $2;
 `;
 
 export const countPlaylistUsers = `

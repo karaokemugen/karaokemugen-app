@@ -1,16 +1,17 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
 import axios from "axios";
-import NewsArticle from "./NewsArticle"
-import {parseJwt,readCookie} from "./toolsReact";
-
+import ProfilModal from "./modals/ProfilModal"
+import LoginModal from "./modals/LoginModal"
+import logo from '../assets/Logo-final-fond-transparent.png'
 class WelcomePage extends Component {
   constructor(props) {
     super(props);
-    var cookie = readCookie('mugenToken');
     this.state = {
       news: [],
-      username: cookie ? parseJwt(cookie).username : null
+      loginModal: !this.props.logInfos.token || (this.props.admpwd && this.props.settings.config.App.FirstRun),
+      profileModal: false,
+      open: false
     };
     this.getCatchphrase = this.getCatchphrase.bind(this);
     this.getNewsFeed = this.getNewsFeed.bind(this);
@@ -46,7 +47,7 @@ class WelcomePage extends Component {
             " : " +
             base.body.feed.title._text +
             (base.body.feed.entry[0].summary._text ? " - " +
-            base.body.feed.entry[0].summary._text : ''),
+              base.body.feed.entry[0].summary._text : ''),
           link: base.body.feed.entry[0].link._attributes.href,
           type: "base"
         },
@@ -61,8 +62,8 @@ class WelcomePage extends Component {
             " : " +
             appli.body.feed.entry[0].title._text +
             (appli.body.feed.entry[0].summary._text ?
-            " - " +
-            appli.body.feed.entry[0].summary._text : ''),
+              " - " +
+              appli.body.feed.entry[0].summary._text : ''),
           link: appli.body.feed.entry[0].link._attributes.href,
           type: "app"
         }
@@ -71,7 +72,8 @@ class WelcomePage extends Component {
 
     if (mast.body) {
       mast.body = JSON.parse(mast.body);
-      for (var i = 0; i < 3; i++) {
+      var max = mast.body.rss.channel.item.length > 3 ? 3 : mast.body.rss.channel.item.length;
+      for (var i = 0; i < max; i++) {
         news.push({
           html: mast.body.rss.channel.item[i].description._text,
           date: mast.body.rss.channel.item[i].pubDate._text,
@@ -92,21 +94,28 @@ class WelcomePage extends Component {
     this.setState({ news: news });
   }
 
-  
-	loginClick() {
-		if (!this.state.username) {
-      this.props.loginModal(scope, null, (username)=> {this.setState({username:username})});
-		} else {
-			this.props.profileModal(true);
-		}
+
+  loginClick() {
+    if (!this.props.logInfos.token) {
+      this.props.loginModal('welcome', null);
+    } else {
+      this.props.profileModal(true);
+    }
   }
-  
+
+
   render() {
     const t = this.props.t;
-    var isTuto = window.location.search.indexOf('admpwd') > -1 ? "manage tutorial" : "manage";
     return (
-      <React.Fragment>
-        <div id="root"></div>
+      <div id="welcomePage">
+        {this.state.loginModal ?
+          <LoginModal scope={this.props.admpwd && this.props.settings.config.App.FirstRun ? 'admin' : 'welcome'}
+            config={this.props.settings.config} admpwd={this.props.admpwd} updateLogInfos={this.props.updateLogInfos}
+            toggleLoginModal={() => this.setState({ loginModal: !this.state.loginModal })} /> : null
+        }
+        {this.state.profileModal ?
+          <ProfilModal settingsOnline={this.props.settings.config.Online} updateLogInfos={this.props.updateLogInfos} logInfos={this.props.logInfos} /> : null
+        }
         <div className="navbar-default navbar-fixed-top" id="navigation">
           <div className="container">
             <div className="navbar-header">
@@ -151,16 +160,16 @@ class WelcomePage extends Component {
                 <li>
                   <a href="#" id="wlcm_login" onClick={this.loginClick}>
                     <i className="glyphicon glyphicon-user" />
-                    <span>{this.state.username ? this.state.username : t("NOT_LOGGED")}</span>
+                    <span>{this.props.logInfos.token ? this.props.logInfos.username : t("NOT_LOGGED")}</span>
                   </a>
                 </li>
-                {this.state.username ?
-                <li id="wlcm_disconnect">
-                  <a href="#" title={t("LOGOUT")} className="logout">
-                    <i className="glyphicon glyphicon-log-out" />{" "}
-                    <span>{t("LOGOUT")}</span>
-                  </a>
-                </li> : null
+                {this.props.logInfos.token ?
+                  <li id="wlcm_disconnect">
+                    <a href="#" title={t("LOGOUT")} className="logout" onClick={this.props.logOut}>
+                      <i className="glyphicon glyphicon-log-out" />{" "}
+                      <span>{t("LOGOUT")}</span>
+                    </a>
+                  </li> : null
                 }
               </ul>
             </nav>
@@ -175,7 +184,7 @@ class WelcomePage extends Component {
                   <img
                     className="logo-1"
                     height="122"
-                    src="/ressources/img/Logo-final-fond-transparent.png"
+                    src={logo}
                     alt="LOGO"
                   />
                 </h1>
@@ -185,7 +194,7 @@ class WelcomePage extends Component {
               </div>
               <div className="col-md-12 block wow menu zoomIn">
                 <ul id="welcome_dashboard">
-                  <li className={isTuto} 
+                  <li className={this.props.admpwd && this.props.settings.config.App.FirstRun ? "manage tutorial" : "manage"}
                     onClick={() => window.open('/admin' + window.location.search, '_blank')}>
                     <div className="dash days_dash">
                       <i className="digit glyphicon glyphicon-list normalText" />
@@ -200,7 +209,7 @@ class WelcomePage extends Component {
                   </li>
                   <li>
                     <div className="dash hours_dash"
-                        onClick={() => window.open('/system', '_blank')}>
+                      onClick={() => window.open('/system', '_blank')}>
                       <i className="digit glyphicon glyphicon-cog" />
                       <div className="dash_title">
                         {t("WLCM_ADMINISTRATION")}
@@ -209,7 +218,7 @@ class WelcomePage extends Component {
                   </li>
                   <li>
                     <div className="dash seconds_dash"
-                        onClick={() => window.open('/' + window.location.search, '_blank')}>
+                      onClick={() => window.open('/' + window.location.search, '_blank')}>
                       <i className="digit glyphicon glyphicon-user" />
                       <div className="dash_title">{t("WLCM_PUBLIC")}</div>
                     </div>
@@ -222,17 +231,28 @@ class WelcomePage extends Component {
                   </li>
                 </ul>
               </div>
-              <div className="col-md-12 wow block zoomIn perfectScrollbar">
+              <div className="col-md-12 wow block zoomIn">
                 <ul className="news">
-                  {this.state.news.map(e => {
-                    return <NewsArticle key={Math.random()} new={e}/>;
+                  {this.state.news.map(article => {
+                    return (<li className={this.state.open ? "new open" : "new"}
+                      type={article.type} onClick={() => this.setState({ open: !this.state.open })}>
+                      <p className="new-header">
+                        <b>{article.title}</b>
+                        <a href={article.link} target="_blank">
+                          {article.dateStr}
+                        </a>
+                      </p>
+                      <p dangerouslySetInnerHTML={{ __html: article.html }}></p>
+                    </li>)
                   })}
                 </ul>
               </div>
             </div>
           </div>
         </section>
-      </React.Fragment>
+        <a id="downloadAnchorElem"></a>
+        <div className="toastMessageContainer"></div>
+      </div>
     );
   }
 }

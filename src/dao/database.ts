@@ -9,7 +9,6 @@ import {join} from 'path';
 import {isShutdownPG, initPG} from '../utils/postgresql';
 import { baseChecksum } from './dataStore';
 import { DBStats } from '../types/database/database';
-import { checkUserDBIntegrity } from './generation';
 import { getSettings, saveSetting, connectDB, db } from '../lib/dao/database';
 
 const sql = require('./sql/database');
@@ -156,7 +155,6 @@ export async function generateDB(): Promise<boolean> {
 	try {
 		await generateDatabase(false, true);
 		logger.info('[DB] Database generation completed successfully!');
-		await checkUserDBIntegrity();
 		if (state.opt.generateDB) await exit(0);
 	} catch(err) {
 		logger.error(`[DB] Database generation completed with errors : ${err}`);

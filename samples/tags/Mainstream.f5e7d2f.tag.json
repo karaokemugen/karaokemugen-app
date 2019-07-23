@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Mainstream"
+    },
+    "name": "Mainstream",
+    "tid": "f5e7d2fc-0cbb-4fb9-a84a-b25dfb0e9e77",
+    "types": [
+      "groups"
+    ]
+  }
+}

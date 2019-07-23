@@ -62,8 +62,7 @@ main()
 
 async function main() {
 	const argv = minimist(process.argv.slice(2));
-	setState({os: process.platform});
-	setState({ version: version });
+	setState({ os: process.platform, version: version });
 	const state = getState();
 	console.log(chalk.blue(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
@@ -103,7 +102,7 @@ async function main() {
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.System.Path.Avatars));
-	fileBuffer = readFileSync(join(__dirname, '../frontend/ressources/img/blank.png'));
+	fileBuffer = readFileSync(join(__dirname, '../frontend/src/assets/blank.png'));
 	const tempAvatar = resolve(appPath, config.System.Path.Avatars, 'blank.png');
 	if (await asyncExists(tempAvatar)) await asyncUnlink(tempAvatar);
 	writeFileSync(tempAvatar, fileBuffer);
@@ -150,6 +149,7 @@ async function checkPaths(config: Config) {
 	// Checking paths
 	let checks = [];
 	config.System.Path.Karas.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.System.Path.Tags.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.System.Path.Series.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.System.Path.Lyrics.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.System.Path.Medias.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));

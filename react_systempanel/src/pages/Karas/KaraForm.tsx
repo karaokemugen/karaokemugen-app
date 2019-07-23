@@ -1,120 +1,175 @@
-import React, {Component} from 'react';
-import {Button, Form, Icon, Input, InputNumber, message, Select, Tooltip, Upload} from 'antd';
-import EditableTagGroup from '../Components/EditableTagGroup';
+import React, { Component } from "react";
+import {
+	Button,
+	Form,
+	Icon,
+	Input,
+	InputNumber,
+	message,
+	Select,
+	Tooltip,
+	Upload
+} from "antd";
+import EditableTagGroup from "../Components/EditableTagGroup";
+import axios from "axios/index";
+import { getTagInLocale } from "../../utils/kara";
 
 interface KaraFormProps {
-	kara: any,
-	form: any,
-	save: any,
+	kara: any;
+	form: any;
+	save: any;
+}
+
+interface Tag {
+	tid: string;
+	i18n: any[];
+	short: string;
+	name: string;
+	types: any[];
+	misc: any[]
 }
 
 interface KaraFormState {
-	seriesRequired: boolean,
-	subfileList: any[],
-	mediafileList: any[],
-	singers: string[],
-	authors: string[],
-	tags: string[],
-	series: any[],
-	creators: string[],
-	songwriters: string[],
-	groups: string[],
-	songtype: string,
-	langs: string[],
+	serieSingersRequired: Boolean;
+	subfile: any[];
+	mediafile: any[];
+	singers: Tag[];
+	authors: Tag[];
+	misc: Tag[];
+	serie_orig: any[];
+	creators: Tag[];
+	songwriters: Tag[];
+	groups: Tag[];
+	songtypes: Tag;
+	langs: Tag[];
+	families?: Tag[];
+	genres?: Tag[];
+	platforms?: Tag[];
+	origins?: Tag[],
+	created_at?: Date,
+	modified_at?: Date,
+	songtypesValue: Tag[]
 }
 
 class KaraForm extends Component<KaraFormProps, KaraFormState> {
-
 	constructor(props) {
 		super(props);
-
-		// If kara is being edited (already has a dateadded) author won't be automatically filled if there's no author already.
-		// If there's an author field already in the karadata, it gets filled later.
-		this.state = this.createStateFromProps(props);
-
-	}
-
-	createStateFromProps(props) {
-		const state = {
-			seriesRequired: true,
-			subfileList: [],
-			mediafileList: [],
-			singers: [],
-			authors: [],
-			tags: ['TAG_ANIME', 'TAG_TVSHOW'],
-			series: [],
-			creators: [],
-			songwriters: [],
-			groups: [],
-			songtype: 'OP',
-			langs: ['jpn']
+		const kara = this.props.kara;
+		this.getSongtypes();
+		this.state = {
+			serieSingersRequired: false,
+			subfile: kara.subfile
+				? [
+					{
+						uid: -1,
+						name: kara.subfile,
+						status: "done"
+					}
+				]
+				: null,
+			mediafile: kara.mediafile
+				? [
+					{
+						uid: -1,
+						name: kara.mediafile,
+						status: "done"
+					}
+				]
+				: null,
+			singers: this.getTagArray(kara.singers),
+			authors: this.getTagArray(kara.authors),
+			misc: this.getTagArray(kara.misc),
+			serie_orig: kara.serie_orig ? [kara.serie_orig] : [],
+			creators: this.getTagArray(kara.creators),
+			songwriters: this.getTagArray(kara.songwriters),
+			groups: this.getTagArray(kara.groups),
+			songtypes: kara.songtypes ? kara.songtypes[0] : [],
+			langs: this.getTagArray(kara.langs),
+			families: this.getTagArray(kara.families),
+			platforms: this.getTagArray(kara.platforms),
+			genres: this.getTagArray(kara.genres),
+			origins: this.getTagArray(kara.origins),
+			created_at: kara.created_at ? kara.created_at : new Date(),
+			modified_at: kara.modified_at ? kara.modified_at : new Date(),
+			songtypesValue: null
 		};
-
-		if (!this.props.kara.dateadded) {
-			this.props.kara.dateadded = new Date();
-			localStorage.getItem('username') !== 'admin' ? state.authors = [localStorage.getItem('username').split('@')[0]] : state.authors = [];
-		}
-		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
-		if (this.props.kara.singers && this.props.kara.singers.length > 0 && !this.props.kara.singers.includes('NO_TAG')) state.singers = this.props.kara.singers;
-		if (this.props.kara.series) state.series = this.props.kara.series.split(',');
-		if (this.props.kara.groups && this.props.kara.groups.length > 0 && !this.props.kara.groups.includes('NO_TAG')) state.groups = this.props.kara.groups;
-		if (this.props.kara.songwriters && this.props.kara.songwriters.length  > 0 && !this.props.kara.songwriters.includes('NO_TAG')) state.songwriters = this.props.kara.songwriters;
-		if (this.props.kara.authors && this.props.kara.authors.length > 0 && !this.props.kara.authors.includes('NO_TAG')) state.authors = this.props.kara.authors;
-		if (this.props.kara.langs && this.props.kara.langs.length > 0 && !this.props.kara.langs.includes('NO_TAG')) state.langs = this.props.kara.langs;
-		if (this.props.kara.creators && this.props.kara.creators.length > 0 && !this.props.kara.creators.includes('NO_TAG')) state.creators = this.props.kara.creators;
-		if (this.props.kara.songtype && this.props.kara.songtype.length > 0) state.songtype =  this.props.kara.songtype[0].replace('TYPE_','');
-		if (this.props.kara.tags && this.props.kara.tags.length > 0 && !this.props.kara.tags.includes('NO_TAG')) state.tags = this.props.kara.tags;
-		if (this.props.kara.mediafile_old) {
-			state.mediafileList = [{
-				uid: -1,
-				name: this.props.kara.mediafile_old,
-				status: 'done'
-			}];
-		}
-		if (this.props.kara.subfile_old) {
-			state.subfileList = [{
-				uid: -1,
-				name: this.props.kara.subfile_old,
-				status: 'done'
-			}];
-		}
-
-		return state;
 	}
+
+	getTagArray(value) {
+		if (value) {
+			return value.map(element => {
+				return [element.tid, getTagInLocale(element), element.name]
+			});
+		} else {
+			return [];
+		}
+	}
+
+	getTagObject(value) {
+		if (value) {
+			return value.map(element => {
+				if (element.length === 3) {
+					return { tid: element[0], name: element[2] };
+				} else if (element.length === 2) {
+					return { tid: element[0], name: element[1] };
+				} else {
+					return null;
+				}
+			});
+		}
+		else {
+			return [];
+		}
+	}
+
+	getSongtypes = async () => {
+		const res = await axios.get("/api/system/tags", {
+			params: {
+				type: 3
+			}
+		});
+		this.setState({ songtypesValue: this.getTagArray(res.data.content) });
+	};
 
 	componentDidMount() {
-		this.onChangeType(this.state.songtype);
 		this.props.form.validateFields();
+		this.props.form.validateFields(['series'], { force: true });
+		this.props.form.validateFields(['singers'], { force: true });
 	}
 
-	handleSubmit = (e) => {
+	handleSubmit = e => {
 		e.preventDefault();
 		this.props.form.validateFields((err, values) => {
-			if (!err) this.props.save(values);
+			var kara = values;
+			kara.singers = this.getTagObject(kara.singers);
+			kara.authors = this.getTagObject(kara.authors);
+			kara.misc = this.getTagObject(kara.misc);
+			kara.creators = this.getTagObject(kara.creators);
+			kara.songwriters = this.getTagObject(kara.songwriters);
+			kara.groups = this.getTagObject(kara.groups);
+			kara.langs = this.getTagObject(kara.langs);
+			kara.families = this.getTagObject(kara.families);
+			kara.platforms = this.getTagObject(kara.platforms);
+			kara.genres = this.getTagObject(kara.genres);
+			kara.origins = this.getTagObject(kara.origins);
+			kara.songtypes = this.getTagObject(this.state.songtypesValue).filter(value => values.songtypes === value.tid);
+			if (!err) this.props.save(kara);
 		});
 	};
 
-	isMediaFile = (filename) => {
-		return new RegExp('^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg|ogg|m4a|mp3)$').test(filename);
-	};
-
-	onChangeType = (e) => {
-		this.setState({
-			seriesRequired: !(e === 'MV' || e === 'LIVE')
-		}, () => {
-			this.props.form.validateFields(['series'], { force: true });
-	  		this.props.form.validateFields(['singer'], { force: true });
-    	}
+	isMediaFile = filename => {
+		return new RegExp("^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg|ogg|m4a|mp3)$").test(
+			filename
 		);
 	};
 
-	onMediaUploadChange = (info) => {
+	onMediaUploadChange = info => {
 		let fileList = info.fileList;
 		fileList = fileList.slice(-1);
-		this.setState({ mediafileList: fileList });
-		if (info.file.status === 'uploading') {
+		this.setState({ mediafile: fileList });
+		if (info.file.status === "uploading") {
 			this.props.form.setFieldsValue({ mediafile: null, mediafile_orig: null });
-		} else if (info.file.status === 'done') {
+		} else if (info.file.status === "done") {
 			if (this.isMediaFile(info.file.name)) {
 				this.props.form.setFieldsValue({
 					mediafile: info.file.response.filename,
@@ -124,23 +179,23 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			} else {
 				this.props.form.setFieldsValue({ mediafile: null });
 				message.error(`${info.file.name} is not a media file`);
-				info.file.status = 'error';
-				this.setState({ mediafileList: [] });
+				info.file.status = "error";
+				this.setState({ mediafile: [] });
 			}
-		} else if (info.file.status === 'error') {
+		} else if (info.file.status === "error") {
 			this.props.form.setFieldsValue({ mediafile: null, mediafile_orig: null });
-			this.setState({ mediafileList: [] });
+			this.setState({ mediafile: [] });
 		}
 	};
 
-	onSubUploadChange = (info) => {
+	onSubUploadChange = info => {
 		let fileList = info.fileList;
 		fileList = fileList.slice(-1);
-		this.setState({ subfileList: fileList });
-		if (info.file.status === 'uploading') {
+		this.setState({ subfile: fileList });
+		if (info.file.status === "uploading") {
 			this.props.form.setFieldsValue({ subfile: null, subfile_orig: null });
-		} else if (info.file.status === 'done') {
-			if (info.file.name.endsWith('.ass')) {
+		} else if (info.file.status === "done") {
+			if (info.file.name.endsWith(".ass")) {
 				this.props.form.setFieldsValue({
 					subfile: info.file.response.filename,
 					subfile_orig: info.file.response.originalname
@@ -149,120 +204,136 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			} else {
 				this.props.form.setFieldsValue({ subfile: null, subfile_orig: null });
 				message.error(`${info.file.name} is not a subs file`);
-				info.file.status = 'error';
-				this.setState({ subfileList: [] });
+				info.file.status = "error";
+				this.setState({ subfile: [] });
 			}
-		} else if (info.file.status === 'error') {
+		} else if (info.file.status === "error") {
 			this.props.form.setFieldsValue({ subfile: null });
-			this.setState({ subfileList: [] });
+			this.setState({ subfile: [] });
 		}
 	};
 
-	render() {
-		const {getFieldDecorator} = this.props.form;
+	onChangeSingersSeries = (tags) => {
+		this.setState({serieSingersRequired: (!tags || tags.length === 0)}, () => {
+			this.props.form.validateFields(['series'], { force: true });
+			this.props.form.validateFields(['singers'], { force: true });
+		});
+	}
 
+	render() {
+		const { getFieldDecorator } = this.props.form;
 		return (
-			<Form
-				onSubmit={this.handleSubmit}
-				className='kara-form'
-			>
-				<Form.Item hasFeedback
+			<Form onSubmit={this.handleSubmit} className="kara-form">
+				<Form.Item
+					hasFeedback
 					label="Media file"
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					<Upload
-						action='/api/system/karas/importfile'
-						accept='video/*,audio/*'
+						action="/api/system/karas/importfile"
+						accept="video/*,audio/*"
 						multiple={false}
 						onChange={this.onMediaUploadChange}
-						fileList={this.state.mediafileList}
+						fileList={this.state.mediafile}
 					>
 						<Button>
-							<Icon type="upload" />Media File
-						</Button>
-					</Upload></Form.Item>
+							<Icon type="upload" />
+							Media File
+                                                </Button>
+					</Upload>
+				</Form.Item>
 				<Form.Item
 					label="Lyrics file"
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					<Upload
-						action='/api/system/karas/importfile'
+						action="/api/system/karas/importfile"
 						multiple={false}
 						onChange={this.onSubUploadChange}
-						fileList={this.state.subfileList}
+						fileList={this.state.subfile}
 					>
 						<Button>
-							<Icon type="upload" />Lyrics File
-						</Button>
-					</Upload></Form.Item>
-				<Form.Item hasFeedback
-					label={(
-						<span>Song title&nbsp;
-							<Tooltip title="If you don't know, put the name of the series here as well">
+							<Icon type="upload" />
+							Lyrics File
+                                                </Button>
+					</Upload>
+				</Form.Item>
+				<Form.Item
+					hasFeedback
+					label={
+						<span>
+							Song title&nbsp;
+              <Tooltip title="If you don't know, put the name of the series here as well">
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
-					)}
+					}
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 8, offset: 0 }}
 				>
-					{getFieldDecorator('title', {
+					{getFieldDecorator("title", {
 						initialValue: this.props.kara.title,
-						rules: [{
-							required: true,
-							message: 'Please enter a song title'
-						}],
-					})(<Input
-						onPressEnter={this.handleSubmit}
-						placeholder='Song Title'
-					/>)}
-				</Form.Item>
-				<Form.Item hasFeedback
-					label={(
-						<span>Serie(s)&nbsp;
-							<Tooltip title="If type is MV or LIVE, series is not mandatory, except if it is related to a particular anime series (Love Live, Idolmaster, etc.)">
-								<Icon type="question-circle-o" />
-							</Tooltip>
-						</span>
+						rules: [
+							{
+								required: true,
+								message: "Please enter a song title"
+							}
+						]
+					})(
+						<Input onPressEnter={this.handleSubmit} placeholder="Song Title" />
 					)}
+				</Form.Item>
+
+				<Form.Item
+					hasFeedback
+					label={<span>Serie(s)&nbsp;</span>}
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 14, offset: 0 }}
 				>
-					{getFieldDecorator('series', {
-						initialValue: this.state.series,
+					{getFieldDecorator("series", {
+						initialValue: this.state.serie_orig,
 						rules: [{
-							required: this.state.seriesRequired,
-							message: 'Series is mandatory if song type is not MV or LIVE'
+							required: this.state.serieSingersRequired,
+							message: "Series or singers cannot be empty in the same time."
 						}]
-					})(<EditableTagGroup
-						search={'serie'}
-						onChange={ (tags) => this.props.form.setFieldsValue({ series: tags.join(',') }) }
-					/>)}
+					})(
+						<EditableTagGroup
+							search={"serie"}
+							onChange={tags => {
+								this.props.form.setFieldsValue({ serie_orig: tags });
+								this.onChangeSingersSeries(tags);
+							}
+							}
+						/>
+					)}
 				</Form.Item>
-				<Form.Item
-					label="Song type"
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 3, offset: 0 }}
-				>
-					{getFieldDecorator('type', {
-						rules: [{required: true}],
-						initialValue: this.state.songtype
-					})(<Select placeholder={'Song type'}
-						onChange={ this.onChangeType }
+				{this.state.songtypesValue ?
+					<Form.Item
+						label="Song type"
+						labelCol={{ span: 3 }}
+						wrapperCol={{ span: 3, offset: 0 }}
 					>
-						<Select.Option value='AMV'>AMV</Select.Option>
-						<Select.Option value='CM'>Commercial</Select.Option>
-						<Select.Option value='ED'>Ending</Select.Option>
-						<Select.Option value='IN'>Insert Song</Select.Option>
-						<Select.Option value='OT'>Other</Select.Option>
-						<Select.Option value='PV'>Promotional Video</Select.Option>
-						<Select.Option value='LIVE'>Concert</Select.Option>
-						<Select.Option value='OP'>Opening</Select.Option>
-						<Select.Option value='MV'>Music video</Select.Option>
-					</Select>)}
-				</Form.Item>
+
+						{getFieldDecorator("songtypes", {
+							rules: [{
+								required: true,
+								message: "Song type is mandatory"
+							}],
+							initialValue: this.state.songtypes.tid
+						})(
+
+							<Select placeholder={"Song type"}>
+								{this.state.songtypesValue.map(type => {
+									return <Select.Option key={type[0]} value={type[0]}>{type[1]}</Select.Option>
+								})
+								}
+							</Select>
+						)}
+					</Form.Item> : null
+				}
+
 				<Form.Item hasFeedback
 					label={(
 						<span>Song order&nbsp;
@@ -275,7 +346,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					wrapperCol={{ span: 1, offset: 0 }}
 				>
 					{getFieldDecorator('order', {
-						initialValue: this.props.kara.order
+						initialValue: this.props.kara.songorder
 					})(<InputNumber
 						min={0}
 						style={{ width: '100%' }}
@@ -292,12 +363,16 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
-					{getFieldDecorator('lang', {
-						rules: [{required: true}],
+					{getFieldDecorator('langs', {
+						rules: [{
+							required: true,
+							message: "Please choose a language"
+                        }],
 						initialValue: this.state.langs
 					})(<EditableTagGroup
-						search={'lang'}
-						onChange={ (tags) => this.props.form.setFieldsValue({ lang: tags.join(',') }) }
+						tagType={5}
+						search={'tag'}
+						onChange={(tags) => this.props.form.setFieldsValue({ langs: tags })}
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback
@@ -313,7 +388,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				>
 					{getFieldDecorator('year', {
 						initialValue: this.props.kara.year || 2010,
-						rules: [{required: true}]
+						rules: [{ required: true }]
 					})(<InputNumber
 						min={0}
 						placeholder='Year'
@@ -325,16 +400,20 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
-					{getFieldDecorator('singer', {
+					{getFieldDecorator('singers', {
 						initialValue: this.state.singers,
 						rules: [{
-							required: !this.state.seriesRequired,
-							message: 'Singer is mandatory if song type is MV or LIVE'
+							required: this.state.serieSingersRequired,
+							message: "Series or singers cannot be empty in the same time."
 						}]
 					})(<EditableTagGroup
 						tagType={2}
 						search={'tag'}
-						onChange={ (tags) => this.props.form.setFieldsValue({ singer: tags.join(',') }) }
+						onChange={(tags) => {
+							this.props.form.setFieldsValue({ singer: tags });
+							this.onChangeSingersSeries(tags);
+						}
+						}
 					/>)}
 				</Form.Item>
 				<Form.Item
@@ -348,12 +427,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
-					{getFieldDecorator('songwriter', {
+					{getFieldDecorator('songwriters', {
 						initialValue: this.state.songwriters
 					})(<EditableTagGroup
 						tagType={8}
 						search={'tag'}
-						onChange={ (tags) => this.props.form.setFieldsValue({ songwriter: tags.join(',') }) }
+						onChange={(tags) => this.props.form.setFieldsValue({ songwriters: tags })}
 					/>)}
 				</Form.Item>
 				<Form.Item
@@ -367,12 +446,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
-					{getFieldDecorator('creator', {
+					{getFieldDecorator('creators', {
 						initialValue: this.state.creators
 					})(<EditableTagGroup
 						tagType={4}
 						search={'tag'}
-						onChange={ (tags) => this.props.form.setFieldsValue({ creator: tags.join(',') }) }
+						onChange={(tags) => this.props.form.setFieldsValue({ creators: tags })}
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback
@@ -386,18 +465,18 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
-					{getFieldDecorator('author', {
+					{getFieldDecorator('authors', {
 						initialValue: this.state.authors
 					})(<EditableTagGroup
 						tagType={6}
 						search={'tag'}
-						onChange={ (tags) => this.props.form.setFieldsValue({ author: tags.join(',') }) }
+						onChange={(tags) => this.props.form.setFieldsValue({ author: tags })}
 					/>)}
 				</Form.Item>
 				<Form.Item
 					label={(
-						<span>Tag(s)&nbsp;
-							<Tooltip title={(<a href="http://mugen.karaokes.moe/docs/fr/contrib-guide/tags/">See tag list</a>)}>
+						<span>Families&nbsp;
+							<Tooltip title={(<a href="http://docs.karaokes.moe/fr/contrib-guide/references/#tags">See tag list</a>)}>
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
@@ -405,13 +484,93 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 10, offset: 0 }}
 				>
-					{getFieldDecorator('tags', {
-						initialValue: this.state.tags
+					{getFieldDecorator('families', {
+						initialValue: this.state.families
+					})(<EditableTagGroup
+						tagType={10}
+						checkboxes={true}
+						search={'tag'}
+						onChange={(tags) => this.props.form.setFieldsValue({ families: tags })}
+					/>)}
+				</Form.Item>
+				<Form.Item
+					label={(
+						<span>Plateforms&nbsp;
+							<Tooltip title={(<a href="http://docs.karaokes.moe/fr/contrib-guide/references/#tags">See tag list</a>)}>
+								<Icon type="question-circle-o" />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 10, offset: 0 }}
+				>
+					{getFieldDecorator('platforms', {
+						initialValue: this.state.platforms
+					})(<EditableTagGroup
+						tagType={13}
+						checkboxes={true}
+						search={'tag'}
+						onChange={(tags) => this.props.form.setFieldsValue({ platforms: tags })}
+					/>)}
+				</Form.Item>
+				<Form.Item
+					label={(
+						<span>Genres&nbsp;
+							<Tooltip title={(<a href="http://docs.karaokes.moe/fr/contrib-guide/references/#tags">See tag list</a>)}>
+								<Icon type="question-circle-o" />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 10, offset: 0 }}
+				>
+					{getFieldDecorator('genres', {
+						initialValue: this.state.genres
+					})(<EditableTagGroup
+						tagType={12}
+						checkboxes={true}
+						search={'tag'}
+						onChange={(tags) => this.props.form.setFieldsValue({ genres: tags })}
+					/>)}
+				</Form.Item>
+				<Form.Item
+					label={(
+						<span>Origins&nbsp;
+							<Tooltip title={(<a href="http://docs.karaokes.moe/fr/contrib-guide/references/#tags">See tag list</a>)}>
+								<Icon type="question-circle-o" />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 10, offset: 0 }}
+				>
+					{getFieldDecorator('origins', {
+						initialValue: this.state.origins
+					})(<EditableTagGroup
+						tagType={11}
+						checkboxes={true}
+						search={'tag'}
+						onChange={(tags) => this.props.form.setFieldsValue({ origins: tags })}
+					/>)}
+				</Form.Item>
+				<Form.Item
+					label={(
+						<span>Misc&nbsp;
+							<Tooltip title={(<a href="http://docs.karaokes.moe/fr/contrib-guide/references/#tags">See tag list</a>)}>
+								<Icon type="question-circle-o" />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 10, offset: 0 }}
+				>
+					{getFieldDecorator('misc', {
+						initialValue: this.state.misc
 					})(<EditableTagGroup
 						tagType={7}
 						checkboxes={true}
 						search={'tag'}
-						onChange={ (tags) => this.props.form.setFieldsValue({ tags: tags.join(',') }) }
+						onChange={(tags) => this.props.form.setFieldsValue({ misc: tags })}
 					/>)}
 				</Form.Item>
 				<Form.Item
@@ -430,7 +589,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					})(<EditableTagGroup
 						tagType={9}
 						search={'tag'}
-						onChange={ (tags) => this.props.form.setFieldsValue({ groups: tags.join(',') }) }
+						onChange={(tags) => this.props.form.setFieldsValue({ groups: tags })}
 					/>)}
 				</Form.Item>
 				<Form.Item
@@ -438,8 +597,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 8, offset: 0 }}
 				>
-					{getFieldDecorator('dateadded', {
-						initialValue: this.props.kara.dateadded
+					{getFieldDecorator('created_at', {
+						initialValue: this.props.kara.created_at
 					})(<Input disabled={true} />)}
 				</Form.Item>
 				<Form.Item
@@ -447,8 +606,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 8, offset: 0 }}
 				>
-					{getFieldDecorator('datemodif', {
-						initialValue: this.props.kara.datemodif
+					{getFieldDecorator('modified_at', {
+						initialValue: this.props.kara.modified_at
 					})(<Input disabled={true} />)}
 				</Form.Item>
 				<Form.Item
@@ -488,7 +647,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						initialValue: this.props.kara.subfile
 					})(<Input type="hidden" />)}
 				</Form.Item>
-
 			</Form>
 		);
 	}

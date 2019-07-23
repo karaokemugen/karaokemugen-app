@@ -118,25 +118,6 @@ describe('Blacklist', function() {
 			});
 	});
 
-	it('Edit a blacklist criteria', function() {
-		var data = {
-			blcriteria_type: 1001,
-			blcriteria_value: 'a9c17ee5-b0f1-43d7-a1e0-0babf5997bde'
-		};
-		return request
-			.put('/api/admin/blacklist/criterias/'+blc_id)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.code,'BLC_UPDATED');
-				strictEqual(response.body.data.blcriteria_type,data.blcriteria_type);
-				strictEqual(response.body.data.blcriteria_value,data.blcriteria_value);
-			});
-	});
-
 	it('Get blacklist (public)', function() {
 		return request
 			.get('/api/public/blacklist/')
@@ -314,7 +295,7 @@ describe('Karas information', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.length, 1);
+				strictEqual(response.body.data.kid, 'f4c8b1a5-f59a-4142-ae46-b43037a9d75b');
 			});
 	});
 

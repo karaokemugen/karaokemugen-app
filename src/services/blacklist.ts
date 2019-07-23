@@ -1,18 +1,15 @@
 import {emptyBlacklistCriterias as emptyBLC,
 	isBLCriteria as isBLC,
-	editBlacklistCriteria as editBLC,
 	deleteBlacklistCriteria as deleteBLC,
 	generateBlacklist as generateBL,
 	addBlacklistCriteria as addBLC,
 	getBlacklistContents as getBLContents,
 	getBlacklistCriterias as getBLC,
 } from '../dao/blacklist';
-import {getTag} from '../dao/tag';
+import {getTag} from './tag';
 import {getKara} from '../dao/kara';
-import {translateKaraInfo} from './kara';
 import langs from 'langs';
 import {getState} from '../utils/state';
-import {resolve} from 'path';
 import logger from '../lib/utils/logger';
 import {profile} from '../lib/utils/logger';
 import {formatKaraList} from './kara';
@@ -24,7 +21,7 @@ import {isNumber} from '../lib/utils/validators';
 export async function getBlacklist(params: KaraParams): Promise<KaraList> {
 	profile('getBL');
 	const pl = await getBLContents(params);
-	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.lang, params.from, pl.length);
+	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.from, pl.length);
 	profile('getBL');
 	return ret;
 }
@@ -55,34 +52,6 @@ export async function emptyBlacklistCriterias() {
 	return await generateBlacklist();
 }
 
-export async function editBlacklistCriteria(blc: BLC) {
-	if (!await isBLCriteria(blc.id)) throw `BLC ID ${blc.id} unknown`;
-	profile('editBLC');
-	logger.info(`[Blacklist] Editing criteria ${blc.id} : ${blc.type} = ${blc.value}`);
-	if (blc.type < 0 && blc.type > 1004) throw `Blacklist criteria type error : ${blc.type} is incorrect`;
-	if (blc.type > 0 && blc.type < 1000) {
-		[blc] = await BLCgetTagName([blc]);
-	} else {
-		// Remember to define uniquevalue
-		blc.uniquevalue = null;
-	}
-	if (blc.type === 1001) {
-		if (!new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`;
-	}
-	if (((blc.type > 1001 && blc.type <= 1003) || (blc.type > 0 && blc.type < 999)) && (isNaN(blc.value))) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
-	await editBLC(blc);
-	await generateBlacklist();
-	profile('editBLC');
-}
-
-export async function BLCgetTagName(blcList: BLC[]): Promise<BLC[]> {
-	for (const index in blcList) {
-		const res = await getTag(blcList[index].value);
-		if (res) blcList[index].uniquevalue = res.name;
-	}
-	return blcList;
-}
-
 export async function deleteBlacklistCriteria(blc_id: number) {
 	profile('delBLC');
 	logger.info(`[Blacklist] Deleting criteria ${blc_id}`);
@@ -107,7 +76,6 @@ export async function addBlacklistCriteria(type: number, value: any) {
 	});
 	try {
 		if (type < 0 && type > 1004) throw `Incorrect BLC type (${type})`;
-		if (type > 0 && type < 1000) blcList = await BLCgetTagName(blcList);
 		if (type === 1001) {
 			if (blcList.some((blc: BLC) => !new RegExp(uuidRegexp).test(blc.value))) throw `Blacklist criteria value mismatch : type ${type} must have UUID values`;
 		}
@@ -126,37 +94,24 @@ async function translateBlacklistCriterias(blcList: BLC[], lang: string): Promis
 	// If lang is not provided, assume we're using node's system locale
 	if (!lang) lang = getState().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
-	if (!langs.has('1',lang)) throw `Unknown language : ${lang}`;
-	// Instanciate a translation object for our needs with the correct language.
-	const i18n = require('i18n'); // Needed for its own translation instance
-	i18n.configure({
-		directory: resolve(__dirname,'../locales'),
-	});
-	i18n.setLocale(lang);
+	if (!langs.has('1', lang)) throw `Unknown language : ${lang}`;
 	// We need to read the detected locale in ISO639-1
+	const langObj = langs.where('1', lang);
 	for (const i in blcList) {
 		if (blcList[i].type === 1) {
 			// We just need to translate the tag name if there is a translation
 			if (typeof blcList[i].value !== 'string') throw `BLC value is not a string : ${blcList[i].value}`;
-			if (blcList[i].value.startsWith('TAG_')) {
-				blcList[i].value_i18n = i18n.__(blcList[i].value);
-			} else {
-				blcList[i].value_i18n = blcList[i].value;
-			}
+			blcList[i].value_i18n = blcList[i].value;
 		}
 		if (blcList[i].type >= 2 && blcList[i].type <= 999) {
 			// We need to get the tag name and then translate it if needed
 			const tag = await getTag(blcList[i].value);
-			if (tag.name.startsWith('TAG_')) {
-				blcList[i].value_i18n = i18n.__(tag.name);
-			} else {
-				blcList[i].value_i18n = tag.name;
-			}
+			blcList[i].value_i18n = tag.i18n[langObj['2B']];
 		}
 		if (blcList[i].type === 1001) {
 			// We have a kara ID, let's get the kara itself and append it to the value
 			const kara = await getKara(blcList[i].value, 'admin', lang, 'admin');
-			blcList[i].value = translateKaraInfo(kara, lang);
+			blcList[i].value = kara;
 		}
 		// No need to do anything, values have been modified if necessary
 	}

@@ -5,13 +5,14 @@ import logger, {profile} from '../lib/utils/logger';
 import { Token } from '../lib/types/user';
 import { KaraParams } from '../lib/types/kara';
 
+/** Add a KID or KID array to the whitelist */
 export async function addKaraToWhitelist(kid: string|string[], reason: string, token: Token, lang: string): Promise<string[]> {
 	let karas = [];
 	Array.isArray(kid)
 		? karas = kid
 		: karas = kid.split(',');
 	const kara = await getKara(karas[0], token, lang);
-	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara[0].title}...`);
+	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
 	try {
 		profile('addKaraToWL');
 		const karasUnknown = await isAllKaras(karas);
@@ -20,7 +21,6 @@ export async function addKaraToWhitelist(kid: string|string[], reason: string, t
 		generateBlacklist();
 		return karas;
 	} catch(err) {
-		console.log(err);
 		throw {
 			message: err,
 			data: karas
@@ -30,14 +30,16 @@ export async function addKaraToWhitelist(kid: string|string[], reason: string, t
 	}
 }
 
+/** Get whitelist contents as a regular kara list */
 export async function getWhitelistContents(params: KaraParams) {
 	profile('getWL');
 	const pl = await getWLContents(params);
-	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.lang, params.from, pl.length);
+	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.from, pl.length);
 	profile('getWL');
 	return ret;
 }
 
+/** Remove KIDs from the whitelist */
 export async function deleteKaraFromWhitelist(karas: string[]) {
 	try {
 		profile('deleteWLC');
@@ -51,6 +53,7 @@ export async function deleteKaraFromWhitelist(karas: string[]) {
 	}
 }
 
+/** Wipe whitelist clean, so it's whiter than white. */
 export async function emptyWhitelist() {
 	logger.info('[Whitelist] Wiping whitelist');
 	await emptyWL();

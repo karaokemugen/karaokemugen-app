@@ -1,17 +1,7 @@
-import { DownloadFile } from "../download";
+import { DownloadFile, KaraDownload } from "../download";
 
-export interface DBDownload {
-	name: string,
-	urls: {
-		media: DownloadFile,
-		lyrics: DownloadFile,
-		kara: DownloadFile,
-		serie: DownloadFile[]
-	},
-	size: number,
-	status: string,
-	started_at: Date,
-	uuid: string
+export interface DBDownload extends KaraDownload {
+	started_at: Date
 }
 
 export interface DBDownloadBLC {

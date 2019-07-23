@@ -1,20 +1,25 @@
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import { routerReducer, routerMiddleware } from 'react-router-redux';
-import {createBrowserHistory} from 'history';
+import { routerMiddleware } from 'connected-react-router';
+import { createBrowserHistory } from 'history';
+import { applyMiddleware, compose, createStore } from 'redux';
+import { createRootReducer } from './reducers/reducers';
 
-import navigation from './reducers/navigation';
-import auth from './reducers/auth';
+export const history = createBrowserHistory()
 
-const initialState = {};
+// If devtools is present use it's compose instead of redux's compose; Does the same thing
+const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export const history = createBrowserHistory();
+function configureStore() {
+  const store = createStore(
+    createRootReducer(history),
+    {},
+    composeEnhancers(
+      applyMiddleware(
+        routerMiddleware(history)
+      )
+    )
+  )
 
-const middleware = [
-	applyMiddleware(routerMiddleware(history))
-];
+  return store
+}
 
-export const store = createStore(
-	combineReducers({ navigation, auth, router: routerReducer }),
-	initialState,
-	compose(...middleware)
-);
+export const store = configureStore();

@@ -42,7 +42,7 @@ export default function adminMiscController(router: Router) {
 	/**
  * @api {get} /admin/settings Get settings
  * @apiName GetSettings
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Main
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -171,14 +171,15 @@ export default function adminMiscController(router: Router) {
  *			Previews: 'app/previews',
  *			Series: 'app/data/series',
  *			Subs: 'app/data/lyrics',
+ *          Tags: 'app/data/tags',
  * 			Temp: 'app/temp',
  *			DB: 'app/db'
  *		}
  *	}
  * },
  * version: {
- * 		number: '2.5-next',
- * 		name: 'Konata Karaokiste'
+ * 		number: '3.0.0-next',
+ * 		name: 'Leafa Lumineuse'
  * }
  * }
  */

@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Takeshi Ike"
+    },
+    "name": "Takeshi Ike",
+    "tid": "4c786551-95e2-4aaa-9aca-792796abd9ec",
+    "types": [
+      "songwriters",
+      "singers"
+    ]
+  }
+}
