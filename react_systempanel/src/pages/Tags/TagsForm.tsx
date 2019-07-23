@@ -4,15 +4,18 @@ import EditableTagGroup from '../Components/EditableTagGroup';
 import langs from 'langs';
 
 interface TagsFormProps {
+	tags: any,
 	tag: any,
 	form: any
 	save: any,
+	mergeAction: any,
 }
 
 interface TagsFormState {
 	i18n: any[],
 	languages: any[],
-	selectVisible: boolean
+	selectVisible: boolean,
+	mergeSelection: string
 }
 
 export const tagTypes = Object.freeze({
@@ -39,7 +42,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		this.state = {
 			i18n: [],
 			languages: [],
-			selectVisible: false
+			selectVisible: false,
+			mergeSelection: ''
 		};
 		langs.all().forEach(lang => this.state.languages.push({ value: lang['2B'], text: lang.name }));
 		Object.keys(this.props.tag.i18n).forEach(lang => {
@@ -81,6 +85,13 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			message.error('A tags must have at least one name by language');
 		}
 	};
+
+	handleTagMergeSelection = (e) => {
+		this.setState({mergeSelection:e.target.value})
+	}
+	handleTagMerge = (e) => {
+		this.props.mergeAction(this.props.tag.tid,this.state.mergeSelection)
+	}
 
 	// i18n dynamic management
 	addLang = (lang) => {
@@ -261,6 +272,38 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						Save tags
 					</Button>
 				</Form.Item>
+
+				<div className="ant-row ant-form-item">
+					<div className="ant-col ant-col-3 ant-form-item-label">
+						<label>
+							<span>
+								Merge with&nbsp;
+								<Tooltip title="Merge the current tag with another one">
+									<Icon type="question-circle-o" />
+								</Tooltip>
+							</span>
+						</label>
+					</div>
+					<div className="ant-col ant-col-8 ant-form-item-control-wrapper">
+						<div className="ant-form-item-control has-feedback has-success">
+							<select style={{width:'100%'}} onChange={this.handleTagMergeSelection.bind(this)}>
+								<option key="-1" value=""></option>
+								{
+									this.props.tags.map((tag,i) => {
+									return <option key={i} value={tag.tid}>{tag.name}</option>
+									})
+								}
+							</select>
+							<button type="button" onClick={this.handleTagMerge.bind(this)}>Merge !</button>
+						</div>
+					</div>
+				</div>
+				<p style={{color:'#fff',background:'tomato',textAlign:'left',padding:'1em'}}>
+					About "Merging process" :
+					<br />Resulting tags will have the current Name and Shortname.
+					<br />Types, Aliases and translation will be merged and the resulting tags will contain all the information from Current and targeted tags
+				</p>
+
 				<Form.Item>
 					{getFieldDecorator('i18n', {
 						initialValue: this.props.tag.i18n
@@ -271,6 +314,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						initialValue: this.props.tag.tid
 					})(<Input type="hidden" />)}
 				</Form.Item>
+
 			</Form>
 		);
 	}
