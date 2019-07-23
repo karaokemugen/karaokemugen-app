@@ -1,4 +1,4 @@
-import {getAllTags, selectTagByNameAndType, insertTag, selectTag, updateTag, removeTag, updateKaraTagsTID} from '../dao/tag';
+import {getAllTags, selectTagByNameAndType, insertTag, selectTag, updateTag, removeTag, updateKaraTagsTID, selectDuplicateTags} from '../dao/tag';
 import logger, {profile} from '../lib/utils/logger';
 import { TagParams, Tag } from '../lib/types/tag';
 import { DBTag } from '../lib/types/database/tag';
@@ -30,6 +30,11 @@ export async function getTags(params: TagParams) {
 	const ret = formatTagList(tags.slice(params.from || 0, (params.from || 0) + params.size || 999999999), params.from || 0, tags.length);
 	profile('getTags');
 	return ret;
+}
+
+export async function getDuplicateTags() {
+	const tags = await selectDuplicateTags();
+	return formatTagList(tags, 0, tags.length);
 }
 
 export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> {

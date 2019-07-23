@@ -6,6 +6,11 @@ FROM all_tags
 WHERE tid = $1
 `;
 
+export const selectDuplicateTags = `
+SELECT * FROM all_tags ou
+WHERE (SELECT COUNT(*) FROM all_tags inr WHERE inr.name = ou.name) > 1
+`;
+
 export const getAllTags = (filterClauses: string[], typeClauses: string, limitClause: string, offsetClause: string) => `
 SELECT tid,
 	types,
