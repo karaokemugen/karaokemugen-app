@@ -52,7 +52,7 @@ ON CONFLICT (pk_tid) DO UPDATE SET
 	types = $3
 `;
 
-export const updateKaraTagTID = `
+export const updateKaraTagsTID = `
 UPDATE kara_tag SET fk_tid = $2 WHERE fk_tid = $1;
 `;
 

@@ -4,14 +4,14 @@ import { TagParams, Tag } from '../lib/types/tag';
 import { DBTag } from '../lib/types/database/tag';
 import uuidV4 from 'uuid/v4';
 import { resolvedPathTags } from '../lib/utils/config';
-import { addTagToStore, sortTagsStore, getStoreChecksum, editTagInStore, removeTagInStore } from '../dao/dataStore';
+import { addTagToStore, sortTagsStore, getStoreChecksum, editTagInStore, removeTagInStore, editKaraInStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import { sanitizeFile, asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
 import { writeTagFile, formatTagFile, removeTagFile, removeTagInKaras, getDataFromTagFile } from '../lib/dao/tagfile';
 import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
 import { refreshKaras } from '../lib/dao/kara';
 import { getAllKaras, getKaras } from './kara';
-import { writeKara } from '../lib/dao/karafile';
+import { replaceTagInKaras } from '../lib/dao/karafile';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
@@ -44,7 +44,7 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 		return tag;
 	}
 	if (!tagObj.tid) tagObj.tid = uuidV4();
-	if (!tagObj.tagfile) tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 7)}.tag.json`;
+	if (!tagObj.tagfile) tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
 	const tagfile = tagObj.tagfile;
 
 	const promises = [
@@ -83,23 +83,42 @@ export async function mergeTags(tid1: string, tid2: string) {
 		const types = [].concat(tag1.types, tag2.types);
 		const aliases = [].concat(tag1.aliases, tag2.aliases);
 		const i18n = {...tag1.i18n, ...tag2.i18n};
+		const tid = uuidV4();
 		const tagObj: Tag = {
-			tid: uuidV4(),
+			tid: tid,
 			name: tag1.name,
 			types: types,
 			i18n: i18n,
 			short: tag1.short,
-			aliases: aliases
+			aliases: aliases,
+			tagfile: `${tag1.name}.${tid.substring(0, 8)}.tag.json`
 		};
 		await insertTag(tagObj);
+		await writeTagFile(tagObj, resolvedPathTags()[0]);
+		addTagToStore(tagObj);
+		sortTagsStore();
 		await Promise.all([
 			updateKaraTagsTID(tid1, tagObj.tid),
 			updateKaraTagsTID(tid2, tagObj.tid)
 		]);
-		const affectedKaras = await getKaras({mode: 'search', modeValue: `t:${tagObj.tid}`, admin: true});
-		const karaEdits = [refreshTagsAfterDBChange()];
-		affectedKaras.content.forEach(kara => karaEdits.push(writeKara(kara.karafile, kara)));
-		await Promise.all(karaEdits);
+		await Promise.all([
+			removeTag(tid1),
+			removeTag(tid2),
+			removeTagFile(tag1.tagfile),
+			removeTagFile(tag2.tagfile),
+			removeTagInStore(tid1),
+			removeTagInStore(tid2)
+		]);
+		saveSetting('baseChecksum', getStoreChecksum());
+		const karas = await getKaras({admin: true, token: {username: 'admin', role: 'admin'}});
+		const modifiedKaras1 = await replaceTagInKaras(tid1, tagObj.tid, karas);
+		const modifiedKaras2 = await replaceTagInKaras(tid2, tagObj.tid, karas);
+		const modifiedKaras = [].concat(modifiedKaras1, modifiedKaras2);
+		for (const kara of modifiedKaras) {
+			editKaraInStore(kara.data.kid, kara.data);
+		}
+		await refreshTagsAfterDBChange();
+		console.log('Done');
 		return tagObj;
 	} catch(err) {
 		logger.error(`[Tags] Error merging tag ${tid1} and ${tid2} : ${err}`);
@@ -123,19 +142,17 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 	if (opts.refresh) await refreshTagsAfterDBChange();
 }
 
-export async function deleteTag(tid: string) {
+export async function deleteTag(tid: string, opt = {refresh: true}) {
 	const tag = await getTag(tid);
 	if (!tag) throw 'Tag ID unknown';
 	await removeTag(tid);
-	await Promise.all([
-		refreshTags(),
-		removeTagFile(tag.tagfile),
-		removeTagInKaras(tid, await getAllKaras()),
-	]);
+	const removes = [removeTagFile(tag.tagfile), removeTagInKaras(tid, await getAllKaras())];
+	if (opt.refresh) removes.push(refreshTags());
+	await Promise.all(removes);
 	// Refreshing karas is done asynchronously
 	removeTagInStore(tid);
 	saveSetting('baseChecksum', getStoreChecksum());
-	refreshKaraTags().then(() => refreshKaras());
+	if (opt.refresh) refreshKaraTags().then(() => refreshKaras());
 }
 
 export async function integrateTagFile(file: string): Promise<string> {
