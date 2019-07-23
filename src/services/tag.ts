@@ -100,6 +100,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		const karaEdits = [refreshTagsAfterDBChange()];
 		affectedKaras.content.forEach(kara => karaEdits.push(writeKara(kara.karafile, kara)));
 		await Promise.all(karaEdits);
+		return tagObj;
 	} catch(err) {
 		logger.error(`[Tags] Error merging tag ${tid1} and ${tid2} : ${err}`);
 	}

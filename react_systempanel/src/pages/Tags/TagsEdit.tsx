@@ -15,6 +15,7 @@ interface TagEditProps extends ReduxMappedProps {
 
 interface TagEditState {
 	tag: any,
+	tags: any,
 	save: any,
 }
 
@@ -27,6 +28,7 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 
 	state = {
 		tag: null,
+		tags: [],
 		aliases: [],
 		save: () => {}
 	};
@@ -57,6 +59,17 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 			});
 	};
 
+	handleTagMerge = (tid1,tid2) => {
+		axios.get('/api/system/tags/merge/'+tid1+'/'+tid2)
+			.then((data) => {
+				this.props.infoMessage('Tags successfully merged');
+				this.props.push('/system/km/tags/'+data.data.tid);
+			})
+			.catch(err => {
+				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			});
+	}
+
 	loadTag = () => {
 		this.props.loading(true);
 		if (this.props.match && this.props.match.params.tid) {
@@ -65,7 +78,16 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 					const tagData = {...res.data};
 					tagData.tid = this.props.match.params.tid;
 					this.setState({tag: tagData, save: this.saveUpdate});
-					this.props.loading(false);
+
+					axios.get('/api/system/tags')
+						.then(res => {
+							this.props.loading(false);
+							this.setState({tags: res.data.content});
+						})
+						.catch(err => {
+							this.props.loading(false);
+							this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+						});
 				})
 				.catch(err => {
 					this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -81,7 +103,7 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 	render() {
 		return (
 			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.tag && (<TagsForm tag={this.state.tag} save={this.state.save} />)}
+				{this.state.tag && (<TagsForm tag={this.state.tag} tags={this.state.tags} save={this.state.save} mergeAction={this.handleTagMerge.bind(this)} />)}
 			</Layout.Content>
 		);
 	}

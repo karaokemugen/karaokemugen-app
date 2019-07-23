@@ -37,10 +37,10 @@ export default function systemTagController(router: Router) {
 			res.status(500).send(`Error while fetching tags: ${err}`);
 		}
 	});
-	router.post('/system/tags/merge', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	router.get('/system/tags/merge/:tid1/:tid2', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
-			await mergeTags(req.body.tid1, req.body.tid2);
-			res.send('Tags merged');
+			const tag = await mergeTags(req.params.tid1, req.params.tid2);
+			res.json(tag);
 		} catch(err) {
 			res.status(500).send(`Error while merging tags: ${err}`);
 		}
