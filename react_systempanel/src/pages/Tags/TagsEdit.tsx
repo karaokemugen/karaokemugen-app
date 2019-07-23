@@ -9,7 +9,7 @@ import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/nav
 import {ReduxMappedProps} from '../../react-app-env';
 
 interface TagEditProps extends ReduxMappedProps {
-	push: (string) => any,
+	push: (url: string) => void;
 	match?: any,
 }
 
@@ -63,7 +63,7 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 		axios.get('/api/system/tags/merge/'+tid1+'/'+tid2)
 			.then((data) => {
 				this.props.infoMessage('Tags successfully merged');
-				this.props.push('/system/km/tags/'+data.data.tid);
+				this.props.push('/system/km/tags/');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
