@@ -6,6 +6,25 @@ import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
 
+export function getTagTypeName(type: number): string {
+	return Object.keys(tagTypes).find(t => tagTypes[t] === type);
+}
+
+export const tagTypes = Object.freeze({
+	singers: 2,
+	songtypes: 3,
+	creators: 4,
+	langs: 5,
+	authors: 6,
+	misc: 7,
+	songwriters: 8,
+	groups: 9,
+	families: 10,
+	origins: 11,
+	genres: 12,
+	platforms: 13
+});
+
 interface TagsListProps extends ReduxMappedProps {}
 
 interface TagsListState {
@@ -100,6 +119,11 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 		dataIndex: 'name',
 		key: 'name',
 		render: name => name
+	}, {
+		title: 'Types',
+		dataIndex: 'types',
+		key: 'types',
+		render: types => types.map(t => getTagTypeName(t)).join(', ')
 	}, {
 		title: 'International Names',
 		dataIndex: 'i18n',
