@@ -1,6 +1,6 @@
 import i18n from 'i18n';
 import logger from 'winston';
-import {resolvedPathBackgrounds, getConfig} from '../lib/utils/config';
+import {resolvedPathBackgrounds, getConfig, resolvedPathMedias} from '../lib/utils/config';
 import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../lib/utils/files';
 import sample from 'lodash.sample';
@@ -314,7 +314,7 @@ export async function play(mediadata: MediaData) {
 	let mediaFile: string;
 	let subFile: string;
 	try {
-		mediaFile = await resolveFileInDirs(mediadata.media, conf.System.Path.Medias);
+		mediaFile = await resolveFileInDirs(mediadata.media, resolvedPathMedias());
 	} catch (err) {
 		logger.debug(`[Player] Error while resolving media path : ${err}`);
 		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
@@ -322,7 +322,7 @@ export async function play(mediadata: MediaData) {
 			mediaFile = `${conf.System.Path.MediasHTTP}/${encodeURIComponent(mediadata.media)}`;
 			logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.System.Path.MediasHTTP}`);
 		} else {
-			throw `No media source for ${mediadata.media} (tried in ${conf.System.Path.Medias.toString()} and HTTP source)`;
+			throw `No media source for ${mediadata.media} (tried in ${resolvedPathMedias().toString()} and HTTP source)`;
 		}
 	}
 	try {
