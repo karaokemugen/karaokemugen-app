@@ -1,6 +1,6 @@
 import i18n from 'i18n';
 import logger from 'winston';
-import {resolvedPathBackgrounds, getConfig, resolvedPathMedias} from '../lib/utils/config';
+import {resolvedPathBackgrounds, getConfig, resolvedPathMedias, resolvedPathTemp} from '../lib/utils/config';
 import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../lib/utils/files';
 import sample from 'lodash.sample';
@@ -71,10 +71,10 @@ export async function loadBackground() {
 	const conf = getConfig();
 	// Default background
 	let backgroundFiles = [];
-	const defaultImageFile = resolve(getState().appPath,conf.System.Path.Temp,'default.jpg');
+	const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
 	let backgroundImageFile = defaultImageFile;
 	if (conf.Player.Background) {
-		backgroundImageFile = resolve(getState().appPath, conf.System.Path.Backgrounds[0], conf.Player.Background);
+		backgroundImageFile = resolve(resolvedPathBackgrounds()[0], conf.Player.Background);
 		if (await asyncExists(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
 			logger.warn(`[Player] Unable to find background file ${backgroundImageFile}, reverting to default one`);
@@ -88,7 +88,7 @@ export async function loadBackground() {
 		if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);
 	}
 	backgroundImageFile = sample(backgroundFiles);
-	logger.debug(`[Player] Background ${backgroundImageFile}`);
+	logger.debug(`[Player] Background selected : ${backgroundImageFile}`);
 	try {
 		const loads = [
 			player.load(backgroundImageFile, 'replace')
@@ -119,11 +119,9 @@ async function getmpvVersion(path: string): Promise<string> {
 async function startmpv() {
 	const conf = getConfig();
 	const state = getState();
-	if (conf.Player.Monitor) {
-		monitorEnabled = true;
-	} else {
-		monitorEnabled = false;
-	}
+
+	monitorEnabled = conf.Player.Monitor;
+
 	let mpvOptions = [
 		'--keep-open=yes',
 		'--fps=60',
@@ -135,6 +133,7 @@ async function startmpv() {
 		`--input-conf=${resolve(state.appPath,conf.System.Path.Temp,'input.conf')}`,
 		'--autoload-files=no'
 	];
+
 	if (conf.Player.PIP.Enabled) {
 		mpvOptions.push(`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`);
 		// By default, center.
@@ -148,12 +147,14 @@ async function startmpv() {
 		if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
 		mpvOptions.push(`--geometry=${positionX}%:${positionY}%`);
 	}
+
 	if (conf.Player.mpvVideoOutput) mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
+
 	if (conf.Player.Screen) {
 		mpvOptions.push(`--screen=${conf.Player.Screen}`);
 		mpvOptions.push(`--fs-screen=${conf.Player.Screen}`);
 	}
-	// Fullscreen is disabled if pipmode is set.
+
 	if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
 		mpvOptions.push('--fullscreen');
 		playerState.fullscreen = true;
@@ -164,6 +165,7 @@ async function startmpv() {
 	}
 	if (conf.Player.NoHud) mpvOptions.push('--no-osc');
 	if (conf.Player.NoBar) mpvOptions.push('--no-osd-bar');
+
 	//On all platforms, check if we're using mpv at least version 0.25 or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
 	let mpvVersion = await getmpvVersion(state.binPath.mpv);
@@ -173,20 +175,23 @@ async function startmpv() {
 	//If we're on macOS, add --no-native-fs to get a real
 	// fullscreen experience on recent macOS versions.
 	if (!semver.satisfies(mpvVersion, '>=0.25.0')) {
-		// Version is too old. Abort.
 		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
 		logger.error(`[Player] mpv binary : ${state.binPath.mpv}`);
 		logger.error('[Player] Exiting due to obsolete mpv version');
 		await exit(1);
 	}
+
 	if (state.os === 'darwin' && semver.satisfies(mpvVersion, '0.27.x')) mpvOptions.push('--no-native-fs');
+
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
 	logger.debug(`[Player] mpv binary : ${state.binPath.mpv}`);
+
 	let socket: string;
 	// Name socket file accordingly depending on OS.
 	state.os === 'win32'
 		? socket = '\\\\.\\pipe\\mpvsocket'
 		: socket = '/tmp/km-node-mpvsocket';
+
 	player = new mpv(
 		{
 			ipc_command: '--input-ipc-server',
@@ -233,6 +238,7 @@ async function startmpv() {
 			mpvOptions
 		);
 	}
+
 	// Starting up mpv
 	try {
 		const promises = [
@@ -244,13 +250,23 @@ async function startmpv() {
 		logger.error(`[Player] mpvAPI : ${err}`);
 		throw err;
 	}
+
 	await loadBackground();
-	player.observeProperty('sub-text',13);
-	player.observeProperty('playtime-remaining',14);
-	player.observeProperty('eof-reached',15);
+	player.observeProperty('sub-text', 13);
+	player.observeProperty('playtime-remaining', 14);
+	player.observeProperty('eof-reached', 15);
 	player.on('statuschange', (status: mpvStatus) => {
 		// If we're displaying an image, it means it's the pause inbetween songs
-		if (playerState._playing && status && ((status['playtime-remaining'] !== null && status['playtime-remaining'] >= 0 && status['playtime-remaining'] <= 1 && status.pause) || status['eof-reached']) ) {
+		if (playerState._playing &&
+			status &&
+			(
+				(status['playtime-remaining'] !== null &&
+					status['playtime-remaining'] >= 0 &&
+					status['playtime-remaining'] <= 1 &&
+					status.pause
+				) ||
+				status['eof-reached']
+			)) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			playerState.playing = false;
 			playerState._playing = false;
@@ -287,14 +303,17 @@ async function startmpv() {
 		emitPlayerState();
 		// Display informations if timeposition is 8 seconds before end of song
 		if (position >= (playerState.duration - 8) &&
-						!displayingInfo &&
-						playerState.mediaType === 'song')
-			displaySongInfo(playerState.currentSongInfos);
+			!displayingInfo &&
+			playerState.mediaType === 'song')
+				displaySongInfo(playerState.currentSongInfos);
 		// Display KM's banner if position reaches halfpoint in the song
-		if (Math.floor(position) === Math.floor(playerState.duration / 2) && !displayingInfo && playerState.mediaType === 'song') displayInfo(8000);
+		if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
+		!displayingInfo &&
+		playerState.mediaType === 'song') displayInfo(8000);
 		const conf = getConfig();
 		// Stop poll if position reaches 10 seconds before end of song
-		if (Math.floor(position) >= Math.floor(playerState.duration - 10) && playerState.mediaType === 'song' &&
+		if (Math.floor(position) >= Math.floor(playerState.duration - 10) &&
+		playerState.mediaType === 'song' &&
 		conf.Karaoke.Poll.Enabled &&
 		!songNearEnd) {
 			songNearEnd = true;
@@ -395,7 +414,9 @@ export async function play(mediadata: MediaData) {
 
 export function setFullscreen(fsState: boolean): boolean {
 	playerState.fullscreen = fsState;
-	fsState ? player.fullscreen() : player.leaveFullscreen();
+	fsState
+		? player.fullscreen()
+		: player.leaveFullscreen();
 	return playerState.fullscreen;
 }
 
