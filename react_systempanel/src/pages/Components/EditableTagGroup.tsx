@@ -2,6 +2,7 @@ import React from 'react';
 import deburr from 'lodash.deburr';
 import {AutoComplete, Button, Checkbox, Col, Form, Icon, Row, Tag, Tooltip} from 'antd';
 import axios from 'axios/index';
+import { getTagInLocale } from "../../utils/kara";
 
 interface EditableTagGroupProps {
 	search: 'tag' | 'serie' | 'aliases',
@@ -116,7 +117,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	searchTags = (val?: any) => {
 		this.getTags(val, this.props.tagType).then(tags => {
 			let result = tags.data.content.map(tag => {
-				return { value: tag.tid, text: tag.name };
+				return { value: tag.tid, text: getTagInLocale(tag) };
 			}) || [];
 			result = this.sortByProp(result, 'text');
 			this.setState({ DS: result });
