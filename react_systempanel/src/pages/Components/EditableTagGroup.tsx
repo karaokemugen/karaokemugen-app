@@ -129,6 +129,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 			var tag = this.state.DS.filter(tag => element === tag.value);
 			tags.push([tag[0].value, tag[0].text]);
 		});
+		this.setState({value: tags})
 		this.props.onChange && this.props.onChange(tags);
 	};
 
