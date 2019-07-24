@@ -11,57 +11,33 @@ import { getDataFromTagFile } from "../lib/dao/tagfile";
 import parallel from 'async-await-parallel';
 
 let dataStore = {
-	karas: [],
-	series: [],
-	tags: []
+	karas: new Map(),
+	series: new Map(),
+	tags: new Map()
 };
 
-function findKaraInStore(kid: string) {
-	return dataStore.karas.find(k => k.kid === kid);
-}
-
-function findSeriesInStore(sid: string) {
-	return dataStore.series.find(s => s.sid === sid);
-}
-
-function findTagInStore(tid: string) {
-	return dataStore.tags.find(t => t.tid === tid);
-}
-
 export function addKaraToStore(kara: KaraFileV4) {
-	if (!findKaraInStore(kara.data.kid)) dataStore.karas.push(kara);
+	dataStore.karas.set(kara.data.kid, kara);
 }
 
 export function addSeriesToStore(series: Series) {
-	if (!findSeriesInStore(series.sid)) dataStore.series.push(series);
+	dataStore.series.set(series.sid, series);
 }
 
 export function addTagToStore(tag: Tag) {
-	if (!findTagInStore(tag.tid)) dataStore.tags.push(tag);
+	dataStore.tags.set(tag.tid, tag);
 }
 
 export function sortKaraStore() {
-	dataStore.karas = dataStore.karas.sort((a, b) => {
-		if (a.data.kid > b.data.kid) return 1;
-		if (a.data.kid < b.data.kid) return -1;
-		if (a.data.kid === b.data.kid) return 0;
-	});
+	dataStore.karas = new Map([...dataStore.karas.entries()].sort());
 }
 
 export function sortSeriesStore() {
-	dataStore.series = dataStore.series.sort((a, b) => {
-		if (a.sid > b.sid) return 1;
-		if (a.sid < b.sid) return -1;
-		if (a.sid === b.sid) return 0;
-	});
+	dataStore.series = new Map([...dataStore.series.entries()].sort());
 }
 
 export function sortTagsStore() {
-	dataStore.tags = dataStore.tags.sort((a, b) => {
-		if (a.tid > b.tid) return 1;
-		if (a.tid < b.tid) return -1;
-		if (a.tid === b.tid) return 0;
-	});
+	dataStore.tags = new Map([...dataStore.tags.entries()].sort());
 }
 
 export function getStoreChecksum() {
@@ -70,36 +46,27 @@ export function getStoreChecksum() {
 }
 
 export function editKaraInStore(kid: string, kara: KaraFileV4) {
-	const i = dataStore.karas.find(e => e.data.kid === kid);
-	dataStore.karas[i] = kara;
-	getStoreChecksum();
+	dataStore.karas.set(kid, kara);
 }
 
 export function removeKaraInStore(kid: string) {
-	dataStore.karas = dataStore.karas.filter(e => e.data.kid !== kid);
-	getStoreChecksum();
+	dataStore.karas.delete(kid);
 }
 
 export function editSeriesInStore(sid: string, series: Series) {
-	const i = dataStore.series.find(e => e.sid === sid);
-	dataStore.series[i] = series;
-	getStoreChecksum();
+	dataStore.series.set(sid, series);
 }
 
 export function editTagInStore(tid: string, tag: Tag) {
-	const i = dataStore.tags.find(e => e.tid === tid);
-	dataStore.tags[i] = tag;
-	getStoreChecksum();
+	dataStore.tags.set(tid, tag);
 }
 
 export function removeTagInStore(tid: string) {
-	dataStore.tags = dataStore.tags.filter(e => e.tid !== tid);
-	getStoreChecksum();
+	dataStore.tags.delete(tid);
 }
 
 export function removeSeriesInStore(sid: string) {
-	dataStore.series = dataStore.series.filter(e => e.sid !== sid);
-	getStoreChecksum();
+	dataStore.series.delete(sid);
 }
 
 async function processDataFile(file: string, silent?: boolean, bar?: any) {
