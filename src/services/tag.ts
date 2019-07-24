@@ -12,6 +12,7 @@ import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
 import { refreshKaras } from '../lib/dao/kara';
 import { getAllKaras, getKaras } from './kara';
 import { replaceTagInKaras } from '../lib/dao/karafile';
+import { KaraFileV4 } from '../lib/types/kara';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
@@ -118,14 +119,14 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid1),
 			removeTagInStore(tid2)
 		]);
-		saveSetting('baseChecksum', getStoreChecksum());
 		const karas = await getKaras({admin: true, token: {username: 'admin', role: 'admin'}});
 		const modifiedKaras1 = await replaceTagInKaras(tid1, tagObj.tid, karas);
 		const modifiedKaras2 = await replaceTagInKaras(tid2, tagObj.tid, karas);
-		const modifiedKaras = [].concat(modifiedKaras1, modifiedKaras2);
+		const modifiedKaras: KaraFileV4[] = [].concat(modifiedKaras1, modifiedKaras2);
 		for (const kara of modifiedKaras) {
-			editKaraInStore(kara.data.kid, kara.data);
+			editKaraInStore(kara.data.kid, kara);
 		}
+		saveSetting('baseChecksum', getStoreChecksum());
 		await refreshTagsAfterDBChange();
 		console.log('Done');
 		return tagObj;
