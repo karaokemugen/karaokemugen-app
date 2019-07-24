@@ -562,7 +562,7 @@ export async function playJingle() {
 			await retry(async () => load(jingle.file, 'replace', options), {
 				retries: 3,
 				onFailedAttempt: error => {
-					logger.warn(`[Player] Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
+					logger.warn(`[Player] Failed to play jingle, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
 				}
 			});
 			await player.play();
