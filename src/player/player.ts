@@ -521,7 +521,7 @@ export function displayInfo(duration: number = 10000000) {
 	let text = '';
 	if (ci.Enabled) text = `${ci.Message} ${i18n.__('GO_TO')} ${getState().osURL} !`;
 	const version = `Karaoke Mugen ${getState().version.number} (${getState().version.name}) - http://karaokes.moe`;
-	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+sample(initializationCatchphrases);
+	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+sample(initializationCatchphrases);
 	const command = {
 		command: [
 			'expand-properties',
