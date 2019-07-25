@@ -22,7 +22,7 @@ import {basename} from 'path';
 import {profile} from '../lib/utils/logger';
 import {Kara, KaraParams, KaraList, YearList} from '../lib/types/kara';
 import {Series} from '../lib/types/series';
-import { getOrAddSerieID, deleteSerie } from './series';
+import { getOrAddSerieID } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../lib/utils/files';
 import {resolvedPathMedias, resolvedPathKaras, resolvedPathSubs} from '../lib/utils/config';
 import logger from 'winston';
@@ -44,27 +44,8 @@ export async function isAllKaras(karas: string[]): Promise<string[]> {
 export async function deleteKara(kid: string, refresh = true) {
 	const kara = await getKaraMini(kid);
 	if (!kara) throw `Unknown kara ID ${kid}`;
-
-	// If kara_ids contains only one entry, it means the series won't have any more kara attached to it, so it's safe to remove it.
-	const karas = await selectAllKaras({
-		username: 'admin',
-		mode: 'search',
-		modeValue: `s:${kara.sid}`,
-		admin: true
-	});
-	if (karas.length <= 1 && kara.sid.length > 0) {
-		for(const sid of kara.sid) {
-			try {
-				await deleteSerie(sid);
-			} catch(e) {
-				logger.error(`[Kara] Unable to remove all series from a karaoke : ${e}`);
-				//throw e;
-			}
-		}
-	}
-
 	// Remove files
-
+	await deleteKaraDB(kid);
 	try {
 		await asyncUnlink(await resolveFileInDirs(kara.mediafile, resolvedPathMedias()));
 	} catch(err) {
@@ -84,7 +65,6 @@ export async function deleteKara(kid: string, refresh = true) {
 	removeKaraInStore(kara.kid);
 	saveSetting('baseChecksum', getStoreChecksum());
 	// Remove kara from database
-	await deleteKaraDB(kid);
 	logger.info(`[Kara] Song ${kara.karafile} removed`);
 
 	if (refresh) delayedDbRefreshViews(2000);
