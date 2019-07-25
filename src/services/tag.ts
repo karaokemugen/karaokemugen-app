@@ -12,7 +12,6 @@ import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
 import { refreshKaras } from '../lib/dao/kara';
 import { getAllKaras, getKaras } from './kara';
 import { replaceTagInKaras } from '../lib/dao/karafile';
-import { KaraFileV4 } from '../lib/types/kara';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
@@ -92,6 +91,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		let aliases = [].concat(tag1.aliases, tag2.aliases);
 		types = types.filter((e, pos) => types.indexOf(e) === pos);
 		aliases = aliases.filter((e, pos) => aliases.indexOf(e) === pos);
+		if (aliases[0] === null) aliases = null;
 		const i18n = {...tag2.i18n, ...tag1.i18n};
 		const tid = uuidV4();
 		const tagObj: Tag = {
@@ -120,9 +120,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid2)
 		]);
 		const karas = await getKaras({admin: true, token: {username: 'admin', role: 'admin'}});
-		const modifiedKaras1 = await replaceTagInKaras(tid1, tagObj.tid, karas);
-		const modifiedKaras2 = await replaceTagInKaras(tid2, tagObj.tid, karas);
-		const modifiedKaras: KaraFileV4[] = [].concat(modifiedKaras1, modifiedKaras2);
+		const modifiedKaras = await replaceTagInKaras(tid1, tid2,tagObj.tid, karas);
 		for (const kara of modifiedKaras) {
 			editKaraInStore(kara.data.kid, kara);
 		}
