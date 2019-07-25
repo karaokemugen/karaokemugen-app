@@ -8,8 +8,8 @@ import internet from 'internet-available';
 import logger from '../lib/utils/logger';
 import {asyncMove, resolveFileInDirs, asyncStat, asyncUnlink, asyncReadDir} from '../lib/utils/files';
 import {uuidRegexp, getTagTypeName} from '../lib/utils/constants';
-import {integrateKaraFile, refreshKarasAfterDBChange, getAllKaras} from './kara';
-import {integrateSeriesFile, refreshSeriesAfterDBChange} from './series';
+import {integrateKaraFile, getAllKaras} from './kara';
+import {integrateSeriesFile} from './series';
 import { compareKarasChecksum } from '../dao/database';
 import { emitWS } from '../lib/utils/ws';
 import got from 'got';
@@ -20,7 +20,7 @@ import { TagParams, Tag } from '../lib/types/tag';
 import { deleteKara } from '../services/kara';
 import { refreshAll } from '../lib/dao/database';
 import { DBKara } from '../lib/types/database/kara';
-import { getTags, refreshTagsAfterDBChange, integrateTagFile } from './tag';
+import { getTags, integrateTagFile } from './tag';
 import { DBTag } from '../lib/types/database/tag';
 import prettyBytes = require('pretty-bytes');
 
@@ -70,7 +70,7 @@ function initQueue(drainEvent = true) {
 		if (taskCounter >= 5) {
 			logger.debug('[Download] Triggering database refresh');
 			compareKarasChecksum(true);
-			refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange());
+			refreshAll();
 			taskCounter = 0;
 		}
 		emitQueueStatus('updated');
@@ -82,9 +82,8 @@ function initQueue(drainEvent = true) {
 	q.on('empty', () => emitQueueStatus('updated'));
 	if (drainEvent) q.on('drain', () => {
 		logger.info('[Download] No tasks left, stopping queue');
-		refreshSeriesAfterDBChange().then(() => refreshKarasAfterDBChange().then(() =>
-		refreshTagsAfterDBChange().then(() =>
-		compareKarasChecksum(true))));
+		refreshAll();
+		compareKarasChecksum();
 		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
@@ -441,15 +440,11 @@ async function waitForUpdateQueueToFinish() {
 	return new Promise((resolve, reject) => {
 		// We'll redefine the drain event of the queue to resolve once the queue is drained.
 		q.on('drain', () => {
-			refreshSeriesAfterDBChange()
-			.then(() =>
-			refreshKarasAfterDBChange()
-			.then(() =>
-			compareKarasChecksum(true)
+			compareKarasChecksum()
+			refreshAll()
 			.then(() => {
 				resolve();
-			})
-			)).catch(err => {
+			}).catch(err => {
 				logger.error(`[Download] Error while draining queue : ${err}`);
 				reject();
 			});
@@ -575,8 +570,8 @@ export async function cleanAllKaras(instance: string, local?: KaraList, remote?:
 		await deleteKara(kid, false);
 	}
 	if (karasToRemove.length > 0) {
-		await refreshAll();
 		compareKarasChecksum(true);
+		await refreshAll();
 	}
 }
 

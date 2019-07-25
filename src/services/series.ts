@@ -1,6 +1,6 @@
 import {removeSeriesFile, writeSeriesFile, formatSeriesFile} from '../lib/dao/seriesfile';
 import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, testSerie} from '../dao/series';
-import {refreshSeries, refreshKaraSeries} from '../lib/dao/series';
+import {refreshSeries, refreshKaraSeries, refreshKaraSeriesLang} from '../lib/dao/series';
 import {profile} from '../lib/utils/logger';
 import logger from 'winston';
 import {removeSerieInKaras} from '../lib/dao/karafile';
@@ -122,7 +122,7 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 /** Refreshes materialized views for series in an async manner to avoid long pause times */
 export async function refreshSeriesAfterDBChange() {
 	await refreshSeries();
-	refreshKaraSeries().then(() => refreshKaras());
+	refreshKaraSeries().then(() => refreshKaras().then(() => refreshKaraSeriesLang()));
 }
 
 /** Integrate downloaded series file into database */

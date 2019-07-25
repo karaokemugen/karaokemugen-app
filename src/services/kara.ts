@@ -2,7 +2,7 @@ import {tagTypes} from '../lib/utils/constants';
 import {ASSToLyrics} from '../utils/ass';
 import {refreshTags, refreshKaraTags} from '../lib/dao/tag';
 import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../lib/dao/series';
-import { refreshAll, saveSetting } from '../lib/dao/database';
+import { saveSetting } from '../lib/dao/database';
 import { refreshYears, refreshKaras } from '../lib/dao/kara';
 import {selectAllKaras,
 	getYears as getYearsDB,
@@ -74,7 +74,7 @@ let delayedDbRefreshTimeout = null;
 
 export async function delayedDbRefreshViews(ttl = 100) {
 	clearTimeout(delayedDbRefreshTimeout);
-	delayedDbRefreshTimeout = setTimeout(refreshAll,ttl);
+	delayedDbRefreshTimeout = setTimeout(refreshKarasAfterDBChange, ttl);
 }
 
 export async function getKara(kid: string, token: Token, lang?: string): Promise<DBKara> {
@@ -237,11 +237,9 @@ export async function refreshKarasAfterDBChange() {
 		refreshKaraSeries(),
 		refreshKaraTags()
 	]);
-	await Promise.all([
-		refreshKaras(),
-		refreshKaraSeriesLang(),
-		refreshSeries()
-	]);
+	await refreshKaras();
+	refreshSeries();
+	refreshKaraSeriesLang();
 	refreshYears();
 	refreshTags();
 }
