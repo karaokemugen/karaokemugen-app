@@ -5,14 +5,14 @@
   },
   "tag": {
     "i18n": {
-	  "eng": "Video Game",
-	  "fre": "Jeu Vidéo"
+      "eng": "Real-life",
+      "fre": "Prise de vue réelle"
     },
-    "name": "Video Game",
-    "tid": "dbedd6b3-d125-4cd8-aa32-c4175e4ca3a3",
+    "name": "Real",
+    "tid": "5391f9fe-638c-415f-8dc9-958e3a2c5787",
     "types": [
       "families"
     ],
-    "short": "VG"
+    "short": "REA"
   }
 }

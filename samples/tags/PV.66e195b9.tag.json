@@ -5,11 +5,11 @@
   },
   "tag": {
     "i18n": {
-	  "eng": "Commercial",
-	  "fre": "Publicité"
+      "eng": "Promotional Video",
+      "fre": "Vidéo Promotionnelle"
     },
-    "name": "CM",
-    "tid": "2ddb5358-e674-46fa-a6e1-7f5c5d56f8fa",
+    "name": "PV",
+    "tid": "66e195b9-64ea-432d-a917-2e2c88d26052",
     "types": [
       "songtypes"
     ]

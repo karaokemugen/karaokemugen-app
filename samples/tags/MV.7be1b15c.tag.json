@@ -5,11 +5,10 @@
   },
   "tag": {
     "i18n": {
-	  "eng": "Other",
-	  "fre": "Divers"
+      "eng": "Music/Video"
     },
-    "name": "OT",
-    "tid": "97769615-a2e5-4f36-8c23-b2ce2ce3c460",
+    "name": "MV",
+    "tid": "7be1b15c-cff8-4b37-a649-5c90f3d569a9",
     "types": [
       "songtypes"
     ]

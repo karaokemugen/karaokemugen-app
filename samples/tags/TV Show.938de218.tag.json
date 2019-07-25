@@ -5,8 +5,8 @@
   },
   "tag": {
     "i18n": {
-	  "eng": "TV Show",
-	  "fre": "Emission TV"
+      "eng": "TV Show",
+      "fre": "Emission TV"
     },
     "name": "TV Show",
     "tid": "938de218-5343-4865-94d3-fb33f2eaa152",

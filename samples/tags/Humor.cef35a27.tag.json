@@ -5,14 +5,14 @@
   },
   "tag": {
     "i18n": {
-	  "eng": "Parody",
-	  "fre": "Parodie"
+      "eng": "Humor",
+      "fre": "Humour"
     },
-    "name": "Parody",
-    "tid": "07af42d1-824e-407e-bf37-7fb84905484b",
+    "name": "Humor",
+    "tid": "cef35a27-3bf0-48c9-beb2-d245ba62ea6b",
     "types": [
       "misc"
     ],
-    "short": "PAR"
+    "short": "HUM"
   }
 }

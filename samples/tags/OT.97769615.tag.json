@@ -5,11 +5,11 @@
   },
   "tag": {
     "i18n": {
-	  "eng": "Promotional Video",
-	  "fre": "Vidéo Promotionnelle"
+      "eng": "Other",
+      "fre": "Divers"
     },
-    "name": "PV",
-    "tid": "66e195b9-64ea-432d-a917-2e2c88d26052",
+    "name": "OT",
+    "tid": "97769615-a2e5-4f36-8c23-b2ce2ce3c460",
     "types": [
       "songtypes"
     ]

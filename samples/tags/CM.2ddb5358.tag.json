@@ -5,10 +5,11 @@
   },
   "tag": {
     "i18n": {
-	  "eng": "Music/Video"
+      "eng": "Commercial",
+      "fre": "Publicité"
     },
-    "name": "MV",
-    "tid": "7be1b15c-cff8-4b37-a649-5c90f3d569a9",
+    "name": "CM",
+    "tid": "2ddb5358-e674-46fa-a6e1-7f5c5d56f8fa",
     "types": [
       "songtypes"
     ]

@@ -5,14 +5,14 @@
   },
   "tag": {
     "i18n": {
-	  "eng": "Hard Mode",
-	  "fre": "Difficile"
+      "eng": "Spoiler",
+      "fre": "Divulgâche"
     },
-    "name": "Hard Mode",
-    "tid": "ec4fee75-71fb-45b4-9772-2ca374b4b600",
+    "name": "Spoiler",
+    "tid": "95ca7fca-3a9e-4f24-be25-05e21261e26e",
     "types": [
       "misc"
     ],
-    "short": "HRD"
+    "short": "SPL"
   }
 }
