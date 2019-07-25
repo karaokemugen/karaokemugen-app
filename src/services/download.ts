@@ -98,7 +98,7 @@ export async function startDownloads() {
 	} else {
 		const downloads = await selectPendingDownloads();
 		try {
-			//await internet();
+			await internet();
 			downloads.forEach((dl: KaraDownload) => q.push(dl));
 			logger.info('[Downloader] Download queue starting up');
 			emitQueueStatus('started');
@@ -234,7 +234,6 @@ async function processDownload(download: KaraDownload) {
 			throw err;
 		}
 	} catch(err) {
-		console.log(err);
 		setDownloadStatus(download.uuid, 'DL_FAILED');
 		throw err;
 	}
