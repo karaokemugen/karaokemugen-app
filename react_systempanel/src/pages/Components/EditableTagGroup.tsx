@@ -68,7 +68,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		var tag = this.state.DS.filter(tag => val === tag.value);
 		if (tags.filter(tag => val === tag.tid).length === 0) {
 			if (tag.length > 0) {
-				tags.push([tag[0].value, tag[0].text]);
+				tags.push([tag[0].value, tag[0].text, tag[0].name]);
 			} else {
 				tags.push([null, val]);
 			}
@@ -117,7 +117,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	searchTags = (val?: any) => {
 		this.getTags(val, this.props.tagType).then(tags => {
 			let result = tags.data.content.map(tag => {
-				return { value: tag.tid, text: getTagInLocale(tag) };
+				return { value: tag.tid, text: getTagInLocale(tag), name:tag.name };
 			}) || [];
 			result = this.sortByProp(result, 'text');
 			this.setState({ DS: result });
@@ -128,7 +128,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		var tags = []
 		val.forEach(element => {
 			var tag = this.state.DS.filter(tag => element === tag.value);
-			tags.push([tag[0].value, tag[0].text]);
+			tags.push([tag[0].value, tag[0].text, tag[0].name]);
 		});
 		this.setState({value: tags})
 		this.props.onChange && this.props.onChange(tags);
