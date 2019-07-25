@@ -42,14 +42,14 @@ export async function generateBlacklist() {
 }
 
 export async function emptyBlacklistCriterias() {
-	logger.info('[Blacklist] Wiping criterias');
+	logger.debug('[Blacklist] Wiping criterias');
 	await emptyBLC();
 	return await generateBlacklist();
 }
 
 export async function deleteBlacklistCriteria(blc_id: number) {
 	profile('delBLC');
-	logger.info(`[Blacklist] Deleting criteria ${blc_id}`);
+	logger.debug(`[Blacklist] Deleting criteria ${blc_id}`);
 	await deleteBLC(blc_id);
 	await generateBlacklist();
 	profile('delBLC');
@@ -61,19 +61,19 @@ export async function addBlacklistCriteria(type: number, value: any) {
 	typeof value === 'string'
 		? blcvalues = value.split(',')
 		: blcvalues = [value];
-	logger.info(`[Blacklist] Adding criteria ${type} = ${blcvalues}`);
-	let blcList = blcvalues.map((e: any) => {
+	logger.info(`[Blacklist] Adding criteria ${type} = ${blcvalues.toString()}`);
+	let blcList = blcvalues.map((e: string) => {
 		return {
 			value: e,
 			type: type
 		};
 	});
 	try {
-		if (type < 0 && type > 1004) throw `Incorrect BLC type (${type})`;
-		if (type === 1001) {
+		if (type < 0 && type > 1006) throw `Incorrect BLC type (${type})`;
+		if (type === 1001 || type < 1000) {
 			if (blcList.some((blc: BLC) => !new RegExp(uuidRegexp).test(blc.value))) throw `Blacklist criteria value mismatch : type ${type} must have UUID values`;
 		}
-		if (((type > 1001 && type <= 1003) || (type > 0 && type < 999)) && !blcvalues.some(isNumber)) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
+		if ((type > 1001 && type <= 1003) || (type === 1005 || type === 1006) && !blcvalues.some(isNumber))throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
 		await addBLC(blcList);
 		return await generateBlacklist();
 	} catch(err) {

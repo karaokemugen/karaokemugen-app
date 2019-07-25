@@ -17,7 +17,6 @@ import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC, File }
 import { DownloadItem } from '../types/downloader';
 import { KaraList, KaraParams } from '../lib/types/kara';
 import { TagParams, Tag } from '../lib/types/tag';
-import { DBDownload, DBDownloadBLC } from '../types/database/download';
 import { deleteKara } from '../services/kara';
 import { refreshAll } from '../lib/dao/database';
 import { DBKara } from '../lib/types/database/kara';
@@ -206,7 +205,7 @@ async function processDownload(download: KaraDownload) {
 			for (const serie of bundle.series) {
 				try {
 					const serieName = await integrateSeriesFile(serie);
-					logger.info(`[Download] Series "${serieName}" in database`);
+					logger.debug(`[Download] Series "${serieName}" in database`);
 				} catch(err) {
 					logger.error(`[Download] Series "${serie}" not properly added to database`);
 					throw err;
@@ -215,7 +214,7 @@ async function processDownload(download: KaraDownload) {
 			for (const tag of bundle.tags) {
 				try {
 					const tagName = await integrateTagFile(tag);
-					logger.info(`[Download] Tag "${tagName}" in database`);
+					logger.debug(`[Download] Tag "${tagName}" in database`);
 				} catch(err) {
 					logger.error(`[Download] Tag "${tag}" not properly added to database`);
 					throw err;
@@ -240,18 +239,16 @@ async function processDownload(download: KaraDownload) {
 }
 
 async function downloadFiles(download: KaraDownload, list: DownloadItem[]) {
-	const downloader = new Downloader(list, {
-		bar: true
-	});
+	const downloader = new Downloader(list, { bar: true });
 	// Launch downloads
 	return new Promise((resolve, reject) => {
 		downloader.download(fileErrors => {
 			if (fileErrors.length > 0) {
 				setDownloadStatus(download.uuid, 'DL_FAILED')
 					.then(() => {
-						reject(`Error downloading this file : ${fileErrors.toString()}`);
+						reject(`Error downloading file : ${fileErrors.toString()}`);
 					}).catch(err => {
-						reject(`Error downloading this file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
+						reject(`Error downloading file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
 					});
 			} else {
 				resolve();
@@ -273,14 +270,16 @@ export function resumeQueue() {
 
 export async function addDownloads(repo: string, downloads: KaraDownloadRequest[]): Promise<string> {
 	const currentDls = await getDownloads();
-	let dls: KaraDownload[] = downloads.map(dl => {
-		for (const currentDl of currentDls) {
-			if (dl.name === currentDl.name &&
-				(currentDl.status === 'DL_RUNNING' ||
-				currentDl.status === 'DL_PLANNED'
-				)
-			) return null;
-		}
+	downloads = downloads.filter(dl => {
+		if (currentDls.find(cdl => dl.name === cdl.name &&
+			(cdl.status === 'DL_RUNNING' ||
+			cdl.status === 'DL_PLANNED')
+			)
+		) return false;
+		return true;
+	});
+	if (downloads.length === 0) throw 'No downloads added, all are already in queue or running';
+	const dls: KaraDownload[] = downloads.map(dl => {
 		const seriefiles = dl.seriefiles.map(s => {
 			return {
 				remote: `https://${repo}/downloads/series/${s}`,
@@ -316,9 +315,6 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 			status: 'DL_PLANNED'
 		};
 	});
-	//Remove downloads with null entry (they are already present and could not be added)
-	dls = dls.filter(dl => dl !== null);
-	if (dls.length === 0) throw 'No downloads added, all are already in queue or running';
 	await insertDownloads(dls);
 	try {
 		await internet();
@@ -329,11 +325,11 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 	}
 }
 
-export async function getDownloads(): Promise<DBDownload[]> {
+export async function getDownloads() {
 	return await selectDownloads();
 }
 
-export async function getDownload(uuid: string): Promise<DBDownload> {
+export async function getDownload(uuid: string) {
 	return await selectDownload(uuid);
 }
 
@@ -354,7 +350,7 @@ export async function retryDownload(uuid: string) {
 export async function removeDownload(uuid: string) {
 	const dl = await selectDownload(uuid);
 	if (!dl) throw 'Download ID unknown';
-	if (dl.status !== 'DL_PLANNED') throw 'Only planned downloads can be cancelled';
+	if (dl.status === 'DL_RUNNING' ) throw 'Running downloads cannot be cancelled';
 	await deleteDownload(uuid);
 	q.cancel(uuid);
 	emitQueueStatus('updated');
@@ -367,13 +363,13 @@ export async function wipeDownloads() {
 	return await emptyDownload();
 }
 
-export async function getDownloadBLC(): Promise<DBDownloadBLC[]> {
+export async function getDownloadBLC() {
 	return await selectDownloadBLC();
 }
 
 export async function addDownloadBLC(blc: KaraDownloadBLC) {
 	if (blc.type < 0 && blc.type > 1006) throw `Incorrect BLC type (${blc.type})`;
-	if (blc.type === 1001 && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
+	if ((blc.type === 1001 || blc.type < 1000) && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
 	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
 	return await insertDownloadBLC(blc);
 }
@@ -382,7 +378,7 @@ export async function editDownloadBLC(blc: KaraDownloadBLC) {
 	const dlBLC = await selectDownloadBLC();
 	if (!dlBLC.some(e => e.dlblc_id === blc.id)) throw 'DL BLC ID does not exist';
 	if (blc.type < 0 && blc.type > 1006) throw `Incorrect BLC type (${blc.type})`;
-	if (blc.type === 1001 && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
+	if ((blc.type === 1001 || blc.type < 1000) && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
 	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
 	return await updateDownloadBLC(blc);
 }
