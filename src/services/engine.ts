@@ -19,7 +19,6 @@ import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { generateDatabase } from '../lib/services/generation';
 import {validateV3} from '../lib/dao/karafile';
-import { DBStats } from '../types/database/database';
 import { createVideoPreviews } from '../lib/utils/previews';
 import { getAllKaras } from './kara';
 
@@ -58,7 +57,7 @@ export async function initEngine() {
 	//Database system is the foundation of every other system
 	await initDBSystem();
 	if (state.opt.baseUpdate) try {
-		await updateBase('kara.moe');
+		await updateBase(conf.Online.Host);
 		logger.info('[Engine] Done updating karaoke base');
 		await exit(0);
 	} catch (err) {
@@ -82,8 +81,6 @@ export async function initEngine() {
 	testPlaylists();
 	initDownloader();
 	if (conf.Online.Stats === true) inits.push(initStats(false));
-	//Initialize engine
-	// Test if current/public playlists exist
 	try {
 		await Promise.all(inits);
 		//Easter egg
@@ -142,6 +139,6 @@ export function shutdown() {
 	exit(0);
 }
 
-export async function getKMStats(): Promise<DBStats> {
+export async function getKMStats() {
 	return await getStats();
 }
