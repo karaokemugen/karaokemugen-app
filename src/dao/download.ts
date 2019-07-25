@@ -65,7 +65,3 @@ export async function deleteDownloadBLC(id: number) {
 export async function insertDownloadBLC(blc: KaraDownloadBLC) {
 	return await db().query(sql.insertDownloadBLC, [blc.type, blc.value]);
 }
-
-export async function updateDownloadBLC(blc: KaraDownloadBLC) {
-	return await db().query(sql.updateDownloadBLC, [blc.id, blc.type, blc.value]);
-}

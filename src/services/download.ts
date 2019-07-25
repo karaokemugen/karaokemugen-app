@@ -1,4 +1,4 @@
-import {selectDownloadBLC, truncateDownloadBLC, insertDownloadBLC, updateDownloadBLC, deleteDownloadBLC, emptyDownload, selectDownload, selectDownloads, updateDownload, deleteDownload, insertDownloads, selectPendingDownloads, initDownloads} from '../dao/download';
+import {selectDownloadBLC, truncateDownloadBLC, insertDownloadBLC,  deleteDownloadBLC, emptyDownload, selectDownload, selectDownloads, updateDownload, deleteDownload, insertDownloads, selectPendingDownloads, initDownloads} from '../dao/download';
 import Downloader from '../utils/downloader';
 import Queue from 'better-queue';
 import uuidV4 from 'uuid/v4';
@@ -371,15 +371,6 @@ export async function addDownloadBLC(blc: KaraDownloadBLC) {
 	if ((blc.type === 1001 || blc.type < 1000) && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
 	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
 	return await insertDownloadBLC(blc);
-}
-
-export async function editDownloadBLC(blc: KaraDownloadBLC) {
-	const dlBLC = await selectDownloadBLC();
-	if (!dlBLC.some(e => e.dlblc_id === blc.id)) throw 'DL BLC ID does not exist';
-	if (blc.type < 0 && blc.type > 1006) throw `Incorrect BLC type (${blc.type})`;
-	if ((blc.type === 1001 || blc.type < 1000) && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
-	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
-	return await updateDownloadBLC(blc);
 }
 
 export async function removeDownloadBLC(id: number) {

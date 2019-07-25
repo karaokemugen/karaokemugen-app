@@ -94,9 +94,3 @@ INSERT INTO download_blacklist_criteria(
 	value
 ) VALUES($1, $2)
 `;
-
-export const updateDownloadBLC = `
-UPDATE download_blacklist_criteria
-SET type = $2, value = $3
-WHERE pk_id_dl_blcriteria = $1
-`;

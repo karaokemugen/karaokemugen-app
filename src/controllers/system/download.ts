@@ -2,7 +2,7 @@
 import {requireAuth, requireValidUser, requireAdmin} from '../middlewares/auth';
 import {requireNotDemo} from '../middlewares/demo';
 
-import {getDownloadBLC, addDownloadBLC, editDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras} from '../../services/download';
+import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras} from '../../services/download';
 import {getRepos} from '../../services/repo';
 import { Router } from 'express';
 
@@ -86,14 +86,6 @@ export default function systemDownloadController(router: Router) {
 			res.status(200).send('Download blacklist criteria added');
 		} catch(err) {
 			res.status(500).send(`Error adding download BLC : ${err}`);
-		}
-	});
-	router.put('/system/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-		try {
-			await editDownloadBLC({ id: +req.params.id, type: +req.body.type, value: req.body.value});
-			res.status(200).send('Download blacklist criteria edited');
-		} catch(err) {
-			res.status(500).send(`Error editing download BLC : ${err}`);
 		}
 	});
 	router.delete('/system/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
