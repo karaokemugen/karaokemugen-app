@@ -44,11 +44,6 @@ export async function getBlacklistContents(params: KaraParams): Promise<DBBlackl
 	return res.rows;
 }
 
-export async function isBLCriteria(blc_id: number): Promise<boolean> {
-	const res = await db().query(sql.isBLCriteria, [blc_id]);
-	return res.rows.length > 0;
-}
-
 export async function addBlacklistCriteria(blcList: BLC[]) {
 	const blc = blcList.map((blcItem) => ([
 		blcItem.value,

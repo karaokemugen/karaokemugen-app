@@ -110,9 +110,3 @@ ORDER BY ak.languages_sortable, ak.serie_singer_sortable, ak.songtypes_sortable 
 ${limitClause}
 ${offsetClause}
 `;
-
-export const isBLCriteria = `
-SELECT pk_id_blcriteria
-FROM blacklist_criteria
-WHERE pk_id_blcriteria = $1
-`;

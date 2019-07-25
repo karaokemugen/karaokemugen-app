@@ -1,5 +1,4 @@
 import {emptyBlacklistCriterias as emptyBLC,
-	isBLCriteria as isBLC,
 	deleteBlacklistCriteria as deleteBLC,
 	generateBlacklist as generateBL,
 	addBlacklistCriteria as addBLC,
@@ -42,10 +41,6 @@ export async function generateBlacklist() {
 	return await generateBL();
 }
 
-async function isBLCriteria(blc_id: number): Promise<boolean> {
-	return await isBLC(blc_id);
-}
-
 export async function emptyBlacklistCriterias() {
 	logger.info('[Blacklist] Wiping criterias');
 	await emptyBLC();
@@ -55,7 +50,6 @@ export async function emptyBlacklistCriterias() {
 export async function deleteBlacklistCriteria(blc_id: number) {
 	profile('delBLC');
 	logger.info(`[Blacklist] Deleting criteria ${blc_id}`);
-	if (!await isBLCriteria(blc_id)) throw `BLC ID ${blc_id} unknown`;
 	await deleteBLC(blc_id);
 	await generateBlacklist();
 	profile('delBLC');
