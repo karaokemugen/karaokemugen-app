@@ -42,7 +42,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	componentDidMount() {
 		const socket = openSocket('http://localhost:1337');
 		socket.on('downloadBatchProgress', (data) => {
-			
+
 		});
 		socket.on('downloadProgress', (data) => {
 			let active_download = null;
@@ -83,6 +83,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		downloadObject.subfile = kara.subfile;
 		downloadObject.karafile = kara.karafile;
 		downloadObject.seriefiles = kara.seriefiles;
+		downloadObject.tagfiles = kara.tagfiles;
 		downloadObject.size = kara.mediasize;
 		downloadObject.name = kara.name;
 		postToDownloadQueue('kara.moe', [downloadObject]);
@@ -180,7 +181,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 						</Row>
 					</Layout.Header>
 					<Layout.Content>
-						
+
 						<Table
 							onChange={this.handleTableChange}
 							dataSource={this.state.karas_online}
@@ -254,7 +255,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			if(this.is_local_kara(record.kid))
 				return <strong>{title}</strong>;
 			return <span>{title}</span>;
-			
+
 		}
 	}, {
 		title: <span><button title="Download all retrieved karas at once" type="button" onClick={this.downloadAll.bind(this)}><Icon type='download'/></button> Download</span>,

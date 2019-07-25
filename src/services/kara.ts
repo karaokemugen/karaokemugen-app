@@ -24,7 +24,7 @@ import {Kara, KaraParams, KaraList, YearList} from '../lib/types/kara';
 import {Series} from '../lib/types/series';
 import { getOrAddSerieID, deleteSerie } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../lib/utils/files';
-import {getConfig, resolvedPathMedias, resolvedPathKaras, resolvedPathSubs} from '../lib/utils/config';
+import {resolvedPathMedias, resolvedPathKaras, resolvedPathSubs} from '../lib/utils/config';
 import logger from 'winston';
 import { editKaraInStore, removeKaraInStore, getStoreChecksum } from '../dao/dataStore';
 import { DBKaraHistory } from '../types/database/kara';
@@ -272,10 +272,11 @@ export async function integrateKaraFile(file: string) {
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData)
 	const karaDB = await getKaraDB(karaData.kid, 'admin', null, 'admin');
 	if (karaDB) {
+		console.log(karaDB);
 		await editKaraInDB(karaData, { refresh: false });
-		if (karaDB[0].karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].karafile, getConfig().System.Path.Karas));
-		if (karaDB[0].mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB[0].mediafile, getConfig().System.Path.Medias));
-		if (karaDB[0].subfile !== 'dummy.ass' && karaDB[0].subfile !== karaData.subfile) await asyncUnlink(await resolveFileInDirs(karaDB[0].subfile, getConfig().System.Path.Lyrics));
+		if (karaDB.karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB.karafile, resolvedPathKaras()));
+		if (karaDB.mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB.mediafile, resolvedPathMedias()));
+		if (karaDB.subfile && karaDB.subfile !== karaData.subfile) await asyncUnlink(await resolveFileInDirs(karaDB.subfile, resolvedPathSubs()));
 	} else {
 		await createKaraInDB(karaData, { refresh: false });
 	}
