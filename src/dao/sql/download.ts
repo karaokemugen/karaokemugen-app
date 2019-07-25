@@ -92,7 +92,7 @@ export const insertDownloadBLC = `
 INSERT INTO download_blacklist_criteria(
 	type,
 	value
-) VALUES($1, $2, $3)
+) VALUES($1, $2)
 `;
 
 export const updateDownloadBLC = `
