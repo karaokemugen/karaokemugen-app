@@ -11,6 +11,8 @@ import {
   is_touch_device
 } from "../toolsReact";
 
+var timer;
+
 class Playlist extends Component {
   constructor(props) {
     super(props);
@@ -166,9 +168,10 @@ class Playlist extends Component {
 
   changeSearchValue(e) {
     this.setState({ searchValue: e.target.value });
-    setTimeout(() => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
       this.getPlaylist();
-    }, 200);
+    }, 1000);
   }
 
   async getPlaylistInfo() {
