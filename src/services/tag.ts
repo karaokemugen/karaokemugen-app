@@ -76,7 +76,7 @@ export async function getTag(tid: string) {
 
 export async function getOrAddTagID(tagObj: Tag): Promise<Tag> {
 	let tag:Tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
-	if (!tag) tag = await addTag(tagObj);
+	if (!tag) tag = await addTag(tagObj, {refresh: false});
 	return tag;
 }
 
