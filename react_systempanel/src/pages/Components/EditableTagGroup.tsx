@@ -38,7 +38,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		this.setState({ inputVisible: true }, () => this.input.focus());
 	};
 
-	
+
 	handleInputConfirmSerie = (val) => {
 		let tags = this.state.value;
 		if (val && tags.indexOf(val) === -1) {
@@ -233,7 +233,8 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 								onChange={ val => this.currentVal = val }
 								filterOption={(inputValue, option) => {
 									const s: any = option.props.children;
-									return deburr(s.toUpperCase()).indexOf(deburr(inputValue).toUpperCase()) !== -1;
+									if (s) return deburr(s.toUpperCase()).indexOf(deburr(inputValue).toUpperCase()) !== -1;
+									return false;
 								}}
 							>
 							</AutoComplete>
