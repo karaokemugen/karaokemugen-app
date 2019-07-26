@@ -210,10 +210,13 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 										}
 									}
 								}
+								return ;
 							})
 						}
+						return ;
 					})
 				}
+				return ;
 			})
 		}
 
