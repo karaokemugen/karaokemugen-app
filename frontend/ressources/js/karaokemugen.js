@@ -6,7 +6,7 @@ var welcomeScreen;              // String : if we're in public or admin interfac
 var refreshTime;        // Int (ms) : time unit between every call
 var stopUpdate;         // Boolean : allow to stop any automatic ajax update
 var oldState;           // Object : last player state saved
-var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a flood of search
+var ajaxSearch;  // 2 variables used to optimize the search, preventing a flood of search
 var tags;               // Object : list of blacklist criterias tags
 var forSelectTags;      // Object : list of blacklist criterias tags for select use
 var series;
@@ -263,7 +263,7 @@ var plData;
 	stopUpdate = false;
 
 	playlistRange = {};
-	ajaxSearch = {}, timer;
+	ajaxSearch = {};
 	oldState = {};
 	oldSearchVal = '';
 

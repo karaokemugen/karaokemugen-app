@@ -166,8 +166,7 @@ class Playlist extends Component {
 
   changeSearchValue(e) {
     this.setState({ searchValue: e.target.value });
-    clearTimeout(timer);
-    timer = setTimeout(() => {
+    setTimeout(() => {
       this.getPlaylist();
     }, 200);
   }
