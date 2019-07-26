@@ -121,11 +121,14 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				children: []
 			}
 			this.props.tags.forEach(tag => {
-				if(tag.types.length && tag.types.indexOf(typeID)>=0)
-					option.children.push({
-						value:tag.tid,
-						label:tag.name,
-					})
+				if(tag.tid!==this.props.tag.tid)
+				{
+					if(tag.types.length && tag.types.indexOf(typeID)>=0)
+						option.children.push({
+							value:tag.tid,
+							label:tag.name,
+						})
+				}
 			})
 			return option;
 		})
