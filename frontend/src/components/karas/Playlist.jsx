@@ -51,10 +51,10 @@ class Playlist extends Component {
       if (this.state.idPlaylist === -5) this.getPlaylist();
     });
     window.socket.on("playlistContentsUpdated", idPlaylist => {
-      if (this.state.idPlaylist === idPlaylist) this.getPlaylist();
+      if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylist();
     });
     window.socket.on("playlistInfoUpdated", idPlaylist => {
-      if (this.state.idPlaylist === idPlaylist) this.getPlaylistInfo();
+      if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylistInfo();
     });
     window.socket.on('quotaAvailableUpdated', this.updateQuotaAvailable);
   }

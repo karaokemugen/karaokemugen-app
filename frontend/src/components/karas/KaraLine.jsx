@@ -53,7 +53,7 @@ class KaraLine extends Component {
     if (this.props.scope === 'admin' && (this.props.idPlaylist >= 0 || this.props.idPlaylist === -3)) {
       // Admin et playlist standard ou Whitelist
       return <React.Fragment>
-        <button title={this.props.t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action"></button>
+        <button title={this.props.t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}></button>
         {addKaraButton}
         <button title={this.props.t('TOOLTIP_TRANSFERKARA')} name="transferKara" className="btn btn-sm btn-action"></button>
       </React.Fragment>
@@ -95,7 +95,7 @@ class KaraLine extends Component {
   }
 
   deleteKara() {
-    axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + kara.playlistcontent_id);
+    axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/', {data:{plc_id:String(this.props.kara.playlistcontent_id)}});
   }
 
   
