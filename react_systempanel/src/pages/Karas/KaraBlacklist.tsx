@@ -4,6 +4,8 @@ import {connect} from 'react-redux';
 import {Layout, Table, Input, InputNumber, Button, Select} from 'antd';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
+import criteras_types from './_blc_criterias_types';
+
 
 const { Option } = Select;
 
@@ -76,7 +78,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 				filter_type:value,
 				filter_mode:mode,
 				filter_options: this.state.filter_options_full.map((o)=>{
-					if(o.type===value)
+					if(o.type===value || (o.types && o.types.indexOf(value)>=0))
 						return o;
 					return undefined;
 				}).filter((o)=>{ return o; }),
@@ -172,11 +174,12 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 				onChange={this.handleCriteriaValue.bind(this)}
 				>
 				<option key="null" value=""></option>
-				{this.state.filter_options.map(o => <option key={o.tag_id} value={o.tag_id}>{o.name}</option>)}
+				{this.state.filter_options.map(o => <option key={o.tid} value={o.tid}>{o.name}</option>)}
 			</select>
 		}
 		else
 		{
+			console.log(this.state);
 			return null
 		}
 	}
@@ -187,7 +190,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 				<Layout>
 					<Layout.Header>
 						<Select style={{ width: 200 }} value={this.state.filter_type} onChange={this.handleCriteriasTypeChange.bind(this)}>
-							{this.criteras_types.map(o => <Option key={o.value} data-mode={o.mode} value={o.value}>{o.label}</Option>)}
+							{criteras_types.map(o => <Option key={o.value} data-mode={o.mode} value={o.value}>{o.label}</Option>)}
 						</Select>
 						{" "}
 						{this.filter_input()}
@@ -214,7 +217,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 			dataIndex: 'type',
 			key: 'type',
 			render: type => {
-				var t = this.criteras_types.filter((t)=>{ return t.value===type})
+				var t = criteras_types.filter((t)=>{ return t.value===type})
 				return t.length>0 ? t[0].label : type;
 			}
 		}, {
@@ -223,84 +226,16 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 			key: 'value',
 			render: (value, record)  => {
 				var label = value
-				var t = this.criteras_types.filter((t)=>{ return t.mode==="tag" && t.value===record.type})
+				var t = criteras_types.filter((t)=>{ return t.mode==="tag" && t.value===record.type})
 				if(t.length>0) // c'est un tag ^^
 				{
-					var o = this.state.filter_options_full.filter((o) => { return o.tag_id===value})
+					var o = this.state.filter_options_full.filter((o) => { return o.tid===value})
 					if(o.length>0)
 						label = o[0].name;
 				}
 				return <span>{label} <Button type="primary" onClick={this.handleCriteriaDelete.bind(this,record.dlblc_id)}>-</Button></span>
 			}
 		},
-	];
-
-	criteras_types = [
-		{
-			label:"Plus long que (s)",
-			value:1002,
-			mode:'number',
-		},
-		{
-			label:"Plus court que (s)",
-			value:1003,
-			mode:'number',
-		},
-		{
-			label:"Titre contenant",
-			value:1004,
-			mode:'text',
-		},
-		{
-			label:"Série contenant",
-			value:1000,
-			mode:'text',
-		},
-		{
-			label:"Métadonnées",
-			value:0,
-			mode:'text',
-		},
-		{
-			label:"Chanteur",
-			value:2,
-			mode:'tag',
-		},
-		{
-			label:"Type",
-			value:3,
-			mode:'tag',
-		},
-		{
-			label:"Créateur",
-			value:4,
-			mode:'tag',
-		},
-		{
-			label:"Langue",
-			value:5,
-			mode:'tag',
-		},
-		{
-			label:"Auteur du kara",
-			value:6,
-			mode:'tag',
-		},
-		{
-			label:"Tags",
-			value:7,
-			mode:'tag',
-		},
-		{
-			label:"Compositeur",
-			value:8,
-			mode:'tag',
-		},
-		{
-			label:"Groupe de kara",
-			value:9,
-			mode:'tag',
-		}
 	];
 }
 

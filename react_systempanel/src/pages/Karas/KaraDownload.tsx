@@ -6,19 +6,25 @@ import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/nav
 import openSocket from 'socket.io-client';
 import { getLocalKaras, deleteDownloadQueue, deleteKAraFromDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../../api/local';
 import {ReduxMappedProps} from '../../react-app-env';
+import {getCriterasByValue} from './_blc_criterias_types';
+
+var blacklist_cache = {}
+var api_get_local_karas_interval = null;
+var api_read_kara_queue_interval = null;
 
 interface KaraDownloadProps extends ReduxMappedProps {}
 
 interface KaraDownloadState {
 	karas_local: any[],
 	karas_online: any[],
+	blacklist_criterias: any[],
 	karas_online_count: number,
 	karas_queue: any[],
 	active_download: any,
 	kara: any,
 	currentPage: number,
 	currentPageSize: number,
-	filter: string
+	filter: string,
 }
 
 class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
@@ -29,12 +35,13 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			karas_local: [],
 			karas_online: [],
 			karas_online_count: 0,
+			blacklist_criterias: [],
 			karas_queue: [],
 			active_download: null,
 			kara: {},
 			currentPage: parseInt(localStorage.getItem('karaDownloadPage')) || 1,
 			currentPageSize: parseInt(localStorage.getItem('karaDownloadPageSize')) || 100,
-			filter: localStorage.getItem('karaDownloadFilter') || ''
+			filter: localStorage.getItem('karaDownloadFilter') || '',
 		};
 
 	}
@@ -63,11 +70,26 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			}
 		});
 
-		this.api_get_local_karas();
 		this.api_get_online_karas();
+		this.api_get_blacklist_criterias();
+		this.blacklist_check_emptyCache();
+		this.startObserver();
+	}
+	componentWillUnmount() {
+		this.stopObserver();
+	}
+
+	startObserver()
+	{
+		this.api_get_local_karas();
 		this.api_read_kara_queue();
-		setInterval(this.api_get_local_karas.bind(this),2000);
-		setInterval(this.api_read_kara_queue.bind(this),1000);
+		api_get_local_karas_interval = setInterval(this.api_get_local_karas.bind(this),2000);
+		api_read_kara_queue_interval = setInterval(this.api_read_kara_queue.bind(this),2000);
+	}
+	stopObserver()
+	{
+		clearInterval(api_get_local_karas_interval);
+		clearInterval(api_read_kara_queue_interval);
 	}
 
 	changeFilter(event) {
@@ -92,14 +114,26 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 
 	downloadAll() {
 		this.props.loading(true);
-		axios.get(`/api/system/karas?filter=${this.state.filter}&instance=kara.moe`)
+		this.stopObserver();
+		putToDownloadQueuePause()
+		
+		var p = Math.max(0,this.state.currentPage - 1);
+		var psz = this.state.currentPageSize;
+		var pfrom = p*psz;
+
+		axios.get(`/api/system/karas?filter=${this.state.filter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
 			.then(res => {
 				let karas = res.data.content;
 				karas.forEach((kara) => {
-					kara.name = kara.karafile.replace('.kara.json', '');
-					this.downloadKara(kara);
+					if(this.blacklist_check(kara))
+					{
+						kara.name = kara.karafile.replace('.kara.json', '');
+						this.downloadKara(kara);
+					}
 				});
 				this.props.loading(false);
+				this.startObserver();
+				putToDownloadQueueStart();
 			})
 			.catch(err => {
 				this.props.loading(false);
@@ -109,6 +143,81 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 
 	async api_get_local_karas() {
 		this.setState({karas_local: await getLocalKaras()});
+	}
+
+	async api_get_blacklist_criterias() {
+		try {
+			const res = await axios.get('/api/system/downloads/blacklist/criterias');
+			if(res.data.length)
+			{
+				let criterias = res.data.map(function(criteria){
+					var c = getCriterasByValue(criteria.type);
+					if(c && c.fields && c.fields.length > 0)
+					{
+						criteria.filter = c;
+						criteria.value = criteria.value.toLowerCase();
+						return criteria;
+					}
+					return ;
+				})
+				this.setState({blacklist_criterias:criterias});
+			}
+		} catch (e) {
+			console.log('Error KaraDownload.js in api_get_blacklist_criterias');
+			throw e;
+		}
+	}
+
+	blacklist_check_emptyCache() {
+		blacklist_cache = {};
+	}
+	blacklist_check(kara) {
+		// avoid lots of kara check operation on re-render
+		if(blacklist_cache[kara.kid]!==undefined)
+			return blacklist_cache[kara.kid];
+
+		blacklist_cache[kara.kid] = true;
+		if(this.state.blacklist_criterias.length)
+		{
+			this.state.blacklist_criterias.map(criteria => {
+				if(criteria.filter.test=='contain')
+				{
+					criteria.filter.fields.map(field => {
+						if(typeof(kara[field])==='string')
+						{
+							if(kara[field].toLowerCase().match(criteria.value))
+							{
+								blacklist_cache[kara.kid] = false;
+							}
+						}
+						else if(kara[field] && kara[field].length > 0)
+						{
+							kara[field].map(t => {
+								if(t)
+								{
+									if(typeof t==='string')
+									{
+										if(t.toLowerCase().match(criteria.value))
+										{
+											blacklist_cache[kara.kid] = false;
+										}
+									}
+									else if(t.name)
+									{
+										if(t.name.toLowerCase().match(criteria.value))
+										{
+											blacklist_cache[kara.kid] = false;
+										}
+									}
+								}
+							})
+						}
+					})
+				}
+			})
+		}
+
+		return blacklist_cache[kara.kid];
 	}
 
 	api_get_online_karas() {
@@ -216,12 +325,13 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		return this.state.karas_queue.find(item => item.name === kara.name);
 	}
 
-	columns = [{
+	columns = [
+	{
 		title: 'Language(s)',
-		dataIndex: 'languages',
-		key: 'languages',
-		render: languages => {
-			const ret = languages ? languages.map(e => {
+		dataIndex: 'langs',
+		key: 'langs',
+		render: langs => {
+			const ret = langs ? langs.map(e => {
 				return e.name;
 			}) : [];
 			return ret.join(', ').toUpperCase();
@@ -238,8 +348,8 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		}
 	}, {
 		title: 'Type',
-		dataIndex: 'songtype',
-		key: 'songtype',
+		dataIndex: 'songtypes',
+		key: 'songtypes',
 		render: (songtypes, record) => {
 			const types = songtypes ? songtypes.map(e => {
 				return e.name;
@@ -258,25 +368,30 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 
 		}
 	}, {
-		title: <span><button title="Download all retrieved karas at once" type="button" onClick={this.downloadAll.bind(this)}><Icon type='download'/></button> Download</span>,
+		title: <span><Button title="Download all retrieved karas at once" type="default" onClick={this.downloadAll.bind(this)}><Icon type='download'/></Button> Download</span>,
 		key: 'download',
 		render: (text, record) => {
 			var button = null;
+			var blacklisted = !this.blacklist_check(record);
 			if(this.is_local_kara(record))
-				button = <button disabled type="button"><Icon type='check-circle' theme="twoTone" twoToneColor="#52c41a"/></button>;
+				button = <Button disabled type="default"><Icon type='check-circle' theme="twoTone" twoToneColor="#52c41a"/></Button>;
 			else {
 				let queue = this.is_queued_kara(record);
 				if(queue) {
 					if(queue.status==='DL_RUNNING')
-						button = <span><button disabled type="button"><Icon type="sync" spin /></button> {this.state.active_download ? this.state.active_download.progress:null}%</span>;
+						button = <span><Button disabled type="default"><Icon type="sync" spin /></Button> {this.state.active_download ? this.state.active_download.progress:null}%</span>;
 					else if(queue.status==='DL_PLANNED')
-						button = <button onClick={deleteKAraFromDownloadQueue.bind(null,queue.pk_uuid)} type="button"><Icon type='clock-circle' theme="twoTone" twoToneColor="#dc4e41"/></button>;
+						button = <Button onClick={deleteKAraFromDownloadQueue.bind(null,queue.pk_uuid)} type="default"><Icon type='clock-circle' theme="twoTone" twoToneColor="#dc4e41"/></Button>;
 					else if(queue.status==='DL_DONE') // done but not in local -> try again dude
-						button = <span><button disabled type="button"><Icon type='check-circle' theme="twoTone" twoToneColor="#4989f3"/></button></span>;
-				} else
-					button = <button type="button" onClick={this.downloadKara.bind(this,record)}><Icon type='download'/></button>;
+						button = <span><Button disabled type="default"><Icon type='check-circle' theme="twoTone" twoToneColor="#4989f3"/></Button></span>;
+				} else {
+					if(blacklisted)
+						button = <Button type="danger" onClick={this.downloadKara.bind(this,record)} ><Icon type='download'/></Button>;
+					else
+						button = <Button type="default" onClick={this.downloadKara.bind(this,record)}><Icon type='download'/></Button>;
+				}
 			}
-			return <span>{button} {Math.round(record.mediasize/(1024*1024))}Mb</span>;
+			return <span>{button} {Math.round(record.mediasize/(1024*1024))}Mb {blacklisted ? <small style={{color:'#f5232e'}}>In Blacklist</small>:null}</span>;
 		}
 	}];
 }
