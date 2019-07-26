@@ -158,7 +158,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 						criteria.value = criteria.value.toLowerCase();
 						return criteria;
 					}
-					return ;
+					return null;
 				})
 				this.setState({blacklist_criterias:criterias});
 			}
@@ -180,7 +180,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		if(this.state.blacklist_criterias.length)
 		{
 			this.state.blacklist_criterias.map(criteria => {
-				if(criteria.filter.test=='contain')
+				if(criteria.filter.test==='contain')
 				{
 					criteria.filter.fields.map(field => {
 						if(typeof(kara[field])==='string')
@@ -210,13 +210,13 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 										}
 									}
 								}
-								return ;
+								return null;
 							})
 						}
-						return ;
+						return null;
 					})
 				}
-				return ;
+				return null;
 			})
 		}
 
