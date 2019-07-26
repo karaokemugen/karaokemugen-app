@@ -155,7 +155,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
             } else {
                 promise.resolve();
             }
-            if (action === 'transferKara' || action === 'deleteKara') {
+            if (action === 'transferKara') {
                 // temp solution to database transaction issue
                 promise.done(function () {
                     li.addClass('deleted');

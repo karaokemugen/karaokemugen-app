@@ -114,7 +114,8 @@ class WelcomePage extends Component {
             toggleLoginModal={() => this.setState({ loginModal: !this.state.loginModal })} /> : null
         }
         {this.state.profileModal ?
-          <ProfilModal settingsOnline={this.props.settings.config.Online} updateLogInfos={this.props.updateLogInfos} logInfos={this.props.logInfos} /> : null
+          <ProfilModal settingsOnline={this.props.settings.config.Online} updateLogInfos={this.props.updateLogInfos} logInfos={this.props.logInfos} 
+            toggleProfileModal={() => this.setState({profileModal:!this.state.profileModal})} /> : null
         }
         <div className="navbar-default navbar-fixed-top" id="navigation">
           <div className="container">
