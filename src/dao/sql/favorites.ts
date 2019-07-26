@@ -46,7 +46,3 @@ export const insertFavorites = `
 INSERT INTO favorites(fk_kid, fk_login)
 VALUES ($1, $2) ON CONFLICT DO NOTHING
 `;
-
-export const emptyFavorites = `
-DELETE FROM favorites WHERE fk_login = $1;
-`;

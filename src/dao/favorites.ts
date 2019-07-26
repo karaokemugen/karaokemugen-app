@@ -34,10 +34,6 @@ export async function selectFavorites(params: FavParams): Promise<DBKara[]> {
 	return res.rows;
 }
 
-export async function removeAllFavorites(username: string) {
-	return await db().query(sql.emptyFavorites, [username]);
-}
-
 export async function removeFavorites(fList: string[], username: string) {
 	const karas = fList.map(kara => ([
 		kara,

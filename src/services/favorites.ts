@@ -1,4 +1,4 @@
-import {selectFavorites, removeAllFavorites, removeFavorites, insertFavorites} from '../dao/favorites';
+import {selectFavorites, removeFavorites, insertFavorites} from '../dao/favorites';
 import {trimPlaylist, shufflePlaylist, createPlaylist, addKaraToPlaylist} from './playlist';
 import {findUserByName} from './user';
 import logger from 'winston';
@@ -43,10 +43,6 @@ export async function fetchAndAddFavorites(instance: string, token: string, user
 	} catch(err) {
 		logger.error(`[Favorites] Error getting remote favorites for ${username} : ${err}`);
 	}
-}
-
-export async function emptyFavorites(username: string) {
-	return await removeAllFavorites(username);
 }
 
 export async function addToFavorites(username: string, kid: any) {
@@ -163,11 +159,12 @@ export async function importFavorites(favs: FavExport, username: string) {
 	return { karasUnknown: karasUnknown };
 }
 
+/* Get favorites from a user list */
 async function getAllFavorites(userList: string[]): Promise<string[]> {
 	const kids = [];
 	for (const user of userList) {
 		if (!await findUserByName(user)) {
-			logger.warn(`[AutoMix] Username ${user} does not exist`);
+			logger.warn(`[Favorites] Username ${user} does not exist`);
 		} else {
 			const favs = await getFavorites({
 				username: user,
@@ -185,7 +182,6 @@ async function getAllFavorites(userList: string[]): Promise<string[]> {
 }
 
 export async function createAutoMix(params: AutoMixParams, username: string): Promise<AutoMixPlaylistInfo> {
-	// Create Playlist.
 	profile('AutoMix');
 	const favs = await getAllFavorites(params.users);
 	if (favs.length === 0) throw 'No favorites found for those users';
