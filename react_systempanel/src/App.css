@@ -49,6 +49,11 @@
   align-items: center;
   justify-content: center;
 }
+
+.ant-form-item {
+  text-align: left;
+}
+
 .UI-notification-loading .ant-spin-container {
   display: none;
 }
