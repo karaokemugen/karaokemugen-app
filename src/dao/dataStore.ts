@@ -41,7 +41,11 @@ export function sortTagsStore() {
 }
 
 export function getStoreChecksum() {
-	const store = JSON.stringify(dataStore, null, 2);
+	const store = JSON.stringify({
+		karas: dataStore.karas.entries(),
+		tags: dataStore.tags.entries(),
+		series: dataStore.series.entries()
+	}, null, 2);
 	return checksum(store);
 }
 
