@@ -122,7 +122,7 @@ export async function updateTags(kara: Kara) {
 	const tagsAndTypes = [];
 	for (const type of Object.keys(tagTypes)) {
 		if (kara[type]) for (const tag of kara[type]) {
-			tagsAndTypes.push({tid: tag, type: tagTypes[type]});
+			tagsAndTypes.push({tid: tag.tid, type: tagTypes[type]});
 		}
 	}
 	await updateKaraTags(kara.kid, tagsAndTypes);
