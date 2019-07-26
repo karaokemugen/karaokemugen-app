@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { errMessage, OKMessage } from "../../common";
 import { emitWS } from "../../../lib/utils/ws";
-import { createAutoMix, deleteFavorites, addToFavorites, getFavorites, emptyFavorites } from "../../../services/favorites";
+import { createAutoMix, deleteFavorites, addToFavorites, getFavorites } from "../../../services/favorites";
 import { check } from "../../../lib/utils/validators";
 import { updateUserLoginTime, requireAdmin, requireValidUser, requireAuth } from "../../middlewares/auth";
 import { getLang } from "../../middlewares/lang";
@@ -65,35 +65,6 @@ export default function adminFavoritesController(router: Router) {
 				res.status(400).json(validationErrors);
 			}
 		});
-		router.route('/admin/favorites/:username/empty')
-		/**
-	 * @api {put} /admin/favorites/:username/empty Empty favorites (as admin)
-	 * @apiName PutEmptyFavoritesAdmin
-	 * @apiVersion 2.5.0
-	 * @apiGroup Favorites
-	 * @apiPermission admin
-	 * @apiHeader authorization Auth token received from logging in
-	 * @apiSuccess {String} code Message to display
-	 *
-	 * @apiSuccessExample Success-Response:
-	 * HTTP/1.1 200 OK
-	 * {
-	 *   "code": "FAV_EMPTIED"
-	 * }
-	 * @apiError FAV_EMPTY_ERROR Unable to empty favorites
-	 *
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
-	 */
-			.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-				try {
-					await emptyFavorites(req.params.username);
-					emitWS('favoritesUpdated', req.params.username);
-					res.json(OKMessage(null,'FAV_EMPTIED'));
-				} catch(err) {
-					res.status(500).json(errMessage('FAV_EMPTY_ERROR', err));
-				}
-			});
 		router.route('/admin/favorites/:username')
 		/**
 	 * @api {get} /admin/favorites Get favorites of any user (as admin)

@@ -9691,6 +9691,23 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-=======
+
+ /**
+	 * @api {put} /admin/favorites/:username/empty Empty favorites (as admin)
+	 * @apiName PutEmptyFavoritesAdmin
+	 * @apiVersion 2.5.0
+	 * @apiGroup Favorites
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiSuccess {String} code Message to display
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": "FAV_EMPTIED"
+	 * }
+	 * @apiError FAV_EMPTY_ERROR Unable to empty favorites
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
 	 */
->>>>>>> next
