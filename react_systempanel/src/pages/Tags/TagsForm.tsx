@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Col, Form, Icon, Input, message, Row, Select, Tag, Tooltip } from 'antd';
+import { Button, Col, Form, Icon, Input, message, Row, Select, Tag, Tooltip, Cascader } from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
 import langs from 'langs';
 
@@ -86,8 +86,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		}
 	};
 
-	handleTagMergeSelection = (e) => {
-		this.setState({mergeSelection:e.target.value})
+	handleTagMergeSelection = (value) => {
+		this.setState({mergeSelection:value})
 	}
 	handleTagMerge = (e) => {
 		this.props.mergeAction(this.props.tag.tid,this.state.mergeSelection)
@@ -110,6 +110,31 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			this.setState({ i18n: newI18n });
 		}
 	};
+
+	mergeCascaderOption = () => {
+		let options = Object.keys(tagTypes).map(type => {
+			const typeID = tagTypes[type];
+			
+			let option = {
+				value:typeID,
+				label:type,
+				children: []
+			}
+			this.props.tags.forEach(tag => {
+				if(tag.types.length && tag.types.indexOf(typeID)>=0)
+					option.children.push({
+						value:tag.tid,
+						label:tag.name,
+					})
+			})
+			return option;
+		})
+		return options;
+	}
+
+	mergeCascaderFilter = function(inputValue, path) {
+	  return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+	}
 
 	render() {
 		const { getFieldDecorator } = this.props.form;
@@ -191,7 +216,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 10, offset: 0 }}
+					wrapperCol={{ span: 8, offset: 0 }}
 				>
 					{getFieldDecorator('aliases', {
 						initialValue: this.props.tag.aliases,
@@ -200,20 +225,26 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						onChange={(tags) => this.props.form.setFieldsValue({ aliases: tags.join(',') })}
 					/>)}
 				</Form.Item>
-				<div>
-					Names by language&nbsp;
-					<Tooltip title="There must be at least one name in any language (enter the original name by default)">
-						<Icon type="question-circle-o" />
-					</Tooltip>
-				</div>
+
+				<Form.Item 
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 8, offset: 0 }}
+					label={(<span>Names by language&nbsp;
+						<Tooltip title="There must be at least one name in any language (enter the original name by default)">
+							<Icon type="question-circle-o" />
+						</Tooltip>
+					</span>)}
+					>
+				</Form.Item>
+
 				{this.state.i18n.map(langKey => (
-					<Row gutter={8} key={langKey}>
-						<Form.Item
-							hasFeedback
-							label={langs.where('2B', langKey).name}
-							labelCol={{ span: 3 }}
-							wrapperCol={{ span: 16, offset: 0 }}
-						>
+					<Form.Item
+						key={langKey}
+						hasFeedback
+						label={langs.where('2B', langKey).name}
+						labelCol={{ span: 3 }}
+						wrapperCol={{ span: 8, offset: 0 }}
+					>
 							{getFieldDecorator('lang_' + langKey, {
 								initialValue: this.state[`lang_${langKey}`],
 								rules: [{
@@ -221,33 +252,29 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 									message: 'Please enter a translation'
 								}],
 							})(
-								<Col span={12}>
-
-									<Input
-										placeholder='Name in that language'
-										defaultValue={this.state[`lang_${langKey}`]}
-									/>
-								</Col>
+								<Input
+									placeholder='Name in that language'
+									defaultValue={this.state[`lang_${langKey}`]}
+								/>
 							)}
 
 							{Object.keys(this.state.i18n).length > 1 ? (
-								<Col span={2}>
-									<Tooltip title="Remove name">
-										<Icon
-											className="dynamic-delete-button"
-											type="minus-circle-o"
-											onClick={() => this.removeLang(langKey)}
-										/></Tooltip></Col>
+								<span style={{position:'absolute'}}><Tooltip title="Remove name">
+									<Icon
+										className="dynamic-delete-button"
+										type="minus-circle-o"
+										onClick={() => this.removeLang(langKey)}
+									/>
+								</Tooltip></span>
 							) : null}
 
-						</Form.Item>
-					</Row>
+					</Form.Item>
 				))}
 				{selectVisible && (
 					<Form.Item
 						label="Select a language"
 						labelCol={{ span: 3 }}
-						wrapperCol={{ span: 4, offset: 0 }}
+						wrapperCol={{ span: 8, offset: 0 }}
 					>
 						<Select
 							showSearch
@@ -258,51 +285,52 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					</Form.Item>
 				)}
 				{!selectVisible && (
-					<Tag
-						onClick={this.showSelect}
-						style={{ borderStyle: 'dashed' }}
+					<Form.Item
+						label="Select a language"
+						labelCol={{ span: 3 }}
+						wrapperCol={{ span: 8, offset: 0 }}
 					>
-						<Icon type="plus" /> Add
-					</Tag>
+						<Tag
+							onClick={this.showSelect}
+							style={{ borderStyle: 'dashed' }}
+							>
+							<Icon type="plus" /> Add
+						</Tag>
+					</Form.Item>
 				)}
-				<Form.Item
-					wrapperCol={{ span: 4, offset: 2 }}
-				>
+				<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{textAlign:"right"}}>
 					<Button type='primary' htmlType='submit' className='tags-form-button'>
 						Save tags
 					</Button>
 				</Form.Item>
+				
+				<Form.Item hasFeedback
+					label={(
+						<span>Merge with&nbsp;
+							<Tooltip title="Merge the current tag with another one">
+								<Icon type="question-circle-o" />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 8, offset: 0 }}
+					>
+					<Cascader options={this.mergeCascaderOption()} showSearch={{filter:this.mergeCascaderFilter}} onChange={this.handleTagMergeSelection.bind(this)} placeholder="Please select" />
+				</Form.Item>
 
-				<div className="ant-row ant-form-item">
-					<div className="ant-col ant-col-3 ant-form-item-label">
-						<label>
-							<span>
-								Merge with&nbsp;
-								<Tooltip title="Merge the current tag with another one">
-									<Icon type="question-circle-o" />
-								</Tooltip>
-							</span>
-						</label>
-					</div>
-					<div className="ant-col ant-col-8 ant-form-item-control-wrapper">
-						<div className="ant-form-item-control has-feedback has-success">
-							<select style={{width:'100%'}} onChange={this.handleTagMergeSelection.bind(this)}>
-								<option key="-1" value=""></option>
-								{
-									this.props.tags.map((tag,i) => {
-									return <option key={i} value={tag.tid}>{tag.name}</option>
-									})
-								}
-							</select>
-							<button type="button" onClick={this.handleTagMerge.bind(this)}>Merge !</button>
-						</div>
-					</div>
-				</div>
-				<p style={{color:'#fff',background:'tomato',textAlign:'left',padding:'1em'}}>
-					About "Merging process" :
-					<br />Resulting tags will have the current Name and Shortname.
-					<br />Types, Aliases and translation will be merged and the resulting tags will contain all the information from Current and targeted tags
-				</p>
+				<Form.Item
+					wrapperCol={{ span: 8, offset: 3 }}
+					style={{textAlign:"right"}}
+					>
+					<Button type="danger" onClick={this.handleTagMerge.bind(this)}>
+						Merge !
+					</Button>
+					<p style={{color:'#fff',background:'tomato',textAlign:'left',padding:'1em',lineHeight:'1.4em'}}>
+						About "Merging process" :
+						<br />Resulting tags will have the current Name and Shortname.
+						<br />Types, Aliases and translation will be merged and the resulting tags will contain all the information from Current and targeted tags
+					</p>
+				</Form.Item>
 
 				<Form.Item>
 					{getFieldDecorator('i18n', {
