@@ -30,7 +30,8 @@ class AdminPage extends Component {
             toggleLoginModal={() => this.setState({loginModal:!this.state.loginModal})} /> : null
         }
         {this.state.profileModal ?
-          <ProfilModal settingsOnline={this.props.settings.config.Online} updateLogInfos={this.props.updateLogInfos} logInfos={this.props.logInfos} /> : null
+          <ProfilModal settingsOnline={this.props.settings.config.Online} updateLogInfos={this.props.updateLogInfos} logInfos={this.props.logInfos} 
+            toggleProfileModal={() => this.setState({profileModal:!this.state.profileModal})} /> : null
         }
         <AdminHeader config={this.props.settings.config} toggleProfileModal={() => this.setState({ profileModal: !this.state.profileModal })}
           callModal={window.callModal} setOptionMode={() => this.setState({ options: !this.state.options })} powerOff={this.props.powerOff}

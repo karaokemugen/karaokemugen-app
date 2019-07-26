@@ -94,7 +94,8 @@ class PublicPage extends Component {
                 toggleLoginModal={() => this.setState({ loginModal: !this.state.loginModal })} updateLogInfos={this.props.updateLogInfos} /> : null
             }
             {this.state.profileModal ?
-              <ProfilModal settingsOnline={this.props.settings.config.Online} updateLogInfos={this.props.updateLogInfos} logInfos={this.props.logInfos} /> : null
+              <ProfilModal settingsOnline={this.props.settings.config.Online} updateLogInfos={this.props.updateLogInfos} logInfos={this.props.logInfos} 
+                toggleProfileModal={() => this.setState({profileModal:!this.state.profileModal})} /> : null
             }
             {this.state.restrictedHelpModal ?
               <RestrictedHelpModal /> : null
