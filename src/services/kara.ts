@@ -122,7 +122,7 @@ export async function updateTags(kara: Kara) {
 	const tagsAndTypes = [];
 	for (const type of Object.keys(tagTypes)) {
 		if (kara[type]) for (const tag of kara[type]) {
-			tagsAndTypes.push({tid: tag.tid, type: tagTypes[type]});
+			tagsAndTypes.push({tid: tag, type: tagTypes[type]});
 		}
 	}
 	await updateKaraTags(kara.kid, tagsAndTypes);
@@ -250,7 +250,6 @@ export async function integrateKaraFile(file: string) {
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData)
 	const karaDB = await getKaraDB(karaData.kid, 'admin', null, 'admin');
 	if (karaDB) {
-		console.log(karaDB);
 		await editKaraInDB(karaData, { refresh: false });
 		if (karaDB.karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB.karafile, resolvedPathKaras()));
 		if (karaDB.mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB.mediafile, resolvedPathMedias()));
