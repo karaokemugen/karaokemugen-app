@@ -10,7 +10,7 @@ import { sanitizeFile, asyncUnlink, resolveFileInDirs } from '../lib/utils/files
 import { writeTagFile, formatTagFile, removeTagFile, removeTagInKaras, getDataFromTagFile } from '../lib/dao/tagfile';
 import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
 import { refreshKaras } from '../lib/dao/kara';
-import { getAllKaras, getKaras } from './kara';
+import { getAllKaras } from './kara';
 import { replaceTagInKaras } from '../lib/dao/karafile';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
@@ -119,7 +119,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid1),
 			removeTagInStore(tid2)
 		]);
-		const karas = await getKaras({admin: true, token: {username: 'admin', role: 'admin'}});
+		const karas = await getAllKaras();
 		const modifiedKaras = await replaceTagInKaras(tid1, tid2,tagObj.tid, karas);
 		for (const kara of modifiedKaras) {
 			editKaraInStore(kara.data.kid, kara);
@@ -154,10 +154,12 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 	const tag = await getTag(tid);
 	if (!tag) throw 'Tag ID unknown';
 	await removeTag(tid);
-	const removes = [removeTagFile(tag.tagfile), removeTagInKaras(tid, await getAllKaras())];
+	const removes = [
+		removeTagFile(tag.tagfile),
+		removeTagInKaras(tid, await getAllKaras())
+	];
 	if (opt.refresh) removes.push(refreshTags());
 	await Promise.all(removes);
-	// Refreshing karas is done asynchronously
 	removeTagInStore(tid);
 	saveSetting('baseChecksum', getStoreChecksum());
 	if (opt.refresh) refreshKaraTags().then(() => refreshKaras());
