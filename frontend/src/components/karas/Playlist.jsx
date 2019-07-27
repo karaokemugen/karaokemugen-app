@@ -10,6 +10,7 @@ import {
   secondsTimeSpanToHMS,
   is_touch_device
 } from "../toolsReact";
+import BlacklistCriterias from "./BlacklistCriterias";
 
 var timer;
 
@@ -17,14 +18,17 @@ class Playlist extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchValue: "",
-      playlistCommands: false
+      filterValue: "",
+      searchValue: undefined,
+      searchCriteria: undefined,
+      playlistCommands: false,
+      maxBeforeUpdate: 200
     };
     this.getIdPlaylist = this.getIdPlaylist.bind(this);
     this.changeIdPlaylist = this.changeIdPlaylist.bind(this);
     this.getPlaylist = this.getPlaylist.bind(this);
     this.playingUpdate = this.playingUpdate.bind(this);
-    this.changeSearchValue = this.changeSearchValue.bind(this);
+    this.changeFilterValue = this.changeFilterValue.bind(this);
     this.getPlaylistInfo = this.getPlaylistInfo.bind(this);
     this.getPlInfosElement = this.getPlInfosElement.bind(this);
     this.handleScroll = this.handleScroll.bind(this);
@@ -32,6 +36,16 @@ class Playlist extends Component {
     this.scrollToPlaying = this.scrollToPlaying.bind(this);
     this.updateQuotaAvailable = this.updateQuotaAvailable.bind(this);
     this.togglePlaylistCommands = this.togglePlaylistCommands.bind(this);
+    this.editNamePlaylist = this.editNamePlaylist.bind(this);
+    this.selectAllKaras = this.selectAllKaras.bind(this);
+    this.checkKara = this.checkKara.bind(this);
+    this.handleDragStart = this.handleDragStart.bind(this);
+    this.handleDragEnd = this.handleDragEnd.bind(this);
+    this.deleteCHeckedKaras = this.deleteCHeckedKaras.bind(this);
+    this.addCheckedKaras = this.addCheckedKaras.bind(this);
+    this.transferCheckedKaras = this.transferCheckedKaras.bind(this);
+    this.addAllKaras = this.addAllKaras.bind(this);
+    this.onChangeTags = this.onChangeTags.bind(this);
     this.playlistRef = React.createRef();
   }
 
@@ -73,7 +87,7 @@ class Playlist extends Component {
       if (data.quotaLeft == -1) {
         quotaString = '\u221e';
       }
-      this.setState({quotaString: quotaString})
+      this.setState({ quotaString: quotaString })
     }
   }
 
@@ -159,19 +173,30 @@ class Playlist extends Component {
       }
     }
     this.setState({ idPlaylist: value });
+    this.props.majIdsPlaylist(this.props.side, value);
   }
 
-  changeIdPlaylist(e) {
-    createCookie("mugenPlVal" + this.props.side, e.target.value, 365);
-    this.setState({ idPlaylist: Number(e.target.value) }, this.getPlaylist);
+  changeIdPlaylist(idPlaylist) {
+    createCookie("mugenPlVal" + this.props.side, idPlaylist, 365);
+    this.setState({ idPlaylist: Number(idPlaylist),data:undefined }, this.getPlaylist);
+    this.props.majIdsPlaylist(this.props.side, idPlaylist);
   }
 
-  changeSearchValue(e) {
-    this.setState({ searchValue: e.target.value });
+  changeFilterValue(e) {
+    this.setState({ filterValue: e.target.value });
     clearTimeout(timer);
     timer = setTimeout(() => {
       this.getPlaylist();
     }, 1000);
+  }
+
+  editNamePlaylist() {
+    window.callModal('prompt', this.props.t('CL_RENAME_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', newName => {
+      axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist, { name: newName, flag_visible: this.props.playlistInfo.flag_public });
+      var playlistInfo = this.state.playlistInfo;
+      playlistInfo.name = newName;
+      this.setState({ playlistInfo: playlistInfo });
+    });
   }
 
   async getPlaylistInfo() {
@@ -181,50 +206,67 @@ class Playlist extends Component {
     this.setState({ playlistInfo: response.data.data });
   }
 
-  getPlaylistUrl() {
+  getPlaylistUrl(idPlaylistParam) {
+    var idPlaylist = idPlaylistParam ? idPlaylistParam : this.state.idPlaylist;
     var url;
-    if (this.state.idPlaylist >= 0) {
+    if (idPlaylist >= 0) {
       url =
         "/api/" +
         this.props.scope +
         "/playlists/" +
-        this.state.idPlaylist +
+        idPlaylist +
         "/karas";
-    } else if (this.state.idPlaylist === -1) {
+    } else if (idPlaylist === -1) {
       url = "/api/public/karas";
-    } else if (this.state.idPlaylist === -2) {
+    } else if (idPlaylist === -2) {
       url = "/api/" + this.props.scope + "/blacklist";
-    } else if (this.state.idPlaylist === -3) {
+    } else if (idPlaylist === -3) {
       url = "/api/" + this.props.scope + "/whitelist";
-    } else if (this.state.idPlaylist === -4) {
+    } else if (idPlaylist === -4) {
       url = "/api/" + this.props.scope + "/blacklist/criterias";
-    } else if (this.state.idPlaylist === -5) {
+    } else if (idPlaylist === -5) {
       url = "/api/public/favorites";
-    } else if (this.state.idPlaylist === -6) {
+    } else if (idPlaylist === -6) {
       url = "/api/public/karas/recent";
     }
     return url;
   }
 
-  async getPlaylist() {
+  async getPlaylist(searchType) {
     var url = this.getPlaylistUrl();
     if (this.state.idPlaylist >= 0) {
       this.getPlaylistInfo();
     }
-    url =
-      url +
+
+    url +=
       "?filter=" +
-      this.state.searchValue +
+      this.state.filterValue + 
       "&from=" +
       (this.state.data && this.state.data.infos.from > 0 ? this.state.data.infos.from : 0) +
-      "&size=400";
+      "&size=" + this.state.maxBeforeUpdate;
+
+      if(searchType) {
+        this.state.searchCriteria = this.state.searchCriteria ?
+          {
+            'year' : 'y',
+            'serie' : 's',
+            'tag' : 't'
+          }[this.state.searchCriteria]
+          : '';
+  
+          url += '&searchType=' + searchType
+          + (this.state.searchCriteria && this.state.searchValue ? '&searchValue=' + this.state.searchCriteria + ':' + this.state.searchValue : '');
+      }
+
     var response = await axios.get(url);
     this.playlistRef.current.scrollTo(0, 1);
     var karas = response.data.data;
-    karas.content = karas.content.map(element => {
-      element.karaRef = React.createRef();
-      return element;
-    });
+    if (karas.content) {
+      karas.content = karas.content.map(element => {
+        element.karaRef = React.createRef();
+        return element;
+      });
+    }
     this.setState({ data: karas });
   }
 
@@ -280,10 +322,10 @@ class Playlist extends Component {
     var content_height = this.outerHeight(document.querySelector('.playlistContainer > ul'))
     var percent = 100 * scroll_by / (content_height - container_height)
 
-    if (this.state.data.infos.count > 400 && (percent === 100 || percent === 0)) {
+    if (this.state.data.infos.count > this.state.maxBeforeUpdate && (percent === 100 || percent === 0)) {
       var data = this.state.data;
-      data.infos.from = percent === 100 ? data.infos.from + 400 : data.infos.from - 400;
-      data.infos.to = percent === 100 ? data.infos.to + 400 : data.infos.to - 400;
+      data.infos.from = percent === 100 ? data.infos.from + this.state.maxBeforeUpdate : data.infos.from - this.state.maxBeforeUpdate;
+      data.infos.to = percent === 100 ? data.infos.to + this.state.maxBeforeUpdate : data.infos.to - this.state.maxBeforeUpdate;
       this.setState({ data: data }, this.getPlaylist);
     }
   }
@@ -301,7 +343,107 @@ class Playlist extends Component {
   }
 
   togglePlaylistCommands() {
-    this.setState({playlistCommands: !this.state.playlistCommands});
+    this.setState({ playlistCommands: !this.state.playlistCommands });
+  }
+
+  selectAllKaras() {
+    var data = this.state.data;
+    this.state.data.content.forEach(kara => kara.checked = !kara.checked);
+    this.setState({ data: data });
+  }
+
+  checkKara(idPlaylistContent) {
+    var data = this.state.data;
+    data.content.forEach(kara => {
+      if (kara.playlistcontent_id === idPlaylistContent) kara.checked = !kara.checked
+    });
+    this.setState({ data: data });
+  }
+
+  addAllKaras() {
+    var karaList = this.state.data.content.map(a => a.kid).join();
+    window.displayMessage('info', 'Info', 'Ajout de ' + this.state.data.content.length + ' karas');
+    axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
+  }
+
+  addCheckedKaras() {
+    var idKara = this.state.data.content.map(a => a.kid).join();
+    var idKaraPlaylist = this.state.data.content.map(a => a.playlistcontent_id).join();
+    var url;
+    var data;
+
+    if (this.state.idPlaylistTo > 0) {
+      url = '/api/' + this.props.scope + '/playlists/' + this.state.idPlaylistTo + '/karas';
+      if (this.state.idPlaylist > 0) {
+        data = { plc_id: idKaraPlaylist };
+        type = 'PATCH';
+      } else {
+        data = { requestedby: this.props.logInfos.username, kid: idKara };
+      }
+    } else if (this.state.idPlaylistTo == -2 || this.state.idPlaylistTo == -4) {
+      url = '/api' + this.props.scope + '/blacklist/criterias';
+      data = { blcriteria_type: 1001, blcriteria_value: idKara };
+    } else if (this.state.idPlaylistTo == -3) {
+      url = '/api/' + this.props.scope + '/whitelist';
+      data = { kid: idKara };
+    }
+    axios.post(url, data);
+  }
+
+  transferCheckedKaras() {
+    this.addCheckedKaras();
+    this.deleteCHeckedKaras();
+  }
+
+  deleteCHeckedKaras() {
+    var idKaraPlaylist = this.state.data.content.map(a => a.playlistcontent_id).join();
+    var url;
+    var data;
+    if (this.props.idPlaylist > 0) {
+      url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/';
+      data = { plc_id: idKaraPlaylist };
+    } else if (this.props.idPlaylist == -3) {
+      url = '/api/ ' + this.props.scope + '/whitelist';
+      data = { wlc_id: idKaraPlaylist }
+    }
+    if (url) {
+      axios.delete(url, data);
+    }
+  }
+
+  handleDragEnd(e) {
+    console.log(this.state.idPlaylistContentMove)
+    console.log(e)
+    console.log(e.currentTarget);
+    var liKara = e.closest('li');
+    var posFromPrev = parseInt(liKara.prev('li').attr('pos')) + 1;
+    var posFromNext = parseInt(liKara.next('li').attr('pos'));
+    posFromPrev = isNaN(posFromPrev) ? posFromNext : posFromPrev;
+
+    if (isNaN(posFromPrev) && !isNaN(this.state.idPlaylistContentMove)) {
+      axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.state.idPlaylistContentMove, { pos: posFromPrev });
+    }
+  }
+
+  handleDragStart(idPlaylistContent) {
+    this.setState({ idPlaylistContentMove: idPlaylistContent });
+  }
+
+  karaSuggestion() {
+    window.callModal('prompt', this.props.t('KARA_SUGGESTION_NAME'), '', function (text) {
+      axios.post('/api/public/karas/suggest', { karaName: text }).then(response => {
+        setTimeout(() => {
+          window.displayMessage('info', this.props.t('KARA_SUGGESTION_INFO'),
+            this.props.t('KARA_SUGGESTION_LINK', response.data.data.issueURL, 'console'), '30000');
+        }, 200);
+      })
+    }, this.state.filterValue);
+  }
+
+  onChangeTags(type, value) {
+    var searchCriteria = (type === 'serie' || type === 'year') ? type : 'tag';
+    this.setState({searchCriteria: searchCriteria, searchValue: value});
+    this.getPlaylist("search");
   }
 
   render() {
@@ -325,12 +467,23 @@ class Playlist extends Component {
             playlistToAddId={this.state.playlistToAddId}
             idPlaylist={this.state.idPlaylist}
             changeIdPlaylist={this.changeIdPlaylist}
-            searchValue={this.state.searchValue}
+            filterValue={this.state.filterValue}
             playlistInfo={this.state.playlistInfo}
-            changeSearchValue={this.changeSearchValue}
+            changeFilterValue={this.changeFilterValue}
             getPlaylistUrl={this.getPlaylistUrl}
-            togglePlaylistCommands = {this.togglePlaylistCommands}
+            togglePlaylistCommands={this.togglePlaylistCommands}
             playlistCommands={this.state.playlistCommands}
+            editNamePlaylist={this.editNamePlaylist}
+            logInfos={this.props.logInfos}
+            idPlaylistTo={this.props.idPlaylistTo}
+            selectAllKaras={this.selectAllKaras}
+            addAllKaras={this.addAllKaras}
+            addCheckedKaras={this.addCheckedKaras}
+            transferCheckedKaras={this.transferCheckedKaras}
+            deleteCHeckedKaras={this.deleteCHeckedKaras}
+            tags={this.props.tags}
+            onChangeTags={this.onChangeTags}
+            getPlaylist={this.getPlaylist}
           />
           <div
             className="playlistContainer"
@@ -338,35 +491,48 @@ class Playlist extends Component {
             ref={this.playlistRef}
           >
             <ul id={"playlist" + this.props.side} className="list-group">
-              {this.state.data &&
-                this.state.data.content.map(kara => {
-                  // build the kara line
-                  return (
-                    //<div ref={kara.karaRef} key={Math.random()}></div>
-                    <KaraLine
-                      key={kara.kid}
-                      kara={kara}
-                      scope={this.props.scope}
-                      idPlaylist={this.state.idPlaylist}
-                      playlistInfo={this.state.playlistInfo}
-                      i18nTag={this.state.data.i18n}
-                      navigatorLanguage={this.props.navigatorLanguage}
-                      playlistToAddId={this.state.playlistToAddId}
-                      side={this.props.side}
-                      mode={this.props.config.Frontend.Mode}
-                      logInfos={this.props.logInfos}
-                      playlistCommands={this.state.playlistCommands}
-                    />
-                  );
-                })}
-              {this.props.config &&
-                this.props.config.Gitlab.Enabled &&
-                this.state.idPlaylist === -1 &&
-                this.state.data.infos.count === this.state.data.infos.from + 400 ? (
-                  <li className="list-group-item karaSuggestion">
-                    {t("KARA_SUGGESTION_MAIL")}
-                  </li>
-                ) : null}
+              {this.state.idPlaylist !== -4 ?
+                <React.Fragment>
+                  {
+                    this.state.data &&
+                    this.state.data.content.map(kara => {
+                      // build the kara line
+                      return (
+                        //<div ref={kara.karaRef} key={Math.random()}></div>
+                        <KaraLine
+                          key={kara.kid}
+                          kara={kara}
+                          scope={this.props.scope}
+                          idPlaylist={this.state.idPlaylist}
+                          playlistInfo={this.state.playlistInfo}
+                          i18nTag={this.state.data.i18n}
+                          navigatorLanguage={this.props.navigatorLanguage}
+                          playlistToAddId={this.state.playlistToAddId}
+                          side={this.props.side}
+                          mode={this.props.config.Frontend.Mode}
+                          logInfos={this.props.logInfos}
+                          playlistCommands={this.state.playlistCommands}
+                          idPlaylistTo={this.props.idPlaylistTo}
+                          checkKara={this.checkKara}
+                          handleDragStart={this.handleDragStart}
+                          handleDragEnd={this.handleDragEnd}
+                        />
+                      );
+                    })
+                  }
+                  {this.props.config &&
+                    this.props.config.Gitlab.Enabled &&
+                    this.state.idPlaylist === -1 &&
+                    this.state.data.infos.count === this.state.data.infos.from + this.state.maxBeforeUpdate ? (
+                      <li className="list-group-item karaSuggestion" onClick={this.karaSuggestion}>
+                        {t("KARA_SUGGESTION_MAIL")}
+                      </li>
+                    ) : null}
+                </React.Fragment> :
+                (this.state.data ? 
+                <BlacklistCriterias data={this.state.data} scope={this.props.scope} tags={this.props.tags} /> : null
+                )
+              }
             </ul>
           </div>
           <div
@@ -397,7 +563,7 @@ class Playlist extends Component {
               </button>
             </div>
             <div className="plInfos">{this.getPlInfosElement()}</div>
-            {this.props.side === 1 && this.state.quotaString ? 
+            {this.props.side === 1 && this.state.quotaString ?
               <div id="plQuota" className="plQuota right">
                 {this.props.t('QUOTA')}{this.state.quotaString}
               </div> : null

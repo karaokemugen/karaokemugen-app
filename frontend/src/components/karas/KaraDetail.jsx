@@ -317,11 +317,9 @@ class KaraDetail extends Component {
                 ) : null}
                 {this.props.scope === "admin" && this.props.publicOuCurrent ? (
                   <button
-                    title={t("TOOLTIP_UPVOTE")}
-                    className={
-                      data.flag_free
-                        ? "free btn-primary"
-                        : "" + " likeFreeButton btn btn-action"
+                    title={t("TOOLTIP_UPVOTE")} onClick={this.props.freeKara}
+                    className={"likeFreeButton btn btn-action " + 
+                      (data.flag_free ? "free btn-primary": "")
                     }
                   />
                 ) : null}

@@ -10,6 +10,8 @@ import LoginModal from "./modals/LoginModal";
 import ProfilModal from "./modals/ProfilModal";
 import RadioButton from "./RadioButton.jsx";
 import axios from "axios";
+import ProgressBar from "./karas/ProgressBar";
+import {buildKaraTitle} from './toolsReact';
 
 class PublicPage extends Component {
   constructor(props) {
@@ -22,15 +24,27 @@ class PublicPage extends Component {
       helpModal: false,
       lyrics: true,
       restrictedHelpModal: this.props.settings.config.Frontend.Mode === 1,
-      searchValue: "",
+      filterValue: "",
       pseudoValue: "",
-      mobileMenu: false
+      mobileMenu: false,
+      idsPlaylist: {left: '', right: ''}
     };
     this.openLoginOrProfileModal = this.openLoginOrProfileModal.bind(this);
     this.toggleHelpModal = this.toggleHelpModal.bind(this);
     this.setLyrics = this.setLyrics.bind(this);
     this.getLucky = this.getLucky.bind(this);
     this.changePseudo = this.changePseudo.bind(this);
+    this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
+  }
+
+  majIdsPlaylist(side, value) {
+    var idsPlaylist = this.state.idsPlaylist;
+    if(side === 1) {
+      idsPlaylist.left = Number(value);
+    } else {
+      idsPlaylist.right = Number(value);
+    }
+    this.setState({idsPlaylist : idsPlaylist})
   }
 
   async componentDidMount() {
@@ -60,11 +74,11 @@ class PublicPage extends Component {
 
   // pick a random kara & add it after (not) asking user's confirmation
   getLucky() {
-    axios.get('/api/public/karas?filter=' + this.state.searchValue+'&random=1').then(response => {
+    axios.get('/api/public/karas?filter=' + this.state.filterValue+'&random=1').then(response => {
       if (response.data.data && response.data.data.content && response.data.data.content[0]) {
         var chosenOne = response.data.data.content[0].kid;
         axios.get('/api/public/karas/' + chosenOne).then(response2 => {
-          window.displayModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD',{title: window.buildKaraTitle(response2.data.data)}), () => {
+          window.displayModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
             axios.post('/api/public/karas/' + chosenOne, { requestedby: this.props.logInfos.username })
           }, 'lucky');
         })
@@ -76,6 +90,13 @@ class PublicPage extends Component {
     axios.put('/api/public/myaccount', { nickname : e.target.value }).then(response => {
       this.setState({pseudoValue: response.data.nickname});
     });
+  }
+
+  stopVideo() {
+    var video = $('#video');
+    $('.overlay').hide();
+    video[0].pause();
+    video.removeAttr('src');
   }
 
   render() {
@@ -106,10 +127,7 @@ class PublicPage extends Component {
             {this.state.helpModal ?
               <HelpModal /> : null
             }
-            <div id="progressBar" className="underHeader">
-              <div id="karaInfo" idkara="-1" onDragStart={() => { return false }} draggable="false"><span>{t("KARA_PAUSED_WAITING")}</span></div>
-              <div id="progressBarColor" className="cssTransform"></div>
-            </div>
+            <ProgressBar />
             {this.props.settings.config.Frontend.Mode === 2 ?
               <React.Fragment>
                 <div id="header" className="header">
@@ -120,10 +138,10 @@ class PublicPage extends Component {
 
                     <div className="plSearch" id="searchParent" style={{ width: (this.props.logInfos.role != 'guest' ? "" : "100%") }}>
                       <input type="text" className="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist"
-                        value={this.state.searchValue} onChange={(e) => this.setState({ searchValue: e.target.value })}
+                        value={this.state.filterValue} onChange={(e) => this.setState({ filterValue: e.target.value })}
                         onKeyPress={e => {
                           if (e.which == 13) {
-                            this.setState({ searchValue: e.target.value });
+                            this.setState({ filterValue: e.target.value });
                           }
                         }} />
                     </div>
@@ -184,11 +202,13 @@ class PublicPage extends Component {
               <div className="playlist-main row" id="playlist">
                 <div className={"panel col-msm-12 col-sm-12 col-xs-12"
                   + (this.props.settings.config.Frontend.Mode === 1 ? "col-lg-4 col-md-5" : "col-lg-8 col-md-7")} id="panel1" side={"1"}>
-                  <Playlist scope='public' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config} />
+                  <Playlist scope='public' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config} 
+                    idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
                 </div>
                 <div className={"panel col-msm-12 col-sm-12 col-xs-12"
                   + (this.props.settings.config.Frontend.Mode === 1 ? "col-lg-8 col-md-7" : "col-lg-4 col-md-5")} id="panel2" side="2">
-                  <Playlist scope='public' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config} />
+                  <Playlist scope='public' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config} 
+                    idPlaylistTo={this.state.idsPlaylist.left} majIdsPlaylist={this.majIdsPlaylist} />
                 </div>
               </div>
             </div>
@@ -229,7 +249,7 @@ class PublicPage extends Component {
                 </ul> : null
               }
             </div>
-            <div className="overlay">
+            <div className="overlay" onClick={this.stopVideo}>
               <video id="video" type="video/mp4" autoPlay>
               </video>
             </div>
