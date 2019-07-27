@@ -6,6 +6,7 @@ import AdminHeader from "./AdminHeader"
 import Options from "./options/Options"
 import ProfilModal from "./modals/ProfilModal"
 import LoginModal from "./modals/LoginModal"
+import ProgressBar from "./karas/ProgressBar";
 
 class AdminPage extends Component {
   constructor(props) {
@@ -14,8 +15,27 @@ class AdminPage extends Component {
       options: false,
       loginModal: !this.props.logInfos.token || this.props.logInfos.role !== 'admin',
       profileModal: false,
-      onlineStatsModal: this.props.settings.config.Online.Stats === undefined
+      onlineStatsModal: this.props.settings.config.Online.Stats === undefined,
+      idsPlaylist: {left: '', right: ''}
     };
+    this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
+  }
+
+  majIdsPlaylist(side, value) {
+    var idsPlaylist = this.state.idsPlaylist;
+    if(side === 1) {
+      idsPlaylist.left = value;
+    } else {
+      idsPlaylist.right = value;
+    }
+    this.setState({idsPlaylist : idsPlaylist})
+  }
+
+  stopVideo() {
+    var video = $('#video');
+    $('.overlay').hide();
+    video[0].pause();
+    video.removeAttr('src');
   }
 
   render() {
@@ -36,19 +56,18 @@ class AdminPage extends Component {
         <AdminHeader config={this.props.settings.config} toggleProfileModal={() => this.setState({ profileModal: !this.state.profileModal })}
           callModal={window.callModal} setOptionMode={() => this.setState({ options: !this.state.options })} powerOff={this.props.powerOff}
           logOut={this.props.logOut}/>
-        <div id="progressBar" className="underHeader">
-          <div id="karaInfo" idkara="-1" onDragStart={() => { return false }} draggable="false"><span>{t("KARA_PAUSED_WAITING")}</span></div>
-          <div id="progressBarColor" className="cssTransform"></div>
-        </div>
+        <ProgressBar />
         <div id="underHeader" className="underHeader container-fluid">
           {!this.state.options ?
             <div className="playlist-main row" id="playlist">
               <div className="panel col-lg-6 col-xs-6" id="panel1" side="1">
-                <Playlist scope='admin' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config} />
+                <Playlist scope='admin' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
+                  idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
               </div>
 
               <div className="panel col-lg-6 col-xs-6" id="panel2" side="2">
-                <Playlist scope='admin' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config} />
+                <Playlist scope='admin' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
+                  idPlaylistTo={this.state.idsPlaylist.left} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
               </div>
             </div> : null
           }
@@ -60,7 +79,7 @@ class AdminPage extends Component {
 
           <div className="toastMessageContainer"></div>
         </div>
-        <div className="overlay">
+        <div className="overlay" onClick={this.stopVideo}>
           <video id="video" src="" type="video/mp4" autoPlay>
           </video>
         </div>

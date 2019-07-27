@@ -3,6 +3,8 @@ import { withTranslation } from "react-i18next";
 import { is_touch_device } from "../toolsReact";
 import KaraDetail from "./KaraDetail";
 import axios from "axios";
+import ActionsButtons from "./ActionsButtons";
+import {buildKaraTitle} from '../toolsReact';
 
 class KaraLine extends Component {
   constructor(props) {
@@ -13,7 +15,6 @@ class KaraLine extends Component {
       isLike: this.props.kara.flag_upvoted,
       startSwipeX: 0
     };
-    this.getActionsDiv = this.getActionsDiv.bind(this);
     this.toggleKaraDetail = this.toggleKaraDetail.bind(this);
     this.makeFavorite = this.makeFavorite.bind(this);
     this.getTagInLocale = this.getTagInLocale.bind(this);
@@ -23,10 +24,8 @@ class KaraLine extends Component {
     this.deleteKara = this.deleteKara.bind(this);
     this.likeKara = this.likeKara.bind(this);
     this.addKara = this.addKara.bind(this);
-  }
-
-  addKara() {
-    axios.post('/api/public/karas/' + this.props.kara.kid, { requestedby: this.props.logInfos.token ? this.props.logInfos.username : '' });
+    this.transferKara = this.transferKara.bind(this);
+    this.freeKara = this.freeKara.bind(this);
   }
 
   handleSwipe(e) {
@@ -45,27 +44,6 @@ class KaraLine extends Component {
 
   handleStart(e) {
     this.setState({ startSwipeX: e.changedTouches[0].clientX });
-  }
-
-  getActionsDiv() {
-    var addKaraButton = (<button title={this.props.t('TOOLTIP_ADDKARA') + (this.props.scope == 'admin' ? ' - ' + this.props.t('TOOLTIP_ADDKARA_ADMIN') : '')}
-      name="addKara" className="btn btn-sm btn-action" onClick={this.addKara} ></button>);
-    if (this.props.scope === 'admin' && (this.props.idPlaylist >= 0 || this.props.idPlaylist === -3)) {
-      // Admin et playlist standard ou Whitelist
-      return <React.Fragment>
-        <button title={this.props.t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}></button>
-        {addKaraButton}
-        <button title={this.props.t('TOOLTIP_TRANSFERKARA')} name="transferKara" className="btn btn-sm btn-action"></button>
-      </React.Fragment>
-    } else if (this.props.idPlaylist === -4) {
-      // blacklist criterias
-      return <button title={this.props.t('TOOLTIP_DELETECRITERIA')} name="deleteCriteria" className="btn btn-action deleteCriteria"></button>
-    } else if (this.props.idPlaylist === -1 || this.props.idPlaylist === -5 || this.props.idPlaylist === -6) {
-      // Kara List, Kara list recent ou Favorites
-      return addKaraButton;
-    }
-    // Blacklist
-    return null;
   }
 
   toggleKaraDetail() {
@@ -98,9 +76,22 @@ class KaraLine extends Component {
     axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/', {data:{plc_id:String(this.props.kara.playlistcontent_id)}});
   }
 
-  
   playKara() {
     axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_playing: true });
+  }
+
+  addKara() {
+    axios.post('/api/public/karas/' + this.props.kara.kid, { requestedby: this.props.logInfos.token ? this.props.logInfos.username : '' });
+  }
+
+  transferKara() {
+    this.addKara();
+  }
+
+  freeKara() {
+    if(this.props.scope === 'admin') {
+      axios.put('/api/ ' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + kara.playlistcontent_id, { flag_free: true });
+    }
   }
 
   render() {
@@ -111,15 +102,24 @@ class KaraLine extends Component {
     var flagPublic = this.props.flagPublic
     return (
       <li className={"list-group-item " + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu' : '')} idkara={kara.kid}
-        onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}
-        {...(idPlaylist === -3 ? { idwhitelist: kara.whitelist_id } : {})}
-        {...(idPlaylist > 0 || idPlaylist == -5 ? { idplaylistcontent: kara.playlistcontent_id, pos: kara.pos } : {})}>
+        onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
         {is_touch_device() && scope !== 'admin' ? null :
-          <div className="actionDiv"> {this.getActionsDiv()}
-            {is_touch_device() && scope == 'admin' && idPlaylist > 0 ? <span className="dragHandle"><i className="glyphicon glyphicon-option-vertical"></i></span> : null}
+          <div className="actionDiv"> {this.props.idPlaylistTo !== this.props.idPlaylist ? 
+            <ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist} 
+              scope={this.props.scope} playlistToAddId={this.props.playlistToAddId}
+              addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} /> : null}
+            {!is_touch_device() && scope == 'admin' && idPlaylist > 0 ? 
+              <span className="dragHandle" draggable onDragStart={() => this.props.handleDragStart(kara.playlistcontent_id)}
+                  onDragOver={(e) => {
+                  console.log(e)
+                  this.props.handleDragEnd(e)}}>
+                <i className="glyphicon glyphicon-option-vertical"></i>
+              </span> : null}
           </div>
         }
-        {scope == 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ? <span name="checkboxKara"></span> : null}
+        {scope == 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ? 
+          <span name="checkboxKara" className={kara.checked ? 'checked' : 'notchecked'} 
+            onClick={() => this.props.checkKara(kara.playlistcontent_id)}></span> : null}
         <div className="infoDiv">
           {scope === 'admin' || !is_touch_device() ? <button title={t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
             style={this.state.karaDetailState ? { borderColor: '#8aa9af' } : {}} onClick={this.toggleKaraDetail}
@@ -130,13 +130,15 @@ class KaraLine extends Component {
                 + (is_touch_device() ? 'mobile' : '')
                 + (kara.flag_favorites || idPlaylist === -5 ? 'currentFav' : '')}>
             </button> : null}
-          {scope === 'admin' && idPlaylist > 0 ? <button title={t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara" onClick={this.playKara}></button> : null}
-          {scope !== 'admin' && flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? 'currentLike' : ''} onClick={this.likeKara}></button> : null}
+          {scope === 'admin' && idPlaylist > 0 ? <button title={t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara" 
+            onClick={this.playKara}></button> : null}
+          {scope !== 'admin' && flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? 'currentLike' : ''} 
+            onClick={this.likeKara}></button> : null}
           {scope !== 'admin' && kara.username == this.props.logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
             <button title={t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}></button> : null}
         </div>
         <div className="contentDiv">
-          <div>{window.buildKaraTitle(kara)}</div>
+          <div>{buildKaraTitle(kara)}</div>
           <div>
             {kara.families && kara.families.map(tag => {
               return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
@@ -154,15 +156,18 @@ class KaraLine extends Component {
               return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
             })}
             {kara.upvotes ?
-              <div className="tag likeCount" title={t('TOOLTIP_UPVOTE')}>{kara.upvotes}<i className="glyphicon glyphicon-heart"></i></div> : null
+              <div className="tag likeCount" title={t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
+                {kara.upvotes}<i className="glyphicon glyphicon-heart"></i>
+              </div> : null
             }
           </div>
         </div>
         {this.state.karaDetailState ?
           <KaraDetail kara={this.props.kara} scope={this.props.scope} idPlaylist={this.props.idPlaylist} mode='list'
-            publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)} toggleKaraDetail={this.toggleKaraDetail}
-            karaDetailState={this.state.karaDetailState} makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite}
-            getTagInLocale={this.getTagInLocale} logInfos={this.props.logInfos}></KaraDetail> : null
+            publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)} 
+            toggleKaraDetail={this.toggleKaraDetail} karaDetailState={this.state.karaDetailState} 
+            makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite}
+            getTagInLocale={this.getTagInLocale} logInfos={this.props.logInfos} freeKara={this.freeKara}></KaraDetail> : null
         }
       </li>)
   }

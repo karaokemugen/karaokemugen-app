@@ -529,7 +529,7 @@ button.closeParent.bottom  {
 	background-color: rgba(57, 57, 57, .7)
 }
 
-.playlistContainer[flipped]:after {
+.playlistContainer:after {
     content : "";
     display: block;
     position: absolute;
@@ -544,17 +544,13 @@ button.closeParent.bottom  {
 	z-index: 0;
 	filter: grayscale(70%);
 }
-.playlistContainer[flipped="true"]:after {
+#panel2 > .playlistContainer:after {
 	-moz-transform: scaleX(-1);
     -o-transform: scaleX(-1);
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
     filter: FlipH;
     -ms-filter: "FlipH";
-}
-.playlistContainer[noGreyFace]:after {
-	filter: grayscale(18%);
-    opacity : 0.38;
 }
 
 .playlistContainer > ul {
@@ -706,13 +702,6 @@ button.closePopupParent {
 }
 .input-lg {
 	padding-top: 15px;
-}
-
-.flipped {
-    transform: scaleX(-1);
-    -moz-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    -ms-transform: scaleX(-1);
 }
 
 #video {
@@ -1668,7 +1657,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 		width: 100% !important;
 	}
 
-	.playlistContainer[flipped]:after {
+	.playlistContainer:after {
 		background: url(../assets/nanami_g_980w.jpg) no-repeat;
 		background-size: 100%;
 		background-position: 0 20%;

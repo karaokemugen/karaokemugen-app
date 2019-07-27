@@ -3,7 +3,6 @@
 
 @import './vendors/bootstrap3/css/bootstrap.css';
 
-@import './vendors/jquery-ui.min.css';
 @import './styles/karaokemugen.scss';
 @import './styles/admin.scss';
 @import './styles/main.scss';

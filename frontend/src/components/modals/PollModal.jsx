@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import axios from 'axios';
+import {buildKaraTitle} from '../toolsReact';
 
 class PollModal extends Component {
     constructor(props) {
@@ -52,7 +53,7 @@ class PollModal extends Component {
                                                         + Math.floor(Math.random() * 256)
                                                         + ',20%, 26%)'
                                                 }}>
-                                                {window.buildKaraTitle(kara)}
+                                                {buildKaraTitle(kara)}
                                             </button>
                                         })}
                                     </div>

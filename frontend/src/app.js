@@ -17,7 +17,6 @@ import './components/oldTools';
 class App extends Component {
     constructor(props) {
         super(props);
-        window.translation = this.props.t;
         window.socket = io();
         window.callModal = this.callModal;
         this.state = {
@@ -70,10 +69,35 @@ class App extends Component {
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     }
 
+    async parseTags() {
+        const response = await axios.get('/api/public/tags');
+		return response.data.data.content.map(val => {
+            var trad = val.i18n[this.state.navigatorLanguage];
+            return {id:val.tid, text: trad ? trad : val.name, type: val.types, karacount: val.karacount};
+        });
+    }
+
+    async parseSeries() {
+        const response = await axios.get('/api/public/series');
+		return response.data.data.content.map(val => {
+            return {id:val.sid, text: val.i18n_name, type: ['serie'],
+                aliases : val.aliases, karacount : val.karacount};
+        });
+    }
+
+    async parseYears() {
+        const response = await axios.get('/api/public/years');
+        return response.data.data.content.map(val =>{
+            return {id:val.year, text: val.year, type: ['year'], karacount: val.karacount};
+        });
+    }
+
     async componentDidMount() {
         this.getSettings();
         window.socket.on('settingsUpdated', this.getSettings);
         window.socket.on('connect', () => this.setState({ shutdownPopup: false }));
+        const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
+        this.setState({tags: tags.concat(series, years)});
     }
 
     async getSettings() {
@@ -126,10 +150,10 @@ class App extends Component {
                             admpwd={this.state.admpwd} updateLogInfos={this.updateLogInfos} logOut={this.logOut} />} />
                         <Route path="/admin" render={(props) => <AdminPage {...props}
                             navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
-                            updateLogInfos={this.updateLogInfos} powerOff={this.powerOff}logOut={this.logOut} />} />
+                            updateLogInfos={this.updateLogInfos} powerOff={this.powerOff}logOut={this.logOut} tags={this.state.tags} />} />
                         <Route exact path="/" render={(props) => <PublicPage {...props}
                             navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
-                            updateLogInfos={this.updateLogInfos} logOut={this.logOut} />} />
+                            updateLogInfos={this.updateLogInfos} logOut={this.logOut} tags={this.state.tags} />} />
                         <Route component={NotFoundPage} />
                     </Switch> : null
         )
