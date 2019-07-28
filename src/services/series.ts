@@ -30,7 +30,7 @@ export async function getOrAddSerieID(serieObj: Series): Promise<string> {
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) return serie.sid;
 	//Series does not exist, create it.
-	return await addSerie(serieObj);
+	return await addSerie(serieObj, {refresh: false});
 }
 
 
