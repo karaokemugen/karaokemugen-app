@@ -258,7 +258,7 @@ class AdminHeader extends Component {
             <button
               title={t("PLAY_PAUSE")}
               id="status"
-              namecommand="play"
+              namecommand={this.state.statusPlayer.status === "play" ? "pause" : "play"}
               className="btn btn-primary"
               onClick={this.putPlayerCommando}
             >
