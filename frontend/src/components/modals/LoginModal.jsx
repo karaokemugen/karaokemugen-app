@@ -37,23 +37,22 @@ class LoginModal extends Component {
             url = '/api/admin/users/login';
         }
 
-        await axios.post(url, data).then(result => {
-            var response = result.data;
-            this.props.toggleLoginModal();
-            if (this.props.scope === 'admin' && response.role !== 'admin') {
-                window.displayMessage('warning', '', this.props.t('ADMIN_PLEASE'));
-            }
-            this.props.updateLogInfos(response);
-            window.displayMessage('info', '', this.props.t('LOG_SUCCESS', username));
+        var result = await axios.post(url, data);
+        var response = result.data;
+        this.props.toggleLoginModal();
+        if (this.props.scope === 'admin' && response.role !== 'admin') {
+            window.displayMessage('warning', '', this.props.t('ADMIN_PLEASE'));
+        }
+        this.props.updateLogInfos(response);
+        window.displayMessage('info', '', this.props.t('LOG_SUCCESS', username));
 
-            if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
-                this.props.toggleHelpModal();
-            }
-            if (this.props.admpwd && this.props.config.App.FirstRun) {
-                startIntro('admin');
-                axios.put('/api/admin/settings', JSON.stringify({ 'setting': { 'Karaoke': { 'Private': true } } }));
-            }
-        });
+        if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
+            this.props.toggleHelpModal();
+        }
+        if (this.props.admpwd && this.props.config.App.FirstRun) {
+            startIntro('admin');
+            axios.put('/api/admin/settings', JSON.stringify({ 'setting': { 'Karaoke': { 'Private': true } } }));
+        }
     };
 
     loginGuest() {

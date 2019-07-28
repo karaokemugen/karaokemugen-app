@@ -92,19 +92,18 @@ class PlaylistHeader extends Component {
     );
   }
 
-  exportPlaylist() {
+  async exportPlaylist() {
     var url = idPlaylist === -5 ? '/api/public/favorites' : '/api' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export'
-    axios.get(url).then(data => {
-      var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 4));
-      var dlAnchorElem = document.getElementById('downloadAnchorElem');
-      dlAnchorElem.setAttribute('href', dataStr);
-      if (idPlaylist === -5) {
-        dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.props.logInfos.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
-      } else {
-        dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.playlistInfo.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
-      }
-      dlAnchorElem.click();
-    });
+    var response = await axios.get(url);
+    var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
+    var dlAnchorElem = document.getElementById('downloadAnchorElem');
+    dlAnchorElem.setAttribute('href', dataStr);
+    if (idPlaylist === -5) {
+      dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.props.logInfos.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+    } else {
+      dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.playlistInfo.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+    }
+    dlAnchorElem.click();
   }
 
   importPlaylist() {
@@ -126,12 +125,12 @@ class PlaylistHeader extends Component {
           name = JSON.parse(fr.result).PlaylistInformation.name;
         }
         axios.post(url, data).then(response => {
-          window.displayMessage('success', 'Playlist importée' + ' : ', name);
+        window.displayMessage('success', 'Playlist importée' + ' : ', name);
           if (response.unknownKaras && response.unknownKaras.length > 0) {
             window.displayMessage('warning', 'Karas inconnus' + ' : ', response.unknownKaras);
-          }
+        }
           var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
-          this.props.changeIdPlaylist(playlist_id);
+        this.props.changeIdPlaylist(playlist_id);
         });
       };
       fr.readAsText(file);

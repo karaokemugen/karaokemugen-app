@@ -23,10 +23,9 @@ class KaraDetail extends Component {
     var urlInfoKara = this.props.idPlaylist > 0 ?
       '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id :
       '/api/public/karas/' + this.props.kara.kid;
-    await axios.get(urlInfoKara).then(response => {
-      const kara = response.data.data;
-      this.setState({ kara: kara });
-    })
+    var response = await axios.get(urlInfoKara);
+    const kara = response.data.data;
+    this.setState({ kara: kara });
   }
 
   getLastPlayed(lastPlayed_at, lastPlayed) {
@@ -146,17 +145,14 @@ class KaraDetail extends Component {
    * show full lyrics of a given kara
    */
 
-  showFullLyrics() {
-    axios
-      .get("/api/public/karas/" + this.props.data.kid + "/lyrics")
-      .then(response => {
-        if (is_touch_device()) {
-          window.callModal('alert', this.props.t('LYRICS'), '<center>' + response.data.data.join('<br/>') + '</center');
-        } else {
-          this.setState({ lyrics: response.data.data, showLyrics:true });
-          this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-      });
+  async showFullLyrics() {
+    var response = await axios.get("/api/public/karas/" + this.props.data.kid + "/lyrics");
+    if (is_touch_device()) {
+      window.callModal('alert', this.props.t('LYRICS'), '<center>' + response.data.data.join('<br/>') + '</center');
+    } else {
+      this.setState({ lyrics: response.data.data, showLyrics:true });
+      this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }
 
   getTagNames(data) {

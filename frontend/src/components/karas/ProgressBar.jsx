@@ -57,7 +57,7 @@ class ProgressBar extends Component {
         window.socket.on('playerStatus', this.refreshPlayerInfos);
     }
 
-    goToPosition(e) {
+    async goToPosition(e) {
         var karaInfo = $('#karaInfo');
         var songLength = karaInfo.attr('length');
         var barInnerwidth = karaInfo.innerWidth();
@@ -68,9 +68,8 @@ class ProgressBar extends Component {
             $('#progressBarColor').removeClass('cssTransform')
                 .css('transform', 'translateX(' + e.pageX + 'px)')
                 .addClass('');
-            axios.put('/api/admin/player', { command: 'goTo', options: futurTimeSec }).then(() => {
-                $('#progressBarColor').addClass('cssTransform');
-            });
+            await axios.put('/api/admin/player', { command: 'goTo', options: futurTimeSec });
+            $('#progressBarColor').addClass('cssTransform');
         }
     }
 
@@ -83,7 +82,7 @@ class ProgressBar extends Component {
     /**
     * refresh the player infos
     */
-    refreshPlayerInfos(data) {
+    async refreshPlayerInfos(data) {
         if (this.state.oldState != data) {
             var newWidth = $('#karaInfo').width() * 
                 parseInt(10000 * (data.timePosition + this.state.refreshTime / 1000) / $('#karaInfo').attr('length')) / 10000 + 'px';
@@ -133,13 +132,12 @@ class ProgressBar extends Component {
                     $('#karaInfo > span').data('text', this.props.t('JINGLE_TIME'));
 
                 } else {
-                    axios.get('/api/public/karas/' + data.currentlyPlaying).then(response => {
-                        var kara = response.data.data;
-                        $('#karaInfo').attr('idKara', kara.kid);
-                        $('#karaInfo').attr('length', kara.duration);
-                        $('#karaInfo > span').text(buildKaraTitle(kara));
-                        $('#karaInfo > span').data('text', buildKaraTitle(kara));
-                    });
+                    var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
+                    var kara = response.data.data;
+                    $('#karaInfo').attr('idKara', kara.kid);
+                    $('#karaInfo').attr('length', kara.duration);
+                    $('#karaInfo > span').text(buildKaraTitle(kara));
+                    $('#karaInfo > span').data('text', buildKaraTitle(kara));
                 }
             }
             this.setState({oldState: data});

@@ -73,23 +73,20 @@ class PublicPage extends Component {
   }
 
   // pick a random kara & add it after (not) asking user's confirmation
-  getLucky() {
-    axios.get('/api/public/karas?filter=' + this.state.filterValue+'&random=1').then(response => {
-      if (response.data.data && response.data.data.content && response.data.data.content[0]) {
-        var chosenOne = response.data.data.content[0].kid;
-        axios.get('/api/public/karas/' + chosenOne).then(response2 => {
-          window.callModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
-            axios.post('/api/public/karas/' + chosenOne, { requestedby: this.props.logInfos.username })
-          }, 'lucky');
-        })
-      }
-    });
+  async getLucky() {
+    var response = await axios.get('/api/public/karas?filter=' + this.state.filterValue+'&random=1');
+    if (response.data.data && response.data.data.content && response.data.data.content[0]) {
+      var chosenOne = response.data.data.content[0].kid;
+      var response2 = await axios.get('/api/public/karas/' + chosenOne);
+      window.callModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
+        axios.post('/api/public/karas/' + chosenOne, { requestedby: this.props.logInfos.username })
+      }, 'lucky');
+    }
   }
 
-  changePseudo(e) {
-    axios.put('/api/public/myaccount', { nickname : e.target.value }).then(response => {
-      this.setState({pseudoValue: response.data.nickname});
-    });
+  async changePseudo(e) {
+    var response = await axios.put('/api/public/myaccount', { nickname : e.target.value });
+    this.setState({pseudoValue: response.data.nickname});
   }
 
   stopVideo() {

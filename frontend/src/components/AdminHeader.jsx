@@ -200,12 +200,12 @@ class AdminHeader extends Component {
               buttons={[
                 {
                   label:t("CL_PLAYLISTS"),
-                  active:!this.state.options,
+                  active:!this.props.options,
                   onClick:this.props.setOptionMode,
                 },
                 {
                   label:t("OPTIONS"),
-                  active:this.state.options,
+                  active:this.props.options,
                   onClick:this.props.setOptionMode,
                   
                 }
