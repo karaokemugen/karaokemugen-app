@@ -25,7 +25,7 @@ class RestrictedHelpModal extends Component {
                                     {t("CL_HELP_PUBLIC_MOBILE_RESTRICTED_DESCRIPTION")}
                                 </div>
                                 <div className="modal-message">
-                                    <button data-dismiss="modal" className="btn btn-default confirm">
+                                    <button className="btn btn-default confirm">
                                         <i className="glyphicon glyphicon-ok"></i>
                                     </button>
                                 </div>

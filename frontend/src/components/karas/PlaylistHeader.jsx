@@ -282,12 +282,12 @@ class PlaylistHeader extends Component {
                 <select id={"selectPlaylist" + this.props.side} side={this.props.side} type="playlist_select" className="form-control"
                   value={this.props.idPlaylist} onChange={(e) => this.props.changeIdPlaylist(e.target.value)}>
                   {(this.props.scope === 'public' && this.props.side === 1 && this.props.mode === 1) ?
-                    <option value={this.props.playlistToAddId} data-playlist_id={this.props.playlistToAddId}></option> :
+                    <option value={this.props.playlistToAddId} ></option> :
                     this.props.scope === 'public' && this.props.side === 1 ? (
                       <React.Fragment>
-                        <option value="-1" data-playlist_id="-1"></option>
-                        <option value="-6" data-playlist_id="-6"></option>
-                        <option value="-5" data-playlist_id="-5"></option>
+                        <option value="-1"></option>
+                        <option value="-6"></option>
+                        <option value="-5"></option>
                       </React.Fragment>) :
                       this.props.playlistList && this.props.playlistList.map(playlist => {
                         return <option key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}</option>;

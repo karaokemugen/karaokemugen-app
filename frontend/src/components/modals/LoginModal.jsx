@@ -118,7 +118,7 @@ class LoginModal extends Component {
                                 <a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">{this.props.scope === 'admin' ? 'Login admin' : t("LOGIN")}</a>
                             </li>
                             <li className="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {t("NEW_ACCOUNT")}</a></li>
-                            <button className="closeModal btn btn-action" data-dismiss="modal" aria-label="Close" onClick={this.props.toggleLoginModal}></button>
+                            <button className="closeModal btn btn-action" aria-label="Close" onClick={this.props.toggleLoginModal}></button>
                         </ul>
                         <div className="tab-content" id="nav-tabContent">
                             <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" className="modal-body tab-pane fade in active">
@@ -159,7 +159,7 @@ class LoginModal extends Component {
                                 </div>
                                 <div className="loginRelated"></div>
                                 <div className="loginRelated">
-                                    <button type="button" className="btn btn-default login" data-dismiss="xxxmodalxxx" onClick={this.loginUser}>
+                                    <button type="button" className="btn btn-default login" onClick={this.loginUser}>
                                         <i className="glyphicon glyphicon-ok"></i>
                                     </button>
                                 </div>
@@ -186,7 +186,7 @@ class LoginModal extends Component {
                                     }
                                 </div>
                                 <div>
-                                    <button id="signup" type="button" className="btn btn-default login" data-dismiss="xxxmodalxxx" onClick={this.signup}>
+                                    <button id="signup" type="button" className="btn btn-default login" onClick={this.signup}>
                                         {t("SIGN_UP")}
                                     </button>
                                 </div>

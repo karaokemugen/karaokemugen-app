@@ -155,7 +155,7 @@ class ProfilModal extends Component {
                                 <li className="modal-title"><a data-toggle="tab" href="#nav-lang" role="tab" aria-controls="nav-lang" aria-selected="false"> {t("LANGUAGE")}</a></li> : null
                             }
                             <li className="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab" aria-controls="nav-userlist" aria-selected="false"> {t("USERLIST")}</a></li>
-                            <button className="closeModal btn btn-action" data-dismiss="modal" aria-label="Close" onClick={this.props.toggleProfileModal}></button>
+                            <button className="closeModal btn btn-action" aria-label="Close" onClick={this.props.toggleProfileModal}></button>
                         </ul>
                         <div className="tab-content" id="nav-tabContent">
                             <div id="nav-profil" role="tabpanel" aria-labelledby="nav-profil-tab" className="modal-body tab-pane fade in active">

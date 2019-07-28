@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
-import { expand, eraseCookie } from "./toolsReact";
+import { expand } from "./toolsReact";
 import axios from "axios";
 import RadioButton from "./RadioButton.jsx";
 
@@ -8,7 +8,7 @@ class AdminHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      privateMode: this.props.config.Karaoke.Private,
+      privateMode: Boolean(this.props.config.Karaoke.Private),
       statusPlayer: {}
     };
     this.saveMode = this.saveMode.bind(this);
@@ -24,10 +24,6 @@ class AdminHeader extends Component {
   }
 
   async saveMode(mode) {
-    // mode have to be a boolean [true,false]
-    if(typeof mode =='object') // if we receive an event => toggle current state
-      mode = !this.state.privateMode;
-
     var data = expand("Karaoke.Private", mode);
     this.setState({ privateMode: mode });
     await axios.put("/api/admin/settings", { setting: JSON.stringify(data) });

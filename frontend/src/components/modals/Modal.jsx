@@ -71,11 +71,11 @@ class Modal extends Component {
 						}
 						<div className="modal-footer">
 							{this.props.type === 'confirm' || this.props.type === 'prompt' ?
-								<button type="button" className="btn btn-action btn-primary other" data-dismiss="modal" onClick={this.abortModal}>
+								<button type="button" className="btn btn-action btn-primary other" onClick={this.abortModal}>
 									<i className="glyphicon glyphicon-remove"></i>
 								</button> : null
 							}
-							<button type="button" className="btn btn-action btn-default ok" data-dismiss="modal" onClick={this.confirmModal}>
+							<button type="button" className="btn btn-action btn-default ok" onClick={this.confirmModal}>
 								<i className="glyphicon glyphicon-ok"></i>
 							</button>
 						</div>

@@ -37,7 +37,7 @@ class PollModal extends Component {
                                     <a data-toggle="tab" href="#nav-poll" role="tab" aria-controls="nav-poll" aria-selected="true" style={{ fontWeight: 'bold' }}>
                                         {t("POLLTITLE")}</a>
                                 </li>
-                                <button className="closeModal btn btn-action" data-dismiss="modal" aria-label="Close" onClick={this.props.closePollModal}></button>
+                                <button className="closeModal btn btn-action" aria-label="Close" onClick={this.props.closePollModal}></button>
                                 <span className="timer"></span>
 
                             </ul>
