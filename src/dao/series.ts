@@ -50,7 +50,7 @@ export async function selectSerieByName(name: string): Promise<DBSeries> {
 export async function insertSerie(serieObj: Series) {
 	await db().query(yesql(sql.insertSerie)({
 		name: serieObj.name,
-		aliases: JSON.stringify(serieObj.aliases),
+		aliases: JSON.stringify(serieObj.aliases || []),
 		sid: serieObj.sid,
 		seriefile: serieObj.seriefile
 	}));
@@ -70,7 +70,7 @@ export async function updateSerie(serie: Series) {
 	await db().query(yesql(sql.updateSerie)({
 		sid: serie.sid,
 		name: serie.name,
-		aliases: JSON.stringify(serie.aliases),
+		aliases: JSON.stringify(serie.aliases || null),
 		seriefile: serie.seriefile
 	}));
 	await db().query(sql.deleteSeriesi18n, [serie.sid]);
