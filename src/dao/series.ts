@@ -70,7 +70,7 @@ export async function updateSerie(serie: Series) {
 	await db().query(yesql(sql.updateSerie)({
 		sid: serie.sid,
 		name: serie.name,
-		aliases: JSON.stringify(serie.aliases || null),
+		aliases: JSON.stringify(serie.aliases || []),
 		seriefile: serie.seriefile
 	}));
 	await db().query(sql.deleteSeriesi18n, [serie.sid]);
