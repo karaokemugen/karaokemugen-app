@@ -78,7 +78,7 @@ class PublicPage extends Component {
       if (response.data.data && response.data.data.content && response.data.data.content[0]) {
         var chosenOne = response.data.data.content[0].kid;
         axios.get('/api/public/karas/' + chosenOne).then(response2 => {
-          window.displayModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
+          window.callModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
             axios.post('/api/public/karas/' + chosenOne, { requestedby: this.props.logInfos.username })
           }, 'lucky');
         })

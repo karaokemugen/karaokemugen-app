@@ -35,11 +35,11 @@ class PlaylistHeader extends Component {
   }
 
   addRandomKaras() {
-    window.displayModal('prompt', this.props.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
+    window.callModal('prompt', this.props.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
       axios.get(this.props.getPlaylistUrl(), { random: nbOfRandoms }).then(randomKaras => {
         if (randomKaras.content.length > 0) {
           let textContent = randomKaras.content.map(e => buildKaraTitle(e)).join('<br/><br/>');
-          window.displayModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD') + '<br/><br/>' + textContent, () => {
+          window.callModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD') + '<br/><br/>' + textContent, () => {
             var karaList = randomKaras.content.map(a => {
               return a.kid;
             }).join();
