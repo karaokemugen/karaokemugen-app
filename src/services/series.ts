@@ -8,7 +8,7 @@ import uuidV4 from 'uuid/v4';
 import { sanitizeFile } from '../lib/utils/files';
 import { refreshKaras } from '../lib/dao/kara';
 import {Series} from '../lib/types/series';
-import { KaraParams, KaraList } from '../lib/types/kara';
+import { KaraParams, KaraList, IDQueryResult } from '../lib/types/kara';
 import { removeSeriesInStore, editSeriesInStore, addSeriesToStore, sortSeriesStore, getStoreChecksum } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import {asyncUnlink, resolveFileInDirs, } from '../lib/utils/files';
@@ -26,11 +26,12 @@ export async function getSeries(params: KaraParams) {
 }
 
 /** Get SID from database for a particular series name, or add it if it doesn't exist. */
-export async function getOrAddSerieID(serieObj: Series): Promise<string> {
+export async function getOrAddSerieID(serieObj: Series): Promise<IDQueryResult> {
 	const serie = await selectSerieByName(serieObj.name);
-	if (serie) return serie.sid;
+	if (serie) return {id: serie.sid, new: false};
 	//Series does not exist, create it.
-	return await addSerie(serieObj, {refresh: false});
+	await addSerie(serieObj, {refresh: false});
+	return {id: serieObj.sid, new: true};
 }
 
 

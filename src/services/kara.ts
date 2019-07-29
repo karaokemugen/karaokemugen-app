@@ -1,6 +1,6 @@
 import {tagTypes} from '../lib/utils/constants';
 import {ASSToLyrics} from '../utils/ass';
-import {refreshTags, refreshKaraTags} from '../lib/dao/tag';
+import {refreshTags, refreshKaraTags, refreshAllKaraTags} from '../lib/dao/tag';
 import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../lib/dao/series';
 import { saveSetting } from '../lib/dao/database';
 import { refreshYears, refreshKaras } from '../lib/dao/kara';
@@ -21,8 +21,6 @@ import {updateKaraTags} from '../dao/tag';
 import {basename} from 'path';
 import {profile} from '../lib/utils/logger';
 import {Kara, KaraParams, KaraList, YearList} from '../lib/types/kara';
-import {Series} from '../lib/types/series';
-import { getOrAddSerieID } from './series';
 import {asyncUnlink, resolveFileInDirs} from '../lib/utils/files';
 import {resolvedPathMedias, resolvedPathKaras, resolvedPathSubs} from '../lib/utils/config';
 import logger from 'winston';
@@ -67,15 +65,13 @@ export async function deleteKara(kid: string, refresh = true) {
 	// Remove kara from database
 	logger.info(`[Kara] Song ${kara.karafile} removed`);
 
-	if (refresh) delayedDbRefreshViews(2000);
+	if (refresh) {
+		await refreshKaras();
+		refreshTags();
+		refreshAllKaraTags();
+	}
 }
 
-let delayedDbRefreshTimeout = null;
-
-export async function delayedDbRefreshViews(ttl = 100) {
-	clearTimeout(delayedDbRefreshTimeout);
-	delayedDbRefreshTimeout = setTimeout(refreshKarasAfterDBChange, ttl);
-}
 
 export async function getKara(kid: string, token: Token, lang?: string): Promise<DBKara> {
 	profile('getKaraInfo');
@@ -101,21 +97,8 @@ export async function getKaraLyrics(kid: string): Promise<string[]> {
 }
 
 async function updateSeries(kara: Kara) {
-	if (!kara.series) return true;
-	let lang = 'und';
-	if (kara.langs) lang = kara.langs[0].name;
-	let sids = [];
-	for (const s of kara.series) {
-		let langObj = {};
-		langObj[lang] = s;
-		let seriesObj: Series = {
-			name: s
-		};
-		seriesObj.i18n = {...langObj};
-		const sid = await getOrAddSerieID(seriesObj);
-		if (sid) sids.push(sid);
-	}
-	await updateKaraSeries(kara.kid, sids);
+	if (!kara.sids) return true;
+	await updateKaraSeries(kara.kid, kara.sids);
 }
 
 export async function updateTags(kara: Kara) {
@@ -134,7 +117,7 @@ export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 		updateTags(kara),
 		updateSeries(kara)
 	]);
-	if (opts.refresh) await refreshKarasAfterDBChange();
+	if (opts.refresh) await refreshKarasAfterDBChange(kara.newSeries, kara.newTags);
 }
 
 export async function editKaraInDB(kara: Kara, opts = {
@@ -145,7 +128,7 @@ export async function editKaraInDB(kara: Kara, opts = {
 		updateSeries(kara),
 		updateKara(kara)
 	]);
-	if (opts.refresh) await refreshKarasAfterDBChange();
+	if (opts.refresh) await refreshKarasAfterDBChange(kara.newSeries, kara.newTags);
 }
 
 export async function getKaraHistory(): Promise<DBKaraHistory[]> {
@@ -232,16 +215,18 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 	};
 }
 
-export async function refreshKarasAfterDBChange() {
-	await Promise.all([
-		refreshKaraSeries(),
-		refreshKaraTags()
-	]);
+export async function refreshKarasAfterDBChange(newSeries: boolean, newTags: boolean) {
+	profile('RefreshAfterDBChange')
+	if (newSeries) await refreshKaraSeries();
+	if (newTags) await refreshKaraTags();
 	await refreshKaras();
-	refreshSeries();
-	refreshKaraSeriesLang();
+	if (newSeries) {
+		refreshSeries();
+		refreshKaraSeriesLang();
+	}
+	if (newTags) refreshTags();
 	refreshYears();
-	refreshTags();
+	profile('RefreshAfterDBChange')
 }
 
 export async function integrateKaraFile(file: string) {

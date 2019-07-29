@@ -12,6 +12,7 @@ import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
 import { refreshKaras } from '../lib/dao/kara';
 import { getAllKaras } from './kara';
 import { replaceTagInKaras } from '../lib/dao/karafile';
+import { IDQueryResult } from '../lib/types/kara';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
@@ -74,10 +75,11 @@ export async function getTag(tid: string) {
 	return await selectTag(tid);
 }
 
-export async function getOrAddTagID(tagObj: Tag): Promise<Tag> {
+export async function getOrAddTagID(tagObj: Tag): Promise<IDQueryResult> {
 	let tag:Tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
-	if (!tag) tag = await addTag(tagObj, {refresh: false});
-	return tag;
+	if (tag) return {id: tag.tid, new: false};
+	await addTag(tagObj, {refresh: false});
+	return {id: tagObj.tid, new: true};
 }
 
 
