@@ -34,7 +34,7 @@ export async function sendPayload() {
 		}
 		const payload = await buildPayload();
 		logger.info(`[Stats] Sending payload (${prettyBytes(JSON.stringify(payload).length)})`);
-		logger.debug('[Stats] Payload data saved locally to logs/statsPayload.json');
+		logger.info('[Stats] Payload data saved locally to logs/statsPayload.json');
 		const conf = getConfig();
 		asyncWriteFile(resolve(getState().appPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
 		try {

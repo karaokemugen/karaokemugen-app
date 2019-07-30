@@ -4,12 +4,11 @@ import {listUsers, updateSongsLeft} from './user';
 import {getConfig} from '../lib/utils/config';
 import logger from 'winston';
 import {getState} from '../utils/state';
-import { User } from '../lib/types/user';
 
 /** (Up|Down)vote a song. */
 export async function vote(plc_id: number, username: string, downvote: boolean) {
-	if (downvote) return await deleteUpvote(plc_id,username);
-	return await addUpvote(plc_id,username);
+	if (downvote) return await deleteUpvote(plc_id, username);
+	return await addUpvote(plc_id, username);
 }
 
 /** Upvotes a song */
@@ -20,7 +19,7 @@ export async function addUpvote(plc_id: number, username: string) {
 		if (plc.username === username) throw {code: 'UPVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
 		if (userList.some(u => u.username === username)) throw {code: 'UPVOTE_ALREADY_DONE'};
-		await insertUpvote(plc_id,username);
+		await insertUpvote(plc_id, username);
 		plc.upvotes++;
 		const ret = {
 			upvotes: plc.upvotes,
@@ -62,8 +61,8 @@ export async function deleteUpvote(plc_id: number, username: string) {
 
 /** Free song if it's sufficiently upvotes */
 async function tryToFreeKara(plc_id :number, upvotes: number, username: string, playlist_id: number) {
-	const allUsersList: User[] = await listUsers();
-	const onlineUsers = allUsersList.filter((user: User) => user.flag_online);
+	const allUsersList = await listUsers();
+	const onlineUsers = allUsersList.filter(user => user.flag_online);
 	const upvotePercent = (upvotes / onlineUsers.length) * 100;
 	const conf = getConfig();
 	if (upvotePercent >= +conf.Karaoke.Quota.FreeUpVotesRequiredPercent &&
