@@ -12,10 +12,9 @@ export async function editKara(kara: Kara) {
 	let newKara: NewKara;
 	try {
 		const mediaFile = resolve(resolvedPathMedias()[0], kara.mediafile);
-		let subFile: string;
-		kara.subfile && kara.subfile
-			? subFile = resolve(resolvedPathSubs()[0], kara.subfile)
-			: subFile = kara.subfile;
+		const subFile = kara.subfile
+			? resolve(resolvedPathSubs()[0], kara.subfile)
+			: kara.subfile;
 		const karaFile = resolve(resolvedPathKaras()[0], kara.karafile);
 		// Removing useless data
 		delete kara.karafile;
