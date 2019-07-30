@@ -11,7 +11,7 @@ import { DownloadItem, DownloadOpts } from '../types/downloader';
 const HttpAgent = require('agentkeepalive');
 const {HttpsAgent} = HttpAgent;
 
-/** Downloader class, to download one or more file, complete with a progress bar and crepes. */
+/** Downloader class, to download one or more files, complete with a progress bar and crepes. */
 
 // TODO: Rewrite the chain with better-queue instead
 
@@ -144,3 +144,5 @@ export default class Downloader {
 			.pipe(stream);
 	};
 }
+
+// The crepes are a lie.
