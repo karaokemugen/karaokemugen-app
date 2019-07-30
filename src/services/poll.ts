@@ -13,7 +13,7 @@ import { PollResults } from '../types/poll';
 const sleep = promisify(setTimeout);
 
 let poll = [];
-let voters = [];
+let voters = new Set();
 let pollDate: Date;
 let pollEnding = false;
 let clock: any;
@@ -40,7 +40,7 @@ export function endPoll() {
 export function stopPoll() {
 	logger.debug('[Poll] Stopping poll');
 	poll = [];
-	voters = [];
+	voters = new Set();
 	pollEnding = false;
 	emitWS('songPollEnded');
 }
@@ -53,10 +53,10 @@ export async function getPollResults(): Promise<PollResults> {
 	let winners = poll.filter(c => +c.votes === +maxVotes);
 	let winner = sample(winners);
 	const playlist_id = getState().currentPlaylistID;
-	await copyKaraToPlaylist([winner[0].playlistcontent_id],playlist_id);
-	emitWS('playlistInfoUpdated',playlist_id);
-	emitWS('playlistContentsUpdated',playlist_id);
-	const kara = `${winner[0].serie} - ${winner[0].songtype[0].name.replace('TYPE_','')}${winner[0].songorder ? winner[0].songorder : ''} - ${winner[0].title}`;
+	await copyKaraToPlaylist([winner[0].playlistcontent_id], playlist_id);
+	emitWS('playlistInfoUpdated', playlist_id);
+	emitWS('playlistContentsUpdated', playlist_id);
+	const kara = `${winner[0].serie} - ${winner[0].songtypes[0].name}${winner[0].songorder ? winner[0].songorder : ''} - ${winner[0].title}`;
 	logger.info(`[Poll] Winner is "${kara}" with ${maxVotes} votes`);
 	return {
 		votes: maxVotes,
@@ -69,7 +69,7 @@ export async function addPollVote(playlistcontent_id: number, token: Token) {
 	if (poll.length === 0 || pollEnding) throw {
 		code: 'POLL_NOT_ACTIVE'
 	};
-	if (hasUserVoted(token.username)) throw {
+	if (voters.has(token.username)) throw {
 		code: 'POLL_USER_ALREADY_VOTED'
 	};
 	const choiceFound = poll.some((choice, index) => {
@@ -83,7 +83,7 @@ export async function addPollVote(playlistcontent_id: number, token: Token) {
 		code: 'POLL_VOTE_ERROR',
 		message: 'This song is not in the poll'
 	};
-	voters.push(token.username);
+	voters.add(token.username);
 	return {
 		code: 'POLL_VOTED',
 		data: poll
@@ -99,7 +99,7 @@ export async function startPoll() {
 	}
 	logger.info('[Poll] Starting a new poll');
 	poll = [];
-	voters = [];
+	voters = new Set();
 	pollEnding = false;
 	// Create new poll
 	// Get a list of karaokes to add to the poll
@@ -124,11 +124,6 @@ export async function startPoll() {
 	timerPoll();
 }
 
-/** Checks if a user has voted or not already */
-function hasUserVoted(username: string): boolean {
-	return voters.includes(username);
-}
-
 /** Get current poll options */
 export async function getPoll(token: Token, from: number, size: number) {
 	if (poll.length === 0) throw {
@@ -142,7 +137,7 @@ export async function getPoll(token: Token, from: number, size: number) {
 		},
 		poll: poll,
 		timeLeft: clock.getTimeLeft(),
-		flag_uservoted: hasUserVoted(token.username)
+		flag_uservoted: voters.has(token.username)
 	};
 }
 
