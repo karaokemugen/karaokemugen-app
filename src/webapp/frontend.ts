@@ -112,7 +112,7 @@ export async function initFrontend() {
 		});
 
 		//Path to video previews
-		app.use('/previews', express.static(resolvedPathMedias()[0]));
+		app.use('/medias', express.static(resolvedPathMedias()[0]));
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 		app.use('/admin', routerAdmin);
