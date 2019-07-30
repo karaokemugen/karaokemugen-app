@@ -137,7 +137,6 @@ export default function publicKaraController(router: Router) {
  * @apiSuccess {Date} data/lastplayed_at When the song has been played last, in `Date()` format
  * @apiSuccess {Interval} data/lastplayed_ago When the song has been played last, in hours/minutes/seconds ago
  * @apiSuccess {Object[]} data/misc_tags Internal tag list (`TAG_VIDEOGAME`, etc.)
- * @apiSuccess {String} data/previewfile Filename of the preview file associated with the karaoke. Can be undefined if the preview hasn't been generated yet by the server.
  * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {Object[][]} data/serie_i18n array of array of JSON objects with series' names depending on their language.
@@ -242,7 +241,6 @@ export default function publicKaraController(router: Router) {
  *           ],
  *           "modified_at": "2018-11-14T21:31:36.000Z",
  *           "played": "0",
- * 			 "previewfile": "abcdef.1023.mp4"
  *           "requested": "0",
  *           "serie": "Dokidoki! PreCure",
  *           "serie_altname": [
