@@ -9711,3 +9711,26 @@
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
+
+/**
+	* @api {delete} /admin/favorites/:username Delete favorite items (as admin)
+	* @apiName DeleteFavoritesAdmin
+	* @apiVersion 2.5.0
+	* @apiGroup Favorites
+	* @apiPermission admin
+	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {uuid[]} kid Karaoke IDs to delete from favorites, separated by commas
+	* @apiSuccess {Number} args Arguments associated with message
+	* @apiSuccess {Number} code Message to display
+	* @apiSuccess {uuid[]} data List of favorites KIDs separated by commas
+	*
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* {
+	*   "args": "1",
+	*   "code": "FAV_SONG_DELETED",
+	*   "data": "uuid"
+	* }
+	* @apiError FAV_DELETE_SONG_ERROR Favorites item could not be deleted.
+	*
+	*/

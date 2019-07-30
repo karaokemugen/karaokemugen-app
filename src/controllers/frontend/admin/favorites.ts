@@ -170,7 +170,7 @@ export default function adminFavoritesController(router: Router) {
 				});
 				if (!validationErrors) {
 					try {
-						await addToFavorites(req.params.username, req.body.kid);
+						await addToFavorites(req.params.username, req.body.kid.split(','));
 						emitWS('favoritesUpdated', req.params.username);
 						res.status(201).json(OKMessage(req.body, 'FAV_SONG_ADDED', req.body.kid));
 					} catch(err) {
@@ -185,7 +185,7 @@ export default function adminFavoritesController(router: Router) {
 		/**
 	* @api {delete} /admin/favorites/:username Delete favorite items (as admin)
 	* @apiName DeleteFavoritesAdmin
-	* @apiVersion 2.5.0
+	* @apiVersion 3.0.0
 	* @apiGroup Favorites
 	* @apiPermission admin
 	* @apiHeader authorization Auth token received from logging in
@@ -201,7 +201,7 @@ export default function adminFavoritesController(router: Router) {
 	*   "code": "FAV_SONG_DELETED",
 	*   "data": "uuid"
 	* }
-	* @apiError FAV_DELETE_SONG_ERROR Favorites item could not be deleted.
+	* @apiError FAV_SONG_DELETE_ERROR Favorites item could not be deleted.
 	*
 	*/
 			.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
@@ -212,11 +212,11 @@ export default function adminFavoritesController(router: Router) {
 				});
 				if (!validationErrors) {
 					try {
-						await deleteFavorites(req.params.username, req.body.kid);
+						await deleteFavorites(req.params.username,  req.body.kid.split(','));
 						emitWS('favoritesUpdated', req.params.username);
 						res.json(OKMessage(req.body.kid,'FAV_SONG_DELETED',req.body.kid));
 					} catch(err) {
-						res.status(500).json(errMessage('WL_DELETE_SONG_ERROR',err));
+						res.status(500).json(errMessage('FAV_SONG_DELETE_ERROR',err));
 					}
 				} else {
 					// Errors detected

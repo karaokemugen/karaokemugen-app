@@ -110,8 +110,8 @@ export default function publicFavoritesController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await addToFavorites(req.authToken.username,req.body.kid);
-					emitWS('favoritesUpdated',req.authToken.username);
+					const data = await addToFavorites(req.authToken.username, [req.body.kid]);
+					emitWS('favoritesUpdated', req.authToken.username);
 					res.json(OKMessage(null,'FAVORITES_ADDED',data));
 				} catch(err) {
 					res.status(500).json(errMessage('FAVORITES_ADD_SONG_ERROR',err.message,err.data));
@@ -163,11 +163,11 @@ export default function publicFavoritesController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await deleteFavorites(req.authToken.username,req.body.kid);
-					emitWS('favoritesUpdated',req.authToken.username);
-					res.json(OKMessage(null,'FAVORITES_DELETED',data));
+					const data = await deleteFavorites(req.authToken.username, [req.body.kid] );
+					emitWS('favoritesUpdated', req.authToken.username);
+					res.json(OKMessage(null, 'FAVORITES_DELETED', data));
 				} catch(err) {
-					res.status(500).json(errMessage('FAVORITES_DELETE_ERROR',err.message,err.data));
+					res.status(500).json(errMessage('FAVORITES_DELETE_ERROR', err.message, err.data));
 				}
 			}
 

@@ -45,15 +45,13 @@ export async function fetchAndAddFavorites(instance: string, token: string, user
 	}
 }
 
-export async function addToFavorites(username: string, kid: any) {
+export async function addToFavorites(username: string, kids: string[]) {
 	try {
 		profile('addToFavorites');
-		let karas = [kid];
-		Array.isArray(kid)
-			? karas = kid
-			: karas = kid.split(',');
-		await insertFavorites(karas, username);
-		if (username.includes('@') && getConfig().Online.Users) karas.forEach(k => manageFavoriteInInstance('POST', username, k));
+		await insertFavorites(kids, username);
+		if (username.includes('@') && getConfig().Online.Users) {
+			kids.forEach(k => manageFavoriteInInstance('POST', username, k));
+		}
 	} catch(err) {
 		throw err;
 	} finally {
@@ -79,17 +77,12 @@ export async function convertToRemoteFavorites(username: string) {
 	}
 }
 
-export async function deleteFavorites(username: string, kid: string) {
+export async function deleteFavorites(username: string, kids: string[]) {
 	try {
 		profile('deleteFavorites');
-		let karas = [kid];
-		if (Array.isArray(kid)) karas = kid;
-		if (typeof kid === 'string') karas = kid.split(',');
-		await removeFavorites(karas, username);
+		await removeFavorites(kids, username);
 		if (username.includes('@') && getConfig().Online.Users) {
-			for (const kid of karas) {
-				manageFavoriteInInstance('DELETE', username, kid);
-			}
+			kids.forEach(k => manageFavoriteInInstance('DELETE', username, k));
 		}
 	} catch(err) {
 		throw {message: err};
