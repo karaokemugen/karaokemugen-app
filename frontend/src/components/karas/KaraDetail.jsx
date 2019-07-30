@@ -54,7 +54,7 @@ class KaraDetail extends Component {
     var openExternalPageButton =
       '<i class="glyphicon glyphicon-new-window"></i>';
     var externalUrl = "";
-    var serie = this.props.data.serie;
+    var serie = this.state.kara.serie;
     var extraSearchInfo = "";
     var searchLanguage = navigator.languages[0];
     searchLanguage = searchLanguage.substring(0, 2);
@@ -131,14 +131,12 @@ class KaraDetail extends Component {
   }
 
   showVideo() {
-    var previewFile = this.props.data.previewfile;
-    if (previewFile) {
-      setTimeout(function () {
-        $("#video").attr("src", "/previews/" + previewFile);
-        $("#video")[0].play();
-        $(".overlay").show();
-      }, 1);
-    }
+    var mediafile = this.state.kara.mediafile;
+    setTimeout(function () {
+      $("#video").attr("src", "/medias/" + mediafile);
+      $("#video")[0].play();
+      $(".overlay").show();
+    }, 1);
   }
 
   /**
@@ -146,7 +144,7 @@ class KaraDetail extends Component {
    */
 
   async showFullLyrics() {
-    var response = await axios.get("/api/public/karas/" + this.props.data.kid + "/lyrics");
+    var response = await axios.get("/api/public/karas/" + this.state.kara.kid + "/lyrics");
     if (is_touch_device()) {
       window.callModal('alert', this.props.t('LYRICS'), '<center>' + response.data.data.join('<br/>') + '</center');
     } else {
@@ -293,7 +291,7 @@ class KaraDetail extends Component {
                     onClick={this.showFullLyrics}
                   />
                 ) : null}
-                {data.previewfile ? (
+                {(data.mediafile.match(/^((?!\.mp3).)*$/) && data.mediafile.match(/^((?!\.m4a).)*$/)) ? (
                   <button
                     title={t("TOOLTIP_SHOWVIDEO")}
                     className={

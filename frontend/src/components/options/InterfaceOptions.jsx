@@ -78,16 +78,6 @@ class InterfaceOptions extends Component {
               isChecked={settings.Frontend.Permissions.AllowViewWhitelist} />
           </div>
         </div>
-
-        <div className="form-group">
-          <label className="col-xs-4 control-label">
-            {t("ENGINECREATEPREVIEWS")}
-          </label>
-          <div className="col-xs-6">
-            <Switch idInput="Karaoke.CreatePreviews" handleChange={this.props.onChange}
-              isChecked={settings.Karaoke.CreatePreviews} />
-          </div>
-        </div>
       </> : null
     );
   }

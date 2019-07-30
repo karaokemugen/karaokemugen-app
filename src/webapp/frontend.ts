@@ -77,8 +77,6 @@ export async function initFrontend() {
 		const conf = getConfig();
 		const state = getState();
 		const app = express();
-		const routerAdmin = express.Router();
-		const routerWelcome = express.Router();
 		app.use(passport.initialize());
 		configurePassport();
 		app.use(compression());
@@ -106,17 +104,16 @@ export async function initFrontend() {
 				res.sendFile(resolve(__dirname, '../../react_systempanel/build/index.html'));
 			});
 		}
-		app.use(express.static(__dirname + '/../../frontend/build'));
-		app.get('/*', (_req, res) => {
-			res.sendFile(resolve(__dirname, '../../frontend/build/index.html'));
-		});
-
+		
 		//Path to video previews
 		app.use('/medias', express.static(resolvedPathMedias()[0]));
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
-		app.use('/admin', routerAdmin);
-		app.use('/welcome', routerWelcome);
+
+		app.use(express.static(__dirname + '/../../frontend/build'));
+		app.get('/*', (_req, res) => {
+			res.sendFile(resolve(__dirname, '../../frontend/build/index.html'));
+		});
 
 		const server = createServer(app);
 		initWS(server);
