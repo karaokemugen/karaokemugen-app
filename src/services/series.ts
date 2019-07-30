@@ -60,7 +60,7 @@ export async function deleteSerie(sid: string) {
 	await removeSerie(sid);
 	await Promise.all([
 		refreshSeries(),
-		removeSeriesFile(serie.name),
+		removeSeriesFile(serie.seriefile),
 		removeSerieInKaras(serie.name, await getAllKaras()),
 	]);
 	// Refreshing karas is done asynchronously
@@ -71,7 +71,6 @@ export async function deleteSerie(sid: string) {
 
 /** Add a new series */
 export async function addSerie(serieObj: Series, opts = {refresh: true}): Promise<string> {
-	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) {
 		logger.warn(`[Series] Series original name already exists "${serieObj.name}"`);
@@ -104,7 +103,7 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const oldSerie = await testSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
-	if (oldSerie.name !== serieObj.name) await removeSeriesFile(oldSerie.name);
+	if (oldSerie.name !== serieObj.name) await removeSeriesFile(oldSerie.seriefile);
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	const seriefile = serieObj.seriefile;
 	await Promise.all([
