@@ -44,7 +44,7 @@ class LoginModal extends Component {
             window.displayMessage('warning', '', this.props.t('ADMIN_PLEASE'));
         }
         this.props.updateLogInfos(response);
-        window.displayMessage('info', '', this.props.t('LOG_SUCCESS', username));
+        window.displayMessage('info', '', this.props.t('LOG_SUCCESS', {name:username}));
 
         if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
             this.props.toggleHelpModal();
@@ -71,7 +71,7 @@ class LoginModal extends Component {
     signup() {
         if (this.state.login.includes('@')) {
             this.setState({ errorBackground: 'errorBackground' });
-            window.displayMessage('warning', '', this.props.t('CHAR_NOT_ALLOWED', '@'));
+            window.displayMessage('warning', '', this.props.t('CHAR_NOT_ALLOWED', {char:'@'}));
             return;
         } else {
             this.setState({ errorBackground: '' });
