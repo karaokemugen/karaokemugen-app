@@ -23,6 +23,7 @@ import { DBKara } from '../lib/types/database/kara';
 import { getTags, integrateTagFile } from './tag';
 import { DBTag } from '../lib/types/database/tag';
 import prettyBytes = require('pretty-bytes');
+import { refreshKaras } from '../lib/dao/kara';
 
 const queueOptions = {
 	id: 'uuid',
@@ -562,7 +563,7 @@ export async function cleanAllKaras(instance: string, local?: KaraList, remote?:
 	}
 	if (karasToRemove.length > 0) {
 		compareKarasChecksum(true);
-		await refreshAll();
+		refreshKaras();
 	}
 }
 
