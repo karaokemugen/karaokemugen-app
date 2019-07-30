@@ -1,1 +1,1 @@
-DELETE FROM blacklist_criteria WHERE type > 0 AND type < 1000
+DELETE FROM blacklist_criteria WHERE type > 0 AND type < 1000;
