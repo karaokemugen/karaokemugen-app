@@ -9734,3 +9734,39 @@
 	* @apiError FAV_DELETE_SONG_ERROR Favorites item could not be deleted.
 	*
 	*/
+
+		/**
+	* @api {post} /admin/favorites/:username Add song to a user's favorites (as admin)
+	* @apiName PostFavoritesAdmin
+	* @apiVersion 2.5.0
+	* @apiGroup Favorites
+	* @apiPermission admin
+	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {String} username Username to add favorites to
+	* @apiParam {uuid[]} kid Karaoke song IDs, separated by commas
+	* @apiParam {String} [reason] Reason the song was added
+	* @apiSuccess {Number} args Arguments associated with message
+	* @apiSuccess {Number} code Message to display
+	* @apiSuccess {uuid[]} data/kid List of karaoke IDs separated by commas
+	*
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 201 Created
+	* {
+	*   "args": "2",
+	*   "code": "FAV_SONG_ADDED",
+	*   "data": [
+	*       "kid"
+	*   ]
+	* }
+	* @apiError FAV_ADD_SONG_ERROR Karaoke couldn't be added to favorites
+	*
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	* {
+	*   "args": [
+	*       "2"
+	*   ],
+	*   "code": "FAV_ADD_SONG_ERROR",
+	*   "message": null
+	* }
+	*/
