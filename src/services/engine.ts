@@ -19,8 +19,6 @@ import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { generateDatabase } from '../lib/services/generation';
 import {validateV3} from '../lib/dao/karafile';
-import { createVideoPreviews } from '../lib/utils/previews';
-import { getAllKaras } from './kara';
 
 export async function initEngine() {
 	profile('Init');
@@ -72,9 +70,6 @@ export async function initEngine() {
 		logger.error(`[Engine] Failed to init online system : ${err}`);
 	}
 	let inits = [];
-	if (conf.Karaoke.CreatePreviews) {
-		createVideoPreviews(await getAllKaras());
-	}
 	inits.push(initPlaylistSystem());
 	if (!state.isDemo && !state.isTest) inits.push(initPlayer());
 	inits.push(initFrontend());

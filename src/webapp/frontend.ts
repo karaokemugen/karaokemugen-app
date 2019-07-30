@@ -3,7 +3,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import logger from '../lib/utils/logger';
-import {getConfig, resolvedPathPreviews, resolvedPathAvatars} from '../lib/utils/config';
+import {getConfig, resolvedPathAvatars, resolvedPathMedias} from '../lib/utils/config';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
 import {configurePassport} from '../lib/utils/passport_manager';
@@ -112,7 +112,7 @@ export async function initFrontend() {
 		});
 
 		//Path to video previews
-		app.use('/previews', express.static(resolvedPathPreviews()));
+		app.use('/previews', express.static(resolvedPathMedias()[0]));
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 		app.use('/admin', routerAdmin);

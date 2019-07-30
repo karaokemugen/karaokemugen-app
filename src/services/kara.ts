@@ -28,7 +28,6 @@ import { editKaraInStore, removeKaraInStore, getStoreChecksum } from '../dao/dat
 import { DBKaraHistory } from '../types/database/kara';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
-import { isPreviewAvailable } from '../lib/utils/previews';
 import { Token } from '../lib/types/user';
 import { consolidatei18n } from '../lib/services/kara';
 
@@ -77,8 +76,6 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 	profile('getKaraInfo');
 	let kara = await getKaraDB(kid, token.username, lang, token.role);
 	if (!kara) throw `Kara ${kid} unknown`;
-	const previewfile = await isPreviewAvailable(kara.kid, kara.mediasize);
-	if (previewfile) kara.previewfile = previewfile;
 	profile('getKaraInfo');
 	return kara;
 }

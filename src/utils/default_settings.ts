@@ -54,7 +54,6 @@ export const defaults: Config = {
 	},
 	Karaoke: {
 		Autoplay: false,
-		CreatePreviews: false,
 		JinglesInterval: 20,
 		Private: true,
 		Repeat: false,
@@ -161,7 +160,6 @@ export const configConstraints = {
 	'Frontend.Mode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
 	'Frontend.SeriesLanguageMode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	'Karaoke.Autoplay': {inclusion : bools},
-	'Karaoke.CreatePreviews': {inclusion : bools},
 	'Karaoke.Private': {inclusion : bools},
 	'Karaoke.Repeat': {inclusion : bools},
 	'Karaoke.SmartInsert': {inclusion : bools},

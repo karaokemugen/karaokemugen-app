@@ -55,7 +55,6 @@ import {updateSongsLeft, findUserByName} from './user';
 import {Token, User} from '../lib/types/user';
 import { isAllKaras, formatKaraList, getKaras, getKara} from './kara';
 import {playPlayer, playingUpdated} from './player';
-import {isPreviewAvailable} from '../lib/utils/previews';
 import {getBlacklist} from './blacklist';
 import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
 	getKaraMini,
@@ -394,14 +393,6 @@ export async function getKaraFromPlaylist(plc_id: number, token: Token) {
 	profile('getPLCInfo');
 	let kara = await getPLCInfo(plc_id, token.role === 'user', token.username);
 	if (!kara) throw 'PLCID unknown';
-	try {
-		profile('previewCheck');
-		const previewfile = await isPreviewAvailable(kara[0].kid, kara[0].mediasize);
-		if (previewfile) kara[0].previewfile = previewfile;
-		profile('previewCheck');
-	} catch(err) {
-		logger.warn(`[Previews] Error detecting previews : ${err}`);
-	}
 	profile('getPLCInfo');
 	return kara;
 }

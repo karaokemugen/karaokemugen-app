@@ -41,7 +41,6 @@ export interface Config {
 		Autoplay?: boolean,
 		Repeat?: boolean,
 		SmartInsert?: boolean,
-		CreatePreviews?: boolean,
 		JinglesInterval?: number,
 		Display: {
 			Avatar?: boolean,
