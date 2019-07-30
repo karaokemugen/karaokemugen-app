@@ -1,29 +1,23 @@
-import {formatKaraList, isAllKaras, getKara} from './kara';
+import {formatKaraList, isAllKaras} from './kara';
 import {removeKaraFromWhitelist, getWhitelistContents as getWLContents, emptyWhitelist as emptyWL, addKaraToWhitelist as addToWL} from '../dao/whitelist';
 import {generateBlacklist} from './blacklist';
 import logger, {profile} from '../lib/utils/logger';
-import { Token } from '../lib/types/user';
 import { KaraParams } from '../lib/types/kara';
 
 /** Add a KID or KID array to the whitelist */
-export async function addKaraToWhitelist(kid: string|string[], reason: string, token: Token, lang: string): Promise<string[]> {
-	let karas = [];
-	Array.isArray(kid)
-		? karas = kid
-		: karas = kid.split(',');
-	const kara = await getKara(karas[0], token, lang);
-	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
+export async function addKaraToWhitelist(kids: string[], reason: string): Promise<string[]> {
+	logger.info(`[Whitelist] Adding ${kids.length} karaokes to whitelist...`);
 	try {
 		profile('addKaraToWL');
-		const karasUnknown = await isAllKaras(karas);
+		const karasUnknown = await isAllKaras(kids);
 		if (karasUnknown.length > 0) throw 'One of the karaokes does not exist.';
-		await addToWL(karas, reason);
+		await addToWL(kids, reason);
 		generateBlacklist();
-		return karas;
+		return kids;
 	} catch(err) {
 		throw {
 			message: err,
-			data: karas
+			data: kids
 		};
 	} finally {
 		profile('addKaraToWL');
@@ -57,5 +51,5 @@ export async function deleteKaraFromWhitelist(karas: string[]) {
 export async function emptyWhitelist() {
 	logger.info('[Whitelist] Wiping whitelist');
 	await emptyWL();
-	await generateBlacklist();
+	generateBlacklist();
 }

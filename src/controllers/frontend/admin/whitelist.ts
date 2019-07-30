@@ -137,13 +137,13 @@ export default function adminWhitelistController(router: Router) {
  *   "message": "No karaoke could be added, all are in whitelist already"
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
 				kid: {uuidArrayValidator: true}
 			});
 			if (!validationErrors) {
 				try {
-					await addKaraToWhitelist(req.body.kid,req.body.reason, req.authToken, req.lang);
+					await addKaraToWhitelist(req.body.kid, req.body.reason);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.status(201).json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kid));
@@ -302,7 +302,7 @@ export default function adminWhitelistController(router: Router) {
 				});
 				if (!validationErrors) {
 					try {
-						await addKaraToWhitelist(req.body.kid,req.body.reason, req.authToken, req.lang);
+						await addKaraToWhitelist(req.body.kid.split(','),req.body.reason);
 						emitWS('whitelistUpdated');
 						emitWS('blacklistUpdated');
 						res.status(201).json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kid));
