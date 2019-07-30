@@ -1,6 +1,6 @@
 //Utils
 import {getStats} from '../dao/database';
-import {getConfig} from '../lib/utils/config';
+import {getConfig, resolvedPathAvatars} from '../lib/utils/config';
 import {now} from '../lib/utils/date';
 import logger from '../lib/utils/logger';
 import shuffle from 'lodash.shuffle';
@@ -391,7 +391,7 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 /** Get song information from a particular PLC */
 export async function getKaraFromPlaylist(plc_id: number, token: Token) {
 	profile('getPLCInfo');
-	let kara = await getPLCInfo(plc_id, token.role === 'user', token.username);
+	const kara = await getPLCInfo(plc_id, token.role === 'user', token.username);
 	if (!kara) throw 'PLCID unknown';
 	profile('getPLCInfo');
 	return kara;
@@ -428,7 +428,6 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		const karasUnknown = await isAllKaras(karas);
 		if (karasUnknown.length > 0) throw {code: 3, msg: 'One of the karaokes does not exist'};
 		logger.debug(`[Playlist] Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`);
-
 		if (!addByAdmin) {
 			// Check user quota first
 			if (!await isUserAllowedToAddKara(playlist_id, requester, kara.duration)) {
@@ -529,12 +528,13 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		};
 		// Song requests by admins are ignored and not added to requests stats
 		if (!addByAdmin) addKaraToRequests(user.login, karaList.map(k => k.kid));
-		// If pos is provided, we need to update all karas above that and add
-		// karas.length to the position
-		// If pos is not provided, we need to get the maximum position in the PL
-		// And use that +1 to set our song's playlist position.
-		// If pos is -1, we must add it after the currently flag_playing karaoke.
-		// Position management here :
+		/*
+		If pos is provided, we need to update all karas above that and add karas.length to the position
+		If pos is not provided, we need to get the maximum position in the PL
+		And use that +1 to set our song's playlist position.
+		If pos is -1, we must add it after the currently flag_playing karaoke.
+		Position management here :
+		*/
 		if (conf.Karaoke.SmartInsert && user.type !== 0) {
 			if (userMaxPosition === null) {
 				// No songs yet from that user, they go first.
@@ -558,6 +558,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		for (const i in karaList) {
 			karaList[i].pos = pos + +i;
 		}
+
+		// Adding song to playlsit at long last!
 		await addKaraToPL(karaList);
 		updatePlaylistLastEditTime(playlist_id);
 		// Checking if a flag_playing is present inside the playlist.
@@ -1093,8 +1095,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 			requester = `${i18n.__('REQUESTED_BY')} ${kara.nickname}`;
 			// Get user avatar
 			const user = await findUserByName(kara.username);
-			const state = getState();
-			avatarfile = resolve(state.appPath, conf.System.Path.Avatars, user.avatar_file);
+			avatarfile = resolve(resolvedPathAvatars(), user.avatar_file);
 		} else {
 			requester = '';
 		}

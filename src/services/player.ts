@@ -51,16 +51,14 @@ async function playCurrentSong(now: boolean) {
 	}
 }
 
-
+/* Current playing song has been changed, stopping playing now and hitting play again to get the new song. */
 export async function playingUpdated() {
-	// Current playing song has been changed, stopping playing now and
-	// hitting play again to get the new song.
 	const state = getState();
 	if (state.status === 'play' && state.player.playing) playPlayer(true);
 }
 
+/* This is triggered when player ends its current song */
 export async function playerEnding() {
-	// This is triggered when player ends its current song.
 	let state = getState();
 	logger.debug('[Player] Player Ending event triggered');
 	if (state.playerNeedsRestart) {
@@ -69,7 +67,7 @@ export async function playerEnding() {
 		await restartPlayer();
 	}
 	const conf = getConfig();
-	logger.debug(`[Jingles] Songs before next jingle: ${conf.Karaoke.JinglesInterval - state.counterToJingle}`);
+	logger.info(`[Jingles] Songs before next jingle: ${conf.Karaoke.JinglesInterval - state.counterToJingle}`);
 	if (state.counterToJingle >= conf.Karaoke.JinglesInterval && conf.Karaoke.JinglesInterval > 0) {
 		setState({
 			currentlyPlayingKara: -1,
@@ -103,7 +101,6 @@ async function prev() {
 		await previousSong();
 	} catch(err) {
 		logger.warn(`[Player] Previous song is not available : ${err}`);
-		// A failed previous means we restart the current song.
 	} finally {
 		playPlayer(true);
 	}
@@ -165,7 +162,6 @@ function stopPlayer(now?: boolean) {
 		logger.info('[Player] Karaoke stopping after current song');
 		setState({status: 'stop'});
 	}
-
 }
 
 function pausePlayer() {
@@ -235,7 +231,7 @@ export async function sendCommand(command: string, options: any) {
 	if (state.isDemo || state.isTest) throw 'Player management is disabled in demo or test modes';
 	commandInProgress = true;
 	// Automatically set it back to false after 3 seconds
-	setTimeout(function () {
+	setTimeout(() => {
 		commandInProgress = false;
 	}, 3000);
 	try {

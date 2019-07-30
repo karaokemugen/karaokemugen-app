@@ -31,9 +31,8 @@ import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
 import { Token } from '../lib/types/user';
 import { consolidatei18n } from '../lib/services/kara';
 
+/* Returns an array of unknown karaokes. If array is empty, all songs in "karas" are present in database */
 export async function isAllKaras(karas: string[]): Promise<string[]> {
-	// Returns an array of unknown karaokes
-	// If array is empty, all songs in "karas" are present in database
 	const allKaras = await selectAllKIDs();
 	return karas.filter(kid => !allKaras.includes(kid));
 }
@@ -94,7 +93,7 @@ export async function getKaraLyrics(kid: string): Promise<string[]> {
 }
 
 async function updateSeries(kara: Kara) {
-	if (!kara.sids) return true;
+	if (!kara.sids) return;
 	await updateKaraSeries(kara.kid, kara.sids);
 }
 
@@ -110,21 +109,20 @@ export async function updateTags(kara: Kara) {
 
 export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	await addKara(kara);
-	await Promise.all([
-		updateTags(kara),
-		updateSeries(kara)
-	]);
+	const promises = [];
+	if (kara.newSeries) promises.push(updateSeries(kara));
+	if (kara.newTags) promises.push(updateTags(kara));
+	await Promise.all(promises);
 	if (opts.refresh) await refreshKarasAfterDBChange(kara.newSeries, kara.newTags);
 }
 
 export async function editKaraInDB(kara: Kara, opts = {
 	refresh: true
 }) {
-	await Promise.all([
-		updateTags(kara),
-		updateSeries(kara),
-		updateKara(kara)
-	]);
+	const promises = [updateKara(kara)];
+	if (kara.newSeries) promises.push(updateSeries(kara));
+	if (kara.newTags) promises.push(updateTags(kara))
+	await Promise.all(promises);
 	if (opts.refresh) await refreshKarasAfterDBChange(kara.newSeries, kara.newTags);
 }
 
