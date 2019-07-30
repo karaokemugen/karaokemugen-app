@@ -45,7 +45,7 @@ import {has as hasLang} from 'langs';
 import slugify from 'slugify';
 
 let userLoginTimes = new Map();
-let usersFetched = {};
+let usersFetched = new Set();
 let databaseBusy = false;
 
 on('databaseBusy', (status: boolean) => {
@@ -54,7 +54,6 @@ on('databaseBusy', (status: boolean) => {
 
 /** Converts a online user to a local one by removing its online account from KM Server */
 export async function removeRemoteUser(token: Token, password: string): Promise<SingleToken> {
-	// Function used when asking for user deletion on Karaoke Mugen Server
 	const instance = token.username.split('@')[1];
 	const username = token.username.split('@')[0];
 	// Verify that no local user exists with the name we're going to rename it to
@@ -137,8 +136,8 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 			};
 		}
 		// Checking if user has already been fetched during this session or not
-		if (!usersFetched[username]) {
-			usersFetched[username] = true;
+		if (!usersFetched.has(username)) {
+			usersFetched.add(username);
 			user = await editUser(
 				username,
 				{
@@ -376,7 +375,7 @@ export async function checkPassword(user: User, password: string): Promise<boole
 	return false;
 }
 
-/** checks database for a user's fingerprint  */
+/** Checks database for a user's fingerprint */
 export async function findFingerprint(fingerprint: string): Promise<string> {
 	// If fingerprint is present we return the login name of that user
 	// If not we find a new guest account to assign to the user.
@@ -568,7 +567,6 @@ async function updateGuestAvatar(user: User) {
 	const bundledAvatarPath = join(__dirname, '../../assets/guestAvatars/', bundledAvatarFile);
 	if (!await asyncExists(bundledAvatarPath)) {
 		// Bundled avatar does not exist for this user, skipping.
-		logger.warn(`[User] The user "${user.login}" does not have a matching avatar file in assets. Searched : ${bundledAvatarFile}`);
 		return false;
 	}
 	let avatarStats: any = {};
