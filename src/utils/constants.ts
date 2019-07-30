@@ -146,10 +146,10 @@ export const defaultGuestNames = [
 	'Raphtalia > Holo'
 ];
 
-/** Initialization catchphrases. We need more of them. And we also need a better way to use them. */
+/** Initialization catchphrases. We need more of them. */
 export const initializationCatchphrases = [
-	'"Karaoke Mugen is combat-ready!" --Nanami-chan',
-	'"Karaoke Mugen, ikôzo!" --Nanami-chan',
+	'"Karaoke Mugen is combat-ready!" --Nanamin',
+	'"Karaoke Mugen, ikôzo!" --Nanamin',
 	'"Smile! Sweet! Sister! Sadistic! Surprise! SING!" --The Karaoke Mugen Dev Team',
 	'"Let us achieve world domination through karaoke!" --Axel Terizaki',
 	'"Listen to my song!" --Every Macross Idol',
@@ -194,5 +194,18 @@ export const initializationCatchphrases = [
 	'"DEJA FAIT! I just timed this karaoke before!" --Guy in Trueno GT APEX AE86',
 	'"Pirikaraoke Royal !" --Doremi Harukaze',
 	'"Karaoke that conceals the power of darkness, reveal your true timing to me! By my power, I command you, release!" --Sakura Kinomoto',
-	'"I hold the mic with my right hand, and with my left, I\'ll write the name of the next karaoke. I\'ll take a potato chip... AND EAT IT!" --Light Yagami'
+	'"I hold the mic with my right hand, and with my left, I\'ll write the name of the next karaoke. I\'ll take a potato chip... AND EAT IT!" --Light Yagami',
+	'"You can listen anytime, but singing takes true courage" --Kenshin Himura',
+	'"Karaoke is not a game of luck. If you want to win, sing hard." --Sora',
+	'"Whatever you sing, enjoy it to the fullest. That is the secret of karaoke" --Rider',
+	'"If you don\'t like your song, don\'t accept it. Instead, have the courage to change it the way you want to be." --Naruto Uzumaki',
+	'"If you can\'t find a reason to sing, then you shouldn\'t be singing" --Akame',
+	'"Karaoke is like a tube of toothpaste. When you\'ve used all the toothpaste, that\'s when you\'ve really sang. Sing with all your might, and struggle as long as you have your voice." --Mion Sonozaki',
+	'"Sing exactly as you like. That is the true meaning of karaoke. Karaoke leads to joy and joy leads to happiness." --Gilgamesh',
+	'"If you can\'t sing something, then don\'t. Focus on what you can sing." --Shiroe',
+	'"When you lose sight of the lyrics, listen to the karaoke in your heart" --Allen Walker',
+	'"A karaoke is worth less than nothing if you don\'t have someone to share it." --Dousan Saitou',
+	'"What you can\'t sing alone, becomes singable when you\'re with someone else." --Taichi Yaegashi',
+	'"Even if you\'re a bad singer, there are miracles you can seize with your voice if you sing on to the very end." --Uryuu Minene',
+	'"You\'re singing in Japanese! If you must sing, do it in German!" --Asuka Langley Sohryu',
 ];
