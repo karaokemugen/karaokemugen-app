@@ -3,7 +3,7 @@ import { gitlabPostNewIssue } from '../lib/services/gitlab';
 import logger from '../lib/utils/logger';
 import { findUserByName } from './user';
 
-export async function PostSuggestionToKaraBase(karaName: string, username: string): Promise<string> {
+export async function postSuggestionToKaraBase(karaName: string, username: string): Promise<string> {
 	const conf = getConfig();
 	let title = conf.Gitlab.IssueTemplate && conf.Gitlab.IssueTemplate.Suggestion && conf.Gitlab.IssueTemplate.Suggestion.Title ? conf.Gitlab.IssueTemplate.Suggestion.Title : 'New kara suggestion: $kara';
 	title = title.replace('$kara', karaName);

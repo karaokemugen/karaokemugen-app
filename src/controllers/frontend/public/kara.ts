@@ -7,7 +7,7 @@ import { getLang } from "../../middlewares/lang";
 import { emitWS } from "../../../lib/utils/ws";
 import { addKaraToPlaylist } from "../../../services/playlist";
 import { getConfig } from "../../../lib/utils/config";
-import { PostSuggestionToKaraBase } from "../../../services/gitlab";
+import { postSuggestionToKaraBase } from "../../../services/gitlab";
 
 export default function publicKaraController(router: Router) {
 	router.route('/public/karas/suggest')
@@ -35,7 +35,7 @@ export default function publicKaraController(router: Router) {
 	.post(requireAuth, requireValidUser, requireWebappOpen, updateUserLoginTime, async(req: any, res: any) => {
 		try {
 			if (getConfig().Gitlab.Enabled) {
-				const url = await PostSuggestionToKaraBase(req.body.karaName, req.authToken.username);
+				const url = await postSuggestionToKaraBase(req.body.karaName, req.authToken.username);
 				res.json(OKMessage({issueURL: url}));
 			} else {
 				res.status(403).json(null);
