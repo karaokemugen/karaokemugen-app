@@ -8,6 +8,8 @@ To see how you can help, check :
 - [Create an issue or try to resolve one!](https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues)
 - [Come to our Discord!](https://karaokes.moe/discord)
 
+Please read the following before contributing :
+
 ## Branches
 
 When trying to work on a new feature or issue, remember there are two main branches to base your new branch/work off :
@@ -28,3 +30,21 @@ Please respect coding conventions already in place as much as possible.
 - Use TypeScript
 - Use import module syntax, not the require one
 - Before adding a dependency, ask on Discord if it should really be added. Who knows, someone might have an idea on how to avoid using it, or a better alternative.
+
+## Workflow
+
+### Issues approval
+
+If an issue needs to be fixed, the `ToDo` label will be added to it by a maintainer. At this point anyone can take the issue and work on it.
+
+If a issue is closed but has not been fixed and could be reopened, please add a comment to it and wait for a maintainer to reopen it.
+
+### Working on an issue
+
+When starting work on an issue, **DO NOT** use the "Create merge request" button as it'll create a new branch on `master` by default. **DO** use the arrow next to it to create your new branch from the `next` branch instead.
+
+### Merging
+
+Once your work is ready, remove the `WIP` label at the beginning of the merge request title and add a comment to tell maintainers this is ready to merge.
+
+Maintainers will usually merge by squashing the commits inside the branch unless explicitely stated otherwise.
