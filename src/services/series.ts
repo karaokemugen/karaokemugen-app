@@ -122,7 +122,10 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 /** Refreshes materialized views for series in an async manner to avoid long pause times */
 export async function refreshSeriesAfterDBChange() {
 	await refreshSeries();
-	refreshKaraSeries().then(() => refreshKaras().then(() => refreshKaraSeriesLang()));
+	refreshKaraSeries()
+		.then(() => refreshKaras()
+		.then(() => refreshKaraSeriesLang()
+	));
 }
 
 /** Integrate downloaded series file into database */
