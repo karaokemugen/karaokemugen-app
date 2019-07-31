@@ -160,8 +160,6 @@ async function checkPaths(config: Config) {
 	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.DB));
 	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Import));
 	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Temp));
-	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Previews));
-
 	await Promise.all(checks);
 	logger.debug('[Launcher] Directory checks complete');
 }
