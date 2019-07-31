@@ -116,11 +116,6 @@
     "@types/tough-cookie" "*"
     form-data "^2.5.0"
 
-"@types/i18n@^0.8.5":
-  version "0.8.5"
-  resolved "https://registry.yarnpkg.com/@types/i18n/-/i18n-0.8.5.tgz#fd55b7abb4085faa013f0ce27c3fec85e27ff7c3"
-  integrity sha512-8fZUrwtP8nk0JWDujsx5JdrF4RuLyAD/yb9qgnFuBZgR6rI1afLP66Vytx//Bp6sROY/+kdRjopdq+HwNlHgrQ==
-
 "@types/ini@^1.3.30":
   version "1.3.30"
   resolved "https://registry.yarnpkg.com/@types/ini/-/ini-1.3.30.tgz#d1485459c9fad84e937414b832a2adb649eab379"
@@ -1795,6 +1790,14 @@ humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
+i18next-node-fs-backend@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/i18next-node-fs-backend/-/i18next-node-fs-backend-2.1.3.tgz#483fa9eda4c152d62a3a55bcae2a5727ba887559"
+  integrity sha512-CreMFiVl3ChlMc5ys/e0QfuLFOZyFcL40Jj6jaKD6DxZ/GCUMxPI9BpU43QMWUgC7r+PClpxg2cGXAl0CjG04g==
+  dependencies:
+    js-yaml "3.13.1"
+    json5 "2.0.0"
+
 i18next@^17.0.7:
   version "17.0.7"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.7.tgz#aae8591634b109c0ecec755b46c6414b0d743e07"
@@ -2029,6 +2032,13 @@ json-stable-stringify-without-jsonify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
   integrity sha1-nbe1lJatPzz+8wp1FC0tkwrXJlE=
+
+json5@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-2.0.0.tgz#b61abf97aa178c4b5853a66cc8eecafd03045d78"
+  integrity sha512-0EdQvHuLm7yJ7lyG5dp7Q3X2ku++BG5ZHaJ5FTnaXpKqDrw4pMxel5Bt3oAYMthnrthFBdnZ1FcsXTPyrQlV0w==
+  dependencies:
+    minimist "^1.2.0"
 
 jsonfile@^4.0.0:
   version "4.0.0"
