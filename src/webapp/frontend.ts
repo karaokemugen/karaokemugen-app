@@ -104,13 +104,13 @@ export async function initFrontend() {
 				res.sendFile(resolve(__dirname, '../../react_systempanel/build/index.html'));
 			});
 		}
-		
+
 		//Path to video previews
 		app.use('/medias', express.static(resolvedPathMedias()[0]));
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 
-		app.use(express.static(__dirname + '/../../frontend/build'));
+		app.use(express.static(resolve(__dirname, '/../../frontend/build')));
 		app.get('/*', (_req, res) => {
 			res.sendFile(resolve(__dirname, '../../frontend/build/index.html'));
 		});
@@ -120,7 +120,7 @@ export async function initFrontend() {
 		server.listen(conf.Frontend.Port, () => {
 			logger.debug(`[Webapp] Webapp is READY and listens on port ${conf.Frontend.Port}`);
 		});
-	}catch(err) {
+	} catch(err) {
 		throw err;
 	}
 }
