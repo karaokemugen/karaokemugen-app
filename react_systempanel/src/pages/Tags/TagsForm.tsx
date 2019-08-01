@@ -257,7 +257,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							})(
 								<Input
 									placeholder='Name in that language'
-									defaultValue={this.state[`lang_${langKey}`]}
 								/>
 							)}
 
