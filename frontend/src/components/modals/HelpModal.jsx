@@ -25,7 +25,7 @@ class HelpModal extends Component {
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
                             <li className="modal-title active"><a>{t("CL_HELP")}</a></li>
-                            <button className="closeModal btn btn-action" aria-label="Close" onClick={this.mugenTouchscreenHelp}></button>
+                            <button className="closeModal btn btn-action" onClick={this.mugenTouchscreenHelp}></button>
                         </ul>
                         <div className="tab-content" id="nav-tabContent-help">
                             <div id="nav-help" className="modal-body tab-pane fade in active">

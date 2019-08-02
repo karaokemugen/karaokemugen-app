@@ -27,7 +27,8 @@ class PublicPage extends Component {
       filterValue: "",
       pseudoValue: "",
       mobileMenu: false,
-      idsPlaylist: {left: '', right: ''}
+      idsPlaylist: {left: '', right: ''},
+      dropDownMenu: false
     };
     this.openLoginOrProfileModal = this.openLoginOrProfileModal.bind(this);
     this.toggleHelpModal = this.toggleHelpModal.bind(this);
@@ -154,18 +155,21 @@ class PublicPage extends Component {
                   </div>
                   <div className="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs">
                     <div className="dropdown pull-right">
-                      <button className="btn btn-dark dropdown-toggle klogo" id="menuPC" type="button" data-toggle="dropdown">
+                      <button className="btn btn-dark dropdown-toggle klogo" id="menuPC" type="button"
+                        onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}>
                       </button>
-                      <ul className="dropdown-menu">
-                        <li><a href="#" className="changePseudo" onClick={this.openLoginOrProfileModal}>
-                          <i className="glyphicon glyphicon-user"></i> {t("ACCOUNT")}</a>
-                        </li>
-                        <li><a href="/admin" id="logAdmin" target="_blank"><i className="glyphicon glyphicon-wrench"></i> Admin</a></li>
-                        <li><a href="#" className="showSettings" onClick={this.toggleHelpModal}>
-                          <i className="glyphicon glyphicon-info-sign"></i> {t("HELP")}</a>
-                        </li>
-                        <li><a href="#" className="logout" onClick={this.props.logOut}><i className="glyphicon glyphicon-log-out"></i> {t("LOGOUT")}</a></li>
-                      </ul>
+                      {this.state.dropDownMenu ?
+                        <ul className="dropdown-menu">
+                          <li><a href="#" className="changePseudo" onClick={this.openLoginOrProfileModal}>
+                            <i className="glyphicon glyphicon-user"></i> {t("ACCOUNT")}</a>
+                          </li>
+                          <li><a href="/admin" id="logAdmin" target="_blank"><i className="glyphicon glyphicon-wrench"></i> Admin</a></li>
+                          <li><a href="#" className="showSettings" onClick={this.toggleHelpModal}>
+                            <i className="glyphicon glyphicon-info-sign"></i> {t("HELP")}</a>
+                          </li>
+                          <li><a href="#" className="logout" onClick={this.props.logOut}><i className="glyphicon glyphicon-log-out"></i> {t("LOGOUT")}</a></li>
+                        </ul> : null
+                      }
                     </div>
                     <div className="pull-right btn-group switchParent">
                       {this.state.isPollActive ?
