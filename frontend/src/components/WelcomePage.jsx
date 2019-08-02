@@ -235,7 +235,7 @@ class WelcomePage extends Component {
               <div className="col-md-12 wow block zoomIn">
                 <ul className="news">
                   {this.state.news.map(article => {
-                    return (<li className={this.state.open ? "new open" : "new"}
+                    return (<li key={Math.random()} className={this.state.open ? "new open" : "new"}
                       type={article.type} onClick={() => this.setState({ open: !this.state.open })}>
                       <p className="new-header">
                         <b>{article.title}</b>
