@@ -110,7 +110,7 @@ export async function initFrontend() {
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 
-		app.use(express.static(resolve(__dirname, '/../../frontend/build')));
+		app.use(express.static(resolve(__dirname, '../../frontend/build')));
 		app.get('/*', (_req, res) => {
 			res.sendFile(resolve(__dirname, '../../frontend/build/index.html'));
 		});
