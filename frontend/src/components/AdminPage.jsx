@@ -58,22 +58,19 @@ class AdminPage extends Component {
           logOut={this.props.logOut} options={this.state.options}/>
         <ProgressBar webappMode={this.props.settings.config.Frontend.Mode} />
         <div id="underHeader" className="underHeader container-fluid">
-          {!this.state.options ?
-            <div className="playlist-main row" id="playlist">
-              <div className="panel col-lg-6 col-xs-6" id="panel1" side="1">
-                <Playlist scope='admin' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
-                  idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
-              </div>
-
-              <div className="panel col-lg-6 col-xs-6" id="panel2" side="2">
-                <Playlist scope='admin' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
-                  idPlaylistTo={this.state.idsPlaylist.left} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
-              </div>
-            </div> :
-            <div className="row" id="manage">
-              <Options settings={this.props.settings} />
+          <div className={"playlist-main row "+(this.state.options ? "hidden" : "")} id="playlist">
+            <div className="panel col-lg-6 col-xs-6" id="panel1" side="1">
+              <Playlist scope='admin' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
+                idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
             </div>
-          }
+            <div className="panel col-lg-6 col-xs-6" id="panel2" side="2">
+              <Playlist scope='admin' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
+                idPlaylistTo={this.state.idsPlaylist.left} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
+            </div>
+          </div>
+          <div className={"row "+(this.state.options ? "" : "hidden")} id="manage">
+            <Options settings={this.props.settings} />
+          </div>
           <div className="toastMessageContainer"></div>
         </div>
         <div className="overlay" onClick={this.stopVideo}>
