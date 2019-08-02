@@ -9,8 +9,8 @@ class OnlineStatsModal extends Component {
         this.onClick = this.onClick.bind(this);
     }
 
-    onClick(e) {
-        var data = expand("Online.Stats", eval(e.target.value));
+    onClick(value) {
+        var data = expand("Online.Stats", eval(value));
         axios.put('/api/admin/settings', {
             setting: JSON.stringify(data)
         });
@@ -20,12 +20,12 @@ class OnlineStatsModal extends Component {
     render() {
         const t = this.props.t;
         return (
-            <div className="modal modalPage fade" id="onlineStatsModal" role="dialog">
+            <div className="modal modalPage" id="onlineStatsModal" role="dialog">
                 <div className="modal-dialog modal-md">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
-                            <li className="modal-title stats"><a data-toggle="tab" href="#nav-stats" role="tab" aria-controls="nav-stats" aria-selected="true" aria-expanded="true">
-                                {t('ONLINE_STATS.TITLE')} </a>
+                            <li className="modal-title stats">
+                                <a>{t('ONLINE_STATS.TITLE')}</a>
                             </li>
                         </ul>
                         <div className="tab-content" id="nav-stats-tab">
@@ -49,8 +49,7 @@ class OnlineStatsModal extends Component {
                                                 {'- ' + t('ONLINE_STATS.DETAILS.2')}<br />
                                                 {'- ' + t('ONLINE_STATS.DETAILS.3')}<br />
                                                 {'- ' + t('ONLINE_STATS.DETAILS.4')}<br />
-                                                {'- ' + t('ONLINE_STATS.DETAILS.5')}<br /><br />
-
+                                                {'- ' + t('ONLINE_STATS.DETAILS.5')}<br />
                                                 <p>{t('ONLINE_STATS.DETAILS.OUTRO')}</p>
                                             </div>
                                         </div>
@@ -61,10 +60,10 @@ class OnlineStatsModal extends Component {
                                     </div>
                                     <div></div>
                                     <div>
-                                        <button type="button" value={true} className="onlineStatsBtn btn btn-default btn-primary col-xs-6" onClick={this.onClick}>
+                                        <button type="button" className="onlineStatsBtn btn btn-default btn-primary col-xs-6" onClick={() => this.onClick(true)}>
                                             {t('YES')}
                                         </button>
-                                        <button type="button" value={false} className="onlineStatsBtn btn btn-default col-xs-6" onClick={this.onClick}>
+                                        <button type="button" className="onlineStatsBtn btn btn-default col-xs-6" onClick={() => this.onClick(false)}>
                                             {t('NO')}
                                         </button>
                                     </div>
