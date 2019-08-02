@@ -20,7 +20,7 @@ class OnlineStatsModal extends Component {
     render() {
         const t = this.props.t;
         return (
-            <div className="modal modalPage" id="onlineStatsModal" role="dialog">
+            <div className="modal modalPage" id="onlineStatsModal">
                 <div className="modal-dialog modal-md">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
@@ -29,7 +29,7 @@ class OnlineStatsModal extends Component {
                             </li>
                         </ul>
                         <div className="tab-content" id="nav-stats-tab">
-                            <div id="nav-stats" role="tabpanel" aria-labelledby="nav-stats-tab" className="modal-body tab-pane fade active in">
+                            <div id="nav-stats" className="modal-body">
                                 <div className="modal-message text">
                                     <p>{t('ONLINE_STATS.INTRO')}</p>
                                 </div>

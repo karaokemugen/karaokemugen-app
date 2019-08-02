@@ -16,7 +16,8 @@ class LoginModal extends Component {
             redBorders: '',
             errorBackground: '',
             serv: (this.props.config && this.props.config.Online.Users) ? this.props.config.Online.Host : '',
-            role: 'user'
+            role: 'user',
+            activeView: 1
         }
     }
 
@@ -113,14 +114,17 @@ class LoginModal extends Component {
                 <div className="modal-dialog modal-sm">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
-                            <li className="modal-title active">
-                                <a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">{this.props.scope === 'admin' ? 'Login admin' : t("LOGIN")}</a>
+                            <li className={"modal-title " + (this.state.activeView === 1 ? "active" : "")}>
+                                <a onClick={() => this.setState({activeView: 1})}>{t("LOGIN")}</a>
                             </li>
-                            <li className="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {t("NEW_ACCOUNT")}</a></li>
-                            <button className="closeModal btn btn-action" aria-label="Close" onClick={this.props.toggleLoginModal}></button>
+                            <li className={"modal-title " + (this.state.activeView === 2 ? "active" : "")}>
+                                <a onClick={() => this.setState({activeView: 2})}>{t("NEW_ACCOUNT")}</a>
+                            </li>
+                            <button className="closeModal btn btn-action" onClick={this.props.toggleLoginModal}></button>
                         </ul>
                         <div className="tab-content" id="nav-tabContent">
-                            <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" className="modal-body tab-pane fade in active">
+                            {this.state.activeView === 1 ?
+                            <div id="nav-login" className="modal-body">
                                 {this.props.scope !== 'admin' && this.props.config.Frontend.Mode === 2 ? 
                                     <React.Fragment>
                                         <div className="tour hidden">
@@ -162,8 +166,8 @@ class LoginModal extends Component {
                                         <i className="glyphicon glyphicon-ok"></i>
                                     </button>
                                 </div>
-                            </div>
-                            <div id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" className="modal-body tab-pane fade">
+                            </div> :
+                            <div id="nav-signup" className="modal-body">
                                 <div>
                                     <input type="text" id="signupLogin" className={this.state.errorBackground} name="modalLogin" placeholder={t("NICKNAME")}
                                         defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
@@ -190,6 +194,7 @@ class LoginModal extends Component {
                                     </button>
                                 </div>
                             </div>
+                            }
                         </div>
 
                     </div>
