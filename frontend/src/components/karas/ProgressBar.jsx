@@ -14,7 +14,9 @@ class ProgressBar extends Component {
             // Int (ms) : time unit between every call
             refreshTime: 1000,
             // String : status of the player
-            status: undefined
+            status: undefined,
+            karaInfoText: this.props.t("KARA_PAUSED_WAITING"),
+            length: -1
         };
         /* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
         if (is_touch_device()) {
@@ -33,8 +35,6 @@ class ProgressBar extends Component {
             $('#progressBarColor').removeClass('cssTransform')
                 .css('transform', 'translateX(' + e.pageX + 'px)')
                 .addClass('');
-
-            $('#progressBar').attr('title', oldState.timeposition);
         }
     }
 
@@ -59,10 +59,9 @@ class ProgressBar extends Component {
 
     async goToPosition(e) {
         var karaInfo = $('#karaInfo');
-        var songLength = karaInfo.attr('length');
         var barInnerwidth = karaInfo.innerWidth();
         var futurTimeX = e.pageX - karaInfo.offset().left;
-        var futurTimeSec = songLength * futurTimeX / barInnerwidth;
+        var futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
 
         if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
             $('#progressBarColor').removeClass('cssTransform')
@@ -74,7 +73,7 @@ class ProgressBar extends Component {
     }
 
     karaInfoClick(e) {
-        if (this.state.status != undefined && this.state.status != '' && this.state.status != 'stop' && $(this).attr('length') != -1) {
+        if (this.state.status != undefined && this.state.status != '' && this.state.status != 'stop' && this.state.length != -1) {
             this.goToPosition(e);
         }
     }
@@ -85,9 +84,9 @@ class ProgressBar extends Component {
     async refreshPlayerInfos(data) {
         if (this.state.oldState != data) {
             var newWidth = $('#karaInfo').width() * 
-                parseInt(10000 * (data.timePosition + this.state.refreshTime / 1000) / $('#karaInfo').attr('length')) / 10000 + 'px';
+                parseInt(10000 * (data.timePosition + this.state.refreshTime / 1000) / this.state.length) / 10000 + 'px';
 
-            if (data.timePosition != this.state.oldState.timePosition && $('#karaInfo').attr('length') != 0) {
+            if (data.timePosition != this.state.oldState.timePosition && this.state.length != 0) {
                 var elm = document.getElementById('progressBarColor');
                 elm.style.transform = 'translateX(' + newWidth + ')';
             }
@@ -121,23 +120,13 @@ class ProgressBar extends Component {
                 barCss.addClass('cssTransform');
 
                 if (data.currentlyPlaying === null) {
-                    $('#karaInfo').attr('idKara', data.currentlyPlaying);
-                    $('#karaInfo').attr('length', -1);
-                    $('#karaInfo > span').text(this.props.t('KARA_PAUSED_WAITING'));
-                    $('#karaInfo > span').data('text', this.props.t('KARA_PAUSED_WAITING'));
+                    this.setState({karaInfoText: this.props.t('KARA_PAUSED_WAITING'), length: -1})
                 } else if (data.currentlyPlaying === -1) {
-                    $('#karaInfo').attr('idKara', data.currentlyPlaying);
-                    $('#karaInfo').attr('length', -1);
-                    $('#karaInfo > span').text(this.props.t('JINGLE_TIME'));
-                    $('#karaInfo > span').data('text', this.props.t('JINGLE_TIME'));
-
+                    this.setState({karaInfoText: this.props.t('JINGLE_TIME'), length: -1})
                 } else {
                     var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
                     var kara = response.data.data;
-                    $('#karaInfo').attr('idKara', kara.kid);
-                    $('#karaInfo').attr('length', kara.duration);
-                    $('#karaInfo > span').text(buildKaraTitle(kara));
-                    $('#karaInfo > span').data('text', buildKaraTitle(kara));
+                    this.setState({karaInfoText: buildKaraTitle(kara), length: kara.duration})
                 }
             }
             this.setState({oldState: data});
@@ -148,11 +137,11 @@ class ProgressBar extends Component {
         const t = this.props.t;
         return (
             <div id="progressBar" className="underHeader">
-                <div id="karaInfo" idkara="-1" onDragStart={() => { return false }} draggable="false"
+                <div id="karaInfo" onDragStart={() => { return false }} draggable="false"
                     onClick={this.karaInfoClick}
                     onMouseDown={this.mouseDown} onMouseUp={() => this.setState({mouseDown: false})}
                     onMouseMove={this.mouseMove} onMouseOut={this.mouseOut}
-                ><span>{t("KARA_PAUSED_WAITING")}</span></div>
+                ><span>{this.state.karaInfoText}</span></div>
                 <div id="progressBarColor" className="cssTransform"></div>
             </div>
         )
