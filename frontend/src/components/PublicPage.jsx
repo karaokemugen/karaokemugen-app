@@ -66,7 +66,7 @@ class PublicPage extends Component {
   }
 
   toggleHelpModal() {
-    this.setState({ loginModal: false, callHelpModal: !this.state.callHelpModal });
+    this.setState({ loginModal: false, helpModal: !this.state.helpModal, dropDownMenu:false });
   }
 
   setLyrics() {
@@ -123,7 +123,7 @@ class PublicPage extends Component {
               <PollModal pollModal={this.state.pollModal} closePollModal={() => this.setState({ pollModal: false })} /> : null
             }
             {this.state.helpModal ?
-              <HelpModal /> : null
+              <HelpModal toggleHelpModal={this.toggleHelpModal} version={this.props.settings.version} /> : null
             }
             <ProgressBar />
             {this.props.settings.config.Frontend.Mode === 2 ?
