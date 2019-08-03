@@ -119,30 +119,8 @@ class WelcomePage extends Component {
         }
         <div className="navbar-default navbar-fixed-top" id="navigation">
           <div className="container">
-            <div className="navbar-header">
-              <button
-                type="button"
-                className="navbar-toggle collapsed"
-                data-toggle="collapse"
-                data-target="#navbar"
-              >
-                <span className="sr-only">Toggle navigation</span>
-                <span className="icon-bar" />
-                <span className="icon-bar" />
-                <span className="icon-bar" />
-              </button>
-            </div>
 
-            <nav className="collapse navbar-collapse" id="navbar">
               <ul className="nav navbar-nav navbar-right" id="top-nav">
-                <li className="current hidden">
-                  <a href="#body">Home</a>
-                </li>
-                <li>
-                  <a href="#about" className="hidden">
-                    {t("WLCM_ABOUTUS")}
-                  </a>
-                </li>
                 <li>
                   <a
                     href="http://mugen.karaokes.moe/contact.html"
@@ -173,7 +151,6 @@ class WelcomePage extends Component {
                   </li> : null
                 }
               </ul>
-            </nav>
           </div>
         </div>
 
@@ -235,7 +212,7 @@ class WelcomePage extends Component {
               <div className="col-md-12 wow block zoomIn">
                 <ul className="news">
                   {this.state.news.map(article => {
-                    return (<li className={this.state.open ? "new open" : "new"}
+                    return (<li key={Math.random()} className={this.state.open ? "new open" : "new"}
                       type={article.type} onClick={() => this.setState({ open: !this.state.open })}>
                       <p className="new-header">
                         <b>{article.title}</b>

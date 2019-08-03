@@ -9,7 +9,7 @@ import {on} from '../lib/utils/pubsub';
 import {setState, getState} from '../utils/state';
 import {profile} from '../lib/utils/logger';
 import {resolve} from 'path';
-import i18n from 'i18n';
+import i18n from 'i18next';
 
 //DAO
 import {
@@ -1092,7 +1092,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 			// When a kara has been added by admin/import, do not display it on screen.
 			// Escaping {} because it'll be interpreted as ASS tags below.
 			kara.nickname = kara.nickname.replace(/[\{\}]/g,'');
-			requester = `${i18n.__('REQUESTED_BY')} ${kara.nickname}`;
+			requester = `${i18n.t('REQUESTED_BY')} ${kara.nickname}`;
 			// Get user avatar
 			const user = await findUserByName(kara.username);
 			avatarfile = resolve(resolvedPathAvatars(), user.avatar_file);
@@ -1169,7 +1169,7 @@ export async function testCurrentPlaylist() {
 	if (currentPL_id) {
 		setState({currentPlaylistID: currentPL_id});
 	} else {
-		setState({currentPlaylistID: await createPlaylist(i18n.__('CURRENT_PLAYLIST'),{
+		setState({currentPlaylistID: await createPlaylist(i18n.t('CURRENT_PLAYLIST'),{
 			visible: true,
 			current: true
 		},'admin')
@@ -1185,7 +1185,7 @@ export async function testPublicPlaylist() {
 	if (publicPL_id) {
 		setState({ publicPlaylistID: publicPL_id });
 	} else {
-		setState({ publicPlaylistID: await createPlaylist(i18n.__('PUBLIC_PLAYLIST'),{
+		setState({ publicPlaylistID: await createPlaylist(i18n.t('PUBLIC_PLAYLIST'),{
 			visible: true,
 			public: true
 		},'admin')

@@ -29,21 +29,19 @@ class PollModal extends Component {
         const t = this.props.t;
         return (
             this.props.pollModal ?
-                <div className="modal modalPage fade" id="pollModal" tabIndex="30">
+                <div className="modal modalPage" id="pollModal">
                     <div className="modal-dialog modal-md">
                         <div className="modal-content">
                             <ul className="nav nav-tabs nav-justified modal-header">
                                 <li className="modal-title active">
-                                    <a data-toggle="tab" href="#nav-poll" role="tab" aria-controls="nav-poll" aria-selected="true" style={{ fontWeight: 'bold' }}>
-                                        {t("POLLTITLE")}</a>
+                                    <a style={{ fontWeight: 'bold' }}>{t("POLLTITLE")}</a>
                                 </li>
-                                <button className="closeModal btn btn-action" aria-label="Close" onClick={this.props.closePollModal}></button>
+                                <button className="closeModal btn btn-action" onClick={this.props.closePollModal}></button>
                                 <span className="timer"></span>
 
                             </ul>
                             <div className="tab-content" id="nav-tabContent">
-                                <div id="nav-poll" role="tabpanel" aria-labelledby="nav-poll-tab"
-                                    className="modal-body tab-pane fade in active" style={{ height: 3 * this.state.poll.length + 'em' }}>
+                                <div id="nav-poll" className="modal-body" style={{ height: 3 * this.state.poll.length + 'em' }}>
                                     <div className="modal-message">
                                         {this.state.poll.map(kara => {
                                             return <button className="btn btn-default tour poll" key={kara.playlistcontent_id} value={kara.playlistcontent_id}

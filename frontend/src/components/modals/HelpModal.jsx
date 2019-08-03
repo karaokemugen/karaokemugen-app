@@ -5,30 +5,33 @@ import { is_touch_device,startIntro } from '../toolsReact';
 
 class HelpModal extends Component {
     constructor(props) {
-        super(props)
+        super(props);
+        this.mugenTouchscreenHelp = this.mugenTouchscreenHelp.bind(this);
+        this.tourAgain = this.tourAgain.bind(this);
     }
 
     mugenTouchscreenHelp() {
         createCookie('mugenTouchscreenHelp', true, -1);
+        this.props.toggleHelpModal();
     }
 
     tourAgain() {
 		startIntro('public', 'afterLogin');
-		$('#helpModal').modal('hide');
+		this.props.toggleHelpModal();
 	}
 
     render() {
         const t = this.props.t;
         return (
-            <div className="modal modalPage fade" tabIndex="22" id="helpModal">
+            <div className="modal modalPage" id="helpModal">
                 <div className="modal-dialog modal-sm">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
                             <li className="modal-title active"><a>{t("CL_HELP")}</a></li>
-                            <button className="closeModal btn btn-action" aria-label="Close" onClick={this.mugenTouchscreenHelp}></button>
+                            <button className="closeModal btn btn-action" onClick={this.mugenTouchscreenHelp}></button>
                         </ul>
                         <div className="tab-content" id="nav-tabContent-help">
-                            <div id="nav-help" className="modal-body tab-pane fade in active">
+                            <div id="nav-help" className="modal-body">
                                 {is_touch_device ?
                                     <div id="mobileHelp" className="text"
                                         dangerouslySetInnerHTML={{ __html: t("CL_HELP_PUBLIC_MOBILE") }}>

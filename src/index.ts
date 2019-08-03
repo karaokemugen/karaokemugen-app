@@ -68,7 +68,7 @@ async function main() {
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
 	console.log('================================================================');
-	await configureLogger(appPath, !!argv.debug, false);
+	await configureLogger(appPath, !!argv.debug, true);
 	await initConfig(argv);
 	let config = getConfig();
 	await parseCommandLineArgs(argv);
@@ -160,8 +160,6 @@ async function checkPaths(config: Config) {
 	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.DB));
 	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Import));
 	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Temp));
-	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Previews));
-
 	await Promise.all(checks);
 	logger.debug('[Launcher] Directory checks complete');
 }

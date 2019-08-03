@@ -127,6 +127,7 @@ export async function initDBSystem(): Promise<boolean> {
 		await generateDB();
 	} catch(err) {
 		logger.error(`[DB] Generation failed : ${err}`);
+		throw 'Generation failure';
 	}
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
@@ -157,7 +158,6 @@ export async function generateDB(): Promise<boolean> {
 		logger.info('[DB] Database generation completed successfully!');
 		if (state.opt.generateDB) await exit(0);
 	} catch(err) {
-		logger.error(`[DB] Database generation completed with errors : ${err}`);
 		if (state.opt.generateDB) await exit(1);
 	}
 	return true;

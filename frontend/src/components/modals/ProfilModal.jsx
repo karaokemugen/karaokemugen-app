@@ -18,7 +18,8 @@ class ProfilModal extends Component {
             pathAvatar: '/avatars/',
             users: [],
             user: {},
-            passwordDifferent: 'form-control'
+            passwordDifferent: 'form-control',
+            activeView: 1
         };
     }
 
@@ -146,23 +147,28 @@ class ProfilModal extends Component {
             }, 500);
         }
         return (
-            <div className="modal modalPage" id="profilModal" tabIndex="21">
+            <div className="modal modalPage" id="profilModal">
                 <div className="modal-dialog modal-md">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
-                            <li className="modal-title active"><a data-toggle="tab" href="#nav-profil" role="tab" aria-controls="nav-profil" aria-selected="true"> {t("PROFILE")}</a></li>
+                            <li className={"modal-title " + (this.state.activeView === 1 ? "active" : "")}>
+                                <a onClick={() => this.setState({activeView: 1})}> {t("PROFILE")}</a>
+                            </li>
                             {this.props.logInfos.role !== 'guest' ?
-                                <li className="modal-title"><a data-toggle="tab" href="#nav-lang" role="tab" aria-controls="nav-lang" aria-selected="false"> {t("LANGUAGE")}</a></li> : null
+                                <li className={"modal-title " + (this.state.activeView === 2 ? "active" : "")}>
+                                    <a onClick={() => this.setState({activeView: 2})}> {t("LANGUAGE")}</a>
+                                </li> : null
                             }
-                            <li className="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab" aria-controls="nav-userlist" aria-selected="false"> {t("USERLIST")}</a></li>
-                            <button className="closeModal btn btn-action" aria-label="Close" onClick={this.props.toggleProfileModal}></button>
+                            <li className={"modal-title " + (this.state.activeView === 3 ? "active" : "")}>
+                                <a onClick={() => this.setState({activeView: 3})}> {t("USERLIST")}</a>
+                            </li>
+                            <button className="closeModal btn btn-action" onClick={this.props.toggleProfileModal}></button>
                         </ul>
                         <div className="tab-content" id="nav-tabContent">
-                            <div id="nav-profil" role="tabpanel" aria-labelledby="nav-profil-tab" className="modal-body tab-pane fade in active">
+                            {this.state.activeView === 1 ?
+                            <div id="nav-profil" className="modal-body" >
                                 <div className="profileContent">
-
                                     <div className="col-md-3 col-lg-3 col-xs-12 col-sm-12">
-
                                         <label title={t("AVATAR_IMPORT")} className="btn btn-default plGenericButton avatar" name="import">
                                             <img className="img-circle" name="avatar_file"
                                                 src={this.state.user.avatar_file ? this.state.pathAvatar + this.state.user.avatar_file : {blankAvatar}}
@@ -225,8 +231,9 @@ class ProfilModal extends Component {
                                         </div> : null
                                     }
                                 </div>
-                            </div>
-                            <div id="nav-lang" role="tabpanel" aria-labelledby="nav-lang-tab" className="modal-body tab-pane fade in">
+                            </div> : null}
+                            {this.state.activeView === 2 ? 
+                            <div id="nav-lang" className="modal-body">
                                 <div className="profileContent">
                                     <div className="col-md-12 col-lg-12 col-xs-12 col-sm-12 profileData">
                                         <div className="profileLine row">
@@ -260,8 +267,10 @@ class ProfilModal extends Component {
                                         }
                                     </div>
                                 </div>
-                            </div>
-                            <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" className="modal-body tab-pane fade in">
+                            </div> : null
+                            }
+                            {this.state.activeView === 3 ?
+                            <div id="nav-userlist" className="modal-body">
                                 <div className="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
                                     {this.state.users.map(user => {
                                         return <li key={user.login} className={user.flag_online ? "list-group-item online" : "list-group-item"} id={user.login} onClick={this.getUserDetails}>
@@ -279,11 +288,8 @@ class ProfilModal extends Component {
                                         </li>;
                                     })}
                                 </div>
-                            </div>
-                            <div className="modal-footer">
-
-                            </div>
-
+                            </div> : null
+                            }
                         </div>
 
                     </div>

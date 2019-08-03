@@ -9,7 +9,8 @@ class AdminHeader extends Component {
     super(props);
     this.state = {
       privateMode: Boolean(this.props.config.Karaoke.Private),
-      statusPlayer: {}
+      statusPlayer: {},
+      dropDownMenu: false
     };
     this.saveMode = this.saveMode.bind(this);
     this.adminMessage = this.adminMessage.bind(this);
@@ -94,34 +95,33 @@ class AdminHeader extends Component {
             <button
               className="btn btn-dark pull-right dropdown-toggle klogo"
               type="button"
-              id="dropdownMenu1"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="true"
+              onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}
             />
-            <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <li
-                title={t("ACCOUNT")}
-                action="account"
-                className="btn btn-default btn-dark"
-                onClick={this.props.toggleProfileModal}
-              >
-                <i className="glyphicon glyphicon-user" />
-              </li>
-              <li
-                title={t("LOGOUT")} onClick={this.props.logOut}
-                className="btn btn-default btn-dark"
-              >
-                <i className="glyphicon glyphicon-log-out" />
-              </li>
-              <li
-                title={t("SHUTDOWN")}
-                className="btn btn-default btn-dark"
-                onClick={this.props.powerOff}
-              >
-                <i className="glyphicon glyphicon-off" />
-              </li>
-            </ul>
+            {this.state.dropDownMenu ?
+              <ul className="dropdown-menu">
+                <li
+                  title={t("ACCOUNT")}
+                  action="account"
+                  className="btn btn-default btn-dark"
+                  onClick={this.props.toggleProfileModal}
+                >
+                  <i className="glyphicon glyphicon-user" />
+                </li>
+                <li
+                  title={t("LOGOUT")} onClick={this.props.logOut}
+                  className="btn btn-default btn-dark"
+                >
+                  <i className="glyphicon glyphicon-log-out" />
+                </li>
+                <li
+                  title={t("SHUTDOWN")}
+                  className="btn btn-default btn-dark"
+                  onClick={this.props.powerOff}
+                >
+                  <i className="glyphicon glyphicon-off" />
+                </li>
+              </ul> : null
+            }
           </div>
 
           <a

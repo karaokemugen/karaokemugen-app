@@ -87,7 +87,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	};
 
 	handleTagMergeSelection = (value) => {
-		this.setState({mergeSelection:value})
+		this.setState({mergeSelection:value[1]})
 	}
 	handleTagMerge = (e) => {
 		this.props.mergeAction(this.props.tag.tid,this.state.mergeSelection)
@@ -257,7 +257,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							})(
 								<Input
 									placeholder='Name in that language'
-									defaultValue={this.state[`lang_${langKey}`]}
 								/>
 							)}
 

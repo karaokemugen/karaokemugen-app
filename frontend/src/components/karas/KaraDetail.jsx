@@ -291,16 +291,14 @@ class KaraDetail extends Component {
                     onClick={this.showFullLyrics}
                   />
                 ) : null}
-                {(data.mediafile.match(/^((?!\.mp3).)*$/) && data.mediafile.match(/^((?!\.m4a).)*$/)) ? (
-                  <button
-                    title={t("TOOLTIP_SHOWVIDEO")}
-                    className={
-                      "showVideo btn btn-action" +
-                      (is_touch_device() ? "mobile" : "")
-                    }
-                    onClick={this.showVideo}
-                  />
-                ) : null}
+                <button
+                  title={t("TOOLTIP_SHOWVIDEO")}
+                  className={
+                    "showVideo btn btn-action" +
+                    (is_touch_device() ? "mobile" : "")
+                  }
+                  onClick={this.showVideo}
+                />
                 {data.serie ? (
                   <button
                     className={
