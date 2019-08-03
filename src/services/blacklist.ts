@@ -73,7 +73,7 @@ export async function addBlacklistCriteria(type: number, value: any) {
 		if (type === 1001 || type < 1000) {
 			if (blcList.some((blc: BLC) => !new RegExp(uuidRegexp).test(blc.value))) throw `Blacklist criteria value mismatch : type ${type} must have UUID values`;
 		}
-		if ((type > 1001 && type <= 1003) || (type === 1005 || type === 1006) && !blcvalues.some(isNumber))throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
+		if ((type === 1002 || type === 1003 || type === 1005 || type === 1006) && !blcvalues.some(e => isNumber(e))) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
 		await addBLC(blcList);
 		return await generateBlacklist();
 	} catch(err) {
