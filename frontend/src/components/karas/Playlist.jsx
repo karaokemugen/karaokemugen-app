@@ -498,7 +498,7 @@ class Playlist extends Component {
                     this.state.data.content.map(kara => {
                       // build the kara line
                       return (
-                        //<div ref={kara.karaRef} key={Math.random()}></div>
+                        <li ref={kara.karaRef} key={Math.random()}>
                         <KaraLine
                           key={kara.kid}
                           kara={kara}
@@ -517,6 +517,7 @@ class Playlist extends Component {
                           handleDragStart={this.handleDragStart}
                           handleDragEnd={this.handleDragEnd}
                         />
+                        </li>
                       );
                     })
                   }

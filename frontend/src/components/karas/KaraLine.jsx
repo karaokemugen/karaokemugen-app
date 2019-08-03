@@ -101,7 +101,7 @@ class KaraLine extends Component {
     var idPlaylist = this.props.idPlaylist;
     var flagPublic = this.props.flagPublic
     return (
-      <li className={"list-group-item " + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu' : '')}
+      <div className={"list-group-item " + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu' : '')}
         onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
         {is_touch_device() && scope !== 'admin' ? null :
           <div className="actionDiv"> {this.props.idPlaylistTo !== this.props.idPlaylist ? 
@@ -169,7 +169,7 @@ class KaraLine extends Component {
             makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite}
             getTagInLocale={this.getTagInLocale} logInfos={this.props.logInfos} freeKara={this.freeKara}></KaraDetail> : null
         }
-      </li>)
+      </div>)
   }
 }
 

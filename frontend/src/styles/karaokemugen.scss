@@ -207,11 +207,11 @@ select.form-control {
 	line-height: 3.1rem;
 }
 
-.playlist-main .list-group-item:nth-child(even) {
+.playlist-main li:nth-child(even) .list-group-item {
 	background-color: hsla(0, 0%, 27%, 0.7);
 }
 
-body:not(.touch) .playlist-main .list-group-item:nth-child(even):hover {
+body:not(.touch) .playlist-main li:nth-child(even) .list-group-item:hover {
 	filter: brightness(117%);
 }
 body:not(.touch) .playlist-main .list-group-item:hover {
