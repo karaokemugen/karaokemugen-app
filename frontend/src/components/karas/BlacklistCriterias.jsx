@@ -26,15 +26,17 @@ class BlacklistCriterias extends Component {
             bcType: "1002",
             bcVal: ""
         };
+        this.addBlacklistCriteria = this.addBlacklistCriteria.bind(this);
+        this.deleteCriteria = this.deleteCriteria.bind(this);
     }
 
     addBlacklistCriteria () {
-        axios.post('/api/' + scope + '/blacklist/criterias',
+        axios.post('/api/' + this.props.scope + '/blacklist/criterias',
          { blcriteria_type: this.state.bcType, blcriteria_value: this.state.bcVal });
     }
 
     deleteCriteria (bcId) {
-        axios.delete('/api/' + scope + '/blacklist/criterias/' + bcId)
+        axios.delete('/api/' + this.props.scope + '/blacklist/criterias/' + bcId)
     }
 
     render() {
@@ -55,7 +57,8 @@ class BlacklistCriterias extends Component {
                                 {tagsFiltered.length > 0 ? 
                                     <Autocomplete className="form-control" name="bcVal" value={this.state.bcVal} 
                                         options={tagsFiltered} onChange={value => this.setState({bcVal: value})} /> :
-                                    <input type="text" id="bcVal" className="input-sm"/>
+                                    <input type="text" id="bcVal" value={this.state.bcVal} 
+                                        className="input-sm" onChange={e => this.setState({bcVal: e.target.value})}/>
                                 }
                             </span> 
                             <button id="bcAdd" className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}

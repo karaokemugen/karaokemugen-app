@@ -37,12 +37,12 @@ class OnlineStatsModal extends Component {
                                     <div className="card">
                                         <div className="card-header" id="headingOne">
                                             <h5 className="mb-0">
-                                                <a className="btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                <a className="btn-link" type="button" data-toggle="collapse" data-target="#collapseOne">
                                                     {t('ONLINE_STATS.DETAILS.TITLE')}
                                                 </a>
                                             </h5>
                                         </div>
-                                        <div id="collapseOne" className="collapse" aria-labelledby="headingOne" data-parent="#accordionDetails">
+                                        <div id="collapseOne" className="collapse" data-parent="#accordionDetails">
                                             <div className="card-body">
 
                                                 {'- ' + t('ONLINE_STATS.DETAILS.1')}<br />
