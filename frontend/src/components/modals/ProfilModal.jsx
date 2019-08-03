@@ -147,7 +147,7 @@ class ProfilModal extends Component {
             }, 500);
         }
         return (
-            <div className="modal modalPage" id="profilModal" tabIndex="21">
+            <div className="modal modalPage" id="profilModal">
                 <div className="modal-dialog modal-md">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">

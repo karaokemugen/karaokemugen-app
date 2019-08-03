@@ -29,7 +29,7 @@ class PollModal extends Component {
         const t = this.props.t;
         return (
             this.props.pollModal ?
-                <div className="modal modalPage fade" id="pollModal" tabIndex="30">
+                <div className="modal modalPage" id="pollModal">
                     <div className="modal-dialog modal-md">
                         <div className="modal-content">
                             <ul className="nav nav-tabs nav-justified modal-header">

@@ -110,7 +110,7 @@ class LoginModal extends Component {
         const t = this.props.t;
         var loginModalClassName = readCookie('publicTuto') ? "modal modalPage" : "modal modalPage firstRun";
         return (
-            <div className={loginModalClassName} id="loginModal" tabIndex="20">
+            <div className={loginModalClassName} id="loginModal">
                 <div className="modal-dialog modal-sm">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">

@@ -52,7 +52,7 @@ class Modal extends Component {
 	render() {
 		var modalDialogClass = window.innerWidth < 1025 ? "modal-dialog modal-sm" : "modal-dialog modal-md";
 		return (
-			<div className="modal fade" id="modalBox" tabIndex="2" onKeyDown={this.onKeyDown}>
+			<div className="modal fade" id="modalBox" onKeyDown={this.onKeyDown}>
 				<div className={modalDialogClass}>
 					<div className="modal-content">
 						<div className="modal-header">

@@ -9,7 +9,7 @@ class RestrictedHelpModal extends Component {
     render() {
         const t = this.props.t;
         return (
-            <div className="modal modalPage fade" tabIndex="23" id="restrictedHelpModal" hidden>
+            <div className="modal modalPage fade" id="restrictedHelpModal" hidden>
                 <div className="modal-dialog modal-sm">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">

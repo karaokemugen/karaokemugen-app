@@ -23,7 +23,7 @@ class HelpModal extends Component {
     render() {
         const t = this.props.t;
         return (
-            <div className="modal modalPage" tabIndex="22" id="helpModal">
+            <div className="modal modalPage" id="helpModal">
                 <div className="modal-dialog modal-sm">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
