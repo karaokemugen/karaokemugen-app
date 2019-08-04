@@ -144,19 +144,23 @@ class PlaylistHeader extends Component {
   getActionDivContainer() {
     const commandsControls = (
       <div className="btn-group plCommands controls">
-        <button title={this.props.t("PLAYLIST_EDIT")} className="btn btn-default" name="editName" onClick={this.props.editNamePlaylist}>
-          <i className="glyphicon glyphicon-pencil"></i>
-        </button>
-        <button title={this.props.t("START_FAV_MIX")} className="btn btn-default plGenericButton" name="startFavMix" onClick={this.startFavMix}>
+        {this.props.idPlaylist >= 0 ?
+          <button title={this.props.t("PLAYLIST_EDIT")} className="btn btn-default" name="editName" onClick={this.props.editNamePlaylist}>
+            <i className="glyphicon glyphicon-pencil"></i>
+          </button> : null
+        }
+        <button title={this.props.t("START_FAV_MIX")} className="btn btn-default" name="startFavMix" onClick={this.startFavMix}>
           <i className="glyphicon glyphicon-flash"></i>
         </button>
-        <button title={this.props.t("PLAYLIST_ADD")} className="btn btn-default plGenericButton" name="add" onClick={this.addPlaylist}>
+        <button title={this.props.t("PLAYLIST_ADD")} className="btn btn-default" name="add" onClick={this.addPlaylist}>
           <i className="glyphicon glyphicon-plus-sign"></i>
         </button>
-        <button title={this.props.t("PLAYLIST_DELETE")} className="btn btn-danger" name="delete" onClick={this.deletePlaylist}>
-          <i className="glyphicon glyphicon-remove red"></i>
-        </button>
-        <label htmlFor={"import-file" + this.props.side} title={this.props.t("PLAYLIST_IMPORT")} className="btn btn-default plGenericButton" name="import">
+        {this.props.idPlaylist >= 0 ?
+          <button title={this.props.t("PLAYLIST_DELETE")} className="btn btn-danger" name="delete" onClick={this.deletePlaylist}>
+            <i className="glyphicon glyphicon-remove red"></i>
+          </button> : null
+        }
+        <label htmlFor={"import-file" + this.props.side} title={this.props.t("PLAYLIST_IMPORT")} className="btn btn-default" name="import">
           <i className="glyphicon glyphicon-import"></i>
           <input id={"import-file" + this.props.side} className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }}
             onClick={this.importPlaylist} />
@@ -309,12 +313,14 @@ class PlaylistHeader extends Component {
                     </div>
                   </div> : null
                 }
-                <div className="searchMenuButtonContainer btn-group plCommands">
-                  <button type="button" className={"searchMenuButton collapsed btn btn-default" + (this.props.searchMenuOpen ? " searchMenuButtonOpen" : "")}
-                    onClick={this.props.toggleSearchMenu}>
-                    <i className="glyphicon glyphicon-filter"></i>
-                  </button>
-                </div>
+                {this.props.idPlaylist === -1 ?
+                  <div className="searchMenuButtonContainer btn-group plCommands">
+                    <button type="button" className={"searchMenuButton collapsed btn btn-default" + (this.props.searchMenuOpen ? " searchMenuButtonOpen" : "")}
+                      onClick={this.props.toggleSearchMenu}>
+                      <i className="glyphicon glyphicon-filter"></i>
+                    </button>
+                  </div> : null
+                }
               </React.Fragment > : null
             }
             {this.props.side === 1 ?

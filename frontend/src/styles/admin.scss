@@ -214,38 +214,9 @@
 	.panel-heading > div > div:nth-child(2) {
 		padding-left: 4px;
 	}
-	.plDashboard[data-flag_visible="true"] [name="flag_visible"] > i.glyphicon-eye-close {
-		display: none;
-	}
-	.plDashboard[data-flag_visible="false"] [name="flag_visible"] > i.glyphicon-eye-open {
-		display: none;
-	}
 
 	.plDashboard .flags {
 		margin-left: auto;
-	}
-
-	.plDashboard[data-playlist_id="-1"] .flagsContainer {
-		display: none;
-		padding: 0px;
-	}
-	.plDashboard[data-playlist_id="-4"] .actionDiv {
-		display: none;
-	}
-
-	.plDashboard[data-playlist_id="-2"] button[name="flag_visible"],
-	.plDashboard[data-playlist_id="-3"] button[name="flag_visible"],
-	.plDashboard[data-playlist_id="-4"] button[name="flag_visible"]
-	{
-		display: block;
-	}
-
-	.plDashboard[data-playlist_id="-1"] .actionDivContainer .controls button:not(.plGenericButton),
-	.plDashboard[data-playlist_id="-2"] .actionDivContainer .controls button:not(.plGenericButton),
-	.plDashboard[data-playlist_id="-3"] .actionDivContainer .controls button:not(.plGenericButton),
-	.plDashboard[data-playlist_id="-4"] .actionDivContainer .controls button:not(.plGenericButton)
-	{
-		display: none;
 	}
 
 	button[name="addRandomKaras"] {
@@ -287,26 +258,7 @@
 		text-align:right; 
 		font-family: 'Glyphicons Halflings'; 
 	}
-	.plDashboard[data-playlist_id="-2"] .actionDiv {
-		display: none;
-	}
-
-	.plDashboard[data-playlist_id="-1"] .flagsContainer {
-		display: none;	
-	}
-	.searchMenuButtonContainer {
-		display: none;
-	}
-	.plDashboard[data-playlist_id="-1"] .searchMenuButtonContainer {
-		display: block;
-	}
-	.plDashboard[data-playlist_id="-1"] .controlsContainer,
-	.plDashboard[data-playlist_id="-2"] .controlsContainer,
-	.plDashboard[data-playlist_id="-3"] .controlsContainer,
-	.plDashboard[data-playlist_id="-4"] .controlsContainer  {
-		display: none;	
-	}
-
+	
 	.plSearch {
 		order: 2;
 	}
