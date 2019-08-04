@@ -310,8 +310,8 @@ class PlaylistHeader extends Component {
                   </div> : null
                 }
                 <div className="searchMenuButtonContainer btn-group plCommands">
-                  <button type="button" className="searchMenuButton collapsed btn btn-default"
-                    data-toggle="collapse" data-target={"#searchMenu" + this.props.side} aria-expanded="false">
+                  <button type="button" className={"searchMenuButton collapsed btn btn-default" + (this.props.searchMenuOpen ? " searchMenuButtonOpen" : "")}
+                    onClick={this.props.toggleSearchMenu}>
                     <i className="glyphicon glyphicon-filter"></i>
                   </button>
                 </div>
@@ -324,9 +324,9 @@ class PlaylistHeader extends Component {
 
           </div> : null
         }
-        {this.props.side === 1 ?
+        {this.props.side === 1 && this.props.searchMenuOpen ?
           <nav className="navbar navbar-default  searchMenuContainer">
-            <div className="searchMenu container collapse" id={"searchMenu" + this.props.side}>
+            <div className="searchMenu container" id={"searchMenu" + this.props.side}>
               <ul className="nav navbar-nav">
                 <li className="tagFilter">
                   <span className='value'>

@@ -28,7 +28,8 @@ class PublicPage extends Component {
       pseudoValue: "",
       mobileMenu: false,
       idsPlaylist: {left: '', right: ''},
-      dropDownMenu: false
+      dropDownMenu: false,
+      searchMenuOpen: false
     };
     this.openLoginOrProfileModal = this.openLoginOrProfileModal.bind(this);
     this.toggleHelpModal = this.toggleHelpModal.bind(this);
@@ -36,6 +37,7 @@ class PublicPage extends Component {
     this.getLucky = this.getLucky.bind(this);
     this.changePseudo = this.changePseudo.bind(this);
     this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
+    this.toggleSearchMenu = this.toggleSearchMenu.bind(this);
   }
 
   majIdsPlaylist(side, value) {
@@ -97,6 +99,10 @@ class PublicPage extends Component {
     video.removeAttr('src');
   }
 
+  toggleSearchMenu() {
+    this.setState({searchMenuOpen: !this.state.searchMenuOpen});
+  }
+
   render() {
     const t = this.props.t;
     return (
@@ -130,7 +136,8 @@ class PublicPage extends Component {
               <React.Fragment>
                 <div id="header" className="header">
                   <div className="col-lg-8 col-md-7 col-msm-12  col-sm-12 col-xs-12 headerInputs">
-                    <button type="button" className="searchMenuButton collapsed btn btn-sm btn-default" data-toggle="collapse" data-target="#searchMenu1" aria-expanded="false">
+                    <button type="button" className={"searchMenuButton btn btn-sm btn-default" + (this.state.searchMenuOpen ? " searchMenuButtonOpen" : "")} 
+                      onClick={this.toggleSearchMenu}>
                       <i className="glyphicon glyphicon-filter"></i>
                     </button>
 
@@ -204,7 +211,8 @@ class PublicPage extends Component {
                 <div className={"panel col-msm-12 col-sm-12 col-xs-12"
                   + (this.props.settings.config.Frontend.Mode === 1 ? "col-lg-4 col-md-5" : "col-lg-8 col-md-7")} id="panel1" side={"1"}>
                   <Playlist scope='public' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config} 
-                    idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
+                    idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} toggleSearchMenu={this.toggleSearchMenu}
+                    searchMenuOpen={this.state.searchMenuOpen} />
                 </div>
                 <div className={"panel col-msm-12 col-sm-12 col-xs-12"
                   + (this.props.settings.config.Frontend.Mode === 1 ? "col-lg-8 col-md-7" : "col-lg-4 col-md-5")} id="panel2" side="2">

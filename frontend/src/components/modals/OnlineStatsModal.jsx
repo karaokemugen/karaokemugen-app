@@ -6,6 +6,9 @@ import {expand} from '../tools';
 class OnlineStatsModal extends Component {
     constructor(props) {
         super(props)
+        this.state = {
+            openDetails: false
+        }
         this.onClick = this.onClick.bind(this);
     }
 
@@ -37,22 +40,22 @@ class OnlineStatsModal extends Component {
                                     <div className="card">
                                         <div className="card-header" id="headingOne">
                                             <h5 className="mb-0">
-                                                <a className="btn-link" type="button" data-toggle="collapse" data-target="#collapseOne">
+                                                <a className="btn-link" type="button" onClick={() => this.setState({openDetails: !this.state.openDetails})}>
                                                     {t('ONLINE_STATS.DETAILS.TITLE')}
                                                 </a>
                                             </h5>
                                         </div>
-                                        <div id="collapseOne" className="collapse" data-parent="#accordionDetails">
+                                        {this.state.openDetails ?
                                             <div className="card-body">
-
                                                 {'- ' + t('ONLINE_STATS.DETAILS.1')}<br />
                                                 {'- ' + t('ONLINE_STATS.DETAILS.2')}<br />
                                                 {'- ' + t('ONLINE_STATS.DETAILS.3')}<br />
                                                 {'- ' + t('ONLINE_STATS.DETAILS.4')}<br />
                                                 {'- ' + t('ONLINE_STATS.DETAILS.5')}<br />
                                                 <p>{t('ONLINE_STATS.DETAILS.OUTRO')}</p>
-                                            </div>
-                                        </div>
+                                                <br />
+                                            </div> : null
+                                        }
                                     </div >
                                     <div className="modal-message text">
                                         <p>{t('ONLINE_STATS.CHANGE')}</p>

@@ -1450,7 +1450,7 @@ input[type="text"]:focus, input[type="password"]:focus {
    float: right;
    border: 0;
 }
-.searchMenuButton[aria-expanded="true"] {
+.searchMenuButtonOpen{
     background-color: hsla(211, 33%, 38%, 1);
     font-weight: bold;
     color: #eee;

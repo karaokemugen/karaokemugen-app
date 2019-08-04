@@ -16,9 +16,11 @@ class AdminPage extends Component {
       loginModal: !this.props.logInfos.token || this.props.logInfos.role !== 'admin',
       profileModal: false,
       onlineStatsModal: this.props.settings.config.Online.Stats === undefined,
-      idsPlaylist: { left: '', right: '' }
+      idsPlaylist: { left: '', right: '' },
+      searchMenuOpen: false
     };
     this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
+    this.toggleSearchMenu = this.toggleSearchMenu.bind(this);
   }
 
   majIdsPlaylist(side, value) {
@@ -36,6 +38,10 @@ class AdminPage extends Component {
     $('.overlay').hide();
     video[0].pause();
     video.removeAttr('src');
+  }
+
+  toggleSearchMenu() {
+    this.setState({searchMenuOpen: !this.state.searchMenuOpen});
   }
 
   render() {
@@ -61,7 +67,8 @@ class AdminPage extends Component {
           <div className={"playlist-main row "+(this.state.options ? "hidden" : "")} id="playlist">
             <div className="panel col-lg-6 col-xs-6" id="panel1" side="1">
               <Playlist scope='admin' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
-                idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
+                idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} toggleSearchMenu={this.toggleSearchMenu}
+                searchMenuOpen={this.state.searchMenuOpen} />
             </div>
             <div className="panel col-lg-6 col-xs-6" id="panel2" side="2">
               <Playlist scope='admin' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}

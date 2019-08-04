@@ -521,6 +521,8 @@ class Playlist extends Component {
             tags={this.props.tags}
             onChangeTags={this.onChangeTags}
             getPlaylist={this.getPlaylist}
+            toggleSearchMenu={this.props.toggleSearchMenu}
+            searchMenuOpen={this.props.searchMenuOpen}
           />
           <div
             className="playlistContainer"
