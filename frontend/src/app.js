@@ -1,12 +1,11 @@
 import { Switch, Route } from 'react-router'
 import WelcomePage from './components/WelcomePage';
 import AdminPage from './components/AdminPage';
-import { withTranslation } from "react-i18next";
 import PublicPage from './components/PublicPage';
 import React, { Component, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from "react-router-dom";
-import './components/i18n';
+import i18n from './components/i18n';
 import NotFoundPage from './components/NotfoundPage'
 import io from 'socket.io-client';
 import langs from "langs";
@@ -27,6 +26,7 @@ class App extends Component {
         }
         this.getSettings = this.getSettings.bind(this);
         this.updateLogInfos = this.updateLogInfos.bind(this);
+        this.powerOff = this.powerOff.bind(this);
         axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     }
@@ -96,6 +96,7 @@ class App extends Component {
         this.getSettings();
         window.socket.on('settingsUpdated', this.getSettings);
         window.socket.on('connect', () => this.setState({ shutdownPopup: false }));
+        window.socket.on('disconnect', () => this.setState({ shutdownPopup: true }));
         const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
         this.setState({tags: tags.concat(series, years)});
     }
@@ -127,20 +128,17 @@ class App extends Component {
     powerOff() {
         axios.post("/api/admin/shutdown");
         this.setState({ shutdownPopup: true });
-        $('.noise').animate({
-            opacity: 0.38
-        }, 30000);
     }
 
     render() {
         return (
             this.state.shutdownPopup ?
                 <div className="shutdown-popup">
-                    <div className="noise-wrapper" style="opacity: 1;">
+                    <div className="noise-wrapper" style={{opacity: 1}}>
                         <div className="noise"></div>'
 				    </div>
-                    <div className="shutdown-popup-text">{this.props.t('SHUTDOWN_POPUP')}</div>
-                    <button title={this.props.t('TOOLTIP_CLOSEPARENT')} className="closeParent btn btn-action"
+                    <div className="shutdown-popup-text">{i18n.t('SHUTDOWN_POPUP')}<br/>{"·´¯`(>_<)´¯`·"}</div>
+                    <button title={i18n.t('TOOLTIP_CLOSEPARENT')} className="closeParent btn btn-action"
                     onClick={() => this.setState({shutdownPopup: false})}></button>
                 </div> :
                 this.state.settings ?
@@ -160,5 +158,5 @@ class App extends Component {
     }
 }
 
-export default withTranslation()(App);
+export default App;
 ReactDOM.render(<BrowserRouter><App /></BrowserRouter>, document.getElementById('root'));

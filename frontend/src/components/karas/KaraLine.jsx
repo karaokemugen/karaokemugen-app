@@ -6,6 +6,10 @@ import axios from "axios";
 import ActionsButtons from "./ActionsButtons";
 import {buildKaraTitle} from '../toolsReact';
 
+import {sortableHandle} from 'react-sortable-hoc';
+
+const DragHandle = sortableHandle(() => <span><i className="glyphicon glyphicon-option-vertical"></i></span>);
+
 class KaraLine extends Component {
   constructor(props) {
     super(props);
@@ -73,7 +77,12 @@ class KaraLine extends Component {
   }
 
   deleteKara() {
-    axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/', {data:{plc_id:String(this.props.kara.playlistcontent_id)}});
+    if(this.props.scope === 'admin') {
+      axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/', {data:{plc_id:String(this.props.kara.playlistcontent_id)}});
+    } else {
+      var currentOrPublic = this.props.playlistInfo.flag_current ? 'current' : 'public';
+      axios.delete('/api/' + this.props.scope + '/playlists/' + currentOrPublic + '/karas/' + this.props.kara.playlistcontent_id);
+    }
   }
 
   playKara() {
@@ -101,20 +110,16 @@ class KaraLine extends Component {
     var idPlaylist = this.props.idPlaylist;
     var flagPublic = this.props.flagPublic
     return (
-      <li className={"list-group-item " + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu' : '')}
+      <div className={"list-group-item " + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu' : '')}
         onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
         {is_touch_device() && scope !== 'admin' ? null :
           <div className="actionDiv"> {this.props.idPlaylistTo !== this.props.idPlaylist ? 
             <ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist} 
               scope={this.props.scope} playlistToAddId={this.props.playlistToAddId}
               addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} /> : null}
-            {!is_touch_device() && scope == 'admin' && idPlaylist > 0 ? 
-              <span className="dragHandle" draggable onDragStart={() => this.props.handleDragStart(kara.playlistcontent_id)}
-                  onDragOver={(e) => {
-                  console.log(e)
-                  this.props.handleDragEnd(e)}}>
-                <i className="glyphicon glyphicon-option-vertical"></i>
-              </span> : null}
+
+              {!is_touch_device() && scope == 'admin' && idPlaylist > 0 ? <DragHandle /> : null }
+
           </div>
         }
         {scope == 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ? 
@@ -169,7 +174,7 @@ class KaraLine extends Component {
             makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite}
             getTagInLocale={this.getTagInLocale} logInfos={this.props.logInfos} freeKara={this.freeKara}></KaraDetail> : null
         }
-      </li>)
+      </div>)
   }
 }
 

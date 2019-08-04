@@ -12,6 +12,8 @@ import {
 } from "../toolsReact";
 import BlacklistCriterias from "./BlacklistCriterias";
 
+import {SortableContainer, SortableElement} from 'react-sortable-hoc';
+
 var timer;
 
 class Playlist extends Component {
@@ -39,8 +41,6 @@ class Playlist extends Component {
     this.editNamePlaylist = this.editNamePlaylist.bind(this);
     this.selectAllKaras = this.selectAllKaras.bind(this);
     this.checkKara = this.checkKara.bind(this);
-    this.handleDragStart = this.handleDragStart.bind(this);
-    this.handleDragEnd = this.handleDragEnd.bind(this);
     this.deleteCHeckedKaras = this.deleteCHeckedKaras.bind(this);
     this.addCheckedKaras = this.addCheckedKaras.bind(this);
     this.transferCheckedKaras = this.transferCheckedKaras.bind(this);
@@ -242,7 +242,7 @@ class Playlist extends Component {
       "?filter=" +
       this.state.filterValue + 
       "&from=" +
-      (this.state.data && this.state.data.infos.from > 0 ? this.state.data.infos.from : 0) +
+      (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 ? this.state.data.infos.from : 0) +
       "&size=" + this.state.maxBeforeUpdate;
 
       if(searchType) {
@@ -322,7 +322,7 @@ class Playlist extends Component {
     var content_height = this.outerHeight(document.querySelector('.playlistContainer > ul'))
     var percent = 100 * scroll_by / (content_height - container_height)
 
-    if (this.state.data.infos.count > this.state.maxBeforeUpdate && (percent === 100 || percent === 0)) {
+    if (this.state.data.infos && this.state.data.infos.count > this.state.maxBeforeUpdate && (percent === 100 || percent === 0)) {
       var data = this.state.data;
       data.infos.from = percent === 100 ? data.infos.from + this.state.maxBeforeUpdate : data.infos.from - this.state.maxBeforeUpdate;
       data.infos.to = percent === 100 ? data.infos.to + this.state.maxBeforeUpdate : data.infos.to - this.state.maxBeforeUpdate;
@@ -411,24 +411,6 @@ class Playlist extends Component {
     }
   }
 
-  handleDragEnd(e) {
-    console.log(this.state.idPlaylistContentMove)
-    console.log(e)
-    console.log(e.currentTarget);
-    var liKara = e.closest('li');
-    var posFromPrev = parseInt(liKara.prev('li').attr('pos')) + 1;
-    var posFromNext = parseInt(liKara.next('li').attr('pos'));
-    posFromPrev = isNaN(posFromPrev) ? posFromNext : posFromPrev;
-
-    if (isNaN(posFromPrev) && !isNaN(this.state.idPlaylistContentMove)) {
-      axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.state.idPlaylistContentMove, { pos: posFromPrev });
-    }
-  }
-
-  handleDragStart(idPlaylistContent) {
-    this.setState({ idPlaylistContentMove: idPlaylistContent });
-  }
-
   karaSuggestion() {
     window.callModal('prompt', this.props.t('KARA_SUGGESTION_NAME'), '', function (text) {
       axios.post('/api/public/karas/suggest', { karaName: text }).then(response => {
@@ -446,7 +428,56 @@ class Playlist extends Component {
     this.getPlaylist("search");
   }
 
+  onSortEnd({oldIndex, newIndex}) {
+    // extract playlistcontent_id based on sorter index
+    let playlistcontent_id = this.state.data.content[oldIndex].playlistcontent_id;
+
+    // fix index to match api behaviour
+    newIndex = newIndex+1;
+    if(newIndex > oldIndex)
+      newIndex = newIndex+1;
+
+    // final to api to save order change
+    axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: newIndex });
+  };
+
   render() {
+
+    const SortableItem = SortableElement(({value,index}) => {
+      let kara = value;
+      return <li>
+        <div ref={kara.karaRef} key={Math.random()}>
+          <KaraLine
+            key={kara.kid}
+            kara={kara}
+            scope={this.props.scope}
+            idPlaylist={this.state.idPlaylist}
+            playlistInfo={this.state.playlistInfo}
+            i18nTag={this.state.data.i18n}
+            navigatorLanguage={this.props.navigatorLanguage}
+            playlistToAddId={this.state.playlistToAddId}
+            side={this.props.side}
+            mode={this.props.config.Frontend.Mode}
+            logInfos={this.props.logInfos}
+            playlistCommands={this.state.playlistCommands}
+            idPlaylistTo={this.props.idPlaylistTo}
+            checkKara={this.checkKara}
+          />
+        </div>
+      </li>
+    });
+
+    const SortableList = SortableContainer(({items}) => {
+      return (
+        <div>
+          {this.state.data.content.map((value, index) => (
+            <SortableItem key={`item-${index}`} index={index} value={value} />
+          ))}
+        </div>
+      );
+    });
+
+
     const t = this.props.t;
     return this.props.scope === "public" &&
       this.props.side === 1 && this.props.config &&
@@ -491,35 +522,13 @@ class Playlist extends Component {
             ref={this.playlistRef}
           >
             <ul id={"playlist" + this.props.side} className="list-group">
+              {
+                this.state.idPlaylist !== -4 && this.state.data
+                  ? <SortableList useDragHandle={true} items={['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6']} onSortEnd={this.onSortEnd.bind(this)} />
+                  : null
+              }
               {this.state.idPlaylist !== -4 ?
                 <React.Fragment>
-                  {
-                    this.state.data &&
-                    this.state.data.content.map(kara => {
-                      // build the kara line
-                      return (
-                        //<div ref={kara.karaRef} key={Math.random()}></div>
-                        <KaraLine
-                          key={kara.kid}
-                          kara={kara}
-                          scope={this.props.scope}
-                          idPlaylist={this.state.idPlaylist}
-                          playlistInfo={this.state.playlistInfo}
-                          i18nTag={this.state.data.i18n}
-                          navigatorLanguage={this.props.navigatorLanguage}
-                          playlistToAddId={this.state.playlistToAddId}
-                          side={this.props.side}
-                          mode={this.props.config.Frontend.Mode}
-                          logInfos={this.props.logInfos}
-                          playlistCommands={this.state.playlistCommands}
-                          idPlaylistTo={this.props.idPlaylistTo}
-                          checkKara={this.checkKara}
-                          handleDragStart={this.handleDragStart}
-                          handleDragEnd={this.handleDragEnd}
-                        />
-                      );
-                    })
-                  }
                   {this.props.config &&
                     this.props.config.Gitlab.Enabled &&
                     this.state.idPlaylist === -1 &&
