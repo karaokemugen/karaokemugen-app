@@ -257,12 +257,6 @@ class Playlist extends Component {
     var response = await axios.get(url);
     this.playlistRef.current.scrollTo(0, 1);
     var karas = response.data.data;
-    if (karas.content) {
-      karas.content = karas.content.map(element => {
-        element.karaRef = React.createRef();
-        return element;
-      });
-    }
     this.setState({ data: karas });
   }
 
@@ -333,9 +327,16 @@ class Playlist extends Component {
   }
 
   scrollToPlaying() {
-    var ref;
-    this.state.data.content.forEach(element => { if (element.flag_playing) ref = element.karaRef });
-    ref.current.scrollIntoView({ behavior: "smooth" });
+    let kid;
+    this.state.data.content.forEach(element => { if (element.flag_playing) kid = element.kid });
+    if(!kid)
+      return;
+
+    let target = this.playlistRef.current.querySelector('.playlist-draggable-item[data-kid="'+kid+'"]')
+    if(!target)
+      return;
+
+    target.scrollIntoView({ behavior: "smooth" });
   }
 
   togglePlaylistCommands() {
@@ -451,8 +452,7 @@ class Playlist extends Component {
 
     const SortableItem = SortableElement(({value,index}) => {
       let kara = value;
-      return <li>
-        <div ref={kara.karaRef} key={Math.random()}>
+      return <li className="playlist-draggable-item" data-kid={kara.kid}>
           <KaraLine
             key={kara.kid}
             kara={kara}
@@ -469,7 +469,6 @@ class Playlist extends Component {
             idPlaylistTo={this.props.idPlaylistTo}
             checkKara={this.checkKara}
           />
-        </div>
       </li>
     });
 
@@ -532,7 +531,13 @@ class Playlist extends Component {
             <ul id={"playlist" + this.props.side} className="list-group">
               {
                 this.state.idPlaylist !== -4 && this.state.data
-                  ? <SortableList helperClass="playlist-dragged-item" useDragHandle={true} items={['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6']} onSortEnd={this.onSortEnd.bind(this)} />
+                  ? <SortableList 
+                      lockAxis="y"
+                      pressDelay={is_touch_device() ? 150 : 0}
+                      helperClass="playlist-dragged-item"
+                      useDragHandle={!is_touch_device()}
+                      onSortEnd={this.onSortEnd.bind(this)}
+                      />
                   : null
               }
               {this.state.idPlaylist !== -4 ?
