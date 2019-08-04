@@ -7,16 +7,14 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from "react-router-dom";
 import i18n from './components/i18n';
 import NotFoundPage from './components/NotfoundPage'
-import io from 'socket.io-client';
 import langs from "langs";
 import axios from "axios";
-import { readCookie, parseJwt, createCookie, eraseCookie  } from "./components/tools"
+import { readCookie, parseJwt, createCookie, eraseCookie, getSocket } from "./components/tools"
 import Modal from './components/modals/Modal';
 import './components/oldTools';
 class App extends Component {
     constructor(props) {
         super(props);
-        window.socket = io();
         window.callModal = this.callModal;
         this.state = {
             navigatorLanguage: this.getNavigatorLanguage(),
@@ -94,9 +92,9 @@ class App extends Component {
 
     async componentDidMount() {
         this.getSettings();
-        window.socket.on('settingsUpdated', this.getSettings);
-        window.socket.on('connect', () => this.setState({ shutdownPopup: false }));
-        window.socket.on('disconnect', () => this.setState({ shutdownPopup: true }));
+        getSocket().on('settingsUpdated', this.getSettings);
+        getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
+        getSocket().on('disconnect', () => this.setState({ shutdownPopup: true }));
         const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
         this.setState({tags: tags.concat(series, years)});
     }

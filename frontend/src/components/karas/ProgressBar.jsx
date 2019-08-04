@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import axios from "axios";
-import { is_touch_device } from "../tools";
-import { buildKaraTitle } from '../tools';
+import { is_touch_device, buildKaraTitle, getSocket } from "../tools";
 
 class ProgressBar extends Component {
     constructor(props) {
@@ -54,7 +53,7 @@ class ProgressBar extends Component {
     }
 
     componentDidMount() {
-        window.socket.on('playerStatus', this.refreshPlayerInfos);
+        getSocket().on('playerStatus', this.refreshPlayerInfos);
     }
 
     async goToPosition(e) {

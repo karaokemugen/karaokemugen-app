@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
-import { expand } from "./tools";
+import { expand, getSocket } from "./tools";
 import axios from "axios";
 import RadioButton from "./RadioButton.jsx";
 
@@ -14,7 +14,7 @@ class AdminHeader extends Component {
     };
     this.saveMode = this.saveMode.bind(this);
     this.adminMessage = this.adminMessage.bind(this);
-    window.socket.on("playerStatus", data => {
+    getSocket().on("playerStatus", data => {
       var val = parseInt(data.volume);
       var base = 100;
       var pow = 0.76;

@@ -1,4 +1,11 @@
-import axios from "axios";
+import axios from 'axios';
+import io from 'socket.io-client';
+
+const socket = io();
+
+export function getSocket() {
+	return socket;
+}
 
 export function parseJwt(token) {
 	var base64Url = token.split('.')[1];

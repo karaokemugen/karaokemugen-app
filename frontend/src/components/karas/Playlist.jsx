@@ -4,12 +4,7 @@ import PlaylistHeader from "./PlaylistHeader";
 import KaraDetail from "./KaraDetail";
 import KaraLine from "./KaraLine";
 import axios from "axios";
-import {
-  readCookie,
-  createCookie,
-  secondsTimeSpanToHMS,
-  is_touch_device
-} from "../tools";
+import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket} from "../tools";
 import BlacklistCriterias from "./BlacklistCriterias";
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 
@@ -55,25 +50,25 @@ class Playlist extends Component {
     await this.getPlaylistList();
     await this.getIdPlaylist();
     await this.getPlaylist();
-    window.socket.on("playingUpdated", this.playingUpdate);
-    window.socket.on("playlistsUpdated", this.getPlaylistList);
-    window.socket.on("whitelistUpdated", () => {
+    getSocket().on("playingUpdated", this.playingUpdate);
+    getSocket().on("playlistsUpdated", this.getPlaylistList);
+    getSocket().on("whitelistUpdated", () => {
       if (this.state.idPlaylist === -3) this.getPlaylist();
     });
-    window.socket.on("blacklistUpdated", () => {
+    getSocket().on("blacklistUpdated", () => {
       if (this.state.idPlaylist === -2 || this.state.idPlaylist === -4)
         this.getPlaylist();
     });
-    window.socket.on("favoritesUpdated", () => {
+    getSocket().on("favoritesUpdated", () => {
       if (this.state.idPlaylist === -5) this.getPlaylist();
     });
-    window.socket.on("playlistContentsUpdated", idPlaylist => {
+    getSocket().on("playlistContentsUpdated", idPlaylist => {
       if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylist();
     });
-    window.socket.on("playlistInfoUpdated", idPlaylist => {
+    getSocket().on("playlistInfoUpdated", idPlaylist => {
       if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylistInfo();
     });
-    window.socket.on('quotaAvailableUpdated', this.updateQuotaAvailable);
+    getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
   }
 
 

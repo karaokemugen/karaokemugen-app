@@ -11,7 +11,7 @@ import ProfilModal from "./modals/ProfilModal";
 import RadioButton from "./RadioButton.jsx";
 import axios from "axios";
 import ProgressBar from "./karas/ProgressBar";
-import {buildKaraTitle} from './tools';
+import {buildKaraTitle, getSocket} from './tools';
 
 class PublicPage extends Component {
   constructor(props) {
@@ -49,12 +49,12 @@ class PublicPage extends Component {
   }
 
   async componentDidMount() {
-    window.socket.on('newSongPoll', () => this.setState({ isPollActive: true, pollModal: true }));
-    window.socket.on('songPollEnded', () => this.setState({ isPollActive: false }));
-    window.socket.on('songPollResult', () => {
+    getSocket().on('newSongPoll', () => this.setState({ isPollActive: true, pollModal: true }));
+    getSocket().on('songPollEnded', () => this.setState({ isPollActive: false }));
+    getSocket().on('songPollResult', () => {
       window.displayMessage('success', '', this.props.t('POLLENDED', { kara: data.kara.substring(0, 100), votes: data.votes }));
     });
-    window.socket.on('adminMessage', data => window.displayMessage('info', this.props.t('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration));
+    getSocket().on('adminMessage', data => window.displayMessage('info', this.props.t('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration));
   }
 
   openLoginOrProfileModal() {
