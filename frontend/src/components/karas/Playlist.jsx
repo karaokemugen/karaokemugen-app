@@ -487,15 +487,17 @@ class Playlist extends Component {
     return this.props.scope === "public" &&
       this.props.side === 1 && this.props.config &&
       this.props.config.Frontend.Mode === 1 ? (
-        <div class="playlistContainer">
-          <ul id="playlist1" side="1" class="list-group">
-            <li class="list-group-item">
-              <KaraDetail data={this.state.data} mode="karaCard" />
-            </li>
-          </ul>
+        <div className="playlist--wrapper">
+          <div className="playlistContainer">
+            <ul id="playlist1" side="1" className="list-group">
+              <li className="list-group-item">
+                <KaraDetail data={this.state.data} mode="karaCard" />
+              </li>
+            </ul>
+          </div>
         </div>
       ) : (
-        <React.Fragment>
+        <div className="playlist--wrapper">
           <PlaylistHeader
             side={this.props.side}
             scope={this.props.scope}
@@ -591,7 +593,7 @@ class Playlist extends Component {
               </div> : null
             }
           </div>
-        </React.Fragment>
+        </div>
       );
   }
 }

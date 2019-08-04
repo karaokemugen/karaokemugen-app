@@ -62,13 +62,6 @@
         font-size :   21px;
     }
 
-    .playlist-main {
-    height : 100%;
-    }
-    .panel {
-        height : 100%;
-    }
-
     .panel-heading > div,.panel-heading > div > div, .panel-heading > div > div > div, .panel-heading > div > div > div > input {
         height: 100%;
     }
@@ -151,15 +144,6 @@
 
     .popup .panel-heading {
         display: flex;
-    }
-
-    /* tablet */
-
-    .panel {
-        border: 3px solid #1E2124;
-    }
-    .playlist-main {
-        padding: 3px 0px;
     }
 
     /* experimental, à vérifier */
@@ -320,15 +304,6 @@
     }
 
     @media (max-width: 1025px) {
-        .panel {
-            border: 0px solid #1E2124;
-            position: absolute;
-            transform: translateX(0%);
-        }
-
-        #panel2 {
-            left: 100%;
-        }
 
         .toastMessage {
             top: 3px;
@@ -339,9 +314,6 @@
             font-size: 18px;
         }
 
-        .playlist-main {
-            padding: 0px;
-        }
         .deleteCriteria {
             display: none !important;
         }
@@ -349,9 +321,6 @@
             border-top-width: 0px;
         }
 
-        .playlist-main {
-            width: 100%;
-        }
         .headerInputs, .header > div > div {
             padding: 0px;
         }

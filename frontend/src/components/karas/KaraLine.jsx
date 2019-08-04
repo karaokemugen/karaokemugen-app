@@ -33,15 +33,8 @@ class KaraLine extends Component {
   }
 
   handleSwipe(e) {
-    var panelWidth = $('#panel1').width();
-    var elem = $('#panel1, #panel2');
-    elem.css({ transition: 'transform 1s ease' });
-    if (this.props.side === 1 && this.props.mode === 2 && e.changedTouches[0].clientX > this.state.startSwipeX + 50) {
+    if (this.props.mode === 2 && e.changedTouches[0].clientX > this.state.startSwipeX + 50) {
       this.addKara();
-    } else if (this.props.side === 1 && e.changedTouches[0].clientX < this.state.startSwipeX - 50) {
-      elem.css({ transform: 'translateX(' + -1 * panelWidth + 'px)' });
-    } else if (this.props.side === 2 && e.changedTouches[0].clientX > this.state.startSwipeX + 50) {
-      elem.css({ transform: 'translateX(0)' });
     }
   }
 

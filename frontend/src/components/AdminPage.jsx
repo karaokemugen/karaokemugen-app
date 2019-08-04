@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
+import PlaylistMain from "./karas/PlaylistMain";
 import Playlist from "./karas/Playlist";
 import OnlineStatsModal from "./modals/OnlineStatsModal"
 import AdminHeader from "./AdminHeader"
@@ -63,18 +64,20 @@ class AdminPage extends Component {
           callModal={window.callModal} setOptionMode={() => this.setState({ options: !this.state.options })} powerOff={this.props.powerOff}
           logOut={this.props.logOut} options={this.state.options}/>
         <ProgressBar webappMode={this.props.settings.config.Frontend.Mode} />
-        <div id="underHeader" className="underHeader container-fluid">
-          <div className={"playlist-main row "+(this.state.options ? "hidden" : "")} id="playlist">
-            <div className="panel col-lg-6 col-xs-6" id="panel1" side="1">
-              <Playlist scope='admin' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
-                idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} toggleSearchMenu={this.toggleSearchMenu}
-                searchMenuOpen={this.state.searchMenuOpen} />
-            </div>
-            <div className="panel col-lg-6 col-xs-6" id="panel2" side="2">
-              <Playlist scope='admin' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
-                idPlaylistTo={this.state.idsPlaylist.left} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
-            </div>
-          </div>
+        <div id="underHeader" className="underHeader" data-mode="admin">
+          {
+            (
+              this.state.options 
+              ? null
+              : <PlaylistMain>
+                    <Playlist scope='admin' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
+                      idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} toggleSearchMenu={this.toggleSearchMenu}
+                      searchMenuOpen={this.state.searchMenuOpen} />
+                    <Playlist scope='admin' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
+                      idPlaylistTo={this.state.idsPlaylist.left} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
+                </PlaylistMain>
+            )
+          }
           <div className={"row "+(this.state.options ? "" : "hidden")} id="manage">
             <Options settings={this.props.settings} />
           </div>

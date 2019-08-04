@@ -140,10 +140,6 @@ div > a, h5 > a, a.btn-link {
   height: calc( 100% - 60px - 30px );
 }
 
-.playlist-main, #manage {
-  padding: 3px;
-}
-
 .panel {
 	border: 3px solid #1E2124;
     background-color: #2d2d2f;
@@ -197,7 +193,13 @@ select.form-control {
 .list-group-item:focus {
 	background-color : #5b5e54;
 }
-.playlist-main .list-group-item,.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
 	background-color: hsla(0, 0%, 20%, .67);
 	border-color: hsla(0, 0%, 35%, 1);
 	border-width: 0px;
@@ -207,17 +209,6 @@ select.form-control {
 	line-height: 3.1rem;
 }
 
-.playlist-main li:nth-child(even) .list-group-item {
-	background-color: hsla(0, 0%, 27%, 0.7);
-}
-
-body:not(.touch) .playlist-main li:nth-child(even) .list-group-item:hover {
-	filter: brightness(117%);
-}
-body:not(.touch) .playlist-main .list-group-item:hover {
-	filter: brightness(120%);
-}
-
 .dejavu {
 	background-color: hsla(30, 22%, 29%, 0.6) !important;
 }
@@ -225,26 +216,7 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 .currentlyplaying {
 	background-color: #3a5064 !important;
 }
-.playlist-main li.list-group-item.karaSuggestion {
-	background-color: rgba(93, 131, 119, 0.55);
-	text-align: center;
-	cursor: pointer;
 
-	line-height: 55px;
-    font-size: 120%;
-	height: 64px;
-	
-    padding: 5px;
-	overflow: hidden !important;
-	width: 100% !important;
-	margin-bottom: 100px;
-}
-.playlist-main .list-group-item.liType {
-	background-color: #607e97;
-	padding-left: 20px;
-	min-height: 20px;
-	line-height: 24px;
-}
 .list-group-item.liTag {
 	min-height: auto;
 }
@@ -521,34 +493,6 @@ button.closeParent.bottom  {
 	font-weight: 500;
 	font-size: 1.6rem;
 	z-index: 50;
-}
-
-.playlist-main ul button  {
-	background-color: rgba(57, 57, 57, .7)
-}
-
-.playlistContainer:after {
-    content : "";
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: url(../assets/nanami_g_1280w.jpg) no-repeat;
-	background-size: 100%;
-	background-position: 0 20%;
-    width: 100%;
-	height: 100%;
-    opacity : 0.2;
-	z-index: 0;
-	filter: grayscale(70%);
-}
-#panel2 > .playlistContainer:after {
-	-moz-transform: scaleX(-1);
-    -o-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
-    filter: FlipH;
-    -ms-filter: "FlipH";
 }
 
 .playlistContainer > ul {
@@ -1198,12 +1142,6 @@ input[type=range]:focus::-ms-fill-upper {
     text-align:right;
     font-family: 'Glyphicons Halflings';
 }
-body .playlist-main li.list-group-item.filler {
-    width: 100% !important;
-	overflow: hidden;
-	overflow: hidden;
-	background-color: hsla(0, 0%, 20%, .57);
-}
 
 .loader {
 	border: 16px solid #9e9e9e;
@@ -1282,7 +1220,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 .btn-danger:hover {
 	border-color: hsla(2, 22%, 67%, 1);
 }
-.btn-primary, .playlist-main ul button.btn-primary {
+.btn-primary {
 	border-color: hsla(208, 22%, 52%, 1);
 	background-color: #37679a;
 }

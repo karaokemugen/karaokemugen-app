@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
+import PlaylistMain from "./karas/PlaylistMain";
 import Playlist from "./karas/Playlist";
 import RestrictedHelpModal from "./modals/RestrictedHelpModal"
 import PollModal from "./modals/PollModal"
@@ -206,20 +207,14 @@ class PublicPage extends Component {
                 </div>
               </React.Fragment> : null
             }
-            <div id="underHeader" className={"underHeader container-fluid" + (this.props.settings.config.Frontend.Mode === 1 ? " mode1" : "")}>
-              <div className="playlist-main row" id="playlist">
-                <div className={"panel col-msm-12 col-sm-12 col-xs-12"
-                  + (this.props.settings.config.Frontend.Mode === 1 ? "col-lg-4 col-md-5" : "col-lg-8 col-md-7")} id="panel1" side={"1"}>
-                  <Playlist scope='public' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config} 
-                    idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} toggleSearchMenu={this.toggleSearchMenu}
-                    searchMenuOpen={this.state.searchMenuOpen} />
-                </div>
-                <div className={"panel col-msm-12 col-sm-12 col-xs-12"
-                  + (this.props.settings.config.Frontend.Mode === 1 ? "col-lg-8 col-md-7" : "col-lg-4 col-md-5")} id="panel2" side="2">
+            <div id="underHeader" data-mode={this.props.settings.config.Frontend.Mode} className={"underHeader" + (this.props.settings.config.Frontend.Mode === 1 ? " mode1" : "")}>
+              <PlaylistMain>
+                <Playlist scope='public' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config} 
+                  idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} toggleSearchMenu={this.toggleSearchMenu}
+                  searchMenuOpen={this.state.searchMenuOpen} />
                   <Playlist scope='public' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config} 
                     idPlaylistTo={this.state.idsPlaylist.left} majIdsPlaylist={this.majIdsPlaylist} />
-                </div>
-              </div>
+              </PlaylistMain>
             </div>
             <div className="toastMessageContainer">
             </div>

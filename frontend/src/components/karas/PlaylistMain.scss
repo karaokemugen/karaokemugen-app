@@ -1,0 +1,98 @@
+.playlist-main--wrapper,
+.playlist-main--wrapper * {
+	box-sizing: border-box;
+}
+
+
+.playlist-main--wrapper {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+	
+	// overlay visuel
+	&:after {
+		content : "";
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: url(../../assets/nanami_g_1280w.jpg) no-repeat;
+		background-size: cover;
+		background-position: center 20%;
+		opacity : 0.1;
+		filter: grayscale(70%);
+		pointer-events: none;
+	}
+}
+
+.playlist-main .list-group-item {
+	background-color: hsla(0, 0%, 20%, .67);
+	border-color: hsla(0, 0%, 35%, 1);
+	border-width: 0px;
+	z-index: 20;
+	overflow: auto;
+	padding: 0px;
+	line-height: 3.1rem;
+}
+
+.playlist-main li:nth-child(even) .list-group-item {
+	background-color: hsla(0, 0%, 27%, 0.7);
+}
+
+body:not(.touch) .playlist-main li:nth-child(even) .list-group-item:hover {
+	filter: brightness(117%);
+}
+body:not(.touch) .playlist-main .list-group-item:hover {
+	filter: brightness(120%);
+}
+
+.playlist-main {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 100%;
+	.panel {
+		flex: 1;
+		border:10px solid rgba(#000,0.3);
+		max-height: 100%;
+	}
+
+	@media screen and (max-width:1200px) {
+		width: 180%;
+		transition:transform ease .5s;
+		&[data-side="2"] {
+			transform:translate(-45%);
+		}
+	}
+}
+
+.playlist-main li.list-group-item.karaSuggestion {
+	background-color: rgba(93, 131, 119, 0.55);
+	text-align: center;
+	cursor: pointer;
+
+	line-height: 55px;
+    font-size: 120%;
+	height: 64px;
+	
+    padding: 5px;
+	overflow: hidden !important;
+	width: 100% !important;
+	margin-bottom: 100px;
+}
+.playlist-main .list-group-item.liType {
+	background-color: #607e97;
+	padding-left: 20px;
+	min-height: 20px;
+	line-height: 24px;
+}
+
+body .playlist-main li.list-group-item.filler {
+    width: 100% !important;
+	overflow: hidden;
+	overflow: hidden;
+	background-color: hsla(0, 0%, 20%, .57);
+}

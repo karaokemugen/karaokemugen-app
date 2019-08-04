@@ -273,7 +273,7 @@ class PlaylistHeader extends Component {
     return (
       <React.Fragment>
         {this.props.scope !== "public" || this.props.side !== 1 ?
-          <div className={"panel-heading container-fluid plDashboard" + (this.props.playlistCommands ? " advanced" : "")}>
+          <div className={"panel-heading plDashboard" + (this.props.playlistCommands ? " advanced" : "")}>
             {this.props.scope === "admin" || this.props.mode !== 1 ?
               <div className={(this.props.scope !== "public" ? "col-lg-8 col-md-7 col-sm-6 col-xs-6 " : "") + "plSelect"}>
                 {this.props.scope === "admin" && this.props.idPlaylist !== -4 ?
