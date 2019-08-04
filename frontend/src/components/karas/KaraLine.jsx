@@ -43,7 +43,6 @@ class KaraLine extends Component {
     } else if (this.props.side === 2 && e.changedTouches[0].clientX > this.state.startSwipeX + 50) {
       elem.css({ transform: 'translateX(0)' });
     }
-    e.preventDefault();
   }
 
   handleStart(e) {
