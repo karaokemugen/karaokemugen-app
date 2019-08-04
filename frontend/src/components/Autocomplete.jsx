@@ -5,6 +5,7 @@
 // ------------------------------------------------------------------------
 
 import React, {useState, useRef, useEffect, Component} from  'react';
+require('./Autocomplete.scss');
 
 function Autocomplete(props){
  
