@@ -18,9 +18,6 @@ class ProgressBar extends Component {
             length: -1
         };
         /* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
-        if (is_touch_device()) {
-            $('#progressBarColor').addClass('cssTransition');
-        }
         this.mouseDown = this.mouseDown.bind(this);
         this.mouseMove = this.mouseMove.bind(this);
         this.mouseOut = this.mouseOut.bind(this);
