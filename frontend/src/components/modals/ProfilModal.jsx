@@ -169,7 +169,7 @@ class ProfilModal extends Component {
                             <div id="nav-profil" className="modal-body" >
                                 <div className="profileContent">
                                     <div className="col-md-3 col-lg-3 col-xs-12 col-sm-12">
-                                        <label title={t("AVATAR_IMPORT")} className="btn btn-default plGenericButton avatar" name="import">
+                                        <label title={t("AVATAR_IMPORT")} className="btn btn-default avatar" name="import">
                                             <img className="img-circle" name="avatar_file"
                                                 src={this.state.user.avatar_file ? this.state.pathAvatar + this.state.user.avatar_file : {blankAvatar}}
                                                 alt="User Pic" />

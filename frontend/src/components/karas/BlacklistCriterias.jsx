@@ -41,7 +41,6 @@ class BlacklistCriterias extends Component {
 
     render() {
         const t = this.props.t;
-        console.log(this.props.data)
         var types = [];
         this.props.data.forEach(element => {
             if (!types.includes(element.type)) types.push(element.type);

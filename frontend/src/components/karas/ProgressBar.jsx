@@ -17,7 +17,6 @@ class ProgressBar extends Component {
             karaInfoText: this.props.t("KARA_PAUSED_WAITING"),
             length: -1
         };
-        /* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
         this.mouseDown = this.mouseDown.bind(this);
         this.mouseMove = this.mouseMove.bind(this);
         this.mouseOut = this.mouseOut.bind(this);

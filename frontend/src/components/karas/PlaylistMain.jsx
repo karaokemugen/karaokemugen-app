@@ -27,7 +27,6 @@ class PlaylistMain extends Component {
   }
 
   render() {
-    console.log(this.state);
     return (
       <div className="playlist-main--wrapper">
         <div className="playlist-main" id="playlist" data-side={this.state.currentSide} onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
