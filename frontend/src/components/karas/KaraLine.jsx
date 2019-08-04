@@ -73,7 +73,12 @@ class KaraLine extends Component {
   }
 
   deleteKara() {
-    axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/', {data:{plc_id:String(this.props.kara.playlistcontent_id)}});
+    if(this.props.scope === 'admin') {
+      axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/', {data:{plc_id:String(this.props.kara.playlistcontent_id)}});
+    } else {
+      var currentOrPublic = this.props.playlistInfo.flag_current ? 'current' : 'public';
+      axios.delete('/api/' + this.props.scope + '/playlists/' + currentOrPublic + '/karas/' + this.props.kara.playlistcontent_id);
+    }
   }
 
   playKara() {
