@@ -9,7 +9,7 @@ import {
   createCookie,
   secondsTimeSpanToHMS,
   is_touch_device
-} from "../toolsReact";
+} from "../tools";
 import BlacklistCriterias from "./BlacklistCriterias";
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 

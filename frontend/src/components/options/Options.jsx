@@ -4,7 +4,7 @@ import PlayerOptions from './PlayerOptions';
 import KaraokeOptions from './KaraokeOptions';
 import InterfaceOptions from './InterfaceOptions';
 import axios from 'axios';
-import {expand} from '../toolsReact';
+import {expand} from '../tools';
 
 class Options extends Component {
   constructor(props) {

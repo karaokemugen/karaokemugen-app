@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import axios from "axios";
 import Autocomplete from '../Autocomplete'
-import { buildKaraTitle } from '../toolsReact';
+import { buildKaraTitle } from '../tools';
 
 var listTypeBlc = [
     'BLCTYPE_1002',

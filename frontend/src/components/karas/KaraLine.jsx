@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
-import { is_touch_device } from "../toolsReact";
+import { is_touch_device } from "../tools";
 import KaraDetail from "./KaraDetail";
 import axios from "axios";
 import ActionsButtons from "./ActionsButtons";
-import {buildKaraTitle} from '../toolsReact';
+import {buildKaraTitle} from '../tools';
 
 import {sortableHandle} from 'react-sortable-hoc';
 

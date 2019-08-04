@@ -11,7 +11,7 @@ import ProfilModal from "./modals/ProfilModal";
 import RadioButton from "./RadioButton.jsx";
 import axios from "axios";
 import ProgressBar from "./karas/ProgressBar";
-import {buildKaraTitle} from './toolsReact';
+import {buildKaraTitle} from './tools';
 
 class PublicPage extends Component {
   constructor(props) {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
-import { createCookie } from '../toolsReact';
-import { is_touch_device,startIntro } from '../toolsReact';
+import { createCookie } from '../tools';
+import { is_touch_device,startIntro } from '../tools';
 
 class HelpModal extends Component {
     constructor(props) {

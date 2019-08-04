@@ -1,4 +1,4 @@
-import {is_touch_device} from './toolsReact';
+import {is_touch_device} from './tools';
 
 /* display a fading message, useful to show success or errors */
 

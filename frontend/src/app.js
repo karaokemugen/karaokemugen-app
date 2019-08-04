@@ -10,7 +10,7 @@ import NotFoundPage from './components/NotfoundPage'
 import io from 'socket.io-client';
 import langs from "langs";
 import axios from "axios";
-import { readCookie, parseJwt, createCookie, eraseCookie  } from "./components/toolsReact"
+import { readCookie, parseJwt, createCookie, eraseCookie  } from "./components/tools"
 import Modal from './components/modals/Modal';
 import './components/oldTools';
 class App extends Component {

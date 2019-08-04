@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import axios from "axios";
-import { is_touch_device } from "../toolsReact";
-import { buildKaraTitle } from '../toolsReact';
+import { is_touch_device } from "../tools";
+import { buildKaraTitle } from '../tools';
 
 class ProgressBar extends Component {
     constructor(props) {

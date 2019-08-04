@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import axios from 'axios';
-import {expand} from '../toolsReact';
+import {expand} from '../tools';
 
 class OnlineStatsModal extends Component {
     constructor(props) {

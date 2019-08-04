@@ -3,7 +3,7 @@ import { withTranslation } from "react-i18next";
 import axios from "axios";
 import getLucky from "../../assets/clover.png"
 import ActionsButtons from "./ActionsButtons";
-import { buildKaraTitle } from '../toolsReact';
+import { buildKaraTitle } from '../tools';
 
 var tagsTypesList = [
   'DETAILS_SERIE',

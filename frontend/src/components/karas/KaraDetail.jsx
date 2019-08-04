@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
-import { is_touch_device, secondsTimeSpanToHMS } from "../toolsReact";
+import { is_touch_device, secondsTimeSpanToHMS } from "../tools";
 import axios from "axios";
 
 class KaraDetail extends Component {

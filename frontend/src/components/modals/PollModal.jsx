@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import axios from 'axios';
-import {buildKaraTitle} from '../toolsReact';
+import {buildKaraTitle} from '../tools';
 
 class PollModal extends Component {
     constructor(props) {

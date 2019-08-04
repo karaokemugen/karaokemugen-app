@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import Fingerprint2 from 'fingerprintjs2'
 import axios from "axios";
-import { is_touch_device,startIntro,readCookie  } from '../toolsReact';
+import { is_touch_device,startIntro,readCookie  } from '../tools';
 
 class LoginModal extends Component {
     constructor(props) {

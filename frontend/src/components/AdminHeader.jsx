@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
-import { expand } from "./toolsReact";
+import { expand } from "./tools";
 import axios from "axios";
 import RadioButton from "./RadioButton.jsx";
 
