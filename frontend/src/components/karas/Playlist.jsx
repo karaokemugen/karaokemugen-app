@@ -11,8 +11,9 @@ import {
   is_touch_device
 } from "../toolsReact";
 import BlacklistCriterias from "./BlacklistCriterias";
-
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
+
+require('./Playlist.scss');
 
 var timer;
 
@@ -429,16 +430,26 @@ class Playlist extends Component {
   }
 
   onSortEnd({oldIndex, newIndex}) {
-    // extract playlistcontent_id based on sorter index
-    let playlistcontent_id = this.state.data.content[oldIndex].playlistcontent_id;
+    if(oldIndex!=newIndex)
+    {
+      // extract playlistcontent_id based on sorter index
+      let playlistcontent_id = this.state.data.content[oldIndex].playlistcontent_id;
 
-    // fix index to match api behaviour
-    newIndex = newIndex+1;
-    if(newIndex > oldIndex)
-      newIndex = newIndex+1;
+      // fix index to match api behaviour
+      let apiIndex = newIndex+1;
+      if(newIndex > oldIndex)
+        apiIndex = apiIndex+1;
 
-    // final to api to save order change
-    axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: newIndex });
+      // final to api to save order change
+      axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: apiIndex });
+
+      // internal reordering (avoid waiting the api update)
+      let data = this.state.data;
+      let t = data.content[oldIndex];
+      data.content[oldIndex] = data.content[newIndex];
+      data.content[newIndex] = t;
+      this.setState({data:data});
+    }
   };
 
   render() {
@@ -524,7 +535,7 @@ class Playlist extends Component {
             <ul id={"playlist" + this.props.side} className="list-group">
               {
                 this.state.idPlaylist !== -4 && this.state.data
-                  ? <SortableList useDragHandle={true} items={['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6']} onSortEnd={this.onSortEnd.bind(this)} />
+                  ? <SortableList helperClass="playlist-dragged-item" useDragHandle={true} items={['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6']} onSortEnd={this.onSortEnd.bind(this)} />
                   : null
               }
               {this.state.idPlaylist !== -4 ?
