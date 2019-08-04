@@ -53,10 +53,10 @@ export async function getPollResults(): Promise<PollResults> {
 	let winners = poll.filter(c => +c.votes === +maxVotes);
 	let winner = sample(winners);
 	const playlist_id = getState().currentPlaylistID;
-	await copyKaraToPlaylist([winner[0].playlistcontent_id], playlist_id);
+	await copyKaraToPlaylist([winner.playlistcontent_id], playlist_id);
 	emitWS('playlistInfoUpdated', playlist_id);
 	emitWS('playlistContentsUpdated', playlist_id);
-	const kara = `${winner[0].serie} - ${winner[0].songtypes[0].name}${winner[0].songorder ? winner[0].songorder : ''} - ${winner[0].title}`;
+	const kara = `${winner.serie} - ${winner.songtypes[0].name}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
 	logger.info(`[Poll] Winner is "${kara}" with ${maxVotes} votes`);
 	return {
 		votes: maxVotes,
