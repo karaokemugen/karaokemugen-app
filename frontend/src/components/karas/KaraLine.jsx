@@ -6,6 +6,10 @@ import axios from "axios";
 import ActionsButtons from "./ActionsButtons";
 import {buildKaraTitle} from '../toolsReact';
 
+import {sortableHandle} from 'react-sortable-hoc';
+
+const DragHandle = sortableHandle(() => <span><i className="glyphicon glyphicon-option-vertical"></i></span>);
+
 class KaraLine extends Component {
   constructor(props) {
     super(props);
@@ -113,13 +117,9 @@ class KaraLine extends Component {
             <ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist} 
               scope={this.props.scope} playlistToAddId={this.props.playlistToAddId}
               addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} /> : null}
-            {!is_touch_device() && scope == 'admin' && idPlaylist > 0 ? 
-              <span className="dragHandle" draggable onDragStart={() => this.props.handleDragStart(kara.playlistcontent_id)}
-                  onDragOver={(e) => {
-                  console.log(e)
-                  this.props.handleDragEnd(e)}}>
-                <i className="glyphicon glyphicon-option-vertical"></i>
-              </span> : null}
+
+              {!is_touch_device() && scope == 'admin' && idPlaylist > 0 ? <DragHandle /> : null }
+
           </div>
         }
         {scope == 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ? 
