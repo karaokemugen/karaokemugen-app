@@ -90,6 +90,10 @@ class AdminHeader extends Component {
 
   render() {
     const t = this.props.t;
+
+    let volume = parseInt(this.state.statusPlayer.volume);
+    volume = isNaN(volume) ? 100 : volume;
+
     return (
       <React.Fragment>
         <div
@@ -97,11 +101,11 @@ class AdminHeader extends Component {
           className="header"
         >
           <div
-            className="dropdown btn btn-default btn-dark pull-right"
+            className="btn btn-default btn-dark pull-right"
             id="manageButton"
           >
             <button
-              className="btn btn-dark pull-right dropdown-toggle klogo"
+              className="btn btn-dark klogo"
               type="button"
               onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}
             />
@@ -113,49 +117,54 @@ class AdminHeader extends Component {
                   className="btn btn-default btn-dark"
                   onClick={this.props.toggleProfileModal}
                 >
-                  <i className="glyphicon glyphicon-user" />
+                  <i className="fas fa-user"></i>
                 </li>
                 <li
                   title={t("LOGOUT")} onClick={this.props.logOut}
                   className="btn btn-default btn-dark"
                 >
-                  <i className="glyphicon glyphicon-log-out" />
+                  <i className="fas fa-sign-out"></i>
                 </li>
                 <li
                   title={t("SHUTDOWN")}
                   className="btn btn-default btn-dark"
                   onClick={this.props.powerOff}
                 >
-                  <i className="glyphicon glyphicon-off" />
+                  <i className="fas fa-power-off"></i>
                 </li>
               </ul> : null
             }
           </div>
 
-          <a
+          <button 
+            type="button"
             title={t("MUTE_UNMUTE")}
             id="mutestatus"
             name="mute"
             className="btn btn-default btn-dark pull-right"
           >
-            {this.state.statusPlayer.mutestatus ? (
-              <i className="glyphicon glyphicon-volume-off mute" />
-            ) : (
-              <i className="glyphicon glyphicon-volume-up unmute" />
-            )}
+            {
+                volume === 0 || this.state.statusPlayer.mutestatus 
+                ? <i className="fas fa-volume-mute"></i>
+                : (
+                  volume > 66
+                    ? <i className="fas fa-volume-up"></i>
+                    : (
+                      volume > 33
+                        ? <i className="fas fa-volume-down"></i>
+                        : <i className="fas fa-volume-off"></i>
+                    )
+                )
+            }
             <input
               title={t("VOLUME_LEVEL")}
               namecommand="setVolume"
               id="volume"
-              defaultValue={
-                this.state.statusPlayer.volume
-                  ? this.state.statusPlayer.volume
-                  : 100
-              }
+              defaultValue={volume}
               type="range"
               onMouseLeave={this.putPlayerCommando}
             />
-          </a>
+          </button>
           <button
             title={t("SHOW_HIDE_SUBS")}
             id="showSubs"
@@ -164,9 +173,12 @@ class AdminHeader extends Component {
             onClick={this.putPlayerCommando}
           >
             {this.state.statusPlayer.showSubs ? (
-              <i className="glyphicon glyphicon-subtitles hideSubs" />
+              <i className="fas fa-closed-captioning"></i>
             ) : (
-              <i className="glyphicon glyphicon glyphicon-question-sign showSubs" />
+              <span className="fa-stack">
+                <i className="fas fa-closed-captioning fa-stack-1x"></i>
+                <i className="fas fa-ban fa-stack-2x" style={{color:"#943d42",opacity:0.7}}></i>
+              </span>
             )}
           </button>
 
@@ -177,7 +189,7 @@ class AdminHeader extends Component {
             style={{ borderLeftWidth: "0px" }}
             onClick={this.adminMessage}
           >
-            <i className="glyphicon glyphicon-comment" />
+            <i className="fas fa-comment-alt-plus"></i>
           </button>
 
           <div className="pull-left btn-group switchs">
@@ -248,11 +260,9 @@ class AdminHeader extends Component {
               id="stopAfter"
               namecommand="stopAfter"
               className="btn btn-danger-low"
-              style={{ width: "50px" }}
               onClick={this.putPlayerCommando}
             >
-              <i className="glyphicon glyphicon-stop" />
-              <i className="glyphicon glyphicon-time secondaryIcon" />
+              <i className="fas fa-clock"></i>
             </button>
             <button
               title={t("STOP_NOW")}
@@ -261,8 +271,7 @@ class AdminHeader extends Component {
               className="btn btn-danger"
               onClick={this.putPlayerCommando}
             >
-              {" "}
-              <i className="glyphicon glyphicon-stop" />
+              <i className="fas fa-stop"></i>
             </button>
             <button
               title={t("REWIND")}
@@ -272,9 +281,10 @@ class AdminHeader extends Component {
               className="btn btn-dark"
               onClick={this.putPlayerCommando}
             >
-              <i className="glyphicon glyphicon-fast-backward" />
+              <i className="fas fa-backward"></i>
             </button>
           </div>
+
           <div className="btn-group centerBtns">
             <button
               title={t("REWIND")}
@@ -283,7 +293,7 @@ class AdminHeader extends Component {
               className="btn btn-default"
               onClick={this.putPlayerCommando}
             >
-              <i className="glyphicon glyphicon-chevron-left" />
+              <i className="fas fa-chevron-left"></i>
             </button>
             <button
               title={t("PLAY_PAUSE")}
@@ -293,9 +303,9 @@ class AdminHeader extends Component {
               onClick={this.putPlayerCommando}
             >
               {this.state.statusPlayer.status === "play" ? (
-                <i className="glyphicon glyphicon-pause pause" />
+                <i className="fas fa-pause"></i>
               ) : (
-                <i className="glyphicon glyphicon-play play" />
+                <i className="fas fa-play"></i>
               )}
             </button>
             <button
@@ -305,7 +315,7 @@ class AdminHeader extends Component {
               className="btn btn-default"
               onClick={this.putPlayerCommando}
             >
-              <i className="glyphicon glyphicon-chevron-right" />
+              <i className="fas fa-chevron-right"></i>
             </button>
           </div>
         </div>

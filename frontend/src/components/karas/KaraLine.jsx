@@ -124,19 +124,22 @@ class KaraLine extends Component {
             <div className="infoDiv">
               {scope === 'admin' || !is_touch_device() ? <button title={t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
                 style={this.state.karaDetailState ? { borderColor: '#8aa9af' } : {}} onClick={this.toggleKaraDetail}
-              ></button> : null}
-              {scope === 'public' && this.props.logInfos.role !== 'guest' && !is_touch_device() ?
+              >
+                <i className="fas fa-info-circle"></i>
+              </button> : null}
+              {scope === 'public' && this.props.logInfos.role !== 'guest' ?
                 <button title={t('TOOLTIP_FAV')} onClick={this.makeFavorite}
                   className={"makeFav btn-sm btn btn-action "
                     + (is_touch_device() ? 'mobile' : '')
                     + (kara.flag_favorites || idPlaylist === -5 ? 'currentFav' : '')}>
+                    <i className="fas fa-star"></i>
                 </button> : null}
               {scope === 'admin' && idPlaylist > 0 ? <button title={t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara" 
-                onClick={this.playKara}></button> : null}
+                onClick={this.playKara}><i className="fas fa-play"></i></button> : null}
               {scope !== 'admin' && this.props.flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? 'currentLike' : ''} 
-                onClick={this.likeKara}></button> : null}
+                onClick={this.likeKara}><i className="fas fa-thumbs-up"></i></button> : null}
               {scope !== 'admin' && kara.username == this.props.logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
-                <button title={t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}></button> : null}
+                <button title={t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
             </div>
             <div className="contentDiv">
               <div>{buildKaraTitle(kara)}</div>

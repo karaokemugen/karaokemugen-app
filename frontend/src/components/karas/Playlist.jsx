@@ -560,27 +560,30 @@ class Playlist extends Component {
             className="plFooter">
             <div className="plBrowse">
               <button
+                type="button"
                 title={t("GOTO_TOP")}
                 className="btn btn-sm btn-action"
                 onClick={() => this.playlistRef.current.scrollTo(0, 5)}
               >
-                <i className="glyphicon glyphicon glyphicon-menu-up" />
+                <i className="fas fa-chevron-up"></i>
               </button>
               <button
+                type="button"
                 title={t("GOTO_PLAYING")}
                 className="btn btn-sm btn-action"
                 onClick={this.scrollToPlaying}
                 action="goTo"
                 value="playing"
               >
-                <i className="glyphicon glyphicon glyphicon-play" />
+                <i className="fas fa-play"></i>
               </button>
               <button
+                type="button"
                 title={t("GOTO_BOTTOM")}
                 className="btn btn-sm btn-action"
                 onClick={this.scrollToBottom}
               >
-                <i className="glyphicon glyphicon glyphicon-menu-down" />
+                <i className="fas fa-chevron-down"></i>
               </button>
             </div>
             <div className="plInfos">{this.getPlInfosElement()}</div>

@@ -236,24 +236,22 @@ class KaraDetail extends Component {
       });
       var makeFavButton = (
         <button
+          type="button"
           title={t("TOOLTIP_FAV")}
           onClick={this.props.makeFavorite}
-          className={
-            (this.props.isFavorite ? "currentFav " : "") +
-            (is_touch_device() ? "mobile" : "") +
-            " makeFav btn btn-action"
-          }
-        />
+          className={(this.props.isFavorite ? "currentFav" : "") + " makeFav btn btn-action"}
+          ><i className="fas fa-star"></i></button>
       );
 
       var lyricsKara =
         data.subfile && this.state.showLyrics ? (
           <div className="lyricsKara alert alert-info" ref={this.fullLyricsRef}>
             <button
+              type="button"
               title={t("TOOLTIP_CLOSEPARENT")}
               className="closeParent btn btn-action"
               onClick={() => this.setState({showLyrics: false})}
-            />
+              ><i className="fas fa-times"></i></button>
             <div className="lyricsKaraLoad">
               {this.state.lyrics.map(ligne => {
                 return (
@@ -265,10 +263,11 @@ class KaraDetail extends Component {
               })}
             </div>
             <button
+              type="button"
               title={t("TOOLTIP_CLOSEPARENT")}
-              className="closeParent bottom btn btn-action"
+              className="closeParent btn btn-action"
               onClick={() => this.setState({showLyrics: false})}
-            />
+              ><i className="fas fa-times"></i></button>
           </div>
         ) : null;
 
@@ -280,10 +279,11 @@ class KaraDetail extends Component {
               <div className="topRightButtons">
                 {is_touch_device() ? null : (
                   <button
+                    type="button"
                     title={t("TOOLTIP_CLOSEPARENT")}
                     className="closeParent btn btn-action"
                     onClick={this.props.toggleKaraDetail}
-                  />
+                  ><i className="fas fa-times"></i></button>
                 )}
                 {(this.props.scope === "public" && !is_touch_device()) ||
                   this.props.logInfos.role === "guest"
@@ -291,41 +291,46 @@ class KaraDetail extends Component {
                   : makeFavButton}
                 {data.subfile ? (
                   <button
+                    type="button"
                     title={t("TOOLTIP_SHOWLYRICS")}
                     className={
                       "fullLyrics btn btn-action " +
                       (is_touch_device() ? "mobile" : "")
                     }
                     onClick={this.showFullLyrics}
-                  />
+                  ><i className="fas fa-quote-right"></i></button>
                 ) : null}
                 <button
+                  type="button"
                   title={t("TOOLTIP_SHOWVIDEO")}
                   className={
                     "showVideo btn btn-action" +
                     (is_touch_device() ? "mobile" : "")
                   }
                   onClick={this.showVideo}
-                />
+                ><i className="fas fa-video"></i></button>
                 {data.serie ? (
                   <button
+                    type="button"
                     className={
                       "moreInfo btn btn-action" + (is_touch_device() ? "mobile" : "")
                     }
                     onClick={this.moreInfo}
-                  />
+                  ><i className="fas fa-info-circle"></i></button>
                 ) : null}
                 {this.props.scope === "admin" && this.props.publicOuCurrent ? (
                   <button
+                    type="button"
                     title={t("TOOLTIP_UPVOTE")} onClick={this.props.freeKara}
                     className={"likeFreeButton btn btn-action " + (data.flag_free ? "btn-primary": "")}
-                  />
+                  ><i className="fas fa-gift"></i></button>
                 ) : null}
                 {this.props.scope === "admin" && this.props.publicOuCurrent ? (
                   <button
+                    type="button"
                     title={data.flag_visible ? t("TOOLTIP_VISIBLE_OFF") : t("TOOLTIP_VISIBLE_ON")} onClick={this.changeVisibilityKara}
                     className={"visibilityButton btn btn-action " + (data.flag_visible ? "": "btn-primary")}
-                  />
+                  ><i className="fas fa-eye-slash"></i></button>
                 ) : null}
               </div>
               <table>

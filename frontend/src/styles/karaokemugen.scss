@@ -262,60 +262,12 @@ select.form-control {
 .btn-action, .actionDiv > button {
 	font-family: 'Glyphicons Halflings';
 }
-button[name="addKara"]:before {
-	content:"\2b";
-}
-button[name="deleteKara"]:before, button.deleteCriteria:before {
-	content:"\2212";
-}
-button[name="transferKara"]:before {
-	content:"\2b";
-}
 
-button[name="infoKara"]:before {
-	content:"\e086";
-}
-
-#panel2 .actionDiv > button[name="transferKara"]:before {
-	content:"\e091";
-}
-#panel1 .actionDiv > button[name="transferKara"]:before {
-	content:"\e092";
-}
-.closeParent:before, .closePopupParent:before, .closeModal:before {
-	content:"\e014";
-}
-.fullLyrics:before {
-	content:"\e055";
-}
-.showVideo:before {
-	content:"\e009";
-}
-.likeFreeButton:before {
-	content:"\e102";
-}
-.visibilityButton:before {
-	content:"\e085";
-}
-.makeFav:before {
-	content:"\e007";
-}
-
-.makeFav.currentFav:before {
-	content:"\e006";
+.makeFav.currentFav {
     color: firebrick;
 }
 
-.moreInfo:before {
-	content:"\e086";
-}
-
-.likeKara:before {
-	content:"\e143";
-}
-
-.likeKara.currentLike:before {
-	content:"\e005";
+.likeKara.currentLike {
     color: firebrick;
 }
 .likeCount:hover {
@@ -331,9 +283,6 @@ button[name="infoKara"]:before {
 .likeCount > i {
     color: firebrick;
     font-size: 88%;
-}
-.playKara:before {
-	content:"\e072";
 }
 
 .list-group-item.dragged .dragHandle {

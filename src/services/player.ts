@@ -275,7 +275,7 @@ export async function sendCommand(command: string, options: any) {
 			}
 			await goToPlayer(options);
 		} else if (command === 'setVolume') {
-			if (!options || isNaN(options)) {
+			if (isNaN(options)) {
 				commandInProgress = false;
 				throw 'Command setVolume must have a numeric option value';
 			}

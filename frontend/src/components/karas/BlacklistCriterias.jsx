@@ -67,7 +67,7 @@ class BlacklistCriterias extends Component {
                         <button id="bcAdd" className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}
                             onKeyPress={e => {
                                 if (e.which == 13) addBlacklistCriteria()
-                            }}></button>
+                            }}><i className="fas fa-plus"></i></button>
                     </span> : null
                 }
                 {types.map((type) => {
@@ -78,7 +78,9 @@ class BlacklistCriterias extends Component {
                                 <li key={criteria.blcriteria_id} className="list-group-item liTag">
                                     <div className="actionDiv">
                                         <button title={t('TOOLTIP_DELETECRITERIA')} name="deleteCriteria"
-                                            className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id)}></button>
+                                            className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id)}>
+                                            <i className="fas fa-minus"></i>
+                                        </button>
                                     </div>
                                     <div className="typeDiv">{t('BLCTYPE_' + criteria.type)}</div>
                                     <div className="contentDiv">{criteria.type == 1001 ? buildKaraTitle(criteria.value[0]) : criteria.value}</div>

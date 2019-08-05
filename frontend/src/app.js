@@ -136,7 +136,9 @@ class App extends Component {
 				    </div>
                     <div className="shutdown-popup-text">{i18n.t('SHUTDOWN_POPUP')}<br/>{"·´¯`(>_<)´¯`·"}</div>
                     <button title={i18n.t('TOOLTIP_CLOSEPARENT')} className="closeParent btn btn-action"
-                    onClick={() => this.setState({shutdownPopup: false})}></button>
+                    onClick={() => this.setState({shutdownPopup: false})}>
+                        <i className="fas fa-times"></i>
+                    </button>
                 </div> :
                 this.state.settings ?
                     <Switch>

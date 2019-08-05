@@ -146,27 +146,27 @@ class PlaylistHeader extends Component {
       <div className="btn-group plCommands controls">
         {this.props.idPlaylist >= 0 ?
           <button title={this.props.t("PLAYLIST_EDIT")} className="btn btn-default" name="editName" onClick={this.props.editNamePlaylist}>
-            <i className="glyphicon glyphicon-pencil"></i>
+            <i className="fas fa-pencil"></i>
           </button> : null
         }
         <button title={this.props.t("START_FAV_MIX")} className="btn btn-default" name="startFavMix" onClick={this.startFavMix}>
-          <i className="glyphicon glyphicon-flash"></i>
+          <i className="fas fa-bolt"></i>
         </button>
         <button title={this.props.t("PLAYLIST_ADD")} className="btn btn-default" name="add" onClick={this.addPlaylist}>
-          <i className="glyphicon glyphicon-plus-sign"></i>
+          <i className="fas fa-plus"></i>
         </button>
         {this.props.idPlaylist >= 0 ?
           <button title={this.props.t("PLAYLIST_DELETE")} className="btn btn-danger" name="delete" onClick={this.deletePlaylist}>
-            <i className="glyphicon glyphicon-remove red"></i>
+            <i className="fas fa-times"></i>
           </button> : null
         }
         <label htmlFor={"import-file" + this.props.side} title={this.props.t("PLAYLIST_IMPORT")} className="btn btn-default" name="import">
-          <i className="glyphicon glyphicon-import"></i>
+          <i className="fas fa-download"></i>
           <input id={"import-file" + this.props.side} className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }}
             onClick={this.importPlaylist} />
         </label>
         <button title={this.props.t("PLAYLIST_EXPORT")} className="btn btn-default" name="export" onClick={this.exportPlaylist} >
-          <i className="glyphicon glyphicon-export"></i>
+          <i className="fas fa-upload"></i>
         </button>
       </div>);
 
@@ -178,22 +178,31 @@ class PlaylistHeader extends Component {
               <img src={getLucky} />
             </button>
             <button title={this.props.t("ADD_ALL_KARAS")} name="addAllKaras" className="btn btn-danger clusterAction" onClick={this.addAllKaras}>
-              <i className="glyphicon glyphicon-share"></i>
+              <i className="fas fa-share"></i>
             </button>
           </React.Fragment>
           : null
         }
         <button title={this.props.t("EMPTY_LIST")} name="deleteAllKaras" className="btn btn-danger clusterAction" onClick={this.deleteAllKaras}>
-          <i className="glyphicon glyphicon-erase"></i>
+          <i className="fas fa-eraser"></i>
         </button>
         <ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
           scope={this.props.scope} playlistToAddId={this.props.playlistToAddId} isHeader={true}
           addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCHeckedKaras} transferKara={this.props.transferCheckedKaras} />
-        <button title={this.props.t("SELECT_ALL")} name="selectAllKaras" onClick={() => {
-          this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
-          this.props.selectAllKaras();
-        }}
-          className={"btn btn-default clusterAction " + (this.state.selectAllKarasChecked ? 'checked' : 'notchecked')}>
+        <button 
+          title={this.props.t("SELECT_ALL")}
+          name="selectAllKaras"
+          onClick={() => {
+            this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
+            this.props.selectAllKaras();
+          }}
+          className="btn btn-default clusterAction"
+        >
+          {
+            this.state.selectAllKarasChecked  
+              ? <i className="far fa-check-square"></i>
+              : <i className="far fa-square"></i>
+          }
         </button>
       </div>);
 
@@ -231,17 +240,17 @@ class PlaylistHeader extends Component {
           <div className="btn-group plCommands flags" id={"flag" + this.props.side}>
             <button title={this.props.t("PLAYLIST_CURRENT")} name="flag_current" onClick={this.setFlagCurrent}
               className={"btn " + (this.props.playlistInfo.flag_current ? "btn-primary" : "btn-default")} >
-              <i className="glyphicon glyphicon-facetime-video"></i>
+              <i className="fas fa-video"></i>
             </button>
             <button title={this.props.t("PLAYLIST_PUBLIC")} name="flag_public" onClick={this.setFlagPublic}
               className={"btn " + (this.props.playlistInfo.flag_public ? "btn-primary" : "btn-default")} >
-              <i className="glyphicon glyphicon-globe"></i>
+              <i className="fas fa-globe"></i>
             </button>
             {this.props.idPlaylist >= 0 ?
               <button title={this.props.t("PLAYLIST_VISIBLE")} className="btn btn-default" name="flag_visible" onClick={this.setFlagVisible}>
                 {this.props.playlistInfo.flag_visible ?
-                  <i className="glyphicon glyphicon-eye-close"></i> :
-                  <i className="glyphicon glyphicon-eye-open"></i>
+                  <i className="fas fa-eye-slash"></i> :
+                  <i className="fas fa-eye"></i>
                 }
               </button> : null
             }
@@ -282,7 +291,7 @@ class PlaylistHeader extends Component {
                 {this.props.scope === "admin" && this.props.idPlaylist !== -4 ?
                   <button title={t("PLAYLIST_COMMANDS")} onClick={this.props.togglePlaylistCommands}
                     className={"btn btn-default pull-left showPlaylistCommands" + (this.props.playlistCommands ? " btn-primary" : "")}>
-                    <i className="glyphicon glyphicon-wrench"></i>
+                    <i className="fas fa-wrench"></i>
                   </button> : null
                 }
                 <select id={"selectPlaylist" + this.props.side} side={this.props.side} type="playlist_select" className="form-control"
@@ -308,10 +317,10 @@ class PlaylistHeader extends Component {
                   <div className="controlsContainer">
                     <div className="btn-group plCommands controls">
                       <button title={t("PLAYLIST_SHUFFLE")} className="btn btn-default" name="shuffle" onClick={this.shuffle}>
-                        <i className="glyphicon glyphicon-random"></i>
+                        <i className="fas fa-random"></i>
                       </button>
                       <button title={t("PLAYLIST_SMART_SHUFFLE")} className="btn btn-default" name="smartShuffle" onClick={this.smartShuffle}>
-                        <i className="glyphicon glyphicon-random"></i>
+                        <i className="fas fa-random"></i>
                       </button>
                     </div>
                   </div> : null
@@ -320,7 +329,7 @@ class PlaylistHeader extends Component {
                   <div className="searchMenuButtonContainer btn-group plCommands">
                     <button type="button" className={"searchMenuButton collapsed btn btn-default" + (this.props.searchMenuOpen ? " searchMenuButtonOpen" : "")}
                       onClick={this.props.toggleSearchMenu}>
-                      <i className="glyphicon glyphicon-filter"></i>
+                      <i className="fas fa-filter"></i>
                     </button>
                   </div> : null
                 }
