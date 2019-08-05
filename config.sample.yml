@@ -74,8 +74,6 @@ Karaoke:
     ConnectionInfo:
       # Enable display of connection messages
       Enabled: true
-      # Enable QR Code
-      QRCode: true
       # Additional message prepended to the connection URL
       Message: null
       # Override host/IP address
@@ -141,6 +139,17 @@ Playlist:
   MaxDejaVuTime: 60
   # Remove songs from public playlist when they're played.
   RemovePublicOnPlay: false
+  MysterySongs:
+    # Invisible songs are not hidden (they appear as a slot in playlist)
+    Hide: false
+    # Should songs added by admin be invisible?
+    AddedSongVisibilityAdmin: false
+    # Should songs added by public be invisible?
+    AddedSongVisibilityPublic: false
+    # List of mystery songs labels
+    Labels:
+    - ???
+    - Chanson mystère !
 System:
   Binaries:
     Player:

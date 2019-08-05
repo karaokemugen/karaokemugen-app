@@ -16,6 +16,7 @@ export interface DBPLCBase extends DBKara {
 	flag_playing: boolean,
 	pos: number,
 	flag_free: boolean,
+	flag_visible: boolean,
 	username: string
 	playlistcontent_id: number,
 	playlist_id: number,

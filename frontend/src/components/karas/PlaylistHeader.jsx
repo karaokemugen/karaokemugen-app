@@ -239,7 +239,10 @@ class PlaylistHeader extends Component {
             </button>
             {this.props.idPlaylist >= 0 ?
               <button title={this.props.t("PLAYLIST_VISIBLE")} className="btn btn-default" name="flag_visible" onClick={this.setFlagVisible}>
-                <i className="glyphicon glyphicon-eye-close"></i><i className="glyphicon glyphicon-eye-open"></i>
+                {this.props.playlistInfo.flag_visible ?
+                  <i className="glyphicon glyphicon-eye-close"></i> :
+                  <i className="glyphicon glyphicon-eye-open"></i>
+                }
               </button> : null
             }
           </div>

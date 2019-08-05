@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Bakaclub"
+    },
+    "name": "Bakaclub",
+    "tid": "8c22c899-b3ed-42da-a548-ce00f950798b",
+    "types": [
+      "authors"
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "header": {
+    "version": 4,
+    "description": "Karaoke Mugen Karaoke Data File"
+  },
+  "medias": [
+    {
+      "version": "Default",
+      "filename": "ENG - Black Lagoon - OP - Red Fraction.mp4",
+      "audiogain": -0.99,
+      "filesize": 5459504,
+      "duration": 87,
+      "default": true,
+      "lyrics": [
+        {
+          "filename": "ENG - Black Lagoon - OP - Red Fraction.ass",
+          "default": true,
+          "version": "Default",
+          "subchecksum": "3a7b15099e4ecbad4524939c86b4fa4b"
+        }
+      ]
+    }
+  ],
+  "data": {
+    "created_at": "Wed Oct 11 2017 19:02:18 GMT+0200 (GMT+02:00)",
+    "kid": "5737c5b2-7ea4-414f-8c92-143838a402f6",
+    "modified_at": "Mon Aug 05 2019 01:15:53 GMT+0200 (GMT+02:00)",
+    "repository": "kara.moe",
+    "sids": [
+      "f7250ed6-c188-40b7-bf9a-e461f0a21305"
+    ],
+    "tags": {
+      "authors": [
+        "5bdaba57-27f8-4568-8806-76a807728766"
+      ],
+      "creators": [
+        "9c5cf6ba-0bc8-4cfe-a63c-e9be3a14e9fd"
+      ],
+      "families": [
+        "0377db02-3af6-43b8-9b08-c759df3d25c3"
+      ],
+      "groups": [
+        "3c14c864-533c-49e6-a3cc-6969f1233775"
+      ],
+      "langs": [
+        "de5eda1c-5fb3-46a6-9606-d4554fc5a1d6"
+      ],
+      "origins": [
+        "938de218-5343-4865-94d3-fb33f2eaa152"
+      ],
+      "singers": [
+        "dd13c2a8-16ac-4ae0-a533-28890d392aa0"
+      ],
+      "songtypes": [
+        "f02ad9b3-0bd9-4aad-85b3-9976739ba0e4"
+      ],
+      "songwriters": [
+        "03e272ce-1c50-4706-a431-d49f48a5dd62",
+        "dd13c2a8-16ac-4ae0-a533-28890d392aa0"
+      ]
+    },
+    "title": "Red Fraction",
+    "year": 2006
+  }
+}

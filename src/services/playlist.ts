@@ -37,6 +37,8 @@ import {
 	setPlaying as setPlayingFlag,
 	setPLCFreeBeforePos,
 	setPLCFree,
+	setPLCVisible,
+	setPLCInvisible,
 	setPos,
 	setPublicPlaylist as setPublicPL,
 	setVisiblePlaylist as setVisiblePL,
@@ -732,6 +734,8 @@ export async function editPLC(plc_id: number, params: PLCEditParams, token: Toke
 		await freePLC(plc_id);
 		updateSongsLeft(plcData.username, pl.playlist_id);
 	}
+	if (params.flag_visible === true) await setPLCVisible(plc_id);
+	if (params.flag_visible === false) await setPLCInvisible(plc_id);
 	if (params.pos) {
 		await shiftPosInPlaylist(pl.playlist_id, params.pos, 1);
 		await setPos(plc_id, params.pos);

@@ -10,10 +10,12 @@ class AdminHeader extends Component {
     this.state = {
       privateMode: Boolean(this.props.config.Karaoke.Private),
       statusPlayer: {},
-      dropDownMenu: false
+      dropDownMenu: false,
+      songVisibilityOperator: Boolean(this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin)
     };
     this.saveMode = this.saveMode.bind(this);
     this.adminMessage = this.adminMessage.bind(this);
+    this.saveOperatorAdd = this.saveOperatorAdd.bind(this);
     getSocket().on("playerStatus", data => {
       var val = parseInt(data.volume);
       var base = 100;
@@ -27,6 +29,12 @@ class AdminHeader extends Component {
   async saveMode(mode) {
     var data = expand("Karaoke.Private", mode);
     this.setState({ privateMode: mode });
+    await axios.put("/api/admin/settings", { setting: JSON.stringify(data) });
+  }
+
+  async saveOperatorAdd(songVisibility) {
+    var data = expand("Playlist.MysterySongs.AddedSongVisibilityAdmin", songVisibility);
+    this.setState({ songVisibilityOperator: songVisibility });
     await axios.put("/api/admin/settings", { setting: JSON.stringify(data) });
   }
 
@@ -193,7 +201,7 @@ class AdminHeader extends Component {
                 }
               ]}
             ></RadioButton>
-
+  
             <RadioButton
               title={t("SWITCH_OPTIONS")}
               name="optionsButton"
@@ -211,6 +219,28 @@ class AdminHeader extends Component {
                 }
               ]}
             ></RadioButton>
+          </div>
+          <div className="pull-left btn-group switchs">
+            <RadioButton
+                title={t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN")}
+                name="Playlist.MysterySongs.AddedSongVisibilityAdmin"
+                buttons={[
+                  {
+                    label:t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL"),
+                    active:!this.state.songVisibilityOperator,
+                    activeColor:"#57bb00",
+                    onClick:() => this.saveOperatorAdd(false),
+                    
+                  },
+                  {
+                    label:t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY"),
+                    active:this.state.songVisibilityOperator,
+                    activeColor:"#994240",
+                    onClick:() => this.saveOperatorAdd(true),
+                    
+                  }
+                ]}
+              ></RadioButton>
           </div>
           <div className="pull-left btn-group">
             <button
@@ -277,7 +307,6 @@ class AdminHeader extends Component {
             >
               <i className="glyphicon glyphicon-chevron-right" />
             </button>
-            <button className="btn btn-default hidden" />
           </div>
         </div>
       </React.Fragment>

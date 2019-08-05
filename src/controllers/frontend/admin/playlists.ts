@@ -595,7 +595,7 @@ export default function adminPlaylistsController(router: Router) {
 		/**
 	 * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist item
 	 * @apiName GetPlaylistPLC
-	 * @apiVersion 2.5.0
+	 * @apiVersion 3.0.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -625,6 +625,7 @@ export default function adminPlaylistsController(router: Router) {
 	 *           "flag_blacklisted": false,
 	 *           "flag_free": false,
 	 * 			 "flag_playing": true,
+	 * 			 "flag_visible": true
 	 *           "flag_whitelisted": false,
 	 * 	         "kara_created_at": "2019-01-01T10:01:01.000Z"
 	 * 	         "kara_modified_at": "2019-01-01T10:01:01.000Z"
@@ -657,7 +658,7 @@ export default function adminPlaylistsController(router: Router) {
 		/**
 	 * @api {put} /admin/playlists/:pl_id([0-9]+)/karas/:plc_id Update song in a playlist
 	 * @apiName PutPlaylistKara
-	 * @apiVersion 2.5.0
+	 * @apiVersion 3.0.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -666,6 +667,7 @@ export default function adminPlaylistsController(router: Router) {
 	 * @apiParam {Number} [pos] Position in target playlist where to move the song to.
 	 * @apiParam {Boolean} [flag_playing] If set to true, the selected song will become the currently playing song.
 	 * @apiParam {Boolean} [flag_free] If set to true, the selected song will be marked as free. Setting it to false has no effect.
+	 * @apiParam {Boolean} [flag_visible] If set to false, the selected song will be made invisible to users (all entries will be replaced by "mystery song")
 	 * @apiSuccess {String} code Message to display
 	 * @apiSuccess {String} data PLCID modified
 	 *
@@ -690,7 +692,8 @@ export default function adminPlaylistsController(router: Router) {
 
 				const validationErrors = check(req.body, {
 					flag_playing: {inclusion: bools},
-					flag_free: {inclusion: bools}
+					flag_free: {inclusion: bools},
+					flag_visible: {inclusion: bools}
 				});
 				if (req.body.flag_playing === 'true') req.body.flag_playing = true;
 				if (req.body.flag_free === 'true') req.body.flag_free = true;
@@ -699,7 +702,8 @@ export default function adminPlaylistsController(router: Router) {
 						const data = await editPLC(req.params.plc_id,{
 							pos: +req.body.pos,
 							flag_playing: req.body.flag_playing,
-							flag_free: req.body.flag_free
+							flag_free: req.body.flag_free,
+							flag_visible: req.body.flag_visible
 						},req.authToken);
 						emitWS('playlistContentsUpdated',data.pl_id);
 						emitWS('playlistInfoUpdated',data.pl_id);
@@ -714,167 +718,167 @@ export default function adminPlaylistsController(router: Router) {
 				}
 
 			});
-			router.route('/admin/playlists/:pl_id([0-9]+)/export')
-			/**
-		 * @api {get} /admin/playlists/:pl_id/export Export a playlist
-		 * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
-		 * @apiName getPlaylistExport
-		 * @apiVersion 2.5.0
-		 * @apiGroup Playlists
-		 * @apiPermission admin
-		 * @apiHeader authorization Auth token received from logging in
-		 * @apiParam {Number} pl_id Playlist ID to export
-		 * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
-		 *
-		 * @apiSuccessExample Success-Response:
-		 * HTTP/1.1 200 OK
-		 * {
-		 *   "data": {
-		 *       "Header": {
-		 *           "description": "Karaoke Mugen Playlist File",
-		 *           "version": 4
-		 *       },
-		 *       "PlaylistContents": [
-		 *           {
-		 *               "flag_playing": true,
-		 *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b"
-		 *           },
-		 *           {
-		 *               "kid": "6da96a7d-7159-4ea7-a5ee-1d78a6eb44dd"
-		 *           },
-		 *           {
-		 *               "kid": "5af7ba4c-2325-451d-a24f-e7fd7c2d3ba8"
-		 *           },
-		 *           {
-		 *               "kid": "e0206f48-0f51-44e3-bf9a-b651916d0c05"
-		 *           }
-		 *       ],
-		 *       "PlaylistInformation": {
-		 *           "created_at": "2019-01-01T02:01:11.000Z",
-		 *           "flag_visible": true,
-		 *           "modified_at": "2019-01-01T02:01:11.000Z",
-		 *           "name": "Test",
-		 *           "time_left": 0
-		 *       }
-		 *   }
-		 * }
-		 * @apiError PL_EXPORT_ERROR Unable to export playlist
-		 *
-		 * @apiErrorExample Error-Response:
-		 * HTTP/1.1 500 Internal Server Error
-		 * {
-		 *   "args": "5",
-		 *   "code": "PL_EXPORT_ERROR",
-		 *   "message": "Playlist 5 unknown"
-		 * }
-		 */
-				.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-					// Returns the playlist and its contents in an exportable format (to save on disk)
-					try {
-						const playlist = await exportPlaylist(req.params.pl_id);
-						// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
-						res.json(OKMessage(playlist));
-					} catch(err) {
-						res.status(500).json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
-					}
-				});
-			router.route('/admin/playlists/import')
-			/**
-		 * @api {post} /admin/playlists/import Import a playlist
-		 * @apiName postPlaylistImport
-		 * @apiVersion 2.1.0
-		 * @apiGroup Playlists
-		 * @apiPermission admin
-		 * @apiHeader authorization Auth token received from logging in
-		 * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
-		 *
-		 * @apiSuccessExample Success-Response:
-		 * HTTP/1.1 200 OK
-		 * {
-		 *   "args": 4,
-		 *   "code": "PL_IMPORTED",
-		 *   "data": {
-		 *       "message": "Playlist imported",
-		 *       "playlist_id": 4,
-		 *       "unknownKaras": []
-		 *   }
-		 * }
-		 * @apiError PL_IMPORT_ERROR Unable to import playlist
-		 *
-		 * @apiErrorExample Error-Response:
-		 * HTTP/1.1 500 Internal Server Error
-		 * {
-		 *   "code": "PL_IMPORT_ERROR",
-		 *   "message": "No header section"
-		 * }
-		 */
-				.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-					// Imports a playlist and its contents in an importable format (posted as JSON data)
-					const validationErrors = check(req.body, {
-						playlist: {isJSON: true}
-					});
-					if (!validationErrors) {
-						try {
-							const data = await importPlaylist(JSON.parse(req.body.playlist), req.authToken.username);
-							const response = {
-								message: 'Playlist imported',
-								playlist_id: data.playlist_id,
-								unknownKaras: undefined
-							};
-							if (data.karasUnknown) response.unknownKaras = data.karasUnknown;
-							emitWS('playlistsUpdated');
-							res.json(OKMessage(response,'PL_IMPORTED',data.playlist_id));
-						} catch(err) {
-							res.status(500).json(errMessage('PL_IMPORT_ERROR',err));
-						}
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.status(400).json(validationErrors);
-					}
+	router.route('/admin/playlists/:pl_id([0-9]+)/export')
+	/**
+ * @api {get} /admin/playlists/:pl_id/export Export a playlist
+ * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
+ * @apiName getPlaylistExport
+ * @apiVersion 2.5.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Playlist ID to export
+ * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "Header": {
+ *           "description": "Karaoke Mugen Playlist File",
+ *           "version": 4
+ *       },
+ *       "PlaylistContents": [
+ *           {
+ *               "flag_playing": true,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b"
+ *           },
+ *           {
+ *               "kid": "6da96a7d-7159-4ea7-a5ee-1d78a6eb44dd"
+ *           },
+ *           {
+ *               "kid": "5af7ba4c-2325-451d-a24f-e7fd7c2d3ba8"
+ *           },
+ *           {
+ *               "kid": "e0206f48-0f51-44e3-bf9a-b651916d0c05"
+ *           }
+ *       ],
+ *       "PlaylistInformation": {
+ *           "created_at": "2019-01-01T02:01:11.000Z",
+ *           "flag_visible": true,
+ *           "modified_at": "2019-01-01T02:01:11.000Z",
+ *           "name": "Test",
+ *           "time_left": 0
+ *       }
+ *   }
+ * }
+ * @apiError PL_EXPORT_ERROR Unable to export playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "5",
+ *   "code": "PL_EXPORT_ERROR",
+ *   "message": "Playlist 5 unknown"
+ * }
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			// Returns the playlist and its contents in an exportable format (to save on disk)
+			try {
+				const playlist = await exportPlaylist(req.params.pl_id);
+				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				res.status(500).json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
+			}
+		});
+	router.route('/admin/playlists/import')
+	/**
+ * @api {post} /admin/playlists/import Import a playlist
+ * @apiName postPlaylistImport
+ * @apiVersion 2.1.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 4,
+ *   "code": "PL_IMPORTED",
+ *   "data": {
+ *       "message": "Playlist imported",
+ *       "playlist_id": 4,
+ *       "unknownKaras": []
+ *   }
+ * }
+ * @apiError PL_IMPORT_ERROR Unable to import playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_IMPORT_ERROR",
+ *   "message": "No header section"
+ * }
+ */
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			// Imports a playlist and its contents in an importable format (posted as JSON data)
+			const validationErrors = check(req.body, {
+				playlist: {isJSON: true}
+			});
+			if (!validationErrors) {
+				try {
+					const data = await importPlaylist(JSON.parse(req.body.playlist), req.authToken.username);
+					const response = {
+						message: 'Playlist imported',
+						playlist_id: data.playlist_id,
+						unknownKaras: undefined
+					};
+					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;
+					emitWS('playlistsUpdated');
+					res.json(OKMessage(response,'PL_IMPORTED',data.playlist_id));
+				} catch(err) {
+					res.status(500).json(errMessage('PL_IMPORT_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
 
-				});
+		});
 
 
-			router.route('/admin/playlists/:pl_id([0-9]+)/shuffle')
-			/**
-		 * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
-		 * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
-		 * @apiName putPlaylistShuffle
-		 * @apiVersion 2.3.0
-		 * @apiGroup Playlists
-		 * @apiPermission admin
-		 * @apiHeader authorization Auth token received from logging in
-		 * @apiParam {Number} pl_id Playlist ID to shuffle
-		 * @apiParam {Number} smartShuffle Parameter to determine if we use, or not, an advanced algorithm to shuffle
-		 * @apiSuccess {String} args ID of playlist shuffled
-		 * @apiSuccess {String} code Message to display
-		 * @apiSuccess {Number} data ID of playlist shuffled
-		 * @apiSuccessExample Success-Response:
-		 * HTTP/1.1 200 OK
-		 * {
-		 *   "args": "5",
-		 *   "code": "PL_SHUFFLED",
-		 *   "data": "5"
-		 * }
-		 * @apiError PL_SHUFFLE_ERROR Unable to shuffle playlist
-		 *
-		 * @apiErrorExample Error-Response:
-		 * HTTP/1.1 500 Internal Server Error
-		 * {
-		 *   "args": "10",
-		 *   "code": "PL_SHUFFLE_ERROR",
-		 *   "message": "Playlist 10 unknown"
-		 * }
-		 */
-				.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-					try {
-						await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
-						emitWS('playlistContentsUpdated',req.params.pl_id);
-						res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));
-					} catch(err) {
-						res.status(500).json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
-					}
-				});
+	router.route('/admin/playlists/:pl_id([0-9]+)/shuffle')
+	/**
+ * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
+ * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
+ * @apiName putPlaylistShuffle
+ * @apiVersion 2.3.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Playlist ID to shuffle
+ * @apiParam {Number} smartShuffle Parameter to determine if we use, or not, an advanced algorithm to shuffle
+ * @apiSuccess {String} args ID of playlist shuffled
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist shuffled
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "5",
+ *   "code": "PL_SHUFFLED",
+ *   "data": "5"
+ * }
+ * @apiError PL_SHUFFLE_ERROR Unable to shuffle playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "10",
+ *   "code": "PL_SHUFFLE_ERROR",
+ *   "message": "Playlist 10 unknown"
+ * }
+ */
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			try {
+				await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
+				emitWS('playlistContentsUpdated',req.params.pl_id);
+				res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));
+			} catch(err) {
+				res.status(500).json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
+			}
+		});
 
 }

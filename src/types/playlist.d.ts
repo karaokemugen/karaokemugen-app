@@ -4,6 +4,7 @@ import { DBPLCBase, DBPLC } from './database/playlist';
 export interface PLCEditParams {
 	flag_playing: boolean,
 	flag_free: boolean,
+	flag_visible: boolean,
 	pos: number
 }
 

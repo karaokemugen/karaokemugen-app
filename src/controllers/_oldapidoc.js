@@ -8501,6 +8501,145 @@
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
+
+ 		/**
+	 * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
+	 * @apiName GetPlaylistKaras
+	 * @apiVersion 2.5.0
+	 * @apiGroup Playlists
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {Number} pl_id Target playlist ID.
+	 * @apiParam {String} [filter] Filter list by this string.
+	 * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+	 * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+	 * @apiParam {Number} [random=0] Return a [random] number of karaokes from that playlist.
+	 *
+	 * @apiSuccess {Object[]} data/content/plc Array of `playlistcontent` objects
+	 * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+	 * @apiSuccess {Number} data/infos/from Starting position of listing
+	 * @apiSuccess {Number} data/infos/to End position of listing
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "data": {
+	 *       "content": [
+	 *           <see admin/playlists/[id]/karas/[plc_id] for example>
+	 *       ],
+	 *       "infos": {
+	 *           "count": 3,
+	 * 			 "from": 0,
+	 * 			 "to": 120
+	 *       }
+	 *   }
+	 * }
+	 * @apiError PL_VIEW_SONGS_ERROR Unable to fetch list of karaokes in a playlist
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+/**
+	 * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist item
+	 * @apiName GetPlaylistPLC
+	 * @apiVersion 2.5.0
+	 * @apiGroup Playlists
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
+	 * @apiParam {Number} plc_id Playlist content ID.
+	 * @apiSuccess {Object[]} data Array containing one playlist content object, which consists of a kara object + the following properties
+	 * @apiSuccess {Number} data/kara_created_at In `Date()` format
+	 * @apiSuccess {Number} data/created_at Karaoke added to playlist, in `Date()` format
+	 * @apiSuccess {Number} data/kara_modified_at In `Date()` format
+	 * @apiSuccess {Boolean} data/flag_blacklisted Is the song in the blacklist ?
+	 * @apiSuccess {Boolean} data/flag_playing Is the song the one currently playing ?
+	 * @apiSuccess {Boolean} data/flag_whitelisted Is the song in the whitelist ?
+	 * @apiSuccess {Boolean} data/flag_free Wether the song has been marked as free or not
+	 * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
+	 * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
+	 * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
+	 * @apiSuccess {String} data/nickname Nickname of user who added/requested the song. this nickname can be changed (`username` cannot) hence why it is displayed here.
+	 * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
+	 * @apiSuccess {String} data/username Username who submitted this karaoke. Can be different from `nickname`.
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "data": [
+	 *       {
+	 * 			 <See public/karas/[kara_id] object>,
+	 * 	         "created_at": "2019-01-01T10:01:01.000Z"
+	 *           "flag_blacklisted": false,
+	 *           "flag_free": false,
+	 * 			 "flag_playing": true,
+	 *           "flag_whitelisted": false,
+	 * 	         "kara_created_at": "2019-01-01T10:01:01.000Z"
+	 * 	         "kara_modified_at": "2019-01-01T10:01:01.000Z"
+	 *           "nickname": "Axel",
+	 *           "playlist_id": 2,
+	 *           "playlistcontent_id": 24,
+	 *           "pos": 2,
+	 *           "time_before_play": 134,
+	 *           "username": "Axel"
+	 *         },
+	 *   ]
+	 * }
+	 * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * {
+	 *   "code": "PL_VIEW_CONTENT_ERROR",
+	 *   "message": "PLCID unknown!"
+	 * }
+	 */
+/**
+	 * @api {put} /admin/playlists/:pl_id([0-9]+)/karas/:plc_id Update song in a playlist
+	 * @apiName PutPlaylistKara
+	 * @apiVersion 2.5.0
+	 * @apiGroup Playlists
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
+	 * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
+	 * @apiParam {Number} [pos] Position in target playlist where to move the song to.
+	 * @apiParam {Boolean} [flag_playing] If set to true, the selected song will become the currently playing song.
+	 * @apiParam {Boolean} [flag_free] If set to true, the selected song will be marked as free. Setting it to false has no effect.
+	 * @apiSuccess {String} code Message to display
+	 * @apiSuccess {String} data PLCID modified
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": "PL_CONTENT_MODIFIED",
+	 *   "data": "4962"
+	 * }
+	 * @apiError PL_MODIFY_CONTENT_ERROR Unable to modify content's position or playing status
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * {
+	 *   "code": "PL_MODIFY_CONTENT_ERROR",
+	 *   "message": "PLCID unknown!"
+	 * }
+	 */
+/**
+ * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
+ * @apiName GetPlaylistKarasPublic
+ * @apiVersion 2.5.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `false`.
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
  /**
  * @api {get} /public/myaccount View own user details
  * @apiName GetMyAccount
@@ -8570,23 +8709,39 @@
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "args": "lol",
- *   "code": "USER_UPDATED",
  *   "data": {
- *       "bio": "lol2",
- *       "email": "lol3@lol.fr",
- *       "login": "test2",
- *       "nickname": "lol",
- *       "url": "http://lol4"
+ *       "content": [
+ *           {
+ * 				<See admin/playlists/[id]/karas/[kara_id] object>
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
  *   }
  * }
- * @apiError USER_UPDATE_ERROR Unable to edit user
+ * @apiError PL_VIEW_SONGS_ERROR Unable to fetch list of karaokes in a playlist
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
+
+	/**
+ * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
+ * @apiName GetPlaylistPLCPublic
+ * @apiVersion 2.3.1
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
+ * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
+ * @apiParam {Number} plc_id Playlist content ID.
+ * @apiSuccess {Object[]} data Array with one playlist content object
 /**
  * @api {get} /admin/users/:username View user details (admin)
  * @apiName GetUserAdmin
@@ -8613,7 +8768,7 @@
  * {
  *   "data": [
  *       {
- *           "avatar_file": "",
+  *           "avatar_file": "",
  *           "flag_online": false,
  *           "type": 0,
  *           "last_login": "2019-01-01T13:34:00.000Z",
@@ -8628,9 +8783,12 @@
  *   ]
  * }
  * @apiError USER_VIEW_ERROR Unable to view user details
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  * {
  *   "code": "USER_VIEW_ERROR",
  *   "message": null
@@ -8638,7 +8796,6 @@
  */
 
  /**
-<<<<<<< HEAD
 	 * @api {get} /admin/blacklist/criterias Get list of blacklist criterias
 	 * @apiName GetBlacklistCriterias
 	 * @apiVersion 2.1.0
@@ -8672,8 +8829,6 @@
 	 */
 
 	 /**
-=======
->>>>>>> next
 	 * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
 	 * @apiName PutBlacklistCriterias
 	 * @apiVersion 2.1.0
@@ -8705,7 +8860,6 @@
 	 *   "code": "BLC_UPDATE_ERROR",
 	 *   "message": "BLCID 12309 unknown"
 	 * }
-<<<<<<< HEAD
 	 */
 
 /**
@@ -9733,40 +9887,4 @@
 	* }
 	* @apiError FAV_DELETE_SONG_ERROR Favorites item could not be deleted.
 	*
-	*/
-
-		/**
-	* @api {post} /admin/favorites/:username Add song to a user's favorites (as admin)
-	* @apiName PostFavoritesAdmin
-	* @apiVersion 2.5.0
-	* @apiGroup Favorites
-	* @apiPermission admin
-	* @apiHeader authorization Auth token received from logging in
-	* @apiParam {String} username Username to add favorites to
-	* @apiParam {uuid[]} kid Karaoke song IDs, separated by commas
-	* @apiParam {String} [reason] Reason the song was added
-	* @apiSuccess {Number} args Arguments associated with message
-	* @apiSuccess {Number} code Message to display
-	* @apiSuccess {uuid[]} data/kid List of karaoke IDs separated by commas
-	*
-	* @apiSuccessExample Success-Response:
-	* HTTP/1.1 201 Created
-	* {
-	*   "args": "2",
-	*   "code": "FAV_SONG_ADDED",
-	*   "data": [
-	*       "kid"
-	*   ]
-	* }
-	* @apiError FAV_ADD_SONG_ERROR Karaoke couldn't be added to favorites
-	*
-	* @apiErrorExample Error-Response:
-	* HTTP/1.1 500 Internal Server Error
-	* {
-	*   "args": [
-	*       "2"
-	*   ],
-	*   "code": "FAV_ADD_SONG_ERROR",
-	*   "message": null
-	* }
 	*/

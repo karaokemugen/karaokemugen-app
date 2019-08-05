@@ -146,7 +146,7 @@ export default function publicPlaylistsController(router: Router) {
 	/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
- * @apiVersion 2.3.1
+ * @apiVersion 3.0.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in

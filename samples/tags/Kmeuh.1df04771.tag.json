@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Kmeuh"
+    },
+    "name": "Kmeuh",
+    "tid": "1df04771-a378-4f14-a5e1-1455187d681a",
+    "types": [
+      "authors"
+    ]
+  }
+}

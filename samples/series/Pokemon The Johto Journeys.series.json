@@ -1,0 +1,19 @@
+{
+  "header": {
+    "version": 3,
+    "description": "Karaoke Mugen Series File"
+  },
+  "series": {
+    "name": "Pokémon: The Johto Journeys",
+    "aliases": [
+      "Pkmn",
+      "Pocket Monsters"
+    ],
+    "i18n": {
+      "jpn": "ポケットモンスター 金&銀",
+      "fre": "Pokémon : Voyage à Johto",
+      "eng": "Pokémon: The Johto Journeys"
+    },
+    "sid": "7cc9bd18-2aff-4121-a155-6f00f0b65544"
+  }
+}
