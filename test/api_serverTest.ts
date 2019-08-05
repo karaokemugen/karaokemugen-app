@@ -76,7 +76,7 @@ describe('Blacklist', function() {
 	it('Add a blacklist criteria', function() {
 		var data = {
 			'blcriteria_type': '1001',
-			'blcriteria_value': 'c28c8739-da02-49b4-889e-b15d1e9b2139'
+			'blcriteria_value': '5737c5b2-7ea4-414f-8c92-143838a402f6'
 		};
 		return request
 			.post('/api/admin/blacklist/criterias')
@@ -171,7 +171,7 @@ describe('Blacklist', function() {
 describe('Favorites', function() {
 	it('Add karaoke to your favorites', function() {
 		var data = {
-			kid: 'a07a32f7-63eb-46a6-8158-09bf4b06f1c7'
+			kid: 'a6108863-0ae9-48ad-adb5-cb703651f6bf'
 		};
 		return request
 			.post('/api/public/favorites')
@@ -230,7 +230,7 @@ describe('Favorites', function() {
 
 	it('Delete karaoke from your favorites', function() {
 		var data = {
-			kid: 'a07a32f7-63eb-46a6-8158-09bf4b06f1c7'
+			kid: 'a6108863-0ae9-48ad-adb5-cb703651f6bf'
 		};
 		return request
 			.delete('/api/public/favorites')
@@ -283,25 +283,25 @@ describe('Karas information', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.content[0].serie, 'Dragon Ball');
+				strictEqual(response.body.data.content[0].serie, 'Dragon Ball Z');
 			});
 	});
 
 	it('Get song info from database', function() {
 		return request
-			.get('/api/public/karas/f4c8b1a5-f59a-4142-ae46-b43037a9d75b')
+			.get('/api/public/karas/a6108863-0ae9-48ad-adb5-cb703651f6bf')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.kid, 'f4c8b1a5-f59a-4142-ae46-b43037a9d75b');
+				strictEqual(response.body.data.kid, 'a6108863-0ae9-48ad-adb5-cb703651f6bf');
 			});
 	});
 
 	it('Get song lyrics', function() {
 		return request
-			.get('/api/public/karas/b5df891e-6d1f-407d-8b5a-e6bd5368c366/lyrics')
+			.get('/api/public/karas/a6108863-0ae9-48ad-adb5-cb703651f6bf/lyrics')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -324,7 +324,7 @@ describe('Series and year', function() {
 			.expect(200)
 			.then(response => {
 				strictEqual(response.body.data.content.length>=1, true);
-				strictEqual(response.body.data.infos.count, 3);
+				strictEqual(response.body.data.infos.count, 6);
 			});
 	});
 
@@ -337,7 +337,7 @@ describe('Series and year', function() {
 			.expect(200)
 			.then(response => {
 				strictEqual(response.body.data.content.length>=1, true);
-				strictEqual(response.body.data.infos.count, 3);
+				strictEqual(response.body.data.infos.count, 6);
 			});
 	});
 });
@@ -360,9 +360,9 @@ describe('Playlists', function() {
 	var new_playlist_public_id;
 	var plc_id;
 	var playlist = 1;
-	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 to playlist '+playlist, function() {
+	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf to playlist '+playlist, function() {
 		var data = {
-			'kid': ['c28c8739-da02-49b4-889e-b15d1e9b2139'],
+			'kid': ['a6108863-0ae9-48ad-adb5-cb703651f6bf'],
 			'requestedby': 'Test'
 		};
 		return request
@@ -377,9 +377,9 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 again to playlist '+playlist+' to see if it fails', function() {
+	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf again to playlist '+playlist+' to see if it fails', function() {
 		var data = {
-			'kid': ['c28c8739-da02-49b4-889e-b15d1e9b2139'],
+			'kid': ['a6108863-0ae9-48ad-adb5-cb703651f6bf'],
 			'requestedby': 'Test'
 		};
 		return request
@@ -414,9 +414,9 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Add karaoke c28c8739-da02-49b4-889e-b15d1e9b2139 to an unknown playlist to see if it fails', function() {
+	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf to an unknown playlist to see if it fails', function() {
 		var data = {
-			'kid': ['c28c8739-da02-49b4-889e-b15d1e9b2139'],
+			'kid': ['a6108863-0ae9-48ad-adb5-cb703651f6bf'],
 			'requestedby': 'Test'
 		};
 		return request
@@ -535,14 +535,14 @@ describe('Playlists', function() {
 
 	it('Add karaoke to current/public playlist', function() {
 		return request
-			.post('/api/public/karas/a9c17ee5-b0f1-43d7-a1e0-0babf5997bde')
+			.post('/api/public/karas/495e2635-38a9-42db-bdd0-df4d27329c87')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(response => {
 				strictEqual(response.body.code,'PLAYLIST_MODE_SONG_ADDED');
-				strictEqual(response.body.data.kid[0], 'a9c17ee5-b0f1-43d7-a1e0-0babf5997bde');
+				strictEqual(response.body.data.kid[0], '495e2635-38a9-42db-bdd0-df4d27329c87');
 			});
 	});
 
@@ -1007,7 +1007,7 @@ describe('Users', function() {
 describe('Whitelist', function() {
 	it('Add song to whitelist', function() {
 		var data = {
-			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2139',
+			'kid': '495e2635-38a9-42db-bdd0-df4d27329c87',
 			'reason': 'Because reasons'
 		};
 		return request
@@ -1050,7 +1050,7 @@ describe('Whitelist', function() {
 
 	it('Delete whitelist item', function() {
 		var data = {
-			kid: 'c28c8739-da02-49b4-889e-b15d1e9b2139'
+			kid: '495e2635-38a9-42db-bdd0-df4d27329c87'
 		};
 		return request
 			.delete('/api/admin/whitelist/')
