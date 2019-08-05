@@ -10,12 +10,13 @@ class RadioButton extends Component {
     return (
       <div className="radiobutton-ui">
         {
-          this.props.buttons.map(function(item,i){
+          this.props.buttons.map((item,i) => {
             var style = {};
             if(item.active && item.activeColor)
               style.backgroundColor = item.activeColor;
             return (
               <button
+                title={this.props.title}
                 key={i}
                 type="button"
                 className={item.active ? 'active':''}

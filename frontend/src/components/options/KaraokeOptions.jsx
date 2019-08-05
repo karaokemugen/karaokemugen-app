@@ -1,8 +1,35 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import Switch from '../Switch';
+import {expand} from '../tools';
+import axios from 'axios';
 
 class KaraokeOptions extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      mysterySongLabel: ""
+    }
+    this.addMysterySongLabel = this.addMysterySongLabel.bind(this);
+    this.deleteMysterySongLabel = this.deleteMysterySongLabel.bind(this);
+    this.saveMysterySongsLabels = this.saveMysterySongsLabels.bind(this);
+  }
+
+  addMysterySongLabel() {
+    var mysterySongsLabels = this.props.settings.Playlist.MysterySongs.Labels;
+    mysterySongsLabels.push(this.state.mysterySongLabel);
+    this.saveMysterySongsLabels(mysterySongsLabels)
+    this.setState({mysterySongLabel: ""});
+  }
+
+  deleteMysterySongLabel(value) {
+    this.saveMysterySongsLabels(this.props.settings.Playlist.MysterySongs.Labels.filter(function(ele){return ele != value}));
+  }
+
+  async saveMysterySongsLabels(labels) {
+    var data = expand("Playlist.MysterySongs.Labels", eval(labels));
+    axios.put('/api/admin/settings', {setting: JSON.stringify(data)});
+  }
 
   render() {
     const t = this.props.t;
@@ -142,6 +169,85 @@ class KaraokeOptions extends Component {
             <div className="col-xs-6">
               <Switch idInput="Playlist.AllowDuplicateSeries" handleChange={this.props.onChange}
                 isChecked={settings.Playlist.AllowDuplicateSeries} />
+            </div>
+          </div>
+
+          <div className="form-group settingsGroupPanel subCategoryGroupPanel">
+            <div className="col-xs-12" style={{ textAlign: "center" }}>
+              {t("MYSTERY_SONG_SETTINGS")}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {t("ENGINE_HIDE_INVISIBLE_SONGS")}
+            </label>
+            <div className="col-xs-6">
+              <select
+                className="form-control"
+                id="Playlist.MysterySongs.Hide"
+                onChange={this.props.onChange}
+                value={settings.Playlist.MysterySongs.Hide}
+              >
+                <option value={true}> {t("ENGINE_HIDE_INVISIBLE_SONGS_HIDDEN_OPTION")} </option>
+                <option value={false}>???</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN")}
+            </label>
+            <div className="col-xs-6">
+              <select
+                className="form-control"
+                id="Playlist.MysterySongs.AddedSongVisibilityAdmin"
+                onChange={this.props.onChange}
+                value={settings.Playlist.MysterySongs.AddedSongVisibilityAdmin}
+              >
+                <option value={true}> {t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
+                <option value={false}> {t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {t("ENGINE_ADDED_SONG_VISIBILITY_PUBLIC")}
+            </label>
+            <div className="col-xs-6">
+              <select
+                className="form-control"
+                id="Playlist.MysterySongs.AddedSongVisibilityPublic"
+                onChange={this.props.onChange}
+                value={settings.Playlist.MysterySongs.AddedSongVisibilityPublic}
+              >
+                <option value={true}> {t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
+                <option value={false}> {t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {t("ENGINE_LABELS_MYSTERY_SONGS")}
+            </label>
+            <div className="col-xs-6">
+              <div>
+                <input value={this.state.mysterySongLabel} style={{margin: "10px", color: "#555"}}
+                  onChange={e => this.setState({mysterySongLabel: e.target.value})}/>
+                <button type="button" className="btn btn-default" onClick={this.addMysterySongLabel}>{t("ENGINE_LABELS_MYSTERY_SONGS_ADD")}</button>
+              </div>
+              {settings.Playlist.MysterySongs.Labels.map(value => {
+                return (
+                <div key={value}>
+                  <label style={{margin: "10px"}}>{value}</label>
+                  <button type="button" className="btn btn-default" 
+                    onClick={() => this.deleteMysterySongLabel(value)}>{t("ENGINE_LABELS_MYSTERY_SONGS_DELETE")}</button>
+                </div>
+                )
+              })}
             </div>
           </div>
         </div>

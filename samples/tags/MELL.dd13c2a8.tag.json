@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "MELL"
+    },
+    "name": "MELL",
+    "tid": "dd13c2a8-16ac-4ae0-a533-28890d392aa0",
+    "types": [
+      "singers",
+      "songwriters"
+    ]
+  }
+}

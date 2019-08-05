@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Amo"
+    },
+    "name": "Amo",
+    "tid": "5a629611-96b4-422c-b309-ba7a58e263a2",
+    "types": [
+      "authors",
+      "creators"
+    ]
+  }
+}

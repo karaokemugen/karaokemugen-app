@@ -103,7 +103,15 @@ export const defaults: Config = {
 		AllowDuplicates: false,
 		AllowDuplicateSeries: true,
 		MaxDejaVuTime: 60,
-		RemovePublicOnPlay: false
+		RemovePublicOnPlay: false,
+		MysterySongs: {
+			Hide: false,
+			AddedSongVisibilityAdmin: true,
+			AddedSongVisibilityPublic: true,
+			Labels: [
+				'???',
+			]
+		}
 	},
 	System: {
 		Binaries: {
@@ -193,5 +201,9 @@ export const configConstraints = {
 	'Playlist.AllowDuplicates': {inclusion : bools},
 	'Playlist.AllowDuplicateSeries': {inclusion : bools},
 	'Playlist.RemovePublicOnPlay': {inclusion : bools},
-	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}}
+	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
+	'Playlist.MysterySongs.Hide': {inclusion: bools},
+	'Playlist.MysterySongs.AddedSongVisibilityAdmin': {inclusion: bools},
+	'Playlist.MysterySongs.AddedSongVisibilityPublic': {inclusion: bools},
+	'Playlist.MysterySongs.Labels': {arrayOneItemValidator: true}
 };

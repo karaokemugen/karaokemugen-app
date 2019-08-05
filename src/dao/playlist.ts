@@ -41,6 +41,14 @@ export async function deletePlaylist(id: number) {
 	return await db().query(sql.deletePlaylist, [id]);
 }
 
+export async function setPLCVisible(plc_id: number) {
+	return await db().query(sql.setPLCVisible, [plc_id]);
+}
+
+export async function setPLCInvisible(plc_id: number) {
+	return await db().query(sql.setPLCInvisible, [plc_id]);
+}
+
 export async function setPLCFree(plc_id: number) {
 	return await db().query(sql.setPLCFree, [plc_id]);
 }

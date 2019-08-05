@@ -181,7 +181,8 @@ SELECT
 	ELSE FALSE
   END) AS flag_blacklisted,
   COUNT(up.fk_login)::integer AS upvotes,
-  (CASE WHEN up.fk_login = :username THEN 1 ELSE 0 END) as flag_upvoted
+  (CASE WHEN up.fk_login = :username THEN 1 ELSE 0 END) as flag_upvoted,
+  pc.flag_visible AS flag_visible
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
@@ -304,7 +305,8 @@ SELECT
   (CASE WHEN bl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_blacklisted,
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
   (CASE WHEN up.fk_login = :username THEN TRUE ELSE FALSE END) as flag_upvoted,
-  SUM(plc_before_karas.duration) - ak.duration AS time_before_play
+  SUM(plc_before_karas.duration) - ak.duration AS time_before_play,
+  pc.flag_visible AS flag_visible
 FROM playlist_content AS pc
 INNER JOIN  playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid
@@ -392,6 +394,19 @@ UPDATE playlist_content
 SET flag_free = TRUE
 WHERE pk_id_plcontent = $1;
 `;
+
+export const setPLCVisible = `
+UPDATE playlist_content
+SET flag_visible = TRUE
+WHERE pk_id_plcontent = $1;
+`;
+
+export const setPLCInvisible = `
+UPDATE playlist_content
+SET flag_visible = FALSE
+WHERE pk_id_plcontent = $1;
+`;
+
 
 export const setPLCFreeBeforePos = `
 UPDATE playlist_content

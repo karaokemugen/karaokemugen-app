@@ -67,8 +67,10 @@ class AdminPage extends Component {
         <div id="underHeader" className="underHeader" data-mode="admin">
           {
             (
-              this.state.options 
-              ? null
+              this.state.options ?   
+                <div className="row " id="manage">
+                  <Options settings={this.props.settings} />
+                </div>
               : <PlaylistMain>
                     <Playlist scope='admin' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
                       idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} toggleSearchMenu={this.toggleSearchMenu}
@@ -78,9 +80,6 @@ class AdminPage extends Component {
                 </PlaylistMain>
             )
           }
-          <div className={"row "+(this.state.options ? "" : "hidden")} id="manage">
-            <Options settings={this.props.settings} />
-          </div>
           <div className="toastMessageContainer"></div>
         </div>
         <div className="overlay" onClick={this.stopVideo}>

@@ -99,8 +99,7 @@ class Playlist extends Component {
     )
       playlistList.push({
         playlist_id: -2,
-        name: "Blacklist",
-        flag_visible: true
+        name: "Blacklist"
       });
     if (
       this.props.scope === "admin" ||
@@ -108,8 +107,7 @@ class Playlist extends Component {
     )
       playlistList.push({
         playlist_id: -4,
-        name: "Blacklist criterias",
-        flag_visible: true
+        name: "Blacklist criterias"
       });
     if (
       this.props.scope === "admin" ||
@@ -117,8 +115,7 @@ class Playlist extends Component {
     )
       playlistList.push({
         playlist_id: -3,
-        name: "Whitelist",
-        flag_visible: true
+        name: "Whitelist"
       });
     if (this.props.scope === "admin")
       playlistList.push({
@@ -463,7 +460,7 @@ class Playlist extends Component {
             navigatorLanguage={this.props.navigatorLanguage}
             playlistToAddId={this.state.playlistToAddId}
             side={this.props.side}
-            mode={this.props.config.Frontend.Mode}
+            config={this.props.config}
             logInfos={this.props.logInfos}
             playlistCommands={this.state.playlistCommands}
             idPlaylistTo={this.props.idPlaylistTo}

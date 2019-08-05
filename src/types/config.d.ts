@@ -87,7 +87,13 @@ export interface Config {
 		AllowDuplicates?: boolean,
 		AllowDuplicateSeries?: boolean,
 		MaxDejaVuTime?: number,
-		RemovePublicOnPlay?: boolean
+		RemovePublicOnPlay?: boolean,
+		MysterySongs: {
+			Hide?: boolean,
+			AddedSongVisibilityPublic?: boolean,
+			AddedSongVisibilityAdmin?: boolean,
+			Labels?: string[]
+		}
 	},
 	System: {
 		Binaries: {

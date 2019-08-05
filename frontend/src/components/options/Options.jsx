@@ -47,10 +47,10 @@ class Options extends Component {
                   <PlayerOptions onChange={this.saveSettings} settings={this.props.settings.config} /> : null
                 }
                 {this.state.activeView === 2 ?
-                  <InterfaceOptions onChange={this.saveSettings} settings={this.props.settings.config} /> : null
+                  <KaraokeOptions onChange={this.saveSettings} settings={this.props.settings.config}/> : null
                 }
                 {this.state.activeView === 3 ?
-                  <KaraokeOptions onChange={this.saveSettings} settings={this.props.settings.config}/> : null
+                  <InterfaceOptions onChange={this.saveSettings} settings={this.props.settings.config} /> : null
                 }
               </div>
             </div>

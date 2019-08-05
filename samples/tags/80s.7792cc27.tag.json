@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "80s"
+    },
+    "name": "80s",
+    "tid": "7792cc27-9ff9-4d47-9287-2338b7db1575",
+    "types": [
+      "groups"
+    ]
+  }
+}

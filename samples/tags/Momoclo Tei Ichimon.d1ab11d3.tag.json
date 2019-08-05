@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Momoclo Tei Ichimon"
+    },
+    "name": "Momoclo Tei Ichimon",
+    "tid": "d1ab11d3-bc82-491c-b517-c9a1ad8df7f3",
+    "types": [
+      "singers"
+    ]
+  }
+}

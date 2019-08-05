@@ -15,6 +15,7 @@ class KaraDetail extends Component {
     this.showFullLyrics = this.showFullLyrics.bind(this);
     this.getKaraDetail = this.getKaraDetail.bind(this);
     this.getTagNames = this.getTagNames.bind(this);
+    this.changeVisibilityKara = this.changeVisibilityKara.bind(this);
     this.fullLyricsRef = React.createRef();
     this.getKaraDetail();
   }
@@ -161,6 +162,13 @@ class KaraDetail extends Component {
     if (data.origins) tagNames = tagNames.concat(data.origins.map(e => this.props.getTagInLocale(e)))
     if (data.misc) tagNames = tagNames.concat(data.misc.map(e => this.props.getTagInLocale(e)))
     return tagNames.join(', ');
+  }
+
+  changeVisibilityKara() {
+    if(this.props.scope === 'admin') {
+      axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.state.kara.playlistcontent_id, 
+        { flag_visible: !this.state.kara.flag_visible });
+    }
   }
 
   /**
@@ -310,9 +318,13 @@ class KaraDetail extends Component {
                 {this.props.scope === "admin" && this.props.publicOuCurrent ? (
                   <button
                     title={t("TOOLTIP_UPVOTE")} onClick={this.props.freeKara}
-                    className={"likeFreeButton btn btn-action " + 
-                      (data.flag_free ? "free btn-primary": "")
-                    }
+                    className={"likeFreeButton btn btn-action " + (data.flag_free ? "btn-primary": "")}
+                  />
+                ) : null}
+                {this.props.scope === "admin" && this.props.publicOuCurrent ? (
+                  <button
+                    title={data.flag_visible ? t("TOOLTIP_VISIBLE_OFF") : t("TOOLTIP_VISIBLE_ON")} onClick={this.changeVisibilityKara}
+                    className={"visibilityButton btn btn-action " + (data.flag_visible ? "": "btn-primary")}
                   />
                 ) : null}
               </div>

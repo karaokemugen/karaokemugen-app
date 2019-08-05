@@ -4,13 +4,40 @@
     "description": "Karaoke Mugen Series File"
   },
   "series": {
-    "aliases": [
-      "DBZ"
-    ],
     "name": "Dragon Ball Z",
+    "aliases": [
+      "DBZ",
+      "dbztv",
+      "Dragon Ball Z",
+      "Dragonball Z",
+      "Ejder Topu Z",
+      "Драконий жемчуг Зет",
+      "Драконова топка Зет",
+      "ドラゴンボールZ"
+    ],
     "i18n": {
-      "jpn": "Dragon Ball Z"
+      "jpn": "ドラゴンボールZ",
+      "cat": "Bola De Drac Z",
+      "spa": "Dragon Ball Z",
+      "hun": "Dragon Ball Z",
+      "ger": "Dragon Ball Z",
+      "pol": "Dragon Ball Z",
+      "dut": "Dragon Ball Z",
+      "rum": "Dragon Ball Z",
+      "ita": "Dragon Ball Z",
+      "por": "Dragon Ball Z",
+      "fre": "Dragon Ball Z",
+      "hrv": "Dragon Ball Z",
+      "eng": "Dragon Ball Z",
+      "dan": "Dragon Ball Z",
+      "fin": "DragonBall Z",
+      "lit": "Drakonų Kovos Z",
+      "heb": "Z דרגון בול",
+      "ara": "دراغون بول z",
+      "tha": "ดราก้อนบอล Z",
+      "kor": "드래곤볼Z",
+      "chi": "龙珠Z"
     },
-    "sid": "dd06c976-b2da-4340-8d92-fabe61305c60"
+    "sid": "3cfa486b-0ab4-4969-85b7-113ae4450c42"
   }
 }

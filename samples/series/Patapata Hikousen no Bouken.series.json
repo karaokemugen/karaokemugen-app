@@ -1,0 +1,24 @@
+{
+  "header": {
+    "version": 3,
+    "description": "Karaoke Mugen Series File"
+  },
+  "series": {
+    "name": "Patapata Hikôsen no Bôken",
+    "aliases": [
+      "Adventures of Patapata Aircraft",
+      "Patapata Hikousen no Bouken",
+      "Patapata",
+      "Secret of Cerulean Sand",
+      "SOCS"
+    ],
+    "i18n": {
+      "jpn": "パタパタ飛行船の冒険",
+      "fre": "Le secret du sable bleu",
+      "eng": "The Secret of Cerulean Sand",
+      "ita": "Il Segreto della sabbia",
+      "ara": "الطاقة الزرقاء"
+    },
+    "sid": "bcde5e8c-32d7-4d66-b6fd-81d4fcc5add3"
+  }
+}

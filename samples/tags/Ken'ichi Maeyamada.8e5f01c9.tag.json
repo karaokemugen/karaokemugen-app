@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Ken'ichi Maeyamada"
+    },
+    "name": "Ken'ichi Maeyamada",
+    "tid": "8e5f01c9-7971-4dbd-a03c-0118003ba21b",
+    "types": [
+      "songwriters"
+    ]
+  }
+}
