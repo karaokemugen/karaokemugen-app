@@ -23,8 +23,10 @@ Many things have changed, both in database schemas, code base, frontend, and eve
   - WARNING : As a result, blacklists criterias relying on tags won't be valid anymore and are going to be removed from your blacklist criterias.
 - Mystery karaoke toggle (#441)
   - You can flag a song as visible or invisible. Invisible songs will be marked as ??? to the public, which means they won't know in advance what that song is in the playlist. Good for surprises and troll songs.
+  - You can add mystery labels, which are shown randomly in place of the real song's name in a song slot to users. This is troll ammo.
+  - You can make it so admins or users added songs are automatically marked as invisible (or not)
 - Classic Karaoke Mode (#432)
-  - In Karaoke Classic mode, a pause is made in between songs, and the person who requested the song (or admin, or after a time period has elapsed) can hit play on its device. This is a mode for thos who prefer a classic karaoke box experience where each user takes the microphone to sing on the song they asked for.
+  - In Karaoke Classic mode, a pause is made in between songs, and the person who requested the song (or admin, or after a time period has elapsed) can hit play on its device. This is a mode for those who prefer a classic karaoke box experience where each user takes the microphone to sing on the song they asked for.
 - New features for Download manager :
   - Blacklist system to keep the Download manager to automatically download some songs. Manual download is still possible (#427)
   - A "Update All" button to update existing songs and download all songs missing from your database. See above for the blacklist feature. (#426)
@@ -54,6 +56,7 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - Karaoke Mugen's API has been split in smaller chunks for easier debugging and programming.
 - A lot of code is now shared between Karaoke Mugen App and Server via the Karaoke Mugen Shared Library (#402) saving us a lot of time
 - Importing playlists is now safer thanks to a code rewrite by using constraints instead of tests (#329)
+- Preview videos are not generated anymore. It was costly and took a hell lot of time. Now full media files are served instead (#457)
 
 ### Fixes
 
