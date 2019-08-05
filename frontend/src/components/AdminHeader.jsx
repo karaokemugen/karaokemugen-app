@@ -189,7 +189,7 @@ class AdminHeader extends Component {
             style={{ borderLeftWidth: "0px" }}
             onClick={this.adminMessage}
           >
-            <i className="fas fa-comment-alt-plus"></i>
+            <i className="fas fa-comment"></i>
           </button>
 
           <div className="pull-left btn-group switchs">
