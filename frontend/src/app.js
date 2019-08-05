@@ -119,8 +119,7 @@ class App extends Component {
 
     callModal(type, title, message, callback, placeholder) {
         ReactDOM.render(<Suspense fallback={<div>loading...</div>}><Modal type={type} title={title} message={message}
-            callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('root'));
-        $('#modalBox').modal('show');
+            callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('modal'));
     }
 
     powerOff() {

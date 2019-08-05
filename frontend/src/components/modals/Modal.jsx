@@ -1,11 +1,11 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 
 class Modal extends Component {
 	constructor(props) {
 		super(props)
 		this.confirmModal = this.confirmModal.bind(this);
 		this.abortModal = this.abortModal.bind(this);
-		this.onKeyDown = this.onKeyDown.bind(this);
 		this.state = {
 			promptText: this.props.placeholder
 		}
@@ -31,28 +31,37 @@ class Modal extends Component {
 				this.props.callback();
 			}
 		}
+		ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
 	}
 
 	abortModal() {
-		if (typeof this.props.callback != 'undefined' && this.props.type === 'confirm') {
-			this.props.callback(false);
-		}
+		ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
 	}
 
-	onKeyDown(e) {
+
+	keyObserverHandler(e) {
 		var keyCode = e.keyCode || e.which;
-		if (keyCode == '13') {
-			this.confirmModal();
-			$('#modalBox').modal('hide');
-			$('body').removeClass('modal-open');
-			$('.modal-backdrop').remove();
-		}
+			console.log(keyCode);
+			if (keyCode == '13') {
+				this.confirmModal();
+			}
+			if (keyCode == '27') {
+				this.abortModal();
+			}
+	}
+
+	componentDidMount() {
+		document.addEventListener('keyup', this.keyObserverHandler.bind(this));
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('keyup', this.keyObserverHandler.bind(this));
 	}
 
 	render() {
 		var modalDialogClass = window.innerWidth < 1025 ? "modal-dialog modal-sm" : "modal-dialog modal-md";
 		return (
-			<div className="modal fade" id="modalBox" onKeyDown={this.onKeyDown}>
+			<div className="modal" id="modalBox">
 				<div className={modalDialogClass}>
 					<div className="modal-content">
 						<div className="modal-header">
