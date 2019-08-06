@@ -1,23 +1,6 @@
 #publicPage {
     height:100vh;
 
-    #progressBar {
-        top: 0;
-        cursor: auto;
-        font-size:  17px;
-    }
-    #progressBarColor, #progressBar {
-        height: 30px;
-    }
-
-    #karaInfo {
-        padding: 0px 5px;
-        line-height: 30px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-    }
-
     .header button.btn {
         font-size : 21px;
         line-height: 21px;
@@ -349,10 +332,6 @@
         }
 
 
-
-        #progressBar {
-            box-shadow: none;
-        }
 
         #mobileHelp, #mobileActions {
         display: block;

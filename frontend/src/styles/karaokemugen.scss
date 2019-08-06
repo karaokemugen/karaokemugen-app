@@ -74,53 +74,7 @@ div > a, h5 > a, a.btn-link {
 	height: 20px;
     transform: translateY(-69%);
 }
-#progressBar {
-	cursor: pointer;
-	height: 24px;
-	width: 100%;
-	position: relative;
-	z-index: 1337;
-	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
-	background-color: #337ab7;
-}
-#progressBarColor {
-	height: 24px;
-    position: absolute;
-	background-color: #1E2124;
-	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
-	z-index: 0;
-    position: absolute;
-	left: 0;
-    top: 0;
-	width: 100%;
-	-webkit-backface-visibility: hidden;
-	-webkit-perspective: 1000;
-	backface-visibility: hidden;
-	perspective: 1000;
-	will-change: transform;
-    transition: transform 0s linear;
-}
 
-#progressBarColor.cssTransform,
-.cssTransform {
-    transition: transform 1s linear;
-}
-
-#progressBar:hover  {
-	background-color: #286faa;
-}
-#progressBar:active {
-	background-color: #18617a;
-}
-#karaInfo {
-    line-height: 1.83;
-	text-align: center;
-	z-index: 10;
-    position: absolute;
-    top: 0;
-	width: 100%;
-	font-weight: 600;
-}
 .btn-danger {
 	background-color: hsla(0, 42%, 37%, 1);
 	border-color: transparent;
@@ -704,9 +658,7 @@ input[type=range]:focus::-ms-fill-upper {
 .plDashboard {
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.10), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.16);
 }
-#progressBar {
-	box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.24), 0 1px 8px 0 rgba(0, 0, 0, 0.21), 0 3px 4px -1px rgba(0, 0, 0, 0.24);
-}
+
 
 #header {
 	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.23), 0 1px 12px 0 rgba(0, 0, 0, 0.17), 0 2px 2px -1px rgba(0, 0, 0, 0.26)

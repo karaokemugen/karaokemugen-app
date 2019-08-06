@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 
-require('./PlaylistMain.scss');
+require('./PlaylistMainDecorator.scss');
 
-class PlaylistMain extends Component {
+class PlaylistMainDecorator extends Component {
 
   constructor(props) {
     super(props);
@@ -28,7 +28,7 @@ class PlaylistMain extends Component {
 
   render() {
     return (
-      <div className="playlist-main--wrapper">
+      <div className="PlaylistMainDecorator">
         <div className="playlist-main" id="playlist" data-side={this.state.currentSide} onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
           {this.props.children.map((node,index) => {
             let i = index+1
@@ -40,4 +40,4 @@ class PlaylistMain extends Component {
   }
 }
 
-export default PlaylistMain;
+export default PlaylistMainDecorator;

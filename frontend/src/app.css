@@ -3,6 +3,20 @@
 
 @import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 
+/* CSS base for consistent rendering / sort of css reset */
+* {
+	box-sizing: border-box;
+}
+html {
+	height: 100%;
+	overflow: hidden;
+}
+body {
+	height: 100%;
+	margin: 0;
+}
+
+/* Extra css planned to be removed */
 @import './vendors/bootstrap3/css/bootstrap.css';
 @import './styles/karaokemugen.scss';
 @import './styles/admin.scss';

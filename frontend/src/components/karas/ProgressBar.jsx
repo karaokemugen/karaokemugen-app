@@ -3,6 +3,8 @@ import { withTranslation } from 'react-i18next';
 import axios from "axios";
 import { is_touch_device, buildKaraTitle, getSocket } from "../tools";
 
+require('./ProgressBar.scss');
+
 class ProgressBar extends Component {
     constructor(props) {
         super(props);

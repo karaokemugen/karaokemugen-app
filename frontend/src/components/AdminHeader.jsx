@@ -3,6 +3,7 @@ import { withTranslation } from "react-i18next";
 import { expand, getSocket } from "./tools";
 import axios from "axios";
 import RadioButton from "./RadioButton.jsx";
+import KmAppHeaderDecorator from "./decorators/KmAppHeaderDecorator"
 
 class AdminHeader extends Component {
   constructor(props) {
@@ -95,11 +96,7 @@ class AdminHeader extends Component {
     volume = isNaN(volume) ? 100 : volume;
 
     return (
-      <React.Fragment>
-        <div
-          id="header"
-          className="header"
-        >
+      <KmAppHeaderDecorator mode="admin">
           <div
             className="btn btn-default btn-dark pull-right"
             id="manageButton"
@@ -318,8 +315,7 @@ class AdminHeader extends Component {
               <i className="fas fa-chevron-right"></i>
             </button>
           </div>
-        </div>
-      </React.Fragment>
+      </KmAppHeaderDecorator>
     );
   }
 }

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
-import PlaylistMain from "./karas/PlaylistMain";
+import KmAppWrapperDecorator from "./decorators/KmAppWrapperDecorator"
+import PlaylistMainDecorator from "./decorators/PlaylistMainDecorator";
 import Playlist from "./karas/Playlist";
 import OnlineStatsModal from "./modals/OnlineStatsModal"
 import AdminHeader from "./AdminHeader"
@@ -60,33 +61,66 @@ class AdminPage extends Component {
           <ProfilModal settingsOnline={this.props.settings.config.Online} updateLogInfos={this.props.updateLogInfos} logInfos={this.props.logInfos}
             toggleProfileModal={() => this.setState({ profileModal: !this.state.profileModal })} /> : null
         }
-        <AdminHeader config={this.props.settings.config} toggleProfileModal={() => this.setState({ profileModal: !this.state.profileModal })}
-          callModal={window.callModal} setOptionMode={() => this.setState({ options: !this.state.options })} powerOff={this.props.powerOff}
-          logOut={this.props.logOut} options={this.state.options}/>
-        <ProgressBar webappMode={this.props.settings.config.Frontend.Mode} />
-        <div id="underHeader" className="underHeader" data-mode="admin">
-          {
-            (
-              this.state.options ?   
+        
+        <KmAppWrapperDecorator>
+
+          <AdminHeader 
+            config={this.props.settings.config}
+            toggleProfileModal={() => this.setState({ profileModal: !this.state.profileModal })}
+            callModal={window.callModal}
+            setOptionMode={() => this.setState({ options: !this.state.options })}
+            powerOff={this.props.powerOff}
+            logOut={this.props.logOut}
+            options={this.state.options}
+            ></AdminHeader>
+
+          <ProgressBar webappMode={this.props.settings.config.Frontend.Mode}></ProgressBar>
+
+          <div id="underHeader" className="underHeader" data-mode="admin">
+            {
+              this.state.options
+              ?   
                 <div className="row " id="manage">
                   <Options settings={this.props.settings} />
                 </div>
-              : <PlaylistMain>
-                    <Playlist scope='admin' side={1} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
-                      idPlaylistTo={this.state.idsPlaylist.right} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} toggleSearchMenu={this.toggleSearchMenu}
-                      searchMenuOpen={this.state.searchMenuOpen} />
-                    <Playlist scope='admin' side={2} navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} config={this.props.settings.config}
-                      idPlaylistTo={this.state.idsPlaylist.left} majIdsPlaylist={this.majIdsPlaylist} tags={this.props.tags} />
-                </PlaylistMain>
-            )
-          }
-          <div className="toastMessageContainer"></div>
-        </div>
+              :
+                <PlaylistMainDecorator>
+                    <Playlist 
+                      scope='admin'
+                      side={1}
+                      navigatorLanguage={this.props.navigatorLanguage}
+                      logInfos={this.props.logInfos}
+                      config={this.props.settings.config}
+                      idPlaylistTo={this.state.idsPlaylist.right}
+                      majIdsPlaylist={this.majIdsPlaylist}
+                      tags={this.props.tags}
+                      toggleSearchMenu={this.toggleSearchMenu}
+                      searchMenuOpen={this.state.searchMenuOpen}
+                      ></Playlist>
+                    <Playlist
+                      scope='admin'
+                      side={2}
+                      navigatorLanguage={this.props.navigatorLanguage}
+                      logInfos={this.props.logInfos}
+                      config={this.props.settings.config}
+                      idPlaylistTo={this.state.idsPlaylist.left}
+                      majIdsPlaylist={this.majIdsPlaylist}
+                      tags={this.props.tags}
+                      ></Playlist>
+                </PlaylistMainDecorator>
+            }
+            <div className="toastMessageContainer"></div>
+          </div>
+
+        </KmAppWrapperDecorator>
+
         <div className="overlay" onClick={this.stopVideo}>
           <video id="video" src="" type="video/mp4" autoPlay>
           </video>
         </div>
+
         <a id="downloadAnchorElem"></a>
+
       </div>
     );
   }
