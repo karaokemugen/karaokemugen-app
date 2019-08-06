@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
 import KmAppWrapperDecorator from "./decorators/KmAppWrapperDecorator"
 import PlaylistMainDecorator from "./decorators/PlaylistMainDecorator";
+import KmAppBodyDecorator from "./decorators/KmAppBodyDecorator"
 import Playlist from "./karas/Playlist";
 import OnlineStatsModal from "./modals/OnlineStatsModal"
 import AdminHeader from "./AdminHeader"
@@ -76,7 +77,7 @@ class AdminPage extends Component {
 
           <ProgressBar webappMode={this.props.settings.config.Frontend.Mode}></ProgressBar>
 
-          <div id="underHeader" className="underHeader" data-mode="admin">
+          <KmAppBodyDecorator mode="admin" extraClass="">
             {
               this.state.options
               ?   
@@ -109,10 +110,11 @@ class AdminPage extends Component {
                       ></Playlist>
                 </PlaylistMainDecorator>
             }
-            <div className="toastMessageContainer"></div>
-          </div>
+          </KmAppBodyDecorator>
 
         </KmAppWrapperDecorator>
+
+        <div className="toastMessageContainer"></div>
 
         <div className="overlay" onClick={this.stopVideo}>
           <video id="video" src="" type="video/mp4" autoPlay>

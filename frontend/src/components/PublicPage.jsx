@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
 import KmAppWrapperDecorator from "./decorators/KmAppWrapperDecorator"
 import KmAppHeaderDecorator from "./decorators/KmAppHeaderDecorator"
+import KmAppBodyDecorator from "./decorators/KmAppBodyDecorator"
 import PlaylistMainDecorator from "./decorators/PlaylistMainDecorator";
 import Playlist from "./karas/Playlist";
 import RestrictedHelpModal from "./modals/RestrictedHelpModal"
@@ -143,74 +144,77 @@ class PublicPage extends Component {
                   this.props.settings.config.Frontend.Mode === 2
                   ?
                     <KmAppHeaderDecorator mode="public">
-                      <div className="col-lg-8 col-md-7 col-msm-12  col-sm-12 col-xs-12 headerInputs">
-                        <button type="button" className={"searchMenuButton btn btn-sm btn-default" + (this.state.searchMenuOpen ? " searchMenuButtonOpen" : "")} 
-                          onClick={this.toggleSearchMenu}>
-                          <i className="glyphicon glyphicon-filter"></i>
-                        </button>
 
-                        <div className="plSearch" id="searchParent" style={{ width: (this.props.logInfos.role != 'guest' ? "" : "100%") }}>
-                          <input type="text" className="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist"
-                            value={this.state.filterValue} onChange={(e) => this.setState({ filterValue: e.target.value })}
-                            onKeyPress={e => {
-                              if (e.which == 13) {
-                                this.setState({ filterValue: e.target.value });
-                              }
-                            }} />
-                        </div>
-                        <button title={t("GET_LUCKY")} className="btn btn-lg btn-action btn-default getLucky  hidden-msm hidden-xs hidden-sm" onClick={this.getLucky}>
-                          <img src={getLuckyImage} />
+                      <button type="button" className={"searchMenuButton btn btn-sm btn-default" + (this.state.searchMenuOpen ? " searchMenuButtonOpen" : "")} 
+                        onClick={this.toggleSearchMenu}>
+                        <i className="glyphicon glyphicon-filter"></i>
+                      </button>
+
+                      <div className="plSearch" style={{ width: (this.props.logInfos.role != 'guest' ? "" : "100%") }}>
+                        <i className="fas fa-search"></i>
+                        <input type="text" className="form-control" side="1" name="searchPlaylist"
+                          value={this.state.filterValue} onChange={(e) => this.setState({ filterValue: e.target.value })}
+                          onKeyPress={e => {
+                            if (e.which == 13) {
+                              this.setState({ filterValue: e.target.value });
+                            }
+                          }} />
+                      </div>
+
+                      <button title={t("GET_LUCKY")} className="btn btn-lg btn-action btn-default getLucky" onClick={this.getLucky}>
+                        <img src={getLuckyImage} />
+                      </button>
+
+                      {this.props.logInfos.role != 'guest' ?
+                        <div className="pseudoChange">
+                          <input list="pseudo" type="text" id="choixPseudo" className="form-control" placeholder={t("NICKNAME")} 
+                          onBlur={this.changePseudo} onKeyPress={(e) => {if (e.which == 13) this.changePseudo(e)}} />
+                        </div> : null
+                      }
+
+                      <div className="dropdown">
+                        <button className="btn btn-dark dropdown-toggle klogo" id="menuPC" type="button"
+                          onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}>
                         </button>
-                        {this.props.logInfos.role != 'guest' ?
-                          <div className="pseudoChange">
-                            <input list="pseudo" type="text" id="choixPseudo" className="form-control" placeholder={t("NICKNAME")} 
-                            onBlur={this.changePseudo} onKeyPress={(e) => {if (e.which == 13) this.changePseudo(e)}} />
-                          </div> : null
+                        {this.state.dropDownMenu ?
+                          <ul className="dropdown-menu">
+                            <li><a href="#" className="changePseudo" onClick={this.openLoginOrProfileModal}>
+                              <i className="glyphicon glyphicon-user"></i> {t("ACCOUNT")}</a>
+                            </li>
+                            <li><a href="/admin" id="logAdmin" target="_blank"><i className="glyphicon glyphicon-wrench"></i> Admin</a></li>
+                            <li><a href="#" className="showSettings" onClick={this.toggleHelpModal}>
+                              <i className="glyphicon glyphicon-info-sign"></i> {t("HELP")}</a>
+                            </li>
+                            <li><a href="#" className="logout" onClick={this.props.logOut}><i className="glyphicon glyphicon-log-out"></i> {t("LOGOUT")}</a></li>
+                          </ul> : null
                         }
                       </div>
-                      <div className="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs">
-                        <div className="dropdown pull-right">
-                          <button className="btn btn-dark dropdown-toggle klogo" id="menuPC" type="button"
-                            onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}>
-                          </button>
-                          {this.state.dropDownMenu ?
-                            <ul className="dropdown-menu">
-                              <li><a href="#" className="changePseudo" onClick={this.openLoginOrProfileModal}>
-                                <i className="glyphicon glyphicon-user"></i> {t("ACCOUNT")}</a>
-                              </li>
-                              <li><a href="/admin" id="logAdmin" target="_blank"><i className="glyphicon glyphicon-wrench"></i> Admin</a></li>
-                              <li><a href="#" className="showSettings" onClick={this.toggleHelpModal}>
-                                <i className="glyphicon glyphicon-info-sign"></i> {t("HELP")}</a>
-                              </li>
-                              <li><a href="#" className="logout" onClick={this.props.logOut}><i className="glyphicon glyphicon-log-out"></i> {t("LOGOUT")}</a></li>
-                            </ul> : null
-                          }
-                        </div>
-                        <div className="pull-right btn-group switchParent">
-                          {this.state.isPollActive ?
-                            <button className='btn btn-default showPoll' onClick={() => this.setState({ pollModal: true })}>
-                              <i className="glyphicon glyphicon-stats"></i>
-                            </button> : null
-                          }
-                          <RadioButton
-                            title={t("SWITCH_OPTIONS")}
-                            name="publicSwitchButton"
-                            buttons={[
-                              {
-                                label: t("SWITCH_SEARCH_VIEW"),
-                                active: !this.state.lyrics,
-                                onClick: this.setLyrics,
-                              },
-                              {
-                                label: t("SWITCH_BAR_INFOS"),
-                                active: this.state.lyrics,
-                                onClick: this.setLyrics,
 
-                              }
-                            ]}
-                          ></RadioButton>
-                        </div>
+                      <div className="switchParent">
+                        {this.state.isPollActive ?
+                          <button className='btn btn-default showPoll' onClick={() => this.setState({ pollModal: true })}>
+                            <i className="fas fa-chart-line"></i>
+                          </button> : null
+                        }
+                        <RadioButton
+                          title={t("SWITCH_OPTIONS")}
+                          name="publicSwitchButton"
+                          buttons={[
+                            {
+                              label: t("SWITCH_SEARCH_VIEW"),
+                              active: !this.state.lyrics,
+                              onClick: this.setLyrics,
+                            },
+                            {
+                              label: t("SWITCH_BAR_INFOS"),
+                              active: this.state.lyrics,
+                              onClick: this.setLyrics,
+
+                            }
+                          ]}
+                        ></RadioButton>
                       </div>
+
                     </KmAppHeaderDecorator>
                   :
                     null
@@ -218,7 +222,7 @@ class PublicPage extends Component {
 
                 <ProgressBar></ProgressBar>
                 
-                <div id="underHeader" data-mode={this.props.settings.config.Frontend.Mode} className={"underHeader" + (this.props.settings.config.Frontend.Mode === 1 ? " mode1" : "")}>
+                <KmAppBodyDecorator mode={this.props.settings.config.Frontend.Mode} extraClass={this.props.settings.config.Frontend.Mode === 1 ? " mode1" : ""}>
                   <PlaylistMainDecorator>
                     <Playlist
                       scope='public'
@@ -240,7 +244,7 @@ class PublicPage extends Component {
                       idPlaylistTo={this.state.idsPlaylist.left}
                       majIdsPlaylist={this.majIdsPlaylist} />
                   </PlaylistMainDecorator>
-                </div>
+                </KmAppBodyDecorator>
 
               </KmAppWrapperDecorator>
 

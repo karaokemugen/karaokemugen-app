@@ -25,55 +25,7 @@ div > a, h5 > a, a.btn-link {
 	background-color: #e8e8e8;
 }
 
-.header {
-	z-index: 2337;
-	background-color: #1E2124;
-	top: 0;
-	height: 75px;
-	width: 100%;
-	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
-}
 
-.header .btn, #manageButton li {
-	position: relative;
-	height: calc(100% - 1px);
-	width: 75px;
-	padding: 0px;
-	margin: 0px;
-	font-size: 2rem;
-}
-.header div.headerInputs > .btn {
-	height: calc(100% - 1px);
-	border: 0;
-}
-#manageButton .dropdown-menu {
-	display: flex;
-    flex-direction: column;
-	z-index: 1000000;
-	min-width: 0;
-	margin: 0;
-	padding: 0;
-	border: none;
-	box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
-}
-#manageButton li {
-	height: 75px;
-	border: none;
-	border-top: solid 1px hsla(0, 0%, 35%, .6);
-	filter: contrast(115%);
-}
-#manageButton li > i, #manageButton li > img  {
-    top: calc(50% - 2px);
-    transform: translateY(-50%);
-}
-.header > .btn-group, .header img {
-	height: inherit;
-	max-height: inherit;
-}
-#manageButton li > img {
-	height: 20px;
-    transform: translateY(-69%);
-}
 
 .btn-danger {
 	background-color: hsla(0, 42%, 37%, 1);
@@ -87,11 +39,6 @@ div > a, h5 > a, a.btn-link {
 .btn-danger:focus:active {
 	background-color: #893230;
 	border-color: #893230;
-}
-
-.underHeader {
-  position: relative;
-  height: calc( 100% - 60px - 30px );
 }
 
 .panel {
@@ -548,13 +495,7 @@ input[type=range]:focus {
 	outline: none;
 }
 
-.header input[type=range] {
-  -webkit-appearance: none;
-  margin: 0;
-  position: absolute;
-  bottom: 0;
-  width: inherit;
-}
+
 
 
 /* settings slider */
@@ -660,9 +601,6 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 
-#header {
-	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.23), 0 1px 12px 0 rgba(0, 0, 0, 0.17), 0 2px 2px -1px rgba(0, 0, 0, 0.26)
-}
 .plFooter {
 	opacity: .93;
     position: absolute;

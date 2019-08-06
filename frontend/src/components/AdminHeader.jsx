@@ -98,7 +98,7 @@ class AdminHeader extends Component {
     return (
       <KmAppHeaderDecorator mode="admin">
           <div
-            className="btn btn-default btn-dark pull-right"
+            className="btn btn-default btn-dark"
             id="manageButton"
           >
             <button
@@ -120,7 +120,7 @@ class AdminHeader extends Component {
                   title={t("LOGOUT")} onClick={this.props.logOut}
                   className="btn btn-default btn-dark"
                 >
-                  <i className="fas fa-sign-out"></i>
+                  <i className="fas fa-sign-out-alt"></i>
                 </li>
                 <li
                   title={t("SHUTDOWN")}
@@ -133,12 +133,38 @@ class AdminHeader extends Component {
             }
           </div>
 
+          <button
+            title={t("MESSAGE")}
+            id="adminMessage"
+            className="btn btn-dark messageButton"
+            onClick={this.adminMessage}
+          >
+            <i className="fas fa-comment"></i>
+          </button>
+
+          <button
+            title={t("SHOW_HIDE_SUBS")}
+            id="showSubs"
+            namecommand={this.state.statusPlayer.showSubs ? "hideSubs" : "showSubs"}
+            className="btn btn-dark subtitleButton"
+            onClick={this.putPlayerCommando}
+          >
+            {this.state.statusPlayer.showSubs ? (
+              <i className="fas fa-closed-captioning"></i>
+            ) : (
+              <span className="fa-stack">
+                <i className="fas fa-closed-captioning fa-stack-1x"></i>
+                <i className="fas fa-ban fa-stack-2x" style={{color:"#943d42",opacity:0.7}}></i>
+              </span>
+            )}
+          </button>
+
           <button 
             type="button"
             title={t("MUTE_UNMUTE")}
             id="mutestatus"
             name="mute"
-            className="btn btn-default btn-dark pull-right"
+            className="btn btn-dark volumeButton"
           >
             {
                 volume === 0 || this.state.statusPlayer.mutestatus 
@@ -162,34 +188,11 @@ class AdminHeader extends Component {
               onMouseLeave={this.putPlayerCommando}
             />
           </button>
-          <button
-            title={t("SHOW_HIDE_SUBS")}
-            id="showSubs"
-            namecommand={this.state.statusPlayer.showSubs ? "hideSubs" : "showSubs"}
-            className="btn btn-default btn-dark pull-right"
-            onClick={this.putPlayerCommando}
-          >
-            {this.state.statusPlayer.showSubs ? (
-              <i className="fas fa-closed-captioning"></i>
-            ) : (
-              <span className="fa-stack">
-                <i className="fas fa-closed-captioning fa-stack-1x"></i>
-                <i className="fas fa-ban fa-stack-2x" style={{color:"#943d42",opacity:0.7}}></i>
-              </span>
-            )}
-          </button>
+          
 
-          <button
-            title={t("MESSAGE")}
-            id="adminMessage"
-            className="btn btn-dark pull-right"
-            style={{ borderLeftWidth: "0px" }}
-            onClick={this.adminMessage}
-          >
-            <i className="fas fa-comment"></i>
-          </button>
+          
 
-          <div className="pull-left btn-group switchs">
+          <div className="header-group switchs">
             <RadioButton
               title={t("SWITCH_PRIVATE")}
               name="Karaoke.Private"
@@ -210,8 +213,7 @@ class AdminHeader extends Component {
                 }
               ]}
             ></RadioButton>
-  
-            <RadioButton
+              <RadioButton
               title={t("SWITCH_OPTIONS")}
               name="optionsButton"
               buttons={[
@@ -229,10 +231,11 @@ class AdminHeader extends Component {
               ]}
             ></RadioButton>
           </div>
-          <div className="pull-left btn-group switchs">
+          <div className="header-group switchs">
             <RadioButton
                 title={t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN")}
                 name="Playlist.MysterySongs.AddedSongVisibilityAdmin"
+                orientation="vertical"
                 buttons={[
                   {
                     label:t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL"),
@@ -251,7 +254,7 @@ class AdminHeader extends Component {
                 ]}
               ></RadioButton>
           </div>
-          <div className="pull-left btn-group">
+          <div className="header-group controls">
             <button
               title={t("STOP_AFTER")}
               id="stopAfter"
@@ -280,11 +283,9 @@ class AdminHeader extends Component {
             >
               <i className="fas fa-backward"></i>
             </button>
-          </div>
 
-          <div className="btn-group centerBtns">
             <button
-              title={t("REWIND")}
+              title={t("PREVIOUS_SONG")}
               id="prev"
               namecommand="prev"
               className="btn btn-default"

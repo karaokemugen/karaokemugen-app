@@ -1,9 +1,8 @@
 #progressBar {
 	cursor: pointer;
-	height: 24px;
+	min-height: 24px;
 	width: 100%;
 	position: relative;
-	z-index: 1337;
 	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
 	background-color: #337ab7;
 	box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.24), 0 1px 8px 0 rgba(0, 0, 0, 0.21), 0 3px 4px -1px rgba(0, 0, 0, 0.24);

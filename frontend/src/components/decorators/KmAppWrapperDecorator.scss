@@ -1,7 +1,12 @@
 .KmAppWrapperDecorator {
   display: flex;
   flex-direction: column;
+  height: 100%;
   
   background-color: #1E2124;
   color: #eee;
+  
+  > * {
+  	flex:auto;
+  }
 }

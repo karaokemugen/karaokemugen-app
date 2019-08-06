@@ -8,7 +8,7 @@ class RadioButton extends Component {
 
   render() {
     return (
-      <div className="radiobutton-ui">
+      <div className="radiobutton-ui" data-orientation={this.props.orientation || 'horizontal'}>
         {
           this.props.buttons.map((item,i) => {
             var style = {};

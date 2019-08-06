@@ -27,17 +27,7 @@
 		background-color: #41485e61;
 		border-width: 1px 0px;
 	}
-	.header > .btn-group.switchs {
-		width: 10em;
-		display: flex;
-		flex-direction: column;
-		> * {
-			flex:1;
-		}
-	}
-	.header, .header .btn, #manageButton li, .header input[type=range]  {
-		max-height: 7.4vw;
-	}
+	
 
 	.list-group > li > button {
 		position: absolute;
@@ -73,40 +63,6 @@
 
 	span[name="checkboxKara"], [name="selectAllKaras"], .addBlacklistCriteria {
 		font-family: 'Glyphicons Halflings'; 
-	}
-
-	.centerBtns {
-		left: 50%;
-		transform: translateX(-50%);
-		position: sticky;
-	}
-
-	#status[name="play"] > i.pause {
-		display: none;
-	}
-	#status[name="pause"] > i.play {
-		display: none;
-	}
-	#showSubs[name="showSubs"] > i.hideSubs {
-		display: none;
-	}
-	#showSubs[name="hideSubs"] > i.showSubs {
-		display: none;
-	}
-
-	.btn-left {
-		height: 2em;
-		background-color: #f4f4f4;
-		color: #1E2124;
-		border-color: #9e9e9e;
-	}
-
-	.btn-stop {
-		height: 100%;
-	}
-	.btn-stop > button {
-		height: 50%;
-		display: block;
 	}
 
 	.btn-danger-low, .btn-danger-low:focus {

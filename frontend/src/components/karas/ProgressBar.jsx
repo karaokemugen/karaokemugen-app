@@ -133,7 +133,7 @@ class ProgressBar extends Component {
     render() {
         const t = this.props.t;
         return (
-            <div id="progressBar" className="underHeader">
+            <div id="progressBar">
                 <div id="karaInfo" onDragStart={() => { return false }} draggable="false"
                     onClick={this.karaInfoClick}
                     onMouseDown={this.mouseDown} onMouseUp={() => this.setState({mouseDown: false})}

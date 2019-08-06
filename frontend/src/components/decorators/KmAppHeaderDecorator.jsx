@@ -11,7 +11,7 @@ class KmAppHeaderDecorator extends Component {
 
   render() {
     return (
-      <div id="header" className="KmAppHeaderDecorator" className="header" data-mode={this.props.mode} >
+      <div className="KmAppHeaderDecorator" data-mode={this.props.mode} >
         {this.props.children}
       </div>
     );

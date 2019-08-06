@@ -1,6 +1,10 @@
 .radiobutton-ui {
 	display: flex;
 	flex-direction: row;
+	&[data-orientation="vertical"] {
+		flex-direction: column;
+	}
+	
 	button {
 		display: block;
 		flex:1;

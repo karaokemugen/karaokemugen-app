@@ -1,49 +1,7 @@
 #publicPage {
     height:100vh;
 
-    .header button.btn {
-        font-size : 21px;
-        line-height: 21px;
-        width: 60px;
-    }
-
-    .header button.btn.favorites {
-        order: 3;
-    }
-    .header button.btn.favorites.on {
-        color: firebrick;
-    }
-
-    .header {
-        z-index: 1337;
-        background-color: #1E2124;
-        top: 30px;
-        height: 60px;
-        width: 100%;
-        border-bottom: solid 1px hsla(0, 0%, 35%, 1);
-    }
-
-    .header > div {
-        height: 60px;
-        padding: 0px;
-    }
-    .headerInputs {
-        padding: 0px 7px;
-        display: flex;
-    }
-    .header > div > div {
-        height: 100%;
-        padding: 1px 0px 1px 1px;
-    }
-    .header .dropdown {
-        padding: 0px 0px 0px 0px;
-    } 
-    .underHeader.mode1 {
-        height: calc( 100% - 30px );
-    }
-    .dropdown-menu > li > a {
-        font-size :   21px;
-    }
+    
 
     .panel-heading > div,.panel-heading > div > div, .panel-heading > div > div > div, .panel-heading > div > div > div > input {
         height: 100%;
@@ -58,10 +16,6 @@
         color: hsla(110, 35%, 78%, 1);
     }
 
-    .header input {
-        height: 100%;
-        border-radius: 0px;
-    }
 
     .badge {
         font-size: 12px;
@@ -72,57 +26,7 @@
     left: auto;
     }
 
-    #searchParent {
-        display: flex;
-    }
 
-    .header .pseudoChange {
-        order: 10;
-    }
-    .header .getLucky {
-        max-width: 60px;
-        font-size: 17px;
-        line-height: 17px;
-        padding: 10px;
-        background-color: hsla(0, 0%, 20%, .9);
-        border-width: 0px;
-        border-bottom: solid 1px hsla(0, 0%, 35%, 1);
-        filter: opacity(88%);
-        order: 5;
-    }
-    .header .getLucky:hover {
-        background-color: hsla(0, 0%, 14%, 1);
-        border-color: #444;
-    }
-
-    .header .getLucky:active:focus {
-        background-color: hsla(0, 0%, 11%, 1);
-        border-color: #222;
-    }
-
-    #searchParent ::-webkit-input-placeholder {
-        font-size: 2rem;
-        line-height:  3rem;
-        height: 30px;
-        text-align:right; 
-        font-family: 'Glyphicons Halflings'; 
-    }
-
-    #searchParent  ::-moz-placeholder {  /* Firefox 19+ */
-        font-size: 2rem;
-        line-height:  3rem;
-        height: 30px;
-        text-align:right; 
-        font-family: 'Glyphicons Halflings'; 
-    }
-
-    #searchParent :-ms-input-placeholder {
-        font-size: 2rem;
-        line-height:  3rem;
-        height: 30px;
-        text-align:right; 
-        font-family: 'Glyphicons Halflings'; 
-    }
 
 
     .popup .panel-heading {
@@ -199,10 +103,6 @@
         height: calc(100% - 1px);
         padding: 0;
         display: flex;
-    }
-
-    .plSearch {
-        flex-grow: 1000;
     }
 
     #panel1 .plFooter button[value="playing"] {
@@ -312,26 +212,6 @@
             order: 0;
             display: block;
         }
-            
-        #searchParent ::-webkit-input-placeholder {
-            font-size: 2rem;
-            line-height:  3rem;
-            height: 60px;
-        }
-
-        #searchParent  ::-moz-placeholder {  /* Firefox 19+ */
-            font-size: 3rem;
-            line-height:  6rem;
-            height: 60px;
-        }
-
-        #searchParent :-ms-input-placeholder {
-            font-size: 2rem;
-            line-height:  3rem;
-            height: 60px;
-        }
-
-
 
         #mobileHelp, #mobileActions {
         display: block;
