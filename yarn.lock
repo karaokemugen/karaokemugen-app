@@ -57,10 +57,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/compression@^0.0.36":
-  version "0.0.36"
-  resolved "https://registry.yarnpkg.com/@types/compression/-/compression-0.0.36.tgz#7646602ffbfc43ea48a8bf0b2f1d5e5f9d75c0d0"
-  integrity sha512-B66iZCIcD2eB2F8e8YDIVtCUKgfiseOR5YOIbmMN2tM57Wu55j1xSdxdSw78aVzsPmbZ6G+hINc+1xe1tt4NBg==
+"@types/compression@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/compression/-/compression-1.0.0.tgz#5369e3b296be60d8c0d5100119a34cd641755f3b"
+  integrity sha512-WrGAfLyrVFZ1NKdXTTzkXcKpaVPESJZYSV0zOx8FFoP551HpaOdWLRNbxr+nrj2gNLrCsDaE1RMzOEbdVrIzEA==
   dependencies:
     "@types/express" "*"
 
@@ -1819,10 +1819,10 @@ i18next-node-fs-backend@^2.1.3:
     js-yaml "3.13.1"
     json5 "2.0.0"
 
-i18next@^17.0.8:
-  version "17.0.8"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.8.tgz#0c7113a88ad156eb37b9025d83a7684e1bbc2e18"
-  integrity sha512-oojOrqEPQzKo1HDMDDOl19zTM/EaDwBRPobUSD4kEjNoTi2oERvUbngK2lkIm9nOGddh55jbMGbm6fusMBeoKQ==
+i18next@^17.0.9:
+  version "17.0.9"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.9.tgz#5f835e91a34fa5e7da1e5ae4c4586c81d7c4b17f"
+  integrity sha512-fCYpm3TDzcfPIPN3hmgvC/QJx17QHI+Ul88qbixwIrifN9nBmk2c2oVxVYSDxnV5FgBXZJJ0O4yBYiZ8v1bX2A==
   dependencies:
     "@babel/runtime" "^7.3.1"
 
