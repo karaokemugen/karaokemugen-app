@@ -95,21 +95,6 @@ select.form-control {
 	background-color : #5b5e54;
 }
 
-.table>tbody>tr>td,
-.table>tbody>tr>th,
-.table>tfoot>tr>td,
-.table>tfoot>tr>th,
-.table>thead>tr>td,
-.table>thead>tr>th {
-	background-color: hsla(0, 0%, 20%, .67);
-	border-color: hsla(0, 0%, 35%, 1);
-	border-width: 0px;
-	z-index: 20;
-	overflow: auto;
-	padding: 0px;
-	line-height: 3.1rem;
-}
-
 .dejavu {
 	background-color: hsla(30, 22%, 29%, 0.6) !important;
 }

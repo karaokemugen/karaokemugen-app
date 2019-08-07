@@ -119,8 +119,10 @@ class KaraLine extends Component {
               </div>
             }
             {scope === 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ? 
-              <span name="checkboxKara" className={kara.checked ? 'checked' : 'notchecked'} 
-                onClick={() => this.props.checkKara(kara.playlistcontent_id)}></span> : null}
+              <span name="checkboxKara" onClick={() => this.props.checkKara(kara.playlistcontent_id)}>
+                {kara.checked ? <i className="far fa-check-square"></i>
+                  : <i className="far fa-square"></i>}
+                </span> : null}
             <div className="infoDiv">
               {scope === 'admin' || !is_touch_device() ? <button title={t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
                 style={this.state.karaDetailState ? { borderColor: '#8aa9af' } : {}} onClick={this.toggleKaraDetail}

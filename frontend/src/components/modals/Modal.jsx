@@ -41,7 +41,6 @@ class Modal extends Component {
 
 	keyObserverHandler(e) {
 		var keyCode = e.keyCode || e.which;
-			console.log(keyCode);
 			if (keyCode == '13') {
 				this.confirmModal();
 			}
