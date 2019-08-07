@@ -45,7 +45,7 @@ class LoginModal extends Component {
             window.displayMessage('warning', '', this.props.t('ADMIN_PLEASE'));
         }
         this.props.updateLogInfos(response);
-        window.displayMessage('info', '', this.props.t('LOG_SUCCESS', {name:username}));
+        window.displayMessage('info', '', this.props.t('LOG_SUCCESS', {name: response.username}));
 
         if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
             this.props.toggleHelpModal();
