@@ -61,7 +61,7 @@ class PlaylistHeader extends Component {
   }
 
   deletePlaylist() {
-    window.callModal('confirm', this.props.t('CL_DELETE_PLAYLIST', { playlist: playlistName }), '', function (confirm) {
+    window.callModal('confirm', this.props.t('CL_DELETE_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', function (confirm) {
       if (confirm) {
         axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist);
       }

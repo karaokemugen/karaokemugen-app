@@ -17,6 +17,10 @@ class AdminHeader extends Component {
     this.saveMode = this.saveMode.bind(this);
     this.adminMessage = this.adminMessage.bind(this);
     this.saveOperatorAdd = this.saveOperatorAdd.bind(this);
+  }
+
+  
+  componentDidMount() {
     getSocket().on("playerStatus", data => {
       var val = parseInt(data.volume);
       var base = 100;
@@ -296,11 +300,11 @@ class AdminHeader extends Component {
             <button
               title={t("PLAY_PAUSE")}
               id="status"
-              namecommand={this.state.statusPlayer.status === "play" ? "pause" : "play"}
+              namecommand={this.state.statusPlayer.playerStatus === "play" ? "pause" : "play"}
               className="btn btn-primary"
               onClick={this.putPlayerCommando}
             >
-              {this.state.statusPlayer.status === "play" ? (
+              {this.state.statusPlayer.playerStatus === "play" ? (
                 <i className="fas fa-pause"></i>
               ) : (
                 <i className="fas fa-play"></i>
