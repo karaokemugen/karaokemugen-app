@@ -61,7 +61,7 @@ class PlaylistHeader extends Component {
   }
 
   deletePlaylist() {
-    window.callModal('confirm', this.props.t('CL_DELETE_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', function (confirm) {
+    window.callModal('confirm', this.props.t('CL_DELETE_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', confirm => {
       if (confirm) {
         axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist);
       }
@@ -155,7 +155,7 @@ class PlaylistHeader extends Component {
         <button title={this.props.t("PLAYLIST_ADD")} className="btn btn-default" name="add" onClick={this.addPlaylist}>
           <i className="fas fa-plus"></i>
         </button>
-        {this.props.idPlaylist >= 0 ?
+        {this.props.idPlaylist >= 0 && this.props.playlistInfo && !this.props.playlistInfo.flag_current && !this.props.playlistInfo.flag_public ?
           <button title={this.props.t("PLAYLIST_DELETE")} className="btn btn-danger" name="delete" onClick={this.deletePlaylist}>
             <i className="fas fa-times"></i>
           </button> : null
@@ -188,7 +188,7 @@ class PlaylistHeader extends Component {
         </button>
         <ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
           scope={this.props.scope} playlistToAddId={this.props.playlistToAddId} isHeader={true}
-          addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCHeckedKaras} transferKara={this.props.transferCheckedKaras} />
+          addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
         <button 
           title={this.props.t("SELECT_ALL")}
           name="selectAllKaras"

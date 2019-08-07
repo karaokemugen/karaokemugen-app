@@ -84,7 +84,7 @@ class ProfilModal extends Component {
         window.callModal('custom', t('PROFILE_ONLINE_DELETE'),
             '<label>' + t('PROFILE_PASSWORD_AGAIN') + '</label>'
             + '<input type="password" placeholder="' + t('PASSWORD') + '" className="form-control" name="password">', function (data) {
-                var response = axios.delete('/api/public/myaccount/online', { password: data.password });
+                var response = axios.delete('/api/public/myaccount/online', {data:{ password: data.password }});
                 displayMessage('success', '', t('PROFILE_ONLINE_DELETED'));
                 this.props.updateLogInfos(response);
             }

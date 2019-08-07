@@ -37,7 +37,7 @@ class Playlist extends Component {
     this.editNamePlaylist = this.editNamePlaylist.bind(this);
     this.selectAllKaras = this.selectAllKaras.bind(this);
     this.checkKara = this.checkKara.bind(this);
-    this.deleteCHeckedKaras = this.deleteCHeckedKaras.bind(this);
+    this.deleteCheckedKaras = this.deleteCheckedKaras.bind(this);
     this.addCheckedKaras = this.addCheckedKaras.bind(this);
     this.transferCheckedKaras = this.transferCheckedKaras.bind(this);
     this.addAllKaras = this.addAllKaras.bind(this);
@@ -185,7 +185,7 @@ class Playlist extends Component {
 
   editNamePlaylist() {
     window.callModal('prompt', this.props.t('CL_RENAME_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', newName => {
-      axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist, { name: newName, flag_visible: this.props.playlistInfo.flag_public });
+      axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist, { name: newName, flag_visible: this.props.playlistInfo.flag_public });
       var playlistInfo = this.state.playlistInfo;
       playlistInfo.name = newName;
       this.setState({ playlistInfo: playlistInfo });
@@ -258,7 +258,7 @@ class Playlist extends Component {
   }
 
   playingUpdate(data) {
-    if (this.props.idPlaylist === data.playlist_id) {
+    if (this.state.idPlaylist === data.playlist_id) {
       var playlistData = this.state.data;
       playlistData.content.forEach(kara => {
         if (kara.flag_playing) {
@@ -357,12 +357,12 @@ class Playlist extends Component {
   addAllKaras() {
     var karaList = this.state.data.content.map(a => a.kid).join();
     window.displayMessage('info', 'Info', 'Ajout de ' + this.state.data.content.length + ' karas');
-    axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
+    axios.post(this.getPlaylistUrl(this.state.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
   }
 
   addCheckedKaras() {
-    var idKara = this.state.data.content.map(a => a.kid).join();
-    var idKaraPlaylist = this.state.data.content.map(a => a.playlistcontent_id).join();
+    var idKara = this.state.data.content.filter(a => a.checked).map(a => a.kid).join();
+    var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => a.playlistcontent_id).join();
     var url;
     var data;
 
@@ -386,22 +386,22 @@ class Playlist extends Component {
 
   transferCheckedKaras() {
     this.addCheckedKaras();
-    this.deleteCHeckedKaras();
+    this.deleteCheckedKaras();
   }
 
-  deleteCHeckedKaras() {
-    var idKaraPlaylist = this.state.data.content.map(a => a.playlistcontent_id).join();
+  deleteCheckedKaras() {
+    var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => a.playlistcontent_id).join();
     var url;
     var data;
-    if (this.props.idPlaylist > 0) {
-      url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/';
+    if (this.state.idPlaylist > 0) {
+      url = '/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/';
       data = { plc_id: idKaraPlaylist };
-    } else if (this.props.idPlaylist == -3) {
+    } else if (this.state.idPlaylist == -3) {
       url = '/api/ ' + this.props.scope + '/whitelist';
       data = { wlc_id: idKaraPlaylist }
     }
     if (url) {
-      axios.delete(url, data);
+      axios.delete(url, {data:data});
     }
   }
 
@@ -515,7 +515,7 @@ class Playlist extends Component {
             addAllKaras={this.addAllKaras}
             addCheckedKaras={this.addCheckedKaras}
             transferCheckedKaras={this.transferCheckedKaras}
-            deleteCHeckedKaras={this.deleteCHeckedKaras}
+            deleteCheckedKaras={this.deleteCheckedKaras}
             tags={this.props.tags}
             onChangeTags={this.onChangeTags}
             getPlaylist={this.getPlaylist}
