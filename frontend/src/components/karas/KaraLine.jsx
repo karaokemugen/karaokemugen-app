@@ -82,7 +82,13 @@ class KaraLine extends Component {
   }
 
   addKara() {
-    axios.post('/api/public/karas/' + this.props.kara.kid, { requestedby: this.props.logInfos.token ? this.props.logInfos.username : '' });
+    axios.post('/api/public/karas/' + this.props.kara.kid, { requestedby: this.props.logInfos.token ? this.props.logInfos.username : '' })
+      .then(response => {
+        window.displayMessage('success', 'Success', this.props.t(response.data.code));
+      })
+      .catch(error => {
+        window.displayMessage('warning', 'Warning', this.props.t(error.response.data.code));
+      })
   }
 
   transferKara() {

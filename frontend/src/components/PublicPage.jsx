@@ -15,7 +15,7 @@ import ProfilModal from "./modals/ProfilModal";
 import RadioButton from "./RadioButton.jsx";
 import axios from "axios";
 import ProgressBar from "./karas/ProgressBar";
-import {buildKaraTitle, getSocket} from './tools';
+import {buildKaraTitle, getSocket, is_touch_device} from './tools';
 
 class PublicPage extends Component {
   constructor(props) {
@@ -196,23 +196,26 @@ class PublicPage extends Component {
                             <i className="fas fa-chart-line"></i>
                           </button> : null
                         }
-                        <RadioButton
-                          title={t("SWITCH_OPTIONS")}
-                          name="publicSwitchButton"
-                          buttons={[
-                            {
-                              label: t("SWITCH_SEARCH_VIEW"),
-                              active: !this.state.lyrics,
-                              onClick: this.setLyrics,
-                            },
-                            {
-                              label: t("SWITCH_BAR_INFOS"),
-                              active: this.state.lyrics,
-                              onClick: this.setLyrics,
+                        {is_touch_device() ?
+                          null :
+                          <RadioButton
+                            title={t("SWITCH_OPTIONS")}
+                            name="publicSwitchButton"
+                            buttons={[
+                              {
+                                label: t("SWITCH_SEARCH_VIEW"),
+                                active: !this.state.lyrics,
+                                onClick: this.setLyrics,
+                              },
+                              {
+                                label: t("SWITCH_BAR_INFOS"),
+                                active: this.state.lyrics,
+                                onClick: this.setLyrics,
 
-                            }
-                          ]}
-                        ></RadioButton>
+                              }
+                            ]}
+                          ></RadioButton>
+                        }
                       </div>
 
                     </KmAppHeaderDecorator>

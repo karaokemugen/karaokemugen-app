@@ -61,10 +61,10 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 	}
 
 	@media screen and (max-width:1200px) {
-		width: 180%;
+		width: 200%;
 		transition:transform ease .5s;
 		&[data-side="2"] {
-			transform:translate(-45%);
+			transform:translate(-50%);
 		}
 	}
 }

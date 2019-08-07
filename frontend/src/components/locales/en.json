@@ -331,5 +331,7 @@
 	"ADD_RANDOM_KARAS": "Add random songs",
 	"LANGUAGE": "Languages",
 	"MAIN_SERIES_LANG": "Serie language",
-	"FALLBACK_SERIES_LANG": "Fallback serie language"
+	"FALLBACK_SERIES_LANG": "Fallback serie language",
+	"PLAYLIST_MODE_SONG_ADDED": "Add kara to playlist with success",
+	"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "The kara is already in the playlist"
 }

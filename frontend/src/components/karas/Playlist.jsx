@@ -20,7 +20,7 @@ class Playlist extends Component {
       searchValue: undefined,
       searchCriteria: undefined,
       playlistCommands: false,
-      maxBeforeUpdate: 200
+      maxBeforeUpdate: 400
     };
     this.getIdPlaylist = this.getIdPlaylist.bind(this);
     this.changeIdPlaylist = this.changeIdPlaylist.bind(this);
@@ -449,7 +449,7 @@ class Playlist extends Component {
 
     const SortableItem = SortableElement(({value,index}) => {
       let kara = value;
-      return <li className="playlist-draggable-item" data-kid={kara.kid}>
+      return <li className={!is_touch_device() && this.props.scope === 'admin' ? "playlist-draggable-item" : ""} data-kid={kara.kid}>
           <KaraLine
             key={kara.kid}
             kara={kara}
