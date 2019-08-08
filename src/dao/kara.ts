@@ -156,7 +156,7 @@ export async function addPlayed(kid: string) {
 	return await db().query(yesql(sql.addViewcount)({
 		kid: kid,
 		played_at: new Date(),
-		started_at: getState().currentSessionID
+		seid: getState().currentSessionID
 	}));
 }
 
