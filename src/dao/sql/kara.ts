@@ -18,7 +18,7 @@ export const addViewcount = `
 INSERT INTO played(
 	fk_kid,
 	played_at,
-	seid
+	fk_seid
 )
 VALUES(
 	:kid,
@@ -32,7 +32,7 @@ INSERT INTO requested(
 	fk_login,
 	fk_kid,
 	requested_at,
-	seid
+	fk_seid
 )
 VALUES(
 	$1,
