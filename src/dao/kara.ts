@@ -156,7 +156,7 @@ export async function addPlayed(kid: string) {
 	return await db().query(yesql(sql.addViewcount)({
 		kid: kid,
 		played_at: new Date(),
-		started_at: getState().sessionStart
+		started_at: getState().currentSessionID
 	}));
 }
 
@@ -165,7 +165,7 @@ export async function addKaraToRequests(username: string, karaList: string[]) {
 		username,
 		kara,
 		new Date(),
-		getState().sessionStart
+		getState().currentSessionID
 	]));
 	return await transaction([{params: karas, sql: sql.addRequested}]);
 }

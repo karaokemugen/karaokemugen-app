@@ -47,8 +47,6 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 		axios.get('/api/system/karas', { params: { filter: this.state.filter,  }})
 			.then(res => {
 				this.props.loading(false);
-				res.data.content.forEach(kara => {
-				});
 				this.setState({karas: res.data.content, i18nTag: res.data.i18n});
 			})
 			.catch(err => {

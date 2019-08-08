@@ -1,10 +1,11 @@
 import { Config } from './config';
+import { DBStatsPlayed, DBStatsRequested } from './database/stats';
 
 export interface StatsPayload {
 	payloadVersion: number,
 	instance: Instance,
-	viewcounts: Viewcount[],
-	requests: SongRequest[],
+	viewcounts: DBStatsPlayed[],
+	requests: DBStatsRequested[],
 	favorites: Favorite[],
 }
 
@@ -25,17 +26,6 @@ interface Instance {
 	os_release: string
 }
 
-interface Viewcount {
-	kid: string,
-	session_started_at: Date,
-	played_at: Date
-}
-
-interface SongRequest {
-	kid: string,
-	session_started_at: Date,
-	requested_at: Date
-}
 
 interface Favorite {
 	kid: string

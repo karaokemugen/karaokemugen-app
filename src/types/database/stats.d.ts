@@ -1,6 +1,6 @@
 interface DBStatsBase {
 	kid: string,
-	session_started_at: Date,
+	seid: string,
 }
 
 export interface DBStatsPlayed extends DBStatsBase {

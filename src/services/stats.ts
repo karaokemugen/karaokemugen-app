@@ -9,6 +9,7 @@ import prettyBytes from 'pretty-bytes';
 import { asyncWriteFile } from '../lib/utils/files';
 import {resolve} from 'path';
 import cloneDeep from 'lodash.clonedeep';
+import { getSessions } from './session';
 
 let intervalID: any;
 
@@ -55,11 +56,12 @@ export async function sendPayload() {
 /** Create stats payload */
 async function buildPayload() {
 	return {
-		payloadVersion: 2,
+		payloadVersion: 3,
 		instance: await buildInstanceStats(),
 		viewcounts: await exportPlayed(),
 		requests: await exportRequests(),
 		favorites: await exportFavorites(),
+		sessions: await getSessions()
 	};
 }
 

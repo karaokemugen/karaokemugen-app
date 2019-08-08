@@ -33,8 +33,11 @@ class KMMenu extends Component<KMenuProps, {}> {
 					style={{ lineHeight: '56px' }}
 				>
 					<Menu.Item key='home'><Link to='/system/km/home'>Home</Link></Menu.Item>
-					<Menu.Item key='log'><Link to='/system/km/log'>Logs</Link></Menu.Item>
-					<Menu.Item key='config'><Link to='/system/km/config'>Configuration</Link></Menu.Item>
+					<Menu.SubMenu key="system-dropdown" title='System'>
+						<Menu.Item key='log'><Link to='/system/km/log'>Logs</Link></Menu.Item>
+						<Menu.Item key='config'><Link to='/system/km/config'>Configuration</Link></Menu.Item>
+						<Menu.Item key='sessions'><Link to='/system/km/sessions'>Sessions</Link></Menu.Item>
+					</Menu.SubMenu>
 					<Menu.SubMenu key="kara-dropdown" title='Karas'>
 						<Menu.Item key='karalist'><Link to='/system/km/karas'>List</Link></Menu.Item>
 						<Menu.Item key='karaimport'><Link to='/system/km/karas/create'>New</Link></Menu.Item>

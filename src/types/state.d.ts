@@ -1,5 +1,6 @@
 export interface State {
 	currentPlaylistID?: number,
+	currentSessionID?: string,
 	publicPlaylistID?: number,
 	modePlaylistID?: number,
 	playerNeedsRestart?: boolean,
@@ -78,6 +79,7 @@ export interface PublicState {
 	muteStatus: string,
 	playerStatus: string,
 	currentlyPlaying: boolean,
+	currentSessionID: string,
 	subText: string,
 	showSubs: boolean,
 	volume: number,

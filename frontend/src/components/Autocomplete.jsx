@@ -49,9 +49,10 @@ function Autocomplete(props){
       //RETURN
       setFocus(false);
       let o = fo[activeIndex]
-      if(o)
-      {
+      if(o) {
         updateSelectedValue(o.value)
+      } else if (props.acceptNewValues) {
+        updateSelectedValue(e.target.value)
       }
     }
     else if(e.keyCode===27) //ESC
@@ -96,7 +97,7 @@ function Autocomplete(props){
     <div className="UI-autocomplete" ref={node}>
       {
         typeof label === "string" && label.length>0 
-          ? <label className="UI-autocomplete-label">{label} </label>
+          ? <label className="UI-autocomplete-label">{label}&nbsp;</label>
           : null
       }
       <div className="UI-autocomplete-input" focus={focus ? 'true':'false'}>
@@ -105,7 +106,7 @@ function Autocomplete(props){
           onChange={handleInputChange}
           value={selectedValue}
           >
-          <option value=""></option>
+          {props.value ? null : <option value=""></option>}
           {options.map((o,index) => (<option key={index} value={o.value}>{o.label}</option>))}
         </select>
         <ul className="UI-autocomplete-options">
