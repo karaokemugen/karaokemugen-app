@@ -21,6 +21,8 @@ import TagsEdit from '../pages/Tags/TagsEdit';
 import UserEdit from '../pages/Users/UserEdit';
 import UserList from '../pages/Users/UserList';
 import KMHeader from './KMHeader';
+import SessionsList from '../pages/Sessions/SessionsList';
+import SessionsEdit from '../pages/Sessions/SessionsEdit';
 
 
 class KMPage extends Component<{}, {}> {
@@ -36,6 +38,10 @@ class KMPage extends Component<{}, {}> {
 
           <Route path='/system/km/config' component={Config}/>
 
+          <Route path='/system/km/sessions/new' component={SessionsEdit}/>
+          <Route path='/system/km/sessions/:seid' component={SessionsEdit}/>
+          <Route path='/system/km/sessions' component={SessionsList}/>
+
           <Route path='/system/km/karas/download' component={KaraDownload}/>
           <Route path='/system/km/karas/blacklist' component={KaraBlacklist}/>
           <Route path='/system/km/karas/create' component={KaraEdit}/>
@@ -49,7 +55,7 @@ class KMPage extends Component<{}, {}> {
           <Route path='/system/km/series/:sid' component={SeriesEdit}/>
           <Route path='/system/km/series' component={SeriesList}/>
 
-		  <Route path='/system/km/tags/new' component={TagsEdit}/>
+		      <Route path='/system/km/tags/new' component={TagsEdit}/>
           <Route path='/system/km/tags/:tid' component={TagsEdit}/>
           <Route path='/system/km/tags' component={TagsList}/>
 

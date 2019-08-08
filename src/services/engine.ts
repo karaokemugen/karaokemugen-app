@@ -19,6 +19,7 @@ import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { generateDatabase } from '../lib/services/generation';
 import {validateV3} from '../lib/dao/karafile';
+import { initSession } from './session';
 
 export async function initEngine() {
 	profile('Init');
@@ -73,6 +74,7 @@ export async function initEngine() {
 	inits.push(initPlaylistSystem());
 	if (!state.isDemo && !state.isTest) inits.push(initPlayer());
 	inits.push(initFrontend());
+	inits.push(initSession());
 	testPlaylists();
 	initDownloader();
 	if (conf.Online.Stats === true) inits.push(initStats(false));

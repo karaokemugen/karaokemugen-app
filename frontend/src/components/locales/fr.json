@@ -331,6 +331,7 @@
 	"LANGUAGE": "Langues",
 	"MAIN_SERIES_LANG": "Langue des séries",
 	"FALLBACK_SERIES_LANG": "Langue de secours des séries",
+	"ACTIVE_SESSION": "Session Active : ",
 	"PLAYLIST_MODE_SONG_ADDED": "Ajout du kara à la playlist avec succès",
 	"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Le kara est déjà dans la playlist"
 }

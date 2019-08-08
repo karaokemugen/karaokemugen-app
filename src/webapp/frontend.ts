@@ -35,6 +35,8 @@ import publicKaraController from '../controllers/frontend/public/kara';
 import publicPollController from '../controllers/frontend/public/poll';
 import publicUserController from '../controllers/frontend/public/user';
 import publicWhitelistController from '../controllers/frontend/public/whitelist';
+import systemSessionController from '../controllers/system/session';
+import adminSessionController from '../controllers/frontend/admin/session';
 
 /** Declare all routers for API types */
 function apiRouter() {
@@ -50,6 +52,7 @@ function apiRouter() {
 	systemSeriesController(apiRouter);
 	systemUsersController(apiRouter);
 	systemDownloadController(apiRouter);
+	systemSessionController(apiRouter);
 	// Add public/admin routes
 	adminBlacklistController(apiRouter);
 	adminFavoritesController(apiRouter);
@@ -58,6 +61,7 @@ function apiRouter() {
 	adminPlaylistsController(apiRouter);
 	adminUserController(apiRouter);
 	adminWhitelistController(apiRouter);
+	adminSessionController(apiRouter);
 
 	publicBlacklistController(apiRouter);
 	publicFavoritesController(apiRouter);

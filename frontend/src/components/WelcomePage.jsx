@@ -4,6 +4,7 @@ import axios from "axios";
 import ProfilModal from "./modals/ProfilModal"
 import LoginModal from "./modals/LoginModal"
 import logo from '../assets/Logo-final-fond-transparent.png'
+import Autocomplete from "./Autocomplete";
 class WelcomePage extends Component {
   constructor(props) {
     super(props);
@@ -11,13 +12,40 @@ class WelcomePage extends Component {
       news: [],
       loginModal: !this.props.logInfos.token || (this.props.admpwd && this.props.settings.config.App.FirstRun),
       profileModal: false,
-      open: false
+      open: false,
+      sessions: [],
+      activeSession: ""
     };
     this.getCatchphrase = this.getCatchphrase.bind(this);
     this.getNewsFeed = this.getNewsFeed.bind(this);
     this.loginClick = this.loginClick.bind(this);
+    this.getSessions = this.getSessions.bind(this);
+    this.setActiveSession = this.setActiveSession.bind(this);
     this.getCatchphrase();
     this.getNewsFeed();
+    this.getSessions();
+  }
+
+  async getSessions() {
+    if (this.props.logInfos.role === 'admin') {
+      const res = await axios.get('/api/admin/sessions');
+      this.setState({sessions: res.data.data, 
+        activeSession: res.data.data.filter(value => value.active)[0].name});
+    }
+  }
+
+  async setActiveSession(value) {
+    var sessions = this.state.sessions.filter(session => session.name === value);
+    var sessionId;
+    if (sessions.length === 0) {
+      const res = await axios.post('/api/admin/sessions', { name: value });
+      sessionId = res.data.data;
+      this.setState({sessionActive: value});
+    } else {
+      this.setState({sessionActive: sessions[0].name});
+      sessionId = sessions[0].seid;
+    }
+    await axios.post('/api/admin/sessions/' + sessionId);
   }
 
   async getCatchphrase() {
@@ -106,6 +134,12 @@ class WelcomePage extends Component {
 
   render() {
     const t = this.props.t;
+    if (this.props.logInfos.role === 'admin') {
+      var sessions = [];
+      this.state.sessions.forEach(session => {
+        sessions.push({ "label": session.name, "value": session.name });
+      });
+    }
     return (
       <div id="welcomePage">
         {this.state.loginModal ?
@@ -114,43 +148,50 @@ class WelcomePage extends Component {
             toggleLoginModal={() => this.setState({ loginModal: !this.state.loginModal })} /> : null
         }
         {this.state.profileModal ?
-          <ProfilModal settingsOnline={this.props.settings.config.Online} updateLogInfos={this.props.updateLogInfos} logInfos={this.props.logInfos} 
-            toggleProfileModal={() => this.setState({profileModal:!this.state.profileModal})} /> : null
+          <ProfilModal settingsOnline={this.props.settings.config.Online} updateLogInfos={this.props.updateLogInfos} logInfos={this.props.logInfos}
+            toggleProfileModal={() => this.setState({ profileModal: !this.state.profileModal })} /> : null
         }
         <div className="navbar-default navbar-fixed-top" id="navigation">
           <div className="container">
-
-              <ul className="nav navbar-nav navbar-right" id="top-nav">
+            {this.props.logInfos.role === 'admin' ?
+              <ul className="nav navbar-nav navbar-left">
                 <li>
-                  <a
-                    href="http://mugen.karaokes.moe/contact.html"
-                    target="_blank"
-                  >
-                    <i className="glyphicon glyphicon-pencil" />{" "}
-                    {t("WLCM_CONTACT")}
-                  </a>
+                  <Autocomplete label={t("ACTIVE_SESSION")} value={this.state.activeSession} options={sessions}
+                    onChange={this.setActiveSession} acceptNewValues={true} />
                 </li>
-                <li>
-                  <a href="http://mugen.karaokes.moe/" target="_blank">
-                    <i className="glyphicon glyphicon-link" />
-                    {t("WLCM_SITE")}
+              </ul> : null
+            }
+            <ul className="nav navbar-nav navbar-right">
+              <li>
+                <a
+                  href="http://mugen.karaokes.moe/contact.html"
+                  target="_blank"
+                >
+                  <i className="glyphicon glyphicon-pencil" />{" "}
+                  {t("WLCM_CONTACT")}
+                </a>
+              </li>
+              <li>
+                <a href="http://mugen.karaokes.moe/" target="_blank">
+                  <i className="glyphicon glyphicon-link" />
+                  {t("WLCM_SITE")}
+                </a>
+              </li>
+              <li>
+                <a href="#" id="wlcm_login" onClick={this.loginClick}>
+                  <i className="glyphicon glyphicon-user" />
+                  <span>{this.props.logInfos.token ? this.props.logInfos.username : t("NOT_LOGGED")}</span>
+                </a>
+              </li>
+              {this.props.logInfos.token ?
+                <li id="wlcm_disconnect">
+                  <a href="#" title={t("LOGOUT")} className="logout" onClick={this.props.logOut}>
+                    <i className="glyphicon glyphicon-log-out" />{" "}
+                    <span>{t("LOGOUT")}</span>
                   </a>
-                </li>
-                <li>
-                  <a href="#" id="wlcm_login" onClick={this.loginClick}>
-                    <i className="glyphicon glyphicon-user" />
-                    <span>{this.props.logInfos.token ? this.props.logInfos.username : t("NOT_LOGGED")}</span>
-                  </a>
-                </li>
-                {this.props.logInfos.token ?
-                  <li id="wlcm_disconnect">
-                    <a href="#" title={t("LOGOUT")} className="logout" onClick={this.props.logOut}>
-                      <i className="glyphicon glyphicon-log-out" />{" "}
-                      <span>{t("LOGOUT")}</span>
-                    </a>
-                  </li> : null
-                }
-              </ul>
+                </li> : null
+              }
+            </ul>
           </div>
         </div>
 
