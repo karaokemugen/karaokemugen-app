@@ -9,7 +9,8 @@ export interface Config {
 		Port?: number,
 		Users?: boolean,
 		URL?: boolean,
-		Stats?: boolean
+		Stats?: boolean,
+		Updates?: boolean
 	},
 	Frontend: {
 		Port?: number,

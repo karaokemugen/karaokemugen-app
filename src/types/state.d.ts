@@ -39,7 +39,8 @@ export interface State {
 	version?: {
 		number?: string,
 		name?: string,
-		image?: string
+		image?: string,
+		latest?: string
 	},
 	binPath?: {
 		mpv?: string,
@@ -62,9 +63,6 @@ export interface State {
 		debug?: boolean,
 		forceAdminPassword?: string,
 		validateV3?: boolean
-	},
-	engine?: {
-		ontop?: boolean
 	}
 }
 
@@ -82,5 +80,5 @@ export interface PublicState {
 	currentSessionID: string,
 	subText: string,
 	showSubs: boolean,
-	volume: number,
+	volume: number
 }
