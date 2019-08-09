@@ -16,6 +16,7 @@ Online:
   URL: true
   # Should we allow users to register/login accounts on kara.moe ?
   Users: true
+  JinglesUpdate: true
 
 Frontend:
   # Minutes before users are considered signed out

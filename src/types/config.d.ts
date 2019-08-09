@@ -9,7 +9,8 @@ export interface Config {
 		Port?: number,
 		Users?: boolean,
 		URL?: boolean,
-		Stats?: boolean
+		Stats?: boolean,
+		JinglesAutoUpdate?: boolean
 	},
 	Frontend: {
 		Port?: number,
@@ -96,7 +97,6 @@ export interface Config {
 		}
 	},
 	System: {
-		JinglesAutoUpdate?: boolean,
 		Binaries: {
 			Player: {
 				Windows?: string,

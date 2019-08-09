@@ -35,7 +35,8 @@ export const defaults: Config = {
 		Port: undefined,
 		Stats: undefined,
 		URL: true,
-		Users: true
+		Users: true,
+		JinglesUpdate: true,
 	},
 	Frontend: {
 		AuthExpireTime: 15,
@@ -114,7 +115,6 @@ export const defaults: Config = {
 		}
 	},
 	System: {
-		JinglesAutoUpdate: true,
 		Binaries: {
 			Player: {
 				Linux: '/usr/bin/mpv',
