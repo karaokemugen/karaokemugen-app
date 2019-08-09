@@ -114,6 +114,7 @@ export const defaults: Config = {
 		}
 	},
 	System: {
+		JinglesAutoUpdate: true,
 		Binaries: {
 			Player: {
 				Linux: '/usr/bin/mpv',

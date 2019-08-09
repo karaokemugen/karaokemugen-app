@@ -96,6 +96,7 @@ export interface Config {
 		}
 	},
 	System: {
+		JinglesAutoUpdate?: boolean,
 		Binaries: {
 			Player: {
 				Windows?: string,

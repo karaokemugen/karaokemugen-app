@@ -4,7 +4,7 @@ import {resolvedPathBackgrounds, getConfig, resolvedPathMedias, resolvedPathTemp
 import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../lib/utils/files';
 import sample from 'lodash.sample';
-import {getSingleJingle, buildJinglesList} from './jingles';
+import {getSingleJingle, buildJinglesList} from '../services/jingles';
 import {exit} from '../services/engine';
 import {playerEnding} from '../services/player';
 import {getID3} from './id3tag';
