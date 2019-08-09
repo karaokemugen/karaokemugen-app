@@ -7,6 +7,7 @@ import { editSetting } from "../../../utils/config";
 import { getDisplays } from "../../../utils/displays";
 import { OKMessage, errMessage } from "../../common";
 import { emitWS } from "../../../lib/utils/ws";
+import { checkForUpdates } from "../../../services/appUpdates";
 
 
 export default function adminMiscController(router: Router) {
@@ -46,7 +47,7 @@ export default function adminMiscController(router: Router) {
  * @apiGroup Main
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ * @apiSuccess {Object} data Contains all configuration settings. See documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -78,7 +79,9 @@ export default function adminMiscController(router: Router) {
  *		Host: 'kara.moe',
  *		Stats: undefined,
  *		URL: true,
- *		Users: true
+ *		Users: true,
+ *      Updates: true,
+ *      LatestURL: 'http://mugen.karaokes.moe/downloads/latest';
  *	},
  *	Frontend: {
  *		Port: 1337,
@@ -226,10 +229,28 @@ export default function adminMiscController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-		router.route('/admin/displays')
+	router.route('/admin/displays')
 		.get(getLang, requireAuth, requireValidUser, requireAdmin, async (_req:any, res:any) => {
 			const displays = await getDisplays();
 			res.json(OKMessage(displays));
+		});
+
+/**
+ * @api {get} /admin/checkUpdates Get latest KM version
+ * @apiName GetLatestVersion
+ * @apiVersion 3.0.0
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiGroup Main
+ * @apiSuccess {String} data Latest version if there is a newer available. `null` if error or no new version available.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ */
+	router.route('/admin/checkUpdates')
+		.get(getLang, requireAuth, requireValidUser, requireAdmin, async (_req:any, res:any) => {
+			const version = await checkForUpdates();
+			res.json(OKMessage(version));
 		});
 
 }

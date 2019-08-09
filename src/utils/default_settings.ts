@@ -35,7 +35,8 @@ export const defaults: Config = {
 		Port: undefined,
 		Stats: undefined,
 		URL: true,
-		Users: true
+		Users: true,
+		Updates: true
 	},
 	Frontend: {
 		AuthExpireTime: 15,
@@ -160,6 +161,8 @@ export const configConstraints = {
 	'Online.Host': {presence: true},
 	'Online.URL': {inclusion : bools},
 	'Online.Users': {inclusion : bools},
+	'Online.Updates': {inclusion : bools},
+	'Online.LatestURL': {type: 'string'},
 	'Frontend.Permissions.AllowNicknameChange': {inclusion : bools},
 	'Frontend.Permissions.AllowViewBlacklist': {inclusion : bools},
 	'Frontend.Permissions.AllowViewBlacklistCriterias': {inclusion : bools},

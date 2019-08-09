@@ -295,6 +295,7 @@
 	"ONLINEURL": "Short URL",
 	"ONLINESTATS": "Send usage telemetry to Karaoke Mugen Online",
 	"ONLINEUSERS": "Allow online user registration & login",
+	"CHECK_APP_UPDATES": "Check for application updates",
 	"NO_EXT_INFO": "Online search didn't succeed",
 	"FILTER": "Filter",
 	"VIEW_STANDARD": "Standard",
@@ -334,5 +335,10 @@
 	"FALLBACK_SERIES_LANG": "Fallback serie language",
 	"ACTIVE_SESSION": "Active Session : ",
 	"PLAYLIST_MODE_SONG_ADDED": "Add kara to playlist with success",
-	"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "The kara is already in the playlist"
+	"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "The kara is already in the playlist",
+	"UPDATE_BANNER_TITLE": "An update to Karaoke Mugen is available !",
+	"UPDATE_BANNER_MESSAGE": "You have the version {{actualVersion}}. A new version is available for download :",
+	"UPDATE_BANNER_GET_IT": "More info...",
+	"UPDATE_BANNER_REMIND_ME_LATER": "Later",
+	"UPDATE_BANNER_DONT_BOTHER_ME": "Don't warn anymore"
 }
