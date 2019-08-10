@@ -17,8 +17,7 @@ class ProgressBar extends Component {
             // String : status of the player
             status: undefined,
             karaInfoText: this.props.t("KARA_PAUSED_WAITING"),
-            length: -1,
-            refreshPlayerInfosInProgress: false
+            length: -1
         };
         this.mouseDown = this.mouseDown.bind(this);
         this.mouseMove = this.mouseMove.bind(this);
@@ -80,8 +79,7 @@ class ProgressBar extends Component {
     * refresh the player infos
     */
     async refreshPlayerInfos(data) {
-        if (!this.state.refreshPlayerInfosInProgress && this.state.oldState != data) {
-            this.setState({refreshPlayerInfosInProgress: true});
+        if (this.state.oldState != data) {
             var newWidth = $('#karaInfo').width() * 
                 parseInt(10000 * (data.timePosition + this.state.refreshTime / 1000) / this.state.length) / 10000 + 'px';
 
@@ -128,7 +126,7 @@ class ProgressBar extends Component {
                     this.setState({karaInfoText: buildKaraTitle(kara), length: kara.duration})
                 }
             }
-            this.setState({oldState: data, refreshPlayerInfosInProgress: false});
+            this.setState({oldState: data});
         }
     }
 
