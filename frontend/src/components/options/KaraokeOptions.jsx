@@ -33,12 +33,6 @@ class KaraokeOptions extends Component {
     axios.put('/api/admin/settings', { setting: JSON.stringify(data) });
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.settings !== this.state.settings) {
-      this.setState({ settings: dotify(nextProps.settings) });
-    }
-  }
-
   onChange(e) {
     var settings = this.state.settings;
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;

@@ -12,12 +12,6 @@ class InterfaceOptions extends Component {
     this.onChange = this.onChange.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.settings !== this.state.settings) {
-      this.setState({ settings: dotify(nextProps.settings) });
-    }
-  }
-
   onChange(e) {
     var settings = this.state.settings;
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
