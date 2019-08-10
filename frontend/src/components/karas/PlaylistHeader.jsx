@@ -369,7 +369,7 @@ class PlaylistHeader extends Component {
           <nav className="navbar navbar-default  searchMenuContainer">
             <div className="searchMenu container" id={"searchMenu" + this.props.side}>
               <ul className="nav navbar-nav">
-                <li className="tagFilter" className={this.state.activeFilter === 5 ? "active" : ""}>
+                <li className={"tagFilter "+ (this.state.activeFilter === 5 ? "active" : "")}>
                   <span className='value'>
                     <span>
                       <select type="text" className="tagsTypes form-control value" placeholder="Search" 

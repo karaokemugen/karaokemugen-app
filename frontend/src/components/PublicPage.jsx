@@ -26,7 +26,7 @@ class PublicPage extends Component {
       loginModal: !this.props.logInfos.token,
       profileModal: false,
       helpModal: false,
-      lyrics: true,
+      lyrics: false,
       restrictedHelpModal: this.props.settings.config.Frontend.Mode === 1,
       filterValue: "",
       pseudoValue: "",
@@ -265,7 +265,7 @@ class PublicPage extends Component {
               }
 
               <div className="fixed-action-btn right" id="mobileActions">
-                <a className="btn-floating btn-large waves-effect z-depth-3 klogo" id="menuMobile" 
+                <a className="btn-floating btn-large waves-effect z-depth-3 klogo" 
                   onClick={() => this.setState({mobileMenu: !this.state.mobileMenu})}
                   style={{ backgroundColor: "#1b4875", border: ".5px solid #FFFFFF12" }}>
                 </a>

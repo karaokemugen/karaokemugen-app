@@ -117,8 +117,6 @@ class App extends Component {
         return navigatorLanguage;
     }
 
-
-
     powerOff() {
         axios.post("/api/admin/shutdown");
         this.setState({ shutdownPopup: true });

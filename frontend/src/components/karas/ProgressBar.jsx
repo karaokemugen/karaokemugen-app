@@ -80,23 +80,24 @@ class ProgressBar extends Component {
     */
     async refreshPlayerInfos(data) {
         if (this.state.oldState != data) {
-            if (data.currentlyPlaying === null) {
-                this.setState({karaInfoText: this.props.t('KARA_PAUSED_WAITING'), length: -1})
-            } else if (data.currentlyPlaying === -1) {
-                this.setState({karaInfoText: this.props.t('JINGLE_TIME'), length: -1})
-            } else {
-                var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
-                var kara = response.data.data;
-                var karaInfoText;
-                if (this.props.lyrics || this.props.webappMode == 1) {
-                    var text = data.subText;
-                    if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
-                    karaInfoText = text;
+            if (data.currentlyPlaying !== this.state.oldState.currentlyPlaying) {
+                if (data.currentlyPlaying === null) {
+                    this.setState({karaInfoText: this.props.t('KARA_PAUSED_WAITING'), length: -1})
+                } else if (data.currentlyPlaying === -1) {
+                    this.setState({karaInfoText: this.props.t('JINGLE_TIME'), length: -1})
                 } else {
-                    karaInfoText = buildKaraTitle(kara);
+                    var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
+                    var kara = response.data.data;
+                    var karaInfoText;
+                    if (this.props.lyrics || this.props.webappMode == 1) {
+                        var text = data.subText;
+                        if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
+                        karaInfoText = text;
+                    } else {
+                        karaInfoText = buildKaraTitle(kara);
+                    }
+                    this.setState({karaInfoText: karaInfoText, length: kara.duration})
                 }
-                console.log(karaInfoText)
-                this.setState({karaInfoText: karaInfoText, length: kara.duration})
             }
 
             var newWidth = $('#karaInfo').width() * 
