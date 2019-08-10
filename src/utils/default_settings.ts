@@ -36,6 +36,7 @@ export const defaults: Config = {
 		Stats: undefined,
 		URL: true,
 		Users: true,
+		JinglesUpdate: true,
 		Updates: true
 	},
 	Frontend: {

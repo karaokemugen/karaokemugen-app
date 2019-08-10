@@ -10,6 +10,7 @@ export interface Config {
 		Users?: boolean,
 		URL?: boolean,
 		Stats?: boolean,
+		JinglesUpdate?: boolean
 		Updates?: boolean
 	},
 	Frontend: {

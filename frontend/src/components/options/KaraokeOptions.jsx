@@ -296,6 +296,15 @@ class KaraokeOptions extends Component {
                 isChecked={settings.Online.Updates} />
             </div>
           </div>
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {t("AUTO_UPDATE_JINGLES")}
+            </label>
+            <div className="col-xs-6">
+              <Switch idInput="Online.JinglesUpdate" handleChange={this.props.onChange}
+                isChecked={settings.Online.JinglesUpdate} />
+            </div>
+          </div>
         </div>
         <div className="form-group settingsGroupPanel subCategoryGroupPanel">
           <div className="col-xs-12" style={{ textAlign: "center" }}>

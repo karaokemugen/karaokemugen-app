@@ -20,6 +20,7 @@ import {initPlaylistSystem, testPlaylists} from './playlist';
 import { generateDatabase } from '../lib/services/generation';
 import {validateV3} from '../lib/dao/karafile';
 import { initSession } from './session';
+import { updateJingles } from './jingles';
 
 export async function initEngine() {
 	profile('Init');
@@ -91,6 +92,8 @@ export async function initEngine() {
 	} finally {
 		profile('Init');
 	}
+	// This is done later because it's not important.
+	if (conf.Online.JinglesUpdate) updateJingles();
 }
 
 export async function exit(rc: any) {
