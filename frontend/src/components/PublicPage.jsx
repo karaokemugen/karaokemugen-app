@@ -202,12 +202,12 @@ class PublicPage extends Component {
                             name="publicSwitchButton"
                             buttons={[
                               {
-                                label: this.props.t("SWITCH_SEARCH_VIEW"),
+                                label: this.props.t("SWITCH_BAR_INFOS_TITLE"),
                                 active: !this.state.lyrics,
                                 onClick: this.setLyrics,
                               },
                               {
-                                label: this.props.t("SWITCH_BAR_INFOS"),
+                                label: this.props.t("SWITCH_BAR_INFOS_LYRICS"),
                                 active: this.state.lyrics,
                                 onClick: this.setLyrics,
 
@@ -222,7 +222,7 @@ class PublicPage extends Component {
                     null
                 }
 
-                <ProgressBar></ProgressBar>
+                <ProgressBar lyrics={this.state.lyrics}></ProgressBar>
                 
                 <KmAppBodyDecorator mode={this.props.settings.config.Frontend.Mode} extraClass={this.props.settings.config.Frontend.Mode === 1 ? " mode1" : ""}>
                   <PlaylistMainDecorator>

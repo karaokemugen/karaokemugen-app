@@ -375,7 +375,7 @@ class PlaylistHeader extends Component {
                       <select type="text" className="tagsTypes form-control value" placeholder="Search" 
                         onChange={e => this.setState({tagType : (Number(e.target.value) ? Number(e.target.value) : e.target.value)})}
                         value={this.state.tagType}>
-                        {tagsTypesList.map(function (val) {
+                        {tagsTypesList.map(val => {
                           if (val === 'DETAILS_SERIE') {
                             return <option key={val} value='serie'>{this.props.t(val)}</option>
                           } else if (val === 'DETAILS_YEAR') {

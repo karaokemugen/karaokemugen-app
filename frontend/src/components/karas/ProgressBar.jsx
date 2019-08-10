@@ -80,6 +80,25 @@ class ProgressBar extends Component {
     */
     async refreshPlayerInfos(data) {
         if (this.state.oldState != data) {
+            if (data.currentlyPlaying === null) {
+                this.setState({karaInfoText: this.props.t('KARA_PAUSED_WAITING'), length: -1})
+            } else if (data.currentlyPlaying === -1) {
+                this.setState({karaInfoText: this.props.t('JINGLE_TIME'), length: -1})
+            } else {
+                var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
+                var kara = response.data.data;
+                var karaInfoText;
+                if (this.props.lyrics || this.props.webappMode == 1) {
+                    var text = data.subText;
+                    if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
+                    karaInfoText = text;
+                } else {
+                    karaInfoText = buildKaraTitle(kara);
+                }
+                console.log(karaInfoText)
+                this.setState({karaInfoText: karaInfoText, length: kara.duration})
+            }
+
             var newWidth = $('#karaInfo').width() * 
                 parseInt(10000 * (data.timePosition + this.state.refreshTime / 1000) / this.state.length) / 10000 + 'px';
 
@@ -104,27 +123,11 @@ class ProgressBar extends Component {
                 }
             }
 
-            if ($('input[name="lyrics"]').is(':checked')
-                || (is_touch_device() || this.props.webappMode == 1)) {
-                var text = data['subText'];
-                if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
-                $('#karaInfo > span').html(text);
-            }
             if (data.currentlyPlaying !== this.state.oldState.currentlyPlaying) {
                 var barCss = $('#progressBarColor.cssTransform');
                 barCss.removeClass('cssTransform');
                 $('#progressBarColor').stop().css({ transform: 'translateX(0)' });
                 barCss.addClass('cssTransform');
-
-                if (data.currentlyPlaying === null) {
-                    this.setState({karaInfoText: this.props.t('KARA_PAUSED_WAITING'), length: -1})
-                } else if (data.currentlyPlaying === -1) {
-                    this.setState({karaInfoText: this.props.t('JINGLE_TIME'), length: -1})
-                } else {
-                    var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
-                    var kara = response.data.data;
-                    this.setState({karaInfoText: buildKaraTitle(kara), length: kara.duration})
-                }
             }
             this.setState({oldState: data});
         }
