@@ -10,7 +10,8 @@ export interface Config {
 		Users?: boolean,
 		URL?: boolean,
 		Stats?: boolean,
-		JinglesAutoUpdate?: boolean
+		JinglesUpdate?: boolean
+		Updates?: boolean
 	},
 	Frontend: {
 		Port?: number,

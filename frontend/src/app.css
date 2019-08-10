@@ -21,4 +21,5 @@ body {
 @import './styles/karaokemugen.scss';
 @import './styles/admin.scss';
 @import './styles/main.scss';
+@import './styles/welcome/updateBanner.scss';
 @import './styles/public.scss';

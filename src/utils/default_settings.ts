@@ -37,6 +37,7 @@ export const defaults: Config = {
 		URL: true,
 		Users: true,
 		JinglesUpdate: true,
+		Updates: true
 	},
 	Frontend: {
 		AuthExpireTime: 15,
@@ -161,6 +162,8 @@ export const configConstraints = {
 	'Online.Host': {presence: true},
 	'Online.URL': {inclusion : bools},
 	'Online.Users': {inclusion : bools},
+	'Online.Updates': {inclusion : bools},
+	'Online.LatestURL': {type: 'string'},
 	'Frontend.Permissions.AllowNicknameChange': {inclusion : bools},
 	'Frontend.Permissions.AllowViewBlacklist': {inclusion : bools},
 	'Frontend.Permissions.AllowViewBlacklistCriterias': {inclusion : bools},

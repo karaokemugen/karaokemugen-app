@@ -17,6 +17,8 @@ Online:
   # Should we allow users to register/login accounts on kara.moe ?
   Users: true
   JinglesUpdate: true
+  # Should we look for updates ?
+  Updates: true
 
 Frontend:
   # Minutes before users are considered signed out
@@ -59,8 +61,6 @@ Gitlab:
 Karaoke:
   # Autostart playing songs if no song is playing and a song is added
   Autoplay: false
-  # Generate video previews for the web interface
-  CreatePreviews: false
   # Number of songs between jingles
   JinglesInterval: 20
   # Private karaoke mode or public karaoke mode.

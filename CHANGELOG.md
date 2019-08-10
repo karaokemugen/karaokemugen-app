@@ -8,6 +8,7 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 
 ### New Features
 
+- A banner will be displayed on the welcome screen to signal there is a new Karaoke Mugen version and that you should upgrade (#7)
 - All guest accounts now have specific avatars. For fun. (#392)
 - Karaoke data files (.kara) are now on version 4 and are named .kara.json. (#341)
   - Karaoke Mugen 3.x is not compatible with Karaoke files version 3 or below. This means you'll need to update your Karaoke Base for Karaoke Mugen 3.x.

@@ -45,19 +45,19 @@ let previousState = {...state};
 /** Get public state (to send to webapp users) */
 export function getPublicState(): PublicState {
 	return {
-		playing: state.player.playing,
-		private: state.private,
-		status: state.status,
-		onTop: state.ontop,
-		fullscreen: state.player.fullscreen,
-		timePosition: state.player.timeposition,
-		duration: state.player.duration,
-		muteStatus: state.player.mutestatus,
-		playerStatus: state.player.playerstatus,
 		currentlyPlaying: state.currentlyPlayingKara,
 		currentSessionID: state.currentSessionID,
-		subText: state.player.subtext,
+		duration: state.player.duration,
+		fullscreen: state.player.fullscreen,
+		muteStatus: state.player.mutestatus,
+		onTop: state.ontop,
+		playerStatus: state.player.playerstatus,
+		playing: state.player.playing,
+		private: state.private,
 		showSubs: state.player.showsubs,
+		status: state.status,
+		subText: state.player.subtext,
+		timePosition: state.player.timeposition,
 		volume: state.player.volume,
 	};
 }
