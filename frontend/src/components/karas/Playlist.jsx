@@ -42,6 +42,7 @@ class Playlist extends Component {
     this.transferCheckedKaras = this.transferCheckedKaras.bind(this);
     this.addAllKaras = this.addAllKaras.bind(this);
     this.onChangeTags = this.onChangeTags.bind(this);
+    this.getPlaylistUrl = this.getPlaylistUrl.bind(this);
     this.playlistRef = React.createRef();
   }
 
@@ -346,10 +347,16 @@ class Playlist extends Component {
     this.setState({ data: data });
   }
 
-  checkKara(idPlaylistContent) {
+  checkKara(id) {
     var data = this.state.data;
     data.content.forEach(kara => {
-      if (kara.playlistcontent_id === idPlaylistContent) kara.checked = !kara.checked
+      if (this.state.idPlaylist >= 0) {
+        if (kara.playlistcontent_id === id) {
+          kara.checked = !kara.checked
+        }
+      } else if (kara.kid === id) {
+        kara.checked = !kara.checked
+      }
     });
     this.setState({ data: data });
   }
@@ -357,7 +364,7 @@ class Playlist extends Component {
   addAllKaras() {
     var karaList = this.state.data.content.map(a => a.kid).join();
     window.displayMessage('info', 'Info', 'Ajout de ' + this.state.data.content.length + ' karas');
-    axios.post(this.getPlaylistUrl(this.state.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
+    axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
   }
 
   addCheckedKaras() {
@@ -366,18 +373,18 @@ class Playlist extends Component {
     var url;
     var data;
 
-    if (this.state.idPlaylistTo > 0) {
-      url = '/api/' + this.props.scope + '/playlists/' + this.state.idPlaylistTo + '/karas';
+    if (this.props.idPlaylistTo > 0) {
+      url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
       if (this.state.idPlaylist > 0) {
         data = { plc_id: idKaraPlaylist };
         type = 'PATCH';
       } else {
         data = { requestedby: this.props.logInfos.username, kid: idKara };
       }
-    } else if (this.state.idPlaylistTo == -2 || this.state.idPlaylistTo == -4) {
+    } else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
       url = '/api' + this.props.scope + '/blacklist/criterias';
       data = { blcriteria_type: 1001, blcriteria_value: idKara };
-    } else if (this.state.idPlaylistTo == -3) {
+    } else if (this.props.idPlaylistTo == -3) {
       url = '/api/' + this.props.scope + '/whitelist';
       data = { kid: idKara };
     }

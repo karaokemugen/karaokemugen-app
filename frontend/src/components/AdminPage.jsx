@@ -79,36 +79,36 @@ class AdminPage extends Component {
 
           <KmAppBodyDecorator mode="admin" extraClass="">
             {
-              this.state.options
-              ?   
+              this.state.options ?   
                 <div className="row " id="manage">
                   <Options settings={this.props.settings} />
                 </div>
-              :
-                <PlaylistMainDecorator>
-                    <Playlist 
-                      scope='admin'
-                      side={1}
-                      navigatorLanguage={this.props.navigatorLanguage}
-                      logInfos={this.props.logInfos}
-                      config={this.props.settings.config}
-                      idPlaylistTo={this.state.idsPlaylist.right}
-                      majIdsPlaylist={this.majIdsPlaylist}
-                      tags={this.props.tags}
-                      toggleSearchMenu={this.toggleSearchMenu}
-                      searchMenuOpen={this.state.searchMenuOpen}
-                      ></Playlist>
-                    <Playlist
-                      scope='admin'
-                      side={2}
-                      navigatorLanguage={this.props.navigatorLanguage}
-                      logInfos={this.props.logInfos}
-                      config={this.props.settings.config}
-                      idPlaylistTo={this.state.idsPlaylist.left}
-                      majIdsPlaylist={this.majIdsPlaylist}
-                      tags={this.props.tags}
-                      ></Playlist>
-                </PlaylistMainDecorator>
+              : null
+            }
+            <PlaylistMainDecorator className={this.state.options ? "hidden" : ""}>
+                <Playlist 
+                  scope='admin'
+                  side={1}
+                  navigatorLanguage={this.props.navigatorLanguage}
+                  logInfos={this.props.logInfos}
+                  config={this.props.settings.config}
+                  idPlaylistTo={this.state.idsPlaylist.right}
+                  majIdsPlaylist={this.majIdsPlaylist}
+                  tags={this.props.tags}
+                  toggleSearchMenu={this.toggleSearchMenu}
+                  searchMenuOpen={this.state.searchMenuOpen}
+                  ></Playlist>
+                <Playlist
+                  scope='admin'
+                  side={2}
+                  navigatorLanguage={this.props.navigatorLanguage}
+                  logInfos={this.props.logInfos}
+                  config={this.props.settings.config}
+                  idPlaylistTo={this.state.idsPlaylist.left}
+                  majIdsPlaylist={this.majIdsPlaylist}
+                  tags={this.props.tags}
+                  ></Playlist>
+              </PlaylistMainDecorator>
             }
           </KmAppBodyDecorator>
 

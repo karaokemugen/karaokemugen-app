@@ -30,6 +30,7 @@ class KaraLine extends Component {
     this.addKara = this.addKara.bind(this);
     this.transferKara = this.transferKara.bind(this);
     this.freeKara = this.freeKara.bind(this);
+    this.checkKara = this.checkKara.bind(this);
   }
 
   handleSwipe(e) {
@@ -81,14 +82,13 @@ class KaraLine extends Component {
     axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_playing: true });
   }
 
-  addKara() {
-    axios.post('/api/public/karas/' + this.props.kara.kid, { requestedby: this.props.logInfos.token ? this.props.logInfos.username : '' })
-      .then(response => {
-        window.displayMessage('success', 'Success', this.props.t(response.data.code));
-      })
-      .catch(error => {
-        window.displayMessage('warning', 'Warning', this.props.t(error.response.data.code));
-      })
+  async addKara() {
+    try {
+      var response = await axios.post('/api/public/karas/' + this.props.kara.kid, { requestedby: this.props.logInfos.token ? this.props.logInfos.username : '' });
+      window.displayMessage('success', 'Success', this.props.t(response.data.code));
+    } catch (error) {
+      window.displayMessage('warning', 'Warning', this.props.t(error.response.data.code));
+    }
   }
 
   transferKara() {
@@ -98,6 +98,14 @@ class KaraLine extends Component {
   freeKara() {
     if(this.props.scope === 'admin') {
       axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + kara.playlistcontent_id, { flag_free: true });
+    }
+  }
+
+  checkKara() {
+    if (this.props.idPlaylist >= 0) {
+      this.props.checkKara(this.props.kara.playlistcontent_id);
+    } else {
+      this.props.checkKara(this.props.kara.kid);
     }
   }
 
@@ -125,7 +133,7 @@ class KaraLine extends Component {
               </div>
             }
             {scope === 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ? 
-              <span name="checkboxKara" onClick={() => this.props.checkKara(kara.playlistcontent_id)}>
+              <span name="checkboxKara" onClick={this.checkKara}>
                 {kara.checked ? <i className="far fa-check-square"></i>
                   : <i className="far fa-square"></i>}
                 </span> : null}

@@ -177,15 +177,17 @@ class PlaylistHeader extends Component {
             <button title={this.props.t("ADD_RANDOM_KARAS")} name="addRandomKaras" className="btn btn-default clusterAction" onClick={this.addRandomKaras}>
               <img src={getLucky} />
             </button>
-            <button title={this.props.t("ADD_ALL_KARAS")} name="addAllKaras" className="btn btn-danger clusterAction" onClick={this.addAllKaras}>
+            <button title={this.props.t("ADD_ALL_KARAS")} name="addAllKaras" className="btn btn-danger clusterAction" onClick={this.props.addAllKaras}>
               <i className="fas fa-share"></i>
             </button>
           </React.Fragment>
           : null
         }
-        <button title={this.props.t("EMPTY_LIST")} name="deleteAllKaras" className="btn btn-danger clusterAction" onClick={this.deleteAllKaras}>
-          <i className="fas fa-eraser"></i>
-        </button>
+        {this.props.idPlaylist >= 0 ?
+          <button title={this.props.t("EMPTY_LIST")} name="deleteAllKaras" className="btn btn-danger clusterAction" onClick={this.deleteAllKaras}>
+            <i className="fas fa-eraser"></i>
+          </button> : null
+        }
         <ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
           scope={this.props.scope} playlistToAddId={this.props.playlistToAddId} isHeader={true}
           addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
