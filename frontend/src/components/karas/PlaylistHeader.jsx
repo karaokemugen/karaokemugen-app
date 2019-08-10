@@ -3,7 +3,7 @@ import { withTranslation } from "react-i18next";
 import axios from "axios";
 import getLucky from "../../assets/clover.png"
 import ActionsButtons from "./ActionsButtons";
-import { buildKaraTitle } from '../tools';
+import { buildKaraTitle, displayMessage } from '../tools';
 
 var tagsTypesList = [
   'DETAILS_SERIE',
@@ -132,9 +132,9 @@ class PlaylistHeader extends Component {
           name = JSON.parse(fr.result).PlaylistInformation.name;
         }
         axios.post(url, data).then(response => {
-        window.displayMessage('success', 'Playlist importée' + ' : ', name);
+        displayMessage('success', 'Playlist importée' + ' : ', name);
           if (response.unknownKaras && response.unknownKaras.length > 0) {
-            window.displayMessage('warning', 'Karas inconnus' + ' : ', response.unknownKaras);
+            displayMessage('warning', 'Karas inconnus' + ' : ', response.unknownKaras);
         }
           var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
         this.props.changeIdPlaylist(playlist_id);

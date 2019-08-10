@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import Fingerprint2 from 'fingerprintjs2'
 import axios from "axios";
-import { is_touch_device,startIntro,readCookie  } from '../tools';
+import { is_touch_device,startIntro,readCookie,displayMessage  } from '../tools';
 
 class LoginModal extends Component {
     constructor(props) {
@@ -42,10 +42,10 @@ class LoginModal extends Component {
         var response = result.data;
         this.props.toggleLoginModal();
         if (this.props.scope === 'admin' && response.role !== 'admin') {
-            window.displayMessage('warning', '', this.props.t('ADMIN_PLEASE'));
+            displayMessage('warning', '', this.props.t('ADMIN_PLEASE'));
         }
         this.props.updateLogInfos(response);
-        window.displayMessage('info', '', this.props.t('LOG_SUCCESS', {name: response.username}));
+        displayMessage('info', '', this.props.t('LOG_SUCCESS', {name: response.username}));
 
         if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
             this.props.toggleHelpModal();
@@ -72,7 +72,7 @@ class LoginModal extends Component {
     signup() {
         if (this.state.login.includes('@')) {
             this.setState({ errorBackground: 'errorBackground' });
-            window.displayMessage('warning', '', this.props.t('CHAR_NOT_ALLOWED', {char:'@'}));
+            displayMessage('warning', '', this.props.t('CHAR_NOT_ALLOWED', {char:'@'}));
             return;
         } else {
             this.setState({ errorBackground: '' });
@@ -89,7 +89,7 @@ class LoginModal extends Component {
             var apiPublic = this.props.scope === 'welcome' ? 'public' : this.props.scope;
             axios.post('/api/' + apiPublic + '/users', data)
                 .then(response => {
-                    window.displayMessage('info', 'Info', this.props.t('CL_NEW_USER', username));
+                    displayMessage('info', 'Info', this.props.t('CL_NEW_USER', username));
                     this.setState({ redBorders: '' });
 
                     if (this.props.scope === 'public') this.login(username, password);

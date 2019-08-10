@@ -4,7 +4,7 @@ import PlaylistHeader from "./PlaylistHeader";
 import KaraDetail from "./KaraDetail";
 import KaraLine from "./KaraLine";
 import axios from "axios";
-import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket} from "../tools";
+import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage} from "../tools";
 import BlacklistCriterias from "./BlacklistCriterias";
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 
@@ -367,7 +367,7 @@ class Playlist extends Component {
 
   addAllKaras() {
     var karaList = this.state.data.content.map(a => a.kid).join();
-    window.displayMessage('info', 'Info', 'Ajout de ' + this.state.data.content.length + ' karas');
+    displayMessage('info', 'Info', 'Ajout de ' + this.state.data.content.length + ' karas');
     axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
   }
 
@@ -420,7 +420,7 @@ class Playlist extends Component {
     window.callModal('prompt', this.props.t('KARA_SUGGESTION_NAME'), '', function (text) {
       axios.post('/api/public/karas/suggest', { karaName: text }).then(response => {
         setTimeout(() => {
-          window.displayMessage('info', this.props.t('KARA_SUGGESTION_INFO'),
+          displayMessage('info', this.props.t('KARA_SUGGESTION_INFO'),
             this.props.t('KARA_SUGGESTION_LINK', response.data.data.issueURL, 'console'), '30000');
         }, 200);
       })

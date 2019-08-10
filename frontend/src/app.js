@@ -11,7 +11,6 @@ import langs from "langs";
 import axios from "axios";
 import { readCookie, parseJwt, createCookie, eraseCookie, getSocket } from "./components/tools"
 import Modal from './components/modals/Modal';
-import './components/oldTools';
 class App extends Component {
     constructor(props) {
         super(props);

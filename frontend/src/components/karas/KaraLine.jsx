@@ -4,7 +4,7 @@ import { is_touch_device } from "../tools";
 import KaraDetail from "./KaraDetail";
 import axios from "axios";
 import ActionsButtons from "./ActionsButtons";
-import {buildKaraTitle} from '../tools';
+import {buildKaraTitle, displayMessage} from '../tools';
 
 import {sortableHandle} from 'react-sortable-hoc';
 
@@ -85,9 +85,9 @@ class KaraLine extends Component {
   async addKara() {
     try {
       var response = await axios.post('/api/public/karas/' + this.props.kara.kid, { requestedby: this.props.logInfos.token ? this.props.logInfos.username : '' });
-      window.displayMessage('success', 'Success', this.props.t(response.data.code));
+      displayMessage('success', 'Success', this.props.t(response.data.code));
     } catch (error) {
-      window.displayMessage('warning', 'Warning', this.props.t(error.response.data.code));
+      displayMessage('warning', 'Warning', this.props.t(error.response.data.code));
     }
   }
 

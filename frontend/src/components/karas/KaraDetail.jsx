@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
-import { is_touch_device, secondsTimeSpanToHMS } from "../tools";
+import { is_touch_device, secondsTimeSpanToHMS, displayMessage } from "../tools";
 import axios from "axios";
 
 class KaraDetail extends Component {
@@ -119,7 +119,7 @@ class KaraDetail extends Component {
           xhttp.open("GET", searchUrl, true);
           xhttp.send();
         } else {
-          window.displayMessage(
+          displayMessage(
             "warning",
             "",
             this.props.t("NO_EXT_INFO", serie)
