@@ -72,7 +72,7 @@ class ProfilModal extends Component {
             '<label>' + this.props.t('INSTANCE_NAME') + '</label>'
             + '<input type="text"  name="modalLoginServ" value="' + this.props.settingsOnline.Host + '"//>'
             + '<label>' + this.props.t('PROFILE_PASSWORD_AGAIN') + '</label>'
-            + '<input type="password" placeholder="' + this.props.t('PASSWORD') + '" className="form-control" name="password">', function (data) {
+            + '<input type="password" placeholder="' + this.props.t('PASSWORD') + '" className="form-control" name="password">', data => {
                 var response = axios.post('/api/public/myaccount/online', { instance: data.modalLoginServ, password: data.password });
                 displayMessage('success', '', this.props.t('PROFILE_CONVERTED'));
                 this.props.updateLogInfos(response);
@@ -81,10 +81,9 @@ class ProfilModal extends Component {
     }
 
     profileDelete() {
-        var t = this.props.t;
         callModal('custom', this.props.t('PROFILE_ONLINE_DELETE'),
             '<label>' + this.props.t('PROFILE_PASSWORD_AGAIN') + '</label>'
-            + '<input type="password" placeholder="' + this.props.t('PASSWORD') + '" className="form-control" name="password">', function (data) {
+            + '<input type="password" placeholder="' + this.props.t('PASSWORD') + '" className="form-control" name="password">', data => {
                 var response = axios.delete('/api/public/myaccount/online', {data:{ password: data.password }});
                 displayMessage('success', '', this.props.t('PROFILE_ONLINE_DELETED'));
                 this.props.updateLogInfos(response);
@@ -222,7 +221,7 @@ class ProfilModal extends Component {
                                                             <i className="glyphicon glyphicon-retweet"></i> {this.props.t("PROFILE_ONLINE_DELETE")}
                                                         </button>
                                                         :
-                                                        <button type="button" title={this.props.t("PROFILE_CONVERT")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert">
+                                                        <button type="button" title={this.props.t("PROFILE_CONVERT")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert" onClick={this.profileConvert}>
                                                             <i className="glyphicon glyphicon-retweet"></i> {this.props.t("PROFILE_CONVERT")}
                                                         </button>
                                                     }
