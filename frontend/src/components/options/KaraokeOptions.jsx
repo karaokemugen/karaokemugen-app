@@ -20,11 +20,17 @@ class KaraokeOptions extends Component {
   addMysterySongLabel() {
     var mysterySongsLabels = this.state.settings["Playlist.MysterySongs.Labels"];
     mysterySongsLabels.push(this.state.mysterySongLabel);
+    var settings = this.state.settings;
+    this.state.settings["Playlist.MysterySongs.Labels"] = mysterySongsLabels;
+    this.setState({ settings: settings });
     this.saveMysterySongsLabels(mysterySongsLabels)
     this.setState({ mysterySongLabel: "" });
   }
 
   deleteMysterySongLabel(value) {
+    var settings = this.state.settings;
+    this.state.settings["Playlist.MysterySongs.Labels"] = this.state.settings["Playlist.MysterySongs.Labels"].filter(function (ele) { return ele != value });
+    this.setState({ settings: settings });
     this.saveMysterySongsLabels(this.state.settings["Playlist.MysterySongs.Labels"].filter(function (ele) { return ele != value }));
   }
 
@@ -35,14 +41,14 @@ class KaraokeOptions extends Component {
 
   onChange(e) {
     var settings = this.state.settings;
-    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    settings[event.target.id] = eval(value);
+    const value = e.target.type === 'checkbox' ? e.target.checked : 
+      (Number(e.target.value) ? Number(e.target.value) : e.target.value);
+    settings[e.target.id] = value;
     this.setState({ settings: settings });
     if (e.target.type != "number" || (Number(e.target.value))) this.props.onChange(e);
   }
 
   render() {
-    var settings = this.state.settings;
     return (
       <React.Fragment>
         <div id="nav-karaokeAllMode">
@@ -56,7 +62,7 @@ class KaraokeOptions extends Component {
                 className="form-control"
                 id="Karaoke.Quota.Type"
                 onChange={this.onChange}
-                value={settings["Karaoke.Quota.Type"]}
+                value={this.state.settings["Karaoke.Quota.Type"]}
               >
                 <option value="0"> {this.props.t("QUOTA_TYPE_0")} </option>
                 <option value="1"> {this.props.t("QUOTA_TYPE_1")} </option>
@@ -64,7 +70,7 @@ class KaraokeOptions extends Component {
               </select>
             </div>
           </div>
-          {settings["Karaoke.Quota.Type"] === 2 ?
+          {this.state.settings["Karaoke.Quota.Type"] === 2 ?
             <div className="form-group">
               <label className="col-xs-4 control-label">
                 {this.props.t("TIME_BY_USER")}
@@ -76,12 +82,12 @@ class KaraokeOptions extends Component {
                   id="Karaoke.Quota.Time"
                   placeholder="1000"
                   onChange={this.onChange}
-                  value={settings["Karaoke.Quota.Time"]}
+                  value={this.state.settings["Karaoke.Quota.Time"]}
                 />
               </div>
             </div> : null}
 
-          {settings["Karaoke.Quota.Type"] === 1 ?
+          {this.state.settings["Karaoke.Quota.Type"] === 1 ?
             <div className="form-group">
               <label className="col-xs-4 control-label">
                 {this.props.t("SONGS_BY_USER")}
@@ -93,12 +99,12 @@ class KaraokeOptions extends Component {
                   id="Karaoke.Quota.Songs"
                   placeholder="1000"
                   onChange={this.onChange}
-                  value={settings["Karaoke.Quota.Songs"]}
+                  value={this.state.settings["Karaoke.Quota.Songs"]}
                 />
               </div>
             </div> : null}
 
-          {settings["Karaoke.Quota.Type"] !== 0 ?
+          {this.state.settings["Karaoke.Quota.Type"] !== 0 ?
             <div className="form-group">
               <label className="col-xs-4 control-label">
                 {this.props.t("FREE_AUTO_TIME")}
@@ -110,7 +116,7 @@ class KaraokeOptions extends Component {
                   id="Karaoke.Quota.FreeAutoTime"
                   placeholder="1000"
                   onChange={this.onChange}
-                  value={settings["Karaoke.Quota.FreeAutoTime"]}
+                  value={this.state.settings["Karaoke.Quota.FreeAutoTime"]}
                 />
               </div>
             </div> : null}
@@ -126,7 +132,7 @@ class KaraokeOptions extends Component {
                 id="Karaoke.JinglesInterval"
                 placeholder="20"
                 onChange={this.onChange}
-                value={settings["Karaoke.JinglesInterval"]}
+                value={this.state.settings["Karaoke.JinglesInterval"]}
               />
             </div>
           </div>
@@ -137,7 +143,7 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.Repeat" handleChange={this.onChange}
-                isChecked={settings["Karaoke.Repeat"]} />
+                isChecked={this.state.settings["Karaoke.Repeat"]} />
             </div>
           </div>
 
@@ -147,7 +153,7 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.SmartInsert" handleChange={this.onChange}
-                isChecked={settings["Karaoke.SmartInsert"]} />
+                isChecked={this.state.settings["Karaoke.SmartInsert"]} />
             </div>
           </div>
 
@@ -157,7 +163,7 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.Autoplay" handleChange={this.onChange}
-                isChecked={settings["Karaoke.Autoplay"]} />
+                isChecked={this.state.settings["Karaoke.Autoplay"]} />
             </div>
           </div>
 
@@ -167,7 +173,7 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Playlist.AllowDuplicates" handleChange={this.onChange}
-                isChecked={settings["Playlist.AllowDuplicates"]} />
+                isChecked={this.state.settings["Playlist.AllowDuplicates"]} />
             </div>
           </div>
 
@@ -177,7 +183,7 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Playlist.AllowDuplicateSeries" handleChange={this.onChange}
-                isChecked={settings["Playlist.AllowDuplicateSeries"]} />
+                isChecked={this.state.settings["Playlist.AllowDuplicateSeries"]} />
             </div>
           </div>
 
@@ -196,7 +202,7 @@ class KaraokeOptions extends Component {
                 className="form-control"
                 id="Playlist.MysterySongs.Hide"
                 onChange={this.onChange}
-                value={settings["Playlist.MysterySongs.Hide"]}
+                value={this.state.settings["Playlist.MysterySongs.Hide"]}
               >
                 <option value={true}> {this.props.t("ENGINE_HIDE_INVISIBLE_SONGS_HIDDEN_OPTION")} </option>
                 <option value={false}>???</option>
@@ -213,7 +219,7 @@ class KaraokeOptions extends Component {
                 className="form-control"
                 id="Playlist.MysterySongs.AddedSongVisibilityAdmin"
                 onChange={this.onChange}
-                value={settings["Playlist.MysterySongs.AddedSongVisibilityAdmin"]}
+                value={this.state.settings["Playlist.MysterySongs.AddedSongVisibilityAdmin"]}
               >
                 <option value={true}> {this.props.t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
                 <option value={false}> {this.props.t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
@@ -230,7 +236,7 @@ class KaraokeOptions extends Component {
                 className="form-control"
                 id="Playlist.MysterySongs.AddedSongVisibilityPublic"
                 onChange={this.onChange}
-                value={settings["Playlist.MysterySongs.AddedSongVisibilityPublic"]}
+                value={this.state.settings["Playlist.MysterySongs.AddedSongVisibilityPublic"]}
               >
                 <option value={true}> {this.props.t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
                 <option value={false}> {this.props.t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
@@ -248,7 +254,7 @@ class KaraokeOptions extends Component {
                   onChange={e => this.setState({ mysterySongLabel: e.target.value })} />
                 <button type="button" className="btn btn-default" onClick={this.addMysterySongLabel}>{this.props.t("ENGINE_LABELS_MYSTERY_SONGS_ADD")}</button>
               </div>
-              {settings["Playlist.MysterySongs.Labels"].map(value => {
+              {this.state.settings["Playlist.MysterySongs.Labels"].map(value => {
                 return (
                   <div key={value}>
                     <label style={{ margin: "10px" }}>{value}</label>
@@ -273,7 +279,7 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.URL" handleChange={this.onChange}
-                isChecked={settings["Online.URL"]} />
+                isChecked={this.state.settings["Online.URL"]} />
             </div>
           </div>
           <div className="form-group">
@@ -282,7 +288,7 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.Users" handleChange={this.onChange}
-                isChecked={settings["Online.Users"]} />
+                isChecked={this.state.settings["Online.Users"]} />
             </div>
           </div>
 
@@ -292,7 +298,7 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.Stats" handleChange={this.onChange}
-                isChecked={settings["Online.Stats"]} />
+                isChecked={this.state.settings["Online.Stats"]} />
             </div>
           </div>
 
@@ -302,7 +308,7 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.Updates" handleChange={this.onChange}
-                isChecked={settings["Online.Updates"]} />
+                isChecked={this.state.settings["Online.Updates"]} />
             </div>
           </div>
           <div className="form-group">
@@ -311,7 +317,7 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.JinglesUpdate" handleChange={this.onChange}
-                isChecked={settings["Online.JinglesUpdate"]} />
+                isChecked={this.state.settings["Online.JinglesUpdate"]} />
             </div>
           </div>
         </div>
@@ -321,7 +327,7 @@ class KaraokeOptions extends Component {
           </div>
         </div>
         <div id="nav-karaokePublicMode">
-          {settings["Karaoke.Quota.FreeUpVote"] ?
+          {this.state.settings["Karaoke.Quota.FreeUpVote"] ?
             <div
               id="freeUpvotesSettings"
               className="well well-sm settingsGroupPanel"
@@ -336,7 +342,7 @@ class KaraokeOptions extends Component {
                     type="number"
                     id="Karaoke.Quota.FreeUpVotesRequiredMin"
                     onChange={this.onChange}
-                    value={settings["Karaoke.Quota.FreeUpVotesRequiredMin"]}
+                    value={this.state.settings["Karaoke.Quota.FreeUpVotesRequiredMin"]}
                   />
                 </div>
               </div>
@@ -350,7 +356,7 @@ class KaraokeOptions extends Component {
                     type="number"
                     id="Karaoke.Quota.FreeUpVotesRequiredPercent"
                     onChange={this.onChange}
-                    value={settings["Karaoke.Quota.FreeUpVotesRequiredPercent"]}
+                    value={this.state.settings["Karaoke.Quota.FreeUpVotesRequiredPercent"]}
                   />
                 </div>
               </div>
@@ -362,11 +368,11 @@ class KaraokeOptions extends Component {
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.Poll.Enabled" handleChange={this.onChange}
-                isChecked={settings["Karaoke.Poll.Enabled"]} />
+                isChecked={this.state.settings["Karaoke.Poll.Enabled"]} />
             </div>
           </div>
 
-          {settings["Karaoke.Poll.Enabled"] ?
+          {this.state.settings["Karaoke.Poll.Enabled"] ?
             <div id="songPollSettings" className="well well-sm settingsGroupPanel">
               <div className="form-group">
                 <label className="col-xs-4 control-label">
@@ -378,7 +384,7 @@ class KaraokeOptions extends Component {
                     type="number"
                     id="Karaoke.Poll.Choices"
                     onChange={this.onChange}
-                    value={settings["Karaoke.Poll.Choices"]}
+                    value={this.state.settings["Karaoke.Poll.Choices"]}
                   />
                 </div>
               </div>
@@ -392,7 +398,7 @@ class KaraokeOptions extends Component {
                     type="number"
                     id="Karaoke.Poll.Timeout"
                     onChange={this.onChange}
-                    value={settings["Karaoke.Poll.Timeout"]}
+                    value={this.state.settings["Karaoke.Poll.Timeout"]}
                   />
                 </div>
               </div>
@@ -403,7 +409,7 @@ class KaraokeOptions extends Component {
                 </label>
                 <div className="col-xs-6">
                   <Switch idInput="Karaoke.Quota.FreeUpVote" handleChange={this.onChange}
-                    isChecked={settings["Karaoke.Quota.FreeUpVote"]} />
+                    isChecked={this.state.settings["Karaoke.Quota.FreeUpVote"]} />
                 </div>
               </div>
             </div> : null}
@@ -412,7 +418,7 @@ class KaraokeOptions extends Component {
           id="App.FirstRun"
           className="hideInput hidden"
           onChange={this.onChange}
-          value={settings["App.FirstRun"]}
+          value={this.state.settings["App.FirstRun"]}
         />
       </React.Fragment>
     );
