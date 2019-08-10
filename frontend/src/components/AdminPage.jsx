@@ -19,10 +19,12 @@ class AdminPage extends Component {
       profileModal: false,
       onlineStatsModal: this.props.settings.config.Online.Stats === undefined,
       idsPlaylist: { left: '', right: '' },
-      searchMenuOpen: false
+      searchMenuOpen: false,
+      filterValue: ""
     };
     this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
     this.toggleSearchMenu = this.toggleSearchMenu.bind(this);
+    this.changeFilterValue = this.changeFilterValue.bind(this);
   }
 
   majIdsPlaylist(side, value) {
@@ -44,6 +46,10 @@ class AdminPage extends Component {
 
   toggleSearchMenu() {
     this.setState({searchMenuOpen: !this.state.searchMenuOpen});
+  }
+
+  changeFilterValue(e) {
+    this.setState({ filterValue: e.target.value });
   }
 
   render() {
@@ -94,7 +100,9 @@ class AdminPage extends Component {
                   tags={this.props.tags}
                   toggleSearchMenu={this.toggleSearchMenu}
                   searchMenuOpen={this.state.searchMenuOpen}
-                  ></Playlist>
+                  changeFilterValue={this.changeFilterValue}
+                  filterValue={this.state.filterValue} 
+                  />
                 <Playlist
                   scope='admin'
                   side={2}
@@ -104,7 +112,9 @@ class AdminPage extends Component {
                   idPlaylistTo={this.state.idsPlaylist.left}
                   majIdsPlaylist={this.majIdsPlaylist}
                   tags={this.props.tags}
-                  ></Playlist>
+                  changeFilterValue={this.changeFilterValue}
+                  filterValue={this.state.filterValue} 
+                  />
               </PlaylistMainDecorator>
             }
           </KmAppBodyDecorator>

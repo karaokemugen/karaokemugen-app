@@ -42,6 +42,7 @@ class PublicPage extends Component {
     this.changePseudo = this.changePseudo.bind(this);
     this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
     this.toggleSearchMenu = this.toggleSearchMenu.bind(this);
+    this.changeFilterValue = this.changeFilterValue.bind(this);
   }
 
   majIdsPlaylist(side, value) {
@@ -107,6 +108,10 @@ class PublicPage extends Component {
     this.setState({searchMenuOpen: !this.state.searchMenuOpen});
   }
 
+  changeFilterValue(e) {
+    this.setState({ filterValue: e.target.value });
+  }
+
   render() {
     return (
       <div id="publicPage" className="kmapp--wrapper">
@@ -152,10 +157,10 @@ class PublicPage extends Component {
                       <div className="plSearch" style={{ width: (this.props.logInfos.role != 'guest' ? "" : "100%") }}>
                         <i className="fas fa-search"></i>
                         <input type="text" className="form-control" side="1" name="searchPlaylist"
-                          value={this.state.filterValue} onChange={(e) => this.setState({ filterValue: e.target.value })}
+                          value={this.state.filterValue} onChange={this.changeFilterValue}
                           onKeyPress={e => {
                             if (e.which == 13) {
-                              this.setState({ filterValue: e.target.value });
+                              this.changeFilterValue(e);
                             }
                           }} />
                       </div>
@@ -236,7 +241,9 @@ class PublicPage extends Component {
                       majIdsPlaylist={this.majIdsPlaylist}
                       tags={this.props.tags}
                       toggleSearchMenu={this.toggleSearchMenu}
-                      searchMenuOpen={this.state.searchMenuOpen} />
+                      searchMenuOpen={this.state.searchMenuOpen} 
+                      changeFilterValue={this.changeFilterValue}
+                      filterValue={this.state.filterValue} />
                     <Playlist
                       scope='public'
                       side={2}
@@ -244,7 +251,9 @@ class PublicPage extends Component {
                       logInfos={this.props.logInfos}
                       config={this.props.settings.config} 
                       idPlaylistTo={this.state.idsPlaylist.left}
-                      majIdsPlaylist={this.majIdsPlaylist} />
+                      majIdsPlaylist={this.majIdsPlaylist}
+                      changeFilterValue={this.changeFilterValue}
+                      filterValue={this.state.filterValue} />
                   </PlaylistMainDecorator>
                 </KmAppBodyDecorator>
 

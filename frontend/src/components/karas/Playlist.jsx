@@ -10,13 +10,10 @@ import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 
 require('./Playlist.scss');
 
-var timer;
-
 class Playlist extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      filterValue: "",
       searchValue: undefined,
       searchCriteria: undefined,
       playlistCommands: false,
@@ -27,7 +24,6 @@ class Playlist extends Component {
     this.changeIdPlaylist = this.changeIdPlaylist.bind(this);
     this.getPlaylist = this.getPlaylist.bind(this);
     this.playingUpdate = this.playingUpdate.bind(this);
-    this.changeFilterValue = this.changeFilterValue.bind(this);
     this.getPlaylistInfo = this.getPlaylistInfo.bind(this);
     this.getPlInfosElement = this.getPlInfosElement.bind(this);
     this.handleScroll = this.handleScroll.bind(this);
@@ -177,12 +173,12 @@ class Playlist extends Component {
     this.props.majIdsPlaylist(this.props.side, idPlaylist);
   }
 
-  changeFilterValue(e) {
-    this.setState({ filterValue: e.target.value });
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      this.getPlaylist();
-    }, 1000);
+  componentDidUpdate(prevProps) {
+    if (prevProps.filterValue !== this.props.filterValue) {
+      this.setState({timer: setTimeout(() => {
+        this.getPlaylist();
+      }, 1000)})
+    }
   }
 
   editNamePlaylist() {
@@ -238,7 +234,7 @@ class Playlist extends Component {
 
     url +=
       "?filter=" +
-      this.state.filterValue + 
+      this.props.filterValue + 
       "&from=" +
       (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 ? this.state.data.infos.from : 0) +
       "&size=" + this.state.maxBeforeUpdate;
@@ -255,7 +251,6 @@ class Playlist extends Component {
           url += '&searchType=' + searchType
           + ((this.state.searchCriteria && this.state.searchValue) ? ('&searchValue=' + this.state.searchCriteria + ':' + this.state.searchValue) : '');
       }
-
     var response = await axios.get(url);
     this.playlistRef.current.scrollTo(0, 1);
     var karas = response.data.data;
@@ -426,7 +421,7 @@ class Playlist extends Component {
             this.props.t('KARA_SUGGESTION_LINK', response.data.data.issueURL, 'console'), '30000');
         }, 200);
       })
-    }, this.state.filterValue);
+    }, this.props.filterValue);
   }
 
   onChangeTags(type, value) {
@@ -513,9 +508,9 @@ class Playlist extends Component {
             playlistToAddId={this.state.playlistToAddId}
             idPlaylist={this.state.idPlaylist}
             changeIdPlaylist={this.changeIdPlaylist}
-            filterValue={this.state.filterValue}
+            filterValue={this.props.filterValue}
             playlistInfo={this.state.playlistInfo}
-            changeFilterValue={this.changeFilterValue}
+            changeFilterValue={this.props.changeFilterValue}
             getPlaylistUrl={this.getPlaylistUrl}
             togglePlaylistCommands={this.togglePlaylistCommands}
             playlistCommands={this.state.playlistCommands}
