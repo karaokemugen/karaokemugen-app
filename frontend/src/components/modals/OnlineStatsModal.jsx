@@ -13,7 +13,7 @@ class OnlineStatsModal extends Component {
     }
 
     onClick(value) {
-        var data = expand("Online.Stats", eval(value));
+        var data = expand("Online.Stats", value);
         axios.put('/api/admin/settings', {
             setting: JSON.stringify(data)
         });
