@@ -44,7 +44,7 @@ class PlayerOptions extends Component {
 
   render() {
     const t = this.props.t;
-    var settings = this.props.settings;
+    var settings = this.state.settings;
     if (settings["Karaoke.Display.ConnectionInfo.Host"] === null)
       settings["Karaoke.Display.ConnectionInfo.Host"] = '';
     const listdisplays =

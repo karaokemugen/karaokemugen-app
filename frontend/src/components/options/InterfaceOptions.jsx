@@ -28,7 +28,7 @@ class InterfaceOptions extends Component {
 
   render() {
     const t = this.props.t;
-    var settings = this.props.settings;
+    var settings = this.state.settings;
     return (
       <React.Fragment>
         <div className="form-group">
