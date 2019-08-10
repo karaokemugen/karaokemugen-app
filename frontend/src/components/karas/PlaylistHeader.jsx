@@ -8,14 +8,18 @@ import { buildKaraTitle } from '../tools';
 var tagsTypesList = [
   'DETAILS_SERIE',
   'BLCTYPE_3',
-  'BLCTYPE_7',
   'BLCTYPE_2',
   'BLCTYPE_4',
   'BLCTYPE_5',
   'BLCTYPE_6',
   'DETAILS_YEAR',
   'BLCTYPE_8',
-  'BLCTYPE_9'];
+  'BLCTYPE_9',
+  'BLCTYPE_7',
+  'BLCTYPE_10',
+  'BLCTYPE_11',
+  'BLCTYPE_12',
+  'BLCTYPE_13',]
 class PlaylistHeader extends Component {
   constructor(props) {
     super(props);
@@ -350,9 +354,10 @@ class PlaylistHeader extends Component {
               <ul className="nav navbar-nav">
                 <li className="tagFilter">
                   <span className='value'>
-                    <span className="tagsTypesContainer">
+                    <span>
                       <select type="text" className="tagsTypes form-control value" placeholder="Search" 
-                        onChange={e => this.setState({tagType : Number(e.target.value)})}>
+                        onChange={e => this.setState({tagType : (Number(e.target.value) ? Number(e.target.value) : e.target.value)})}
+                        value={this.state.tagType}>
                         {tagsTypesList.map(function (val) {
                           if (val === 'DETAILS_SERIE') {
                             return <option key={val} value='serie'>{t(val)}</option>
@@ -368,7 +373,7 @@ class PlaylistHeader extends Component {
                       <select type="text" className="tags form-control value" placeholder="Search" 
                         onChange={(e) => this.props.onChangeTags(this.state.tagType, e.target.value)}>
                         {this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).map(tag => {
-                          return <option key={tag.id} value={tag.id}>{tag.karacount +" "+ tag.text}</option>
+                          return <option key={tag.id} value={tag.id}>{tag.text + " : " + tag.karacount}</option>
                         })}
                       </select>
                     </span>

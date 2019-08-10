@@ -15,9 +15,13 @@ var listTypeBlc = [
     'BLCTYPE_4',
     'BLCTYPE_5',
     'BLCTYPE_6',
-    'BLCTYPE_7',
     'BLCTYPE_8',
-    'BLCTYPE_9'];
+    'BLCTYPE_9',
+    'BLCTYPE_7',
+    'BLCTYPE_10',
+    'BLCTYPE_11',
+    'BLCTYPE_12',
+    'BLCTYPE_13',];
 
 class BlacklistCriterias extends Component {
     constructor(props) {
