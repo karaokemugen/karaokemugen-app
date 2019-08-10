@@ -24,6 +24,7 @@ class App extends Component {
         this.getSettings = this.getSettings.bind(this);
         this.updateLogInfos = this.updateLogInfos.bind(this);
         this.powerOff = this.powerOff.bind(this);
+        this.logOut = this.logOut.bind(this);
         axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     }
@@ -65,6 +66,7 @@ class App extends Component {
         this.setState({ logInfos: {} });
         axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        location.reload();
     }
 
     async parseTags() {
