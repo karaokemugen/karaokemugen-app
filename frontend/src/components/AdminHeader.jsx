@@ -31,16 +31,16 @@ class AdminHeader extends Component {
     });
   }
 
-  async saveMode(mode) {
+  saveMode(mode) {
     var data = expand("Karaoke.Private", mode);
     this.setState({ privateMode: mode });
-    await axios.put("/api/admin/settings", { setting: JSON.stringify(data) });
+    axios.put("/api/admin/settings", { setting: JSON.stringify(data) });
   }
 
-  async saveOperatorAdd(songVisibility) {
+  saveOperatorAdd(songVisibility) {
     var data = expand("Playlist.MysterySongs.AddedSongVisibilityAdmin", songVisibility);
     this.setState({ songVisibilityOperator: songVisibility });
-    await axios.put("/api/admin/settings", { setting: JSON.stringify(data) });
+    axios.put("/api/admin/settings", { setting: JSON.stringify(data) });
   }
 
   putPlayerCommando(event) {

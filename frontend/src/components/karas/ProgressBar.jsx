@@ -64,7 +64,7 @@ class ProgressBar extends Component {
             $('#progressBarColor').removeClass('cssTransform')
                 .css('transform', 'translateX(' + e.pageX + 'px)')
                 .addClass('');
-            await axios.put('/api/admin/player', { command: 'goTo', options: futurTimeSec });
+            axios.put('/api/admin/player', { command: 'goTo', options: futurTimeSec });
             $('#progressBarColor').addClass('cssTransform');
         }
     }

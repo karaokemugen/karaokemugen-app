@@ -48,10 +48,10 @@ class Playlist extends Component {
   }
 
   async componentDidMount() {
+    this.getPlaylistList();
     await this.getPlaylistToAddId();
-    await this.getPlaylistList();
     await this.getIdPlaylist();
-    await this.getPlaylist();
+    this.getPlaylist();
     getSocket().on("playingUpdated", this.playingUpdate);
     getSocket().on("playlistsUpdated", this.getPlaylistList);
     getSocket().on("whitelistUpdated", () => {

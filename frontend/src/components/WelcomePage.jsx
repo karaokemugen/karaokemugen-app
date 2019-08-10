@@ -73,7 +73,7 @@ class WelcomePage extends Component {
       this.setState({ sessionActive: sessions[0].name });
       sessionId = sessions[0].seid;
     }
-    await axios.post("/api/admin/sessions/" + sessionId);
+    axios.post("/api/admin/sessions/" + sessionId);
   }
 
   async getCatchphrase() {
