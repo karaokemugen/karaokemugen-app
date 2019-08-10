@@ -8,13 +8,12 @@ class NotfoundPage extends Component {
     }
 
     render() {
-        var t = this.props.t;
         return (
             <React.Fragment>
             <p>{location.pathname}</p>
-            <h1>{t("404")}</h1>
-            <h3>{t("404_2")}</h3>
-            <strong><pre>    * &lt;----- {t("404_3")}</pre></strong>
+            <h1>{this.props.t("404")}</h1>
+            <h3>{this.props.t("404_2")}</h3>
+            <strong><pre>    * &lt;----- {this.props.t("404_3")}</pre></strong>
             <img height="500" src={image404} />
         </React.Fragment>
         )

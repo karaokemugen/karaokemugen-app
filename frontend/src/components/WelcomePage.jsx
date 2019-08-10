@@ -163,7 +163,6 @@ class WelcomePage extends Component {
   }
 
   render() {
-    const t = this.props.t;
     if (this.props.logInfos.role === "admin") {
       var sessions = [];
       this.state.sessions.forEach(session => {
@@ -201,25 +200,25 @@ class WelcomePage extends Component {
           <div className="updateBanner">
             <div className="updateBanner--wrapper">
               <dl className="updateBanner--description">
-                <dt>{t("UPDATE_BANNER_TITLE")}</dt>
+                <dt>{this.props.t("UPDATE_BANNER_TITLE")}</dt>
                 <dd className="updateBanner--message">
-                  {t("UPDATE_BANNER_MESSAGE", {
+                  {this.props.t("UPDATE_BANNER_MESSAGE", {
                     actualVersion: this.props.settings.version.number
                   })}
                   <b> {this.state.latestVersion}</b>
                 </dd>
                 <dd className="updateBanner--download">
                   <a href="http://mugen.karaokes.moe/blog.html">
-                    <i className="fas fa-download"></i> {t("UPDATE_BANNER_GET_IT")}
+                    <i className="fas fa-download"></i> {this.props.t("UPDATE_BANNER_GET_IT")}
                   </a>
                 </dd>
               </dl>
               <div className="updateBanner--actions">
                 <button type="button" data-action="later" onClick={this.closeUpdateBanner}>
-                  <i className="fas fa-stopwatch"></i> {t("UPDATE_BANNER_REMIND_ME_LATER")}
+                  <i className="fas fa-stopwatch"></i> {this.props.t("UPDATE_BANNER_REMIND_ME_LATER")}
                 </button>
                 <button type="button" data-action="never" onClick={this.stopAppUpdates}>
-                  <i className="fas fa-bell-slash"></i> {t("UPDATE_BANNER_DONT_BOTHER_ME")}
+                  <i className="fas fa-bell-slash"></i> {this.props.t("UPDATE_BANNER_DONT_BOTHER_ME")}
                 </button>
               </div>
             </div>
@@ -232,7 +231,7 @@ class WelcomePage extends Component {
                 <ul className="nav navbar-nav navbar-left">
                   <li>
                     <Autocomplete
-                      label={t("ACTIVE_SESSION")}
+                      label={this.props.t("ACTIVE_SESSION")}
                       value={this.state.activeSession}
                       options={sessions}
                       onChange={this.setActiveSession}
@@ -248,13 +247,13 @@ class WelcomePage extends Component {
                     target="_blank"
                   >
                     <i className="glyphicon glyphicon-pencil" />{" "}
-                    {t("WLCM_CONTACT")}
+                    {this.props.t("WLCM_CONTACT")}
                   </a>
                 </li>
                 <li>
                   <a href="http://mugen.karaokes.moe/" target="_blank">
                     <i className="glyphicon glyphicon-link" />
-                    {t("WLCM_SITE")}
+                    {this.props.t("WLCM_SITE")}
                   </a>
                 </li>
                 <li>
@@ -263,7 +262,7 @@ class WelcomePage extends Component {
                     <span>
                       {this.props.logInfos.token
                         ? this.props.logInfos.username
-                        : t("NOT_LOGGED")}
+                        : this.props.t("NOT_LOGGED")}
                     </span>
                   </a>
                 </li>
@@ -271,12 +270,12 @@ class WelcomePage extends Component {
                   <li id="wlcm_disconnect">
                     <a
                       href="#"
-                      title={t("LOGOUT")}
+                      title={this.props.t("LOGOUT")}
                       className="logout"
                       onClick={this.props.logOut}
                     >
                       <i className="glyphicon glyphicon-log-out" />{" "}
-                      <span>{t("LOGOUT")}</span>
+                      <span>{this.props.t("LOGOUT")}</span>
                     </a>
                   </li>
                 ) : null}
@@ -310,10 +309,10 @@ class WelcomePage extends Component {
                       <i className="digit glyphicon glyphicon-list normalText" />
                       <i className="digit glyphicon glyphicon-hand-right tutorialText" />
                       <div className="dash_title normalText">
-                        {t("WLCM_KARAMANAGER")}
+                        {this.props.t("WLCM_KARAMANAGER")}
                       </div>
                       <div className="dash_title tutorialText">
-                        {t("WLCM_GETSTARTED")}
+                        {this.props.t("WLCM_GETSTARTED")}
                       </div>
                     </div>
                   </li>
@@ -324,7 +323,7 @@ class WelcomePage extends Component {
                     >
                       <i className="digit glyphicon glyphicon-cog" />
                       <div className="dash_title">
-                        {t("WLCM_ADMINISTRATION")}
+                        {this.props.t("WLCM_ADMINISTRATION")}
                       </div>
                     </div>
                   </li>
@@ -336,7 +335,7 @@ class WelcomePage extends Component {
                       }
                     >
                       <i className="digit glyphicon glyphicon-user" />
-                      <div className="dash_title">{t("WLCM_PUBLIC")}</div>
+                      <div className="dash_title">{this.props.t("WLCM_PUBLIC")}</div>
                     </div>
                   </li>
                   <li
@@ -346,7 +345,7 @@ class WelcomePage extends Component {
                   >
                     <div className="dash minutes_dash">
                       <i className="digit glyphicon glyphicon-question-sign" />
-                      <div className="dash_title">{t("WLCM_HELP")}</div>
+                      <div className="dash_title">{this.props.t("WLCM_HELP")}</div>
                     </div>
                   </li>
                 </ul>

@@ -42,14 +42,13 @@ class KaraokeOptions extends Component {
   }
 
   render() {
-    const t = this.props.t;
     var settings = this.state.settings;
     return (
       <React.Fragment>
         <div id="nav-karaokeAllMode">
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("QUOTA_TYPE")}
+              {this.props.t("QUOTA_TYPE")}
             </label>
             <div className="col-xs-6">
               <select
@@ -59,16 +58,16 @@ class KaraokeOptions extends Component {
                 onChange={this.onChange}
                 value={settings["Karaoke.Quota.Type"]}
               >
-                <option value="0"> {t("QUOTA_TYPE_0")} </option>
-                <option value="1"> {t("QUOTA_TYPE_1")} </option>
-                <option value="2"> {t("QUOTA_TYPE_2")} </option>
+                <option value="0"> {this.props.t("QUOTA_TYPE_0")} </option>
+                <option value="1"> {this.props.t("QUOTA_TYPE_1")} </option>
+                <option value="2"> {this.props.t("QUOTA_TYPE_2")} </option>
               </select>
             </div>
           </div>
           {settings["Karaoke.Quota.Type"] === 2 ?
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {t("TIME_BY_USER")}
+                {this.props.t("TIME_BY_USER")}
               </label>
               <div className="col-xs-6">
                 <input
@@ -85,7 +84,7 @@ class KaraokeOptions extends Component {
           {settings["Karaoke.Quota.Type"] === 1 ?
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {t("SONGS_BY_USER")}
+                {this.props.t("SONGS_BY_USER")}
               </label>
               <div className="col-xs-6">
                 <input
@@ -102,7 +101,7 @@ class KaraokeOptions extends Component {
           {settings["Karaoke.Quota.Type"] !== 0 ?
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {t("FREE_AUTO_TIME")}
+                {this.props.t("FREE_AUTO_TIME")}
               </label>
               <div className="col-xs-6">
                 <input
@@ -118,7 +117,7 @@ class KaraokeOptions extends Component {
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINEJINGLESINTERVAL")}
+              {this.props.t("ENGINEJINGLESINTERVAL")}
             </label>
             <div className="col-xs-6">
               <input
@@ -134,7 +133,7 @@ class KaraokeOptions extends Component {
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINEREPEATPLAYLIST")}
+              {this.props.t("ENGINEREPEATPLAYLIST")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.Repeat" handleChange={this.onChange}
@@ -144,7 +143,7 @@ class KaraokeOptions extends Component {
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINEENABLESMARTINSERT")}
+              {this.props.t("ENGINEENABLESMARTINSERT")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.SmartInsert" handleChange={this.onChange}
@@ -154,7 +153,7 @@ class KaraokeOptions extends Component {
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINEAUTOPLAY")}
+              {this.props.t("ENGINEAUTOPLAY")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.Autoplay" handleChange={this.onChange}
@@ -164,7 +163,7 @@ class KaraokeOptions extends Component {
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINEALLOWDUPLICATES")}
+              {this.props.t("ENGINEALLOWDUPLICATES")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Playlist.AllowDuplicates" handleChange={this.onChange}
@@ -174,7 +173,7 @@ class KaraokeOptions extends Component {
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINEALLOWDUPLICATESSERIES")}
+              {this.props.t("ENGINEALLOWDUPLICATESSERIES")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Playlist.AllowDuplicateSeries" handleChange={this.onChange}
@@ -184,13 +183,13 @@ class KaraokeOptions extends Component {
 
           <div className="form-group settingsGroupPanel subCategoryGroupPanel">
             <div className="col-xs-12" style={{ textAlign: "center" }}>
-              {t("MYSTERY_SONG_SETTINGS")}
+              {this.props.t("MYSTERY_SONG_SETTINGS")}
             </div>
           </div>
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINE_HIDE_INVISIBLE_SONGS")}
+              {this.props.t("ENGINE_HIDE_INVISIBLE_SONGS")}
             </label>
             <div className="col-xs-6">
               <select
@@ -199,7 +198,7 @@ class KaraokeOptions extends Component {
                 onChange={this.onChange}
                 value={settings["Playlist.MysterySongs.Hide"]}
               >
-                <option value={true}> {t("ENGINE_HIDE_INVISIBLE_SONGS_HIDDEN_OPTION")} </option>
+                <option value={true}> {this.props.t("ENGINE_HIDE_INVISIBLE_SONGS_HIDDEN_OPTION")} </option>
                 <option value={false}>???</option>
               </select>
             </div>
@@ -207,7 +206,7 @@ class KaraokeOptions extends Component {
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN")}
+              {this.props.t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN")}
             </label>
             <div className="col-xs-6">
               <select
@@ -216,15 +215,15 @@ class KaraokeOptions extends Component {
                 onChange={this.onChange}
                 value={settings["Playlist.MysterySongs.AddedSongVisibilityAdmin"]}
               >
-                <option value={true}> {t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
-                <option value={false}> {t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
+                <option value={true}> {this.props.t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
+                <option value={false}> {this.props.t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
               </select>
             </div>
           </div>
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINE_ADDED_SONG_VISIBILITY_PUBLIC")}
+              {this.props.t("ENGINE_ADDED_SONG_VISIBILITY_PUBLIC")}
             </label>
             <div className="col-xs-6">
               <select
@@ -233,28 +232,28 @@ class KaraokeOptions extends Component {
                 onChange={this.onChange}
                 value={settings["Playlist.MysterySongs.AddedSongVisibilityPublic"]}
               >
-                <option value={true}> {t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
-                <option value={false}> {t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
+                <option value={true}> {this.props.t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
+                <option value={false}> {this.props.t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
               </select>
             </div>
           </div>
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINE_LABELS_MYSTERY_SONGS")}
+              {this.props.t("ENGINE_LABELS_MYSTERY_SONGS")}
             </label>
             <div className="col-xs-6">
               <div>
                 <input value={this.state.mysterySongLabel} style={{ margin: "10px", color: "#555" }}
                   onChange={e => this.setState({ mysterySongLabel: e.target.value })} />
-                <button type="button" className="btn btn-default" onClick={this.addMysterySongLabel}>{t("ENGINE_LABELS_MYSTERY_SONGS_ADD")}</button>
+                <button type="button" className="btn btn-default" onClick={this.addMysterySongLabel}>{this.props.t("ENGINE_LABELS_MYSTERY_SONGS_ADD")}</button>
               </div>
               {settings["Playlist.MysterySongs.Labels"].map(value => {
                 return (
                   <div key={value}>
                     <label style={{ margin: "10px" }}>{value}</label>
                     <button type="button" className="btn btn-default"
-                      onClick={() => this.deleteMysterySongLabel(value)}>{t("ENGINE_LABELS_MYSTERY_SONGS_DELETE")}</button>
+                      onClick={() => this.deleteMysterySongLabel(value)}>{this.props.t("ENGINE_LABELS_MYSTERY_SONGS_DELETE")}</button>
                   </div>
                 )
               })}
@@ -263,14 +262,14 @@ class KaraokeOptions extends Component {
         </div>
         <div className="form-group settingsGroupPanel subCategoryGroupPanel">
           <div className="col-xs-12" style={{ textAlign: "center" }}>
-            {t("ONLINESETTINGS")}
+            {this.props.t("ONLINESETTINGS")}
           </div>
         </div>
 
         <div id="nav-karaokeOnlineSettings">
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ONLINEURL")}
+              {this.props.t("ONLINEURL")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.URL" handleChange={this.onChange}
@@ -279,7 +278,7 @@ class KaraokeOptions extends Component {
           </div>
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ONLINEUSERS")}
+              {this.props.t("ONLINEUSERS")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.Users" handleChange={this.onChange}
@@ -289,7 +288,7 @@ class KaraokeOptions extends Component {
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ONLINESTATS")}
+              {this.props.t("ONLINESTATS")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.Stats" handleChange={this.onChange}
@@ -299,7 +298,7 @@ class KaraokeOptions extends Component {
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("CHECK_APP_UPDATES")}
+              {this.props.t("CHECK_APP_UPDATES")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.Updates" handleChange={this.onChange}
@@ -308,7 +307,7 @@ class KaraokeOptions extends Component {
           </div>
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("AUTO_UPDATE_JINGLES")}
+              {this.props.t("AUTO_UPDATE_JINGLES")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.JinglesUpdate" handleChange={this.onChange}
@@ -318,7 +317,7 @@ class KaraokeOptions extends Component {
         </div>
         <div className="form-group settingsGroupPanel subCategoryGroupPanel">
           <div className="col-xs-12" style={{ textAlign: "center" }}>
-            {t("PUBLICMODESETTINGS")}
+            {this.props.t("PUBLICMODESETTINGS")}
           </div>
         </div>
         <div id="nav-karaokePublicMode">
@@ -329,7 +328,7 @@ class KaraokeOptions extends Component {
             >
               <div className="form-group">
                 <label className="col-xs-4 control-label">
-                  {t("ENGINEFREEUPVOTESREQUIREDMIN")}
+                  {this.props.t("ENGINEFREEUPVOTESREQUIREDMIN")}
                 </label>
                 <div className="col-xs-6">
                   <input
@@ -343,7 +342,7 @@ class KaraokeOptions extends Component {
               </div>
               <div className="form-group">
                 <label className="col-xs-4 control-label">
-                  {t("ENGINEFREEUPVOTESREQUIREDPERCENT")}
+                  {this.props.t("ENGINEFREEUPVOTESREQUIREDPERCENT")}
                 </label>
                 <div className="col-xs-6">
                   <input
@@ -359,7 +358,7 @@ class KaraokeOptions extends Component {
 
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINESONGPOLL")}
+              {this.props.t("ENGINESONGPOLL")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.Poll.Enabled" handleChange={this.onChange}
@@ -371,7 +370,7 @@ class KaraokeOptions extends Component {
             <div id="songPollSettings" className="well well-sm settingsGroupPanel">
               <div className="form-group">
                 <label className="col-xs-4 control-label">
-                  {t("ENGINESONGPOLLCHOICES")}
+                  {this.props.t("ENGINESONGPOLLCHOICES")}
                 </label>
                 <div className="col-xs-6">
                   <input
@@ -385,7 +384,7 @@ class KaraokeOptions extends Component {
               </div>
               <div className="form-group">
                 <label className="col-xs-4 control-label">
-                  {t("ENGINESONGPOLLTIMEOUT")}
+                  {this.props.t("ENGINESONGPOLLTIMEOUT")}
                 </label>
                 <div className="col-xs-6">
                   <input
@@ -400,7 +399,7 @@ class KaraokeOptions extends Component {
 
               <div className="form-group">
                 <label className="col-xs-4 control-label">
-                  {t("ENGINEFREEUPVOTES")}
+                  {this.props.t("ENGINEFREEUPVOTES")}
                 </label>
                 <div className="col-xs-6">
                   <Switch idInput="Karaoke.Quota.FreeUpVote" handleChange={this.onChange}

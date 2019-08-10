@@ -110,7 +110,6 @@ class KaraLine extends Component {
   }
 
   render() {
-    const t = this.props.t;
     var kara = this.props.kara;
     var scope = this.props.scope;
     var idPlaylist = this.props.idPlaylist;
@@ -138,24 +137,24 @@ class KaraLine extends Component {
                   : <i className="far fa-square"></i>}
                 </span> : null}
             <div className="infoDiv">
-              {scope === 'admin' || !is_touch_device() ? <button title={t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
+              {scope === 'admin' || !is_touch_device() ? <button title={this.props.t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
                 style={this.state.karaDetailState ? { borderColor: '#8aa9af' } : {}} onClick={this.toggleKaraDetail}
               >
                 <i className="fas fa-info-circle"></i>
               </button> : null}
               {scope === 'public' && this.props.logInfos.role !== 'guest' ?
-                <button title={t('TOOLTIP_FAV')} onClick={this.makeFavorite}
+                <button title={this.props.t('TOOLTIP_FAV')} onClick={this.makeFavorite}
                   className={"makeFav btn-sm btn btn-action "
                     + (is_touch_device() ? 'mobile' : '')
                     + (kara.flag_favorites || idPlaylist === -5 ? 'currentFav' : '')}>
                     <i className="fas fa-star"></i>
                 </button> : null}
-              {scope === 'admin' && idPlaylist > 0 ? <button title={t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara" 
+              {scope === 'admin' && idPlaylist > 0 ? <button title={this.props.t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara" 
                 onClick={this.playKara}><i className="fas fa-play"></i></button> : null}
               {scope !== 'admin' && this.props.flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? 'currentLike' : ''} 
                 onClick={this.likeKara}><i className="fas fa-thumbs-up"></i></button> : null}
               {scope !== 'admin' && kara.username == this.props.logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
-                <button title={t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
+                <button title={this.props.t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
             </div>
             <div className="contentDiv">
               <div>{buildKaraTitle(kara)}</div>
@@ -176,7 +175,7 @@ class KaraLine extends Component {
                   return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
                 })}
                 {kara.upvotes ?
-                  <div className="tag likeCount" title={t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
+                  <div className="tag likeCount" title={this.props.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
                     {kara.upvotes}<i className="glyphicon glyphicon-heart"></i>
                   </div> : null
                 }

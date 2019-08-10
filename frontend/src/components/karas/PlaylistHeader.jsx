@@ -305,7 +305,6 @@ class PlaylistHeader extends Component {
   }
 
   render() {
-    const t = this.props.t;
     return (
       <React.Fragment>
         {this.props.scope !== "public" || this.props.side !== 1 ?
@@ -313,7 +312,7 @@ class PlaylistHeader extends Component {
             {this.props.scope === "admin" || this.props.mode !== 1 ?
               <div className={(this.props.scope !== "public" ? "col-lg-8 col-md-7 col-sm-6 col-xs-6 " : "") + "plSelect"}>
                 {this.props.scope === "admin" && this.props.idPlaylist !== -4 ?
-                  <button title={t("PLAYLIST_COMMANDS")} onClick={this.props.togglePlaylistCommands}
+                  <button title={this.props.t("PLAYLIST_COMMANDS")} onClick={this.props.togglePlaylistCommands}
                     className={"btn btn-default pull-left showPlaylistCommands" + (this.props.playlistCommands ? " btn-primary" : "")}>
                     <i className="fas fa-wrench"></i>
                   </button> : null
@@ -340,10 +339,10 @@ class PlaylistHeader extends Component {
                 {this.props.idPlaylist > 0 ?
                   <div className="controlsContainer">
                     <div className="btn-group plCommands controls">
-                      <button title={t("PLAYLIST_SHUFFLE")} className="btn btn-default" name="shuffle" onClick={this.shuffle}>
+                      <button title={this.props.t("PLAYLIST_SHUFFLE")} className="btn btn-default" name="shuffle" onClick={this.shuffle}>
                         <i className="fas fa-random"></i>
                       </button>
-                      <button title={t("PLAYLIST_SMART_SHUFFLE")} className="btn btn-default" name="smartShuffle" onClick={this.smartShuffle}>
+                      <button title={this.props.t("PLAYLIST_SMART_SHUFFLE")} className="btn btn-default" name="smartShuffle" onClick={this.smartShuffle}>
                         <i className="fas fa-random"></i>
                       </button>
                     </div>
@@ -378,11 +377,11 @@ class PlaylistHeader extends Component {
                         value={this.state.tagType}>
                         {tagsTypesList.map(function (val) {
                           if (val === 'DETAILS_SERIE') {
-                            return <option key={val} value='serie'>{t(val)}</option>
+                            return <option key={val} value='serie'>{this.props.t(val)}</option>
                           } else if (val === 'DETAILS_YEAR') {
-                            return <option key={val} value='year'>{t(val)}</option>
+                            return <option key={val} value='year'>{this.props.t(val)}</option>
                           } else {
-                            return <option key={val} value={val.replace('BLCTYPE_', '')}>{t(val)}</option>
+                            return <option key={val} value={val.replace('BLCTYPE_', '')}>{this.props.t(val)}</option>
                           }
                         })}
                       </select>
@@ -396,13 +395,13 @@ class PlaylistHeader extends Component {
                       </select>
                     </span>
                   </span>
-                  <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="glyphicon glyphicon-filter"></i> {t("FILTER")}</a>
+                  <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="glyphicon glyphicon-filter"></i> {this.props.t("FILTER")}</a>
                 </li>
                 <li className={this.state.activeFilter === 1 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(1)}>
-                  <i className="glyphicon glyphicon-sort-by-alphabet"></i> {t("VIEW_STANDARD")}</a></li>
-                <li className={this.state.activeFilter === 2 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(2)}><i className="glyphicon glyphicon-star"></i> {t("VIEW_FAVORITES")}</a></li>
-                <li className={this.state.activeFilter === 3 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(3, "recent")}><i className="glyphicon glyphicon-time"></i> {t("VIEW_RECENT")}</a></li>
-                <li className={this.state.activeFilter === 4 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(4, "requested")}><i className="glyphicon glyphicon-fire"></i> {t("VIEW_POPULAR")}</a></li>
+                  <i className="glyphicon glyphicon-sort-by-alphabet"></i> {this.props.t("VIEW_STANDARD")}</a></li>
+                <li className={this.state.activeFilter === 2 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(2)}><i className="glyphicon glyphicon-star"></i> {this.props.t("VIEW_FAVORITES")}</a></li>
+                <li className={this.state.activeFilter === 3 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(3, "recent")}><i className="glyphicon glyphicon-time"></i> {this.props.t("VIEW_RECENT")}</a></li>
+                <li className={this.state.activeFilter === 4 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(4, "requested")}><i className="glyphicon glyphicon-fire"></i> {this.props.t("VIEW_POPULAR")}</a></li>
 
               </ul>
             </div>

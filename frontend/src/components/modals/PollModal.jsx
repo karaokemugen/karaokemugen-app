@@ -26,7 +26,6 @@ class PollModal extends Component {
     }
 
     render() {
-        const t = this.props.t;
         return (
             this.props.pollModal ?
                 <div className="modal modalPage" id="pollModal">
@@ -34,7 +33,7 @@ class PollModal extends Component {
                         <div className="modal-content">
                             <ul className="nav nav-tabs nav-justified modal-header">
                                 <li className="modal-title active">
-                                    <a style={{ fontWeight: 'bold' }}>{t("POLLTITLE")}</a>
+                                    <a style={{ fontWeight: 'bold' }}>{this.props.t("POLLTITLE")}</a>
                                 </li>
                                 <button className="closeModal btn btn-action" onClick={this.props.closePollModal}></button>
                                 <span className="timer"></span>

@@ -492,8 +492,6 @@ class Playlist extends Component {
       );
     });
 
-
-    const t = this.props.t;
     return this.props.scope === "public" &&
       this.props.side === 1 && this.props.config &&
       this.props.config.Frontend.Mode === 1 ? (
@@ -559,7 +557,7 @@ class Playlist extends Component {
                     this.state.idPlaylist === -1 &&
                     this.state.data.infos.count === this.state.data.infos.from + this.state.maxBeforeUpdate ? (
                       <li className="list-group-item karaSuggestion" onClick={this.karaSuggestion}>
-                        {t("KARA_SUGGESTION_MAIL")}
+                        {this.props.t("KARA_SUGGESTION_MAIL")}
                       </li>
                     ) : null}
                 </React.Fragment> :
@@ -574,7 +572,7 @@ class Playlist extends Component {
             <div className="plBrowse">
               <button
                 type="button"
-                title={t("GOTO_TOP")}
+                title={this.props.t("GOTO_TOP")}
                 className="btn btn-sm btn-action"
                 onClick={() => this.playlistRef.current.scrollTo(0, 5)}
               >
@@ -582,7 +580,7 @@ class Playlist extends Component {
               </button>
               <button
                 type="button"
-                title={t("GOTO_PLAYING")}
+                title={this.props.t("GOTO_PLAYING")}
                 className="btn btn-sm btn-action"
                 onClick={this.scrollToPlaying}
                 action="goTo"
@@ -592,7 +590,7 @@ class Playlist extends Component {
               </button>
               <button
                 type="button"
-                title={t("GOTO_BOTTOM")}
+                title={this.props.t("GOTO_BOTTOM")}
                 className="btn btn-sm btn-action"
                 onClick={this.scrollToBottom}
               >

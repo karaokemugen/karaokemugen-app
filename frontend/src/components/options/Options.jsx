@@ -21,7 +21,6 @@ class Options extends Component {
   }
 
   render() {
-    const t = this.props.t;
     return (
       <>
         <div className="col-lg-2 col-xs-0" />
@@ -31,13 +30,13 @@ class Options extends Component {
           <form className="form-horizontal" id="settings">
             <ul className="nav nav-tabs nav-justified">
               <li className={"modal-title " + (this.state.activeView === 1 ? "active" : "")}>
-                <a onClick={() => this.setState({activeView: 1})}>{t("SETTINGS_PLAYER")}</a>
+                <a onClick={() => this.setState({activeView: 1})}>{this.props.t("SETTINGS_PLAYER")}</a>
               </li>
               <li className={"modal-title " + (this.state.activeView === 2 ? "active" : "")}>
-                <a onClick={() => this.setState({activeView: 2})}>{t("SETTINGS_KARAOKE")}</a>
+                <a onClick={() => this.setState({activeView: 2})}>{this.props.t("SETTINGS_KARAOKE")}</a>
               </li>
               <li className={"modal-title " + (this.state.activeView === 3 ? "active" : "")}>
-                <a onClick={() => this.setState({activeView: 3})}>{t("SETTINGS_INTERFACE")}</a>
+                <a onClick={() => this.setState({activeView: 3})}>{this.props.t("SETTINGS_INTERFACE")}</a>
               </li>
             </ul>
 

@@ -44,7 +44,6 @@ class BlacklistCriterias extends Component {
     }
 
     render() {
-        const t = this.props.t;
         var types = [];
         this.props.data.forEach(element => {
             if (!types.includes(element.type)) types.push(element.type);
@@ -56,7 +55,7 @@ class BlacklistCriterias extends Component {
                     <span id="blacklistCriteriasInputs" className="list-group-item" style={{ padding: "10px" }}>
                         <select id="bcType" className="input-sm form-control" onChange={e => this.setState({ bcType: e.target.value })}>
                             {listTypeBlc.map((value) => {
-                                return <option key={value} value={value.replace('BLCTYPE_', '')}>{t(value)}</option>
+                                return <option key={value} value={value.replace('BLCTYPE_', '')}>{this.props.t(value)}</option>
                             })
                             }
                         </select>
@@ -76,17 +75,17 @@ class BlacklistCriterias extends Component {
                 }
                 {types.map((type) => {
                     return <React.Fragment key={type}>
-                        <li className="list-group-item liType" type={type}>{t('BLCTYPE_' + type)}</li>
+                        <li className="list-group-item liType" type={type}>{this.props.t('BLCTYPE_' + type)}</li>
                         {this.props.data.map(criteria => {
                             return (criteria.type === type ?
                                 <li key={criteria.blcriteria_id} className="list-group-item liTag">
                                     <div className="actionDiv">
-                                        <button title={t('TOOLTIP_DELETECRITERIA')} name="deleteCriteria"
+                                        <button title={this.props.t('TOOLTIP_DELETECRITERIA')} name="deleteCriteria"
                                             className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id)}>
                                             <i className="fas fa-minus"></i>
                                         </button>
                                     </div>
-                                    <div className="typeDiv">{t('BLCTYPE_' + criteria.type)}</div>
+                                    <div className="typeDiv">{this.props.t('BLCTYPE_' + criteria.type)}</div>
                                     <div className="contentDiv">{criteria.type == 1001 ? buildKaraTitle(criteria.value[0]) : criteria.value}</div>
                                 </li> : null
                             )

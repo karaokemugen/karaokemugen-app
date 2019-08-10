@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { withTranslation } from "react-i18next";
 import KmAppWrapperDecorator from "./decorators/KmAppWrapperDecorator"
 import PlaylistMainDecorator from "./decorators/PlaylistMainDecorator";
 import KmAppBodyDecorator from "./decorators/KmAppBodyDecorator"
@@ -48,7 +47,6 @@ class AdminPage extends Component {
   }
 
   render() {
-    const t = this.props.t;
     return (
       <div id="adminPage">
         {this.state.onlineStatsModal ?
@@ -128,4 +126,4 @@ class AdminPage extends Component {
   }
 }
 
-export default withTranslation()(AdminPage);
+export default AdminPage;

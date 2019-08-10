@@ -21,13 +21,12 @@ class InterfaceOptions extends Component {
   }
 
   render() {
-    const t = this.props.t;
     var settings = this.state.settings;
     return (
       <React.Fragment>
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {t("WEBAPPMODE")}
+            {this.props.t("WEBAPPMODE")}
           </label>
           <div className="col-xs-6">
             <select
@@ -37,16 +36,16 @@ class InterfaceOptions extends Component {
               onChange={this.onChange}
               value={settings["Frontend.Mode"]}
             >
-              <option value="0">{t("WEBAPPMODE_CLOSED")}</option>
-              <option value="1">{t("WEBAPPMODE_LIMITED")}</option>
-              <option value="2">{t("WEBAPPMODE_OPEN")}</option>
+              <option value="0">{this.props.t("WEBAPPMODE_CLOSED")}</option>
+              <option value="1">{this.props.t("WEBAPPMODE_LIMITED")}</option>
+              <option value="2">{this.props.t("WEBAPPMODE_OPEN")}</option>
             </select>
           </div>
         </div>
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {t("SERIE_NAME_MODE")}
+            {this.props.t("SERIE_NAME_MODE")}
           </label>
           <div className="col-xs-6">
             <select
@@ -56,17 +55,17 @@ class InterfaceOptions extends Component {
               onChange={this.onChange}
               value={settings["Frontend.SeriesLanguageMode"]}
             >
-              <option value="0">{t("SERIE_NAME_MODE_ORIGINAL")}</option>
-              <option value="1">{t("SERIE_NAME_MODE_SONG")}</option>
-              <option value="2">{t("SERIE_NAME_MODE_ADMIN")}</option>
-              <option value="3">{t("SERIE_NAME_MODE_USER")}</option>
+              <option value="0">{this.props.t("SERIE_NAME_MODE_ORIGINAL")}</option>
+              <option value="1">{this.props.t("SERIE_NAME_MODE_SONG")}</option>
+              <option value="2">{this.props.t("SERIE_NAME_MODE_ADMIN")}</option>
+              <option value="3">{this.props.t("SERIE_NAME_MODE_USER")}</option>
             </select>
           </div>
         </div>
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {t("ENGINEALLOWVIEWBLACKLIST")}
+            {this.props.t("ENGINEALLOWVIEWBLACKLIST")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Frontend.Permissions.AllowViewBlacklist" handleChange={this.onChange}
@@ -76,7 +75,7 @@ class InterfaceOptions extends Component {
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {t("ENGINEALLOWVIEWBLACKLISTCRITERIAS")}
+            {this.props.t("ENGINEALLOWVIEWBLACKLISTCRITERIAS")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Frontend.Permissions.AllowViewBlacklistCriterias" handleChange={this.onChange}
@@ -86,7 +85,7 @@ class InterfaceOptions extends Component {
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {t("ENGINEALLOWVIEWWHITELIST")}
+            {this.props.t("ENGINEALLOWVIEWWHITELIST")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Frontend.Permissions.AllowViewWhitelist" handleChange={this.onChange}

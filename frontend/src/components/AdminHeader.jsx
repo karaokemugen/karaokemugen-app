@@ -94,8 +94,6 @@ class AdminHeader extends Component {
   }
 
   render() {
-    const t = this.props.t;
-
     let volume = parseInt(this.state.statusPlayer.volume);
     volume = isNaN(volume) ? 100 : volume;
 
@@ -113,7 +111,7 @@ class AdminHeader extends Component {
             {this.state.dropDownMenu ?
               <ul className="dropdown-menu">
                 <li
-                  title={t("ACCOUNT")}
+                  title={this.props.t("ACCOUNT")}
                   action="account"
                   className="btn btn-default btn-dark"
                   onClick={this.props.toggleProfileModal}
@@ -121,13 +119,13 @@ class AdminHeader extends Component {
                   <i className="fas fa-user"></i>
                 </li>
                 <li
-                  title={t("LOGOUT")} onClick={this.props.logOut}
+                  title={this.props.t("LOGOUT")} onClick={this.props.logOut}
                   className="btn btn-default btn-dark"
                 >
                   <i className="fas fa-sign-out-alt"></i>
                 </li>
                 <li
-                  title={t("SHUTDOWN")}
+                  title={this.props.t("SHUTDOWN")}
                   className="btn btn-default btn-dark"
                   onClick={this.props.powerOff}
                 >
@@ -138,7 +136,7 @@ class AdminHeader extends Component {
           </div>
 
           <button
-            title={t("MESSAGE")}
+            title={this.props.t("MESSAGE")}
             id="adminMessage"
             className="btn btn-dark messageButton"
             onClick={this.adminMessage}
@@ -147,7 +145,7 @@ class AdminHeader extends Component {
           </button>
 
           <button
-            title={t("SHOW_HIDE_SUBS")}
+            title={this.props.t("SHOW_HIDE_SUBS")}
             id="showSubs"
             namecommand={this.state.statusPlayer.showSubs ? "hideSubs" : "showSubs"}
             className="btn btn-dark subtitleButton"
@@ -165,7 +163,7 @@ class AdminHeader extends Component {
 
           <button 
             type="button"
-            title={t("MUTE_UNMUTE")}
+            title={this.props.t("MUTE_UNMUTE")}
             id="mutestatus"
             name="mute"
             className="btn btn-dark volumeButton"
@@ -184,7 +182,7 @@ class AdminHeader extends Component {
                 )
             }
             <input
-              title={t("VOLUME_LEVEL")}
+              title={this.props.t("VOLUME_LEVEL")}
               namecommand="setVolume"
               id="volume"
               defaultValue={volume}
@@ -198,18 +196,18 @@ class AdminHeader extends Component {
 
           <div className="header-group switchs">
             <RadioButton
-              title={t("SWITCH_PRIVATE")}
+              title={this.props.t("SWITCH_PRIVATE")}
               name="Karaoke.Private"
               buttons={[
                 {
-                  label:t("PRIVATE"),
+                  label:this.props.t("PRIVATE"),
                   active:this.state.privateMode,
                   activeColor:"#994240",
                   onClick:() => this.saveMode(true),
                   
                 },
                 {
-                  label:t("PUBLIC"),
+                  label:this.props.t("PUBLIC"),
                   active:!this.state.privateMode,
                   activeColor:"#57bb00",
                   onClick:() => this.saveMode(false),
@@ -218,16 +216,16 @@ class AdminHeader extends Component {
               ]}
             ></RadioButton>
               <RadioButton
-              title={t("SWITCH_OPTIONS")}
+              title={this.props.t("SWITCH_OPTIONS")}
               name="optionsButton"
               buttons={[
                 {
-                  label:t("CL_PLAYLISTS"),
+                  label:this.props.t("CL_PLAYLISTS"),
                   active:!this.props.options,
                   onClick:this.props.setOptionMode,
                 },
                 {
-                  label:t("OPTIONS"),
+                  label:this.props.t("OPTIONS"),
                   active:this.props.options,
                   onClick:this.props.setOptionMode,
                   
@@ -237,19 +235,19 @@ class AdminHeader extends Component {
           </div>
           <div className="header-group switchs">
             <RadioButton
-                title={t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN")}
+                title={this.props.t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN")}
                 name="Playlist.MysterySongs.AddedSongVisibilityAdmin"
                 orientation="vertical"
                 buttons={[
                   {
-                    label:t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL"),
+                    label:this.props.t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL"),
                     active:!this.state.songVisibilityOperator,
                     activeColor:"#57bb00",
                     onClick:() => this.saveOperatorAdd(false),
                     
                   },
                   {
-                    label:t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY"),
+                    label:this.props.t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY"),
                     active:this.state.songVisibilityOperator,
                     activeColor:"#994240",
                     onClick:() => this.saveOperatorAdd(true),
@@ -260,7 +258,7 @@ class AdminHeader extends Component {
           </div>
           <div className="header-group controls">
             <button
-              title={t("STOP_AFTER")}
+              title={this.props.t("STOP_AFTER")}
               id="stopAfter"
               namecommand="stopAfter"
               className="btn btn-danger-low"
@@ -269,7 +267,7 @@ class AdminHeader extends Component {
               <i className="fas fa-clock"></i>
             </button>
             <button
-              title={t("STOP_NOW")}
+              title={this.props.t("STOP_NOW")}
               id="stopNow"
               namecommand="stopNow"
               className="btn btn-danger"
@@ -278,7 +276,7 @@ class AdminHeader extends Component {
               <i className="fas fa-stop"></i>
             </button>
             <button
-              title={t("REWIND")}
+              title={this.props.t("REWIND")}
               id="goTo"
               namecommand="goTo"
               defaultValue="0"
@@ -289,7 +287,7 @@ class AdminHeader extends Component {
             </button>
 
             <button
-              title={t("PREVIOUS_SONG")}
+              title={this.props.t("PREVIOUS_SONG")}
               id="prev"
               namecommand="prev"
               className="btn btn-default"
@@ -298,7 +296,7 @@ class AdminHeader extends Component {
               <i className="fas fa-chevron-left"></i>
             </button>
             <button
-              title={t("PLAY_PAUSE")}
+              title={this.props.t("PLAY_PAUSE")}
               id="status"
               namecommand={this.state.statusPlayer.playerStatus === "play" ? "pause" : "play"}
               className="btn btn-primary"
@@ -311,7 +309,7 @@ class AdminHeader extends Component {
               )}
             </button>
             <button
-              title={t("NEXT_SONG")}
+              title={this.props.t("NEXT_SONG")}
               id="skip"
               namecommand="skip"
               className="btn btn-default"

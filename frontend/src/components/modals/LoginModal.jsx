@@ -107,7 +107,6 @@ class LoginModal extends Component {
     }
 
     render() {
-        const t = this.props.t;
         var loginModalClassName = readCookie('publicTuto') ? "modal modalPage" : "modal modalPage firstRun";
         return (
             <div className={loginModalClassName} id="loginModal">
@@ -115,10 +114,10 @@ class LoginModal extends Component {
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
                             <li className={"modal-title " + (this.state.activeView === 1 ? "active" : "")}>
-                                <a onClick={() => this.setState({activeView: 1})}>{t("LOGIN")}</a>
+                                <a onClick={() => this.setState({activeView: 1})}>{this.props.t("LOGIN")}</a>
                             </li>
                             <li className={"modal-title " + (this.state.activeView === 2 ? "active" : "")}>
-                                <a onClick={() => this.setState({activeView: 2})}>{t("NEW_ACCOUNT")}</a>
+                                <a onClick={() => this.setState({activeView: 2})}>{this.props.t("NEW_ACCOUNT")}</a>
                             </li>
                             <button className="closeModal btn btn-action" onClick={this.props.toggleLoginModal}></button>
                         </ul>
@@ -128,15 +127,15 @@ class LoginModal extends Component {
                                 {this.props.scope !== 'admin' && this.props.config.Frontend.Mode === 2 ? 
                                     <React.Fragment>
                                         <div className="tour hidden">
-                                            {t("FIRST_PUBLIC_RUN_WELCOME")}
+                                            {this.props.t("FIRST_PUBLIC_RUN_WELCOME")}
                                         </div>
                                         <div className="modal-message tour">
                                             <button className="btn btn-default tour" onClick={() => startIntro('public')}>
-                                                {t("FOLLOW_TOUR")}
+                                                {this.props.t("FOLLOW_TOUR")}
                                             </button>
                                         </div>
                                         <div className="tour">
-                                            {t("OR")}
+                                            {this.props.t("OR")}
                                         </div>
                                     </React.Fragment> : null
                                 }
@@ -144,20 +143,20 @@ class LoginModal extends Component {
                                     <React.Fragment>
                                         <div className="modal-message">
                                             <button className="btn btn-default guest" onClick={this.loginGuest}>
-                                                {t("GUEST_CONTINUE")}
+                                                {this.props.t("GUEST_CONTINUE")}
                                             </button>
                                         </div>
                                         <div className="loginRelated">
-                                            {t("OR")}
+                                            {this.props.t("OR")}
                                         </div>
                                     </React.Fragment> : null
                                 }
                                 <div className="modal-message loginRelated">
-                                    <input type="text" id="login" name="modalLogin" placeholder={t("NICKNAME")}
+                                    <input type="text" id="login" name="modalLogin" placeholder={this.props.t("NICKNAME")}
                                         defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
-                                    <input type="text" id="loginServ" name="modalLoginServ" placeholder={t("INSTANCE_NAME_SHORT")}
+                                    <input type="text" id="loginServ" name="modalLoginServ" placeholder={this.props.t("INSTANCE_NAME_SHORT")}
                                         defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} />
-                                    <input type="password" className={this.state.redBorders} id="password" name="modalPassword" placeholder={t("PASSWORD")}
+                                    <input type="password" className={this.state.redBorders} id="password" name="modalPassword" placeholder={this.props.t("PASSWORD")}
                                         defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
                                 </div>
                                 <div className="loginRelated"></div>
@@ -169,28 +168,28 @@ class LoginModal extends Component {
                             </div> :
                             <div id="nav-signup" className="modal-body">
                                 <div>
-                                    <input type="text" id="signupLogin" className={this.state.errorBackground} name="modalLogin" placeholder={t("NICKNAME")}
+                                    <input type="text" id="signupLogin" className={this.state.errorBackground} name="modalLogin" placeholder={this.props.t("NICKNAME")}
                                         defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
-                                    <input type="text" id="signupServ" name="modalLoginServ" placeholder={t("INSTANCE_NAME_SHORT")}
+                                    <input type="text" id="signupServ" name="modalLoginServ" placeholder={this.props.t("INSTANCE_NAME_SHORT")}
                                         defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} />
-                                    <input type="password" className={this.state.redBorders} id="signupPassword" name="modalPassword" placeholder={t("PASSWORD")}
+                                    <input type="password" className={this.state.redBorders} id="signupPassword" name="modalPassword" placeholder={this.props.t("PASSWORD")}
                                         required onKeyPress={this.onKeyPress} defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
-                                    <input type="password" className={this.state.redBorders} id="signupPasswordConfirmation" name="modalPassword" placeholder={t("PASSWORDCONF")}
+                                    <input type="password" className={this.state.redBorders} id="signupPasswordConfirmation" name="modalPassword" placeholder={this.props.t("PASSWORDCONF")}
                                         required onKeyPress={this.onKeyPress} defaultValue={this.state.passwordConfirmation} required onChange={(event) => this.setState({ passwordConfirmation: event.target.value })} />
                                     {this.props.scope === 'admin' ?
                                         <React.Fragment>
                                             <br />
                                             <select className="form-control" id="signupRole" name="modalRole"
                                                 defaultValue={this.state.role} onChange={(event) => this.setState({ role: event.target.value })} >
-                                                <option value="user">{t("USER")}</option>
-                                                <option value="admin">{t("ADMIN")}</option>
+                                                <option value="user">{this.props.t("USER")}</option>
+                                                <option value="admin">{this.props.t("ADMIN")}</option>
                                             </select>
                                         </React.Fragment> : null
                                     }
                                 </div>
                                 <div>
                                     <button id="signup" type="button" className="btn btn-default login" onClick={this.signup}>
-                                        {t("SIGN_UP")}
+                                        {this.props.t("SIGN_UP")}
                                     </button>
                                 </div>
                             </div>
