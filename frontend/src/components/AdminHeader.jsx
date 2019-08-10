@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
-import { expand, getSocket } from "./tools";
+import { expand, getSocket, callModal } from "./tools";
 import axios from "axios";
 import RadioButton from "./generic/RadioButton";
 import KmAppHeaderDecorator from "./decorators/KmAppHeaderDecorator"
@@ -65,7 +65,7 @@ class AdminHeader extends Component {
   }
 
   adminMessage() {
-    this.props.callModal(
+    callModal(
       "custom",
       "Message indispensable",
       '<select class="form-control" name="destination"><option value="screen">' +

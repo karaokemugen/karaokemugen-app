@@ -2,7 +2,7 @@ import { Switch, Route } from 'react-router'
 import WelcomePage from './components/WelcomePage';
 import AdminPage from './components/AdminPage';
 import PublicPage from './components/PublicPage';
-import React, { Component, Suspense } from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from "react-router-dom";
 import i18n from './components/i18n';
@@ -10,11 +10,9 @@ import NotFoundPage from './components/NotfoundPage'
 import langs from "langs";
 import axios from "axios";
 import { readCookie, parseJwt, createCookie, eraseCookie, getSocket } from "./components/tools"
-import Modal from './components/modals/Modal';
 class App extends Component {
     constructor(props) {
         super(props);
-        window.callModal = this.callModal;
         this.state = {
             navigatorLanguage: this.getNavigatorLanguage(),
             logInfos: this.getLogInfos(),
@@ -119,10 +117,7 @@ class App extends Component {
         return navigatorLanguage;
     }
 
-    callModal(type, title, message, callback, placeholder) {
-        ReactDOM.render(<Suspense fallback={<div>loading...</div>}><Modal type={type} title={title} message={message}
-            callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('modal'));
-    }
+
 
     powerOff() {
         axios.post("/api/admin/shutdown");

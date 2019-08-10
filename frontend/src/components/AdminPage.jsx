@@ -66,7 +66,6 @@ class AdminPage extends Component {
           <AdminHeader 
             config={this.props.settings.config}
             toggleProfileModal={() => this.setState({ profileModal: !this.state.profileModal })}
-            callModal={window.callModal}
             setOptionMode={() => this.setState({ options: !this.state.options })}
             powerOff={this.props.powerOff}
             logOut={this.props.logOut}

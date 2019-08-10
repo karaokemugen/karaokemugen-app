@@ -4,6 +4,7 @@ import iso639 from 'iso-639';
 import axios from 'axios';
 import Autocomplete from '../generic/Autocomplete'
 import blankAvatar from '../../assets/blank.png'
+import { displayMessage, callModal } from '../tools';
 require("babel-polyfill");
 class ProfilModal extends Component {
     constructor(props) {
@@ -67,7 +68,7 @@ class ProfilModal extends Component {
     }
 
     profileConvert() {
-        window.callModal('custom', this.props.t('PROFILE_CONVERT'),
+        callModal('custom', this.props.t('PROFILE_CONVERT'),
             '<label>' + this.props.t('INSTANCE_NAME') + '</label>'
             + '<input type="text"  name="modalLoginServ" value="' + this.props.settingsOnline.Host + '"//>'
             + '<label>' + this.props.t('PROFILE_PASSWORD_AGAIN') + '</label>'
@@ -81,7 +82,7 @@ class ProfilModal extends Component {
 
     profileDelete() {
         var t = this.props.t;
-        window.callModal('custom', this.props.t('PROFILE_ONLINE_DELETE'),
+        callModal('custom', this.props.t('PROFILE_ONLINE_DELETE'),
             '<label>' + this.props.t('PROFILE_PASSWORD_AGAIN') + '</label>'
             + '<input type="password" placeholder="' + this.props.t('PASSWORD') + '" className="form-control" name="password">', function (data) {
                 var response = axios.delete('/api/public/myaccount/online', {data:{ password: data.password }});
@@ -98,7 +99,7 @@ class ProfilModal extends Component {
             var file = input.files[0];
             var fr = new FileReader();
             fr.onload = () => {
-                window.callModal('confirm', this.props.t('CONFIRM_FAV_IMPORT'), '', function (confirm) {
+                callModal('confirm', this.props.t('CONFIRM_FAV_IMPORT'), '', function (confirm) {
                     if (confirm) {
                         var data = {};
                         data['favorites'] = fr['result'];

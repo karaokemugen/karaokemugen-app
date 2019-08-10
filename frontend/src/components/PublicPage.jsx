@@ -15,7 +15,7 @@ import ProfilModal from "./modals/ProfilModal";
 import RadioButton from "./generic/RadioButton";
 import axios from "axios";
 import ProgressBar from "./karas/ProgressBar";
-import {buildKaraTitle, getSocket, is_touch_device,displayMessage} from './tools';
+import {buildKaraTitle, getSocket, is_touch_device,displayMessage,callModal} from './tools';
 
 class PublicPage extends Component {
   constructor(props) {
@@ -85,7 +85,7 @@ class PublicPage extends Component {
     if (response.data.data && response.data.data.content && response.data.data.content[0]) {
       var chosenOne = response.data.data.content[0].kid;
       var response2 = await axios.get('/api/public/karas/' + chosenOne);
-      window.callModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
+      callModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
         axios.post('/api/public/karas/' + chosenOne, { requestedby: this.props.logInfos.username })
       }, 'lucky');
     }

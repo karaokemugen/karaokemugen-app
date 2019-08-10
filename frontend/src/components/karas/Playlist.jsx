@@ -4,7 +4,7 @@ import PlaylistHeader from "./PlaylistHeader";
 import KaraDetail from "./KaraDetail";
 import KaraLine from "./KaraLine";
 import axios from "axios";
-import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage} from "../tools";
+import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage, callModal} from "../tools";
 import BlacklistCriterias from "./BlacklistCriterias";
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 
@@ -186,7 +186,7 @@ class Playlist extends Component {
   }
 
   editNamePlaylist() {
-    window.callModal('prompt', this.props.t('CL_RENAME_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', newName => {
+    callModal('prompt', this.props.t('CL_RENAME_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', newName => {
       axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist, { name: newName, flag_visible: this.props.playlistInfo.flag_public });
       var playlistInfo = this.state.playlistInfo;
       playlistInfo.name = newName;
@@ -419,7 +419,7 @@ class Playlist extends Component {
   }
 
   karaSuggestion() {
-    window.callModal('prompt', this.props.t('KARA_SUGGESTION_NAME'), '', function (text) {
+    callModal('prompt', this.props.t('KARA_SUGGESTION_NAME'), '', function (text) {
       axios.post('/api/public/karas/suggest', { karaName: text }).then(response => {
         setTimeout(() => {
           displayMessage('info', this.props.t('KARA_SUGGESTION_INFO'),

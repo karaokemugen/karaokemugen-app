@@ -1,5 +1,8 @@
 import axios from 'axios';
 import io from 'socket.io-client';
+import Modal from './modals/Modal';
+import React, { Suspense } from 'react';
+import ReactDOM from 'react-dom';
 
 const socket = io();
 
@@ -176,3 +179,8 @@ export function displayMessage (type, title, message, time) {
 		
 	});
 };
+
+export function callModal(type, title, message, callback, placeholder) {
+	ReactDOM.render(<Suspense fallback={<div>loading...</div>}><Modal type={type} title={title} message={message}
+		callback={callback} placeholder={placeholder} /></Suspense>, document.getElementById('modal'));
+}

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
-import { is_touch_device, secondsTimeSpanToHMS, displayMessage } from "../tools";
+import { is_touch_device, secondsTimeSpanToHMS, displayMessage, callModal } from "../tools";
 import axios from "axios";
 
 class KaraDetail extends Component {
@@ -95,7 +95,7 @@ class KaraDetail extends Component {
           extract = extract.replace(/\n/g, "<br /><br />");
           extract = extract.replace(serie, "<b>" + serie + "</b>");
           extract = extract.replace("anime", "<b>anime</b>");
-          window.callModal(
+          callModal(
             "alert",
             '<a target="_blank" href="' +
             externalUrl +
@@ -147,7 +147,7 @@ class KaraDetail extends Component {
   async showFullLyrics() {
     var response = await axios.get("/api/public/karas/" + this.state.kara.kid + "/lyrics");
     if (is_touch_device()) {
-      window.callModal('alert', this.props.t('LYRICS'), '<center>' + response.data.data.join('<br/>') + '</center');
+      callModal('alert', this.props.t('LYRICS'), '<center>' + response.data.data.join('<br/>') + '</center');
     } else {
       this.setState({ lyrics: response.data.data, showLyrics:true });
       this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });

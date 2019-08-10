@@ -3,7 +3,7 @@ import { withTranslation } from "react-i18next";
 import axios from "axios";
 import getLucky from "../../assets/clover.png"
 import ActionsButtons from "./ActionsButtons";
-import { buildKaraTitle, displayMessage } from '../tools';
+import { buildKaraTitle, displayMessage, callModal } from '../tools';
 
 var tagsTypesList = [
   'DETAILS_SERIE',
@@ -42,11 +42,11 @@ class PlaylistHeader extends Component {
   }
 
   addRandomKaras() {
-    window.callModal('prompt', this.props.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
+    callModal('prompt', this.props.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
       axios.get(this.props.getPlaylistUrl(), { random: nbOfRandoms }).then(randomKaras => {
         if (randomKaras.content.length > 0) {
           let textContent = randomKaras.content.map(e => buildKaraTitle(e)).join('<br/><br/>');
-          window.callModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD') + '<br/><br/>' + textContent, () => {
+          callModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD') + '<br/><br/>' + textContent, () => {
             var karaList = randomKaras.content.map(a => {
               return a.kid;
             }).join();
@@ -59,7 +59,7 @@ class PlaylistHeader extends Component {
   }
 
   addPlaylist() {
-    window.callModal('prompt', this.props.t('CL_CREATE_PLAYLIST'), '', playlistName => {
+    callModal('prompt', this.props.t('CL_CREATE_PLAYLIST'), '', playlistName => {
       axios.post('/api/admin/playlists', { name: playlistName, flag_visible: false, flag_current: false, flag_public: false }).then(response => {
         this.props.changeIdPlaylist(response.data.data);
       });
@@ -68,7 +68,7 @@ class PlaylistHeader extends Component {
   }
 
   deletePlaylist() {
-    window.callModal('confirm', this.props.t('CL_DELETE_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', confirm => {
+    callModal('confirm', this.props.t('CL_DELETE_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', confirm => {
       if (confirm) {
         axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist);
       }
@@ -89,7 +89,7 @@ class PlaylistHeader extends Component {
     });
     userlistStr += '</div>';
 
-    window.callModal('custom', this.props.t('START_FAV_MIX'),
+    callModal('custom', this.props.t('START_FAV_MIX'),
       userlistStr + '<input type="text"name="duration" placeholder="200 (min)"/>', data => {
         if (!data.duration) data.duration = 200;
         axios.post('/api/admin/automix', data).then(response => {
