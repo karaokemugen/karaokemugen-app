@@ -98,7 +98,6 @@ deploy_win:
     - mkdir build_win
     - cd build_win
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win.tar.gz | tar xvz
-    - cd ../..
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
     - cp -f ../config.sample.yml .
     - cp -Rf ../samples .
@@ -127,8 +126,6 @@ deploy_osx:
     - cd build_mac
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_macos.tar.gz | tar xvz
     - chmod -R +x app/bin
-    - rm -f archive.tar
-    - cd ../..
     - cp -f ../bin/karaokemugen-app KaraokeMugen
     - cp -f ../config.sample.yml .
     - cp -Rf ../samples .
