@@ -86,8 +86,7 @@ class LoginModal extends Component {
             if (this.props.scope === 'admin') {
                 data.role = this.state.role;
             }
-            var apiPublic = this.props.scope === 'welcome' ? 'public' : this.props.scope;
-            axios.post('/api/' + apiPublic + '/users', data)
+            axios.post('/api/' + this.props.scope + '/users', data)
                 .then(response => {
                     displayMessage('info', 'Info', this.props.t('CL_NEW_USER', username));
                     this.setState({ redBorders: '' });

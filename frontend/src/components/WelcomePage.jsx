@@ -156,7 +156,7 @@ class WelcomePage extends Component {
 
   loginClick() {
     if (!this.props.logInfos.token) {
-      this.props.loginModal("welcome", null);
+      this.props.loginModal("public", null);
     } else {
       this.props.profileModal(true);
     }
@@ -176,7 +176,7 @@ class WelcomePage extends Component {
             scope={
               this.props.admpwd && this.props.settings.config.App.FirstRun
                 ? "admin"
-                : "welcome"
+                : "public"
             }
             config={this.props.settings.config}
             admpwd={this.props.admpwd}
