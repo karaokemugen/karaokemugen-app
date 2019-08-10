@@ -20,7 +20,8 @@ class Playlist extends Component {
       searchValue: undefined,
       searchCriteria: undefined,
       playlistCommands: false,
-      maxBeforeUpdate: 400
+      maxBeforeUpdate: 400,
+      getPlaylistInProgress: false
     };
     this.getIdPlaylist = this.getIdPlaylist.bind(this);
     this.changeIdPlaylist = this.changeIdPlaylist.bind(this);
@@ -192,12 +193,14 @@ class Playlist extends Component {
       this.setState({ playlistInfo: playlistInfo });
     });
   }
-
+  
   async getPlaylistInfo() {
-    var response = await axios.get(
-      "/api/" + this.props.scope + "/playlists/" + this.state.idPlaylist
-    );
-    this.setState({ playlistInfo: response.data.data });
+    if (!this.state.getPlaylistInProgress) {
+      var response = await axios.get(
+        "/api/" + this.props.scope + "/playlists/" + this.state.idPlaylist
+      );
+      this.setState({ playlistInfo: response.data.data });
+    }
   }
 
   getPlaylistUrl(idPlaylistParam) {
@@ -227,6 +230,7 @@ class Playlist extends Component {
   }
 
   async getPlaylist(searchType) {
+    this.setState({getPlaylistInProgress: true});
     var url = this.getPlaylistUrl();
     if (this.state.idPlaylist >= 0) {
       this.getPlaylistInfo();
@@ -255,7 +259,7 @@ class Playlist extends Component {
     var response = await axios.get(url);
     this.playlistRef.current.scrollTo(0, 1);
     var karas = response.data.data;
-    this.setState({ data: karas });
+    this.setState({ data: karas, getPlaylistInProgress: false });
   }
 
   playingUpdate(data) {
