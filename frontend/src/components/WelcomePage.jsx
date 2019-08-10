@@ -4,7 +4,7 @@ import axios from "axios";
 import ProfilModal from "./modals/ProfilModal";
 import LoginModal from "./modals/LoginModal";
 import logo from "../assets/Logo-final-fond-transparent.png";
-import Autocomplete from "./Autocomplete";
+import Autocomplete from "./generic/Autocomplete";
 import { expand } from "./tools";
 class WelcomePage extends Component {
   constructor(props) {

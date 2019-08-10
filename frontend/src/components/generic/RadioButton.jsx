@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import '../styles/RadioButton.scss';
+import './RadioButton.scss';
 
 class RadioButton extends Component {
   constructor(props) {

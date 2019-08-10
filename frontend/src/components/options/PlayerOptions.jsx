@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
-import Switch from '../Switch';
+import Switch from '../generic/Switch';
 import axios from 'axios';
 import { dotify } from '../tools';
 

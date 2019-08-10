@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
 import { expand, getSocket } from "./tools";
 import axios from "axios";
-import RadioButton from "./RadioButton.jsx";
+import RadioButton from "./generic/RadioButton";
 import KmAppHeaderDecorator from "./decorators/KmAppHeaderDecorator"
 
 class AdminHeader extends Component {

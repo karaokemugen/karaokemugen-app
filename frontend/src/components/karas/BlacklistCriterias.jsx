@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import axios from "axios";
-import Autocomplete from '../Autocomplete'
+import Autocomplete from '../generic/Autocomplete'
 import { buildKaraTitle } from '../tools';
 
 var listTypeBlc = [

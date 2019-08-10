@@ -12,7 +12,7 @@ import webappClose from "../assets/dame.jpg"
 import HelpModal from "./modals/HelpModal";
 import LoginModal from "./modals/LoginModal";
 import ProfilModal from "./modals/ProfilModal";
-import RadioButton from "./RadioButton.jsx";
+import RadioButton from "./generic/RadioButton";
 import axios from "axios";
 import ProgressBar from "./karas/ProgressBar";
 import {buildKaraTitle, getSocket, is_touch_device} from './tools';

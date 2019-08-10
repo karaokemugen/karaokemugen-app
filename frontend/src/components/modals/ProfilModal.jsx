@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import iso639 from 'iso-639';
 import axios from 'axios';
-import Autocomplete from '../Autocomplete'
+import Autocomplete from '../generic/Autocomplete'
 import blankAvatar from '../../assets/blank.png'
 require("babel-polyfill");
 class ProfilModal extends Component {
