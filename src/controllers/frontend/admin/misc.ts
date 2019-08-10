@@ -6,7 +6,6 @@ import { getConfig } from "../../../lib/utils/config";
 import { editSetting } from "../../../utils/config";
 import { getDisplays } from "../../../utils/displays";
 import { OKMessage, errMessage } from "../../common";
-import { emitWS } from "../../../lib/utils/ws";
 import { checkForUpdates } from "../../../services/appUpdates";
 
 
@@ -210,7 +209,6 @@ export default function adminMiscController(router: Router) {
 					? JSON.parse(req.body.setting)
 					: req.body.setting;
 				const publicSettings = await editSetting(setting);
-				emitWS('settingsUpdated',publicSettings);
 				res.json(OKMessage(publicSettings,'SETTINGS_UPDATED'));
 			} catch(err) {
 				res.status(500).json(errMessage('SETTINGS_UPDATE_ERROR',err));
