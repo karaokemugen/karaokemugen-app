@@ -93,7 +93,7 @@ export async function initEngine() {
 		profile('Init');
 	}
 	// This is done later because it's not important.
-	if (conf.System.JinglesAutoUpdate) updateJingles();
+	if (conf.Online.JinglesUpdate) updateJingles();
 }
 
 export async function exit(rc: any) {

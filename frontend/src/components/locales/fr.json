@@ -339,5 +339,6 @@
 	"UPDATE_BANNER_MESSAGE": "Vous avez la version {{actualVersion}}. Une nouvelle version est disponible en téléchargement :",
 	"UPDATE_BANNER_GET_IT": "Plus d'informations...",
 	"UPDATE_BANNER_REMIND_ME_LATER": "Plus tard",
-	"UPDATE_BANNER_DONT_BOTHER_ME": "Ne plus m'avertir"
+	"UPDATE_BANNER_DONT_BOTHER_ME": "Ne plus m'avertir",
+	"AUTO_UPDATE_JINGLES": "Mise à jour automatique des Jingles"
 }
