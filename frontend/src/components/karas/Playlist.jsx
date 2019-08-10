@@ -429,7 +429,8 @@ class Playlist extends Component {
 
   onChangeTags(type, value) {
     var searchCriteria = (type === 'serie' || type === 'year') ? type : 'tag';
-    this.setState({searchCriteria: searchCriteria, searchValue: value}, () => this.getPlaylist("search"));
+    var stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
+    this.setState({searchCriteria: searchCriteria, searchValue: stringValue}, () => this.getPlaylist("search"));
   }
 
   onSortEnd({oldIndex, newIndex}) {

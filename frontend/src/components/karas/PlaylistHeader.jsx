@@ -25,7 +25,8 @@ class PlaylistHeader extends Component {
     super(props);
     this.state = {
       selectAllKarasChecked: false,
-      tagType: 2
+      tagType: 2,
+      activeFilter: 1
     };
     this.addRandomKaras = this.addRandomKaras.bind(this);
     this.shuffle = this.shuffle.bind(this);
@@ -36,6 +37,8 @@ class PlaylistHeader extends Component {
     this.exportPlaylist = this.exportPlaylist.bind(this);
     this.importPlaylist = this.importPlaylist.bind(this);
     this.deleteAllKaras = this.deleteAllKaras.bind(this);
+    this.getKarasList = this.getKarasList.bind(this);
+    this.onChangeTags = this.onChangeTags.bind(this);
   }
 
   addRandomKaras() {
@@ -286,6 +289,21 @@ class PlaylistHeader extends Component {
     axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle', { smartShuffle: 1 })
   }
 
+  getKarasList(activeFilter, searchType) {
+    this.setState({activeFilter: activeFilter});
+    if(activeFilter === 2 && this.props.idPlaylist !== -5) {
+      this.props.changeIdPlaylist(-5)
+    } else if (activeFilter !== 2 && this.props.idPlaylist !== -1) {
+      this.props.changeIdPlaylist(-1);
+    }
+    this.props.getPlaylist(searchType);
+  }
+
+  onChangeTags(e) {
+    this.setState({activeFilter: 5});
+    this.props.onChangeTags(this.state.tagType, e.target.value)
+  }
+
   render() {
     const t = this.props.t;
     return (
@@ -352,7 +370,7 @@ class PlaylistHeader extends Component {
           <nav className="navbar navbar-default  searchMenuContainer">
             <div className="searchMenu container" id={"searchMenu" + this.props.side}>
               <ul className="nav navbar-nav">
-                <li className="tagFilter">
+                <li className="tagFilter" className={this.state.activeFilter === 5 ? "active" : ""}>
                   <span className='value'>
                     <span>
                       <select type="text" className="tagsTypes form-control value" placeholder="Search" 
@@ -371,20 +389,20 @@ class PlaylistHeader extends Component {
                     </span>
                     <span className="tagsContainer">
                       <select type="text" className="tags form-control value" placeholder="Search" 
-                        onChange={(e) => this.props.onChangeTags(this.state.tagType, e.target.value)}>
+                        onChange={this.onChangeTags}>
                         {this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).map(tag => {
                           return <option key={tag.id} value={tag.id}>{tag.text + " : " + tag.karacount}</option>
                         })}
                       </select>
                     </span>
                   </span>
-                  <a className="choice" href="#" onClick={() => this.props.getPlaylist("search")}><i className="glyphicon glyphicon-filter"></i> {t("FILTER")}</a>
+                  <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="glyphicon glyphicon-filter"></i> {t("FILTER")}</a>
                 </li>
-                <li className="active"><a className="choice" href="#" onClick={() => this.props.getPlaylist()}>
+                <li className={this.state.activeFilter === 1 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(1)}>
                   <i className="glyphicon glyphicon-sort-by-alphabet"></i> {t("VIEW_STANDARD")}</a></li>
-                <li ><a className="choice" href="#" onClick={() => this.props.getPlaylist()}><i className="glyphicon glyphicon-star"></i> {t("VIEW_FAVORITES")}</a></li>
-                <li ><a className="choice" href="#" onClick={() => this.props.getPlaylist("recent")}><i className="glyphicon glyphicon-time"></i> {t("VIEW_RECENT")}</a></li>
-                <li ><a className="choice" href="#" onClick={() => this.props.getPlaylist("requested")}><i className="glyphicon glyphicon-fire"></i> {t("VIEW_POPULAR")}</a></li>
+                <li className={this.state.activeFilter === 2 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(2)}><i className="glyphicon glyphicon-star"></i> {t("VIEW_FAVORITES")}</a></li>
+                <li className={this.state.activeFilter === 3 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(3, "recent")}><i className="glyphicon glyphicon-time"></i> {t("VIEW_RECENT")}</a></li>
+                <li className={this.state.activeFilter === 4 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(4, "requested")}><i className="glyphicon glyphicon-fire"></i> {t("VIEW_POPULAR")}</a></li>
 
               </ul>
             </div>
