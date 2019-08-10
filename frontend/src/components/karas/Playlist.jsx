@@ -318,7 +318,9 @@ class Playlist extends Component {
       var data = this.state.data;
       data.infos.from = percent === 100 ? data.infos.from + this.state.maxBeforeUpdate : data.infos.from - this.state.maxBeforeUpdate;
       data.infos.to = percent === 100 ? data.infos.to + this.state.maxBeforeUpdate : data.infos.to - this.state.maxBeforeUpdate;
-      this.setState({ data: data }, this.getPlaylist);
+      if (data.infos.from >= 0) {
+        this.setState({ data: data }, this.getPlaylist);
+      }
     }
   }
 
