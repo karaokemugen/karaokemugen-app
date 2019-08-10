@@ -2,16 +2,18 @@ import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import Switch from '../Switch';
 import axios from 'axios';
+import { dotify } from '../tools';
 
 class PlayerOptions extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      displays: this.getDisplays(),
+      settings: dotify(this.props.settings)
+    };
     this.putPlayerCommando = this.putPlayerCommando.bind(this);
     this.getDisplays = this.getDisplays.bind(this);
-
-    this.state = {
-      displays: this.getDisplays()
-    };
+    this.onChange = this.onChange.bind(this);
   }
 
   async getDisplays() {
@@ -26,29 +28,43 @@ class PlayerOptions extends Component {
     this.props.onChange(event);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.settings !== this.state.settings) {
+      this.setState({ settings: dotify(nextProps.settings) });
+    }
+  }
+
+  onChange(e) {
+    var settings = this.state.settings;
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    settings[event.target.id] = eval(value);
+    this.setState({ settings: settings });
+    if (e.target.type != "number" || (Number(e.target.value))) this.props.onChange(e);
+  }
+
   render() {
     const t = this.props.t;
     var settings = this.props.settings;
-    if (settings.Karaoke && settings.Karaoke.Display.ConnectionInfo.Host === null)
-      settings.Karaoke.Display.ConnectionInfo.Host = '';
+    if (settings["Karaoke.Display.ConnectionInfo.Host"] === null)
+      settings["Karaoke.Display.ConnectionInfo.Host"] = '';
     const listdisplays =
       this.state.displays && this.state.displays.length > 0
         ? this.state.displays.map((display, index) => (
           <option key={index} value={index} >
             {" "}
-            {index+1} - ({display.resolutionx}x{display.resolutiony}) {display.model}
+            {index + 1} - ({display.resolutionx}x{display.resolutiony}) {display.model}
           </option>
         ))
         : null;
-    return (settings.Player ?
-      <>
+    return (
+      <React.Fragment>
         <div className="form-group">
           <label className="col-xs-4 control-label">
             {t("ALWAYS_ON_TOP")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Player.StayOnTop" handleChange={this.putPlayerCommando}
-              isChecked={settings.Player.StayOnTop} nameCommand="toggleAlwaysOnTop" />
+              isChecked={settings["Player.StayOnTop"]} nameCommand="toggleAlwaysOnTop" />
           </div>
         </div>
         <div className="form-group">
@@ -57,7 +73,7 @@ class PlayerOptions extends Component {
           </label>
           <div className="col-xs-6">
             <Switch idInput="Player.FullScreen" handleChange={this.putPlayerCommando}
-              isChecked={settings.Player.FullScreen} nameCommand="toggleFullscreen" />
+              isChecked={settings["Player.FullScreen"]} nameCommand="toggleFullscreen" />
           </div>
         </div>
         <div className="form-group">
@@ -69,8 +85,8 @@ class PlayerOptions extends Component {
               type="number"
               className="form-control"
               id="Player.Screen"
-              onChange={this.props.onChange}
-              value={settings.Player.Screen}
+              onChange={this.onChange}
+              value={settings["Player.Screen"]}
             >
               {listdisplays}
             </select>
@@ -82,12 +98,12 @@ class PlayerOptions extends Component {
             {t("ENGINEDISPLAYCONNECTIONINFO")}
           </label>
           <div className="col-xs-6">
-            <Switch idInput="Karaoke.Display.ConnectionInfo.Enabled" handleChange={this.props.onChange}
-              isChecked={settings.Karaoke.Display.ConnectionInfo.Enabled} />
+            <Switch idInput="Karaoke.Display.ConnectionInfo.Enabled" handleChange={this.onChange}
+              isChecked={settings["Karaoke.Display.ConnectionInfo.Enabled"]} />
           </div>
         </div>
 
-        {settings.Karaoke.Display.ConnectionInfo.Enabled ? (
+        {settings["Karaoke.Display.ConnectionInfo.Enabled"] ? (
           <div
             id="connexionInfoSettings"
             className="well well-sm settingsGroupPanel"
@@ -100,8 +116,8 @@ class PlayerOptions extends Component {
                 <input
                   className="form-control"
                   id="Karaoke.Display.ConnectionInfo.Host"
-                  onChange={this.props.onChange}
-                  value={settings.Karaoke.Display.ConnectionInfo.Host}
+                  onChange={this.onChange}
+                  value={settings["Karaoke.Display.ConnectionInfo.Host"]}
                 />
               </div>
             </div>
@@ -114,8 +130,8 @@ class PlayerOptions extends Component {
                 <input
                   className="form-control"
                   id="Karaoke.Display.ConnectionInfo.Message"
-                  onChange={this.props.onChange}
-                  value={settings.Karaoke.Display.ConnectionInfo.Message}
+                  onChange={this.onChange}
+                  value={settings["Karaoke.Display.ConnectionInfo.Message"]}
                 />
               </div>
             </div>
@@ -127,22 +143,22 @@ class PlayerOptions extends Component {
             {t("PLAYERPIP")}
           </label>
           <div className="col-xs-6">
-            <Switch idInput="Player.PIP.Enabled" handleChange={this.props.onChange}
-              isChecked={settings.Player.PIP.Enabled} />
+            <Switch idInput="Player.PIP.Enabled" handleChange={this.onChange}
+              isChecked={settings["Player.PIP.Enabled"]} />
           </div>
         </div>
-        {settings.Player.PIP.Enabled ?
+        {settings["Player.PIP.Enabled"] ?
           <div id="pipSettings" className="well well-sm settingsGroupPanel">
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {t("VIDEO_SIZE") + " (" + settings.Player.PIP.Size + "%)"}
+                {t("VIDEO_SIZE") + " (" + settings["Player.PIP.Size"] + "%)"}
               </label>
               <div className="col-xs-6">
                 <input
                   type="range"
                   id="Player.PIP.Size"
-                  onChange={this.props.onChange}
-                  value={settings.Player.PIP.Size}
+                  onChange={this.onChange}
+                  value={settings["Player.PIP.Size"]}
                 />
               </div>
             </div>
@@ -155,8 +171,8 @@ class PlayerOptions extends Component {
                 <select
                   className="form-control"
                   id="Player.PIP.PositionX"
-                  onChange={this.props.onChange}
-                  value={settings.Player.PIP.PositionX}
+                  onChange={this.onChange}
+                  value={settings["Player.PIP.PositionX"]}
                 >
                   <option value="Left"> {t("LEFT")} </option>
                   <option value="Center" default>{t("CENTER")}</option>
@@ -173,8 +189,8 @@ class PlayerOptions extends Component {
                 <select
                   className="form-control"
                   id="Player.PIP.PositionY"
-                  onChange={this.props.onChange}
-                  value={settings.Player.PIP.PositionY}
+                  onChange={this.onChange}
+                  value={settings["Player.PIP.PositionY"]}
                 >
                   <option value="Bottom"> {t("BOTTOM")} </option>
                   <option value="Center" default>{t("CENTER")}</option>
@@ -188,8 +204,8 @@ class PlayerOptions extends Component {
                 {t("ENGINEDISPLAYNICKNAME")}
               </label>
               <div className="col-xs-6">
-                <Switch idInput="Karaoke.Display.Nickname" handleChange={this.props.onChange}
-                  isChecked={settings.Karaoke.Display.Nickname} />
+                <Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
+                  isChecked={settings["Karaoke.Display.Nickname"]} />
               </div>
             </div>
 
@@ -198,8 +214,8 @@ class PlayerOptions extends Component {
                 {t("ENGINEDISPLAYAVATAR")}
               </label>
               <div className="col-xs-6">
-                <Switch idInput="Karaoke.Display.Avatar" handleChange={this.props.onChange}
-                  isChecked={settings.Karaoke.Display.Avatar} />
+                <Switch idInput="Karaoke.Display.Avatar" handleChange={this.onChange}
+                  isChecked={settings["Karaoke.Display.Avatar"]} />
               </div>
             </div>
 
@@ -208,8 +224,8 @@ class PlayerOptions extends Component {
                 {t("PLAYERMONITOR")}
               </label>
               <div className="col-xs-6">
-                <Switch idInput="Player.Monitor" handleChange={this.props.onChange}
-                  isChecked={settings.Player.Monitor} />
+                <Switch idInput="Player.Monitor" handleChange={this.onChange}
+                  isChecked={settings["Player.Monitor"]} />
               </div>
             </div>
 
@@ -218,12 +234,12 @@ class PlayerOptions extends Component {
                 {t("PLAYERVISUALIZATIONEFFECTS")}
               </label>
               <div className="col-xs-6">
-                <Switch idInput="Player.VisualizationEffects" handleChange={this.props.onChange}
-                  isChecked={settings.Player.VisualizationEffects} />
+                <Switch idInput="Player.VisualizationEffects" handleChange={this.onChange}
+                  isChecked={settings["Player.VisualizationEffects"]} />
               </div>
             </div>
           </div> : null}
-      </> : null
+      </React.Fragment>
     );
   }
 }

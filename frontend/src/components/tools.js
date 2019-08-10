@@ -56,39 +56,55 @@ export function is_touch_device() {
 };
 
 
-export function expand (str, val) {
+export function expand(str, val) {
 	return str.split('.').reduceRight((acc, currentValue) => {
 		return { [currentValue]: acc };
 	}, val);
 };
 
-
+export function dotify(obj) {
+	//Code from the package node-dotify
+	let res = {};
+	function recurse(obj, current) {
+		for (var key in obj) {
+			let value = obj[key];
+			let newKey = (current ? current + '.' + key : key);  // joined key with dot
+			if (value && typeof value === 'object' && !Array.isArray(value)) {
+				recurse(value, newKey);  // it's a nested object, so do it again
+			} else {
+				res[newKey] = value;  // it's not an object, so set the property
+			}
+		}
+	}
+	recurse(obj);
+	return res;
+};
 
 /* format seconds to Hour Minute Second */
-export function secondsTimeSpanToHMS (s, format) {
-	var d = Math.floor(s/(3600 * 24));
+export function secondsTimeSpanToHMS(s, format) {
+	var d = Math.floor(s / (3600 * 24));
 	if (format === '24h' || format === 'dhm') {
 		s -= d * 3600 * 24;
 	}
-	var h = Math.floor(s/3600);
+	var h = Math.floor(s / 3600);
 	if (format !== 'ms') {
 		s -= h * 3600;
 	}
-	var m = Math.floor(s/60);
+	var m = Math.floor(s / 60);
 	s -= m * 60;
 
-	var result = (h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m'+(s < 10 ? '0'+s : s ) + 's';
-	if (format === 'ms') result = (m > 0 ? m+'m' : '')+(s < 10 && m > 0 ? '0'+s : s ) + 's';
-	if (format === 'hm') result = (h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
+	var result = (h > 0 ? h + 'h' : '') + (m < 10 ? '0' + m : m) + 'm' + (s < 10 ? '0' + s : s) + 's';
+	if (format === 'ms') result = (m > 0 ? m + 'm' : '') + (s < 10 && m > 0 ? '0' + s : s) + 's';
+	if (format === 'hm') result = (h > 0 ? h + 'h' : '') + (m < 10 ? '0' + m : m) + 'm';
 	if (format === 'dhm') {
-		result = (d > 0 ? d+'d' : '')+(h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
+		result = (d > 0 ? d + 'd' : '') + (h > 0 ? h + 'h' : '') + (m < 10 ? '0' + m : m) + 'm';
 	}
-	return result; 
+	return result;
 };
 
-export function startIntro (scope){
+export function startIntro(scope) {
 	if (scope === 'admin') {
-		axios.put('/api/admin/settings', JSON.stringify({ 'setting': {'App': {'FirstRun':false}} }));
+		axios.put('/api/admin/settings', JSON.stringify({ 'setting': { 'App': { 'FirstRun': false } } }));
 	} else {
 		createCookie('publicTuto', 'true');
 	}
@@ -100,25 +116,25 @@ export function startIntro (scope){
 * @param {Object} data - data from the kara
 * @return {String} the title
 */
-export function buildKaraTitle (data) {
+export function buildKaraTitle(data) {
 	var isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
-	if(data.langs && isMulti) {
+	if (data.langs && isMulti) {
 		data.langs = [isMulti];
 	}
 	var limit = window.innerWidth < 1025 ? 35 : 50;
-	var serieText =  data.serie ? data.serie : data.singers.map(e => e.name).join(', ');
+	var serieText = data.serie ? data.serie : data.singers.map(e => e.name).join(', ');
 	serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
 	var titleArray = [
 		data.langs.map(e => e.name).join(', ').toUpperCase(),
 		serieText,
-		(data.songtypes[0].short ?  + data.songtypes[0].short : data.songtypes[0].name) + (data.songorder > 0 ? ' ' + data.songorder : '')
+		(data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name) + (data.songorder > 0 ? ' ' + data.songorder : '')
 	];
 	var titleClean = titleArray.map(function (e, k) {
 		return titleArray[k] ? titleArray[k] : '';
 	});
 
 	var separator = '';
-	if(data.title) {
+	if (data.title) {
 		separator = ' - ';
 	}
 	return titleClean.join(' - ') + separator + data.title;

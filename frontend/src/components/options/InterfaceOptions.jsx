@@ -1,15 +1,36 @@
 import React, { Component } from "react";
 import { withTranslation } from 'react-i18next';
 import Switch from '../Switch';
+import { dotify } from '../tools';
 
 class InterfaceOptions extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      settings: dotify(this.props.settings)
+    };
+    this.onChange = this.onChange.bind(this);
+  }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.settings !== this.state.settings) {
+      this.setState({ settings: dotify(nextProps.settings) });
+    }
+  }
+
+  onChange(e) {
+    var settings = this.state.settings;
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    settings[event.target.id] = eval(value);
+    this.setState({ settings: settings });
+    if (e.target.type != "number" || (Number(e.target.value))) this.props.onChange(e);
+  }
 
   render() {
     const t = this.props.t;
     var settings = this.props.settings;
-    return (settings.Frontend ?
-      <>
+    return (
+      <React.Fragment>
         <div className="form-group">
           <label className="col-xs-4 control-label">
             {t("WEBAPPMODE")}
@@ -19,8 +40,8 @@ class InterfaceOptions extends Component {
               type="number"
               className="form-control"
               id="Frontend.Mode"
-              onChange={this.props.onChange}
-              value={settings.Frontend.Mode}
+              onChange={this.onChange}
+              value={settings["Frontend.Mode"]}
             >
               <option value="0">{t("WEBAPPMODE_CLOSED")}</option>
               <option value="1">{t("WEBAPPMODE_LIMITED")}</option>
@@ -38,8 +59,8 @@ class InterfaceOptions extends Component {
               type="number"
               className="form-control"
               id="Frontend.SeriesLanguageMode"
-              onChange={this.props.onChange}
-              value={settings.Frontend.SeriesLanguageMode}
+              onChange={this.onChange}
+              value={settings["Frontend.SeriesLanguageMode"]}
             >
               <option value="0">{t("SERIE_NAME_MODE_ORIGINAL")}</option>
               <option value="1">{t("SERIE_NAME_MODE_SONG")}</option>
@@ -54,8 +75,8 @@ class InterfaceOptions extends Component {
             {t("ENGINEALLOWVIEWBLACKLIST")}
           </label>
           <div className="col-xs-6">
-            <Switch idInput="Frontend.Permissions.AllowViewBlacklist" handleChange={this.props.onChange}
-              isChecked={settings.Frontend.Permissions.AllowViewBlacklist} />
+            <Switch idInput="Frontend.Permissions.AllowViewBlacklist" handleChange={this.onChange}
+              isChecked={settings["Frontend.Permissions.AllowViewBlacklist"]} />
           </div>
         </div>
 
@@ -64,8 +85,8 @@ class InterfaceOptions extends Component {
             {t("ENGINEALLOWVIEWBLACKLISTCRITERIAS")}
           </label>
           <div className="col-xs-6">
-            <Switch idInput="Frontend.Permissions.AllowViewBlacklistCriterias" handleChange={this.props.onChange}
-              isChecked={settings.Frontend.Permissions.AllowViewBlacklistCriterias} />
+            <Switch idInput="Frontend.Permissions.AllowViewBlacklistCriterias" handleChange={this.onChange}
+              isChecked={settings["Frontend.Permissions.AllowViewBlacklistCriterias"]} />
           </div>
         </div>
 
@@ -74,11 +95,11 @@ class InterfaceOptions extends Component {
             {t("ENGINEALLOWVIEWWHITELIST")}
           </label>
           <div className="col-xs-6">
-            <Switch idInput="Frontend.Permissions.AllowViewWhitelist" handleChange={this.props.onChange}
-              isChecked={settings.Frontend.Permissions.AllowViewWhitelist} />
+            <Switch idInput="Frontend.Permissions.AllowViewWhitelist" handleChange={this.onChange}
+              isChecked={settings["Frontend.Permissions.AllowViewWhitelist"]} />
           </div>
         </div>
-      </> : null
+      </React.Fragment>
     );
   }
 }
