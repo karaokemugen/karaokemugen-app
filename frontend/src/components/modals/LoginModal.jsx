@@ -118,7 +118,9 @@ class LoginModal extends Component {
                             <li className={"modal-title " + (this.state.activeView === 2 ? "active" : "")}>
                                 <a onClick={() => this.setState({activeView: 2})}>{this.props.t("NEW_ACCOUNT")}</a>
                             </li>
-                            <button className="closeModal btn btn-action" onClick={this.props.toggleLoginModal}></button>
+                            <button className="closeModal btn btn-action" onClick={this.props.toggleLoginModal}>
+                                <i className="fas fa-times"></i>
+                            </button>
                         </ul>
                         <div className="tab-content" id="nav-tabContent">
                             {this.state.activeView === 1 ?

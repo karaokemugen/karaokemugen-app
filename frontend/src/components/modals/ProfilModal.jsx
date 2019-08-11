@@ -161,7 +161,9 @@ class ProfilModal extends Component {
                             <li className={"modal-title " + (this.state.activeView === 3 ? "active" : "")}>
                                 <a onClick={() => this.setState({activeView: 3})}> {this.props.t("USERLIST")}</a>
                             </li>
-                            <button className="closeModal btn btn-action" onClick={this.props.toggleProfileModal}></button>
+                            <button className="closeModal btn btn-action" onClick={this.props.toggleProfileModal}>
+                                <i className="fas fa-times"></i>
+                            </button>
                         </ul>
                         <div className="tab-content" id="nav-tabContent">
                             {this.state.activeView === 1 ?

@@ -156,9 +156,9 @@ class WelcomePage extends Component {
 
   loginClick() {
     if (!this.props.logInfos.token) {
-      this.props.loginModal("public", null);
+      this.setState({loginModal: true});
     } else {
-      this.props.profileModal(true);
+      this.setState({profileModal: true});
     }
   }
 

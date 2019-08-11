@@ -35,7 +35,9 @@ class PollModal extends Component {
                                 <li className="modal-title active">
                                     <a style={{ fontWeight: 'bold' }}>{this.props.t("POLLTITLE")}</a>
                                 </li>
-                                <button className="closeModal btn btn-action" onClick={this.props.closePollModal}></button>
+                                <button className="closeModal btn btn-action" onClick={this.props.closePollModal}>
+                                    <i className="fas fa-times"></i>
+                                </button>
                                 <span className="timer"></span>
 
                             </ul>
