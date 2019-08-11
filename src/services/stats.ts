@@ -70,6 +70,7 @@ async function buildInstanceStats() {
 	const conf = cloneDeep(getConfig());
 	const state = getState();
 	delete conf.App.JwtSecret;
+	if (conf.Karaoke.StreamerMode.Twitch.OAuth) delete conf.Karaoke.StreamerMode.Twitch.OAuth;
 	const [cpu, mem, gfx, os, disks] = await Promise.all([
 		si.cpu(),
 		si.mem(),

@@ -186,6 +186,92 @@ class KaraokeOptions extends Component {
                 isChecked={this.state.settings["Playlist.AllowDuplicateSeries"]} />
             </div>
           </div>
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {t("CLASSIC_MODE")}
+            </label>
+            <div className="col-xs-6">
+              <Switch idInput="Karaoke.ClassicMode" handleChange={this.onChange}
+                isChecked={this.state.settings["Karaoke.ClassicMode"]} />
+            </div>
+          </div>
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {t("STREAM_MODE")}
+            </label>
+            <div className="col-xs-6">
+              <Switch idInput="Karaoke.StreamerMode.Enabled" handleChange={this.onChange}
+                isChecked={this.state.settings["Karaoke.StreamerMode.Enabled"]} />
+            </div>
+          </div>
+          {this.state.settings["Karaoke.StreamerMode.Enabled"] ?
+            <div
+              id="streamSettings"
+              className="well well-sm settingsGroupPanel"
+            >
+              <div className="form-group">
+                <label className="col-xs-4 control-label">
+                  {t("STREAM_PAUSE_DURATION")}
+                </label>
+                <div className="col-xs-6">
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="Karaoke.StreamerMode.PauseDuration"
+                    placeholder="20"
+                    onChange={this.onChange}
+                    value={this.state.settings["Karaoke.StreamerMode.PauseDuration"]}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="col-xs-4 control-label">
+                  {t("STREAM_TWITCH")}
+                </label>
+                <div className="col-xs-6">
+                  <Switch idInput="Karaoke.StreamerMode.Twitch.Enabled" handleChange={this.onChange}
+                    isChecked={this.state.settings["Karaoke.StreamerMode.Twitch.Enabled"]} />
+                </div>
+              </div>
+              {this.state.settings["Karaoke.StreamerMode.Twitch.Enabled"] ?
+                <div
+                  id="twitchSettings"
+                  className="well well-sm settingsGroupPanel"
+                >
+                  <div className="form-group">
+                    <a className="col-xs-4 control-label" href="https://twitchapps.com/tmi/" target='_blank'>{t("STREAM_TWITCH_OAUTH_TOKEN_GET")}</a>
+                  </div>
+                  <div className="form-group">
+                    <label className="col-xs-4 control-label">
+                      {t("STREAM_TWITCH_OAUTH_TOKEN")}
+                    </label>
+                    <div className="col-xs-6">
+                      <input type="password"
+                        data-exclude="true"
+                        className="form-control"
+                        id="Karaoke.StreamerMode.Twitch.OAuth"
+                        onChange={this.onChange}
+                        value={this.state.settings["Karaoke.StreamerMode.Twitch.OAuth"]}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="col-xs-4 control-label">
+                      {t("STREAM_TWITCH_CHANNEL")}
+                    </label>
+                    <div className="col-xs-6">
+                      <input
+                        className="form-control"
+                        id="Karaoke.StreamerMode.Twitch.Channel"
+                        onChange={this.onChange}
+                        value={this.state.settings["Karaoke.StreamerMode.Twitch.Channel"]}
+                      />
+                    </div>
+                  </div>
+                </div> : null
+              }
+            </div> : null
+          }
 
           <div className="form-group settingsGroupPanel subCategoryGroupPanel">
             <div className="col-xs-12" style={{ textAlign: "center" }}>
@@ -326,7 +412,17 @@ class KaraokeOptions extends Component {
             {this.props.t("PUBLICMODESETTINGS")}
           </div>
         </div>
+
         <div id="nav-karaokePublicMode">
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {t("ENGINEFREEUPVOTES")}
+            </label>
+            <div className="col-xs-6">
+              <Switch idInput="Karaoke.Quota.FreeUpVote" handleChange={this.onChange}
+                isChecked={this.state.settings["Karaoke.Quota.FreeUpVote"]} />
+            </div>
+          </div>
           {this.state.settings["Karaoke.Quota.FreeUpVote"] ?
             <div
               id="freeUpvotesSettings"
@@ -400,16 +496,6 @@ class KaraokeOptions extends Component {
                     onChange={this.onChange}
                     value={this.state.settings["Karaoke.Poll.Timeout"]}
                   />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="col-xs-4 control-label">
-                  {this.props.t("ENGINEFREEUPVOTES")}
-                </label>
-                <div className="col-xs-6">
-                  <Switch idInput="Karaoke.Quota.FreeUpVote" handleChange={this.onChange}
-                    isChecked={this.state.settings["Karaoke.Quota.FreeUpVote"]} />
                 </div>
               </div>
             </div> : null}

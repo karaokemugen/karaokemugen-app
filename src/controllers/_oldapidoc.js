@@ -9888,3 +9888,52 @@
 	* @apiError FAV_DELETE_SONG_ERROR Favorites item could not be deleted.
 	*
 	*/
+
+	/**
+	 * @api {get} /public/player Get player status
+	 * @apiName GetPlayer
+	 * @apiVersion 2.1.0
+	 * @apiGroup Player
+	 * @apiPermission public
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiDescription Player info is updated very frequently. You can poll it to get precise information from player and engine altogether.
+	 * @apiSuccess {Number} data/currentlyPlaying Karaoke ID of song being played
+	 * @apiSuccess {Number} data/duration Current's song duration in seconds
+	 * @apiSuccess {Boolean} data/fullscreen Player's fullscreen status
+	 * @apiSuccess {Boolean} data/muteStatus Player's volume mute status
+	 * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
+	 * @apiSuccess {String=pause,stop,play} data/playerStatus Player's status (not to mistake with engine's status, see below). Player status is `pause` if displaying a background.
+	 * @apiSuccess {Boolean} data/private Engine's public/private status
+	 * @apiSuccess {Boolean} data/showSubs Player's showing subtitles or not
+	 * @apiSuccess {String=pause,play,stop} data/status Engine's status
+	 * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
+	 * @apiSuccess {String} data/subText Text/lyrics being displayed on screen
+	 * @apiSuccess {Number} data/timePosition Player's current position in the song.
+	 * @apiSuccess {Number} data/volume Volume (from `0` to `100`)
+	 * Example Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "data": {
+	 *       "currentlyPlaying": 1020,
+	 *       "duration": 0,
+	 *       "fullscreen": false,
+	 *       "muteStatus": false,
+	 *       "onTop": true,
+	 *       "playerStatus": "pause",
+	 *       "private": true,
+	 *       "showSubs": true,
+	 *       "status": "stop",
+	 *       "subText": null,
+	 *       "timePosition": 0,
+	 *       "volume": 100
+	 *   }
+	 * }
+	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * {
+	 *   "code": "PLAYER_STATUS_ERROR"
+	 * }
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 403 Forbidden
+	 */

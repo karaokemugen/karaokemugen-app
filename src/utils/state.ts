@@ -7,6 +7,7 @@ import {State, PublicState} from '../types/state';
 // Internal settings
 let state: State = {
 	playerNeedsRestart: false,
+	currentRequester: null,
 	currentlyPlayingKara: null,
 	counterToJingle: 1,
 	status: 'stop', // [stop,play,pause] // general engine status
@@ -59,6 +60,7 @@ export function getPublicState(): PublicState {
 		subText: state.player.subtext,
 		timePosition: state.player.timeposition,
 		volume: state.player.volume,
+		currentRequester: state.currentRequester
 	};
 }
 

@@ -13,6 +13,7 @@ import { getTags } from "../../../services/tag";
 import { getFeeds } from "../../../webapp/proxy_feeds";
 import { initializationCatchphrases } from '../../../utils/constants';
 import sample from 'lodash.sample';
+import { playPlayer } from "../../../services/player";
 
 export default function publicMiscController(router: Router) {
 	router.route('/public/settings')
@@ -159,12 +160,12 @@ export default function publicMiscController(router: Router) {
 		/**
 	 * @api {get} /public/player Get player status
 	 * @apiName GetPlayer
-	 * @apiVersion 2.1.0
+	 * @apiVersion 2.5.0
 	 * @apiGroup Player
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiDescription Player info is updated very frequently. You can poll it to get precise information from player and engine altogether.
-	 * @apiSuccess {Number} data/currentlyPlaying Karaoke ID of song being played
+	 * @apiSuccess {String} data/currentlyPlaying Karaoke ID of song being played
 	 * @apiSuccess {Number} data/duration Current's song duration in seconds
 	 * @apiSuccess {Boolean} data/fullscreen Player's fullscreen status
 	 * @apiSuccess {Boolean} data/muteStatus Player's volume mute status
@@ -181,7 +182,7 @@ export default function publicMiscController(router: Router) {
 	 * HTTP/1.1 200 OK
 	 * {
 	 *   "data": {
-	 *       "currentlyPlaying": 1020,
+	 *       "currentlyPlaying": "<Karaoke UUID>",
 	 *       "duration": 0,
 	 *       "fullscreen": false,
 	 *       "muteStatus": false,
@@ -209,166 +210,194 @@ export default function publicMiscController(router: Router) {
 			// What's playing, time in seconds, duration of song
 			res.json(OKMessage(getPublicState()));
 		});
-		router.route('/public/tags')
-		/**
-		* @api {get} /public/tags Get tag list
-		* @apiName GetTags
-		* @apiVersion 3.0.0
-		* @apiGroup Tags
-		* @apiPermission public
-		* @apiHeader authorization Auth token received from logging in
-		* @apiParam {Number} [type] Type of tag to filter
-		* @apiParam {String} [filter] Tag name to filter results
-		* @apiParam {Number} [from] Where to start listing from
-		* @apiParam {Number} [size] How many records to get.
-		* @apiSuccess {String} data/name Name of tag
-		* @apiSuccess {Number} data/tid Tag ID (UUID)
-		* @apiSuccess {Number} data/types Tag types numbers in an array
-		* @apiSuccess {String} data/short Short version of the tag, max 3 chracters. Used to display next to a song item
-		* @apiSuccess {Object} data/i18n Translations in case of misc, languages and song type tags
-		*
-		* @apiSuccessExample Success-Response:
-		* HTTP/1.1 200 OK
-		* {
-		*     "data": {
-		*		content: [
-		*        {
-		*            "i18n": {
-		* 				"eng": "TV Show",
-		*				"fre": "Série TV"
-		*			 },
-		*            "name": "TV Show",
-		*            "short": "TV"
-		*            "tid": "13cb4509-6cb4-43e4-a1ad-417d6ffb75d0",
-		*            "types": [2]
-		*        },
-		*		 ...
-		*   	],
-		*       "infos": {
-		*           "count": 1000,
-		* 			"from": 0,
-		* 			"to": 120
-		*       }
-		* }
-		* @apiError TAGS_LIST_ERROR Unable to get list of tags
-		* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
-		* @apiErrorExample Error-Response:
-		* HTTP/1.1 500 Internal Server Error
-		* @apiErrorExample Error-Response:
-		* HTTP/1.1 403 Forbidden
-		*/
-			.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-				try {
-					const tags = await getTags({
-						filter: req.query.filter,
-						type: req.query.type,
-						from: +req.query.from || 0,
-						size: +req.query.size || 99999
-					});
-					res.json(OKMessage(tags));
-				} catch(err) {
-					res.status(500).json(errMessage('TAGS_LIST_ERROR',err));
-				}
-			});
-	router.route('/public/years')
-		/**
-		* @api {get} /public/years Get year list
-		* @apiName GetYears
-		* @apiVersion 2.3.0
-		* @apiGroup Karaokes
-		* @apiPermission public
-		* @apiHeader authorization Auth token received from logging in
-		* @apiSuccess {String[]} data Array of years
-		* @apiSuccessExample Success-Response:
-		* HTTP/1.1 200 OK
-		* {
-		*     "data": [
-		*       {
-		*			"year": "1969"
-		*		},
-		*		 ...
-		*   ]
-		* }
-		* @apiError YEARS_LIST_ERROR Unable to get list of years
-		* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
-		* @apiErrorExample Error-Response:
-		* HTTP/1.1 500 Internal Server Error
-		* @apiErrorExample Error-Response:
-		* HTTP/1.1 403 Forbidden
-		*/
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
-			try {
-				const years = await getYears();
-				res.json(OKMessage(years));
-			} catch(err) {
-				res.statusCode = 500;
-				res.json(errMessage('YEARS_LIST_ERROR',err));
+	router.route('/public/player/play')
+	/**
+	 * @api {post} /public/player/play Start a song (classic mode)
+	 * @apiName PlayPlayer
+	 * @apiVersion 3.0.0
+	 * @apiGroup Player
+	 * @apiPermission public
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiDescription User hits play when its his/her turn to sing when classic mode is enabled
+	 * Example Success-Response:
+	 * HTTP/1.1 200 OK
+	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * {
+	 *   "code": "USER_NOT_ALLOWED_TO_SING"
+	 * }
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 403 Forbidden
+	 */
+		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+			if (req.authToken.username === getState().currentRequester) {
+				await playPlayer(true);
+				res.status(200).json();
+			} else {
+				res.status(500).json(errMessage('USER_NOT_ALLOWED_TO_SING'))
 			}
 		});
+	router.route('/public/tags')
+	/**
+	* @api {get} /public/tags Get tag list
+	* @apiName GetTags
+	* @apiVersion 3.0.0
+	* @apiGroup Tags
+	* @apiPermission public
+	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {Number} [type] Type of tag to filter
+	* @apiParam {String} [filter] Tag name to filter results
+	* @apiParam {Number} [from] Where to start listing from
+	* @apiParam {Number} [size] How many records to get.
+	* @apiSuccess {String} data/name Name of tag
+	* @apiSuccess {Number} data/tid Tag ID (UUID)
+	* @apiSuccess {Number} data/types Tag types numbers in an array
+	* @apiSuccess {String} data/short Short version of the tag, max 3 chracters. Used to display next to a song item
+	* @apiSuccess {Object} data/i18n Translations in case of misc, languages and song type tags
+	*
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* {
+	*     "data": {
+	*		content: [
+	*        {
+	*            "i18n": {
+	* 				"eng": "TV Show",
+	*				"fre": "Série TV"
+	*			 },
+	*            "name": "TV Show",
+	*            "short": "TV"
+	*            "tid": "13cb4509-6cb4-43e4-a1ad-417d6ffb75d0",
+	*            "types": [2]
+	*        },
+	*		 ...
+	*   	],
+	*       "infos": {
+	*           "count": 1000,
+	* 			"from": 0,
+	* 			"to": 120
+	*       }
+	* }
+	* @apiError TAGS_LIST_ERROR Unable to get list of tags
+	* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 403 Forbidden
+	*/
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+			try {
+				const tags = await getTags({
+					filter: req.query.filter,
+					type: req.query.type,
+					from: +req.query.from || 0,
+					size: +req.query.size || 99999
+				});
+				res.json(OKMessage(tags));
+			} catch(err) {
+				res.status(500).json(errMessage('TAGS_LIST_ERROR',err));
+			}
+		});
+	router.route('/public/years')
+	/**
+	* @api {get} /public/years Get year list
+	* @apiName GetYears
+	* @apiVersion 2.3.0
+	* @apiGroup Karaokes
+	* @apiPermission public
+	* @apiHeader authorization Auth token received from logging in
+	* @apiSuccess {String[]} data Array of years
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* {
+	*     "data": [
+	*       {
+	*			"year": "1969"
+	*		},
+	*		 ...
+	*   ]
+	* }
+	* @apiError YEARS_LIST_ERROR Unable to get list of years
+	* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 403 Forbidden
+	*/
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
+				try {
+					const years = await getYears();
+					res.json(OKMessage(years));
+				} catch(err) {
+					res.statusCode = 500;
+					res.json(errMessage('YEARS_LIST_ERROR',err));
+				}
+			});
 	router.route('/public/series')
-		/**
-		* @api {get} /public/series Get series list
-		* @apiName GetSeries
-		* @apiVersion 2.5.0
-		* @apiGroup Karaokes
-		* @apiPermission public
-		* @apiHeader authorization Auth token received from logging in
-		* @apiParam {String} [filter] Text filter to search series for
-		* @apiParam {Number} [from] Where to start listing from
-		* @apiParam {Number} [size] How many records to get.
-		* @apiSuccess {Array} data Array of series
-		* @apiSuccess {Number} data/serie_id Serie ID in the database
-		* @apiSuccess {String} data/name Serie's original name
-		* @apiSuccess {String} data/i18n_name Serie's name in the provided language (fallback to English)
-		* @apiSuccess {Number} data/karacount Number of karaokes for that series
-		* @apiSuccess {String} data/sid UUID of series
-		* @apiSuccess {String} data/seriefile Name of `series.json` file
-		* @apiSuccess {Object[]} data/i18n Array of i18n objects
-		* @apiSuccess {String} data/i18n/lang ISO639-2B Language code for the series' name
-		* @apiSuccess {String} data/i18n/name name Series' name in that language
-		* @apiSuccess {String[]} data/aliases Array of aliases
-		* @apiSuccess {Object} data/i18n JSON object for the series translations
-		* @apiSuccessExample Success-Response:
-		* HTTP/1.1 200 OK
-		* {
-		*     "data": {
-		*        "contents": [
-		*        {
-		*        "aliases": [
-		*            "Tenshi no Nichou Kenjuu: Angelos Armas"
-		*        ],
-		*        "i18n": [
-		*            {
-		*                "lang": "eng",
-		*                "name": "Angelos Armas"
-		*            },
-		*            {
-		*                "lang": "jpn",
-		*                "name": "??????? -Angelos Armas-"
-		*            }
-		*        ],
-		*        "i18n_name": "Angelos Armas",
-		*        "karacount": 3,
-		*        "name": "Tenshi no Nichô Kenjû: Angelos Armas",
-		*        "seriefile": "Tenshi no Nichou Kenjuu Angelos Armas.series.json",
-		*		 "sid": "c87a7f7b-20cf-4d7d-98fb-722910f4eec6"
-		*		},
-		*		...
-		*		],
-		*       "infos": {
-			*           "count": 1000,
-			* 			"from": 0,
-			* 			"to": 120
-			*       }
-		* }
-		* @apiError SERIES_LIST_ERROR Unable to get series list
-		* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
-		* @apiErrorExample Error-Response:
-		* HTTP/1.1 500 Internal Server Error
-		* @apiErrorExample Error-Response:
-		* HTTP/1.1 403 Forbidden
-		*/
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+	/**
+	* @api {get} /public/series Get series list
+	* @apiName GetSeries
+	* @apiVersion 2.5.0
+	* @apiGroup Karaokes
+	* @apiPermission public
+	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {String} [filter] Text filter to search series for
+	* @apiParam {Number} [from] Where to start listing from
+	* @apiParam {Number} [size] How many records to get.
+	* @apiSuccess {Array} data Array of series
+	* @apiSuccess {Number} data/serie_id Serie ID in the database
+	* @apiSuccess {String} data/name Serie's original name
+	* @apiSuccess {String} data/i18n_name Serie's name in the provided language (fallback to English)
+	* @apiSuccess {Number} data/karacount Number of karaokes for that series
+	* @apiSuccess {String} data/sid UUID of series
+	* @apiSuccess {String} data/seriefile Name of `series.json` file
+	* @apiSuccess {Object[]} data/i18n Array of i18n objects
+	* @apiSuccess {String} data/i18n/lang ISO639-2B Language code for the series' name
+	* @apiSuccess {String} data/i18n/name name Series' name in that language
+	* @apiSuccess {String[]} data/aliases Array of aliases
+	* @apiSuccess {Object} data/i18n JSON object for the series translations
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* {
+	*     "data": {
+	*        "contents": [
+	*        {
+	*        "aliases": [
+	*            "Tenshi no Nichou Kenjuu: Angelos Armas"
+	*        ],
+	*        "i18n": [
+	*            {
+	*                "lang": "eng",
+	*                "name": "Angelos Armas"
+	*            },
+	*            {
+	*                "lang": "jpn",
+	*                "name": "??????? -Angelos Armas-"
+	*            }
+	*        ],
+	*        "i18n_name": "Angelos Armas",
+	*        "karacount": 3,
+	*        "name": "Tenshi no Nichô Kenjû: Angelos Armas",
+	*        "seriefile": "Tenshi no Nichou Kenjuu Angelos Armas.series.json",
+	*		 "sid": "c87a7f7b-20cf-4d7d-98fb-722910f4eec6"
+	*		},
+	*		...
+	*		],
+	*       "infos": {
+	*           "count": 1000,
+	* 			"from": 0,
+	* 			"to": 120
+	*       }
+	* }
+	* @apiError SERIES_LIST_ERROR Unable to get series list
+	* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 403 Forbidden
+	*/
+	.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const series = await getSeries({
 					filter: req.query.filter,
@@ -381,7 +410,7 @@ export default function publicMiscController(router: Router) {
 				res.status(500).json(errMessage('YEARS_LIST_ERROR',err));
 			}
 		});
-		router.route('/public/newsfeed')
+	router.route('/public/newsfeed')
 		/**
 	 * @api {get} /public/newsfeed Get latest KM news
 	 * @apiName GetNews
@@ -390,16 +419,16 @@ export default function publicMiscController(router: Router) {
 	 * @apiPermission NoAuth
 	 * @apiSuccess {Array} Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if RSS feed could not be obtained.
 	 */
-	 .get(getLang, async (_req: any, res: any) => {
-			try {
-				const result = await getFeeds();
-				res.json(result);
-			} catch(err) {
-				res.status(500).send(err);
-			}
-		});
+		.get(getLang, async (_req: any, res: any) => {
+				try {
+					const result = await getFeeds();
+					res.json(result);
+				} catch(err) {
+					res.status(500).send(err);
+				}
+			});
 
-		router.route('/public/catchphrase')
+	router.route('/public/catchphrase')
 		/**
 	 * @api {get} /public/catchphrase Get a random Catchphrase
 	 * @apiName GetCatchPhrase
@@ -408,7 +437,7 @@ export default function publicMiscController(router: Router) {
 	 * @apiPermission NoAuth
 	 * @apiSuccess a random catchphrase
 	 */
-	 .get(getLang, async (_req: any, res: any) => {
-			res.json(sample(initializationCatchphrases));
+		.get(getLang, async (_req: any, res: any) => {
+				res.json(sample(initializationCatchphrases));
 		});
 }

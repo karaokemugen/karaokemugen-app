@@ -592,7 +592,8 @@ async function updateGuestAvatar(user: User) {
 					destination: null,
 					filename: null,
 					buffer: null,
-					size: null
+					size: null,
+					location: null
 				} , 'admin', {
 					renameUser: false,
 					editRemote: false

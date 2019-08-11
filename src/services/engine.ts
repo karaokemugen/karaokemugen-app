@@ -19,6 +19,7 @@ import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { generateDatabase } from '../lib/services/generation';
 import {validateV3} from '../lib/dao/karafile';
+import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from './session';
 import { updateJingles } from './jingles';
 
@@ -72,6 +73,7 @@ export async function initEngine() {
 		logger.error(`[Engine] Failed to init online system : ${err}`);
 	}
 	let inits = [];
+	if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 	inits.push(initPlaylistSystem());
 	if (!state.isDemo && !state.isTest) inits.push(initPlayer());
 	inits.push(initFrontend());
@@ -106,8 +108,11 @@ export async function exit(rc: any) {
 		quitmpv();
 		logger.info('[Engine] Player has shutdown');
 	}
+	if (getTwitchClient()) await stopTwitch();
+
 	closeDB();
 	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
+	if (getConfig().Karaoke.StreamerMode.Twitch.Enabled) await stopTwitch();
 	try {
 		if (await checkPG()) {
 			try {

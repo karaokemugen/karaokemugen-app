@@ -2,7 +2,7 @@ import {setState, getState} from '../utils/state';
 import {getConfig} from '../lib/utils/config';
 import logger from 'winston';
 import {profile} from '../lib/utils/logger';
-import {loadBackground, displayInfo, playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem} from '../player/player';
+import {loadBackground, displayInfo, playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo} from '../player/player';
 import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
@@ -33,7 +33,8 @@ async function playCurrentSong(now: boolean) {
 			addPlayedKara(kara.kid);
 			setPLCVisible(kara.playlistcontent_id);
 			updateUserQuotas(kara);
-			if (getConfig().Karaoke.Poll.Enabled) startPoll();
+			const conf = getConfig();
+			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch(err) {
 			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
 			if (getState().status !== 'stop') {
@@ -92,7 +93,7 @@ export async function playerEnding() {
 		} catch(err) {
 			loadBackground();
 			displayInfo();
-			stopPlayer();
+			stopPlayer(true);
 		}
 	}
 }
@@ -112,7 +113,30 @@ async function next() {
 	logger.debug('[Player] Going to next song');
 	try {
 		await nextSong();
-		playPlayer(true);
+		const conf = getConfig();
+		if (conf.Karaoke.ClassicMode) {
+			const kara = await getCurrentSong();
+			setState({currentRequester: kara.username});
+			await stopPlayer(true);
+			displaySongInfo(kara.infos, 10000000, true);
+			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
+				await playPlayer(true);
+			}
+		} else if (conf.Karaoke.StreamerMode.Enabled) {
+			setState({currentRequester: null});
+			const kara = await getCurrentSong();
+			await stopPlayer(true);
+			displaySongInfo(kara.infos, 10000000);
+			if (conf.Karaoke.Poll.Enabled) await startPoll();
+			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
+				await playPlayer(true);
+			}
+		} else {
+			setState({currentRequester: null});
+			playPlayer(true);
+		}
 	} catch(err) {
 		logger.warn(`[Player] Next song is not available : ${err}`);
 		throw err;
@@ -155,7 +179,7 @@ export async function playPlayer(now?: boolean) {
 	profile('Play');
 }
 
-function stopPlayer(now?: boolean) {
+function stopPlayer(now = true) {
 	if (now) {
 		logger.info('[Player] Karaoke stopping NOW');
 		stop();
@@ -244,7 +268,7 @@ export async function sendCommand(command: string, options: any) {
 		} else if (command === 'pause') {
 			await pausePlayer();
 		} else if (command === 'stopAfter') {
-			stopPlayer();
+			stopPlayer(false);
 			await nextSong();
 		} else if (command === 'skip') {
 			await next();

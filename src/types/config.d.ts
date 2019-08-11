@@ -40,6 +40,16 @@ export interface Config {
 	}
 	Karaoke: {
 		Private?: boolean,
+		ClassicMode?: boolean,
+		StreamerMode: {
+			Enabled?: boolean,
+			PauseDuration?: number
+			Twitch: {
+				Enabled?: boolean,
+				OAuth?: string,
+				Channel?: string
+			}
+		}
 		Autoplay?: boolean,
 		Repeat?: boolean,
 		SmartInsert?: boolean,

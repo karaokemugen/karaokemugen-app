@@ -2,5 +2,8 @@
 	"REQUESTED_BY": "Demandé par",
 	"CURRENT_PLAYLIST": "Courante",
 	"PUBLIC_PLAYLIST": "Publique",
-	"GO_TO": "Allez sur"
+	"GO_TO": "Allez sur",
+	"VOTE_MESSAGE_SCREEN": "Votez pour la prochaine chanson !",
+	"VOTE_MESSAGE_SCREEN_WINNER": "Nous avons un gagnant !",
+	"NEXT_SONG": "Prochaine chanson"
 }

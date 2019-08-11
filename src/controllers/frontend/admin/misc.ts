@@ -96,6 +96,10 @@ export default function adminMiscController(router: Router) {
  *	Karaoke: {
  *		Autoplay: false,
  *		CreatePreviews: false,
+ *      StreamerMode: {
+ *         	Enabled: false,
+ * 			PauseDuration: 35
+ * 		}
  *		JinglesInterval: 20,
  *		Private: true,
  *		RepeatPlaylist: false,
