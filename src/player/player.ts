@@ -95,7 +95,6 @@ export async function loadBackground() {
 		];
 		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile, 'replace'));
 		await Promise.all(loads);
-		displayInfo();
 	} catch(err) {
 		logger.error(`[Player] Unable to load background : ${JSON.stringify(err)}`);
 	}
@@ -252,6 +251,7 @@ async function startmpv() {
 	}
 
 	await loadBackground();
+	displayInfo();
 	player.observeProperty('sub-text', 13);
 	player.observeProperty('playtime-remaining', 14);
 	player.observeProperty('eof-reached', 15);
@@ -501,14 +501,14 @@ export function showSubs(): PlayerState {
 	return playerState;
 }
 
-export async function message(message: string, duration: number = 10000) {
+export async function message(message: string, duration: number = 10000, alignCode = 5) {
 	if (!getState().player.ready) throw 'Player is not ready yet!';
-	logger.info(`[Player] I have a message from another time... : ${message}`);
+	const alignCommand = `{\\an${alignCode}}`;
 	const command = {
 		command: [
 			'expand-properties',
 			'show-text',
-			'${osd-ass-cc/0}{\\an5}'+message,
+			'${osd-ass-cc/0}' + alignCommand + message,
 			duration,
 		]
 	};
@@ -520,19 +520,21 @@ export async function message(message: string, duration: number = 10000) {
 	}
 }
 
-export async function displaySongInfo(infos: string) {
+export async function displaySongInfo(infos: string, duration = 8000, nextSong = false) {
 	displayingInfo = true;
+	const nextSongString = nextSong ? `{\\u1}${i18n.t('NEXT_SONG')}{\\u0}\\N` : '';
+	const position = nextSong ? '{\\an5}' : '{\\an1}';
 	const command = {
 		command: [
 			'expand-properties',
 			'show-text',
-			'${osd-ass-cc/0}{\\an1}'+infos,
-			8000,
+			'${osd-ass-cc/0}'+position+nextSongString+infos,
+			duration,
 		]
 	};
 	player.freeCommand(JSON.stringify(command));
 	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
-	await sleep(8000);
+	await sleep(duration);
 	displayingInfo = false;
 }
 

@@ -662,7 +662,7 @@ input[type=range]:focus::-ms-fill-upper {
 #modalBox {
 	z-index: 10010;
 }
-.modal input[type="text"], .modal input[type="password"]:not([exclude="true"]) {
+.modal input[type="text"], .modal input[type="password"]:not([data-exclude="true"]) {
 	height: 50px;
 	max-height: 9vh;
 	border-radius: 0;
@@ -989,7 +989,7 @@ input[type=range]:focus::-ms-fill-upper {
 
 /* dark theme */
 
-input[type="text"], input[type="password"]:not([exclude="true"]) {
+input[type="text"], input[type="password"]:not([data-exclude="true"]) {
     height: inherit;
     width: calc(100% - 0rem);
     border: 0;

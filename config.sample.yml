@@ -61,6 +61,16 @@ Gitlab:
 Karaoke:
   # Autostart playing songs if no song is playing and a song is added
   Autoplay: false
+  # Classic (Karaoke box) mode
+  ClassicMode: false
+  # Streamer mode options. PauseDuration is in seconds
+  StreamerMode:
+    Enabled: false
+    PauseDuration: 15
+    Twitch:
+      Enabled: false
+      OAuth: 'abcdefgh'
+      Channel: 'AxelTerizaki'
   # Number of songs between jingles
   JinglesInterval: 20
   # Private karaoke mode or public karaoke mode.

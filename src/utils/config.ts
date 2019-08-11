@@ -21,6 +21,7 @@ import { emitWS } from '../lib/utils/ws';
 import { emit } from '../lib/utils/pubsub';
 import { BinariesConfig } from '../types/binChecker';
 import { exit } from '../services/engine';
+import { initTwitch, stopTwitch } from './twitch';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editSetting(part: object) {
@@ -51,15 +52,16 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			updateSongsLeft(user.login, getState().modePlaylistID);
 		};
 	}
-
 	const config = setConfig(newConfig);
 	setSongPoll(config.Karaoke.Poll.Enabled);
+	// Toggling twitch
+	config.Karaoke.StreamerMode.Twitch.Enabled
+		? initTwitch()
+		: stopTwitch();
 	// Toggling stats
-	if (config.Online.Stats) {
-		initStats(newConfig.Online.Stats === oldConfig.Online.Stats);
-	} else {
-		stopStats();
-	}
+	config.Online.Stats
+		? initStats(newConfig.Online.Stats === oldConfig.Online.Stats)
+		: stopStats();
 	// Toggling and updating settings
 	setState({private: config.Karaoke.Private});
 	configureHost();
@@ -113,6 +115,7 @@ export function getPublicConfig() {
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.Database;
 	delete publicSettings.System;
+	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxxxxxxxxxxx'
 	return publicSettings;
 }
 

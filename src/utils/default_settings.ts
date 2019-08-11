@@ -56,6 +56,14 @@ export const defaults: Config = {
 	},
 	Karaoke: {
 		Autoplay: false,
+		ClassicMode: false,
+		StreamerMode: {
+			Enabled: false,
+			PauseDuration: 0,
+			Twitch: {
+				Enabled: false
+			}
+		},
 		JinglesInterval: 20,
 		Private: true,
 		Repeat: false,
@@ -172,6 +180,9 @@ export const configConstraints = {
 	'Frontend.Mode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
 	'Frontend.SeriesLanguageMode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	'Karaoke.Autoplay': {inclusion : bools},
+	'Karaoke.ClassicMode': {inclusion : bools},
+	'Karaoke.StreamerMode.Enabled': {inclusion: bools},
+	'Karaoke.StreamerMode.PauseDuration': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Karaoke.Private': {inclusion : bools},
 	'Karaoke.Repeat': {inclusion : bools},
 	'Karaoke.SmartInsert': {inclusion : bools},

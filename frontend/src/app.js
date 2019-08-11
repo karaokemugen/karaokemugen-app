@@ -10,6 +10,8 @@ import NotFoundPage from './components/NotfoundPage'
 import langs from "langs";
 import axios from "axios";
 import { readCookie, parseJwt, createCookie, eraseCookie, getSocket } from "./components/tools"
+import Modal from './components/modals/Modal';
+import ClassicModeModal from './components/modals/ClassicModeModal';
 class App extends Component {
     constructor(props) {
         super(props);
@@ -17,12 +19,14 @@ class App extends Component {
             navigatorLanguage: this.getNavigatorLanguage(),
             logInfos: this.getLogInfos(),
             admpwd: window.location.search.indexOf('admpwd') ? window.location.search.split("=")[1] : undefined,
-            shutdownPopup: false
+            shutdownPopup: false,
+            classicModeModal: false
         }
         this.getSettings = this.getSettings.bind(this);
         this.updateLogInfos = this.updateLogInfos.bind(this);
         this.powerOff = this.powerOff.bind(this);
         this.logOut = this.logOut.bind(this);
+        this.displayClassicModeModal = this.displayClassicModeModal.bind(this);
         axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     }
@@ -95,8 +99,19 @@ class App extends Component {
         getSocket().on('settingsUpdated', this.getSettings);
         getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
         getSocket().on('disconnect', () => this.setState({ shutdownPopup: true }));
+        getSocket().on('playerStatus', this.displayClassicModeModal);
         const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
         this.setState({tags: tags.concat(series, years)});
+    }
+
+    async displayClassicModeModal(data) {
+        if (data.status === 'stop' && data.playerStatus === 'pause' && data.currentRequester === this.state.logInfos.username && !this.state.classicModeModal) {
+            ReactDOM.render(<Suspense fallback={<div>loading...</div>}><ClassicModeModal /></Suspense>, document.getElementById('modal'));
+            this.setState({classicModeModal: true});
+        } else if (data.playerStatus !== 'pause' && this.state.classicModeModal) {
+            ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
+            this.setState({classicModeModal: false});
+        }
     }
 
     async getSettings() {
