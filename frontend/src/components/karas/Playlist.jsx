@@ -362,9 +362,10 @@ class Playlist extends Component {
     this.setState({ data: data });
   }
 
-  addAllKaras() {
-    var karaList = this.state.data.content.map(a => a.kid).join();
-    displayMessage('info', 'Info', 'Ajout de ' + this.state.data.content.length + ' karas');
+  async addAllKaras() {
+    var response = await axios.get(`${this.getPlaylistUrl()}?filter=${this.props.filterValue}`);
+    var karaList = response.data.data.content.map(a => a.kid).join();
+    displayMessage('info', 'Info', 'Ajout de ' + response.data.data.content.length + ' karas');
     axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
   }
 
