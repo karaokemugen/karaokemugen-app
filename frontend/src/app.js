@@ -75,14 +75,14 @@ class App extends Component {
         const response = await axios.get('/api/public/tags');
 		return response.data.data.content.filter(val => val.karacount > 0).map(val => {
             var trad = val.i18n[this.state.navigatorLanguage];
-            return {id:val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount};
+            return {value:val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount};
         });
     }
 
     async parseSeries() {
         const response = await axios.get('/api/public/series');
 		return response.data.data.content.map(val => {
-            return {id:val.sid, label: val.i18n_name, type: ['serie'],
+            return {value:val.sid, label: val.i18n_name, type: ['serie'],
                 aliases : val.aliases, karacount : val.karacount};
         });
     }
@@ -90,7 +90,7 @@ class App extends Component {
     async parseYears() {
         const response = await axios.get('/api/public/years');
         return response.data.data.content.map(val =>{
-            return {id:val.year, label: val.year, type: ['year'], karacount: val.karacount};
+            return {value:val.year, label: val.year, type: ['year'], karacount: val.karacount};
         });
     }
 

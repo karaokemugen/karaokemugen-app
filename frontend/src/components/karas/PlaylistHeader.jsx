@@ -4,6 +4,7 @@ import axios from "axios";
 import getLucky from "../../assets/clover.png"
 import ActionsButtons from "./ActionsButtons";
 import { buildKaraTitle, displayMessage, callModal } from '../tools';
+import Autocomplete from "../generic/Autocomplete";
 
 var tagsTypesList = [
   'DETAILS_SERIE',
@@ -294,9 +295,9 @@ class PlaylistHeader extends Component {
     this.props.getPlaylist(searchType);
   }
 
-  onChangeTags(e) {
+  onChangeTags(value) {
     this.setState({activeFilter: 5});
-    this.props.onChangeTags(this.state.tagType, e.target.value)
+    this.props.onChangeTags(this.state.tagType, value);
   }
 
   render() {
@@ -382,12 +383,9 @@ class PlaylistHeader extends Component {
                       </select>
                     </span>
                     <span className="tagsContainer">
-                      <select type="text" className="tags form-control value" placeholder="Search" 
-                        onChange={this.onChangeTags}>
-                        {this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).map(tag => {
-                          return <option key={tag.id} value={tag.id}>{tag.label + " : " + tag.karacount}</option>
-                        })}
-                      </select>
+                      <Autocomplete className="tags form-control value" value={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))[0].value}
+                                      options={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))}
+                                      onChange={this.onChangeTags} />
                     </span>
                   </span>
                   <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="glyphicon glyphicon-filter"></i> {i18next.t("FILTER")}</a>
