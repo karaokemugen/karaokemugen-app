@@ -537,14 +537,37 @@ class Playlist extends Component {
             <ul id={"playlist" + this.props.side} className="list-group">
               {
                 this.state.idPlaylist !== -4 && this.state.data
-                  ? <SortableList 
+                  ? (!is_touch_device() && this.props.scope === 'admin' ?
+                  <SortableList 
                       lockAxis="y"
                       pressDelay={is_touch_device() ? 150 : 0}
                       helperClass="playlist-dragged-item"
                       useDragHandle={!is_touch_device()}
                       onSortEnd={this.onSortEnd.bind(this)}
-                      />
-                  : null
+                      /> : this.state.data.content.map(kara => {
+                        return (
+                          <li className="playlist-dragged-item" key={Math.random()} data-kid={kara.kid}>
+                            <KaraLine
+                              key={kara.kid}
+                              kara={kara}
+                              scope={this.props.scope}
+                              idPlaylist={this.state.idPlaylist}
+                              playlistInfo={this.state.playlistInfo}
+                              i18nTag={this.state.data.i18n}
+                              navigatorLanguage={this.props.navigatorLanguage}
+                              playlistToAddId={this.state.playlistToAddId}
+                              side={this.props.side}
+                              mode={this.props.config.Frontend.Mode}
+                              logInfos={this.props.logInfos}
+                              playlistCommands={this.state.playlistCommands}
+                              idPlaylistTo={this.props.idPlaylistTo}
+                              checkKara={this.checkKara}
+                              handleDragStart={this.handleDragStart}
+                              handleDragEnd={this.handleDragEnd}
+                            />
+                          </li>)
+                      })
+                  ) : null
               }
               {this.state.idPlaylist !== -4 ?
                 <React.Fragment>
