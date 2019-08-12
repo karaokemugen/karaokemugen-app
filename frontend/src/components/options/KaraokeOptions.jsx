@@ -188,7 +188,7 @@ class KaraokeOptions extends Component {
           </div>
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("CLASSIC_MODE")}
+              {i18next.t("CLASSIC_MODE")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.ClassicMode" handleChange={this.onChange}
@@ -197,7 +197,7 @@ class KaraokeOptions extends Component {
           </div>
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("STREAM_MODE")}
+              {i18next.t("STREAM_MODE")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.StreamerMode.Enabled" handleChange={this.onChange}
@@ -211,7 +211,7 @@ class KaraokeOptions extends Component {
             >
               <div className="form-group">
                 <label className="col-xs-4 control-label">
-                  {t("STREAM_PAUSE_DURATION")}
+                  {i18next.t("STREAM_PAUSE_DURATION")}
                 </label>
                 <div className="col-xs-6">
                   <input
@@ -226,7 +226,7 @@ class KaraokeOptions extends Component {
               </div>
               <div className="form-group">
                 <label className="col-xs-4 control-label">
-                  {t("STREAM_TWITCH")}
+                  {i18next.t("STREAM_TWITCH")}
                 </label>
                 <div className="col-xs-6">
                   <Switch idInput="Karaoke.StreamerMode.Twitch.Enabled" handleChange={this.onChange}
@@ -239,11 +239,11 @@ class KaraokeOptions extends Component {
                   className="well well-sm settingsGroupPanel"
                 >
                   <div className="form-group">
-                    <a className="col-xs-4 control-label" href="https://twitchapps.com/tmi/" target='_blank'>{t("STREAM_TWITCH_OAUTH_TOKEN_GET")}</a>
+                    <a className="col-xs-4 control-label" href="https://twitchapps.com/tmi/" target='_blank'>{i18next.t("STREAM_TWITCH_OAUTH_TOKEN_GET")}</a>
                   </div>
                   <div className="form-group">
                     <label className="col-xs-4 control-label">
-                      {t("STREAM_TWITCH_OAUTH_TOKEN")}
+                      {i18next.t("STREAM_TWITCH_OAUTH_TOKEN")}
                     </label>
                     <div className="col-xs-6">
                       <input type="password"
@@ -257,7 +257,7 @@ class KaraokeOptions extends Component {
                   </div>
                   <div className="form-group">
                     <label className="col-xs-4 control-label">
-                      {t("STREAM_TWITCH_CHANNEL")}
+                      {i18next.t("STREAM_TWITCH_CHANNEL")}
                     </label>
                     <div className="col-xs-6">
                       <input
@@ -416,7 +416,7 @@ class KaraokeOptions extends Component {
         <div id="nav-karaokePublicMode">
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {t("ENGINEFREEUPVOTES")}
+              {i18next.t("ENGINEFREEUPVOTES")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.Quota.FreeUpVote" handleChange={this.onChange}

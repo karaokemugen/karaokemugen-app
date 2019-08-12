@@ -21,11 +21,11 @@ class ClassicModeModal extends Component {
                 <div className={modalDialogClass}>
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">{t("CLASSIC_MODE_TITLE_MODAL")}</h4>
+                            <h4 className="modal-title">{i18next.t("CLASSIC_MODE_TITLE_MODAL")}</h4>
                         </div>
                         <div className="modal-body"
                             style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
-                            <div className="modal-message">{t("CLASSIC_MODE_TEXT_MODAL")}</div>
+                            <div className="modal-message">{i18next.t("CLASSIC_MODE_TEXT_MODAL")}</div>
                             <button className="btn btn-default" type="button" onClick={this.playSong}
                                 style={{
                                     width: "75px",
