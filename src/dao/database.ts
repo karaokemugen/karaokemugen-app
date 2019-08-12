@@ -10,6 +10,7 @@ import {isShutdownPG, initPG} from '../utils/postgresql';
 import { baseChecksum } from './dataStore';
 import { DBStats } from '../types/database/database';
 import { getSettings, saveSetting, connectDB, db, vacuum } from '../lib/dao/database';
+import { generateBlacklist } from '../services/blacklist';
 
 const sql = require('./sql/database');
 
@@ -132,7 +133,7 @@ export async function initDBSystem(): Promise<boolean> {
 	}
 	// Run this in the background
 	vacuum();
-
+	generateBlacklist();
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
 	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
