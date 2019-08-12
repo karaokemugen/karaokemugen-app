@@ -20,7 +20,8 @@ class AdminPage extends Component {
       onlineStatsModal: this.props.settings.config.Online.Stats === undefined,
       idsPlaylist: { left: '', right: '' },
       searchMenuOpen: false,
-      filterValue: ""
+      filterValue1: "",
+      filterValue2: ""
     };
     this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
     this.toggleSearchMenu = this.toggleSearchMenu.bind(this);
@@ -48,8 +49,12 @@ class AdminPage extends Component {
     this.setState({searchMenuOpen: !this.state.searchMenuOpen});
   }
 
-  changeFilterValue(e) {
-    this.setState({ filterValue: e.target.value });
+  changeFilterValue(e, side) {
+    if (side === 1) {
+      this.setState({ filterValue1: e.target.value });
+    } else {
+      this.setState({ filterValue2: e.target.value });
+    }
   }
 
   render() {
@@ -101,7 +106,7 @@ class AdminPage extends Component {
                   toggleSearchMenu={this.toggleSearchMenu}
                   searchMenuOpen={this.state.searchMenuOpen}
                   changeFilterValue={this.changeFilterValue}
-                  filterValue={this.state.filterValue} 
+                  filterValue={this.state.filterValue1} 
                   />
                 <Playlist
                   scope='admin'
@@ -113,7 +118,7 @@ class AdminPage extends Component {
                   majIdsPlaylist={this.majIdsPlaylist}
                   tags={this.props.tags}
                   changeFilterValue={this.changeFilterValue}
-                  filterValue={this.state.filterValue} 
+                  filterValue={this.state.filterValue2} 
                   />
               </PlaylistMainDecorator>
             }

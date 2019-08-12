@@ -28,7 +28,8 @@ class PublicPage extends Component {
       helpModal: false,
       lyrics: false,
       restrictedHelpModal: this.props.settings.config.Frontend.Mode === 1,
-      filterValue: "",
+      filterValue1: "",
+      filterValue2: "",
       pseudoValue: "",
       mobileMenu: false,
       idsPlaylist: {left: '', right: ''},
@@ -108,8 +109,12 @@ class PublicPage extends Component {
     this.setState({searchMenuOpen: !this.state.searchMenuOpen});
   }
 
-  changeFilterValue(e) {
-    this.setState({ filterValue: e.target.value });
+  changeFilterValue(e, side) {
+    if (side === 1) {
+      this.setState({ filterValue1: e.target.value });
+    } else {
+      this.setState({ filterValue2: e.target.value });
+    }
   }
 
   render() {
@@ -157,7 +162,7 @@ class PublicPage extends Component {
                       <div className="plSearch" style={{ width: (this.props.logInfos.role != 'guest' ? "" : "100%") }}>
                         <i className="fas fa-search"></i>
                         <input type="text" className="form-control" side="1" name="searchPlaylist"
-                          defaultValue={this.state.filterValue} onKeyDown={this.changeFilterValue} />
+                          defaultValue={this.state.filterValue} onChange={(e) => this.changeFilterValue(e, 1)} />
                       </div>
 
                       <button title={i18next.t("GET_LUCKY")} className="btn btn-lg btn-action btn-default getLucky" onClick={this.getLucky}>
@@ -238,7 +243,7 @@ class PublicPage extends Component {
                       toggleSearchMenu={this.toggleSearchMenu}
                       searchMenuOpen={this.state.searchMenuOpen} 
                       changeFilterValue={this.changeFilterValue}
-                      filterValue={this.state.filterValue} />
+                      filterValue={this.state.filterValue1} />
                     <Playlist
                       scope='public'
                       side={2}
@@ -248,7 +253,7 @@ class PublicPage extends Component {
                       idPlaylistTo={this.state.idsPlaylist.left}
                       majIdsPlaylist={this.majIdsPlaylist}
                       changeFilterValue={this.changeFilterValue}
-                      filterValue={this.state.filterValue} />
+                      filterValue={this.state.filterValue2} />
                   </PlaylistMainDecorator>
                 </KmAppBodyDecorator>
 
