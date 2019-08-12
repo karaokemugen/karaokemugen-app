@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from "react-i18next";
+import i18next from 'i18next';
 import { is_touch_device, secondsTimeSpanToHMS, displayMessage, callModal } from "../tools";
 import axios from "axios";
 
@@ -45,7 +45,7 @@ class KaraDetail extends Component {
           ? secondsTimeSpanToHMS(timeAgo, "hm")
           : secondsTimeSpanToHMS(timeAgo, "ms");
 
-      return this.props.t("DETAILS_LAST_PLAYED_2", { time: timeAgoStr });
+      return i18next.t("DETAILS_LAST_PLAYED_2", { time: timeAgoStr });
     } else if (lastPlayed_at) {
       return new Date(lastPlayed_at).toLocaleDateString();
     }
@@ -122,7 +122,7 @@ class KaraDetail extends Component {
           displayMessage(
             "warning",
             "",
-            this.props.t("NO_EXT_INFO", serie)
+            i18next.t("NO_EXT_INFO", serie)
           );
         }
       }
@@ -147,7 +147,7 @@ class KaraDetail extends Component {
   async showFullLyrics() {
     var response = await axios.get("/api/public/karas/" + this.state.kara.kid + "/lyrics");
     if (is_touch_device()) {
-      callModal('alert', this.props.t('LYRICS'), '<center>' + response.data.data.join('<br/>') + '</center');
+      callModal('alert', i18next.t('LYRICS'), '<center>' + response.data.data.join('<br/>') + '</center');
     } else {
       this.setState({ lyrics: response.data.data, showLyrics:true });
       this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });
@@ -189,12 +189,12 @@ class KaraDetail extends Component {
         UPVOTE_NUMBER: data.upvotes,
         DETAILS_ADDED:
           (data.created_at
-            ? this.props.t("DETAILS_ADDED_2") +
+            ? i18next.t("DETAILS_ADDED_2") +
             new Date(data.created_at).toLocaleDateString()
             : "") +
-          (data.nickname ? " " + this.props.t("DETAILS_ADDED_3") + data.nickname : ""),
+          (data.nickname ? " " + i18next.t("DETAILS_ADDED_3") + data.nickname : ""),
         DETAILS_PLAYING_IN: data.time_before_play
-          ? this.props.t("DETAILS_PLAYING_IN_2", {
+          ? i18next.t("DETAILS_PLAYING_IN_2", {
             time: beforePlayTime,
             date: playTimeDate
           })
@@ -225,7 +225,7 @@ class KaraDetail extends Component {
           var detailsLine = details[k].toString().replace(/,/g, ", ");
           return (
             <tr key={k}>
-              <td> {this.props.t(k)}</td>
+              <td> {i18next.t(k)}</td>
               <td> {detailsLine}</td>
             </tr>
           );
@@ -236,7 +236,7 @@ class KaraDetail extends Component {
       var makeFavButton = (
         <button
           type="button"
-          title={this.props.t("TOOLTIP_FAV")}
+          title={i18next.t("TOOLTIP_FAV")}
           onClick={this.props.makeFavorite}
           className={(this.props.isFavorite ? "currentFav" : "") + " makeFav btn btn-action"}
           ><i className="fas fa-star"></i></button>
@@ -247,7 +247,7 @@ class KaraDetail extends Component {
           <div className="lyricsKara alert alert-info" ref={this.fullLyricsRef}>
             <button
               type="button"
-              title={this.props.t("TOOLTIP_CLOSEPARENT")}
+              title={i18next.t("TOOLTIP_CLOSEPARENT")}
               className="closeParent btn btn-action"
               onClick={() => this.setState({showLyrics: false})}
               ><i className="fas fa-times"></i></button>
@@ -263,7 +263,7 @@ class KaraDetail extends Component {
             </div>
             <button
               type="button"
-              title={this.props.t("TOOLTIP_CLOSEPARENT")}
+              title={i18next.t("TOOLTIP_CLOSEPARENT")}
               className="closeParent btn btn-action"
               onClick={() => this.setState({showLyrics: false})}
               ><i className="fas fa-times"></i></button>
@@ -279,7 +279,7 @@ class KaraDetail extends Component {
                 {is_touch_device() ? null : (
                   <button
                     type="button"
-                    title={this.props.t("TOOLTIP_CLOSEPARENT")}
+                    title={i18next.t("TOOLTIP_CLOSEPARENT")}
                     className="closeParent btn btn-action"
                     onClick={this.props.toggleKaraDetail}
                   ><i className="fas fa-times"></i></button>
@@ -291,7 +291,7 @@ class KaraDetail extends Component {
                 {data.subfile ? (
                   <button
                     type="button"
-                    title={this.props.t("TOOLTIP_SHOWLYRICS")}
+                    title={i18next.t("TOOLTIP_SHOWLYRICS")}
                     className={
                       "fullLyrics btn btn-action " +
                       (is_touch_device() ? "mobile" : "")
@@ -301,7 +301,7 @@ class KaraDetail extends Component {
                 ) : null}
                 <button
                   type="button"
-                  title={this.props.t("TOOLTIP_SHOWVIDEO")}
+                  title={i18next.t("TOOLTIP_SHOWVIDEO")}
                   className={
                     "showVideo btn btn-action" +
                     (is_touch_device() ? "mobile" : "")
@@ -320,14 +320,14 @@ class KaraDetail extends Component {
                 {this.props.scope === "admin" && this.props.publicOuCurrent ? (
                   <button
                     type="button"
-                    title={this.props.t("TOOLTIP_UPVOTE")} onClick={this.props.freeKara}
+                    title={i18next.t("TOOLTIP_UPVOTE")} onClick={this.props.freeKara}
                     className={"likeFreeButton btn btn-action " + (data.flag_free ? "btn-primary": "")}
                   ><i className="fas fa-gift"></i></button>
                 ) : null}
                 {this.props.scope === "admin" && this.props.publicOuCurrent ? (
                   <button
                     type="button"
-                    title={data.flag_visible ? this.props.t("TOOLTIP_VISIBLE_OFF") : this.props.t("TOOLTIP_VISIBLE_ON")} onClick={this.changeVisibilityKara}
+                    title={data.flag_visible ? i18next.t("TOOLTIP_VISIBLE_OFF") : i18next.t("TOOLTIP_VISIBLE_ON")} onClick={this.changeVisibilityKara}
                     className={"visibilityButton btn btn-action " + (data.flag_visible ? "": "btn-primary")}
                   ><i className="fas fa-eye-slash"></i></button>
                 ) : null}
@@ -372,4 +372,4 @@ class KaraDetail extends Component {
   }
 }
 
-export default withTranslation()(KaraDetail);
+export default KaraDetail;

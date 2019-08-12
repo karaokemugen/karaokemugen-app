@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from "react-i18next";
+import i18next from 'i18next';
 import KmAppWrapperDecorator from "./decorators/KmAppWrapperDecorator"
 import KmAppHeaderDecorator from "./decorators/KmAppHeaderDecorator"
 import KmAppBodyDecorator from "./decorators/KmAppBodyDecorator"
@@ -59,9 +59,9 @@ class PublicPage extends Component {
     getSocket().on('newSongPoll', () => this.setState({ isPollActive: true, pollModal: true }));
     getSocket().on('songPollEnded', () => this.setState({ isPollActive: false }));
     getSocket().on('songPollResult', () => {
-      displayMessage('success', '', this.props.t('POLLENDED', { kara: data.kara.substring(0, 100), votes: data.votes }));
+      displayMessage('success', '', i18next.t('POLLENDED', { kara: data.kara.substring(0, 100), votes: data.votes }));
     });
-    getSocket().on('adminMessage', data => displayMessage('info', this.props.t('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration));
+    getSocket().on('adminMessage', data => displayMessage('info', i18next.t('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration));
   }
 
   openLoginOrProfileModal() {
@@ -86,7 +86,7 @@ class PublicPage extends Component {
     if (response.data.data && response.data.data.content && response.data.data.content[0]) {
       var chosenOne = response.data.data.content[0].kid;
       var response2 = await axios.get('/api/public/karas/' + chosenOne);
-      callModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
+      callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
         axios.post('/api/public/karas/' + chosenOne, { requestedby: this.props.logInfos.username })
       }, 'lucky');
     }
@@ -120,7 +120,7 @@ class PublicPage extends Component {
             <center style={{ top: "50%", transform: translateY("-50%"), position: "relative" }}>
               <img style={{ maxWidth: "100%", maxHeight: "calc(100vh - 150px)" }}
                 src={webappClose} />
-              <div style={{ fontSize: "30px", padding: "10px" }}>{this.props.t("WEBAPPMODE_CLOSED_MESSAGE")}</div>
+              <div style={{ fontSize: "30px", padding: "10px" }}>{i18next.t("WEBAPPMODE_CLOSED_MESSAGE")}</div>
             </center>
           :
             <React.Fragment>
@@ -160,13 +160,13 @@ class PublicPage extends Component {
                           defaultValue={this.state.filterValue} onKeyDown={this.changeFilterValue} />
                       </div>
 
-                      <button title={this.props.t("GET_LUCKY")} className="btn btn-lg btn-action btn-default getLucky" onClick={this.getLucky}>
+                      <button title={i18next.t("GET_LUCKY")} className="btn btn-lg btn-action btn-default getLucky" onClick={this.getLucky}>
                         <img src={getLuckyImage} />
                       </button>
 
                       {this.props.logInfos.role != 'guest' ?
                         <div className="pseudoChange">
-                          <input list="pseudo" type="text" id="choixPseudo" className="form-control" placeholder={this.props.t("NICKNAME")} 
+                          <input list="pseudo" type="text" id="choixPseudo" className="form-control" placeholder={i18next.t("NICKNAME")} 
                           onBlur={this.changePseudo} onKeyPress={(e) => {if (e.which == 13) this.changePseudo(e)}} />
                         </div> : null
                       }
@@ -178,13 +178,13 @@ class PublicPage extends Component {
                         {this.state.dropDownMenu ?
                           <ul className="dropdown-menu">
                             <li><a href="#" className="changePseudo" onClick={this.openLoginOrProfileModal}>
-                              <i className="glyphicon glyphicon-user"></i> {this.props.t("ACCOUNT")}</a>
+                              <i className="glyphicon glyphicon-user"></i> {i18next.t("ACCOUNT")}</a>
                             </li>
                             <li><a href="/admin" id="logAdmin" target="_blank"><i className="glyphicon glyphicon-wrench"></i> Admin</a></li>
                             <li><a href="#" className="showSettings" onClick={this.toggleHelpModal}>
-                              <i className="glyphicon glyphicon-info-sign"></i> {this.props.t("HELP")}</a>
+                              <i className="glyphicon glyphicon-info-sign"></i> {i18next.t("HELP")}</a>
                             </li>
-                            <li><a href="#" className="logout" onClick={this.props.logOut}><i className="glyphicon glyphicon-log-out"></i> {this.props.t("LOGOUT")}</a></li>
+                            <li><a href="#" className="logout" onClick={this.props.logOut}><i className="glyphicon glyphicon-log-out"></i> {i18next.t("LOGOUT")}</a></li>
                           </ul> : null
                         }
                       </div>
@@ -198,16 +198,16 @@ class PublicPage extends Component {
                         {is_touch_device() ?
                           null :
                           <RadioButton
-                            title={this.props.t("SWITCH_OPTIONS")}
+                            title={i18next.t("SWITCH_OPTIONS")}
                             name="publicSwitchButton"
                             buttons={[
                               {
-                                label: this.props.t("SWITCH_BAR_INFOS_TITLE"),
+                                label: i18next.t("SWITCH_BAR_INFOS_TITLE"),
                                 active: !this.state.lyrics,
                                 onClick: this.setLyrics,
                               },
                               {
-                                label: this.props.t("SWITCH_BAR_INFOS_LYRICS"),
+                                label: i18next.t("SWITCH_BAR_INFOS_LYRICS"),
                                 active: this.state.lyrics,
                                 onClick: this.setLyrics,
 
@@ -309,4 +309,4 @@ class PublicPage extends Component {
   }
 }
 
-export default withTranslation()(PublicPage);
+export default PublicPage;

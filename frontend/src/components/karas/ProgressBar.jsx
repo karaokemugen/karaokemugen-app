@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import axios from "axios";
 import { is_touch_device, buildKaraTitle, getSocket } from "../tools";
 
@@ -16,7 +16,7 @@ class ProgressBar extends Component {
             refreshTime: 1000,
             // String : status of the player
             status: undefined,
-            karaInfoText: this.props.t("KARA_PAUSED_WAITING"),
+            karaInfoText: i18next.t("KARA_PAUSED_WAITING"),
             length: -1
         };
         this.mouseDown = this.mouseDown.bind(this);
@@ -82,9 +82,9 @@ class ProgressBar extends Component {
         if (this.state.oldState != data) {
             if (data.currentlyPlaying !== this.state.oldState.currentlyPlaying) {
                 if (data.currentlyPlaying === null) {
-                    this.setState({karaInfoText: this.props.t('KARA_PAUSED_WAITING'), length: -1})
+                    this.setState({karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1})
                 } else if (data.currentlyPlaying === -1) {
-                    this.setState({karaInfoText: this.props.t('JINGLE_TIME'), length: -1})
+                    this.setState({karaInfoText: i18next.t('JINGLE_TIME'), length: -1})
                 } else {
                     var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
                     var kara = response.data.data;
@@ -148,4 +148,4 @@ class ProgressBar extends Component {
     }
 }
 
-export default withTranslation()(ProgressBar);
+export default ProgressBar;

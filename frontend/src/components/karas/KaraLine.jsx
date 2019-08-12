@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from "react-i18next";
+import i18next from 'i18next';
 import { is_touch_device } from "../tools";
 import KaraDetail from "./KaraDetail";
 import axios from "axios";
@@ -85,9 +85,9 @@ class KaraLine extends Component {
   async addKara() {
     try {
       var response = await axios.post('/api/public/karas/' + this.props.kara.kid, { requestedby: this.props.logInfos.token ? this.props.logInfos.username : '' });
-      displayMessage('success', 'Success', this.props.t(response.data.code));
+      displayMessage('success', 'Success', i18next.t(response.data.code));
     } catch (error) {
-      displayMessage('warning', 'Warning', this.props.t(error.response.data.code));
+      displayMessage('warning', 'Warning', i18next.t(error.response.data.code));
     }
   }
 
@@ -137,24 +137,24 @@ class KaraLine extends Component {
                   : <i className="far fa-square"></i>}
                 </span> : null}
             <div className="infoDiv">
-              {scope === 'admin' || !is_touch_device() ? <button title={this.props.t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
+              {scope === 'admin' || !is_touch_device() ? <button title={i18next.t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
                 style={this.state.karaDetailState ? { borderColor: '#8aa9af' } : {}} onClick={this.toggleKaraDetail}
               >
                 <i className="fas fa-info-circle"></i>
               </button> : null}
               {scope === 'public' && this.props.logInfos.role !== 'guest' ?
-                <button title={this.props.t('TOOLTIP_FAV')} onClick={this.makeFavorite}
+                <button title={i18next.t('TOOLTIP_FAV')} onClick={this.makeFavorite}
                   className={"makeFav btn-sm btn btn-action "
                     + (is_touch_device() ? 'mobile' : '')
                     + (kara.flag_favorites || idPlaylist === -5 ? 'currentFav' : '')}>
                     <i className="fas fa-star"></i>
                 </button> : null}
-              {scope === 'admin' && idPlaylist > 0 ? <button title={this.props.t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara" 
+              {scope === 'admin' && idPlaylist > 0 ? <button title={i18next.t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara" 
                 onClick={this.playKara}><i className="fas fa-play"></i></button> : null}
               {scope !== 'admin' && this.props.flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? 'currentLike' : ''} 
                 onClick={this.likeKara}><i className="fas fa-thumbs-up"></i></button> : null}
               {scope !== 'admin' && kara.username == this.props.logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
-                <button title={this.props.t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
+                <button title={i18next.t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
             </div>
             <div className="contentDiv">
               <div>{buildKaraTitle(kara)}</div>
@@ -175,7 +175,7 @@ class KaraLine extends Component {
                   return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
                 })}
                 {kara.upvotes ?
-                  <div className="tag likeCount" title={this.props.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
+                  <div className="tag likeCount" title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
                     {kara.upvotes}<i className="glyphicon glyphicon-heart"></i>
                   </div> : null
                 }
@@ -194,4 +194,4 @@ class KaraLine extends Component {
   }
 }
 
-export default withTranslation()(KaraLine);
+export default KaraLine;

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from "react-i18next";
+import i18next from 'i18next';
 import { expand, getSocket, callModal } from "./tools";
 import axios from "axios";
 import RadioButton from "./generic/RadioButton";
@@ -69,12 +69,12 @@ class AdminHeader extends Component {
       "custom",
       "Message indispensable",
       '<select class="form-control" name="destination"><option value="screen">' +
-        this.props.t("CL_SCREEN") +
+        i18next.t("CL_SCREEN") +
         "</option>" +
         '<option value="users">' +
-        this.props.t("CL_USERS") +
+        i18next.t("CL_USERS") +
         '</option><option value="all">' +
-        this.props.t("CL_ALL") +
+        i18next.t("CL_ALL") +
         "</option></select>" +
         '<input type="text"name="duration" placeholder="5000 (ms)"/>' +
         '<input type="text" placeholder="Message" class="form-control" id="message" name="message">',
@@ -111,7 +111,7 @@ class AdminHeader extends Component {
             {this.state.dropDownMenu ?
               <ul className="dropdown-menu">
                 <li
-                  title={this.props.t("ACCOUNT")}
+                  title={i18next.t("ACCOUNT")}
                   action="account"
                   className="btn btn-default btn-dark"
                   onClick={this.props.toggleProfileModal}
@@ -119,13 +119,13 @@ class AdminHeader extends Component {
                   <i className="fas fa-user"></i>
                 </li>
                 <li
-                  title={this.props.t("LOGOUT")} onClick={this.props.logOut}
+                  title={i18next.t("LOGOUT")} onClick={this.props.logOut}
                   className="btn btn-default btn-dark"
                 >
                   <i className="fas fa-sign-out-alt"></i>
                 </li>
                 <li
-                  title={this.props.t("SHUTDOWN")}
+                  title={i18next.t("SHUTDOWN")}
                   className="btn btn-default btn-dark"
                   onClick={this.props.powerOff}
                 >
@@ -136,7 +136,7 @@ class AdminHeader extends Component {
           </div>
 
           <button
-            title={this.props.t("MESSAGE")}
+            title={i18next.t("MESSAGE")}
             id="adminMessage"
             className="btn btn-dark messageButton"
             onClick={this.adminMessage}
@@ -145,7 +145,7 @@ class AdminHeader extends Component {
           </button>
 
           <button
-            title={this.props.t("SHOW_HIDE_SUBS")}
+            title={i18next.t("SHOW_HIDE_SUBS")}
             id="showSubs"
             namecommand={this.state.statusPlayer.showSubs ? "hideSubs" : "showSubs"}
             className="btn btn-dark subtitleButton"
@@ -163,7 +163,7 @@ class AdminHeader extends Component {
 
           <button 
             type="button"
-            title={this.props.t("MUTE_UNMUTE")}
+            title={i18next.t("MUTE_UNMUTE")}
             id="mutestatus"
             name="mute"
             className="btn btn-dark volumeButton"
@@ -182,7 +182,7 @@ class AdminHeader extends Component {
                 )
             }
             <input
-              title={this.props.t("VOLUME_LEVEL")}
+              title={i18next.t("VOLUME_LEVEL")}
               namecommand="setVolume"
               id="volume"
               defaultValue={volume}
@@ -196,18 +196,18 @@ class AdminHeader extends Component {
 
           <div className="header-group switchs">
             <RadioButton
-              title={this.props.t("SWITCH_PRIVATE")}
+              title={i18next.t("SWITCH_PRIVATE")}
               name="Karaoke.Private"
               buttons={[
                 {
-                  label:this.props.t("PRIVATE"),
+                  label:i18next.t("PRIVATE"),
                   active:this.state.privateMode,
                   activeColor:"#994240",
                   onClick:() => this.saveMode(true),
                   
                 },
                 {
-                  label:this.props.t("PUBLIC"),
+                  label:i18next.t("PUBLIC"),
                   active:!this.state.privateMode,
                   activeColor:"#57bb00",
                   onClick:() => this.saveMode(false),
@@ -216,16 +216,16 @@ class AdminHeader extends Component {
               ]}
             ></RadioButton>
               <RadioButton
-              title={this.props.t("SWITCH_OPTIONS")}
+              title={i18next.t("SWITCH_OPTIONS")}
               name="optionsButton"
               buttons={[
                 {
-                  label:this.props.t("CL_PLAYLISTS"),
+                  label:i18next.t("CL_PLAYLISTS"),
                   active:!this.props.options,
                   onClick:this.props.setOptionMode,
                 },
                 {
-                  label:this.props.t("OPTIONS"),
+                  label:i18next.t("OPTIONS"),
                   active:this.props.options,
                   onClick:this.props.setOptionMode,
                   
@@ -235,19 +235,19 @@ class AdminHeader extends Component {
           </div>
           <div className="header-group switchs">
             <RadioButton
-                title={this.props.t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN")}
+                title={i18next.t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN")}
                 name="Playlist.MysterySongs.AddedSongVisibilityAdmin"
                 orientation="vertical"
                 buttons={[
                   {
-                    label:this.props.t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL"),
+                    label:i18next.t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL"),
                     active:!this.state.songVisibilityOperator,
                     activeColor:"#57bb00",
                     onClick:() => this.saveOperatorAdd(false),
                     
                   },
                   {
-                    label:this.props.t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY"),
+                    label:i18next.t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY"),
                     active:this.state.songVisibilityOperator,
                     activeColor:"#994240",
                     onClick:() => this.saveOperatorAdd(true),
@@ -258,7 +258,7 @@ class AdminHeader extends Component {
           </div>
           <div className="header-group controls">
             <button
-              title={this.props.t("STOP_AFTER")}
+              title={i18next.t("STOP_AFTER")}
               id="stopAfter"
               namecommand="stopAfter"
               className="btn btn-danger-low"
@@ -267,7 +267,7 @@ class AdminHeader extends Component {
               <i className="fas fa-clock"></i>
             </button>
             <button
-              title={this.props.t("STOP_NOW")}
+              title={i18next.t("STOP_NOW")}
               id="stopNow"
               namecommand="stopNow"
               className="btn btn-danger"
@@ -276,7 +276,7 @@ class AdminHeader extends Component {
               <i className="fas fa-stop"></i>
             </button>
             <button
-              title={this.props.t("REWIND")}
+              title={i18next.t("REWIND")}
               id="goTo"
               namecommand="goTo"
               defaultValue="0"
@@ -287,7 +287,7 @@ class AdminHeader extends Component {
             </button>
 
             <button
-              title={this.props.t("PREVIOUS_SONG")}
+              title={i18next.t("PREVIOUS_SONG")}
               id="prev"
               namecommand="prev"
               className="btn btn-default"
@@ -296,7 +296,7 @@ class AdminHeader extends Component {
               <i className="fas fa-chevron-left"></i>
             </button>
             <button
-              title={this.props.t("PLAY_PAUSE")}
+              title={i18next.t("PLAY_PAUSE")}
               id="status"
               namecommand={this.state.statusPlayer.playerStatus === "play" ? "pause" : "play"}
               className="btn btn-primary"
@@ -309,7 +309,7 @@ class AdminHeader extends Component {
               )}
             </button>
             <button
-              title={this.props.t("NEXT_SONG")}
+              title={i18next.t("NEXT_SONG")}
               id="skip"
               namecommand="skip"
               className="btn btn-default"
@@ -323,4 +323,4 @@ class AdminHeader extends Component {
   }
 }
 
-export default withTranslation()(AdminHeader);
+export default AdminHeader;

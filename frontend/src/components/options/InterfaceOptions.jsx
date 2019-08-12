@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import Switch from '../generic/Switch';
 import { dotify } from '../tools';
 
@@ -26,7 +26,7 @@ class InterfaceOptions extends Component {
       <React.Fragment>
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {this.props.t("WEBAPPMODE")}
+            {i18next.t("WEBAPPMODE")}
           </label>
           <div className="col-xs-6">
             <select
@@ -36,16 +36,16 @@ class InterfaceOptions extends Component {
               onChange={this.onChange}
               value={this.state.settings["Frontend.Mode"]}
             >
-              <option value="0">{this.props.t("WEBAPPMODE_CLOSED")}</option>
-              <option value="1">{this.props.t("WEBAPPMODE_LIMITED")}</option>
-              <option value="2">{this.props.t("WEBAPPMODE_OPEN")}</option>
+              <option value="0">{i18next.t("WEBAPPMODE_CLOSED")}</option>
+              <option value="1">{i18next.t("WEBAPPMODE_LIMITED")}</option>
+              <option value="2">{i18next.t("WEBAPPMODE_OPEN")}</option>
             </select>
           </div>
         </div>
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {this.props.t("SERIE_NAME_MODE")}
+            {i18next.t("SERIE_NAME_MODE")}
           </label>
           <div className="col-xs-6">
             <select
@@ -55,17 +55,17 @@ class InterfaceOptions extends Component {
               onChange={this.onChange}
               value={this.state.settings["Frontend.SeriesLanguageMode"]}
             >
-              <option value="0">{this.props.t("SERIE_NAME_MODE_ORIGINAL")}</option>
-              <option value="1">{this.props.t("SERIE_NAME_MODE_SONG")}</option>
-              <option value="2">{this.props.t("SERIE_NAME_MODE_ADMIN")}</option>
-              <option value="3">{this.props.t("SERIE_NAME_MODE_USER")}</option>
+              <option value="0">{i18next.t("SERIE_NAME_MODE_ORIGINAL")}</option>
+              <option value="1">{i18next.t("SERIE_NAME_MODE_SONG")}</option>
+              <option value="2">{i18next.t("SERIE_NAME_MODE_ADMIN")}</option>
+              <option value="3">{i18next.t("SERIE_NAME_MODE_USER")}</option>
             </select>
           </div>
         </div>
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {this.props.t("ENGINEALLOWVIEWBLACKLIST")}
+            {i18next.t("ENGINEALLOWVIEWBLACKLIST")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Frontend.Permissions.AllowViewBlacklist" handleChange={this.onChange}
@@ -75,7 +75,7 @@ class InterfaceOptions extends Component {
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {this.props.t("ENGINEALLOWVIEWBLACKLISTCRITERIAS")}
+            {i18next.t("ENGINEALLOWVIEWBLACKLISTCRITERIAS")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Frontend.Permissions.AllowViewBlacklistCriterias" handleChange={this.onChange}
@@ -85,7 +85,7 @@ class InterfaceOptions extends Component {
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {this.props.t("ENGINEALLOWVIEWWHITELIST")}
+            {i18next.t("ENGINEALLOWVIEWWHITELIST")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Frontend.Permissions.AllowViewWhitelist" handleChange={this.onChange}
@@ -97,4 +97,4 @@ class InterfaceOptions extends Component {
   }
 }
 
-export default withTranslation()(InterfaceOptions);
+export default InterfaceOptions;

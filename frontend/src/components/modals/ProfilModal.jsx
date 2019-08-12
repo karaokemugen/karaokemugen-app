@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import iso639 from 'iso-639';
 import axios from 'axios';
 import Autocomplete from '../generic/Autocomplete'
@@ -68,24 +68,24 @@ class ProfilModal extends Component {
     }
 
     profileConvert() {
-        callModal('custom', this.props.t('PROFILE_CONVERT'),
-            '<label>' + this.props.t('INSTANCE_NAME') + '</label>'
+        callModal('custom', i18next.t('PROFILE_CONVERT'),
+            '<label>' + i18next.t('INSTANCE_NAME') + '</label>'
             + '<input type="text"  name="modalLoginServ" value="' + this.props.settingsOnline.Host + '"//>'
-            + '<label>' + this.props.t('PROFILE_PASSWORD_AGAIN') + '</label>'
-            + '<input type="password" placeholder="' + this.props.t('PASSWORD') + '" className="form-control" name="password">', data => {
+            + '<label>' + i18next.t('PROFILE_PASSWORD_AGAIN') + '</label>'
+            + '<input type="password" placeholder="' + i18next.t('PASSWORD') + '" className="form-control" name="password">', data => {
                 var response = axios.post('/api/public/myaccount/online', { instance: data.modalLoginServ, password: data.password });
-                displayMessage('success', '', this.props.t('PROFILE_CONVERTED'));
+                displayMessage('success', '', i18next.t('PROFILE_CONVERTED'));
                 this.props.updateLogInfos(response);
             }
         );
     }
 
     profileDelete() {
-        callModal('custom', this.props.t('PROFILE_ONLINE_DELETE'),
-            '<label>' + this.props.t('PROFILE_PASSWORD_AGAIN') + '</label>'
-            + '<input type="password" placeholder="' + this.props.t('PASSWORD') + '" className="form-control" name="password">', data => {
+        callModal('custom', i18next.t('PROFILE_ONLINE_DELETE'),
+            '<label>' + i18next.t('PROFILE_PASSWORD_AGAIN') + '</label>'
+            + '<input type="password" placeholder="' + i18next.t('PASSWORD') + '" className="form-control" name="password">', data => {
                 var response = axios.delete('/api/public/myaccount/online', {data:{ password: data.password }});
-                displayMessage('success', '', this.props.t('PROFILE_ONLINE_DELETED'));
+                displayMessage('success', '', i18next.t('PROFILE_ONLINE_DELETED'));
                 this.props.updateLogInfos(response);
             }
         );
@@ -98,7 +98,7 @@ class ProfilModal extends Component {
             var file = input.files[0];
             var fr = new FileReader();
             fr.onload = () => {
-                callModal('confirm', this.props.t('CONFIRM_FAV_IMPORT'), '', function (confirm) {
+                callModal('confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', function (confirm) {
                     if (confirm) {
                         var data = {};
                         data['favorites'] = fr['result'];
@@ -142,7 +142,7 @@ class ProfilModal extends Component {
         var listLangs = Object.keys(iso639.iso_639_2).map(k => { return { "label": iso639.iso_639_2[k][this.props.i18n.languages[0]][0], "value": k } });
         if (!this.props.settingsOnline.Users && this.props.logInfos.username.includes('@')) {
             setTimeout(function () {
-                displayMessage('warning', this.props.t('LOG_OFFLINE.TITLE') + '<br/>', this.props.t('LOG_OFFLINE.MESSAGE'), 8000);
+                displayMessage('warning', i18next.t('LOG_OFFLINE.TITLE') + '<br/>', i18next.t('LOG_OFFLINE.MESSAGE'), 8000);
             }, 500);
         }
         return (
@@ -151,15 +151,15 @@ class ProfilModal extends Component {
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
                             <li className={"modal-title " + (this.state.activeView === 1 ? "active" : "")}>
-                                <a onClick={() => this.setState({activeView: 1})}> {this.props.t("PROFILE")}</a>
+                                <a onClick={() => this.setState({activeView: 1})}> {i18next.t("PROFILE")}</a>
                             </li>
                             {this.props.logInfos.role !== 'guest' ?
                                 <li className={"modal-title " + (this.state.activeView === 2 ? "active" : "")}>
-                                    <a onClick={() => this.setState({activeView: 2})}> {this.props.t("LANGUAGE")}</a>
+                                    <a onClick={() => this.setState({activeView: 2})}> {i18next.t("LANGUAGE")}</a>
                                 </li> : null
                             }
                             <li className={"modal-title " + (this.state.activeView === 3 ? "active" : "")}>
-                                <a onClick={() => this.setState({activeView: 3})}> {this.props.t("USERLIST")}</a>
+                                <a onClick={() => this.setState({activeView: 3})}> {i18next.t("USERLIST")}</a>
                             </li>
                             <button className="closeModal btn btn-action" onClick={this.props.toggleProfileModal}>
                                 <i className="fas fa-times"></i>
@@ -170,7 +170,7 @@ class ProfilModal extends Component {
                             <div id="nav-profil" className="modal-body" >
                                 <div className="profileContent">
                                     <div className="col-md-3 col-lg-3 col-xs-12 col-sm-12">
-                                        <label title={this.props.t("AVATAR_IMPORT")} className="btn btn-default avatar" name="import">
+                                        <label title={i18next.t("AVATAR_IMPORT")} className="btn btn-default avatar" name="import">
                                             <img className="img-circle" name="avatar_file"
                                                 src={this.state.user.avatar_file ? this.state.pathAvatar + this.state.user.avatar_file : {blankAvatar}}
                                                 alt="User Pic" />
@@ -184,47 +184,47 @@ class ProfilModal extends Component {
                                         <div className="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
                                             <div className="profileLine">
                                                 <i className="glyphicon glyphicon-user"></i>
-                                                <input className="form-control" name="nickname" type="text" placeholder={this.props.t("PROFILE_USERNAME")} defaultValue={this.state.user.nickname} onKeyUp={this.onKeyPress} />
+                                                <input className="form-control" name="nickname" type="text" placeholder={i18next.t("PROFILE_USERNAME")} defaultValue={this.state.user.nickname} onKeyUp={this.onKeyPress} />
                                             </div>
                                             <div className="profileLine">
                                                 <i className="glyphicon glyphicon-envelope"></i>
-                                                <input className="form-control" name="email" type="text" placeholder={this.props.t("PROFILE_MAIL")} defaultValue={this.state.user.email} onKeyUp={this.onKeyPress} />
+                                                <input className="form-control" name="email" type="text" placeholder={i18next.t("PROFILE_MAIL")} defaultValue={this.state.user.email} onKeyUp={this.onKeyPress} />
                                             </div>
                                             <div className="profileLine">
                                                 <i className="glyphicon glyphicon-link"></i>
-                                                <input className="form-control" name="url" type="text" placeholder={this.props.t("PROFILE_URL")} defaultValue={this.state.user.url} onKeyUp={this.onKeyPress} />
+                                                <input className="form-control" name="url" type="text" placeholder={i18next.t("PROFILE_URL")} defaultValue={this.state.user.url} onKeyUp={this.onKeyPress} />
                                             </div>
                                             <div className="profileLine">
                                                 <i className="glyphicon glyphicon-leaf"></i>
-                                                <input className="form-control" name="bio" type="text" placeholder={this.props.t("PROFILE_BIO")} defaultValue={this.state.user.bio} onKeyUp={this.onKeyPress} />
+                                                <input className="form-control" name="bio" type="text" placeholder={i18next.t("PROFILE_BIO")} defaultValue={this.state.user.bio} onKeyUp={this.onKeyPress} />
                                             </div>
                                             <div className="profileLine">
                                                 <i className="glyphicon glyphicon-lock"></i>
                                                 <input className={this.state.passwordDifferent} name="password" type="password"
-                                                    placeholder={this.props.t("PROFILE_PASSWORD")} defaultValue={this.state.user.password} onKeyUp={this.onKeyPress} />
+                                                    placeholder={i18next.t("PROFILE_PASSWORD")} defaultValue={this.state.user.password} onKeyUp={this.onKeyPress} />
                                                 <input className={this.state.passwordDifferent}
-                                                    name="passwordConfirmation" type="password" placeholder={this.props.t("PROFILE_PASSWORDCONF")}
+                                                    name="passwordConfirmation" type="password" placeholder={i18next.t("PROFILE_PASSWORDCONF")}
                                                     defaultValue={this.state.user.passwordConfirmation} onKeyUp={this.onKeyPress} style={{ marginLeft: 3 + 'px' }} />
                                             </div>
                                             <div className="profileLine">
                                                 <i className="glyphicon glyphicon-star"></i>
-                                                <label type="button" title={this.props.t("FAVORITES_IMPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
-                                                    <i className="glyphicon glyphicon-import"></i> {this.props.t("IMPORT")}
+                                                <label type="button" title={i18next.t("FAVORITES_IMPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
+                                                    <i className="glyphicon glyphicon-import"></i> {i18next.t("IMPORT")}
                                                     <input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
                                                 </label>
-                                                <button type="button" title={this.props.t("FAVORITES_EXPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favExport" onClick={this.favExport}>
-                                                    <i className="glyphicon glyphicon-export"></i> {this.props.t("EXPORT")}
+                                                <button type="button" title={i18next.t("FAVORITES_EXPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favExport" onClick={this.favExport}>
+                                                    <i className="glyphicon glyphicon-export"></i> {i18next.t("EXPORT")}
                                                 </button>
                                             </div>
                                             {this.props.settingsOnline.Users && this.props.logInfos.role !== 'guest' ?
                                                 <div className="profileLine">
                                                     {this.props.logInfos.onlineToken ?
-                                                        <button type="button" title={this.props.t("PROFILE_ONLINE_DELETE")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileDelete" onClick={this.profileDelete}>
-                                                            <i className="glyphicon glyphicon-retweet"></i> {this.props.t("PROFILE_ONLINE_DELETE")}
+                                                        <button type="button" title={i18next.t("PROFILE_ONLINE_DELETE")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileDelete" onClick={this.profileDelete}>
+                                                            <i className="glyphicon glyphicon-retweet"></i> {i18next.t("PROFILE_ONLINE_DELETE")}
                                                         </button>
                                                         :
-                                                        <button type="button" title={this.props.t("PROFILE_CONVERT")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert" onClick={this.profileConvert}>
-                                                            <i className="glyphicon glyphicon-retweet"></i> {this.props.t("PROFILE_CONVERT")}
+                                                        <button type="button" title={i18next.t("PROFILE_CONVERT")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert" onClick={this.profileConvert}>
+                                                            <i className="glyphicon glyphicon-retweet"></i> {i18next.t("PROFILE_CONVERT")}
                                                         </button>
                                                     }
                                                 </div> : null
@@ -238,28 +238,28 @@ class ProfilModal extends Component {
                                 <div className="profileContent">
                                     <div className="col-md-12 col-lg-12 col-xs-12 col-sm-12 profileData">
                                         <div className="profileLine row">
-                                            <label className="col-xs-6 control-label">{this.props.t("SERIE_NAME_MODE")}</label>
+                                            <label className="col-xs-6 control-label">{i18next.t("SERIE_NAME_MODE")}</label>
                                             <div className="col-xs-6">
                                                 <select type="number" className="form-control" name="series_lang_mode" defaultValue={this.state.user.series_lang_mode} onChange={this.onKeyPress}>
-                                                    <option value="-1" default>{this.props.t("SERIE_NAME_MODE_NO_PREF")}</option>
-                                                    <option value="0">{this.props.t("SERIE_NAME_MODE_ORIGINAL")}</option>
-                                                    <option value="1">{this.props.t("SERIE_NAME_MODE_SONG")}</option>
-                                                    <option value="2">{this.props.t("SERIE_NAME_MODE_ADMIN")}</option>
-                                                    <option value="3">{this.props.t("SERIE_NAME_MODE_USER")}</option>
-                                                    <option value="4">{this.props.t("SERIE_NAME_MODE_USER_FORCE")}</option>
+                                                    <option value="-1" default>{i18next.t("SERIE_NAME_MODE_NO_PREF")}</option>
+                                                    <option value="0">{i18next.t("SERIE_NAME_MODE_ORIGINAL")}</option>
+                                                    <option value="1">{i18next.t("SERIE_NAME_MODE_SONG")}</option>
+                                                    <option value="2">{i18next.t("SERIE_NAME_MODE_ADMIN")}</option>
+                                                    <option value="3">{i18next.t("SERIE_NAME_MODE_USER")}</option>
+                                                    <option value="4">{i18next.t("SERIE_NAME_MODE_USER_FORCE")}</option>
                                                 </select>
                                             </div>
                                         </div>
                                         {this.state.user.series_lang_mode === "4" ?
                                             <React.Fragment>
                                                 <div className="profileLine row">
-                                                    <label className="col-xs-6 control-label">{this.props.t("MAIN_SERIES_LANG")}</label>
+                                                    <label className="col-xs-6 control-label">{i18next.t("MAIN_SERIES_LANG")}</label>
                                                     <div className="col-xs-6">
                                                         <Autocomplete className="form-control" name="main_series_lang" value={this.state.user.main_series_lang} options={listLangs} onChange={(value) => this.onClick("main_series_lang", value)} />
                                                     </div>
                                                 </div>
                                                 <div className="profileLine row">
-                                                    <label className="col-xs-6 control-label">{this.props.t("FALLBACK_SERIES_LANG")}</label>
+                                                    <label className="col-xs-6 control-label">{i18next.t("FALLBACK_SERIES_LANG")}</label>
                                                     <div className="col-xs-6">
                                                         <Autocomplete className="form-control" name="fallback_series_lang" value={this.state.user.fallback_series_lang} options={listLangs} onChange={(value) => this.onClick("fallback_series_lang", value)} />
                                                     </div>
@@ -300,4 +300,4 @@ class ProfilModal extends Component {
     }
 }
 
-export default withTranslation()(ProfilModal);
+export default ProfilModal;

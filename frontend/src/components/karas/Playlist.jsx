@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from "react-i18next";
+import i18next from 'i18next';
 import PlaylistHeader from "./PlaylistHeader";
 import KaraDetail from "./KaraDetail";
 import KaraLine from "./KaraLine";
@@ -182,7 +182,7 @@ class Playlist extends Component {
   }
 
   editNamePlaylist() {
-    callModal('prompt', this.props.t('CL_RENAME_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', newName => {
+    callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', newName => {
       axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist, { name: newName, flag_visible: this.props.playlistInfo.flag_public });
       var playlistInfo = this.state.playlistInfo;
       playlistInfo.name = newName;
@@ -415,11 +415,11 @@ class Playlist extends Component {
   }
 
   karaSuggestion() {
-    callModal('prompt', this.props.t('KARA_SUGGESTION_NAME'), '', function (text) {
+    callModal('prompt', i18next.t('KARA_SUGGESTION_NAME'), '', function (text) {
       axios.post('/api/public/karas/suggest', { karaName: text }).then(response => {
         setTimeout(() => {
-          displayMessage('info', this.props.t('KARA_SUGGESTION_INFO'),
-            this.props.t('KARA_SUGGESTION_LINK', response.data.data.issueURL, 'console'), '30000');
+          displayMessage('info', i18next.t('KARA_SUGGESTION_INFO'),
+            i18next.t('KARA_SUGGESTION_LINK', response.data.data.issueURL, 'console'), '30000');
         }, 200);
       })
     }, this.props.filterValue);
@@ -553,7 +553,7 @@ class Playlist extends Component {
                     this.state.idPlaylist === -1 &&
                     this.state.data.infos.count === this.state.data.infos.from + this.state.maxBeforeUpdate ? (
                       <li className="list-group-item karaSuggestion" onClick={this.karaSuggestion}>
-                        {this.props.t("KARA_SUGGESTION_MAIL")}
+                        {i18next.t("KARA_SUGGESTION_MAIL")}
                       </li>
                     ) : null}
                 </React.Fragment> :
@@ -568,7 +568,7 @@ class Playlist extends Component {
             <div className="plBrowse">
               <button
                 type="button"
-                title={this.props.t("GOTO_TOP")}
+                title={i18next.t("GOTO_TOP")}
                 className="btn btn-sm btn-action"
                 onClick={() => this.playlistRef.current.scrollTo(0, 5)}
               >
@@ -576,7 +576,7 @@ class Playlist extends Component {
               </button>
               <button
                 type="button"
-                title={this.props.t("GOTO_PLAYING")}
+                title={i18next.t("GOTO_PLAYING")}
                 className="btn btn-sm btn-action"
                 onClick={this.scrollToPlaying}
                 action="goTo"
@@ -586,7 +586,7 @@ class Playlist extends Component {
               </button>
               <button
                 type="button"
-                title={this.props.t("GOTO_BOTTOM")}
+                title={i18next.t("GOTO_BOTTOM")}
                 className="btn btn-sm btn-action"
                 onClick={this.scrollToBottom}
               >
@@ -596,7 +596,7 @@ class Playlist extends Component {
             <div className="plInfos">{this.getPlInfosElement()}</div>
             {this.props.side === 1 && this.state.quotaString ?
               <div id="plQuota" className="plQuota right">
-                {this.props.t('QUOTA')}{this.state.quotaString}
+                {i18next.t('QUOTA')}{this.state.quotaString}
               </div> : null
             }
           </div>
@@ -605,4 +605,4 @@ class Playlist extends Component {
   }
 }
 
-export default withTranslation()(Playlist);
+export default Playlist;

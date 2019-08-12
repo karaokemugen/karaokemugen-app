@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from "react-i18next";
+import i18next from 'i18next';
 import axios from "axios";
 import getLucky from "../../assets/clover.png"
 import ActionsButtons from "./ActionsButtons";
@@ -42,11 +42,11 @@ class PlaylistHeader extends Component {
   }
 
   addRandomKaras() {
-    callModal('prompt', this.props.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
+    callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
       axios.get(this.props.getPlaylistUrl(), { random: nbOfRandoms }).then(randomKaras => {
         if (randomKaras.content.length > 0) {
           let textContent = randomKaras.content.map(e => buildKaraTitle(e)).join('<br/><br/>');
-          callModal('confirm', this.props.t('CL_CONGRATS'), this.props.t('CL_ABOUT_TO_ADD') + '<br/><br/>' + textContent, () => {
+          callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD') + '<br/><br/>' + textContent, () => {
             var karaList = randomKaras.content.map(a => {
               return a.kid;
             }).join();
@@ -59,7 +59,7 @@ class PlaylistHeader extends Component {
   }
 
   addPlaylist() {
-    callModal('prompt', this.props.t('CL_CREATE_PLAYLIST'), '', playlistName => {
+    callModal('prompt', i18next.t('CL_CREATE_PLAYLIST'), '', playlistName => {
       axios.post('/api/admin/playlists', { name: playlistName, flag_visible: false, flag_current: false, flag_public: false }).then(response => {
         this.props.changeIdPlaylist(response.data.data);
       });
@@ -68,7 +68,7 @@ class PlaylistHeader extends Component {
   }
 
   deletePlaylist() {
-    callModal('confirm', this.props.t('CL_DELETE_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', confirm => {
+    callModal('confirm', i18next.t('CL_DELETE_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', confirm => {
       if (confirm) {
         axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist);
       }
@@ -89,7 +89,7 @@ class PlaylistHeader extends Component {
     });
     userlistStr += '</div>';
 
-    callModal('custom', this.props.t('START_FAV_MIX'),
+    callModal('custom', i18next.t('START_FAV_MIX'),
       userlistStr + '<input type="text"name="duration" placeholder="200 (min)"/>', data => {
         if (!data.duration) data.duration = 200;
         axios.post('/api/admin/automix', data).then(response => {
@@ -152,27 +152,27 @@ class PlaylistHeader extends Component {
     const commandsControls = (
       <div className="btn-group plCommands controls">
         {this.props.idPlaylist >= 0 ?
-          <button title={this.props.t("PLAYLIST_EDIT")} className="btn btn-default" name="editName" onClick={this.props.editNamePlaylist}>
+          <button title={i18next.t("PLAYLIST_EDIT")} className="btn btn-default" name="editName" onClick={this.props.editNamePlaylist}>
             <i className="fas fa-pencil"></i>
           </button> : null
         }
-        <button title={this.props.t("START_FAV_MIX")} className="btn btn-default" name="startFavMix" onClick={this.startFavMix}>
+        <button title={i18next.t("START_FAV_MIX")} className="btn btn-default" name="startFavMix" onClick={this.startFavMix}>
           <i className="fas fa-bolt"></i>
         </button>
-        <button title={this.props.t("PLAYLIST_ADD")} className="btn btn-default" name="add" onClick={this.addPlaylist}>
+        <button title={i18next.t("PLAYLIST_ADD")} className="btn btn-default" name="add" onClick={this.addPlaylist}>
           <i className="fas fa-plus"></i>
         </button>
         {this.props.idPlaylist >= 0 && this.props.playlistInfo && !this.props.playlistInfo.flag_current && !this.props.playlistInfo.flag_public ?
-          <button title={this.props.t("PLAYLIST_DELETE")} className="btn btn-danger" name="delete" onClick={this.deletePlaylist}>
+          <button title={i18next.t("PLAYLIST_DELETE")} className="btn btn-danger" name="delete" onClick={this.deletePlaylist}>
             <i className="fas fa-times"></i>
           </button> : null
         }
-        <label htmlFor={"import-file" + this.props.side} title={this.props.t("PLAYLIST_IMPORT")} className="btn btn-default" name="import">
+        <label htmlFor={"import-file" + this.props.side} title={i18next.t("PLAYLIST_IMPORT")} className="btn btn-default" name="import">
           <i className="fas fa-download"></i>
           <input id={"import-file" + this.props.side} className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }}
             onClick={this.importPlaylist} />
         </label>
-        <button title={this.props.t("PLAYLIST_EXPORT")} className="btn btn-default" name="export" onClick={this.exportPlaylist} >
+        <button title={i18next.t("PLAYLIST_EXPORT")} className="btn btn-default" name="export" onClick={this.exportPlaylist} >
           <i className="fas fa-upload"></i>
         </button>
       </div>);
@@ -181,17 +181,17 @@ class PlaylistHeader extends Component {
       <div className="btn-group plCommands actionDiv">
         {this.props.idPlaylistTo >= 0 ?
           <React.Fragment>
-            <button title={this.props.t("ADD_RANDOM_KARAS")} name="addRandomKaras" className="btn btn-default clusterAction" onClick={this.addRandomKaras}>
+            <button title={i18next.t("ADD_RANDOM_KARAS")} name="addRandomKaras" className="btn btn-default clusterAction" onClick={this.addRandomKaras}>
               <img src={getLucky} />
             </button>
-            <button title={this.props.t("ADD_ALL_KARAS")} name="addAllKaras" className="btn btn-danger clusterAction" onClick={this.props.addAllKaras}>
+            <button title={i18next.t("ADD_ALL_KARAS")} name="addAllKaras" className="btn btn-danger clusterAction" onClick={this.props.addAllKaras}>
               <i className="fas fa-share"></i>
             </button>
           </React.Fragment>
           : null
         }
         {this.props.idPlaylist >= 0 ?
-          <button title={this.props.t("EMPTY_LIST")} name="deleteAllKaras" className="btn btn-danger clusterAction" onClick={this.deleteAllKaras}>
+          <button title={i18next.t("EMPTY_LIST")} name="deleteAllKaras" className="btn btn-danger clusterAction" onClick={this.deleteAllKaras}>
             <i className="fas fa-eraser"></i>
           </button> : null
         }
@@ -199,7 +199,7 @@ class PlaylistHeader extends Component {
           scope={this.props.scope} playlistToAddId={this.props.playlistToAddId} isHeader={true}
           addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
         <button 
-          title={this.props.t("SELECT_ALL")}
+          title={i18next.t("SELECT_ALL")}
           name="selectAllKaras"
           onClick={() => {
             this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
@@ -247,16 +247,16 @@ class PlaylistHeader extends Component {
       this.props.idPlaylist !== -5 && this.props.scope !== "public" && this.props.playlistInfo ?
         <div className="flagsContainer " >
           <div className="btn-group plCommands flags" id={"flag" + this.props.side}>
-            <button title={this.props.t("PLAYLIST_CURRENT")} name="flag_current" onClick={this.setFlagCurrent}
+            <button title={i18next.t("PLAYLIST_CURRENT")} name="flag_current" onClick={this.setFlagCurrent}
               className={"btn " + (this.props.playlistInfo.flag_current ? "btn-primary" : "btn-default")} >
               <i className="fas fa-video"></i>
             </button>
-            <button title={this.props.t("PLAYLIST_PUBLIC")} name="flag_public" onClick={this.setFlagPublic}
+            <button title={i18next.t("PLAYLIST_PUBLIC")} name="flag_public" onClick={this.setFlagPublic}
               className={"btn " + (this.props.playlistInfo.flag_public ? "btn-primary" : "btn-default")} >
               <i className="fas fa-globe"></i>
             </button>
             {this.props.idPlaylist >= 0 ?
-              <button title={this.props.t("PLAYLIST_VISIBLE")} className="btn btn-default" name="flag_visible" onClick={this.setFlagVisible}>
+              <button title={i18next.t("PLAYLIST_VISIBLE")} className="btn btn-default" name="flag_visible" onClick={this.setFlagVisible}>
                 {this.props.playlistInfo.flag_visible ?
                   <i className="fas fa-eye-slash"></i> :
                   <i className="fas fa-eye"></i>
@@ -307,7 +307,7 @@ class PlaylistHeader extends Component {
             {this.props.scope === "admin" || this.props.mode !== 1 ?
               <div className={(this.props.scope !== "public" ? "col-lg-8 col-md-7 col-sm-6 col-xs-6 " : "") + "plSelect"}>
                 {this.props.scope === "admin" && this.props.idPlaylist !== -4 ?
-                  <button title={this.props.t("PLAYLIST_COMMANDS")} onClick={this.props.togglePlaylistCommands}
+                  <button title={i18next.t("PLAYLIST_COMMANDS")} onClick={this.props.togglePlaylistCommands}
                     className={"btn btn-default pull-left showPlaylistCommands" + (this.props.playlistCommands ? " btn-primary" : "")}>
                     <i className="fas fa-wrench"></i>
                   </button> : null
@@ -334,10 +334,10 @@ class PlaylistHeader extends Component {
                 {this.props.idPlaylist > 0 ?
                   <div className="controlsContainer">
                     <div className="btn-group plCommands controls">
-                      <button title={this.props.t("PLAYLIST_SHUFFLE")} className="btn btn-default" name="shuffle" onClick={this.shuffle}>
+                      <button title={i18next.t("PLAYLIST_SHUFFLE")} className="btn btn-default" name="shuffle" onClick={this.shuffle}>
                         <i className="fas fa-random"></i>
                       </button>
-                      <button title={this.props.t("PLAYLIST_SMART_SHUFFLE")} className="btn btn-default" name="smartShuffle" onClick={this.smartShuffle}>
+                      <button title={i18next.t("PLAYLIST_SMART_SHUFFLE")} className="btn btn-default" name="smartShuffle" onClick={this.smartShuffle}>
                         <i className="fas fa-random"></i>
                       </button>
                     </div>
@@ -372,11 +372,11 @@ class PlaylistHeader extends Component {
                         value={this.state.tagType}>
                         {tagsTypesList.map(val => {
                           if (val === 'DETAILS_SERIE') {
-                            return <option key={val} value='serie'>{this.props.t(val)}</option>
+                            return <option key={val} value='serie'>{i18next.t(val)}</option>
                           } else if (val === 'DETAILS_YEAR') {
-                            return <option key={val} value='year'>{this.props.t(val)}</option>
+                            return <option key={val} value='year'>{i18next.t(val)}</option>
                           } else {
-                            return <option key={val} value={val.replace('BLCTYPE_', '')}>{this.props.t(val)}</option>
+                            return <option key={val} value={val.replace('BLCTYPE_', '')}>{i18next.t(val)}</option>
                           }
                         })}
                       </select>
@@ -390,13 +390,13 @@ class PlaylistHeader extends Component {
                       </select>
                     </span>
                   </span>
-                  <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="glyphicon glyphicon-filter"></i> {this.props.t("FILTER")}</a>
+                  <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="glyphicon glyphicon-filter"></i> {i18next.t("FILTER")}</a>
                 </li>
                 <li className={this.state.activeFilter === 1 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(1)}>
-                  <i className="glyphicon glyphicon-sort-by-alphabet"></i> {this.props.t("VIEW_STANDARD")}</a></li>
-                <li className={this.state.activeFilter === 2 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(2)}><i className="glyphicon glyphicon-star"></i> {this.props.t("VIEW_FAVORITES")}</a></li>
-                <li className={this.state.activeFilter === 3 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(3, "recent")}><i className="glyphicon glyphicon-time"></i> {this.props.t("VIEW_RECENT")}</a></li>
-                <li className={this.state.activeFilter === 4 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(4, "requested")}><i className="glyphicon glyphicon-fire"></i> {this.props.t("VIEW_POPULAR")}</a></li>
+                  <i className="glyphicon glyphicon-sort-by-alphabet"></i> {i18next.t("VIEW_STANDARD")}</a></li>
+                <li className={this.state.activeFilter === 2 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(2)}><i className="glyphicon glyphicon-star"></i> {i18next.t("VIEW_FAVORITES")}</a></li>
+                <li className={this.state.activeFilter === 3 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(3, "recent")}><i className="glyphicon glyphicon-time"></i> {i18next.t("VIEW_RECENT")}</a></li>
+                <li className={this.state.activeFilter === 4 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(4, "requested")}><i className="glyphicon glyphicon-fire"></i> {i18next.t("VIEW_POPULAR")}</a></li>
 
               </ul>
             </div>
@@ -408,4 +408,4 @@ class PlaylistHeader extends Component {
 }
 
 
-export default withTranslation()(PlaylistHeader);
+export default PlaylistHeader;

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import axios from 'axios';
 import {buildKaraTitle} from '../tools';
 
@@ -33,7 +33,7 @@ class PollModal extends Component {
                         <div className="modal-content">
                             <ul className="nav nav-tabs nav-justified modal-header">
                                 <li className="modal-title active">
-                                    <a style={{ fontWeight: 'bold' }}>{this.props.t("POLLTITLE")}</a>
+                                    <a style={{ fontWeight: 'bold' }}>{i18next.t("POLLTITLE")}</a>
                                 </li>
                                 <button className="closeModal btn btn-action" onClick={this.props.closePollModal}>
                                     <i className="fas fa-times"></i>
@@ -65,4 +65,4 @@ class PollModal extends Component {
     }
 }
 
-export default withTranslation()(PollModal);
+export default PollModal;

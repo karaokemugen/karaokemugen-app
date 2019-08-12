@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import { createCookie } from '../tools';
 import { is_touch_device,startIntro } from '../tools';
 
@@ -26,7 +26,7 @@ class HelpModal extends Component {
                 <div className="modal-dialog modal-sm">
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
-                            <li className="modal-title active"><a>{this.props.t("CL_HELP")}</a></li>
+                            <li className="modal-title active"><a>{i18next.t("CL_HELP")}</a></li>
                             <button className="closeModal btn btn-action" onClick={this.mugenTouchscreenHelp}>
                                 <i className="fas fa-times"></i>
                             </button>
@@ -35,25 +35,25 @@ class HelpModal extends Component {
                             <div id="nav-help" className="modal-body">
                                 {is_touch_device ?
                                     <div id="mobileHelp" className="text"
-                                        dangerouslySetInnerHTML={{ __html: this.props.t("CL_HELP_PUBLIC_MOBILE") }}>
+                                        dangerouslySetInnerHTML={{ __html: i18next.t("CL_HELP_PUBLIC_MOBILE") }}>
                                     </div> : null
                                 }
 
                                 <div className="text"
-                                    dangerouslySetInnerHTML={{ __html: this.props.t("CL_HELP_DISCORD", { discord: '<a href="https://discord.gg/XFXCqzU">Discord</a>' }) }}>
+                                    dangerouslySetInnerHTML={{ __html: i18next.t("CL_HELP_DISCORD", { discord: '<a href="https://discord.gg/XFXCqzU">Discord</a>' }) }}>
                                 </div>
                                 <br />
 
                                     <div className="modal-message tour">
                                         <button className="btn btn-default tourAgain" onClick={this.tourAgain}>
-                                            {this.props.t("FOLLOW_TOUR")}
+                                            {i18next.t("FOLLOW_TOUR")}
                                         </button>
                                     </div>
                                 <hr />
                                 <div className="col-lg-3 col-xs-3">
-                                    <b>{this.props.t("MODE")}</b>
+                                    <b>{i18next.t("MODE")}</b>
                                     <br />
-                                    <b>{this.props.t("VERSION")}</b>
+                                    <b>{i18next.t("VERSION")}</b>
                                     <br />
                                 </div>
                                 <div className="col-lg-9 col-xs-9">
@@ -75,4 +75,4 @@ class HelpModal extends Component {
     }
 }
 
-export default withTranslation()(HelpModal);
+export default HelpModal;

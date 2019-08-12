@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import Fingerprint2 from 'fingerprintjs2'
 import axios from "axios";
 import { is_touch_device,startIntro,readCookie,displayMessage  } from '../tools';
@@ -42,10 +42,10 @@ class LoginModal extends Component {
         var response = result.data;
         this.props.toggleLoginModal();
         if (this.props.scope === 'admin' && response.role !== 'admin') {
-            displayMessage('warning', '', this.props.t('ADMIN_PLEASE'));
+            displayMessage('warning', '', i18next.t('ADMIN_PLEASE'));
         }
         this.props.updateLogInfos(response);
-        displayMessage('info', '', this.props.t('LOG_SUCCESS', {name: response.username}));
+        displayMessage('info', '', i18next.t('LOG_SUCCESS', {name: response.username}));
 
         if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
             this.props.toggleHelpModal();
@@ -72,7 +72,7 @@ class LoginModal extends Component {
     signup() {
         if (this.state.login.includes('@')) {
             this.setState({ errorBackground: 'errorBackground' });
-            displayMessage('warning', '', this.props.t('CHAR_NOT_ALLOWED', {char:'@'}));
+            displayMessage('warning', '', i18next.t('CHAR_NOT_ALLOWED', {char:'@'}));
             return;
         } else {
             this.setState({ errorBackground: '' });
@@ -88,7 +88,7 @@ class LoginModal extends Component {
             }
             axios.post('/api/' + this.props.scope + '/users', data)
                 .then(response => {
-                    displayMessage('info', 'Info', this.props.t('CL_NEW_USER', username));
+                    displayMessage('info', 'Info', i18next.t('CL_NEW_USER', username));
                     this.setState({ redBorders: '' });
 
                     if (this.props.scope === 'public') this.login(username, password);
@@ -113,10 +113,10 @@ class LoginModal extends Component {
                     <div className="modal-content">
                         <ul className="nav nav-tabs nav-justified modal-header">
                             <li className={"modal-title " + (this.state.activeView === 1 ? "active" : "")}>
-                                <a onClick={() => this.setState({activeView: 1})}>{this.props.t("LOGIN")}</a>
+                                <a onClick={() => this.setState({activeView: 1})}>{i18next.t("LOGIN")}</a>
                             </li>
                             <li className={"modal-title " + (this.state.activeView === 2 ? "active" : "")}>
-                                <a onClick={() => this.setState({activeView: 2})}>{this.props.t("NEW_ACCOUNT")}</a>
+                                <a onClick={() => this.setState({activeView: 2})}>{i18next.t("NEW_ACCOUNT")}</a>
                             </li>
                             <button className="closeModal btn btn-action" onClick={this.props.toggleLoginModal}>
                                 <i className="fas fa-times"></i>
@@ -128,15 +128,15 @@ class LoginModal extends Component {
                                 {this.props.scope !== 'admin' && this.props.config.Frontend.Mode === 2 ? 
                                     <React.Fragment>
                                         <div className="tour hidden">
-                                            {this.props.t("FIRST_PUBLIC_RUN_WELCOME")}
+                                            {i18next.t("FIRST_PUBLIC_RUN_WELCOME")}
                                         </div>
                                         <div className="modal-message tour">
                                             <button className="btn btn-default tour" onClick={() => startIntro('public')}>
-                                                {this.props.t("FOLLOW_TOUR")}
+                                                {i18next.t("FOLLOW_TOUR")}
                                             </button>
                                         </div>
                                         <div className="tour">
-                                            {this.props.t("OR")}
+                                            {i18next.t("OR")}
                                         </div>
                                     </React.Fragment> : null
                                 }
@@ -144,20 +144,20 @@ class LoginModal extends Component {
                                     <React.Fragment>
                                         <div className="modal-message">
                                             <button className="btn btn-default guest" onClick={this.loginGuest}>
-                                                {this.props.t("GUEST_CONTINUE")}
+                                                {i18next.t("GUEST_CONTINUE")}
                                             </button>
                                         </div>
                                         <div className="loginRelated">
-                                            {this.props.t("OR")}
+                                            {i18next.t("OR")}
                                         </div>
                                     </React.Fragment> : null
                                 }
                                 <div className="modal-message loginRelated">
-                                    <input type="text" id="login" name="modalLogin" placeholder={this.props.t("NICKNAME")}
+                                    <input type="text" id="login" name="modalLogin" placeholder={i18next.t("NICKNAME")}
                                         defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
-                                    <input type="text" id="loginServ" name="modalLoginServ" placeholder={this.props.t("INSTANCE_NAME_SHORT")}
+                                    <input type="text" id="loginServ" name="modalLoginServ" placeholder={i18next.t("INSTANCE_NAME_SHORT")}
                                         defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} />
-                                    <input type="password" className={this.state.redBorders} id="password" name="modalPassword" placeholder={this.props.t("PASSWORD")}
+                                    <input type="password" className={this.state.redBorders} id="password" name="modalPassword" placeholder={i18next.t("PASSWORD")}
                                         defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
                                 </div>
                                 <div className="loginRelated"></div>
@@ -169,28 +169,28 @@ class LoginModal extends Component {
                             </div> :
                             <div id="nav-signup" className="modal-body">
                                 <div>
-                                    <input type="text" id="signupLogin" className={this.state.errorBackground} name="modalLogin" placeholder={this.props.t("NICKNAME")}
+                                    <input type="text" id="signupLogin" className={this.state.errorBackground} name="modalLogin" placeholder={i18next.t("NICKNAME")}
                                         defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
-                                    <input type="text" id="signupServ" name="modalLoginServ" placeholder={this.props.t("INSTANCE_NAME_SHORT")}
+                                    <input type="text" id="signupServ" name="modalLoginServ" placeholder={i18next.t("INSTANCE_NAME_SHORT")}
                                         defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} />
-                                    <input type="password" className={this.state.redBorders} id="signupPassword" name="modalPassword" placeholder={this.props.t("PASSWORD")}
+                                    <input type="password" className={this.state.redBorders} id="signupPassword" name="modalPassword" placeholder={i18next.t("PASSWORD")}
                                         required onKeyPress={this.onKeyPress} defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
-                                    <input type="password" className={this.state.redBorders} id="signupPasswordConfirmation" name="modalPassword" placeholder={this.props.t("PASSWORDCONF")}
+                                    <input type="password" className={this.state.redBorders} id="signupPasswordConfirmation" name="modalPassword" placeholder={i18next.t("PASSWORDCONF")}
                                         required onKeyPress={this.onKeyPress} defaultValue={this.state.passwordConfirmation} required onChange={(event) => this.setState({ passwordConfirmation: event.target.value })} />
                                     {this.props.scope === 'admin' ?
                                         <React.Fragment>
                                             <br />
                                             <select className="form-control" id="signupRole" name="modalRole"
                                                 defaultValue={this.state.role} onChange={(event) => this.setState({ role: event.target.value })} >
-                                                <option value="user">{this.props.t("USER")}</option>
-                                                <option value="admin">{this.props.t("ADMIN")}</option>
+                                                <option value="user">{i18next.t("USER")}</option>
+                                                <option value="admin">{i18next.t("ADMIN")}</option>
                                             </select>
                                         </React.Fragment> : null
                                     }
                                 </div>
                                 <div>
                                     <button id="signup" type="button" className="btn btn-default login" onClick={this.signup}>
-                                        {this.props.t("SIGN_UP")}
+                                        {i18next.t("SIGN_UP")}
                                     </button>
                                 </div>
                             </div>
@@ -204,4 +204,4 @@ class LoginModal extends Component {
     }
 }
 
-export default withTranslation()(LoginModal);
+export default LoginModal;

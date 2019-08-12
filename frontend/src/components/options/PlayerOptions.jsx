@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import Switch from '../generic/Switch';
 import axios from 'axios';
 import { dotify } from '../tools';
@@ -58,7 +58,7 @@ class PlayerOptions extends Component {
       <React.Fragment>
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {this.props.t("ALWAYS_ON_TOP")}
+            {i18next.t("ALWAYS_ON_TOP")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Player.StayOnTop" handleChange={this.putPlayerCommando}
@@ -67,7 +67,7 @@ class PlayerOptions extends Component {
         </div>
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {this.props.t("FULLSCREEN")}
+            {i18next.t("FULLSCREEN")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Player.FullScreen" handleChange={this.putPlayerCommando}
@@ -76,7 +76,7 @@ class PlayerOptions extends Component {
         </div>
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {this.props.t("MONITOR_NUMBER")}
+            {i18next.t("MONITOR_NUMBER")}
           </label>
           <div className="col-xs-6">
             <select
@@ -93,7 +93,7 @@ class PlayerOptions extends Component {
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {this.props.t("ENGINEDISPLAYCONNECTIONINFO")}
+            {i18next.t("ENGINEDISPLAYCONNECTIONINFO")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Karaoke.Display.ConnectionInfo.Enabled" handleChange={this.onChange}
@@ -108,7 +108,7 @@ class PlayerOptions extends Component {
           >
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {this.props.t("ENGINEDISPLAYCONNECTIONINFOHOST")}
+                {i18next.t("ENGINEDISPLAYCONNECTIONINFOHOST")}
               </label>
               <div className="col-xs-6">
                 <input
@@ -122,7 +122,7 @@ class PlayerOptions extends Component {
 
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {this.props.t("ENGINEDISPLAYCONNECTIONINFOMESSAGE")}
+                {i18next.t("ENGINEDISPLAYCONNECTIONINFOMESSAGE")}
               </label>
               <div className="col-xs-6">
                 <input
@@ -138,7 +138,7 @@ class PlayerOptions extends Component {
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {this.props.t("PLAYERPIP")}
+            {i18next.t("PLAYERPIP")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Player.PIP.Enabled" handleChange={this.onChange}
@@ -149,7 +149,7 @@ class PlayerOptions extends Component {
           <div id="pipSettings" className="well well-sm settingsGroupPanel">
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {`${this.props.t("VIDEO_SIZE")} (${this.state.settings["Player.PIP.Size"]}%)`}
+                {`${i18next.t("VIDEO_SIZE")} (${this.state.settings["Player.PIP.Size"]}%)`}
               </label>
               <div className="col-xs-6">
                 <input
@@ -163,7 +163,7 @@ class PlayerOptions extends Component {
 
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {this.props.t("VIDEO_POSITION_X")}
+                {i18next.t("VIDEO_POSITION_X")}
               </label>
               <div className="col-xs-6">
                 <select
@@ -172,16 +172,16 @@ class PlayerOptions extends Component {
                   onChange={this.onChange}
                   value={this.state.settings["Player.PIP.PositionX"]}
                 >
-                  <option value="Left"> {this.props.t("LEFT")} </option>
-                  <option value="Center" default>{this.props.t("CENTER")}</option>
-                  <option value="Right"> {this.props.t("RIGHT")} </option>
+                  <option value="Left"> {i18next.t("LEFT")} </option>
+                  <option value="Center" default>{i18next.t("CENTER")}</option>
+                  <option value="Right"> {i18next.t("RIGHT")} </option>
                 </select>
               </div>
             </div>
 
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {this.props.t("VIDEO_POSITION_Y")}
+                {i18next.t("VIDEO_POSITION_Y")}
               </label>
               <div className="col-xs-6">
                 <select
@@ -190,16 +190,16 @@ class PlayerOptions extends Component {
                   onChange={this.onChange}
                   value={this.state.settings["Player.PIP.PositionY"]}
                 >
-                  <option value="Bottom"> {this.props.t("BOTTOM")} </option>
-                  <option value="Center" default>{this.props.t("CENTER")}</option>
-                  <option value="Top"> {this.props.t("TOP")} </option>
+                  <option value="Bottom"> {i18next.t("BOTTOM")} </option>
+                  <option value="Center" default>{i18next.t("CENTER")}</option>
+                  <option value="Top"> {i18next.t("TOP")} </option>
                 </select>
               </div>
             </div>
 
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {this.props.t("ENGINEDISPLAYNICKNAME")}
+                {i18next.t("ENGINEDISPLAYNICKNAME")}
               </label>
               <div className="col-xs-6">
                 <Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
@@ -209,7 +209,7 @@ class PlayerOptions extends Component {
 
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {this.props.t("ENGINEDISPLAYAVATAR")}
+                {i18next.t("ENGINEDISPLAYAVATAR")}
               </label>
               <div className="col-xs-6">
                 <Switch idInput="Karaoke.Display.Avatar" handleChange={this.onChange}
@@ -219,7 +219,7 @@ class PlayerOptions extends Component {
 
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {this.props.t("PLAYERMONITOR")}
+                {i18next.t("PLAYERMONITOR")}
               </label>
               <div className="col-xs-6">
                 <Switch idInput="Player.Monitor" handleChange={this.onChange}
@@ -229,7 +229,7 @@ class PlayerOptions extends Component {
 
             <div className="form-group">
               <label className="col-xs-4 control-label">
-                {this.props.t("PLAYERVISUALIZATIONEFFECTS")}
+                {i18next.t("PLAYERVISUALIZATIONEFFECTS")}
               </label>
               <div className="col-xs-6">
                 <Switch idInput="Player.VisualizationEffects" handleChange={this.onChange}
@@ -242,4 +242,4 @@ class PlayerOptions extends Component {
   }
 }
 
-export default withTranslation()(PlayerOptions);
+export default PlayerOptions;

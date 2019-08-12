@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withTranslation } from "react-i18next";
+import i18next from 'i18next';
 import axios from "axios";
 import ProfilModal from "./modals/ProfilModal";
 import LoginModal from "./modals/LoginModal";
@@ -99,7 +99,7 @@ class WelcomePage extends Component {
             base.body.feed.entry[0].updated._text
           ).toLocaleDateString(),
           title:
-            this.props.t("BASE_UPDATE") +
+            i18next.t("BASE_UPDATE") +
             " : " +
             base.body.feed.title._text +
             (base.body.feed.entry[0].summary._text
@@ -115,7 +115,7 @@ class WelcomePage extends Component {
             appli.body.feed.entry[0].updated._text
           ).toLocaleDateString(),
           title:
-            this.props.t("APP_UPDATE") +
+            i18next.t("APP_UPDATE") +
             " : " +
             appli.body.feed.entry[0].title._text +
             (appli.body.feed.entry[0].summary._text
@@ -200,25 +200,25 @@ class WelcomePage extends Component {
           <div className="updateBanner">
             <div className="updateBanner--wrapper">
               <dl className="updateBanner--description">
-                <dt>{this.props.t("UPDATE_BANNER_TITLE")}</dt>
+                <dt>{i18next.t("UPDATE_BANNER_TITLE")}</dt>
                 <dd className="updateBanner--message">
-                  {this.props.t("UPDATE_BANNER_MESSAGE", {
+                  {i18next.t("UPDATE_BANNER_MESSAGE", {
                     actualVersion: this.props.settings.version.number
                   })}
                   <b> {this.state.latestVersion}</b>
                 </dd>
                 <dd className="updateBanner--download">
                   <a href="http://mugen.karaokes.moe/blog.html">
-                    <i className="fas fa-download"></i> {this.props.t("UPDATE_BANNER_GET_IT")}
+                    <i className="fas fa-download"></i> {i18next.t("UPDATE_BANNER_GET_IT")}
                   </a>
                 </dd>
               </dl>
               <div className="updateBanner--actions">
                 <button type="button" data-action="later" onClick={this.closeUpdateBanner}>
-                  <i className="fas fa-stopwatch"></i> {this.props.t("UPDATE_BANNER_REMIND_ME_LATER")}
+                  <i className="fas fa-stopwatch"></i> {i18next.t("UPDATE_BANNER_REMIND_ME_LATER")}
                 </button>
                 <button type="button" data-action="never" onClick={this.stopAppUpdates}>
-                  <i className="fas fa-bell-slash"></i> {this.props.t("UPDATE_BANNER_DONT_BOTHER_ME")}
+                  <i className="fas fa-bell-slash"></i> {i18next.t("UPDATE_BANNER_DONT_BOTHER_ME")}
                 </button>
               </div>
             </div>
@@ -231,7 +231,7 @@ class WelcomePage extends Component {
                 <ul className="nav navbar-nav navbar-left">
                   <li>
                     <Autocomplete
-                      label={this.props.t("ACTIVE_SESSION")}
+                      label={i18next.t("ACTIVE_SESSION")}
                       value={this.state.activeSession}
                       options={sessions}
                       onChange={this.setActiveSession}
@@ -247,13 +247,13 @@ class WelcomePage extends Component {
                     target="_blank"
                   >
                     <i className="glyphicon glyphicon-pencil" />{" "}
-                    {this.props.t("WLCM_CONTACT")}
+                    {i18next.t("WLCM_CONTACT")}
                   </a>
                 </li>
                 <li>
                   <a href="http://mugen.karaokes.moe/" target="_blank">
                     <i className="glyphicon glyphicon-link" />
-                    {this.props.t("WLCM_SITE")}
+                    {i18next.t("WLCM_SITE")}
                   </a>
                 </li>
                 <li>
@@ -262,7 +262,7 @@ class WelcomePage extends Component {
                     <span>
                       {this.props.logInfos.token
                         ? this.props.logInfos.username
-                        : this.props.t("NOT_LOGGED")}
+                        : i18next.t("NOT_LOGGED")}
                     </span>
                   </a>
                 </li>
@@ -270,12 +270,12 @@ class WelcomePage extends Component {
                   <li id="wlcm_disconnect">
                     <a
                       href="#"
-                      title={this.props.t("LOGOUT")}
+                      title={i18next.t("LOGOUT")}
                       className="logout"
                       onClick={this.props.logOut}
                     >
                       <i className="glyphicon glyphicon-log-out" />{" "}
-                      <span>{this.props.t("LOGOUT")}</span>
+                      <span>{i18next.t("LOGOUT")}</span>
                     </a>
                   </li>
                 ) : null}
@@ -309,10 +309,10 @@ class WelcomePage extends Component {
                       <i className="digit glyphicon glyphicon-list normalText" />
                       <i className="digit glyphicon glyphicon-hand-right tutorialText" />
                       <div className="dash_title normalText">
-                        {this.props.t("WLCM_KARAMANAGER")}
+                        {i18next.t("WLCM_KARAMANAGER")}
                       </div>
                       <div className="dash_title tutorialText">
-                        {this.props.t("WLCM_GETSTARTED")}
+                        {i18next.t("WLCM_GETSTARTED")}
                       </div>
                     </div>
                   </li>
@@ -323,7 +323,7 @@ class WelcomePage extends Component {
                     >
                       <i className="digit glyphicon glyphicon-cog" />
                       <div className="dash_title">
-                        {this.props.t("WLCM_ADMINISTRATION")}
+                        {i18next.t("WLCM_ADMINISTRATION")}
                       </div>
                     </div>
                   </li>
@@ -335,7 +335,7 @@ class WelcomePage extends Component {
                       }
                     >
                       <i className="digit glyphicon glyphicon-user" />
-                      <div className="dash_title">{this.props.t("WLCM_PUBLIC")}</div>
+                      <div className="dash_title">{i18next.t("WLCM_PUBLIC")}</div>
                     </div>
                   </li>
                   <li
@@ -345,7 +345,7 @@ class WelcomePage extends Component {
                   >
                     <div className="dash minutes_dash">
                       <i className="digit glyphicon glyphicon-question-sign" />
-                      <div className="dash_title">{this.props.t("WLCM_HELP")}</div>
+                      <div className="dash_title">{i18next.t("WLCM_HELP")}</div>
                     </div>
                   </li>
                 </ul>
@@ -384,4 +384,4 @@ class WelcomePage extends Component {
   }
 }
 
-export default withTranslation()(WelcomePage);
+export default WelcomePage;
