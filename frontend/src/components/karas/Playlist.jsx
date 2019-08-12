@@ -557,13 +557,11 @@ class Playlist extends Component {
                               navigatorLanguage={this.props.navigatorLanguage}
                               playlistToAddId={this.state.playlistToAddId}
                               side={this.props.side}
-                              mode={this.props.config.Frontend.Mode}
+                              config={this.props.config}
                               logInfos={this.props.logInfos}
                               playlistCommands={this.state.playlistCommands}
                               idPlaylistTo={this.props.idPlaylistTo}
                               checkKara={this.checkKara}
-                              handleDragStart={this.handleDragStart}
-                              handleDragEnd={this.handleDragEnd}
                             />
                           </li>)
                       })

@@ -85,20 +85,25 @@ class KaraLine extends Component {
   async addKara() {
     var url;
     var data;
-    if (this.props.idPlaylistTo > 0) {
-      url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
-      if (this.props.idPlaylist > 0) {
-        data = { plc_id: this.props.kara.playlistcontent_id };
-        type = 'PATCH';
-      } else {
-        data = { requestedby: this.props.logInfos.username, kid: idKara };
+    if (this.props.scope === 'admin') {
+      if (this.props.idPlaylistTo > 0) {
+        url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
+        if (this.props.idPlaylist > 0) {
+          data = { plc_id: this.props.kara.playlistcontent_id };
+          type = 'PATCH';
+        } else {
+          data = { requestedby: this.props.logInfos.username, kid: this.props.kara.kid };
+        }
+      } else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
+        url = '/api/' + this.props.scope + '/blacklist/criterias';
+        data = { blcriteria_type: 1001, blcriteria_value: this.props.kara.kid };
+      } else if (this.props.idPlaylistTo == -3) {
+        url = '/api/' + this.props.scope + '/whitelist';
+        data = { kid: this.props.kara.kid };
       }
-    } else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
-      url = '/api/' + this.props.scope + '/blacklist/criterias';
-      data = { blcriteria_type: 1001, blcriteria_value: this.props.kara.kid };
-    } else if (this.props.idPlaylistTo == -3) {
-      url = '/api/' + this.props.scope + '/whitelist';
-      data = { kid: this.props.kara.kid };
+    } else {
+      url = `/api/public/karas/${this.props.kara.kid}`;
+      data = { requestedby: this.props.logInfos.username, kid: this.props.kara.kid };
     }
     try {
       var response = await axios.post(url, data);

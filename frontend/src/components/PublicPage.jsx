@@ -176,23 +176,26 @@ class PublicPage extends Component {
                         </div> : null
                       }
 
-                      <div className="dropdown">
-                        <button className="btn btn-dark dropdown-toggle klogo" id="menuPC" type="button"
-                          onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}>
-                        </button>
-                        {this.state.dropDownMenu ?
-                          <ul className="dropdown-menu">
-                            <li><a href="#" className="changePseudo" onClick={this.openLoginOrProfileModal}>
-                              <i className="glyphicon glyphicon-user"></i> {i18next.t("ACCOUNT")}</a>
-                            </li>
-                            <li><a href="/admin" id="logAdmin" target="_blank"><i className="glyphicon glyphicon-wrench"></i> Admin</a></li>
-                            <li><a href="#" className="showSettings" onClick={this.toggleHelpModal}>
-                              <i className="glyphicon glyphicon-info-sign"></i> {i18next.t("HELP")}</a>
-                            </li>
-                            <li><a href="#" className="logout" onClick={this.props.logOut}><i className="glyphicon glyphicon-log-out"></i> {i18next.t("LOGOUT")}</a></li>
-                          </ul> : null
-                        }
-                      </div>
+                      {is_touch_device() ?
+                        null :
+                        <div className="dropdown">
+                          <button className="btn btn-dark dropdown-toggle klogo" id="menuPC" type="button"
+                            onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}>
+                          </button>
+                          {this.state.dropDownMenu ?
+                            <ul className="dropdown-menu">
+                              <li><a href="#" className="changePseudo" onClick={this.openLoginOrProfileModal}>
+                                <i className="glyphicon glyphicon-user"></i> {i18next.t("ACCOUNT")}</a>
+                              </li>
+                              <li><a href="/admin" id="logAdmin" target="_blank"><i className="glyphicon glyphicon-wrench"></i> Admin</a></li>
+                              <li><a href="#" className="showSettings" onClick={this.toggleHelpModal}>
+                                <i className="glyphicon glyphicon-info-sign"></i> {i18next.t("HELP")}</a>
+                              </li>
+                              <li><a href="#" className="logout" onClick={this.props.logOut}><i className="glyphicon glyphicon-log-out"></i> {i18next.t("LOGOUT")}</a></li>
+                            </ul> : null
+                          }
+                        </div>
+                      }
 
                       <div className="switchParent">
                         {this.state.isPollActive ?
