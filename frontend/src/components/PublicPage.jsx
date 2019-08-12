@@ -169,7 +169,7 @@ class PublicPage extends Component {
                         <img src={getLuckyImage} />
                       </button>
 
-                      {this.props.logInfos.role != 'guest' ?
+                      {this.props.logInfos.role != 'guest' && this.props.settings.config.Frontend.Mode === 1 ?
                         <div className="pseudoChange">
                           <input list="pseudo" type="text" id="choixPseudo" className="form-control" placeholder={i18next.t("NICKNAME")} 
                           onBlur={this.changePseudo} onKeyPress={(e) => {if (e.which == 13) this.changePseudo(e)}} />

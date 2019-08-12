@@ -385,7 +385,7 @@ class PlaylistHeader extends Component {
                       <select type="text" className="tags form-control value" placeholder="Search" 
                         onChange={this.onChangeTags}>
                         {this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).map(tag => {
-                          return <option key={tag.id} value={tag.id}>{tag.text + " : " + tag.karacount}</option>
+                          return <option key={tag.id} value={tag.id}>{tag.label + " : " + tag.karacount}</option>
                         })}
                       </select>
                     </span>
