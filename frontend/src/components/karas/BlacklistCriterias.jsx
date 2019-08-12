@@ -86,7 +86,7 @@ class BlacklistCriterias extends Component {
                                         </button>
                                     </div>
                                     <div className="typeDiv">{i18next.t('BLCTYPE_' + criteria.type)}</div>
-                                    <div className="contentDiv">{criteria.type == 1001 ? buildKaraTitle(criteria.value[0]) : criteria.value}</div>
+                                    <div className="contentDiv">{criteria.type == 1001 ? buildKaraTitle(Array.isArray(criteria.value) ? criteria.value[0] : criteria.value) : criteria.value}</div>
                                 </li> : null
                             )
                         })}
