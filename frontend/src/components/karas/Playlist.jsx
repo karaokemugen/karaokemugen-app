@@ -384,7 +384,7 @@ class Playlist extends Component {
         data = { requestedby: this.props.logInfos.username, kid: idKara };
       }
     } else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
-      url = '/api' + this.props.scope + '/blacklist/criterias';
+      url = '/api/' + this.props.scope + '/blacklist/criterias';
       data = { blcriteria_type: 1001, blcriteria_value: idKara };
     } else if (this.props.idPlaylistTo == -3) {
       url = '/api/' + this.props.scope + '/whitelist';
