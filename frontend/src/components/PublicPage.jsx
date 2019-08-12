@@ -165,9 +165,12 @@ class PublicPage extends Component {
                           defaultValue={this.state.filterValue} onChange={(e) => this.changeFilterValue(e, 1)} />
                       </div>
 
-                      <button title={i18next.t("GET_LUCKY")} className="btn btn-lg btn-action btn-default getLucky" onClick={this.getLucky}>
-                        <img src={getLuckyImage} />
-                      </button>
+                      {is_touch_device() ?
+                        null :
+                        <button title={i18next.t("GET_LUCKY")} className="btn btn-lg btn-action btn-default getLucky" onClick={this.getLucky}>
+                          <img src={getLuckyImage} />
+                        </button>
+                      }
 
                       {this.props.logInfos.role != 'guest' && this.props.settings.config.Frontend.Mode === 1 ?
                         <div className="pseudoChange">

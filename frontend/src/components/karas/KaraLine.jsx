@@ -34,7 +34,8 @@ class KaraLine extends Component {
   }
 
   handleSwipe(e) {
-    if (this.props.config.Frontend.Mode === 2 && e.changedTouches[0].clientX > this.state.startSwipeX + 50) {
+    if (this.props.side === 1 && this.props.config.Frontend.Mode === 2 
+      && e.changedTouches[0].clientX > this.state.startSwipeX + 50) {
       this.addKara();
     }
   }
