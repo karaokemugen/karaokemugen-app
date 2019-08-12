@@ -9,7 +9,7 @@ import {join} from 'path';
 import {isShutdownPG, initPG} from '../utils/postgresql';
 import { baseChecksum } from './dataStore';
 import { DBStats } from '../types/database/database';
-import { getSettings, saveSetting, connectDB, db } from '../lib/dao/database';
+import { getSettings, saveSetting, connectDB, db, vacuum } from '../lib/dao/database';
 
 const sql = require('./sql/database');
 
@@ -33,6 +33,7 @@ function errorFunction(err: any) {
 	if (!isShutdownPG()) logger.error(`[DB] Database error : ${err}`);
 }
 
+/** Initialize a new database with the bundled PostgreSQL server */
 export async function initDB() {
 	const conf = getConfig();
 	await connectDB({superuser: true, db: 'postgres', log: getState().opt.sql}, errorFunction);
@@ -120,7 +121,7 @@ export async function initDBSystem(): Promise<boolean> {
 	const settings = await getSettings();
 	if (!doGenerate && !settings.lastGeneration) {
 		setConfig({ App: { FirstRun: true }});
-		logger.info('[DB] Database is brand new: database generation triggered');
+		logger.info('[DB] Unable to tell when last generation occured: database generation triggered');
 		doGenerate = true;
 	}
 	if (doGenerate) try {
@@ -129,13 +130,13 @@ export async function initDBSystem(): Promise<boolean> {
 		logger.error(`[DB] Generation failed : ${err}`);
 		throw 'Generation failure';
 	}
+	// Run this in the background
+	vacuum();
+
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
 	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
 	logger.info(`Series       : ${stats.series}`);
-	logger.info(`Languages    : ${stats.languages}`);
-	logger.info(`Artists      : ${stats.singers} singers, ${stats.songwriters} songwriters, ${stats.creators} creators`);
-	logger.info(`Kara Authors : ${stats.authors}`);
 	logger.info(`Playlists    : ${stats.playlists}`);
 	logger.info(`Songs played : ${stats.played}`);
 	return true;
@@ -162,3 +163,4 @@ export async function generateDB(): Promise<boolean> {
 	}
 	return true;
 }
+

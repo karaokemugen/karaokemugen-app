@@ -11,6 +11,7 @@ import {uuidRegexp, getTagTypeName} from '../lib/utils/constants';
 import {integrateKaraFile, getAllKaras} from './kara';
 import {integrateSeriesFile} from './series';
 import { compareKarasChecksum } from '../dao/database';
+import { vacuum } from '../lib/dao/database';
 import { emitWS } from '../lib/utils/ws';
 import got from 'got';
 import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC, File } from '../types/download';
@@ -83,7 +84,7 @@ function initQueue(drainEvent = true) {
 	q.on('empty', () => emitQueueStatus('updated'));
 	if (drainEvent) q.on('drain', () => {
 		logger.info('[Download] No tasks left, stopping queue');
-		refreshAll();
+		refreshAll().then(() => vacuum());
 		compareKarasChecksum();
 		taskCounter = 0;
 		emitQueueStatus('updated');
@@ -435,6 +436,7 @@ async function waitForUpdateQueueToFinish() {
 			compareKarasChecksum()
 			refreshAll()
 			.then(() => {
+				vacuum();
 				resolve();
 			}).catch(err => {
 				logger.error(`[Download] Error while draining queue : ${err}`);
