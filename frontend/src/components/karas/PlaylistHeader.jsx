@@ -271,12 +271,7 @@ class PlaylistHeader extends Component {
   getPlSearch() {
     return (<div className="pull-left plSearch">
       <input type="text" className="form-control input-md" side={this.props.side}
-        value={this.props.filterValue} onChange={this.props.changeFilterValue}
-        onKeyPress={e => {
-          if (e.which == 13) {
-            this.props.changeFilterValue(e);
-          }
-        }}
+        defaultValue={this.props.filterValue} onKeyDown={this.props.changeFilterValue}
         id={"searchPlaylist" + this.props.side} placeholder="&#xe003;" name="searchPlaylist" />
     </div>);
   }

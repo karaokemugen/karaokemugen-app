@@ -157,12 +157,7 @@ class PublicPage extends Component {
                       <div className="plSearch" style={{ width: (this.props.logInfos.role != 'guest' ? "" : "100%") }}>
                         <i className="fas fa-search"></i>
                         <input type="text" className="form-control" side="1" name="searchPlaylist"
-                          value={this.state.filterValue} onChange={this.changeFilterValue}
-                          onKeyPress={e => {
-                            if (e.which == 13) {
-                              this.changeFilterValue(e);
-                            }
-                          }} />
+                          defaultValue={this.state.filterValue} onKeyDown={this.changeFilterValue} />
                       </div>
 
                       <button title={this.props.t("GET_LUCKY")} className="btn btn-lg btn-action btn-default getLucky" onClick={this.getLucky}>

@@ -18,7 +18,8 @@ class Playlist extends Component {
       searchCriteria: undefined,
       playlistCommands: false,
       maxBeforeUpdate: 400,
-      getPlaylistInProgress: false
+      getPlaylistInProgress: false,
+      typingTimeout: 0
     };
     this.getIdPlaylist = this.getIdPlaylist.bind(this);
     this.changeIdPlaylist = this.changeIdPlaylist.bind(this);
@@ -175,9 +176,8 @@ class Playlist extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.filterValue !== this.props.filterValue) {
-      this.setState({timer: setTimeout(() => {
-        this.getPlaylist();
-      }, 1000)})
+      clearTimeout(this.state.typingTimeout);
+      this.setState({typingTimeout: setTimeout(this.getPlaylist, 2000)});
     }
   }
 
