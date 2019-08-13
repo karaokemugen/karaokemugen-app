@@ -139,7 +139,7 @@ class ProfilModal extends Component {
     }
 
     render() {
-        var listLangs = Object.keys(iso639.iso_639_2).map(k => { return { "label": iso639.iso_639_2[k][this.props.i18n.languages[0]][0], "value": k } });
+        var listLangs = Object.keys(iso639.iso_639_2).map(k => { return { "label": iso639.iso_639_2[k][i18next.languages[0]][0], "value": k } });
         if (!this.props.settingsOnline.Users && this.props.logInfos.username.includes('@')) {
             setTimeout(function () {
                 displayMessage('warning', i18next.t('LOG_OFFLINE.TITLE') + '<br/>', i18next.t('LOG_OFFLINE.MESSAGE'), 8000);

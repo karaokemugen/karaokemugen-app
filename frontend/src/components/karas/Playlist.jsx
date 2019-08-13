@@ -546,7 +546,7 @@ class Playlist extends Component {
                       onSortEnd={this.onSortEnd.bind(this)}
                       /> : this.state.data.content.map(kara => {
                         return (
-                          <li className="playlist-dragged-item" key={Math.random()} data-kid={kara.kid}>
+                          <li key={Math.random()} data-kid={kara.kid}>
                             <KaraLine
                               key={kara.kid}
                               kara={kara}

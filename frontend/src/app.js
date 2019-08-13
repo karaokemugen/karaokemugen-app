@@ -10,7 +10,6 @@ import NotFoundPage from './components/NotfoundPage'
 import langs from "langs";
 import axios from "axios";
 import { readCookie, parseJwt, createCookie, eraseCookie, getSocket } from "./components/tools"
-import Modal from './components/modals/Modal';
 import ClassicModeModal from './components/modals/ClassicModeModal';
 class App extends Component {
     constructor(props) {
