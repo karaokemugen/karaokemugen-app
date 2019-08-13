@@ -369,11 +369,12 @@ class Playlist extends Component {
     axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
   }
 
-  addCheckedKaras() {
+  async addCheckedKaras() {
     var idKara = this.state.data.content.filter(a => a.checked).map(a => a.kid).join();
     var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => a.playlistcontent_id).join();
     var url;
     var data;
+    var type;
 
     if (this.props.idPlaylistTo > 0) {
       url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
@@ -390,7 +391,17 @@ class Playlist extends Component {
       url = '/api/' + this.props.scope + '/whitelist';
       data = { kid: idKara };
     }
-    axios.post(url, data);
+    try {
+      var response;
+      if (type === 'PATCH') {
+        response = await axios.patch(url, data);
+      } else {
+        response = await axios.post(url, data);
+      }
+      displayMessage('success', 'Success', i18next.t(response.data.code));
+    } catch (error) {
+      displayMessage('warning', 'Warning', i18next.t(error.response.data.code));
+    }
   }
 
   transferCheckedKaras() {

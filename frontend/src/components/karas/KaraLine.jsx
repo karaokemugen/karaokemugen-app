@@ -86,6 +86,7 @@ class KaraLine extends Component {
   async addKara() {
     var url;
     var data;
+    var type;
     if (this.props.scope === 'admin') {
       if (this.props.idPlaylistTo > 0) {
         url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
@@ -107,7 +108,12 @@ class KaraLine extends Component {
       data = { requestedby: this.props.logInfos.username, kid: this.props.kara.kid };
     }
     try {
-      var response = await axios.post(url, data);
+      var response;
+      if (type === 'PATCH') {
+        response = await axios.patch(url, data);
+      } else {
+        response = await axios.post(url, data);
+      }
       displayMessage('success', 'Success', i18next.t(response.data.code));
     } catch (error) {
       displayMessage('warning', 'Warning', i18next.t(error.response.data.code));
