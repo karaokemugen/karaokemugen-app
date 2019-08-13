@@ -219,8 +219,6 @@ class Playlist extends Component {
       url = "/api/" + this.props.scope + "/blacklist/criterias";
     } else if (idPlaylist === -5) {
       url = "/api/public/favorites";
-    } else if (idPlaylist === -6) {
-      url = "/api/public/karas/recent";
     }
     return url;
   }

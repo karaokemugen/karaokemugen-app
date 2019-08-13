@@ -320,7 +320,6 @@ class PlaylistHeader extends Component {
                     this.props.scope === 'public' && this.props.side === 1 ? (
                       <React.Fragment>
                         <option value="-1"></option>
-                        <option value="-6"></option>
                         <option value="-5"></option>
                       </React.Fragment>) :
                       this.props.playlistList && this.props.playlistList.map(playlist => {
