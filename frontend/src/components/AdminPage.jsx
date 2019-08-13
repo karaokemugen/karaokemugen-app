@@ -31,9 +31,9 @@ class AdminPage extends Component {
   majIdsPlaylist(side, value) {
     var idsPlaylist = this.state.idsPlaylist;
     if (side === 1) {
-      idsPlaylist.left = value;
+      idsPlaylist.left = Number(value);
     } else {
-      idsPlaylist.right = value;
+      idsPlaylist.right = Number(value);
     }
     this.setState({ idsPlaylist: idsPlaylist })
   }
