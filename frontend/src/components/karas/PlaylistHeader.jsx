@@ -76,12 +76,12 @@ class PlaylistHeader extends Component {
     });
   }
 
-  startFavMix() {
-    var response = axios.get('/api/public/users/')
+  async startFavMix() {
+    var response = await axios.get('/api/public/users/');
     var userList = response.data.data.filter(u => u.type < 2);
 
     var userlistStr = '<div class="automixUserlist">';
-    userList.array.forEach(k => {
+    userList.forEach(k => {
       userlistStr +=
         '<div class="checkbox"><label>'
         + '<input type="checkbox" name="users"'
