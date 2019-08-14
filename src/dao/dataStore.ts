@@ -42,9 +42,9 @@ export function sortTagsStore() {
 
 export function getStoreChecksum() {
 	const store = JSON.stringify({
-		karas: dataStore.karas.entries(),
-		tags: dataStore.tags.entries(),
-		series: dataStore.series.entries()
+		karas: [...dataStore.karas.entries()],
+		tags: [...dataStore.tags.entries()],
+		series: [...dataStore.series.entries()]
 	}, null, 2);
 	return checksum(store);
 }
@@ -102,6 +102,8 @@ export async function baseChecksum(silent?: boolean) {
 	sortSeriesStore();
 	sortTagsStore();
 	if (!silent) bar.stop();
+	const checksum = getStoreChecksum();
+	logger.debug(`[Store] Store checksum : ${checksum}`);
 	profile('baseChecksum');
-	return getStoreChecksum();
+	return checksum;
 }
