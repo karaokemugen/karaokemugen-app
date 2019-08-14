@@ -224,11 +224,11 @@ class Playlist extends Component {
   }
 
   async getPlaylist(searchType) {
-    this.setState({getPlaylistInProgress: true});
     var url = this.getPlaylistUrl();
     if (this.state.idPlaylist >= 0) {
       this.getPlaylistInfo();
     }
+    this.setState({getPlaylistInProgress: true});
 
     url +=
       "?filter=" +
