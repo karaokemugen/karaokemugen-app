@@ -17,7 +17,8 @@ class KaraLine extends Component {
       karaDetailState: false,
       isFavorite: this.props.kara.flag_favorites,
       isLike: this.props.kara.flag_upvoted,
-      startSwipeX: 0
+      startSwipeX: 0,
+      addKaraInProgress: false
     };
     this.toggleKaraDetail = this.toggleKaraDetail.bind(this);
     this.makeFavorite = this.makeFavorite.bind(this);
@@ -36,7 +37,9 @@ class KaraLine extends Component {
   handleSwipe(e) {
     if (this.props.side === 1 && this.props.config.Frontend.Mode === 2 
       && e.changedTouches[0].clientX > this.state.startSwipeX + 100) {
+      this.setState({addKaraInProgress: true});
       this.addKara();
+      setTimeout(() => this.setState({addKaraInProgress: false}), 800); 
     }
   }
 
@@ -144,6 +147,7 @@ class KaraLine extends Component {
     var idPlaylist = this.props.idPlaylist;
     return (
       <div className={"list-group-item " + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu' : '')}
+        style={this.state.addKaraInProgress ? {transform: "translate(100%)"} : {}}
         onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
         {scope === 'public' && kara.username !== this.props.logInfos.username && kara.flag_visible === false ?
           <div className="contentDiv">
