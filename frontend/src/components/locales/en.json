@@ -354,5 +354,6 @@
 	"UPDATE_BANNER_GET_IT": "More info...",
 	"UPDATE_BANNER_REMIND_ME_LATER": "Ask me later",
 	"UPDATE_BANNER_DONT_BOTHER_ME": "Don't ask anymore",
-	"AUTO_UPDATE_JINGLES": "Auto-update Jingles"
+	"AUTO_UPDATE_JINGLES": "Auto-update Jingles",
+	"PL_SONG_DELETED" : "Song deleted from playlist"
 }
