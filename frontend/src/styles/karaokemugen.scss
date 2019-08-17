@@ -84,7 +84,7 @@ div > a, h5 > a, a.btn-link {
     background-color: hsla(0, 45%, 62%, 0.9) !important
 }
 select.form-control {
-	width: 85%;
+	width: 75%;
 	background-color: #343434;
     color: white;
 	border-radius: 0;
@@ -1244,7 +1244,7 @@ input[type="text"]:focus, input[type="password"]:focus {
     height: 60px;
 }
 .tagsContainer {
-    width: calc(100% - 115px);
+    width: 40%;
 }
 
 @media (max-width: 1025px) {  
