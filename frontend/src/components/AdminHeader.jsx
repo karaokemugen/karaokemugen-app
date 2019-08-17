@@ -241,14 +241,14 @@ class AdminHeader extends Component {
                 buttons={[
                   {
                     label:i18next.t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL"),
-                    active:!this.state.songVisibilityOperator,
+                    active:this.state.songVisibilityOperator,
                     activeColor:"#57bb00",
                     onClick:() => this.saveOperatorAdd(false),
                     
                   },
                   {
                     label:i18next.t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY"),
-                    active:this.state.songVisibilityOperator,
+                    active:!this.state.songVisibilityOperator,
                     activeColor:"#994240",
                     onClick:() => this.saveOperatorAdd(true),
                     
