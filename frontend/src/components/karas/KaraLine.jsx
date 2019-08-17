@@ -179,7 +179,7 @@ class KaraLine extends Component {
                 <button title={i18next.t('TOOLTIP_FAV')} onClick={this.makeFavorite}
                   className={"makeFav btn-sm btn btn-action "
                     + (is_touch_device() ? 'mobile' : '')
-                    + (kara.flag_favorites || idPlaylist === -5 ? 'currentFav' : '')}>
+                    + (kara.flag_favorites || idPlaylist === -5 ? ' currentFav' : '')}>
                     <i className="fas fa-star"></i>
                 </button> : null}
               {scope === 'admin' && idPlaylist > 0 ? <button title={i18next.t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara" 
@@ -189,7 +189,7 @@ class KaraLine extends Component {
               {scope !== 'admin' && kara.username == this.props.logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
                 <button title={i18next.t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
             </div>
-            <div className="contentDiv">
+            <div className="contentDiv" onClick={is_touch_device() ? this.toggleKaraDetail : null}>
               <div>{buildKaraTitle(kara)}</div>
               <div>
                 {kara.families && kara.families.map(tag => {
