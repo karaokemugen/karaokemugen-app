@@ -193,7 +193,8 @@ class KaraLine extends Component {
               {scope !== 'admin' && this.props.flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? 'currentLike' : ''}
                 onClick={this.likeKara}><i className="fas fa-thumbs-up"></i></button> : null}
               {scope !== 'admin' && kara.username == this.props.logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
-                <button title={i18next.t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
+                <button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action deleteKara"
+                  onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
             </div>
             <div className="contentDiv" onClick={is_touch_device() ? this.toggleKaraDetail : null}>
               <div>
