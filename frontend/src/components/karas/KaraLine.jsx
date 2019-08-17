@@ -196,8 +196,8 @@ class KaraLine extends Component {
                 <button title={i18next.t('TOOLTIP_DELETEKARA')} name="deleteKara" className="btn btn-sm btn-action" onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
             </div>
             <div className="contentDiv" onClick={is_touch_device() ? this.toggleKaraDetail : null}>
-              <div>{buildKaraTitle(kara)}</div>
               <div>
+                {buildKaraTitle(kara)}
                 {kara.families && kara.families.map(tag => {
                   return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
                 })}
