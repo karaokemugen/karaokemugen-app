@@ -191,7 +191,7 @@ class PublicPage extends Component {
                                 <i className="glyphicon glyphicon-user"></i> {i18next.t("ACCOUNT")}</a>
                               </li>
                               <li><a href="/admin" id="logAdmin" target="_blank"><i className="glyphicon glyphicon-wrench"></i> Admin</a></li>
-                              <li><a href="#" className="showSettings" onClick={this.toggleHelpModal}>
+                              <li><a href="#" onClick={this.toggleHelpModal}>
                                 <i className="glyphicon glyphicon-info-sign"></i> {i18next.t("HELP")}</a>
                               </li>
                               <li><a href="#" className="logout" onClick={this.props.logOut}><i className="glyphicon glyphicon-log-out"></i> {i18next.t("LOGOUT")}</a></li>
@@ -296,8 +296,13 @@ class PublicPage extends Component {
                         </a></li>
                       </React.Fragment> : null
                     }
-                    <li><a className="z-depth-3 btn-floating btn-large showSettings" style={{ backgroundColor: "#613114" }}><i className="glyphicon glyphicon-question-sign"></i></a></li>
-                    <li><a className="z-depth-3 btn-floating btn-large changePseudo" id="changePseudo" style={{ backgroundColor: "#431b50" }} onClick={this.openLoginOrProfileModal}><i className="glyphicon glyphicon-user"></i></a></li>
+                    <li><a className="z-depth-3 btn-floating btn-large" style={{ backgroundColor: "#613114" }}  onClick={this.toggleHelpModal}>
+                      <i className="glyphicon glyphicon-question-sign"></i>
+                    </a></li>
+                    <li><a className="z-depth-3 btn-floating btn-large changePseudo" id="changePseudo" style={{ backgroundColor: "#431b50" }} 
+                      onClick={this.openLoginOrProfileModal}>
+                        <i className="glyphicon glyphicon-user"></i>
+                    </a></li>
                     <li><a className="z-depth-3 btn-floating btn-large" id="switchInfoBar" style={{ backgroundColor: "#125633" }} onClick={this.setLyrics}>
                       {this.state.lyrics ?
                         <i className="glyphicon glyphicon-subtitles lyrics"></i> :
