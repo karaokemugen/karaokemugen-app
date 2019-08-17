@@ -68,12 +68,16 @@ class WelcomePage extends Component {
     if (sessions.length === 0) {
       const res = await axios.post("/api/admin/sessions", { name: value });
       sessionId = res.data.data;
-      this.setState({ sessionActive: value });
+      const sessionsList = await axios.get("/api/admin/sessions");
+      this.setState({
+        sessions: sessionsList.data.data,
+        activeSession: sessionsList.data.data.filter(value => value.active)[0].name
+      });
     } else {
-      this.setState({ sessionActive: sessions[0].name });
+      this.setState({ activeSession: sessions[0].name });
       sessionId = sessions[0].seid;
+      axios.post("/api/admin/sessions/" + sessionId);
     }
-    axios.post("/api/admin/sessions/" + sessionId);
   }
 
   async getCatchphrase() {
