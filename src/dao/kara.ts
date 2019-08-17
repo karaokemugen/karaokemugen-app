@@ -188,7 +188,8 @@ export async function addKaraToPlaylist(karaList: PLC[]) {
 		kara.created_at,
 		kara.pos,
 		false,
-		false
+		false,
+		kara.flag_visible
 	]));
 	const query = sql.addKaraToPlaylist(expand(karas.length, karas[0].length));
 	const values = flatten(karas);

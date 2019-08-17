@@ -10,7 +10,8 @@ INSERT INTO playlist_content(
 	created_at,
 	pos,
 	flag_playing,
-	flag_free
+	flag_free,
+	flag_visible
 ) VALUES ${values};
 `;
 
