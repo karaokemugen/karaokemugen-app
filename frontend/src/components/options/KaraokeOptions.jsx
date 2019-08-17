@@ -41,8 +41,13 @@ class KaraokeOptions extends Component {
 
   onChange(e) {
     var settings = this.state.settings;
-    const value = e.target.type === 'checkbox' ? e.target.checked : 
+    var value = e.target.type === 'checkbox' ? e.target.checked : 
       (Number(e.target.value) ? Number(e.target.value) : e.target.value);
+    if (value === 'true') {
+      value = true;
+    } else if (value === 'false') {
+      value = false;
+    }
     settings[e.target.id] = value;
     this.setState({ settings: settings });
     if (e.target.type != "number" || (Number(e.target.value))) this.props.onChange(e);
