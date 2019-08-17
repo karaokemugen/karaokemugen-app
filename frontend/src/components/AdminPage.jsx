@@ -83,7 +83,7 @@ class AdminPage extends Component {
             options={this.state.options}
             ></AdminHeader>
 
-          <ProgressBar webappMode={this.props.settings.config.Frontend.Mode}></ProgressBar>
+          <ProgressBar scope='admin' webappMode={this.props.settings.config.Frontend.Mode}></ProgressBar>
 
           <KmAppBodyDecorator mode="admin" extraClass="">
             {

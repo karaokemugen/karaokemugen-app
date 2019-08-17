@@ -233,7 +233,7 @@ class PublicPage extends Component {
                     null
                 }
 
-                <ProgressBar lyrics={this.state.lyrics}></ProgressBar>
+                <ProgressBar scope='public' lyrics={this.state.lyrics}></ProgressBar>
                 
                 <KmAppBodyDecorator mode={this.props.settings.config.Frontend.Mode} extraClass={this.props.settings.config.Frontend.Mode === 1 ? " mode1" : ""}>
                   <PlaylistMainDecorator>
