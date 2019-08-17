@@ -564,7 +564,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			if ((!conf.Playlist.MysterySongs.AddedSongVisibilityAdmin && addByAdmin) || !conf.Playlist.MysterySongs.AddedSongVisibilityPublic && !addByAdmin) karaList[i].flag_visible = false;
 		}
 
-		// Adding song to playlsit at long last!
+		// Adding song to playlist at long last!
 		await addKaraToPL(karaList);
 		updatePlaylistLastEditTime(playlist_id);
 		// Checking if a flag_playing is present inside the playlist.

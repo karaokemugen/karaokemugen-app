@@ -30,9 +30,14 @@ export async function checkValidUser(token: { username: string; }, onlineToken: 
 					// Firing this first to avoid multiple triggers, will get canceled if auth is not OK.
 					upsertRemoteToken(token.username, onlineToken.token);
 					if (await remoteCheckAuth(token.username.split('@')[1], onlineToken.token)){
-						fetchAndAddFavorites(token.username.split('@')[1], onlineToken.token, token.username);
-						fetchAndUpdateRemoteUser(token.username, null, onlineToken);
-						return user;
+						try {
+							fetchAndUpdateRemoteUser(token.username, null, onlineToken);
+							fetchAndAddFavorites(token.username.split('@')[1], onlineToken.token, token.username);
+						} catch(err) {
+							logger.error(`[RemoteUser] Failed to fetch and update user/favorite from remote : ${err}`);
+						} finally {
+							return user;
+						}
 					} else {
 						// Cancelling remote token.
 						upsertRemoteToken(token.username, null);
