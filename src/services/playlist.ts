@@ -559,6 +559,9 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		}
 		for (const i in karaList) {
 			karaList[i].pos = pos + +i;
+			// Test if we're adding a invisible/masked karaoke or not
+			karaList[i].flag_visible = true;
+			if ((!conf.Playlist.MysterySongs.AddedSongVisibilityAdmin && addByAdmin) || !conf.Playlist.MysterySongs.AddedSongVisibilityPublic && !addByAdmin) karaList[i].flag_visible = false;
 		}
 
 		// Adding song to playlsit at long last!
