@@ -51,7 +51,7 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Layout>
 					<Layout.Header>
-					<span style={{ backgroundColor: 'white', padding: "5px" }}><Link to={`/system/km/sessions/new`}>New session : <Icon type="plus" /></Link></span>	
+					<span style={{ backgroundColor: 'white', padding: "5px" }}><Link to={`/system/km/sessions/new`}>New session : <Icon type="plus" /></Link></span>
 					</Layout.Header>
 					<Layout.Content>
 						<Table
@@ -73,6 +73,14 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 		title: 'Started at',
 		dataIndex: 'started_at',
 		key: 'started_at'
+	}, {
+		title: 'Songs played',
+		dataIndex: 'played',
+		key: 'played'
+	}, {
+		title: 'Songs requested',
+		dataIndex: 'requested',
+		key: 'requested'
 	}, {
 		title: 'Active',
 		dataIndex: 'active',

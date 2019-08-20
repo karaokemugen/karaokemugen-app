@@ -22,8 +22,7 @@ import { deleteKara } from '../services/kara';
 import { refreshAll } from '../lib/dao/database';
 import { DBKara } from '../lib/types/database/kara';
 import { getTags, integrateTagFile } from './tag';
-import { DBTag } from '../lib/types/database/tag';
-import prettyBytes = require('pretty-bytes');
+import prettyBytes from 'pretty-bytes';
 import { refreshKaras } from '../lib/dao/kara';
 
 const queueOptions = {
@@ -518,7 +517,7 @@ function filterSeriesName(k: DBKara, value: string): boolean {
 	return !k.serie.includes(value);
 }
 
-function filterTagID(k: DBKara, value: string, type: number, tags: DBTag[]): boolean {
+function filterTagID(k: DBKara, value: string, type: number, tags: Tag[]): boolean {
 	// Find tag
 	const tag = tags.find(e => e.tid === value);
 	if (tag) {

@@ -91,6 +91,16 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	let limitClause = '';
 	let offsetClause = '';
 	let havingClause = '';
+	let groupClause = '';
+	// Search mode to filter karas played or requested in a particular session
+	if (params.mode === 'sessionPlayed') {
+		orderClauses = groupClause = 'p.played_at, ';
+		typeClauses = `AND p.fk_seid = '${params.modeValue}'`;
+	}
+	if (params.mode === 'sessionRequested') {
+		orderClauses = groupClause = 'rq.requested_at, ';
+		typeClauses = `AND rq.fk_seid = '${params.modeValue}'`;
+	}
 	if (params.mode === 'recent') orderClauses = 'created_at DESC, ';
 	if (params.mode === 'requested') {
 		orderClauses = 'requested DESC, ';
@@ -121,7 +131,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		userMode = user.series_lang_mode;
 		userLangs = {main: user.main_series_lang, fallback: user.fallback_series_lang};
 	}
-	const query = sql.getAllKaras(filterClauses.sql, langSelector(params.lang, userMode, userLangs), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
+	const query = sql.getAllKaras(filterClauses.sql, langSelector(params.lang, userMode, userLangs), typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause);
 	const queryParams = {
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 		username: params.username,
