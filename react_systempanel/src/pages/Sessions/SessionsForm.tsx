@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
-import { Button, Form, Icon, Input, Tooltip, Cascader } from 'antd';
+import { Button, Form, Icon, Input, Table, Tooltip, Cascader } from 'antd';
+import axios from 'axios/index';
+import { buildKaraTitle } from '../../utils/kara';
 
 interface SessionsFormProps {
 	sessions: any
@@ -10,7 +12,9 @@ interface SessionsFormProps {
 }
 
 interface SessionsFormState {
-	mergeSelection: string
+	mergeSelection: string,
+	sessionPlayed: any,
+	sessionRequested : any
 }
 
 class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
@@ -18,8 +22,16 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			mergeSelection: ''
+			mergeSelection: '',
+			sessionPlayed: [],
+			sessionRequested: []
 		};
+	}
+
+	async componentDidMount() {
+		var played = await axios.get(`/api/public/karas/?searchType=sessionPlayed&searchValue=${this.props.session.seid}`)
+		var requested = await axios.get(`/api/public/karas/?searchType=sessionRequested&searchValue=${this.props.session.seid}`)
+		this.setState({sessionPlayed: played.data.data.content, sessionRequested: requested.data.data.content});
 	}
 
 	handleSubmit = (e) => {
@@ -121,9 +133,35 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 						initialValue: this.props.session.seid
 					})(<Input type="hidden" />)}
 				</Form.Item>
+				<h1>Karas Played</h1>
+				<Table
+							dataSource={this.state.sessionPlayed}
+							columns={this.columns}
+							rowKey='kid'
+				/>
+				<h1>Karas Requested</h1>
+				<Table
+							dataSource={this.state.sessionRequested}
+							columns={this.columns}
+							rowKey='kid'
+				/>
 			</Form>
 		);
 	}
+
+	columns = [{
+		title: 'Kid',
+		dataIndex: 'kid',
+		key: 'kid'
+	}, {
+		title: 'Title',
+		dataIndex: 'title',
+		key: 'title',
+		render: (text, kara) => (<span>
+			{buildKaraTitle(kara)}
+		</span>)
+	}];
+
 }
 
 const cmp: any = Form.create()(SessionForm);
