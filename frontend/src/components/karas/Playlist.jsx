@@ -19,7 +19,8 @@ class Playlist extends Component {
       playlistCommands: false,
       maxBeforeUpdate: 400,
       getPlaylistInProgress: false,
-      typingTimeout: 0
+      typingTimeout: 0,
+      searchType: undefined
     };
     this.getIdPlaylist = this.getIdPlaylist.bind(this);
     this.changeIdPlaylist = this.changeIdPlaylist.bind(this);
@@ -223,12 +224,18 @@ class Playlist extends Component {
     return url;
   }
 
-  async getPlaylist(searchType) {
+  async getPlaylist(searchType, scrollInProgress) {
+    var data = {getPlaylistInProgress: true};
+    if (searchType) {
+      data.searchType = searchType;
+    } else if (!scrollInProgress) {
+      data.searchType = undefined;
+    }
     var url = this.getPlaylistUrl();
     if (this.state.idPlaylist >= 0) {
       this.getPlaylistInfo();
     }
-    this.setState({getPlaylistInProgress: true});
+    await this.setState(data);
 
     url +=
       "?filter=" +
@@ -237,7 +244,7 @@ class Playlist extends Component {
       (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 ? this.state.data.infos.from : 0) +
       "&size=" + this.state.maxBeforeUpdate;
 
-      if(searchType) {
+      if(this.state.searchType) {
         this.state.searchCriteria = this.state.searchCriteria ?
           {
             'year' : 'y',
@@ -246,7 +253,7 @@ class Playlist extends Component {
           }[this.state.searchCriteria]
           : '';
   
-          url += '&searchType=' + searchType
+          url += '&searchType=' + this.state.searchType
           + ((this.state.searchCriteria && this.state.searchValue) ? ('&searchValue=' + this.state.searchCriteria + ':' + this.state.searchValue) : '');
       }
     var response = await axios.get(url);
@@ -312,7 +319,7 @@ class Playlist extends Component {
       data.infos.from = percent === 100 ? data.infos.from + this.state.maxBeforeUpdate : data.infos.from - this.state.maxBeforeUpdate;
       data.infos.to = percent === 100 ? data.infos.to + this.state.maxBeforeUpdate : data.infos.to - this.state.maxBeforeUpdate;
       if (data.infos.from >= 0) {
-        this.setState({ data: data }, this.getPlaylist);
+        this.setState({data: data }, () => this.getPlaylist(undefined, true));
       }
     }
   }
