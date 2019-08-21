@@ -202,6 +202,7 @@ export function formatKaraList(karaList: any, from: number, count: number, lang:
 	// Get i18n from all tags found in all elements, and remove it
 	const languages = [where('1', getState().EngineDefaultLocale)['2B']];
 	languages.push(where('1', lang || getState().EngineDefaultLocale)['2B']);
+	languages.push('eng'); // English is mandatory
 	const {i18n, data} = consolidatei18n(karaList, languages);
 	return {
 		infos: {
