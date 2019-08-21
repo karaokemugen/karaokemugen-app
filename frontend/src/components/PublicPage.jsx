@@ -146,7 +146,7 @@ class PublicPage extends Component {
 
                       <button type="button" className={"searchMenuButton btn btn-sm btn-default" + (this.state.searchMenuOpen ? " searchMenuButtonOpen" : "")} 
                         onClick={this.toggleSearchMenu}>
-                        <i className="glyphicon glyphicon-filter"></i>
+                        <i className="fas fa-filter"></i>
                       </button>
 
                       <div className="plSearch" style={{ width: (this.props.logInfos.role != 'guest' ? "" : "100%") }}>
@@ -178,13 +178,13 @@ class PublicPage extends Component {
                           {this.state.dropDownMenu ?
                             <ul className="dropdown-menu">
                               <li><a href="#" className="changePseudo" onClick={this.openLoginOrProfileModal}>
-                                <i className="glyphicon glyphicon-user"></i> {i18next.t("ACCOUNT")}</a>
+                                <i className="fas fa-user"></i> {i18next.t("ACCOUNT")}</a>
                               </li>
-                              <li><a href="/admin" id="logAdmin" target="_blank"><i className="glyphicon glyphicon-wrench"></i> Admin</a></li>
+                              <li><a href="/admin" id="logAdmin" target="_blank"><i className="fas fa-wrench"></i> Admin</a></li>
                               <li><a href="#" onClick={this.toggleHelpModal}>
-                                <i className="glyphicon glyphicon-info-sign"></i> {i18next.t("HELP")}</a>
+                                <i className="fas fa-info-circle"></i> {i18next.t("HELP")}</a>
                               </li>
-                              <li><a href="#" className="logout" onClick={this.props.logOut}><i className="glyphicon glyphicon-log-out"></i> {i18next.t("LOGOUT")}</a></li>
+                              <li><a href="#" className="logout" onClick={this.props.logOut}><i className="fas fa-sign-out-alt"></i> {i18next.t("LOGOUT")}</a></li>
                             </ul> : null
                           }
                         </div>
@@ -260,7 +260,7 @@ class PublicPage extends Component {
                 ?
                   <div className="fixed-action-btn right right2" id="mobileActions">
                     <a className="btn-floating btn-large waves-effect z-depth-3 showPoll" onClick={() => this.setState({ pollModal: true })}>
-                      <i className="glyphicon glyphicon-stats"></i>
+                      <i className="fas fa-bar-chart"></i>
                     </a>
                   </div>
                 :
@@ -277,7 +277,7 @@ class PublicPage extends Component {
                     {this.props.settings.config.Frontend.Mode === 2 ?
                       <React.Fragment>
                         <li><a className="z-depth-3 btn-floating btn-large logout" style={{ backgroundColor: "#111" }} onClick={this.props.logOut}>
-                          <i className="glyphicon glyphicon-log-out"></i>
+                          <i className="fas fa-sign-out-alt"></i>
                         </a></li>
                         <li><a className="z-depth-3 btn-floating btn-large getLucky" style={{ backgroundColor: "#111" }} onClick={this.getLucky}>
                           <img style={{ height: "80%", marginTop: "10%" }} src={getLuckyImage} />
@@ -285,16 +285,16 @@ class PublicPage extends Component {
                       </React.Fragment> : null
                     }
                     <li><a className="z-depth-3 btn-floating btn-large" style={{ backgroundColor: "#613114" }}  onClick={this.toggleHelpModal}>
-                      <i className="glyphicon glyphicon-question-sign"></i>
+                      <i className="fas fa-question-circle"></i>
                     </a></li>
                     <li><a className="z-depth-3 btn-floating btn-large changePseudo" id="changePseudo" style={{ backgroundColor: "#431b50" }} 
                       onClick={this.openLoginOrProfileModal}>
-                        <i className="glyphicon glyphicon-user"></i>
+                        <i className="fas fa-user"></i>
                     </a></li>
                     <li><a className="z-depth-3 btn-floating btn-large" id="switchInfoBar" style={{ backgroundColor: "#125633" }} onClick={this.setLyrics}>
                       {this.state.lyrics ?
-                        <i className="glyphicon glyphicon-subtitles lyrics"></i> :
-                        <i className="glyphicon glyphicon-info-sign infos"></i>
+                        <i className="fas fa-cc lyrics"></i> :
+                        <i className="fas fa-info-circle infos"></i>
                       }
                     </a></li>
                   </ul> : null

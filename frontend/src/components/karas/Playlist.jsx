@@ -88,7 +88,7 @@ class Playlist extends Component {
         quotaString = secondsTimeSpanToHMS(data.quotaLeft, 'ms');
       }
       if (data.quotaLeft == -1) {
-        quotaString = '\u221e';
+        quotaString = <i className="fas fa-infinity"></i>;
       }
       this.setState({ quotaString: quotaString })
     }

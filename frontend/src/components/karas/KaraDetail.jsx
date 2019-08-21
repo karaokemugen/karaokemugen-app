@@ -53,7 +53,7 @@ class KaraDetail extends Component {
 
   async moreInfo() {
     var openExternalPageButton =
-      '<i class="glyphicon glyphicon-new-window"></i>';
+      '<i className="fas fa-external-link"></i>';
     var externalUrl = "";
     var serie = this.state.kara.serie;
     var extraSearchInfo = "";
@@ -343,7 +343,7 @@ class KaraDetail extends Component {
         if (data.subfile) this.showFullLyrics();
         infoKaraTemp = (
           <React.Fragment>
-            <div class="details z-depth-1" id="karaCard">
+            <div className="details z-depth-1" id="karaCard">
               <div className="topRightButtons">
                 {this.props.logInfos === "guest" ? null : makeFavButton}
               </div>
@@ -351,7 +351,7 @@ class KaraDetail extends Component {
                 <tbody>{htmlDetails}</tbody>
               </table>
             </div>
-            <div class="lyricsKara alert alert-info">
+            <div className="lyricsKara alert alert-info">
             {data.subfile && this.state.lyrics.map(ligne => {
                 return (
                   <React.Fragment key={Math.random()}>

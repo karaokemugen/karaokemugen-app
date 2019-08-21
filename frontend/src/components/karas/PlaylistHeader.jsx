@@ -81,10 +81,10 @@ class PlaylistHeader extends Component {
     var response = await axios.get('/api/public/users/');
     var userList = response.data.data.filter(u => u.type < 2);
 
-    var userlistStr = '<div class="automixUserlist">';
+    var userlistStr = '<div className="automixUserlist">';
     userList.forEach(k => {
       userlistStr +=
-        '<div class="checkbox"><label>'
+        '<div className="checkbox"><label>'
         + '<input type="checkbox" name="users"'
         + ' value="' + k.login + '" ' + (k.flag_online ? 'checked' : '') + '>'
         + k.nickname + '</label></div>';
@@ -155,7 +155,7 @@ class PlaylistHeader extends Component {
       <div className="btn-group plCommands controls">
         {this.props.idPlaylist >= 0 ?
           <button title={i18next.t("PLAYLIST_EDIT")} className="btn btn-default" name="editName" onClick={this.props.editNamePlaylist}>
-            <i className="fas fa-pencil"></i>
+            <i className="fas fa-pencil-alt"></i>
           </button> : null
         }
         <button title={i18next.t("START_FAV_MIX")} className="btn btn-default" name="startFavMix" onClick={this.startFavMix}>
@@ -272,9 +272,9 @@ class PlaylistHeader extends Component {
 
   getPlSearch() {
     return (<div className="pull-left plSearch">
-      <input type="text" className="form-control input-md" side={this.props.side}
-        defaultValue={store.getFilterValue()} onChange={(e) => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)}
-        id={"searchPlaylist" + this.props.side} placeholder="&#xe003;" name="searchPlaylist" />
+      <input type="text" className={`plSearch-input form-control input-md`} side={this.props.side}
+        defaultValue={store.getFilterValue()} onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)}
+        id={"searchPlaylist" + this.props.side} placeholder="&#xF002;" name="searchPlaylist" />
     </div>);
   }
 
@@ -388,13 +388,13 @@ class PlaylistHeader extends Component {
                                       onChange={this.onChangeTags} />
                     </span>
                   </span>
-                  <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="glyphicon glyphicon-filter"></i> {i18next.t("FILTER")}</a>
+                  <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="fas fa-filter"></i> {i18next.t("FILTER")}</a>
                 </li>
                 <li className={this.state.activeFilter === 1 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(1)}>
-                  <i className="glyphicon glyphicon-sort-by-alphabet"></i> {i18next.t("VIEW_STANDARD")}</a></li>
-                <li className={this.state.activeFilter === 2 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(2)}><i className="glyphicon glyphicon-star"></i> {i18next.t("VIEW_FAVORITES")}</a></li>
-                <li className={this.state.activeFilter === 3 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(3, "recent")}><i className="glyphicon glyphicon-time"></i> {i18next.t("VIEW_RECENT")}</a></li>
-                <li className={this.state.activeFilter === 4 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(4, "requested")}><i className="glyphicon glyphicon-fire"></i> {i18next.t("VIEW_POPULAR")}</a></li>
+                  <i className="fas fa-sort-alpha-asc"></i> {i18next.t("VIEW_STANDARD")}</a></li>
+                <li className={this.state.activeFilter === 2 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(2)}><i className="fas fa-star"></i> {i18next.t("VIEW_FAVORITES")}</a></li>
+                <li className={this.state.activeFilter === 3 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(3, "recent")}><i className="fas fa-clock-o"></i> {i18next.t("VIEW_RECENT")}</a></li>
+                <li className={this.state.activeFilter === 4 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(4, "requested")}><i className="fas fa-fire"></i> {i18next.t("VIEW_POPULAR")}</a></li>
 
               </ul>
             </div>

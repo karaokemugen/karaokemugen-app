@@ -250,19 +250,19 @@ class WelcomePage extends Component {
                     href="http://mugen.karaokes.moe/contact.html"
                     target="_blank"
                   >
-                    <i className="glyphicon glyphicon-pencil" />{" "}
+                    <i className="fas fa-pencil-alt" />{" "}
                     {i18next.t("WLCM_CONTACT")}
                   </a>
                 </li>
                 <li>
                   <a href="http://mugen.karaokes.moe/" target="_blank">
-                    <i className="glyphicon glyphicon-link" />
+                    <i className="fas fa-link" />
                     {i18next.t("WLCM_SITE")}
                   </a>
                 </li>
                 <li>
                   <a href="#" id="wlcm_login" onClick={this.loginClick}>
-                    <i className="glyphicon glyphicon-user" />
+                    <i className="fas fa-user" />
                     <span>
                       {this.props.logInfos.token
                         ? this.props.logInfos.username
@@ -278,7 +278,7 @@ class WelcomePage extends Component {
                       className="logout"
                       onClick={this.props.logOut}
                     >
-                      <i className="glyphicon glyphicon-log-out" />{" "}
+                      <i className="fas fa-sign-out-alt" />{" "}
                       <span>{i18next.t("LOGOUT")}</span>
                     </a>
                   </li>
@@ -310,8 +310,8 @@ class WelcomePage extends Component {
                     }
                   >
                     <div className="dash days_dash">
-                      <i className="digit glyphicon glyphicon-list normalText" />
-                      <i className="digit glyphicon glyphicon-hand-right tutorialText" />
+                      <i className="digit fas fa-list normalText" />
+                      <i className="digit fas fa-hand-o-right tutorialText" />
                       <div className="dash_title normalText">
                         {i18next.t("WLCM_KARAMANAGER")}
                       </div>
@@ -325,7 +325,7 @@ class WelcomePage extends Component {
                       className="dash hours_dash"
                       onClick={() => window.open("/system", "_blank")}
                     >
-                      <i className="digit glyphicon glyphicon-cog" />
+                      <i className="digit fas fa-cog" />
                       <div className="dash_title">
                         {i18next.t("WLCM_ADMINISTRATION")}
                       </div>
@@ -338,7 +338,7 @@ class WelcomePage extends Component {
                         window.open("/" + window.location.search, "_blank")
                       }
                     >
-                      <i className="digit glyphicon glyphicon-user" />
+                      <i className="digit fas fa-user" />
                       <div className="dash_title">{i18next.t("WLCM_PUBLIC")}</div>
                     </div>
                   </li>
@@ -348,7 +348,7 @@ class WelcomePage extends Component {
                     }
                   >
                     <div className="dash minutes_dash">
-                      <i className="digit glyphicon glyphicon-question-sign" />
+                      <i className="digit fas fa-question-circle" />
                       <div className="dash_title">{i18next.t("WLCM_HELP")}</div>
                     </div>
                   </li>

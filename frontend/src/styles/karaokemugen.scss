@@ -145,10 +145,6 @@ select.form-control {
 	z-index: 52;
 	position: relative;
 }
-.btn-action, .actionDiv > button {
-	font-family: 'Glyphicons Halflings';
-}
-
 .makeFav.currentFav {
     color: firebrick;
 }
@@ -952,7 +948,6 @@ input[type=range]:focus::-ms-fill-upper {
 	line-height:  30px;
 	height: 30px;
     text-align:right;
-    font-family: 'Glyphicons Halflings';
 }
 
 .panel-heading  ::-moz-placeholder {  /* Firefox 19+ */
@@ -960,14 +955,12 @@ input[type=range]:focus::-ms-fill-upper {
 	line-height:  21px;
 	height: 20px;
     text-align:right;
-    font-family: 'Glyphicons Halflings';
 }
 .panel-heading  :-ms-input-placeholder {
 	font-size: 2rem;
 	line-height:  21px;
 	height: 20px;
     text-align:right;
-    font-family: 'Glyphicons Halflings';
 }
 
 .loader {

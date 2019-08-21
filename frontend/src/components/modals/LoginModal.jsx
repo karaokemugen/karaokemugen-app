@@ -163,7 +163,7 @@ class LoginModal extends Component {
                                 <div className="loginRelated"></div>
                                 <div className="loginRelated">
                                     <button type="button" className="btn btn-default login" onClick={this.loginUser}>
-                                        <i className="glyphicon glyphicon-ok"></i>
+                                        <i className="fas fa-check"></i>
                                     </button>
                                 </div>
                             </div> :

@@ -61,10 +61,6 @@
 		float: left;
 	}
 
-	span[name="checkboxKara"], [name="selectAllKaras"], .addBlacklistCriteria {
-		font-family: 'Glyphicons Halflings'; 
-	}
-
 	.btn-danger-low, .btn-danger-low:focus {
 		background-color: #1E2124;
 		border: 0px solid #1E2124;
@@ -174,7 +170,6 @@
 		padding-top: 0px;
 		height: 34px;
 		text-align:right; 
-		font-family: 'Glyphicons Halflings'; 
 	}
 
 	.panel-heading  ::-moz-placeholder {  /* Firefox 19+ */
@@ -183,7 +178,6 @@
 		padding-top: 0px;
 		height: 34px;
 		text-align:right; 
-		font-family: 'Glyphicons Halflings';  
 	}
 	.panel-heading  :-ms-input-placeholder {
 		font-size: 17px;
@@ -191,12 +185,18 @@
 		padding-top: 0px;
 		height: 34px;
 		text-align:right; 
-		font-family: 'Glyphicons Halflings'; 
 	}
 	
 	.plSearch {
 		order: 2;
 	}
+
+	.plSearch-input {
+		font-weight: bold;
+		font-family: "Font Awesome 5 Free", Arial;
+	}
+	
+
 	.flagsContainer {
 		order: 1;
 	}

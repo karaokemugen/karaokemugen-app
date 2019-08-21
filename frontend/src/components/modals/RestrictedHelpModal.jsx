@@ -24,7 +24,7 @@ class RestrictedHelpModal extends Component {
                                 </div>
                                 <div className="modal-message">
                                     <button className="btn btn-default confirm">
-                                        <i className="glyphicon glyphicon-ok"></i>
+                                        <i className="fas fa-check"></i>
                                     </button>
                                 </div>
                             </div>

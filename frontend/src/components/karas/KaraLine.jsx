@@ -8,7 +8,7 @@ import { buildKaraTitle, displayMessage } from '../tools';
 
 import { sortableHandle } from 'react-sortable-hoc';
 
-const DragHandle = sortableHandle(() => <span><i className="glyphicon glyphicon-option-vertical"></i></span>);
+const DragHandle = sortableHandle(() => <span><i className="fas fa-ellipsis-v"></i></span>);
 
 class KaraLine extends Component {
   constructor(props) {
@@ -223,7 +223,7 @@ class KaraLine extends Component {
                 })}
                 {kara.upvotes ?
                   <div className="tag likeCount" title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
-                    {kara.upvotes}<i className="glyphicon glyphicon-heart"></i>
+                    {kara.upvotes}<i className="fas fa-heart"></i>
                   </div> : null
                 }
               </div>

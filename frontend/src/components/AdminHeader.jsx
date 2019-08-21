@@ -75,7 +75,7 @@ class AdminHeader extends Component {
     callModal(
       "custom",
       "Message indispensable",
-      '<select class="form-control" name="destination"><option value="screen">' +
+      '<select className="form-control" name="destination"><option value="screen">' +
         i18next.t("CL_SCREEN") +
         "</option>" +
         '<option value="users">' +
@@ -84,7 +84,7 @@ class AdminHeader extends Component {
         i18next.t("CL_ALL") +
         "</option></select>" +
         '<input type="text"name="duration" placeholder="5000 (ms)"/>' +
-        '<input type="text" placeholder="Message" class="form-control" id="message" name="message">',
+        '<input type="text" placeholder="Message" className="form-control" id="message" name="message">',
       function(data) {
         var defaultDuration = 5000;
         var msgData = {
