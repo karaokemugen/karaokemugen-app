@@ -134,7 +134,7 @@ class ProfilModal extends Component {
 
         const response = await axios.put('/api/public/myaccount', dataFile);
         const user = this.state.user;
-        user[avatar_file] = response.data.data.avatar_file;
+        user["avatar_file"] = response.data.data.avatar_file;
         this.setState({ user: user });
     }
 

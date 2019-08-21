@@ -16,6 +16,7 @@ import RadioButton from "./generic/RadioButton";
 import axios from "axios";
 import ProgressBar from "./karas/ProgressBar";
 import {buildKaraTitle, getSocket, is_touch_device,displayMessage,callModal} from './tools';
+import store from "../store";
 
 class PublicPage extends Component {
   constructor(props) {
@@ -28,8 +29,6 @@ class PublicPage extends Component {
       helpModal: false,
       lyrics: false,
       restrictedHelpModal: this.props.settings.config.Frontend.Mode === 1,
-      filterValue1: "",
-      filterValue2: "",
       pseudoValue: "",
       mobileMenu: false,
       idsPlaylist: {left: '', right: ''},
@@ -43,7 +42,6 @@ class PublicPage extends Component {
     this.changePseudo = this.changePseudo.bind(this);
     this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
     this.toggleSearchMenu = this.toggleSearchMenu.bind(this);
-    this.changeFilterValue = this.changeFilterValue.bind(this);
   }
 
   majIdsPlaylist(side, value) {
@@ -83,7 +81,7 @@ class PublicPage extends Component {
 
   // pick a random kara & add it after (not) asking user's confirmation
   async getLucky() {
-    var response = await axios.get('/api/public/karas?filter=' + this.state.filterValue+'&random=1');
+    var response = await axios.get('/api/public/karas?filter=' + store.getFilterValue(1)+'&random=1');
     if (response.data.data && response.data.data.content && response.data.data.content[0]) {
       var chosenOne = response.data.data.content[0].kid;
       var response2 = await axios.get('/api/public/karas/' + chosenOne);
@@ -107,14 +105,6 @@ class PublicPage extends Component {
 
   toggleSearchMenu() {
     this.setState({searchMenuOpen: !this.state.searchMenuOpen});
-  }
-
-  changeFilterValue(e, side) {
-    if (side === 1) {
-      this.setState({ filterValue1: e.target.value });
-    } else {
-      this.setState({ filterValue2: e.target.value });
-    }
   }
 
   render() {
@@ -162,7 +152,7 @@ class PublicPage extends Component {
                       <div className="plSearch" style={{ width: (this.props.logInfos.role != 'guest' ? "" : "100%") }}>
                         <i className="fas fa-search"></i>
                         <input type="text" className="form-control" side="1" name="searchPlaylist"
-                          defaultValue={this.state.filterValue} onChange={(e) => this.changeFilterValue(e, 1)} />
+                          defaultValue={store.getFilterValue(1)} onChange={(e) => store.setFilterValue(e.target.value, 1, this.state.idsPlaylist.left)} />
                       </div>
 
                       {is_touch_device() ?
@@ -248,8 +238,7 @@ class PublicPage extends Component {
                       tags={this.props.tags}
                       toggleSearchMenu={this.toggleSearchMenu}
                       searchMenuOpen={this.state.searchMenuOpen} 
-                      changeFilterValue={this.changeFilterValue}
-                      filterValue={this.state.filterValue1} />
+                      />
                     <Playlist
                       scope='public'
                       side={2}
@@ -258,8 +247,7 @@ class PublicPage extends Component {
                       config={this.props.settings.config} 
                       idPlaylistTo={this.state.idsPlaylist.left}
                       majIdsPlaylist={this.majIdsPlaylist}
-                      changeFilterValue={this.changeFilterValue}
-                      filterValue={this.state.filterValue2} />
+                      />
                   </PlaylistMainDecorator>
                 </KmAppBodyDecorator>
 

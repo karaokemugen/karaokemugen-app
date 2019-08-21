@@ -312,8 +312,8 @@ class KaraokeOptions extends Component {
                 onChange={this.onChange}
                 value={this.state.settings["Playlist.MysterySongs.AddedSongVisibilityAdmin"]}
               >
-                <option value={true}> {i18next.t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
-                <option value={false}> {i18next.t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
+                <option value={false}> {i18next.t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
+                <option value={true}> {i18next.t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
               </select>
             </div>
           </div>
@@ -329,8 +329,8 @@ class KaraokeOptions extends Component {
                 onChange={this.onChange}
                 value={this.state.settings["Playlist.MysterySongs.AddedSongVisibilityPublic"]}
               >
-                <option value={true}> {i18next.t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
-                <option value={false}> {i18next.t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
+                <option value={false}> {i18next.t("ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION")} </option>
+                <option value={true}> {i18next.t("ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION")} </option>
               </select>
             </div>
           </div>

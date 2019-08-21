@@ -31,6 +31,13 @@ class AdminHeader extends Component {
     });
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin 
+      !== prevProps.config.Playlist.MysterySongs.AddedSongVisibilityAdmin) {
+      this.setState({ songVisibilityOperator: Boolean(this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin)});
+    }
+  }
+
   saveMode(mode) {
     var data = expand("Karaoke.Private", mode);
     this.setState({ privateMode: mode });

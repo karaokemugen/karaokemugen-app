@@ -50,8 +50,6 @@ export interface DBPLCNames extends DBPLPos {
 }
 
 export interface DBPLC extends DBPLCBase {
-	kara_created_at: Date,
-	kara_modified_at: Date,
 	flag_whitelisted: boolean,
 	flag_blacklisted: boolean,
 	upvotes: number,

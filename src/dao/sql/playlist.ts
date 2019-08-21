@@ -134,7 +134,6 @@ SELECT
   ak.serie AS serie_orig,
   ak.serie_altname AS serie_altname,
   ak.seriefiles AS seriefiles,
-  ak.sid AS sid,
   ak.subfile AS subfile,
   COALESCE(ak.singers, '[]'::jsonb) AS singers,
   COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
@@ -151,10 +150,7 @@ SELECT
   COALESCE(ak.genres, '[]'::jsonb) AS genres,  ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
-  ak.gain AS gain,
   pc.created_at AS created_at,
-  ak.created_at AS kara_created_at,
-  ak.modified_at AS kara_modified_at,
   ak.mediasize AS mediasize,
   COUNT(p.played_at) AS played,
   COUNT(rq.requested_at) AS requested,
@@ -198,7 +194,7 @@ LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
 WHERE pc.fk_id_playlist = :playlist_id
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${whereClause}
-GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres, ak.platforms, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
+GROUP BY ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres, ak.platforms, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid
 ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}

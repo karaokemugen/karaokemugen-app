@@ -20,7 +20,7 @@ import {isNumber} from '../lib/utils/validators';
 export async function getBlacklist(params: KaraParams): Promise<KaraList> {
 	profile('getBL');
 	const pl = await getBLContents(params);
-	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.from, pl.length);
+	const ret = formatKaraList(pl.slice(params.from, params.from + params.size), params.from, pl.length, params.lang);
 	profile('getBL');
 	return ret;
 }

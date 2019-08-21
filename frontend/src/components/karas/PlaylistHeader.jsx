@@ -5,6 +5,7 @@ import getLucky from "../../assets/clover.png"
 import ActionsButtons from "./ActionsButtons";
 import { buildKaraTitle, displayMessage, callModal } from '../tools';
 import Autocomplete from "../generic/Autocomplete";
+import store from "../../store";
 
 var tagsTypesList = [
   'DETAILS_SERIE',
@@ -272,7 +273,7 @@ class PlaylistHeader extends Component {
   getPlSearch() {
     return (<div className="pull-left plSearch">
       <input type="text" className="form-control input-md" side={this.props.side}
-        defaultValue={this.props.filterValue} onChange={(e) => this.props.changeFilterValue(e, this.props.side)}
+        defaultValue={store.getFilterValue()} onChange={(e) => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)}
         id={"searchPlaylist" + this.props.side} placeholder="&#xe003;" name="searchPlaylist" />
     </div>);
   }

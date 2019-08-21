@@ -7,6 +7,7 @@ import axios from "axios";
 import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage, callModal} from "../tools";
 import BlacklistCriterias from "./BlacklistCriterias";
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
+import store from "../../store";
 
 require('./Playlist.scss');
 
@@ -19,7 +20,7 @@ class Playlist extends Component {
       playlistCommands: false,
       maxBeforeUpdate: 400,
       getPlaylistInProgress: false,
-      typingTimeout: 0
+      searchType: undefined
     };
     this.getIdPlaylist = this.getIdPlaylist.bind(this);
     this.changeIdPlaylist = this.changeIdPlaylist.bind(this);
@@ -41,6 +42,7 @@ class Playlist extends Component {
     this.addAllKaras = this.addAllKaras.bind(this);
     this.onChangeTags = this.onChangeTags.bind(this);
     this.getPlaylistUrl = this.getPlaylistUrl.bind(this);
+    this.playlistContentsUpdated = this.playlistContentsUpdated.bind(this);
     this.playlistRef = React.createRef();
   }
 
@@ -61,15 +63,21 @@ class Playlist extends Component {
     getSocket().on("favoritesUpdated", () => {
       if (this.state.idPlaylist === -5) this.getPlaylist();
     });
-    getSocket().on("playlistContentsUpdated", idPlaylist => {
-      if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylist();
-    });
+    getSocket().on("playlistContentsUpdated", this.playlistContentsUpdated);
     getSocket().on("playlistInfoUpdated", idPlaylist => {
       if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylistInfo();
     });
     getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
+    store.addChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
   }
 
+  componentWillUnmount() {
+    store.removeChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
+  }
+
+  playlistContentsUpdated(idPlaylist) {
+    if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylist();
+  }
 
   updateQuotaAvailable(data) {
     if (this.props.logInfos.username === data.username) {
@@ -174,13 +182,6 @@ class Playlist extends Component {
     this.props.majIdsPlaylist(this.props.side, idPlaylist);
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.filterValue !== this.props.filterValue) {
-      clearTimeout(this.state.typingTimeout);
-      this.setState({typingTimeout: setTimeout(this.getPlaylist, 2000)});
-    }
-  }
-
   editNamePlaylist() {
     callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', newName => {
       axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist, { name: newName, flag_visible: this.props.playlistInfo.flag_public });
@@ -223,21 +224,27 @@ class Playlist extends Component {
     return url;
   }
 
-  async getPlaylist(searchType) {
+  async getPlaylist(searchType, scrollInProgress) {
+    var data = {getPlaylistInProgress: true};
+    if (searchType) {
+      data.searchType = searchType;
+    } else if (!scrollInProgress) {
+      data.searchType = undefined;
+    }
     var url = this.getPlaylistUrl();
     if (this.state.idPlaylist >= 0) {
       this.getPlaylistInfo();
     }
-    this.setState({getPlaylistInProgress: true});
+    await this.setState(data);
 
     url +=
       "?filter=" +
-      this.props.filterValue + 
+      store.getFilterValue(this.props.side) + 
       "&from=" +
       (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 ? this.state.data.infos.from : 0) +
       "&size=" + this.state.maxBeforeUpdate;
 
-      if(searchType) {
+      if(this.state.searchType) {
         this.state.searchCriteria = this.state.searchCriteria ?
           {
             'year' : 'y',
@@ -246,7 +253,7 @@ class Playlist extends Component {
           }[this.state.searchCriteria]
           : '';
   
-          url += '&searchType=' + searchType
+          url += '&searchType=' + this.state.searchType
           + ((this.state.searchCriteria && this.state.searchValue) ? ('&searchValue=' + this.state.searchCriteria + ':' + this.state.searchValue) : '');
       }
     var response = await axios.get(url);
@@ -312,7 +319,7 @@ class Playlist extends Component {
       data.infos.from = percent === 100 ? data.infos.from + this.state.maxBeforeUpdate : data.infos.from - this.state.maxBeforeUpdate;
       data.infos.to = percent === 100 ? data.infos.to + this.state.maxBeforeUpdate : data.infos.to - this.state.maxBeforeUpdate;
       if (data.infos.from >= 0) {
-        this.setState({ data: data }, this.getPlaylist);
+        this.setState({data: data }, () => this.getPlaylist(undefined, true));
       }
     }
   }
@@ -361,7 +368,7 @@ class Playlist extends Component {
   }
 
   async addAllKaras() {
-    var response = await axios.get(`${this.getPlaylistUrl()}?filter=${this.props.filterValue}`);
+    var response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
     var karaList = response.data.data.content.map(a => a.kid).join();
     displayMessage('info', 'Info', 'Ajout de ' + response.data.data.content.length + ' karas');
     axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
@@ -431,7 +438,7 @@ class Playlist extends Component {
             i18next.t('KARA_SUGGESTION_LINK', response.data.data.issueURL, 'console'), '30000');
         }, 200);
       })
-    }, this.props.filterValue);
+    }, store.getFilterValue(this.props.side));
   }
 
   onChangeTags(type, value) {
@@ -518,9 +525,7 @@ class Playlist extends Component {
             playlistToAddId={this.state.playlistToAddId}
             idPlaylist={this.state.idPlaylist}
             changeIdPlaylist={this.changeIdPlaylist}
-            filterValue={this.props.filterValue}
             playlistInfo={this.state.playlistInfo}
-            changeFilterValue={this.props.changeFilterValue}
             getPlaylistUrl={this.getPlaylistUrl}
             togglePlaylistCommands={this.togglePlaylistCommands}
             playlistCommands={this.state.playlistCommands}
