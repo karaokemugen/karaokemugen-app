@@ -22,7 +22,7 @@ class Store extends EventEmmiter {
       clearTimeout(timer);
       timer = setTimeout(() => {
         this.emitChange("playlistContentsUpdated", idPlaylist)
-      }, 2000);
+      }, 1000);
     if (side === 1) {
       filterValue1 = value;
     } else {
