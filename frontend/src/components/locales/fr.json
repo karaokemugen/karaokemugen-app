@@ -375,5 +375,6 @@
 	"UPDATE_BANNER_REMIND_ME_LATER": "Plus tard",
 	"UPDATE_BANNER_DONT_BOTHER_ME": "Ne plus m'avertir",
 	"AUTO_UPDATE_JINGLES": "Mise à jour automatique des Jingles",
-	"PL_SONG_DELETED" : "Chanson supprimée de la playlist"
+	"PL_SONG_DELETED" : "Chanson supprimée de la playlist",
+	"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Ajout de chanson impossible, quota atteint"
 }

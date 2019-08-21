@@ -355,5 +355,6 @@
 	"UPDATE_BANNER_REMIND_ME_LATER": "Ask me later",
 	"UPDATE_BANNER_DONT_BOTHER_ME": "Don't ask anymore",
 	"AUTO_UPDATE_JINGLES": "Auto-update Jingles",
-	"PL_SONG_DELETED" : "Song deleted from playlist"
+	"PL_SONG_DELETED" : "Song deleted from playlist",
+	"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Can't add any song, quota reached"
 }
