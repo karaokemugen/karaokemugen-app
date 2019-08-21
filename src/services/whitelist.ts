@@ -28,7 +28,8 @@ export async function addKaraToWhitelist(kids: string[], reason: string): Promis
 export async function getWhitelistContents(params: KaraParams) {
 	profile('getWL');
 	const pl = await getWLContents(params);
-	const ret = formatKaraList(pl, params.from, pl[0].count , params.lang);
+	const count = pl.length > 0 ? pl[0].count : 0;
+	const ret = formatKaraList(pl, params.from, count, params.lang);
 	profile('getWL');
 	return ret;
 }

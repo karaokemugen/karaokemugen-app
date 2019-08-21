@@ -384,7 +384,8 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 				: from = 0;
 		}
 		profile('getPLC');
-		return formatKaraList(pl, from, pl[0].count, lang);
+		const count = pl.length > 0 ? pl[0].count : 0;
+		return formatKaraList(pl, from, count, lang);
 	} catch(err) {
 		throw {
 			message: err
