@@ -167,7 +167,7 @@ export default function adminWhitelistController(router: Router) {
  * @apiParam {uuid[]} kid Kara IDs to delete from whitelist, separated by commas
  * @apiSuccess {Number} args Arguments associated with message
  * @apiSuccess {Number} code Message to display
- * @apiSuccess {String[]} data List of KIDs
+ * @apiSuccess {Number[]} data List of Whitelist content IDs separated by commas
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
