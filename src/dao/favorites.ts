@@ -18,9 +18,8 @@ export async function selectFavorites(params: FavParams): Promise<DBKara[]> {
 	filterClauses.params.username = params.username;
 	let limitClause = '';
 	let offsetClause = '';
-	//Disabled until frontend manages this
-	//if (from > 0) offsetClause = `OFFSET ${from} `;
-	//if (size > 0) limitClause = `LIMIT ${size} `;
+	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
+	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	let user: User = {};
 	let userMode = -1;
 	let userLangs = {main: null, fallback: null};

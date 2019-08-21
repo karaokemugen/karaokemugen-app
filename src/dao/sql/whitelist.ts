@@ -43,7 +43,8 @@ SELECT
   COALESCE(ak.genres, '[]'::jsonb) AS genres,  ak.created_at AS created_at,
   ak.modified_at AS modified_at,
   wl.created_at AS whitelisted_at,
-  wl.reason AS reason
+  wl.reason AS reason,
+  count(ak.kid) OVER() AS count
   FROM all_karas AS ak
   INNER JOIN whitelist AS wl ON wl.fk_kid = ak.kid
   WHERE 1 = 1

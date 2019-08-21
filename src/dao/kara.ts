@@ -110,9 +110,8 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		orderClauses = 'played DESC, ';
 		havingClause = 'HAVING COUNT(p.*) > 1';
 	}
-	//Disabled until we get the frontend to work around this.
-	//if (from > 0) offsetClause = `OFFSET ${params.from} `;
-	//if (size > 0) limitClause = `LIMIT ${prams.size} `;
+	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
+	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	// If we're asking for random songs, here we modify the query to get them.
 	if (params.random > 0) {
 		orderClauses = `RANDOM(), ${orderClauses}`;

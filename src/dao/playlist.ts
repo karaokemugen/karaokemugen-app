@@ -135,9 +135,8 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 	let offsetClause = '';
 	let orderClause = 'pc.pos';
 	let whereClause = '';
-	//Disabled until we get the frontend to work around this.
-	//if (from > 0) offsetClause = `OFFSET ${from} `;
-	//if (size > 0) limitClause = `LIMIT ${size} `;
+	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
+	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	if (+params.random > 0) {
 		limitClause = ` LIMIT ${+params.random}`;
 		whereClause = ` AND pc.fk_kid NOT IN (

@@ -28,9 +28,8 @@ export async function getBlacklistContents(params: KaraParams): Promise<DBBlackl
 	const filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
 	let limitClause = '';
 	let offsetClause = '';
-	//Disabled until frontend manages this
-	//if (from > 0) offsetClause = `OFFSET ${input.from} `;
-	//if (size > 0) limitClause = `LIMIT ${input.size} `;
+	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
+	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	let user: User = {};
 	let userMode = -1;
 	let userLangs = {main: null, fallback: null};

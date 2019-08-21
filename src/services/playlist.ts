@@ -373,6 +373,8 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 			username: token.username,
 			filter: filter,
 			lang: lang,
+			from: from,
+			size: size,
 			random: random
 		});
 		if (from === -1) {
@@ -382,7 +384,7 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 				: from = 0;
 		}
 		profile('getPLC');
-		return formatKaraList(pl.slice(from, from + size), from, pl.length, lang);
+		return formatKaraList(pl, from, pl[0].count, lang);
 	} catch(err) {
 		throw {
 			message: err

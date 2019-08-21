@@ -20,6 +20,7 @@ export interface DBPLCBase extends DBKara {
 	username: string
 	playlistcontent_id: number,
 	playlist_id: number,
+	count: number,
 }
 
 export interface DBPLPos {

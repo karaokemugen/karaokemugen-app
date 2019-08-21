@@ -302,7 +302,8 @@ SELECT
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
   (CASE WHEN up.fk_login = :username THEN TRUE ELSE FALSE END) as flag_upvoted,
   SUM(plc_before_karas.duration) - ak.duration AS time_before_play,
-  pc.flag_visible AS flag_visible
+  pc.flag_visible AS flag_visible,
+  count(pc.fk_kid) OVER() AS count
 FROM playlist_content AS pc
 INNER JOIN  playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid

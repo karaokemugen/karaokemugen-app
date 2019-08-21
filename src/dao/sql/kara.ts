@@ -89,7 +89,8 @@ export const getAllKaras = (filterClauses: string[], lang: LangClause, typeClaus
   END) as flag_favorites,
   ak.repo AS repo,
   ak.tag_names AS tag_names,
-  ak.tid AS tid
+  ak.tid AS tid,
+  count(ak.kid) OVER() AS count
 FROM all_karas AS ak
 LEFT OUTER JOIN kara_serie AS ks_main ON ks_main.fk_kid = ak.kid
 LEFT OUTER JOIN serie_lang AS sl_main ON sl_main.fk_sid = ks_main.fk_sid AND sl_main.lang = ${lang.main}
@@ -103,7 +104,7 @@ WHERE 1 = 1
   ${typeClauses}
 GROUP BY ${groupClauses} ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_singer_sortable, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.repo, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid, ak.tag_names, ak.tid
 ${havingClause}
-ORDER BY ${orderClauses} ak.languages_sortable, ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, lower(unaccent(ak.title))
+ORDER BY ${orderClauses} ak.languages_sortable, ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.title
 ${limitClause}
 ${offsetClause}
 `;

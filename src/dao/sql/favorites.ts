@@ -26,7 +26,8 @@ SELECT
   COALESCE(ak.genres, '[]'::jsonb) AS genres,
   ak.duration AS duration,
   ak.created_at AS created_at,
-  ak.modified_at AS modified_at
+  ak.modified_at AS modified_at,
+  count(ak.kid) OVER() AS count
   FROM all_karas AS ak
   INNER JOIN favorites AS f ON f.fk_kid = ak.kid
   WHERE fk_login = :username

@@ -192,7 +192,7 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 		random: params.random
 	});
 	profile('formatList');
-	const ret = formatKaraList(pl.slice(params.from || 0, (params.from || 0) + (params.size || 999999999)), (params.from || 0), pl.length, params.lang);
+	const ret = formatKaraList(pl, params.from || 0, pl[0].count, params.lang);
 	profile('formatList');
 	profile('getKaras');
 	return ret;
