@@ -187,7 +187,7 @@ export default function adminWhitelistController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					await deleteKaraFromWhitelist(req.body.kid);
+					await deleteKaraFromWhitelist(req.body.kid.split(','));
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.json(OKMessage(req.body.kid, 'WL_SONG_DELETED', req.body.kid));
