@@ -1,7 +1,7 @@
 import {resolve} from 'path';
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import compression from 'compression';
+//import compression from 'compression';
 import logger from '../lib/utils/logger';
 import {getConfig, resolvedPathAvatars, resolvedPathMedias} from '../lib/utils/config';
 import {urlencoded, json} from 'body-parser';
@@ -83,7 +83,7 @@ export async function initFrontend() {
 		const app = express();
 		app.use(passport.initialize());
 		configurePassport();
-		app.use(compression());
+		//app.use(compression());
 		app.use(cookieParser());
 		app.use(urlencoded({ extended: true, limit: '50mb' }));
 		app.use(json({limit: '50mb'}));
