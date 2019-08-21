@@ -44,7 +44,7 @@ SELECT
   ak.modified_at AS modified_at,
   wl.created_at AS whitelisted_at,
   wl.reason AS reason,
-  count(ak.kid) OVER() AS count
+  count(ak.kid) OVER()::integer AS count
   FROM all_karas AS ak
   INNER JOIN whitelist AS wl ON wl.fk_kid = ak.kid
   WHERE 1 = 1

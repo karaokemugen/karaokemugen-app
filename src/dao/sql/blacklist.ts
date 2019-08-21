@@ -102,7 +102,7 @@ SELECT
   ak.modified_at AS modified_at,
   bl.created_at AS blacklisted_at,
   bl.reason AS reason,
-  count(fk_kid) OVER() AS count
+  count(fk_kid) OVER()::integer AS count
   FROM all_karas AS ak
   INNER JOIN blacklist AS bl ON bl.fk_kid = ak.kid
   WHERE 1 = 1
