@@ -190,7 +190,8 @@ class KaraLine extends Component {
                 </button> : null}
               {scope === 'admin' && idPlaylist > 0 ? <button title={i18next.t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara"
                 onClick={this.playKara}><i className="fas fa-play"></i></button> : null}
-              {scope === "admin" && !kara.flag_visible ? (
+              {scope === "admin" && !kara.flag_visible && this.props.playlistInfo 
+                && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ? (
                   <button
                     type="button"
                     className={"btn btn-sm btn-action btn-primary"}
