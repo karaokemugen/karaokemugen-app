@@ -314,7 +314,9 @@ class Playlist extends Component {
     var content_height = this.outerHeight(document.querySelector('.playlistContainer > ul'))
     var percent = 100 * scroll_by / (content_height - container_height)
 
-    if (this.state.data.infos && this.state.data.infos.count > this.state.maxBeforeUpdate && (percent === 100 || percent === 0)) {
+    if (this.state.data && this.state.data.infos 
+      && this.state.data.infos.count > this.state.maxBeforeUpdate 
+      && (percent === 100 || percent === 0)) {
       var data = this.state.data;
       data.infos.from = percent === 100 ? data.infos.from + this.state.maxBeforeUpdate : data.infos.from - this.state.maxBeforeUpdate;
       data.infos.to = percent === 100 ? data.infos.to + this.state.maxBeforeUpdate : data.infos.to - this.state.maxBeforeUpdate;
