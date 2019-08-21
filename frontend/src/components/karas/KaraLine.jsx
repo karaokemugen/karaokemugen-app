@@ -100,7 +100,7 @@ class KaraLine extends Component {
       if (this.props.idPlaylistTo > 0) {
         url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
         if (this.props.idPlaylist > 0) {
-          data = { plc_id: this.props.kara.playlistcontent_id };
+          data = { plc_id: String(this.props.kara.playlistcontent_id) };
           type = 'PATCH';
         } else {
           data = { requestedby: this.props.logInfos.username, kid: this.props.kara.kid };

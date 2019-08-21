@@ -314,7 +314,9 @@ class Playlist extends Component {
     var content_height = this.outerHeight(document.querySelector('.playlistContainer > ul'))
     var percent = 100 * scroll_by / (content_height - container_height)
 
-    if (this.state.data.infos && this.state.data.infos.count > this.state.maxBeforeUpdate && (percent === 100 || percent === 0)) {
+    if (this.state.data && this.state.data.infos 
+      && this.state.data.infos.count > this.state.maxBeforeUpdate 
+      && (percent === 100 || percent === 0)) {
       var data = this.state.data;
       data.infos.from = percent === 100 ? data.infos.from + this.state.maxBeforeUpdate : data.infos.from - this.state.maxBeforeUpdate;
       data.infos.to = percent === 100 ? data.infos.to + this.state.maxBeforeUpdate : data.infos.to - this.state.maxBeforeUpdate;
@@ -376,7 +378,7 @@ class Playlist extends Component {
 
   async addCheckedKaras() {
     var idKara = this.state.data.content.filter(a => a.checked).map(a => a.kid).join();
-    var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => a.playlistcontent_id).join();
+    var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => String(a.playlistcontent_id)).join();
     var url;
     var data;
     var type;
@@ -415,15 +417,16 @@ class Playlist extends Component {
   }
 
   deleteCheckedKaras() {
-    var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => a.playlistcontent_id).join();
     var url;
     var data;
     if (this.state.idPlaylist > 0) {
+      var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => String(a.playlistcontent_id)).join();
       url = '/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/';
       data = { plc_id: idKaraPlaylist };
     } else if (this.state.idPlaylist == -3) {
+      var idKara = this.state.data.content.filter(a => a.checked).map(a => a.kid).join();
       url = '/api/ ' + this.props.scope + '/whitelist';
-      data = { wlc_id: idKaraPlaylist }
+      data = { kid: idKara }
     }
     if (url) {
       axios.delete(url, {data:data});
