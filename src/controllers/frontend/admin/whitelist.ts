@@ -167,7 +167,7 @@ export default function adminWhitelistController(router: Router) {
  * @apiParam {uuid[]} kid Kara IDs to delete from whitelist, separated by commas
  * @apiSuccess {Number} args Arguments associated with message
  * @apiSuccess {Number} code Message to display
- * @apiSuccess {Number[]} data List of Whitelist content IDs separated by commas
+ * @apiSuccess {String[]} data List of KIDs
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -187,7 +187,7 @@ export default function adminWhitelistController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					await deleteKaraFromWhitelist(req.body.kid.split(','));
+					await deleteKaraFromWhitelist(req.body.kid);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.json(OKMessage(req.body.kid, 'WL_SONG_DELETED', req.body.kid));
