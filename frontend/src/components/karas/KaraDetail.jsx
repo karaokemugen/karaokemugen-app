@@ -328,8 +328,8 @@ class KaraDetail extends Component {
                   <button
                     type="button"
                     title={data.flag_visible ? i18next.t("TOOLTIP_VISIBLE_OFF") : i18next.t("TOOLTIP_VISIBLE_ON")} onClick={this.changeVisibilityKara}
-                    className={"visibilityButton btn btn-action " + (data.flag_visible ? "": "btn-primary")}
-                  ><i className="fas fa-eye-slash"></i></button>
+                    className={"btn btn-action " + (data.flag_visible ? "": "btn-primary")}
+                >{data.flag_visible ? <i className="fas fa-eye"/> : <i className="fas fa-eye-slash"/>}</button>
                 ) : null}
               </div>
               <table>
