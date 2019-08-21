@@ -382,7 +382,7 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 				: from = 0;
 		}
 		profile('getPLC');
-		return formatKaraList(pl.slice(from, from + size), from, pl.length);
+		return formatKaraList(pl.slice(from, from + size), from, pl.length, lang);
 	} catch(err) {
 		throw {
 			message: err

@@ -30,6 +30,8 @@ import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
 import { Token } from '../lib/types/user';
 import { consolidatei18n } from '../lib/services/kara';
+import { getState } from '../utils/state';
+import {where} from 'langs';
 
 /* Returns an array of unknown karaokes. If array is empty, all songs in "karas" are present in database */
 export async function isAllKaras(karas: string[]): Promise<string[]> {
@@ -190,15 +192,17 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 		random: params.random
 	});
 	profile('formatList');
-	const ret = formatKaraList(pl.slice(params.from || 0, (params.from || 0) + (params.size || 999999999)), (params.from || 0), pl.length);
+	const ret = formatKaraList(pl.slice(params.from || 0, (params.from || 0) + (params.size || 999999999)), (params.from || 0), pl.length, params.lang);
 	profile('formatList');
 	profile('getKaras');
 	return ret;
 }
 
-export function formatKaraList(karaList: any, from: number, count: number): KaraList {
+export function formatKaraList(karaList: any, from: number, count: number, lang: string): KaraList {
 	// Get i18n from all tags found in all elements, and remove it
-	const {i18n, data} = consolidatei18n(karaList);
+	const languages = [where('1', getState().EngineDefaultLocale)['2B']];
+	languages.push(where('1', lang || getState().EngineDefaultLocale)['2B']);
+	const {i18n, data} = consolidatei18n(karaList, languages);
 	return {
 		infos: {
 			count: count,
