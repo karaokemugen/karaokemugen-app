@@ -1,7 +1,9 @@
 #welcomePage {
     height:100vh;
-    
-    html,  body, #center-area {
+    padding: 0;
+    background: rgba(0, 0, 0, 0) linear-gradient(135deg, hsla(205, 39%, 20%, 1) 0%, hsla(151, 17%, 40%, 1) 100%) repeat scroll 0 0;
+
+    html,  body {
         height: 100%;
     }
     body {
@@ -69,9 +71,6 @@
         text-decoration: none;
     }
 
-    .section {
-        padding: 100px 0;
-    }
     .btn {    
         border-radius: 0;
     }
@@ -102,27 +101,21 @@
         text-shadow: none;
     }
 
-
-    #center-area {
-        padding: 0;
-        background: rgba(0, 0, 0, 0) linear-gradient(135deg, hsla(205, 39%, 20%, 1) 0%, hsla(151, 17%, 40%, 1) 100%) repeat scroll 0 0
-    }
-    #center-area > .container,
-    #center-area > .container > .row {
+    .container,
+    .container > .row {
         height: 100%;
         padding: 5px;
     }
     .logoDiv {
-        padding-top: 80px;
         margin-bottom: 20px;
     }
     .catchPhrase {
         font-size: 16px;
     }
-    #center-area .block {
+    .block {
     padding-top: 5px;
     }
-    #center-area .block h1.wow {
+    .block h1.wow {
     margin-bottom: 35px;
     margin-top: 5px;
     text-transform: uppercase;
@@ -130,7 +123,7 @@
     letter-spacing: 6px;
     position: relative;
     }
-    #center-area h1.wow:before {
+    h1.wow:before {
         content: "";
         position: absolute;
         left: -6px;
@@ -145,15 +138,13 @@
         padding:20px;
     }
 
-    /* #center-area  */
-
-    #center-area .menu .tutorialText {
+    .menu .tutorialText {
         display: none;
     }
-    #center-area .tutorial .normalText {
+    .tutorial .normalText {
         display: none;
     }
-    #center-area .tutorial .tutorialText {
+    .tutorial .tutorialText {
         display: block;
     }
     .tutorial {
@@ -213,31 +204,31 @@
     .navbar-default.animated .navbar-nav > li.current > a {
         color: #82c25a;
     }
-    #center-area .navbar-default .navbar-nav {
+    .navbar-default .navbar-nav {
         padding-top: 11px;
         padding-right: 60px;
     }
-    #center-area .navbar-default .navbar-nav li {
+    .navbar-default .navbar-nav li {
         padding: 0px 15px;
     }
-    #center-area .navbar-default .navbar-nav li a {
+    .navbar-default .navbar-nav li a {
         color: #fff;
         padding: 10px 0px;
         font-family: 'Roboto', sans-serif;
         font-weight: 400;
         font-size: 14px;
     }
-    #center-area a {
+    a {
         color: hsla(208, 91%, 79%, 1);
     }
-    #center-area li.new .new-header > a {
+    li.new .new-header > a {
         float: right;
     }
-    #center-area li.new .new-header{
+    li.new .new-header{
         position: relative;
         margin-bottom: 14px;
     }
-    #center-area li.new .new-header:after {
+    li.new .new-header:after {
         content: "";
         position: absolute;
         left: -50%;
@@ -246,25 +237,25 @@
         height: 2px;
         width: 200%;
     }
-    #center-area li.new[type="mast"] .new-header:after {
+    li.new[type="mast"] .new-header:after {
         background: #ffffff60;
     }
-    #center-area li.new[type="app"] .new-header:after {
+    li.new[type="app"] .new-header:after {
         background: #ffbd79bd;
     }
-    #center-area li.new[type="base"] .new-header:after {
+    li.new[type="base"] .new-header:after {
         background: #d46cb9ad;
     }
 
-    #center-area .block,
-    #center-area .counter.wow {
+    .block,
+    .counter.wow {
         background: rgba(255, 255, 255, 0.2);
         margin: 5px;
         padding:13px;
         box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2)
     }
 
-    #center-area .block h2 {
+    .block h2 {
         color: #fff;
         font-size: 30px;
         font-weight: 300;
@@ -272,7 +263,7 @@
         padding-bottom: 19px;
         text-align: center;
     }
-    #center-area > .container > .row,
+    .container > .row,
     .news ul {
         display: flex;
         flex-direction: column;
@@ -280,10 +271,10 @@
     .new h1 {
         font-size: 25px;
     }
-    #center-area > .container > .row > div{
-    flex: 0 0 auto;
+    .container > .row > div {
+        flex: 0 0 auto;
     }
-    #center-area > .container > .row > div:last-child {
+    .container > .row > div:last-child {
         flex-shrink: 1;
         overflow: auto;
     }
@@ -317,12 +308,12 @@
     #welcome_dashboard {
         display: flex;
     }
-    #center-area .menu > ul  > li {
+    .menu > ul  > li {
         text-align: center;
         padding: 25px 28px 20px;
     }
-    #center-area .block.wow > ul > li,
-    #center-area .news li.new {
+    .block.wow > ul > li,
+    .news li.new {
         background-color: rgba(255, 255, 255, 0.3);
         color: #fff;
         display: inline-block;
@@ -334,41 +325,41 @@
         box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
         cursor: pointer;
     }
-    #center-area .menu ul li:nth-child(1) {
+    .menu ul li:nth-child(1) {
         background-color: hsla(234, 44%, 67%, 0.2)
     }
-    #center-area .menu ul li:nth-child(2) {
+    .menu ul li:nth-child(2) {
         background-color: hsla(140, 47%, 67%, 0.2);
     }
-    #center-area .menu ul li:nth-child(3) {
+    .menu ul li:nth-child(3) {
         background-color: hsla(60, 50%, 58%, 0.2)
     }
-    #center-area .menu ul li:last-child {
+    .menu ul li:last-child {
         background-color: hsla(0, 12%, 54%, 0.4)
     }
 
-    #center-area .menu ul li:nth-child(1):hover {
+    .menu ul li:nth-child(1):hover {
         background-color: hsla(234, 44%, 47%, 0.2)
     }
-    #center-area .menu ul li:nth-child(2):hover {
+    .menu ul li:nth-child(2):hover {
         background-color: hsla(140, 47%, 47%, 0.2);
     }
-    #center-area .menu ul li:nth-child(3):hover {
+    .menu ul li:nth-child(3):hover {
         background-color: hsla(60, 50%, 38%, 0.2)
     }
-    #center-area .menu ul li:nth-child(4):hover {
+    .menu ul li:nth-child(4):hover {
         background-color: hsla(0, 22%, 34%, 0.4)
     }
 
-    #center-area ul li:active {
+    ul li:active {
         background-color: rgba(255, 255, 255, 0.12);
     }
 
-    #center-area ul li span {
+    ul li span {
         font-size: 16px;
         font-weight: 300;
     }
-    #center-area ul li .digit {
+    ul li .digit {
         display: inline-block;
         font-size: 50px;
         line-height: 50px;
