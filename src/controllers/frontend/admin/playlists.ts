@@ -449,7 +449,7 @@ export default function adminPlaylistsController(router: Router) {
 				});
 				if (!validationErrors) {
 					try {
-						const result = await addKaraToPlaylist(req.body.kid.split(','), req.authToken.username, req.params.pl_id, +req.body.pos);
+						const result = await addKaraToPlaylist(req.body.kid, req.authToken.username, req.params.pl_id, +req.body.pos);
 						emitWS('playlistInfoUpdated',req.params.pl_id);
 						emitWS('playlistContentsUpdated',req.params.pl_id);
 						res.statusCode = 201;
