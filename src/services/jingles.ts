@@ -18,10 +18,10 @@ let currentSeries = {};
 export async function updateJingles() {
 	let gitDir = resolve(resolvedPathJingles()[0], 'KaraokeMugen/');
 	try {
-		if (!await asyncExists(gitDir)) {
+		if (!await asyncExists(gitDir) || !await asyncExists(gitDir + '.git/')) {
 			logger.info('[Jingles] Downloading jingles');
 			// Git clone
-			await asyncMkdirp(gitDir);
+			if (!await asyncExists(gitDir)) await asyncMkdirp(gitDir);
 			await gitClone({
 				dir: gitDir,
 				url: 'https://lab.shelter.moe/karaokemugen/jingles'
