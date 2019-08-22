@@ -612,16 +612,18 @@ class Playlist extends Component {
               >
                 <i className="fas fa-chevron-up"></i>
               </button>
-              <button
-                type="button"
-                title={i18next.t("GOTO_PLAYING")}
-                className="btn btn-sm btn-action"
-                onClick={this.scrollToPlaying}
-                action="goTo"
-                value="playing"
-              >
-                <i className="fas fa-play"></i>
-              </button>
+              {this.state.idPlaylist === this.state.playlistToAddId ?
+                <button
+                  type="button"
+                  title={i18next.t("GOTO_PLAYING")}
+                  className="btn btn-sm btn-action"
+                  onClick={this.scrollToPlaying}
+                  action="goTo"
+                  value="playing"
+                >
+                  <i className="fas fa-play"></i>
+                </button> : null
+              }
               <button
                 type="button"
                 title={i18next.t("GOTO_BOTTOM")}
