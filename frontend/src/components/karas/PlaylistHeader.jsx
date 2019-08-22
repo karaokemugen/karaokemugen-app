@@ -272,7 +272,7 @@ class PlaylistHeader extends Component {
 
   getPlSearch() {
     return (<div className="pull-left plSearch">
-      <input type="text" className={`plSearch-input form-control input-md`} side={this.props.side}
+      <input type="text" className="plSearch-input form-control input-md" side={this.props.side}
         defaultValue={store.getFilterValue()} onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)}
         id={"searchPlaylist" + this.props.side} placeholder="&#xF002;" name="searchPlaylist" />
     </div>);

@@ -329,6 +329,11 @@ button.closeParent.bottom  {
 	z-index: 50;
 }
 
+.plSearch-input {
+	font-weight: bold;
+	font-family: "Font Awesome 5 Free", Arial;
+}
+
 .playlistContainer > ul {
 	margin-bottom: 20px; /* SUPER IMPORTANT TO AVOID (edit: not really) A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
 	position: relative;
