@@ -1,8 +1,6 @@
 #publicPage {
     height:100vh;
 
-    
-
     .panel-heading > div,.panel-heading > div > div, .panel-heading > div > div > div, .panel-heading > div > div > div > input {
         height: 100%;
     }
@@ -16,19 +14,9 @@
         color: hsla(110, 35%, 78%, 1);
     }
 
-    .right-inner-addon i {
-    right: 0px;
-    left: auto;
-    }
-
-
-
-
     .popup .panel-heading {
         display: flex;
     }
-
-    /* experimental, à vérifier */
 
     .playlist-main, .panel, .playlistContainer, .list-group, .list-group > li.list-group-item, .list-group .contentDiv {
         border-radius: 0;
@@ -94,10 +82,6 @@
         height: calc(100% - 1px);
         padding: 0;
         display: flex;
-    }
-
-    #panel1 .plFooter button[value="playing"] {
-        display: none;
     }
 
     .showPoll, .btn-floating.btn-large.showPoll {
@@ -173,9 +157,6 @@
     .z-depth-3 {
         box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
     }
-    .z-depth-2 {
-        box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.3);
-    }
 
     @media (max-width: 1025px) {
 
@@ -228,13 +209,6 @@
         #nav-signup input[type="text"],  #nav-signup input[type="password"]:not([data-exclude="true"]) {
             max-height: 7vh;
             min-height: 32px;
-        }
-    }
-
-    /* special size for iPad pro */
-    @media (max-width: 1025px) and (min-width: 992px) {
-        .col-msm-12 {
-            width: 100% !important;
         }
     }
 }

@@ -343,7 +343,7 @@ class KaraDetail extends Component {
         if (data.subfile) this.showFullLyrics();
         infoKaraTemp = (
           <React.Fragment>
-            <div className="details z-depth-1" id="karaCard">
+            <div className="details karaCard">
               <div className="topRightButtons">
                 {this.props.logInfos === "guest" ? null : makeFavButton}
               </div>
