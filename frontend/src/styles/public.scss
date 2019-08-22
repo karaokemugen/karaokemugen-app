@@ -16,11 +16,6 @@
         color: hsla(110, 35%, 78%, 1);
     }
 
-
-    .badge {
-        font-size: 12px;
-    }
-
     .right-inner-addon i {
     right: 0px;
     left: auto;
@@ -242,9 +237,6 @@
 
     /* special size for iPad pro */
     @media (max-width: 1025px) and (min-width: 992px) {
-        .hidden-msm {
-            display: none!important;
-        }
         .col-msm-12 {
             width: 100% !important;
         }
