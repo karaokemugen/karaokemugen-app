@@ -253,7 +253,7 @@ class PublicPage extends Component {
                               className="changePseudo"
                               onClick={this.openLoginOrProfileModal}
                             >
-                              <i className="fas fa-user" />{" "}
+                              <i className="fas fa-user" />&nbsp;
                               {i18next.t("ACCOUNT")}
                             </a>
                           </li>
@@ -264,7 +264,7 @@ class PublicPage extends Component {
                           </li>
                           <li>
                             <a href="#" onClick={this.toggleHelpModal}>
-                              <i className="fas fa-info-circle" />{" "}
+                              <i className="fas fa-info-circle" />&nbsp;
                               {i18next.t("HELP")}
                             </a>
                           </li>
@@ -274,7 +274,7 @@ class PublicPage extends Component {
                               className="logout"
                               onClick={this.props.logOut}
                             >
-                              <i className="fas fa-sign-out-alt" />{" "}
+                              <i className="fas fa-sign-out-alt" />&nbsp;
                               {i18next.t("LOGOUT")}
                             </a>
                           </li>

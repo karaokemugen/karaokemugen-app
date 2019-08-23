@@ -30,8 +30,10 @@ class InterfaceOptions extends Component {
     return (
       <React.Fragment>
         <div className="form-group">
-          <label className="col-xs-4 control-label">
+          <label className="col-xs-4 control-label" title={i18next.t("WEBAPPMODE_TOOLTIP")}>
             {i18next.t("WEBAPPMODE")}
+            &nbsp;
+            <i class="far fa-question-circle"></i>
           </label>
           <div className="col-xs-6">
             <select

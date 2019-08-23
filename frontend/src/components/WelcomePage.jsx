@@ -249,19 +249,19 @@ class WelcomePage extends Component {
                   href="http://mugen.karaokes.moe/contact.html"
                   target="_blank"
                 >
-                  <i className="fas fa-pencil-alt" />{" "}
+                  <i className="fas fa-pencil-alt" />&nbsp;
                   {i18next.t("WLCM_CONTACT")}
                 </a>
               </li>
               <li>
                 <a href="http://mugen.karaokes.moe/" target="_blank">
-                  <i className="fas fa-link" />{" "}
+                  <i className="fas fa-link" />&nbsp;
                   {i18next.t("WLCM_SITE")}
                 </a>
               </li>
               <li>
                 <a href="#" id="wlcm_login" onClick={this.loginClick}>
-                  <i className="fas fa-user" />{" "}
+                  <i className="fas fa-user" />&nbsp;
                   <span>
                     {this.props.logInfos.token
                       ? this.props.logInfos.username
@@ -277,7 +277,7 @@ class WelcomePage extends Component {
                     className="logout"
                     onClick={this.props.logOut}
                   >
-                    <i className="fas fa-sign-out-alt" />{" "}
+                    <i className="fas fa-sign-out-alt" />&nbsp;
                     <span>{i18next.t("LOGOUT")}</span>
                   </a>
                 </li>

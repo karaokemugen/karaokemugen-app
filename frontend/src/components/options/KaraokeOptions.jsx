@@ -58,8 +58,10 @@ class KaraokeOptions extends Component {
       <React.Fragment>
         <div id="nav-karaokeAllMode">
           <div className="form-group">
-            <label className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label" title={i18next.t("QUOTA_TYPE_TOOLTIP")}>
               {i18next.t("QUOTA_TYPE")}
+              &nbsp;
+              <i class="far fa-question-circle"></i>
             </label>
             <div className="col-xs-6">
               <select
@@ -94,8 +96,10 @@ class KaraokeOptions extends Component {
 
           {this.state.settings["Karaoke.Quota.Type"] === 1 ?
             <div className="form-group">
-              <label className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label" title={i18next.t("SONGS_BY_USER_TOOLTIP")}>
                 {i18next.t("SONGS_BY_USER")}
+                &nbsp;
+                <i class="far fa-question-circle"></i>
               </label>
               <div className="col-xs-6">
                 <input
@@ -111,8 +115,10 @@ class KaraokeOptions extends Component {
 
           {this.state.settings["Karaoke.Quota.Type"] !== 0 ?
             <div className="form-group">
-              <label className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label" title={i18next.t("FREE_AUTO_TIME_TOOLTIP")}>
                 {i18next.t("FREE_AUTO_TIME")}
+                &nbsp;
+                <i class="far fa-question-circle"></i>
               </label>
               <div className="col-xs-6">
                 <input
@@ -127,8 +133,10 @@ class KaraokeOptions extends Component {
             </div> : null}
 
           <div className="form-group">
-            <label className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label" title={i18next.t("ENGINEJINGLESINTERVAL_TOOLTIP")}>
               {i18next.t("ENGINEJINGLESINTERVAL")}
+              &nbsp;
+              <i class="far fa-question-circle"></i>
             </label>
             <div className="col-xs-6">
               <input
@@ -153,8 +161,10 @@ class KaraokeOptions extends Component {
           </div>
 
           <div className="form-group">
-            <label className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label" title={i18next.t("ENGINEENABLESMARTINSERT_TOOLTIP")}>
               {i18next.t("ENGINEENABLESMARTINSERT")}
+              &nbsp;
+              <i class="far fa-question-circle"></i>
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.SmartInsert" handleChange={this.onChange}
@@ -163,8 +173,10 @@ class KaraokeOptions extends Component {
           </div>
 
           <div className="form-group">
-            <label className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label" title={i18next.t("ENGINEAUTOPLAY_TOOLTIP")}>
               {i18next.t("ENGINEAUTOPLAY")}
+              &nbsp;
+              <i class="far fa-question-circle"></i>
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.Autoplay" handleChange={this.onChange}
@@ -192,8 +204,10 @@ class KaraokeOptions extends Component {
             </div>
           </div>
           <div className="form-group">
-            <label className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label" title={i18next.t("CLASSIC_MODE_TOOLTIP")}>
               {i18next.t("CLASSIC_MODE")}
+              &nbsp;
+              <i class="far fa-question-circle"></i>
             </label>
             <div className="col-xs-6">
               <Switch idInput="Karaoke.ClassicMode" handleChange={this.onChange}
@@ -302,8 +316,10 @@ class KaraokeOptions extends Component {
           </div>
 
           <div className="form-group">
-            <label className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label" title={i18next.t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP")}>
               {i18next.t("ENGINE_ADDED_SONG_VISIBILITY_ADMIN")}
+              &nbsp;
+              <i class="far fa-question-circle"></i>
             </label>
             <div className="col-xs-6">
               <select
@@ -319,8 +335,10 @@ class KaraokeOptions extends Component {
           </div>
 
           <div className="form-group">
-            <label className="col-xs-4 control-label">
+            <label className="col-xs-4 control-label" title={i18next.t("ENGINE_ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP")}>
               {i18next.t("ENGINE_ADDED_SONG_VISIBILITY_PUBLIC")}
+              &nbsp;
+              <i class="far fa-question-circle"></i>
             </label>
             <div className="col-xs-6">
               <select
@@ -448,8 +466,10 @@ class KaraokeOptions extends Component {
                 </div>
               </div>
               <div className="form-group">
-                <label className="col-xs-4 control-label">
+                <label className="col-xs-4 control-label" title={i18next.t("ENGINEFREEUPVOTESREQUIREDPERCENT_TOOLTIP")}>
                   {i18next.t("ENGINEFREEUPVOTESREQUIREDPERCENT")}
+                  &nbsp;
+                  <i class="far fa-question-circle"></i>
                 </label>
                 <div className="col-xs-6">
                   <input
