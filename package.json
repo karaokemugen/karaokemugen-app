@@ -72,7 +72,7 @@
       "migrations/**",
       "dist/locales/*",
       "assets/**",
-      "frontend/**",
+	  "frontend/build/**",
       "react_systempanel/build/**"
     ]
   },
