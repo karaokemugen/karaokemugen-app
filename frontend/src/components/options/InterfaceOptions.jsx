@@ -30,8 +30,8 @@ class InterfaceOptions extends Component {
     return (
       <React.Fragment>
         <div className="form-group">
-          <label className="col-xs-4 control-label" title={i18next.t("WEBAPPMODE_TOOLTIP")}>
-            {i18next.t("WEBAPPMODE")}
+          <label className="col-xs-4 control-label" title={i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP")}>
+            {i18next.t("SETTINGS.INTERFACE.WEBAPPMODE")}
             &nbsp;
             <i class="far fa-question-circle"></i>
           </label>
@@ -43,9 +43,9 @@ class InterfaceOptions extends Component {
               onChange={this.onChange}
               value={this.state.settings["Frontend.Mode"]}
             >
-              <option value="0">{i18next.t("WEBAPPMODE_CLOSED")}</option>
-              <option value="1">{i18next.t("WEBAPPMODE_LIMITED")}</option>
-              <option value="2">{i18next.t("WEBAPPMODE_OPEN")}</option>
+              <option value="0">{i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_CLOSED")}</option>
+              <option value="1">{i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_LIMITED")}</option>
+              <option value="2">{i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_OPEN")}</option>
             </select>
           </div>
         </div>
@@ -72,7 +72,7 @@ class InterfaceOptions extends Component {
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {i18next.t("ENGINEALLOWVIEWBLACKLIST")}
+            {i18next.t("SETTINGS.INTERFACE.ALLOW_VIEW_BLACKLIST")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Frontend.Permissions.AllowViewBlacklist" handleChange={this.onChange}
@@ -82,7 +82,7 @@ class InterfaceOptions extends Component {
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {i18next.t("ENGINEALLOWVIEWBLACKLISTCRITERIAS")}
+            {i18next.t("SETTINGS.INTERFACE.ALLOW_VIEW_BLACKLIST_CRITERIAS")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Frontend.Permissions.AllowViewBlacklistCriterias" handleChange={this.onChange}
@@ -92,7 +92,7 @@ class InterfaceOptions extends Component {
 
         <div className="form-group">
           <label className="col-xs-4 control-label">
-            {i18next.t("ENGINEALLOWVIEWWHITELIST")}
+            {i18next.t("SETTINGS.INTERFACE.ALLOW_VIEW_WHITELIST")}
           </label>
           <div className="col-xs-6">
             <Switch idInput="Frontend.Permissions.AllowViewWhitelist" handleChange={this.onChange}

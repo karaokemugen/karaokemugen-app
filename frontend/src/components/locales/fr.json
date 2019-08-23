@@ -38,7 +38,6 @@
 	"BLCTYPE_12": "Genre",
 	"BLCTYPE_13": "Origine",
 	"NICKNAME": "Pseudo",
-	"SETTINGS": "Paramètres",
 	"KARA_PAUSED_WAITING": "Pas de lecture en cours",
 	"MODE": "Mode",
 	"VERSION": "Version",
@@ -88,9 +87,6 @@
 	"PLAYERPIP_TOOLTIP": "Active le mode fenêtré et au dessus des autres fenêtres",
 	"PLAYERVISUALIZATIONEFFECTS": "Activer les effets de visualisation du son",
 	"PLAYERVISUALIZATIONEFFECTS_TOOLTIP": "Uniquement valable pour les chansons audio uniquement (MP3, OGG, etc.)",
-	"ENGINEALLOWVIEWBLACKLIST": "Liste noire visible du public",
-	"ENGINEALLOWVIEWBLACKLISTCRITERIAS": "Critères de liste noire visibles du public",
-	"ENGINEALLOWVIEWWHITELIST": "Liste blanche visible du public",
 	"ENGINEALLOWDUPLICATES": "Permettre les doublons dans les listes de lecture",
 	"ENGINEALLOWDUPLICATESSERIES": "Permettre les doublons de séries ou chanteurs dans les listes de lecture",
 	"ENGINE_HIDE_INVISIBLE_SONGS": "Affichage des chansons mystère comme",
@@ -109,13 +105,7 @@
 	"ENGINEDISPLAYNICKNAME": "Afficher le pseudo du demandeur",
 	"ENGINEDISPLAYNICKNAME_TOOLTIP": "Affichage en bas de l'écran au début et à la fin d'une chanson",
     "ENGINEDISPLAYAVATAR": "Afficher l'avatar du demandeur",
-	"WEBAPPMODE": "Mode de l'interface publique",
-	"WEBAPPMODE_TOOLTIP": "Ce que votre public verra en se connectant à l'interface",
-	"WEBAPPMODE_CLOSED": "Fermé",
-    "WEBAPPMODE_LIMITED": "Chanson en cours et playlists uniquement",
     "WEBAPPMODE_LIMITED_NAME": "Mode restreint",
-	"WEBAPPMODE_OPEN": "Ouvert (par défaut)",
-	"WEBAPPMODE_CLOSED_API_MESSAGE": "Sorrymasen, l'API est désactivée pour le moment.",
 	"WEBAPPMODE_CLOSED_MESSAGE": "Stop ! Nous sommes fermés pour le moment.",
 	"ENGINEFREEUPVOTES": "Libération des chansons par vote",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum de votes requis pour libérer une chanson",
@@ -246,9 +236,25 @@
 	"FIRST_PUBLIC_RUN_WELCOME": "Il semble que ce soit votre 1ère fois ici !",
 	"FOLLOW_TOUR": "SUIVRE LA VISITE GUIDÉE (~2 MIN)",
 	"LOGOUT": "Déconnexion",
-	"SETTINGS_PLAYER": "Lecteur",
-	"SETTINGS_KARAOKE": "Karaoké",
-	"SETTINGS_INTERFACE": "Interface",
+	"SETTINGS": {
+		"PLAYER": {
+			"LABEL": "Lecteur"
+		},
+		"KARAOKE": {
+			"LABEL": "Karaoké"
+		},
+		"INTERFACE": {
+			"LABEL": "Interface",
+			"WEBAPPMODE": "Mode de l'interface publique",
+			"WEBAPPMODE_TOOLTIP": "Ce que votre public verra en se connectant à l'interface",
+			"WEBAPPMODE_CLOSED": "Fermé",
+			"WEBAPPMODE_LIMITED": "Chanson en cours et playlists uniquement",
+			"WEBAPPMODE_OPEN": "Ouvert (par défaut)",
+			"ALLOW_VIEW_BLACKLIST": "Liste noire visible du public",
+			"ALLOW_VIEW_BLACKLIST_CRITERIAS": "Critères de liste noire visibles du public",
+			"ALLOW_VIEW_WHITELIST": "Liste blanche visible du public"
+		}
+	},
 	"JINGLE_TIME": "Instant jingle !",
 	"QUOTA_TYPE": "Type de quota",
 	"QUOTA_TYPE_TOOLTIP": "Le quota permet d'éviter que les utilisateurs n'ajoutent trop de chansons à la fois",

@@ -38,7 +38,6 @@
 	"BLCTYPE_12": "Genre",
 	"BLCTYPE_13": "Origin",
 	"NICKNAME": "Nickname",
-	"SETTINGS": "Settings",
 	"KARA_PAUSED_WAITING": "No song playing yet",
 	"MODE": "Mode",
 	"VERSION": "Version",
@@ -82,8 +81,6 @@
 	"PLAYERPIP": "Picture-in-Picture (Dev) mode",
 	"PLAYERMONITOR": "Second window (monitor)",
 	"PLAYERVISUALIZATIONEFFECTS": "Enable music visualization effects",
-	"ENGINEALLOWVIEWBLACKLIST": "Allow users to view blacklist",
-	"ENGINEALLOWVIEWBLACKLISTCRITERIAS": "Allow users to view blacklist criterias",
 	"ENGINEALLOWDUPLICATES": "Allow duplicate songs in playlists",
 	"ENGINEALLOWDUPLICATESSERIES": "Allow songs with duplicate series or singers in playlists",
 	"ENGINE_HIDE_INVISIBLE_SONGS": "Mystery songs display as",
@@ -97,15 +94,9 @@
 	"ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song",
 	"ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL": "Normal Add",
 	"ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY": "Mystery Add",
-	"ENGINEALLOWVIEWWHITELIST": "Allow users to view whitelist",
 	"ENGINEDISPLAYNICKNAME": "Display nicknames in karaokes",
 	"ENGINEDISPLAYAVATAR": "Display avatar in karaokes",
-	"WEBAPPMODE": "Public interface mode",
-	"WEBAPPMODE_CLOSED": "Closed",
-	"WEBAPPMODE_LIMITED": "Song information and playlists only",
 	"WEBAPPMODE_LIMITED_NAME": "Restricted mode",
-	"WEBAPPMODE_OPEN": "Opened (default)",
-	"WEBAPPMODE_CLOSED_API_MESSAGE": "Sorrymasen, API is disabled right now.",
 	"WEBAPPMODE_CLOSED_MESSAGE": "Stop! We're closed right now.",
 	"ENGINEFREEUPVOTES": "Allow users to upvote songs to free them",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum votes required to free a song",
@@ -231,9 +222,24 @@
 	"FIRST_PUBLIC_RUN_WELCOME": "Hey, looks like it's your first time here!",
 	"FOLLOW_TOUR": "SEE GUIDED TOUR (~2 MIN)",
 	"LOGOUT": "Logout",
-	"SETTINGS_PLAYER": "Player",
-	"SETTINGS_KARAOKE": "Karaoke",
-	"SETTINGS_INTERFACE": "Interface",
+	"SETTINGS": {
+		"PLAYER": {
+			"LABEL": "Player"
+		},
+		"KARAOKE": {
+			"LABEL": "Karaoke"
+		},
+		"INTERFACE": {
+			"LABEL": "Interface",
+			"WEBAPPMODE": "Public interface mode",
+			"WEBAPPMODE_CLOSED": "Closed",
+			"WEBAPPMODE_LIMITED": "Song information and playlists only",
+			"WEBAPPMODE_OPEN": "Opened (default)",
+			"ALLOW_VIEW_BLACKLIST": "Allow users to view blacklist",
+			"ALLOW_VIEW_BLACKLIST_CRITERIAS": "Allow users to view blacklist criterias",
+			"ALLOW_VIEW_WHITELIST": "Allow users to view whitelist"
+		}
+	},
 	"JINGLE_TIME": "Jingle time!",
 	"QUOTA_TYPE": "Quota type",
 	"TIME_BY_USER": "Time per user (seconds)",

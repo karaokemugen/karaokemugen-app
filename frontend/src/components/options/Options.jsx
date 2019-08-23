@@ -36,13 +36,13 @@ class Options extends Component {
           <form className="form-horizontal" id="settings">
             <ul className="nav nav-tabs nav-justified">
               <li className={"modal-title " + (this.state.activeView === 1 ? "active" : "")}>
-                <a onClick={() => this.setState({activeView: 1})}>{i18next.t("SETTINGS_PLAYER")}</a>
+                <a onClick={() => this.setState({activeView: 1})}>{i18next.t("SETTINGS.PLAYER.LABEL")}</a>
               </li>
               <li className={"modal-title " + (this.state.activeView === 2 ? "active" : "")}>
-                <a onClick={() => this.setState({activeView: 2})}>{i18next.t("SETTINGS_KARAOKE")}</a>
+                <a onClick={() => this.setState({activeView: 2})}>{i18next.t("SETTINGS.KARAOKE.LABEL")}</a>
               </li>
               <li className={"modal-title " + (this.state.activeView === 3 ? "active" : "")}>
-                <a onClick={() => this.setState({activeView: 3})}>{i18next.t("SETTINGS_INTERFACE")}</a>
+                <a onClick={() => this.setState({activeView: 3})}>{i18next.t("SETTINGS.INTERFACE.LABEL")}</a>
               </li>
             </ul>
 
