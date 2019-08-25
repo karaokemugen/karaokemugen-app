@@ -133,6 +133,8 @@
     "socket.io": "^2.2.0",
     "systeminformation": "^4.14.4",
     "tmi.js": "^1.4.5",
+    "toyunda2ass": "^1.0.7",
+    "ultrastar2ass": "^1.0.7",
     "uuid": "^3.3.3",
     "validate.js": "^0.13.1",
     "winston": "^3.2.1",

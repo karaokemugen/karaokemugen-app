@@ -520,6 +520,13 @@ ass-compiler@^0.0.11:
   resolved "https://registry.yarnpkg.com/ass-compiler/-/ass-compiler-0.0.11.tgz#b86676c7cfbd205aac2d6a372570f3a8af7a3971"
   integrity sha512-daFDzLCVwG5HkG1ZxrFHRuJAq4+GBb2HRriOf1qWitdfqj8mUvUbi3e0scNTPuEdVdG4LbeWtIGYZRBJueYMcw==
 
+ass-stringify@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/ass-stringify/-/ass-stringify-0.1.3.tgz#33def35e9572682f1333eb1ae1ece192de5312b9"
+  integrity sha1-M97zXpVyaC8TM+sa4ezhkt5TErk=
+  dependencies:
+    pick-values "^1.0.0"
+
 assert-plus@1.0.0, assert-plus@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/assert-plus/-/assert-plus-1.0.0.tgz#f12e0f3c5d77b0b1cdd9146942e4e96c1e4dd525"
@@ -3141,6 +3148,11 @@ pgpass@1.x:
   dependencies:
     split "^1.0.0"
 
+pick-values@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/pick-values/-/pick-values-1.0.1.tgz#67b2d7734e593eb5ba082a54a0477560e374254d"
+  integrity sha1-Z7LXc05ZPrW6CCpUoEd1YON0JU0=
+
 pify@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/pify/-/pify-4.0.1.tgz#4b2cd25c50d598735c50292224fd8c6df41e3231"
@@ -3916,6 +3928,14 @@ tough-cookie@~2.4.3:
     psl "^1.1.24"
     punycode "^1.4.1"
 
+toyunda2ass@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/toyunda2ass/-/toyunda2ass-1.0.7.tgz#c04058b3ad077dd8b3f8c7dcdd9e6cdf6f1a8639"
+  integrity sha512-wpQkEVCZw/Z5sZQF+MG19pdgRmMV8vZimkY6ucQ6ZPttSxZncwcDt3AKqyOae9CNi3a3NcpGzz1ygOVikyLejQ==
+  dependencies:
+    ass-stringify "^0.1.3"
+    execa "^2.0.4"
+
 triple-beam@^1.2.0, triple-beam@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/triple-beam/-/triple-beam-1.3.0.tgz#a595214c7298db8339eeeee083e4d10bd8cb8dd9"
@@ -4001,6 +4021,13 @@ typescript@^3.5.3:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"
   integrity sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
+
+ultrastar2ass@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/ultrastar2ass/-/ultrastar2ass-1.0.7.tgz#801e573c927c88ff9cbc59f3a71a3ef6d597f437"
+  integrity sha512-a1utIMaOcJkGECc6gb9SMWYDiXmL3BNMQ4AqkrstTPEQYGgWdC2J5A0JkNHqBoUKbMQcxD0RUGD2d3DbSTMDEA==
+  dependencies:
+    ass-stringify "^0.1.3"
 
 universalify@^0.1.0:
   version "0.1.2"
