@@ -21,7 +21,7 @@ Many things have changed, both in database schemas, code base, frontend, and eve
   - Tags (languages, songwriters, singers, creators, etc.) are now files in the Karaoke Base, which means they're not tied to the application's version anymore. Anyone can add its own tags if need be.
   - New tag types : Misc (formerly "Tags"), Genres, Origins, Platforms and Families
   - New tags have been added to the Karaoke Base as a result : Fanworks for dojin songs/videos
-  - WARNING : As a result, blacklists criterias relying on tags won't be valid anymore and are going to be removed from your blacklist criterias.
+  - WARNING : As a result, blacklists criterias relying on tags won't be valid anymore and are going to be removed from your blacklist criterias. You can readd them later.
 - Mystery karaoke toggle (#441)
   - You can flag a song as visible or invisible. Invisible songs will be marked as ??? to the public, which means they won't know in advance what that song is in the playlist. Good for surprises and troll songs.
   - You can add mystery labels, which are shown randomly in place of the real song's name in a song slot to users. This is troll ammo.
@@ -42,11 +42,14 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - A small avatar is displayed next to a song in playlists to see who added it (#423)
 - Battle-tested with Node 12 (#439)
 - Karaoke Mugen is now coded with TypeScript, for better debugging and safer programming :) (#437 #391)
-- For MugenPi users (or those who don't want to look at the consoel screen), logs are now available in the System Control Panel (#434)
+- For MugenPi users (or those who don't want to look at the console screen), logs are now available in the System Control Panel (#434)
 - Live changes to the database (editing a song) won't trigger a new generation on next app startup (#433)
 - Admins can restrict song additions by users to one song per series or singer to avoid people trying to force their favorite series or singer by adding all its songs (#431)
 - A new (shy) look for the frontend has been achieved with the React rewrite (#430)
-- Suggesting a song to be added to the karaoke base now generated an issue on our Gitlab (configurable) (#422)
+- Suggesting a song to be added to the karaoke base now generates an issue on our Gitlab (configurable) (#422)
+- The karaoke submission form now accepts new karaoke formats in addition of ASS. The files will be converted to the ASS format on import. New formats are :
+  - Toyunda files (.txt)
+  - UltraStar files (.txt)
 
 ### Improvements
 
@@ -64,6 +67,7 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - Toggling lyrics/song title display on mobile now works properly (#414)
 - Videos aren't weboptimized again even if you don't change anything about it in the edit song form (#436)
 - Toots from Mastodon are now displayed proper on the welcome screen's feed (#429)
+- Fix KM not allowing you to login your online account if a local account with the same nickname exists in your database. (#466)
 
 ## v2.5.3 "Konata Kimono" - 30/06/2019
 
