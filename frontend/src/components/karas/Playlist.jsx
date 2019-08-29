@@ -41,6 +41,7 @@ class Playlist extends Component {
     this.transferCheckedKaras = this.transferCheckedKaras.bind(this);
     this.addAllKaras = this.addAllKaras.bind(this);
     this.onChangeTags = this.onChangeTags.bind(this);
+    this.getPlaylistList = this.getPlaylistList.bind(this);
     this.getPlaylistUrl = this.getPlaylistUrl.bind(this);
     this.playlistContentsUpdated = this.playlistContentsUpdated.bind(this);
     this.playlistRef = React.createRef();
