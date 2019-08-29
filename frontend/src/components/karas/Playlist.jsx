@@ -241,7 +241,7 @@ class Playlist extends Component {
       "?filter=" +
       store.getFilterValue(this.props.side) + 
       "&from=" +
-      (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 ? this.state.data.infos.from : 0) +
+      (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 && store.getFilterValue(this.props.side) === '' ? this.state.data.infos.from : 0) +
       "&size=" + this.state.maxBeforeUpdate;
 
       if(this.state.searchType) {
