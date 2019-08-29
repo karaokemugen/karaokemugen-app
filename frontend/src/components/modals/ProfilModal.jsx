@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import iso639 from 'iso-639';
 import axios from 'axios';
 import Autocomplete from '../generic/Autocomplete'
-import blankAvatar from '../../assets/blank.png'
+import blankAvatar from '../../../../assets/blank.png'
 import { displayMessage, callModal } from '../tools';
 require("babel-polyfill");
 class ProfilModal extends Component {
