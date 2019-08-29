@@ -102,7 +102,7 @@ async function main() {
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.System.Path.Avatars));
-	fileBuffer = readFileSync(join(__dirname, '../frontend/src/assets/blank.png'));
+	fileBuffer = readFileSync(join(__dirname, '../assets/blank.png'));
 	const tempAvatar = resolve(appPath, config.System.Path.Avatars, 'blank.png');
 	if (await asyncExists(tempAvatar)) await asyncUnlink(tempAvatar);
 	writeFileSync(tempAvatar, fileBuffer);
