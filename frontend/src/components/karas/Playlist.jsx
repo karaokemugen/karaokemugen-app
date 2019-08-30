@@ -48,10 +48,12 @@ class Playlist extends Component {
   }
 
   async componentDidMount() {
-    this.getPlaylistList();
-    await this.getPlaylistToAddId();
-    await this.getIdPlaylist();
-    this.getPlaylist();
+    if (axios.defaults.headers.common['authorization']) {
+      this.getPlaylistList();
+      await this.getPlaylistToAddId();
+      await this.getIdPlaylist();
+      this.getPlaylist();
+    }
     getSocket().on("playingUpdated", this.playingUpdate);
     getSocket().on("playlistsUpdated", this.getPlaylistList);
     getSocket().on("whitelistUpdated", () => {
