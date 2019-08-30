@@ -22,8 +22,8 @@ class KaraDetail extends Component {
 
   async getKaraDetail() {
     var urlInfoKara = this.props.idPlaylist > 0 ?
-      '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id :
-      '/api/public/karas/' + this.props.kara.kid;
+      '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.playlistcontentId :
+      '/api/public/karas/' + this.props.kid;
     var response = await axios.get(urlInfoKara);
     const kara = response.data.data;
     this.setState({ kara: kara });
