@@ -1,7 +1,7 @@
 // SQL for kara management
 import {LangClause} from '../../lib/types/database';
 
-export const addKaraToPlaylist = (values:string) => `
+export const addKaraToPlaylist = `
 INSERT INTO playlist_content(
 	fk_id_playlist,
 	fk_login,
@@ -12,7 +12,17 @@ INSERT INTO playlist_content(
 	flag_playing,
 	flag_free,
 	flag_visible
-) VALUES ${values};
+) VALUES(
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8,
+	$9
+)
 `;
 
 export const addViewcount = `
