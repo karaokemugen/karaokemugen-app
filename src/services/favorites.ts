@@ -16,7 +16,8 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 	try {
 		profile('getFavorites');
 		const favs = await selectFavorites(params);
-		return formatKaraList(favs.slice(params.from, params.from + params.size), params.from, favs.length);
+		const count = favs.length > 0 ? favs[0].count : 0;
+		return formatKaraList(favs, params.from, count, params.lang);
 	} catch(err) {
 		throw err;
 	} finally {

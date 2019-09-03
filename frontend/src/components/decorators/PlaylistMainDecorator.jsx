@@ -15,9 +15,9 @@ class PlaylistMainDecorator extends Component {
   }
 
   handleSwipe(e) {
-    if (this.state.currentSide==1 && e.changedTouches[0].clientX < this.state.startSwipeX - 50) {
+    if (this.state.currentSide==1 && e.changedTouches[0].clientX < this.state.startSwipeX - 100) {
       this.setState({currentSide:2});
-    } else if (this.state.currentSide==2 && e.changedTouches[0].clientX > this.state.startSwipeX + 50) {
+    } else if (this.state.currentSide==2 && e.changedTouches[0].clientX > this.state.startSwipeX + 100) {
       this.setState({currentSide:1});
     }
   }

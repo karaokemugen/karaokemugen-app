@@ -99,8 +99,10 @@ class App extends Component {
         getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
         getSocket().on('disconnect', () => this.setState({ shutdownPopup: true }));
         getSocket().on('playerStatus', this.displayClassicModeModal);
-        const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
-        this.setState({tags: tags.concat(series, years)});
+        if (axios.defaults.headers.common['authorization']) {
+            const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
+            this.setState({tags: tags.concat(series, years)});
+        } 
     }
 
     async displayClassicModeModal(data) {

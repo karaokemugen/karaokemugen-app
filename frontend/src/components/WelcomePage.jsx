@@ -68,12 +68,16 @@ class WelcomePage extends Component {
     if (sessions.length === 0) {
       const res = await axios.post("/api/admin/sessions", { name: value });
       sessionId = res.data.data;
-      this.setState({ sessionActive: value });
+      const sessionsList = await axios.get("/api/admin/sessions");
+      this.setState({
+        sessions: sessionsList.data.data,
+        activeSession: sessionsList.data.data.filter(value => value.active)[0].name
+      });
     } else {
-      this.setState({ sessionActive: sessions[0].name });
+      this.setState({ activeSession: sessions[0].name });
       sessionId = sessions[0].seid;
+      axios.post("/api/admin/sessions/" + sessionId);
     }
-    axios.post("/api/admin/sessions/" + sessionId);
   }
 
   async getCatchphrase() {
@@ -224,159 +228,157 @@ class WelcomePage extends Component {
             </div>
           </div>
         ) : null}
-        <section id="center-area">
-          <div className="navbar-default">
-            <div className="container">
-              {this.props.logInfos.role === "admin" ? (
-                <ul className="nav navbar-nav navbar-left">
-                  <li>
-                    <Autocomplete
-                      label={i18next.t("ACTIVE_SESSION")}
-                      value={this.state.activeSession}
-                      options={sessions}
-                      onChange={this.setActiveSession}
-                      acceptNewValues={true}
-                    />
-                  </li>
-                </ul>
-              ) : null}
-              <ul className="nav navbar-nav navbar-right">
+        <div className="navbar-default">
+          <div className="container">
+            {this.props.logInfos.role === "admin" ? (
+              <ul className="nav navbar-nav navbar-left">
                 <li>
+                  <Autocomplete
+                    label={i18next.t("ACTIVE_SESSION")}
+                    value={this.state.activeSession}
+                    options={sessions}
+                    onChange={this.setActiveSession}
+                    acceptNewValues={true}
+                  />
+                </li>
+              </ul>
+            ) : null}
+            <ul className="nav navbar-nav navbar-right">
+              <li>
+                <a
+                  href="http://mugen.karaokes.moe/contact.html"
+                  target="_blank"
+                >
+                  <i className="fas fa-pencil-alt" />&nbsp;
+                  {i18next.t("WLCM_CONTACT")}
+                </a>
+              </li>
+              <li>
+                <a href="http://mugen.karaokes.moe/" target="_blank">
+                  <i className="fas fa-link" />&nbsp;
+                  {i18next.t("WLCM_SITE")}
+                </a>
+              </li>
+              <li>
+                <a href="#" id="wlcm_login" onClick={this.loginClick}>
+                  <i className="fas fa-user" />&nbsp;
+                  <span>
+                    {this.props.logInfos.token
+                      ? this.props.logInfos.username
+                      : i18next.t("NOT_LOGGED")}
+                  </span>
+                </a>
+              </li>
+              {this.props.logInfos.token ? (
+                <li id="wlcm_disconnect">
                   <a
-                    href="http://mugen.karaokes.moe/contact.html"
-                    target="_blank"
+                    href="#"
+                    title={i18next.t("LOGOUT")}
+                    className="logout"
+                    onClick={this.props.logOut}
                   >
-                    <i className="glyphicon glyphicon-pencil" />{" "}
-                    {i18next.t("WLCM_CONTACT")}
+                    <i className="fas fa-sign-out-alt" />&nbsp;
+                    <span>{i18next.t("LOGOUT")}</span>
                   </a>
+                </li>
+              ) : null}
+            </ul>
+          </div>
+        </div>
+        <div className="container">
+          <div className="row">
+            <div className="col-md-12 logoDiv">
+              <h1 className="wow">
+                <img className="logo-1" height="122" src={logo} alt="LOGO" />
+              </h1>
+            </div>
+            <div className="col-md-12 text-center catchPhrase">
+              {this.state.catchphrase}
+            </div>
+            <div className="col-md-12 block wow menu zoomIn">
+              <ul id="welcome_dashboard">
+                <li
+                  className={
+                    this.props.admpwd &&
+                    this.props.settings.config.App.FirstRun
+                      ? "manage tutorial"
+                      : "manage"
+                  }
+                  onClick={() =>
+                    window.open("/admin" + window.location.search, "_blank")
+                  }
+                >
+                  <div className="dash days_dash">
+                    <i className="digit fas fa-list normalText" />
+                    <i className="digit fas fa-hand-point-right tutorialText" />
+                    <div className="dash_title normalText">
+                      {i18next.t("WLCM_KARAMANAGER")}
+                    </div>
+                    <div className="dash_title tutorialText">
+                      {i18next.t("WLCM_GETSTARTED")}
+                    </div>
+                  </div>
                 </li>
                 <li>
-                  <a href="http://mugen.karaokes.moe/" target="_blank">
-                    <i className="glyphicon glyphicon-link" />
-                    {i18next.t("WLCM_SITE")}
-                  </a>
+                  <div
+                    className="dash hours_dash"
+                    onClick={() => window.open("/system", "_blank")}
+                  >
+                    <i className="digit fas fa-cog" />
+                    <div className="dash_title">
+                      {i18next.t("WLCM_ADMINISTRATION")}
+                    </div>
+                  </div>
                 </li>
                 <li>
-                  <a href="#" id="wlcm_login" onClick={this.loginClick}>
-                    <i className="glyphicon glyphicon-user" />
-                    <span>
-                      {this.props.logInfos.token
-                        ? this.props.logInfos.username
-                        : i18next.t("NOT_LOGGED")}
-                    </span>
-                  </a>
+                  <div
+                    className="dash seconds_dash"
+                    onClick={() =>
+                      window.open("/" + window.location.search, "_blank")
+                    }
+                  >
+                    <i className="digit fas fa-user" />
+                    <div className="dash_title">{i18next.t("WLCM_PUBLIC")}</div>
+                  </div>
                 </li>
-                {this.props.logInfos.token ? (
-                  <li id="wlcm_disconnect">
-                    <a
-                      href="#"
-                      title={i18next.t("LOGOUT")}
-                      className="logout"
-                      onClick={this.props.logOut}
+                <li
+                  onClick={() =>
+                    window.open("http://mugen.karaokes.moe/docs/", "_blank")
+                  }
+                >
+                  <div className="dash minutes_dash">
+                    <i className="digit fas fa-question-circle" />
+                    <div className="dash_title">{i18next.t("WLCM_HELP")}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div className="col-md-12 wow block zoomIn">
+              <ul className="news">
+                {this.state.news.map(article => {
+                  return (
+                    <li
+                      key={Math.random()}
+                      className={this.state.open ? "new open" : "new"}
+                      type={article.type}
+                      onClick={() =>
+                        this.setState({ open: !this.state.open })
+                      }
                     >
-                      <i className="glyphicon glyphicon-log-out" />{" "}
-                      <span>{i18next.t("LOGOUT")}</span>
-                    </a>
-                  </li>
-                ) : null}
+                      <p className="new-header">
+                        <b>{article.title}</b>
+                        <a href={article.link} target="_blank">
+                          {article.dateStr}
+                        </a>
+                      </p>
+                      <p dangerouslySetInnerHTML={{ __html: article.html }} />
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>
-          <div className="container">
-            <div className="row">
-              <div className="col-md-12 logoDiv">
-                <h1 className="wow">
-                  <img className="logo-1" height="122" src={logo} alt="LOGO" />
-                </h1>
-              </div>
-              <div className="col-md-12 text-center catchPhrase">
-                {this.state.catchphrase}
-              </div>
-              <div className="col-md-12 block wow menu zoomIn">
-                <ul id="welcome_dashboard">
-                  <li
-                    className={
-                      this.props.admpwd &&
-                      this.props.settings.config.App.FirstRun
-                        ? "manage tutorial"
-                        : "manage"
-                    }
-                    onClick={() =>
-                      window.open("/admin" + window.location.search, "_blank")
-                    }
-                  >
-                    <div className="dash days_dash">
-                      <i className="digit glyphicon glyphicon-list normalText" />
-                      <i className="digit glyphicon glyphicon-hand-right tutorialText" />
-                      <div className="dash_title normalText">
-                        {i18next.t("WLCM_KARAMANAGER")}
-                      </div>
-                      <div className="dash_title tutorialText">
-                        {i18next.t("WLCM_GETSTARTED")}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div
-                      className="dash hours_dash"
-                      onClick={() => window.open("/system", "_blank")}
-                    >
-                      <i className="digit glyphicon glyphicon-cog" />
-                      <div className="dash_title">
-                        {i18next.t("WLCM_ADMINISTRATION")}
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div
-                      className="dash seconds_dash"
-                      onClick={() =>
-                        window.open("/" + window.location.search, "_blank")
-                      }
-                    >
-                      <i className="digit glyphicon glyphicon-user" />
-                      <div className="dash_title">{i18next.t("WLCM_PUBLIC")}</div>
-                    </div>
-                  </li>
-                  <li
-                    onClick={() =>
-                      window.open("http://mugen.karaokes.moe/docs/", "_blank")
-                    }
-                  >
-                    <div className="dash minutes_dash">
-                      <i className="digit glyphicon glyphicon-question-sign" />
-                      <div className="dash_title">{i18next.t("WLCM_HELP")}</div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-              <div className="col-md-12 wow block zoomIn">
-                <ul className="news">
-                  {this.state.news.map(article => {
-                    return (
-                      <li
-                        key={Math.random()}
-                        className={this.state.open ? "new open" : "new"}
-                        type={article.type}
-                        onClick={() =>
-                          this.setState({ open: !this.state.open })
-                        }
-                      >
-                        <p className="new-header">
-                          <b>{article.title}</b>
-                          <a href={article.link} target="_blank">
-                            {article.dateStr}
-                          </a>
-                        </p>
-                        <p dangerouslySetInnerHTML={{ __html: article.html }} />
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
         <a id="downloadAnchorElem" />
         <div className="toastMessageContainer" />
       </div>

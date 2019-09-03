@@ -33,8 +33,8 @@ class HelpModal extends Component {
                         </ul>
                         <div className="tab-content" id="nav-tabContent-help">
                             <div id="nav-help" className="modal-body">
-                                {is_touch_device ?
-                                    <div id="mobileHelp" className="text"
+                                {is_touch_device() ?
+                                    <div className="text mobileHelp"
                                         dangerouslySetInnerHTML={{ __html: i18next.t("CL_HELP_PUBLIC_MOBILE") }}>
                                     </div> : null
                                 }

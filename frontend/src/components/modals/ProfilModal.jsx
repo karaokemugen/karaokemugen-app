@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import iso639 from 'iso-639';
 import axios from 'axios';
 import Autocomplete from '../generic/Autocomplete'
-import blankAvatar from '../../assets/blank.png'
+import blankAvatar from '../../../../assets/blank.png'
 import { displayMessage, callModal } from '../tools';
 require("babel-polyfill");
 class ProfilModal extends Component {
@@ -134,7 +134,7 @@ class ProfilModal extends Component {
 
         const response = await axios.put('/api/public/myaccount', dataFile);
         const user = this.state.user;
-        user[avatar_file] = response.data.data.avatar_file;
+        user["avatar_file"] = response.data.data.avatar_file;
         this.setState({ user: user });
     }
 
@@ -183,23 +183,23 @@ class ProfilModal extends Component {
                                     {this.props.logInfos.role !== 'guest' ?
                                         <div className="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
                                             <div className="profileLine">
-                                                <i className="glyphicon glyphicon-user"></i>
+                                                <i className="fas fa-user"></i>
                                                 <input className="form-control" name="nickname" type="text" placeholder={i18next.t("PROFILE_USERNAME")} defaultValue={this.state.user.nickname} onKeyUp={this.onKeyPress} />
                                             </div>
                                             <div className="profileLine">
-                                                <i className="glyphicon glyphicon-envelope"></i>
+                                                <i className="fas fa-envelope"></i>
                                                 <input className="form-control" name="email" type="text" placeholder={i18next.t("PROFILE_MAIL")} defaultValue={this.state.user.email} onKeyUp={this.onKeyPress} />
                                             </div>
                                             <div className="profileLine">
-                                                <i className="glyphicon glyphicon-link"></i>
+                                                <i className="fas fa-link"></i>
                                                 <input className="form-control" name="url" type="text" placeholder={i18next.t("PROFILE_URL")} defaultValue={this.state.user.url} onKeyUp={this.onKeyPress} />
                                             </div>
                                             <div className="profileLine">
-                                                <i className="glyphicon glyphicon-leaf"></i>
+                                                <i className="fas fa-leaf"></i>
                                                 <input className="form-control" name="bio" type="text" placeholder={i18next.t("PROFILE_BIO")} defaultValue={this.state.user.bio} onKeyUp={this.onKeyPress} />
                                             </div>
                                             <div className="profileLine">
-                                                <i className="glyphicon glyphicon-lock"></i>
+                                                <i className="fas fa-lock"></i>
                                                 <input className={this.state.passwordDifferent} name="password" type="password"
                                                     placeholder={i18next.t("PROFILE_PASSWORD")} defaultValue={this.state.user.password} onKeyUp={this.onKeyPress} />
                                                 <input className={this.state.passwordDifferent}
@@ -207,24 +207,24 @@ class ProfilModal extends Component {
                                                     defaultValue={this.state.user.passwordConfirmation} onKeyUp={this.onKeyPress} style={{ marginLeft: 3 + 'px' }} />
                                             </div>
                                             <div className="profileLine">
-                                                <i className="glyphicon glyphicon-star"></i>
+                                                <i className="fas fa-star"></i>
                                                 <label type="button" title={i18next.t("FAVORITES_IMPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
-                                                    <i className="glyphicon glyphicon-import"></i> {i18next.t("IMPORT")}
+                                                    <i className="fas fa-download"></i> {i18next.t("IMPORT")}
                                                     <input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
                                                 </label>
                                                 <button type="button" title={i18next.t("FAVORITES_EXPORT")} className="btn btn-action btn-default col-xs-6 col-lg-6 favExport" onClick={this.favExport}>
-                                                    <i className="glyphicon glyphicon-export"></i> {i18next.t("EXPORT")}
+                                                    <i className="fas fa-upload"></i> {i18next.t("EXPORT")}
                                                 </button>
                                             </div>
                                             {this.props.settingsOnline.Users && this.props.logInfos.role !== 'guest' ?
                                                 <div className="profileLine">
                                                     {this.props.logInfos.onlineToken ?
                                                         <button type="button" title={i18next.t("PROFILE_ONLINE_DELETE")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileDelete" onClick={this.profileDelete}>
-                                                            <i className="glyphicon glyphicon-retweet"></i> {i18next.t("PROFILE_ONLINE_DELETE")}
+                                                            <i className="fas fa-retweet"></i> {i18next.t("PROFILE_ONLINE_DELETE")}
                                                         </button>
                                                         :
                                                         <button type="button" title={i18next.t("PROFILE_CONVERT")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert" onClick={this.profileConvert}>
-                                                            <i className="glyphicon glyphicon-retweet"></i> {i18next.t("PROFILE_CONVERT")}
+                                                            <i className="fas fa-retweet"></i> {i18next.t("PROFILE_CONVERT")}
                                                         </button>
                                                     }
                                                 </div> : null
@@ -281,9 +281,9 @@ class ProfilModal extends Component {
                                             </div>
                                             {this.state.userDetails ?
                                                 <div className="userDetails">
-                                                    <div><i className="glyphicon glyphicon-envelope"></i>{this.state.userDetails.email ? this.state.userDetails.email : ''}</div>
-                                                    <div><i className="glyphicon glyphicon-link"></i>{this.state.userDetails.url ? this.state.userDetails.url : ''}</div>
-                                                    <div><i className="glyphicon glyphicon-leaf"></i>{this.state.userDetails.bio ? this.state.userDetails.bio : ''}</div>
+                                                    <div><i className="fas fa-envelope"></i>{this.state.userDetails.email ? this.state.userDetails.email : ''}</div>
+                                                    <div><i className="fas fa-link"></i>{this.state.userDetails.url ? this.state.userDetails.url : ''}</div>
+                                                    <div><i className="fas fa-leaf"></i>{this.state.userDetails.bio ? this.state.userDetails.bio : ''}</div>
                                                 </div> : null
                                             }
                                         </li>;

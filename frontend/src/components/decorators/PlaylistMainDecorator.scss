@@ -36,6 +36,7 @@
 	overflow: auto;
 	padding: 0px;
 	line-height: 2.1rem;
+	transition: all .75s ease;
 }
 
 .playlist-main li:nth-child(even) .list-group-item {

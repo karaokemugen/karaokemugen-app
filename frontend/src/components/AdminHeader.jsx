@@ -31,6 +31,13 @@ class AdminHeader extends Component {
     });
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin 
+      !== prevProps.config.Playlist.MysterySongs.AddedSongVisibilityAdmin) {
+      this.setState({ songVisibilityOperator: Boolean(this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin)});
+    }
+  }
+
   saveMode(mode) {
     var data = expand("Karaoke.Private", mode);
     this.setState({ privateMode: mode });
@@ -68,7 +75,7 @@ class AdminHeader extends Component {
     callModal(
       "custom",
       "Message indispensable",
-      '<select class="form-control" name="destination"><option value="screen">' +
+      '<select className="form-control" name="destination"><option value="screen">' +
         i18next.t("CL_SCREEN") +
         "</option>" +
         '<option value="users">' +
@@ -77,7 +84,7 @@ class AdminHeader extends Component {
         i18next.t("CL_ALL") +
         "</option></select>" +
         '<input type="text"name="duration" placeholder="5000 (ms)"/>' +
-        '<input type="text" placeholder="Message" class="form-control" id="message" name="message">',
+        '<input type="text" placeholder="Message" className="form-control" id="message" name="message">',
       function(data) {
         var defaultDuration = 5000;
         var msgData = {
@@ -241,16 +248,16 @@ class AdminHeader extends Component {
                 buttons={[
                   {
                     label:i18next.t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL"),
-                    active:!this.state.songVisibilityOperator,
+                    active:this.state.songVisibilityOperator,
                     activeColor:"#57bb00",
-                    onClick:() => this.saveOperatorAdd(false),
+                    onClick:() => this.saveOperatorAdd(true),
                     
                   },
                   {
                     label:i18next.t("ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY"),
-                    active:this.state.songVisibilityOperator,
+                    active:!this.state.songVisibilityOperator,
                     activeColor:"#994240",
-                    onClick:() => this.saveOperatorAdd(true),
+                    onClick:() => this.saveOperatorAdd(false),
                     
                   }
                 ]}

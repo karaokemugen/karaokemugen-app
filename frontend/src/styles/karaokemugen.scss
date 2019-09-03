@@ -84,7 +84,7 @@ div > a, h5 > a, a.btn-link {
     background-color: hsla(0, 45%, 62%, 0.9) !important
 }
 select.form-control {
-	width: 85%;
+	width: 75%;
 	background-color: #343434;
     color: white;
 	border-radius: 0;
@@ -145,10 +145,6 @@ select.form-control {
 	z-index: 52;
 	position: relative;
 }
-.btn-action, .actionDiv > button {
-	font-family: 'Glyphicons Halflings';
-}
-
 .makeFav.currentFav {
     color: firebrick;
 }
@@ -331,6 +327,11 @@ button.closeParent.bottom  {
 	font-weight: 500;
 	font-size: 1.6rem;
 	z-index: 50;
+}
+
+.plSearch-input {
+	font-weight: bold;
+	font-family: "Font Awesome 5 Free", Arial;
 }
 
 .playlistContainer > ul {
@@ -573,13 +574,6 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 /********************************/
-
-.secondaryIcon {
-    font-size: 69%;
-    margin: 9px 0px 0px -10px;
-    color: black;
-    text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
-}
 
 .plDashboard {
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.10), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.16);
@@ -952,7 +946,6 @@ input[type=range]:focus::-ms-fill-upper {
 	line-height:  30px;
 	height: 30px;
     text-align:right;
-    font-family: 'Glyphicons Halflings';
 }
 
 .panel-heading  ::-moz-placeholder {  /* Firefox 19+ */
@@ -960,14 +953,12 @@ input[type=range]:focus::-ms-fill-upper {
 	line-height:  21px;
 	height: 20px;
     text-align:right;
-    font-family: 'Glyphicons Halflings';
 }
 .panel-heading  :-ms-input-placeholder {
 	font-size: 2rem;
 	line-height:  21px;
 	height: 20px;
     text-align:right;
-    font-family: 'Glyphicons Halflings';
 }
 
 .loader {
@@ -1244,7 +1235,7 @@ input[type="text"]:focus, input[type="password"]:focus {
     height: 60px;
 }
 .tagsContainer {
-    width: calc(100% - 115px);
+    width: 40%;
 }
 
 @media (max-width: 1025px) {  

@@ -373,6 +373,8 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 			username: token.username,
 			filter: filter,
 			lang: lang,
+			from: from,
+			size: size,
 			random: random
 		});
 		if (from === -1) {
@@ -382,7 +384,8 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 				: from = 0;
 		}
 		profile('getPLC');
-		return formatKaraList(pl.slice(from, from + size), from, pl.length);
+		const count = pl.length > 0 ? pl[0].count : 0;
+		return formatKaraList(pl, from, count, lang);
 	} catch(err) {
 		throw {
 			message: err
@@ -559,9 +562,12 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		}
 		for (const i in karaList) {
 			karaList[i].pos = pos + +i;
+			// Test if we're adding a invisible/masked karaoke or not
+			karaList[i].flag_visible = true;
+			if ((!conf.Playlist.MysterySongs.AddedSongVisibilityAdmin && addByAdmin) || !conf.Playlist.MysterySongs.AddedSongVisibilityPublic && !addByAdmin) karaList[i].flag_visible = false;
 		}
 
-		// Adding song to playlsit at long last!
+		// Adding song to playlist at long last!
 		await addKaraToPL(karaList);
 		updatePlaylistLastEditTime(playlist_id);
 		// Checking if a flag_playing is present inside the playlist.

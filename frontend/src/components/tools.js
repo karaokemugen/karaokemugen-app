@@ -148,7 +148,7 @@ export function buildKaraTitle(data) {
 export function displayMessage (type, title, message, time) {
 	var transition = is_touch_device() ? 300 : 500;
 	if (!time) time = 3500;
-	var messageDiv = $('<div nb="' + 0 + '" class="toastMessage alert alert-' + type + '">');
+	var messageDiv = $('<div nb="' + 0 + '" className="toastMessage alert alert-' + type + '">');
 	messageDiv.html('<strong>' + title + '</strong> ' + message);
 	messageDiv.appendTo($('.toastMessageContainer'));
 	setTimeout(function(){

@@ -8,7 +8,9 @@ export interface DBStats {
 	series: number,
 	played: number,
 	playlists: number,
-	duration: number
+	duration: number,
+	blacklist: number,
+	whitelist: number
 }
 
 export interface DBSetting {

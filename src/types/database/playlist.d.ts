@@ -20,6 +20,7 @@ export interface DBPLCBase extends DBKara {
 	username: string
 	playlistcontent_id: number,
 	playlist_id: number,
+	count: number,
 }
 
 export interface DBPLPos {
@@ -50,8 +51,6 @@ export interface DBPLCNames extends DBPLPos {
 }
 
 export interface DBPLC extends DBPLCBase {
-	kara_created_at: Date,
-	kara_modified_at: Date,
 	flag_whitelisted: boolean,
 	flag_blacklisted: boolean,
 	upvotes: number,

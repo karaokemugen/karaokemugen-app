@@ -22,8 +22,8 @@ class KaraDetail extends Component {
 
   async getKaraDetail() {
     var urlInfoKara = this.props.idPlaylist > 0 ?
-      '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id :
-      '/api/public/karas/' + this.props.kara.kid;
+      '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.playlistcontentId :
+      '/api/public/karas/' + this.props.kid;
     var response = await axios.get(urlInfoKara);
     const kara = response.data.data;
     this.setState({ kara: kara });
@@ -53,7 +53,7 @@ class KaraDetail extends Component {
 
   async moreInfo() {
     var openExternalPageButton =
-      '<i class="glyphicon glyphicon-new-window"></i>';
+      '<i className="fas fa-external-link"></i>';
     var externalUrl = "";
     var serie = this.state.kara.serie;
     var extraSearchInfo = "";
@@ -328,8 +328,8 @@ class KaraDetail extends Component {
                   <button
                     type="button"
                     title={data.flag_visible ? i18next.t("TOOLTIP_VISIBLE_OFF") : i18next.t("TOOLTIP_VISIBLE_ON")} onClick={this.changeVisibilityKara}
-                    className={"visibilityButton btn btn-action " + (data.flag_visible ? "": "btn-primary")}
-                  ><i className="fas fa-eye-slash"></i></button>
+                    className={"btn btn-action " + (data.flag_visible ? "": "btn-primary")}
+                >{data.flag_visible ? <i className="fas fa-eye"/> : <i className="fas fa-eye-slash"/>}</button>
                 ) : null}
               </div>
               <table>
@@ -343,7 +343,7 @@ class KaraDetail extends Component {
         if (data.subfile) this.showFullLyrics();
         infoKaraTemp = (
           <React.Fragment>
-            <div class="details z-depth-1" id="karaCard">
+            <div className="details karaCard">
               <div className="topRightButtons">
                 {this.props.logInfos === "guest" ? null : makeFavButton}
               </div>
@@ -351,7 +351,7 @@ class KaraDetail extends Component {
                 <tbody>{htmlDetails}</tbody>
               </table>
             </div>
-            <div class="lyricsKara alert alert-info">
+            <div className="lyricsKara alert alert-info">
             {data.subfile && this.state.lyrics.map(ligne => {
                 return (
                   <React.Fragment key={Math.random()}>

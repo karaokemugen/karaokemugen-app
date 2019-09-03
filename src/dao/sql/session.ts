@@ -1,8 +1,13 @@
 export const selectSessions = `
 SELECT pk_seid AS seid,
 	name,
-	started_at
+	started_at,
+	COUNT(p.fk_kid) AS played,
+	COUNT(r.fk_kid) AS requested
 FROM session
+LEFT JOIN played p ON p.fk_seid = pk_seid
+LEFT JOIN requested r on r.fk_seid = pk_seid
+GROUP BY pk_seid
 ORDER BY started_at DESC
 `;
 

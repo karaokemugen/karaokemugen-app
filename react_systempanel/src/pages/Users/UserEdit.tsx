@@ -47,7 +47,7 @@ class UserEdit extends Component<UserEditProps, UserEditState> {
 	};
 
 	saveUpdate = (user) => {
-		axios.put(`/api/system/users/${user.id}`, user)
+		axios.put(`/api/system/users/${user.login}`, user)
 			.then(() => {
 				this.props.infoMessage('User successfully edited');
 				this.props.push('/system/km/users');

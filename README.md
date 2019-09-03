@@ -17,13 +17,13 @@ It works like a japanese karaoke where anyone can add songs one after another to
 
 Karaoke Mugen works offline and does not require an Internet connection, but a few of its features may need online access.
 
-This is a mature product, battle-tested during anime conventions like [Jonetsu](http://www.jonetsu.fr) and similar events, weddings, anime nights between friends, etc. There still are some bugs remaining we'd like to exterminate, obviously :)
+This is a mature product, battle-tested during anime conventions like [Jonetsu](http://www.jonetsu.fr), Japan Expo or Japanantes and similar events, weddings, anime nights between friends, etc. There still are some bugs remaining we'd like to exterminate, obviously :)
 
 ## Features
 
 * Accepted formats :
   * Video: AVI, MP4, MKV (anything supported by [mpv](http://mpv.io) really)
-  * Subtitles: ASS
+  * Subtitles: ASS, Epitanime Toyunda, Ultrastar .txt files (for those last two, they will be converted to ASS upon importation, and cannot be used directly)
   * Music: MP3, M4A, OGG
 * Complete player controls : Skip, pause, play, stop, rewind playback, hide/show lyrics, mute/unmute and volume control
 * Playlist management : Reorder, shuffle, copy and move songs around between playlists
@@ -32,8 +32,8 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 * Complete filter system and search engine based on the aforementionned metadata.
 * User profiles with access rights, favorites list, and other info
 * Web interface for smartphone/tablet/PC ~~IE6 compatible~~
-* Highly configurable experience to tailor the app to your specific needs (in front of a crowd, between friends, etc.)
-* Displays karaoke information during song playback
+* Highly configurable experience to tailor the app to your specific needs (in front of a crowd, between friends, for karaoke contests, etc.)
+* Displays karaoke information or admin announcements during song playback
 * Public or private mode :
   * In private mode (default) songs added by users are directly played one after the other in the current playlist
   * In public mode, songs are added to a suggestion list. It's up to the admin to add songs from this list.
@@ -48,7 +48,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 * Launch the app (see the launch section below). It will open a browser on the welcome screen. Follow the guided tour for admins.
 * Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and have fun!
 
-In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's over 266Gb big once the videos have been downloaded.
+In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's over a few hundreds gigabytes big once the videos have been downloaded.
 
 For more information, check out the [documentation site!](http://docs.karaokes.moe)
 
@@ -104,13 +104,8 @@ Earlier PostgreSQL versions (9.x, 10.x...) should work but have not been tested.
 
 Karaoke Mugen can use PostgreSQL in two ways :
 
-##### Existing database cluster
-
-* Connect to an existing PostgreSQL server (edit the `database.json` file to point out to the correct server and database)
-
-##### Bundlded PostgreSQL version
-
-* If `bundledPostgresBinary` is set to `true` in `database.json` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
+- **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `database.json` file to point out to the correct server and database)
+- **Bundlded PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `database.json` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
 
 ### Yarn
 
@@ -192,7 +187,7 @@ yarn start
 
 Generating a database ie required on first launch and is done automatically if the database specified in `database.json` is empty. You can trigger it manually later by connecting to the admin panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
 
-On first run, the app will make you create an admin user and follow a guided tour of the control panel. You can trigger this tour/admin creation process again by setting `FirstRun` to `true` in your config file. Check the sample config file for example.
+On first run, the app will make you create an admin user and follow a guided tour of the operator/admin panel. You can trigger this tour/admin creation process again by setting `FirstRun` to `true` in your config file. Check the sample config file for example.
 
 ## Translations
 
@@ -207,10 +202,16 @@ You can contact us by either
 
 ## How to contribute
 
-Read the [dedicated section on the documentation website](http://docs.karaokes.moe/en/dev-guide/code/)
+For general contributions, read the [dedicated section on the documentation website](http://docs.karaokes.moe/en/dev-guide/code/)
 
-Everything's there, and if you have questions, you can come to [our Discord](https://discord.gg/XFXCqzU) in the #karaoke_dev channel!
+For code/development contributions, read the [contributing guide](CONTRIBUTING.md)
+
+Everything's there, and if you have questions, you can come to [our Discord](http://karaokes.moe/discord) in the #karaoke_dev channel!
 
 ## Credits
 
 "Nanamin", Karaoke Mugen's mascott as well as Karaoke Mugen's logo are designed by [Sedeto](http://www.sedeto.fr)
+
+## License
+
+MIT

@@ -1,16 +1,15 @@
 import {db, paramWords} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import { TagParams, Tag, TagAndType } from '../lib/types/tag';
-import { DBTag } from '../lib/types/database/tag';
 import { WhereClause } from '../types/database';
 const sql = require('./sql/tag');
 
-export async function selectTag(id: string): Promise<DBTag> {
+export async function selectTag(id: string): Promise<Tag> {
 	const res = await db().query(sql.getTag, [id]);
 	return res.rows[0];
 }
 
-export async function getAllTags(params: TagParams): Promise<DBTag[]> {
+export async function getAllTags(params: TagParams): Promise<Tag[]> {
 	let filterClauses = params.filter
 		? buildTagClauses(params.filter)
 		: {sql: [], params: {}};
@@ -58,7 +57,7 @@ export async function updateKaraTagsTID(oldTID: string, newTID: string) {
 	]);
 }
 
-export async function selectDuplicateTags(): Promise<DBTag[]> {
+export async function selectDuplicateTags(): Promise<Tag[]> {
 	return await db().query(sql.selectDuplicateTags);
 }
 
@@ -73,7 +72,7 @@ export async function updateKaraTags(kid: string, tags: TagAndType[]) {
 	}
 }
 
-export async function selectTagByNameAndType(name: string, type: number): Promise<DBTag> {
+export async function selectTagByNameAndType(name: string, type: number): Promise<Tag> {
 	const res = await db().query(sql.getTagByNameAndType, [
 		name,
 		[type]

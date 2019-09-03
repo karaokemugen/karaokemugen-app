@@ -91,9 +91,9 @@ class UserList extends Component<UserListProps, UserListState> {
 			{ text: 'Guest', value: '2' },
 		],
 		render: text => {
+			if (+text === 0) return 'Admin';
 			if (+text === 1) return 'User';
 			if (+text === 2) return 'Guest';
-			if (+text === 3) return 'Admin';
 		},
 		filterMultiple: false,
 		onFilter: (value, record) => `${record.type}` === value,

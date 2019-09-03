@@ -9,7 +9,7 @@ import logger from '../lib/utils/logger';
 
 let shutdownInProgress = false;
 
-/** Is postgreSQL is being shutdown? */
+/** Is postgreSQL being shutdown? */
 export function isShutdownPG(): boolean {
 	return shutdownInProgress;
 }

@@ -28,8 +28,6 @@ SELECT
 	  ak.serie) AS serie,
   ak.serie AS serie_orig,
   ak.serie_altname AS serie_altname,
-  ak.sid AS sid,
-  ak.seriefiles AS seriefiles,
   COALESCE(ak.singers, '[]'::jsonb) AS singers,
   COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
   COALESCE(ak.creators, '[]'::jsonb) AS creators,
@@ -45,7 +43,8 @@ SELECT
   COALESCE(ak.genres, '[]'::jsonb) AS genres,  ak.created_at AS created_at,
   ak.modified_at AS modified_at,
   wl.created_at AS whitelisted_at,
-  wl.reason AS reason
+  wl.reason AS reason,
+  count(ak.kid) OVER()::integer AS count
   FROM all_karas AS ak
   INNER JOIN whitelist AS wl ON wl.fk_kid = ak.kid
   WHERE 1 = 1

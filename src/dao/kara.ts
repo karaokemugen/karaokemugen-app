@@ -1,4 +1,4 @@
-import {expand, flatten, buildTypeClauses, langSelector, buildClauses, db, transaction} from '../lib/dao/database';
+import {buildTypeClauses, langSelector, buildClauses, db, transaction} from '../lib/dao/database';
 import {getConfig} from '../lib/utils/config';
 import {asyncExists, asyncReadFile, resolveFileInDirs} from '../lib/utils/files';
 import { getState } from '../utils/state';
@@ -91,6 +91,16 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	let limitClause = '';
 	let offsetClause = '';
 	let havingClause = '';
+	let groupClause = '';
+	// Search mode to filter karas played or requested in a particular session
+	if (params.mode === 'sessionPlayed') {
+		orderClauses = groupClause = 'p.played_at, ';
+		typeClauses = `AND p.fk_seid = '${params.modeValue}'`;
+	}
+	if (params.mode === 'sessionRequested') {
+		orderClauses = groupClause = 'rq.requested_at, ';
+		typeClauses = `AND rq.fk_seid = '${params.modeValue}'`;
+	}
 	if (params.mode === 'recent') orderClauses = 'created_at DESC, ';
 	if (params.mode === 'requested') {
 		orderClauses = 'requested DESC, ';
@@ -100,9 +110,8 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		orderClauses = 'played DESC, ';
 		havingClause = 'HAVING COUNT(p.*) > 1';
 	}
-	//Disabled until we get the frontend to work around this.
-	//if (from > 0) offsetClause = `OFFSET ${params.from} `;
-	//if (size > 0) limitClause = `LIMIT ${prams.size} `;
+	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
+	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	// If we're asking for random songs, here we modify the query to get them.
 	if (params.random > 0) {
 		orderClauses = `RANDOM(), ${orderClauses}`;
@@ -121,7 +130,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		userMode = user.series_lang_mode;
 		userLangs = {main: user.main_series_lang, fallback: user.fallback_series_lang};
 	}
-	const query = sql.getAllKaras(filterClauses.sql, langSelector(params.lang, userMode, userLangs), typeClauses, orderClauses, havingClause, limitClause, offsetClause);
+	const query = sql.getAllKaras(filterClauses.sql, langSelector(params.lang, userMode, userLangs), typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause);
 	const queryParams = {
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 		username: params.username,
@@ -180,7 +189,7 @@ export async function selectAllKIDs(): Promise<string[]> {
 }
 
 export async function addKaraToPlaylist(karaList: PLC[]) {
-	const karas: any[][] = karaList.map(kara => ([
+	const karas: any[] = karaList.map(kara => ([
 		kara.playlist_id,
 		kara.username,
 		kara.nickname,
@@ -188,11 +197,10 @@ export async function addKaraToPlaylist(karaList: PLC[]) {
 		kara.created_at,
 		kara.pos,
 		false,
-		false
+		false,
+		kara.flag_visible
 	]));
-	const query = sql.addKaraToPlaylist(expand(karas.length, karas[0].length));
-	const values = flatten(karas);
-	return await db().query(query, values);
+	return await transaction([{params: karas, sql: sql.addKaraToPlaylist}]);
 }
 
 export async function removeKaraFromPlaylist(karas: number[], playlist_id: number) {

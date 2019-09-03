@@ -1,7 +1,6 @@
 import {getAllTags, selectTagByNameAndType, insertTag, selectTag, updateTag, removeTag, updateKaraTagsTID, selectDuplicateTags} from '../dao/tag';
 import logger, {profile} from '../lib/utils/logger';
 import { TagParams, Tag } from '../lib/types/tag';
-import { DBTag } from '../lib/types/database/tag';
 import uuidV4 from 'uuid/v4';
 import { resolvedPathTags } from '../lib/utils/config';
 import { addTagToStore, sortTagsStore, getStoreChecksum, editTagInStore, removeTagInStore, editKaraInStore } from '../dao/dataStore';
@@ -14,7 +13,7 @@ import { getAllKaras } from './kara';
 import { replaceTagInKaras } from '../lib/dao/karafile';
 import { IDQueryResult } from '../lib/types/kara';
 
-export function formatTagList(tagList: DBTag[], from: number, count: number) {
+export function formatTagList(tagList: Tag[], from: number, count: number) {
 	return {
 		infos: {
 			count: count,

@@ -121,7 +121,7 @@ async function next() {
 			displaySongInfo(kara.infos, 10000000, true);
 			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-				await playPlayer(true);
+				if (getState().status === 'stop') await playPlayer(true);
 			}
 		} else if (conf.Karaoke.StreamerMode.Enabled) {
 			setState({currentRequester: null});
@@ -131,7 +131,7 @@ async function next() {
 			if (conf.Karaoke.Poll.Enabled) await startPoll();
 			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-				await playPlayer(true);
+				if (getState().status === 'stop') await playPlayer(true);
 			}
 		} else {
 			setState({currentRequester: null});

@@ -35,8 +35,13 @@ class PlayerOptions extends Component {
 
   onChange(e) {
     var settings = this.state.settings;
-    const value = e.target.type === 'checkbox' ? e.target.checked : 
+    var value = e.target.type === 'checkbox' ? e.target.checked : 
       (Number(e.target.value) ? Number(e.target.value) : e.target.value);
+    if (value === 'true') {
+      value = true;
+    } else if (value === 'false') {
+      value = false;
+    }
     settings[e.target.id] = value;
     this.setState({ settings: settings });
     if (e.target.type != "number" || (Number(e.target.value))) this.props.onChange(e);
@@ -49,7 +54,7 @@ class PlayerOptions extends Component {
       this.state.displays && this.state.displays.length > 0
         ? this.state.displays.map((display, index) => (
           <option key={index} value={index} >
-            {" "}
+            &nbsp;
             {index + 1} - ({display.resolutionx}x{display.resolutiony}) {display.model}
           </option>
         ))
@@ -57,8 +62,10 @@ class PlayerOptions extends Component {
     return (
       <React.Fragment>
         <div className="form-group">
-          <label className="col-xs-4 control-label">
+          <label className="col-xs-4 control-label" title={i18next.t("ALWAYS_ON_TOP_TOOLTIP")}>
             {i18next.t("ALWAYS_ON_TOP")}
+            &nbsp;
+            <i class="far fa-question-circle"></i>
           </label>
           <div className="col-xs-6">
             <Switch idInput="Player.StayOnTop" handleChange={this.putPlayerCommando}
@@ -66,8 +73,10 @@ class PlayerOptions extends Component {
           </div>
         </div>
         <div className="form-group">
-          <label className="col-xs-4 control-label">
+          <label className="col-xs-4 control-label" title={i18next.t("FULLSCREEN_TOOLTIP")}>
             {i18next.t("FULLSCREEN")}
+            &nbsp;
+            <i class="far fa-question-circle"></i>
           </label>
           <div className="col-xs-6">
             <Switch idInput="Player.FullScreen" handleChange={this.putPlayerCommando}
@@ -107,8 +116,10 @@ class PlayerOptions extends Component {
             className="well well-sm settingsGroupPanel"
           >
             <div className="form-group">
-              <label className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label" title={i18next.t("ENGINEDISPLAYCONNECTIONINFOHOST_TOOLTIP")}>
                 {i18next.t("ENGINEDISPLAYCONNECTIONINFOHOST")}
+                &nbsp;
+                <i class="far fa-question-circle"></i>
               </label>
               <div className="col-xs-6">
                 <input
@@ -121,8 +132,10 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label" title={i18next.t("ENGINEDISPLAYCONNECTIONINFOMESSAGE_TOOLTIP")}>
                 {i18next.t("ENGINEDISPLAYCONNECTIONINFOMESSAGE")}
+                &nbsp;
+                <i class="far fa-question-circle"></i>
               </label>
               <div className="col-xs-6">
                 <input
@@ -137,8 +150,10 @@ class PlayerOptions extends Component {
         ) : null}
 
         <div className="form-group">
-          <label className="col-xs-4 control-label">
+          <label className="col-xs-4 control-label" title={i18next.t("PLAYERPIP_TOOLTIP")}>
             {i18next.t("PLAYERPIP")}
+            &nbsp;
+            <i class="far fa-question-circle"></i>
           </label>
           <div className="col-xs-6">
             <Switch idInput="Player.PIP.Enabled" handleChange={this.onChange}
@@ -148,8 +163,10 @@ class PlayerOptions extends Component {
         {this.state.settings["Player.PIP.Enabled"] ?
           <div id="pipSettings" className="well well-sm settingsGroupPanel">
             <div className="form-group">
-              <label className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label" title={i18next.t("VIDEO_SIZE_TOOLTIP")}>
                 {`${i18next.t("VIDEO_SIZE")} (${this.state.settings["Player.PIP.Size"]}%)`}
+                &nbsp;
+                <i class="far fa-question-circle"></i>
               </label>
               <div className="col-xs-6">
                 <input
@@ -162,8 +179,10 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label" title={i18next.t("VIDEO_POSITION_X_TOOLTIP")}>
                 {i18next.t("VIDEO_POSITION_X")}
+                &nbsp;
+                <i class="far fa-question-circle"></i>
               </label>
               <div className="col-xs-6">
                 <select
@@ -180,8 +199,10 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label" title={i18next.t("VIDEO_POSITION_Y_TOOLTIP")}>
                 {i18next.t("VIDEO_POSITION_Y")}
+                &nbsp;
+                <i class="far fa-question-circle"></i>
               </label>
               <div className="col-xs-6">
                 <select
@@ -198,8 +219,10 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label" title={i18next.t("ENGINEDISPLAYNICKNAME_TOOLTIP")}>
                 {i18next.t("ENGINEDISPLAYNICKNAME")}
+                &nbsp;
+                <i class="far fa-question-circle"></i>
               </label>
               <div className="col-xs-6">
                 <Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
@@ -218,8 +241,10 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label" title={i18next.t("PLAYERMONITOR_TOOLTIP")}>
                 {i18next.t("PLAYERMONITOR")}
+                &nbsp;
+                <i class="far fa-question-circle"></i>
               </label>
               <div className="col-xs-6">
                 <Switch idInput="Player.Monitor" handleChange={this.onChange}
@@ -228,8 +253,10 @@ class PlayerOptions extends Component {
             </div>
 
             <div className="form-group">
-              <label className="col-xs-4 control-label">
+              <label className="col-xs-4 control-label" title={i18next.t("PLAYERVISUALIZATIONEFFECTS_TOOLTIP")}>
                 {i18next.t("PLAYERVISUALIZATIONEFFECTS")}
+                &nbsp;
+                <i class="far fa-question-circle"></i>
               </label>
               <div className="col-xs-6">
                 <Switch idInput="Player.VisualizationEffects" handleChange={this.onChange}

@@ -34,7 +34,8 @@ class LoginModal extends Component {
         if (!username) {
             url = '/api/auth/login/guest';
             data = { fingerprint: password };
-        } else if (this.props.scope === 'admin' && this.props.config && this.props.config.App.FirstRun && username !== 'admin') {
+        } else if (this.props.scope === 'admin' && this.props.config && this.props.config.App.FirstRun 
+            && axios.defaults.headers.common['authorization'] && username !== 'admin') {
             url = '/api/admin/users/login';
         }
 
@@ -163,7 +164,7 @@ class LoginModal extends Component {
                                 <div className="loginRelated"></div>
                                 <div className="loginRelated">
                                     <button type="button" className="btn btn-default login" onClick={this.loginUser}>
-                                        <i className="glyphicon glyphicon-ok"></i>
+                                        <i className="fas fa-check"></i>
                                     </button>
                                 </div>
                             </div> :

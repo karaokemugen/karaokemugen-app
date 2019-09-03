@@ -45,15 +45,15 @@ function Autocomplete(props){
   };
   const handleSearchKeyUp = (e) => {
     var fo = filteredOptions();
-    if(e.keyCode===13) { 
+    if(e.keyCode===13) {
       //RETURN
       setFocus(false);
       let o = fo[activeIndex]
-      if(o) {
-        updateSelectedValue(o.value)
-      } else if (props.acceptNewValues) {
+      if (props.acceptNewValues) {
         updateSelectedValue(e.target.value)
-      }
+      } else if(o) {
+        updateSelectedValue(o.value)
+      } 
     }
     else if(e.keyCode===27) //ESC
       setFocus(false);

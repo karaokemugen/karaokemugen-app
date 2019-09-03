@@ -13,9 +13,8 @@ export async function getWhitelistContents(params: KaraParams): Promise<DBWhitel
 		: {sql: [], params: {}};
 	let limitClause = '';
 	let offsetClause = '';
-	//Disabled until frontend manages this
-	//if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
-	//if (params.size > 0) limitClause = `LIMIT ${params.size} `;
+	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
+	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	let user: User = {};
 	let userMode = -1;
 	let userLangs = {main: null, fallback: null};

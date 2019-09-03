@@ -9,20 +9,20 @@ import { Jingle } from '../types/jingles';
 import fs from 'fs';
 import { editSetting } from '../utils/config';
 import { getState } from '../utils/state';
-const git = require('isomorphic-git');
+import { plugins as gitPlugins, pull as gitPull, clone as gitClone} from 'isomorphic-git';
 
-git.plugins.set('fs', fs);
+gitPlugins.set('fs', fs);
 let allSeries = {};
 let currentSeries = {};
 
 export async function updateJingles() {
 	let gitDir = resolve(resolvedPathJingles()[0], 'KaraokeMugen/');
 	try {
-		if (!await asyncExists(gitDir)) {
+		if (!await asyncExists(gitDir) || !await asyncExists(gitDir + '.git/')) {
 			logger.info('[Jingles] Downloading jingles');
 			// Git clone
-			await asyncMkdirp(gitDir);
-			await git.clone({
+			if (!await asyncExists(gitDir)) await asyncMkdirp(gitDir);
+			await gitClone({
 				dir: gitDir,
 				url: 'https://lab.shelter.moe/karaokemugen/jingles'
 			})
@@ -38,7 +38,7 @@ export async function updateJingles() {
 			buildJinglesList();
 		} else {
 			logger.info('[Jingles] Updating jingles');
-			await git.pull({
+			await gitPull({
 				dir: gitDir,
 				ref: 'master',
 				singleBranch: true
@@ -47,6 +47,7 @@ export async function updateJingles() {
 			buildJinglesList();
 		}
 	} catch(err) {
+		console.log(err);
 		logger.warn(`[Jingles] Error updating jingles : ${err}`);
 	}
 }
@@ -55,12 +56,12 @@ async function extractJingleFiles(jingleDir: string) {
 	const dirListing = await asyncReadDir(jingleDir);
 	for (const file of dirListing) {
 		if (isMediaFile(file)) {
-			getAllVideoGains(file, jingleDir);
+			getVideoGain(file, jingleDir);
 		}
 	}
 }
 
-async function getAllVideoGains(file: string, jingleDir: string) {
+async function getVideoGain(file: string, jingleDir: string) {
 	const jinglefile = resolve(jingleDir, file);
 	const videodata = await getMediaInfo(jinglefile);
 	const serie = file.split(' - ')[0];

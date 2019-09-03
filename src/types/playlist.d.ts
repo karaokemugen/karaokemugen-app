@@ -22,6 +22,7 @@ export interface PLC {
 	created_at?: Date,
 	pos?: number,
 	flag_playing?: boolean,
+	flag_visible?: boolean,
 	duration?: number,
 	unique_id?: string,
 	serie?: string,

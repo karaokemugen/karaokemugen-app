@@ -25,8 +25,8 @@ So if you want to work  on a new feature for example, create a branch from `next
 
 Please respect coding conventions already in place as much as possible.
 
-- Use of async/await instead of promises and callbacks
-- Use `for` loops instead of `.forEach` unless your forEach is not using async functions or is a oneliner
+- Use of async/await instead of .then/.catch and callbacks
+- Use `for..of` or `for..in` loops instead of `.forEach` unless your forEach is not using async functions or is a oneliner
 - Use TypeScript
 - Use import module syntax, not the require one
 - Before adding a dependency, ask on Discord if it should really be added. Who knows, someone might have an idea on how to avoid using it, or a better alternative.
@@ -35,7 +35,7 @@ Please respect coding conventions already in place as much as possible.
 
 ### Issues approval
 
-If an issue needs to be fixed, the `ToDo` label will be added to it by a maintainer. At this point anyone can take the issue and work on it.
+If an issue needs to be fixed, a milestone will be added to it by a maintainer. At this point anyone can take the issue and work on it.
 
 If a issue is closed but has not been fixed and could be reopened, please add a comment to it and wait for a maintainer to reopen it.
 

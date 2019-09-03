@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import i18next from 'i18next';
 import axios from "axios";
-import { is_touch_device, buildKaraTitle, getSocket } from "../tools";
+import { buildKaraTitle, getSocket } from "../tools";
 
 require('./ProgressBar.scss');
 
@@ -70,7 +70,8 @@ class ProgressBar extends Component {
     }
 
     karaInfoClick(e) {
-        if (this.state.status != undefined && this.state.status != '' && this.state.status != 'stop' && this.state.length != -1) {
+        if (this.props.scope === 'admin' && this.state.status != undefined 
+            && this.state.status != '' && this.state.status != 'stop' && this.state.length != -1) {
             this.goToPosition(e);
         }
     }
@@ -80,25 +81,7 @@ class ProgressBar extends Component {
     */
     async refreshPlayerInfos(data) {
         if (this.state.oldState != data) {
-            if (data.currentlyPlaying !== this.state.oldState.currentlyPlaying) {
-                if (data.currentlyPlaying === null) {
-                    this.setState({karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1})
-                } else if (data.currentlyPlaying === -1) {
-                    this.setState({karaInfoText: i18next.t('JINGLE_TIME'), length: -1})
-                } else {
-                    var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
-                    var kara = response.data.data;
-                    var karaInfoText;
-                    if (this.props.lyrics || this.props.webappMode == 1) {
-                        var text = data.subText;
-                        if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
-                        karaInfoText = text;
-                    } else {
-                        karaInfoText = buildKaraTitle(kara);
-                    }
-                    this.setState({karaInfoText: karaInfoText, length: kara.duration})
-                }
-            }
+
 
             var newWidth = $('#karaInfo').width() * 
                 parseInt(10000 * (data.timePosition + this.state.refreshTime / 1000) / this.state.length) / 10000 + 'px';
@@ -129,6 +112,26 @@ class ProgressBar extends Component {
                 barCss.removeClass('cssTransform');
                 $('#progressBarColor').stop().css({ transform: 'translateX(0)' });
                 barCss.addClass('cssTransform');
+            }
+
+            if (data.currentlyPlaying !== this.state.oldState.currentlyPlaying) {
+                if (data.currentlyPlaying === null) {
+                    this.setState({karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1})
+                } else if (data.currentlyPlaying === -1) {
+                    this.setState({karaInfoText: i18next.t('JINGLE_TIME'), length: -1})
+                } else {
+                    var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
+                    var kara = response.data.data;
+                    var karaInfoText;
+                    if (this.props.lyrics || this.props.webappMode == 1) {
+                        var text = data.subText;
+                        if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
+                        karaInfoText = text;
+                    } else {
+                        karaInfoText = buildKaraTitle(kara);
+                    }
+                    this.setState({karaInfoText: karaInfoText, length: kara.duration})
+                }
             }
             this.setState({oldState: data});
         }
