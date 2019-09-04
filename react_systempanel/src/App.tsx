@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { ConnectedRouter } from 'connected-react-router';
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
@@ -8,21 +7,34 @@ import PrivateRoute from './components/PrivateRoute';
 import KMPage from './layout/KMPage';
 import Login from './pages/Login';
 import { history, store } from './store';
+import { isAlreadyLogged } from './actions/auth';
 
-class App extends Component<{}, {}> {
+interface AppState {
+	isInitialized: boolean;
+}
+
+class App extends Component<{}, AppState> {
 
 	constructor(props) {
 		super(props);
-		const token = localStorage.getItem('kmToken');
-		const onlineToken = localStorage.getItem('kmOnlineToken');
-		if (token) {
-			axios.defaults.headers.common['authorization'] = token;
-			axios.defaults.headers.common['onlineAuthorization'] = onlineToken;
-		}
+		this.state = {
+			isInitialized: false
+		};
+	}
+
+	componentWillMount(): void {
+		isAlreadyLogged(store.dispatch)
+			.catch(() => { /* Just to suppress a 'Uncaught (in promise) Error'  */ })
+			.finally(() => {
+				this.setState({
+					isInitialized: true
+				});
+			});
 	}
 
 	render() {
 		return (
+			this.state.isInitialized &&
 			<Provider store={store}>
 				<ConnectedRouter history={history}>
 					<Switch>
