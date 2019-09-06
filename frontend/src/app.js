@@ -71,11 +71,16 @@ class App extends Component {
     }
 
     async parseTags() {
-        const response = await axios.get('/api/public/tags');
-		return response.data.data.content.filter(val => val.karacount > 0).map(val => {
-            var trad = val.i18n[this.state.navigatorLanguage];
-            return {value:val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount};
-        });
+        try {
+            const response = await axios.get('/api/public/tags');
+            return response.data.data.content.filter(val => val.karacount > 0).map(val => {
+                var trad = val.i18n[this.state.navigatorLanguage];
+                return {value:val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount};
+            });
+        } catch (error) {
+            // if error the authorization must be broken so we delete it
+            this.logOut();
+        }
     }
 
     async parseSeries() {
