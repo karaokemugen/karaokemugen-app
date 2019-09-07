@@ -198,13 +198,8 @@ select.form-control {
 	display: inline-block;
 }
 
-.btn-action:hover, .btn-action:focus {
+.btn-action:hover {
 	background-color: #292929;
-	color: white;
-}
-
-.btn-action:active:focus{
-	background-color: #444;
 	color: white;
 }
 
