@@ -12,7 +12,7 @@ import {emitWS} from '../_webapp/frontend';
 
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
-	url: 'http://mugen.karaokes.moe/downloads/medias',
+	url: 'https://mugen.karaokes.moe/downloads/medias',
 	user: 'kmvideos',
 	password: 'musubi'
 };
