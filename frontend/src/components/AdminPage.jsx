@@ -19,10 +19,12 @@ class AdminPage extends Component {
       profileModal: false,
       onlineStatsModal: this.props.settings.config.Online.Stats === undefined,
       idsPlaylist: { left: '', right: '' },
-      searchMenuOpen: false
+      searchMenuOpen1: false,
+      searchMenuOpen2: false
     };
     this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
-    this.toggleSearchMenu = this.toggleSearchMenu.bind(this);
+    this.toggleSearchMenu1 = this.toggleSearchMenu1.bind(this);
+    this.toggleSearchMenu2 = this.toggleSearchMenu2.bind(this);
   }
 
   majIdsPlaylist(side, value) {
@@ -42,8 +44,12 @@ class AdminPage extends Component {
     video.removeAttr('src');
   }
 
-  toggleSearchMenu() {
-    this.setState({searchMenuOpen: !this.state.searchMenuOpen});
+  toggleSearchMenu1() {
+    this.setState({searchMenuOpen1: !this.state.searchMenuOpen1});
+  }
+
+  toggleSearchMenu2() {
+    this.setState({searchMenuOpen2: !this.state.searchMenuOpen2});
   }
 
   render() {
@@ -92,8 +98,8 @@ class AdminPage extends Component {
                   idPlaylistTo={this.state.idsPlaylist.right}
                   majIdsPlaylist={this.majIdsPlaylist}
                   tags={this.props.tags}
-                  toggleSearchMenu={this.toggleSearchMenu}
-                  searchMenuOpen={this.state.searchMenuOpen}
+                  toggleSearchMenu={this.toggleSearchMenu1}
+                  searchMenuOpen={this.state.searchMenuOpen1}
                   />
                 <Playlist
                   scope='admin'
@@ -104,6 +110,8 @@ class AdminPage extends Component {
                   idPlaylistTo={this.state.idsPlaylist.left}
                   majIdsPlaylist={this.majIdsPlaylist}
                   tags={this.props.tags}
+                  toggleSearchMenu={this.toggleSearchMenu2}
+                  searchMenuOpen={this.state.searchMenuOpen2}
                   />
               </PlaylistMainDecorator>
             }
