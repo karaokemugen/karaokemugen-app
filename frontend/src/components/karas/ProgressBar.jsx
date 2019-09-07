@@ -83,7 +83,10 @@ class ProgressBar extends Component {
             }
             if (this.state.oldState.status != data.status || this.state.oldState.playerStatus != data.playerStatus) {
                 status = data.status === 'stop' ? 'stop' : data.playerStatus;
-                this.setState({status: status, width: 0});
+                if( status === 'stop') {
+                    this.setState({width: 0});
+                }
+                this.setState({status: status});
             }
 
             if (data.currentlyPlaying !== this.state.oldState.currentlyPlaying) {
