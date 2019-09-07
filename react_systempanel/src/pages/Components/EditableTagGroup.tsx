@@ -58,7 +58,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	};
 
 	handleClose = (removedTag) => {
-		const tags = this.state.value.filter(tag => tag[0] !== removedTag[0]);
+		const tags = this.state.value.filter(tag => tag[1] !== removedTag[1]);
 		this.setState({ value: tags });
 		this.props.onChange && this.props.onChange(tags);
 	};
@@ -214,7 +214,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 					{
 						value.map((tag) => {
 							if (!tag) tag = '';
-							const isLongTag = tag[1].length > 20;
+							const isLongTag = tag[1] && tag[1].length > 20;
 							const tagElem = (
 								<Tag key={tag} closable={true} onClose={() => this.handleClose(tag)}>
 									{isLongTag ? `${tag[1].slice(0, 20)}...` : tag[1]}
