@@ -314,9 +314,9 @@ class Playlist extends Component {
   }
 
   handleScroll() {
-    var container_height = document.querySelector('.playlistContainer').offsetHeight;
-    var scroll_by = document.querySelector('.playlistContainer').scrollTop;
-    var content_height = this.outerHeight(document.querySelector('.playlistContainer > ul'))
+    var container_height = document.querySelector('#playlistContainer'+this.props.side).offsetHeight;
+    var scroll_by = document.querySelector('#playlistContainer'+this.props.side).scrollTop;
+    var content_height = this.outerHeight(document.querySelector('#playlistContainer'+this.props.side+ ' > ul'))
     var percent = 100 * scroll_by / (content_height - container_height)
 
     if (this.state.data && this.state.data.infos 
@@ -553,6 +553,7 @@ class Playlist extends Component {
             searchMenuOpen={this.props.searchMenuOpen}
           />
           <div
+            id={"playlistContainer" + this.props.side}
             className="playlistContainer"
             onScroll={this.handleScroll}
             ref={this.playlistRef}
