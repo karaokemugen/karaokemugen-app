@@ -2,7 +2,7 @@ import {setState, getState} from '../utils/state';
 import {getConfig} from '../lib/utils/config';
 import logger from 'winston';
 import {profile} from '../lib/utils/logger';
-import {loadBackground, displayInfo, playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo} from '../player/player';
+import {playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo} from '../player/player';
 import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
@@ -90,9 +90,7 @@ export async function playerEnding() {
 			} else {
 				await stopPlayer(true);
 			}
-		} catch(err) {
-			loadBackground();
-			displayInfo();
+		} catch(err) {			
 			stopPlayer(true);
 		}
 	}

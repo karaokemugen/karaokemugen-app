@@ -309,7 +309,7 @@ async function startmpv() {
 		// Display KM's banner if position reaches halfpoint in the song
 		if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
 		!displayingInfo &&
-		playerState.mediaType === 'song') displayInfo(8000);
+		playerState.mediaType === 'song' && !getState().songPoll) displayInfo(8000);
 		const conf = getConfig();
 		// Stop poll if position reaches 10 seconds before end of song
 		if (Math.floor(position) >= Math.floor(playerState.duration - 10) &&
@@ -435,7 +435,7 @@ export function stop(): PlayerState {
 	playerState._playing = false;
 	playerState.playerstatus = 'stop';
 	loadBackground();
-	displayInfo();
+	if (!getState().songPoll) displayInfo();
 	setState({player: playerState});
 	return playerState;
 }
