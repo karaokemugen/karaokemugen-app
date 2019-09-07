@@ -27,7 +27,7 @@ class BlacklistCriterias extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            bcType: "1002",
+            bcType: 1002,
             bcVal: ""
         };
         this.addBlacklistCriteria = this.addBlacklistCriteria.bind(this);
@@ -48,12 +48,12 @@ class BlacklistCriterias extends Component {
         this.props.data.forEach(element => {
             if (!types.includes(element.type)) types.push(element.type);
         });
-        var tagsFiltered = this.props.tags ? this.props.tags.filter(obj => obj.type == this.state.bcType) : [];
+        var tagsFiltered = this.props.tags ? this.props.tags.filter(obj => obj.type.includes(this.state.bcType)) : [];
         return (
             <React.Fragment>
                 {this.props.scope === 'admin' ?
                     <span id="blacklistCriteriasInputs" className="list-group-item" style={{ padding: "10px" }}>
-                        <select id="bcType" className="input-sm form-control" onChange={e => this.setState({ bcType: e.target.value })}>
+                        <select id="bcType" className="input-sm form-control" onChange={e => this.setState({ bcType: Number(e.target.value) })}>
                             {listTypeBlc.map((value) => {
                                 return <option key={value} value={value.replace('BLCTYPE_', '')}>{i18next.t(value)}</option>
                             })
