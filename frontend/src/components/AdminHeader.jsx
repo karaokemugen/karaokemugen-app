@@ -194,7 +194,7 @@ class AdminHeader extends Component {
               id="volume"
               defaultValue={volume}
               type="range"
-              onMouseLeave={this.putPlayerCommando}
+              onMouseUp={this.putPlayerCommando}
             />
           </button>
           
