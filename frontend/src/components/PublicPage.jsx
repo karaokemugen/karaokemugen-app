@@ -96,13 +96,6 @@ class PublicPage extends Component {
     this.setState({pseudoValue: response.data.nickname});
   }
 
-  stopVideo() {
-    var video = $('#video');
-    $('.overlay').hide();
-    video[0].pause();
-    video.removeAttr('src');
-  }
-
   toggleSearchMenu() {
     this.setState({searchMenuOpen: !this.state.searchMenuOpen});
   }
@@ -336,6 +329,7 @@ class PublicPage extends Component {
                     tags={this.props.tags}
                     toggleSearchMenu={this.toggleSearchMenu}
                     searchMenuOpen={this.state.searchMenuOpen}
+                    showVideo={this.props.showVideo}
                   />
                   <Playlist
                     scope="public"
@@ -345,12 +339,12 @@ class PublicPage extends Component {
                     config={this.props.settings.config}
                     idPlaylistTo={this.state.idsPlaylist.left}
                     majIdsPlaylist={this.majIdsPlaylist}
+                    showVideo={this.props.showVideo}
                   />
                 </PlaylistMainDecorator>
               </KmAppBodyDecorator>
             </KmAppWrapperDecorator>
 
-            <div className="toastMessageContainer" />
             {is_touch_device() ? (
               <React.Fragment>
                 {this.props.settings.config.Frontend.Mode === 2 &&
@@ -444,11 +438,7 @@ class PublicPage extends Component {
               </React.Fragment>
             ) : null}
 
-            <div className="overlay" onClick={this.stopVideo}>
-              <video id="video" type="video/mp4" autoPlay />
-            </div>
 
-            <a id="downloadAnchorElem" />
           </React.Fragment>
         )}
       </div>

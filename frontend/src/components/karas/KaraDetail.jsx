@@ -11,7 +11,6 @@ class KaraDetail extends Component {
     };
     this.getLastPlayed = this.getLastPlayed.bind(this);
     this.moreInfo = this.moreInfo.bind(this);
-    this.showVideo = this.showVideo.bind(this);
     this.showFullLyrics = this.showFullLyrics.bind(this);
     this.getKaraDetail = this.getKaraDetail.bind(this);
     this.getTagNames = this.getTagNames.bind(this);
@@ -129,15 +128,6 @@ class KaraDetail extends Component {
     };
     xhttp.open("GET", searchUrl, true);
     xhttp.send();
-  }
-
-  showVideo() {
-    var mediafile = this.state.kara.mediafile;
-    setTimeout(function () {
-      $("#video").attr("src", "/medias/" + mediafile);
-      $("#video")[0].play();
-      $(".overlay").show();
-    }, 1);
   }
 
   /**
@@ -306,7 +296,7 @@ class KaraDetail extends Component {
                     "showVideo btn btn-action" +
                     (is_touch_device() ? "mobile" : "")
                   }
-                  onClick={this.showVideo}
+                  onClick={() => this.props.showVideo(this.state.kara.mediafile)}
                 ><i className="fas fa-video"></i></button>
                 {data.serie ? (
                   <button

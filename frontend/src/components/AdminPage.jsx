@@ -37,13 +37,6 @@ class AdminPage extends Component {
     this.setState({ idsPlaylist: idsPlaylist })
   }
 
-  stopVideo() {
-    var video = $('#video');
-    $('.overlay').hide();
-    video[0].pause();
-    video.removeAttr('src');
-  }
-
   toggleSearchMenu1() {
     this.setState({searchMenuOpen1: !this.state.searchMenuOpen1});
   }
@@ -100,6 +93,7 @@ class AdminPage extends Component {
                   tags={this.props.tags}
                   toggleSearchMenu={this.toggleSearchMenu1}
                   searchMenuOpen={this.state.searchMenuOpen1}
+                  showVideo={this.props.showVideo}
                   />
                 <Playlist
                   scope='admin'
@@ -112,22 +106,13 @@ class AdminPage extends Component {
                   tags={this.props.tags}
                   toggleSearchMenu={this.toggleSearchMenu2}
                   searchMenuOpen={this.state.searchMenuOpen2}
+                  showVideo={this.props.showVideo}
                   />
               </PlaylistMainDecorator>
             }
           </KmAppBodyDecorator>
 
         </KmAppWrapperDecorator>
-
-        <div className="toastMessageContainer"></div>
-
-        <div className="overlay" onClick={this.stopVideo}>
-          <video id="video" src="" type="video/mp4" autoPlay>
-          </video>
-        </div>
-
-        <a id="downloadAnchorElem"></a>
-
       </div>
     );
   }

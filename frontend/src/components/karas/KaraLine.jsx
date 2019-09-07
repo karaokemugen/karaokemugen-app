@@ -232,7 +232,7 @@ class KaraLine extends Component {
               <KaraDetail kid={this.props.kara.kid} playlistcontentId={this.props.kara.playlistcontent_id} scope={this.props.scope} idPlaylist={this.props.idPlaylist} mode='list'
                 publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
                 toggleKaraDetail={this.toggleKaraDetail} karaDetailState={this.state.karaDetailState}
-                makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite}
+                makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite} showVideo={this.props.showVideo}
                 getTagInLocale={this.getTagInLocale} logInfos={this.props.logInfos} freeKara={this.freeKara}></KaraDetail> : null
             }
           </React.Fragment>

@@ -26,6 +26,7 @@ class App extends Component {
         this.powerOff = this.powerOff.bind(this);
         this.logOut = this.logOut.bind(this);
         this.displayClassicModeModal = this.displayClassicModeModal.bind(this);
+        this.showVideo = this.showVideo.bind(this);
         axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     }
@@ -75,7 +76,7 @@ class App extends Component {
             const response = await axios.get('/api/public/tags');
             return response.data.data.content.filter(val => val.karacount > 0).map(val => {
                 var trad = val.i18n[this.state.navigatorLanguage];
-                return {value:val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount};
+                return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
             });
         } catch (error) {
             // if error the authorization must be broken so we delete it
@@ -85,16 +86,18 @@ class App extends Component {
 
     async parseSeries() {
         const response = await axios.get('/api/public/series');
-		return response.data.data.content.map(val => {
-            return {value:val.sid, label: val.i18n_name, type: ['serie'],
-                aliases : val.aliases, karacount : val.karacount};
+        return response.data.data.content.map(val => {
+            return {
+                value: val.sid, label: val.i18n_name, type: ['serie'],
+                aliases: val.aliases, karacount: val.karacount
+            };
         });
     }
 
     async parseYears() {
         const response = await axios.get('/api/public/years');
-        return response.data.data.content.map(val =>{
-            return {value:val.year, label: val.year, type: ['year'], karacount: val.karacount};
+        return response.data.data.content.map(val => {
+            return { value: val.year, label: val.year, type: ['year'], karacount: val.karacount };
         });
     }
 
@@ -106,17 +109,17 @@ class App extends Component {
         getSocket().on('playerStatus', this.displayClassicModeModal);
         if (axios.defaults.headers.common['authorization']) {
             const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
-            this.setState({tags: tags.concat(series, years)});
-        } 
+            this.setState({ tags: tags.concat(series, years) });
+        }
     }
 
     async displayClassicModeModal(data) {
         if (data.status === 'stop' && data.playerStatus === 'pause' && data.currentRequester === this.state.logInfos.username && !this.state.classicModeModal) {
             ReactDOM.render(<Suspense fallback={<div>loading...</div>}><ClassicModeModal /></Suspense>, document.getElementById('modal'));
-            this.setState({classicModeModal: true});
+            this.setState({ classicModeModal: true });
         } else if (data.playerStatus !== 'pause' && this.state.classicModeModal) {
             ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
-            this.setState({classicModeModal: false});
+            this.setState({ classicModeModal: false });
         }
     }
 
@@ -143,32 +146,46 @@ class App extends Component {
         this.setState({ shutdownPopup: true });
     }
 
+    showVideo(file) {
+        this.setState({mediaFile: file});
+    }
+
     render() {
         return (
             this.state.shutdownPopup ?
                 <div className="shutdown-popup">
-                    <div className="noise-wrapper" style={{opacity: 1}}>
+                    <div className="noise-wrapper" style={{ opacity: 1 }}>
                         <div className="noise"></div>'
 				    </div>
-                    <div className="shutdown-popup-text">{i18n.t('SHUTDOWN_POPUP')}<br/>{"·´¯`(>_<)´¯`·"}</div>
+                    <div className="shutdown-popup-text">{i18n.t('SHUTDOWN_POPUP')}<br />{"·´¯`(>_<)´¯`·"}</div>
                     <button title={i18n.t('TOOLTIP_CLOSEPARENT')} className="closeParent btn btn-action"
-                    onClick={() => this.setState({shutdownPopup: false})}>
+                        onClick={() => this.setState({ shutdownPopup: false })}>
                         <i className="fas fa-times"></i>
                     </button>
                 </div> :
                 this.state.settings ?
-                    <Switch>
-                        <Route path="/welcome" render={(props) => <WelcomePage {...props}
-                            navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
-                            admpwd={this.state.admpwd} updateLogInfos={this.updateLogInfos} logOut={this.logOut} />} />
-                        <Route path="/admin" render={(props) => <AdminPage {...props}
-                            navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
-                            updateLogInfos={this.updateLogInfos} powerOff={this.powerOff}logOut={this.logOut} tags={this.state.tags} />} />
-                        <Route exact path="/" render={(props) => <PublicPage {...props}
-                            navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
-                            updateLogInfos={this.updateLogInfos} logOut={this.logOut} tags={this.state.tags} />} />
-                        <Route component={NotFoundPage} />
-                    </Switch> : null
+                    <React.Fragment>
+                        <Switch>
+                            <Route path="/welcome" render={(props) => <WelcomePage {...props}
+                                navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
+                                admpwd={this.state.admpwd} updateLogInfos={this.updateLogInfos} logOut={this.logOut} />} />
+                            <Route path="/admin" render={(props) => <AdminPage {...props}
+                                navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
+                                updateLogInfos={this.updateLogInfos} powerOff={this.powerOff} logOut={this.logOut} tags={this.state.tags}
+                                showVideo={this.showVideo} />} />
+                            <Route exact path="/" render={(props) => <PublicPage {...props}
+                                navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
+                                updateLogInfos={this.updateLogInfos} logOut={this.logOut} tags={this.state.tags} showVideo={this.showVideo} />} />
+                            <Route component={NotFoundPage} />
+                        </Switch>
+                        <a id="downloadAnchorElem" />
+                        {this.state.mediaFile ?
+                            <div className="overlay" onClick={() => this.setState({mediaFile: undefined})}>
+                                <video id="video" type="video/mp4" autoPlay src={`/medias/${this.state.mediaFile}`} />
+                            </div> : null
+                        }
+                        <div className="toastMessageContainer" />
+                    </React.Fragment> : null
         )
     }
 }

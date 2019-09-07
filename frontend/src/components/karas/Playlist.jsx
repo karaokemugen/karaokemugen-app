@@ -498,6 +498,7 @@ class Playlist extends Component {
             playlistCommands={this.state.playlistCommands}
             idPlaylistTo={this.props.idPlaylistTo}
             checkKara={this.checkKara}
+            showVideo={this.props.showVideo}
           />
       </li>
     });
@@ -584,6 +585,7 @@ class Playlist extends Component {
                               playlistCommands={this.state.playlistCommands}
                               idPlaylistTo={this.props.idPlaylistTo}
                               checkKara={this.checkKara}
+                              showVideo={this.props.showVideo}
                             />
                           </li>)
                       })
