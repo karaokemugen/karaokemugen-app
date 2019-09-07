@@ -259,6 +259,9 @@ class Playlist extends Component {
           url += '&searchType=' + this.state.searchType
           + ((this.state.searchCriteria && this.state.searchValue) ? ('&searchValue=' + this.state.searchCriteria + ':' + this.state.searchValue) : '');
       }
+    if (scrollInProgress) {
+      this.playlistRef.current.scrollTo(0, 1);
+    }
     var response = await axios.get(url);
     var karas = response.data.data;
     this.setState({ data: karas, getPlaylistInProgress: false });
