@@ -172,6 +172,10 @@ export async function startPoll() {
 	}
 	const availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
 	let pollChoices = conf.Karaoke.Poll.Choices;
+	if (availableKaras.length === 0) {
+		logger.error('[Poll] Unable to start poll : public playlist has no available songs (have they all been added to current playlist already?)');
+		return false;
+	}
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
 	poll = sampleSize(availableKaras, pollChoices);
 	//Init votes to 0 and index for each poll item
