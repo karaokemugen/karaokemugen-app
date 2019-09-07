@@ -379,8 +379,6 @@ class WelcomePage extends Component {
             </div>
           </div>
         </div>
-        <a id="downloadAnchorElem" />
-        <div className="toastMessageContainer" />
       </div>
     );
   }

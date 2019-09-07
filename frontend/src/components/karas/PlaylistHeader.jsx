@@ -246,7 +246,7 @@ class PlaylistHeader extends Component {
 
   getFlagsContainer() {
     return (
-      this.props.idPlaylist !== -5 && this.props.scope !== "public" && this.props.playlistInfo ?
+      this.props.idPlaylist >= 0 && this.props.scope !== "public" && this.props.playlistInfo ?
         <div className="flagsContainer " >
           <div className="btn-group plCommands flags" id={"flag" + this.props.side}>
             <button title={i18next.t("PLAYLIST_CURRENT")} name="flag_current" onClick={this.setFlagCurrent}

@@ -454,8 +454,8 @@ button.closePopupParent {
 
 #video {
 	z-index: 9200;
-	width: auto;
-	height: auto;
+	width: 75%;
+	height: 75%;
     top: 50%;
     position: absolute;
     left: 50%;
@@ -465,7 +465,6 @@ button.closePopupParent {
 
 .overlay {
     background-color: hsla(0, 0%, 17%, 0.67);
-    display: none;
     position: absolute;
     top: 0;
     right: 0;

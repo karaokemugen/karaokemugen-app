@@ -17,7 +17,8 @@ class ProgressBar extends Component {
             // String : status of the player
             status: undefined,
             karaInfoText: i18next.t("KARA_PAUSED_WAITING"),
-            length: -1
+            length: -1,
+            width: 0
         };
         this.mouseDown = this.mouseDown.bind(this);
         this.mouseMove = this.mouseMove.bind(this);
@@ -27,25 +28,19 @@ class ProgressBar extends Component {
     }
 
     mouseDown(e) {
-        if (this.state.status != undefined && this.state.status != '' && this.state.status != 'stop' && $(this).attr('length') != -1) {
-            this.setState({mouseDown: true});
-            $('#progressBarColor').removeClass('cssTransform')
-                .css('transform', 'translateX(' + e.pageX + 'px)')
-                .addClass('');
+        if (this.state.status != undefined && this.state.status != '' && this.state.status != 'stop' && this.state.length != -1) {
+            this.setState({mouseDown: true, width: e.pageX});
         }
     }
 
     mouseMove(e) {
         if (this.state.mouseDown) {
-            $('#progressBarColor').removeClass('cssTransform')
-                .css('transform', 'translateX(' + e.pageX + 'px)')
-                .addClass('');
+            this.setState({width: e.pageX});
         }
     }
 
     mouseOut() {
         if (this.state.mouseDown) {
-            $('#progressBarColor').addClass('cssTransform');
             this.setState({mouseDown: false});
         }
     }
@@ -61,11 +56,8 @@ class ProgressBar extends Component {
         var futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
 
         if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
-            $('#progressBarColor').removeClass('cssTransform')
-                .css('transform', 'translateX(' + e.pageX + 'px)')
-                .addClass('');
+            this.setState({width: e.pageX});
             axios.put('/api/admin/player', { command: 'goTo', options: futurTimeSec });
-            $('#progressBarColor').addClass('cssTransform');
         }
     }
 
@@ -87,31 +79,15 @@ class ProgressBar extends Component {
                 parseInt(10000 * (data.timePosition + this.state.refreshTime / 1000) / this.state.length) / 10000 + 'px';
 
             if (data.timePosition != this.state.oldState.timePosition && this.state.length != 0) {
-                var elm = document.getElementById('progressBarColor');
-                elm.style.transform = 'translateX(' + newWidth + ')';
+                this.setState({width: newWidth});
             }
             if (this.state.oldState.status != data.status || this.state.oldState.playerStatus != data.playerStatus) {
                 status = data.status === 'stop' ? 'stop' : data.playerStatus;
-                this.setState({status: status});
-                switch (status) {
-                    case 'play':
-                        $('#progressBarColor').addClass('cssTransform');
-                        break;
-                    case 'pause':
-                        $('#progressBarColor').removeClass('cssTransform');
-                        break;
-                    case 'stop':
-                        $('#progressBarColor').removeClass('cssTransform');
-                        break;
-                    default:
-                }
+                this.setState({status: status, width: 0});
             }
 
             if (data.currentlyPlaying !== this.state.oldState.currentlyPlaying) {
-                var barCss = $('#progressBarColor.cssTransform');
-                barCss.removeClass('cssTransform');
-                $('#progressBarColor').stop().css({ transform: 'translateX(0)' });
-                barCss.addClass('cssTransform');
+                this.setState({width: 0});
             }
 
             if (data.currentlyPlaying !== this.state.oldState.currentlyPlaying) {
@@ -145,7 +121,7 @@ class ProgressBar extends Component {
                     onMouseDown={this.mouseDown} onMouseUp={() => this.setState({mouseDown: false})}
                     onMouseMove={this.mouseMove} onMouseOut={this.mouseOut}
                 ><span>{this.state.karaInfoText}</span></div>
-                <div id="progressBarColor" className="cssTransform"></div>
+                <div id="progressBarColor" style={{width: this.state.width}}></div>
             </div>
         )
     }
