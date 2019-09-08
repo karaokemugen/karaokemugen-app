@@ -18,7 +18,6 @@ let currentSeries = {};
 export async function updateJingles() {
 	let gitDir = resolve(resolvedPathJingles()[0], 'KaraokeMugen/');
 	try {
-		console.log(gitDir + '.git');
 		if (!await asyncExists(gitDir) || !await asyncExists(gitDir + '/.git')) {
 			logger.info('[Jingles] Downloading jingles');
 			// Git clone
@@ -34,7 +33,7 @@ export async function updateJingles() {
 			if (gitDir.includes(appPath)) {
 				gitDir = gitDir.split(appPath)[1].replace(/\\/g,'/');
 			}
-			jingleDirs.push(gitDir);
+			if (!jingleDirs.includes(gitDir)) jingleDirs.push(gitDir);
 			editSetting({System: {Path: {Jingles: jingleDirs}}});
 			buildJinglesList();
 		} else {
