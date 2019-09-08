@@ -18,7 +18,8 @@ let currentSeries = {};
 export async function updateJingles() {
 	let gitDir = resolve(resolvedPathJingles()[0], 'KaraokeMugen/');
 	try {
-		if (!await asyncExists(gitDir) || !await asyncExists(gitDir + '.git/')) {
+		console.log(gitDir + '.git');
+		if (!await asyncExists(gitDir) || !await asyncExists(gitDir + '/.git')) {
 			logger.info('[Jingles] Downloading jingles');
 			// Git clone
 			if (!await asyncExists(gitDir)) await asyncMkdirp(gitDir);
