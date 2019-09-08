@@ -114,7 +114,7 @@
     "minimist": "^1.2.0",
     "multer": "^1.4.2",
     "node-id3": "^0.1.11",
-    "node-mpv": "github:AxelTerizaki/Node-MPV#53504b9e7c035232857bdbcf7cc0b2fe06d38bf0",
+    "node-mpv": "github:AxelTerizaki/Node-MPV#2b4c818c3e543a3e10ba356dc69c278223538941",
     "open": "^6.4.0",
     "os-locale": "^4.0.0",
     "p-retry": "^4.1.0",
