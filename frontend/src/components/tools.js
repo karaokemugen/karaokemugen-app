@@ -125,7 +125,7 @@ export function buildKaraTitle(data) {
 	if (data.langs && isMulti) {
 		data.langs = [isMulti];
 	}
-	var limit = window.innerWidth < 1025 ? 25 : 50;
+	var limit = is_touch_device() ? 25 : 50;
 	var serieText = data.serie ? data.serie : data.singers.map(e => e.name).join(', ');
 	serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
 	var titleArray = [

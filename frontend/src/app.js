@@ -9,7 +9,7 @@ import i18n from './components/i18n';
 import NotFoundPage from './components/NotfoundPage'
 import langs from "langs";
 import axios from "axios";
-import { readCookie, parseJwt, createCookie, eraseCookie, getSocket } from "./components/tools"
+import { readCookie, parseJwt, createCookie, eraseCookie, getSocket, is_touch_device } from "./components/tools"
 import ClassicModeModal from './components/modals/ClassicModeModal';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -166,7 +166,7 @@ class App extends Component {
                     </button>
                 </div> :
                 this.state.settings ?
-                    <React.Fragment>
+                    <div className={is_touch_device() ? 'touch' : ''}>
                         <Switch>
                             <Route path="/welcome" render={(props) => <WelcomePage {...props}
                                 navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
@@ -187,7 +187,7 @@ class App extends Component {
                             </div> : null
                         }
                         <ToastContainer />
-                    </React.Fragment> : null
+                    </div> : null
         )
     }
 }
