@@ -17,16 +17,6 @@ class Modal extends Component {
 				this.props.callback(true);
 			} else if (this.props.type === 'prompt') {
 				this.props.callback(this.state.promptText);
-			} else if (this.props.type === 'custom') {
-				var data = {};
-				$('#modalBox').find('.modal-body').find('input[type="checkbox"]:checked, input[type!="checkbox"], select').map(function (k, v) {
-					if (!data[v.name]) {
-						data[v.name] = $(v).val();
-					} else {
-						data[v.name] += ',' + $(v).val();
-					}
-				});
-				this.props.callback(data);
 			} else {
 				this.props.callback();
 			}

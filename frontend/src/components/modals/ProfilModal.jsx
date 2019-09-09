@@ -5,6 +5,8 @@ import axios from 'axios';
 import Autocomplete from '../generic/Autocomplete'
 import blankAvatar from '../../../../assets/blank.png'
 import { displayMessage, callModal } from '../tools';
+import ReactDOM from 'react-dom';
+import OnlineProfileModal from './OnlineProfileModal'
 require("babel-polyfill");
 class ProfilModal extends Component {
     constructor(props) {
@@ -68,31 +70,11 @@ class ProfilModal extends Component {
     }
 
     profileConvert() {
-        callModal('custom', i18next.t('PROFILE_CONVERT'),
-            <React.Fragment>
-                <label>{i18next.t('INSTANCE_NAME')}</label>
-                <input type="text" name="modalLoginServ" value={this.props.settingsOnline.Host} />
-                <label>{i18next.t('PROFILE_PASSWORD_AGAIN')}</label>
-                <input type="password" placeholder={i18next.t('PASSWORD')} className="form-control" name="password" />
-            </React.Fragment>, data => {
-                var response = axios.post('/api/public/myaccount/online', { instance: data.modalLoginServ, password: data.password });
-                displayMessage('success', i18next.t('PROFILE_CONVERTED'));
-                this.props.updateLogInfos(response);
-            }
-        );
+        ReactDOM.render(<OnlineProfileModal type="convert" updateLogInfos={this.props.updateLogInfos} loginServ={this.props.settingsOnline.Host} />, document.getElementById('modal'));
     }
 
     profileDelete() {
-        callModal('custom', i18next.t('PROFILE_ONLINE_DELETE'),
-            <React.Fragment>
-                <label>{i18next.t('PROFILE_PASSWORD_AGAIN')}</label>
-                <input type="password" placeholder={i18next.t('PASSWORD')} className="form-control" name="password" />
-            </React.Fragment>, data => {
-                var response = axios.delete('/api/public/myaccount/online', {data:{ password: data.password }});
-                displayMessage('success', i18next.t('PROFILE_ONLINE_DELETED'));
-                this.props.updateLogInfos(response);
-            }
-        );
+        ReactDOM.render(<OnlineProfileModal type="delete" updateLogInfos={this.props.updateLogInfos} />, document.getElementById('modal'));
     }
 
     favImport(event) {
