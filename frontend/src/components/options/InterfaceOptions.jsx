@@ -43,9 +43,9 @@ class InterfaceOptions extends Component {
               onChange={this.onChange}
               value={this.state.settings["Frontend.Mode"]}
             >
-              <option value="0">{i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_CLOSED")}</option>
-              <option value="1">{i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_LIMITED")}</option>
-              <option value="2">{i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_OPEN")}</option>
+              <option value={0}>{i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_CLOSED")}</option>
+              <option value={1}>{i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_LIMITED")}</option>
+              <option value={2}>{i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_OPEN")}</option>
             </select>
           </div>
         </div>

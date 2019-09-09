@@ -107,8 +107,7 @@ class PublicPage extends Component {
         {this.props.settings.config.Frontend.Mode === 0 ? (
           <center
             style={{
-              top: "50%",
-              transform: translateY("-50%"),
+              top: "25%",
               position: "relative"
             }}
           >
