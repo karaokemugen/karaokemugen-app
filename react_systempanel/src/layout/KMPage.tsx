@@ -55,7 +55,7 @@ class KMPage extends Component<{}, {}> {
           <Route path='/system/km/series/:sid' component={SeriesEdit}/>
           <Route path='/system/km/series' component={SeriesList}/>
 
-		      <Route path='/system/km/tags/new' component={TagsEdit}/>
+          <Route path='/system/km/tags/new' component={TagsEdit}/>
           <Route path='/system/km/tags/:tid' component={TagsEdit}/>
           <Route path='/system/km/tags' component={TagsList}/>
 

@@ -3,7 +3,7 @@ import { FormComponentProps } from 'antd/lib/form';
 import { push } from 'connected-react-router';
 import React, { Component, FormEvent, ReactNode } from 'react';
 import { connect } from 'react-redux';
-import { isAlreadyLogged, login } from '../actions/auth';
+import { login } from '../actions/auth';
 import styles from '../App.module.css';
 import logo from '../assets/Logo-fond-transp.png';
 
@@ -14,28 +14,17 @@ interface LoginForm {
 
 interface LoginProps extends FormComponentProps<LoginForm> {
   login: (username, password) => Promise<void>;
-  isAlreadyLogged: () => Promise<void>;
   push: (url: string) => void;
   authError: string;
+  isAuthenticated: boolean;
 }
 
-interface LoginState {
-  shouldRenderLoginForm: boolean; // Make sure to display the form only if you don't have already credential (F5 issue)
-}
-
-class Login extends Component<LoginProps, LoginState> {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      shouldRenderLoginForm: false
-    };
-  }
+class Login extends Component<LoginProps, {}> {
 
   componentDidMount() {
-    this.props.isAlreadyLogged()
-      .then(() => this.props.push('/system/km'))
-      .catch(() => this.setState({shouldRenderLoginForm: true}));
+    if (this.props.isAuthenticated) {
+      this.props.push('/system/km')
+    }
   }
 
   handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -105,19 +94,17 @@ class Login extends Component<LoginProps, LoginState> {
       </Layout>
     )
 
-    return (
-      this.state.shouldRenderLoginForm && LoginForm
-    );
+    return (LoginForm);
   }
 }
 
 const mapStateToProps = (state) => ({
-  authError: state.auth.error
+  authError: state.auth.error,
+  isAuthenticated: state.auth.isAuthenticated
 });
 
 const mapDispatchToProps = (dispatch) => ({
   login: (username: string, password: string) => login(username, password, dispatch),
-  isAlreadyLogged: () => isAlreadyLogged(dispatch),
   push: (url: string) => dispatch(push(url))
 });
 
