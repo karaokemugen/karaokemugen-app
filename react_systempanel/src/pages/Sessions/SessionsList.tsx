@@ -51,7 +51,7 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Layout>
 					<Layout.Header>
-					<span style={{ backgroundColor: 'white', padding: "5px" }}><Link to={`/system/km/sessions/new`}>New session : <Icon type="plus" /></Link></span>
+					<span><Link to={`/system/km/sessions/new`}>New session : <Icon type="plus" /></Link></span>
 					</Layout.Header>
 					<Layout.Content>
 						<Table

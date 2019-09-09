@@ -15,12 +15,6 @@
     gud "^1.0.0"
     warning "^4.0.3"
 
-"@ant-design/dark-theme@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@ant-design/dark-theme/-/dark-theme-0.2.2.tgz#822ddd89b4ab6536d62e33838d897527bbe5cb3c"
-  dependencies:
-    "@ant-design/colors" "^3.1.0"
-
 "@ant-design/icons-react@~2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@ant-design/icons-react/-/icons-react-2.0.1.tgz#17a2513571ab317aca2927e58cea25dd31e536fb"
