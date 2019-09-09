@@ -51,8 +51,6 @@ class KaraDetail extends Component {
   }
 
   async moreInfo() {
-    var openExternalPageButton =
-      '<i className="fas fa-external-link"></i>';
     var externalUrl = "";
     var serie = this.state.kara.serie;
     var extraSearchInfo = "";
@@ -88,23 +86,11 @@ class KaraDetail extends Component {
         } else if (
           contentResult &&
           contentResult.length > 0 &&
-          detailsUrl !== ""
-        ) {
+          detailsUrl !== "") {
           var extract = contentResult[0].extract;
-          extract = extract.replace(/\n/g, "<br /><br />");
-          extract = extract.replace(serie, "<b>" + serie + "</b>");
-          extract = extract.replace("anime", "<b>anime</b>");
-          callModal(
-            "alert",
-            '<a target="_blank" href="' +
-            externalUrl +
-            '">' +
-            serie +
-            " " +
-            openExternalPageButton +
-            "</a>",
-            extract
-          );
+          callModal("alert",
+            <a target="_blank" href={externalUrl}>{serie}&nbsp;
+          <i className="fas fa-external-link-alt"></i></a>,extract);
         } else if (
           searchInfo &&
           searchInfo.totalhits === 0 &&
@@ -136,7 +122,8 @@ class KaraDetail extends Component {
   async showFullLyrics() {
     var response = await axios.get("/api/public/karas/" + this.state.kara.kid + "/lyrics");
     if (is_touch_device()) {
-      callModal('alert', i18next.t('LYRICS'), '<center>' + response.data.data.join('<br/>') + '</center');
+      callModal('alert', i18next.t('LYRICS'), <center>{response.data.data.map(value => 
+        <React.Fragment>{value} <br/></React.Fragment>)}</center>);
     } else {
       this.setState({ lyrics: response.data.data, showLyrics:true });
       this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });

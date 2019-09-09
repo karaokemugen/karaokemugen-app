@@ -75,16 +75,15 @@ class AdminHeader extends Component {
     callModal(
       "custom",
       "Message indispensable",
-      '<select className="form-control" name="destination"><option value="screen">' +
-        i18next.t("CL_SCREEN") +
-        "</option>" +
-        '<option value="users">' +
-        i18next.t("CL_USERS") +
-        '</option><option value="all">' +
-        i18next.t("CL_ALL") +
-        "</option></select>" +
-        '<input type="text"name="duration" placeholder="5000 (ms)"/>' +
-        '<input type="text" placeholder="Message" className="form-control" id="message" name="message">',
+      <React.Fragment>
+      <select className="form-control" name="destination">
+        <option value="screen">{i18next.t("CL_SCREEN")}</option>
+        <option value="users">{i18next.t("CL_USERS")}</option>
+        <option value="all">{i18next.t("CL_ALL")}</option>
+      </select>
+        <input type="text"name="duration" placeholder="5000 (ms)"/>
+        <input type="text" placeholder="Message" className="form-control" id="message" name="message" />
+      </React.Fragment>,
       function(data) {
         var defaultDuration = 5000;
         var msgData = {

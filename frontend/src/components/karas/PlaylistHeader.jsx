@@ -47,8 +47,8 @@ class PlaylistHeader extends Component {
     callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
       axios.get(this.props.getPlaylistUrl(), { random: nbOfRandoms }).then(randomKaras => {
         if (randomKaras.content.length > 0) {
-          let textContent = randomKaras.content.map(e => buildKaraTitle(e)).join('<br/><br/>');
-          callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD') + '<br/><br/>' + textContent, () => {
+          let textContent = randomKaras.content.map(e => <React.Fragment>{buildKaraTitle(e)} <br/><br/></React.Fragment>);
+          callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br/><br/>{textContent}</React.Fragment>, () => {
             var karaList = randomKaras.content.map(a => {
               return a.kid;
             }).join();
@@ -81,18 +81,22 @@ class PlaylistHeader extends Component {
     var response = await axios.get('/api/public/users/');
     var userList = response.data.data.filter(u => u.type < 2);
 
-    var userlistStr = '<div className="automixUserlist">';
-    userList.forEach(k => {
-      userlistStr +=
-        '<div className="checkbox"><label>'
-        + '<input type="checkbox" name="users"'
-        + ' value="' + k.login + '" ' + (k.flag_online ? 'checked' : '') + '>'
-        + k.nickname + '</label></div>';
-    });
-    userlistStr += '</div>';
-
-    callModal('custom', i18next.t('START_FAV_MIX'),
-      userlistStr + '<input type="text"name="duration" placeholder="200 (min)"/>', data => {
+    var userlistStr = (
+    <React.Fragment>
+      <div className="automixUserlist">
+      {userList.map(k => 
+          <div key={k.nickname} className="checkbox">
+            <label>
+              <input type="checkbox" name="users" defaultChecked={k.flag_online} value={k.login} />
+              {k.nickname}
+            </label>
+          </div>
+      )}
+      </div>
+      <input type="text"name="duration" placeholder="200 (min)"/>
+    </React.Fragment>);
+    
+    callModal('custom', i18next.t('START_FAV_MIX'), userlistStr, data => {
         if (!data.duration) data.duration = 200;
         axios.post('/api/admin/automix', data).then(response => {
           this.props.changeIdPlaylist(response.data.data.playlist_id)

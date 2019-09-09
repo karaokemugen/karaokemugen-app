@@ -69,10 +69,12 @@ class ProfilModal extends Component {
 
     profileConvert() {
         callModal('custom', i18next.t('PROFILE_CONVERT'),
-            '<label>' + i18next.t('INSTANCE_NAME') + '</label>'
-            + '<input type="text"  name="modalLoginServ" value="' + this.props.settingsOnline.Host + '"//>'
-            + '<label>' + i18next.t('PROFILE_PASSWORD_AGAIN') + '</label>'
-            + '<input type="password" placeholder="' + i18next.t('PASSWORD') + '" className="form-control" name="password">', data => {
+            <React.Fragment>
+                <label>{i18next.t('INSTANCE_NAME')}</label>
+                <input type="text" name="modalLoginServ" value={this.props.settingsOnline.Host} />
+                <label>{i18next.t('PROFILE_PASSWORD_AGAIN')}</label>
+                <input type="password" placeholder={i18next.t('PASSWORD')} className="form-control" name="password" />
+            </React.Fragment>, data => {
                 var response = axios.post('/api/public/myaccount/online', { instance: data.modalLoginServ, password: data.password });
                 displayMessage('success', i18next.t('PROFILE_CONVERTED'));
                 this.props.updateLogInfos(response);
@@ -82,8 +84,10 @@ class ProfilModal extends Component {
 
     profileDelete() {
         callModal('custom', i18next.t('PROFILE_ONLINE_DELETE'),
-            '<label>' + i18next.t('PROFILE_PASSWORD_AGAIN') + '</label>'
-            + '<input type="password" placeholder="' + i18next.t('PASSWORD') + '" className="form-control" name="password">', data => {
+            <React.Fragment>
+                <label>{i18next.t('PROFILE_PASSWORD_AGAIN')}</label>
+                <input type="password" placeholder={i18next.t('PASSWORD')} className="form-control" name="password" />
+            </React.Fragment>, data => {
                 var response = axios.delete('/api/public/myaccount/online', {data:{ password: data.password }});
                 displayMessage('success', i18next.t('PROFILE_ONLINE_DELETED'));
                 this.props.updateLogInfos(response);
