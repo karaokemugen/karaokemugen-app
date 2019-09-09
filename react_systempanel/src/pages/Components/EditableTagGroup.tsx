@@ -201,7 +201,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 					{!inputVisible && (
 						<Tag
 							onClick={this.showInput}
-							style={{ background: '#fff', borderStyle: 'dashed' }}
+							style={{ borderStyle: 'dashed' }}
 						>
 							<Icon type="plus" /> Add
 						</Tag>
@@ -247,7 +247,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 					{!inputVisible && (
 						<Tag
 							onClick={this.showInput}
-							style={{ background: '#fff', borderStyle: 'dashed' }}
+							style={{ borderStyle: 'dashed' }}
 						>
 							<Icon type="plus" /> Add
 						</Tag>

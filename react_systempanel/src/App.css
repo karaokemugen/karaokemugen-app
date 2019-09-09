@@ -68,10 +68,6 @@ select {
   padding: 4px 5px 5px;
 }
 
-.ant-alert-with-description .ant-alert-message {
-    color: #FDFDFD;
-}
-
 
 .ant-pagination-item-active a {
     color: #888 !important;

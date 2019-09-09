@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Form, Icon, Input, message, Select, Tag, Tooltip, Cascader } from 'antd';
+import { Alert, Button, Form, Icon, Input, message, Select, Tag, Tooltip, Cascader } from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
 import langs from 'langs';
 
@@ -327,11 +327,12 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					<Button type="danger" onClick={this.handleTagMerge.bind(this)}>
 						Merge !
 					</Button>
-					<p style={{color:'#fff',background:'tomato',textAlign:'left',padding:'1em',lineHeight:'1.4em'}}>
-						About "Merging process" :
-						<br />Resulting tags will have the current Name and Shortname.
-						<br />Types, Aliases and translation will be merged and the resulting tags will contain all the information from Current and targeted tags
-					</p>
+                    <Alert style={{textAlign:"left"}}
+                        message="About Merging process"
+                        description="Resulting tags will have the current Name and Shortname. Types, Aliases and translation will be merged and the resulting tags will contain all the information from Current and targeted tags"
+                        type="warning"
+                    />
+				
 				</Form.Item>
 
 				<Form.Item>
