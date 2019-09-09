@@ -7,7 +7,8 @@ class PollModal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            poll: []
+            poll: [],
+            width: "100%"
         };
         this.getSongPoll = this.getSongPoll.bind(this);
         this.postSong = this.postSong.bind(this);
@@ -16,8 +17,8 @@ class PollModal extends Component {
 
     async getSongPoll() {
         var response = await axios.get('/api/public/songpoll');
-        this.setState({ poll: response.data.data.poll });
-        $('#pollModal .timer').finish().width('100%').animate({ width: '0%' }, response.data.data.timeLeft, 'linear');
+        console.log(response.data.data.timeLeft)
+        this.setState({ poll: response.data.data.poll, timeLeft: `${response.data.data.timeLeft/1000}s`, width: "0%" });
     }
 
     postSong(event) {
@@ -38,7 +39,7 @@ class PollModal extends Component {
                                 <button className="closeModal btn btn-action" onClick={this.props.closePollModal}>
                                     <i className="fas fa-times"></i>
                                 </button>
-                                <span className="timer"></span>
+                                <span className="timer" style={{transition: `width ${this.state.timeLeft}`, width: this.state.width}}></span>
 
                             </ul>
                             <div className="tab-content" id="nav-tabContent">

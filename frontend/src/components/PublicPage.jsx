@@ -57,7 +57,7 @@ class PublicPage extends Component {
   async componentDidMount() {
     getSocket().on('newSongPoll', () => this.setState({ isPollActive: true, pollModal: true }));
     getSocket().on('songPollEnded', () => this.setState({ isPollActive: false }));
-    getSocket().on('songPollResult', () => {
+    getSocket().on('songPollResult', (data) => {
       displayMessage('success',  i18next.t('POLLENDED', { kara: data.kara.substring(0, 100), votes: data.votes }));
     });
     getSocket().on('adminMessage', data => displayMessage('info', 
