@@ -43,10 +43,10 @@ class LoginModal extends Component {
         var response = result.data;
         this.props.toggleLoginModal();
         if (this.props.scope === 'admin' && response.role !== 'admin') {
-            displayMessage('warning', '', i18next.t('ADMIN_PLEASE'));
+            displayMessage('warning', i18next.t('ADMIN_PLEASE'));
         }
         this.props.updateLogInfos(response);
-        displayMessage('info', '', i18next.t('LOG_SUCCESS', {name: response.username}));
+        displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
 
         if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
             this.props.toggleHelpModal();
@@ -73,7 +73,7 @@ class LoginModal extends Component {
     signup() {
         if (this.state.login.includes('@')) {
             this.setState({ errorBackground: 'errorBackground' });
-            displayMessage('warning', '', i18next.t('CHAR_NOT_ALLOWED', {char:'@'}));
+            displayMessage('warning', i18next.t('CHAR_NOT_ALLOWED', {char:'@'}));
             return;
         } else {
             this.setState({ errorBackground: '' });
@@ -89,7 +89,7 @@ class LoginModal extends Component {
             }
             axios.post('/api/' + this.props.scope + '/users', data)
                 .then(response => {
-                    displayMessage('info', 'Info', i18next.t('CL_NEW_USER', username));
+                    displayMessage('info', i18next.t('CL_NEW_USER', username));
                     this.setState({ redBorders: '' });
 
                     if (this.props.scope === 'public') this.login(username, password);

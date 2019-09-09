@@ -400,31 +400,6 @@ button.closeParent.bottom  {
 	height: 46px;
 }
 
-.toastMessageContainer {
-	position: absolute;
-	top: 0;
-	left: 50%;
-    transform: translateX(-50%);
-    position: fixed;
-	z-index: 1000000070;
-	max-width:600px;
-	min-width:250px;
-}
-.toastMessage {
-	cursor: pointer;
-	position: relative;
-	overflow: hidden;
-	padding: 10px;
-	margin: 7px;
-    box-shadow: 2px 2px 1px #a5a5a5;
-	z-index: 1000000070;
-	opacity: 0;
-	transition: opacity ease .5s;
-}
-.toastMessage.dismiss {
-	opacity: 0 !important;
-}
-
 .contentDiv h {
 	background-color : #82bdad;
 	color: black;

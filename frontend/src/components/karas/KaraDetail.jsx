@@ -120,7 +120,6 @@ class KaraDetail extends Component {
         } else {
           displayMessage(
             "warning",
-            "",
             i18next.t("NO_EXT_INFO", serie)
           );
         }

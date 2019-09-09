@@ -134,9 +134,9 @@ class PlaylistHeader extends Component {
           name = JSON.parse(fr.result).PlaylistInformation.name;
         }
         axios.post(url, data).then(response => {
-        displayMessage('success', 'Playlist importée' + ' : ', name);
+        displayMessage('success', i18next.t('PLAYLIST_ADDED', {name:name}));
           if (response.unknownKaras && response.unknownKaras.length > 0) {
-            displayMessage('warning', 'Karas inconnus' + ' : ', response.unknownKaras);
+            displayMessage('warning', i18next.t('UNKNOWN_KARAS', {count: response.unknownKaras}));
         }
           var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
         this.props.changeIdPlaylist(playlist_id);

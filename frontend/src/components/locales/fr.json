@@ -334,5 +334,8 @@
 	"AUTO_UPDATE_JINGLES": "Mise à jour automatique des Jingles",
 	"PL_SONG_DELETED" : "Chanson supprimée de la playlist",
 	"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Ajout de chanson impossible, quota atteint",
-	"PL_SONG_ADDED": "Chanson ajoutée avec succès !"
+	"PL_SONG_ADDED": "Chanson ajoutée avec succès !",
+	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
+	"PLAYLIST_ADDED": "Playlist importée : {{name}}",
+	"UNKNOWN_KARAS": "Chansons inconnus : {{count}}"
 }

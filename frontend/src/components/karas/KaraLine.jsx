@@ -82,9 +82,9 @@ class KaraLine extends Component {
         var currentOrPublic = this.props.playlistInfo.flag_current ? 'current' : 'public';
         response = await axios.delete('/api/' + this.props.scope + '/playlists/' + currentOrPublic + '/karas/' + this.props.kara.playlistcontent_id);
       }
-      displayMessage('success', 'Success', i18next.t(response.data.code));
+      displayMessage('success', i18next.t(response.data.code));
     } catch (error) {
-      displayMessage('danger', 'Fail', error.response.data.code);
+      displayMessage('error', error.response.data.code);
     }
   }
 
@@ -123,9 +123,9 @@ class KaraLine extends Component {
       } else {
         response = await axios.post(url, data);
       }
-      displayMessage('success', 'Success', i18next.t(response.data.code));
+      displayMessage('success', i18next.t(response.data.code));
     } catch (error) {
-      displayMessage('warning', 'Warning', i18next.t(error.response.data.code));
+      displayMessage('warning', i18next.t(error.response.data.code));
     }
   }
 

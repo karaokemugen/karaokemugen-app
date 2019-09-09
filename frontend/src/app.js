@@ -11,6 +11,8 @@ import langs from "langs";
 import axios from "axios";
 import { readCookie, parseJwt, createCookie, eraseCookie, getSocket } from "./components/tools"
 import ClassicModeModal from './components/modals/ClassicModeModal';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 class App extends Component {
     constructor(props) {
         super(props);
@@ -184,7 +186,7 @@ class App extends Component {
                                 <video id="video" type="video/mp4" autoPlay src={`/medias/${this.state.mediaFile}`} />
                             </div> : null
                         }
-                        <div className="toastMessageContainer" />
+                        <ToastContainer />
                     </React.Fragment> : null
         )
     }

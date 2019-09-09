@@ -377,7 +377,7 @@ class Playlist extends Component {
   async addAllKaras() {
     var response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
     var karaList = response.data.data.content.map(a => a.kid).join();
-    displayMessage('info', 'Info', 'Ajout de ' + response.data.data.content.length + ' karas');
+    displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', {count: response.data.data.content.length}));
     axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
   }
 
@@ -410,9 +410,9 @@ class Playlist extends Component {
       } else {
         response = await axios.post(url, data);
       }
-      displayMessage('success', 'Success', i18next.t(response.data.code));
+      displayMessage('success', i18next.t(response.data.code));
     } catch (error) {
-      displayMessage('warning', 'Warning', i18next.t(error.response.data.code));
+      displayMessage('warning', i18next.t(error.response.data.code));
     }
   }
 
@@ -442,8 +442,8 @@ class Playlist extends Component {
     callModal('prompt', i18next.t('KARA_SUGGESTION_NAME'), '', function (text) {
       axios.post('/api/public/karas/suggest', { karaName: text }).then(response => {
         setTimeout(() => {
-          displayMessage('info', i18next.t('KARA_SUGGESTION_INFO'),
-            i18next.t('KARA_SUGGESTION_LINK', response.data.data.issueURL, 'console'), '30000');
+          displayMessage('info', <div><label>{i18next.t('KARA_SUGGESTION_INFO')}</label> <br/> 
+            {i18next.t('KARA_SUGGESTION_LINK', response.data.data.issueURL, 'console')}</div>, '30000');
         }, 200);
       })
     }, store.getFilterValue(this.props.side));

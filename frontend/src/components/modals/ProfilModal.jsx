@@ -74,7 +74,7 @@ class ProfilModal extends Component {
             + '<label>' + i18next.t('PROFILE_PASSWORD_AGAIN') + '</label>'
             + '<input type="password" placeholder="' + i18next.t('PASSWORD') + '" className="form-control" name="password">', data => {
                 var response = axios.post('/api/public/myaccount/online', { instance: data.modalLoginServ, password: data.password });
-                displayMessage('success', '', i18next.t('PROFILE_CONVERTED'));
+                displayMessage('success', i18next.t('PROFILE_CONVERTED'));
                 this.props.updateLogInfos(response);
             }
         );
@@ -85,7 +85,7 @@ class ProfilModal extends Component {
             '<label>' + i18next.t('PROFILE_PASSWORD_AGAIN') + '</label>'
             + '<input type="password" placeholder="' + i18next.t('PASSWORD') + '" className="form-control" name="password">', data => {
                 var response = axios.delete('/api/public/myaccount/online', {data:{ password: data.password }});
-                displayMessage('success', '', i18next.t('PROFILE_ONLINE_DELETED'));
+                displayMessage('success', i18next.t('PROFILE_ONLINE_DELETED'));
                 this.props.updateLogInfos(response);
             }
         );
@@ -142,7 +142,7 @@ class ProfilModal extends Component {
         var listLangs = Object.keys(iso639.iso_639_2).map(k => { return { "label": iso639.iso_639_2[k][i18next.languages[0]][0], "value": k } });
         if (!this.props.settingsOnline.Users && this.props.logInfos.username.includes('@')) {
             setTimeout(function () {
-                displayMessage('warning', i18next.t('LOG_OFFLINE.TITLE') + '<br/>', i18next.t('LOG_OFFLINE.MESSAGE'), 8000);
+                displayMessage('warning', <div><label>{i18next.t('LOG_OFFLINE.TITLE')}</label> <br/> {i18next.t('LOG_OFFLINE.MESSAGE')}</div>, 8000);
             }, 500);
         }
         return (

@@ -58,9 +58,10 @@ class PublicPage extends Component {
     getSocket().on('newSongPoll', () => this.setState({ isPollActive: true, pollModal: true }));
     getSocket().on('songPollEnded', () => this.setState({ isPollActive: false }));
     getSocket().on('songPollResult', () => {
-      displayMessage('success', '', i18next.t('POLLENDED', { kara: data.kara.substring(0, 100), votes: data.votes }));
+      displayMessage('success',  i18next.t('POLLENDED', { kara: data.kara.substring(0, 100), votes: data.votes }));
     });
-    getSocket().on('adminMessage', data => displayMessage('info', i18next.t('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration));
+    getSocket().on('adminMessage', data => displayMessage('info', 
+      <div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br/>{data.message}</div>, data.duration));
   }
 
   openLoginOrProfileModal() {
