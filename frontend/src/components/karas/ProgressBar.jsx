@@ -50,9 +50,9 @@ class ProgressBar extends Component {
     }
 
     async goToPosition(e) {
-        var karaInfo = $('#karaInfo');
-        var barInnerwidth = karaInfo.innerWidth();
-        var futurTimeX = e.pageX - karaInfo.offset().left;
+        var karaInfo = document.getElementById('karaInfo');
+        var barInnerwidth = karaInfo.offsetWidth;
+        var futurTimeX = e.pageX - karaInfo.offsetLeft;
         var futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
 
         if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
@@ -75,7 +75,7 @@ class ProgressBar extends Component {
         if (this.state.oldState != data) {
 
 
-            var newWidth = $('#karaInfo').width() * 
+            var newWidth = document.getElementById('karaInfo').offsetWidth * 
                 parseInt(10000 * (data.timePosition + this.state.refreshTime / 1000) / this.state.length) / 10000 + 'px';
 
             if (data.timePosition != this.state.oldState.timePosition && this.state.length != 0) {
