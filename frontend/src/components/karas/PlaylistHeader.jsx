@@ -6,6 +6,8 @@ import ActionsButtons from "./ActionsButtons";
 import { buildKaraTitle, displayMessage, callModal } from '../tools';
 import Autocomplete from "../generic/Autocomplete";
 import store from "../../store";
+import ReactDOM from 'react-dom';
+import FavMixModal from "../modals/FavMixModal"
 
 var tagsTypesList = [
   'DETAILS_SERIE',
@@ -80,29 +82,7 @@ class PlaylistHeader extends Component {
   async startFavMix() {
     var response = await axios.get('/api/public/users/');
     var userList = response.data.data.filter(u => u.type < 2);
-
-    var userlistStr = (
-    <React.Fragment>
-      <div className="automixUserlist">
-      {userList.map(k => 
-          <div key={k.nickname} className="checkbox">
-            <label>
-              <input type="checkbox" name="users" defaultChecked={k.flag_online} value={k.login} />
-              {k.nickname}
-            </label>
-          </div>
-      )}
-      </div>
-      <input type="text"name="duration" placeholder="200 (min)"/>
-    </React.Fragment>);
-    
-    callModal('custom', i18next.t('START_FAV_MIX'), userlistStr, data => {
-        if (!data.duration) data.duration = 200;
-        axios.post('/api/admin/automix', data).then(response => {
-          this.props.changeIdPlaylist(response.data.data.playlist_id)
-        });
-      }
-    );
+    ReactDOM.render(<FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList}/>, document.getElementById('modal'));
   }
 
   async exportPlaylist() {
