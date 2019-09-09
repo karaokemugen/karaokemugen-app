@@ -33,7 +33,7 @@ class InterfaceOptions extends Component {
           <label className="col-xs-4 control-label" title={i18next.t("SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP")}>
             {i18next.t("SETTINGS.INTERFACE.WEBAPPMODE")}
             &nbsp;
-            <i class="far fa-question-circle"></i>
+            <i className="far fa-question-circle"></i>
           </label>
           <div className="col-xs-6">
             <select
