@@ -338,5 +338,6 @@
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
 	"PLAYLIST_ADDED": "Liste de lecture importée : {{name}}",
 	"UNKNOWN_KARAS": "Chansons inconnus : {{count}}",
-	"PL_ADD_SONG_ERROR": "Aucune chanson ne peut être ajoutée, elles sont déjà toutes dans la liste de lecture"
+	"PL_ADD_SONG_ERROR": "Aucune chanson ne peut être ajoutée, elles sont déjà toutes dans la liste de lecture",
+	"ESSENTIAL_MESSAGE": "Message indispensable"
 }

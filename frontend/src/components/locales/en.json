@@ -317,5 +317,6 @@
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
 	"PLAYLIST_ADDED": "Playlist added : {{name}}",
 	"UNKNOWN_KARAS": "Unknow songs : {{count}}",
-	"PL_ADD_SONG_ERROR": "No songs could be added, all are in destination playlist already"
+	"PL_ADD_SONG_ERROR": "No songs could be added, all are in destination playlist already",
+	"ESSENTIAL_MESSAGE": "Essential message"
 }

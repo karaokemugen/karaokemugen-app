@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import i18next from 'i18next';
-import { expand, getSocket, callModal } from "./tools";
+import ReactDOM from 'react-dom';
+import { expand, getSocket } from "./tools";
 import axios from "axios";
 import RadioButton from "./generic/RadioButton";
 import KmAppHeaderDecorator from "./decorators/KmAppHeaderDecorator"
+import AdminMessageModal from "./modals/AdminMessageModal"
 
 class AdminHeader extends Component {
   constructor(props) {
@@ -72,31 +74,7 @@ class AdminHeader extends Component {
   }
 
   adminMessage() {
-    callModal(
-      "custom",
-      "Message indispensable",
-      <React.Fragment>
-      <select className="form-control" name="destination">
-        <option value="screen">{i18next.t("CL_SCREEN")}</option>
-        <option value="users">{i18next.t("CL_USERS")}</option>
-        <option value="all">{i18next.t("CL_ALL")}</option>
-      </select>
-        <input type="text"name="duration" placeholder="5000 (ms)"/>
-        <input type="text" placeholder="Message" className="form-control" id="message" name="message" />
-      </React.Fragment>,
-      function(data) {
-        var defaultDuration = 5000;
-        var msgData = {
-          message: data.message,
-          destination: data.destination,
-          duration:
-            !data.duration || isNaN(data.duration)
-              ? defaultDuration
-              : data.duration
-        };
-        axios.post("/api/admin/player/message", msgData);
-      }
-    );
+    ReactDOM.render(<AdminMessageModal />, document.getElementById('modal'));
   }
 
   render() {
