@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Icon, Layout, Table} from 'antd';
+import {Icon, Button, Layout, Table} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
@@ -101,7 +101,8 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 		key: 'delete',
 		render: (text, record) => {
 			return (record.active ? "" :
-				 (<button type="button" onClick={this.deleteSession.bind(this,record)}><Icon type='close-circle' theme="twoTone" twoToneColor="#d8493e"/></button>));
+                 (<Button type="danger" icon='delete' onClick={this.deleteSession.bind(this,record)}></Button>));
+                 
 		}
 	}];
 }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Icon, Layout, Table, Input} from 'antd';
+import {Icon, Button, Layout, Table, Input} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import { deleteKaraByLocalId } from '../../api/local';
@@ -170,7 +170,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 			if(this.state.karas_removing.indexOf(record.kid)>=0)
 				return (<button type="button"><Icon type="sync" spin /></button>);
 			else
-				return (<button type="button" onClick={this.deleteKara.bind(this,record)}><Icon type='close-circle' theme="twoTone" twoToneColor="#d8493e"/></button>);
+				return (<Button type="danger" icon='delete' onClick={this.deleteKara.bind(this,record)}></Button>);
 		}
 	}];
 }

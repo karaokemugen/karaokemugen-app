@@ -1,4 +1,4 @@
-@import '~antd/dist/antd.css';
+/* @import '~antd/dist/antd.less'; */
 
 /* Add font used by KaraokeMugen logo */
 @font-face {
@@ -66,4 +66,13 @@ select {
   border-radius: 4px;
   outline: none;
   padding: 4px 5px 5px;
+}
+
+.ant-alert-with-description .ant-alert-message {
+    color: #FDFDFD;
+}
+
+
+.ant-pagination-item-active a {
+    color: #888 !important;
 }
