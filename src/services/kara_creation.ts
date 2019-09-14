@@ -1,5 +1,5 @@
 import {basename, resolve} from 'path';
-import {createKaraInDB, editKaraInDB} from './kara';
+import {createKaraInDB, editKaraInDB, getKara} from './kara';
 import { addKaraToStore, editKaraInStore, sortKaraStore, getStoreChecksum } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import { Kara, NewKara } from '../lib/types/kara';
@@ -11,6 +11,7 @@ import logger from '../lib/utils/logger';
 export async function editKara(kara: Kara) {
 	let newKara: NewKara;
 	try {
+		const oldKara = await getKara(kara.kid, {role: 'admin', username: 'admin'});
 		const mediaFile = resolve(resolvedPathMedias()[0], kara.mediafile);
 		const subFile = kara.subfile
 			? resolve(resolvedPathSubs()[0], kara.subfile)
@@ -33,7 +34,7 @@ export async function editKara(kara: Kara) {
 			}
 		}
 		// Treat files
-		newKara = await generateKara(kara, resolvedPathKaras()[0], resolvedPathMedias()[0], resolvedPathSubs()[0]);
+		newKara = await generateKara(kara, resolvedPathKaras()[0], resolvedPathMedias()[0], resolvedPathSubs()[0], oldKara);
 
 		const newMediaFile = resolve(resolvedPathMedias()[0],newKara.data.mediafile);
 
