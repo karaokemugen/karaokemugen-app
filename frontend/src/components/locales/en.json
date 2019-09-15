@@ -320,5 +320,6 @@
 	"PL_ADD_SONG_ERROR": "No songs could be added, all are in destination playlist already",
 	"ESSENTIAL_MESSAGE": "Essential message",
 	"FAVORITES_ADDED": "Successfully added favorites!",
-	"FAVORITES_DELETED": "Favorites deleted"
+	"FAVORITES_DELETED": "Favorites deleted",
+	"PL_SONG_MOVED": "Song moved from playlist"
 }

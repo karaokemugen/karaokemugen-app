@@ -341,5 +341,6 @@
 	"PL_ADD_SONG_ERROR": "Aucune chanson ne peut être ajoutée, elles sont déjà toutes dans la liste de lecture",
 	"ESSENTIAL_MESSAGE": "Message indispensable",
 	"FAVORITES_ADDED": "Favoris ajoutés avec succès !",
-	"FAVORITES_DELETED": "Favoris supprimés"
+	"FAVORITES_DELETED": "Favoris supprimés",
+	"PL_SONG_MOVED": "Chanson déplacée de la liste de lecture"
 }
