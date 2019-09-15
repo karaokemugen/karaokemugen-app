@@ -53,8 +53,8 @@ class KaraLine extends Component {
 
   makeFavorite() {
     this.state.isFavorite ?
-      axios.delete('/api/public/favorites', { data: { 'kid': this.props.kara.kid } }) :
-      axios.get('/api/public/favorites', { 'kid': this.props.kara.kid })
+      axios.delete('/api/public/favorites', { data: { 'kid': [this.props.kara.kid] } }) :
+      axios.get('/api/public/favorites', { 'kid': [this.props.kara.kid] })
     this.setState({ isFavorite: !this.state.isFavorite })
   };
 
@@ -96,7 +96,10 @@ class KaraLine extends Component {
     var url;
     var data;
     var type;
-    if (this.props.scope === 'admin') {
+    if (this.props.idPlaylistTo == -5) {
+      url = '/api/public/favorites';
+      data = { kid: [this.props.kara.kid] };
+    } else if (this.props.scope === 'admin') {
       if (this.props.idPlaylistTo > 0) {
         url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
         if (this.props.idPlaylist > 0) {

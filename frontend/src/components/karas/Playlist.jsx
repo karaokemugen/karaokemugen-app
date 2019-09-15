@@ -402,6 +402,9 @@ class Playlist extends Component {
     } else if (this.props.idPlaylistTo == -3) {
       url = '/api/' + this.props.scope + '/whitelist';
       data = { kid: idKara };
+    } else if (this.props.idPlaylistTo == -5) {
+      url = '/api/public/favorites';
+      data = { kid: this.state.data.content.filter(a => a.checked).map(a => a.kid) };
     }
     try {
       var response;
