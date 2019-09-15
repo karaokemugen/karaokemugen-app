@@ -9972,3 +9972,33 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
+	/**
+ * @api {delete} /public/favorites/ Delete karaoke from your favorites
+ * @apiName DeleteFavorites
+ * @apiVersion 2.5.0
+ * @apiGroup Favorites
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {uuid} kid Kara ID to delete
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "playlist_id": 1
+ *   },
+ *   "code": "FAVORITES_DELETED",
+ *   "data": null
+ * }
+ * @apiError FAVORITES_DELETE_ERROR Unable to delete the favorited song
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "FAVORITES_DELETE_ERROR",
+ *   "message": "Kara ID unknown"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */

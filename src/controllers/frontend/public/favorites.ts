@@ -128,11 +128,11 @@ export default function publicFavoritesController(router: Router) {
 	/**
  * @api {delete} /public/favorites/ Delete karaoke from your favorites
  * @apiName DeleteFavorites
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Favorites
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid} kid Kara ID to delete
+ * @apiParam {uuid[]} kid kara IDs to add
  * @apiSuccess {String} code Message to display
  *
  * @apiSuccessExample Success-Response:
@@ -163,7 +163,7 @@ export default function publicFavoritesController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await deleteFavorites(req.authToken.username, [req.body.kid] );
+					const data = await deleteFavorites(req.authToken.username, req.body.kid );
 					emitWS('favoritesUpdated', req.authToken.username);
 					res.json(OKMessage(null, 'FAVORITES_DELETED', data));
 				} catch(err) {
