@@ -88,9 +88,9 @@ export async function playerEnding() {
 			if (state.status !== 'stop') {
 				await next();
 			} else {
-				await stopPlayer(true);
+				stopPlayer(true);
 			}
-		} catch(err) {			
+		} catch(err) {
 			stopPlayer(true);
 		}
 	}

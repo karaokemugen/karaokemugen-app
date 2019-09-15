@@ -56,7 +56,7 @@ async function extractJingleFiles(jingleDir: string) {
 	const dirListing = await asyncReadDir(jingleDir);
 	for (const file of dirListing) {
 		if (isMediaFile(file)) {
-			getVideoGain(file, jingleDir);
+			await getVideoGain(file, jingleDir);
 		}
 	}
 }
@@ -73,12 +73,12 @@ async function getVideoGain(file: string, jingleDir: string) {
 	logger.debug(`[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.gain} dB`);
 }
 
-export function buildJinglesList() {
+export async function buildJinglesList() {
 	allSeries = {};
-	currentSeries = {};
 	for (const resolvedPath of resolvedPathJingles()) {
-		extractJingleFiles(resolvedPath);
+		await extractJingleFiles(resolvedPath);
 	}
+	currentSeries = cloneDeep(allSeries);
 }
 
 export function getSingleJingle(): Jingle {
