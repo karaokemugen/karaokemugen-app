@@ -54,7 +54,7 @@ class KaraLine extends Component {
   makeFavorite() {
     this.state.isFavorite ?
       axios.delete('/api/public/favorites', { data: { 'kid': [this.props.kara.kid] } }) :
-      axios.get('/api/public/favorites', { 'kid': [this.props.kara.kid] })
+      axios.post('/api/public/favorites', { 'kid': [this.props.kara.kid] })
     this.setState({ isFavorite: !this.state.isFavorite })
   };
 
@@ -76,7 +76,9 @@ class KaraLine extends Component {
   async deleteKara() {
     var response;
     try {
-      if (this.props.scope === 'admin') {
+      if (this.props.idPlaylist == -5) {
+        response = await axios.delete('/api/public/favorites', { data: { kid: [this.props.kara.kid] }});
+      } else if (this.props.scope === 'admin') {
         response = await axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/', { data: { plc_id: String(this.props.kara.playlistcontent_id) } });
       } else {
         var currentOrPublic = this.props.playlistInfo.flag_current ? 'current' : 'public';

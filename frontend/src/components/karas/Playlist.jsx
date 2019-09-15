@@ -435,6 +435,9 @@ class Playlist extends Component {
       var idKara = this.state.data.content.filter(a => a.checked).map(a => a.kid).join();
       url = '/api/ ' + this.props.scope + '/whitelist';
       data = { kid: idKara }
+    } else if (this.state.idPlaylist == -5) {
+      url = '/api/public/favorites';
+      data = { kid: this.state.data.content.filter(a => a.checked).map(a => a.kid) };
     }
     if (url) {
       axios.delete(url, {data:data});
