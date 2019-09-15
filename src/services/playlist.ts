@@ -651,6 +651,7 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 			plcList[index].created_at = new Date();
 			plcList[index].username = plcData.username;
 			plcList[index].playlist_id = playlist_id;
+			plcList[index].flag_visible = plcData.flag_visible;
 		}
 		// Remove karas already in playlist
 		plcList = plcList.filter(plc => !playlist.map(e => e.kid).includes(plc.kid));

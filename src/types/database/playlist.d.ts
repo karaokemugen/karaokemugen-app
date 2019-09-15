@@ -54,7 +54,8 @@ export interface DBPLC extends DBPLCBase {
 	flag_whitelisted: boolean,
 	flag_blacklisted: boolean,
 	upvotes: number,
-	flag_upvoted: boolean
+	flag_upvoted: boolean,
+	flag_visible: boolean
 }
 
 export interface DBPLCInfo extends DBPLC {
