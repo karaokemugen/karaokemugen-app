@@ -73,11 +73,11 @@ export default function publicFavoritesController(router: Router) {
 	/**
  * @api {post} /public/favorites Add karaoke to your favorites
  * @apiName PostFavorites
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Favorites
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid} kid kara ID to add
+ * @apiParam {uuid[]} kid kara IDs to add
  * @apiSuccess {Number} args/kid ID of kara added
  * @apiSuccess {Number} args/kara Name of kara added
  * @apiSuccess {String} code Message to display
@@ -110,7 +110,7 @@ export default function publicFavoritesController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await addToFavorites(req.authToken.username, [req.body.kid]);
+					const data = await addToFavorites(req.authToken.username, req.body.kid);
 					emitWS('favoritesUpdated', req.authToken.username);
 					res.json(OKMessage(null,'FAVORITES_ADDED',data));
 				} catch(err) {

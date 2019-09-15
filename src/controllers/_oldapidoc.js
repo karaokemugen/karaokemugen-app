@@ -9937,3 +9937,38 @@
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
+
+	/**
+ * @api {post} /public/favorites Add karaoke to your favorites
+ * @apiName PostFavorites
+ * @apiVersion 2.5.0
+ * @apiGroup Favorites
+ * @apiPermission own
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {uuid} kid kara ID to add
+ * @apiSuccess {Number} args/kid ID of kara added
+ * @apiSuccess {Number} args/kara Name of kara added
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ * 		 "kara": "Les Nuls - MV - Vous me subirez",
+ *       "kid": "uuid"
+ *   },
+ *   "code": "FAVORITES_ADDED",
+ *   "data": null
+ * }
+ * @apiError FAVORITES_ADD_SONG_ERROR Unable to add songs to the playlist
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_ADD_SONG_ERROR",
+ *   "message": "Karaoke unknown"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
