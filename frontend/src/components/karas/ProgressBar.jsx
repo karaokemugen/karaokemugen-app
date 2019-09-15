@@ -54,7 +54,6 @@ class ProgressBar extends Component {
         var barInnerwidth = karaInfo.offsetWidth;
         var futurTimeX = e.pageX - karaInfo.offsetLeft;
         var futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
-
         if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
             this.setState({width: e.pageX});
             axios.put('/api/admin/player', { command: 'goTo', options: futurTimeSec });
@@ -102,7 +101,7 @@ class ProgressBar extends Component {
                     var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
                     var kara = response.data.data;
                     var karaInfoText;
-                    if (this.props.lyrics || this.props.webappMode == 1) {
+                    if (this.props.lyrics || (this.props.scope === 'public' && this.props.webappMode == 1)) {
                         var text = data.subText;
                         if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
                         karaInfoText = text;

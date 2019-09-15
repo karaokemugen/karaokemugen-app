@@ -402,6 +402,9 @@ class Playlist extends Component {
     } else if (this.props.idPlaylistTo == -3) {
       url = '/api/' + this.props.scope + '/whitelist';
       data = { kid: idKara };
+    } else if (this.props.idPlaylistTo == -5) {
+      url = '/api/public/favorites';
+      data = { kid: this.state.data.content.filter(a => a.checked).map(a => a.kid) };
     }
     try {
       var response;
@@ -421,7 +424,7 @@ class Playlist extends Component {
     this.deleteCheckedKaras();
   }
 
-  deleteCheckedKaras() {
+  async deleteCheckedKaras() {
     var url;
     var data;
     if (this.state.idPlaylist > 0) {
@@ -432,9 +435,21 @@ class Playlist extends Component {
       var idKara = this.state.data.content.filter(a => a.checked).map(a => a.kid).join();
       url = '/api/ ' + this.props.scope + '/whitelist';
       data = { kid: idKara }
+    } else if (this.state.idPlaylist == -5) {
+      url = '/api/public/favorites';
+      data = { kid: this.state.data.content.filter(a => a.checked).map(a => a.kid) };
     }
     if (url) {
-      axios.delete(url, {data:data});
+      try {
+        var response = await axios.delete(url, {data:data});
+        displayMessage('success', i18next.t(response.data.code));
+      } catch (error) {
+        if (error.response.data.code) {
+          displayMessage('warning', i18next.t(error.response.data.code));
+        } else {
+          displayMessage('warning', JSON.stringify(error.response.data));
+        }
+      }
     }
   }
 

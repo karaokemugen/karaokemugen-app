@@ -339,5 +339,7 @@
 	"PLAYLIST_ADDED": "Liste de lecture importée : {{name}}",
 	"UNKNOWN_KARAS": "Chansons inconnus : {{count}}",
 	"PL_ADD_SONG_ERROR": "Aucune chanson ne peut être ajoutée, elles sont déjà toutes dans la liste de lecture",
-	"ESSENTIAL_MESSAGE": "Message indispensable"
+	"ESSENTIAL_MESSAGE": "Message indispensable",
+	"FAVORITES_ADDED": "Favoris ajoutés avec succès !",
+	"FAVORITES_DELETED": "Favoris supprimés"
 }
