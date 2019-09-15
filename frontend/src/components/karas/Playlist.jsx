@@ -424,7 +424,7 @@ class Playlist extends Component {
     this.deleteCheckedKaras();
   }
 
-  deleteCheckedKaras() {
+  async deleteCheckedKaras() {
     var url;
     var data;
     if (this.state.idPlaylist > 0) {
@@ -440,7 +440,16 @@ class Playlist extends Component {
       data = { kid: this.state.data.content.filter(a => a.checked).map(a => a.kid) };
     }
     if (url) {
-      axios.delete(url, {data:data});
+      try {
+        var response = await axios.delete(url, {data:data});
+        displayMessage('success', i18next.t(response.data.code));
+      } catch (error) {
+        if (error.response.data.code) {
+          displayMessage('warning', i18next.t(error.response.data.code));
+        } else {
+          displayMessage('warning', JSON.stringify(error.response.data));
+        }
+      }
     }
   }
 
