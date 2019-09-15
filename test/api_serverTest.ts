@@ -171,7 +171,7 @@ describe('Blacklist', function() {
 describe('Favorites', function() {
 	it('Add karaoke to your favorites', function() {
 		var data = {
-			kid: 'a6108863-0ae9-48ad-adb5-cb703651f6bf'
+			kid: ['a6108863-0ae9-48ad-adb5-cb703651f6bf']
 		};
 		return request
 			.post('/api/public/favorites')
@@ -230,7 +230,7 @@ describe('Favorites', function() {
 
 	it('Delete karaoke from your favorites', function() {
 		var data = {
-			kid: 'a6108863-0ae9-48ad-adb5-cb703651f6bf'
+			kid: ['a6108863-0ae9-48ad-adb5-cb703651f6bf']
 		};
 		return request
 			.delete('/api/public/favorites')
