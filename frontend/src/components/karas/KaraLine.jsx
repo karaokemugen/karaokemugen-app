@@ -238,7 +238,7 @@ class KaraLine extends Component {
                 publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
                 toggleKaraDetail={this.toggleKaraDetail} karaDetailState={this.state.karaDetailState}
                 makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite} showVideo={this.props.showVideo}
-                getTagInLocale={this.getTagInLocale} logInfos={this.props.logInfos} freeKara={this.freeKara}></KaraDetail> : null
+                navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} freeKara={this.freeKara}></KaraDetail> : null
             }
           </React.Fragment>
         }

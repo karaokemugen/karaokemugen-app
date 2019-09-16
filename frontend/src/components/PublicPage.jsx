@@ -42,6 +42,7 @@ class PublicPage extends Component {
     this.changePseudo = this.changePseudo.bind(this);
     this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
     this.toggleSearchMenu = this.toggleSearchMenu.bind(this);
+    this.updateKidPlaying = this.updateKidPlaying.bind(this);
   }
 
   majIdsPlaylist(side, value) {
@@ -99,6 +100,10 @@ class PublicPage extends Component {
 
   toggleSearchMenu() {
     this.setState({searchMenuOpen: !this.state.searchMenuOpen});
+  }
+
+  updateKidPlaying(kid) {
+    this.setState({kidPlaying: kid});
   }
 
   render() {
@@ -330,6 +335,7 @@ class PublicPage extends Component {
                     toggleSearchMenu={this.toggleSearchMenu}
                     searchMenuOpen={this.state.searchMenuOpen}
                     showVideo={this.props.showVideo}
+                    kidPlaying={this.state.kidPlaying}
                   />
                   <Playlist
                     scope="public"
@@ -340,6 +346,7 @@ class PublicPage extends Component {
                     idPlaylistTo={this.state.idsPlaylist.left}
                     majIdsPlaylist={this.majIdsPlaylist}
                     showVideo={this.props.showVideo}
+                    updateKidPlaying={this.updateKidPlaying}
                   />
                 </PlaylistMainDecorator>
               </KmAppBodyDecorator>

@@ -15,14 +15,21 @@ class KaraDetail extends Component {
     this.getKaraDetail = this.getKaraDetail.bind(this);
     this.getTagNames = this.getTagNames.bind(this);
     this.changeVisibilityKara = this.changeVisibilityKara.bind(this);
+    this.getTagInLocale = this.getTagInLocale.bind(this);
     this.fullLyricsRef = React.createRef();
     this.getKaraDetail();
   }
 
-  async getKaraDetail() {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.kid && nextProps.kid !== this.props.kid) {
+      this.getKaraDetail(nextProps.kid);
+    }
+  }
+
+  async getKaraDetail(kid) {
     var urlInfoKara = this.props.idPlaylist > 0 ?
       '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.playlistcontentId :
-      '/api/public/karas/' + this.props.kid;
+      '/api/public/karas/' + (kid ? kid : this.props.kid);
     var response = await axios.get(urlInfoKara);
     const kara = response.data.data;
     this.setState({ kara: kara });
@@ -126,17 +133,23 @@ class KaraDetail extends Component {
         <React.Fragment>{value} <br/></React.Fragment>)}</center>);
     } else {
       this.setState({ lyrics: response.data.data, showLyrics:true });
-      this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });
+      if (this.props.mode !== "karaCard") {
+        this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });
+      }
     }
+  }
+
+  getTagInLocale(e) {
+    return e.i18n[this.props.navigatorLanguage] ? e.i18n[this.props.navigatorLanguage] : e.i18n['eng'];
   }
 
   getTagNames(data) {
     var tagNames = [];
-    if (data.families) tagNames = tagNames.concat(data.families.map(e => this.props.getTagInLocale(e)))
-    if (data.platforms) tagNames = tagNames.concat(data.platforms.map(e => this.props.getTagInLocale(e)))
-    if (data.genres) tagNames = tagNames.concat(data.genres.map(e => this.props.getTagInLocale(e)))
-    if (data.origins) tagNames = tagNames.concat(data.origins.map(e => this.props.getTagInLocale(e)))
-    if (data.misc) tagNames = tagNames.concat(data.misc.map(e => this.props.getTagInLocale(e)))
+    if (data.families) tagNames = tagNames.concat(data.families.map(e => this.getTagInLocale(e)))
+    if (data.platforms) tagNames = tagNames.concat(data.platforms.map(e => this.getTagInLocale(e)))
+    if (data.genres) tagNames = tagNames.concat(data.genres.map(e => this.getTagInLocale(e)))
+    if (data.origins) tagNames = tagNames.concat(data.origins.map(e => this.getTagInLocale(e)))
+    if (data.misc) tagNames = tagNames.concat(data.misc.map(e => this.getTagInLocale(e)))
     return tagNames.join(', ');
   }
 
@@ -178,23 +191,23 @@ class KaraDetail extends Component {
         DETAILS_LAST_PLAYED: data.lastplayed_ago
           ? this.getLastPlayed(data.lastplayed_at, data.lastplayed_ago)
           : "",
-        BLCTYPE_6: data.authors.map(e => this.props.getTagInLocale(e)).join(", "),
+        BLCTYPE_6: data.authors.map(e => this.getTagInLocale(e)).join(", "),
         DETAILS_VIEWS: data.played,
-        BLCTYPE_4: data.creators.map(e => this.props.getTagInLocale(e)).join(", "),
+        BLCTYPE_4: data.creators.map(e => this.getTagInLocale(e)).join(", "),
         DETAILS_DURATION:
           ~~(data.duration / 60) +
           ":" +
           (data.duration % 60 < 10 ? "0" : "") +
           (data.duration % 60),
-        DETAILS_LANGUAGE: data.langs.map(e => this.props.getTagInLocale(e)).join(", "),
+        DETAILS_LANGUAGE: data.langs.map(e => this.getTagInLocale(e)).join(", "),
         BLCTYPE_7: this.getTagNames(data),
         DETAILS_SERIE: data.serie,
         DETAILS_SERIE_ORIG: data.serie_orig,
-        BLCTYPE_2: data.singers.map(e => this.props.getTagInLocale(e)).join(", "),
-        DETAILS_TYPE: this.props.getTagInLocale(data.songtypes[0])
+        BLCTYPE_2: data.singers.map(e => this.getTagInLocale(e)).join(", "),
+        DETAILS_TYPE: this.getTagInLocale(data.songtypes[0])
           + (data.songorder > 0 ? " " + data.songorder : ""),
         DETAILS_YEAR: data.year,
-        BLCTYPE_8: data.songwriters.map(e => this.props.getTagInLocale(e)).join(", ")
+        BLCTYPE_8: data.songwriters.map(e => this.getTagInLocale(e)).join(", ")
       };
       var htmlDetails = Object.keys(details).map(function (k) {
         if (details[k]) {
@@ -328,7 +341,7 @@ class KaraDetail extends Component {
               </table>
             </div>
             <div className="lyricsKara alert alert-info">
-            {data.subfile && this.state.lyrics.map(ligne => {
+            {data.subfile && this.state.lyrics && this.state.lyrics.map(ligne => {
                 return (
                   <React.Fragment key={Math.random()}>
                     {ligne}

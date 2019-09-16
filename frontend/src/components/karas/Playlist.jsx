@@ -264,6 +264,13 @@ class Playlist extends Component {
     }
     var response = await axios.get(url);
     var karas = response.data.data;
+    if (this.props.scope === "public" && this.props.config.Frontend.Mode === 1) {
+      karas.content.forEach(kara => {
+        if (kara.flag_playing) {
+          this.props.updateKidPlaying(kara.kid);
+        }
+      });
+    }
     this.setState({ data: karas, getPlaylistInProgress: false });
   }
 
@@ -276,6 +283,9 @@ class Playlist extends Component {
           kara.flag_dejavu = true;
         } else if (kara.playlistcontent_id === data.plc_id) {
           kara.flag_playing = true;
+          if (this.props.scope === "public" && this.props.config.Frontend.Mode === 1) {
+            this.props.updateKidPlaying(kara.kid);
+          }
         }
       });
       this.setState({ data: playlistData });
@@ -533,9 +543,10 @@ class Playlist extends Component {
       this.props.config.Frontend.Mode === 1 ? (
         <div className="playlist--wrapper">
           <div className="playlistContainer">
-            <ul id="playlist1" side="1" className="list-group">
+            <ul id="playlist1" className="list-group" side="1">
               <li className="list-group-item">
-                <KaraDetail data={this.state.data} mode="karaCard" />
+                <KaraDetail kid={this.props.kidPlaying} mode="karaCard" scope={this.props.scope} 
+                navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} />
               </li>
             </ul>
           </div>
