@@ -15,7 +15,7 @@ class KaraLine extends Component {
     super(props);
     this.state = {
       karaDetailState: false,
-      isFavorite: this.props.kara.flag_favorites,
+      isFavorite: this.props.kara.flag_favorites || this.props.idPlaylist === -5,
       isLike: this.props.kara.flag_upvoted,
       startSwipeX: 0,
       addKaraInProgress: false
