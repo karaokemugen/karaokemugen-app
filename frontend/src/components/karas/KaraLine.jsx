@@ -152,6 +152,28 @@ class KaraLine extends Component {
     }
   }
 
+  karaFamilies = this.props.kara.families.map(tag => {
+    <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
+  });
+
+  karaPlatforms = this.props.kara.platforms.map(tag => {
+    <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
+  });
+
+  karaGenres = this.props.kara.genres.map(tag => {
+    <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
+  });
+
+  karaOrigins = this.props.kara.origins.map(tag => {
+    <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
+  });
+
+  karaMisc = this.props.kara.misc.map(tag => {
+    <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
+  });
+
+  karaTitle = buildKaraTitle(this.props.kara);
+
   render() {
     var kara = this.props.kara;
     var scope = this.props.scope;
@@ -210,22 +232,12 @@ class KaraLine extends Component {
             </div>
             <div className="contentDiv" onClick={is_touch_device() ? this.toggleKaraDetail : null}>
               <div>
-                {buildKaraTitle(kara)}
-                {kara.families && kara.families.map(tag => {
-                  return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
-                })}
-                {kara.platforms && kara.platforms.map(tag => {
-                  return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
-                })}
-                {kara.genres && kara.genres.map(tag => {
-                  return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
-                })}
-                {kara.origins && kara.origins.map(tag => {
-                  return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
-                })}
-                {kara.misc && kara.misc.map(tag => {
-                  return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
-                })}
+                {this.karaTitle}
+                {this.karaFamilies}
+                {this.karaPlatforms}
+                {this.karaGenres}
+                {this.karaOrigins}
+                {this.karaMisc}
                 {kara.upvotes ?
                   <div className="tag likeCount" title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
                     {kara.upvotes}<i className="fas fa-heart"></i>
