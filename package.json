@@ -102,6 +102,7 @@
     "isomorphic-git": "^0.67.2",
     "js-yaml": "^3.13.1",
     "jwt-simple": "^0.5.6",
+    "kfn-to-ass": "^1.0.1",
     "langs": "^2.0.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.deburr": "^4.1.0",

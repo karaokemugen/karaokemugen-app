@@ -779,6 +779,11 @@ commander@^2.11.0:
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
 
+commander@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-3.0.1.tgz#4595aec3530525e671fb6f85fb173df8ff8bf57a"
+  integrity sha512-UNgvDd+csKdc9GD4zjtkHKQbT8Aspt2jCBqNSPp53vAS0L1tS9sXB2TCEOPHJ7kt9bN/niWkYj8T3RQSoMXdSQ==
+
 component-bind@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/component-bind/-/component-bind-1.0.0.tgz#00c608ab7dcd93897c0009651b1d3a8e1e73bbd1"
@@ -2022,6 +2027,15 @@ keyv@^3.0.0:
   resolved "https://registry.yarnpkg.com/keyv/-/keyv-3.1.0.tgz#ecc228486f69991e49e9476485a5be1e8fc5c4d9"
   dependencies:
     json-buffer "3.0.0"
+
+kfn-to-ass@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/kfn-to-ass/-/kfn-to-ass-1.0.1.tgz#ea163355db64dc75614be3eae1f46cfdba7bc896"
+  integrity sha512-oVN6e4g4hb0Mw6F3jZXOJMUleTvHezcWNNsi/NwB25vuZcsAUFMLlXMQgmdIZ+LaT6AqyE/AVfNp9tCVcMdGgA==
+  dependencies:
+    ass-stringify "^0.1.3"
+    commander "^3.0.1"
+    uuid "^3.3.3"
 
 kuler@1.0.x:
   version "1.0.1"
