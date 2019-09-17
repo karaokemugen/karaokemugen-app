@@ -35,7 +35,6 @@ export async function updateJingles() {
 			}
 			if (!jingleDirs.includes(gitDir)) jingleDirs.push(gitDir);
 			editSetting({System: {Path: {Jingles: jingleDirs}}});
-			buildJinglesList();
 		} else {
 			logger.info('[Jingles] Updating jingles');
 			await gitPull({
@@ -44,7 +43,6 @@ export async function updateJingles() {
 				singleBranch: true
 			})
 			logger.info('[Jingles] Finished updating jingles');
-			buildJinglesList();
 		}
 	} catch(err) {
 		console.log(err);

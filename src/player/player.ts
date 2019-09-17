@@ -4,7 +4,7 @@ import {resolvedPathBackgrounds, getConfig, resolvedPathMedias, resolvedPathTemp
 import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../lib/utils/files';
 import sample from 'lodash.sample';
-import {getSingleJingle, buildJinglesList} from '../services/jingles';
+import {getSingleJingle} from '../services/jingles';
 import {exit} from '../services/engine';
 import {playerEnding} from '../services/player';
 import {getID3} from './id3tag';
@@ -104,7 +104,6 @@ export async function initPlayerSystem() {
 	const state = getState();
 	playerState.fullscreen = state.fullscreen;
 	playerState.stayontop = state.ontop;
-	buildJinglesList();
 	await startmpv();
 	emitPlayerState();
 	logger.debug('[Player] Player is READY');
