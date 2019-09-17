@@ -12,7 +12,7 @@
     "babel-polyfill": "^6.26.0",
     "fingerprintjs2": "^2.1.0",
     "fonts": "^0.0.2",
-    "i18next": "^17.0.13",
+    "i18next": "^17.0.16",
     "i18next-browser-languagedetector": "^3.0.3",
     "i18next-xhr-backend": "^3.1.2",
     "iso-639": "^0.2.2",
@@ -35,9 +35,6 @@
     "@fortawesome/fontawesome-free": "^5.10.2",
     "node-sass": "^4.12.0",
     "parcel-bundler": "^1.12.3"
-  },
-  "resolutions": {
-    "react-scripts/**/fsevents": "1.2.9"
   },
   "license": "MIT"
 }
