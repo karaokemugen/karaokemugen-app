@@ -49,8 +49,8 @@ class PlaylistHeader extends Component {
     callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
       axios.get(this.props.getPlaylistUrl(), { random: nbOfRandoms }).then(randomKaras => {
         if (randomKaras.content.length > 0) {
-          let textContent = randomKaras.content.map(e => <React.Fragment>{buildKaraTitle(e)} <br/><br/></React.Fragment>);
-          callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br/><br/>{textContent}</React.Fragment>, () => {
+          let textContent = randomKaras.content.map(e => <React.Fragment>{buildKaraTitle(e)} <br /><br /></React.Fragment>);
+          callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
             var karaList = randomKaras.content.map(a => {
               return a.kid;
             }).join();
@@ -82,7 +82,7 @@ class PlaylistHeader extends Component {
   async startFavMix() {
     var response = await axios.get('/api/public/users/');
     var userList = response.data.data.filter(u => u.type < 2);
-    ReactDOM.render(<FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList}/>, document.getElementById('modal'));
+    ReactDOM.render(<FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList} />, document.getElementById('modal'));
   }
 
   async exportPlaylist() {
@@ -118,12 +118,12 @@ class PlaylistHeader extends Component {
           name = JSON.parse(fr.result).PlaylistInformation.name;
         }
         axios.post(url, data).then(response => {
-        displayMessage('success', i18next.t('PLAYLIST_ADDED', {name:name}));
+          displayMessage('success', i18next.t('PLAYLIST_ADDED', { name: name }));
           if (response.unknownKaras && response.unknownKaras.length > 0) {
-            displayMessage('warning', i18next.t('UNKNOWN_KARAS', {count: response.unknownKaras}));
-        }
+            displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.unknownKaras }));
+          }
           var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
-        this.props.changeIdPlaylist(playlist_id);
+          this.props.changeIdPlaylist(playlist_id);
         });
       };
       fr.readAsText(file);
@@ -134,7 +134,47 @@ class PlaylistHeader extends Component {
     axios.put(this.props.getPlaylistUrl().replace('/karas', '') + '/empty');
   }
 
-  getActionDivContainer() {
+  setFlagCurrent() {
+    if (!this.props.playlistInfo.flag_current) {
+      axios.put('/api/admin/playlists/' + this.props.idPlaylist + '/setCurrent');
+    }
+  }
+
+  setFlagPublic() {
+    if (!this.props.playlistInfo.flag_public) {
+      axios.put('/api/admin/playlists/' + this.props.idPlaylist + '/setPublic');
+    }
+  }
+
+  setFlagVisible() {
+    axios.put('/api/admin/playlists/' + this.props.idPlaylist,
+      { name: this.props.playlistInfo.name, flag_visible: !this.props.playlistInfo.flag_visible });
+  }
+
+  shuffle() {
+    axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle')
+  }
+
+  smartShuffle() {
+    axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle', { smartShuffle: 1 })
+  }
+
+  getKarasList(activeFilter, searchType) {
+    this.setState({ activeFilter: activeFilter });
+    if (activeFilter === 2 && this.props.idPlaylist !== -5) {
+      this.props.changeIdPlaylist(-5)
+    } else if (activeFilter !== 2 && this.props.idPlaylist !== -1) {
+      this.props.changeIdPlaylist(-1);
+    }
+    this.props.getPlaylist(searchType);
+  }
+
+  onChangeTags(value) {
+    this.setState({ activeFilter: 5 });
+    this.props.onChangeTags(this.state.tagType, value);
+  }
+
+  render() {
     const commandsControls = (
       <div className="btn-group plCommands controls">
         {this.props.idPlaylist >= 0 ?
@@ -184,7 +224,7 @@ class PlaylistHeader extends Component {
         <ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
           scope={this.props.scope} playlistToAddId={this.props.playlistToAddId} isHeader={true}
           addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
-        <button 
+        <button
           title={i18next.t("SELECT_ALL")}
           name="selectAllKaras"
           onClick={() => {
@@ -194,42 +234,69 @@ class PlaylistHeader extends Component {
           className="btn btn-default clusterAction"
         >
           {
-            this.state.selectAllKarasChecked  
+            this.state.selectAllKarasChecked
               ? <i className="far fa-check-square"></i>
               : <i className="far fa-square"></i>
           }
         </button>
       </div>);
 
-    return (
+      
+  const plCommandsContainer =(
       this.props.scope === 'admin' && this.props.playlistCommands && this.props.idPlaylist !== -4 ?
         <div className="plCommandsContainer actionDivContainer">
           {this.props.side === 1 ?
             <React.Fragment>{commandsControls} {actionDivContainer}</React.Fragment> :
             <React.Fragment>{actionDivContainer}{commandsControls} </React.Fragment>
           }
-        </div> : null)
-  }
+        </div> : null);
 
-  setFlagCurrent() {
-    if (!this.props.playlistInfo.flag_current) {
-      axios.put('/api/admin/playlists/' + this.props.idPlaylist + '/setCurrent');
-    }
-  }
+    const searchMenu = (this.props.tags ? <nav className="navbar navbar-default  searchMenuContainer">
+      <div className="searchMenu container" id={"searchMenu" + this.props.side}>
+        <ul className="nav navbar-nav">
+          <li className={"tagFilter " + (this.state.activeFilter === 5 ? "active" : "")}>
+            <span className='value'>
+              <span>
+                <select type="text" className="tagsTypes form-control value" placeholder="Search"
+                  onChange={e => this.setState({ tagType: (Number(e.target.value) ? Number(e.target.value) : e.target.value) })}
+                  value={this.state.tagType}>
+                  {tagsTypesList.map(val => {
+                    if (val === 'DETAILS_SERIE') {
+                      return <option key={val} value='serie'>{i18next.t(val)}</option>
+                    } else if (val === 'DETAILS_YEAR') {
+                      return <option key={val} value='year'>{i18next.t(val)}</option>
+                    } else {
+                      return <option key={val} value={val.replace('BLCTYPE_', '')}>{i18next.t(val)}</option>
+                    }
+                  })}
+                </select>
+              </span>
+              <span className="tagsContainer">
+                <Autocomplete className="tags form-control value" value={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))[0].value}
+                  options={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))}
+                  onChange={this.onChangeTags} />
+              </span>
+            </span>
+            <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="fas fa-filter"></i> {i18next.t("FILTER")}</a>
+          </li>
+          <li className={this.state.activeFilter === 1 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(1)}>
+            <i className="fas fa-sort-alpha-asc"></i> {i18next.t("VIEW_STANDARD")}</a></li>
+          <li className={this.state.activeFilter === 2 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(2)}><i className="fas fa-star"></i> {i18next.t("VIEW_FAVORITES")}</a></li>
+          <li className={this.state.activeFilter === 3 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(3, "recent")}><i className="fas fa-clock-o"></i> {i18next.t("VIEW_RECENT")}</a></li>
+          <li className={this.state.activeFilter === 4 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(4, "requested")}><i className="fas fa-fire"></i> {i18next.t("VIEW_POPULAR")}</a></li>
 
-  setFlagPublic() {
-    if (!this.props.playlistInfo.flag_public) {
-      axios.put('/api/admin/playlists/' + this.props.idPlaylist + '/setPublic');
-    }
-  }
+        </ul>
+      </div>
+    </nav> : null);
 
-  setFlagVisible() {
-    axios.put('/api/admin/playlists/' + this.props.idPlaylist,
-      { name: this.props.playlistInfo.name, flag_visible: !this.props.playlistInfo.flag_visible });
-  }
+    
+  const plSearch = (<div className="pull-left plSearch">
+      <input type="text" className="plSearch-input form-control input-md" side={this.props.side}
+        defaultValue={store.getFilterValue()} onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)}
+        id={"searchPlaylist" + this.props.side} placeholder="&#xF002;" name="searchPlaylist" />
+    </div>);
 
-  getFlagsContainer() {
-    return (
+  const flagsContainer = (
       this.props.idPlaylist >= 0 && this.props.scope !== "public" && this.props.playlistInfo ?
         <div className="flagsContainer " >
           <div className="btn-group plCommands flags" id={"flag" + this.props.side}>
@@ -252,40 +319,7 @@ class PlaylistHeader extends Component {
           </div>
         </div> : null
     );
-  }
 
-  getPlSearch() {
-    return (<div className="pull-left plSearch">
-      <input type="text" className="plSearch-input form-control input-md" side={this.props.side}
-        defaultValue={store.getFilterValue()} onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)}
-        id={"searchPlaylist" + this.props.side} placeholder="&#xF002;" name="searchPlaylist" />
-    </div>);
-  }
-
-  shuffle() {
-    axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle')
-  }
-
-  smartShuffle() {
-    axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle', { smartShuffle: 1 })
-  }
-
-  getKarasList(activeFilter, searchType) {
-    this.setState({activeFilter: activeFilter});
-    if(activeFilter === 2 && this.props.idPlaylist !== -5) {
-      this.props.changeIdPlaylist(-5)
-    } else if (activeFilter !== 2 && this.props.idPlaylist !== -1) {
-      this.props.changeIdPlaylist(-1);
-    }
-    this.props.getPlaylist(searchType);
-  }
-
-  onChangeTags(value) {
-    this.setState({activeFilter: 5});
-    this.props.onChangeTags(this.state.tagType, value);
-  }
-
-  render() {
     return (
       <React.Fragment>
         {this.props.scope !== "public" || this.props.side !== 1 ?
@@ -339,50 +373,14 @@ class PlaylistHeader extends Component {
               </React.Fragment > : null
             }
             {this.props.side === 1 ?
-              <React.Fragment>{this.getPlSearch()}{this.getFlagsContainer()}{this.getActionDivContainer()}</React.Fragment> :
-              <React.Fragment>{this.getActionDivContainer()}{this.getFlagsContainer()}{this.getPlSearch()}</React.Fragment>
+              <React.Fragment>{plSearch}{flagsContainer}{plCommandsContainer}</React.Fragment> :
+              <React.Fragment>{plCommandsContainer}{flagsContainer}{plSearch}</React.Fragment>
             }
 
           </div> : null
         }
         {this.props.side === 1 && this.props.searchMenuOpen ?
-          <nav className="navbar navbar-default  searchMenuContainer">
-            <div className="searchMenu container" id={"searchMenu" + this.props.side}>
-              <ul className="nav navbar-nav">
-                <li className={"tagFilter "+ (this.state.activeFilter === 5 ? "active" : "")}>
-                  <span className='value'>
-                    <span>
-                      <select type="text" className="tagsTypes form-control value" placeholder="Search" 
-                        onChange={e => this.setState({tagType : (Number(e.target.value) ? Number(e.target.value) : e.target.value)})}
-                        value={this.state.tagType}>
-                        {tagsTypesList.map(val => {
-                          if (val === 'DETAILS_SERIE') {
-                            return <option key={val} value='serie'>{i18next.t(val)}</option>
-                          } else if (val === 'DETAILS_YEAR') {
-                            return <option key={val} value='year'>{i18next.t(val)}</option>
-                          } else {
-                            return <option key={val} value={val.replace('BLCTYPE_', '')}>{i18next.t(val)}</option>
-                          }
-                        })}
-                      </select>
-                    </span>
-                    <span className="tagsContainer">
-                      <Autocomplete className="tags form-control value" value={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))[0].value}
-                                      options={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))}
-                                      onChange={this.onChangeTags} />
-                    </span>
-                  </span>
-                  <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="fas fa-filter"></i> {i18next.t("FILTER")}</a>
-                </li>
-                <li className={this.state.activeFilter === 1 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(1)}>
-                  <i className="fas fa-sort-alpha-asc"></i> {i18next.t("VIEW_STANDARD")}</a></li>
-                <li className={this.state.activeFilter === 2 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(2)}><i className="fas fa-star"></i> {i18next.t("VIEW_FAVORITES")}</a></li>
-                <li className={this.state.activeFilter === 3 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(3, "recent")}><i className="fas fa-clock-o"></i> {i18next.t("VIEW_RECENT")}</a></li>
-                <li className={this.state.activeFilter === 4 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(4, "requested")}><i className="fas fa-fire"></i> {i18next.t("VIEW_POPULAR")}</a></li>
-
-              </ul>
-            </div>
-          </nav> : null
+          searchMenu : null
         }
       </React.Fragment >
     )
