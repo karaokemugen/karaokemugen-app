@@ -147,7 +147,8 @@ class ProfilModal extends Component {
                             <li className={"modal-title " + (this.state.activeView === 3 ? "active" : "")}>
                                 <a onClick={() => this.setState({activeView: 3})}> {i18next.t("USERLIST")}</a>
                             </li>
-                            <button className="closeModal btn btn-action" onClick={this.props.toggleProfileModal}>
+                            <button className="closeModal btn btn-action" 
+                                onClick={() => ReactDOM.unmountComponentAtNode(document.getElementById('modal'))}>
                                 <i className="fas fa-times"></i>
                             </button>
                         </ul>

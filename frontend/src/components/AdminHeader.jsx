@@ -33,7 +33,7 @@ class AdminHeader extends Component {
     });
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps) {
     if (this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin 
       !== prevProps.config.Playlist.MysterySongs.AddedSongVisibilityAdmin) {
       this.setState({ songVisibilityOperator: Boolean(this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin)});

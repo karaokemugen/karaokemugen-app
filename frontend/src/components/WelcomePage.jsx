@@ -11,19 +11,20 @@ class WelcomePage extends Component {
     super(props);
     this.state = {
       news: [],
-      loginModal: !this.props.logInfos.token,
-      profileModal: false,
       open: false,
       sessions: [],
       activeSession: ""
     };
     this.getCatchphrase = this.getCatchphrase.bind(this);
     this.getNewsFeed = this.getNewsFeed.bind(this);
-    this.loginClick = this.loginClick.bind(this);
+    this.openLoginOrProfileModal = this.openLoginOrProfileModal.bind(this);
     this.getSessions = this.getSessions.bind(this);
     this.setActiveSession = this.setActiveSession.bind(this);
     this.closeUpdateBanner = this.closeUpdateBanner.bind(this);
     this.stopAppUpdates = this.stopAppUpdates.bind(this);
+    if (!this.props.logInfos.token) {
+      this.openLoginOrProfileModal()
+    }
   }
 
   componentDidMount() {
@@ -158,11 +159,24 @@ class WelcomePage extends Component {
     this.setState({ news: news });
   }
 
-  loginClick() {
+  openLoginOrProfileModal() {
     if (!this.props.logInfos.token) {
-      this.setState({loginModal: true});
+      ReactDOM.render(<LoginModal
+        scope={
+          this.props.admpwd && this.props.settings.config.App.FirstRun
+            ? "admin"
+            : "public"
+        }
+        config={this.props.settings.config}
+        admpwd={this.props.admpwd}
+        updateLogInfos={this.props.updateLogInfos}
+      />, document.getElementById('modal'));
     } else {
-      this.setState({profileModal: true});
+      ReactDOM.render(<ProfilModal
+        settingsOnline={this.props.settings.config.Online}
+        updateLogInfos={this.props.updateLogInfos}
+        logInfos={this.props.logInfos}
+      />, document.getElementById('modal'));
     }
   }
 
@@ -175,31 +189,6 @@ class WelcomePage extends Component {
     }
     return (
       <div id="welcomePage">
-        {this.state.loginModal ? (
-          <LoginModal
-            scope={
-              this.props.admpwd && this.props.settings.config.App.FirstRun
-                ? "admin"
-                : "public"
-            }
-            config={this.props.settings.config}
-            admpwd={this.props.admpwd}
-            updateLogInfos={this.props.updateLogInfos}
-            toggleLoginModal={() =>
-              this.setState({ loginModal: !this.state.loginModal })
-            }
-          />
-        ) : null}
-        {this.state.profileModal ? (
-          <ProfilModal
-            settingsOnline={this.props.settings.config.Online}
-            updateLogInfos={this.props.updateLogInfos}
-            logInfos={this.props.logInfos}
-            toggleProfileModal={() =>
-              this.setState({ profileModal: !this.state.profileModal })
-            }
-          />
-        ) : null}
         {this.state.latestVersion ? (
           <div className="updateBanner">
             <div className="updateBanner--wrapper">
@@ -260,7 +249,7 @@ class WelcomePage extends Component {
                 </a>
               </li>
               <li>
-                <a href="#" id="wlcm_login" onClick={this.loginClick}>
+                <a href="#" id="wlcm_login" onClick={this.openLoginOrProfileModal}>
                   <i className="fas fa-user" />&nbsp;
                   <span>
                     {this.props.logInfos.token

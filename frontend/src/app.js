@@ -117,7 +117,7 @@ class App extends Component {
 
     async displayClassicModeModal(data) {
         if (data.status === 'stop' && data.playerStatus === 'pause' && data.currentRequester === this.state.logInfos.username && !this.state.classicModeModal) {
-            ReactDOM.render(<Suspense fallback={<div>loading...</div>}><ClassicModeModal /></Suspense>, document.getElementById('modal'));
+            ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
             this.setState({ classicModeModal: true });
         } else if (data.playerStatus !== 'pause' && this.state.classicModeModal) {
             ReactDOM.unmountComponentAtNode(document.getElementById('modal'));

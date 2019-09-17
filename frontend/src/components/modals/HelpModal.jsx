@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import i18next from 'i18next';
 import { createCookie } from '../tools';
 import { is_touch_device,startIntro } from '../tools';
+import ReactDOM from 'react-dom';
 
 class HelpModal extends Component {
     constructor(props) {
@@ -12,12 +13,12 @@ class HelpModal extends Component {
 
     mugenTouchscreenHelp() {
         createCookie('mugenTouchscreenHelp', true, -1);
-        this.props.toggleHelpModal();
+        ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
     }
 
     tourAgain() {
 		startIntro('public', 'afterLogin');
-		this.props.toggleHelpModal();
+		ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
 	}
 
     render() {

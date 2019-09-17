@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import i18next from 'i18next';
 import axios from 'axios';
 import {expand} from '../tools';
-
+import ReactDOM from 'react-dom';
 class OnlineStatsModal extends Component {
     constructor(props) {
         super(props)
@@ -17,7 +17,7 @@ class OnlineStatsModal extends Component {
         axios.put('/api/admin/settings', {
             setting: JSON.stringify(data)
         });
-        this.props.toggleOnlineStatsModal();
+        ReactDOM.unmountComponentAtNode(document.getElementById('modal'))
     }
 
     render() {

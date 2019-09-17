@@ -5,7 +5,6 @@ import KmAppHeaderDecorator from "./decorators/KmAppHeaderDecorator"
 import KmAppBodyDecorator from "./decorators/KmAppBodyDecorator"
 import PlaylistMainDecorator from "./decorators/PlaylistMainDecorator";
 import Playlist from "./karas/Playlist";
-import RestrictedHelpModal from "./modals/RestrictedHelpModal"
 import PollModal from "./modals/PollModal"
 import getLuckyImage from "../assets/clover.png"
 import webappClose from "../assets/dame.jpg"
@@ -17,18 +16,14 @@ import axios from "axios";
 import ProgressBar from "./karas/ProgressBar";
 import {buildKaraTitle, getSocket, is_touch_device,displayMessage,callModal} from './tools';
 import store from "../store";
-
+import ReactDOM from 'react-dom';
 class PublicPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isPollActive: false,
-      pollModal: false,
-      loginModal: !this.props.logInfos.token,
-      profileModal: false,
       helpModal: false,
       lyrics: false,
-      restrictedHelpModal: this.props.settings.config.Frontend.Mode === 1,
       pseudoValue: "",
       mobileMenu: false,
       idsPlaylist: {left: '', right: ''},
@@ -36,13 +31,25 @@ class PublicPage extends Component {
       searchMenuOpen: false
     };
     this.openLoginOrProfileModal = this.openLoginOrProfileModal.bind(this);
-    this.toggleHelpModal = this.toggleHelpModal.bind(this);
     this.setLyrics = this.setLyrics.bind(this);
     this.getLucky = this.getLucky.bind(this);
     this.changePseudo = this.changePseudo.bind(this);
     this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
     this.toggleSearchMenu = this.toggleSearchMenu.bind(this);
     this.updateKidPlaying = this.updateKidPlaying.bind(this);
+    if (!this.props.logInfos.token) {
+      this.openLoginOrProfileModal();
+    } else if (this.props.settings.config.Frontend.Mode === 1) {
+      callModal('confirm', i18next.t("WEBAPPMODE_LIMITED_NAME"),
+        (<React.Fragment>
+          <div className="text">
+            {i18next.t("CL_HELP_PUBLIC_MOBILE_RESTRICTED")}
+          </div>
+          <div className="text">
+            {i18next.t("CL_HELP_PUBLIC_MOBILE_RESTRICTED_DESCRIPTION")}
+          </div>
+        </React.Fragment>));
+    }
   }
 
   majIdsPlaylist(side, value) {
@@ -56,8 +63,14 @@ class PublicPage extends Component {
   }
 
   async componentDidMount() {
-    getSocket().on('newSongPoll', () => this.setState({ isPollActive: true, pollModal: true }));
-    getSocket().on('songPollEnded', () => this.setState({ isPollActive: false }));
+    getSocket().on('newSongPoll', () => {
+      this.setState({ isPollActive: true});
+      ReactDOM.render(<PollModal />, document.getElementById('modal'));
+    });
+    getSocket().on('songPollEnded', () => {
+      this.setState({ isPollActive: false });
+      ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
+    });
     getSocket().on('songPollResult', (data) => {
       displayMessage('success',  i18next.t('POLLENDED', { kara: data.kara.substring(0, 100), votes: data.votes }));
     });
@@ -67,14 +80,20 @@ class PublicPage extends Component {
 
   openLoginOrProfileModal() {
     if (this.props.logInfos.token) {
-      this.setState({ profileModal: true });
+      ReactDOM.render(<ProfilModal
+        settingsOnline={this.props.settings.config.Online}
+        updateLogInfos={this.props.updateLogInfos}
+        logInfos={this.props.logInfos}
+      />, document.getElementById('modal'));
     } else {
-      this.setState({ loginModal: true });
+      ReactDOM.render(<LoginModal
+        scope="public"
+        config={this.props.settings.config}
+        version={this.props.settings.version}
+        logInfos={this.props.logInfos}
+        updateLogInfos={this.props.updateLogInfos}
+      />, document.getElementById('modal'));
     }
-  }
-
-  toggleHelpModal() {
-    this.setState({ loginModal: false, helpModal: !this.state.helpModal, dropDownMenu:false });
   }
 
   setLyrics() {
@@ -126,44 +145,6 @@ class PublicPage extends Component {
           </center>
         ) : (
           <React.Fragment>
-            {this.state.loginModal ? (
-              <LoginModal
-                scope="public"
-                config={this.props.settings.config}
-                toggleHelpModal={this.toggleHelpModal}
-                logInfos={this.props.logInfos}
-                toggleLoginModal={() =>
-                  this.setState({ loginModal: !this.state.loginModal })
-                }
-                updateLogInfos={this.props.updateLogInfos}
-              />
-            ) : null}
-            {this.state.profileModal ? (
-              <ProfilModal
-                settingsOnline={this.props.settings.config.Online}
-                updateLogInfos={this.props.updateLogInfos}
-                logInfos={this.props.logInfos}
-                toggleProfileModal={() =>
-                  this.setState({ profileModal: !this.state.profileModal })
-                }
-              />
-            ) : null}
-            {this.state.restrictedHelpModal ? (
-              <RestrictedHelpModal />
-            ) : null}
-            {this.state.isPollActive ? (
-              <PollModal
-                pollModal={this.state.pollModal}
-                closePollModal={() => this.setState({ pollModal: false })}
-              />
-            ) : null}
-            {this.state.helpModal ? (
-              <HelpModal
-                toggleHelpModal={this.toggleHelpModal}
-                version={this.props.settings.version}
-              />
-            ) : null}
-
             <KmAppWrapperDecorator>
               {this.props.settings.config.Frontend.Mode === 2 ? (
                 <KmAppHeaderDecorator mode="public">
@@ -261,7 +242,8 @@ class PublicPage extends Component {
                             </a>
                           </li>
                           <li>
-                            <a href="#" onClick={this.toggleHelpModal}>
+                            <a href="#" onClick={() => 
+                                ReactDOM.render(<HelpModal version={this.props.config.version} />, document.getElementById('modal'))}>
                               <i className="fas fa-info-circle" />&nbsp;
                               {i18next.t("HELP")}
                             </a>
@@ -285,7 +267,7 @@ class PublicPage extends Component {
                     {this.state.isPollActive ? (
                       <button
                         className="btn btn-default showPoll"
-                        onClick={() => this.setState({ pollModal: true })}
+                        onClick={() => ReactDOM.render(<PollModal />, document.getElementById('modal'))}
                       >
                         <i className="fas fa-chart-line" />
                       </button>
@@ -361,7 +343,7 @@ class PublicPage extends Component {
                   >
                     <a
                       className="btn-floating btn-large waves-effect z-depth-3 showPoll"
-                      onClick={() => this.setState({ pollModal: true })}
+                      onClick={() => ReactDOM.render(<PollModal />, document.getElementById('modal'))}
                     >
                       <i className="fas fa-bar-chart" />
                     </a>
@@ -410,7 +392,7 @@ class PublicPage extends Component {
                         <a
                           className="z-depth-3 btn-floating btn-large"
                           style={{ backgroundColor: "#613114" }}
-                          onClick={this.toggleHelpModal}
+                          onClick={() => ReactDOM.render(<HelpModal />, document.getElementById('modal'))}
                         >
                           <i className="fas fa-question-circle" />
                         </a>

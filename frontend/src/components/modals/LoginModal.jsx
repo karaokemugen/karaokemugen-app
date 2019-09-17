@@ -3,6 +3,8 @@ import i18next from 'i18next';
 import Fingerprint2 from 'fingerprintjs2'
 import axios from "axios";
 import { is_touch_device,startIntro,readCookie,displayMessage  } from '../tools';
+import HelpModal from "./HelpModal";
+import ReactDOM from 'react-dom';
 
 class LoginModal extends Component {
     constructor(props) {
@@ -41,7 +43,7 @@ class LoginModal extends Component {
 
         var result = await axios.post(url, data);
         var response = result.data;
-        this.props.toggleLoginModal();
+        ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
         if (this.props.scope === 'admin' && response.role !== 'admin') {
             displayMessage('warning', i18next.t('ADMIN_PLEASE'));
         }
@@ -49,7 +51,7 @@ class LoginModal extends Component {
         displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
 
         if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
-            this.props.toggleHelpModal();
+            ReactDOM.render(<HelpModal version={this.props.version}/>, document.getElementById('modal'));
         }
         if (this.props.admpwd && this.props.config.App.FirstRun) {
             startIntro('admin');
@@ -119,7 +121,8 @@ class LoginModal extends Component {
                             <li className={"modal-title " + (this.state.activeView === 2 ? "active" : "")}>
                                 <a onClick={() => this.setState({activeView: 2})}>{i18next.t("NEW_ACCOUNT")}</a>
                             </li>
-                            <button className="closeModal btn btn-action" onClick={this.props.toggleLoginModal}>
+                            <button className="closeModal btn btn-action" 
+                                onClick={() => ReactDOM.unmountComponentAtNode(document.getElementById('modal'))}>
                                 <i className="fas fa-times"></i>
                             </button>
                         </ul>

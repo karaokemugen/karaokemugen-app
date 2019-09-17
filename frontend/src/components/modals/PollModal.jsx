@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import i18next from 'i18next';
 import axios from 'axios';
 import {buildKaraTitle} from '../tools';
-
+import ReactDOM from 'react-dom';
 class PollModal extends Component {
     constructor(props) {
         super(props)
@@ -17,18 +17,16 @@ class PollModal extends Component {
 
     async getSongPoll() {
         var response = await axios.get('/api/public/songpoll');
-        console.log(response.data.data.timeLeft)
         this.setState({ poll: response.data.data.poll, timeLeft: `${response.data.data.timeLeft/1000}s`, width: "0%" });
     }
 
     postSong(event) {
         axios.post('/api/public/songpoll', { playlistcontent_id: event.target.value });
-        this.props.closePollModal();
+        ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
     }
 
     render() {
         return (
-            this.props.pollModal ?
                 <div className="modal modalPage" id="pollModal">
                     <div className="modal-dialog modal-md">
                         <div className="modal-content">
@@ -36,7 +34,8 @@ class PollModal extends Component {
                                 <li className="modal-title active">
                                     <a style={{ fontWeight: 'bold' }}>{i18next.t("POLLTITLE")}</a>
                                 </li>
-                                <button className="closeModal btn btn-action" onClick={this.props.closePollModal}>
+                                <button className="closeModal btn btn-action" 
+                                    onClick={() => ReactDOM.unmountComponentAtNode(document.getElementById('modal'))}>
                                     <i className="fas fa-times"></i>
                                 </button>
                                 <span className="timer" style={{transition: `width ${this.state.timeLeft}`, width: this.state.width}}></span>
@@ -61,7 +60,7 @@ class PollModal extends Component {
                             </div>
                         </div>
                     </div >
-                </div> : null
+                </div>
         )
     }
 }
