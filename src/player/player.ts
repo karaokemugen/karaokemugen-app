@@ -8,7 +8,7 @@ import {getSingleJingle, buildJinglesList} from '../services/jingles';
 import {exit} from '../services/engine';
 import {playerEnding} from '../services/player';
 import {getID3} from './id3tag';
-import mpv from 'node-mpv';
+import mpv from 'node-mpv-km';
 import {promisify} from 'util';
 import {endPoll} from '../services/poll';
 import {getState, setState} from '../utils/state';
