@@ -115,7 +115,7 @@ async function next() {
 		if (conf.Karaoke.ClassicMode) {
 			const kara = await getCurrentSong();
 			setState({currentRequester: kara.username});
-			await stopPlayer(true);
+			stopPlayer(true);
 			displaySongInfo(kara.infos, 10000000, true);
 			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
@@ -124,7 +124,7 @@ async function next() {
 		} else if (conf.Karaoke.StreamerMode.Enabled) {
 			setState({currentRequester: null});
 			const kara = await getCurrentSong();
-			await stopPlayer(true);
+			stopPlayer(true);
 			displaySongInfo(kara.infos, 10000000);
 			if (conf.Karaoke.Poll.Enabled) await startPoll();
 			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
@@ -262,9 +262,9 @@ export async function sendCommand(command: string, options: any) {
 		if (command === 'play') {
 			await playPlayer();
 		} else if (command === 'stopNow') {
-			await stopPlayer(true);
+			stopPlayer(true);
 		} else if (command === 'pause') {
-			await pausePlayer();
+			pausePlayer();
 		} else if (command === 'stopAfter') {
 			stopPlayer(false);
 			await nextSong();
@@ -273,17 +273,17 @@ export async function sendCommand(command: string, options: any) {
 		} else if (command === 'prev') {
 			await prev();
 		} else if (command === 'toggleFullscreen') {
-			await toggleFullScreenPlayer();
+			toggleFullScreenPlayer();
 		} else if (command === 'toggleAlwaysOnTop') {
-			await toggleOnTopPlayer();
+			toggleOnTopPlayer();
 		} else if (command === 'mute') {
-			await mutePlayer();
+			mutePlayer();
 		} else if (command === 'unmute') {
-			await unmutePlayer();
+			unmutePlayer();
 		} else if (command === 'showSubs') {
-			await showSubsPlayer();
+			showSubsPlayer();
 		} else if (command === 'hideSubs') {
-			await hideSubsPlayer();
+			hideSubsPlayer();
 		} else if (command === 'seek') {
 			if (!options || isNaN(options)) {
 				commandInProgress = false;
