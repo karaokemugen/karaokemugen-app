@@ -384,25 +384,25 @@ export async function emptyDownloadBLC() {
 	return await truncateDownloadBLC();
 }
 
-export async function getRemoteKaras(instance: string, params: KaraParams): Promise<KaraList> {
+export async function getRemoteKaras(repo: string, params: KaraParams): Promise<KaraList> {
 	const URLParams = [];
 	if (params.filter) URLParams.push(['filter', params.filter])
 	if (params.size) URLParams.push(['size', params.size + ''])
 	if (params.from) URLParams.push(['from', params.from + ''])
 	const queryParams = new URLSearchParams(URLParams);
-	const res = await got(`https://${instance}/api/karas?${queryParams.toString()}`);
+	const res = await got(`https://${repo}/api/karas?${queryParams.toString()}`);
 	return JSON.parse(res.body);
 }
 
-export async function getRemoteTags(instance: string, params: TagParams): Promise<any> {
+export async function getRemoteTags(repo: string, params: TagParams): Promise<any> {
 	const queryParams = new URLSearchParams([
 		['type', params.type + '']
 	]);
-	const res = await got(`https://${instance}/api/karas/tags?${queryParams.toString()}`);
+	const res = await got(`https://${repo}/api/karas/tags?${queryParams.toString()}`);
 	return JSON.parse(res.body);
 }
 
-export async function updateBase(instance: string) {
+export async function updateBase(repo: string) {
 	// Another idea would be not to download songs older than the newest song in database : for example we can assume that if a user downloaded a song added on 01/02/2019, we won't download any new songs added before that date because the user already viewed songs before that date and choose not to download them
 
 	// First, make sure we wipe the download queue before updating.
@@ -411,13 +411,13 @@ export async function updateBase(instance: string) {
 	logger.info('[Update] Computing songs to add/remove/update...');
 	try {
 		logger.info('[Update] Getting song inventory for local and remote');
-		const karas = await getKaraInventory(instance);
+		const karas = await getKaraInventory(repo);
 		logger.info('[Update] Removing songs...');
-		await cleanAllKaras(instance, karas.local, karas.remote);
+		await cleanAllKaras(repo, karas.local, karas.remote);
 		logger.info('[Update] Adding updated/new songs...');
 		const [updatedSongs, newSongs] = await Promise.all([
-			updateAllKaras(instance, karas.local, karas.remote),
-			downloadAllKaras(instance, karas.local, karas.remote)
+			updateAllKaras(repo, karas.local, karas.remote),
+			downloadAllKaras(repo, karas.local, karas.remote)
 		]);
 		if (updatedSongs === 0 && newSongs === 0) return true;
 		await waitForUpdateQueueToFinish();
@@ -444,10 +444,10 @@ async function waitForUpdateQueueToFinish() {
 		});
 	});
 }
-async function getKaraInventory(instance: string) {
+async function getKaraInventory(repo: string) {
 	const [local, remote] = await Promise.all([
 		getAllKaras(),
-		getRemoteKaras(instance, {})
+		getRemoteKaras(repo, {})
 	]);
 	return {
 		local,
@@ -455,9 +455,9 @@ async function getKaraInventory(instance: string) {
 	}
 }
 
-export async function downloadAllKaras(instance: string, local?: KaraList, remote?: KaraList): Promise<number> {
+export async function downloadAllKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
 	if (!local || !remote) {
-		const karas = await getKaraInventory(instance);
+		const karas = await getKaraInventory(repo);
 		local = karas.local;
 		remote = karas.remote;
 	}
@@ -497,7 +497,7 @@ export async function downloadAllKaras(instance: string, local?: KaraList, remot
 	});
 	logger.info(`[Update] Adding ${karasToAdd.length} new songs.`);
 	if (initialKarasToAddCount !== karasToAdd.length) logger.info(`[Update] ${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`);
-	if (karasToAdd.length > 0) await addDownloads(instance, downloads);
+	if (karasToAdd.length > 0) await addDownloads(repo, downloads);
 	return karasToAdd.length;
 }
 
@@ -548,9 +548,9 @@ function filterYearYounger(k: DBKara, value: string) {
 	return k.year >= +value;
 }
 
-export async function cleanAllKaras(instance: string, local?: KaraList, remote?: KaraList) {
+export async function cleanAllKaras(repo: string, local?: KaraList, remote?: KaraList) {
 	if (!local || !remote) {
-		const karas = await getKaraInventory(instance);
+		const karas = await getKaraInventory(repo);
 		local = karas.local;
 		remote = karas.remote;
 	}
@@ -568,9 +568,9 @@ export async function cleanAllKaras(instance: string, local?: KaraList, remote?:
 	}
 }
 
-export async function updateAllKaras(instance: string, local?: KaraList, remote?: KaraList): Promise<number> {
+export async function updateAllKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
 	if (!local || !remote) {
-		const karas = await getKaraInventory(instance);
+		const karas = await getKaraInventory(repo);
 		local = karas.local;
 		remote = karas.remote;
 	}
@@ -590,13 +590,13 @@ export async function updateAllKaras(instance: string, local?: KaraList, remote?
 		}
 	});
 	logger.info(`[Update] Updating ${karasToUpdate.length} songs`);
-	if (karasToUpdate.length > 0) await addDownloads(instance, downloads);
+	if (karasToUpdate.length > 0) await addDownloads(repo, downloads);
 	return karasToUpdate.length;
 }
 
 let updateRunning = false;
 
-async function listRemoteMedias(instance: string): Promise<File[]> {
+async function listRemoteMedias(repo: string): Promise<File[]> {
 	logger.info('[Update] Fetching current media list');
 	emitWS('downloadProgress', {
 		text: 'Listing media files to download',
@@ -608,7 +608,7 @@ async function listRemoteMedias(instance: string): Promise<File[]> {
 		value: 3,
 		total: 5
 	});
-	const remote = await getRemoteKaras(instance, {});
+	const remote = await getRemoteKaras(repo, {});
 	return remote.content.map(k => {
 		return {
 			basename: k.mediafile,
@@ -617,7 +617,7 @@ async function listRemoteMedias(instance: string): Promise<File[]> {
 	});
 }
 
-async function compareMedias(localFiles: File[], remoteFiles: File[], instance: string): Promise<boolean> {
+async function compareMedias(localFiles: File[], remoteFiles: File[], repo: string): Promise<boolean> {
 	let removedFiles:string[] = [];
 	let addedFiles:File[] = [];
 	let updatedFiles:File[] = [];
@@ -669,7 +669,7 @@ async function compareMedias(localFiles: File[], remoteFiles: File[], instance: 
 			bytesToDownload = bytesToDownload + file.size;
 		}
 		logger.info(`[Update] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);
-		await downloadMedias(filesToDownload, mediasPath, instance);
+		await downloadMedias(filesToDownload, mediasPath, repo);
 		logger.info('[Update] Done updating medias');
 		return true;
 	} else {
@@ -678,12 +678,12 @@ async function compareMedias(localFiles: File[], remoteFiles: File[], instance: 
 	}
 }
 
-function downloadMedias(files: File[], mediasPath: string, instance: string): Promise<void> {
+function downloadMedias(files: File[], mediasPath: string, repo: string): Promise<void> {
 	let list = [];
 	for (const file of files) {
 		list.push({
 			filename: resolve(mediasPath, file.basename),
-			url: `https://${instance}/downloads/medias/${encodeURIComponent(file.basename)}`,
+			url: `https://${repo}/downloads/medias/${encodeURIComponent(file.basename)}`,
 			size: file.size
 		});
 	}
@@ -722,15 +722,15 @@ async function removeFiles(files: string[], dir: string): Promise<void> {
 	}
 }
 
-export async function updateMedias(instance: string): Promise<boolean> {
+export async function updateMedias(repo: string): Promise<boolean> {
 	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
 	updateRunning = true;
 	try {
 		const [remoteMedias, localMedias] = await Promise.all([
-			listRemoteMedias(instance),
+			listRemoteMedias(repo),
 			listLocalMedias()
 		]);
-		const updateVideos = await compareMedias(localMedias, remoteMedias, instance);
+		const updateVideos = await compareMedias(localMedias, remoteMedias, repo);
 
 		updateRunning = false;
 		emitWS('downloadProgress', {
