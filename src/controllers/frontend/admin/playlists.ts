@@ -200,6 +200,7 @@ export default function adminPlaylistsController(router: Router) {
 				try {
 					await editPlaylist(req.params.pl_id,req.body);
 					emitWS('playlistInfoUpdated',req.params.pl_id);
+					emitWS('playlistsUpdated');
 					res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));
 				} catch(err) {
 					res.status(500).json(errMessage('PL_UPDATE_ERROR',err.message,err.data));
