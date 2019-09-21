@@ -8,7 +8,8 @@ class AdminMessageModal extends Component {
         super(props)
         this.state = {
             duration: 5000,
-            message: ''
+			message: '',
+			destination: 'screen'
         }
         this.onClick = this.onClick.bind(this);
     }
