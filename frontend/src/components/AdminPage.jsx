@@ -22,6 +22,7 @@ class AdminPage extends Component {
     this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
     this.toggleSearchMenu1 = this.toggleSearchMenu1.bind(this);
     this.toggleSearchMenu2 = this.toggleSearchMenu2.bind(this);
+    this.openLoginOrProfileModal = this.openLoginOrProfileModal.bind(this);
     if (!this.props.logInfos.token || this.props.logInfos.role !== 'admin') {
       this.openLoginOrProfileModal()
     } else if (this.props.settings.config.Online.Stats === undefined) {
