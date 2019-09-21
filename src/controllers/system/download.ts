@@ -106,7 +106,7 @@ export default function systemDownloadController(router: Router) {
 	});
 	router.post('/system/downloads/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
-			await updateAllKaras(req.body.instance);
+			await updateAllKaras(req.body.repository);
 			res.status(200).send('Update in progress');
 		} catch(err) {
 			res.status(500).send(`Error computing update: ${err}`);
@@ -114,7 +114,7 @@ export default function systemDownloadController(router: Router) {
 	});
 	router.post('/system/downloads/all', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
-			await downloadAllKaras(req.body.instance);
+			await downloadAllKaras(req.body.repository);
 			res.status(200).send('Download in progress');
 		} catch(err) {
 			res.status(500).send(`Error computing update: ${err}`);
@@ -122,7 +122,7 @@ export default function systemDownloadController(router: Router) {
 	});
 	router.post('/system/downloads/clean', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
-			await cleanAllKaras(req.body.instance);
+			await cleanAllKaras(req.body.repository);
 			res.status(200).send('Cleanup in progress');
 		} catch(err) {
 			res.status(500).send(`Error computing update: ${err}`);

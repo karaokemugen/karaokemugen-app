@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Row, Col, Icon, Layout, Table, Input, Button} from 'antd';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import openSocket from 'socket.io-client';
-import { getLocalKaras, deleteDownloadQueue, deleteKAraFromDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause } from '../../api/local';
+import { getLocalKaras, deleteDownloadQueue, deleteKAraFromDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause, updateAllToDownloadQueue } from '../../api/local';
 import {ReduxMappedProps} from '../../react-app-env';
 import {getCriterasByValue} from './_blc_criterias_types';
 
@@ -274,7 +274,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 				<Layout>
 					<Layout.Header>
 						<Row type="flex" justify="space-between">
-							<Col span={20}>
+							<Col span={19}>
 								<Input.Search
 									placeholder='Search filter'
 									value={this.state.filter}
@@ -284,6 +284,8 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 								/>
 							</Col>
 							<Col>
+								<Button type="primary" key="queueUpdateAll" onClick={() => updateAllToDownloadQueue()}>Update all</Button>
+								&nbsp;
 								<Button type="primary" key="queueDelete" onClick={deleteDownloadQueue}>Cleanup</Button>
 								&nbsp;
 								<Button type="primary" key="queueStart" onClick={putToDownloadQueueStart}>Start</Button>

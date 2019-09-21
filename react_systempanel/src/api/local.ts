@@ -85,14 +85,26 @@ export async function postToDownloadQueue(repo = 'kara.moe', downloads) {
 	}
 }
 
+// UPDATE ALL karas
+export async function updateAllToDownloadQueue(repo = 'kara.moe') {
+	try {
+		const data = {
+			repository: repo
+		};
+		const res = await axios.post('/api/system/downloads/update', data);
+		return res.data;
+	} catch (e) {
+		console.log('Error from /api/local.js:updateAllToDownloadQueue');
+		throw e;
+	}
+}
+
 export async function deleteKaraByLocalId(karaId) {
 	try {
 		const response = await axios.delete(`/api/system/karas/${karaId}`);
-		console.log(response);
 		return response.status === 200;
 	} catch (e) {
-		console.log(e);
-		console.error('Error from /api/local.js:deleteKaraByLocalId');
+		console.log('Error from /api/local.js:deleteKaraByLocalId');
 		throw e;
 	}
 }
