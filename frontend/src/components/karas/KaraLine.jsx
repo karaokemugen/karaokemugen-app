@@ -94,7 +94,7 @@ class KaraLine extends Component {
     axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_playing: true });
   }
 
-  async addKara() {
+  async addKara(event, pos) {
     var url;
     var data;
     var type;
@@ -105,10 +105,18 @@ class KaraLine extends Component {
       if (this.props.idPlaylistTo > 0) {
         url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
         if (this.props.idPlaylist > 0) {
-          data = { plc_id: String(this.props.kara.playlistcontent_id) };
+          if (pos) {
+            data = { plc_id: String(this.props.kara.playlistcontent_id) , pos: pos+1};
+          } else {
+            data = { plc_id: String(this.props.kara.playlistcontent_id) };
+          }
           type = 'PATCH';
         } else {
-          data = { requestedby: this.props.logInfos.username, kid: this.props.kara.kid };
+          if (pos) {
+            data = { requestedby: this.props.logInfos.username, kid: this.props.kara.kid, pos: pos+1 };
+          } else {
+            data = { requestedby: this.props.logInfos.username, kid: this.props.kara.kid };
+          }
         }
       } else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
         url = '/api/' + this.props.scope + '/blacklist/criterias';

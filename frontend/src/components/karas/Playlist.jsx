@@ -264,10 +264,13 @@ class Playlist extends Component {
     }
     var response = await axios.get(url);
     var karas = response.data.data;
-    if (this.props.scope === "public" && this.props.config.Frontend.Mode === 1) {
+    if (this.state.idPlaylist > 0) {
       karas.content.forEach(kara => {
         if (kara.flag_playing) {
-          this.props.updateKidPlaying(kara.kid);
+          store.setPosPlaying(kara.pos);
+          if (this.props.config.Frontend.Mode === 1 && this.props.scope === "public") {
+            this.props.updateKidPlaying(kara.kid);
+          }
         }
       });
     }
@@ -283,7 +286,8 @@ class Playlist extends Component {
           kara.flag_dejavu = true;
         } else if (kara.playlistcontent_id === data.plc_id) {
           kara.flag_playing = true;
-          if (this.props.scope === "public" && this.props.config.Frontend.Mode === 1) {
+          store.setPosPlaying(kara.pos);
+          if (this.props.config.Frontend.Mode === 1 && this.props.scope === "public") {
             this.props.updateKidPlaying(kara.kid);
           }
         }
