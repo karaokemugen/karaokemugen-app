@@ -186,8 +186,8 @@ class Playlist extends Component {
   }
 
   editNamePlaylist() {
-    callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', newName => {
-      axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist, { name: newName, flag_visible: this.props.playlistInfo.flag_public });
+    callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: this.state.playlistInfo.name }), '', newName => {
+      axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist, { name: newName, flag_visible: this.state.playlistInfo.flag_public });
       var playlistInfo = this.state.playlistInfo;
       playlistInfo.name = newName;
       this.setState({ playlistInfo: playlistInfo });

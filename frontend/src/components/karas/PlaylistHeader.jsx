@@ -43,6 +43,9 @@ class PlaylistHeader extends Component {
     this.deleteAllKaras = this.deleteAllKaras.bind(this);
     this.getKarasList = this.getKarasList.bind(this);
     this.onChangeTags = this.onChangeTags.bind(this);
+    this.setFlagCurrent = this.setFlagCurrent.bind(this);
+    this.setFlagPublic = this.setFlagPublic.bind(this);
+    this.setFlagVisible = this.setFlagVisible.bind(this);
   }
 
   addRandomKaras() {
@@ -86,12 +89,12 @@ class PlaylistHeader extends Component {
   }
 
   async exportPlaylist() {
-    var url = idPlaylist === -5 ? '/api/public/favorites' : '/api' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export'
+    var url = this.props.idPlaylist === -5 ? '/api/public/favorites' : '/api' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export'
     var response = await axios.get(url);
     var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
     var dlAnchorElem = document.getElementById('downloadAnchorElem');
     dlAnchorElem.setAttribute('href', dataStr);
-    if (idPlaylist === -5) {
+    if (this.props.idPlaylist === -5) {
       dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.props.logInfos.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
     } else {
       dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.playlistInfo.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
