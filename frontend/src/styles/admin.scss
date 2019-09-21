@@ -111,26 +111,6 @@
 	.playlistCommands .showPlaylistCommands:hover, .playlistCommands .showPlaylistCommands.btn-primary {
 		opacity: 1.0;
 	}
-	span.hideCommands {
-		position: relative;
-		margin-left: -270px !important;
-		transition: all .5s ease;
-	}
-	span:not(.hideCommands) {
-		transition: all .5s ease;
-		margin-right: 0;
-	}
-
-	span.hideCommands {
-		position: relative;
-		margin-left: -270px !important;
-		transition: all .5s ease;
-	}
-	span:not(.hideCommands) {
-		transition: all .5s ease;
-		margin-right: 0;
-	}
-
 	#panel2 .actionDiv {
 		float: left;
 	}
@@ -207,6 +187,12 @@
 		pointer-events: none;
 		cursor: not-allowed;
 		opacity: 0.66;
+	}
+
+	.dragHandle {
+		padding-left: 10px;
+		padding-right: 10px;
+		padding-top: 3px;
 	}
 
 	@media (max-width: 1520px) {	

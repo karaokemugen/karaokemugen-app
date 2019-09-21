@@ -8,7 +8,7 @@ import { buildKaraTitle, displayMessage } from '../tools';
 
 import { sortableHandle } from 'react-sortable-hoc';
 
-const DragHandle = sortableHandle(() => <span><i className="fas fa-ellipsis-v"></i></span>);
+const DragHandle = sortableHandle(() => <span class="dragHandle"><i className="fas fa-ellipsis-v"></i></span>);
 
 class KaraLine extends Component {
   constructor(props) {

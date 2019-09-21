@@ -132,12 +132,12 @@ select.form-control {
 	padding: 3px;
 }
 
-.playlistContainer > #playlist2 .list-group-item > .infoDiv > button, .playlistContainer > #playlist1 .list-group-item > .actionDiv > button, .playlistContainer > #playlist2 .list-group-item .dragHandle {
+.playlistContainer > #playlist2 .list-group-item > .infoDiv > button, .playlistContainer > #playlist1 .list-group-item > .actionDiv > button {
 	float: right;
 	display: block;
 }
 
-.playlistContainer > #playlist1 .list-group-item > .infoDiv > button, .playlistContainer > #playlist2 .list-group-item > .actionDiv > button, .playlistContainer > #playlist2 .list-group-item .dragHandle  {
+.playlistContainer > #playlist1 .list-group-item > .infoDiv > button, .playlistContainer > #playlist2 .list-group-item > .actionDiv > button {
 	float: left;
 	display: block;
 }
@@ -166,21 +166,6 @@ select.form-control {
     color: firebrick;
     font-size: 88%;
 }
-
-.list-group-item.dragged .dragHandle {
-	margin-left: 0px;
-	margin-top:3px;
-	float: right;
-	padding: 0px;
-}
-.list-group-item .dragHandle {
-	height: 100%;
-	margin-left: 6px;
-    font-size: 2rem;
-	cursor: -webkit-grab;
-	float: right;
-}
-
 
 .btn-action {
     border: solid 1px hsla(0, 0%, 51%, 1);
