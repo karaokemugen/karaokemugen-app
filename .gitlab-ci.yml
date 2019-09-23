@@ -50,10 +50,9 @@ test:
 build:
   stage: build
   script:
-    - npm install -g modclean
+    - npm install -g modclean parcel-bundler typescript
     - yarn build
     - yarn buildReact
-    - npm install -g parcel-bundler
     - yarn frontend-prod
     - yarn install --production
     - cd node_modules
