@@ -1,5 +1,7 @@
 #welcomePage {
     height:100vh;
+    display: flex;
+    flex-direction: column;
     padding: 0;
     background: rgba(0, 0, 0, 0) linear-gradient(135deg, hsla(205, 39%, 20%, 1) 0%, hsla(151, 17%, 40%, 1) 100%) repeat scroll 0 0;
 
