@@ -112,6 +112,8 @@ pkg_osx:
 deploy_win:
   stage: deploy
   interruptible: true
+  dependencies:
+    - pkg_win
   cache: {}
   needs:
     - pkg_win
@@ -144,6 +146,8 @@ deploy_osx:
   stage: deploy
   interruptible: true
   cache: {}
+  dependencies:
+    - pkg_osx
   needs:
     - pkg_osx
   script:
