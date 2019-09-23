@@ -50,15 +50,14 @@ build:
   stage: build
   interruptible: true
   artifacts:
-    when: on_success
-    expire_in: 2 days
+    expire_in: 1 days
     name: km-app-build-${CI_COMMIT_REF_SLUG}
     paths:
     - react_systempanel/build/
     - dist/
     - frontend/build/
   script:
-    - npm install -g modclean parcel-bundler typescript
+    - npm install -g modclean parcel-bundler
     - yarn build
     - yarn buildReact
     - yarn frontend-prod
@@ -75,7 +74,7 @@ pkg_win:
   stage: package
   interruptible: true
   artifacts:
-    expire_in: 2 days
+    expire_in: 1 day
     name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
     paths:
     - bin/
@@ -94,7 +93,7 @@ pkg_osx:
   stage: package
   interruptible: true
   artifacts:
-    expire_in: 2 days
+    expire_in: 1 day
     name: km-app-pkgosx-${CI_COMMIT_REF_SLUG}
     paths:
     - bin/
@@ -115,8 +114,6 @@ deploy_win:
   dependencies:
     - pkg_win
   cache: {}
-  needs:
-    - pkg_win
   script:
     - mkdir build_win
     - cd build_win
@@ -147,8 +144,6 @@ deploy_osx:
   interruptible: true
   cache: {}
   dependencies:
-    - pkg_osx
-  needs:
     - pkg_osx
   script:
     - mkdir build_mac
