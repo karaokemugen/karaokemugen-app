@@ -4,11 +4,11 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 cache:
-  key: km
+  key: km-app-${CI_COMMIT_REF_SLUG}
   paths:
-  - node_modules/
-  - react_systempanel/node_modules/
-  - frontend/node_modules/
+    - node_modules/
+    - react_systempanel/node_modules/
+    - frontend/node_modules/
 
 stages:
   - test
@@ -48,6 +48,7 @@ test:
 
 build:
   stage: build
+  interruptible: true
   artifacts:
     when: on_success
     expire_in: 2 days
@@ -57,7 +58,7 @@ build:
     - dist/
     - frontend/build/
   script:
-    - npm install -g modclean parcel-bundler
+    - npm install -g modclean parcel-bundler typescript
     - yarn build
     - yarn buildReact
     - yarn frontend-prod
@@ -72,6 +73,7 @@ build:
 
 pkg_win:
   stage: package
+  interruptible: true
   artifacts:
     expire_in: 2 days
     name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
@@ -90,6 +92,7 @@ pkg_win:
 
 pkg_osx:
   stage: package
+  interruptible: true
   artifacts:
     expire_in: 2 days
     name: km-app-pkgosx-${CI_COMMIT_REF_SLUG}
@@ -108,8 +111,9 @@ pkg_osx:
 
 deploy_win:
   stage: deploy
+  interruptible: true
   cache: {}
-  dependencies:
+  needs:
     - pkg_win
   script:
     - mkdir build_win
@@ -128,6 +132,7 @@ deploy_win:
 
 latest_tag:
   stage: deploy
+  interruptible: true
   cache: {}
   script:
     - echo $CI_COMMIT_REF_NAME >latest
@@ -137,8 +142,9 @@ latest_tag:
 
 deploy_osx:
   stage: deploy
+  interruptible: true
   cache: {}
-  dependencies:
+  needs:
     - pkg_osx
   script:
     - mkdir build_mac
@@ -158,6 +164,7 @@ deploy_osx:
 
 apidoc:
   stage: deploy
+  interruptible: true
   cache: {}
   script:
     - npm install -g apidoc
