@@ -3,6 +3,13 @@ image: axelterizaki/karaokemugen-ci:node-10
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
+cache:
+  key: km-app-${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - react_systempanel/node_modules/
+    - frontend/node_modules/
+
 stages:
   - test
   - build
@@ -14,12 +21,6 @@ test:
   retry:
     max: 2
   interruptible: true
-  cache:
-    key: km-app-${CI_COMMIT_REF_SLUG}
-    paths:
-    - node_modules/
-    - react_systempanel/node_modules/
-    - frontend/node_modules/
   services:
     - postgres:10.6
   variables:
@@ -48,12 +49,6 @@ test:
 build:
   stage: build
   interruptible: true
-  cache:
-    key: km-app-${CI_COMMIT_REF_SLUG}
-    paths:
-    - node_modules/
-    - react_systempanel/node_modules/
-    - frontend/node_modules/
   artifacts:
     when: on_success
     expire_in: 2 days
@@ -79,8 +74,6 @@ build:
 pkg_win:
   stage: package
   interruptible: true
-  cache:
-    key: km-app-${CI_COMMIT_REF_SLUG}
   artifacts:
     expire_in: 2 days
     name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
@@ -100,8 +93,6 @@ pkg_win:
 pkg_osx:
   stage: package
   interruptible: true
-  cache:
-    key: km-app-${CI_COMMIT_REF_SLUG}
   artifacts:
     expire_in: 2 days
     name: km-app-pkgosx-${CI_COMMIT_REF_SLUG}
