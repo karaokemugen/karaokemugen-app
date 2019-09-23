@@ -4,15 +4,11 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 cache:
-  key: km
+  key: km-app-${CI_COMMIT_REF_SLUG}
   paths:
   - node_modules/
-  - bin/
   - react_systempanel/node_modules/
-  - dist/
-  - react_systempanel/build/
   - frontend/node_modules/
-  - frontend/build/
 
 stages:
   - test
@@ -22,6 +18,15 @@ stages:
 
 test:
   stage: test
+  retry:
+    max: 2
+  interruptible: true
+  cache:
+    key: km-app-${CI_COMMIT_REF_SLUG}
+    paths:
+    - node_modules/
+    - react_systempanel/node_modules/
+    - frontend/node_modules/
   services:
     - postgres:10.6
   variables:
@@ -49,6 +54,21 @@ test:
 
 build:
   stage: build
+  interruptible: true
+  cache:
+    key: km-app-${CI_COMMIT_REF_SLUG}
+    paths:
+    - node_modules/
+    - react_systempanel/node_modules/
+    - frontend/node_modules/
+  artifacts:
+    when: on_success
+    expire_in: 2 days
+    name: km-app-build-${CI_COMMIT_REF_SLUG}
+    paths:
+    - react_systempanel/build/
+    - dist/
+    - frontend/build/
   script:
     - npm install -g modclean parcel-bundler typescript
     - yarn build
@@ -65,6 +85,14 @@ build:
 
 pkg_win:
   stage: package
+  interruptible: true
+  cache:
+    key: km-app-${CI_COMMIT_REF_SLUG}
+  artifacts:
+    expire_in: 2 days
+    name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
+    paths:
+    - bin/
   dependencies:
     - build
   script:
@@ -78,6 +106,14 @@ pkg_win:
 
 pkg_osx:
   stage: package
+  interruptible: true
+  cache:
+    key: km-app-${CI_COMMIT_REF_SLUG}
+  artifacts:
+    expire_in: 2 days
+    name: km-app-pkgosx-${CI_COMMIT_REF_SLUG}
+    paths:
+    - bin/
   dependencies:
     - build
   script:
@@ -91,7 +127,9 @@ pkg_osx:
 
 deploy_win:
   stage: deploy
-  dependencies:
+  interruptible: true
+  cache: {}
+  needs:
     - pkg_win
   script:
     - mkdir build_win
@@ -110,6 +148,8 @@ deploy_win:
 
 latest_tag:
   stage: deploy
+  interruptible: true
+  cache: {}
   script:
     - echo $CI_COMMIT_REF_NAME >latest
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put latest"
@@ -118,7 +158,9 @@ latest_tag:
 
 deploy_osx:
   stage: deploy
-  dependencies:
+  interruptible: true
+  cache: {}
+  needs:
     - pkg_osx
   script:
     - mkdir build_mac
@@ -138,6 +180,8 @@ deploy_osx:
 
 apidoc:
   stage: deploy
+  interruptible: true
+  cache: {}
   script:
     - npm install -g apidoc
     - apidoc -i src/controllers -o apidoc -t apidoc_template
