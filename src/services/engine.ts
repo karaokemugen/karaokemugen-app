@@ -95,7 +95,7 @@ export async function initEngine() {
 		profile('Init');
 	}
 	// This is done later because it's not important.
-	if (conf.Online.JinglesUpdate) await updateJingles();
+	if (conf.Online.JinglesUpdate && !state.isTest && !state.isDemo) await updateJingles();
 	buildJinglesList();
 }
 
