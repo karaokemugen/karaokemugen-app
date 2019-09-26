@@ -50,10 +50,11 @@ class AdminPage extends Component {
 
   openLoginOrProfileModal() {
     if (this.props.logInfos.token) {
-      <ProfilModal 
+      ReactDOM.render(<ProfilModal 
         settingsOnline={this.props.settings.config.Online}
         updateLogInfos={this.props.updateLogInfos}
-        logInfos={this.props.logInfos} />
+        logInfos={this.props.logInfos} 
+      />, document.getElementById('modal'));
     } else {
       ReactDOM.render(<LoginModal 
         scope='admin'
