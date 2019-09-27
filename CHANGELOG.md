@@ -34,11 +34,9 @@ Many things have changed, both in database schemas, code base, frontend, and eve
   - Advanced search (via tags/series) (#425)
 - Session management on welcome screen (#390)
   - You can now name individual karaoke sessions when starting one with friends or during events. It'll allow you to filter song history to see, for example, which songs were played during Epitanime 2020 or Jonetsu 5555. Sessions are just groups for stats but can be helpful for other purposes later.
-- System control panel is now in different languages (French/English for now) (#263)
 - QR Code has been removed (why is it a new feature?) (#451)
 - Users can now select which language for series names they tend to prefer (just like an admin can). This setting is saved to your online account. (#440)
 - New, updated sample songs included with every release (#452)
-- Blacklist criterias can now be edited (#444)
 - A small avatar is displayed next to a song in playlists to see who added it (#423)
 - Battle-tested with Node 12 (#439)
 - Karaoke Mugen is now coded with TypeScript, for better debugging and safer programming :) (#437 #391)
@@ -47,9 +45,16 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - Admins can restrict song additions by users to one song per series or singer to avoid people trying to force their favorite series or singer by adding all its songs (#431)
 - A new (shy) look for the frontend has been achieved with the React rewrite (#430)
 - Suggesting a song to be added to the karaoke base now generates an issue on our Gitlab (configurable) (#422)
+<<<<<<< Updated upstream
 - The karaoke submission form now accepts new karaoke formats in addition of ASS. The files will be converted to the ASS format on import. New formats are :
+=======
+- The karaoke submission form now accepts new karaoke formats in addition of ASS. The files will be converted to the ASS format on import. New formats supported are :
+>>>>>>> Stashed changes
   - Toyunda files (.txt)
   - UltraStar files (.txt)
+  - Karafun files (.kfn)
+- Dark theme for the system panel (#468)
+- Settings in the options panel now have tooltips to explain what they do (#460)
 
 ### Improvements
 
@@ -61,6 +66,8 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - A lot of code is now shared between Karaoke Mugen App and Server via the Karaoke Mugen Shared Library (#402) saving us a lot of time
 - Importing playlists is now safer thanks to a code rewrite by using constraints instead of tests (#329)
 - Preview videos are not generated anymore. It was costly and took a hell lot of time. Now full media files are served instead (#457)
+- Updated mpv version to 0.29.1.
+- When editing a karaoke in the system UI, tags and series are checked for differences between the old and new karaoke to avoid triggering useless refreshes.
 
 ### Fixes
 
