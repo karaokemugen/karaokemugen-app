@@ -11,6 +11,8 @@ import store from "../../store";
 
 require('./Playlist.scss');
 
+const maxBeforeUpdate = 100;
+
 class Playlist extends Component {
   constructor(props) {
     super(props);
@@ -18,7 +20,6 @@ class Playlist extends Component {
       searchValue: undefined,
       searchCriteria: undefined,
       playlistCommands: false,
-      maxBeforeUpdate: 400,
       getPlaylistInProgress: false,
       searchType: undefined
     };
@@ -245,7 +246,7 @@ class Playlist extends Component {
       store.getFilterValue(this.props.side) + 
       "&from=" +
       (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 && store.getFilterValue(this.props.side) === '' ? this.state.data.infos.from : 0) +
-      "&size=" + this.state.maxBeforeUpdate;
+      "&size=" + maxBeforeUpdate;
 
       if(this.state.searchType) {
         this.state.searchCriteria = this.state.searchCriteria ?
@@ -334,11 +335,11 @@ class Playlist extends Component {
     var percent = 100 * scroll_by / (content_height - container_height)
 
     if (this.state.data && this.state.data.infos 
-      && this.state.data.infos.count > this.state.maxBeforeUpdate 
+      && this.state.data.infos.count > maxBeforeUpdate 
       && (percent === 100 || percent === 0)) {
       var data = this.state.data;
-      data.infos.from = percent === 100 ? data.infos.from + this.state.maxBeforeUpdate : data.infos.from - this.state.maxBeforeUpdate;
-      data.infos.to = percent === 100 ? data.infos.to + this.state.maxBeforeUpdate : data.infos.to - this.state.maxBeforeUpdate;
+      data.infos.from = percent === 100 ? data.infos.from + maxBeforeUpdate : data.infos.from - maxBeforeUpdate;
+      data.infos.to = percent === 100 ? data.infos.to + maxBeforeUpdate : data.infos.to - maxBeforeUpdate;
       if (data.infos.from >= 0) {
         this.setState({data: data }, () => this.getPlaylist(undefined, true));
       }
@@ -627,7 +628,7 @@ class Playlist extends Component {
                   {this.props.config &&
                     this.props.config.Gitlab.Enabled &&
                     this.state.idPlaylist === -1 &&
-                    this.state.data.infos.count === this.state.data.infos.from + this.state.maxBeforeUpdate ? (
+                    this.state.data.infos.count === this.state.data.infos.from + maxBeforeUpdate ? (
                       <li className="list-group-item karaSuggestion" onClick={this.karaSuggestion}>
                         {i18next.t("KARA_SUGGESTION_MAIL")}
                       </li>
