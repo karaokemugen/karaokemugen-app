@@ -88,7 +88,7 @@ export async function getKaraMini(kid: string): Promise<DBKaraBase> {
 export async function getKaraLyrics(kid: string): Promise<string[]> {
 	const kara = await getKaraMini(kid);
 	if (!kara) throw `Kara ${kid} unknown`;
-	if (kara.subfile === 'dummy.ass') return ['Lyrics not available for this song'];
+	if (!kara.subfile) return ['Lyrics not available for this song'];
 	const ASS = await getASS(kara.subfile);
 	if (ASS) return ASSToLyrics(ASS);
 	return ['Lyrics not available for this song'];
