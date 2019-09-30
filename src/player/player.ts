@@ -179,7 +179,7 @@ async function startmpv() {
 		await exit(1);
 	}
 
-	if (state.os === 'darwin' && semver.satisfies(mpvVersion, '0.27.x')) mpvOptions.push('--no-native-fs');
+	if (state.os === 'darwin' && semver.gte(mpvVersion, '0.27.0')) mpvOptions.push('--no-native-fs');
 
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
 	logger.debug(`[Player] mpv binary : ${state.binPath.mpv}`);
