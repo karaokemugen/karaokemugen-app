@@ -1,6 +1,5 @@
 import {buildTypeClauses, langSelector, buildClauses, db, transaction} from '../lib/dao/database';
 import {getConfig} from '../lib/utils/config';
-import {asyncExists, asyncReadFile, resolveFileInDirs} from '../lib/utils/files';
 import { getState } from '../utils/state';
 import {pg as yesql} from 'yesql';
 import {now} from '../lib/utils/date';
@@ -152,13 +151,6 @@ export async function updateFreeOrphanedSongs(expireTime: number) {
 export async function getKaraMini(kid: string): Promise<DBKaraBase> {
 	const res = await db().query(sql.getKaraMini, [kid]);
 	return res.rows[0];
-}
-
-export async function getASS(sub: string): Promise<string> {
-	const conf = getConfig();
-	const subfile = await resolveFileInDirs(sub, conf.System.Path.Lyrics);
-	if (await asyncExists(subfile)) return await asyncReadFile(subfile, 'utf-8');
-	throw 'Subfile not found';
 }
 
 export async function addPlayed(kid: string) {

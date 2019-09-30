@@ -4,12 +4,12 @@ import {refreshTags, refreshKaraTags, refreshAllKaraTags} from '../lib/dao/tag';
 import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../lib/dao/series';
 import { saveSetting } from '../lib/dao/database';
 import { refreshYears, refreshKaras } from '../lib/dao/kara';
+import { getASS } from '../lib/dao/karafile';
 import {selectAllKaras,
 	getYears as getYearsDB,
 	getKara as getKaraDB,
 	getKaraMini as getKaraMiniDB,
 	deleteKara as deleteKaraDB,
-	getASS,
 	addKara,
 	updateKara,
 	addPlayed,
