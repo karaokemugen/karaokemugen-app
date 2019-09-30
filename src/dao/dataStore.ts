@@ -90,7 +90,7 @@ export async function baseChecksum(silent?: boolean) {
 	]);
 	const fileCount = karaFiles.length + seriesFiles.length + tagFiles.length
 	if (karaFiles.length === 0) return null;
-	logger.info(`[Store] Found ${karaFiles.length} kara files, ${seriesFiles.length} series files and ${tagFiles.length} tag files`)
+	logger.info(`[Store] Found ${karaFiles.length} karas, ${seriesFiles.length} series and ${tagFiles.length} tags`)
 	if (!silent) bar = new Bar({
 		message: 'Checking files...    '
 	}, fileCount);
