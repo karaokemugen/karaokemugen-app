@@ -1,5 +1,5 @@
 import {tagTypes} from '../lib/utils/constants';
-import {ASSToLyrics} from '../utils/ass';
+import {ASSToLyrics} from '../lib/utils/ass';
 import {refreshTags, refreshKaraTags, refreshAllKaraTags} from '../lib/dao/tag';
 import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../lib/dao/series';
 import { saveSetting } from '../lib/dao/database';
