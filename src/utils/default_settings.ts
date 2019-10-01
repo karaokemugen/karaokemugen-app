@@ -37,6 +37,7 @@ export const defaults: Config = {
 		URL: true,
 		Users: true,
 		JinglesUpdate: true,
+		IntrosUpdate: true,
 		Updates: true
 	},
 	Frontend: {
@@ -114,6 +115,8 @@ export const defaults: Config = {
 		AllowDuplicateSeries: true,
 		MaxDejaVuTime: 60,
 		RemovePublicOnPlay: false,
+		IntroVideos: true,
+		IntroVideoFile: null,
 		MysterySongs: {
 			Hide: false,
 			AddedSongVisibilityAdmin: true,
@@ -146,7 +149,8 @@ export const defaults: Config = {
 			Backgrounds: ['app/backgrounds'],
 			Bin: 'app/bin',
 			Import: 'app/import',
-			Jingles: ['app/jingles'],
+			Jingles: ['app/jingles', 'app/jingles/KaraokeMugen'],
+			Intros: ['app/intros', 'app/intros/KaraokeMugen'],
 			Karas: ['app/data/karaokes'],
 			Lyrics: ['app/data/lyrics'],
 			Medias: ['app/data/medias'],
@@ -171,6 +175,8 @@ export const configConstraints = {
 	'Online.URL': {inclusion : bools},
 	'Online.Users': {inclusion : bools},
 	'Online.Updates': {inclusion : bools},
+	'Online.JinglesUpdate': {inclusion : bools},
+	'Online.IntrosUpdate': {inclusion : bools},
 	'Online.LatestURL': {type: 'string'},
 	'Frontend.Permissions.AllowNicknameChange': {inclusion : bools},
 	'Frontend.Permissions.AllowViewBlacklist': {inclusion : bools},
@@ -217,6 +223,7 @@ export const configConstraints = {
 	'Playlist.AllowDuplicateSeries': {inclusion : bools},
 	'Playlist.RemovePublicOnPlay': {inclusion : bools},
 	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
+	'Playlist.IntroVideos': {inclusion: bools},
 	'Playlist.MysterySongs.Hide': {inclusion: bools},
 	'Playlist.MysterySongs.AddedSongVisibilityAdmin': {inclusion: bools},
 	'Playlist.MysterySongs.AddedSongVisibilityPublic': {inclusion: bools},

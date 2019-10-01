@@ -22,6 +22,7 @@ import {validateV3} from '../lib/dao/karafile';
 import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from './session';
 import { updateJingles, buildJinglesList } from './jingles';
+import { updateIntros, buildIntrosList } from './intros';
 
 export async function initEngine() {
 	profile('Init');
@@ -95,6 +96,8 @@ export async function initEngine() {
 		profile('Init');
 	}
 	// This is done later because it's not important.
+	if (conf.Online.IntrosUpdate && !state.isTest && !state.isDemo) await updateIntros();
+	buildIntrosList();
 	if (conf.Online.JinglesUpdate && !state.isTest && !state.isDemo) await updateJingles();
 	buildJinglesList();
 }

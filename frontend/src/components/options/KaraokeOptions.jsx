@@ -203,6 +203,19 @@ class KaraokeOptions extends Component {
                 isChecked={this.state.settings["Playlist.AllowDuplicateSeries"]} />
             </div>
           </div>
+
+          <div className="form-group">
+            <label className="col-xs-4 control-label" title={i18next.t("SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_TOOLTIP")}>
+            {i18next.t("SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS")}
+              &nbsp;
+              <i className="far fa-question-circle"></i>
+            </label>
+            <div className="col-xs-6">
+              <Switch idInput="Playlist.IntroVideos" handleChange={this.onChange}
+                isChecked={this.state.settings["Playlist.IntroVideos"]} />
+            </div>
+          </div>
+
           <div className="form-group">
             <label className="col-xs-4 control-label" title={i18next.t("CLASSIC_MODE_TOOLTIP")}>
               {i18next.t("CLASSIC_MODE")}
@@ -422,11 +435,20 @@ class KaraokeOptions extends Component {
           </div>
           <div className="form-group">
             <label className="col-xs-4 control-label">
-              {i18next.t("AUTO_UPDATE_JINGLES")}
+              {i18next.t("SETTINGS.KARAOKE.AUTO_UPDATE_JINGLES")}
             </label>
             <div className="col-xs-6">
               <Switch idInput="Online.JinglesUpdate" handleChange={this.onChange}
                 isChecked={this.state.settings["Online.JinglesUpdate"]} />
+            </div>
+          </div>
+          <div className="form-group">
+            <label className="col-xs-4 control-label">
+              {i18next.t("SETTINGS.KARAOKE.AUTO_UPDATE_INTROS")}
+            </label>
+            <div className="col-xs-6">
+              <Switch idInput="Online.IntrosUpdate" handleChange={this.onChange}
+                isChecked={this.state.settings["Online.IntrosUpdate"]} />
             </div>
           </div>
         </div>

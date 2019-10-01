@@ -17,6 +17,7 @@ Online:
   # Should we allow users to register/login accounts on kara.moe ?
   Users: true
   JinglesUpdate: true
+  IntrosUpdate: true
   # Should we look for updates ?
   Updates: true
 
@@ -150,6 +151,10 @@ Playlist:
   MaxDejaVuTime: 60
   # Remove songs from public playlist when they're played.
   RemovePublicOnPlay: false
+  # Enable/Disable Intro Videos
+  IntroVideos: true
+  # Specify an intro video file. KM will search in all Intro folders for that file and will play it instead of selecting a random one.
+  IntroVideoFile: PS1-Nanami.mp4
   MysterySongs:
     # Invisible songs are not hidden (they appear as a slot in playlist)
     Hide: false
@@ -184,6 +189,10 @@ System:
     Import: app/import
     Jingles:
       - app/jingles
+      - app/jingles/KaraokeMugen
+    Intros:
+      - app/intros
+      - app/intros/KaraokeMugen
     Karas:
       - app/data/karas
     Lyrics:

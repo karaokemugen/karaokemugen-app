@@ -241,7 +241,11 @@
 			"LABEL": "Lecteur"
 		},
 		"KARAOKE": {
-			"LABEL": "Karaoké"
+			"LABEL": "Karaoké",
+			"AUTO_UPDATE_JINGLES": "Mise à jour automatique des Jingles",
+			"AUTO_UPDATE_INTROS": "Mise à jour automatique des Intros",
+			"PLAYLIST_INTRO_VIDEOS": "Vidéo d'intro de playlist",
+			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Les intro vidéo sont jouées uniquement une fois si vous lancez la première chanson d'une playlist, sont suivies d'une vidéo sponsor si disponible dans les jingles."
 		},
 		"INTERFACE": {
 			"LABEL": "Interface",
@@ -256,6 +260,8 @@
 		}
 	},
 	"JINGLE_TIME": "Instant jingle !",
+	"INTRO_TIME": "Intro de playlist",
+	"SPONSOR_TIME": "LA PUB !",
 	"QUOTA_TYPE": "Type de quota",
 	"QUOTA_TYPE_TOOLTIP": "Le quota permet d'éviter que les utilisateurs n'ajoutent trop de chansons à la fois",
 	"TIME_BY_USER": "Temps par utilisateur (secondes)",
@@ -331,7 +337,6 @@
 	"UPDATE_BANNER_GET_IT": "Plus d'informations...",
 	"UPDATE_BANNER_REMIND_ME_LATER": "Plus tard",
 	"UPDATE_BANNER_DONT_BOTHER_ME": "Ne plus m'avertir",
-	"AUTO_UPDATE_JINGLES": "Mise à jour automatique des Jingles",
 	"PL_SONG_DELETED" : "Chanson supprimée de la liste de lecture",
 	"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Ajout de chanson impossible, quota atteint",
 	"PL_SONG_ADDED": "Chanson ajoutée avec succès !",

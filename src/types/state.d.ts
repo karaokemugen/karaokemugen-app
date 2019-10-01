@@ -1,3 +1,5 @@
+import { PlayerState } from "./player";
+
 export interface State {
 	currentPlaylistID?: number,
 	currentSessionID?: string,
@@ -7,6 +9,7 @@ export interface State {
 	currentRequester?: string,
 	currentlyPlayingKara?: string,
 	counterToJingle?: number,
+	introPlayed?: boolean,
 	status?: string,
 	private?: boolean,
 	fullscreen?: boolean,
@@ -24,19 +27,7 @@ export interface State {
 	os?: string,
 	osHost?: string
 	EngineDefaultLocale?: string,
-	player?: {
-		playing?: boolean,
-		fullscreen?: boolean,
-		timeposition?: number,
-		duration?: number,
-		mutestatus?: string,
-		playerstatus?: string,
-		currentlyPlaying?: boolean,
-		subtext?: string,
-		showsubs?: boolean,
-		volume?: number,
-		ready?: boolean
-	},
+	player?: PlayerState,
 	version?: {
 		number?: string,
 		name?: string,
@@ -75,7 +66,7 @@ export interface PublicState {
 	fullscreen: boolean,
 	timePosition: number,
 	duration: number,
-	muteStatus: string,
+	muteStatus: boolean,
 	playerStatus: string,
 	currentlyPlaying: string,
 	currentRequester: string,

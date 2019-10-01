@@ -4,7 +4,7 @@ import {resolvedPathBackgrounds, getConfig, resolvedPathMedias, resolvedPathTemp
 import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../lib/utils/files';
 import sample from 'lodash.sample';
-import {getSingleJingle} from '../services/jingles';
+import {getSingleJingle, getSingleSponsor} from '../services/jingles';
 import {exit} from '../services/engine';
 import {playerEnding} from '../services/player';
 import {getID3} from './id3tag';
@@ -18,6 +18,8 @@ import { imageFileTypes } from '../lib/utils/constants';
 import {PlayerState, MediaData, mpvStatus} from '../types/player';
 import retry from 'p-retry';
 import { initializationCatchphrases } from '../utils/constants';
+import { getSingleIntro } from '../services/intros';
+import { Media } from '../types/medias';
 
 const sleep = promisify(setTimeout);
 
@@ -556,6 +558,19 @@ export function displayInfo(duration: number = 10000000) {
 	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
 }
 
+export function clearText() {
+	const command = {
+		command: [
+			'expand-properties',
+			'show-text',
+			'',
+			10,
+		]
+	};
+	player.freeCommand(JSON.stringify(command));
+	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
+}
+
 export async function restartmpv() {
 	await quitmpv();
 	logger.debug('[Player] Stopped mpv (restarting)');
@@ -573,32 +588,37 @@ export async function quitmpv() {
 	playerState.ready = false;
 }
 
-export async function playJingle() {
+export async function playMedia(mediaType: 'sponsor' | 'jingle' | 'intro') {
 	playerState.playing = true;
-	playerState.mediaType = 'jingle';
-	const jingle = getSingleJingle();
-	if (jingle) {
+	playerState.mediaType = mediaType;
+	let media: Media;
+	if (mediaType === 'sponsor') media = getSingleSponsor();
+	if (mediaType === 'jingle') media = getSingleJingle();
+	if (mediaType === 'intro') media = getSingleIntro();
+	if (media) {
 		try {
-			logger.debug(`[Player] Playing jingle ${jingle.file}`);
-			const options = [`replaygain-fallback=${jingle.gain}`];
-			await retry(async () => load(jingle.file, 'replace', options), {
+			logger.debug(`[Player] Playing ${mediaType} : ${media.file}`);
+			const options = [`replaygain-fallback=${media.gain}`];
+			await retry(async () => load(media.file, 'replace', options), {
 				retries: 3,
 				onFailedAttempt: error => {
-					logger.warn(`[Player] Failed to play jingle, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
+					logger.warn(`[Player] Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
 				}
 			});
 			await player.play();
 			if (monitorEnabled) await playerMonitor.play();
-			displayInfo();
+			mediaType === 'jingle'
+				? displayInfo()
+				: clearText();
 			playerState.playerstatus = 'play';
 			playerState._playing = true;
 			emitPlayerState();
 		} catch(err) {
-			logger.error(`[Player] Unable to load jingle file ${jingle.file} : ${JSON.stringify(err)}`);
+			logger.error(`[Player] Unable to load ${mediaType} file ${media.file} : ${JSON.stringify(err)}`);
 			throw Error(err);
 		}
 	} else {
-		logger.debug('[Jingles] No jingle to play.');
+		logger.debug(`[Player] No ${mediaType} to play.`);
 		playerState.playerstatus = 'play';
 		loadBackground();
 		displayInfo();

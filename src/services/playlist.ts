@@ -201,7 +201,7 @@ export async function setCurrentPlaylist(playlist_id: number) {
 		updatePlaylistLastEditTime(playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
-		setState({currentPlaylistID: playlist_id});
+		setState({currentPlaylistID: playlist_id, introPlayed: false});
 		logger.info(`[Playlist] Playlist ${pl.name} is now current`);
 		return playlist_id;
 	} catch(err) {
