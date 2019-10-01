@@ -302,7 +302,11 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 
 	handleFilterTagSelection = (value) => {
 		//console.log(value);
-		this.setState({tagFilter:'t:'+value[1]+'~'+value[0]}, () => {
+		let t = '';
+		if(value && value[1])
+			t = 't:'+value[1]+'~'+value[0]
+
+		this.setState({tagFilter:t}, () => {
 			localStorage.setItem('karaDownloadtagFilter', this.state.tagFilter);
 			setTimeout(this.api_get_online_karas.bind(this),10);
 		});
