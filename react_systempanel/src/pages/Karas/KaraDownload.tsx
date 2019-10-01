@@ -145,12 +145,12 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		this.props.loading(true);
 		this.stopObserver();
 		putToDownloadQueuePause()
-		
+
 		var p = Math.max(0,this.state.currentPage - 1);
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
 
-		axios.get(`/api/system/karas?filter=${this.state.filter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
+		axios.get(`/api/system/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
 			.then(res => {
 				let karas = res.data.content;
 				karas.forEach((kara) => {
@@ -258,10 +258,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
 
-		console.log(this.state.tagFilter);
-
-		//https://kara.moe/api/karas/search?q=t%3A86705d4b-24e4-4756-9687-2b9c98bcf366~7%2C95ca7fca-3a9e-4f24-be25-05e21261e26e~7
-		axios.get(`/api/system/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
+				axios.get(`/api/system/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
 			.then(res => {
 				let karas = res.data.content;
 				karas = karas.map((kara) => {
@@ -353,7 +350,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 								/>
 							</Col>
 							<Col span={5}>
-								<Cascader options={this.FilterTagCascaderOption()} showSearch={{filter:this.FilterTagCascaderFilter}} onChange={this.handleFilterTagSelection.bind(this)} placeholder="Tag filter" />
+								<Cascader style={{ width: '90%' }} options={this.FilterTagCascaderOption()} showSearch={{filter:this.FilterTagCascaderFilter,matchInputWidth:false}} onChange={this.handleFilterTagSelection.bind(this)} placeholder="Tag filter" />
 							</Col>
 							<Col>
 								<Button type="primary" key="queueUpdateAll" onClick={() => updateAllToDownloadQueue()}>Update all</Button>
