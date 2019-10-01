@@ -60,7 +60,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			currentPage: parseInt(localStorage.getItem('karaDownloadPage')) || 1,
 			currentPageSize: parseInt(localStorage.getItem('karaDownloadPageSize')) || 100,
 			filter: localStorage.getItem('karaDownloadFilter') || '',
-			tagFilter: localStorage.getItem('karaDownloadtagFilter') || '',
+			tagFilter: '',
 			tags: [],
 		};
 
