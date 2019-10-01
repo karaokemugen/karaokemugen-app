@@ -227,7 +227,11 @@
 			"LABEL": "Player"
 		},
 		"KARAOKE": {
-			"LABEL": "Karaoke"
+			"LABEL": "Karaoke",
+			"AUTO_UPDATE_JINGLES": "Auto-update Jingles",
+			"AUTO_UPDATE_INTROS": "Auto-update Intros",
+			"PLAYLIST_INTRO_VIDEOS": "Playlist intro video",
+			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Intro videos are played only once if you start playing the first song of the current playlist. A sponsor jingle video follows, if available."
 		},
 		"INTERFACE": {
 			"LABEL": "Interface",
@@ -241,6 +245,8 @@
 		}
 	},
 	"JINGLE_TIME": "Jingle time!",
+	"INTRO_TIME": "Playlist intro",
+	"SPONSOR_TIME": "COMMERCIAL TIME !",
 	"QUOTA_TYPE": "Quota type",
 	"TIME_BY_USER": "Time per user (seconds)",
 	"QUOTA_TYPE_0": "No quota",
@@ -310,7 +316,6 @@
 	"UPDATE_BANNER_GET_IT": "More info...",
 	"UPDATE_BANNER_REMIND_ME_LATER": "Ask me later",
 	"UPDATE_BANNER_DONT_BOTHER_ME": "Don't ask anymore",
-	"AUTO_UPDATE_JINGLES": "Auto-update Jingles",
 	"PL_SONG_DELETED" : "Song deleted from playlist",
 	"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Can't add any song, quota reached",
 	"PL_SONG_ADDED": "Successfully added song!",

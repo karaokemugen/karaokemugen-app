@@ -10,8 +10,9 @@ let state: State = {
 	currentRequester: null,
 	currentlyPlayingKara: null,
 	counterToJingle: 1,
+	introPlayed: false,
 	status: 'stop', // [stop,play,pause] // general engine status
-	private: true, //  // karaoke mode
+	private: true, // Karaoke Mode
 	fullscreen: false,
 	ontop: true,
 	playlist: null,

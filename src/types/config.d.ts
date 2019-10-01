@@ -10,7 +10,8 @@ export interface Config {
 		Users?: boolean,
 		URL?: boolean,
 		Stats?: boolean,
-		JinglesUpdate?: boolean
+		JinglesUpdate?: boolean,
+		IntrosUpdate?: boolean,
 		Updates?: boolean
 	},
 	Frontend: {
@@ -100,6 +101,8 @@ export interface Config {
 		AllowDuplicateSeries?: boolean,
 		MaxDejaVuTime?: number,
 		RemovePublicOnPlay?: boolean,
+		IntroVideos: boolean,
+		IntroVideoFile: string,
 		MysterySongs: {
 			Hide?: boolean,
 			AddedSongVisibilityPublic?: boolean,
@@ -134,6 +137,7 @@ export interface Config {
 			Series?: string[],
 			Backgrounds?: string[],
 			Jingles?: string[],
+			Intros?: string[],
 			Temp?: string,
 			Previews?: string,
 			Import?: string,

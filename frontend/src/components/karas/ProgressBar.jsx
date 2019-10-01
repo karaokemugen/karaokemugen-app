@@ -97,6 +97,10 @@ class ProgressBar extends Component {
                     this.setState({karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1})
                 } else if (data.currentlyPlaying === -1) {
                     this.setState({karaInfoText: i18next.t('JINGLE_TIME'), length: -1})
+                } else if (data.currentlyPlaying === -2) {
+                    this.setState({karaInfoText: i18next.t('INTRO_TIME'), length: -1})
+                } else if (data.currentlyPlaying === -3) {
+                    this.setState({karaInfoText: i18next.t('SPONSOR_TIME'), length: -1})
                 } else {
                     var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
                     var kara = response.data.data;

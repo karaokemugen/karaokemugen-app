@@ -1,19 +1,19 @@
 export interface PlayerState {
-	volume: number,
-	playing: boolean,
-	playerstatus: string,
-	_playing: boolean, // internal delay flag
-	timeposition: number,
-	duration: number,
-	mutestatus: boolean,
-	subtext: string,
-	currentSongInfos: string,
-	mediaType: string,
-	showsubs: boolean,
-	stayontop: boolean,
-	fullscreen: boolean,
+	volume?: number,
+	playing?: boolean,
+	playerstatus?: string,
+	_playing?: boolean, // internal delay flag
+	timeposition?: number,
+	duration?: number,
+	mutestatus?: boolean,
+	subtext?: string,
+	currentSongInfos?: string,
+	mediaType?: string,
+	showsubs?: boolean,
+	stayontop?: boolean,
+	fullscreen?: boolean,
 	ready: boolean,
-	url: string,
+	url?: string,
 	status?: string
 }
 

@@ -2,13 +2,14 @@ import {setState, getState} from '../utils/state';
 import {getConfig} from '../lib/utils/config';
 import logger from 'winston';
 import {profile} from '../lib/utils/logger';
-import {playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo} from '../player/player';
+import {playMedia, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo} from '../player/player';
 import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
 import {previousSong, nextSong, getCurrentSong} from './playlist';
 import {promisify} from 'util';
 import { setPLCVisible } from '../dao/playlist';
+import { getSingleIntro } from './intros';
 
 const sleep = promisify(setTimeout);
 
@@ -19,6 +20,16 @@ async function playCurrentSong(now: boolean) {
 		profile('playCurrentSong');
 		try {
 			const kara = await getCurrentSong();
+			// Testing if we're on first position, if intro hasn't been played already and if we have at least one intro available
+			if (kara.pos === 1 && getSingleIntro() && !getState().introPlayed) {
+				try {
+					setState({currentlyPlayingKara: -2, introPlayed: true});
+					await playMedia('intro');
+					return;
+				} catch(err) {
+					throw err;
+				}
+			}
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
 			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
 			await play({
@@ -69,6 +80,16 @@ export async function playerEnding() {
 		setState({playerNeedsRestart: false});
 		await restartPlayer();
 	}
+	// If we just played an intro, relaunch play.
+	if (getState().player.mediaType === 'intro') {
+		setState({currentlyPlayingKara: -3});
+		await playMedia('sponsor');
+		return;
+	}
+	if (getState().player.mediaType === 'sponsor') {
+		await playCurrentSong(true);
+		return;
+	}
 	const conf = getConfig();
 	logger.info(`[Jingles] Songs before next jingle: ${conf.Karaoke.JinglesInterval - state.counterToJingle}`);
 	if (state.counterToJingle >= conf.Karaoke.JinglesInterval && conf.Karaoke.JinglesInterval > 0) {
@@ -77,7 +98,7 @@ export async function playerEnding() {
 			counterToJingle: 0
 		});
 		try {
-			await playJingle();
+			await playMedia('jingle');
 		} catch(err) {
 			logger.error(`[Jingle] Unable to play jingle file : ${err}`);
 		}
