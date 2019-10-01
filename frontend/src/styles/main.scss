@@ -102,7 +102,10 @@
         text-transform: uppercase;
         text-shadow: none;
     }
-
+    .container {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
     .container,
     .container > .row {
         height: 100%;
@@ -279,6 +282,7 @@
     .container > .row > div:last-child {
         flex-shrink: 1;
         overflow: auto;
+        width: auto;
     }
 
     ul.news li.new {
