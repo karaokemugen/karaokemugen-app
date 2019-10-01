@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Row, Col, Icon, Layout, Table, Input, Button} from 'antd';
+import {Row, Col, Icon, Layout, Table, Input, Button, Cascader} from 'antd';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import openSocket from 'socket.io-client';
 import { getLocalKaras, deleteDownloadQueue, deleteKAraFromDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause, updateAllToDownloadQueue } from '../../api/local';
 import {ReduxMappedProps} from '../../react-app-env';
 import {getCriterasByValue} from './_blc_criterias_types';
+import getTags from '../../api/getTags';
 
 var blacklist_cache = {}
 var api_get_local_karas_interval = null;
@@ -25,7 +26,24 @@ interface KaraDownloadState {
 	currentPage: number,
 	currentPageSize: number,
 	filter: string,
+	tagFilter: string,
+	tags: any[]
 }
+
+export const tagTypes = Object.freeze({
+	Singers: 2,
+	Songtypes: 3,
+	Creators: 4,
+	Langs: 5,
+	Authors: 6,
+	Misc: 7,
+	Songwriters: 8,
+	Groups: 9,
+	Families: 10,
+	Origins: 11,
+	Genres: 12,
+	Platforms: 13
+});
 
 class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 
@@ -42,6 +60,8 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			currentPage: parseInt(localStorage.getItem('karaDownloadPage')) || 1,
 			currentPageSize: parseInt(localStorage.getItem('karaDownloadPageSize')) || 100,
 			filter: localStorage.getItem('karaDownloadFilter') || '',
+			tagFilter: localStorage.getItem('karaDownloadtagFilter') || '',
+			tags: [],
 		};
 
 	}
@@ -70,11 +90,20 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			}
 		});
 
+
+
 		this.api_get_online_karas();
 		this.api_get_blacklist_criterias();
 		this.blacklist_check_emptyCache();
 		this.startObserver();
+		this.getTags();
 	}
+
+	async getTags() {
+		let tags = await getTags();
+		this.setState({tags:tags});
+	}
+
 	componentWillUnmount() {
 		this.stopObserver();
 	}
@@ -229,7 +258,10 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
 
-		axios.get(`/api/system/karas?filter=${this.state.filter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
+		console.log(this.state.tagFilter);
+
+		//https://kara.moe/api/karas/search?q=t%3A86705d4b-24e4-4756-9687-2b9c98bcf366~7%2C95ca7fca-3a9e-4f24-be25-05e21261e26e~7
+		axios.get(`/api/system/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
 			.then(res => {
 				let karas = res.data.content;
 				karas = karas.map((kara) => {
@@ -268,13 +300,46 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		setTimeout(this.api_get_online_karas.bind(this),10);
 	};
 
+	handleFilterTagSelection = (value) => {
+		//console.log(value);
+		this.setState({tagFilter:'t:'+value[1]+'~'+value[0]}, () => {
+			localStorage.setItem('karaDownloadtagFilter', this.state.tagFilter);
+			setTimeout(this.api_get_online_karas.bind(this),10);
+		});
+	}
+
+	FilterTagCascaderOption = () => {
+		let options = Object.keys(tagTypes).map(type => {
+			const typeID = tagTypes[type];
+
+			let option = {
+				value:typeID,
+				label:type,
+				children: []
+			}
+			this.state.tags.forEach(tag => {
+				if(tag.types.length && tag.types.indexOf(typeID)>=0)
+					option.children.push({
+						value:tag.tid,
+						label:tag.name,
+					})
+			})
+			return option;
+		})
+		return options;
+	}
+
+	FilterTagCascaderFilter = function(inputValue, path) {
+	  return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+	}
+
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Layout>
 					<Layout.Header>
 						<Row type="flex" justify="space-between">
-							<Col span={19}>
+							<Col span={14}>
 								<Input.Search
 									placeholder='Search filter'
 									value={this.state.filter}
@@ -282,6 +347,9 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 									enterButton="Search"
 									onSearch={this.api_get_online_karas.bind(this)}
 								/>
+							</Col>
+							<Col span={5}>
+								<Cascader options={this.FilterTagCascaderOption()} showSearch={{filter:this.FilterTagCascaderFilter}} onChange={this.handleFilterTagSelection.bind(this)} placeholder="Tag filter" />
 							</Col>
 							<Col>
 								<Button type="primary" key="queueUpdateAll" onClick={() => updateAllToDownloadQueue()}>Update all</Button>

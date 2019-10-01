@@ -59,6 +59,7 @@ export default function systemKaraController(router: Router) {
 			if (req.query.instance) {
 				karas = await getRemoteKaras(req.query.instance, {
 					filter: req.query.filter,
+					q: req.query.q ? req.query.q : '',
 					from: +req.query.from,
 					size: +req.query.size
 				});

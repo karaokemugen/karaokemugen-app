@@ -389,8 +389,13 @@ export async function getRemoteKaras(repo: string, params: KaraParams): Promise<
 	if (params.filter) URLParams.push(['filter', params.filter])
 	if (params.size) URLParams.push(['size', params.size + ''])
 	if (params.from) URLParams.push(['from', params.from + ''])
+	if (params.q)
+		URLParams.push(['q', params.q]);
+	else
+		URLParams.push(['q', '']);
+
 	const queryParams = new URLSearchParams(URLParams);
-	const res = await got(`https://${repo}/api/karas?${queryParams.toString()}`);
+	const res = await got(`https://${repo}/api/karas/search?${queryParams.toString()}`);
 	return JSON.parse(res.body);
 }
 
