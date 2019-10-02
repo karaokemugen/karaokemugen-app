@@ -149,10 +149,11 @@ async function checkPaths(config: Config) {
 	if (await asyncExists(resolve(appPath, config.System.Path.Temp))) await asyncRemove(resolve(appPath, config.System.Path.Temp));
 	// Checking paths
 	let checks = [];
-	for (const item of Object.keys(config.System.Path)) {
-		Array.isArray(item)
-			? item.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)))
-			: checks.push(asyncCheckOrMkdir(appPath, item));
+	const paths = config.System.Path;
+	for (const item of Object.keys(paths)) {
+		Array.isArray(paths[item])
+			? paths[item].forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)))
+			: checks.push(asyncCheckOrMkdir(appPath, paths[item]));
 	}
 	await Promise.all(checks);
 	logger.debug('[Launcher] Directory checks complete');
