@@ -16,7 +16,7 @@ const sql = require('./sql/database');
 
 
 export async function compareKarasChecksum(silent?: boolean): Promise<boolean> {
-	logger.info('[DB] Comparing files and database data');
+	logger.info('[Store] Comparing files and database data');
 	const [settings, currentChecksum] = await Promise.all([
 		getSettings(),
 		baseChecksum(silent)
@@ -40,13 +40,13 @@ export async function initDB() {
 	await connectDB({superuser: true, db: 'postgres', log: getState().opt.sql}, errorFunction);
 	try {
 		await db().query(`CREATE DATABASE ${conf.Database.prod.database} ENCODING 'UTF8'`);
-		logger.info('[DB] Database created');
+		logger.debug('[DB] Database created');
 	} catch(err) {
 		logger.debug('[DB] Database already exists');
 	}
 	try {
 		await db().query(`CREATE USER ${conf.Database.prod.user} WITH ENCRYPTED PASSWORD '${conf.Database.prod.password}';`);
-		logger.info('[DB] User created');
+		logger.debug('[DB] User created');
 	} catch(err) {
 		logger.debug('[DB] User already exists');
 	}
@@ -137,7 +137,6 @@ export async function initDBSystem(): Promise<boolean> {
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
 	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
-	logger.info(`Series       : ${stats.series}`);
 	logger.info(`Playlists    : ${stats.playlists}`);
 	logger.info(`Songs played : ${stats.played}`);
 	return true;

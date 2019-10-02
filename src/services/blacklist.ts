@@ -58,10 +58,9 @@ export async function deleteBlacklistCriteria(blc_id: number) {
 
 export async function addBlacklistCriteria(type: number, value: any) {
 	profile('addBLC');
-	let blcvalues: string[];
-	typeof value === 'string'
-		? blcvalues = value.split(',')
-		: blcvalues = [value];
+	const blcvalues = typeof value === 'string'
+		? value.split(',')
+		: [value];
 	logger.info(`[Blacklist] Adding criteria ${type} = ${blcvalues.toString()}`);
 	let blcList = blcvalues.map((e: string) => {
 		return {

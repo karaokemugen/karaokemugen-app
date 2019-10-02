@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 import logger from 'winston';
-import {resolvedPathBackgrounds, getConfig, resolvedPathMedias, resolvedPathTemp} from '../lib/utils/config';
+import {resolvedPathBackgrounds, getConfig, resolvedPathMedias, resolvedPathTemp, resolvedPathSubs} from '../lib/utils/config';
 import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../lib/utils/files';
 import sample from 'lodash.sample';
@@ -346,7 +346,7 @@ export async function play(mediadata: MediaData) {
 		}
 	}
 	try {
-		if (mediadata.subfile !== 'dummy.ass') subFile = await resolveFileInDirs(mediadata.subfile, conf.System.Path.Lyrics);
+		if (mediadata.subfile) subFile = await resolveFileInDirs(mediadata.subfile, resolvedPathSubs());
 	} catch(err) {
 		logger.debug(`[Player] Error while resolving subs path : ${err}`);
 		logger.warn(`[Player] Subs NOT FOUND : ${mediadata.subfile}`);

@@ -2,7 +2,7 @@ import { KaraFileV4 } from "../lib/types/kara";
 import { Series } from "../lib/types/series";
 import { checksum } from "../lib/utils/files";
 import logger, { profile } from "../lib/utils/logger";
-import { extractAllKaraFiles, extractAllSeriesFiles, extractAllTagFiles } from "../lib/services/generation";
+import { extractAllFiles } from "../lib/services/generation";
 import Bar from "../lib/utils/bar";
 import { parseKara } from "../lib/dao/karafile";
 import { getDataFromSeriesFile } from "../lib/dao/seriesfile";
@@ -84,9 +84,9 @@ export async function baseChecksum(silent?: boolean) {
 	profile('baseChecksum');
 	 let bar: any;
 	const [karaFiles, seriesFiles, tagFiles] = await Promise.all([
-		extractAllKaraFiles(),
-		extractAllSeriesFiles(),
-		extractAllTagFiles()
+		extractAllFiles('kara'),
+		extractAllFiles('series'),
+		extractAllFiles('tag')
 	]);
 	const fileCount = karaFiles.length + seriesFiles.length + tagFiles.length
 	if (karaFiles.length === 0) return null;
