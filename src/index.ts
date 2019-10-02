@@ -149,18 +149,11 @@ async function checkPaths(config: Config) {
 	if (await asyncExists(resolve(appPath, config.System.Path.Temp))) await asyncRemove(resolve(appPath, config.System.Path.Temp));
 	// Checking paths
 	let checks = [];
-	config.System.Path.Karas.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.System.Path.Tags.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.System.Path.Series.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.System.Path.Lyrics.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.System.Path.Medias.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.System.Path.Jingles.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.System.Path.Backgrounds.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Avatars));
-	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Bin));
-	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.DB));
-	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Import));
-	checks.push(asyncCheckOrMkdir(appPath, config.System.Path.Temp));
+	for (const item of Object.keys(config.System.Path)) {
+		Array.isArray(item)
+			? item.forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)))
+			: checks.push(asyncCheckOrMkdir(appPath, item));
+	}
 	await Promise.all(checks);
 	logger.debug('[Launcher] Directory checks complete');
 }
