@@ -65,7 +65,10 @@ class Config extends Component<ConfigProps, ConfigState> {
 		key: 'value',
 		render: (text, record) => (<span>
 			<Input
-				onPressEnter={() => this.saveSetting(record, record.value)}
+				onPressEnter={(e) => {
+					const target = e.target as HTMLInputElement;
+					this.saveSetting(record, target.value)
+				}}
 				defaultValue={record.value}
 			/>
 		</span>)
