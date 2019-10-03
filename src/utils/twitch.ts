@@ -47,7 +47,7 @@ function listenVoteEvents(chat: any) {
 
 export async function stopTwitch() {
 	if (client) try {
-		client.disconnect();
+		await client.disconnect();
 	} catch(err) {
 		//Non fatal.
 	} finally {
