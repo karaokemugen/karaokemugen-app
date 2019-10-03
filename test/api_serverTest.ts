@@ -861,7 +861,7 @@ describe('Song Poll', function() {
 
 	it('Get current poll status', function() {
 		var data = {
-			playlistcontent_id: 1
+			index: 1
 		};
 		return request
 			.post('/api/public/songpoll')
