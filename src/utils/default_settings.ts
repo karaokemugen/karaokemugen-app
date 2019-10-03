@@ -38,7 +38,8 @@ export const defaults: Config = {
 		Users: true,
 		JinglesUpdate: true,
 		IntrosUpdate: true,
-		Updates: true
+		Updates: true,
+		MediasHost: undefined
 	},
 	Frontend: {
 		AuthExpireTime: 15,
@@ -154,7 +155,6 @@ export const defaults: Config = {
 			Karas: ['app/data/karaokes'],
 			Lyrics: ['app/data/lyrics'],
 			Medias: ['app/data/medias'],
-			MediasHTTP: '',
 			Previews: 'app/previews',
 			Series: ['app/data/series'],
 			Tags: ['app/data/tags'],

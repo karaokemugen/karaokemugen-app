@@ -12,7 +12,8 @@ export interface Config {
 		Stats?: boolean,
 		JinglesUpdate?: boolean,
 		IntrosUpdate?: boolean,
-		Updates?: boolean
+		Updates?: boolean,
+		MediasHost: string
 	},
 	Frontend: {
 		Port?: number,
@@ -142,8 +143,7 @@ export interface Config {
 			Previews?: string,
 			Import?: string,
 			Avatars?: string,
-			Tags?: string[],
-			MediasHTTP?: string
+			Tags?: string[]
 		}
 	},
 	Database: {

@@ -338,9 +338,9 @@ export async function play(mediadata: MediaData) {
 	} catch (err) {
 		logger.debug(`[Player] Error while resolving media path : ${err}`);
 		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
-		if (conf.System.Path.MediasHTTP) {
-			mediaFile = `${conf.System.Path.MediasHTTP}/${encodeURIComponent(mediadata.media)}`;
-			logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.System.Path.MediasHTTP}`);
+		if (conf.Online.MediasHost) {
+			mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(mediadata.media)}`;
+			logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`);
 		} else {
 			throw `No media source for ${mediadata.media} (tried in ${resolvedPathMedias().toString()} and HTTP source)`;
 		}
