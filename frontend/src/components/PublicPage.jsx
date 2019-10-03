@@ -11,6 +11,7 @@ import webappClose from "../assets/dame.jpg"
 import HelpModal from "./modals/HelpModal";
 import LoginModal from "./modals/LoginModal";
 import ProfilModal from "./modals/ProfilModal";
+import ClassicModeModal from './modals/ClassicModeModal';
 import RadioButton from "./generic/RadioButton";
 import axios from "axios";
 import ProgressBar from "./karas/ProgressBar";
@@ -28,8 +29,10 @@ class PublicPage extends Component {
       mobileMenu: false,
       idsPlaylist: {left: '', right: ''},
       dropDownMenu: false,
-      searchMenuOpen: false
+      searchMenuOpen: false,
+      classicModeModal: false
     };
+    this.displayClassicModeModal = this.displayClassicModeModal.bind(this);
     this.openLoginOrProfileModal = this.openLoginOrProfileModal.bind(this);
     this.setLyrics = this.setLyrics.bind(this);
     this.getLucky = this.getLucky.bind(this);
@@ -63,6 +66,7 @@ class PublicPage extends Component {
   }
 
   async componentDidMount() {
+    getSocket().on('playerStatus', this.displayClassicModeModal);
     getSocket().on('newSongPoll', () => {
       this.setState({ isPollActive: true});
       ReactDOM.render(<PollModal />, document.getElementById('modal'));
@@ -77,6 +81,16 @@ class PublicPage extends Component {
     getSocket().on('adminMessage', data => displayMessage('info', 
       <div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br/>{data.message}</div>, data.duration));
   }
+
+  async displayClassicModeModal(data) {
+    if (data.status === 'stop' && data.playerStatus === 'pause' && data.currentRequester === this.props.logInfos.username && !this.state.classicModeModal) {
+        ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
+        this.setState({ classicModeModal: true });
+    } else if (data.playerStatus !== 'pause' && this.state.classicModeModal) {
+        ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
+        this.setState({ classicModeModal: false });
+    }
+}
 
   openLoginOrProfileModal() {
     if (this.props.logInfos.token) {
