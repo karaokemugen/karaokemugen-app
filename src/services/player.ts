@@ -134,13 +134,12 @@ async function next() {
 		await nextSong();
 		const conf = getConfig();
 		if (conf.Karaoke.ClassicMode) {
-			const kara = await getCurrentSong();
-			setState({currentRequester: kara.username});
+			await prepareClassicPauseScreen();
 			stopPlayer(true);
-			displaySongInfo(kara.infos, 10000000, true);
 			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-				if (getState().status === 'stop') await playPlayer(true);
+				// Recheck if classic mode is still enabled after the sleep timer. If it's disabled now, do not play song.
+				if (getState().status === 'stop' && getConfig().Karaoke.ClassicMode) await playPlayer(true);
 			}
 		} else if (conf.Karaoke.StreamerMode.Enabled) {
 			setState({currentRequester: null});
@@ -198,7 +197,7 @@ export async function playPlayer(now?: boolean) {
 	profile('Play');
 }
 
-function stopPlayer(now = true) {
+async function stopPlayer(now = true) {
 	if (now) {
 		logger.info('[Player] Karaoke stopping NOW');
 		stop();
@@ -207,6 +206,13 @@ function stopPlayer(now = true) {
 		logger.info('[Player] Karaoke stopping after current song');
 		setState({status: 'stop'});
 	}
+	if (getConfig().Karaoke.ClassicMode) await prepareClassicPauseScreen();
+}
+
+export async function prepareClassicPauseScreen() {
+	const kara = await getCurrentSong();
+	setState({currentRequester: kara.username});
+	displaySongInfo(kara.infos, 10000000, true);
 }
 
 function pausePlayer() {

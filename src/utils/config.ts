@@ -7,7 +7,7 @@ import {asyncCopy, asyncRequired} from '../lib/utils/files';
 import {configureIDs, configureLocale, loadConfigFiles, setConfig, verifyConfig, getConfig, setConfigConstraints} from '../lib/utils/config';
 import {configConstraints, defaults} from './default_settings';
 import {publishURL} from '../webapp/online';
-import {playerNeedsRestart} from '../services/player';
+import {playerNeedsRestart, prepareClassicPauseScreen} from '../services/player';
 import {getState, setState} from './state';
 import {setSongPoll} from '../services/poll';
 import {initStats, stopStats} from '../services/stats';
@@ -56,6 +56,8 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			updateSongsLeft(user.login, getState().modePlaylistID);
 		};
 	}
+	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
+	if (newConfig.Karaoke.ClassicMode && getState().status === 'stop') prepareClassicPauseScreen();
 	const config = setConfig(newConfig);
 	setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch
