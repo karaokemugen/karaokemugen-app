@@ -22,6 +22,10 @@ class ClassicModeModal extends Component {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h4 className="modal-title">{i18next.t("CLASSIC_MODE_TITLE_MODAL")}</h4>
+                            <button className="closeModal btn btn-action" 
+                                onClick={() => ReactDOM.unmountComponentAtNode(document.getElementById('modal'))}>
+                                <i className="fas fa-times"></i>
+                            </button>
                         </div>
                         <div className="modal-body"
                             style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>

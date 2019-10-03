@@ -10,7 +10,6 @@ import NotFoundPage from './components/NotfoundPage'
 import langs from "langs";
 import axios from "axios";
 import { readCookie, parseJwt, createCookie, eraseCookie, getSocket, is_touch_device } from "./components/tools"
-import ClassicModeModal from './components/modals/ClassicModeModal';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 class App extends Component {
@@ -20,14 +19,12 @@ class App extends Component {
             navigatorLanguage: this.getNavigatorLanguage(),
             logInfos: this.getLogInfos(),
             admpwd: window.location.search.indexOf('admpwd') ? window.location.search.split("=")[1] : undefined,
-            shutdownPopup: false,
-            classicModeModal: false
+            shutdownPopup: false
         }
         this.getSettings = this.getSettings.bind(this);
         this.updateLogInfos = this.updateLogInfos.bind(this);
         this.powerOff = this.powerOff.bind(this);
         this.logOut = this.logOut.bind(this);
-        this.displayClassicModeModal = this.displayClassicModeModal.bind(this);
         this.showVideo = this.showVideo.bind(this);
         axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
@@ -108,20 +105,9 @@ class App extends Component {
         getSocket().on('settingsUpdated', this.getSettings);
         getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
         getSocket().on('disconnect', () => this.setState({ shutdownPopup: true }));
-        getSocket().on('playerStatus', this.displayClassicModeModal);
         if (this.state.settings.config.Frontend.Mode !== 0 && axios.defaults.headers.common['authorization']) {
             const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
             this.setState({ tags: tags.concat(series, years) });
-        }
-    }
-
-    async displayClassicModeModal(data) {
-        if (data.status === 'stop' && data.playerStatus === 'pause' && data.currentRequester === this.state.logInfos.username && !this.state.classicModeModal) {
-            ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
-            this.setState({ classicModeModal: true });
-        } else if (data.playerStatus !== 'pause' && this.state.classicModeModal) {
-            ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
-            this.setState({ classicModeModal: false });
         }
     }
 
