@@ -20,6 +20,7 @@ export default function publicPollController(router: Router) {
 
  * @apiSuccess {Array} data/poll Array of `playlistcontents` objects (see `/public/playlist/current/karas` for sample)
  * @apiSuccess {Number} data/poll/votes Number of votes this song has earned
+ * @apiSuccess {Number} data/poll/index Song's index, used to cast a vote
  * @apiSuccess {Boolean} data/flag_uservoted Has the user already voted for this poll?
  * @apiSuccess {Number} data/timeLeft Miliseconds before vote ends
  * @apiSuccessExample Success-Response:
@@ -36,6 +37,7 @@ export default function publicPollController(router: Router) {
  *           {
  * 				 <See admin/playlists/[id]/karas/[plc_id] object>
  *               "votes": 0,
+ * 				 "index": 1
  *           },
  *           ...
  *       ],
@@ -68,8 +70,7 @@ export default function publicPollController(router: Router) {
  * @apiGroup Song Poll
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} [playlistcontent_id] PLC ID to vote for
-
+ * @apiParam {Number} [index] Song's `index` property to vote for
  * @apiSuccess {Array} data/poll Array of `playlistcontents` objects (see `/public/playlist/current/karas` for sample)
  * @apiSuccess {Number} data/poll/votes Number of votes this song has earned
  * @apiSuccess {Boolean} data/flag_uservoted Has the user already voted for this poll?
