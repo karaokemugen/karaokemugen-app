@@ -10,6 +10,7 @@ export function getTwitchClient() {
 }
 
 export async function initTwitch() {
+	if (client) return;
 	try {
 		const conf = getConfig();
 		const opts = {
