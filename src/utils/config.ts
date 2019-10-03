@@ -25,13 +25,17 @@ import { initTwitch, stopTwitch } from './twitch';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editSetting(part: object) {
-	const config = getConfig();
-	const oldConfig = cloneDeep(config);
-	const newConfig = merge(config, part);
-	verifyConfig(newConfig);
-	await mergeConfig(newConfig, oldConfig);
-	emitWS('settingsUpdated', config);
-	return config;
+	try {
+		const config = getConfig();
+		const oldConfig = cloneDeep(config);
+		const newConfig = merge(config, part);
+		verifyConfig(newConfig);
+		await mergeConfig(newConfig, oldConfig);
+		emitWS('settingsUpdated', config);
+		return config;
+	} catch(err) {
+		throw err;
+	}
 }
 
 /** Merge and act according to config changes */
