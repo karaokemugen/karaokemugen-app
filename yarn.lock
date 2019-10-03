@@ -794,10 +794,10 @@ cli-cursor@^2.1.0:
   dependencies:
     restore-cursor "^2.0.0"
 
-cli-progress@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/cli-progress/-/cli-progress-3.3.0.tgz#e05c5080d143f609c1c091d6d0b9aa8c526e9d6f"
-  integrity sha512-t+hem1Ce/usD+v3aI1qJ4vCxYh51nntr6GjQS4ElbNqsSUdvWPbeNHOfFHi4PkyL1wqiC/O6RBoYqnWBlGqhzA==
+cli-progress@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/cli-progress/-/cli-progress-3.3.1.tgz#e08fb6853e269c3bc7e0ad8ad0ede59035f5fbce"
+  integrity sha512-cfvv/uuWblzSI6fvpmCNREWxwzI/luelp+P7zoPlguswswWVCfsq334/U6tmh+vusJ7yzbQ3xFni9JNqiF4fAA==
   dependencies:
     colors "^1.1.2"
     string-width "^2.1.1"
@@ -1956,10 +1956,10 @@ i18next-node-fs-backend@^2.1.3:
     js-yaml "3.13.1"
     json5 "2.0.0"
 
-i18next@^17.0.17:
-  version "17.0.17"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.17.tgz#11ef6282970023147598fa0b2edd87990b49897f"
-  integrity sha512-cOIAxGV6ltvEdKoTvTKqzLGxp72T9m5Ivxsqsjikx42/GmWZVjfvfstExOSlrWMVOv47itGGXt36xatK9y+BQQ==
+i18next@^17.0.18:
+  version "17.0.18"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.18.tgz#cca2503125af2370daa4657c5320d5ef6924c23a"
+  integrity sha512-FpLbLwzYV/qen9ZTA+mOHiNzLxESnF+sQCe5wT7UShssfDiW/df5JdXuxnPsPQiUd+M1kpB3Jaawcn9RN6atig==
   dependencies:
     "@babel/runtime" "^7.3.1"
 
@@ -2314,10 +2314,10 @@ keyv@^3.0.0:
   dependencies:
     json-buffer "3.0.0"
 
-kfn-to-ass@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/kfn-to-ass/-/kfn-to-ass-1.0.4.tgz#b007b19c55ea2909af48af746f8018ed93cd4302"
-  integrity sha512-fX9baX8m9k0+4aRk92FTHonMnALJ2rRUg0fF45xAdbXAhC3Tw09Z1w788MLtfeQHumD7Hjw1okuexRNDlIYHbA==
+kfn-to-ass@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/kfn-to-ass/-/kfn-to-ass-1.0.5.tgz#038154130f0d94898001cc398987ede805442f39"
+  integrity sha512-96g9V7hWZG6sidTpQKSgtwX+pUp9bKPmOV8IkYNn+7JjQyvcRoJoriegxWCD+3TpH/xIMNV+QPXfVOCH4/CYaw==
   dependencies:
     ass-stringify "^0.1.3"
     commander "^3.0.1"
