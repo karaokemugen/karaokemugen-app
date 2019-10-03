@@ -543,9 +543,12 @@ export function displayInfo(duration: number = 10000000) {
 	const conf = getConfig();
 	const ci = conf.Karaoke.Display.ConnectionInfo;
 	let text = '';
+	const catchphrase = playerState.mediaType !== 'song'
+		? sample(initializationCatchphrases)
+		: '';
 	if (ci.Enabled) text = `${ci.Message} ${i18n.t('GO_TO')} ${getState().osURL} !`;
 	const version = `Karaoke Mugen ${getState().version.number} (${getState().version.name}) - http://karaokes.moe`;
-	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+sample(initializationCatchphrases);
+	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+catchphrase;
 	const command = {
 		command: [
 			'expand-properties',
