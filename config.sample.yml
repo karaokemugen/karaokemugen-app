@@ -141,7 +141,7 @@ Player:
     # Size in %
     Size: 30
   # When playing mp3s, enable/disable visualization effects.
-  VisualizationEffects: true
+  VisualizationEffects: false
 Playlist:
   # Allow duplicates in current playlist
   AllowDuplicates: false
