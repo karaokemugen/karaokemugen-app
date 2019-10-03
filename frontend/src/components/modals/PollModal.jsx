@@ -21,7 +21,7 @@ class PollModal extends Component {
     }
 
     postSong(event) {
-        axios.post('/api/public/songpoll', { playlistcontent_id: event.target.value });
+        axios.post('/api/public/songpoll', { index: event.target.value });
         ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
     }
 
@@ -45,7 +45,7 @@ class PollModal extends Component {
                                 <div id="nav-poll" className="modal-body" style={{ height: 3 * this.state.poll.length + 'em' }}>
                                     <div className="modal-message">
                                         {this.state.poll.map(kara => {
-                                            return <button className="btn btn-default tour poll" key={kara.playlistcontent_id} value={kara.playlistcontent_id}
+                                            return <button className="btn btn-default tour poll" key={kara.playlistcontent_id} value={kara.index}
                                                 onClick={this.postSong}
                                                 style={{
                                                     backgroundColor: 'hsl('

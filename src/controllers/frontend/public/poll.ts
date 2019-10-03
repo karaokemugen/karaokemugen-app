@@ -114,12 +114,12 @@ export default function publicPollController(router: Router) {
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			//Validate form data
 			const validationErrors = check(req.body, {
-				playlistcontent_id: {presence: true, numbersArrayValidator: true}
+				index: {presence: true, numbersArrayValidator: true}
 			});
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					const ret = await addPollVote(+req.body.playlistcontent_id,req.authToken);
+					const ret = await addPollVote(+req.body.index,req.authToken);
 					emitWS('songPollUpdated', ret.data);
 					res.json(OKMessage(null,ret.code,ret.data));
 				} catch(err) {
