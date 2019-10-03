@@ -50,6 +50,7 @@ export async function stopTwitch() {
 		client.disconnect();
 	} catch(err) {
 		//Non fatal.
+	} finally {
+		client = null;
 	}
-	client = null;
 }

@@ -61,9 +61,13 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	const config = setConfig(newConfig);
 	setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch
-	config.Karaoke.StreamerMode.Twitch.Enabled
-		? initTwitch()
-		: stopTwitch();
+	try {
+		config.Karaoke.StreamerMode.Twitch.Enabled
+			? initTwitch()
+			: stopTwitch();
+	} catch(err) {
+		logger.warn(`[Config] Could not start/stop Twitch : ${err}`);
+	}
 	// Toggling stats
 	config.Online.Stats
 		? initStats(newConfig.Online.Stats === oldConfig.Online.Stats)
