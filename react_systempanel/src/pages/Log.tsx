@@ -33,15 +33,20 @@ class Log extends Component<LogProps, LogState> {
 
 	parseLogs(data: string) {
 		const logs = [];
-		const re = new RegExp('^([0-1][0-9]|[2][0-3]):([0-5][0-9])$');
-		const lines = data.split('\n')
+		const re = /[0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT\+[0-9]{4} \(GMT\+[0-9]{2}:[0-9]{2}\) - [a-z]+:/
+		const lines = data.split("\n")
 		lines.forEach((line, i) => {
-			if (re.test(line.substr(0,5))) {
-				let a = i + 1;
+			if (re.test(line)) {
+				let a = 1;
 				let string = line;
-				while (!re.test(lines[a].substr(0,5) || '00:00')) {
-					string = string+'\n\n'+lines[a];
+				while (!re.test(lines[i + a])) {
+					string = string+"\n"+lines[i + a];
 					a++;
+					if(a>100)
+					{
+						string = string+"\n...";
+						break;
+					}
 				}
 				logs.push(string);
 			}
@@ -58,17 +63,17 @@ class Log extends Component<LogProps, LogState> {
 
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'left' }}>
 
-			<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
+			<p><Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button></p>
 			<Timeline>
 				{
-					this.state.log.map(line => {
-						let color = 'green';
-						if (line.includes( ' - warn: ')) { color = 'yellow'; }
-						if (line.includes(' - error: ')) { color = 'red'; }
-						if (line.includes(' - debug: ')) { color = 'blue'; }
+					this.state.log.map((line,i) => {
+						let color = '#a6e22d'; // green
+						if (line.includes( ' - warn: ')) { color = '#e6db74'; } // yellow
+						if (line.includes(' - error: ')) { color = '#f9265d'; } // red
+						if (line.includes(' - debug: ')) { color = '#999999'; } // blue
 						return (
-							<Timeline.Item style={{color: color }}>
-								{line}
+							<Timeline.Item key={i} style={{color: color }}>
+								<code style={{whiteSpace:'pre-wrap'}}>{line}</code>
 							</Timeline.Item>
 						);
 					})
