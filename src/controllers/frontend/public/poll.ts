@@ -114,7 +114,7 @@ export default function publicPollController(router: Router) {
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			//Validate form data
 			const validationErrors = check(req.body, {
-				playlistcontent_id: {presence: true, numbersArrayValidator: true}
+				index: {presence: true, numbersArrayValidator: true}
 			});
 			if (!validationErrors) {
 				// No errors detected
