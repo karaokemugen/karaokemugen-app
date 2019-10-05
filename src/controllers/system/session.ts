@@ -59,7 +59,7 @@ export default function systemSessionController(router: Router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					await editSession(req.params.seid, req.body.name, req.body.date);
+					await editSession(req.params.seid, req.body.name, req.body.started_at);
 					res.status(200).send('Session updated');
 				} catch(err) {
 					res.status(500).send(`Error updating session : ${err}`);
