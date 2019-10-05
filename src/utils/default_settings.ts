@@ -109,7 +109,7 @@ export const defaults: Config = {
 			PositionY: 'Bottom',
 			Size: 30,
 		},
-		VisualizationEffects: true
+		VisualizationEffects: false
 	},
 	Playlist: {
 		AllowDuplicates: false,

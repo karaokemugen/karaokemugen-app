@@ -119,7 +119,7 @@ export default function publicPollController(router: Router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					const ret = await addPollVote(+req.body.playlistcontent_id,req.authToken);
+					const ret = await addPollVote(+req.body.index,req.authToken);
 					emitWS('songPollUpdated', ret.data);
 					res.json(OKMessage(null,ret.code,ret.data));
 				} catch(err) {
