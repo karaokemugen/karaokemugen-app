@@ -76,6 +76,7 @@ export async function initPGData() {
 			windowsVerbatimArguments: state.os === 'win32'
 		});
 	} catch(err) {
+		logger.error(`[DB] Failed to initialize database : ${err.message}`);
 		throw `Init failed : ${err}`;
 	}
 }
@@ -137,10 +138,15 @@ export async function initPG() {
 	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 	if (state.os === 'win32') binPath = `"${binPath}"`;
 	// We set all stdios on ignore since pg_ctl requires a TTY terminal and will hang if we don't do that
-	await execa(binPath, options, {
-		cwd: resolve(state.appPath, state.binPath.postgres),
-		stdio: ['ignore','ignore','ignore'],
-		windowsVerbatimArguments: state.os === 'win32'
-	});
+	try {
+		await execa(binPath, options, {
+			cwd: resolve(state.appPath, state.binPath.postgres),
+			stdio: ['ignore','ignore','ignore'],
+			windowsVerbatimArguments: state.os === 'win32'
+		});
+	} catch(err) {
+		logger.error(`[DB] Failed to start PostgreSQL : ${err.message}`);
+		throw err.message;
+	}
 }
 
