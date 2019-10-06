@@ -143,7 +143,22 @@ export const defaultGuestNames = [
 	'Ore no Uta wo kike!',
 	'BUT IT WAS ME, DIO!',
 	'One Song Man',
-	'Raphtalia > Holo'
+	'Raphtalia > Holo',
+	'SAIDO CHESTO',
+	'Isekai mom',
+	'Rôdeur de la nuit',
+	'Slime',
+	'Nepu',
+	'Ganbaru Beam',
+	'Kappa of ass',
+	'KIMI GA',
+	'Rimi Choco Cornet',
+	'Doraemon',
+	'Popuko',
+	'Pipimi'
+	'Bananya'
+	'CONTRACT?'
+	'Michelle'
 ];
 
 /** Initialization catchphrases. We need more of them. */
@@ -164,7 +179,6 @@ export const initializationCatchphrases = [
 	'"Hey, want to become a karaoke maker?" ‒／人◕ ‿‿ ◕人＼',
 	'"IT\'S JJ STYLE! ‒King J.J."',
 	'"A microphone has no strength, unless the hand that holds it has courage." ‒Link',
-	'"EXPLOSION!" ‒Megumin',
 	'"I AM THE GREAT MAD SINGER, HÔÔIN KYÔMA!" ‒Okabe Rintarô',
 	'"If you are not singing with you, sing with me who sings with you!" ‒Kamina',
 	'"Do you remember the number of songs you have sung in your life?" ‒Dio Brando',
@@ -208,4 +222,5 @@ export const initializationCatchphrases = [
 	'"What you can\'t sing alone, becomes singable when you\'re with someone else." ‒Taichi Yaegashi',
 	'"Even if you\'re a bad singer, there are miracles you can seize with your voice if you sing on to the very end." ‒Uryû Minene',
 	'"You\'re singing in Japanese! If you must sing, do it in German!" ‒Asuka Langley Soryu',
+	'"A russian karaoke is fine too" ‒Shiki Tohno'
 ];
