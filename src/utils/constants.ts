@@ -155,9 +155,9 @@ export const defaultGuestNames = [
 	'Rimi Choco Cornet',
 	'Doraemon',
 	'Popuko',
-	'Pipimi'
-	'Bananya'
-	'CONTRACT?'
+	'Pipimi',
+	'Bananya',
+	'CONTRACT?',
 	'Michelle'
 ];
 
