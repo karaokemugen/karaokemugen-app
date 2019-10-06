@@ -222,5 +222,5 @@ export const initializationCatchphrases = [
 	'"What you can\'t sing alone, becomes singable when you\'re with someone else." ‒Taichi Yaegashi',
 	'"Even if you\'re a bad singer, there are miracles you can seize with your voice if you sing on to the very end." ‒Uryû Minene',
 	'"You\'re singing in Japanese! If you must sing, do it in German!" ‒Asuka Langley Soryu',
-	'"A russian karaoke is fine too" ‒Shiki Tohno'
+	'"A russian karaoke is fine too" ‒Shiki Tohno',
 ];
