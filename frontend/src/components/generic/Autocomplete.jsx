@@ -8,7 +8,7 @@ import React, {useState, useRef, useEffect, Component} from  'react';
 import './Autocomplete.scss';
 
 function Autocomplete(props){
- 
+
   const node = useRef();
   const [label, setLabel] = useState(props.label || null);
   const [placeholder, setPlaceholder] = useState(props.placeholder || null);
@@ -18,16 +18,16 @@ function Autocomplete(props){
   const [activeIndex, setActiveIndex] = useState(0);
   const [focus, setFocus] = useState(false);
   var blurDelay = null
-  
+
   const options = props.options || [];
-  
+
   const updateSelectedValue = (v) => {
     setSelectedValue(v);
     if(typeof props.onChange==="function")
       props.onChange(v);
     return;
   }
-  
+
   // INPUT USER EVENT
   const handleInputFocus = (e) => {
     setSearchValue("");
@@ -37,7 +37,7 @@ function Autocomplete(props){
     updateSelectedValue(e.target.value);
     setFocus(false);
   };
-  
+
   // SEARCH USER EVENT
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value);
@@ -53,7 +53,7 @@ function Autocomplete(props){
         updateSelectedValue(e.target.value)
       } else if(o) {
         updateSelectedValue(o.value)
-      } 
+      }
     }
     else if(e.keyCode===27) //ESC
       setFocus(false);
@@ -62,15 +62,15 @@ function Autocomplete(props){
     else if(e.keyCode===38) //UP
       setActiveIndex(fo.length > 0 ? Math.max(activeIndex-1, 0) : 0)
   };
-  
+
   const handleOptionSelection = (o) => {
     setFocus(false);
     updateSelectedValue(o.value)
   };
-  
+
   const filteredOptions = () => options.filter((o) => {
-    return o.label.toLowerCase().match(searchValue.toLowerCase())
-      || o.value.toLowerCase().match(searchValue.toLowerCase())
+    return String(o.label).toLowerCase().match(searchValue.toLowerCase())
+      || String(o.value).toLowerCase().match(searchValue.toLowerCase())
   });
 
   const handleClick = e => {
@@ -78,7 +78,7 @@ function Autocomplete(props){
       // inside click
       return;
     }
-    // outside click 
+    // outside click
     setFocus(false)
   };
 
@@ -92,11 +92,11 @@ function Autocomplete(props){
       document.removeEventListener("mousedown", handleClick);
     };
   }, [focus]); // executé au démarrage puis en cas de mise à jour de focus
-  
+
   return (
     <div className="UI-autocomplete" ref={node}>
       {
-        typeof label === "string" && label.length>0 
+        typeof label === "string" && label.length>0
           ? <label className="UI-autocomplete-label">{label}&nbsp;</label>
           : null
       }
