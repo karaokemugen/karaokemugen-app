@@ -96,9 +96,17 @@ export async function initEngine() {
 		profile('Init');
 	}
 	// This is done later because it's not important.
-	if (conf.Online.IntrosUpdate && !state.isTest && !state.isDemo) await updateIntros();
+	if (conf.Online.IntrosUpdate && !state.isTest && !state.isDemo) try {
+		await updateIntros();
+	} catch(err) {
+		// Non-fatal
+	}
 	buildIntrosList();
-	if (conf.Online.JinglesUpdate && !state.isTest && !state.isDemo) await updateJingles();
+	if (conf.Online.JinglesUpdate && !state.isTest && !state.isDemo) try {
+		await updateJingles();
+	} catch(err) {
+		// Non-fatal
+	}
 	buildJinglesList();
 }
 
