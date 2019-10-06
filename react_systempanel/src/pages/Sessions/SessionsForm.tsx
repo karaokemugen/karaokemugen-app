@@ -150,16 +150,20 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	}
 
 	columns = [{
-		title: 'Kid',
-		dataIndex: 'kid',
-		key: 'kid'
+		title: 'Last played at',
+		dataIndex: 'lastplayed_at',
+		key: 'lastplayed_at',
+		render: (text, kara) => new Date(text).toLocaleString()
+	}, {
+		title: 'Last requested at',
+		dataIndex: 'lastrequested_at',
+		key: 'lastrequested_at',
+		render: (text, kara) => new Date(text).toLocaleString()
 	}, {
 		title: 'Title',
 		dataIndex: 'title',
 		key: 'title',
-		render: (text, kara) => (<span>
-			{buildKaraTitle(kara)}
-		</span>)
+		render: (text, kara) => buildKaraTitle(kara)
 	}];
 
 }

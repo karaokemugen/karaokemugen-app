@@ -56,11 +56,6 @@ class Ranking extends Component<RankingProps, RankingState> {
 	}
 
 	columns = [{
-		title: 'Requested',
-		dataIndex: 'requested',
-		key: 'requested',
-		render: requested => requested,
-	}, {
 		title: 'Language',
 		dataIndex: 'langs',
 		key: 'langs',
@@ -79,6 +74,11 @@ class Ranking extends Component<RankingProps, RankingState> {
 		title: 'Title',
 		dataIndex: 'title',
 		key: 'title'
+	}, {
+		title: 'Requested',
+		dataIndex: 'requested',
+		key: 'requested',
+		render: requested => requested,
 	}];
 }
 
