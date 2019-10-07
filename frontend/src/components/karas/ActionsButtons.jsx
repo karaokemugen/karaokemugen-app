@@ -3,18 +3,13 @@ import i18next from 'i18next';
 import store from "../../store";
 
 class ActionsButtons extends Component {
-    constructor(props) {
-        super(props);
-        this.onRightClick = this.onRightClick.bind(this);
-    }
-
-    onRightClick(e) {
+    onRightClick = e => {
         if (this.props.scope == 'admin') {
             e.preventDefault();
             e.stopPropagation(); 
             this.props.addKara(e, store.getPosPlaying());
         }
-    }
+    };
 
     render() {
         var classValue = this.props.isHeader ? "btn btn-default" : "btn btn-sm btn-action"

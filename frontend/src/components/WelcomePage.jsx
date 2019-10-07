@@ -17,13 +17,6 @@ class WelcomePage extends Component {
       sessions: [],
       activeSession: ""
     };
-    this.getCatchphrase = this.getCatchphrase.bind(this);
-    this.getNewsFeed = this.getNewsFeed.bind(this);
-    this.openLoginOrProfileModal = this.openLoginOrProfileModal.bind(this);
-    this.getSessions = this.getSessions.bind(this);
-    this.setActiveSession = this.setActiveSession.bind(this);
-    this.closeUpdateBanner = this.closeUpdateBanner.bind(this);
-    this.stopAppUpdates = this.stopAppUpdates.bind(this);
     if (!this.props.logInfos.token) {
       this.openLoginOrProfileModal()
     }
@@ -43,17 +36,17 @@ class WelcomePage extends Component {
     }
   }
 
-  stopAppUpdates() {
+  stopAppUpdates = () => {
     this.closeUpdateBanner();
     var data = expand("Online.Updates", false);
     axios.put("/api/admin/settings", { setting: JSON.stringify(data) });
-  }
+  };
 
-  closeUpdateBanner() {
+  closeUpdateBanner = () => {
     this.setState({ latestVersion: undefined });
-  }
+  };
 
-  async getSessions() {
+  getSessions = async () => {
     if (this.props.logInfos.role === "admin") {
       const res = await axios.get("/api/admin/sessions");
       this.setState({
@@ -61,9 +54,9 @@ class WelcomePage extends Component {
         activeSession: res.data.data.filter(value => value.active)[0].name
       });
     }
-  }
+  };
 
-  async setActiveSession(value) {
+  setActiveSession = async value => {
     var sessions = this.state.sessions.filter(
       session => session.name === value
     );
@@ -81,14 +74,14 @@ class WelcomePage extends Component {
       sessionId = sessions[0].seid;
       axios.post("/api/admin/sessions/" + sessionId);
     }
-  }
+  };
 
-  async getCatchphrase() {
+  getCatchphrase = async () => {
     const res = await axios.get("/api/public/catchphrase");
     this.setState({ catchphrase: res.data });
-  }
+  };
 
-  async getNewsFeed() {
+  getNewsFeed = async () => {
     const res = await axios.get("/api/public/newsfeed");
     const data = res.data;
     var base = data[0];
@@ -159,9 +152,9 @@ class WelcomePage extends Component {
       return dateA < dateB ? 1 : dateA > dateB ? -1 : 0;
     });
     this.setState({ news: news });
-  }
+  };
 
-  openLoginOrProfileModal() {
+  openLoginOrProfileModal = () => {
     if (!this.props.logInfos.token) {
       ReactDOM.render(<LoginModal
         scope={
@@ -180,7 +173,7 @@ class WelcomePage extends Component {
         logInfos={this.props.logInfos}
       />, document.getElementById('modal'));
     }
-  }
+  };
 
   render() {
     if (this.props.logInfos.role === "admin") {

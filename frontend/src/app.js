@@ -21,11 +21,6 @@ class App extends Component {
             admpwd: window.location.search.indexOf('admpwd') ? window.location.search.split("=")[1] : undefined,
             shutdownPopup: false
         }
-        this.getSettings = this.getSettings.bind(this);
-        this.updateLogInfos = this.updateLogInfos.bind(this);
-        this.powerOff = this.powerOff.bind(this);
-        this.logOut = this.logOut.bind(this);
-        this.showVideo = this.showVideo.bind(this);
         axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     }
@@ -44,7 +39,7 @@ class App extends Component {
         return logInfos;
     }
 
-    updateLogInfos(data) {
+    updateLogInfos = data => {
         let logInfos = parseJwt(data.token);
         createCookie('mugenToken', data.token, -1);
         if (data.onlineToken) {
@@ -59,16 +54,16 @@ class App extends Component {
         axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         location.reload();
-    }
+    };
 
-    logOut() {
+    logOut = () => {
         eraseCookie('mugenToken');
         eraseCookie('mugenTokenOnline');
         this.setState({ logInfos: {} });
         axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         location.reload();
-    }
+    };
 
     async parseTags() {
         try {
@@ -111,10 +106,10 @@ class App extends Component {
         }
     }
 
-    async getSettings() {
+    getSettings = async () => {
         const res = await axios.get('/api/public/settings');
         this.setState({ settings: res.data.data });
-    }
+    };
 
     getNavigatorLanguage() {
         var navigatorLanguage;
@@ -129,14 +124,14 @@ class App extends Component {
         return navigatorLanguage;
     }
 
-    powerOff() {
+    powerOff = () => {
         axios.post("/api/admin/shutdown");
         this.setState({ shutdownPopup: true });
-    }
+    };
 
-    showVideo(file) {
+    showVideo = file => {
         this.setState({mediaFile: file});
-    }
+    };
 
     render() {
         return (

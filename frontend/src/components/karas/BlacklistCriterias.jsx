@@ -30,18 +30,16 @@ class BlacklistCriterias extends Component {
             bcType: 1002,
             bcVal: ""
         };
-        this.addBlacklistCriteria = this.addBlacklistCriteria.bind(this);
-        this.deleteCriteria = this.deleteCriteria.bind(this);
     }
 
-    addBlacklistCriteria() {
+    addBlacklistCriteria = () => {
         axios.post('/api/' + this.props.scope + '/blacklist/criterias',
             { blcriteria_type: this.state.bcType, blcriteria_value: this.state.bcVal });
-    }
+    };
 
-    deleteCriteria(bcId) {
+    deleteCriteria = bcId => {
         axios.delete('/api/' + this.props.scope + '/blacklist/criterias/' + bcId)
-    }
+    };
 
     render() {
         var types = [];

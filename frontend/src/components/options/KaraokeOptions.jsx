@@ -11,13 +11,9 @@ class KaraokeOptions extends Component {
       mysterySongLabel: "",
       settings: dotify(this.props.settings)
     }
-    this.addMysterySongLabel = this.addMysterySongLabel.bind(this);
-    this.deleteMysterySongLabel = this.deleteMysterySongLabel.bind(this);
-    this.saveMysterySongsLabels = this.saveMysterySongsLabels.bind(this);
-    this.onChange = this.onChange.bind(this);
   }
 
-  addMysterySongLabel() {
+  addMysterySongLabel = () => {
     var mysterySongsLabels = this.state.settings["Playlist.MysterySongs.Labels"];
     mysterySongsLabels.push(this.state.mysterySongLabel);
     var settings = this.state.settings;
@@ -25,21 +21,21 @@ class KaraokeOptions extends Component {
     this.setState({ settings: settings });
     this.saveMysterySongsLabels(mysterySongsLabels)
     this.setState({ mysterySongLabel: "" });
-  }
+  };
 
-  deleteMysterySongLabel(value) {
+  deleteMysterySongLabel = value => {
     var settings = this.state.settings;
     this.state.settings["Playlist.MysterySongs.Labels"] = this.state.settings["Playlist.MysterySongs.Labels"].filter(function (ele) { return ele != value });
     this.setState({ settings: settings });
     this.saveMysterySongsLabels(this.state.settings["Playlist.MysterySongs.Labels"].filter(function (ele) { return ele != value }));
-  }
+  };
 
-  async saveMysterySongsLabels(labels) {
+  saveMysterySongsLabels = async labels => {
     var data = expand("Playlist.MysterySongs.Labels", eval(labels));
     axios.put('/api/admin/settings', { setting: JSON.stringify(data) });
-  }
+  };
 
-  onChange(e) {
+  onChange = e => {
     var settings = this.state.settings;
     var value = e.target.type === 'checkbox' ? e.target.checked : 
       (Number(e.target.value) ? Number(e.target.value) : e.target.value);
@@ -51,7 +47,7 @@ class KaraokeOptions extends Component {
     settings[e.target.id] = value;
     this.setState({ settings: settings });
     if (e.target.type != "number" || (Number(e.target.value))) this.props.onChange(e);
-  }
+  };
 
   render() {
     return (
@@ -555,7 +551,7 @@ class KaraokeOptions extends Component {
         />
       </React.Fragment>
     );
-  };
+  }
 }
 
 export default KaraokeOptions;

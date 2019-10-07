@@ -9,13 +9,6 @@ class KaraDetail extends Component {
     this.state = {
       showLyrics: false
     };
-    this.getLastPlayed = this.getLastPlayed.bind(this);
-    this.moreInfo = this.moreInfo.bind(this);
-    this.showFullLyrics = this.showFullLyrics.bind(this);
-    this.getKaraDetail = this.getKaraDetail.bind(this);
-    this.getTagNames = this.getTagNames.bind(this);
-    this.changeVisibilityKara = this.changeVisibilityKara.bind(this);
-    this.getTagInLocale = this.getTagInLocale.bind(this);
     this.fullLyricsRef = React.createRef();
     this.getKaraDetail();
   }
@@ -26,16 +19,16 @@ class KaraDetail extends Component {
     }
   }
 
-  async getKaraDetail(kid) {
+  getKaraDetail = async kid => {
     var urlInfoKara = this.props.idPlaylist > 0 ?
       '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.playlistcontentId :
       '/api/public/karas/' + (kid ? kid : this.props.kid);
     var response = await axios.get(urlInfoKara);
     const kara = response.data.data;
     this.setState({ kara: kara });
-  }
+  };
 
-  getLastPlayed(lastPlayed_at, lastPlayed) {
+  getLastPlayed = (lastPlayed_at, lastPlayed) => {
     if (
       lastPlayed &&
       !lastPlayed.days &&
@@ -55,9 +48,9 @@ class KaraDetail extends Component {
     } else if (lastPlayed_at) {
       return new Date(lastPlayed_at).toLocaleDateString();
     }
-  }
+  };
 
-  async moreInfo() {
+  moreInfo = async () => {
     var externalUrl = "";
     var serie = this.state.kara.serie;
     var extraSearchInfo = "";
@@ -120,13 +113,13 @@ class KaraDetail extends Component {
     };
     xhttp.open("GET", searchUrl, true);
     xhttp.send();
-  }
+  };
 
   /**
    * show full lyrics of a given kara
    */
 
-  async showFullLyrics() {
+  showFullLyrics = async () => {
     var response = await axios.get("/api/public/karas/" + this.state.kara.kid + "/lyrics");
     if (is_touch_device()) {
       callModal('alert', i18next.t('LYRICS'), <center>{response.data.data.map(value => 
@@ -137,13 +130,13 @@ class KaraDetail extends Component {
         this.fullLyricsRef.current.scrollIntoView({ behavior: "smooth" });
       }
     }
-  }
+  };
 
-  getTagInLocale(e) {
+  getTagInLocale = e => {
     return e.i18n[this.props.navigatorLanguage] ? e.i18n[this.props.navigatorLanguage] : e.i18n['eng'];
-  }
+  };
 
-  getTagNames(data) {
+  getTagNames = data => {
     var tagNames = [];
     if (data.families) tagNames = tagNames.concat(data.families.map(e => this.getTagInLocale(e)))
     if (data.platforms) tagNames = tagNames.concat(data.platforms.map(e => this.getTagInLocale(e)))
@@ -151,14 +144,14 @@ class KaraDetail extends Component {
     if (data.origins) tagNames = tagNames.concat(data.origins.map(e => this.getTagInLocale(e)))
     if (data.misc) tagNames = tagNames.concat(data.misc.map(e => this.getTagInLocale(e)))
     return tagNames.join(', ');
-  }
+  };
 
-  changeVisibilityKara() {
+  changeVisibilityKara = () => {
     if(this.props.scope === 'admin') {
       axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.state.kara.playlistcontent_id, 
         { flag_visible: !this.state.kara.flag_visible });
     }
-  }
+  };
 
   /**
    * Build kara details depending on the data

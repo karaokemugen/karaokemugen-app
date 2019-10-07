@@ -20,60 +20,48 @@ class KaraLine extends Component {
       startSwipeX: 0,
       addKaraInProgress: false
     };
-    this.toggleKaraDetail = this.toggleKaraDetail.bind(this);
-    this.makeFavorite = this.makeFavorite.bind(this);
-    this.getTagInLocale = this.getTagInLocale.bind(this);
-    this.handleSwipe = this.handleSwipe.bind(this);
-    this.handleStart = this.handleStart.bind(this);
-    this.playKara = this.playKara.bind(this);
-    this.deleteKara = this.deleteKara.bind(this);
-    this.likeKara = this.likeKara.bind(this);
-    this.addKara = this.addKara.bind(this);
-    this.transferKara = this.transferKara.bind(this);
-    this.freeKara = this.freeKara.bind(this);
-    this.checkKara = this.checkKara.bind(this);
   }
 
-  handleSwipe(e) {
+  handleSwipe = e => {
     if (this.props.side === 1 && this.props.config.Frontend.Mode === 2
       && e.changedTouches[0].clientX > this.state.startSwipeX + 100) {
       this.setState({ addKaraInProgress: true });
       this.addKara();
       setTimeout(() => this.setState({ addKaraInProgress: false }), 800);
     }
-  }
+  };
 
-  handleStart(e) {
+  handleStart = e => {
     this.setState({ startSwipeX: e.changedTouches[0].clientX });
-  }
+  };
 
-  toggleKaraDetail() {
+  toggleKaraDetail = () => {
     this.setState({ karaDetailState: !this.state.karaDetailState });
-  }
+  };
 
-  makeFavorite() {
+  makeFavorite = () => {
     this.state.isFavorite ?
       axios.delete('/api/public/favorites', { data: { 'kid': [this.props.kara.kid] } }) :
       axios.post('/api/public/favorites', { 'kid': [this.props.kara.kid] })
     this.setState({ isFavorite: !this.state.isFavorite })
   };
 
-  getTagInLocale(tag) {
+  getTagInLocale = tag => {
     if (this.props.i18nTag && this.props.i18nTag[tag.tid]) {
       let i18nTag = this.props.i18nTag[tag.tid];
       return i18nTag[this.props.navigatorLanguage] ? i18nTag[this.props.navigatorLanguage] : i18nTag['eng'];
     } else {
       return tag.name;
     }
-  }
+  };
 
-  likeKara() {
+  likeKara = () => {
     var data = kara.flag_upvoted ? {} : dataLikeKara = { 'downvote': 'true' };
     axios.post('/api/public/playlists/public/karas/' + this.props.idPlaylist + '/vote', data);
     this.setState({ isLike: !this.state.isLike })
-  }
+  };
 
-  async deleteKara() {
+  deleteKara = async () => {
     var response;
     try {
       if (this.props.idPlaylist == -5) {
@@ -88,13 +76,13 @@ class KaraLine extends Component {
     } catch (error) {
       displayMessage('error', error.response.data.code);
     }
-  }
+  };
 
-  playKara() {
+  playKara = () => {
     axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_playing: true });
-  }
+  };
 
-  async addKara(event, pos) {
+  addKara = async (event, pos) => {
     var url;
     var data;
     var type;
@@ -140,25 +128,25 @@ class KaraLine extends Component {
     } catch (error) {
       displayMessage('warning', i18next.t(error.response.data.code));
     }
-  }
+  };
 
-  transferKara() {
+  transferKara = () => {
     this.addKara();
-  }
+  };
 
-  freeKara() {
+  freeKara = () => {
     if (this.props.scope === 'admin') {
       axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + kara.playlistcontent_id, { flag_free: true });
     }
-  }
+  };
 
-  checkKara() {
+  checkKara = () => {
     if (this.props.idPlaylist >= 0) {
       this.props.checkKara(this.props.kara.playlistcontent_id);
     } else {
       this.props.checkKara(this.props.kara.kid);
     }
-  }
+  };
 
   karaFamilies = this.props.kara.families.map(tag => {
     return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>

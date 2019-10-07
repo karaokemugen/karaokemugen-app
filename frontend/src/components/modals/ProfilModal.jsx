@@ -11,12 +11,6 @@ require("babel-polyfill");
 class ProfilModal extends Component {
     constructor(props) {
         super(props)
-        this.favImport = this.favImport.bind(this);
-        this.profileConvert = this.profileConvert.bind(this);
-        this.profileDelete = this.profileDelete.bind(this);
-        this.onKeyPress = this.onKeyPress.bind(this);
-        this.getUserDetails = this.getUserDetails.bind(this);
-        this.importAvatar = this.importAvatar.bind(this);
         this.state = {
             pathAvatar: '/avatars/',
             users: [],
@@ -31,7 +25,7 @@ class ProfilModal extends Component {
         this.getUserList();
     }
 
-    onKeyPress(event) {
+    onKeyPress = event => {
         const user = this.state.user;
         user[event.target.name] = event.target.value;
         this.setState({ user: user });
@@ -43,7 +37,7 @@ class ProfilModal extends Component {
                 this.setState({ passwordDifferent: 'form-control redBorders' });
             }
         }
-    }
+    };
 
     onClick(name, value) {
         const user = this.state.user;
@@ -69,15 +63,15 @@ class ProfilModal extends Component {
         this.setState({ users: response.data.data.filter(a => a.flag_online) });
     }
 
-    profileConvert() {
+    profileConvert = () => {
         ReactDOM.render(<OnlineProfileModal type="convert" updateLogInfos={this.props.updateLogInfos} loginServ={this.props.settingsOnline.Host} />, document.getElementById('modal'));
-    }
+    };
 
-    profileDelete() {
+    profileDelete = () => {
         ReactDOM.render(<OnlineProfileModal type="delete" updateLogInfos={this.props.updateLogInfos} />, document.getElementById('modal'));
-    }
+    };
 
-    favImport(event) {
+    favImport = event => {
         if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
         var input = event.target;
         if (input.files && input.files[0]) {
@@ -94,7 +88,7 @@ class ProfilModal extends Component {
             };
             fr.readAsText(file);
         }
-    }
+    };
 
     async favExport() {
         const exportFile = await axios.get('/api/public/favorites/export');
@@ -105,13 +99,13 @@ class ProfilModal extends Component {
         dlAnchorElem.click();
     }
 
-    async getUserDetails(event) {
+    getUserDetails = async event => {
         const response = await axios.get('/api/public/users/' + event.currentTarget.id)
         const responseUserDetails = response.data.data;
         this.setState({ userDetails: { email: responseUserDetails.email, url: responseUserDetails.url, bio: responseUserDetails.bio, } });
-    }
+    };
 
-    async importAvatar(event) {
+    importAvatar = async event => {
         var dataFile = new FormData();
         for (var i = 0; i < event.target.files.length; i++) {
             dataFile.append('avatarfile', event.target.files[i])
@@ -122,7 +116,7 @@ class ProfilModal extends Component {
         const user = this.state.user;
         user["avatar_file"] = response.data.data.avatar_file;
         this.setState({ user: user });
-    }
+    };
 
     render() {
         var listLangs = Object.keys(iso639.iso_639_2).map(k => { return { "label": iso639.iso_639_2[k][i18next.languages[0]][0], "value": k } });

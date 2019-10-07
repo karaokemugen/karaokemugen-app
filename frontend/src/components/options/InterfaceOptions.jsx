@@ -9,10 +9,9 @@ class InterfaceOptions extends Component {
     this.state = {
       settings: dotify(this.props.settings)
     };
-    this.onChange = this.onChange.bind(this);
   }
 
-  onChange(e) {
+  onChange = e => {
     var settings = this.state.settings;
     var value = e.target.type === 'checkbox' ? e.target.checked : 
       (Number(e.target.value) ? Number(e.target.value) : e.target.value);
@@ -24,7 +23,7 @@ class InterfaceOptions extends Component {
     settings[e.target.id] = value;
     this.setState({ settings: settings });
     if (e.target.type != "number" || (Number(e.target.value))) this.props.onChange(e);
-  }
+  };
 
   render() {
     return (

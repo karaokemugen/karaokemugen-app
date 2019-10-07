@@ -3,28 +3,25 @@ import React, { Component } from "react";
 require('./PlaylistMainDecorator.scss');
 
 class PlaylistMainDecorator extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
       currentSide: 1,
       startSwipeX: null,
     };
-    this.handleSwipe = this.handleSwipe.bind(this);
-    this.handleStart = this.handleStart.bind(this);
   }
 
-  handleSwipe(e) {
+  handleSwipe = e => {
     if (this.state.currentSide==1 && e.changedTouches[0].clientX < this.state.startSwipeX - 100) {
       this.setState({currentSide:2});
     } else if (this.state.currentSide==2 && e.changedTouches[0].clientX > this.state.startSwipeX + 100) {
       this.setState({currentSide:1});
     }
-  }
+  };
 
-  handleStart(e) {
+  handleStart = e => {
     this.setState({ startSwipeX: e.changedTouches[0].clientX });
-  }
+  };
 
   render() {
     return (

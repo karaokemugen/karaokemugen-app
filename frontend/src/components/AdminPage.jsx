@@ -19,10 +19,6 @@ class AdminPage extends Component {
       searchMenuOpen1: false,
       searchMenuOpen2: false
     };
-    this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
-    this.toggleSearchMenu1 = this.toggleSearchMenu1.bind(this);
-    this.toggleSearchMenu2 = this.toggleSearchMenu2.bind(this);
-    this.openLoginOrProfileModal = this.openLoginOrProfileModal.bind(this);
     if (!this.props.logInfos.token || this.props.logInfos.role !== 'admin') {
       this.openLoginOrProfileModal()
     } else if (this.props.settings.config.Online.Stats === undefined) {
@@ -30,7 +26,7 @@ class AdminPage extends Component {
     }
   }
 
-  majIdsPlaylist(side, value) {
+  majIdsPlaylist = (side, value) => {
     var idsPlaylist = this.state.idsPlaylist;
     if (side === 1) {
       idsPlaylist.left = Number(value);
@@ -38,17 +34,17 @@ class AdminPage extends Component {
       idsPlaylist.right = Number(value);
     }
     this.setState({ idsPlaylist: idsPlaylist })
-  }
+  };
 
-  toggleSearchMenu1() {
+  toggleSearchMenu1 = () => {
     this.setState({searchMenuOpen1: !this.state.searchMenuOpen1});
-  }
+  };
 
-  toggleSearchMenu2() {
+  toggleSearchMenu2 = () => {
     this.setState({searchMenuOpen2: !this.state.searchMenuOpen2});
-  }
+  };
 
-  openLoginOrProfileModal() {
+  openLoginOrProfileModal = () => {
     if (this.props.logInfos.token) {
       ReactDOM.render(<ProfilModal 
         settingsOnline={this.props.settings.config.Online}
@@ -62,7 +58,7 @@ class AdminPage extends Component {
         updateLogInfos={this.props.updateLogInfos}
       />, document.getElementById('modal'));
     }
-  }
+  };
 
   render() {
     return (

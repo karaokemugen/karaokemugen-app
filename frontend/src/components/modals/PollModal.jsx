@@ -10,20 +10,18 @@ class PollModal extends Component {
             poll: [],
             width: "100%"
         };
-        this.getSongPoll = this.getSongPoll.bind(this);
-        this.postSong = this.postSong.bind(this);
         this.getSongPoll();
     }
 
-    async getSongPoll() {
+    getSongPoll = async () => {
         var response = await axios.get('/api/public/songpoll');
         this.setState({ poll: response.data.data.poll, timeLeft: `${response.data.data.timeLeft/1000}s`, width: "0%" });
-    }
+    };
 
-    postSong(event) {
+    postSong = event => {
         axios.post('/api/public/songpoll', { index: event.target.value });
         ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
-    }
+    };
 
     render() {
         return (

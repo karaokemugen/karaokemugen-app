@@ -23,28 +23,6 @@ class Playlist extends Component {
       getPlaylistInProgress: false,
       searchType: undefined
     };
-    this.getIdPlaylist = this.getIdPlaylist.bind(this);
-    this.changeIdPlaylist = this.changeIdPlaylist.bind(this);
-    this.getPlaylist = this.getPlaylist.bind(this);
-    this.playingUpdate = this.playingUpdate.bind(this);
-    this.getPlaylistInfo = this.getPlaylistInfo.bind(this);
-    this.getPlInfosElement = this.getPlInfosElement.bind(this);
-    this.handleScroll = this.handleScroll.bind(this);
-    this.scrollToBottom = this.scrollToBottom.bind(this);
-    this.scrollToPlaying = this.scrollToPlaying.bind(this);
-    this.updateQuotaAvailable = this.updateQuotaAvailable.bind(this);
-    this.togglePlaylistCommands = this.togglePlaylistCommands.bind(this);
-    this.editNamePlaylist = this.editNamePlaylist.bind(this);
-    this.selectAllKaras = this.selectAllKaras.bind(this);
-    this.checkKara = this.checkKara.bind(this);
-    this.deleteCheckedKaras = this.deleteCheckedKaras.bind(this);
-    this.addCheckedKaras = this.addCheckedKaras.bind(this);
-    this.transferCheckedKaras = this.transferCheckedKaras.bind(this);
-    this.addAllKaras = this.addAllKaras.bind(this);
-    this.onChangeTags = this.onChangeTags.bind(this);
-    this.getPlaylistList = this.getPlaylistList.bind(this);
-    this.getPlaylistUrl = this.getPlaylistUrl.bind(this);
-    this.playlistContentsUpdated = this.playlistContentsUpdated.bind(this);
     this.playlistRef = React.createRef();
   }
 
@@ -79,11 +57,11 @@ class Playlist extends Component {
     store.removeChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
   }
 
-  playlistContentsUpdated(idPlaylist) {
+  playlistContentsUpdated = idPlaylist => {
     if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylist();
-  }
+  };
 
-  updateQuotaAvailable(data) {
+  updateQuotaAvailable = data => {
     if (this.props.logInfos.username === data.username) {
       var quotaString = '';
       if (data.quotaType == 1) {
@@ -96,9 +74,9 @@ class Playlist extends Component {
       }
       this.setState({ quotaString: quotaString })
     }
-  }
+  };
 
-  async getPlaylistList() {
+  getPlaylistList = async () => {
     const response = await axios.get(
       "/api/" + this.props.scope + "/playlists/"
     );
@@ -140,7 +118,7 @@ class Playlist extends Component {
         karacount: kmStats.data.data.karas
       });
     this.setState({ playlistList: playlistList });
-  }
+  };
 
   async getPlaylistToAddId() {
     var playlistToAdd = this.props.config.Karaoke.Private
@@ -150,7 +128,7 @@ class Playlist extends Component {
     this.setState({ playlistToAddId: response.data.data.playlist_id });
   }
 
-  getIdPlaylist() {
+  getIdPlaylist = () => {
     var value;
     if (this.props.scope === "public") {
       value =
@@ -178,33 +156,33 @@ class Playlist extends Component {
     }
     this.setState({ idPlaylist: value });
     this.props.majIdsPlaylist(this.props.side, value);
-  }
+  };
 
-  changeIdPlaylist(idPlaylist) {
+  changeIdPlaylist = idPlaylist => {
     createCookie("mugenPlVal" + this.props.side, idPlaylist, 365);
     this.setState({ idPlaylist: Number(idPlaylist),data:undefined }, this.getPlaylist);
     this.props.majIdsPlaylist(this.props.side, idPlaylist);
-  }
+  };
 
-  editNamePlaylist() {
+  editNamePlaylist = () => {
     callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: this.state.playlistInfo.name }), '', newName => {
       axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist, { name: newName, flag_visible: this.state.playlistInfo.flag_public });
       var playlistInfo = this.state.playlistInfo;
       playlistInfo.name = newName;
       this.setState({ playlistInfo: playlistInfo });
     });
-  }
-  
-  async getPlaylistInfo() {
+  };
+
+  getPlaylistInfo = async () => {
     if (!this.state.getPlaylistInProgress) {
       var response = await axios.get(
         "/api/" + this.props.scope + "/playlists/" + this.state.idPlaylist
       );
       this.setState({ playlistInfo: response.data.data });
     }
-  }
+  };
 
-  getPlaylistUrl(idPlaylistParam) {
+  getPlaylistUrl = idPlaylistParam => {
     var idPlaylist = idPlaylistParam ? idPlaylistParam : this.state.idPlaylist;
     var url;
     if (idPlaylist >= 0) {
@@ -226,9 +204,9 @@ class Playlist extends Component {
       url = "/api/public/favorites";
     }
     return url;
-  }
+  };
 
-  async getPlaylist(searchType, scrollInProgress) {
+  getPlaylist = async (searchType, scrollInProgress) => {
     var data = {getPlaylistInProgress: true};
     if (searchType) {
       data.searchType = searchType;
@@ -276,9 +254,9 @@ class Playlist extends Component {
       });
     }
     this.setState({ data: karas, getPlaylistInProgress: false });
-  }
+  };
 
-  playingUpdate(data) {
+  playingUpdate = data => {
     if (this.state.idPlaylist === data.playlist_id) {
       var playlistData = this.state.data;
       playlistData.content.forEach(kara => {
@@ -295,9 +273,9 @@ class Playlist extends Component {
       });
       this.setState({ data: playlistData });
     }
-  }
+  };
 
-  getPlInfosElement() {
+  getPlInfosElement = () => {
     var plInfos = "";
     if (this.state.idPlaylist && this.state.data) {
       plInfos =
@@ -318,7 +296,7 @@ class Playlist extends Component {
           : "");
     }
     return plInfos;
-  }
+  };
 
   outerHeight(el) {
     var height = el.offsetHeight;
@@ -328,7 +306,7 @@ class Playlist extends Component {
     return height;
   }
 
-  handleScroll() {
+  handleScroll = () => {
     var container_height = document.querySelector('#playlistContainer'+this.props.side).offsetHeight;
     var scroll_by = document.querySelector('#playlistContainer'+this.props.side).scrollTop;
     var content_height = this.outerHeight(document.querySelector('#playlistContainer'+this.props.side+ ' > ul'))
@@ -344,15 +322,15 @@ class Playlist extends Component {
         this.setState({data: data }, () => this.getPlaylist(undefined, true));
       }
     }
-  }
+  };
 
-  scrollToBottom() {
+  scrollToBottom = () => {
     var container_height = document.querySelector('.playlistContainer').offsetHeight;
     var content_height = this.outerHeight(document.querySelector('.playlistContainer > ul'))
     this.playlistRef.current.scrollTo(0, content_height - container_height - 1);
-  }
+  };
 
-  scrollToPlaying() {
+  scrollToPlaying = () => {
     let kid;
     this.state.data.content.forEach(element => { if (element.flag_playing) kid = element.kid });
     if(!kid)
@@ -363,19 +341,19 @@ class Playlist extends Component {
       return;
 
     target.scrollIntoView({ behavior: "smooth" });
-  }
+  };
 
-  togglePlaylistCommands() {
+  togglePlaylistCommands = () => {
     this.setState({ playlistCommands: !this.state.playlistCommands });
-  }
+  };
 
-  selectAllKaras() {
+  selectAllKaras = () => {
     var data = this.state.data;
     this.state.data.content.forEach(kara => kara.checked = !kara.checked);
     this.setState({ data: data });
-  }
+  };
 
-  checkKara(id) {
+  checkKara = id => {
     var data = this.state.data;
     data.content.forEach(kara => {
       if (this.state.idPlaylist >= 0) {
@@ -387,16 +365,16 @@ class Playlist extends Component {
       }
     });
     this.setState({ data: data });
-  }
+  };
 
-  async addAllKaras() {
+  addAllKaras = async () => {
     var response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
     var karaList = response.data.data.content.map(a => a.kid).join();
     displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', {count: response.data.data.content.length}));
     axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
-  }
+  };
 
-  async addCheckedKaras() {
+  addCheckedKaras = async () => {
     var idKara = this.state.data.content.filter(a => a.checked).map(a => a.kid).join();
     var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => String(a.playlistcontent_id)).join();
     var url;
@@ -432,14 +410,14 @@ class Playlist extends Component {
     } catch (error) {
       displayMessage('warning', i18next.t(error.response.data.code));
     }
-  }
+  };
 
-  transferCheckedKaras() {
+  transferCheckedKaras = () => {
     this.addCheckedKaras();
     this.deleteCheckedKaras();
-  }
+  };
 
-  async deleteCheckedKaras() {
+  deleteCheckedKaras = async () => {
     var url;
     var data;
     if (this.state.idPlaylist > 0) {
@@ -466,7 +444,7 @@ class Playlist extends Component {
         }
       }
     }
-  }
+  };
 
   karaSuggestion() {
     callModal('prompt', i18next.t('KARA_SUGGESTION_NAME'), '', function (text) {
@@ -479,13 +457,13 @@ class Playlist extends Component {
     }, store.getFilterValue(this.props.side));
   }
 
-  onChangeTags(type, value) {
+  onChangeTags = (type, value) => {
     var searchCriteria = (type === 'serie' || type === 'year') ? type : 'tag';
     var stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
     this.setState({searchCriteria: searchCriteria, searchValue: stringValue}, () => this.getPlaylist("search"));
-  }
+  };
 
-  onSortEnd({oldIndex, newIndex}) {
+  onSortEnd = ({oldIndex, newIndex}) => {
     if(oldIndex!=newIndex)
     {
       // extract playlistcontent_id based on sorter index
@@ -506,7 +484,7 @@ class Playlist extends Component {
       data.content[newIndex] = t;
       this.setState({data:data});
     }
-  };
+  }
 
   render() {
 
@@ -598,7 +576,7 @@ class Playlist extends Component {
                       pressDelay={is_touch_device() ? 150 : 0}
                       helperClass="playlist-dragged-item"
                       useDragHandle={!is_touch_device()}
-                      onSortEnd={this.onSortEnd.bind(this)}
+                      onSortEnd={this.onSortEnd}
                       /> : this.state.data.content.map(kara => {
                         return (
                           <li key={Math.random()} data-kid={kara.kid}>

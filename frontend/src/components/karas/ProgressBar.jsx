@@ -20,30 +20,25 @@ class ProgressBar extends Component {
             length: -1,
             width: 0
         };
-        this.mouseDown = this.mouseDown.bind(this);
-        this.mouseMove = this.mouseMove.bind(this);
-        this.mouseOut = this.mouseOut.bind(this);
-        this.karaInfoClick = this.karaInfoClick.bind(this);
-        this.refreshPlayerInfos = this.refreshPlayerInfos.bind(this);
     }
 
-    mouseDown(e) {
+    mouseDown = e => {
         if (this.state.status != undefined && this.state.status != '' && this.state.status != 'stop' && this.state.length != -1) {
             this.setState({mouseDown: true, width: e.pageX});
         }
-    }
+    };
 
-    mouseMove(e) {
+    mouseMove = e => {
         if (this.state.mouseDown) {
             this.setState({width: e.pageX});
         }
-    }
+    };
 
-    mouseOut() {
+    mouseOut = () => {
         if (this.state.mouseDown) {
             this.setState({mouseDown: false});
         }
-    }
+    };
 
     componentDidMount() {
         getSocket().on('playerStatus', this.refreshPlayerInfos);
@@ -60,17 +55,17 @@ class ProgressBar extends Component {
         }
     }
 
-    karaInfoClick(e) {
+    karaInfoClick = e => {
         if (this.props.scope === 'admin' && this.state.status != undefined 
             && this.state.status != '' && this.state.status != 'stop' && this.state.length != -1) {
             this.goToPosition(e);
         }
-    }
+    };
 
     /**
     * refresh the player infos
     */
-    async refreshPlayerInfos(data) {
+    refreshPlayerInfos = async data => {
         if (this.state.oldState != data) {
 
 
@@ -117,7 +112,7 @@ class ProgressBar extends Component {
             }
             this.setState({oldState: data});
         }
-    }
+    };
 
     render() {
         return (

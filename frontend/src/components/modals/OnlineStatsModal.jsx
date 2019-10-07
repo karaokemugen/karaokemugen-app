@@ -9,16 +9,15 @@ class OnlineStatsModal extends Component {
         this.state = {
             openDetails: false
         }
-        this.onClick = this.onClick.bind(this);
     }
 
-    onClick(value) {
+    onClick = value => {
         var data = expand("Online.Stats", value);
         axios.put('/api/admin/settings', {
             setting: JSON.stringify(data)
         });
         ReactDOM.unmountComponentAtNode(document.getElementById('modal'))
-    }
+    };
 
     render() {
         return (

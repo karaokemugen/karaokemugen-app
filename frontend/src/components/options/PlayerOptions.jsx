@@ -11,17 +11,14 @@ class PlayerOptions extends Component {
       displays: this.getDisplays(),
       settings: dotify(this.props.settings)
     };
-    this.putPlayerCommando = this.putPlayerCommando.bind(this);
-    this.getDisplays = this.getDisplays.bind(this);
-    this.onChange = this.onChange.bind(this);
   }
 
-  async getDisplays() {
+  getDisplays = async () => {
     const res = await axios.get('/api/admin/displays');
     this.setState({ displays: res.data.data })
-  }
+  };
 
-  putPlayerCommando(e) {
+  putPlayerCommando = e => {
     var settings = this.state.settings;
     const value = e.target.type === 'checkbox' ? e.target.checked : 
       (Number(e.target.value) ? Number(e.target.value) : e.target.value);
@@ -31,9 +28,9 @@ class PlayerOptions extends Component {
       command: e.target.getAttribute('namecommand')
     });
     this.props.onChange(e);
-  }
+  };
 
-  onChange(e) {
+  onChange = e => {
     var settings = this.state.settings;
     var value = e.target.type === 'checkbox' ? e.target.checked : 
       (Number(e.target.value) ? Number(e.target.value) : e.target.value);
@@ -45,7 +42,7 @@ class PlayerOptions extends Component {
     settings[e.target.id] = value;
     this.setState({ settings: settings });
     if (e.target.type != "number" || (Number(e.target.value))) this.props.onChange(e);
-  }
+  };
 
   render() {
     if (this.state.settings["Karaoke.Display.ConnectionInfo.Host"] === null)

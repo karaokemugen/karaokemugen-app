@@ -32,14 +32,6 @@ class PublicPage extends Component {
       searchMenuOpen: false,
       classicModeModal: false
     };
-    this.displayClassicModeModal = this.displayClassicModeModal.bind(this);
-    this.openLoginOrProfileModal = this.openLoginOrProfileModal.bind(this);
-    this.setLyrics = this.setLyrics.bind(this);
-    this.getLucky = this.getLucky.bind(this);
-    this.changePseudo = this.changePseudo.bind(this);
-    this.majIdsPlaylist = this.majIdsPlaylist.bind(this);
-    this.toggleSearchMenu = this.toggleSearchMenu.bind(this);
-    this.updateKidPlaying = this.updateKidPlaying.bind(this);
     if (!this.props.logInfos.token) {
       this.openLoginOrProfileModal();
     } else if (this.props.settings.config.Frontend.Mode === 1) {
@@ -55,7 +47,7 @@ class PublicPage extends Component {
     }
   }
 
-  majIdsPlaylist(side, value) {
+  majIdsPlaylist = (side, value) => {
     var idsPlaylist = this.state.idsPlaylist;
     if(side === 1) {
       idsPlaylist.left = Number(value);
@@ -63,7 +55,7 @@ class PublicPage extends Component {
       idsPlaylist.right = Number(value);
     }
     this.setState({idsPlaylist : idsPlaylist})
-  }
+  };
 
   async componentDidMount() {
     getSocket().on('playerStatus', this.displayClassicModeModal);
@@ -82,7 +74,7 @@ class PublicPage extends Component {
       <div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br/>{data.message}</div>, data.duration));
   }
 
-  async displayClassicModeModal(data) {
+  displayClassicModeModal = async data => {
     if (data.status === 'stop' && data.playerStatus === 'pause' && data.currentRequester === this.props.logInfos.username && !this.state.classicModeModal) {
         ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
         this.setState({ classicModeModal: true });
@@ -90,9 +82,9 @@ class PublicPage extends Component {
         ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
         this.setState({ classicModeModal: false });
     }
-}
+};
 
-  openLoginOrProfileModal() {
+  openLoginOrProfileModal = () => {
     if (this.props.logInfos.token) {
       ReactDOM.render(<ProfilModal
         settingsOnline={this.props.settings.config.Online}
@@ -108,14 +100,14 @@ class PublicPage extends Component {
         updateLogInfos={this.props.updateLogInfos}
       />, document.getElementById('modal'));
     }
-  }
+  };
 
-  setLyrics() {
+  setLyrics = () => {
     this.setState({ lyrics: !this.state.lyrics });
-  }
+  };
 
   // pick a random kara & add it after (not) asking user's confirmation
-  async getLucky() {
+  getLucky = async () => {
     var response = await axios.get('/api/public/karas?filter=' + store.getFilterValue(1)+'&random=1');
     if (response.data.data && response.data.data.content && response.data.data.content[0]) {
       var chosenOne = response.data.data.content[0].kid;
@@ -124,20 +116,20 @@ class PublicPage extends Component {
         axios.post('/api/public/karas/' + chosenOne, { requestedby: this.props.logInfos.username })
       }, 'lucky');
     }
-  }
+  };
 
-  async changePseudo(e) {
+  changePseudo = async e => {
     var response = await axios.put('/api/public/myaccount', { nickname : e.target.value });
     this.setState({pseudoValue: response.data.nickname});
-  }
+  };
 
-  toggleSearchMenu() {
+  toggleSearchMenu = () => {
     this.setState({searchMenuOpen: !this.state.searchMenuOpen});
-  }
+  };
 
-  updateKidPlaying(kid) {
+  updateKidPlaying = kid => {
     this.setState({kidPlaying: kid});
-  }
+  };
 
   render() {
     return (

@@ -32,23 +32,9 @@ class PlaylistHeader extends Component {
       tagType: 2,
       activeFilter: 1
     };
-    this.addRandomKaras = this.addRandomKaras.bind(this);
-    this.shuffle = this.shuffle.bind(this);
-    this.smartShuffle = this.smartShuffle.bind(this);
-    this.addPlaylist = this.addPlaylist.bind(this);
-    this.deletePlaylist = this.deletePlaylist.bind(this);
-    this.startFavMix = this.startFavMix.bind(this);
-    this.exportPlaylist = this.exportPlaylist.bind(this);
-    this.importPlaylist = this.importPlaylist.bind(this);
-    this.deleteAllKaras = this.deleteAllKaras.bind(this);
-    this.getKarasList = this.getKarasList.bind(this);
-    this.onChangeTags = this.onChangeTags.bind(this);
-    this.setFlagCurrent = this.setFlagCurrent.bind(this);
-    this.setFlagPublic = this.setFlagPublic.bind(this);
-    this.setFlagVisible = this.setFlagVisible.bind(this);
   }
 
-  addRandomKaras() {
+  addRandomKaras = () => {
     callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
       axios.get(this.props.getPlaylistUrl(), { random: nbOfRandoms }).then(randomKaras => {
         if (randomKaras.content.length > 0) {
@@ -63,32 +49,32 @@ class PlaylistHeader extends Component {
         }
       });
     }, '');
-  }
+  };
 
-  addPlaylist() {
+  addPlaylist = () => {
     callModal('prompt', i18next.t('CL_CREATE_PLAYLIST'), '', playlistName => {
       axios.post('/api/admin/playlists', { name: playlistName, flag_visible: false, flag_current: false, flag_public: false }).then(response => {
         this.props.changeIdPlaylist(response.data.data);
       });
     }
     );
-  }
+  };
 
-  deletePlaylist() {
+  deletePlaylist = () => {
     callModal('confirm', i18next.t('CL_DELETE_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', confirm => {
       if (confirm) {
         axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist);
       }
     });
-  }
+  };
 
-  async startFavMix() {
+  startFavMix = async () => {
     var response = await axios.get('/api/public/users/');
     var userList = response.data.data.filter(u => u.type < 2);
     ReactDOM.render(<FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList} />, document.getElementById('modal'));
-  }
+  };
 
-  async exportPlaylist() {
+  exportPlaylist = async () => {
     var url = this.props.idPlaylist === -5 ? '/api/public/favorites' : '/api' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export'
     var response = await axios.get(url);
     var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
@@ -100,9 +86,9 @@ class PlaylistHeader extends Component {
       dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.playlistInfo.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
     }
     dlAnchorElem.click();
-  }
+  };
 
-  importPlaylist() {
+  importPlaylist = () => {
     if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
     var input = this;
     if (input.files && input.files[0]) {
@@ -131,38 +117,38 @@ class PlaylistHeader extends Component {
       };
       fr.readAsText(file);
     }
-  }
+  };
 
-  deleteAllKaras() {
+  deleteAllKaras = () => {
     axios.put(this.props.getPlaylistUrl().replace('/karas', '') + '/empty');
-  }
+  };
 
-  setFlagCurrent() {
+  setFlagCurrent = () => {
     if (!this.props.playlistInfo.flag_current) {
       axios.put('/api/admin/playlists/' + this.props.idPlaylist + '/setCurrent');
     }
-  }
+  };
 
-  setFlagPublic() {
+  setFlagPublic = () => {
     if (!this.props.playlistInfo.flag_public) {
       axios.put('/api/admin/playlists/' + this.props.idPlaylist + '/setPublic');
     }
-  }
+  };
 
-  setFlagVisible() {
+  setFlagVisible = () => {
     axios.put('/api/admin/playlists/' + this.props.idPlaylist,
       { name: this.props.playlistInfo.name, flag_visible: !this.props.playlistInfo.flag_visible });
-  }
+  };
 
-  shuffle() {
+  shuffle = () => {
     axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle')
-  }
+  };
 
-  smartShuffle() {
+  smartShuffle = () => {
     axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle', { smartShuffle: 1 })
-  }
+  };
 
-  getKarasList(activeFilter, searchType) {
+  getKarasList = (activeFilter, searchType) => {
     this.setState({ activeFilter: activeFilter });
     if (activeFilter === 2 && this.props.idPlaylist !== -5) {
       this.props.changeIdPlaylist(-5)
@@ -170,12 +156,12 @@ class PlaylistHeader extends Component {
       this.props.changeIdPlaylist(-1);
     }
     this.props.getPlaylist(searchType);
-  }
+  };
 
-  onChangeTags(value) {
+  onChangeTags = value => {
     this.setState({ activeFilter: 5 });
     this.props.onChangeTags(this.state.tagType, value);
-  }
+  };
 
   render() {
     const commandsControls = (

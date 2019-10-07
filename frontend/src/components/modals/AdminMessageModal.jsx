@@ -11,10 +11,9 @@ class AdminMessageModal extends Component {
 			message: '',
 			destination: 'screen'
         }
-        this.onClick = this.onClick.bind(this);
     }
 
-    onClick() {
+    onClick = () => {
         var defaultDuration = 5000;
         var msgData = {
           message: this.state.message,
@@ -26,7 +25,7 @@ class AdminMessageModal extends Component {
         };
         axios.post("/api/admin/player/message", msgData);
         ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
-    }
+    };
 
     render() {
         return (

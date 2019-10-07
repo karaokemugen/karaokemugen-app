@@ -16,12 +16,9 @@ class AdminHeader extends Component {
       dropDownMenu: false,
       songVisibilityOperator: Boolean(this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin)
     };
-    this.saveMode = this.saveMode.bind(this);
-    this.adminMessage = this.adminMessage.bind(this);
-    this.saveOperatorAdd = this.saveOperatorAdd.bind(this);
   }
 
-  
+
   componentDidMount() {
     getSocket().on("playerStatus", data => {
       var val = parseInt(data.volume);
@@ -40,17 +37,17 @@ class AdminHeader extends Component {
     }
   }
 
-  saveMode(mode) {
+  saveMode = mode => {
     var data = expand("Karaoke.Private", mode);
     this.setState({ privateMode: mode });
     axios.put("/api/admin/settings", { setting: JSON.stringify(data) });
-  }
+  };
 
-  saveOperatorAdd(songVisibility) {
+  saveOperatorAdd = songVisibility => {
     var data = expand("Playlist.MysterySongs.AddedSongVisibilityAdmin", songVisibility);
     this.setState({ songVisibilityOperator: songVisibility });
     axios.put("/api/admin/settings", { setting: JSON.stringify(data) });
-  }
+  };
 
   putPlayerCommando(event) {
     var namecommand = event.currentTarget.getAttribute("namecommand");
@@ -73,9 +70,9 @@ class AdminHeader extends Component {
     axios.put("/api/admin/player", data);
   }
 
-  adminMessage() {
+  adminMessage = () => {
     ReactDOM.render(<AdminMessageModal />, document.getElementById('modal'));
-  }
+  };
 
   render() {
     let volume = parseInt(this.state.statusPlayer.volume);

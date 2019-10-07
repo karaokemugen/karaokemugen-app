@@ -10,10 +10,9 @@ class FavMixModal extends Component {
             modalLoginServ: this.props.loginServ,
             password: ''
         }
-        this.onClick = this.onClick.bind(this);
     }
 
-    onClick() {
+    onClick = () => {
         var response;
         if (this.props.type === 'convert') {
             response = axios.post('/api/public/myaccount/online', { instance: this.state.modalLoginServ, password: this.state.password });
@@ -24,7 +23,7 @@ class FavMixModal extends Component {
         }
         this.props.updateLogInfos(response);
         ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
-    }
+    };
 
     render() {
         return (

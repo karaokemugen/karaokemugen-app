@@ -5,21 +5,15 @@ import { is_touch_device,startIntro } from '../tools';
 import ReactDOM from 'react-dom';
 
 class HelpModal extends Component {
-    constructor(props) {
-        super(props);
-        this.mugenTouchscreenHelp = this.mugenTouchscreenHelp.bind(this);
-        this.tourAgain = this.tourAgain.bind(this);
-    }
-
-    mugenTouchscreenHelp() {
+    mugenTouchscreenHelp = () => {
         createCookie('mugenTouchscreenHelp', true, -1);
         ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
-    }
+    };
 
-    tourAgain() {
+    tourAgain = () => {
 		startIntro('public', 'afterLogin');
 		ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
-	}
+	};
 
     render() {
         return (

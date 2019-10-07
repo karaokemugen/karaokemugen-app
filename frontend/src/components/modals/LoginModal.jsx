@@ -9,11 +9,6 @@ import ReactDOM from 'react-dom';
 class LoginModal extends Component {
     constructor(props) {
         super(props)
-        this.login = this.login.bind(this);
-        this.loginGuest = this.loginGuest.bind(this);
-        this.loginUser = this.loginUser.bind(this);
-        this.onKeyPress = this.onKeyPress.bind(this);
-        this.signup = this.signup.bind(this);
         this.state = {
             redBorders: '',
             errorBackground: '',
@@ -29,7 +24,7 @@ class LoginModal extends Component {
         }
     }
 
-    async login(username, password) {
+    login = async (username, password) => {
         var url = '/api/auth/login';
         var data = { username: username, password: password };
 
@@ -59,20 +54,20 @@ class LoginModal extends Component {
         }
     };
 
-    loginGuest() {
+    loginGuest = () => {
         Fingerprint2.get({ excludes: { userAgent: true } }, (components) => {
             var values = components.map(function (component) { return component.value })
             var murmur = Fingerprint2.x64hash128(values.join(''), 31)
             this.login('', murmur);
         });
-    }
+    };
 
-    loginUser() {
+    loginUser = () => {
         var username = this.state.login + (this.state.serv ? '@' + this.state.serv : '');
         this.login(username, this.state.password);
-    }
+    };
 
-    signup() {
+    signup = () => {
         if (this.state.login.includes('@')) {
             this.setState({ errorBackground: 'errorBackground' });
             displayMessage('warning', i18next.t('CHAR_NOT_ALLOWED', {char:'@'}));
@@ -100,13 +95,13 @@ class LoginModal extends Component {
                     this.setState({ redBorders: 'redBorders' });
                 });
         }
-    }
+    };
 
-    onKeyPress(e) {
+    onKeyPress = e => {
         if (e.which == 13) {
             this.signup();
         }
-    }
+    };
 
     render() {
         var loginModalClassName = readCookie('publicTuto') ? "modal modalPage" : "modal modalPage firstRun";
