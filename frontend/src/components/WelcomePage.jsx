@@ -6,6 +6,8 @@ import LoginModal from "./modals/LoginModal";
 import logo from "../assets/Logo-final-fond-transparent.png";
 import Autocomplete from "./generic/Autocomplete";
 import { expand } from "./tools";
+import ReactDOM from 'react-dom';
+
 class WelcomePage extends Component {
   constructor(props) {
     super(props);
