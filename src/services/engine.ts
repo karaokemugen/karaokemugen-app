@@ -122,7 +122,7 @@ export async function exit(rc: any) {
 	}
 	if (getTwitchClient()) await stopTwitch();
 
-	closeDB();
+	await closeDB();
 	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
 	if (getConfig() && getConfig().Karaoke.StreamerMode.Twitch.Enabled) await stopTwitch();
 	try {
