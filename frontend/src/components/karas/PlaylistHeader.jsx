@@ -254,7 +254,7 @@ class PlaylistHeader extends Component {
           }
         </div> : null);
 
-    const searchMenu = (this.props.tags ? <nav className="navbar navbar-default  searchMenuContainer">
+    const searchMenu = (this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).length > 0 ? <nav className="navbar navbar-default  searchMenuContainer">
       <div className="searchMenu container" id={"searchMenu" + this.props.side}>
         <ul className="nav navbar-nav">
           <li className={"tagFilter " + (this.state.activeFilter === 5 ? "active" : "")}>
