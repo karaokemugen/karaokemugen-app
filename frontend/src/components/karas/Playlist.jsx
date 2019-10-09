@@ -8,10 +8,14 @@ import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSock
 import BlacklistCriterias from "./BlacklistCriterias";
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 import store from "../../store";
+import { AutoSizer, InfiniteLoader, CellMeasurer, CellMeasurerCache, List } from 'react-virtualized'
 
 require('./Playlist.scss');
 
-const maxBeforeUpdate = 100;
+const chunksize = 100;
+const _cache = new CellMeasurerCache({ defaultHeight: 30, fixedWidth: true });
+const STATUS_LOADING = 777;
+let loadMoreRowsTimeout = null;
 
 class Playlist extends Component {
   constructor(props) {
@@ -21,7 +25,9 @@ class Playlist extends Component {
       searchCriteria: undefined,
       playlistCommands: false,
       getPlaylistInProgress: false,
-      searchType: undefined
+      searchType: undefined,
+      chunks: [],
+      data: {infos:{}}
     };
     this.playlistRef = React.createRef();
   }
@@ -31,7 +37,7 @@ class Playlist extends Component {
       this.getPlaylistList();
       await this.getPlaylistToAddId();
       await this.getIdPlaylist();
-      this.getPlaylist();
+      this.loadChunk(0);
     }
     getSocket().on("playingUpdated", this.playingUpdate);
     getSocket().on("playlistsUpdated", this.getPlaylistList);
@@ -56,6 +62,131 @@ class Playlist extends Component {
   componentWillUnmount() {
     store.removeChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
   }
+
+  SortableList = SortableContainer(List, { withRef: true })
+  SortableItem = SortableElement(({value,key}) => {
+    console.log(value)
+    console.log(key)
+    let kara = value;
+    return <li className={!is_touch_device() && this.props.scope === 'admin' ? "playlist-draggable-item" : ""} data-kid={kara.kid}>
+        <KaraLine
+          key={kara.kid}
+          kara={kara}
+          scope={this.props.scope}
+          idPlaylist={this.state.idPlaylist}
+          playlistInfo={this.state.playlistInfo}
+          i18nTag={this.state.data.i18n}
+          navigatorLanguage={this.props.navigatorLanguage}
+          playlistToAddId={this.state.playlistToAddId}
+          side={this.props.side}
+          config={this.props.config}
+          logInfos={this.props.logInfos}
+          playlistCommands={this.state.playlistCommands}
+          idPlaylistTo={this.props.idPlaylistTo}
+          checkKara={this.checkKara}
+          showVideo={this.props.showVideo}
+        />
+    </li>
+  });
+
+ chunkIndex = (i) => {
+  return Math.floor(i/chunksize);
+}
+
+ getChunkValue = (i) => {
+  if(this.isRowLoaded({index:i}))
+  {
+    const c = this.chunkIndex(i)
+    const chunk = this.state.chunks[c];
+    return chunk[i%chunksize];
+  }
+  else
+  {
+    return false;
+  }
+}
+
+ setChunkValue = (i,v) => {
+  if(this.isRowLoaded({index:i}))
+  {
+    const c = this.chunkIndex(i)
+    const chunk = this.state.chunks[c];
+    return chunk[i%chunksize] = v;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+loadChunk = async (index) => {
+  if(index.length)
+  {
+    for(let i=0;i<index.length;i++)
+    {
+      await this.loadChunk(index[i]);
+    }
+  }
+  else
+  {
+    let c = this.chunkIndex(index)
+    var chunks = this.state.chunks;
+    if(chunks[c])
+      return chunks[c];
+    
+    chunks[c] = STATUS_LOADING;
+    var data = this.state.data;
+    data.infos.from = c*100;
+    data.infos.to = c*100+chunksize;
+    await this.setState({data: data });
+    await this.getPlaylist(undefined, true);
+    chunks[c] = this.state.data.content
+    console.log(chunks)
+    this.setState({chunks: chunks});
+  }
+}
+
+isRowLoaded = ({index}) => {
+  let c = this.chunkIndex(index)
+  var chunks = this.state.chunks;
+  return !!chunks[c] && chunks[c]!==STATUS_LOADING
+}
+
+ loadMoreRows = ({startIndex, stopIndex}) => {
+  clearTimeout(loadMoreRowsTimeout);
+  loadMoreRowsTimeout = setTimeout(() => {
+    this.loadChunk([startIndex,stopIndex]);
+  },100)
+}
+
+
+rowRenderer = ({ index, isScrolling, key, parent, style }) => {
+  let content;
+  const c = this.chunkIndex(index)
+  const chunk = this.state.chunks[c];
+  console.log(chunk)
+  if (!chunk || chunk === STATUS_LOADING)
+  {
+    content = (<div />);
+  }
+  else
+  {
+    let kara = chunk[index%chunksize];
+    content = kara;
+
+  }
+  return (
+    <CellMeasurer
+      cache={_cache}
+      columnIndex={0}
+      key={key}
+      parent={parent}
+      rowIndex={index}
+      >
+      <this.SortableItem key={key} index={index} style={style} value={content} />
+    </CellMeasurer>
+  );
+}
 
   playlistContentsUpdated = idPlaylist => {
     if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylist();
@@ -224,7 +355,7 @@ class Playlist extends Component {
       store.getFilterValue(this.props.side) + 
       "&from=" +
       (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 && store.getFilterValue(this.props.side) === '' ? this.state.data.infos.from : 0) +
-      "&size=" + maxBeforeUpdate;
+      "&size=" + chunksize;
 
       if(this.state.searchType) {
         this.state.searchCriteria = this.state.searchCriteria ?
@@ -313,11 +444,11 @@ class Playlist extends Component {
     var percent = 100 * scroll_by / (content_height - container_height)
 
     if (this.state.data && this.state.data.infos 
-      && this.state.data.infos.count > maxBeforeUpdate 
+      && this.state.data.infos.count > chunksize 
       && (percent === 100 || percent === 0)) {
       var data = this.state.data;
-      data.infos.from = percent === 100 ? data.infos.from + maxBeforeUpdate : data.infos.from - maxBeforeUpdate;
-      data.infos.to = percent === 100 ? data.infos.to + maxBeforeUpdate : data.infos.to - maxBeforeUpdate;
+      data.infos.from = percent === 100 ? data.infos.from + chunksize : data.infos.from - chunksize;
+      data.infos.to = percent === 100 ? data.infos.to + chunksize : data.infos.to - chunksize;
       if (data.infos.from >= 0) {
         this.setState({data: data }, () => this.getPlaylist(undefined, true));
       }
@@ -463,9 +594,28 @@ class Playlist extends Component {
     this.setState({searchCriteria: searchCriteria, searchValue: stringValue}, () => this.getPlaylist("search"));
   };
 
-  onSortEnd = ({oldIndex, newIndex}) => {
-    if(oldIndex!=newIndex)
-    {
+  sortRow = ({oldIndex, newIndex}) => {
+		if(oldIndex>newIndex)
+		{
+			let temp = getChunkValue(oldIndex);
+			for(let i=oldIndex; i>newIndex; i--)
+			{
+				setChunkValue(i, getChunkValue(i-1));
+			}
+			setChunkValue(newIndex, temp);
+		}
+		else if(oldIndex < newIndex)
+		{
+			let temp = getChunkValue(oldIndex);
+			for(let i=oldIndex; i<newIndex; i++)
+			{
+				setChunkValue(i, getChunkValue(i+1));
+			}
+			setChunkValue(newIndex, temp);
+		}
+		if(oldIndex !== newIndex)
+		{
+      this.setState({chunks: chunks});
       // extract playlistcontent_id based on sorter index
       let playlistcontent_id = this.state.data.content[oldIndex].playlistcontent_id;
 
@@ -483,44 +633,10 @@ class Playlist extends Component {
       data.content[oldIndex] = data.content[newIndex];
       data.content[newIndex] = t;
       this.setState({data:data});
-    }
-  }
+		}
+	}
 
   render() {
-
-    const SortableItem = SortableElement(({value,index}) => {
-      let kara = value;
-      return <li className={!is_touch_device() && this.props.scope === 'admin' ? "playlist-draggable-item" : ""} data-kid={kara.kid}>
-          <KaraLine
-            key={kara.kid}
-            kara={kara}
-            scope={this.props.scope}
-            idPlaylist={this.state.idPlaylist}
-            playlistInfo={this.state.playlistInfo}
-            i18nTag={this.state.data.i18n}
-            navigatorLanguage={this.props.navigatorLanguage}
-            playlistToAddId={this.state.playlistToAddId}
-            side={this.props.side}
-            config={this.props.config}
-            logInfos={this.props.logInfos}
-            playlistCommands={this.state.playlistCommands}
-            idPlaylistTo={this.props.idPlaylistTo}
-            checkKara={this.checkKara}
-            showVideo={this.props.showVideo}
-          />
-      </li>
-    });
-
-    const SortableList = SortableContainer(({items}) => {
-      return (
-        <div>
-          {this.state.data.content.map((value, index) => (
-            <SortableItem key={`item-${index}`} index={index} value={value} />
-          ))}
-        </div>
-      );
-    });
-
     return this.props.scope === "public" &&
       this.props.side === 1 && this.props.config &&
       this.props.config.Frontend.Mode === 1 ? (
@@ -567,46 +683,37 @@ class Playlist extends Component {
             onScroll={this.handleScroll}
             ref={this.playlistRef}
           >
-            <ul id={"playlist" + this.props.side} className="list-group">
+            <ul id={"playlist" + this.props.side} className="list-group" style={{height: "100%"}}>
               {
-                this.state.idPlaylist !== -4 && this.state.data
-                  ? (!is_touch_device() && this.props.scope === 'admin' ?
-                  <SortableList 
-                      lockAxis="y"
-                      pressDelay={is_touch_device() ? 150 : 0}
-                      helperClass="playlist-dragged-item"
-                      useDragHandle={!is_touch_device()}
-                      onSortEnd={this.onSortEnd}
-                      /> : this.state.data.content.map(kara => {
-                        return (
-                          <li key={Math.random()} data-kid={kara.kid}>
-                            <KaraLine
-                              key={kara.kid}
-                              kara={kara}
-                              scope={this.props.scope}
-                              idPlaylist={this.state.idPlaylist}
-                              playlistInfo={this.state.playlistInfo}
-                              i18nTag={this.state.data.i18n}
-                              navigatorLanguage={this.props.navigatorLanguage}
-                              playlistToAddId={this.state.playlistToAddId}
-                              side={this.props.side}
-                              config={this.props.config}
-                              logInfos={this.props.logInfos}
-                              playlistCommands={this.state.playlistCommands}
-                              idPlaylistTo={this.props.idPlaylistTo}
-                              checkKara={this.checkKara}
-                              showVideo={this.props.showVideo}
-                            />
-                          </li>)
-                      })
-                  ) : null
+                this.state.idPlaylist !== -4 && this.state.data ?
+                  <InfiniteLoader
+                    isRowLoaded={this.isRowLoaded}
+                    loadMoreRows={this.loadMoreRows}
+                    rowCount={this.state.data.infos.count || 0}>
+                    {({ onRowsRendered, registerChild }) => (
+                      <AutoSizer>
+                        {({ height, width }) => (
+                          <this.SortableList
+                            deferredMeasurementCache={_cache}
+                            ref={registerChild}
+                            onRowsRendered={onRowsRendered}
+                            rowCount={this.state.data.infos.count || 0}
+                            rowHeight={_cache.rowHeight}
+                            rowRenderer={this.rowRenderer}
+                            height={height}
+                            width={width}
+                            onSortEnd={this.sortRow}
+                          />)}
+                      </AutoSizer>
+                    )}
+                  </InfiniteLoader> : null
               }
               {this.state.idPlaylist !== -4 ?
                 <React.Fragment>
                   {this.props.config &&
                     this.props.config.Gitlab.Enabled &&
                     this.state.idPlaylist === -1 &&
-                    this.state.data.infos.count === this.state.data.infos.from + maxBeforeUpdate ? (
+                    this.state.data.infos.count === this.state.data.infos.from + chunksize ? (
                       <li className="list-group-item karaSuggestion" onClick={this.karaSuggestion}>
                         {i18next.t("KARA_SUGGESTION_MAIL")}
                       </li>
