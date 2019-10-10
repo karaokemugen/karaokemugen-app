@@ -7,13 +7,14 @@ import axios from "axios";
 import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage, callModal} from "../tools";
 import BlacklistCriterias from "./BlacklistCriterias";
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
-import store from "../../store";
 import { AutoSizer, InfiniteLoader, CellMeasurer, CellMeasurerCache, List } from 'react-virtualized'
+import store from "../../store";
 
+import 'react-virtualized/styles.css'
 require('./Playlist.scss');
 
 const chunksize = 100;
-const _cache = new CellMeasurerCache({ defaultHeight: 30, fixedWidth: true });
+const _cache = new CellMeasurerCache({ defaultHeight: 50, fixedWidth: true });
 const STATUS_LOADING = 777;
 let loadMoreRowsTimeout = null;
 
@@ -37,7 +38,7 @@ class Playlist extends Component {
       this.getPlaylistList();
       await this.getPlaylistToAddId();
       await this.getIdPlaylist();
-      this.loadChunk(0);
+      await this.getPlaylist();
     }
     getSocket().on("playingUpdated", this.playingUpdate);
     getSocket().on("playlistsUpdated", this.getPlaylistList);
@@ -64,117 +65,60 @@ class Playlist extends Component {
   }
 
   SortableList = SortableContainer(List, { withRef: true })
-  SortableItem = SortableElement(({value,key}) => {
-    console.log(value)
-    console.log(key)
-    let kara = value;
-    return <li className={!is_touch_device() && this.props.scope === 'admin' ? "playlist-draggable-item" : ""} data-kid={kara.kid}>
-        <KaraLine
-          key={kara.kid}
-          kara={kara}
-          scope={this.props.scope}
-          idPlaylist={this.state.idPlaylist}
-          playlistInfo={this.state.playlistInfo}
-          i18nTag={this.state.data.i18n}
-          navigatorLanguage={this.props.navigatorLanguage}
-          playlistToAddId={this.state.playlistToAddId}
-          side={this.props.side}
-          config={this.props.config}
-          logInfos={this.props.logInfos}
-          playlistCommands={this.state.playlistCommands}
-          idPlaylistTo={this.props.idPlaylistTo}
-          checkKara={this.checkKara}
-          showVideo={this.props.showVideo}
-        />
-    </li>
+  SortableItem = SortableElement(({value,key,style}) => {
+    if(value)
+    {
+      //console.log(value)
+      //console.log(key)
+      let kara = value;
+      return <li data-kid={kara.kid} key={key} style={style}>
+          <KaraLine
+            key={kara.kid}
+            kara={kara}
+            scope={this.props.scope}
+            idPlaylist={this.state.idPlaylist}
+            playlistInfo={this.state.playlistInfo}
+            i18nTag={this.state.data.i18n}
+            navigatorLanguage={this.props.navigatorLanguage}
+            playlistToAddId={this.state.playlistToAddId}
+            side={this.props.side}
+            config={this.props.config}
+            logInfos={this.props.logInfos}
+            playlistCommands={this.state.playlistCommands}
+            idPlaylistTo={this.props.idPlaylistTo}
+            checkKara={this.checkKara}
+            showVideo={this.props.showVideo}
+          />
+      </li>
+    }
+    else
+    {
+      // placeholder line while loading kara content
+      return <li>Loading...</li>
+    }
   });
 
- chunkIndex = (i) => {
-  return Math.floor(i/chunksize);
-}
-
- getChunkValue = (i) => {
-  if(this.isRowLoaded({index:i}))
-  {
-    const c = this.chunkIndex(i)
-    const chunk = this.state.chunks[c];
-    return chunk[i%chunksize];
-  }
-  else
-  {
-    return false;
-  }
-}
-
- setChunkValue = (i,v) => {
-  if(this.isRowLoaded({index:i}))
-  {
-    const c = this.chunkIndex(i)
-    const chunk = this.state.chunks[c];
-    return chunk[i%chunksize] = v;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-loadChunk = async (index) => {
-  if(index.length)
-  {
-    for(let i=0;i<index.length;i++)
-    {
-      await this.loadChunk(index[i]);
-    }
-  }
-  else
-  {
-    let c = this.chunkIndex(index)
-    var chunks = this.state.chunks;
-    if(chunks[c])
-      return chunks[c];
-    
-    chunks[c] = STATUS_LOADING;
-    var data = this.state.data;
-    data.infos.from = c*100;
-    data.infos.to = c*100+chunksize;
-    await this.setState({data: data });
-    await this.getPlaylist(undefined, true);
-    chunks[c] = this.state.data.content
-    console.log(chunks)
-    this.setState({chunks: chunks});
-  }
-}
-
 isRowLoaded = ({index}) => {
-  let c = this.chunkIndex(index)
-  var chunks = this.state.chunks;
-  return !!chunks[c] && chunks[c]!==STATUS_LOADING
+  return !!this.state.data.content[index];
 }
 
- loadMoreRows = ({startIndex, stopIndex}) => {
-  clearTimeout(loadMoreRowsTimeout);
-  loadMoreRowsTimeout = setTimeout(() => {
-    this.loadChunk([startIndex,stopIndex]);
-  },100)
+loadMoreRows = ({startIndex, stopIndex}) => {
+  // in this project all kara will be loaded at once
+  // so loadmorerows is not used
 }
 
 
 rowRenderer = ({ index, isScrolling, key, parent, style }) => {
   let content;
-  const c = this.chunkIndex(index)
-  const chunk = this.state.chunks[c];
-  console.log(chunk)
-  if (!chunk || chunk === STATUS_LOADING)
+  if (this.state.data && this.state.data.content && this.state.data.content[index])
   {
-    content = (<div />);
+    content = this.state.data.content[index];
   }
   else
   {
-    let kara = chunk[index%chunksize];
-    content = kara;
-
+    content = null;
   }
+  //console.log(index,content);
   return (
     <CellMeasurer
       cache={_cache}
@@ -337,11 +281,12 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
     return url;
   };
 
-  getPlaylist = async (searchType, scrollInProgress) => {
+
+  getPlaylist = async (searchType) => {
     var data = {getPlaylistInProgress: true};
     if (searchType) {
       data.searchType = searchType;
-    } else if (!scrollInProgress) {
+    } else {
       data.searchType = undefined;
     }
     var url = this.getPlaylistUrl();
@@ -352,10 +297,12 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
 
     url +=
       "?filter=" +
-      store.getFilterValue(this.props.side) + 
+      store.getFilterValue(this.props.side)
+      /*+ 
       "&from=" +
       (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 && store.getFilterValue(this.props.side) === '' ? this.state.data.infos.from : 0) +
       "&size=" + chunksize;
+      */
 
       if(this.state.searchType) {
         this.state.searchCriteria = this.state.searchCriteria ?
@@ -369,9 +316,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
           url += '&searchType=' + this.state.searchType
           + ((this.state.searchCriteria && this.state.searchValue) ? ('&searchValue=' + this.state.searchCriteria + ':' + this.state.searchValue) : '');
       }
-    if (scrollInProgress) {
-      this.playlistRef.current.scrollTo(0, 1);
-    }
+
     var response = await axios.get(url);
     var karas = response.data.data;
     if (this.state.idPlaylist > 0) {
@@ -385,6 +330,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       });
     }
     this.setState({ data: karas, getPlaylistInProgress: false });
+
   };
 
   playingUpdate = data => {
@@ -436,24 +382,6 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
     height += parseInt(style.marginTop) + parseInt(style.marginBottom);
     return height;
   }
-
-  handleScroll = () => {
-    var container_height = document.querySelector('#playlistContainer'+this.props.side).offsetHeight;
-    var scroll_by = document.querySelector('#playlistContainer'+this.props.side).scrollTop;
-    var content_height = this.outerHeight(document.querySelector('#playlistContainer'+this.props.side+ ' > ul'))
-    var percent = 100 * scroll_by / (content_height - container_height)
-
-    if (this.state.data && this.state.data.infos 
-      && this.state.data.infos.count > chunksize 
-      && (percent === 100 || percent === 0)) {
-      var data = this.state.data;
-      data.infos.from = percent === 100 ? data.infos.from + chunksize : data.infos.from - chunksize;
-      data.infos.to = percent === 100 ? data.infos.to + chunksize : data.infos.to - chunksize;
-      if (data.infos.from >= 0) {
-        this.setState({data: data }, () => this.getPlaylist(undefined, true));
-      }
-    }
-  };
 
   scrollToBottom = () => {
     var container_height = document.querySelector('.playlistContainer').offsetHeight;
@@ -595,27 +523,8 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
   };
 
   sortRow = ({oldIndex, newIndex}) => {
-		if(oldIndex>newIndex)
-		{
-			let temp = getChunkValue(oldIndex);
-			for(let i=oldIndex; i>newIndex; i--)
-			{
-				setChunkValue(i, getChunkValue(i-1));
-			}
-			setChunkValue(newIndex, temp);
-		}
-		else if(oldIndex < newIndex)
-		{
-			let temp = getChunkValue(oldIndex);
-			for(let i=oldIndex; i<newIndex; i++)
-			{
-				setChunkValue(i, getChunkValue(i+1));
-			}
-			setChunkValue(newIndex, temp);
-		}
 		if(oldIndex !== newIndex)
 		{
-      this.setState({chunks: chunks});
       // extract playlistcontent_id based on sorter index
       let playlistcontent_id = this.state.data.content[oldIndex].playlistcontent_id;
 
@@ -624,15 +533,32 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       if(newIndex > oldIndex)
         apiIndex = apiIndex+1;
 
+      // TODO : THIS HAD TO BE FIXED
       // final to api to save order change
-      axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: apiIndex });
+      // PUT OPERATION IS REJECTED AS AN ERROR !!!!
+      //axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: apiIndex });
 
-      // internal reordering (avoid waiting the api update)
       let data = this.state.data;
-      let t = data.content[oldIndex];
-      data.content[oldIndex] = data.content[newIndex];
-      data.content[newIndex] = t;
+      let karas = data.content;
+      if(oldIndex<newIndex) {
+        //console.log(oldIndex,newIndex)
+        karas = karas.splice(0,oldIndex).concat(
+          karas.splice(oldIndex+1,newIndex-oldIndex),
+          karas[oldIndex],
+          karas.splice(newIndex)
+        )
+      }
+      else if(oldIndex>newIndex) {
+        karas = karas.splice(0,newIndex).concat(
+          karas[oldIndex],
+          karas.splice(newIndex,oldIndex-newIndex),
+          karas.splice(oldIndex+1)
+        )
+      }
+      data.content = karas
       this.setState({data:data});
+
+      // WIERDLY, karas state seems to be correct, but the list is not updated accordingly
 		}
 	}
 
@@ -680,7 +606,6 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
           <div
             id={"playlistContainer" + this.props.side}
             className="playlistContainer"
-            onScroll={this.handleScroll}
             ref={this.playlistRef}
           >
             <ul id={"playlist" + this.props.side} className="list-group" style={{height: "100%"}}>

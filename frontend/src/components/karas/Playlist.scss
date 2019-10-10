@@ -23,5 +23,8 @@
 }
 
 .playlistContainer {
-	overflow: auto;
+	overflow: hidden;
+	li {
+		display: block;
+	}
 }

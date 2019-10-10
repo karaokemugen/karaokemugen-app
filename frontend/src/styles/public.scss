@@ -18,14 +18,6 @@
         display: flex;
     }
 
-    .playlist-main, .panel, .playlistContainer, .list-group, .list-group > li.list-group-item, .list-group .contentDiv {
-        border-radius: 0;
-        touch-action: pan-y !important;
-    }
-    .playlistContainer {
-        overflow-x: hidden;
-    }
-
     .drag  {
         overflow: hidden;
     }   
