@@ -629,7 +629,7 @@ class Playlist extends Component {
               >
                 <i className="fas fa-chevron-up"></i>
               </button>
-              {this.state.idPlaylist === this.state.playlistToAddId ?
+              {this.state.playlistInfo && this.state.playlistInfo.flag_current ?
                 <button
                   type="button"
                   title={i18next.t("GOTO_PLAYING")}
