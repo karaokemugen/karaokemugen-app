@@ -307,9 +307,10 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
     var response = await axios.get(url);
     var karas = response.data.data;
     if (this.state.idPlaylist > 0) {
-      karas.content.forEach(kara => {
+      karas.content.forEach((kara, index) => {
         if (kara.flag_playing) {
           store.setPosPlaying(kara.pos);
+          this.setState({scrollToIndex: index});
           if (this.props.config.Frontend.Mode === 1 && this.props.scope === "public") {
             this.props.updateKidPlaying(kara.kid);
           }
@@ -322,13 +323,14 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
   playingUpdate = data => {
     if (this.state.idPlaylist === data.playlist_id) {
       var playlistData = this.state.data;
-      playlistData.content.forEach(kara => {
+      playlistData.content.forEach((kara, index) => {
         if (kara.flag_playing) {
           kara.flag_playing = false;
           kara.flag_dejavu = true;
         } else if (kara.playlistcontent_id === data.plc_id) {
           kara.flag_playing = true;
           store.setPosPlaying(kara.pos);
+          this.setState({scrollToIndex: index});
           if (this.props.config.Frontend.Mode === 1 && this.props.scope === "public") {
             this.props.updateKidPlaying(kara.kid);
           }
@@ -583,7 +585,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
                     isRowLoaded={this.isRowLoaded}
                     loadMoreRows={this.loadMoreRows}
                     rowCount={this.state.data.infos.count || 0}>
-                    {({ onRowsRendered, registerChild }) => (
+                    {({ onRowsRendered, registerChild }) => (               
                       <AutoSizer>
                         {({ height, width }) => (
                           <this.SortableList
