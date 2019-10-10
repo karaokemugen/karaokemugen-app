@@ -27,7 +27,6 @@ class Playlist extends Component {
       searchType: undefined,
       data: {infos:{}}
     };
-    this.playlistRef = React.createRef();
   }
 
   async componentDidMount() {
@@ -292,12 +291,6 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
     url +=
       "?filter=" +
       store.getFilterValue(this.props.side)
-      /*+ 
-      "&from=" +
-      (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 && store.getFilterValue(this.props.side) === '' ? this.state.data.infos.from : 0) +
-      "&size=" + chunksize;
-      */
-
       if(this.state.searchType) {
         this.state.searchCriteria = this.state.searchCriteria ?
           {
@@ -347,14 +340,11 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
 
   getPlInfosElement = () => {
     var plInfos = "";
-    if (this.state.idPlaylist && this.state.data) {
-      plInfos =
-        this.state.idPlaylist != -4
-          ? this.state.data.infos.from + "-" + this.state.data.infos.to
-          : "";
+    if (this.state.idPlaylist && this.state.data 
+      && this.state.data.infos && this.state.data.infos.count) {
       plInfos +=
         (this.state.idPlaylist != -4
-          ? " / " +
+          ?
           this.state.data.infos.count +
           (!is_touch_device() ? " karas" : "")
           : "") +
@@ -376,23 +366,11 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
     return height;
   }
 
-  scrollToBottom = () => {
-    var container_height = document.querySelector('.playlistContainer').offsetHeight;
-    var content_height = this.outerHeight(document.querySelector('.playlistContainer > ul'))
-    this.playlistRef.current.scrollTo(0, content_height - container_height - 1);
-  };
-
   scrollToPlaying = () => {
-    let kid;
-    this.state.data.content.forEach(element => { if (element.flag_playing) kid = element.kid });
-    if(!kid)
-      return;
-
-    let target = this.playlistRef.current.querySelector('.playlist-draggable-item[data-kid="'+kid+'"]')
-    if(!target)
-      return;
-
-    target.scrollIntoView({ behavior: "smooth" });
+    let indexPlaying;
+    this.state.data.content.forEach((element, index) => { if (element.flag_playing) indexPlaying = index });
+    if (indexPlaying)
+      this.setState({scrollToIndex: indexPlaying});
   };
 
   togglePlaylistCommands = () => {
@@ -547,7 +525,11 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       data.content = karas;
       this.setState({data:data});
 		}
-	}
+  }
+  
+  clearScrollToIndex = () => {
+    this.setState({ scrollToIndex: -1 });
+  }
 
   render() {
     return this.props.scope === "public" &&
@@ -593,12 +575,11 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
           <div
             id={"playlistContainer" + this.props.side}
             className="playlistContainer"
-            ref={this.playlistRef}
           >
             <ul id={"playlist" + this.props.side} className="list-group" style={{height: "100%"}}>
               {
                 this.state.idPlaylist !== -4 && this.state.data ?
-                  <InfiniteLoader
+                  <InfiniteLoader 
                     isRowLoaded={this.isRowLoaded}
                     loadMoreRows={this.loadMoreRows}
                     rowCount={this.state.data.infos.count || 0}>
@@ -618,6 +599,8 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
                             height={height}
                             width={width}
                             onSortEnd={this.sortRow}
+                            onScroll={this.clearScrollToIndex}
+                            scrollToIndex={this.state.scrollToIndex}
                           />)}
                       </AutoSizer>
                     )}
@@ -628,7 +611,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
                   {this.props.config &&
                     this.props.config.Gitlab.Enabled &&
                     this.state.idPlaylist === -1 &&
-                    this.state.data.infos.count === this.state.data.infos.from + chunksize ? (
+                    this.state.data.infos.count === 0 ? (
                       <li className="list-group-item karaSuggestion" onClick={this.karaSuggestion}>
                         {i18next.t("KARA_SUGGESTION_MAIL")}
                       </li>
@@ -647,7 +630,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
                 type="button"
                 title={i18next.t("GOTO_TOP")}
                 className="btn btn-sm btn-action"
-                onClick={() => this.playlistRef.current.scrollTo(0, 5)}
+                onClick={() => this.setState({scrollToIndex: 0})}
               >
                 <i className="fas fa-chevron-up"></i>
               </button>
@@ -667,7 +650,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
                 type="button"
                 title={i18next.t("GOTO_BOTTOM")}
                 className="btn btn-sm btn-action"
-                onClick={this.scrollToBottom}
+                onClick={() => this.setState({scrollToIndex: this.state.data.infos.count-1})}
               >
                 <i className="fas fa-chevron-down"></i>
               </button>
