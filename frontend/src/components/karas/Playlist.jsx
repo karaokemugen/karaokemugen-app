@@ -526,10 +526,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       if(newIndex > oldIndex)
         apiIndex = apiIndex+1;
 
-      // TODO : THIS HAD TO BE FIXED
-      // final to api to save order change
-      // PUT OPERATION IS REJECTED AS AN ERROR !!!!
-      //axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: apiIndex });
+      axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: apiIndex });
 
       let data = this.state.data;
       let karas = null;
