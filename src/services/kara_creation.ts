@@ -47,7 +47,7 @@ export async function editKara(kara: Kara) {
 			logger.info(`[KaraGen] Removing ${karaV3File}`);
 			await asyncUnlink(karaV3File);
 		}
-		if (newKara.data.subfile) {
+		if (newKara.data.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
 			const newSubFile = resolve(resolvedPathSubs()[0],newKara.data.subfile);
 			if (newSubFile.toLowerCase() !== subFile.toLowerCase() && subFile) {
 				if (await asyncExists(subFile)) asyncUnlink(subFile);
