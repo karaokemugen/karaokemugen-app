@@ -65,8 +65,6 @@ class Playlist extends Component {
   SortableItem = SortableElement(({value,key,style}) => {
     if(value)
     {
-      //console.log(value)
-      //console.log(key)
       let kara = value;
       return <li data-kid={kara.kid} key={key} style={style}>
           <KaraLine
@@ -115,7 +113,6 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
   {
     content = null;
   }
-  //console.log(index,content);
   return (
     <CellMeasurer
       cache={_cache}
@@ -327,8 +324,6 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       });
     }
     this.setState({ data: karas, getPlaylistInProgress: false });
-    console.log('getPlaylist setData');
-
   };
 
   playingUpdate = data => {
@@ -347,7 +342,6 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
         }
       });
       this.setState({ data: playlistData });
-      console.log('playingUpdate setData');
     }
   };
 
@@ -409,7 +403,6 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
     var data = this.state.data;
     this.state.data.content.forEach(kara => kara.checked = !kara.checked);
     this.setState({ data: data });
-    console.log('selectAllKaras setData');
   };
 
   checkKara = id => {
@@ -424,7 +417,6 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       }
     });
     this.setState({ data: data });
-    console.log('checkKara setData');
   };
 
   addAllKaras = async () => {
@@ -542,7 +534,6 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       let data = this.state.data;
       let karas = null;
       if(oldIndex<newIndex) {
-        //console.log(oldIndex,newIndex)
         karas = data.content.splice(0,oldIndex).concat(
           data.content.splice(oldIndex+1,newIndex-oldIndex),
           data.content[oldIndex],
@@ -558,7 +549,6 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       }
       data.content = karas;
       this.setState({data:data});
-      console.log('sortRow setData');
 		}
 	}
 
