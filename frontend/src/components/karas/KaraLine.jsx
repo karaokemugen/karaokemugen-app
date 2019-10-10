@@ -180,7 +180,7 @@ class KaraLine extends Component {
         onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
         {scope === 'public' && kara.username !== this.props.logInfos.username && kara.flag_visible === false ?
           <div className="contentDiv">
-            {this.props.config.Playlist.MysterySongs.Labels[this.props.config.Playlist.MysterySongs.Labels.length * Math.random() | 0]}
+            <div style={{height:"33px"}}>{this.props.config.Playlist.MysterySongs.Labels[this.props.config.Playlist.MysterySongs.Labels.length * Math.random() | 0]}</div>
           </div> :
           <React.Fragment>
             {is_touch_device() && scope !== 'admin' ? null :
