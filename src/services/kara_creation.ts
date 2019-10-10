@@ -4,7 +4,7 @@ import { addKaraToStore, editKaraInStore, sortKaraStore, getStoreChecksum } from
 import { saveSetting } from '../lib/dao/database';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPathMedias, resolvedPathSubs, resolvedPathKaras, resolvedPathTemp } from '../lib/utils/config';
-import { asyncUnlink, asyncExists, asyncCopy } from '../lib/utils/files';
+import { asyncUnlink, asyncExists, asyncCopy, resolveFileInDirs } from '../lib/utils/files';
 import {generateKara} from '../lib/services/kara_creation';
 import logger from '../lib/utils/logger';
 
@@ -36,8 +36,6 @@ export async function editKara(kara: Kara) {
 		// Treat files
 		newKara = await generateKara(kara, resolvedPathKaras()[0], resolvedPathMedias()[0], resolvedPathSubs()[0], oldKara);
 
-		const newMediaFile = resolve(resolvedPathMedias()[0],newKara.data.mediafile);
-
 		//Removing previous files if they're different from the new ones (name changed, etc.)
 		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) {
 			logger.info(`[KaraGen] Removing ${karaFile}`);
@@ -48,12 +46,19 @@ export async function editKara(kara: Kara) {
 			await asyncUnlink(karaV3File);
 		}
 		if (newKara.data.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
-			const newSubFile = resolve(resolvedPathSubs()[0],newKara.data.subfile);
-			if (newSubFile.toLowerCase() !== subFile.toLowerCase() && subFile) {
-				if (await asyncExists(subFile)) asyncUnlink(subFile);
+			const oldSubFile = await resolveFileInDirs(oldKara.subfile, resolvedPathSubs());
+			if (await asyncExists(oldSubFile)) {
+				logger.info(`[KaraGen] Removing ${oldSubFile}`);
+				await asyncUnlink(oldSubFile);
 			}
 		}
-		if (newMediaFile.toLowerCase() !== mediaFile.toLowerCase() && await asyncExists(mediaFile)) asyncUnlink(mediaFile);
+		if (newKara.data.mediafile.toLowerCase() !== oldKara.mediafile.toLowerCase()) {
+			const oldMediaFile = await resolveFileInDirs(oldKara.mediafile, resolvedPathMedias());
+			if (await asyncExists(oldMediaFile)) {
+				logger.info(`[KaraGen] Removing ${oldMediaFile}`);
+				await asyncUnlink(oldMediaFile);
+			}
+		}
 	} catch(err) {
 		logger.error(`[KaraGen] Error while editing kara : ${err}`);
 		throw err;
