@@ -117,8 +117,13 @@ export async function exit(rc: any) {
 	// non-TTY terminals have no stdin support.
 
 	if (getState().player.ready) {
-		quitmpv();
-		logger.info('[Engine] Player has shutdown');
+		try {
+			await quitmpv();
+		} catch(err) {
+			logger.warn(`[Engine] mpv error : ${err}`);
+		} finally {
+			logger.info('[Engine] Player has shutdown');
+		}
 	}
 	if (getTwitchClient()) await stopTwitch();
 
