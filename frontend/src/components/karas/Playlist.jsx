@@ -125,6 +125,18 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
   );
 }
 
+noRowsRenderer = () => {
+return <React.Fragment>
+  {this.props.config &&
+    this.props.config.Gitlab.Enabled &&
+    this.state.idPlaylist === -1 ? (
+      <li className="list-group-item karaSuggestion" onClick={this.karaSuggestion}>
+        {i18next.t("KARA_SUGGESTION_MAIL")}
+      </li>
+    ) : null}
+</React.Fragment> 
+}
+
   playlistContentsUpdated = idPlaylist => {
     if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylist();
   };
@@ -598,6 +610,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
                             rowCount={this.state.data.infos.count || 0}
                             rowHeight={_cache.rowHeight}
                             rowRenderer={this.rowRenderer}
+                            noRowsRenderer={this.noRowsRenderer}
                             height={height}
                             width={width}
                             onSortEnd={this.sortRow}
@@ -606,20 +619,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
                           />)}
                       </AutoSizer>
                     )}
-                  </InfiniteLoader> : null
-              }
-              {this.state.idPlaylist !== -4 ?
-                <React.Fragment>
-                  {this.props.config &&
-                    this.props.config.Gitlab.Enabled &&
-                    this.state.idPlaylist === -1 &&
-                    this.state.data.infos.count === 0 ? (
-                      <li className="list-group-item karaSuggestion" onClick={this.karaSuggestion}>
-                        {i18next.t("KARA_SUGGESTION_MAIL")}
-                      </li>
-                    ) : null}
-                </React.Fragment> :
-                (this.state.data ? 
+                  </InfiniteLoader> :  (this.state.data ? 
                 <BlacklistCriterias data={this.state.data} scope={this.props.scope} tags={this.props.tags} /> : null
                 )
               }
