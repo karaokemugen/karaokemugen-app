@@ -15,8 +15,6 @@ require('./Playlist.scss');
 
 const chunksize = 100;
 const _cache = new CellMeasurerCache({ defaultHeight: 50, fixedWidth: true });
-const STATUS_LOADING = 777;
-let loadMoreRowsTimeout = null;
 
 class Playlist extends Component {
   constructor(props) {
@@ -27,7 +25,6 @@ class Playlist extends Component {
       playlistCommands: false,
       getPlaylistInProgress: false,
       searchType: undefined,
-      chunks: [],
       data: {infos:{}}
     };
     this.playlistRef = React.createRef();
@@ -94,7 +91,7 @@ class Playlist extends Component {
     else
     {
       // placeholder line while loading kara content
-      return <li>Loading...</li>
+      return <li key={key} style={style}>Loading...</li>
     }
   });
 
@@ -330,6 +327,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       });
     }
     this.setState({ data: karas, getPlaylistInProgress: false });
+    console.log('getPlaylist setData');
 
   };
 
@@ -349,6 +347,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
         }
       });
       this.setState({ data: playlistData });
+      console.log('playingUpdate setData');
     }
   };
 
@@ -410,6 +409,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
     var data = this.state.data;
     this.state.data.content.forEach(kara => kara.checked = !kara.checked);
     this.setState({ data: data });
+    console.log('selectAllKaras setData');
   };
 
   checkKara = id => {
@@ -424,6 +424,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       }
     });
     this.setState({ data: data });
+    console.log('checkKara setData');
   };
 
   addAllKaras = async () => {
@@ -539,26 +540,25 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       //axios.put('/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: apiIndex });
 
       let data = this.state.data;
-      let karas = data.content;
+      let karas = null;
       if(oldIndex<newIndex) {
         //console.log(oldIndex,newIndex)
-        karas = karas.splice(0,oldIndex).concat(
-          karas.splice(oldIndex+1,newIndex-oldIndex),
-          karas[oldIndex],
-          karas.splice(newIndex)
+        karas = data.content.splice(0,oldIndex).concat(
+          data.content.splice(oldIndex+1,newIndex-oldIndex),
+          data.content[oldIndex],
+          data.content.splice(newIndex)
         )
       }
       else if(oldIndex>newIndex) {
-        karas = karas.splice(0,newIndex).concat(
-          karas[oldIndex],
-          karas.splice(newIndex,oldIndex-newIndex),
-          karas.splice(oldIndex+1)
+        karas = data.content.splice(0,newIndex).concat(
+          data.content[oldIndex],
+          data.content.splice(newIndex,oldIndex-newIndex),
+          data.content.splice(oldIndex+1)
         )
       }
-      data.content = karas
+      data.content = karas;
       this.setState({data:data});
-
-      // WIERDLY, karas state seems to be correct, but the list is not updated accordingly
+      console.log('sortRow setData');
 		}
 	}
 
@@ -619,6 +619,9 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
                       <AutoSizer>
                         {({ height, width }) => (
                           <this.SortableList
+                            pressDelay={0}
+                            helperClass="playlist-dragged-item"
+                            useDragHandle={true}
                             deferredMeasurementCache={_cache}
                             ref={registerChild}
                             onRowsRendered={onRowsRendered}
