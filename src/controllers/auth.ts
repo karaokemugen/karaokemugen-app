@@ -1,5 +1,6 @@
 import {requireAuth, requireValidUser, requireAdmin} from './middlewares/auth';
-import { updateLastLoginName, createJwtToken, decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint, findUserByName, editUser } from '../services/user';
+import { updateLastLoginName, createJwtToken, decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint, findUserByName, editUser, resetSecurityCode } from '../services/user';
+import { getState } from '../utils/state';
 
 const loginErr = {
 	code: 'LOG_ERROR',
@@ -14,13 +15,14 @@ export default function authController(router) {
 		/**
  * @api {post} /auth/login Login / Sign in
  * @apiName AuthLogin
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Auth
  * @apiPermission NoAuth
  * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
  * @apiHeader {String} charset Must be `UTF-8`
  * @apiParam {String} username Login name for the user
  * @apiParam {String} password Password for the user. Can be empty if user is a guest.
+ * @apiParam {Number} securityCode Security Code in case a local admin forgot its password
  * @apiSuccess {String} onlineToken If username is a remote one, `onlineToken` is defined. You need to pass it via headers along `token` for user to be authentified.
  * @apiSuccess {String} token Identification token for this session
  * @apiSuccess {String} username Username logged in ( contains @host if remote, with host being the instance's host)
@@ -41,6 +43,19 @@ export default function authController(router) {
  */
 		if (!req.body.password) req.body.password = '';
 		try {
+			// Check if security code is correct and user does not contain a @
+			if (req.body.securityCode === getState().securityCode && !req.body.username.includes('@')) {
+				// Reset security code
+				resetSecurityCode();
+				// Edit user and change its password first
+				await editUser(req.body.username, {
+					login: req.body.username,
+					password: req.body.password
+				}, null, 'admin', {
+					editRemote: false,
+					renameUser: false
+				});
+			}
 			const token = await checkLogin(req.body.username, req.body.password);
 			res.send(token);
 		} catch(err) {
@@ -111,7 +126,7 @@ export default function authController(router) {
 		/**
  * @api {post} /admin/users/login Login / Sign in from the admin panel
  * @apiName AdminAuthLogin
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Auth
  * @apiPermission Admin
  * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
