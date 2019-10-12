@@ -604,7 +604,7 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 .modal {
-	z-index: 10000;
+	z-index: 9998;
 }
 #modalBox {
 	z-index: 10010;
@@ -1212,4 +1212,13 @@ input[type="text"]:focus, input[type="password"]:focus {
     background-size: 67%;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+.accountLabel {
+	margin: 10px;
+}
+
+.forgotPasswordButton {
+	width: 40px !important;
+	background-color: #1E2124
 }

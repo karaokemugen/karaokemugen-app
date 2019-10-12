@@ -60,6 +60,7 @@
 	"ADMIN_PLEASE": "Please use an admin account",
 	"PASSWORD": "Password",
 	"PASSWORDCONF": "Confirm password",
+	"NEW_PASSWORD": "New Password",
 	"MONITOR_NUMBER": "Player screen",
 	"VIDEO_SIZE": "Video size",
 	"VIDEO_POSITION_X": "Video position (X)",
@@ -153,7 +154,7 @@
 	"CL_USERS": "Users' devices",
 	"CL_ALL": "All",
 	"CL_PLAYLISTS": "Playlists",
-	"CL_NEW_USER": "New account %s created & logged on",
+	"CL_NEW_USER": "New account {{username}} created & logged on",
 	"GOTO_TOP": "Go to the start of the playlist",
 	"GOTO_PLAYING": "Go to the kara currently playing",
 	"GOTO_BOTTOM": "Go to the end of the playlist",
@@ -216,8 +217,6 @@
 	"WLCM_SITE": "Website",
 	"WLCM_PUBLIC": "PUBLIC INTERFACE",
 	"GUEST": "Guest",
-	"USER": "User",
-	"ADMIN": "Admin",
 	"QUOTA": "Left:",
 	"FIRST_PUBLIC_RUN_WELCOME": "Hey, looks like it's your first time here!",
 	"FOLLOW_TOUR": "SEE GUIDED TOUR (~2 MIN)",
@@ -326,5 +325,11 @@
 	"ESSENTIAL_MESSAGE": "Essential message",
 	"FAVORITES_ADDED": "Successfully added favorites!",
 	"FAVORITES_DELETED": "Favorites deleted",
-	"PL_SONG_MOVED": "Song moved from playlist"
+	"PL_SONG_MOVED": "Song moved from playlist",
+	"ONLINE_ACCOUNT": "Online account",
+	"ADMIN_ACCOUNT": "Admin account?",
+	"SECURITY_CODE": "Security code",
+	"FORGOT_PASSWORD": "Forgot password?",
+	"FORGOT_PASSWORD_SUCCESS": "An email has been sent with a link to reset your password.",
+	"FORGOT_PASSWORD_ERROR": "Could not reset your password: contact the the server's administrator your account belongs to."
 }

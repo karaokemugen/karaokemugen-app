@@ -14,7 +14,7 @@ import {on} from '../lib/utils/pubsub';
 import {getSongCountForUser, getSongTimeSpentForUser} from '../dao/kara';
 import {emitWS} from '../lib/utils/ws';
 import {profile} from '../lib/utils/logger';
-import {getState} from '../utils/state';
+import {getState, setState} from '../utils/state';
 import got from 'got';
 import { getRemoteToken, upsertRemoteToken } from '../dao/user';
 import formData from 'form-data';
@@ -434,6 +434,16 @@ export async function remoteLogin(username: string, password: string): Promise<T
 	}
 }
 
+export async function resetRemotePassword(user: string) {
+	const [username, instance] = user.split('@');
+	try {
+		await got.post(`https://${instance}/api/users/${username}/resetpassword`);
+	} catch (err) {
+		logger.error(`[RemoteUser] Could not trigger reset password for ${user} : ${err}`);
+		throw err;
+	}
+}
+
 /** Get all users from KM Server */
 async function getAllRemoteUsers(instance: string): Promise<User[]> {
 	try {
@@ -491,6 +501,12 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 		if (err.statusCode === 401) throw 'Unauthorized';
 		throw `Unknown error : ${err.response ? err.response.body : err}`;
 	}
+}
+
+/** Create ADMIN user only if security code matches */
+export async function createAdminUser(user: User) {
+	if (user.securityCode !== getState().securityCode) throw `Wrong security code`;
+	return await createUser(user, { admin: true });
 }
 
 /** Create new user (either local or online. Defaults to online) */
@@ -676,6 +692,8 @@ export async function initUserSystem() {
 	createDefaultGuests().then(() => checkGuestAvatars());
 	cleanupAvatars();
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
+	setState({securityCode: generateSecurityCode()});
+	logger.info(`[User] SECURITY CODE FOR THIS SESSION : ${getState().securityCode}`);
 }
 
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
@@ -810,3 +828,16 @@ export async function generateAdminPassword(): Promise<string> {
 		'admin');
 	return adminPassword;
 }
+
+export function resetSecurityCode() {
+	setState({ securityCode: generateSecurityCode()});
+	logger.warn(`[Users] SECURITY CODE RESET : ${getState().securityCode}`);
+}
+
+function generateSecurityCode(): string {
+	return randomstring.generate({
+		length: 6,
+		charset: 'numeric'
+	});
+}
+

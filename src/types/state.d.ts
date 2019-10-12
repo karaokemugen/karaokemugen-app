@@ -28,6 +28,7 @@ export interface State {
 	osHost?: string
 	EngineDefaultLocale?: string,
 	player?: PlayerState,
+	securityCode: number,
 	version?: {
 		number?: string,
 		name?: string,

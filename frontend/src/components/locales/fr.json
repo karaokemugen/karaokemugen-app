@@ -62,6 +62,7 @@
     "ADMIN_PLEASE": "Merci d'utiliser un compte admin",
 	"PASSWORD": "Mot de passe",
 	"PASSWORDCONF": "Confirmer mdp",
+	"NEW_PASSWORD": "Nouveau mdp",
 	"MONITOR_NUMBER": "Ecran du lecteur",
 	"VIDEO_SIZE": "Taille vidéo",
 	"VIDEO_SIZE_TOOLTIP": "Affecte uniquement le mode Picture In Picture",
@@ -182,7 +183,7 @@
 	"CL_HELP_PUBLIC_MOBILE_RESTRICTED_DESCRIPTION": "Vous ne pouvez pas ajouter de karaoké pour le moment, mais pouvez consulter celui en cours, ainsi que la playlist en swipant vers la gauche.",
 	"CL_HELP": "Aide",
 	"CL_PLAYLISTS": "Listes",
-	"CL_NEW_USER": "Nouveau compte %s créé et connecté",
+	"CL_NEW_USER": "Nouveau compte {{username}} créé et connecté",
 	"GOTO_TOP": "Aller au début de la liste",
 	"GOTO_PLAYING": "Aller à la chanson en cours de lecture",
 	"GOTO_BOTTOM": "Aller à la fin de la liste",
@@ -230,8 +231,6 @@
 	"NOT_LOGGED": "Non connecté",
 	"WLCM_HELP": "AIDE EN LIGNE",
 	"GUEST": "Invité",
-	"USER": "Utilisateur",
-	"ADMIN": "Administrateur",
 	"QUOTA": "Restant :",
 	"FIRST_PUBLIC_RUN_WELCOME": "Il semble que ce soit votre 1ère fois ici !",
 	"FOLLOW_TOUR": "SUIVRE LA VISITE GUIDÉE (~2 MIN)",
@@ -347,5 +346,11 @@
 	"ESSENTIAL_MESSAGE": "Message indispensable",
 	"FAVORITES_ADDED": "Favoris ajoutés avec succès !",
 	"FAVORITES_DELETED": "Favoris supprimés",
-	"PL_SONG_MOVED": "Chanson déplacée de la liste de lecture"
+	"PL_SONG_MOVED": "Chanson déplacée de la liste de lecture",
+	"ONLINE_ACCOUNT": "Compte en ligne ?",
+	"ADMIN_ACCOUNT": "Compte opérateur ?",
+	"SECURITY_CODE": "Code de sécurité",
+	"FORGOT_PASSWORD": "Mot de passe oublié ?",
+	"FORGOT_PASSWORD_SUCCESS": "Un email avec un lien pour réinitialiser votre mot de passe vous a été envoyé.",
+	"FORGOT_PASSWORD_ERROR": "Impossible de vous envoyer un email de réinitialisation : contacter l'administrateur du serveur dont vous dépendez"
 }
