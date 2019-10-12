@@ -24,6 +24,7 @@ let state: State = {
 	isDemo: false,
 	isTest: false,
 	EngineDefaultLocale: 'fr',
+	securityCode: null,
 	player: {
 		ready: false
 	},

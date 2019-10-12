@@ -5,6 +5,7 @@ import axios from "axios";
 import { is_touch_device,startIntro,readCookie,displayMessage  } from '../tools';
 import HelpModal from "./HelpModal";
 import ReactDOM from 'react-dom';
+import Switch from '../generic/Switch';
 
 class LoginModal extends Component {
     constructor(props) {
@@ -14,7 +15,10 @@ class LoginModal extends Component {
             errorBackground: '',
             serv: (this.props.config && this.props.config.Online.Users) ? this.props.config.Online.Host : '',
             role: 'user',
-            activeView: 1
+            activeView: 1,
+            onlineSwitch : true,
+            adminSwitch : false,
+            forgotPassword: false
         }
     }
 
@@ -34,6 +38,9 @@ class LoginModal extends Component {
         } else if (this.props.scope === 'admin' && this.props.config && this.props.config.App.FirstRun 
             && axios.defaults.headers.common['authorization'] && username !== 'admin') {
             url = '/api/admin/users/login';
+        }
+        if (this.state.forgotPassword && !this.state.onlineSwitch) {
+            data.securityCode = this.state.securityCode;
         }
 
         var result = await axios.post(url, data);
@@ -63,7 +70,7 @@ class LoginModal extends Component {
     };
 
     loginUser = () => {
-        var username = this.state.login + (this.state.serv ? '@' + this.state.serv : '');
+        var username = this.state.login + (this.state.onlineSwitch ? '@' + this.state.serv : '');
         this.login(username, this.state.password);
     };
 
@@ -75,21 +82,20 @@ class LoginModal extends Component {
         } else {
             this.setState({ errorBackground: '' });
         }
-        var username = this.state.login + (this.state.serv ? '@' + this.state.serv : '');
-        if (this.state.password !== this.state.passwordConfirmation) {
+        var username = this.state.login + (this.state.onlineSwitch ? '@' + this.state.serv : '');
+        var password = this.state.password;
+        if (password !== this.state.passwordConfirmation) {
             this.setState({ redBorders: 'redBorders' });
         } else {
-            var data = { login: username, password: this.state.password };
-
-            if (this.props.scope === 'admin') {
-                data.role = this.state.role;
+            var data = { login: username, password: password, admin: this.state.adminSwitch };
+            if (this.state.adminSwitch) {
+                data.securityCode = this.state.securityCode;
             }
-            axios.post('/api/' + this.props.scope + '/users', data)
+            axios.post('/api/public/users', data)
                 .then(response => {
-                    displayMessage('info', i18next.t('CL_NEW_USER', username));
+                    displayMessage('info', i18next.t('CL_NEW_USER', {username: username}));
                     this.setState({ redBorders: '' });
-
-                    if (this.props.scope === 'public') this.login(username, password);
+                    this.login(username, password);
                 })
                 .catch(err => {
                     this.setState({ redBorders: 'redBorders' });
@@ -102,6 +108,17 @@ class LoginModal extends Component {
             this.signup();
         }
     };
+
+    forgetOnlinePassword = () => {
+        if (this.state.login)
+            axios.post(`/api/public/users/${this.state.login}@${this.state.serv}/resetpassword`)
+            .then(response => {
+                displayMessage('success', i18next.t('FORGOT_PASSWORD_SUCCESS'));
+            })
+            .catch(err => {
+                displayMessage('error', i18next.t('FORGOT_PASSWORD_ERROR'));
+            });
+    }
 
     render() {
         var loginModalClassName = readCookie('publicTuto') ? "modal modalPage" : "modal modalPage firstRun";
@@ -151,15 +168,32 @@ class LoginModal extends Component {
                                         </div>
                                     </React.Fragment> : null
                                 }
+                                <div>
+                                    <label className="accountLabel">{i18next.t("ONLINE_ACCOUNT")}</label>                                    
+                                    <Switch handleChange={() => this.setState({onlineSwitch: !this.state.onlineSwitch})}
+                                            isChecked={this.state.onlineSwitch} />
+                                </div>
                                 <div className="modal-message loginRelated">
                                     <input type="text" id="login" name="modalLogin" placeholder={i18next.t("NICKNAME")}
                                         defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
-                                    <input type="text" id="loginServ" name="modalLoginServ" placeholder={i18next.t("INSTANCE_NAME_SHORT")}
-                                        defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} />
-                                    <input type="password" className={this.state.redBorders} id="password" name="modalPassword" placeholder={i18next.t("PASSWORD")}
+                                    {this.state.onlineSwitch ? <input type="text" id="loginServ" name="modalLoginServ" placeholder={i18next.t("INSTANCE_NAME_SHORT")}
+                                        defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} /> : null}
+                                    <input type="password" className={this.state.redBorders} id="password" name="modalPassword" 
+                                        placeholder={this.state.forgotPassword & !this.state.onlineSwitch ? i18next.t("NEW_PASSWORD") : i18next.t("PASSWORD")}
                                         defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
                                 </div>
-                                <div className="loginRelated"></div>
+                                <div>
+                                    <label className="accountLabel">{i18next.t("FORGOT_PASSWORD")}</label>                                    
+                                    {this.state.onlineSwitch ? 
+                                        <button type="button" className="forgotPasswordButton" onClick={this.forgetOnlinePassword}><i className="fas fa-lock"></i></button> : 
+                                        <Switch handleChange={() => this.setState({forgotPassword: !this.state.forgotPassword})}
+                                            isChecked={this.state.forgotPassword} />
+                                    }
+                                </div>
+                                {this.state.forgotPassword & !this.state.onlineSwitch ?
+                                    <input type="text" placeholder={i18next.t("SECURITY_CODE")}
+                                        defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: event.target.value })} /> : null
+                                }
                                 <div className="loginRelated">
                                     <button type="button" className="btn btn-default login" onClick={this.loginUser}>
                                         <i className="fas fa-check"></i>
@@ -168,23 +202,27 @@ class LoginModal extends Component {
                             </div> :
                             <div id="nav-signup" className="modal-body">
                                 <div>
+                                    <label className="accountLabel">{i18next.t("ONLINE_ACCOUNT")}</label>                                    
+                                    <Switch handleChange={() => this.setState({onlineSwitch: !this.state.onlineSwitch})}
+                                            isChecked={this.state.onlineSwitch} />
+                                </div>
+                                <div>
                                     <input type="text" id="signupLogin" className={this.state.errorBackground} name="modalLogin" placeholder={i18next.t("NICKNAME")}
                                         defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
-                                    <input type="text" id="signupServ" name="modalLoginServ" placeholder={i18next.t("INSTANCE_NAME_SHORT")}
-                                        defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} />
+                                    {this.state.onlineSwitch ? <input type="text" id="signupServ" name="modalLoginServ" placeholder={i18next.t("INSTANCE_NAME_SHORT")}
+                                        defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} /> : null}
                                     <input type="password" className={this.state.redBorders} id="signupPassword" name="modalPassword" placeholder={i18next.t("PASSWORD")}
                                         required onKeyPress={this.onKeyPress} defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
                                     <input type="password" className={this.state.redBorders} id="signupPasswordConfirmation" name="modalPassword" placeholder={i18next.t("PASSWORDCONF")}
                                         required onKeyPress={this.onKeyPress} defaultValue={this.state.passwordConfirmation} required onChange={(event) => this.setState({ passwordConfirmation: event.target.value })} />
-                                    {this.props.scope === 'admin' ?
-                                        <React.Fragment>
-                                            <br />
-                                            <select className="form-control" id="signupRole" name="modalRole"
-                                                defaultValue={this.state.role} onChange={(event) => this.setState({ role: event.target.value })} >
-                                                <option value="user">{i18next.t("USER")}</option>
-                                                <option value="admin">{i18next.t("ADMIN")}</option>
-                                            </select>
-                                        </React.Fragment> : null
+                                    <div>
+                                        <label className="accountLabel">{i18next.t("ADMIN_ACCOUNT")}</label>                                    
+                                        <Switch handleChange={() => this.setState({adminSwitch: !this.state.adminSwitch})}
+                                                isChecked={this.state.adminSwitch} />
+                                    </div>
+                                    {this.state.adminSwitch ?
+                                        <input type="text" placeholder={i18next.t("SECURITY_CODE")}
+                                            defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: event.target.value })} /> : null
                                     }
                                 </div>
                                 <div>

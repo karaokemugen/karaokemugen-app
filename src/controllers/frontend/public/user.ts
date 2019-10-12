@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { errMessage, OKMessage } from "../../common";
-import { removeRemoteUser, convertToRemoteUser, editUser, findUserByName, updateSongsLeft, createUser, listUsers } from "../../../services/user";
+import { removeRemoteUser, convertToRemoteUser, editUser, findUserByName, updateSongsLeft, createUser, listUsers, createAdminUser, resetRemotePassword } from "../../../services/user";
 import { emitWS } from "../../../lib/utils/ws";
 import { check } from "../../../lib/utils/validators";
 import { updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
@@ -69,6 +69,46 @@ export default function publicUserController(router: Router) {
 				res.status(500).json(errMessage('USER_VIEW_ERROR',err));
 			}
 		})
+	router.route('/public/users/:username/resetpassword')
+		/**
+	 * @api {post} /public/users/:username/resetpassword Reset password (online account only)
+	 * @apiName PostResetPassword
+	 * @apiVersion 3.0.0
+	 * @apiGroup Users
+	 * @apiPermission noAuth
+	 * @apiParam {String} username Username for password reset
+	 * @apiSuccess {String} data/login User's login
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "data": [
+	 *       {
+	 *           "login": "admin@kara.moe",
+	 *       },
+	 *   ]
+	 * }
+	 * @apiError USER_RESETPASSWORD_NOTONLINE_ERROR Only online users can have their password automatically reset
+	 * @apiError USER_RESETPASSWORD_ERROR Reset password generic error
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * {
+	 *   "code": "USER_RESETPASSWORD_NOTONLINE_ERROR",
+	 *   "message": null
+	 * }
+	  */
+			.post(async (req: any, res: any) => {
+				try {
+					if (!req.params.username.includes('@')) {
+						res.status(500).json(errMessage('USER_RESETPASSWORD_NOTONLINE_ERROR',null));
+					} else {
+						await resetRemotePassword(req.params.username);
+						res.status(200).json(OKMessage(null));
+					}
+				} catch(err) {
+					res.status(500).json(errMessage('USER_RESETPASSWORD_ERROR',err));
+				}
+			})
 	router.route('/public/myaccount')
 	/**
  * @api {get} /public/myaccount View own user details
@@ -371,12 +411,14 @@ export default function publicUserController(router: Router) {
 		/**
 	 * @api {post} /public/users Create new user
 	 * @apiName PostUser
-	 * @apiVersion 2.1.0
+	 * @apiVersion 3.0.0
 	 * @apiGroup Users
 	 * @apiPermission NoAuth
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {String} login Login name for the user
 	 * @apiParam {String} password Password for the user
+	 * @apiParam {Boolean} admin Is it an admin account creation ?
+	 * @apiParam {Number} securityCode Security code if `admin` is set to `true`
 	 * @apiSuccess {String} code Message to display
 	 * @apiSuccess {Boolean} data Returns `true` if success
 	 *
@@ -413,10 +455,18 @@ export default function publicUserController(router: Router) {
 					req.body.login = unescape(req.body.login.trim());
 					// No errors detected
 					try {
-						await createUser(req.body);
+						if (req.body.admin) {
+							await createAdminUser(req.body);
+						} else {
+							await createUser(req.body);
+						}
 						res.json(OKMessage(true,'USER_CREATED'));
 					} catch(err) {
-						res.status(500).json(errMessage(err.code,err.message));
+						if (err.code) {
+							res.status(500).json(errMessage(err.code,err.message));
+						} else {
+							res.status(500).json(errMessage('USER_CREATE_ERROR_ONLINE', err));
+						}
 					}
 				} else {
 					// Errors detected
