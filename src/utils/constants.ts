@@ -158,7 +158,11 @@ export const defaultGuestNames = [
 	'Pipimi',
 	'Bananya',
 	'CONTRACT?',
-	'Michelle'
+	'Michelle',
+	'Tubacabra',
+	'Hideyoshi',
+	'POÏ',
+	'A classified information'
 ];
 
 /** Initialization catchphrases. We need more of them. */
@@ -209,18 +213,20 @@ export const initializationCatchphrases = [
 	'"Pirikaraoke Royal !" ‒Doremi Harukaze',
 	'"Karaoke that conceals the power of darkness, reveal your true timing to me! By my power, I command you, release!" ‒Sakura Kinomoto',
 	'"I hold the mic with my right hand, and with my left, I\'ll write the name of the next karaoke. I\'ll take a potato chip... AND EAT IT!" ‒Light Yagami',
-	'"You can listen anytime, but singing takes true courage" ‒Kenshin Himura',
+	'"You can listen anytime, but singing takes true courage." ‒Kenshin Himura',
 	'"Karaoke is not a game of luck. If you want to win, sing hard." ‒Sora',
-	'"Whatever you sing, enjoy it to the fullest. That is the secret of karaoke" ‒Rider',
+	'"Whatever you sing, enjoy it to the fullest. That is the secret of karaoke." ‒Rider',
 	'"If you don\'t like your song, don\'t accept it. Instead, have the courage to change it the way you want to be." ‒Naruto Uzumaki',
-	'"If you can\'t find a reason to sing, then you shouldn\'t be singing" ‒Akame',
+	'"If you can\'t find a reason to sing, then you shouldn\'t be singing." ‒Akame',
 	'"Karaoke is like a tube of toothpaste. When you\'ve used all the toothpaste, that\'s when you\'ve really sang. Sing with all your might, and struggle as long as you have your voice." ‒Mion Sonozaki',
 	'"Sing exactly as you like. That is the true meaning of karaoke. Karaoke leads to joy and joy leads to happiness." ‒Gilgamesh',
 	'"If you can\'t sing something, then don\'t. Focus on what you can sing." ‒Shiroe',
-	'"When you lose sight of the lyrics, listen to the karaoke in your heart" ‒Allen Walker',
+	'"When you lose sight of the lyrics, listen to the karaoke in your heart." ‒Allen Walker',
 	'"A karaoke is worth less than nothing if you don\'t have someone to share it." ‒Dôsan Saitô',
 	'"What you can\'t sing alone, becomes singable when you\'re with someone else." ‒Taichi Yaegashi',
 	'"Even if you\'re a bad singer, there are miracles you can seize with your voice if you sing on to the very end." ‒Uryû Minene',
 	'"You\'re singing in Japanese! If you must sing, do it in German!" ‒Asuka Langley Soryu',
-	'"A russian karaoke is fine too" ‒Shiki Tohno',
+	'"A russian karaoke is fine too." ‒Shiki Tohno',
+	'"Let\'s save the world by overloading it with karaoke!" ‒Haruhi Suzumiya',
+	'"Let us begin, Rei. Release your voice, the barrier of your mind. Make our imperfect voices whole again. Discard this unnecessary physical microphone. Merge all voice into one. And then, take me to Yui\'s side." ‒Gendo Ikari',
 ];
