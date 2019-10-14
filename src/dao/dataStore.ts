@@ -82,28 +82,34 @@ async function processDataFile(file: string, silent?: boolean, bar?: any) {
 
 export async function baseChecksum(silent?: boolean) {
 	profile('baseChecksum');
-	 let bar: any;
-	const [karaFiles, seriesFiles, tagFiles] = await Promise.all([
-		extractAllFiles('kara'),
-		extractAllFiles('series'),
-		extractAllFiles('tag')
-	]);
-	const fileCount = karaFiles.length + seriesFiles.length + tagFiles.length
-	if (karaFiles.length === 0) return null;
-	logger.info(`[Store] Found ${karaFiles.length} karas, ${seriesFiles.length} series and ${tagFiles.length} tags`)
-	if (!silent) bar = new Bar({
-		message: 'Checking files...    '
-	}, fileCount);
-	const files = [].concat(karaFiles, seriesFiles, tagFiles);
-	const promises = [];
-	files.forEach(f => promises.push(() => processDataFile(f, silent, bar)));
-	await parallel(promises, 32);
-	sortKaraStore();
-	sortSeriesStore();
-	sortTagsStore();
-	if (!silent) bar.stop();
-	const checksum = getStoreChecksum();
-	logger.debug(`[Store] Store checksum : ${checksum}`);
-	profile('baseChecksum');
-	return checksum;
+	try {
+		let bar: any;
+		const [karaFiles, seriesFiles, tagFiles] = await Promise.all([
+			extractAllFiles('kara'),
+			extractAllFiles('series'),
+			extractAllFiles('tag')
+		]);
+		const fileCount = karaFiles.length + seriesFiles.length + tagFiles.length
+		if (karaFiles.length === 0) return null;
+		logger.info(`[Store] Found ${karaFiles.length} karas, ${seriesFiles.length} series and ${tagFiles.length} tags`)
+		if (!silent) bar = new Bar({
+			message: 'Checking files...    '
+		}, fileCount);
+		const files = [].concat(karaFiles, seriesFiles, tagFiles);
+		const promises = [];
+		files.forEach(f => promises.push(() => processDataFile(f, silent, bar)));
+		await parallel(promises, 32);
+		sortKaraStore();
+		sortSeriesStore();
+		sortTagsStore();
+		if (!silent) bar.stop();
+		const checksum = getStoreChecksum();
+		logger.debug(`[Store] Store checksum : ${checksum}`);
+		return checksum;
+	} catch(err) {
+		logger.warn(`[Store] Unable to browse through your data files : ${err}`)
+	} finally {
+		profile('baseChecksum');
+	}
+
 }
