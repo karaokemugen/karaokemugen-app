@@ -61,11 +61,13 @@ class Playlist extends Component {
   }
 
   SortableList = SortableContainer(List, { withRef: true })
-  SortableItem = SortableElement(({value,key,style}) => {
-    if(value)
+  SortableItem = SortableElement(({value,style}) => {
+    if(value.content)
     {
-      let kara = value;
-      return <li data-kid={kara.kid} key={key} style={style}>
+      let kara = value.content;
+      let s = JSON.parse(JSON.stringify(style));
+      s.zIndex = 999999999 - value.index;
+      return <li data-kid={kara.kid} key={value.key} style={s}>
           <KaraLine
             key={kara.kid}
             kara={kara}
@@ -120,7 +122,7 @@ rowRenderer = ({ index, isScrolling, key, parent, style }) => {
       parent={parent}
       rowIndex={index}
       >
-      <this.SortableItem key={key} index={index} style={style} value={content} />
+      <this.SortableItem key={key} index={index} style={style} value={{content,key,index}} />
     </CellMeasurer>
   );
 }
