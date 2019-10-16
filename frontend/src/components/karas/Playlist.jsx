@@ -606,7 +606,7 @@ class Playlist extends Component {
                   {this.props.config &&
                     this.props.config.Gitlab.Enabled &&
                     this.state.idPlaylist === -1 &&
-                    this.state.data.infos.count === this.state.data.infos.from + maxBeforeUpdate ? (
+                    this.state.data && this.state.data.infos && this.state.data.infos.count === this.state.data.infos.from + maxBeforeUpdate ? (
                       <li className="list-group-item karaSuggestion" onClick={this.karaSuggestion}>
                         {i18next.t("KARA_SUGGESTION_MAIL")}
                       </li>
