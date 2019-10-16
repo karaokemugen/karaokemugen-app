@@ -64,6 +64,7 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - Importing playlists is now safer thanks to a code rewrite by using constraints instead of tests (#329)
 - Preview videos are not generated anymore. It was costly and took a hell lot of time. Now full media files are served instead (#457)
 - Updated mpv version to 0.29.1.
+- Karaoke base updates now go through the Download Manager and should easier to handle.
 - When editing a karaoke in the system UI, tags and series are checked for differences between the old and new karaoke to avoid triggering useless refreshes.
 
 ### Fixes
