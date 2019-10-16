@@ -11,7 +11,7 @@ export async function postSuggestionToKaraBase(karaName: string, username: strin
 	title = title.replace('$kara', karaName);
 	let desc = conf && conf.Suggestion && conf.Suggestion.Description
 		? conf.Suggestion.Description
-		: '';
+		: 'From $username : it would be nice if someone could time this!';
 	const user = await findUserByName(username);
 	desc = desc.replace('$username', user.nickname)
 	try {

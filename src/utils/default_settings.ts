@@ -54,7 +54,15 @@ export const defaults: Config = {
 		SeriesLanguageMode: 3
 	},
 	Gitlab: {
-		Enabled: false
+		Enabled: true,
+		Host: 'lab.shelter.moe',
+		Token: 'i5WnabG3fvda4oxx-FRb',
+		ProjectID: 2,
+		IssueTemplate: {
+			Suggestion: {
+				Labels: ['à intégrer']
+			}
+		}
 	},
 	Karaoke: {
 		Autoplay: false,
