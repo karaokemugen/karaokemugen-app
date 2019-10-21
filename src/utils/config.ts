@@ -135,7 +135,10 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	const binariesPath = configuredBinariesForSystem(config);
 	let requiredBinariesChecks = [];
 	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
-	if (config.Database.prod.bundledPostgresBinary) requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
+	if (config.Database.prod.bundledPostgresBinary) {
+		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
+		requiredBinariesChecks.push(asyncRequired('C:/Windows/System32/msvcr120.dll'));
+	}
 	if (!getState().isTest && !getState().isDemo) requiredBinariesChecks.push(asyncRequired(binariesPath.mpv));
 
 	try {
@@ -193,4 +196,5 @@ function binMissing(binariesPath: any, err: string) {
 	console.log('You can download mpv for your OS from http://mpv.io/');
 	console.log('You can download postgreSQL for your OS from http://postgresql.org/');
 	console.log('You can download ffmpeg for your OS from http://ffmpeg.org');
+	if (process.platform === 'win32') console.log('If the missing file is msvcr120.dll, download Microsoft Visual C++ 2013  Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784')
 }
