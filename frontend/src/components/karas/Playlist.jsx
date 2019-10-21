@@ -13,7 +13,7 @@ import store from "../../store";
 import 'react-virtualized/styles.css'
 require('./Playlist.scss');
 
-const chunksize = 100;
+const chunksize = 400;
 const _cache = new CellMeasurerCache({ defaultHeight: 50, fixedWidth: true });
 
 class Playlist extends Component {
@@ -90,7 +90,7 @@ class Playlist extends Component {
     else
     {
       // placeholder line while loading kara content
-      return <li key={key} style={style}>Loading...</li>
+      return <li key={value.key} style={style}>Loading...</li>
     }
   });
 
@@ -98,9 +98,13 @@ isRowLoaded = ({index}) => {
   return !!this.state.data.content[index];
 }
 
-loadMoreRows = ({startIndex, stopIndex}) => {
-  // in this project all kara will be loaded at once
-  // so loadmorerows is not used
+loadMoreRows = async ({startIndex, stopIndex}) => {
+  if (!this.state.getPlaylistInProgress) {
+    var data = this.state.data;
+    data.infos.from = data.infos.to;
+    await this.setState({data: data, getPlaylistInProgress: true});
+    this.getPlaylist();
+  }
 }
 
 
@@ -304,7 +308,10 @@ return <React.Fragment>
 
     url +=
       "?filter=" +
-      store.getFilterValue(this.props.side)
+      store.getFilterValue(this.props.side) +
+      "&from=" +
+      (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 && store.getFilterValue(this.props.side) === '' ? this.state.data.infos.from : 0) +
+      "&size=" + chunksize;
       if(this.state.searchType) {
         this.state.searchCriteria = this.state.searchCriteria ?
           {
@@ -331,7 +338,17 @@ return <React.Fragment>
         }
       });
     }
-    this.setState({ data: karas, getPlaylistInProgress: false });
+    var data;
+    if (this.state.data.infos.from > 0) {
+      data = this.state.data;
+      data.infos = karas.infos;
+      data.content = data.content.concat(karas.content);
+      data.i18n = Object.assign(data.i18n, karas.i18n);
+      console.log(data)
+    } else {
+      data = karas;
+    }
+    this.setState({ data: data, getPlaylistInProgress: false });
   };
 
   playingUpdate = data => {
