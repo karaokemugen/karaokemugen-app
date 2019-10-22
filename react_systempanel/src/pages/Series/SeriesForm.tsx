@@ -36,14 +36,6 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 	}
 
 	componentDidMount() {
-		// For some stupid reason the list of languages won't be filled up, even with initialValue.
-		// So we're filling the form here.
-		for (const lang of this.state.i18n) {
-			const obj = {};
-			obj[`lang_${lang}`] = this.props.serie.i18n[lang];
-			this.props.form.setFieldsValue(obj);
-		}
-		//this.props.form.validateFields();
 	}
 
 	showSelect = () => {
@@ -141,12 +133,23 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 					</Tooltip>
 				</div>
 				{ this.state.i18n.map(langKey => (
-					<Row gutter={8}>
 						<Form.Item
 							hasFeedback
-							label={langs.where('2B', langKey).name}
+							label={(
+								<span>
+									{langs.where('2B', langKey).name+" "}
+									{Object.keys(this.state.i18n).length > 1 ? (
+										<Tooltip title="Remove name">
+											<Icon
+												className="dynamic-delete-button"
+												type="minus-circle-o"
+												onClick={() => this.removeLang(langKey)}
+										/></Tooltip>
+									) : null}
+								</span>
+							)}
 							labelCol={{ span: 3 }}
-							wrapperCol={{ span: 16, offset: 0 }}
+							wrapperCol={{ span: 10, offset: 0 }}
 						>
 							{getFieldDecorator('lang_' + langKey, {
 								initialValue: this.state[`lang_${langKey}`],
@@ -155,27 +158,9 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 									message: 'Please enter a translation'
 								}],
 							})(
-								<Col span={12}>
-
-									<Input
-										placeholder='Name in that language'
-										defaultValue={this.state[`lang_${langKey}`]}
-									/>
-								</Col>
+								<Input placeholder='Name in that language' />
 							)}
-
-						 {Object.keys(this.state.i18n).length > 1 ? (
-								<Col span={2}>
-									<Tooltip title="Remove name">
-										<Icon
-											className="dynamic-delete-button"
-											type="minus-circle-o"
-											onClick={() => this.removeLang(langKey)}
-										/></Tooltip></Col>
-							) : null}
-
 						</Form.Item>
-					</Row>
 				))}
 				{selectVisible && (
 					<Form.Item
