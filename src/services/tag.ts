@@ -66,8 +66,11 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 }
 
 export async function refreshTagsAfterDBChange() {
+	logger.debug('[DB] Refreshing DB after tag change');
 	await refreshTags();
-	refreshKaraTags().then(() => refreshKaras());
+	await refreshKaraTags();
+	await refreshKaras();
+	logger.debug('[DB] Done refreshing DB after tag change');
 }
 
 export async function getTag(tid: string) {

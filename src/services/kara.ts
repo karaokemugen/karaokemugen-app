@@ -219,6 +219,7 @@ export function formatKaraList(karaList: any, from: number, count: number, lang:
 
 export async function refreshKarasAfterDBChange(newSeries: boolean, newTags: boolean) {
 	profile('RefreshAfterDBChange')
+	logger.debug('[DB] Refreshing DB after kara change');
 	if (newSeries) await refreshKaraSeries();
 	if (newTags) await refreshKaraTags();
 	await refreshKaras();
@@ -227,7 +228,8 @@ export async function refreshKarasAfterDBChange(newSeries: boolean, newTags: boo
 		await refreshKaraSeriesLang();
 	}
 	if (newTags) await refreshTags();
-	refreshYears();
+	await refreshYears();
+	logger.debug('[DB] Done refreshing DB after kara change');
 	profile('RefreshAfterDBChange')
 }
 
