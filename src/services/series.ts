@@ -1,6 +1,6 @@
 import {removeSeriesFile, writeSeriesFile, formatSeriesFile} from '../lib/dao/seriesfile';
 import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries, testSerie} from '../dao/series';
-import {refreshSeries, refreshKaraSeries, refreshKaraSeriesLang} from '../lib/dao/series';
+import {refreshSeries, refreshKaraSeries, refreshKaraSeriesLang, refreshSeriesi18n} from '../lib/dao/series';
 import {profile} from '../lib/utils/logger';
 import logger from 'winston';
 import {removeSerieInKaras} from '../lib/dao/karafile';
@@ -123,6 +123,7 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 export async function refreshSeriesAfterDBChange() {
 	logger.debug('[DB] Refreshing DB after series change');
 	await refreshSeries();
+	await refreshSeriesi18n();
 	await refreshKaraSeries();
 	await refreshKaras();
 	await refreshKaraSeriesLang();

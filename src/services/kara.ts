@@ -111,11 +111,11 @@ export async function updateTags(kara: Kara) {
 
 export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	await addKara(kara);
-	const promises = [];
-	if (kara.newSeries) promises.push(updateSeries(kara));
-	if (kara.newTags) promises.push(updateTags(kara));
-	await Promise.all(promises);
-	if (opts.refresh) await refreshKarasAfterDBChange(kara.newSeries, kara.newTags);
+	await Promise.all([
+		updateSeries(kara),
+		updateTags(kara)
+	]);
+	if (opts.refresh) await refreshKarasAfterDBChange(true, true);
 }
 
 export async function editKaraInDB(kara: Kara, opts = {
@@ -220,14 +220,16 @@ export function formatKaraList(karaList: any, from: number, count: number, lang:
 export async function refreshKarasAfterDBChange(newSeries: boolean, newTags: boolean) {
 	profile('RefreshAfterDBChange')
 	logger.debug('[DB] Refreshing DB after kara change');
-	if (newSeries) await refreshKaraSeries();
-	if (newTags) await refreshKaraTags();
-	await refreshKaras();
 	if (newSeries) {
+		await refreshKaraSeries();
 		await refreshSeries();
 		await refreshKaraSeriesLang();
 	}
-	if (newTags) await refreshTags();
+	if (newTags) {
+		await refreshKaraTags();
+		await refreshTags();
+	}
+	await refreshKaras();
 	await refreshYears();
 	logger.debug('[DB] Done refreshing DB after kara change');
 	profile('RefreshAfterDBChange')
