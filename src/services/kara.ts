@@ -223,10 +223,10 @@ export async function refreshKarasAfterDBChange(newSeries: boolean, newTags: boo
 	if (newTags) await refreshKaraTags();
 	await refreshKaras();
 	if (newSeries) {
-		refreshSeries();
-		refreshKaraSeriesLang();
+		await refreshSeries();
+		await refreshKaraSeriesLang();
 	}
-	if (newTags) refreshTags();
+	if (newTags) await refreshTags();
 	refreshYears();
 	profile('RefreshAfterDBChange')
 }
