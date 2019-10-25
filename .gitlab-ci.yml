@@ -100,6 +100,9 @@ pkg_win32:
   dependencies:
     - build
   script:
+    - dpkg --add-architecture i386
+    - apt-get update
+    - apt-get install -y libc6:i386 libstdc++6:i386
     - mkdir -p bin
     - npm install -g pkg@4.3.8
     - pkg . -d --targets node10-win-x86 -o bin/karaokemugen-app32.exe
