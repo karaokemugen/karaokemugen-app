@@ -37,7 +37,6 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - QR Code has been removed (why is it a new feature?) (#451)
 - Users can now select which language for series names they tend to prefer (just like an admin can). This setting is saved to your online account. (#440)
 - New, updated sample songs included with every release (#452)
-- A small avatar is displayed next to a song in playlists to see who added it (#423)
 - Battle-tested with Node 12 (#439)
 - Karaoke Mugen is now coded with TypeScript, for better debugging and safer programming :) (#437 #391)
 - For MugenPi users (or those who don't want to look at the console screen), logs are now available in the System Control Panel (#434)
