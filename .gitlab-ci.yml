@@ -1,7 +1,7 @@
 image: axelterizaki/karaokemugen-ci:node-10
 
 cache:
-  key: km
+  key: km-app-${CI_COMMIT_REF_SLUG}
   paths:
   - node_modules/
   - bin/
@@ -17,6 +17,9 @@ stages:
 
 test:
   stage: test
+  retry:
+    max: 2
+  interruptible: true
   services:
     - postgres:10.6
   variables:
@@ -41,9 +44,17 @@ test:
 
 build:
   stage: build
+  interruptible: true
+  artifacts:
+    expire_in: 1 days
+    name: km-app-build-${CI_COMMIT_REF_SLUG}
+    paths:
+    - react_systempanel/build/
+    - dist/
   script:
-    - npm install -g modclean
+    - npm install -g modclean parcel-bundler
     - yarn build
+    - yarn buildReact
     - yarn install --production
     - cd node_modules
     - find -name *.node -delete
@@ -55,6 +66,12 @@ build:
 
 pkg_win:
   stage: package
+  interruptible: true
+  artifacts:
+    expire_in: 1 day
+    name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
+    paths:
+    - bin/
   dependencies:
     - build
   script:
@@ -66,8 +83,33 @@ pkg_win:
     - next
     - tags
 
+pkg_win32:
+  stage: package
+  interruptible: true
+  artifacts:
+    expire_in: 1 day
+    name: km-app-pkgwin32-${CI_COMMIT_REF_SLUG}
+    paths:
+    - bin/
+  dependencies:
+    - build
+  script:
+    - mkdir -p bin
+    - npm install -g pkg@4.3.8
+    - pkg . -d --targets node10-win-x86 -o bin/karaokemugen-app32.exe
+  only:
+    - master
+    - next
+    - tags
+
 pkg_osx:
   stage: package
+  interruptible: true
+  artifacts:
+    expire_in: 1 day
+    name: km-app-pkgosx-${CI_COMMIT_REF_SLUG}
+    paths:
+    - bin/
   dependencies:
     - build
   script:
@@ -81,8 +123,10 @@ pkg_osx:
 
 deploy_win:
   stage: deploy
+  interruptible: true
   dependencies:
     - pkg_win
+  cache: {}
   script:
     - mkdir build_win
     - cd build_win
@@ -104,8 +148,37 @@ deploy_win:
     - next
     - tags
 
+deploy_win32:
+  stage: deploy
+  interruptible: true
+  dependencies:
+    - pkg_win32
+  cache: {}
+  script:
+    - mkdir build_win32
+    - cd build_win32
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_win32.tar.gz | tar xvz
+    - mkdir -p app/jingles
+    - cd app/jingles
+    - wget -qO- https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar | tar xv
+    - mv -f jingles-master*/* .
+    - rm -Rf jingles-master*
+    - cd ../..
+    - cp -f ../bin/karaokemugen-app32.exe KaraokeMugen.exe
+    - cp -f ../config.sample.yml .
+    - cp -Rf ../samples .
+    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win32.zip *
+    - cd ..
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win32/KaraokeMugen-$CI_COMMIT_REF_NAME-win32.zip"
+  only:
+    - master
+    - next
+    - tags
+
 latest_tag:
   stage: deploy
+  interruptible: true
+  cache: {}
   script:
     - echo $CI_COMMIT_REF_NAME >latest
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put latest"
@@ -114,6 +187,8 @@ latest_tag:
 
 deploy_osx:
   stage: deploy
+  interruptible: true
+  cache: {}
   dependencies:
     - pkg_osx
   script:
@@ -141,6 +216,8 @@ deploy_osx:
 
 apidoc:
   stage: deploy
+  interruptible: true
+  cache: {}
   script:
     - npm install -g apidoc
     - apidoc -i src/_controllers -o apidoc -t apidoc_template
