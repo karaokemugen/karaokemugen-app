@@ -44,11 +44,11 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - Admins can restrict song additions by users to one song per series or singer to avoid people trying to force their favorite series or singer by adding all its songs (#431)
 - A new (shy) look for the frontend has been achieved with the React rewrite (#430 #300)
 - Suggesting a song to be added to the karaoke base now generates an issue on our Gitlab (configurable) (#422)
-- An intro video is played at the beginning of a playlist if you're starting on the first song. If a sponsor jingle file is present (Beginning with `Sponsor - `) it will be played right after.
+- An intro video is played at the beginning of a playlist if you're starting on the first song. If a sponsor jingle file is present (Beginning with `Sponsor - `) it will be played right after. (#482)
 - The karaoke submission form now accepts new karaoke formats in addition of ASS. The files will be converted to the ASS format on import. New formats supported are :
-  - Toyunda files (.txt)
-  - UltraStar files (.txt)
-  - Karafun files (.kfn)
+  - Toyunda files (.txt) (#463)
+  - UltraStar files (.txt) (#31)
+  - Karafun files (.kfn) (#471)
 - Dark theme for the system panel (#468)
 - Settings in the options panel now have tooltips to explain what they do (#460)
 
