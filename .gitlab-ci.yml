@@ -121,7 +121,7 @@ pkg_osx:
   script:
     - mkdir -p bin
     - npm install -g pkg@4.3.8
-    - pkg . -d --targets node10-macos-x64 --out-path bin
+    - pkg . -d --targets node10-macos-x64 -o bin/karaokemugen-app32.exe
   only:
     - master
     - next
@@ -158,7 +158,7 @@ deploy_win32:
     - mkdir build_win32
     - cd build_win32
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win32.tar.gz | tar xvz
-    - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
+    - cp -f ../bin/karaokemugen-app32.exe KaraokeMugen.exe
     - cp -f ../config.sample.yml .
     - cp -Rf ../samples .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win32.zip *
