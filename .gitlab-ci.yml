@@ -102,7 +102,7 @@ pkg_win32:
   script:
     - mkdir -p bin
     - npm install -g pkg@4.3.8
-    - pkg . -d --targets node10-win-x86 --out-path bin
+    - pkg . -d --targets node10-win-x86 -o bin/karaokemugen-app32.exe
   only:
     - master
     - next
@@ -121,7 +121,7 @@ pkg_osx:
   script:
     - mkdir -p bin
     - npm install -g pkg@4.3.8
-    - pkg . -d --targets node10-macos-x64 -o bin/karaokemugen-app32.exe
+    - pkg . -d --targets node10-macos-x64 --out-path bin
   only:
     - master
     - next
