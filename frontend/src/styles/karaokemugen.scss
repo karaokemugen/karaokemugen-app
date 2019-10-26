@@ -789,9 +789,6 @@ input[type=range]:focus::-ms-fill-upper {
     text-decoration: none;
     background-color: rgb(75, 75, 75);
 }
-.tagFilter {
-	width: 100%;
-}
 .modal .modal-message div {
 	padding: 0;
 }
@@ -1110,85 +1107,38 @@ input[type="text"]:focus, input[type="password"]:focus {
 /* FILTER MENU CSS */
 
 .searchMenuContainer {
-    min-height: 105px; 
-    margin-bottom:0;
-    border:0;
-    background-color: #1E2124;
-	z-index: 1444;
-	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.24), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
-	
-	flex: 0 0 auto;
-}
-.searchMenu {
+	background-color: #1E2124;
     border: solid 0px hsla(0, 0%, 70%, 1);
     border-width:  1px 0px;
-    width: 100%;
-    height: 100%;
 }
-
-.searchMenu .nav>li:not(.tagFilter) {
-	width: 50%;
-}
-.searchMenu .navbar-nav {
-    margin: 0px -15px;
-}
-.searchMenuContainer.navbar-default .navbar-nav>.active>a.choice {
-    background-color: hsla(211, 33%, 38%, 1);
-    font-weight: bold;
-    color: #eee;
-}
-.searchMenu .navbar-nav>li>a {
-    padding-top: 9px;
-    padding-bottom: 9px;
-}
-.searchMenuContainer.navbar-default .navbar-nav>li>a.choice {
-    color: #eee;
-    font-size: 14px;
-}
-
-.searchMenuContainer.navbar-default .navbar-nav>li > * {
-    display: flex;
-    line-height: 17px;
-    height: 34px;
-}
-.searchMenuContainer.navbar-default .navbar-nav>li a>i {
-    margin-right: 10px;
-}
-.searchMenuContainer.navbar-default .navbar-nav>li > .value {
-   width: calc(100% - 100px);
-   float: right;
-   border: 0;
-}
-.searchMenuButtonOpen{
-    background-color: hsla(211, 33%, 38%, 1);
-    font-weight: bold;
-    color: #eee;
-}
-.searchMenu .navbar-nav>li, .searchMenu .navbar-nav {
-	float: none;
-}
-.searchMenu ul.navbar-nav {
+.filterContainer {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 }
 
-.searchMenu ::-webkit-input-placeholder {
-    font-size: 14px;
-    line-height: 14px;
-    height: 60px;
+.filterButton {
+	width: 70px;
+	padding: 7px
 }
-.searchMenu  ::-moz-placeholder {  /* Firefox 19+ */
-    font-size: 14px;
-    line-height: 14px;
-    height: 60px;
+
+.filterElement {
+	flex: 1;
+	text-align: center;
+	height: 35px;
+	padding: 5px;
 }
-.searchMenu :-ms-input-placeholder {
-    font-size: 14px;
-    line-height: 14px;
-    height: 60px;
+
+.filterElement:nth-child(3) {
+	padding: 0px;
 }
-.tagsContainer {
-    width: 40%;
+
+.filterTags {
+	background-color: #343434;
+}
+
+.filterElementActive {
+	background-color:#416081;
+	font-weight: bold;
 }
 
 @media (max-width: 1025px) {  
