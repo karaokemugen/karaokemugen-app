@@ -229,16 +229,18 @@ class KaraLine extends Component {
             <div className="contentDiv" onClick={is_touch_device() ? this.toggleKaraDetail : null}>
               <div>
                 {this.karaTitle}
-                {this.karaFamilies}
-                {this.karaPlatforms}
-                {this.karaGenres}
-                {this.karaOrigins}
-                {this.karaMisc}
                 {kara.upvotes ?
                   <div className="tag likeCount" title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
                     {kara.upvotes}<i className="fas fa-heart"></i>
                   </div> : null
                 }
+              </div>
+              <div>
+                {this.karaFamilies}
+                {this.karaPlatforms}
+                {this.karaGenres}
+                {this.karaOrigins}
+                {this.karaMisc}
               </div>
             </div>
             {this.state.karaDetailState ?
