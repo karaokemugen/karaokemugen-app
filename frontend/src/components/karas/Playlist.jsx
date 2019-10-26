@@ -13,7 +13,7 @@ import store from "../../store";
 import 'react-virtualized/styles.css'
 require('./Playlist.scss');
 
-const chunksize = 400;
+const chunksize = 10;
 const _cache = new CellMeasurerCache({ defaultHeight: 50, fixedWidth: true });
 
 class Playlist extends Component {
@@ -101,7 +101,7 @@ isRowLoaded = ({index}) => {
 loadMoreRows = async ({startIndex, stopIndex}) => {
   if (!this.state.getPlaylistInProgress) {
     var data = this.state.data;
-    data.infos.from = data.infos.to;
+    data.infos.from = chunksize * Math.floor(startIndex / chunksize) ;
     await this.setState({data: data, getPlaylistInProgress: true});
     this.getPlaylist();
   }
@@ -294,7 +294,6 @@ return <React.Fragment>
 
   playlistWillUpdate = () => {
     this.setState({data:false, getPlaylistInProgress:true});
-    _cache.clearAll();
   }
 
   playlistDidUpdate = () => {
@@ -364,6 +363,7 @@ return <React.Fragment>
       data = karas;
     }
     this.setState({ data: data, getPlaylistInProgress: false });
+    _cache.clearAll();
   };
 
   playingUpdate = data => {
@@ -628,7 +628,7 @@ return <React.Fragment>
           >
             <ul id={"playlist" + this.props.side} className="list-group" style={{height: "100%"}}>
               {
-                this.state.getPlaylistInProgress
+                this.state.data == false && this.state.getPlaylistInProgress
                 ? <li className="getPlaylistInProgressIndicator"><span className="fas fa-sync"></span></li>
                 : (
                     this.state.idPlaylist !== -4 && this.state.data
