@@ -38,9 +38,6 @@
     .playlist-main  .list-group-item[valid="true"] {
         background-color: hsla(151, 37%, 25%, 0.7);
     }
-    .list-group-item > .contentDiv, .playlist-main .list-group-item {
-        overflow: hidden;
-    }
 
     .touch:not(.mode1) .playlist-main .list-group-item:not(.filler)  {
         width: calc(100% - 12px);

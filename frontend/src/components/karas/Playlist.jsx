@@ -24,7 +24,8 @@ class Playlist extends Component {
       searchCriteria: undefined,
       playlistCommands: false,
       getPlaylistInProgress: false,
-      searchType: undefined
+      searchType: undefined,
+      data: {infos:{}}
     };
   }
 
@@ -299,6 +300,19 @@ return <React.Fragment>
     return url;
   };
 
+  playlistWillUpdate = () => {
+    this.setState({data:false, getPlaylistInProgress:true});
+  }
+
+  playlistDidUpdate = () => {
+    this.getPlaylist();
+  }
+
+  // combined call to force a full refresh of the playlist Panel
+  playlistForceRefresh = () => {
+    this.playlistWillUpdate();
+    this.playlistDidUpdate();
+  }
 
   getPlaylist = async (searchType, stopIndex) => {
     var indexToGo = stopIndex;
@@ -392,7 +406,8 @@ return <React.Fragment>
 
   getPlInfosElement = () => {
     var plInfos = "";
-    if (this.state.idPlaylist && this.state.data) {
+    if (this.state.idPlaylist && this.state.data
+      && this.state.data.infos && this.state.data.infos.count) {
       plInfos =
         this.state.idPlaylist != -4
           ? this.state.data.infos.from + "-" + this.state.data.infos.to
@@ -577,13 +592,13 @@ return <React.Fragment>
       }
       data.content = karas;
       this.setState({data:data});
-    }
+		}
   }
   
   clearScrollToIndex = () => {
     this.setState({ scrollToIndex: -1 });
   }
-
+  
   render() {
     return this.props.scope === "public" &&
       this.props.side === 1 && this.props.config &&
@@ -624,6 +639,8 @@ return <React.Fragment>
             getPlaylist={this.getPlaylist}
             toggleSearchMenu={this.props.toggleSearchMenu}
             searchMenuOpen={this.props.searchMenuOpen}
+            playlistWillUpdate={this.playlistWillUpdate}
+            playlistDidUpdate={this.playlistDidUpdate}
           />
           <div
             id={"playlistContainer" + this.props.side}
@@ -631,36 +648,43 @@ return <React.Fragment>
           >
             <ul id={"playlist" + this.props.side} className="list-group" style={{height: "100%"}}>
               {
-                this.state.idPlaylist !== -4 && this.state.data ?
-                  <InfiniteLoader 
-                    isRowLoaded={this.isRowLoaded}
-                    loadMoreRows={this.loadMoreRows}
-                    rowCount={this.state.data.infos.count || 0}>
-                    {({ onRowsRendered, registerChild }) => (               
-                      <AutoSizer>
-                        {({ height, width }) => (
-                          <this.SortableList
-                            pressDelay={0}
-                            helperClass="playlist-dragged-item"
-                            useDragHandle={true}
-                            deferredMeasurementCache={_cache}
-                            ref={registerChild}
-                            onRowsRendered={onRowsRendered}
-                            rowCount={this.state.data.infos.count || 0}
-                            rowHeight={_cache.rowHeight}
-                            rowRenderer={this.rowRenderer}
-                            noRowsRenderer={this.noRowsRenderer}
-                            height={height}
-                            width={width}
-                            onSortEnd={this.sortRow}
-                            onScroll={this.clearScrollToIndex}
-                            scrollToIndex={this.state.scrollToIndex}
-                          />)}
-                      </AutoSizer>
-                    )}
-                  </InfiniteLoader> :  (this.state.data ? 
-                <BlacklistCriterias data={this.state.data} scope={this.props.scope} tags={this.props.tags} /> : null
-                )
+                (this.state.data === false || this.state.data.infos.count === 0 || !this.state.data.infos.count) && this.state.getPlaylistInProgress
+                ? <li className="getPlaylistInProgressIndicator"><span className="fas fa-sync"></span></li>
+                : (
+                    this.state.idPlaylist !== -4 && this.state.data
+                    ? <InfiniteLoader
+                        isRowLoaded={this.isRowLoaded}
+                        loadMoreRows={this.loadMoreRows}
+                        rowCount={this.state.data && this.state.data.infos ? this.state.data.infos.count || 0 : 0}>
+                        {({ onRowsRendered, registerChild }) => (
+                          <AutoSizer>
+                            {({ height, width }) => (
+                              <this.SortableList
+                                pressDelay={0}
+                                helperClass="playlist-dragged-item"
+                                useDragHandle={true}
+                                deferredMeasurementCache={_cache}
+                                ref={registerChild}
+                                onRowsRendered={onRowsRendered}
+                                rowCount={this.state.data.infos.count || 0}
+                                rowHeight={_cache.rowHeight}
+                                rowRenderer={this.rowRenderer}
+                                noRowsRenderer={this.noRowsRenderer}
+                                height={height}
+                                width={width}
+                                onSortEnd={this.sortRow}
+                                onScroll={this.clearScrollToIndex}
+                                scrollToIndex={this.state.scrollToIndex}
+                              />)}
+                          </AutoSizer>
+                        )}
+                      </InfiniteLoader>
+                    : (
+                        this.state.data
+                        ? <BlacklistCriterias data={this.state.data} scope={this.props.scope} tags={this.props.tags} />
+                        : null
+                      )
+                  )
               }
             </ul>
           </div>
