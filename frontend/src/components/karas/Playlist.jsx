@@ -382,6 +382,7 @@ return <React.Fragment>
       data = karas;
     }
     this.setState({ data: data, getPlaylistInProgress: false, scrollToIndex: indexToGo });
+    _cache.clearAll();
   };
 
   playingUpdate = data => {
