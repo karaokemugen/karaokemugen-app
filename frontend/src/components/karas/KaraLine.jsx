@@ -148,25 +148,25 @@ class KaraLine extends Component {
     }
   };
 
-  karaFamilies = this.props.kara.families.map(tag => {
+  karaFamilies = this.props.kara.families ? this.props.kara.families.map(tag => {
     return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
-  });
+  }) : [] ;
 
-  karaPlatforms = this.props.kara.platforms.map(tag => {
+  karaPlatforms = this.props.kara.platforms ? this.props.kara.platforms.map(tag => {
     return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
-  });
+  }) : [];
 
-  karaGenres = this.props.kara.genres.map(tag => {
+  karaGenres = this.props.kara.genres ? this.props.kara.genres.map(tag => {
     return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
-  });
+  }) : [];
 
-  karaOrigins = this.props.kara.origins.map(tag => {
+  karaOrigins = this.props.kara.origins ? this.props.kara.origins.map(tag => {
     return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
-  });
+  }) : [];
 
-  karaMisc = this.props.kara.misc.map(tag => {
+  karaMisc = this.props.kara.misc ? this.props.kara.misc.map(tag => {
     return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
-  });
+  }) : [];
 
   karaTitle = buildKaraTitle(this.props.kara);
 
@@ -180,7 +180,7 @@ class KaraLine extends Component {
         onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
         {scope === 'public' && kara.username !== this.props.logInfos.username && kara.flag_visible === false ?
           <div className="contentDiv">
-            {this.props.config.Playlist.MysterySongs.Labels[this.props.config.Playlist.MysterySongs.Labels.length * Math.random() | 0]}
+            <div style={{height:"33px"}}>{this.props.config.Playlist.MysterySongs.Labels[this.props.config.Playlist.MysterySongs.Labels.length * Math.random() | 0]}</div>
           </div> :
           <React.Fragment>
             {is_touch_device() && scope !== 'admin' ? null :

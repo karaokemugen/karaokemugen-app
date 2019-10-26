@@ -315,7 +315,6 @@ button.closeParent.bottom  {
 }
 
 .playlistContainer > ul {
-	margin-bottom: 20px; /* SUPER IMPORTANT TO AVOID (edit: not really) A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
 	position: relative;
 	z-index: 2;
 }
