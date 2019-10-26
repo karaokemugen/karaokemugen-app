@@ -9,6 +9,8 @@ import store from "../../store";
 import ReactDOM from 'react-dom';
 import FavMixModal from "../modals/FavMixModal"
 
+import styles from './PlaylistHeader.scss'
+
 var tagsTypesList = [
   'DETAILS_SERIE',
   'BLCTYPE_3',
@@ -244,43 +246,48 @@ class PlaylistHeader extends Component {
           }
         </div> : null);
 
-    const searchMenu = (this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).length > 0 ? <nav className="navbar navbar-default  searchMenuContainer">
-      <div className="searchMenu container" id={"searchMenu" + this.props.side}>
-        <ul className="nav navbar-nav">
-          <li className={"tagFilter " + (this.state.activeFilter === 5 ? "active" : "")}>
-            <span className='value'>
-              <span>
-                <select type="text" className="tagsTypes form-control value" placeholder="Search"
-                  onChange={e => this.setState({ tagType: (Number(e.target.value) ? Number(e.target.value) : e.target.value) })}
-                  value={this.state.tagType}>
-                  {tagsTypesList.map(val => {
-                    if (val === 'DETAILS_SERIE') {
-                      return <option key={val} value='serie'>{i18next.t(val)}</option>
-                    } else if (val === 'DETAILS_YEAR') {
-                      return <option key={val} value='year'>{i18next.t(val)}</option>
-                    } else {
-                      return <option key={val} value={val.replace('BLCTYPE_', '')}>{i18next.t(val)}</option>
-                    }
-                  })}
-                </select>
-              </span>
-              <span className="tagsContainer">
-                <Autocomplete className="tags form-control value" value={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))[0].value}
-                  options={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))}
-                  onChange={this.onChangeTags} />
-              </span>
-            </span>
-            <a className="choice" href="#" onClick={() => this.getKarasList(5, "search")}><i className="fas fa-filter"></i> {i18next.t("FILTER")}</a>
-          </li>
-          <li className={this.state.activeFilter === 1 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(1)}>
-            <i className="fas fa-sort-alpha-asc"></i> {i18next.t("VIEW_STANDARD")}</a></li>
-          <li className={this.state.activeFilter === 2 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(2)}><i className="fas fa-star"></i> {i18next.t("VIEW_FAVORITES")}</a></li>
-          <li className={this.state.activeFilter === 3 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(3, "recent")}><i className="fas fa-clock-o"></i> {i18next.t("VIEW_RECENT")}</a></li>
-          <li className={this.state.activeFilter === 4 ? "active" : ""}><a className="choice" href="#" onClick={() => this.getKarasList(4, "requested")}><i className="fas fa-fire"></i> {i18next.t("VIEW_POPULAR")}</a></li>
-
-        </ul>
-      </div>
-    </nav> : null);
+    const searchMenu = (this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).length > 0 ? 
+      <div className="searchMenuContainer">
+        <div className="filterContainer">
+          <div className={"filterButton " + (this.state.activeFilter === 5 ? "filterElementActive" : "")} onClick={() => this.getKarasList(5, "search")}>
+            <i className="fas fa-filter"></i> {i18next.t("FILTER")}
+          </div>
+          <select type="text" className="filterElement filterTags" placeholder="Search"
+            onChange={e => this.setState({ tagType: (Number(e.target.value) ? Number(e.target.value) : e.target.value) })}
+            value={this.state.tagType}>
+            {tagsTypesList.map(val => {
+              if (val === 'DETAILS_SERIE') {
+                return <option key={val} value='serie'>{i18next.t(val)}</option>
+              } else if (val === 'DETAILS_YEAR') {
+                return <option key={val} value='year'>{i18next.t(val)}</option>
+              } else {
+                return <option key={val} value={val.replace('BLCTYPE_', '')}>{i18next.t(val)}</option>
+              }
+            })}
+          </select>
+          <div className="filterElement filterTagsOptions">
+            <Autocomplete value={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))[0].value}
+              options={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))}
+              onChange={this.onChangeTags} />
+          </div>
+        </div>
+        <div className="filterContainer">
+          <div className={"filterElement " + (this.state.activeFilter === 1 ? "filterElementActive" : "")} onClick={() => this.getKarasList(1)}>
+            <i class="fas fa-sort-alpha-down"></i> {i18next.t("VIEW_STANDARD")}
+          </div>
+          <div className={"filterElement " + (this.state.activeFilter === 2 ? "filterElementActive" : "")}  onClick={() => this.getKarasList(2)}>
+            <i className="fas fa-star"></i> {i18next.t("VIEW_FAVORITES")}
+          </div>
+        </div>
+        <div className="filterContainer">
+          <div className={"filterElement " + (this.state.activeFilter === 3 ? "filterElementActive" : "")}  onClick={() => this.getKarasList(3, "recent")}>
+            <i class="far fa-clock"></i> {i18next.t("VIEW_RECENT")}
+          </div>
+          <div className={"filterElement " + (this.state.activeFilter === 4 ? "filterElementActive" : "")} onClick={() => this.getKarasList(4, "requested")}>
+            <i className="fas fa-fire"></i> {i18next.t("VIEW_POPULAR")}
+          </div>
+        </div>
+    </div> : null);
 
     
   const plSearch = (<div className="pull-left plSearch">
@@ -318,14 +325,14 @@ class PlaylistHeader extends Component {
         {this.props.scope !== "public" || this.props.side !== 1 ?
           <div className={"panel-heading plDashboard" + (this.props.playlistCommands ? " advanced" : "")}>
             {this.props.scope === "admin" || this.props.mode !== 1 ?
-              <div className={(this.props.scope !== "public" ? "col-lg-8 col-md-7 col-sm-6 col-xs-6 " : "") + "plSelect"}>
+              <React.Fragment>
                 {this.props.scope === "admin" && this.props.idPlaylist !== -4 ?
-                  <button title={i18next.t("PLAYLIST_COMMANDS")} onClick={this.props.togglePlaylistCommands}
-                    className={"btn btn-default pull-left showPlaylistCommands" + (this.props.playlistCommands ? " btn-primary" : "")}>
-                    <i className="fas fa-wrench"></i>
-                  </button> : null
+                <button title={i18next.t("PLAYLIST_COMMANDS")} onClick={this.props.togglePlaylistCommands}
+                  className={"btn btn-default pull-left showPlaylistCommands" + (this.props.playlistCommands ? " btn-primary" : "")}>
+                  <i className="fas fa-wrench"></i>
+                </button> : null
                 }
-                <select id={"selectPlaylist" + this.props.side} side={this.props.side} type="playlist_select" className="form-control"
+                <select side={this.props.side} className="selectPlaylist"
                   value={this.props.idPlaylist} onChange={(e) => this.props.changeIdPlaylist(e.target.value)}>
                   {(this.props.scope === 'public' && this.props.side === 1 && this.props.mode === 1) ?
                     <option value={this.props.playlistToAddId} ></option> :
@@ -339,7 +346,7 @@ class PlaylistHeader extends Component {
                       })
                   }
                 </select>
-              </div> : null
+              </React.Fragment> : null
             }
             {this.props.scope === 'admin' ?
               <React.Fragment>

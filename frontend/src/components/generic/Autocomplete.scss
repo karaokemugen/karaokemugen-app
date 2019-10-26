@@ -32,6 +32,7 @@ $option-active-background:#00b0ed;
   display: inline-block;
   position: relative;
   max-width: 100%;
+  width: 100%;
 }
 .UI-autocomplete-input select {
   position: relative;
@@ -41,6 +42,7 @@ $option-active-background:#00b0ed;
   color:$input-color;
   background:$input-background;
   max-width: 100%;
+  width: 100%;
 }
 .UI-autocomplete-input input {
   padding: 0.25em;

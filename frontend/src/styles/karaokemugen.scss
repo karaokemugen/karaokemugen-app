@@ -587,18 +587,24 @@ input[type=range]:focus::-ms-fill-upper {
     width: 100%;
     flex: 0 0 auto;
 }
-.plDashboard .plSelect, .plDashboard .plSearch {
+.plDashboard .plSearch {
 	z-index:10;
 }
 
-.plDashboard .plSelect {
-	flex-grow: 100;
-	flex-basis: 30%;
-    float: left;
+.selectPlaylist {
+	background-color: #343434;
+	padding: 6px 12px;
+	font-size: 14px;
+	color: #555;
+	border: 1px solid #ccc;
+	color:white;
+	border-radius: 0;
+	border-color:#fafafa70;
+	flex: 1;
 }
+
 .plDashboard .plSearch {
-    flex-grow: 100;
-	flex-basis: 25%;
+    flex: 2;
 	float: right;
 	order: 1;
 }
@@ -788,9 +794,6 @@ input[type=range]:focus::-ms-fill-upper {
     border-top: none;
     text-decoration: none;
     background-color: rgb(75, 75, 75);
-}
-.tagFilter {
-	width: 100%;
 }
 .modal .modal-message div {
 	padding: 0;
@@ -1108,88 +1111,6 @@ input[type="text"]:focus, input[type="password"]:focus {
 }
 
 /* FILTER MENU CSS */
-
-.searchMenuContainer {
-    min-height: 105px; 
-    margin-bottom:0;
-    border:0;
-    background-color: #1E2124;
-	z-index: 1444;
-	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.24), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
-	
-	flex: 0 0 auto;
-}
-.searchMenu {
-    border: solid 0px hsla(0, 0%, 70%, 1);
-    border-width:  1px 0px;
-    width: 100%;
-    height: 100%;
-}
-
-.searchMenu .nav>li:not(.tagFilter) {
-	width: 50%;
-}
-.searchMenu .navbar-nav {
-    margin: 0px -15px;
-}
-.searchMenuContainer.navbar-default .navbar-nav>.active>a.choice {
-    background-color: hsla(211, 33%, 38%, 1);
-    font-weight: bold;
-    color: #eee;
-}
-.searchMenu .navbar-nav>li>a {
-    padding-top: 9px;
-    padding-bottom: 9px;
-}
-.searchMenuContainer.navbar-default .navbar-nav>li>a.choice {
-    color: #eee;
-    font-size: 14px;
-}
-
-.searchMenuContainer.navbar-default .navbar-nav>li > * {
-    display: flex;
-    line-height: 17px;
-    height: 34px;
-}
-.searchMenuContainer.navbar-default .navbar-nav>li a>i {
-    margin-right: 10px;
-}
-.searchMenuContainer.navbar-default .navbar-nav>li > .value {
-   width: calc(100% - 100px);
-   float: right;
-   border: 0;
-}
-.searchMenuButtonOpen{
-    background-color: hsla(211, 33%, 38%, 1);
-    font-weight: bold;
-    color: #eee;
-}
-.searchMenu .navbar-nav>li, .searchMenu .navbar-nav {
-	float: none;
-}
-.searchMenu ul.navbar-nav {
-	display: flex;
-	flex-wrap: wrap;
-}
-
-.searchMenu ::-webkit-input-placeholder {
-    font-size: 14px;
-    line-height: 14px;
-    height: 60px;
-}
-.searchMenu  ::-moz-placeholder {  /* Firefox 19+ */
-    font-size: 14px;
-    line-height: 14px;
-    height: 60px;
-}
-.searchMenu :-ms-input-placeholder {
-    font-size: 14px;
-    line-height: 14px;
-    height: 60px;
-}
-.tagsContainer {
-    width: 40%;
-}
 
 @media (max-width: 1025px) {  
 

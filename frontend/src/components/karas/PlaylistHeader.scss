@@ -1,0 +1,46 @@
+.searchMenuContainer {
+	background-color: #1E2124;
+    border: solid 0px hsla(0, 0%, 70%, 1);
+    border-width:  1px 0px;
+}
+.filterContainer {
+	display: flex;
+	flex-wrap: nowrap;
+
+	.filterButton {
+		width: 70px;
+		padding: 7px
+	}
+
+	.filterElement {
+		flex: 1;
+		text-align: center;
+		height: 35px;
+		padding: 5px;
+	}
+
+	.filterTags {
+		background-color: #343434;
+	}
+
+	.filterTagsOptions {
+		padding: 0px;
+	}
+
+	.filterElementActive {
+		background-color:#416081;
+		font-weight: bold;
+}
+
+	@media (max-width:500px) {
+		flex-wrap: wrap;
+		.filterTags {
+			flex:1;
+		}
+		.filterTagsOptions {
+			flex:auto;
+			width: 100%;
+		}
+	}
+}
+
