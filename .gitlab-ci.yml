@@ -1,4 +1,4 @@
-image: axelterizaki/karaokemugen-ci:node-12
+image: axelterizaki/karaokemugen-ci:node-10
 
 cache:
   key: km-app-${CI_COMMIT_REF_SLUG}
