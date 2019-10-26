@@ -24,8 +24,7 @@ class Playlist extends Component {
       searchCriteria: undefined,
       playlistCommands: false,
       getPlaylistInProgress: false,
-      searchType: undefined,
-      data: {infos:{}}
+      searchType: undefined
     };
   }
 
@@ -406,11 +405,15 @@ return <React.Fragment>
 
   getPlInfosElement = () => {
     var plInfos = "";
-    if (this.state.idPlaylist && this.state.data 
+    if (this.state.idPlaylist && this.state.data
       && this.state.data.infos && this.state.data.infos.count) {
+      plInfos =
+        this.state.idPlaylist != -4
+          ? this.state.data.infos.from + "-" + this.state.data.infos.to
+          : "";
       plInfos +=
         (this.state.idPlaylist != -4
-          ?
+          ? " / " +
           this.state.data.infos.count +
           (!is_touch_device() ? " karas" : "")
           : "") +
@@ -595,10 +598,6 @@ return <React.Fragment>
     this.setState({ scrollToIndex: -1 });
   }
   
-  clearScrollToIndex = () => {
-    this.setState({ scrollToIndex: -1 });
-  }
-
   render() {
     return this.props.scope === "public" &&
       this.props.side === 1 && this.props.config &&
