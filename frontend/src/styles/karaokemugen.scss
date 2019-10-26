@@ -1106,41 +1106,6 @@ input[type="text"]:focus, input[type="password"]:focus {
 
 /* FILTER MENU CSS */
 
-.searchMenuContainer {
-	background-color: #1E2124;
-    border: solid 0px hsla(0, 0%, 70%, 1);
-    border-width:  1px 0px;
-}
-.filterContainer {
-	display: flex;
-	flex-wrap: nowrap;
-}
-
-.filterButton {
-	width: 70px;
-	padding: 7px
-}
-
-.filterElement {
-	flex: 1;
-	text-align: center;
-	height: 35px;
-	padding: 5px;
-}
-
-.filterElement:nth-child(3) {
-	padding: 0px;
-}
-
-.filterTags {
-	background-color: #343434;
-}
-
-.filterElementActive {
-	background-color:#416081;
-	font-weight: bold;
-}
-
 @media (max-width: 1025px) {  
 
 	.playlistContainer:after {

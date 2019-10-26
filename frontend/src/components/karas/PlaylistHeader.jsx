@@ -9,6 +9,8 @@ import store from "../../store";
 import ReactDOM from 'react-dom';
 import FavMixModal from "../modals/FavMixModal"
 
+import styles from './PlaylistHeader.scss'
+
 var tagsTypesList = [
   'DETAILS_SERIE',
   'BLCTYPE_3',
@@ -263,7 +265,7 @@ class PlaylistHeader extends Component {
               }
             })}
           </select>
-          <div className="filterElement">
+          <div className="filterElement filterTagsOptions">
             <Autocomplete value={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))[0].value}
               options={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))}
               onChange={this.onChangeTags} />
