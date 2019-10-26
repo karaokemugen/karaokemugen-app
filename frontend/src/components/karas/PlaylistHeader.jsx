@@ -140,12 +140,16 @@ class PlaylistHeader extends Component {
       { name: this.props.playlistInfo.name, flag_visible: !this.props.playlistInfo.flag_visible });
   };
 
-  shuffle = () => {
-    axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle')
+  shuffle = async () => {
+    this.props.playlistWillUpdate();
+    await axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle')
+    this.props.playlistDidUpdate();
   };
 
   smartShuffle = () => {
+    this.props.playlistWillUpdate();
     axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle', { smartShuffle: 1 })
+    this.props.playlistDidUpdate();
   };
 
   getKarasList = (activeFilter, searchType) => {
