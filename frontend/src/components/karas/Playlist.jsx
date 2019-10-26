@@ -24,7 +24,8 @@ class Playlist extends Component {
       searchCriteria: undefined,
       playlistCommands: false,
       getPlaylistInProgress: false,
-      searchType: undefined
+      searchType: undefined,
+      data: {infos:{}}
     };
   }
 
