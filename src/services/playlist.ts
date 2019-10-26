@@ -1149,7 +1149,7 @@ export async function buildDummyPlaylist() {
 			token: {username: 'admin', role: 'admin'},
 			random: karaCount
 		});
-		karas.content.forEach(k => addKaraToPlaylist(k.kid, 'admin', state.currentPlaylistID));
+		await addKaraToPlaylist(karas.content.map(k => k.kid), 'admin', state.currentPlaylistID);
 		logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
 		emitWS('playlistInfoUpdated', state.currentPlaylistID);
 		emitWS('playlistContentsUpdated', state.currentPlaylistID);
