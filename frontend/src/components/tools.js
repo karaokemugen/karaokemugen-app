@@ -121,17 +121,17 @@ export function startIntro(scope) {
 * @return {String} the title
 */
 export function buildKaraTitle(data) {
-	var isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
+	var isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
 	if (data.langs && isMulti) {
 		data.langs = [isMulti];
 	}
 	var limit = is_touch_device() ? 25 : 50;
-	var serieText = data.serie ? data.serie : data.singers.map(e => e.name).join(', ');
+	var serieText = data.serie ? data.serie : (data.singers ? data.singers.map(e => e.name).join(', ') : '');
 	serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
 	var titleArray = [
-		data.langs.map(e => e.name).join(', ').toUpperCase(),
+		data.langs ? data.langs.map(e => e.name).join(', ').toUpperCase() : '',
 		serieText,
-		(data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name) + (data.songorder > 0 ? ' ' + data.songorder : '')
+		data.songtypes ? (data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name) + (data.songorder > 0 ? ' ' + data.songorder : '') : ''
 	];
 	var titleClean = titleArray.map(function (e, k) {
 		return titleArray[k] ? titleArray[k] : '';
