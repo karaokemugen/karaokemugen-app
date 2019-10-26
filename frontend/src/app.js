@@ -68,7 +68,7 @@ class App extends Component {
     async parseTags() {
         try {
             const response = await axios.get('/api/public/tags');
-            return response.data.data.content.filter(val => val.karacount > 0).map(val => {
+            return response.data.data.content.filter(val => val.karacount !== null).map(val => {
                 var trad = val.i18n[this.state.navigatorLanguage];
                 return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
             });
