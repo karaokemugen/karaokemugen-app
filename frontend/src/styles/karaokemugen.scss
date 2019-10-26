@@ -587,18 +587,24 @@ input[type=range]:focus::-ms-fill-upper {
     width: 100%;
     flex: 0 0 auto;
 }
-.plDashboard .plSelect, .plDashboard .plSearch {
+.plDashboard .plSearch {
 	z-index:10;
 }
 
-.plDashboard .plSelect {
-	flex-grow: 100;
-	flex-basis: 30%;
-    float: left;
+.selectPlaylist {
+	background-color: #343434;
+	padding: 6px 12px;
+	font-size: 14px;
+	color: #555;
+	border: 1px solid #ccc;
+	color:white;
+	border-radius: 0;
+	border-color:#fafafa70;
+	flex: 1;
 }
+
 .plDashboard .plSearch {
-    flex-grow: 100;
-	flex-basis: 25%;
+    flex: 2;
 	float: right;
 	order: 1;
 }

@@ -196,9 +196,6 @@
 	}
 
 	@media (max-width: 1520px) {	
-		.plDashboard .plSelect {
-		flex-basis : 50%;
-		}
 		#panel2 .plSearch {
 			order: 5;
 		}
@@ -213,9 +210,6 @@
 	@media (max-width: 900px) {	
 		.plDashboard .plSearch {
 			flex-basis : 30%;
-		}
-		.plDashboard .plSelect {
-			flex-basis : 20%;
 		}
 		#panel2 .plSearch {
 			order: 1;
