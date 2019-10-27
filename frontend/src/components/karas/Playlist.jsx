@@ -24,8 +24,7 @@ class Playlist extends Component {
       searchCriteria: undefined,
       playlistCommands: false,
       getPlaylistInProgress: false,
-      searchType: undefined,
-      data: {infos:{}}
+      searchType: undefined
     };
   }
 
@@ -361,7 +360,7 @@ return <React.Fragment>
       });
     }
     var data;
-    if (karas.infos.from > 0) {
+    if (karas.infos && karas.infos.from > 0) {
       data = this.state.data;
       if (karas.infos.from < data.content.length) {
         for (let index = 0; index < karas.content.length; index++) {
@@ -649,7 +648,7 @@ return <React.Fragment>
           >
             <ul id={"playlist" + this.props.side} className="list-group" style={{height: "100%"}}>
               {
-                (this.state.data === false || this.state.data && (this.state.data.infos.count === 0 || !this.state.data.infos.count)) && this.state.getPlaylistInProgress
+                (this.state.data === false || this.state.data && this.state.data.infos && (this.state.data.infos.count === 0 || !this.state.data.infos.count)) && this.state.getPlaylistInProgress
                 ? <li className="getPlaylistInProgressIndicator"><span className="fas fa-sync"></span></li>
                 : (
                     this.state.idPlaylist !== -4 && this.state.data
