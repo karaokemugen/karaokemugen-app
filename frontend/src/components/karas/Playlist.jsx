@@ -335,7 +335,7 @@ return <React.Fragment>
       (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 && store.getFilterValue(this.props.side) === '' ? this.state.data.infos.from : 0) +
       "&size=" + chunksize;
       if(this.state.searchType) {
-        this.state.searchCriteria = this.state.searchCriteria ?
+        let searchCriteria = this.state.searchCriteria ?
           {
             'year' : 'y',
             'serie' : 's',
@@ -344,7 +344,7 @@ return <React.Fragment>
           : '';
   
           url += '&searchType=' + this.state.searchType
-          + ((this.state.searchCriteria && this.state.searchValue) ? ('&searchValue=' + this.state.searchCriteria + ':' + this.state.searchValue) : '');
+          + ((searchCriteria && this.state.searchValue) ? ('&searchValue=' + searchCriteria + ':' + this.state.searchValue) : '');
       }
 
     var response = await axios.get(url);
@@ -649,7 +649,7 @@ return <React.Fragment>
           >
             <ul id={"playlist" + this.props.side} className="list-group" style={{height: "100%"}}>
               {
-                (this.state.data === false || this.state.data.infos.count === 0 || !this.state.data.infos.count) && this.state.getPlaylistInProgress
+                (this.state.data === false || this.state.data && (this.state.data.infos.count === 0 || !this.state.data.infos.count)) && this.state.getPlaylistInProgress
                 ? <li className="getPlaylistInProgressIndicator"><span className="fas fa-sync"></span></li>
                 : (
                     this.state.idPlaylist !== -4 && this.state.data

@@ -32,7 +32,8 @@ class PlaylistHeader extends Component {
     this.state = {
       selectAllKarasChecked: false,
       tagType: 2,
-      activeFilter: 1
+      activeFilter: 1,
+      activeFilterUUID: null
     };
   }
 
@@ -165,7 +166,7 @@ class PlaylistHeader extends Component {
   };
 
   onChangeTags = value => {
-    this.setState({ activeFilter: 5 });
+    this.setState({ activeFilter: 5, activeFilterUUID: value });
     this.props.onChangeTags(this.state.tagType, value);
   };
 
@@ -250,7 +251,7 @@ class PlaylistHeader extends Component {
       <div className="searchMenuContainer">
         <div className="filterContainer">
           <div className={"filterButton " + (this.state.activeFilter === 5 ? "filterElementActive" : "")} onClick={() => this.getKarasList(5, "search")}>
-            <i className="fas fa-filter"></i> {i18next.t("FILTER")}
+            <i className="fas fa-filter"></i> <span>{i18next.t("FILTER")}</span>
           </div>
           <select type="text" className="filterElement filterTags" placeholder="Search"
             onChange={e => this.setState({ tagType: (Number(e.target.value) ? Number(e.target.value) : e.target.value) })}
@@ -266,14 +267,14 @@ class PlaylistHeader extends Component {
             })}
           </select>
           <div className="filterElement filterTagsOptions">
-            <Autocomplete value={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))[0].value}
+            <Autocomplete value={this.state.activeFilterUUID || ""}
               options={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))}
               onChange={this.onChangeTags} />
           </div>
         </div>
         <div className="filterContainer">
           <div className={"filterElement " + (this.state.activeFilter === 1 ? "filterElementActive" : "")} onClick={() => this.getKarasList(1)}>
-            <i class="fas fa-sort-alpha-down"></i> {i18next.t("VIEW_STANDARD")}
+            <i className="fas fa-sort-alpha-down"></i> {i18next.t("VIEW_STANDARD")}
           </div>
           <div className={"filterElement " + (this.state.activeFilter === 2 ? "filterElementActive" : "")}  onClick={() => this.getKarasList(2)}>
             <i className="fas fa-star"></i> {i18next.t("VIEW_FAVORITES")}
@@ -281,7 +282,7 @@ class PlaylistHeader extends Component {
         </div>
         <div className="filterContainer">
           <div className={"filterElement " + (this.state.activeFilter === 3 ? "filterElementActive" : "")}  onClick={() => this.getKarasList(3, "recent")}>
-            <i class="far fa-clock"></i> {i18next.t("VIEW_RECENT")}
+            <i className="far fa-clock"></i> {i18next.t("VIEW_RECENT")}
           </div>
           <div className={"filterElement " + (this.state.activeFilter === 4 ? "filterElementActive" : "")} onClick={() => this.getKarasList(4, "requested")}>
             <i className="fas fa-fire"></i> {i18next.t("VIEW_POPULAR")}

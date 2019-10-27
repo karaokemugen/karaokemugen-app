@@ -9,17 +9,26 @@ import './Autocomplete.scss';
 
 function Autocomplete(props){
 
+  const options = props.options || [];
+
   const node = useRef();
   const [label, setLabel] = useState(props.label || null);
   const [placeholder, setPlaceholder] = useState(props.placeholder || null);
   const [selectedValue, setSelectedValue] = useState(props.value || "");
-  const [searchValue, setSearchValue] = useState(props.value || "");
+
+  let temp = "";
+  if(selectedValue)
+  {
+    temp = options.filter((o) => o.value === selectedValue)
+    if(temp.length)
+      temp = temp[0].label;
+  }
+  const [searchValue, setSearchValue] = useState(temp);
+
   const searchInputRef = useRef();
   const [activeIndex, setActiveIndex] = useState(0);
   const [focus, setFocus] = useState(false);
   var blurDelay = null
-
-  const options = props.options || [];
 
   const updateSelectedValue = (v) => {
     setSelectedValue(v);
@@ -30,12 +39,12 @@ function Autocomplete(props){
 
   // INPUT USER EVENT
   const handleInputFocus = (e) => {
+    setTimeout(() => setFocus(true) , 250);
     setSearchValue("");
-    setFocus(true);
   };
-  const handleInputChange = (e) => {
-    updateSelectedValue(e.target.value);
-    setFocus(false);
+
+  const handleInputClick = (e) => {
+    setFocus(!focus);
   };
 
   // SEARCH USER EVENT
@@ -66,11 +75,13 @@ function Autocomplete(props){
   const handleOptionSelection = (o) => {
     setFocus(false);
     updateSelectedValue(o.value)
+    setSearchValue(o.label)
+    setPlaceholder(o.label)
   };
 
   const filteredOptions = () => options.filter((o) => {
-    return String(o.label).toLowerCase().match(searchValue.toLowerCase())
-      || String(o.value).toLowerCase().match(searchValue.toLowerCase())
+    return String(o.label).toLowerCase().match(RegExp.escape(searchValue.toLowerCase()))
+      || String(o.value).toLowerCase().match(RegExp.escape(searchValue.toLowerCase()))
   });
 
   const handleClick = e => {
@@ -101,21 +112,16 @@ function Autocomplete(props){
           : null
       }
       <div className="UI-autocomplete-input" focus={focus ? 'true':'false'}>
-        <select
-          onFocus={handleInputFocus}
-          onChange={handleInputChange}
-          value={selectedValue}
-          >
-          {props.value ? null : <option value=""></option>}
-          {options.map((o,index) => (<option key={index} value={o.value}>{o.label}</option>))}
-        </select>
-        <ul className="UI-autocomplete-options">
-          <li>
-            <input type="text" ref={searchInputRef} value={searchValue} placeholder={placeholder}
+        <input type="text"
+              ref={searchInputRef}
+              value={searchValue}
+              placeholder={placeholder}
+              onFocus={handleInputFocus}
+              onClick={handleInputClick}
               onChange={handleSearchChange}
               onKeyUp={handleSearchKeyUp}
               />
-          </li>
+        <ul className="UI-autocomplete-options">
           <div className="UI-autocomplete-options-wrapper">
             {filteredOptions().map((o,index) => <li className="UI-autocomplete-option" index={index} active={index==activeIndex ? 'true':'false'} key={index} onClick={() => handleOptionSelection(o)}>{o.label}</li>)}
           </div>

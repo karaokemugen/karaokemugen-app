@@ -34,7 +34,7 @@ $option-active-background:#00b0ed;
   max-width: 100%;
   width: 100%;
 }
-.UI-autocomplete-input select {
+.UI-autocomplete-input input {
   position: relative;
   z-index: 1;
   padding: 0.5em;
@@ -43,22 +43,7 @@ $option-active-background:#00b0ed;
   background:$input-background;
   max-width: 100%;
   width: 100%;
-}
-.UI-autocomplete-input input {
-  padding: 0.25em;
-  border:1px solid $input-border;
-  color:$input-color;
-  background:$input-background;
-  height: auto !important;
-  line-height: 1em !important;
-  width: 100% !important;
-  &::placeholder {
-    color:$input-placeholder;
-  }
-  &:focus {
-    background:$input-background;
-    color:$input-color;
-  }
+  text-align: left;
 }
 .UI-autocomplete-options {
   position: fixed;
@@ -73,6 +58,7 @@ $option-active-background:#00b0ed;
     cursor: pointer;
     padding: .25em;
     margin: 0;
+    text-align: left;
     &[active="true"] {
       color:$option-active-color;
       background:$option-active-background;
