@@ -227,7 +227,7 @@ class KaraLine extends Component {
                   onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
             </div>
             <div className="contentDiv" onClick={is_touch_device() ? this.toggleKaraDetail : null}>
-              <div>
+              <div className="disable-select">
                 {this.karaTitle}
                 {kara.upvotes ?
                   <div className="tag likeCount" title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
@@ -235,7 +235,7 @@ class KaraLine extends Component {
                   </div> : null
                 }
               </div>
-              <div>
+              <div className="disable-select">
                 {this.karaFamilies}
                 {this.karaPlatforms}
                 {this.karaGenres}
