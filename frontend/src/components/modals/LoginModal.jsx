@@ -6,18 +6,21 @@ import { is_touch_device,startIntro,readCookie,displayMessage  } from '../tools'
 import HelpModal from "./HelpModal";
 import ReactDOM from 'react-dom';
 import Switch from '../generic/Switch';
+require("babel-polyfill");
+import store from '../../store'
 
 class LoginModal extends Component {
     constructor(props) {
         super(props)
+        let config = store.getConfig();
         this.state = {
             redBorders: '',
             errorBackground: '',
-            serv: (this.props.config && this.props.config.Online.Users) ? this.props.config.Online.Host : '',
-            role: 'user',
-            activeView: 1,
+            serv: (config.Online.Users) ? config.Online.Host : '',
+            role: this.props.role ? this.props.role : 'user',
+            activeView: this.props.activeView ? this.props.activeView : 1,
             onlineSwitch : true,
-            adminSwitch : false,
+            adminSwitch : this.props.role && this.props.role === 'admin',
             forgotPassword: false
         }
     }
@@ -35,7 +38,7 @@ class LoginModal extends Component {
         if (!username) {
             url = '/api/auth/login/guest';
             data = { fingerprint: password };
-        } else if (this.props.scope === 'admin' && this.props.config && this.props.config.App.FirstRun 
+        } else if (this.props.scope === 'admin' && store.getConfig().App.FirstRun 
             && axios.defaults.headers.common['authorization'] && username !== 'admin') {
             url = '/api/admin/users/login';
         }
@@ -49,21 +52,20 @@ class LoginModal extends Component {
         if (this.props.scope === 'admin' && response.role !== 'admin') {
             displayMessage('warning', i18next.t('ADMIN_PLEASE'));
         }
-        this.props.updateLogInfos(response);
+        store.setLogInfos(response);
         displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
 
         if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
-            ReactDOM.render(<HelpModal version={this.props.version}/>, document.getElementById('modal'));
+            ReactDOM.render(<HelpModal version={this.props.version} />, document.getElementById('modal'));
         }
-        if (this.props.admpwd && this.props.config.App.FirstRun) {
-            startIntro('admin');
-            axios.put('/api/admin/settings', JSON.stringify({ 'setting': { 'Karaoke': { 'Private': true } } }));
-        }
+        store.getTuto() && store.getTuto().move(1);
     };
 
     loginGuest = () => {
         Fingerprint2.get({ excludes: { userAgent: true } }, (components) => {
-            var values = components.map(function (component) { return component.value })
+            var values = components.map(function (component) {
+                return component.value;
+            });
             var murmur = Fingerprint2.x64hash128(values.join(''), 31)
             this.login('', murmur);
         });
@@ -141,7 +143,7 @@ class LoginModal extends Component {
                         <div className="tab-content" id="nav-tabContent">
                             {this.state.activeView === 1 ?
                             <div id="nav-login" className="modal-body">
-                                {this.props.scope !== 'admin' && this.props.config.Frontend.Mode === 2 ? 
+                                {this.props.scope !== 'admin' && store.getConfig().Frontend.Mode === 2 ? 
                                     <React.Fragment>
                                         <div className="tour hidden">
                                             {i18next.t("FIRST_PUBLIC_RUN_WELCOME")}

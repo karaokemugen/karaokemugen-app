@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import store from "../../store";
 
 require('./PlaylistMainDecorator.scss');
 
@@ -14,8 +15,15 @@ class PlaylistMainDecorator extends Component {
   handleSwipe = e => {
     if (this.state.currentSide==1 && e.changedTouches[0].clientX < this.state.startSwipeX - 100) {
       this.setState({currentSide:2});
+      store.getTuto() && console.log(store.getTuto(), store.getTuto().getStepLabel())
+      if(store.getTuto() && store.getTuto().getStepLabel() === "change_screen") {
+        store.getTuto().move(1);
+        }
     } else if (this.state.currentSide==2 && e.changedTouches[0].clientX > this.state.startSwipeX + 100) {
       this.setState({currentSide:1});
+      if(store.getTuto() && store.getTuto().getStepLabel() === "change_screen2") {
+        store.getTuto().move(1);
+        }
     }
   };
 

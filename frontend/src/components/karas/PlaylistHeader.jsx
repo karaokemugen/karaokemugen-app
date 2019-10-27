@@ -84,7 +84,7 @@ class PlaylistHeader extends Component {
     var dlAnchorElem = document.getElementById('downloadAnchorElem');
     dlAnchorElem.setAttribute('href', dataStr);
     if (this.props.idPlaylist === -5) {
-      dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.props.logInfos.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+      dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', store.getLogInfos().username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
     } else {
       dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.playlistInfo.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
     }

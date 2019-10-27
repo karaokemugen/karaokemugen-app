@@ -1,9 +1,12 @@
-import axios from 'axios';
 import io from 'socket.io-client';
 import Modal from './modals/Modal';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import store from '../store.js';
+import Tutorial from './modals/Tutorial';
+import i18next from 'i18next';
 import { toast } from 'react-toastify';
+
 
 const socket = io();
 
@@ -107,13 +110,13 @@ export function secondsTimeSpanToHMS(s, format) {
 };
 
 export function startIntro(scope) {
-	if (scope === 'admin') {
-		axios.put('/api/admin/settings', JSON.stringify({ 'setting': { 'App': { 'FirstRun': false } } }));
-	} else {
-		createCookie('publicTuto', 'true');
-	}
+	store.setTuto(ReactDOM.render(<Tutorial scope={scope}/>,  document.getElementById('tuto')));
+	return store.getTuto();
 };
 
+export function i18nAsDiv(key, args) {
+    return (<div dangerouslySetInnerHTML={{__html: i18next.t(key, args)}}/>)
+};
 
 /**
 * Build kara title for users depending on the data

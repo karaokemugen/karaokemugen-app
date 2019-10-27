@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import i18next from 'i18next';
 import axios from 'axios';
 import ReactDOM from 'react-dom';
+import store from '../../store'
 
 class FavMixModal extends Component {
     constructor(props) {
@@ -21,7 +22,7 @@ class FavMixModal extends Component {
             response = axios.delete('/api/public/myaccount/online', {data:{ password: this.state.password }});
             displayMessage('success', i18next.t('PROFILE_ONLINE_DELETED'));
         }
-        this.props.updateLogInfos(response);
+        store.setLogInfos(response);
         ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
     };
 

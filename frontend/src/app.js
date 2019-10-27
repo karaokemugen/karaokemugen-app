@@ -1,23 +1,24 @@
-import { Switch, Route } from 'react-router'
+import { Switch, Route } from 'react-router';
 import WelcomePage from './components/WelcomePage';
 import AdminPage from './components/AdminPage';
 import PublicPage from './components/PublicPage';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from 'react-router-dom';
 import i18n from './components/i18n';
-import NotFoundPage from './components/NotfoundPage'
-import langs from "langs";
-import axios from "axios";
-import { readCookie, parseJwt, createCookie, eraseCookie, getSocket, is_touch_device } from "./components/tools"
+import NotFoundPage from './components/NotfoundPage';
+import langs from 'langs';
+import axios from 'axios';
+import { startIntro, getSocket, is_touch_device } from './components/tools';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import store from './store';
+
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
             navigatorLanguage: this.getNavigatorLanguage(),
-            logInfos: this.getLogInfos(),
             admpwd: window.location.search.indexOf('admpwd') ? window.location.search.split("=")[1] : undefined,
             shutdownPopup: false
         }
@@ -25,45 +26,7 @@ class App extends Component {
         axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     }
 
-    getLogInfos() {
-        let logInfos = {};
-        var token = readCookie('mugenToken');
-        var onlineToken = readCookie('mugenTokenOnline');
-        if (token) {
-            logInfos = parseJwt(token);
-            logInfos.token = token;
-            if (onlineToken) {
-                logInfos.onlineToken = onlineToken;
-            }
-        }
-        return logInfos;
-    }
 
-    updateLogInfos = data => {
-        let logInfos = parseJwt(data.token);
-        createCookie('mugenToken', data.token, -1);
-        if (data.onlineToken) {
-            createCookie('mugenTokenOnline', data.onlineToken, -1);
-        } else if (!logInfos.username.includes('@')) {
-            eraseCookie('mugenTokenOnline');
-        }
-
-        logInfos.token = data.token;
-        logInfos.onlineToken = data.onlineToken;
-        this.setState({ logInfos: logInfos });
-        axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-        axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-        location.reload();
-    };
-
-    logOut = () => {
-        eraseCookie('mugenToken');
-        eraseCookie('mugenTokenOnline');
-        this.setState({ logInfos: {} });
-        axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-        axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-        location.reload();
-    };
 
     async parseTags() {
         try {
@@ -74,7 +37,7 @@ class App extends Component {
             });
         } catch (error) {
             // if error the authorization must be broken so we delete it
-            this.logOut();
+            store.logOut()
         }
     }
 
@@ -101,13 +64,26 @@ class App extends Component {
         getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
         getSocket().on('disconnect', () => this.setState({ shutdownPopup: true }));
         if (this.state.settings.config.Frontend.Mode !== 0 && axios.defaults.headers.common['authorization']) {
-            const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
-            this.setState({ tags: tags.concat(series, years) });
+            this.addTags();
         }
+        if (this.state.admpwd && this.state.settings.config.App.FirstRun && window.location.pathname === '/admin') {
+            startIntro('admin');
+        }
+        store.addChangeListener('loginUpdated', this.addTags);
     }
+
+    addTags = async () => {
+        const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
+        this.setState({ tags: tags.concat(series, years) });
+    }
+
+    componentWillUnmount() {
+        store.removeChangeListener('loginUpdated', this.addTags);
+      }
 
     getSettings = async () => {
         const res = await axios.get('/api/public/settings');
+        store.setConfig(res.data.data.config);
         this.setState({ settings: res.data.data });
     };
 
@@ -150,15 +126,15 @@ class App extends Component {
                     <div className={is_touch_device() ? 'touch' : ''}>
                         <Switch>
                             <Route path="/welcome" render={(props) => <WelcomePage {...props}
-                                navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
-                                admpwd={this.state.admpwd} updateLogInfos={this.updateLogInfos} logOut={this.logOut} />} />
+                                navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings}
+                                admpwd={this.state.admpwd} />} />
                             <Route path="/admin" render={(props) => <AdminPage {...props}
-                                navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
-                                updateLogInfos={this.updateLogInfos} powerOff={this.powerOff} logOut={this.logOut} tags={this.state.tags}
+                                navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings}
+                                powerOff={this.powerOff} tags={this.state.tags}
                                 showVideo={this.showVideo} />} />
                             <Route exact path="/" render={(props) => <PublicPage {...props}
-                                navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings} logInfos={this.state.logInfos}
-                                updateLogInfos={this.updateLogInfos} logOut={this.logOut} tags={this.state.tags} showVideo={this.showVideo} />} />
+                                navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings}
+                                tags={this.state.tags} showVideo={this.showVideo} />} />
                             <Route component={NotFoundPage} />
                         </Switch>
                         <a id="downloadAnchorElem" />

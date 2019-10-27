@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import i18next from 'i18next';
 import { is_touch_device, secondsTimeSpanToHMS, displayMessage, callModal } from "../tools";
 import axios from "axios";
-
+import store from "../../store"
 class KaraDetail extends Component {
   constructor(props) {
     super(props);
@@ -267,7 +267,7 @@ class KaraDetail extends Component {
                   ><i className="fas fa-times"></i></button>
                 )}
                 {(this.props.scope === "public" && !is_touch_device()) ||
-                  this.props.logInfos.role === "guest"
+                  store.getLogInfos().role === "guest"
                   ? null
                   : makeFavButton}
                 {data.subfile ? (
@@ -327,7 +327,7 @@ class KaraDetail extends Component {
           <React.Fragment>
             <div className="details karaCard">
               <div className="topRightButtons">
-                {this.props.logInfos === "guest" ? null : makeFavButton}
+                {store.getLogInfos().role === "guest" ? null : makeFavButton}
               </div>
               <table>
                 <tbody>{htmlDetails}</tbody>

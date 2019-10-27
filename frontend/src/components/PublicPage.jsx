@@ -32,7 +32,7 @@ class PublicPage extends Component {
       searchMenuOpen: false,
       classicModeModal: false
     };
-    if (!this.props.logInfos.token) {
+    if (!store.getLogInfos().token) {
       this.openLoginOrProfileModal();
     } else if (this.props.settings.config.Frontend.Mode === 1) {
       callModal('confirm', i18next.t("WEBAPPMODE_LIMITED_NAME"),
@@ -75,7 +75,7 @@ class PublicPage extends Component {
   }
 
   displayClassicModeModal = async data => {
-    if (data.status === 'stop' && data.playerStatus === 'pause' && data.currentRequester === this.props.logInfos.username && !this.state.classicModeModal) {
+    if (data.status === 'stop' && data.playerStatus === 'pause' && data.currentRequester === store.getLogInfos().username && !this.state.classicModeModal) {
         ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
         this.setState({ classicModeModal: true });
     } else if (data.playerStatus !== 'pause' && this.state.classicModeModal) {
@@ -85,19 +85,14 @@ class PublicPage extends Component {
 };
 
   openLoginOrProfileModal = () => {
-    if (this.props.logInfos.token) {
+    if (store.getLogInfos().token) {
       ReactDOM.render(<ProfilModal
         settingsOnline={this.props.settings.config.Online}
-        updateLogInfos={this.props.updateLogInfos}
-        logInfos={this.props.logInfos}
       />, document.getElementById('modal'));
     } else {
       ReactDOM.render(<LoginModal
         scope="public"
-        config={this.props.settings.config}
         version={this.props.settings.version}
-        logInfos={this.props.logInfos}
-        updateLogInfos={this.props.updateLogInfos}
       />, document.getElementById('modal'));
     }
   };
@@ -113,7 +108,7 @@ class PublicPage extends Component {
       var chosenOne = response.data.data.content[0].kid;
       var response2 = await axios.get('/api/public/karas/' + chosenOne);
       callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
-        axios.post('/api/public/karas/' + chosenOne, { requestedby: this.props.logInfos.username })
+        axios.post('/api/public/karas/' + chosenOne, { requestedby: store.getLogInfos().username })
       }, 'lucky');
     }
   };
@@ -132,6 +127,7 @@ class PublicPage extends Component {
   };
 
   render() {
+    var logInfos = store.getLogInfos();
     return (
       <div id="publicPage" className="kmapp--wrapper">
         {this.props.settings.config.Frontend.Mode === 0 ? (
@@ -171,7 +167,7 @@ class PublicPage extends Component {
                     className="plSearch"
                     style={{
                       width:
-                        this.props.logInfos.role != "guest" ? "" : "100%"
+                        logInfos.role != "guest" ? "" : "100%"
                     }}
                   >
                     <i className="fas fa-search" />
@@ -201,7 +197,7 @@ class PublicPage extends Component {
                     </button>
                   )}
 
-                  {this.props.logInfos.role != "guest" &&
+                  {logInfos.role != "guest" &&
                   this.props.settings.config.Frontend.Mode === 1 ? (
                     <div className="pseudoChange">
                       <input
@@ -249,7 +245,7 @@ class PublicPage extends Component {
                           </li>
                           <li>
                             <a href="#" onClick={() => 
-                                ReactDOM.render(<HelpModal version={this.props.config.version} />, document.getElementById('modal'))}>
+                                ReactDOM.render(<HelpModal version={this.props.settings.version} />, document.getElementById('modal'))}>
                               <i className="fas fa-info-circle" />&nbsp;
                               {i18next.t("HELP")}
                             </a>
@@ -258,7 +254,7 @@ class PublicPage extends Component {
                             <a
                               href="#"
                               className="logout"
-                              onClick={this.props.logOut}
+                              onClick={store.logOut}
                             >
                               <i className="fas fa-sign-out-alt" />&nbsp;
                               {i18next.t("LOGOUT")}
@@ -315,7 +311,6 @@ class PublicPage extends Component {
                     scope="public"
                     side={1}
                     navigatorLanguage={this.props.navigatorLanguage}
-                    logInfos={this.props.logInfos}
                     config={this.props.settings.config}
                     idPlaylistTo={this.state.idsPlaylist.right}
                     majIdsPlaylist={this.majIdsPlaylist}
@@ -329,7 +324,6 @@ class PublicPage extends Component {
                     scope="public"
                     side={2}
                     navigatorLanguage={this.props.navigatorLanguage}
-                    logInfos={this.props.logInfos}
                     config={this.props.settings.config}
                     idPlaylistTo={this.state.idsPlaylist.left}
                     majIdsPlaylist={this.majIdsPlaylist}
@@ -375,7 +369,7 @@ class PublicPage extends Component {
                             <a
                               className="z-depth-3 btn-floating btn-large logout"
                               style={{ backgroundColor: "#111" }}
-                              onClick={this.props.logOut}
+                              onClick={store.logOut}
                             >
                               <i className="fas fa-sign-out-alt" />
                             </a>
