@@ -213,8 +213,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		}
 	};
 
-	onChangeSingersSeries = (tags) => {
-		this.setState({serieSingersRequired: (!tags || tags.length === 0)}, () => {
+	onChangeSingersSeries = (tags, type) => {
+		this.setState({serieSingersRequired: (!tags || tags.length === 0) &&  this.props.form.getFieldValue(type).length === 0}, () => {
 			this.props.form.validateFields(['series'], { force: true });
 			this.props.form.validateFields(['singers'], { force: true });
 		});
@@ -303,7 +303,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							search={"serie"}
 							onChange={tags => {
 								this.props.form.setFieldsValue({ serie_orig: tags });
-								this.onChangeSingersSeries(tags);
+								this.onChangeSingersSeries(tags, "singers");
 							}
 							}
 						/>
@@ -411,7 +411,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						search={'tag'}
 						onChange={(tags) => {
 							this.props.form.setFieldsValue({ singer: tags });
-							this.onChangeSingersSeries(tags);
+							this.onChangeSingersSeries(tags, "serie");
 						}
 						}
 					/>)}
