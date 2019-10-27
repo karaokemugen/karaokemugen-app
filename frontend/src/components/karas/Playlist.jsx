@@ -30,10 +30,7 @@ class Playlist extends Component {
 
   async componentDidMount() {
     if (axios.defaults.headers.common['authorization']) {
-      this.getPlaylistList();
-      await this.getPlaylistToAddId();
-      await this.getIdPlaylist();
-      await this.getPlaylist();
+      this.initCall();
     }
     getSocket().on("playingUpdated", this.playingUpdate);
     getSocket().on("playlistsUpdated", this.getPlaylistList);
@@ -53,10 +50,19 @@ class Playlist extends Component {
     });
     getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
     store.addChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
+    store.addChangeListener('loginUpdated', this.initCall);
+  }
+
+  initCall = async () => {
+    this.getPlaylistList();
+    await this.getPlaylistToAddId();
+    await this.getIdPlaylist();
+    await this.getPlaylist();
   }
 
   componentWillUnmount() {
     store.removeChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
+    store.removeChangeListener('loginUpdated', this.initCall);
   }
 
   SortableList = SortableContainer(List, { withRef: true })
@@ -78,7 +84,6 @@ class Playlist extends Component {
             playlistToAddId={this.state.playlistToAddId}
             side={this.props.side}
             config={this.props.config}
-            logInfos={this.props.logInfos}
             playlistCommands={this.state.playlistCommands}
             idPlaylistTo={this.props.idPlaylistTo}
             checkKara={this.checkKara}
@@ -155,7 +160,7 @@ return <React.Fragment>
   };
 
   updateQuotaAvailable = data => {
-    if (this.props.logInfos.username === data.username) {
+    if (store.getLogInfos().username === data.username) {
       var quotaString = '';
       if (data.quotaType == 1) {
         quotaString = data.quotaLeft;
@@ -438,13 +443,16 @@ return <React.Fragment>
 
   scrollToPlaying = () => {
     let indexPlaying;
-    this.state.data.content.forEach((element, index) => { if (element.flag_playing) indexPlaying = index });
+    this.state.data.content.forEach((element, index) => {
+      if (element.flag_playing) indexPlaying = index;
+    });
     if (indexPlaying)
       this.setState({scrollToIndex: indexPlaying});
   };
 
   togglePlaylistCommands = () => {
     this.setState({ playlistCommands: !this.state.playlistCommands });
+    store.getTuto() && store.getTuto().move(1);
   };
 
   selectAllKaras = () => {
@@ -487,7 +495,7 @@ return <React.Fragment>
         data = { plc_id: idKaraPlaylist };
         type = 'PATCH';
       } else {
-        data = { requestedby: this.props.logInfos.username, kid: idKara };
+        data = { requestedby: store.getLogInfos().username, kid: idKara };
       }
     } else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
       url = '/api/' + this.props.scope + '/blacklist/criterias';
@@ -608,7 +616,7 @@ return <React.Fragment>
             <ul id="playlist1" className="list-group" side="1">
               <li className="list-group-item">
                 <KaraDetail kid={this.props.kidPlaying} mode="karaCard" scope={this.props.scope} 
-                navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} />
+                navigatorLanguage={this.props.navigatorLanguage} />
               </li>
             </ul>
           </div>
@@ -627,7 +635,6 @@ return <React.Fragment>
             togglePlaylistCommands={this.togglePlaylistCommands}
             playlistCommands={this.state.playlistCommands}
             editNamePlaylist={this.editNamePlaylist}
-            logInfos={this.props.logInfos}
             idPlaylistTo={this.props.idPlaylistTo}
             selectAllKaras={this.selectAllKaras}
             addAllKaras={this.addAllKaras}

@@ -8,6 +8,7 @@ import { displayMessage, callModal } from '../tools';
 import ReactDOM from 'react-dom';
 import OnlineProfileModal from './OnlineProfileModal'
 require("babel-polyfill");
+import store from '../../store';
 class ProfilModal extends Component {
     constructor(props) {
         super(props)
@@ -64,11 +65,11 @@ class ProfilModal extends Component {
     }
 
     profileConvert = () => {
-        ReactDOM.render(<OnlineProfileModal type="convert" updateLogInfos={this.props.updateLogInfos} loginServ={this.props.settingsOnline.Host} />, document.getElementById('modal'));
+        ReactDOM.render(<OnlineProfileModal type="convert" loginServ={this.props.settingsOnline.Host} />, document.getElementById('modal'));
     };
 
     profileDelete = () => {
-        ReactDOM.render(<OnlineProfileModal type="delete" updateLogInfos={this.props.updateLogInfos} />, document.getElementById('modal'));
+        ReactDOM.render(<OnlineProfileModal type="delete" />, document.getElementById('modal'));
     };
 
     favImport = event => {
@@ -95,7 +96,7 @@ class ProfilModal extends Component {
         var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
         var dlAnchorElem = document.getElementById('downloadAnchorElem');
         dlAnchorElem.setAttribute('href', dataStr);
-        dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.props.logInfos.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+        dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', store.getLogInfos().username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
         dlAnchorElem.click();
     }
 
@@ -110,7 +111,7 @@ class ProfilModal extends Component {
         for (var i = 0; i < event.target.files.length; i++) {
             dataFile.append('avatarfile', event.target.files[i])
         }
-        dataFile.append('nickname', this.props.logInfos.username);
+        dataFile.append('nickname', store.getLogInfos().username);
 
         const response = await axios.put('/api/public/myaccount', dataFile);
         const user = this.state.user;
@@ -119,8 +120,9 @@ class ProfilModal extends Component {
     };
 
     render() {
+        var logInfos = store.getLogInfos();
         var listLangs = Object.keys(iso639.iso_639_2).map(k => { return { "label": iso639.iso_639_2[k][i18next.languages[0]][0], "value": k } });
-        if (!this.props.settingsOnline.Users && this.props.logInfos.username.includes('@')) {
+        if (!this.props.settingsOnline.Users && logInfos.username.includes('@')) {
             setTimeout(function () {
                 displayMessage('warning', <div><label>{i18next.t('LOG_OFFLINE.TITLE')}</label> <br/> {i18next.t('LOG_OFFLINE.MESSAGE')}</div>, 8000);
             }, 500);
@@ -133,7 +135,7 @@ class ProfilModal extends Component {
                             <li className={"modal-title " + (this.state.activeView === 1 ? "active" : "")}>
                                 <a onClick={() => this.setState({activeView: 1})}> {i18next.t("PROFILE")}</a>
                             </li>
-                            {this.props.logInfos.role !== 'guest' ?
+                            {logInfos.role !== 'guest' ?
                                 <li className={"modal-title " + (this.state.activeView === 2 ? "active" : "")}>
                                     <a onClick={() => this.setState({activeView: 2})}> {i18next.t("LANGUAGE")}</a>
                                 </li> : null
@@ -155,13 +157,13 @@ class ProfilModal extends Component {
                                             <img className="img-circle" name="avatar_file"
                                                 src={this.state.user.avatar_file ? this.state.pathAvatar + this.state.user.avatar_file : {blankAvatar}}
                                                 alt="User Pic" />
-                                            {this.props.logInfos.role !== 'guest' ?
+                                            {logInfos.role !== 'guest' ?
                                                 <input id="avatar" className="import-file" type="file" accept="image/*" style={{ display: 'none' }} onChange={this.importAvatar} /> : null
                                             }
                                         </label>
                                         <p name="login">{this.state.user.login}</p>
                                     </div>
-                                    {this.props.logInfos.role !== 'guest' ?
+                                    {logInfos.role !== 'guest' ?
                                         <div className="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
                                             <div className="profileLine">
                                                 <i className="fas fa-user"></i>
@@ -197,9 +199,9 @@ class ProfilModal extends Component {
                                                     <i className="fas fa-upload"></i> {i18next.t("EXPORT")}
                                                 </button>
                                             </div>
-                                            {this.props.settingsOnline.Users && this.props.logInfos.role !== 'guest' ?
+                                            {this.props.settingsOnline.Users && logInfos.role !== 'guest' ?
                                                 <div className="profileLine">
-                                                    {this.props.logInfos.onlineToken ?
+                                                    {logInfos.onlineToken ?
                                                         <button type="button" title={i18next.t("PROFILE_ONLINE_DELETE")} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileDelete" onClick={this.profileDelete}>
                                                             <i className="fas fa-retweet"></i> {i18next.t("PROFILE_ONLINE_DELETE")}
                                                         </button>

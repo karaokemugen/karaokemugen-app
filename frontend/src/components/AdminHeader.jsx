@@ -6,6 +6,7 @@ import axios from "axios";
 import RadioButton from "./generic/RadioButton";
 import KmAppHeaderDecorator from "./decorators/KmAppHeaderDecorator"
 import AdminMessageModal from "./modals/AdminMessageModal"
+import store from "../store"
 
 class AdminHeader extends Component {
   constructor(props) {
@@ -99,7 +100,7 @@ class AdminHeader extends Component {
                   <i className="fas fa-user"></i>
                 </li>
                 <li
-                  title={i18next.t("LOGOUT")} onClick={this.props.logOut}
+                  title={i18next.t("LOGOUT")} onClick={store.logOut}
                   className="btn btn-default btn-dark"
                 >
                   <i className="fas fa-sign-out-alt"></i>

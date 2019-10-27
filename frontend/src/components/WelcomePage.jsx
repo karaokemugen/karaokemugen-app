@@ -7,6 +7,7 @@ import logo from "../assets/Logo-final-fond-transparent.png";
 import Autocomplete from "./generic/Autocomplete";
 import { expand } from "./tools";
 import ReactDOM from 'react-dom';
+import store from '../store';
 
 class WelcomePage extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ class WelcomePage extends Component {
       sessions: [],
       activeSession: ""
     };
-    if (!this.props.logInfos.token) {
+    if (!store.getLogInfos().token) {
       this.openLoginOrProfileModal()
     }
   }
@@ -30,7 +31,7 @@ class WelcomePage extends Component {
   }
 
   async checkAppUpdates() {
-    if (this.props.logInfos.role === "admin") {
+    if (store.getLogInfos().role === "admin") {
       const res = await axios.get("/api/admin/checkUpdates");
       if (res.data.data) this.setState({ latestVersion: res.data.data });
     }
@@ -47,7 +48,7 @@ class WelcomePage extends Component {
   };
 
   getSessions = async () => {
-    if (this.props.logInfos.role === "admin") {
+    if (store.getLogInfos().role === "admin") {
       const res = await axios.get("/api/admin/sessions");
       this.setState({
         sessions: res.data.data,
@@ -155,28 +156,25 @@ class WelcomePage extends Component {
   };
 
   openLoginOrProfileModal = () => {
-    if (!this.props.logInfos.token) {
+    if (!store.getLogInfos().token) {
       ReactDOM.render(<LoginModal
         scope={
           this.props.admpwd && this.props.settings.config.App.FirstRun
             ? "admin"
             : "public"
         }
-        config={this.props.settings.config}
         admpwd={this.props.admpwd}
-        updateLogInfos={this.props.updateLogInfos}
       />, document.getElementById('modal'));
     } else {
       ReactDOM.render(<ProfilModal
         settingsOnline={this.props.settings.config.Online}
-        updateLogInfos={this.props.updateLogInfos}
-        logInfos={this.props.logInfos}
       />, document.getElementById('modal'));
     }
   };
 
   render() {
-    if (this.props.logInfos.role === "admin") {
+    var logInfos = store.getLogInfos();
+    if (logInfos.role === "admin") {
       var sessions = [];
       this.state.sessions.forEach(session => {
         sessions.push({ label: session.name, value: session.name });
@@ -214,7 +212,7 @@ class WelcomePage extends Component {
         ) : null}
         <div className="navbar-default">
           <div className="container">
-            {this.props.logInfos.role === "admin" ? (
+            {logInfos.role === "admin" ? (
               <ul className="nav navbar-nav navbar-left">
                 <li>
                   <Autocomplete
@@ -247,19 +245,19 @@ class WelcomePage extends Component {
                 <a href="#" id="wlcm_login" onClick={this.openLoginOrProfileModal}>
                   <i className="fas fa-user" />&nbsp;
                   <span>
-                    {this.props.logInfos.token
-                      ? this.props.logInfos.username
+                    {logInfos.token
+                      ? logInfos.username
                       : i18next.t("NOT_LOGGED")}
                   </span>
                 </a>
               </li>
-              {this.props.logInfos.token ? (
+              {logInfos.token ? (
                 <li id="wlcm_disconnect">
                   <a
                     href="#"
                     title={i18next.t("LOGOUT")}
                     className="logout"
-                    onClick={this.props.logOut}
+                    onClick={store.logOut}
                   >
                     <i className="fas fa-sign-out-alt" />&nbsp;
                     <span>{i18next.t("LOGOUT")}</span>

@@ -41,6 +41,11 @@ div > a, h5 > a, a.btn-link {
 	border-color: #893230;
 }
 
+
+div[id^="react-joyride-step"] button{
+        padding: 10px !important;
+}
+
 .panel {
 	border: 3px solid #1E2124;
     background-color: #2d2d2f;

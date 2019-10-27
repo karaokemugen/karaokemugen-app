@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { createCookie } from '../tools';
 import { is_touch_device,startIntro } from '../tools';
 import ReactDOM from 'react-dom';
+import store from '../../store';
 
 class HelpModal extends Component {
     mugenTouchscreenHelp = () => {
@@ -10,8 +11,9 @@ class HelpModal extends Component {
         ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
     };
 
-    tourAgain = () => {
-		startIntro('public', 'afterLogin');
+    tourAgain = async () => {
+        var tuto = startIntro('public');
+        tuto.move(1);
 		ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
 	};
 

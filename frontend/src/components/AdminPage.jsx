@@ -10,6 +10,7 @@ import ProfilModal from "./modals/ProfilModal"
 import LoginModal from "./modals/LoginModal"
 import ProgressBar from "./karas/ProgressBar";
 import ReactDOM from 'react-dom';
+import store from '../store'
 class AdminPage extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +20,7 @@ class AdminPage extends Component {
       searchMenuOpen1: false,
       searchMenuOpen2: false
     };
-    if (!this.props.logInfos.token || this.props.logInfos.role !== 'admin') {
+    if (!store.getLogInfos().token || store.getLogInfos().role !== 'admin') {
       this.openLoginOrProfileModal()
     } else if (this.props.settings.config.Online.Stats === undefined) {
       ReactDOM.render(<OnlineStatsModal />, document.getElementById('modal'));
@@ -45,17 +46,13 @@ class AdminPage extends Component {
   };
 
   openLoginOrProfileModal = () => {
-    if (this.props.logInfos.token) {
+    if (store.getLogInfos().token) {
       ReactDOM.render(<ProfilModal 
         settingsOnline={this.props.settings.config.Online}
-        updateLogInfos={this.props.updateLogInfos}
-        logInfos={this.props.logInfos} 
       />, document.getElementById('modal'));
     } else {
       ReactDOM.render(<LoginModal 
         scope='admin'
-        config={this.props.settings.config}
-        updateLogInfos={this.props.updateLogInfos}
       />, document.getElementById('modal'));
     }
   };
@@ -68,9 +65,11 @@ class AdminPage extends Component {
           <AdminHeader 
             config={this.props.settings.config}
             toggleProfileModal={this.openLoginOrProfileModal}
-            setOptionMode={() => this.setState({ options: !this.state.options })}
+            setOptionMode={() => {
+                this.setState({ options: !this.state.options });
+                store.getTuto() && store.getTuto().move(1);
+            }}
             powerOff={this.props.powerOff}
-            logOut={this.props.logOut}
             options={this.state.options}
             ></AdminHeader>
 
@@ -89,7 +88,6 @@ class AdminPage extends Component {
                   scope='admin'
                   side={1}
                   navigatorLanguage={this.props.navigatorLanguage}
-                  logInfos={this.props.logInfos}
                   config={this.props.settings.config}
                   idPlaylistTo={this.state.idsPlaylist.right}
                   majIdsPlaylist={this.majIdsPlaylist}
@@ -102,7 +100,6 @@ class AdminPage extends Component {
                   scope='admin'
                   side={2}
                   navigatorLanguage={this.props.navigatorLanguage}
-                  logInfos={this.props.logInfos}
                   config={this.props.settings.config}
                   idPlaylistTo={this.state.idsPlaylist.left}
                   majIdsPlaylist={this.majIdsPlaylist}

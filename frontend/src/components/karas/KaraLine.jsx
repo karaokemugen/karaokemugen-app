@@ -5,7 +5,7 @@ import KaraDetail from "./KaraDetail";
 import axios from "axios";
 import ActionsButtons from "./ActionsButtons";
 import { buildKaraTitle, displayMessage } from '../tools';
-
+import store from '../../store'
 import { sortableHandle } from 'react-sortable-hoc';
 
 const DragHandle = sortableHandle(() => <span className="dragHandle"><i className="fas fa-ellipsis-v"></i></span>);
@@ -83,6 +83,7 @@ class KaraLine extends Component {
   };
 
   addKara = async (event, pos) => {
+    var logInfos = store.getLogInfos();
     var url;
     var data;
     var type;
@@ -101,9 +102,9 @@ class KaraLine extends Component {
           type = 'PATCH';
         } else {
           if (pos) {
-            data = { requestedby: this.props.logInfos.username, kid: this.props.kara.kid, pos: pos+1 };
+            data = { requestedby: logInfos.username, kid: this.props.kara.kid, pos: pos+1 };
           } else {
-            data = { requestedby: this.props.logInfos.username, kid: this.props.kara.kid };
+            data = { requestedby: logInfos.username, kid: this.props.kara.kid };
           }
         }
       } else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
@@ -115,7 +116,7 @@ class KaraLine extends Component {
       }
     } else {
       url = `/api/public/karas/${this.props.kara.kid}`;
-      data = { requestedby: this.props.logInfos.username, kid: this.props.kara.kid };
+      data = { requestedby: logInfos.username, kid: this.props.kara.kid };
     }
     try {
       var response;
@@ -171,6 +172,7 @@ class KaraLine extends Component {
   karaTitle = buildKaraTitle(this.props.kara);
 
   render() {
+    var logInfos = store.getLogInfos();
     var kara = this.props.kara;
     var scope = this.props.scope;
     var idPlaylist = this.props.idPlaylist;
@@ -178,7 +180,7 @@ class KaraLine extends Component {
       <div className={"list-group-item " + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu' : '')}
         style={this.state.addKaraInProgress ? { transform: "translate(100%)" } : {}}
         onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
-        {scope === 'public' && kara.username !== this.props.logInfos.username && kara.flag_visible === false ?
+        {scope === 'public' && kara.username !== logInfos.username && kara.flag_visible === false ?
           <div className="contentDiv">
             <div style={{height:"33px"}}>{this.props.config.Playlist.MysterySongs.Labels[this.props.config.Playlist.MysterySongs.Labels.length * Math.random() | 0]}</div>
           </div> :
@@ -204,7 +206,7 @@ class KaraLine extends Component {
               >
                 <i className="fas fa-info-circle"></i>
               </button> : null}
-              {scope === 'public' && this.props.logInfos.role !== 'guest' ?
+              {scope === 'public' && logInfos.role !== 'guest' ?
                 <button title={i18next.t('TOOLTIP_FAV')} onClick={this.makeFavorite}
                   className={"makeFav btn-sm btn btn-action "
                     + (is_touch_device() ? 'mobile' : '')
@@ -222,7 +224,7 @@ class KaraLine extends Component {
                 ) : null}
               {scope !== 'admin' && this.props.flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? 'currentLike' : ''}
                 onClick={this.likeKara}><i className="fas fa-thumbs-up"></i></button> : null}
-              {scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username == this.props.logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
+              {scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username == logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
                 <button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action deleteKara"
                   onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
             </div>
@@ -248,7 +250,7 @@ class KaraLine extends Component {
                 publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
                 toggleKaraDetail={this.toggleKaraDetail} karaDetailState={this.state.karaDetailState}
                 makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite} showVideo={this.props.showVideo}
-                navigatorLanguage={this.props.navigatorLanguage} logInfos={this.props.logInfos} freeKara={this.freeKara}></KaraDetail> : null
+                navigatorLanguage={this.props.navigatorLanguage} freeKara={this.freeKara}></KaraDetail> : null
             }
           </React.Fragment>
         }

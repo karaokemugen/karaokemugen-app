@@ -34,7 +34,7 @@ class Options extends Component {
           className="panel col-lg-8 col-xs-12 modalPage"
         >
           <form className="form-horizontal" id="settings">
-            <ul className="nav nav-tabs nav-justified">
+            <ul className="nav nav-tabs nav-justified" id="settingsNav">
               <li className={"modal-title " + (this.state.activeView === 1 ? "active" : "")}>
                 <a onClick={() => this.setState({activeView: 1})}>{i18next.t("SETTINGS.PLAYER.LABEL")}</a>
               </li>
@@ -61,7 +61,6 @@ class Options extends Component {
             </div>
           </form>
         </div>
-        <div className="col-lg-2 col-xs-0" />
       </>
     );
   };
