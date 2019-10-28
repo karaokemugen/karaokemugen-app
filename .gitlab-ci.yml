@@ -7,7 +7,7 @@ cache:
   key: km-app-${CI_COMMIT_REF_SLUG}
   paths:
     - node_modules/
-    - react_systempanel/node_modules/
+    - systempanel/node_modules/
     - frontend/node_modules/
 
 stages:
@@ -28,7 +28,7 @@ test:
     POSTGRES_PASSWORD: musubi
   script:
     - yarn install --check-files --force
-    - yarn installReact --check-files --force
+    - yarn installSystemPanel --check-files --force
     - yarn installFrontend --check-files --force
     - touch mpv
     - cp -f config.CICD.yml config.yml
@@ -53,13 +53,13 @@ build:
     expire_in: 1 days
     name: km-app-build-${CI_COMMIT_REF_SLUG}
     paths:
-    - react_systempanel/build/
+    - systempanel/build/
     - dist/
     - frontend/build/
   script:
     - npm install -g modclean parcel-bundler
     - yarn build
-    - yarn buildReact
+    - yarn buildSystemPanel
     - yarn frontend-prod
     - yarn install --production
     - cd node_modules

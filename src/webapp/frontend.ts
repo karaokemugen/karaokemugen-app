@@ -103,9 +103,9 @@ export async function initFrontend() {
 		//path for system control panel
 		// System is not served in demo mode.
 		if (!state.isDemo) {
-			app.use('/system', express.static(resolve(__dirname, '../../react_systempanel/build')));
+			app.use('/system', express.static(resolve(__dirname, '../../systempanel/build')));
 			app.get('/system/*', (_req, res) => {
-				res.sendFile(resolve(__dirname, '../../react_systempanel/build/index.html'));
+				res.sendFile(resolve(__dirname, '../../systempanel/build/index.html'));
 			});
 		}
 

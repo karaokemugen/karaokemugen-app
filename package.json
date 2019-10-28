@@ -14,13 +14,13 @@
     "qstart": "node dist/index.js",
     "test": "mocha --require ts-node/register --timeout 20000 test/*.ts",
     "build": "npx rimraf \"dist\" && tsc --build",
-    "setup": "git submodule sync --recursive && git submodule update --init --recursive && yarn install && yarn build && yarn installFrontend && yarn frontend-prod && yarn installReact && yarn buildReact",
+    "setup": "git submodule sync --recursive && git submodule update --init --recursive && yarn install && yarn build && yarn installFrontend && yarn frontend-prod && yarn installSystemPanel && yarn buildSystemPanel",
     "gitconfig": "git config diff.submodule log && git config fetch.recursesubmodules on-demand && git config status.submodulesummary true && git config push.recursesubmodules on-demand && git config submodule.recurse true",
     "pull": "git pull && git submodule sync --recursive && git submodule update --init --recursive",
     "installFrontend": "cd frontend && yarn install",
-    "installReact": "cd react_systempanel && yarn install",
-    "buildReact": "cd react_systempanel && yarn build",
-    "startReact": "cd react_systempanel && yarn start",
+    "installSystemPanel": "cd systempanel && yarn install",
+    "buildSystemPanel": "cd systempanel && yarn build",
+    "startSystemPanel": "cd systempanel && yarn start",
     "migrate": "node node_modules/db-migrate/bin/db-migrate sync [all]",
     "migrateDown": "node node_modules/db-migrate/bin/db-migrate down",
     "migrateUp": "node node_modules/db-migrate/bin/db-migrate up",
@@ -73,7 +73,7 @@
       "dist/locales/*",
       "assets/**",
       "frontend/build/**",
-      "react_systempanel/build/**"
+      "systempanel/build/**"
     ]
   },
   "dependencies": {

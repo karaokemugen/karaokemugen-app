@@ -28,10 +28,10 @@ logs/
 updater/
 mpv.log
 
-# Client react
-react_systempanel/node_modules
-react_systempanel/coverage
-react_systempanel/build
+# System panel
+systempanel/node_modules
+systempanel/coverage
+systempanel/build
 react_client
 
 # Frontend
