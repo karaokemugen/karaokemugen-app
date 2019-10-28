@@ -77,10 +77,12 @@ export async function loadBackground() {
 	let backgroundImageFile = defaultImageFile;
 	if (conf.Player.Background) {
 		backgroundImageFile = resolve(resolvedPathBackgrounds()[0], conf.Player.Background);
-		if (await asyncExists(backgroundImageFile)) {
+		if (!await asyncExists(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
 			logger.warn(`[Player] Unable to find background file ${backgroundImageFile}, reverting to default one`);
 			backgroundFiles.push(defaultImageFile);
+		} else {
+			backgroundFiles.push(backgroundImageFile);
 		}
 	} else {
 		// PlayerBackground is empty, thus we search through all backgrounds paths and pick one at random
