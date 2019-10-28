@@ -51,6 +51,7 @@ Many things have changed, both in database schemas, code base, frontend, and eve
   - Karafun files (.kfn) (#471)
 - Dark theme for the system panel (#468)
 - Settings in the options panel now have tooltips to explain what they do (#460)
+- Login modal in public and admin interface now has toggles for online/local accounts and password reset feature. (#489)
 
 ### Improvements
 
@@ -65,6 +66,8 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - Updated mpv version to 0.29.1.
 - Karaoke base updates now go through the Download Manager and should easier to handle.
 - When editing a karaoke in the system UI, tags and series are checked for differences between the old and new karaoke to avoid triggering useless refreshes.
+- Added a message in case MS Visual Studio C++ 2013 redist is not installed (Windows only) (#492)
+- Karaoke Mugen behaves better when mpv has been shutdown outside of KM (#491)
 
 ### Fixes
 
@@ -72,6 +75,10 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - Videos aren't weboptimized again even if you don't change anything about it in the edit song form (#436)
 - Toots from Mastodon are now displayed proper on the welcome screen's feed (#429)
 - Fix KM not allowing you to login your online account if a local account with the same nickname exists in your database. (#466)
+- When working with several karaoke/media/lyrics folders, edited karas will be placed in the original folders they belong to instead of the
+first one in the list.
+- i18n fields in series edit page in control panel are now automatically validated, no need to fiddle with them anymore (#505)
+- .ass files are now properly deleted when editing a kara (#490)
 
 ## v2.5.3 "Konata Kimono" - 30/06/2019
 
