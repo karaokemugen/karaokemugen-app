@@ -1,4 +1,4 @@
-import {basename, resolve} from 'path';
+import {dirname, basename, resolve} from 'path';
 import {createKaraInDB, editKaraInDB, getKara} from './kara';
 import { addKaraToStore, editKaraInStore, sortKaraStore, getStoreChecksum } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
@@ -12,11 +12,17 @@ export async function editKara(kara: Kara) {
 	let newKara: NewKara;
 	try {
 		const oldKara = await getKara(kara.kid, {role: 'admin', username: 'admin'});
-		const mediaFile = resolve(resolvedPathMedias()[0], kara.mediafile);
-		const subFile = kara.subfile
-			? resolve(resolvedPathSubs()[0], kara.subfile)
-			: kara.subfile;
-		const karaFile = resolve(resolvedPathKaras()[0], kara.karafile);
+		const mediaFile = await resolveFileInDirs(kara.mediafile, resolvedPathMedias());
+		const mediaDir = dirname(mediaFile);
+		let subFile = kara.subfile;
+		let subDir: string;
+		if (kara.subfile) {
+			subFile = await resolveFileInDirs(kara.subfile, resolvedPathSubs());
+			subDir = dirname(subFile);
+		};
+		const karaFile = await resolveFileInDirs(kara.karafile, resolvedPathKaras());
+		const karaDir = dirname(karaFile);
+
 		// Removing useless data
 		delete kara.karafile;
 		// Copying already present files in temp directory to be worked on with by generateKara
@@ -34,7 +40,7 @@ export async function editKara(kara: Kara) {
 			}
 		}
 		// Treat files
-		newKara = await generateKara(kara, resolvedPathKaras()[0], resolvedPathMedias()[0], resolvedPathSubs()[0], oldKara);
+		newKara = await generateKara(kara, karaDir, mediaDir, subDir, oldKara);
 
 		//Removing previous files if they're different from the new ones (name changed, etc.)
 		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) {
