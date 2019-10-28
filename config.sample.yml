@@ -194,7 +194,7 @@ System:
       - app/intros
       - app/intros/KaraokeMugen
     Karas:
-      - app/data/karas
+      - app/data/karaokes
     Lyrics:
       - app/data/lyrics
     Medias:
