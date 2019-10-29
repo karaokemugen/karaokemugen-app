@@ -83,6 +83,7 @@ class AdminHeader extends Component {
   		<KmAppHeaderDecorator mode="admin">
   			<div
   				className="btn btn-default btn-dark"
+  				id="manageButton"
   			>
   				<button
   					className="btn btn-dark klogo"
