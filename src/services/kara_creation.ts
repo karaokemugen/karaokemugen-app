@@ -13,21 +13,29 @@ export async function editKara(kara: Kara) {
 	try {
 		const oldKara = await getKara(kara.kid, {role: 'admin', username: 'admin'});
 		let mediaFile: string;
+		let mediaDir: string;
 		if (kara.mediafile_orig) {
 			mediaFile = resolve(resolvedPathTemp(), kara.mediafile);
+			mediaDir = dirname(await resolveFileInDirs(oldKara.mediafile, resolvedPathMedias()));
 		} else {
 			mediaFile = await resolveFileInDirs(kara.mediafile, resolvedPathMedias());
+			mediaDir = dirname(mediaFile);
 		}
-		const mediaDir = dirname(mediaFile);
+
 		let subFile = kara.subfile;
 		let subDir: string;
 		if (kara.subfile) {
 			if (kara.subfile_orig) {
 				subFile = resolve(resolvedPathTemp(), kara.subfile);
+				if (oldKara.subfile) {
+					subDir = dirname(await resolveFileInDirs(oldKara.subfile, resolvedPathSubs()));
+				} else {
+					subDir = resolvedPathSubs()[0];
+				}
 			} else {
 				subFile = await resolveFileInDirs(kara.subfile, resolvedPathSubs());
+				subDir = dirname(subFile);
 			}
-			subDir = dirname(subFile);
 		};
 		const karaFile = await resolveFileInDirs(kara.karafile, resolvedPathKaras());
 		const karaDir = dirname(karaFile);
