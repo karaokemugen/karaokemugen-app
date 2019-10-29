@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import i18next from 'i18next';
+import i18next from "i18next";
 import { is_touch_device, secondsTimeSpanToHMS, displayMessage, callModal } from "../tools";
 import axios from "axios";
-import store from "../../store"
+import store from "../../store";
 class KaraDetail extends Component {
   constructor(props) {
     super(props);
@@ -21,8 +21,8 @@ class KaraDetail extends Component {
 
   getKaraDetail = async kid => {
     var urlInfoKara = this.props.idPlaylist > 0 ?
-      '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.playlistcontentId :
-      '/api/public/karas/' + (kid ? kid : this.props.kid);
+      "/api/" + this.props.scope + "/playlists/" + this.props.idPlaylist + "/karas/" + this.props.playlistcontentId :
+      "/api/public/karas/" + (kid ? kid : this.props.kid);
     var response = await axios.get(urlInfoKara);
     const kara = response.data.data;
     this.setState({ kara: kara });
@@ -90,7 +90,7 @@ class KaraDetail extends Component {
           var extract = contentResult[0].extract;
           callModal("alert",
             <a target="_blank" href={externalUrl}>{serie}&nbsp;
-          <i className="fas fa-external-link-alt"></i></a>,extract);
+              <i className="fas fa-external-link-alt"></i></a>,extract);
         } else if (
           searchInfo &&
           searchInfo.totalhits === 0 &&
@@ -122,7 +122,7 @@ class KaraDetail extends Component {
   showFullLyrics = async () => {
     var response = await axios.get("/api/public/karas/" + this.state.kara.kid + "/lyrics");
     if (is_touch_device()) {
-      callModal('alert', i18next.t('LYRICS'), <center>{response.data.data.map(value => 
+      callModal("alert", i18next.t("LYRICS"), <center>{response.data.data.map(value => 
         <React.Fragment>{value} <br/></React.Fragment>)}</center>);
     } else {
       this.setState({ lyrics: response.data.data, showLyrics:true });
@@ -133,25 +133,29 @@ class KaraDetail extends Component {
   };
 
   getTagInLocale = e => {
-    return e.i18n[this.props.navigatorLanguage] ? e.i18n[this.props.navigatorLanguage] : e.i18n['eng'];
+    return e.i18n[this.props.navigatorLanguage] ? e.i18n[this.props.navigatorLanguage] : e.i18n["eng"];
   };
 
   getTagNames = data => {
     var tagNames = [];
-    if (data.families) tagNames = tagNames.concat(data.families.map(e => this.getTagInLocale(e)))
-    if (data.platforms) tagNames = tagNames.concat(data.platforms.map(e => this.getTagInLocale(e)))
-    if (data.genres) tagNames = tagNames.concat(data.genres.map(e => this.getTagInLocale(e)))
-    if (data.origins) tagNames = tagNames.concat(data.origins.map(e => this.getTagInLocale(e)))
-    if (data.misc) tagNames = tagNames.concat(data.misc.map(e => this.getTagInLocale(e)))
-    return tagNames.join(', ');
+    if (data.families) tagNames = tagNames.concat(data.families.map(e => this.getTagInLocale(e)));
+    if (data.platforms) tagNames = tagNames.concat(data.platforms.map(e => this.getTagInLocale(e)));
+    if (data.genres) tagNames = tagNames.concat(data.genres.map(e => this.getTagInLocale(e)));
+    if (data.origins) tagNames = tagNames.concat(data.origins.map(e => this.getTagInLocale(e)));
+    if (data.misc) tagNames = tagNames.concat(data.misc.map(e => this.getTagInLocale(e)));
+    return tagNames.join(", ");
   };
 
   changeVisibilityKara = () => {
-    if(this.props.scope === 'admin') {
-      axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.state.kara.playlistcontent_id, 
+    if(this.props.scope === "admin") {
+      axios.put("/api/" + this.props.scope + "/playlists/" + this.props.idPlaylist + "/karas/" + this.state.kara.playlistcontent_id, 
         { flag_visible: !this.state.kara.flag_visible });
     }
   };
+
+  onClick = () => {
+    ReactDOM.unmountComponentAtNode(document.getElementById("modal"));
+  }
 
   /**
    * Build kara details depending on the data
@@ -221,7 +225,7 @@ class KaraDetail extends Component {
           title={i18next.t("TOOLTIP_FAV")}
           onClick={this.props.makeFavorite}
           className={(this.props.isFavorite ? "currentFav" : "") + " makeFav btn btn-action"}
-          ><i className="fas fa-star"></i></button>
+        ><i className="fas fa-star"></i></button>
       );
 
       var lyricsKara =
@@ -232,7 +236,7 @@ class KaraDetail extends Component {
               title={i18next.t("TOOLTIP_CLOSEPARENT")}
               className="closeParent btn btn-action"
               onClick={() => this.setState({showLyrics: false})}
-              ><i className="fas fa-times"></i></button>
+            ><i className="fas fa-times"></i></button>
             <div className="lyricsKaraLoad">
               {this.state.lyrics.map(ligne => {
                 return (
@@ -248,7 +252,7 @@ class KaraDetail extends Component {
               title={i18next.t("TOOLTIP_CLOSEPARENT")}
               className="closeParent btn btn-action"
               onClick={() => this.setState({showLyrics: false})}
-              ><i className="fas fa-times"></i></button>
+            ><i className="fas fa-times"></i></button>
           </div>
         ) : null;
 
@@ -311,7 +315,7 @@ class KaraDetail extends Component {
                     type="button"
                     title={data.flag_visible ? i18next.t("TOOLTIP_VISIBLE_OFF") : i18next.t("TOOLTIP_VISIBLE_ON")} onClick={this.changeVisibilityKara}
                     className={"btn btn-action " + (data.flag_visible ? "": "btn-primary")}
-                >{data.flag_visible ? <i className="fas fa-eye"/> : <i className="fas fa-eye-slash"/>}</button>
+                  >{data.flag_visible ? <i className="fas fa-eye"/> : <i className="fas fa-eye-slash"/>}</button>
                 ) : null}
               </div>
               <table>
@@ -334,7 +338,7 @@ class KaraDetail extends Component {
               </table>
             </div>
             <div className="lyricsKara alert alert-info">
-            {data.subfile && this.state.lyrics && this.state.lyrics.map(ligne => {
+              {data.subfile && this.state.lyrics && this.state.lyrics.map(ligne => {
                 return (
                   <React.Fragment key={Math.random()}>
                     {ligne}

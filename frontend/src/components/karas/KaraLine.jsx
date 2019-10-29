@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import i18next from 'i18next';
+import i18next from "i18next";
 import { is_touch_device } from "../tools";
 import KaraDetail from "./KaraDetail";
 import axios from "axios";
 import ActionsButtons from "./ActionsButtons";
-import { buildKaraTitle, displayMessage } from '../tools';
-import store from '../../store'
-import { sortableHandle } from 'react-sortable-hoc';
+import { buildKaraTitle, displayMessage } from "../tools";
+import store from "../../store";
+import { sortableHandle } from "react-sortable-hoc";
 
 const DragHandle = sortableHandle(() => <span className="dragHandle"><i className="fas fa-ellipsis-v"></i></span>);
 
@@ -41,45 +41,45 @@ class KaraLine extends Component {
 
   makeFavorite = () => {
     this.state.isFavorite ?
-      axios.delete('/api/public/favorites', { data: { 'kid': [this.props.kara.kid] } }) :
-      axios.post('/api/public/favorites', { 'kid': [this.props.kara.kid] })
-    this.setState({ isFavorite: !this.state.isFavorite })
+      axios.delete("/api/public/favorites", { data: { "kid": [this.props.kara.kid] } }) :
+      axios.post("/api/public/favorites", { "kid": [this.props.kara.kid] });
+    this.setState({ isFavorite: !this.state.isFavorite });
   };
 
   getTagInLocale = tag => {
     if (this.props.i18nTag && this.props.i18nTag[tag.tid]) {
       let i18nTag = this.props.i18nTag[tag.tid];
-      return i18nTag[this.props.navigatorLanguage] ? i18nTag[this.props.navigatorLanguage] : i18nTag['eng'];
+      return i18nTag[this.props.navigatorLanguage] ? i18nTag[this.props.navigatorLanguage] : i18nTag["eng"];
     } else {
       return tag.name;
     }
   };
 
   likeKara = () => {
-    var data = kara.flag_upvoted ? {} : dataLikeKara = { 'downvote': 'true' };
-    axios.post('/api/public/playlists/public/karas/' + this.props.idPlaylist + '/vote', data);
-    this.setState({ isLike: !this.state.isLike })
+    var data = kara.flag_upvoted ? {} : dataLikeKara = { "downvote": "true" };
+    axios.post("/api/public/playlists/public/karas/" + this.props.idPlaylist + "/vote", data);
+    this.setState({ isLike: !this.state.isLike });
   };
 
   deleteKara = async () => {
     var response;
     try {
       if (this.props.idPlaylist == -5) {
-        response = await axios.delete('/api/public/favorites', { data: { kid: [this.props.kara.kid] }});
-      } else if (this.props.scope === 'admin') {
-        response = await axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/', { data: { plc_id: String(this.props.kara.playlistcontent_id) } });
+        response = await axios.delete("/api/public/favorites", { data: { kid: [this.props.kara.kid] }});
+      } else if (this.props.scope === "admin") {
+        response = await axios.delete("/api/" + this.props.scope + "/playlists/" + this.props.idPlaylist + "/karas/", { data: { plc_id: String(this.props.kara.playlistcontent_id) } });
       } else {
-        var currentOrPublic = this.props.playlistInfo.flag_current ? 'current' : 'public';
-        response = await axios.delete('/api/' + this.props.scope + '/playlists/' + currentOrPublic + '/karas/' + this.props.kara.playlistcontent_id);
+        var currentOrPublic = this.props.playlistInfo.flag_current ? "current" : "public";
+        response = await axios.delete("/api/" + this.props.scope + "/playlists/" + currentOrPublic + "/karas/" + this.props.kara.playlistcontent_id);
       }
-      displayMessage('success', i18next.t(response.data.code));
+      displayMessage("success", i18next.t(response.data.code));
     } catch (error) {
-      displayMessage('error', error.response.data.code);
+      displayMessage("error", error.response.data.code);
     }
   };
 
   playKara = () => {
-    axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_playing: true });
+    axios.put("/api/" + this.props.scope + "/playlists/" + this.props.idPlaylist + "/karas/" + this.props.kara.playlistcontent_id, { flag_playing: true });
   };
 
   addKara = async (event, pos) => {
@@ -88,18 +88,18 @@ class KaraLine extends Component {
     var data;
     var type;
     if (this.props.idPlaylistTo == -5) {
-      url = '/api/public/favorites';
+      url = "/api/public/favorites";
       data = { kid: [this.props.kara.kid] };
-    } else if (this.props.scope === 'admin') {
+    } else if (this.props.scope === "admin") {
       if (this.props.idPlaylistTo > 0) {
-        url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
+        url = "/api/" + this.props.scope + "/playlists/" + this.props.idPlaylistTo + "/karas";
         if (this.props.idPlaylist > 0) {
           if (pos) {
             data = { plc_id: String(this.props.kara.playlistcontent_id) , pos: pos+1};
           } else {
             data = { plc_id: String(this.props.kara.playlistcontent_id) };
           }
-          type = 'PATCH';
+          type = "PATCH";
         } else {
           if (pos) {
             data = { requestedby: logInfos.username, kid: this.props.kara.kid, pos: pos+1 };
@@ -108,10 +108,10 @@ class KaraLine extends Component {
           }
         }
       } else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
-        url = '/api/' + this.props.scope + '/blacklist/criterias';
+        url = "/api/" + this.props.scope + "/blacklist/criterias";
         data = { blcriteria_type: 1001, blcriteria_value: this.props.kara.kid };
       } else if (this.props.idPlaylistTo == -3) {
-        url = '/api/' + this.props.scope + '/whitelist';
+        url = "/api/" + this.props.scope + "/whitelist";
         data = { kid: this.props.kara.kid };
       }
     } else {
@@ -120,14 +120,14 @@ class KaraLine extends Component {
     }
     try {
       var response;
-      if (type === 'PATCH') {
+      if (type === "PATCH") {
         response = await axios.patch(url, data);
       } else {
         response = await axios.post(url, data);
       }
-      displayMessage('success', i18next.t(response.data.code));
+      displayMessage("success", i18next.t(response.data.code));
     } catch (error) {
-      displayMessage('warning', i18next.t(error.response.data.code));
+      displayMessage("warning", i18next.t(error.response.data.code));
     }
   };
 
@@ -136,8 +136,8 @@ class KaraLine extends Component {
   };
 
   freeKara = () => {
-    if (this.props.scope === 'admin') {
-      axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + kara.playlistcontent_id, { flag_free: true });
+    if (this.props.scope === "admin") {
+      axios.put("/api/" + this.props.scope + "/playlists/" + this.props.idPlaylist + "/karas/" + kara.playlistcontent_id, { flag_free: true });
     }
   };
 
@@ -150,23 +150,23 @@ class KaraLine extends Component {
   };
 
   karaFamilies = this.props.kara.families ? this.props.kara.families.map(tag => {
-    return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
+    return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : "?"}</div>;
   }) : [] ;
 
   karaPlatforms = this.props.kara.platforms ? this.props.kara.platforms.map(tag => {
-    return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
+    return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : "?"}</div>;
   }) : [];
 
   karaGenres = this.props.kara.genres ? this.props.kara.genres.map(tag => {
-    return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
+    return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : "?"}</div>;
   }) : [];
 
   karaOrigins = this.props.kara.origins ? this.props.kara.origins.map(tag => {
-    return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
+    return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : "?"}</div>;
   }) : [];
 
   karaMisc = this.props.kara.misc ? this.props.kara.misc.map(tag => {
-    return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>
+    return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : "?"}</div>;
   }) : [];
 
   karaTitle = buildKaraTitle(this.props.kara);
@@ -177,43 +177,43 @@ class KaraLine extends Component {
     var scope = this.props.scope;
     var idPlaylist = this.props.idPlaylist;
     return (
-      <div className={"list-group-item " + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu' : '')}
+      <div className={"list-group-item " + (kara.flag_playing ? "currentlyplaying " : " ") + (kara.flag_dejavu ? "dejavu" : "")}
         style={this.state.addKaraInProgress ? { transform: "translate(100%)" } : {}}
         onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
-        {scope === 'public' && kara.username !== logInfos.username && kara.flag_visible === false ?
+        {scope === "public" && kara.username !== logInfos.username && kara.flag_visible === false ?
           <div className="contentDiv">
             <div style={{height:"33px"}}>{this.props.config.Playlist.MysterySongs.Labels[this.props.config.Playlist.MysterySongs.Labels.length * Math.random() | 0]}</div>
           </div> :
           <React.Fragment>
-            {is_touch_device() && scope !== 'admin' ? null :
+            {is_touch_device() && scope !== "admin" ? null :
               <div className="actionDiv"> {this.props.idPlaylistTo !== this.props.idPlaylist ?
                 <ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
                   scope={this.props.scope} playlistToAddId={this.props.playlistToAddId}
                   addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} /> : null}
 
-                {!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
+              {!is_touch_device() && scope === "admin" && idPlaylist > 0 ? <DragHandle /> : null}
 
               </div>
             }
-            {scope === 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ?
+            {scope === "admin" && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ?
               <span name="checkboxKara" onClick={this.checkKara}>
                 {kara.checked ? <i className="far fa-check-square"></i>
                   : <i className="far fa-square"></i>}
               </span> : null}
             <div className="infoDiv">
-              {scope === 'admin' || !is_touch_device() ? <button title={i18next.t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
-                style={this.state.karaDetailState ? { borderColor: '#8aa9af' } : {}} onClick={this.toggleKaraDetail}
+              {scope === "admin" || !is_touch_device() ? <button title={i18next.t("TOOLTIP_SHOWINFO")} name="infoKara" className="btn btn-sm btn-action"
+                style={this.state.displayedKaraDetail ? { borderColor: "#8aa9af" } : {}} onClick={this.toggleKaraDetail}
               >
                 <i className="fas fa-info-circle"></i>
               </button> : null}
-              {scope === 'public' && logInfos.role !== 'guest' ?
-                <button title={i18next.t('TOOLTIP_FAV')} onClick={this.makeFavorite}
+              {scope === "public" && logInfos.role !== "guest" ?
+                <button title={i18next.t("TOOLTIP_FAV")} onClick={this.makeFavorite}
                   className={"makeFav btn-sm btn btn-action "
-                    + (is_touch_device() ? 'mobile' : '')
-                    + (kara.flag_favorites || idPlaylist === -5 ? ' currentFav' : '')}>
+                    + (is_touch_device() ? "mobile" : "")
+                    + (kara.flag_favorites || idPlaylist === -5 ? " currentFav" : "")}>
                   <i className="fas fa-star"></i>
                 </button> : null}
-              {scope === 'admin' && idPlaylist > 0 ? <button title={i18next.t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara"
+              {scope === "admin" && idPlaylist > 0 ? <button title={i18next.t("TOOLTIP_PLAYKARA")} className="btn btn-sm btn-action playKara"
                 onClick={this.playKara}><i className="fas fa-play"></i></button> : null}
               {scope === "admin" && idPlaylist > 0 && !kara.flag_visible && this.props.playlistInfo 
                 && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ? (
@@ -222,17 +222,17 @@ class KaraLine extends Component {
                     className={"btn btn-sm btn-action btn-primary"}
                   ><i className="fas fa-eye-slash"></i></button>
                 ) : null}
-              {scope !== 'admin' && this.props.flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? 'currentLike' : ''}
+              {scope !== "admin" && this.props.flagPublic ? <button className={"likeKara btn btn-sm btn-action " + this.state.isLike ? "currentLike" : ""}
                 onClick={this.likeKara}><i className="fas fa-thumbs-up"></i></button> : null}
-              {scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username == logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
-                <button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action deleteKara"
+              {scope !== "admin" && !kara.flag_dejavu && !kara.flag_playing && kara.username == logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
+                <button title={i18next.t("TOOLTIP_DELETEKARA")} className="btn btn-sm btn-action deleteKara"
                   onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
             </div>
             <div className="contentDiv" onClick={is_touch_device() ? this.toggleKaraDetail : null}>
               <div className="disable-select">
                 {this.karaTitle}
                 {kara.upvotes ?
-                  <div className="tag likeCount" title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
+                  <div className="tag likeCount" title={i18next.t("TOOLTIP_UPVOTE")} onClick={this.freeKara}>
                     {kara.upvotes}<i className="fas fa-heart"></i>
                   </div> : null
                 }
@@ -254,7 +254,7 @@ class KaraLine extends Component {
             }
           </React.Fragment>
         }
-      </div>)
+      </div>);
   }
 }
 
