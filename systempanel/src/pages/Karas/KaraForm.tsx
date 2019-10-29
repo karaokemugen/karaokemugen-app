@@ -600,7 +600,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					{getFieldDecorator('created_at', {
 						initialValue: this.props.kara.created_at
 					})(<Input type="hidden" />)}
-					<label>{new Date(this.props.kara.created_at).toLocaleString()}</label>
+					<label>{this.props.kara.created_at ? new Date(this.props.kara.created_at).toLocaleString() : null}</label>
 				</Form.Item>
 				<Form.Item
 					label='Last updated date'
@@ -610,7 +610,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					{getFieldDecorator('modified_at', {
 						initialValue: this.props.kara.modified_at
 					})(<Input type="hidden" />)}
-					<label>{new Date(this.props.kara.created_at).toLocaleString()}</label>
+					<label>{this.props.kara.modified_at ? new Date(this.props.kara.modified_at).toLocaleString() : null}</label>
 				</Form.Item>
 				<Form.Item
 					wrapperCol={{ span: 8, offset: 0 }}

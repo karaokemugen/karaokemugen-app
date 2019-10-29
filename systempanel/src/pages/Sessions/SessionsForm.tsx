@@ -153,12 +153,12 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 		title: 'Last played at',
 		dataIndex: 'lastplayed_at',
 		key: 'lastplayed_at',
-		render: (text, kara) => new Date(text).toLocaleString()
+		render: (text, kara) => text ? new Date(text).toLocaleString() : null
 	}, {
 		title: 'Last requested at',
 		dataIndex: 'lastrequested_at',
 		key: 'lastrequested_at',
-		render: (text, kara) => new Date(text).toLocaleString()
+		render: (text, kara) => text ? new Date(text).toLocaleString() : null
 	}, {
 		title: 'Title',
 		dataIndex: 'title',
