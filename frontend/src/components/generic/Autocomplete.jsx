@@ -113,14 +113,15 @@ function Autocomplete(props){
       }
       <div className="UI-autocomplete-input" focus={focus ? 'true':'false'}>
         <input type="text"
-              ref={searchInputRef}
-              value={searchValue}
-              placeholder={placeholder}
-              onFocus={handleInputFocus}
-              onClick={handleInputClick}
-              onChange={handleSearchChange}
-              onKeyUp={handleSearchKeyUp}
-              />
+          data-exclude={true}
+          ref={searchInputRef}
+          value={searchValue}
+          placeholder={placeholder}
+          onFocus={handleInputFocus}
+          onClick={handleInputClick}
+          onChange={handleSearchChange}
+          onKeyUp={handleSearchKeyUp}
+          />
         <ul className="UI-autocomplete-options">
           <div className="UI-autocomplete-options-wrapper">
             {filteredOptions().map((o,index) => <li className="UI-autocomplete-option" index={index} active={index==activeIndex ? 'true':'false'} key={index} onClick={() => handleOptionSelection(o)}>{o.label}</li>)}

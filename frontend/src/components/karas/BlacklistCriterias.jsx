@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import axios from "axios";
 import Autocomplete from '../generic/Autocomplete'
 import { buildKaraTitle } from '../tools';
+require('./BlacklistCriterias.scss');
 
 var listTypeBlc = [
     'BLCTYPE_1002',
@@ -50,7 +51,7 @@ class BlacklistCriterias extends Component {
         return (
             <React.Fragment>
                 {this.props.scope === 'admin' ?
-                    <span id="blacklistCriteriasInputs" className="list-group-item" style={{ padding: "10px" }}>
+                    <span id="blacklistCriteriasInputs" className="blacklist-criterias-input" style={{ padding: "10px" }}>
                         <select id="bcType" className="input-sm form-control" onChange={e => this.setState({ bcType: Number(e.target.value) })}>
                             {listTypeBlc.map((value) => {
                                 return <option key={value} value={value.replace('BLCTYPE_', '')}>{i18next.t(value)}</option>

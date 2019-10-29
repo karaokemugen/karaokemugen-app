@@ -9,6 +9,8 @@ import { expand } from "./tools";
 import ReactDOM from 'react-dom';
 import store from '../store';
 
+require ("../styles/welcome/WelcomePage.scss");
+require("../styles/welcome/updateBanner.scss");
 class WelcomePage extends Component {
   constructor(props) {
     super(props);
@@ -210,61 +212,49 @@ class WelcomePage extends Component {
             </div>
           </div>
         ) : null}
-        <div className="navbar-default">
-          <div className="container">
-            {logInfos.role === "admin" ? (
-              <ul className="nav navbar-nav navbar-left">
-                <li>
-                  <Autocomplete
-                    label={i18next.t("ACTIVE_SESSION")}
-                    value={this.state.activeSession}
-                    options={sessions}
-                    onChange={this.setActiveSession}
-                    acceptNewValues={true}
-                  />
-                </li>
-              </ul>
+        <div className="menu-top">
+          {logInfos.role === "admin" ? (
+            <div className="menu-top-left">
+              <label className="menu-top-sessions-label">{i18next.t("ACTIVE_SESSION")}&nbsp;</label>
+              <Autocomplete
+                value={this.state.activeSession}
+                options={sessions}
+                onChange={this.setActiveSession}
+                acceptNewValues={true}
+              />
+            </div>
+          ) : null}
+          <div className="menu-top-right">
+            <a
+              href="http://mugen.karaokes.moe/contact.html"
+              target="_blank"
+            >
+              <i className="fas fa-pencil-alt" />&nbsp;
+              {i18next.t("WLCM_CONTACT")}
+            </a>
+            <a href="http://mugen.karaokes.moe/" target="_blank">
+              <i className="fas fa-link" />&nbsp;
+              {i18next.t("WLCM_SITE")}
+            </a>
+            <a href="#" id="wlcm_login" onClick={this.openLoginOrProfileModal}>
+              <i className="fas fa-user" />&nbsp;
+              <span>
+                {logInfos.token
+                  ? logInfos.username
+                  : i18next.t("NOT_LOGGED")}
+              </span>
+            </a>
+            {logInfos.token ? (
+              <a
+                href="#"
+                title={i18next.t("LOGOUT")}
+                className="logout"
+                onClick={store.logOut}
+              >
+                <i className="fas fa-sign-out-alt" />&nbsp;
+                <span>{i18next.t("LOGOUT")}</span>
+              </a>
             ) : null}
-            <ul className="nav navbar-nav navbar-right">
-              <li>
-                <a
-                  href="http://mugen.karaokes.moe/contact.html"
-                  target="_blank"
-                >
-                  <i className="fas fa-pencil-alt" />&nbsp;
-                  {i18next.t("WLCM_CONTACT")}
-                </a>
-              </li>
-              <li>
-                <a href="http://mugen.karaokes.moe/" target="_blank">
-                  <i className="fas fa-link" />&nbsp;
-                  {i18next.t("WLCM_SITE")}
-                </a>
-              </li>
-              <li>
-                <a href="#" id="wlcm_login" onClick={this.openLoginOrProfileModal}>
-                  <i className="fas fa-user" />&nbsp;
-                  <span>
-                    {logInfos.token
-                      ? logInfos.username
-                      : i18next.t("NOT_LOGGED")}
-                  </span>
-                </a>
-              </li>
-              {logInfos.token ? (
-                <li id="wlcm_disconnect">
-                  <a
-                    href="#"
-                    title={i18next.t("LOGOUT")}
-                    className="logout"
-                    onClick={store.logOut}
-                  >
-                    <i className="fas fa-sign-out-alt" />&nbsp;
-                    <span>{i18next.t("LOGOUT")}</span>
-                  </a>
-                </li>
-              ) : null}
-            </ul>
           </div>
         </div>
         <div className="container">
