@@ -44,6 +44,17 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 
 	deleteSession(session) {
 		axios.delete('/api/system/sessions/' + session.seid);
+		this.refresh();
+	}
+
+	exportSession(session) {
+		axios.get(`/api/system/sessions/${session.seid}/export`)
+		.then(res => {
+			this.props.infoMessage("Session data exported in application folder");
+		})
+		.catch(err => {
+			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+		});
 	}
 
 	render() {
@@ -97,12 +108,17 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 			<Link to={`/system/km/sessions/${record.seid}`}><Icon type='edit'/></Link>
 		</span>)
 	}, {
+		title: 'Export data as CSV',
+		key: 'export',
+		render: (text, record) => {
+			return <Button type="default" icon='file-excel' onClick={this.exportSession.bind(this,record)}></Button>;
+		}
+	}, {
 		title: 'Delete',
 		key: 'delete',
 		render: (text, record) => {
 			return (record.active ? "" :
                  (<Button type="danger" icon='delete' onClick={this.deleteSession.bind(this,record)}></Button>));
-                 
 		}
 	}];
 }
