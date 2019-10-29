@@ -115,7 +115,7 @@ export function startIntro(scope) {
 };
 
 export function i18nAsDiv(key, args) {
-    return (<div dangerouslySetInnerHTML={{__html: i18next.t(key, args)}}/>)
+	return (<div dangerouslySetInnerHTML={{__html: i18next.t(key, args)}}/>);
 };
 
 /**
@@ -147,7 +147,7 @@ export function buildKaraTitle(data) {
 
 export function displayMessage (type, message, time) {
 	if (!time) time = 3500;
-	toast(message, {type: type, autoClose: time, position: "top-center"});
+	toast(message, {type: type, autoClose: time, position: 'top-center'});
 }
 
 export function callModal(type, title, message, callback, placeholder) {

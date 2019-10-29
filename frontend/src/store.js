@@ -1,5 +1,5 @@
 import EventEmmiter from 'events';
-import axios from "axios";
+import axios from 'axios';
 import { readCookie, parseJwt, createCookie, eraseCookie} from './components/tools';
 
 let filterValue1 = '';
@@ -64,15 +64,15 @@ class Store extends EventEmmiter {
 
 	setPosPlaying(pos) {
 		posPlaying = pos;
-    }
+	}
     
-    getTuto() {
-        return tuto;
-    }
+	getTuto() {
+		return tuto;
+	}
 
 	setTuto(newTuto) {
-        tuto = newTuto;
-    }
+		tuto = newTuto;
+	}
 
 	getConfig() {
 		return config;
@@ -97,8 +97,8 @@ class Store extends EventEmmiter {
 
 		logInfos.token = data.token;
 		logInfos.onlineToken = data.onlineToken;
-		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 		this.emitChange('loginUpdated');
 	}
 
@@ -106,8 +106,8 @@ class Store extends EventEmmiter {
 		eraseCookie('mugenToken');
 		eraseCookie('mugenTokenOnline');
 		logInfos = undefined;
-		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 		location.reload();
 	}
 }
