@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Button, Form, Icon, Input, Table, Tooltip, Cascader } from 'antd';
 import axios from 'axios/index';
 import { buildKaraTitle } from '../../utils/kara';
-
+import { message } from 'antd';
 interface SessionsFormProps {
 	sessions: any
 	session: any,
@@ -62,6 +62,16 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	  return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	}
 
+	exportSession() {
+		axios.get(`/api/system/sessions/${this.props.session.seid}/export`)
+		.then(res => {
+			message.success("Session data exported in application folder");
+		})
+		.catch(err => {
+			message.error(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+		});
+	}
+
 	render() {
 		const {getFieldDecorator} = this.props.form;
 		return (
@@ -69,6 +79,15 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 				onSubmit={this.handleSubmit}
 				className='session-form'
 			>
+				{this.props.session.seid ?
+					<Form.Item
+						wrapperCol={{ span: 4, offset: 3 }}
+					>
+						<Button type='default' icon='file-excel' onClick={this.exportSession.bind(this)}>
+						Export data as CSV
+						</Button>
+					</Form.Item> : null
+				}
 				<Form.Item hasFeedback
 					label={(
 						<span>Name&nbsp;
@@ -102,8 +121,8 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 				<Form.Item
 					wrapperCol={{ span: 4, offset: 2 }}
 				>
-					<Button type='primary' htmlType='submit' className='sessions-form-button'>
-						Save sessions
+					<Button type='primary' htmlType='submit'>
+						Save session
 					</Button>
 				</Form.Item>
 				<Form.Item hasFeedback

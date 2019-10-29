@@ -37,3 +37,9 @@ react_client
 # Frontend
 .cache/
 frontend/build/
+
+# sessions export
+*.played.csv
+*.playedCount.csv
+*.requested.csv
+*.requestedCount.csv
