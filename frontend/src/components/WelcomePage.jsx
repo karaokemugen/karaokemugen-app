@@ -1,14 +1,13 @@
 import React, { Component } from "react";
-import i18next from 'i18next';
+import i18next from "i18next";
 import axios from "axios";
 import ProfilModal from "./modals/ProfilModal";
 import LoginModal from "./modals/LoginModal";
 import logo from "../assets/Logo-final-fond-transparent.png";
 import Autocomplete from "./generic/Autocomplete";
 import { expand } from "./tools";
-import ReactDOM from 'react-dom';
-import store from '../store';
-
+import ReactDOM from "react-dom";
+import store from "../store";
 require ("../styles/welcome/WelcomePage.scss");
 require("../styles/welcome/updateBanner.scss");
 class WelcomePage extends Component {
@@ -21,7 +20,7 @@ class WelcomePage extends Component {
       activeSession: ""
     };
     if (!store.getLogInfos().token) {
-      this.openLoginOrProfileModal()
+      this.openLoginOrProfileModal();
     }
   }
 
@@ -166,11 +165,11 @@ class WelcomePage extends Component {
             : "public"
         }
         admpwd={this.props.admpwd}
-      />, document.getElementById('modal'));
+      />, document.getElementById("modal"));
     } else {
       ReactDOM.render(<ProfilModal
         settingsOnline={this.props.settings.config.Online}
-      />, document.getElementById('modal'));
+      />, document.getElementById("modal"));
     }
   };
 
