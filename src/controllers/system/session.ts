@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from "../middlewares/auth";
 import { check } from "../../lib/utils/validators";
-import { setActiveSession, getSessions, addSession, editSession, removeSession, mergeSessions } from "../../services/session";
+import { exportSession, setActiveSession, getSessions, addSession, editSession, removeSession, mergeSessions } from "../../services/session";
 
 export default function systemSessionController(router: Router) {
 	router.route('/system/sessions')
@@ -80,6 +80,15 @@ export default function systemSessionController(router: Router) {
 				res.status(200).send('Session deleted');
 			} catch(err) {
 				res.status(500).send(`Error deleting session : ${err}`);
+			}
+		});
+	router.route('/system/sessions/:seid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/export')
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
+			try {
+				await exportSession(req.params.seid);
+				res.status(200).send('Session exported');
+			} catch(err) {
+				res.status(500).send(err);
 			}
 		});
 }

@@ -2,6 +2,10 @@ import {selectSessions, insertSession, updateSession, deleteSession, cleanSessio
 import uuidV4 from 'uuid/v4';
 import { getState, setState } from '../utils/state';
 import { Session } from '../types/session';
+import { getKaras } from './kara';
+import { createObjectCsvWriter as csvWriter } from 'csv-writer';
+import { resolve } from 'path';
+import { sanitizeFile } from '../lib/utils/files';
 
 export async function getSessions() {
 	const sessions = await selectSessions();
@@ -96,3 +100,118 @@ export async function initSession() {
 	}
 }
 
+export async function exportSession(seid: string) {
+	try {
+		const session = await findSession(seid);
+		if (!session) throw 'Session does not exist';
+		const [requested, played] = await Promise.all([
+			getKaras({mode: 'sessionRequested', modeValue: seid, token: { role: 'admin', username: 'admin'}}),
+			getKaras({mode: 'sessionPlayed', modeValue: seid, token: { role: 'admin', username: 'admin'}})
+		]);
+		const csvRequested = csvWriter({
+			path: resolve(getState().appPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.requested.csv')),
+			header: [
+				{id: 'requested_at', title: 'REQUESTED AT'},
+				{id: 'seriesinger', title: 'SERIES/SINGER'},
+				{id: 'songtype', title: 'TYPE'},
+				{id: 'order', title: 'ORDER'},
+				{id: 'title', title: 'TITLE'}
+			],
+			alwaysQuote: true
+		});
+		const csvPlayed = csvWriter({
+			path: resolve(getState().appPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.played.csv')),
+			header: [
+				{id: 'played_at', title: 'PLAYED AT'},
+				{id: 'seriesinger', title: 'SERIES/SINGER'},
+				{id: 'songtype', title: 'TYPE'},
+				{id: 'order', title: 'ORDER'},
+				{id: 'title', title: 'TITLE'}
+			],
+			alwaysQuote: true
+		});
+		const csvPlayedCount = csvWriter({
+			path: resolve(getState().appPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.playedCount.csv')),
+			header: [
+				{id: 'count', title: 'PLAY COUNT'},
+				{id: 'seriesinger', title: 'SERIES/SINGER'},
+				{id: 'songtype', title: 'TYPE'},
+				{id: 'order', title: 'ORDER'},
+				{id: 'title', title: 'TITLE'}
+			],
+			alwaysQuote: true
+		});
+		const csvRequestedCount = csvWriter({
+			path: resolve(getState().appPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.requestedCount.csv')),
+			header: [
+				{id: 'count', title: 'REQUEST COUNT'},
+				{id: 'seriesinger', title: 'SERIES/SINGER'},
+				{id: 'songtype', title: 'TYPE'},
+				{id: 'order', title: 'ORDER'},
+				{id: 'title', title: 'TITLE'}
+			],
+			alwaysQuote: true
+		});
+		const recordsPlayed = played.content.map(k => {
+			return {
+				played_at: k.lastplayed_at.toLocaleString(),
+				seriesinger: k.serie ? k.serie : k.singers.map(s => s.name).join(', '),
+				songtype: k.songtypes.map(s => s.name).join(', '),
+				order: k.songorder ? k.songorder : '',
+				title: k.title,
+				kid: k.kid
+			}
+		});
+		const recordsRequested = requested.content.map(k => {
+			return {
+				requested_at: k.lastrequested_at.toLocaleString(),
+				seriesinger: k.serie ? k.serie : k.singers.map(s => s.name).join(', '),
+				songtype: k.songtypes.map(s => s.name).join(', '),
+				order: k.songorder ? k.songorder : '',
+				title: k.title,
+				kid: k.kid
+			}
+		});
+		// Get counts for KIDs
+		const playedCount = {};
+		const requestedCount = {};
+		for (const k of recordsPlayed) {
+			playedCount[k.kid]
+				? playedCount[k.kid]++
+				: playedCount[k.kid] = 1;
+		}
+		for (const k of recordsRequested) {
+			requestedCount[k.kid]
+				? requestedCount[k.kid]++
+				: requestedCount[k.kid] = 1;
+		}
+		const recordsPlayedCount = recordsPlayed.filter((e, pos) => {
+			return recordsPlayed.findIndex(i => i.kid === e.kid) === pos;
+		}).map((k: any) => {
+			const kara = Object.assign({}, k)
+			kara.count = playedCount[k.kid];
+			delete kara.played_at;
+			delete kara.kid;
+			return kara;
+		});
+		const recordsRequestedCount = recordsRequested.filter((e, pos) => {
+			return recordsRequested.findIndex(i => i.kid === e.kid) === pos;
+		}).map((k: any) => {
+			const kara = Object.assign({}, k)
+			kara.count = requestedCount[k.kid];
+			delete kara.requested_at;
+			delete kara.kid;
+			return kara;
+		});
+		recordsRequestedCount.sort((a, b) => (a.count < b.count) ? 1 : -1);
+		recordsPlayedCount.sort((a, b) => (a.count < b.count) ? 1 : -1);
+		await Promise.all([
+			csvPlayed.writeRecords(recordsPlayed),
+			csvRequested.writeRecords(recordsRequested),
+			csvPlayedCount.writeRecords(recordsPlayedCount),
+			csvRequestedCount.writeRecords(recordsRequestedCount)
+		]);
+	} catch(err) {
+		throw err;
+	}
+}

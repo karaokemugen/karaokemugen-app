@@ -87,6 +87,7 @@
     "cli-progress": "^3.3.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.4",
+    "csv-writer": "^1.5.0",
     "db-migrate": "^0.11.6",
     "db-migrate-pg": "^1.0.0",
     "execa": "^3.2.0",
