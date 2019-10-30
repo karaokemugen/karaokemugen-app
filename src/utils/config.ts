@@ -160,7 +160,8 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 			mpv: resolve(getState().appPath, config.System.Binaries.Player.Windows),
 			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Windows),
 			postgres_ctl: 'pg_ctl.exe',
-			postgres_dump: 'pg_dump.exe'
+			postgres_dump: 'pg_dump.exe',
+			postgres_client: 'psql.exe'
 		};
 	case 'darwin':
 		return {
@@ -168,7 +169,8 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 			mpv: resolve(getState().appPath, config.System.Binaries.Player.OSX),
 			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.OSX),
 			postgres_ctl: 'pg_ctl',
-			postgres_dump: 'pg_dump'
+			postgres_dump: 'pg_dump',
+			postgres_client: 'psql'
 		};
 	default:
 		return {
@@ -176,7 +178,8 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 			mpv: resolve(getState().appPath, config.System.Binaries.Player.Linux),
 			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Linux),
 			postgres_ctl: 'pg_ctl',
-			postgres_dump: 'pg_dump'
+			postgres_dump: 'pg_dump',
+			postgres_client: 'psql'
 		};
 	}
 }

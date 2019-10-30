@@ -173,9 +173,6 @@ WHERE pc.fk_login = $2
 	AND pc.flag_free = FALSE
 `;
 
-
-export const resetViewcounts = 'TRUNCATE played RESTART IDENTITY;';
-
 export const updateFreeOrphanedSongs = `
 UPDATE playlist_content SET
 	flag_free = TRUE

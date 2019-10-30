@@ -34,6 +34,7 @@ Many things have changed, both in database schemas, code base, frontend, and eve
   - Advanced search (via tags/series) (#425)
 - Session management on welcome screen (#390)
   - You can now name individual karaoke sessions when starting one with friends or during events. It'll allow you to filter song history to see, for example, which songs were played during Epitanime 2020 or Jonetsu 5555. Sessions are just groups for stats but can be helpful for other purposes later.
+  - Session data can be exported as CSV (#508)
 - QR Code has been removed (why is it a new feature?) (#451)
 - Users can now select which language for series names they tend to prefer (just like an admin can). This setting is saved to your online account. (#440)
 - New, updated sample songs included with every release (#452)
@@ -52,6 +53,7 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - Dark theme for the system panel (#468)
 - Settings in the options panel now have tooltips to explain what they do (#460)
 - Login modal in public and admin interface now has toggles for online/local accounts and password reset feature. (#489)
+- Database can be restored from the karaokemugen.sql file in the application's directory (#509)
 
 ### Improvements
 

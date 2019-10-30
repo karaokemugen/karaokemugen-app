@@ -41,6 +41,7 @@ export interface State {
 		postgres?: string,
 		postgres_ctl?: string,
 		postgres_dump?: string,
+		postgres_client?: string
 	},
 	opt?: {
 		generateDB?: boolean,

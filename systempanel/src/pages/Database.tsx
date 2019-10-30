@@ -146,22 +146,9 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 			});
 	}
 
-	dbresetviewcounts() {
+	dbrestore() {
 		this.props.loading(true);
-		axios.post('/api/system/db/resetviewcounts')
-			.then(res => {
-				this.props.loading(false);
-				this.props.infoMessage(res.data);
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
-	}
-
-	dbrenameallkaras() {
-		this.props.loading(true);
-		axios.post('/api/system/db/renamekaras')
+		axios.post('/api/system/db/restore')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);
@@ -201,16 +188,16 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 						onClick={this.dbdump.bind(this)}
 						disabled={this.props.loadingActive}
 					>
-						Dump database to a file
+						Dump database to karaokemugen.sql file
 					</Button>
 				</div>
 				<div>
 					<Button
 						type='primary'
-						onClick={this.dbresetviewcounts.bind(this)}
+						onClick={this.dbrestore.bind(this)}
 						disabled={this.props.loadingActive}
 					>
-						Reset song viewcounts
+						Restore database from karaokemugen.sql file
 					</Button>
 				</div>
 				<Modal

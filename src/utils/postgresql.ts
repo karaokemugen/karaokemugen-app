@@ -49,15 +49,36 @@ export async function dumpPG() {
 	const conf = getConfig();
 	const state = getState();
 	try {
-		const options = ['-c','-E','UTF8','--if-exists','-U',conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.appPath, 'karaokemugen.pgdump'), conf.Database.prod.database ];
+		const options = ['-c','-E','UTF8','--if-exists','-U',conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.appPath, 'karaokemugen.sql'), conf.Database.prod.database ];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			windowsVerbatimArguments: state.os === 'win32'
 		});
+		logger.info('[DB] Database dumped to file');
 	} catch(err) {
 		throw `Dump failed : ${err}`;
+	}
+}
+
+/** Restore postgreSQL database from file */
+export async function restorePG() {
+	const conf = getConfig();
+	const state = getState();
+	try {
+		const options = ['-U', conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.appPath, 'karaokemugen.sql'), conf.Database.prod.database];
+		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_client);
+		if (state.os === 'win32') binPath = `"${binPath}"`;
+		await execa(binPath, options, {
+			cwd: resolve(state.appPath, state.binPath.postgres),
+			stdio: 'inherit',
+			windowsVerbatimArguments: state.os === 'win32'
+		});
+		logger.info('[DB] Database restored from file');
+	} catch(err) {
+		logger.error(`[DB] Database restoration failed : ${err}`);
+		throw `Restore failed : ${err}`;
 	}
 }
 
