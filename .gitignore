@@ -27,6 +27,8 @@ bin/
 logs/
 updater/
 mpv.log
+karaokemugen.pgdump
+karaokemugen.sql
 
 # System panel
 systempanel/node_modules

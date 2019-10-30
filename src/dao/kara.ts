@@ -171,10 +171,6 @@ export async function addKaraToRequests(username: string, karaList: string[]) {
 	return await transaction([{params: karas, sql: sql.addRequested}]);
 }
 
-export async function resetViewcounts() {
-	return await db().query(sql.resetViewcounts);
-}
-
 export async function selectAllKIDs(): Promise<string[]> {
 	const res = await db().query(sql.selectAllKIDs);
 	return res.rows.map((k: Kara) => k.kid);
