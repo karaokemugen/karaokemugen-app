@@ -770,10 +770,10 @@ input[type=range]:focus::-ms-fill-upper {
     width: 130px;
     color: #bbb;
 }
-#loginModal .modal-body input[name="modalLogin"] {
-    width: calc(100% - 130px - 4px);
-}
 
+.modalLogin {
+	width: calc(100% - 130px - 4px) !important;
+}
 
 .modalPage .modal-message div {
 	height: 100%;
@@ -958,7 +958,6 @@ input[type="text"]:not([data-exclude="true"]), input[type="password"]:not([data-
     padding: 0;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
-	transition: all 0.3s;
 	color: #ccc;
 }
 

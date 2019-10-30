@@ -176,7 +176,7 @@ class LoginModal extends Component {
     										isChecked={this.state.onlineSwitch} />
     								</div>
     								<div className="modal-message loginRelated">
-    									<input type="text" id="login" name="modalLogin" placeholder={i18next.t('NICKNAME')}
+    									<input className={this.state.onlineSwitch ? 'modalLogin' : ''} type="text" id="login" name="modalLogin" placeholder={i18next.t('NICKNAME')}
     										defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
     									{this.state.onlineSwitch ? <input type="text" id="loginServ" name="modalLoginServ" placeholder={i18next.t('INSTANCE_NAME_SHORT')}
     										defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} /> : null}
@@ -209,7 +209,7 @@ class LoginModal extends Component {
     										isChecked={this.state.onlineSwitch} />
     								</div>
     								<div>
-    									<input type="text" id="signupLogin" className={this.state.errorBackground} name="modalLogin" placeholder={i18next.t('NICKNAME')}
+    									<input className={`${this.state.errorBackground} ${this.state.onlineSwitch ? 'modalLogin' : ''}`} type="text" id="signupLogin" placeholder={i18next.t('NICKNAME')}
     										defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
     									{this.state.onlineSwitch ? <input type="text" id="signupServ" name="modalLoginServ" placeholder={i18next.t('INSTANCE_NAME_SHORT')}
     										defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} /> : null}
