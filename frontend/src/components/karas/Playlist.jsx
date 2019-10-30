@@ -476,7 +476,7 @@ noRowsRenderer = () => {
   	var response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
   	var karaList = response.data.data.content.map(a => a.kid).join();
   	displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', {count: response.data.data.content.length}));
-  	axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: this.props.logInfos.username });
+  	axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: store.getLogInfos().username });
   };
 
   addCheckedKaras = async () => {
