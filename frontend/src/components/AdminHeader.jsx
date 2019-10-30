@@ -61,7 +61,12 @@ class AdminHeader extends Component {
   		volume = volume * base;
   		data = {
   			command: namecommand,
-  			options: volume
+  			options: volume,
+		  };
+  	} else if (namecommand === 'goTo') {
+  		data = {
+  			command: namecommand,
+  			options: 1
   		};
   	} else {
   		data = {
