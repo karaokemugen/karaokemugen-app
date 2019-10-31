@@ -37,6 +37,13 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
+"@types/better-queue@^3.8.1":
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/@types/better-queue/-/better-queue-3.8.1.tgz#6ec2c79b295a6676675ebacd585468146c1c4a7f"
+  integrity sha512-xZJHcoyb8mSs9vhvyd68r66e1smn70SmA2HqrJRqgKAHdJkd5Sd/edEu61lzmt1ggQDqRY2w0jZJnMV3jD/qwA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/body-parser@*":
   version "1.17.1"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.17.1.tgz#18fcf61768fb5c30ccc508c21d6fd2e8b3bf7897"
