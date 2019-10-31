@@ -113,7 +113,7 @@ async function main() {
 		await initEngine();
 	} catch(err) {
 		console.log(err);
-		logger.error(`[Launcher] Karaoke Mugen initialization failed :( : ${err}`);
+		logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
 		exit(1);
 	}
 }
@@ -159,7 +159,6 @@ function verifyOpenPort(port: number) {
 		if (err) {
 			logger.error(`[Launcher] Port ${port} is already in use.`);
 			console.log('\nIf another Karaoke Mugen instance is running, please kill it (process name is "node" or "KaraokeMugen")');
-			console.log('Also verify that no postgreSQL server is running on said port');
 			console.log('Then restart the app.');
 			process.exit(1);
 		}
