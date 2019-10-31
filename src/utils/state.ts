@@ -28,21 +28,9 @@ let state: State = {
 	player: {
 		ready: false
 	},
-	opt: {
-		generateDB: false,
-		reset: false,
-		noBaseCheck: false,
-		strict: false,
-		noMedia: false,
-		baseUpdate: false,
-		mediaUpdate: false,
-		noBrowser: false,
-		sql: false,
-		validate: false,
-		debug: false,
-		forceAdminPassword: undefined
-	}
+	opt: {}
 };
+
 let previousState = {...state};
 
 /** Get public state (to send to webapp users) */

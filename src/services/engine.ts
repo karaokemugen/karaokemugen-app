@@ -4,7 +4,7 @@ import {profile} from '../lib/utils/logger';
 import readlineSync from 'readline-sync';
 import logger from 'winston';
 import {getState, setState} from '../utils/state';
-import {checkPG, killPG} from '../utils/postgresql';
+import {checkPG, killPG, dumpPG, restorePG} from '../utils/postgresql';
 
 //KM Modules
 import {initUserSystem} from './user';
@@ -58,6 +58,18 @@ export async function initEngine() {
 	}
 	//Database system is the foundation of every other system
 	await initDBSystem();
+	if (state.opt.dumpDB) try {
+		await dumpPG();
+		await exit(0);
+	} catch(err) {
+		await exit(1);
+	}
+	if (state.opt.restoreDB) try {
+		await restorePG();
+		await exit(0);
+	} catch(err) {
+		await exit(1);
+	}
 	if (state.opt.baseUpdate) try {
 		await updateBase(conf.Online.Host);
 		logger.info('[Engine] Done updating karaoke base');

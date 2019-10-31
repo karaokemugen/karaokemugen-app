@@ -56,7 +56,9 @@ export interface State {
 		validate?: boolean,
 		debug?: boolean,
 		forceAdminPassword?: string,
-		validateV3?: boolean
+		validateV3?: boolean,
+		dumpDB?: boolean,
+		restoreDB?: boolean
 	}
 }
 
