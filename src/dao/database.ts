@@ -155,8 +155,12 @@ export async function getStats(): Promise<DBStats> {
 export async function generateDB(): Promise<boolean> {
 	const state = getState();
 	try {
-		await generateDatabase(false, true);
+		const modified = await generateDatabase(false, true);
 		logger.info('[DB] Database generation completed successfully!');
+		if (modified) {
+			logger.info('[DB] Kara files have been modified during generation, re-evaluating store')
+			await compareKarasChecksum();
+		}
 		if (state.opt.generateDB) await exit(0);
 	} catch(err) {
 		if (state.opt.generateDB) await exit(1);
