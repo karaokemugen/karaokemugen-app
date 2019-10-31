@@ -3,6 +3,8 @@ import i18next from 'i18next';
 import { is_touch_device, secondsTimeSpanToHMS, displayMessage, callModal } from '../tools';
 import axios from 'axios';
 import store from '../../store';
+import ReactDOM from 'react-dom';
+
 class KaraDetail extends Component {
 	constructor(props) {
 		super(props);
@@ -18,6 +20,23 @@ class KaraDetail extends Component {
 			this.getKaraDetail(nextProps.kid);
 		}
 	}
+
+  keyObserverHandler = e => {
+  	var keyCode = e.keyCode || e.which;
+  	if (keyCode == '27') {
+  		this.props.toggleKaraDetail();
+  	}
+  }
+
+  componentDidMount() {
+  	if(this.props.mode === 'list' && !is_touch_device())
+		  document.addEventListener('keyup', this.keyObserverHandler);
+  }
+
+  componentWillUnmount() {
+  	if(this.props.mode === 'list' && !is_touch_device())
+  		document.removeEventListener('keyup', this.keyObserverHandler);
+  }
 
   getKaraDetail = async kid => {
   	var urlInfoKara = this.props.idPlaylist > 0 ?
@@ -259,71 +278,71 @@ class KaraDetail extends Component {
   		var infoKaraTemp;
   		if (this.props.mode == 'list') {
   			infoKaraTemp = (
-  				<React.Fragment>
-  					<div className="detailsKara" style={this.props.karaDetailState ? {} : { display: 'none' }}>
-  						<div className="topRightButtons">
-  							{is_touch_device() ? null : (
+  				<div className="modal modalPage">
+  					<div className="modal-dialog modal-md">
+  						<div className="detailsKara">
+  							<div className="topRightButtons">
   								<button
   									type="button"
   									title={i18next.t('TOOLTIP_CLOSEPARENT')}
   									className="closeParent btn btn-action"
   									onClick={this.props.toggleKaraDetail}
   								><i className="fas fa-times"></i></button>
-  							)}
-  							{(this.props.scope === 'public' && !is_touch_device()) ||
-                  store.getLogInfos().role === 'guest'
-  								? null
-  								: makeFavButton}
-  							{data.subfile ? (
+  								{(this.props.scope === 'public' && !is_touch_device()) ||
+                    store.getLogInfos().role === 'guest'
+  									? null
+  									: makeFavButton}
+  								{data.subfile ? (
+  									<button
+  										type="button"
+  										title={i18next.t('TOOLTIP_SHOWLYRICS')}
+  										className={
+  											'fullLyrics btn btn-action ' +
+                        (is_touch_device() ? 'mobile' : '')
+  										}
+  										onClick={this.showFullLyrics}
+  									><i className="fas fa-quote-right"></i></button>
+  								) : null}
   								<button
   									type="button"
-  									title={i18next.t('TOOLTIP_SHOWLYRICS')}
+  									title={i18next.t('TOOLTIP_SHOWVIDEO')}
   									className={
-  										'fullLyrics btn btn-action ' +
+  										'showVideo btn btn-action' +
                       (is_touch_device() ? 'mobile' : '')
   									}
-  									onClick={this.showFullLyrics}
-  								><i className="fas fa-quote-right"></i></button>
-  							) : null}
-  							<button
-  								type="button"
-  								title={i18next.t('TOOLTIP_SHOWVIDEO')}
-  								className={
-  									'showVideo btn btn-action' +
-                    (is_touch_device() ? 'mobile' : '')
-  								}
-  								onClick={() => this.props.showVideo(this.state.kara.mediafile)}
-  							><i className="fas fa-video"></i></button>
-  							{data.serie ? (
-  								<button
-  									type="button"
-  									className={
-  										'moreInfo btn btn-action' + (is_touch_device() ? 'mobile' : '')
-  									}
-  									onClick={this.moreInfo}
-  								><i className="fas fa-info-circle"></i></button>
-  							) : null}
-  							{this.props.scope === 'admin' && this.props.publicOuCurrent ? (
-  								<button
-  									type="button"
-  									title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.props.freeKara}
-  									className={'likeFreeButton btn btn-action ' + (data.flag_free ? 'btn-primary': '')}
-  								><i className="fas fa-gift"></i></button>
-  							) : null}
-  							{this.props.scope === 'admin' && this.props.publicOuCurrent ? (
-  								<button
-  									type="button"
-  									title={data.flag_visible ? i18next.t('TOOLTIP_VISIBLE_OFF') : i18next.t('TOOLTIP_VISIBLE_ON')} onClick={this.changeVisibilityKara}
-  									className={'btn btn-action ' + (data.flag_visible ? '': 'btn-primary')}
-  								>{data.flag_visible ? <i className="fas fa-eye"/> : <i className="fas fa-eye-slash"/>}</button>
-  							) : null}
+  									onClick={() => this.props.showVideo(this.state.kara.mediafile)}
+  								><i className="fas fa-video"></i></button>
+  								{data.serie ? (
+  									<button
+  										type="button"
+  										className={
+  											'moreInfo btn btn-action' + (is_touch_device() ? 'mobile' : '')
+  										}
+  										onClick={this.moreInfo}
+  									><i className="fas fa-info-circle"></i></button>
+  								) : null}
+  								{this.props.scope === 'admin' && this.props.publicOuCurrent ? (
+  									<button
+  										type="button"
+  										title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.props.freeKara}
+  										className={'likeFreeButton btn btn-action ' + (data.flag_free ? 'btn-primary': '')}
+  									><i className="fas fa-gift"></i></button>
+  								) : null}
+  								{this.props.scope === 'admin' && this.props.publicOuCurrent ? (
+  									<button
+  										type="button"
+  										title={data.flag_visible ? i18next.t('TOOLTIP_VISIBLE_OFF') : i18next.t('TOOLTIP_VISIBLE_ON')} onClick={this.changeVisibilityKara}
+  										className={'btn btn-action ' + (data.flag_visible ? '': 'btn-primary')}
+  									>{data.flag_visible ? <i className="fas fa-eye"/> : <i className="fas fa-eye-slash"/>}</button>
+  								) : null}
+  							</div>
+  							<table>
+  								<tbody>{htmlDetails}</tbody>
+  							</table>
   						</div>
-  						<table>
-  							<tbody>{htmlDetails}</tbody>
-  						</table>
+  						{lyricsKara}
   					</div>
-  					{lyricsKara}
-  				</React.Fragment>
+  				</div>
   			);
   		} else if (this.props.mode == 'karaCard') {
   			if (data.subfile) this.showFullLyrics();

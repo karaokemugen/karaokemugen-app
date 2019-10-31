@@ -7,6 +7,7 @@ import ActionsButtons from './ActionsButtons';
 import { buildKaraTitle, displayMessage } from '../tools';
 import store from '../../store';
 import { sortableHandle } from 'react-sortable-hoc';
+import ReactDOM from 'react-dom';
 
 const DragHandle = sortableHandle(() => <span className="dragHandle"><i className="fas fa-ellipsis-v"></i></span>);
 
@@ -14,7 +15,7 @@ class KaraLine extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			karaDetailState: false,
+			displayedKaraDetail: false,
 			isFavorite: this.props.kara.flag_favorites || this.props.idPlaylist === -5,
 			isLike: this.props.kara.flag_upvoted,
 			startSwipeX: 0,
@@ -36,7 +37,16 @@ class KaraLine extends Component {
   };
 
   toggleKaraDetail = () => {
-  	this.setState({ karaDetailState: !this.state.karaDetailState });
+  	if (this.state.displayedKaraDetail) {
+  		ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
+  	} else {
+  		ReactDOM.render(<KaraDetail kid={this.props.kara.kid} playlistcontentId={this.props.kara.playlistcontent_id} scope={this.props.scope} 
+  			idPlaylist={this.props.idPlaylist} mode='list' toggleKaraDetail={this.toggleKaraDetail}
+  			publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
+  			makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite} showVideo={this.props.showVideo}
+  			navigatorLanguage={this.props.navigatorLanguage} freeKara={this.freeKara}></KaraDetail>, document.getElementById('modal'));
+  	}
+  	this.setState({ displayedKaraDetail: !this.state.displayedKaraDetail });
   };
 
   makeFavorite = () => {
@@ -245,13 +255,6 @@ class KaraLine extends Component {
   							{this.karaMisc}
   						</div>
   					</div>
-  					{this.state.karaDetailState ?
-  						<KaraDetail kid={this.props.kara.kid} playlistcontentId={this.props.kara.playlistcontent_id} scope={this.props.scope} idPlaylist={this.props.idPlaylist} mode='list'
-  							publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
-  							toggleKaraDetail={this.toggleKaraDetail} karaDetailState={this.state.karaDetailState}
-  							makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite} showVideo={this.props.showVideo}
-  							navigatorLanguage={this.props.navigatorLanguage} freeKara={this.freeKara}></KaraDetail> : null
-  					}
   				</React.Fragment>
   			}
   		</div>);
