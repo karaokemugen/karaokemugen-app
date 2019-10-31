@@ -1,9 +1,8 @@
-import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './lib/utils/files';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove,  asyncCopyAlt} from './lib/utils/files';
 import {getConfig} from './lib/utils/config';
 import {initConfig} from './utils/config';
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './args';
-import {writeFileSync, readFileSync} from 'fs';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import {createServer} from 'net';
@@ -48,7 +47,9 @@ if (process.platform === 'win32' ) {
 // Main app begins here.
 let appPath: string;
 // Testing if we're in a packaged version of KM or not.
-('pkg' in process) ? appPath = join(process['execPath'],'../') : appPath = join(__dirname,'../');
+('pkg' in process)
+	? appPath = join(process['execPath'],'../')
+	: appPath = join(__dirname,'../');
 setState({appPath: appPath});
 
 process.env['NODE_ENV'] = 'production'; // Default
@@ -72,7 +73,7 @@ async function main() {
 	await initConfig(argv);
 	let config = getConfig();
 	await parseCommandLineArgs(argv);
-	logger.debug(`[Launcher] SysPath : ${appPath}`);
+	logger.debug(`[Launcher] AppPath : ${appPath}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
 	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(config, null, 2)}`);
@@ -90,22 +91,15 @@ async function main() {
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	const tempInput = resolve(appPath, config.System.Path.Temp, 'input.conf');
 	logger.debug(`[Launcher] Copying input.conf to ${tempInput}`);
-	let fileBuffer = readFileSync(join(__dirname, '../assets/input.conf'));
-	if (await asyncExists(tempInput)) await asyncUnlink(tempInput);
-	writeFileSync(tempInput, fileBuffer);
+	await asyncCopyAlt(join(__dirname, '../assets/input.conf'), tempInput)
 
 	const tempBackground = resolve(appPath, config.System.Path.Temp, 'default.jpg');
 	logger.debug(`[Launcher] Copying default background to ${tempBackground}`);
-	fileBuffer = readFileSync(join(__dirname, `../assets/${state.version.image}`));
-	if (await asyncExists(tempBackground)) await asyncUnlink(tempBackground);
-	writeFileSync(tempBackground, fileBuffer);
+	await asyncCopyAlt(join(__dirname, `../assets/${state.version.image}`), tempBackground);
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
-	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.System.Path.Avatars));
-	fileBuffer = readFileSync(join(__dirname, '../assets/blank.png'));
-	const tempAvatar = resolve(appPath, config.System.Path.Avatars, 'blank.png');
-	if (await asyncExists(tempAvatar)) await asyncUnlink(tempAvatar);
-	writeFileSync(tempAvatar, fileBuffer);
+	logger.debug(`[Launcher] Copying blank.png to ${resolve(appPath, config.System.Path.Avatars)}`);
+	await asyncCopyAlt(join(__dirname, '../assets/blank.png'), resolve(appPath, config.System.Path.Avatars, 'blank.png'));
 
 	/**
 	 * Test if network ports are available
