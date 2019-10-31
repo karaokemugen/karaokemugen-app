@@ -15,8 +15,7 @@ const feeds = [
 	},
 	{
 		name: 'mastodon',
-		url:
-		'https://shelter.moe/users/KaraokeMugen.rss'
+		url: 'https://shelter.moe/users/KaraokeMugen.rss'
 	}
 ];
 
@@ -28,9 +27,7 @@ export async function getFeeds() {
 		throw 'This instance is not connected to the internets';
 	}
 	let feedPromises = [];
-	for (const feed of feeds) {
-		feedPromises.push(fetchFeed(feed.url, feed.name));
-	}
+	feeds.forEach(feed => feedPromises.push(fetchFeed(feed.url, feed.name)));
 	return await Promise.all(feedPromises);
 }
 

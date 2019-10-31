@@ -120,6 +120,7 @@ export async function initFrontend() {
 		});
 
 		const server = createServer(app);
+		// Init websockets
 		initWS(server);
 		server.listen(conf.Frontend.Port, () => {
 			logger.debug(`[Webapp] Webapp is READY and listens on port ${conf.Frontend.Port}`);

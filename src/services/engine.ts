@@ -11,7 +11,7 @@ import {initUserSystem} from './user';
 import {initDBSystem, getStats} from '../dao/database';
 import {closeDB} from '../lib/dao/database';
 import {initFrontend} from '../webapp/frontend';
-import {initOnlineURLSystem} from '../webapp/online';
+import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from './player';
 import {initDownloader, updateBase, updateMedias} from './download';
 import {initStats} from './stats';

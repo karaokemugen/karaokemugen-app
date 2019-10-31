@@ -6,7 +6,7 @@ import logger from '../lib/utils/logger';
 import {asyncCopy, asyncRequired} from '../lib/utils/files';
 import {configureIDs, configureLocale, loadConfigFiles, setConfig, verifyConfig, getConfig, setConfigConstraints} from '../lib/utils/config';
 import {configConstraints, defaults} from './default_settings';
-import {publishURL} from '../webapp/online';
+import {publishURL} from '../services/online';
 import {playerNeedsRestart, prepareClassicPauseScreen} from '../services/player';
 import {getState, setState} from './state';
 import {setSongPoll} from '../services/poll';
@@ -66,7 +66,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			? initTwitch()
 			: stopTwitch();
 	} catch(err) {
-		logger.warn(`[Config] Could not start/stop Twitch : ${err}`);
+		logger.warn(`[Config] Could not start/stop Twitch chat bot : ${err}`);
 	}
 	// Toggling stats
 	config.Online.Stats
@@ -79,10 +79,9 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 
 /** Initializing configuration */
 export async function initConfig(argv: any) {
-	let appPath = getState().appPath;
 	setConfigConstraints(configConstraints);
 	await configureLocale();
-	await loadConfigFiles(appPath, argv.config, defaults);
+	await loadConfigFiles(getState().appPath, argv.config, defaults);
 	const binaries = await checkBinaries(getConfig());
 	setState({binPath: binaries});
 	emit('configReady');
@@ -94,9 +93,10 @@ export async function initConfig(argv: any) {
 /** Detect and set hostname and local IP */
 export function configureHost() {
 	const config = getConfig();
-	let URLPort = `:${config.Frontend.Port}`;
+	const URLPort = +config.Online.Port === 80
+		? ''
+		: `:${config.Frontend.Port}`;
 	setState({osHost: address()});
-	if (+config.Online.Port === 80) URLPort = '';
 	if (config.Online.URL) {
 		setState({osURL: `http://${config.Online.Host}`});
 	} else {
@@ -125,13 +125,12 @@ export function getPublicConfig() {
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.Database;
 	delete publicSettings.System;
-	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxxxxxxxxxxx'
+	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = '*********'
 	return publicSettings;
 }
 
 /** Check if binaries are available. Provide their paths for runtime */
 async function checkBinaries(config: Config): Promise<BinariesConfig> {
-
 	const binariesPath = configuredBinariesForSystem(config);
 	let requiredBinariesChecks = [];
 	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
@@ -199,5 +198,5 @@ function binMissing(binariesPath: any, err: string) {
 	console.log('You can download mpv for your OS from http://mpv.io/');
 	console.log('You can download postgreSQL for your OS from http://postgresql.org/');
 	console.log('You can download ffmpeg for your OS from http://ffmpeg.org');
-	if (process.platform === 'win32') console.log('If the missing file is msvcr120.dll, download Microsoft Visual C++ 2013  Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784')
+	if (process.platform === 'win32') console.log('If the missing file is msvcr120.dll, download Microsoft Visual C++ 2013 Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784')
 }
