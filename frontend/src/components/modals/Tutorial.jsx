@@ -32,8 +32,9 @@ class Tutorial extends Component {
 					content: i18nAsDiv('INTRO_ADMIN_INTRO2'),
 					styles: {
 						buttonNext: {
-							backgroundColor: 'transparent',
-							color: 'hsla(0, 100%, 100%, .5)'
+							// backgroundColor: 'transparent',
+                            // color: 'hsla(0, 100%, 100%, .5)'
+                            display: 'none'
 						}
 					},
 				}, 
@@ -106,7 +107,6 @@ class Tutorial extends Component {
 					placement: isSmall ? 'bottom' : 'right',
 					target: '#nav-login > .modal-message:not(.tour)',
 					content: i18nAsDiv('INTRO_PUBLIC_INTRO1'), 
-					tooltipClass : 'hideNext hidePrev',
 					disableOverlay: true,
 					disableBeacon: true,
 					styles: {
