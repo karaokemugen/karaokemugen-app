@@ -1,9 +1,9 @@
 import logger from '../lib/utils/logger';
 import { addPollVoteIndex } from '../services/poll';
-import tmi from 'tmi.js';
+import tmi, { Client, ChatUserstate } from 'tmi.js';
 import { getConfig } from '../lib/utils/config';
 
-let client: any;
+let client: Client;
 
 export function getTwitchClient() {
 	return client;
@@ -20,7 +20,7 @@ export async function initTwitch() {
 			},
 			channels: [conf.Karaoke.StreamerMode.Twitch.Channel]
 		};
-		client = new tmi.client(opts);
+		client = tmi.client(opts);
 		await client.connect();
 		listenVoteEvents(client);
 	} catch(err) {
@@ -29,7 +29,7 @@ export async function initTwitch() {
 }
 
 function listenVoteEvents(chat: any) {
-	chat.on('message', (target: string, context: any, msg: string, self: boolean) => {
+	chat.on('message', (target: string, context: ChatUserstate, msg: string, self: boolean) => {
 		if (self) return;
 		if (msg.startsWith('!vote ')) {
 			const choice = msg.split(' ')[1];
