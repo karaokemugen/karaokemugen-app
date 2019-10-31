@@ -107,7 +107,7 @@ export async function initDBSystem(): Promise<boolean> {
 		}, errorFunction);
 		await migrateDB();
 	} catch(err) {
-		throw `Database initialization failed. Check if a postgres binary is already running on that port and kill it? Error : ${err}`;
+		throw `Database initialization failed : ${err}`;
 	}
 	if (state.opt.reset) await resetUserData();
 	if (!state.opt.noBaseCheck) {
