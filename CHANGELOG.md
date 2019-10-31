@@ -70,6 +70,7 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 - When editing a karaoke in the system UI, tags and series are checked for differences between the old and new karaoke to avoid triggering useless refreshes.
 - Added a message in case MS Visual Studio C++ 2013 redist is not installed (Windows only) (#492)
 - Karaoke Mugen behaves better when mpv has been shutdown outside of KM (#491)
+- Added `--dumpDB` and `--restoreDB` command-line arguments.
 
 ### Fixes
 
