@@ -12,14 +12,14 @@ Options :
 --sql                           Traces SQL query at the debug log level
 --generate                      Generates a new database then quits
 --validate                      Validates kara files and modify them if needed (no generation)
---strict                        Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
+--strict                        Generation/validation only. Strict mode, returns an error if kara files had to be modified.
 --profiling                     Displays profiling information for some functions
 --test                          Launches in test mode (for running unit tests)
 --reset                         Reset user data (WARNING! Backup your base first!)
---demo                          Launches in demo mode (no admin panel, no password changes)
+--demo                          Launches in demo mode (no system panel, no password changes)
 --config file                   Specify a config file to use (default is config.yml)
 --updateBase                    Update karaoke base files
---updateMedias                  Update karaoke media files only (no kara/lyrics/series files)
+--updateMedias                  Update karaoke media files only (no other data files)
 --noBaseCheck                   Disable data file checking on startup
 --noBrowser                     Do not open a browser window upon launch
 --noMedia                       (generation only) Do not try to fetch data from media files
