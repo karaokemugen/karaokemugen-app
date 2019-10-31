@@ -32,7 +32,7 @@ const queueOptions = {
 			.then(cb(null, true))
 			.catch(cb(null, false));
 	},
-	preconditionRetryTimeout: 10*1000,
+	preconditionRetryTimeout: 10 * 1000,
 	cancelIfRunning: true
 };
 
@@ -45,12 +45,8 @@ function emitQueueStatus(status: QueueStatus) {
 function queueDownload(input: KaraDownload, done: any) {
 	logger.info(`[Download] Processing song : ${input.name}`);
 	processDownload(input)
-		.then(() => {
-			done();
-		})
-		.catch(err => {
-			done(err);
-		});
+		.then(() => done())
+		.catch(err => done(err));
 }
 
 export async function initDownloader() {
@@ -98,11 +94,11 @@ export async function startDownloads() {
 		const downloads = await selectPendingDownloads();
 		try {
 			await internet();
-			downloads.forEach((dl: KaraDownload) => q.push(dl));
+			downloads.forEach(dl => q.push(dl));
 			logger.info('[Downloader] Download queue starting up');
 			emitQueueStatus('started');
 		} catch(err) {
-			if (downloads.length > 0) logger.warn('[Downloader] There are planned downloads, but your computer seems offline');
+			if (downloads.length > 0) logger.warn('[Download] There are planned downloads, but your computer seems offline');
 			emitQueueStatus('stopped');
 		}
 	}
@@ -127,7 +123,6 @@ async function processDownload(download: KaraDownload) {
 		const tempKara = resolve(tempDir, download.urls.kara.local);
 		const tempSeriesPath = tempDir;
 		const tempTagsPath = tempDir;
-
 
 		// Check if media already exists in any media dir. If it does, do not try to redownload it.
 		let mediaAlreadyExists = false;
@@ -190,12 +185,12 @@ async function processDownload(download: KaraDownload) {
 		if (download.urls.lyrics.local !== null) await asyncMove(tempLyrics, localLyrics, {overwrite: true});
 		await asyncMove(tempKara, localKara, {overwrite: true});
 		for (const seriefile of download.urls.serie) {
-			if (typeof seriefile.local == 'string') {
+			if (typeof seriefile.local === 'string') {
 				await asyncMove(resolve(tempSeriesPath, seriefile.local), resolve(localSeriesPath, seriefile.local), {overwrite: true});
 			}
 		}
 		for (const tagfile of download.urls.tag) {
-			if (typeof tagfile.local == 'string') {
+			if (typeof tagfile.local === 'string') {
 				await asyncMove(resolve(tempTagsPath, tagfile.local), resolve(localTagsPath, tagfile.local), {overwrite: true});
 			}
 		}
@@ -369,8 +364,8 @@ export async function getDownloadBLC() {
 
 export async function addDownloadBLC(blc: KaraDownloadBLC) {
 	if (blc.type < 0 && blc.type > 1006) throw `Incorrect BLC type (${blc.type})`;
-	if ((blc.type === 1001 || blc.type < 1000) && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
-	if ((blc.type === 1002 || blc.type === 1003 || blc.type > 1004) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
+	if ((blc.type <= 1001) && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
+	if ((blc.type >= 1002) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
 	return await insertDownloadBLC(blc);
 }
 
@@ -406,14 +401,12 @@ export async function getRemoteTags(repo: string, params: TagParams): Promise<an
 }
 
 export async function updateBase(repo: string) {
-	// Another idea would be not to download songs older than the newest song in database : for example we can assume that if a user downloaded a song added on 01/02/2019, we won't download any new songs added before that date because the user already viewed songs before that date and choose not to download them
-
 	// First, make sure we wipe the download queue before updating.
 	if (!q) initQueue(false);
 	await emptyDownload();
 	logger.info('[Update] Computing songs to add/remove/update...');
 	try {
-		logger.info('[Update] Getting song inventory for local and remote');
+		logger.info('[Update] Getting local and remote song inventory');
 		const karas = await getKaraInventory(repo);
 		logger.info('[Update] Removing songs...');
 		await cleanAllKaras(repo, karas.local, karas.remote);
