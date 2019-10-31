@@ -110,7 +110,7 @@ export async function initFrontend() {
 		}
 
 		//Path to video previews
-		app.use('/medias', express.static(resolvedPathMedias()[0]));
+		resolvedPathMedias().forEach(dir => app.use('/medias', express.static(dir)));
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 
