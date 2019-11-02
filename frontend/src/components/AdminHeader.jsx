@@ -178,13 +178,31 @@ class AdminHeader extends Component {
   				/>
   			</button>
           
-
-          
-
-  			<div className="header-group switchs">
+			<div className="header-group switchs">
+  				<RadioButton
+  					title={i18next.t('SWITCH_OPTIONS')}
+					name="optionsButton"
+					orientation="vertical"
+  					buttons={[
+  						{
+  							label:i18next.t('CL_PLAYLISTS'),
+  							active:!this.props.options,
+  							onClick:this.props.setOptionMode,
+  						},
+  						{
+  							label:i18next.t('OPTIONS'),
+  							active:this.props.options,
+  							onClick:this.props.setOptionMode,
+                  
+  						}
+  					]}
+  				></RadioButton>
+  			</div>
+			<div className="header-group switchs">
   				<RadioButton
   					title={i18next.t('SWITCH_PRIVATE')}
-  					name="Karaoke.Private"
+					name="Karaoke.Private"
+					orientation="vertical"
   					buttons={[
   						{
   							label:i18next.t('PRIVATE'),
@@ -202,24 +220,7 @@ class AdminHeader extends Component {
   						}
   					]}
   				></RadioButton>
-  				<RadioButton
-  					title={i18next.t('SWITCH_OPTIONS')}
-  					name="optionsButton"
-  					buttons={[
-  						{
-  							label:i18next.t('CL_PLAYLISTS'),
-  							active:!this.props.options,
-  							onClick:this.props.setOptionMode,
-  						},
-  						{
-  							label:i18next.t('OPTIONS'),
-  							active:this.props.options,
-  							onClick:this.props.setOptionMode,
-                  
-  						}
-  					]}
-  				></RadioButton>
-  			</div>
+			</div>
   			<div className="header-group switchs">
   				<RadioButton
   					title={i18next.t('ENGINE_ADDED_SONG_VISIBILITY_ADMIN')}
@@ -243,36 +244,35 @@ class AdminHeader extends Component {
   					]}
   				></RadioButton>
   			</div>
+			<button
+				title={i18next.t('STOP_AFTER')}
+				id="stopAfter"
+				namecommand="stopAfter"
+				className="btn btn-danger-low"
+				onClick={this.putPlayerCommando}
+			>
+				<i className="fas fa-clock"></i>
+			</button>
+			<button
+				title={i18next.t('STOP_NOW')}
+				id="stopNow"
+				namecommand="stopNow"
+				className="btn btn-danger"
+				onClick={this.putPlayerCommando}
+			>
+				<i className="fas fa-stop"></i>
+			</button>
+				<button
+				title={i18next.t('REWIND')}
+				id="goTo"
+				namecommand="goTo"
+				defaultValue="0"
+				className="btn btn-dark"
+				onClick={this.putPlayerCommando}
+			>
+				<i className="fas fa-backward"></i>
+			</button>
   			<div className="header-group controls">
-  				<button
-  					title={i18next.t('STOP_AFTER')}
-  					id="stopAfter"
-  					namecommand="stopAfter"
-  					className="btn btn-danger-low"
-  					onClick={this.putPlayerCommando}
-  				>
-  					<i className="fas fa-clock"></i>
-  				</button>
-  				<button
-  					title={i18next.t('STOP_NOW')}
-  					id="stopNow"
-  					namecommand="stopNow"
-  					className="btn btn-danger"
-  					onClick={this.putPlayerCommando}
-  				>
-  					<i className="fas fa-stop"></i>
-  				</button>
-  				<button
-  					title={i18next.t('REWIND')}
-  					id="goTo"
-  					namecommand="goTo"
-  					defaultValue="0"
-  					className="btn btn-dark"
-  					onClick={this.putPlayerCommando}
-  				>
-  					<i className="fas fa-backward"></i>
-  				</button>
-
   				<button
   					title={i18next.t('PREVIOUS_SONG')}
   					id="prev"
