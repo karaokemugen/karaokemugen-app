@@ -8,7 +8,7 @@ import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
 import {previousSong, nextSong, getCurrentSong} from './playlist';
 import {promisify} from 'util';
-import { setPLCVisible } from '../dao/playlist';
+import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import { getSingleIntro } from './intros';
 
 const sleep = promisify(setTimeout);
@@ -43,6 +43,7 @@ async function playCurrentSong(now: boolean) {
 			setState({currentlyPlayingKara: kara.kid});
 			addPlayedKara(kara.kid);
 			setPLCVisible(kara.playlistcontent_id);
+			updatePlaylistDuration(kara.playlist_id),
 			updateUserQuotas(kara);
 			const conf = getConfig();
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
