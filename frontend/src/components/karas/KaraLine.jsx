@@ -247,13 +247,15 @@ class KaraLine extends Component {
   								</div> : null
   							}
   						</div>
-  						<div className="disable-select">
+  						{is_touch_device() ? null :
+						<div className="disable-select">
   							{this.karaFamilies}
   							{this.karaPlatforms}
   							{this.karaGenres}
   							{this.karaOrigins}
   							{this.karaMisc}
-  						</div>
+						</div>
+						}
   					</div>
   				</React.Fragment>
   			}
