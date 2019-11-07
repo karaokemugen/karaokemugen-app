@@ -159,7 +159,7 @@ export async function generateDB(): Promise<boolean> {
 		logger.info('[DB] Database generation completed successfully!');
 		if (modified) {
 			logger.info('[DB] Kara files have been modified during generation, re-evaluating store')
-			await compareKarasChecksum();
+			await compareKarasChecksum(true);
 		}
 		if (state.opt.generateDB) await exit(0);
 	} catch(err) {
