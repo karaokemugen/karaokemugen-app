@@ -8,8 +8,7 @@ import Autocomplete from '../generic/Autocomplete';
 import store from '../../store';
 import ReactDOM from 'react-dom';
 import FavMixModal from '../modals/FavMixModal';
-
-import styles from './PlaylistHeader.scss';
+require ('./PlaylistHeader.scss');
 
 var tagsTypesList = [
 	'DETAILS_SERIE',
@@ -38,12 +37,12 @@ class PlaylistHeader extends Component {
 	}
 
   addRandomKaras = () => {
-  	callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', function (nbOfRandoms) {
-  		axios.get(this.props.getPlaylistUrl(), { random: nbOfRandoms }).then(randomKaras => {
-  			if (randomKaras.content.length > 0) {
-  				let textContent = randomKaras.content.map(e => <React.Fragment>{buildKaraTitle(e)} <br /><br /></React.Fragment>);
+  	callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', nbOfRandoms => {
+  		axios.get(`${this.props.getPlaylistUrl()}?random=${nbOfRandoms}`).then(randomKaras => {
+  			if (randomKaras.data.data.content.length > 0) {
+  				let textContent = randomKaras.data.data.content.map(e => <React.Fragment key={e.kid}>{buildKaraTitle(e)} <br /><br /></React.Fragment>);
   				callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
-  					var karaList = randomKaras.content.map(a => {
+  					var karaList = randomKaras.data.data.content.map(a => {
   						return a.kid;
   					}).join();
   					var urlPost = this.props.getPlaylistUrl();
@@ -51,7 +50,7 @@ class PlaylistHeader extends Component {
   				}, '');
   			}
   		});
-  	}, '');
+  	}, '1');
   };
 
   addPlaylist = () => {
