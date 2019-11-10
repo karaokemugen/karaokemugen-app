@@ -14,6 +14,7 @@
 	"DETAILS_LAST_PLAYED_2": "il y a {{time}}",
 	"DETAILS_VIEWS": "Vues",
 	"DETAILS_DURATION": "Durée",
+	"DURATION_REMAINING": "restantes",
 	"DETAILS_LANGUAGE": "Langue",
 	"DETAILS_SERIE": "Série",
 	"DETAILS_SERIE_ORIG": "Série (orig.)",

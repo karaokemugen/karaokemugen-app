@@ -421,10 +421,9 @@ noRowsRenderer = () => {
           (!is_touch_device() ? ' karas' : '')
         	: '') +
         (this.state.idPlaylist > -1 && this.state.playlistInfo
-        	? ' ~ dur. ' +
+        	? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS_DURATION')} ` +
           secondsTimeSpanToHMS(this.state.playlistInfo.duration, 'hm') +
-          ' / re. ' +
-          secondsTimeSpanToHMS(this.state.playlistInfo.time_left, 'hm')
+          ` / ${secondsTimeSpanToHMS(this.state.playlistInfo.time_left, 'hm')} ${is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')} `
         	: '');
   	}
   	return plInfos;
