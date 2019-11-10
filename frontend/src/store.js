@@ -108,7 +108,7 @@ class Store extends EventEmmiter {
 		logInfos = undefined;
 		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, '$1');
-		location.reload();
+		this.emitChange('loginUpdated');
 	}
 }
 

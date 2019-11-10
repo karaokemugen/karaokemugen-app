@@ -11,6 +11,9 @@ import LoginModal from './modals/LoginModal';
 import ProgressBar from './karas/ProgressBar';
 import ReactDOM from 'react-dom';
 import store from '../store';
+import { displayMessage } from './tools';
+import i18next from 'i18next';
+
 class AdminPage extends Component {
 	constructor(props) {
 		super(props);
@@ -20,7 +23,11 @@ class AdminPage extends Component {
 			searchMenuOpen1: false,
 			searchMenuOpen2: false
 		};
-		if (!store.getLogInfos().token || store.getLogInfos().role !== 'admin') {
+		if (!store.getLogInfos() || !store.getLogInfos().token || store.getLogInfos().role !== 'admin') {
+			if (store.getLogInfos() && store.getLogInfos().token && store.getLogInfos().role !== 'admin') {
+				displayMessage('warning', i18next.t('ADMIN_PLEASE'));
+			}
+			store.logOut();
 			this.openLoginOrProfileModal();
 		} else if (this.props.settings.config.Online.Stats === undefined) {
 			ReactDOM.render(<OnlineStatsModal />, document.getElementById('modal'));
@@ -46,7 +53,7 @@ class AdminPage extends Component {
   };
 
   openLoginOrProfileModal = () => {
-  	if (store.getLogInfos().token) {
+  	if (store.getLogInfos() && store.getLogInfos().token) {
   		ReactDOM.render(<ProfilModal 
   			settingsOnline={this.props.settings.config.Online}
   		/>, document.getElementById('modal'));

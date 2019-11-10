@@ -157,7 +157,7 @@ noRowsRenderer = () => {
   };
 
   updateQuotaAvailable = data => {
-  	if (store.getLogInfos().username === data.username) {
+  	if (store.getLogInfos() && store.getLogInfos().username === data.username) {
   		var quotaString = '';
   		if (data.quotaType == 1) {
   			quotaString = data.quotaLeft;

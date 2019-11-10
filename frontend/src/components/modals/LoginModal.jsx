@@ -51,6 +51,7 @@ class LoginModal extends Component {
     	ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
     	if (this.props.scope === 'admin' && response.role !== 'admin') {
     		displayMessage('warning', i18next.t('ADMIN_PLEASE'));
+    		store.logOut();
     	}
     	store.setLogInfos(response);
     	displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
