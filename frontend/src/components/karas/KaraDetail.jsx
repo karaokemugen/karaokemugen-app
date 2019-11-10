@@ -191,6 +191,7 @@ class KaraDetail extends Component {
         playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
   		var beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
   		var details = {
+  			DETAILS_TITLE: data.title,
   			UPVOTE_NUMBER: data.upvotes,
   			DETAILS_ADDED:
           (data.created_at
