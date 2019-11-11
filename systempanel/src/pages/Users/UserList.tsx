@@ -107,13 +107,13 @@ class UserList extends Component<UserListProps, UserListState> {
 		title: 'Username',
 		dataIndex: 'login',
 		key: 'login',
-		render: (text, record) => <Link to={`/system/km/users/${record.user_id}`}>{text}</Link>,
+		render: (text, record) => <Link to={`/system/km/users/${record.login}`}>{text}</Link>,
 		sorter: (a, b) => a.login.localeCompare(b.login)
 	}, {
 		title: 'Nickname',
 		dataIndex: 'nickname',
 		key: 'nickname',
-		render: (text, record) => <Link to={`/system/km/users/${record.user_id}`}>{text}</Link>,
+		render: (text, record) => <Link to={`/system/km/users/${record.login}`}>{text}</Link>,
 		sorter: (a, b) => a.nickname.localeCompare(b.nickname)
 	}, {
 		title: 'Last seen on',
