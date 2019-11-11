@@ -24,7 +24,8 @@ class Playlist extends Component {
 			searchCriteria: undefined,
 			playlistCommands: false,
 			getPlaylistInProgress: false,
-			searchType: undefined
+			searchType: undefined,
+			stopUpdate: false
 		};
 	}
 
@@ -153,7 +154,7 @@ noRowsRenderer = () => {
 }
 
   playlistContentsUpdated = idPlaylist => {
-  	if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylist();
+  	if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) this.getPlaylist();
   };
 
   updateQuotaAvailable = data => {
@@ -387,7 +388,7 @@ noRowsRenderer = () => {
   };
 
   playingUpdate = data => {
-  	if (this.state.idPlaylist === data.playlist_id) {
+  	if (this.state.idPlaylist === data.playlist_id && !this.stopUpdate) {
   		var playlistData = this.state.data;
   		playlistData.content.forEach((kara, index) => {
   			if (kara.flag_playing) {
@@ -595,12 +596,16 @@ noRowsRenderer = () => {
   			);
   		}
   		data.content = karas;
-  		this.setState({data:data, scrollToIndex: oldIndex});
+  		this.setState({data:data, scrollToIndex: oldIndex, stopUpdate: false});
   	}
   }
   
   clearScrollToIndex = () => {
   	this.setState({ scrollToIndex: -1 });
+  }
+
+  stopUpdate = () => {
+	  this.setState({stopUpdate : true});
   }
   
   render() {
@@ -675,6 +680,7 @@ noRowsRenderer = () => {
   															noRowsRenderer={this.noRowsRenderer}
   															height={height}
   															width={width}
+															onSortStart={this.stopUpdate}
   															onSortEnd={this.sortRow}
   															onScroll={this.clearScrollToIndex}
   															scrollToIndex={this.state.scrollToIndex}
