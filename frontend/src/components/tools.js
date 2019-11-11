@@ -128,15 +128,12 @@ export function buildKaraTitle(data) {
 	if (data.langs && isMulti) {
 		data.langs = [isMulti];
 	}
-	var limit = is_touch_device() ? 25 : 50;
 	var serieText = data.serie ? data.serie : (data.singers ? data.singers.map(e => e.name).join(', ') : '');
-	serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
-	var titleTest = data.title.length <= limit ? data.title : data.title.substring(0, limit) + '…';
 	var titleArray = [
 		data.langs ? data.langs.map(e => e.name).join(', ').toUpperCase() : '',
 		serieText,
 		data.songtypes ? (data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name) + (data.songorder > 0 ? ' ' + data.songorder : '') : '',
-		titleTest
+		data.title
 	];
 	var titleClean = titleArray.map(function (e, k) {
 		return titleArray[k] ? titleArray[k] : '';

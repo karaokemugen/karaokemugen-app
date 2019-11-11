@@ -233,8 +233,6 @@ class KaraLine extends Component {
   									{kara.upvotes}<i className="fas fa-heart"></i>
   								</div> : null
   							}
-  						</div>
-  						<div className="disable-select">
   							{this.karaFamilies}
   							{this.karaPlatforms}
   							{this.karaGenres}

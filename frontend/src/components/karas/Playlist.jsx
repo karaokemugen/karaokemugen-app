@@ -381,9 +381,9 @@ noRowsRenderer = () => {
   		data.i18n = Object.assign(data.i18n, karas.i18n);
   	} else {
   		data = karas;
-  	}
-  	this.setState({ data: data, getPlaylistInProgress: false, scrollToIndex: indexToGo });
+	  }
   	_cache.clearAll();
+  	this.setState({ data: data, getPlaylistInProgress: false, scrollToIndex: indexToGo });
   };
 
   playingUpdate = data => {
