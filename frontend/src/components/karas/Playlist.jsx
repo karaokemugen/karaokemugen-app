@@ -116,7 +116,7 @@ loadMoreRows = async ({startIndex, stopIndex}) => {
 		var data = this.state.data;
 		data.infos.from = toLoad;
 		await this.setState({data: data, getPlaylistInProgress: true});
-		this.getPlaylist(undefined, stopIndex);
+		this.getPlaylist();
 	}
 }
 
@@ -316,8 +316,7 @@ noRowsRenderer = () => {
   	this.playlistDidUpdate();
   }
 
-  getPlaylist = async (searchType, stopIndex) => {
-  	var indexToGo = stopIndex;
+  getPlaylist = async (searchType) => {
   	var data = {getPlaylistInProgress: true};
   	if (searchType) {
   		data.searchType = searchType;
@@ -352,10 +351,9 @@ noRowsRenderer = () => {
   	var response = await axios.get(url);
   	var karas = response.data.data;
   	if (this.state.idPlaylist > 0) {
-  		karas.content.forEach((kara, index) => {
+  		karas.content.forEach((kara) => {
   			if (kara.flag_playing) {
   				store.setPosPlaying(kara.pos);
-  				indexToGo = index;
   				if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
   					this.props.updateKidPlaying(kara.kid);
   				}
@@ -384,7 +382,7 @@ noRowsRenderer = () => {
   		data = karas;
 	  }
   	_cache.clearAll();
-  	this.setState({ data: data, getPlaylistInProgress: false, scrollToIndex: indexToGo });
+  	this.setState({ data: data, getPlaylistInProgress: false });
   };
 
   playingUpdate = data => {
