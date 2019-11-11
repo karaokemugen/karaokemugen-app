@@ -9,7 +9,8 @@ class KaraDetail extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			showLyrics: false
+			showLyrics: false,
+			isFavorite: false
 		};
 		this.fullLyricsRef = React.createRef();
 		this.getKaraDetail();
@@ -44,7 +45,10 @@ class KaraDetail extends Component {
   		'/api/public/karas/' + (kid ? kid : this.props.kid);
   	var response = await axios.get(urlInfoKara);
   	const kara = response.data.data;
-  	this.setState({ kara: kara });
+	  this.setState({
+  		kara: kara,
+  		isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
+  	});
   };
 
   getLastPlayed = (lastPlayed_at, lastPlayed) => {
@@ -176,6 +180,13 @@ class KaraDetail extends Component {
   	ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
   }
 
+  makeFavorite = () => {
+  	this.state.isFavorite ?
+  		axios.delete('/api/public/favorites', { data: { 'kid': [this.props.kid] } }) :
+  		axios.post('/api/public/favorites', { 'kid': [this.props.kid] });
+  	this.setState({ isFavorite: !this.state.isFavorite });
+  };
+
   /**
    * Build kara details depending on the data
    * @param {Object} data - data from the kara
@@ -243,8 +254,8 @@ class KaraDetail extends Component {
   			<button
   				type="button"
   				title={i18next.t('TOOLTIP_FAV')}
-  				onClick={this.props.makeFavorite}
-  				className={(this.props.isFavorite ? 'currentFav' : '') + ' makeFav btn btn-action'}
+  				onClick={this.makeFavorite}
+  				className={(this.state.isFavorite ? 'currentFav' : '') + ' makeFav btn btn-action'}
   			><i className="fas fa-star"></i></button>
   		);
 
@@ -289,8 +300,7 @@ class KaraDetail extends Component {
   									className="closeParent btn btn-action"
   									onClick={this.props.toggleKaraDetail}
   								><i className="fas fa-times"></i></button>
-  								{(this.props.scope === 'public' && !is_touch_device()) ||
-                    store.getLogInfos().role === 'guest'
+  								{store.getLogInfos().role === 'guest'
   									? null
   									: makeFavButton}
   								{data.subfile ? (

@@ -16,7 +16,6 @@ class KaraLine extends Component {
 		super(props);
 		this.state = {
 			displayedKaraDetail: false,
-			isFavorite: this.props.kara.flag_favorites || this.props.idPlaylist === -5,
 			isLike: this.props.kara.flag_upvoted,
 			startSwipeX: 0,
 			addKaraInProgress: false
@@ -43,18 +42,13 @@ class KaraLine extends Component {
   		ReactDOM.render(<KaraDetail kid={this.props.kara.kid} playlistcontentId={this.props.kara.playlistcontent_id} scope={this.props.scope} 
   			idPlaylist={this.props.idPlaylist} mode='list' toggleKaraDetail={this.toggleKaraDetail}
   			publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
-  			makeFavorite={this.makeFavorite} isFavorite={this.state.isFavorite} showVideo={this.props.showVideo}
-  			navigatorLanguage={this.props.navigatorLanguage} freeKara={this.freeKara}></KaraDetail>, document.getElementById('modal'));
+  			showVideo={this.props.showVideo} navigatorLanguage={this.props.navigatorLanguage} freeKara={this.freeKara}>
+			  </KaraDetail>, document.getElementById('modal'));
   	}
   	this.setState({ displayedKaraDetail: !this.state.displayedKaraDetail });
   };
 
-  makeFavorite = () => {
-  	this.state.isFavorite ?
-  		axios.delete('/api/public/favorites', { data: { 'kid': [this.props.kara.kid] } }) :
-  		axios.post('/api/public/favorites', { 'kid': [this.props.kara.kid] });
-  	this.setState({ isFavorite: !this.state.isFavorite });
-  };
+
 
   getTagInLocale = tag => {
   	if (this.props.i18nTag && this.props.i18nTag[tag.tid]) {
@@ -216,13 +210,6 @@ class KaraLine extends Component {
   						>
   							<i className="fas fa-info-circle"></i>
   						</button> : null}
-  						{scope === 'public' && logInfos.role !== 'guest' ?
-  							<button title={i18next.t('TOOLTIP_FAV')} onClick={this.makeFavorite}
-  								className={'makeFav btn-sm btn btn-action '
-                    + (is_touch_device() ? 'mobile' : '')
-                    + (kara.flag_favorites || idPlaylist === -5 ? ' currentFav' : '')}>
-  								<i className="fas fa-star"></i>
-  							</button> : null}
   						{scope === 'admin' && idPlaylist > 0 ? <button title={i18next.t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara"
   							onClick={this.playKara}><i className="fas fa-play"></i></button> : null}
   						{scope === 'admin' && idPlaylist > 0 && !kara.flag_visible && this.props.playlistInfo 
