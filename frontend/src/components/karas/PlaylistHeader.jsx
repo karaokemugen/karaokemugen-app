@@ -379,7 +379,7 @@ class PlaylistHeader extends Component {
 
   				</div> : null
   			}
-  			{this.props.side === 1 && this.props.searchMenuOpen ?
+  			{this.props.searchMenuOpen ?
   				searchMenu : null
   			}
   		</React.Fragment >
