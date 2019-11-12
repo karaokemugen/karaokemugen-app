@@ -15,6 +15,7 @@ require('./Playlist.scss');
 
 const chunksize = 400;
 const _cache = new CellMeasurerCache({ defaultHeight: 50, fixedWidth: true });
+let timer;
 
 class Playlist extends Component {
 	constructor(props) {
@@ -111,12 +112,12 @@ isRowLoaded = ({index}) => {
 }
 
 loadMoreRows = async ({startIndex, stopIndex}) => {
-	var toLoad = Math.floor(stopIndex/chunksize)*chunksize;
-	if (!this.state.getPlaylistInProgress && toLoad !== this.state.data.infos.from) {
+	if (!this.state.getPlaylistInProgress) {
 		var data = this.state.data;
-		data.infos.from = toLoad;
-		await this.setState({data: data, getPlaylistInProgress: true});
-		this.getPlaylist();
+		data.infos.from = Math.floor(stopIndex/chunksize)*chunksize;
+		await this.setState({data: data});
+		if (timer) clearTimeout(timer);
+		timer = setTimeout(this.getPlaylist, 1000);
 	}
 }
 
