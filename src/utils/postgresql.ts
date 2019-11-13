@@ -23,8 +23,7 @@ export async function killPG() {
 	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 	if (state.os === 'win32') binPath = `"${binPath}"`;
 	return await execa(binPath, ['-D', pgDataDir, '-w', 'stop'], {
-		cwd: state.binPath.postgres,
-		windowsVerbatimArguments: state.os === 'win32'
+		cwd: state.binPath.postgres
 	});
 }
 
@@ -53,8 +52,7 @@ export async function dumpPG() {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
-			cwd: resolve(state.appPath, state.binPath.postgres),
-			windowsVerbatimArguments: state.os === 'win32'
+			cwd: resolve(state.appPath, state.binPath.postgres)
 		});
 		logger.info('[DB] Database dumped to file');
 	} catch(err) {
@@ -72,8 +70,7 @@ export async function restorePG() {
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
-			stdio: 'inherit',
-			windowsVerbatimArguments: state.os === 'win32'
+			stdio: 'inherit'
 		});
 		logger.info('[DB] Database restored from file');
 	} catch(err) {
@@ -93,8 +90,7 @@ export async function initPGData() {
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
-			stdio: 'inherit',
-			windowsVerbatimArguments: state.os === 'win32'
+			stdio: 'inherit'
 		});
 	} catch(err) {
 		logger.error(`[DB] Failed to initialize database : ${JSON.stringify(err, null, 2)}`);
@@ -131,8 +127,7 @@ export async function checkPG() {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
-			cwd: resolve(state.appPath, state.binPath.postgres),
-			windowsVerbatimArguments: state.os === 'win32'
+			cwd: resolve(state.appPath, state.binPath.postgres)
 		});
 		return true;
 	} catch(err) {
@@ -162,14 +157,10 @@ export async function initPG() {
 	try {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
-			stdin: 'ignore',
-			stdout: 'ignore',
-			stderr: 'inherit',
-			windowsVerbatimArguments: state.os === 'win32'
+			stdin: 'ignore'
 		});
 	} catch(err) {
 		logger.error(`[DB] Failed to start PostgreSQL : ${JSON.stringify(err, null, 2)}`);
-
 		throw err.message;
 	}
 }
