@@ -26,7 +26,8 @@ class Playlist extends Component {
 			playlistCommands: false,
 			getPlaylistInProgress: false,
 			searchType: undefined,
-			stopUpdate: false
+			stopUpdate: false,
+			forceUpdate: false
 		};
 	}
 
@@ -377,7 +378,8 @@ noRowsRenderer = () => {
   		data = karas;
 	  }
   	_cache.clearAll();
-  	this.setState({ data: data, getPlaylistInProgress: false });
+	  this.setState({ data: data, getPlaylistInProgress: false });
+	  this.playlistForceRefresh();
   };
 
   playingUpdate = data => {
@@ -450,7 +452,8 @@ noRowsRenderer = () => {
   	this.state.data.content.forEach(kara => {
 		  if(kara) kara.checked = !kara.checked;
   	});
-  	this.setState({ data: data });
+	  this.setState({ data: data });
+	  this.playlistForceRefresh();
   };
 
   checkKara = id => {
@@ -464,7 +467,8 @@ noRowsRenderer = () => {
   			kara.checked = !kara.checked;
   		}
   	});
-  	this.setState({ data: data });
+	  this.setState({ data: data });
+	  this.playlistForceRefresh();
   };
 
   addAllKaras = async () => {
@@ -602,6 +606,10 @@ noRowsRenderer = () => {
   stopUpdate = () => {
 	  this.setState({stopUpdate : true});
   }
+
+  playlistForceRefresh = () => {
+	  this.setState({forceUpdate: !this.state.forceUpdate});
+  }
   
   render() {
   	return this.props.scope === 'public' &&
@@ -663,6 +671,7 @@ noRowsRenderer = () => {
   												<AutoSizer>
   													{({ height, width }) => (
   														<this.SortableList
+														  {...[this.state.playlistCommands, this.state.forceUpdate]}
   															pressDelay={0}
   															helperClass="playlist-dragged-item"
   															useDragHandle={true}
@@ -675,7 +684,7 @@ noRowsRenderer = () => {
   															noRowsRenderer={this.noRowsRenderer}
   															height={height}
   															width={width}
-															onSortStart={this.stopUpdate}
+  															onSortStart={this.stopUpdate}
   															onSortEnd={this.sortRow}
   															onScroll={this.clearScrollToIndex}
   															scrollToIndex={this.state.scrollToIndex}
