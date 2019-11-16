@@ -157,7 +157,7 @@ export async function initPG() {
 	try {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
-			stdin: 'ignore'
+			stdio: 'ignore'
 		});
 	} catch(err) {
 		logger.error(`[DB] Failed to start PostgreSQL : ${JSON.stringify(err, null, 2)}`);
