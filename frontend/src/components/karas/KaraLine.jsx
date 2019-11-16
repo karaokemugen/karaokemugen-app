@@ -175,6 +175,26 @@ class KaraLine extends Component {
 
   karaTitle = buildKaraTitle(this.props.kara);
 
+  getLangs(data) {
+  	var isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
+  	if (data.langs && isMulti) {
+  		data.langs = [isMulti];
+  	}
+  	return data.langs.map(e => e.name).join(', ').toUpperCase();
+  }
+
+  getSerieOrSingers(data) {
+  	return data.serie ? data.serie : data.singers.map(e => e.name).join(', ');
+  }
+
+  getSongtype(data) {
+	  return data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name + (data.songorder > 0 ? ' ' + data.songorder : '');
+  }
+
+  karaLangs = this.getLangs(this.props.kara);
+  karaSerieOrSingers = this.getSerieOrSingers(this.props.kara);
+  karaSongType = this.getSongtype(this.props.kara);
+
   render() {
   	var logInfos = store.getLogInfos();
   	var kara = this.props.kara;
@@ -225,21 +245,49 @@ class KaraLine extends Component {
   							<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action deleteKara"
   								onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
   					</div>
-  					<div className="contentDiv" onClick={is_touch_device() ? this.toggleKaraDetail : null}>
-  						<div className="disable-select">
-  							{this.karaTitle}
-  							{kara.upvotes ?
-  								<div className="tag likeCount" title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
-  									{kara.upvotes}<i className="fas fa-heart"></i>
-  								</div> : null
-  							}
-  							{this.karaFamilies}
-  							{this.karaPlatforms}
-  							{this.karaGenres}
-  							{this.karaOrigins}
-  							{this.karaMisc}
+  					{is_touch_device() ?
+  						<div className="contentDiv contentDivMobile" onClick={this.toggleKaraDetail}>
+  							<div className="disable-select contentDivMobileTop">
+							  	<div className="contentDivMobileFirstColumn">
+  									<div>{this.karaLangs}</div>
+  									<div>{this.karaSongType}</div>
+  								</div>
+  								<div>
+  									<div className="contentDivMobileSerie">{this.karaSerieOrSingers}</div>
+									  <div className="contentDivMobileTitle">{kara.title}</div>
+  								</div>
+  								{kara.upvotes ?
+  									<div className="tag likeCount" title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
+  										{kara.upvotes}<i className="fas fa-heart"></i>
+  									</div> : null
+  								}
+  							</div>
+  							<div className="disable-select">
+  								<div>
+  									{this.karaFamilies}
+  									{this.karaPlatforms}
+  									{this.karaGenres}
+  									{this.karaOrigins}
+  									{this.karaMisc}
+  								</div>
+  							</div>
+  						</div> :
+  						<div className="contentDiv">
+  							<div className="disable-select">
+  								{this.karaTitle}
+  								{kara.upvotes ?
+  									<div className="tag likeCount" title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
+  										{kara.upvotes}<i className="fas fa-heart"></i>
+  									</div> : null
+  								}
+  								{this.karaFamilies}
+  								{this.karaPlatforms}
+  								{this.karaGenres}
+  								{this.karaOrigins}
+  								{this.karaMisc}
+  							</div>
   						</div>
-  					</div>
+  				}
   				</React.Fragment>
   			}
   		</div>);

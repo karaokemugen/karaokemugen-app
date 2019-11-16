@@ -293,6 +293,44 @@ button.closeParent.bottom  {
 	display: flex;
 	flex-wrap: wrap;
 }
+
+.list-group-item > .contentDivMobile {
+	flex-direction: column;
+}
+
+.list-group-item > .contentDivMobile > div {
+	display: flex;
+}
+
+.list-group-item > .contentDivMobile > div > div > div{
+	margin-left: 2px;
+	margin-bottom: 2px;
+	padding: 0 5px;
+}
+
+.contentDivMobileFirstColumn {
+	margin-right: 20px;
+}
+
+.contentDivMobileFirstColumn > div {
+	color: #aaa;
+	background-color: #212831;
+	text-align: center;
+	font-weight: bold;
+}
+
+.contentDivMobileSerie {
+	font-weight: bold;
+}
+
+.contentDivMobileTitle {
+	font-style: italic;
+}
+
+.contentDivMobileTop {
+	margin-bottom: 5px;
+}
+
 .list-group-item > .contentDiv > *{
 	flex-grow: 1;
 }
