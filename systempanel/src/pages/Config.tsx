@@ -43,6 +43,11 @@ class Config extends Component<ConfigProps, ConfigState> {
 	};
 
 	saveSetting(record, value) {
+		if (value === 'true') {
+			value = true;
+		} else if (value === 'false') {
+			value = false;
+		}
 		axios.put('/api/system/config', {
 			setting: this.expand(record.key, value)
 		})
