@@ -311,12 +311,6 @@ noRowsRenderer = () => {
   	this.getPlaylist();
   }
 
-  // combined call to force a full refresh of the playlist Panel
-  playlistForceRefresh = () => {
-  	this.playlistWillUpdate();
-  	this.playlistDidUpdate();
-  }
-
   getPlaylist = async (searchType) => {
   	var data = {getPlaylistInProgress: true};
   	if (searchType) {
@@ -453,7 +447,9 @@ noRowsRenderer = () => {
 
   selectAllKaras = () => {
   	var data = this.state.data;
-  	this.state.data.content.forEach(kara => kara.checked = !kara.checked);
+  	this.state.data.content.forEach(kara => {
+		  if(kara) kara.checked = !kara.checked;
+  	});
   	this.setState({ data: data });
   };
 
@@ -525,7 +521,7 @@ noRowsRenderer = () => {
   	var url;
   	var data;
   	if (this.state.idPlaylist > 0) {
-  		var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => String(a.playlistcontent_id)).join();
+  		var idKaraPlaylist = this.state.data.content.filter(a => a && a.checked).map(a => String(a.playlistcontent_id)).join();
   		url = '/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/';
   		data = { plc_id: idKaraPlaylist };
   	} else if (this.state.idPlaylist == -3) {
