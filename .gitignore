@@ -35,6 +35,7 @@ systempanel/node_modules
 systempanel/coverage
 systempanel/build
 react_client
+react_systempanel/
 
 # Frontend
 .cache/
