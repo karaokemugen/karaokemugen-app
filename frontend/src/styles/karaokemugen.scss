@@ -596,10 +596,6 @@ input[type=range]:focus::-ms-fill-upper {
     width: 100%;
     flex: 0 0 auto;
 }
-.plDashboard .plSearch {
-	z-index:10;
-}
-
 .selectPlaylist {
 	background-color: #343434;
 	padding: 6px 12px;
@@ -612,6 +608,8 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 .plDashboard .plSearch {
+	min-width: 100px;
+	z-index:10;
     flex: 2;
 	float: right;
 	order: 1;

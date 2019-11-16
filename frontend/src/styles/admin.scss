@@ -195,18 +195,6 @@
 		padding-top: 3px;
 	}
 
-	@media (max-width: 1520px) {	
-		#panel2 .plSearch {
-			order: 5;
-		}
-	}
-
-	@media (max-width: 1380px) {	
-		#panel2 .flagsContainer {
-			order: 4;
-		}
-	}
-
 	@media (max-width: 900px) {	
 		.plDashboard .plSearch {
 			flex-basis : 30%;
