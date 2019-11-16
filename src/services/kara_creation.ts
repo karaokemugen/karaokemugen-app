@@ -66,7 +66,11 @@ export async function editKara(kara: Kara) {
 			// Remove karav3 file
 			const karaV3File = karaFile.replace('\\karaokes\\','\\karas\\').replace('/karaokes/','/karas/').replace('.json','');
 			logger.info(`[KaraGen] Removing ${karaV3File}`);
-			await asyncUnlink(karaV3File);
+			try {
+				await asyncUnlink(karaV3File);
+			} catch(err) {
+				logger.warn('[KaraGen] Could not remove karaV3 file. Non fatal, continuing...');
+			}
 		}
 		if (newKara.data.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
 			const oldSubFile = await resolveFileInDirs(oldKara.subfile, resolvedPathSubs());
