@@ -137,7 +137,7 @@ async function next() {
 		if (conf.Karaoke.ClassicMode) {
 			await prepareClassicPauseScreen();
 			stopPlayer(true);
-			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+			if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
 				// Recheck if classic mode is still enabled after the sleep timer. If it's disabled now, do not play song.
 				if (getState().status === 'stop' && getConfig().Karaoke.ClassicMode) await playPlayer(true);
