@@ -33,7 +33,11 @@ class AdminMessageModal extends Component {
     			<div className="modal-dialog modal-md">
     				<div className="modal-content">
     					<ul className="modal-header">
-    						<label className="modal-title">{i18next.t('ESSENTIAL_MESSAGE')}</label>
+    						<h4 className="modal-title">{i18next.t('ESSENTIAL_MESSAGE')}</h4>
+    						<button className="closeModal btn btn-action" 
+    							onClick={() => ReactDOM.unmountComponentAtNode(document.getElementById('modal'))}>
+    							<i className="fas fa-times"></i>
+    						</button>
     					</ul>
     					<div className="modal-body">
     						<select className="form-control" name="destination" onChange={(e => this.setState({destination: e.target.value}))}>
