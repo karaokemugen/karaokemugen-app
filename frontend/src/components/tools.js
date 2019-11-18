@@ -47,7 +47,7 @@ export function eraseCookie(name) {
 };
 
 export function is_touch_device() {
-	if (!navigator.userAgent.includes('mobi')) return false;
+	if (!navigator.userAgent.toLowerCase().includes('mobi')) return false;
 
 	var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
 	var mq = function (query) {
