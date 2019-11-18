@@ -52,7 +52,12 @@ class Playlist extends Component {
 			if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylistInfo();
 		});
 		getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
-		store.addChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
+		store.addChangeListener('playlistContentsUpdated', (idPlaylist) => {
+			var data = this.state.data;
+			data.infos.from = 0;
+			this.setState({data: data});
+			this.playlistContentsUpdated(idPlaylist);
+		});
 		store.addChangeListener('loginUpdated', this.initCall);
 	}
 
@@ -329,7 +334,7 @@ noRowsRenderer = () => {
       '?filter=' +
       store.getFilterValue(this.props.side) +
       '&from=' +
-      (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 && store.getFilterValue(this.props.side) === '' ? this.state.data.infos.from : 0) +
+      (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 ? this.state.data.infos.from : 0) +
       '&size=' + chunksize;
   	if(this.state.searchType) {
   		let searchCriteria = this.state.searchCriteria ?
