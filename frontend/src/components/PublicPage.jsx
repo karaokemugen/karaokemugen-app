@@ -129,7 +129,7 @@ class PublicPage extends Component {
   render() {
   	var logInfos = store.getLogInfos();
   	return (
-  		<div id="publicPage" className="kmapp--wrapper">
+  		<div id="publicPage">
   			{this.props.settings.config.Frontend.Mode === 0 ? (
   				<center
   					style={{

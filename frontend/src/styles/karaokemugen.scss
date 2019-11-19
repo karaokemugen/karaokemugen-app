@@ -1186,3 +1186,74 @@ input[type="text"]:focus, input[type="password"]:focus {
 	width: 40px !important;
 	background-color: #1E2124
 }
+
+
+
+.fixed-action-btn.right {
+	bottom: 12px;
+	left: auto;
+	right: 12px;
+	position: absolute;
+	padding-top: 15px;
+	z-index: 9876;
+}
+.fixed-action-btn.right2 {
+	bottom: calc(12px + 60px + 12px);
+}
+.fixed-action-btn.right.top {
+	bottom: auto;
+	top: 12px;
+}
+
+.btn-floating.btn-large {
+	font-size: 23px;
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	transition: .3s;
+	cursor: pointer;
+	vertical-align: middle;
+	display: inline-block;
+	color: #fff;
+	position: relative;
+	overflow: hidden;
+	z-index: 1;
+	line-height: 40px;
+	padding: 0;
+	background-color: #546e7a;
+	text-align: center;
+}
+.btn-large > i {
+	line-height: 60px;
+	font-weight: 30px;
+	text-align: center;
+}
+.fixed-action-btn ul {
+	left: 0;
+	right: 0;
+	text-align: center;
+	position: absolute;
+	bottom: 64px;
+	margin: 0;
+	transition: all .5s ease;
+
+	max-height: calc(100vh - 120px);
+	max-width: calc(100vw - 50px);
+	display: flex;
+	flex-wrap: wrap-reverse;
+	flex-direction: column;
+}
+
+.fixed-action-btn ul li {
+	margin-bottom: 7px;
+	list-style-type: none;
+}
+.fixed-action-btn ul {
+	padding-left: 0px;
+}
+.fixed-action-btn ul li a {
+	transform: scaleY(0.9) scaleX(0.9) translateY(0px) translateX(0px);
+}
+.z-depth-3 {
+	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+}
