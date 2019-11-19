@@ -321,7 +321,7 @@ noRowsRenderer = () => {
   	var data = {getPlaylistInProgress: true};
   	if (searchType) {
   		data.searchType = searchType;
-  	} else {
+  	} else if (this.state.data && this.state.data.infos && this.state.data.infos.from == 0) {
   		data.searchType = undefined;
   	}
   	var url = this.getPlaylistUrl();
