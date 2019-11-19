@@ -17,7 +17,8 @@ class WelcomePage extends Component {
 			news: [],
 			open: false,
 			sessions: [],
-			activeSession: ''
+			activeSession: '',
+			logInfos : {}
 		};
 		if (!store.getLogInfos().token) {
 			this.openLoginOrProfileModal();
@@ -29,6 +30,16 @@ class WelcomePage extends Component {
 		this.getNewsFeed();
 		this.getSessions();
 		this.checkAppUpdates();
+		this.setLogInfos();
+		store.addChangeListener('loginUpdated', this.setLogInfos);
+	}
+
+	setLogInfos = () => {
+		this.setState({logInfos: store.getLogInfos()});
+	}
+
+	componentWillUnmount() {
+    	store.removeChangeListener('loginUpdated', this.setLogInfos);
 	}
 
 	async checkAppUpdates() {
@@ -180,7 +191,7 @@ class WelcomePage extends Component {
   		this.state.sessions.forEach(session => {
   			sessions.push({ label: session.name, value: session.name });
   		});
-  	}
+	  }
   	return (
   		<div id="welcomePage">
   			{this.state.latestVersion ? (
@@ -239,7 +250,7 @@ class WelcomePage extends Component {
   						<i className="fas fa-user" />&nbsp;
   						<span>
   							{logInfos.token
-  								? logInfos.username
+  								? decodeURIComponent(logInfos.username)
   								: i18next.t('NOT_LOGGED')}
   						</span>
   					</a>

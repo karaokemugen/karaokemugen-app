@@ -63,9 +63,7 @@ class App extends Component {
 		getSocket().on('settingsUpdated', this.getSettings);
 		getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
 		getSocket().on('disconnect', () => this.setState({ shutdownPopup: true }));
-		if (this.state.settings.config.Frontend.Mode !== 0 && axios.defaults.headers.common['authorization']) {
-			this.addTags();
-		}
+		this.addTags();
 		if (this.state.admpwd && this.state.settings.config.App.FirstRun && window.location.pathname === '/admin') {
 			startIntro('admin');
 		}
@@ -73,8 +71,10 @@ class App extends Component {
 	}
 
     addTags = async () => {
-    	const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
-    	this.setState({ tags: tags.concat(series, years) });
+    	if (this.state.settings.config.Frontend.Mode !== 0 && axios.defaults.headers.common['authorization']) {
+    		const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
+    		this.setState({ tags: tags.concat(series, years) });
+    	}
     }
 
     componentWillUnmount() {

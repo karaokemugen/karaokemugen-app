@@ -87,7 +87,7 @@ class Store extends EventEmmiter {
 	}
 
 	setLogInfos(data) {
-		let logInfos = parseJwt(data.token);
+		logInfos = parseJwt(data.token);
 		createCookie('mugenToken', data.token, -1);
 		if (data.onlineToken) {
 			createCookie('mugenTokenOnline', data.onlineToken, -1);
@@ -99,19 +99,17 @@ class Store extends EventEmmiter {
 		logInfos.onlineToken = data.onlineToken;
 		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, '$1');
-		this.emitChange('loginUpdated');
+		store.emitChange('loginUpdated');
 	}
 
 	logOut() {
 		eraseCookie('mugenToken');
 		eraseCookie('mugenTokenOnline');
-		logInfos = undefined;
+		logInfos = {};
 		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, '$1');
-		this.emitChange('loginUpdated');
+		store.emitChange('loginUpdated');
 	}
 }
-
 const store = new Store();
-
 export default store;
