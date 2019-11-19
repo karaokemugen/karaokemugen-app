@@ -2418,10 +2418,10 @@ keyv@^3.0.0:
   dependencies:
     json-buffer "3.0.0"
 
-kfn-to-ass@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/kfn-to-ass/-/kfn-to-ass-1.0.7.tgz#8a8926637fe5452f166db2826d4046d86e287606"
-  integrity sha512-PrN2X4chlriBRYoCUCY1yCmNQoT77xjjglApBNgiK+cN3K+luKVwqh2q5N4O9ArwyfWDjJZzxcYc6mVBUfjYPQ==
+kfn-to-ass@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/kfn-to-ass/-/kfn-to-ass-1.0.8.tgz#500d8ef43e189e4485b55f5900f4c4bca8dbcc3f"
+  integrity sha512-iGF+utL1Ct9fFQmB6vOSQj2FmEH6iTuLbmVe35mK1i5MmepG3Px8BnDM8x2U1fkxsgCHlTmxf5bYi/w33WEHBQ==
   dependencies:
     ass-stringify "^0.1.3"
     commander "^3.0.1"
