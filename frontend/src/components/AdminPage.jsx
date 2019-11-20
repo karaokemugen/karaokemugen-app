@@ -14,6 +14,7 @@ import store from '../store';
 import { displayMessage, is_touch_device, getSocket } from './tools';
 import i18next from 'i18next';
 import AdminMessageModal from './modals/AdminMessageModal';
+import axios from 'axios';
 
 class AdminPage extends Component {
 	constructor(props) {
