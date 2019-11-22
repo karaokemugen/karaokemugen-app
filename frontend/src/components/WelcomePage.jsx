@@ -100,7 +100,7 @@ class WelcomePage extends Component {
   	var base = data[0];
   	var appli = data[1];
   	var mast = data[2];
-  	var news = data[2].body;
+  	var news = [];
   	if (base.body && appli.body) {
   		base.body = JSON.parse(base.body);
   		appli.body = JSON.parse(appli.body);
