@@ -15,7 +15,6 @@ class PlaylistMainDecorator extends Component {
   handleSwipe = e => {
   	if (this.state.currentSide==1 && e.changedTouches[0].clientX < this.state.startSwipeX - 100) {
   		this.setState({currentSide:2});
-  		store.getTuto() && console.log(store.getTuto(), store.getTuto().getStepLabel());
   		if(store.getTuto() && store.getTuto().getStepLabel() === 'change_screen') {
   			store.getTuto().move(1);
   		}

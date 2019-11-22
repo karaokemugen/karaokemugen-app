@@ -288,10 +288,6 @@ class Tutorial extends Component {
           
     	if (typeof joyride.callback === 'function') {
     		joyride.callback(data);
-    	} else {
-    		console.group(type);
-    		console.log(data); //eslint-disable-line no-console
-    		console.groupEnd();
     	}
     };
     
@@ -310,7 +306,6 @@ class Tutorial extends Component {
     render() {
     	const { run, stepIndex, steps } = this.state;
     	// more css details on https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js
-    	console.log(run, stepIndex, steps );
     	return (<div>
     		<ReactJoyride
     			continuous
