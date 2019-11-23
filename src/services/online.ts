@@ -3,6 +3,7 @@ import {configureHost} from '../utils/config';
 import got from 'got';
 import logger from '../lib/utils/logger';
 import { getState } from '../utils/state';
+import { getInstanceID } from '../lib/dao/database';
 
 /** Send IP to KM Server's URL shortener */
 export async function publishURL() {
@@ -14,7 +15,7 @@ export async function publishURL() {
 			body: {
 				localIP: localHost,
 				localPort: conf.Frontend.Port,
-				IID: conf.App.InstanceID
+				IID: await getInstanceID(),
 			},
 			form: true
 		});

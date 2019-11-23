@@ -9,11 +9,11 @@ import {join} from 'path';
 import {isShutdownPG, initPG} from '../utils/postgresql';
 import { baseChecksum } from './dataStore';
 import { DBStats } from '../types/database/database';
-import { getSettings, saveSetting, connectDB, db, vacuum } from '../lib/dao/database';
+import { getSettings, saveSetting, connectDB, db, vacuum, getInstanceID, setInstanceID } from '../lib/dao/database';
 import { generateBlacklist } from '../services/blacklist';
+import uuidV4 from 'uuid/v4';
 
 const sql = require('./sql/database');
-
 
 export async function compareKarasChecksum(silent?: boolean): Promise<boolean> {
 	logger.info('[Store] Comparing files and database data');
@@ -108,6 +108,11 @@ export async function initDBSystem(): Promise<boolean> {
 		await migrateDB();
 	} catch(err) {
 		throw `Database initialization failed : ${err}`;
+	}
+	if (!await getInstanceID()) {
+		conf.App.InstanceID
+			? setInstanceID(conf.App.InstanceID)
+			: setInstanceID(uuidV4());
 	}
 	if (state.opt.reset) await resetUserData();
 	if (!state.opt.noBaseCheck) {

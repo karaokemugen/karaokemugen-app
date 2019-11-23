@@ -2,8 +2,6 @@
 App:
   # FirstRun is set to false after user completed the tutorial. Reset it to true to generate a new admin password
   FirstRun: true
-  # Instance ID (uuid)
-  InstanceID: Change me
   # JWT secret used to salt passwords (uuid)
   JwtSecret: Change me
 

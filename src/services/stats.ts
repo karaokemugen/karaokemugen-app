@@ -10,6 +10,7 @@ import { asyncWriteFile } from '../lib/utils/files';
 import {resolve} from 'path';
 import cloneDeep from 'lodash.clonedeep';
 import { getSessions } from './session';
+import { getInstanceID } from '../lib/dao/database';
 
 let intervalID: any;
 
@@ -85,7 +86,7 @@ async function buildInstanceStats() {
 	disks.forEach(d => { total_disk_size += d.size});
 	return {
 		config: {...conf},
-		instance_id: conf.App.InstanceID,
+		instance_id: await getInstanceID(),
 		version: state.version.number,
 		locale: state.EngineDefaultLocale,
 		screens: gfx.displays.length,

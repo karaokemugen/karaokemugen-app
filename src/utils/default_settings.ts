@@ -11,7 +11,6 @@ import { bools } from '../lib/utils/constants';
 export const defaults: Config = {
 	App: {
 		FirstRun: true,
-		InstanceID: 'Change me',
 		JwtSecret: 'Change me'
 	},
 	Database: {

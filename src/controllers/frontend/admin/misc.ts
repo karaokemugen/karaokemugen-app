@@ -55,7 +55,6 @@ export default function adminMiscController(router: Router) {
  *	"config": {
  *	 App: {
  *		FirstRun: true,
- *		InstanceID: 'Change me',
  *		JwtSecret: 'Change me'
  *	},
  *	Database: {
