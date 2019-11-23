@@ -72,7 +72,7 @@ export async function editKara(kara: Kara) {
 				logger.warn('[KaraGen] Could not remove karaV3 file. Non fatal, continuing...');
 			}
 		}
-		if (newKara.data.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
+		if (newKara.data.subfile && oldKara.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
 			const oldSubFile = await resolveFileInDirs(oldKara.subfile, resolvedPathSubs());
 			if (await asyncExists(oldSubFile)) {
 				logger.info(`[KaraGen] Removing ${oldSubFile}`);
