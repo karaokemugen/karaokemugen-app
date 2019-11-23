@@ -85,8 +85,22 @@ export async function postToDownloadQueue(repo = 'kara.moe', downloads) {
 	}
 }
 
+// DOWNLOAD ALL karas
+export async function postAllToDownloadQueue(repo = 'kara.moe') {
+	try {
+		const data = {
+			repository: repo
+		};
+		const res = await axios.post('/api/system/downloads/all', data);
+		return res.data;
+	} catch (e) {
+		console.log('Error from /api/local.js:downloadAllToDownloadQueue');
+		throw e;
+	}
+}
+
 // UPDATE ALL karas
-export async function updateAllToDownloadQueue(repo = 'kara.moe') {
+export async function postUpdateToDownloadQueue(repo = 'kara.moe') {
 	try {
 		const data = {
 			repository: repo

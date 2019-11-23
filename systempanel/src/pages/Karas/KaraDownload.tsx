@@ -4,7 +4,16 @@ import {connect} from 'react-redux';
 import {Row, Col, Icon, Layout, Table, Input, Button, Cascader} from 'antd';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import openSocket from 'socket.io-client';
-import { getLocalKaras, deleteDownloadQueue, deleteKAraFromDownloadQueue, postToDownloadQueue, putToDownloadQueueStart, putToDownloadQueuePause, updateAllToDownloadQueue } from '../../api/local';
+import {
+  getLocalKaras,
+  deleteDownloadQueue,
+  deleteKAraFromDownloadQueue,
+  postToDownloadQueue,
+  putToDownloadQueueStart,
+  putToDownloadQueuePause,
+  postAllToDownloadQueue,
+  postUpdateToDownloadQueue
+} from "../../api/local";
 import {ReduxMappedProps} from '../../react-app-env';
 import {getCriterasByValue} from './_blc_criterias_types';
 import getTags from '../../api/getTags';
@@ -352,14 +361,19 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 							<Col span={5}>
 								<Cascader style={{ width: '90%' }} options={this.FilterTagCascaderOption()} showSearch={{filter:this.FilterTagCascaderFilter,matchInputWidth:false}} onChange={this.handleFilterTagSelection.bind(this)} placeholder="Tag filter" />
 							</Col>
-							<Col>
-								<Button type="primary" key="queueUpdateAll" onClick={() => updateAllToDownloadQueue()}>Update all</Button>
+						</Row>
+						<Row type="flex" justify="space-between">
+							<Col style={{ paddingTop: '20px'}}>
+								<Button type="primary" key="queueDownloadAll" onClick={() => postAllToDownloadQueue()}>Download all</Button>
 								&nbsp;
-								<Button type="primary" key="queueDelete" onClick={deleteDownloadQueue}>Cleanup</Button>
+								<Button type="primary" key="queueUpdateAll" onClick={() => postUpdateToDownloadQueue()}>Update all</Button>
+							</Col>
+							<Col style={{ paddingTop: '20px'}}>
+								<Button type="primary" key="queueDelete" onClick={deleteDownloadQueue}>Wipe download queue</Button>
 								&nbsp;
-								<Button type="primary" key="queueStart" onClick={putToDownloadQueueStart}>Start</Button>
+								<Button type="primary" key="queueStart" onClick={putToDownloadQueueStart}>Start download queue</Button>
 								&nbsp;
-								<Button type="primary" key="queuePause" onClick={putToDownloadQueuePause}>Pause</Button>
+								<Button type="primary" key="queuePause" onClick={putToDownloadQueuePause}>Pause download queue</Button>
 							</Col>
 						</Row>
 					</Layout.Header>
