@@ -181,17 +181,37 @@ async function processDownload(download: KaraDownload) {
 
 		await downloadFiles(download, list);
 		// Delete files if they're already present
-		if (!mediaAlreadyExists) await asyncMove(tempMedia, localMedia, {overwrite: true});
-		if (download.urls.lyrics.local !== null) await asyncMove(tempLyrics, localLyrics, {overwrite: true});
-		await asyncMove(tempKara, localKara, {overwrite: true});
+		try {
+			if (!mediaAlreadyExists) await asyncMove(tempMedia, localMedia, {overwrite: true});
+		} catch(err) {
+			logger.error(`[Debug] Unable to move ${tempMedia} to ${localMedia}`);
+		}
+		try {
+			if (download.urls.lyrics.local !== null) await asyncMove(tempLyrics, localLyrics, {overwrite: true});
+		} catch(err) {
+			logger.error(`[Debug] Unable to move ${tempLyrics} to ${localLyrics}`);
+		}
+		try {
+			await asyncMove(tempKara, localKara, {overwrite: true});
+		} catch(err) {
+			logger.error(`[Debug] Unable to move ${tempKara} to ${localKara}`);
+		}
 		for (const seriefile of download.urls.serie) {
 			if (typeof seriefile.local === 'string') {
-				await asyncMove(resolve(tempSeriesPath, seriefile.local), resolve(localSeriesPath, seriefile.local), {overwrite: true});
+				try {
+					await asyncMove(resolve(tempSeriesPath, seriefile.local), resolve(localSeriesPath, seriefile.local), {overwrite: true});
+				} catch(err) {
+					logger.error(`[Debug] Unable to move ${resolve(tempSeriesPath, seriefile.local)} to ${resolve(localSeriesPath, seriefile.local)}`);
+				}
 			}
 		}
 		for (const tagfile of download.urls.tag) {
 			if (typeof tagfile.local === 'string') {
-				await asyncMove(resolve(tempTagsPath, tagfile.local), resolve(localTagsPath, tagfile.local), {overwrite: true});
+				try {
+					await asyncMove(resolve(tempTagsPath, tagfile.local), resolve(localTagsPath, tagfile.local), {overwrite: true});
+				} catch(err) {
+					logger.error(`[Debug] Unable to move ${resolve(tempTagsPath, tagfile.local)} to ${resolve(localTagsPath, tagfile.local)}`);
+				}
 			}
 		}
 		logger.info(`[Download] Finished downloading item "${download.name}"`);
