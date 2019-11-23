@@ -587,10 +587,14 @@ export async function restartmpv() {
 
 export async function quitmpv() {
 	logger.debug('[Player] Quitting mpv');
-	await player.quit();
-	// Destroy mpv instance.
-	if (playerMonitor) await playerMonitor.quit();
-	playerState.ready = false;
+	try {
+		await player.quit();
+		if (playerMonitor) await playerMonitor.quit();
+		playerState.ready = false;
+	} catch(err) {
+		//Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
+		logger.warn(`[Player] Failed to quit mpv : ${err}`);
+	}
 }
 
 export async function playMedia(mediaType: 'sponsor' | 'jingle' | 'intro') {
