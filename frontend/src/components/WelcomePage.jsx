@@ -61,11 +61,11 @@ class WelcomePage extends Component {
 
   getSessions = async () => {
   	if (store.getLogInfos().role === 'admin') {
-  		const res = await axios.get('/api/admin/sessions');
+		  const res = await axios.get('/api/admin/sessions');
   		this.setState({
   			sessions: res.data.data,
   			activeSession: res.data.data.filter(value => value.active)[0].name
-  		});
+		  });
   	}
   };
 
@@ -100,7 +100,7 @@ class WelcomePage extends Component {
   	var base = data[0];
   	var appli = data[1];
   	var mast = data[2];
-  	var news = data[2].body;
+  	var news = [];
   	if (base.body && appli.body) {
   		base.body = JSON.parse(base.body);
   		appli.body = JSON.parse(appli.body);
@@ -223,7 +223,7 @@ class WelcomePage extends Component {
   				</div>
   			) : null}
   			<div className="menu-top">
-  				{logInfos.role === 'admin' ? (
+  				{logInfos.role === 'admin' && sessions.length > 0 ? (
   					<div className="menu-top-left">
   						<label className="menu-top-sessions-label">{i18next.t('ACTIVE_SESSION')}&nbsp;</label>
   						<Autocomplete
