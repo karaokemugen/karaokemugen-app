@@ -1,11 +1,10 @@
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove,  asyncCopyAlt} from './lib/utils/files';
-import {getConfig} from './lib/utils/config';
+import {getConfig, setConfig} from './lib/utils/config';
 import {initConfig} from './utils/config';
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './args';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
-import {createServer} from 'net';
 import logger, { configureLogger } from './lib/utils/logger';
 import minimist from 'minimist';
 import {exit, initEngine} from './services/engine';
@@ -14,6 +13,7 @@ import chalk from 'chalk';
 import {createInterface} from 'readline';
 import { setState, getState } from './utils/state';
 import { version } from './version';
+import { getPortPromise } from 'portfinder';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -153,16 +153,17 @@ async function checkPaths(config: Config) {
 	logger.debug('[Launcher] Directory checks complete');
 }
 
-function verifyOpenPort(port: number) {
-	const server = createServer();
-	server.once('error', err => {
-		if (err) {
-			logger.error(`[Launcher] Port ${port} is already in use.`);
-			console.log('\nIf another Karaoke Mugen instance is running, please kill it (process name is "node" or "KaraokeMugen")');
-			console.log('Then restart the app.');
-			process.exit(1);
+async function verifyOpenPort(portConfig: number) {
+	try {
+		const port = await getPortPromise({
+			port: portConfig,
+			stopPort: 7331
+		});
+		if (port !== portConfig) {
+			logger.warn(`[Launcher] Port ${portConfig} is already in use. Switching to ${port} and saving configuration`);
+			setConfig({Frontend: {Port: port}});
 		}
-	});
-	server.once('listening', () => server.close());
-	server.listen(port);
+	} catch(err) {
+		throw 'Failed to find a free port to use';
+	}
 }
