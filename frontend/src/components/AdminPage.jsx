@@ -3,7 +3,6 @@ import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
 import PlaylistMainDecorator from './decorators/PlaylistMainDecorator';
 import KmAppBodyDecorator from './decorators/KmAppBodyDecorator';
 import Playlist from './karas/Playlist';
-import OnlineStatsModal from './modals/OnlineStatsModal';
 import AdminHeader from './AdminHeader';
 import Options from './options/Options';
 import ProfilModal from './modals/ProfilModal';
@@ -33,8 +32,6 @@ class AdminPage extends Component {
 			}
 			store.logOut();
 			this.openLoginOrProfileModal();
-		} else if (this.props.settings.config.Online.Stats === undefined) {
-			ReactDOM.render(<OnlineStatsModal />, document.getElementById('modal'));
 		}
 	}
 

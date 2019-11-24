@@ -8,6 +8,7 @@ import Autocomplete from './generic/Autocomplete';
 import { expand } from './tools';
 import ReactDOM from 'react-dom';
 import store from '../store';
+import OnlineStatsModal from './modals/OnlineStatsModal';
 require ('../styles/welcome/WelcomePage.scss');
 require('../styles/welcome/updateBanner.scss');
 class WelcomePage extends Component {
@@ -22,6 +23,8 @@ class WelcomePage extends Component {
 		};
 		if (!store.getLogInfos().token) {
 			this.openLoginOrProfileModal();
+		} else if (this.props.settings.config.Online.Stats === undefined) {
+			ReactDOM.render(<OnlineStatsModal />, document.getElementById('modal'));
 		}
 	}
 
