@@ -34,5 +34,8 @@
 		top: 0;
 		width: 100%;
 		font-weight: 600;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 }
