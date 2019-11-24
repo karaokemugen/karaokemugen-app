@@ -87,28 +87,26 @@ class ProgressBar extends Component {
     			this.setState({width: 0});
     		}
 
-    		if (data.currentlyPlaying !== this.state.oldState.currentlyPlaying) {
-    			if (data.currentlyPlaying === null) {
-    				this.setState({karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1});
-    			} else if (data.currentlyPlaying === -1) {
-    				this.setState({karaInfoText: i18next.t('JINGLE_TIME'), length: -1});
-    			} else if (data.currentlyPlaying === -2) {
-    				this.setState({karaInfoText: i18next.t('INTRO_TIME'), length: -1});
-    			} else if (data.currentlyPlaying === -3) {
-    				this.setState({karaInfoText: i18next.t('SPONSOR_TIME'), length: -1});
+    		if (data.currentlyPlaying === null) {
+    			this.setState({karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1});
+    		} else if (data.currentlyPlaying === -1) {
+    			this.setState({karaInfoText: i18next.t('JINGLE_TIME'), length: -1});
+    		} else if (data.currentlyPlaying === -2) {
+    			this.setState({karaInfoText: i18next.t('INTRO_TIME'), length: -1});
+    		} else if (data.currentlyPlaying === -3) {
+    			this.setState({karaInfoText: i18next.t('SPONSOR_TIME'), length: -1});
+    		} else {
+    			var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
+    			var kara = response.data.data;
+    			var karaInfoText;
+    			if (this.props.lyrics || (this.props.scope === 'public' && this.props.webappMode == 1)) {
+    				var text = data.subText;
+    				if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
+    				karaInfoText = text;
     			} else {
-    				var response = await axios.get('/api/public/karas/' + data.currentlyPlaying);
-    				var kara = response.data.data;
-    				var karaInfoText;
-    				if (this.props.lyrics || (this.props.scope === 'public' && this.props.webappMode == 1)) {
-    					var text = data.subText;
-    					if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
-    					karaInfoText = text;
-    				} else {
-    					karaInfoText = buildKaraTitle(kara);
-    				}
-    				this.setState({karaInfoText: karaInfoText, length: kara.duration});
+    				karaInfoText = buildKaraTitle(kara);
     			}
+    			this.setState({karaInfoText: karaInfoText, length: kara.duration});
     		}
     		this.setState({oldState: data});
     	}
