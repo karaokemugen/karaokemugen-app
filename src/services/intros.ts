@@ -11,7 +11,7 @@ let allIntros: Media[];
 
 export async function updateIntros() {
 	try {
-		const localDirs = await gitUpdate(resolve(resolvedPathIntros()[0], 'KaraokeMugen/'), 'https://lab.shelter.moe/karaokemugen/intros.git', 'Intros', getConfig().System.Path.Intros);
+	const localDirs = await gitUpdate(resolve(resolvedPathIntros()[0], 'KaraokeMugen/'), 'https://lab.shelter.moe/karaokemugen/medias/intros.git', 'Intros', getConfig().System.Path.Intros);
 		if (localDirs) editSetting({System: {Path: {Intros: localDirs}}});
 	} catch(err) {
 		logger.warn(`[Jingles] Error updating jingles : ${err}`);

@@ -13,7 +13,7 @@ let currentSeries = {};
 
 export async function updateJingles() {
 	try {
-		const localDirs = await gitUpdate(resolve(resolvedPathJingles()[0], 'KaraokeMugen/'), 'https://lab.shelter.moe/karaokemugen/jingles.git', 'Jingles', getConfig().System.Path.Jingles);
+	const localDirs = await gitUpdate(resolve(resolvedPathJingles()[0], 'KaraokeMugen/'), 'https://lab.shelter.moe/karaokemugen/medias/jingles.git', 'Jingles', getConfig().System.Path.Jingles);
 		if (localDirs) editSetting({System: {Path: {Jingles: localDirs}}});
 	} catch(err) {
 		logger.warn(`[Jingles] Error updating jingles : ${err}`);
