@@ -490,7 +490,7 @@ export async function downloadAllKaras(repo: string, local?: KaraList, remote?: 
 	for (const blc of blcs) {
 		let filterFunction: Function;
 		if (blc.type === 0) filterFunction = filterTagName;
-		if (blc.type >= 2 && blc.type <= 9) filterFunction = filterTagID;
+		if (blc.type >= 2 && blc.type < 1000) filterFunction = filterTagID;
 		if (blc.type === 1000) filterFunction = filterSeriesName;
 		if (blc.type === 1001) filterFunction = filterKID;
 		if (blc.type === 1002) filterFunction = filterDurationLonger;
