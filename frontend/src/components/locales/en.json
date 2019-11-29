@@ -335,7 +335,7 @@
 	"FORGOT_PASSWORD_SUCCESS": "An email has been sent with a link to reset your password.",
 	"FORGOT_PASSWORD_ERROR": "Could not reset your password: contact the the server's administrator your account belongs to.",
     "INTRO_ADMIN_INTRO1": "Welcome to Karaoke Mugen!<br/><br/>Before we begin, write down the <b>admin</b> account password somewhere: <br/>{{password}}<br/><br/>This account can't be deleted and will allow you to login in case there's a problem with the account we are going to create next.<br/>",
-	"INTRO_ADMIN_INTRO2": "Karaoke Mugen uses an account system to manage and participate in your karaoke session.<br/><br/>Enter a user name and a password.<br/><br/>You can modify your nickname later (but not your user name!)<br/><br/>Click on continue.",
+	"INTRO_ADMIN_INTRO2": "Karaoke Mugen uses an account system to manage and participate in your karaoke session.<br/><br/>Enter a user name and a password.<br/>The security code is visible in Karaoke Mugen console.<br /><br/>You can modify your nickname later (but not your user name!)<br/><br/>Click on continue.",
 	"INTRO_ADMIN_INTRO3": "Welcome {{username}}!<br /><br />Your Karaoke Mugen is configured, we are now going to show you how it works.<br/><br/>To redo this configuration, set the <i>App : FirstRun</i> setting to true in your config.yml file, in the same folder as the Karaoke Mugen executable.",
 	"INTRO_ADMIN_PLAYLISTS": "Here are your playlists. You can manage them from this screen. We will learn more on them later.",
 	"INTRO_ADMIN_LECTEUR": "Here is the control panel.<br/>You can manage your karaoke as you wish.<br />We have selected 5 random songs from your collection to have a playlist ready to play. Press <i class='fas fa-play'></i> Play to test it out.",
