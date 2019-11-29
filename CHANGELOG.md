@@ -1,6 +1,6 @@
 # Versions
 
-## v3.0.0 "Leafa Lumineuse" - 15/11/2019
+## v3.0.0 "Leafa Lumineuse" - 29/11/2019
 
 This is a VERY MAJOR release.
 
