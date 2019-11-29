@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Saturn"
+    },
+    "name": "Saturn",
+    "tid": "e6778c89-1d6b-455e-bd53-37a3b12b7140",
+    "types": [
+      "platforms"
+    ],
+    "short": "SAT"
+  }
+}

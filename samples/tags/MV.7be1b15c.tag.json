@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Music/Video"
+    },
+    "name": "MV",
+    "tid": "7be1b15c-cff8-4b37-a649-5c90f3d569a9",
+    "types": [
+      "songtypes"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "John Loeffler"
+    },
+    "name": "John Loeffler",
+    "tid": "8c03deb2-503d-4c95-b6ae-3199751dbb46",
+    "types": [
+      "songwriters"
+    ]
+  }
+}

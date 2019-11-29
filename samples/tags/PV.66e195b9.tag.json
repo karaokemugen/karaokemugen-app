@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Promotional Video",
+      "fre": "Vidéo Promotionnelle"
+    },
+    "name": "PV",
+    "tid": "66e195b9-64ea-432d-a917-2e2c88d26052",
+    "types": [
+      "songtypes"
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+.loginLayout {
+  height: 100%;
+  overflow: auto;
+  padding: 10px;
+  align-items: center;
+}
+
+.loginAppName {
+  font-family: '07NikumaruFont';
+  font-size: 40px;
+  color: #26aacc;
+  text-shadow: 0px 0px 10px rgba(38,170,204, 0.7);
+}
+
+.loginForm {
+  width: 400px;
+}
+
+.loginImageContainer {
+  min-width: 400px;
+  max-width: 750px;
+}
+
+.loginImage {
+  width: 100%;
+}
+
+.loginIconColor {
+  color: rgba(255,255,2550,.25)
+}
+
+.loginFormButton {
+  width: 100%;
+}
+
+.pageLayout {
+  height: 100%;
+  overflow: auto;
+}
+
+.menuItemInactive {
+  pointer-events:none;
+}

@@ -1,0 +1,69 @@
+{
+  "header": {
+    "version": 4,
+    "description": "Karaoke Mugen Karaoke Data File"
+  },
+  "medias": [
+    {
+      "version": "Default",
+      "filename": "JPN - Top wo Nerae 2! Diebuster - ED - Hoshikuzu Namida.mp4",
+      "audiogain": 0.13,
+      "filesize": 8423762,
+      "duration": 133,
+      "default": true,
+      "lyrics": [
+        {
+          "filename": "JPN - Top wo Nerae 2! Diebuster - ED - Hoshikuzu Namida.ass",
+          "default": true,
+          "version": "Default",
+          "subchecksum": "38755a372f60800b114e94376c9d5721"
+        }
+      ]
+    }
+  ],
+  "data": {
+    "created_at": "Wed Oct 11 2017 19:03:09 GMT+0200 (GMT+02:00)",
+    "kid": "2581dec1-4f92-4f5a-a3ec-71dd6874b990",
+    "modified_at": "Mon Aug 05 2019 01:15:53 GMT+0200 (GMT+02:00)",
+    "repository": "kara.moe",
+    "sids": [
+      "72320fe0-6871-495f-ba2e-a491fbe11bce"
+    ],
+    "tags": {
+      "authors": [
+        "8c22c899-b3ed-42da-a548-ce00f950798b",
+        "a5dbab74-510b-48c5-9cea-5a537a81c974"
+      ],
+      "creators": [
+        "dd729cab-2a78-4282-a402-b242e927a0a5"
+      ],
+      "families": [
+        "0377db02-3af6-43b8-9b08-c759df3d25c3"
+      ],
+      "genres": [
+        "f60ba57d-5ef4-49e0-b93b-d0dcbcff6592"
+      ],
+      "groups": [
+        "3c14c864-533c-49e6-a3cc-6969f1233775"
+      ],
+      "langs": [
+        "4dcf9614-7914-42aa-99f4-dbce2e059133"
+      ],
+      "origins": [
+        "938de218-5343-4865-94d3-fb33f2eaa152"
+      ],
+      "singers": [
+        "eca408a2-003f-4918-b22a-32d9248098bb"
+      ],
+      "songtypes": [
+        "38c77c56-2b95-4040-b676-0994a8cb0597"
+      ],
+      "songwriters": [
+        "eca408a2-003f-4918-b22a-32d9248098bb",
+        "6096a886-a68e-4960-900e-1d00eeaa387c"
+      ]
+    },
+    "title": "Hoshikuzu Namida",
+    "year": 2004
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "2000s"
+    },
+    "name": "2000s",
+    "tid": "3c14c864-533c-49e6-a3cc-6969f1233775",
+    "types": [
+      "groups"
+    ]
+  }
+}

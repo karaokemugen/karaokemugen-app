@@ -1,0 +1,196 @@
+import {buildTypeClauses, langSelector, buildClauses, db, transaction} from '../lib/dao/database';
+import {getConfig} from '../lib/utils/config';
+import { getState } from '../utils/state';
+import {pg as yesql} from 'yesql';
+import {now} from '../lib/utils/date';
+import { Kara, KaraParams } from '../lib/types/kara';
+import { Role, User } from '../lib/types/user';
+import {PLC} from '../types/playlist';
+import { DBYear, DBKaraHistory } from '../types/database/kara';
+import { getUser } from './user';
+import { DBKara, DBKaraBase } from '../lib/types/database/kara';
+
+const sql = require('./sql/kara');
+
+export async function getSongCountForUser(playlist_id: number, username: string): Promise<number> {
+	const res = await db().query(sql.getSongCountPerUser, [playlist_id, username]);
+	return res.rows[0].count;
+}
+
+
+export async function getYears(): Promise<DBYear[]> {
+	const res = await db().query(sql.getYears);
+	return res.rows;
+}
+
+export async function updateKara(kara: Kara) {
+	await db().query(yesql(sql.updateKara)({
+		karafile: kara.karafile,
+		mediafile: kara.mediafile,
+		subfile: kara.subfile,
+		title: kara.title,
+		year: kara.year,
+		songorder: kara.order || null,
+		duration: kara.mediaduration,
+		gain: kara.mediagain,
+		modified_at: kara.modified_at,
+		kid: kara.kid
+	}));
+}
+
+export async function addKara(kara: Kara) {
+	await db().query(yesql(sql.insertKara)({
+		karafile: kara.karafile,
+		mediafile: kara.mediafile,
+		subfile: kara.subfile,
+		title: kara.title,
+		year: kara.year,
+		songorder: kara.order || null,
+		duration: kara.mediaduration,
+		gain: kara.mediagain,
+		modified_at: kara.modified_at,
+		created_at: kara.created_at,
+		kid: kara.kid,
+		//Default for now.
+		repo: 'kara.moe'
+	}));
+}
+
+export async function getSongTimeSpentForUser(playlist_id: number, username: string): Promise<number> {
+	const res = await db().query(sql.getTimeSpentPerUser,[
+		playlist_id,
+		username
+	]);
+	return res.rows[0].time_spent;
+}
+
+export async function getKara(kid: string, username: string, lang: string, role: Role): Promise<DBKara> {
+	const res = await selectAllKaras({
+		username: username,
+		filter: null,
+		lang: lang,
+		mode: 'kid',
+		modeValue: kid,
+		admin: role === 'admin'
+	 });
+	return res[0];
+}
+
+
+export async function deleteKara(kid: string) {
+	await db().query(sql.deleteKara, [kid]);
+}
+
+export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
+	let filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
+	let typeClauses = params.mode ? buildTypeClauses(params.mode, params.modeValue) : '';
+	// Hide blacklisted songs if not admin
+	if (!params.admin) typeClauses = `${typeClauses} AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)`;
+	let orderClauses = '';
+	let limitClause = '';
+	let offsetClause = '';
+	let havingClause = '';
+	let groupClause = '';
+	// Search mode to filter karas played or requested in a particular session
+	if (params.mode === 'sessionPlayed') {
+		orderClauses = groupClause = 'p.played_at, ';
+		typeClauses = `AND p.fk_seid = '${params.modeValue}'`;
+	}
+	if (params.mode === 'sessionRequested') {
+		orderClauses = groupClause = 'rq.requested_at, ';
+		typeClauses = `AND rq.fk_seid = '${params.modeValue}'`;
+	}
+	if (params.mode === 'recent') orderClauses = 'created_at DESC, ';
+	if (params.mode === 'requested') {
+		orderClauses = 'requested DESC, ';
+		havingClause = 'HAVING COUNT(rq.*) > 1';
+	}
+	if (params.mode === 'played') {
+		orderClauses = 'played DESC, ';
+		havingClause = 'HAVING COUNT(p.*) > 1';
+	}
+	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
+	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
+	// If we're asking for random songs, here we modify the query to get them.
+	if (params.random > 0) {
+		orderClauses = `RANDOM(), ${orderClauses}`;
+		limitClause = `LIMIT ${params.random}`;
+		typeClauses = `${typeClauses} AND ak.kid NOT IN (
+			SELECT pc.fk_kid
+			FROM playlist_content pc
+			WHERE pc.fk_id_playlist = ${getState().modePlaylistID}
+		)`;
+	}
+	let user: User = {};
+	let userMode = -1;
+	let userLangs = {main: null, fallback: null};
+	if (params.username) user = await getUser(params.username);
+	if (user) {
+		userMode = user.series_lang_mode;
+		userLangs = {main: user.main_series_lang, fallback: user.fallback_series_lang};
+	}
+	const query = sql.getAllKaras(filterClauses.sql, langSelector(params.lang, userMode, userLangs), typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause);
+	const queryParams = {
+		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
+		username: params.username,
+		...filterClauses.params
+	};
+	const res = await db().query(yesql(query)(queryParams));
+	return res.rows;
+}
+
+export async function getKaraHistory(): Promise<DBKaraHistory[]> {
+	const res = await db().query(sql.getKaraHistory);
+	return res.rows;
+}
+
+export async function updateFreeOrphanedSongs(expireTime: number) {
+	return await db().query(sql.updateFreeOrphanedSongs, [new Date(expireTime * 1000)]);
+}
+
+export async function getKaraMini(kid: string): Promise<DBKaraBase> {
+	const res = await db().query(sql.getKaraMini, [kid]);
+	return res.rows[0];
+}
+
+export async function addPlayed(kid: string) {
+	return await db().query(yesql(sql.addViewcount)({
+		kid: kid,
+		played_at: new Date(),
+		seid: getState().currentSessionID
+	}));
+}
+
+export async function addKaraToRequests(username: string, karaList: string[]) {
+	const karas = karaList.map(kara => ([
+		username,
+		kara,
+		new Date(),
+		getState().currentSessionID
+	]));
+	return await transaction([{params: karas, sql: sql.addRequested}]);
+}
+
+export async function selectAllKIDs(): Promise<string[]> {
+	const res = await db().query(sql.selectAllKIDs);
+	return res.rows.map((k: Kara) => k.kid);
+}
+
+export async function addKaraToPlaylist(karaList: PLC[]) {
+	const karas: any[] = karaList.map(kara => ([
+		kara.playlist_id,
+		kara.username,
+		kara.nickname,
+		kara.kid,
+		kara.created_at,
+		kara.pos,
+		false,
+		false,
+		kara.flag_visible
+	]));
+	return await transaction([{params: karas, sql: sql.addKaraToPlaylist}]);
+}
+
+export async function removeKaraFromPlaylist(karas: number[], playlist_id: number) {
+	return await db().query(sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')), [playlist_id]);
+}

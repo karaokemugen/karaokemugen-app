@@ -1,0 +1,1 @@
+ALTER TABLE download_blacklist_criteria DROP COLUMN uniquevalue;

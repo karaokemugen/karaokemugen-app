@@ -4,7 +4,7 @@
 .vscode
 node_modules
 app/
-package-lock.json
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -27,9 +27,22 @@ bin/
 logs/
 updater/
 mpv.log
+karaokemugen.pgdump
+karaokemugen.sql
 
-# Client react
-react_systempanel/node_modules
-react_systempanel/coverage
-react_systempanel/build
+# System panel
+systempanel/node_modules
+systempanel/coverage
+systempanel/build
 react_client
+react_systempanel/
+
+# Frontend
+.cache/
+frontend/build/
+
+# sessions export
+*.played.csv
+*.playedCount.csv
+*.requested.csv
+*.requestedCount.csv

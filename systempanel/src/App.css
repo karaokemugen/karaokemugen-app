@@ -1,0 +1,77 @@
+/* @import '~antd/dist/antd.less'; */
+
+/* Add font used by KaraokeMugen logo */
+@font-face {
+  font-family: "07NikumaruFont";
+  src: url("./assets/07NikumaruFont.woff") format("woff");
+}
+
+#root {
+  height: 100%;
+}
+
+.dynamic-delete-button {
+  cursor: pointer;
+  position: relative;
+  top: 4px;
+  font-size: 24px;
+  color: #999;
+  transition: all .3s;
+}
+.dynamic-delete-button:hover {
+  color: #777;
+}
+.dynamic-delete-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ant-layout-header {
+  padding: 0;
+}
+
+.ant-layout-content .ant-layout-header {
+	height: auto;
+	line-height: normal;
+	padding: 1em;
+}
+
+.UI-notification-loading .ant-spin-nested-loading {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(255,255,255,0.5);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-form-item {
+  text-align: left;
+}
+
+.UI-notification-loading .ant-spin-container {
+  display: none;
+}
+
+select {
+  display: inline-block;
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  outline: none;
+  padding: 4px 5px 5px;
+}
+
+
+.ant-pagination-item-active a {
+    color: #888 !important;
+}
+.ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open, .ant-menu-submenu-active {
+    color: #5582bb;
+}

@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Yukinojô Mori"
+    },
+    "name": "Yukinojô Mori",
+    "tid": "f29da5f3-027d-4eea-9abc-f8b99e93fce6",
+    "types": [
+      "songwriters"
+    ]
+  }
+}

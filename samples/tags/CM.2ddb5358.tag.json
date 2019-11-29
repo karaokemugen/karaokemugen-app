@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Commercial",
+      "fre": "Publicité"
+    },
+    "name": "CM",
+    "tid": "2ddb5358-e674-46fa-a6e1-7f5c5d56f8fa",
+    "types": [
+      "songtypes"
+    ]
+  }
+}

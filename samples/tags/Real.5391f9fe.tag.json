@@ -1,0 +1,18 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Real-life",
+      "fre": "Prise de vue réelle"
+    },
+    "name": "Real",
+    "tid": "5391f9fe-638c-415f-8dc9-958e3a2c5787",
+    "types": [
+      "families"
+    ],
+    "short": "REA"
+  }
+}

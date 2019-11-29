@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Telecom Animation Film"
+    },
+    "name": "Telecom Animation Film",
+    "tid": "e7fd2965-b154-4d71-9a4e-d6af1ec7243f",
+    "types": [
+      "creators"
+    ]
+  }
+}

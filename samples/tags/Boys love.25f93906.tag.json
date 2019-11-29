@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Boys love"
+    },
+    "name": "Boys love",
+    "tid": "25f93906-7228-4f3e-b5f2-99b52180f9bd",
+    "types": [
+      "genres"
+    ],
+    "short": "BL"
+  }
+}

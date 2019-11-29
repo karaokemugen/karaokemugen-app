@@ -1,0 +1,27 @@
+{
+  "header": {
+    "version": 3,
+    "description": "Karaoke Mugen Series File"
+  },
+  "series": {
+    "name": "Top wo Nerae 2! Diebuster",
+    "aliases": [
+      "Aim for the Top! Gunbuster 2",
+      "Diebuster",
+      "Top o Nerae! 2",
+      "Top wo Nerae! 2",
+      "top2",
+      "Zirveyi Hedefle 2! NihaiAvcı",
+      "Дотянись до неба 2"
+    ],
+    "i18n": {
+      "jpn": "トップをねらえ2! DIEBUSTER",
+      "eng": "Diebuster",
+      "fre": "Diebuster",
+      "ita": "Punta al top 2! Diebuster",
+      "rus": "Дайбастер: дотянись до неба - 2!",
+      "tha": "กันบัสเตอร์ 2: ไดบัสเตอร์"
+    },
+    "sid": "72320fe0-6871-495f-ba2e-a491fbe11bce"
+  }
+}

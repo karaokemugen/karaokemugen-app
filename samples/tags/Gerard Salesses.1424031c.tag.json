@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Gérard Salesses"
+    },
+    "name": "Gérard Salesses",
+    "tid": "1424031c-2f68-4b37-9a5a-dfd8ba299f2f",
+    "types": [
+      "songwriters"
+    ]
+  }
+}

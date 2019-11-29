@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Playstation Vita"
+    },
+    "name": "Playstation Vita",
+    "tid": "e791f168-068f-4c05-aa36-e8d63726aa06",
+    "types": [
+      "platforms"
+    ],
+    "short": "PSV"
+  }
+}

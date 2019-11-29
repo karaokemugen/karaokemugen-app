@@ -1,0 +1,18 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Hard Mode",
+      "fre": "Difficile"
+    },
+    "name": "Hard Mode",
+    "tid": "ec4fee75-71fb-45b4-9772-2ca374b4b600",
+    "types": [
+      "misc"
+    ],
+    "short": "HRD"
+  }
+}

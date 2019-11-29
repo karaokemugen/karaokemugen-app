@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Toei Animation"
+    },
+    "name": "Toei Animation",
+    "tid": "f694bf43-b427-4244-9744-9d3f84fd8a31",
+    "types": [
+      "creators"
+    ]
+  }
+}

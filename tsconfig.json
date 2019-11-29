@@ -1,0 +1,34 @@
+{
+	"compilerOptions": {
+		// Target latest version of ECMAScript.
+		"target": "esNext",
+		"module": "commonjs",
+		// Search under node_modules for non-relative imports.
+		"moduleResolution": "node",
+		// Process & infer types from .js files.
+		"allowJs": false,
+		// Don't emit; allow Babel to transform files.
+		"noEmit": false,
+		// Enable strictest settings like strictNullChecks & noImplicitAny.
+		// true is better but requires a global refactoring.
+		"strict": false,
+		// Disallow features that require cross-file information for emit.
+		"isolatedModules": false,
+		// Import non-ES modules as default imports.
+		"esModuleInterop": true,
+		// Import constants from JSON (locales).
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"outDir": "dist/",
+		"pretty": true,
+		"removeComments": true,
+		"downlevelIteration": true,
+		"listFiles": false,
+		"listEmittedFiles": false,
+		"noUnusedParameters": true,
+		"noUnusedLocals": true
+	},
+	"include": [
+		"src"
+	],
+}

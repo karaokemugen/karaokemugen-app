@@ -1,0 +1,18 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Spoiler",
+      "fre": "Divulgâche"
+    },
+    "name": "Spoiler",
+    "tid": "95ca7fca-3a9e-4f24-be25-05e21261e26e",
+    "types": [
+      "misc"
+    ],
+    "short": "SPL"
+  }
+}

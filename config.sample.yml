@@ -2,12 +2,8 @@
 App:
   # FirstRun is set to false after user completed the tutorial. Reset it to true to generate a new admin password
   FirstRun: true
-  # Instance ID (uuid)
-  InstanceID: Change me
   # JWT secret used to salt passwords (uuid)
   JwtSecret: Change me
-  # Mail to send song suggestions to when a user can't find the song he wants in the app. Defaults to a mail which automatically creates issues on KM's base repository
-  karaSuggestionMail: shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org
 
 Online:
   # Host for your KM Server
@@ -18,6 +14,10 @@ Online:
   URL: true
   # Should we allow users to register/login accounts on kara.moe ?
   Users: true
+  JinglesUpdate: true
+  IntrosUpdate: true
+  # Should we look for updates ?
+  Updates: true
 
 Frontend:
   # Minutes before users are considered signed out
@@ -42,11 +42,34 @@ Frontend:
   # 3 : Use user language (fallbacks to english then original)
   SeriesLanguageMode: 3
 
+Gitlab:
+  # Enable or not gitlab posting
+  Enable: false
+  # URL to your gitlab instance
+  Host: https://lab.shelter.moe
+  # Access token
+  Token: xxx
+  # Project ID where you want issues posted
+  ProjectID: 1234
+  Template:
+    Suggestion:
+      Description: Hello, please add this! Thank you, $username
+      Title: New kara suggestion - $kara
+      Labels:
+        - suggestion
 Karaoke:
   # Autostart playing songs if no song is playing and a song is added
   Autoplay: false
-  # Generate video previews for the web interface
-  CreatePreviews: false
+  # Classic (Karaoke box) mode
+  ClassicMode: false
+  # Streamer mode options. PauseDuration is in seconds
+  StreamerMode:
+    Enabled: false
+    PauseDuration: 15
+    Twitch:
+      Enabled: false
+      OAuth: 'abcdefgh'
+      Channel: 'AxelTerizaki'
   # Number of songs between jingles
   JinglesInterval: 20
   # Private karaoke mode or public karaoke mode.
@@ -61,8 +84,6 @@ Karaoke:
     ConnectionInfo:
       # Enable display of connection messages
       Enabled: true
-      # Enable QR Code
-      QRCode: true
       # Additional message prepended to the connection URL
       Message: null
       # Override host/IP address
@@ -118,14 +139,31 @@ Player:
     # Size in %
     Size: 30
   # When playing mp3s, enable/disable visualization effects.
-  VisualizationEffects: true
+  VisualizationEffects: false
 Playlist:
   # Allow duplicates in current playlist
   AllowDuplicates: false
+  # Allow duplicate series or singers in current playlist
+  AllowDuplicateSeries: true
   # Time after which a song is not considered recently played anymore in minutes
   MaxDejaVuTime: 60
   # Remove songs from public playlist when they're played.
   RemovePublicOnPlay: false
+  # Enable/Disable Intro Videos
+  IntroVideos: true
+  # Specify an intro video file. KM will search in all Intro folders for that file and will play it instead of selecting a random one.
+  IntroVideoFile: PS1-Nanami.mp4
+  MysterySongs:
+    # Invisible songs are not hidden (they appear as a slot in playlist)
+    Hide: false
+    # Should songs added by admin be invisible?
+    AddedSongVisibilityAdmin: false
+    # Should songs added by public be invisible?
+    AddedSongVisibilityPublic: false
+    # List of mystery songs labels
+    Labels:
+    - ???
+    - Chanson mystère !
 System:
   Binaries:
     Player:
@@ -149,8 +187,12 @@ System:
     Import: app/import
     Jingles:
       - app/jingles
+      - app/jingles/KaraokeMugen
+    Intros:
+      - app/intros
+      - app/intros/KaraokeMugen
     Karas:
-      - app/data/karas
+      - app/data/karaokes
     Lyrics:
       - app/data/lyrics
     Medias:
@@ -160,5 +202,7 @@ System:
     Previews: app/previews
     Series:
       - app/data/series
+    Tags:
+      - app/data/tags
     Temp: app/temp
     DB: app/db

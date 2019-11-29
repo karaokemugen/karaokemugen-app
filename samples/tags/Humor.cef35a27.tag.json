@@ -1,0 +1,18 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Humor",
+      "fre": "Humour"
+    },
+    "name": "Humor",
+    "tid": "cef35a27-3bf0-48c9-beb2-d245ba62ea6b",
+    "types": [
+      "misc"
+    ],
+    "short": "HUM"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Génération Club Dorothée"
+    },
+    "name": "Génération Club Dorothée",
+    "tid": "cebcdc5d-31af-4c83-a744-680885904b73",
+    "types": [
+      "groups"
+    ]
+  }
+}

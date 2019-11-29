@@ -1,0 +1,18 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Parody",
+      "fre": "Parodie"
+    },
+    "name": "Parody",
+    "tid": "07af42d1-824e-407e-bf37-7fb84905484b",
+    "types": [
+      "misc"
+    ],
+    "short": "PAR"
+  }
+}

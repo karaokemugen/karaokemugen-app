@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Concert"
+    },
+    "name": "LIVE",
+    "tid": "a0167949-580c-4de3-bf13-497e462e02f3",
+    "types": [
+      "songtypes"
+    ]
+  }
+}

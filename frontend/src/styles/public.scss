@@ -1,0 +1,130 @@
+#publicPage {
+    height:100vh;
+
+    .panel-heading > div,.panel-heading > div > div, .panel-heading > div > div > div, .panel-heading > div > div > div > input {
+        height: 100%;
+    }
+    .panel-heading > div > div , .panel-heading > div > div > div, .panel-heading > div > div > div > input {
+        width: 100%;
+    }
+    .list-group-item {
+        font-size: 14px;
+    }
+    .playlist-main .list-group-item[user] {
+        color: hsla(110, 35%, 78%, 1);
+    }
+
+    .popup .panel-heading {
+        display: flex;
+    }
+
+    .drag  {
+        overflow: hidden;
+    }   
+    .dragged .contentDiv {
+        white-space: nowrap;
+    }
+
+    .playlist-main  .list-group-item.opened,
+    .playlist-main  .list-group-item.opened, .list-group-item.opened:focus, .list-group-item.opened:hover {
+        border-color: rgba(177, 177, 177, 0.65);
+        box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 9px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.15);
+        background-color: hsla(201, 33%, 22%, 0.8)
+    }
+
+    .playlist-main  .list-group-item.pressed {
+        background-color: hsla(151, 31%, 12%, 0.6);
+    }
+    .playlist-main  .list-group-item[valid="true"] {
+        background-color: hsla(151, 37%, 25%, 0.7);
+    }
+
+    .touch:not(.mode1) .playlist-main .list-group-item:not(.filler)  {
+        width: calc(100% - 12px);
+        overflow: visible;
+    }
+
+    .touch:not(.mode1)  .list-group-item:not(.filler):after { 
+        content:"";
+        position: absolute; 
+        top:0; 
+        right: -24px;
+        height: 36px;
+        width: 0;   
+        border-width: 18px 12px;
+        border-style:solid;
+        border-color: transparent;
+        border-left-color: hsla(0, 0%, 20%, .67);
+    }
+    .touch:not(.mode1)  .list-group-item:nth-child(even):after {
+        border-left-color: hsla(0, 0%, 27%, 0.6);
+    }
+    .touch:not(.mode1) .list-group-item.pressed:after { 
+        border-left-color: hsla(151, 31%, 12%, 0.6);
+    }
+
+    .touch:not(.mode1)  .list-group-item[valid="true"]:after { 
+        border-left-color: hsla(151, 37%, 25%, 0.7);
+    }
+
+    .header > div > div.switchParent {
+        height: calc(100% - 1px);
+        padding: 0;
+        display: flex;
+    }
+
+    .showPoll, .btn-floating.btn-large.showPoll {
+        background-color:#9c5600;
+    }
+    /* mobile */
+    @media (max-width: 1025px) {
+
+        .fullLyrics, .showVideo, .makeFav, .deleteKara, .moreInfo {
+            width: 46px;
+            height: 46px;
+            font-size: 18px;
+        }
+
+        .deleteCriteria {
+            display: none !important;
+        }
+        .list-group-item:first-child {
+            border-top-width: 0px;
+        }
+
+        .headerInputs, .header > div > div {
+            padding: 0px;
+        }
+            
+        .header button.btn.favorites {
+            order: 0;
+            display: block;
+        }
+
+        .mobileHelp, .mobileActions {
+        display: block;
+        }
+        .plFooter {
+            font-size: 1.5rem;
+            width: calc(100% - 70px); /* leaving room for the menu button */
+        }
+        
+        .plInfos { 
+            vertical-align: middle;
+        }
+        .plFooter button {
+            height: 26px;
+            width: 26px;
+            margin: 0px -1px;
+        }
+        
+        .plInfos, .plBrowse {
+            float: left;
+        }
+
+        #nav-signup input[type="text"],  #nav-signup input[type="password"]:not([data-exclude="true"]) {
+            max-height: 7vh;
+            min-height: 32px;
+        }
+    }
+}

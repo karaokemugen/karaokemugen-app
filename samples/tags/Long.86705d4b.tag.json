@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Long"
+    },
+    "name": "Long",
+    "tid": "86705d4b-24e4-4756-9687-2b9c98bcf366",
+    "types": [
+      "misc"
+    ],
+    "short": "LON"
+  }
+}

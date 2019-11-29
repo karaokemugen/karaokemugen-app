@@ -1,0 +1,18 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Movie",
+      "fre": "Film"
+    },
+    "name": "Movie",
+    "tid": "c8ca9dea-d8b4-48fe-8427-d911653232e9",
+    "types": [
+      "origins"
+    ],
+    "short": "MOV"
+  }
+}

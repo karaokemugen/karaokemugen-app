@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Shoujo"
+    },
+    "name": "Shoujo",
+    "tid": "8b6ace6f-a59e-4740-b3ff-e1618720383c",
+    "types": [
+      "genres"
+    ],
+    "short": "SHJ"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Jean-Marc Anthony Kabeya"
+    },
+    "name": "Jean-Marc Anthony Kabeya",
+    "tid": "c4e59998-59f2-4d4f-aa7f-177b05889c49",
+    "types": [
+      "singers"
+    ]
+  }
+}

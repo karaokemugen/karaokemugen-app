@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Magical Girl"
+    },
+    "name": "Magical Girl",
+    "tid": "b84e28f9-db1e-447f-b339-7954c3592523",
+    "types": [
+      "genres"
+    ],
+    "short": "MAG"
+  }
+}

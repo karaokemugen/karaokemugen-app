@@ -1,5 +1,88 @@
 # Versions
 
+## v3.0.0 "Leafa Lumineuse" - 15/11/2019
+
+This is a VERY MAJOR release.
+
+Many things have changed, both in database schemas, code base, frontend, and even how Karaoke Mugen works
+
+### New Features
+
+- A banner will be displayed on the welcome screen to signal there is a new Karaoke Mugen version and that you should upgrade (#7)
+- All guest accounts now have specific avatars. For fun. (#392)
+- Karaoke data files (.kara) are now on version 4 and are named .kara.json. (#341)
+  - Karaoke Mugen 3.x is not compatible with Karaoke files version 3 or below. This means you'll need to update your Karaoke Base for Karaoke Mugen 3.x.
+  - If you have songs you have not uploaded to the Karaoke Base, please contact us so we can help you convert your files.
+- Streamer mode with Twitch integration (#447)
+  - Song poll results can be displayed on the player's wallpaper inbetween songs.
+  - Twitch users can vote from chat for which song to play next
+  - Added a configurable pause time in between songs.
+- Song tags have been completely reworked (#443)
+  - Tags (languages, songwriters, singers, creators, etc.) are now files in the Karaoke Base, which means they're not tied to the application's version anymore. Anyone can add its own tags if need be.
+  - New tag types : Misc (formerly "Tags"), Genres, Origins, Platforms and Families
+  - New tags have been added to the Karaoke Base as a result : Fanworks for dojin songs/videos
+  - WARNING : As a result, blacklists criterias relying on tags won't be valid anymore and are going to be removed from your blacklist criterias. You can readd them later.
+- Mystery karaoke toggle (#441)
+  - You can flag a song as visible or invisible. Invisible songs will be marked as ??? to the public, which means they won't know in advance what that song is in the playlist. Good for surprises and troll songs.
+  - You can add mystery labels, which are shown randomly in place of the real song's name in a song slot to users. This is troll ammo.
+  - You can make it so admins or users added songs are automatically marked as invisible (or not)
+- Classic Karaoke Mode (#432)
+  - In Karaoke Classic mode, a pause is made in between songs, and the person who requested the song (or admin, or after a time period has elapsed) can hit play on its device. This is a mode for those who prefer a classic karaoke box experience where each user takes the microphone to sing on the song they asked for.
+- New features for Download manager :
+  - Blacklist system to keep the Download manager to automatically download some songs. Manual download is still possible (#427)
+  - A "Update All" button to update existing songs and download all songs missing from your database. See above for the blacklist feature. (#426)
+  - Advanced search (via tags/series) (#425)
+- Session management on welcome screen (#390)
+  - You can now name individual karaoke sessions when starting one with friends or during events. It'll allow you to filter song history to see, for example, which songs were played during Epitanime 2020 or Jonetsu 5555. Sessions are just groups for stats but can be helpful for other purposes later.
+  - Session data can be exported as CSV (#508)
+- QR Code has been removed (why is it a new feature?) (#451)
+- Users can now select which language for series names they tend to prefer (just like an admin can). This setting is saved to your online account. (#440)
+- New, updated sample songs included with every release (#452)
+- Battle-tested with Node 12 (#439)
+- Karaoke Mugen is now coded with TypeScript, for better debugging and safer programming :) (#437 #391)
+- For MugenPi users (or those who don't want to look at the console screen), logs are now available in the System Control Panel (#434)
+- Live changes to the database (editing a song) won't trigger a new generation on next app startup (#433)
+- Admins can restrict song additions by users to one song per series or singer to avoid people trying to force their favorite series or singer by adding all its songs (#431)
+- A new (shy) look for the frontend has been achieved with the React rewrite (#430 #300)
+- Suggesting a song to be added to the karaoke base now generates an issue on our Gitlab (configurable) (#422)
+- An intro video is played at the beginning of a playlist if you're starting on the first song. If a sponsor jingle file is present (Beginning with `Sponsor - `) it will be played right after. (#482)
+- The karaoke submission form now accepts new karaoke formats in addition of ASS. The files will be converted to the ASS format on import. New formats supported are :
+  - Toyunda files (.txt) (#463)
+  - UltraStar files (.txt) (#31)
+  - Karafun files (.kfn) (#471)
+- Dark theme for the system panel (#468)
+- Settings in the options panel now have tooltips to explain what they do (#460)
+- Login modal in public and admin interface now has toggles for online/local accounts and password reset feature. (#489)
+- Database can be restored from the karaokemugen.sql file in the application's directory (#509)
+
+### Improvements
+
+- System panel's code dependencies are now up to date (#445)
+- Playlist information is updated more often on screen so a device coming back from sleep mode can get an updated version of the page sooner (#416)
+- Search engine in playlists now looks for the song requester as well. (#448)
+- Quotations (" and ') are now taken into account during search (#446)
+- Karaoke Mugen's API has been split in smaller chunks for easier debugging and programming.
+- A lot of code is now shared between Karaoke Mugen App and Server via the Karaoke Mugen Shared Library (#402) saving us a lot of time
+- Importing playlists is now safer thanks to a code rewrite by using constraints instead of tests (#329)
+- Preview videos are not generated anymore. It was costly and took a hell lot of time. Now full media files are served instead (#457)
+- Updated mpv version to 0.29.1.
+- Karaoke base updates now go through the Download Manager and should easier to handle.
+- When editing a karaoke in the system UI, tags and series are checked for differences between the old and new karaoke to avoid triggering useless refreshes.
+- Added a message in case MS Visual Studio C++ 2013 redist is not installed (Windows only) (#492)
+- Karaoke Mugen behaves better when mpv has been shutdown outside of KM (#491)
+- Added `--dumpDB` and `--restoreDB` command-line arguments.
+
+### Fixes
+
+- Toggling lyrics/song title display on mobile now works properly (#414)
+- Videos aren't weboptimized again even if you don't change anything about it in the edit song form (#436)
+- Toots from Mastodon are now displayed proper on the welcome screen's feed (#429)
+- Fix KM not allowing you to login your online account if a local account with the same nickname exists in your database. (#466)
+- When working with several karaoke/media/lyrics folders, edited karas will be placed in the original folders they belong to instead of the
+first one in the list.
+- i18n fields in series edit page in control panel are now automatically validated, no need to fiddle with them anymore (#505)
+- .ass files are now properly deleted when editing a kara (#490)
+
 ## v2.5.3 "Konata Kimono" - 30/06/2019
 
 This is a bugfix release.

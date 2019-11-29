@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Visual Novel"
+    },
+    "name": "Visual Novel",
+    "tid": "2f96e82c-c61b-4413-817e-e6b247509b95",
+    "types": [
+      "origins"
+    ],
+    "short": "VN"
+  }
+}

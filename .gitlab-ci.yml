@@ -1,13 +1,14 @@
-image: axelterizaki/karaokemugen-ci:node-10
+image: axelterizaki/karaokemugen-ci:node-12
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
 
 cache:
   key: km-app-${CI_COMMIT_REF_SLUG}
   paths:
-  - node_modules/
-  - bin/
-  - react_systempanel/node_modules/
-  - dist/
-  - react_systempanel/build/
+    - node_modules/
+    - systempanel/node_modules/
+    - frontend/node_modules/
 
 stages:
   - test
@@ -27,6 +28,8 @@ test:
     POSTGRES_PASSWORD: musubi
   script:
     - yarn install --check-files --force
+    - yarn installSystemPanel --check-files --force
+    - yarn installFrontend --check-files --force
     - touch mpv
     - cp -f config.CICD.yml config.yml
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
@@ -34,6 +37,7 @@ test:
     - cp -f database.CICD.json database.json
     - export LANG=en_US
     - node --version
+    - node_modules/.bin/ts-node --version
     - node util/extUnaccent.js
     - yarn start --debug --test &disown
     - bash test/run.sh
@@ -49,12 +53,14 @@ build:
     expire_in: 1 days
     name: km-app-build-${CI_COMMIT_REF_SLUG}
     paths:
-    - react_systempanel/build/
+    - systempanel/build/
     - dist/
+    - frontend/build/
   script:
     - npm install -g modclean parcel-bundler
     - yarn build
-    - yarn buildReact
+    - yarn buildSystemPanel
+    - yarn frontend-prod
     - yarn install --production
     - cd node_modules
     - find -name *.node -delete
@@ -134,12 +140,6 @@ deploy_win:
     - mkdir build_win
     - cd build_win
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win.tar.gz | tar xvz
-    - mkdir -p app/jingles
-    - cd app/jingles
-    - wget -qO- https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar | tar xv
-    - mv -f jingles-master*/* .
-    - rm -Rf jingles-master*
-    - cd ../..
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
     - cp -f ../config.sample.yml .
     - cp -Rf ../samples .
@@ -161,12 +161,6 @@ deploy_win32:
     - mkdir build_win32
     - cd build_win32
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win32.tar.gz | tar xvz
-    - mkdir -p app/jingles
-    - cd app/jingles
-    - wget -qO- https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar | tar xv
-    - mv -f jingles-master*/* .
-    - rm -Rf jingles-master*
-    - cd ../..
     - cp -f ../bin/karaokemugen-app32.exe KaraokeMugen.exe
     - cp -f ../config.sample.yml .
     - cp -Rf ../samples .
@@ -199,13 +193,6 @@ deploy_osx:
     - cd build_mac
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_macos.tar.gz | tar xvz
     - chmod -R +x app/bin
-    - mkdir -p app/jingles
-    - cd app/jingles
-    - wget -qO- https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar | tar xv
-    - mv -f jingles-master*/* .
-    - rm -Rf jingles-master*
-    - rm -f archive.tar
-    - cd ../..
     - cp -f ../bin/karaokemugen-app KaraokeMugen
     - cp -f ../config.sample.yml .
     - cp -Rf ../samples .
@@ -223,7 +210,7 @@ apidoc:
   cache: {}
   script:
     - npm install -g apidoc
-    - apidoc -i src/_controllers -o apidoc -t apidoc_template
+    - apidoc -i src/controllers -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; mkdir -p site/apidoc/$CI_COMMIT_REF_NAME; cd site/apidoc/$CI_COMMIT_REF_NAME; mirror -Rnev --parallel=10"
   only:

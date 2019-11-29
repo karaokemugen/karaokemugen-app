@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Mecha"
+    },
+    "name": "Mecha",
+    "tid": "f60ba57d-5ef4-49e0-b93b-d0dcbcff6592",
+    "types": [
+      "genres"
+    ],
+    "short": "MCH"
+  }
+}

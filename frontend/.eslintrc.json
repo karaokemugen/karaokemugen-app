@@ -1,0 +1,27 @@
+{
+    "globals": {
+		"__": true
+    },
+    "env": {
+        "es6": true
+    },
+    "rules": {
+        "brace-style": [
+            "error",
+            "1tbs"
+        ],
+        "no-console": 0,
+        "indent": [
+            "error",
+            "tab"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
+    }
+}

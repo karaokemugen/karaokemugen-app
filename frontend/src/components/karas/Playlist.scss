@@ -1,0 +1,41 @@
+.playlist--wrapper,
+.playlist--wrapper * {
+	box-sizing: border-box;
+}
+
+.playlist--wrapper {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	> * {
+		flex:auto;
+	}
+}
+
+.playlist-dragged-item {
+	list-style: none;
+	.list-group-item  {
+		background: #333;
+	}
+	.actionDiv, .infoDiv {
+		display: none;
+	}
+}
+
+.playlistContainer {
+	overflow: hidden;
+	li {
+		display: block;
+		z-index: 1;
+		.detailsKara {
+			z-index: 10;
+		}
+	}
+}
+
+.getPlaylistInProgressIndicator {
+	font-size: 6em;
+	display: block;
+	text-align: center;
+	padding: 2em 0;
+}

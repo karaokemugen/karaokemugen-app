@@ -1,0 +1,16 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "J.C.STAFF"
+    },
+    "name": "J.C.STAFF",
+    "tid": "802a8ac8-b16f-40a4-944b-99956798c906",
+    "types": [
+      "creators"
+    ]
+  }
+}

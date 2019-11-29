@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "ACKO"
+    },
+    "name": "ACKO",
+    "tid": "eca408a2-003f-4918-b22a-32d9248098bb",
+    "types": [
+      "singers",
+      "songwriters"
+    ]
+  }
+}

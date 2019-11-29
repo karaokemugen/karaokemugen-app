@@ -1,0 +1,17 @@
+{
+  "header": {
+    "description": "Karaoke Mugen Tag File",
+    "version": 1
+  },
+  "tag": {
+    "i18n": {
+      "eng": "Other",
+      "fre": "Divers"
+    },
+    "name": "OT",
+    "tid": "97769615-a2e5-4f36-8c23-b2ce2ce3c460",
+    "types": [
+      "songtypes"
+    ]
+  }
+}
