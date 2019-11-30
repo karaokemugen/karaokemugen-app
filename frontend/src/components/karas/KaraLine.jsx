@@ -60,7 +60,7 @@ class KaraLine extends Component {
   };
 
   likeKara = () => {
-  	var data = kara.flag_upvoted ? {} : dataLikeKara = { 'downvote': 'true' };
+  	var data = kara.flag_upvoted ? {} : { 'downvote': 'true' };
   	axios.post('/api/public/playlists/public/karas/' + this.props.idPlaylist + '/vote', data);
   	this.setState({ isLike: !this.state.isLike });
   };
