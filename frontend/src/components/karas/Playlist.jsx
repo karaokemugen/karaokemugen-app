@@ -31,6 +31,12 @@ class Playlist extends Component {
 		};
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.idPlaylistTo && nextProps.idPlaylistTo !== this.props.idPlaylistTo) {
+			this.playlistForceRefresh();
+		}
+	}
+
 	async componentDidMount() {
 		if (axios.defaults.headers.common['authorization']) {
 			this.initCall();
