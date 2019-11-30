@@ -68,7 +68,7 @@ class BlacklistCriterias extends Component {
     					</span>
     					<button id="bcAdd" className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}
     						onKeyPress={e => {
-    							if (e.which == 13) addBlacklistCriteria();
+    							if (e.which == 13) this.addBlacklistCriteria();
     						}}><i className="fas fa-plus"></i></button>
     				</span> : null
     			}
