@@ -136,7 +136,8 @@ class KaraLine extends Component {
   };
 
   transferKara = () => {
-  	this.addKara();
+	  this.addKara();
+	  this.deleteKara();
   };
 
   freeKara = () => {
