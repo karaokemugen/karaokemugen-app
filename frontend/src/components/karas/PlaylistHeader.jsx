@@ -324,7 +324,7 @@ class PlaylistHeader extends Component {
   		<React.Fragment>
   			{this.props.scope !== 'public' || this.props.side !== 1 ?
   				<div className={'panel-heading plDashboard' + (this.props.playlistCommands ? ' advanced' : '')}>
-  					{this.props.scope === 'admin' || this.props.mode !== 1 ?
+  					{this.props.scope === 'admin' || this.props.config.Frontend.Mode !== 1 ?
   						<React.Fragment>
   							{this.props.scope === 'admin' && this.props.idPlaylist !== -4 ?
   								<button title={i18next.t('PLAYLIST_COMMANDS')} onClick={this.props.togglePlaylistCommands}
@@ -334,7 +334,7 @@ class PlaylistHeader extends Component {
   							}
   							<select side={this.props.side} className="selectPlaylist"
   								value={this.props.idPlaylist} onChange={(e) => this.props.changeIdPlaylist(e.target.value)}>
-  								{(this.props.scope === 'public' && this.props.side === 1 && this.props.mode === 1) ?
+  								{(this.props.scope === 'public' && this.props.side === 1 && this.props.config.Frontend.Mode === 1) ?
   									<option value={this.props.playlistToAddId} ></option> :
   									this.props.scope === 'public' && this.props.side === 1 ? (
   										<React.Fragment>

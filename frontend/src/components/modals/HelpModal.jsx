@@ -55,7 +55,7 @@ class HelpModal extends Component {
     							</div>
     							<div className="col-lg-9 col-xs-9">
     								<span id="mode">
-    									{this.props.mode ? 'Privé' : 'Public'}
+    									{store.getConfig().Karaoke.Private ? 'Privé' : 'Public'}
     								</span>
     								<br />
     								<span id="version">

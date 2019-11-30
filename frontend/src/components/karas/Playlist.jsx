@@ -235,7 +235,7 @@ noRowsRenderer = () => {
   	var value;
   	if (this.props.scope === 'public') {
   		value =
-        this.props.side === 1 && this.props.mode !== 1
+        this.props.side === 1 && this.props.config.Frontend.Mode !== 1
         	? -1
         	: this.state.playlistToAddId;
   	} else {
@@ -634,7 +634,8 @@ noRowsRenderer = () => {
   			<div className="playlist--wrapper">
   				<PlaylistHeader
   					side={this.props.side}
-  					scope={this.props.scope}
+					  scope={this.props.scope}
+					  config={this.props.config}
   					playlistList={this.state.playlistList}
   					playlistToAddId={this.state.playlistToAddId}
   					idPlaylist={this.state.idPlaylist}
