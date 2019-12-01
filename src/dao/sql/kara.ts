@@ -112,9 +112,9 @@ LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.kid
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ${groupClauses} ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_singer_sortable, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.repo, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid, ak.tid
+GROUP BY ${groupClauses} ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_singer_sortable, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.repo, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid, ak.tid
 ${havingClause}
-ORDER BY ${orderClauses} ak.languages_sortable, ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.title
+ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.title
 ${limitClause}
 ${offsetClause}
 `;
