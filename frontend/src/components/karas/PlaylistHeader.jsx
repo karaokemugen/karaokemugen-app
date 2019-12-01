@@ -108,7 +108,7 @@ class PlaylistHeader extends Component {
   				data['playlist'] = fr['result'];
   				name = JSON.parse(fr.result).PlaylistInformation.name;
   			}
-  			var response = await = axios.post(url, data);
+  			var response = await axios.post(url, data);
 			displayMessage('success', i18next.t('PLAYLIST_ADDED', { name: name }));
 			if (response.unknownKaras && response.unknownKaras.length > 0) {
 				displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.unknownKaras }));
