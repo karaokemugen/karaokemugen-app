@@ -96,7 +96,7 @@ class PlaylistHeader extends Component {
   	if (input.files && input.files[0]) {
   		file = input.files[0];
   		fr = new FileReader();
-  		fr.onload = function () {
+  		fr.onload = async () => {
   			var data = {};
   			var name;
   			if (file.name.includes('KaraMugen_fav')) {
@@ -108,14 +108,13 @@ class PlaylistHeader extends Component {
   				data['playlist'] = fr['result'];
   				name = JSON.parse(fr.result).PlaylistInformation.name;
   			}
-  			axios.post(url, data).then(response => {
-  				displayMessage('success', i18next.t('PLAYLIST_ADDED', { name: name }));
-  				if (response.unknownKaras && response.unknownKaras.length > 0) {
-  					displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.unknownKaras }));
-  				}
-  				var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
-  				this.props.changeIdPlaylist(playlist_id);
-  			});
+  			var response = await axios.post(url, data);
+			displayMessage('success', i18next.t('PLAYLIST_ADDED', { name: name }));
+			if (response.unknownKaras && response.unknownKaras.length > 0) {
+				displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.unknownKaras }));
+			}
+			var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
+			this.props.changeIdPlaylist(playlist_id);
   		};
   		fr.readAsText(file);
   	}
@@ -292,7 +291,7 @@ class PlaylistHeader extends Component {
     
   	const plSearch = (<div className="pull-left plSearch">
   		<input type="text" className="plSearch-input form-control input-md" side={this.props.side}
-  			defaultValue={store.getFilterValue()} onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)}
+  			defaultValue={store.getFilterValue(this.props.side)} onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)}
   			id={'searchPlaylist' + this.props.side} placeholder="&#xF002;" name="searchPlaylist" />
   	</div>);
 

@@ -60,7 +60,7 @@ class KaraLine extends Component {
   };
 
   likeKara = () => {
-  	var data = kara.flag_upvoted ? {} : dataLikeKara = { 'downvote': 'true' };
+  	var data = this.props.kara.flag_upvoted ? {} : { 'downvote': 'true' };
   	axios.post('/api/public/playlists/public/karas/' + this.props.idPlaylist + '/vote', data);
   	this.setState({ isLike: !this.state.isLike });
   };
@@ -142,7 +142,7 @@ class KaraLine extends Component {
 
   freeKara = () => {
   	if (this.props.scope === 'admin') {
-  		axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + kara.playlistcontent_id, { flag_free: true });
+  		axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_free: true });
   	}
   };
 
