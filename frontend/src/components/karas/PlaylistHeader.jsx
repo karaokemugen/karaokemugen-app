@@ -96,7 +96,7 @@ class PlaylistHeader extends Component {
   	if (input.files && input.files[0]) {
   		file = input.files[0];
   		fr = new FileReader();
-  		fr.onload = () => {
+  		fr.onload = async () => {
   			var data = {};
   			var name;
   			if (file.name.includes('KaraMugen_fav')) {
