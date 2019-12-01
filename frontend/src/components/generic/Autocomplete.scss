@@ -15,7 +15,7 @@ $option-active-background:#00b0ed;
 .UI-autocomplete-options {
   display: none;
 }
-.UI-autocomplete-input[focus="true"] .UI-autocomplete-options {
+.UI-autocomplete-input[data-focus="true"] .UI-autocomplete-options {
   display: block;
 }
 
@@ -55,7 +55,7 @@ $option-active-background:#00b0ed;
     padding: .25em;
     margin: 0;
     text-align: left;
-    &[active="true"] {
+    &[data-active="true"] {
       color:$option-active-color;
       background:$option-active-background;
     }
