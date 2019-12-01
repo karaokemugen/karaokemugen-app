@@ -142,7 +142,7 @@ class KaraLine extends Component {
 
   freeKara = () => {
   	if (this.props.scope === 'admin') {
-  		axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + kara.playlistcontent_id, { flag_free: true });
+  		axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_free: true });
   	}
   };
 
