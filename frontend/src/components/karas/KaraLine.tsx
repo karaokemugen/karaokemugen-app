@@ -304,18 +304,20 @@ class KaraLine extends Component<IProps,IState> {
   							</div>
   						</div> :
   						<div className="contentDiv">
-  							<div className="disable-select">
+  							<div className="disable-select karaTitle">
   								{this.karaTitle}
   								{kara.upvotes ?
   									<div className="tag likeCount" title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.freeKara}>
   										{kara.upvotes}<i className="fas fa-heart"></i>
   									</div> : null
   								}
-  								{this.karaFamilies}
-  								{this.karaPlatforms}
-  								{this.karaGenres}
-  								{this.karaOrigins}
-  								{this.karaMisc}
+								<div className="tagConteneur">
+									{this.karaFamilies}
+									{this.karaPlatforms}
+									{this.karaGenres}
+									{this.karaOrigins}
+									{this.karaMisc}
+								</div>
   							</div>
   						</div>
   				}

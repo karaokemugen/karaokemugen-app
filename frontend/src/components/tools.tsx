@@ -131,17 +131,19 @@ export function buildKaraTitle(data:DBPLC) {
 		data.langs = [isMulti];
 	}
 	var serieText = data.serie ? data.serie : (data.singers ? data.singers.map(e => e.name).join(', ') : '');
-	var titleArray = [
-		data.langs ? data.langs.map(e => e.name).join(', ').toUpperCase() : '',
-		serieText,
-		data.songtypes ? (data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name) + (data.songorder > 0 ? ' ' + data.songorder : '') : '',
-		data.title
-	];
-	var titleClean = titleArray.map(function (e, k) {
-		return titleArray[k] ? titleArray[k] : '';
-	});
+	var langsText = data.langs.map(e => e.name).join(', ').toUpperCase();
+	var songtypeText = data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name;
+	var songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
 
-	return titleClean.join(' - ');
+	return (<div className='karaTitle'>
+		<div>{langsText}</div>
+		<div>&nbsp;-&nbsp;</div>
+		<div className="karaTitleSerie">{serieText}</div>
+		<div>&nbsp;-&nbsp;</div>
+		<div>{`${songtypeText} ${songorderText}`}</div>
+		<div>&nbsp;-&nbsp;</div>
+		<div className="karaTitleTitle">{data.title}</div>
+		</div>)
 };
 
 export function displayMessage (type:TypeOptions, message:any, time?:number) {
