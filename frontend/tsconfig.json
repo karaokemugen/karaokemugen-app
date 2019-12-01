@@ -1,0 +1,30 @@
+{
+	"compilerOptions": {
+		"sourceMap": true,
+		"target": "es6",
+		"jsx": "preserve",
+		"module": "esnext",
+		"moduleResolution": "node",
+		"declaration": true,
+		"outDir": "build",
+		"lib": [
+			"es6",
+			"es7",
+			"dom",
+			"es2018.promise"
+		],
+		"esModuleInterop": true,
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true
+	},
+	"exclude": [
+		"build",
+		"node_modules"
+	],
+	"include": [
+		"src/**/*"
+	]
+}

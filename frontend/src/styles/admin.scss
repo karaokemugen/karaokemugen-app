@@ -52,12 +52,12 @@
 		flex-direction: row-reverse;
 	}
 
-	span[name="checkboxKara"] {
+	.checkboxKara {
 		padding: 6px;
 		font-size: 19px;
 		float: right;
 	}
-	#panel2 span[name="checkboxKara"] {
+	#panel2 .checkboxKara {
 		float: left;
 	}
 

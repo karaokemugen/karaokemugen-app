@@ -218,13 +218,13 @@
         height: 2px;
         width: 200%;
     }
-    li.new[type="mast"] .new-header:after {
+    li.new[data-type="mast"] .new-header:after {
         background: #ffffff60;
     }
-    li.new[type="app"] .new-header:after {
+    li.new[data-type="app"] .new-header:after {
         background: #ffbd79bd;
     }
-    li.new[type="base"] .new-header:after {
+    li.new[data-type="base"] .new-header:after {
         background: #d46cb9ad;
     }
 
