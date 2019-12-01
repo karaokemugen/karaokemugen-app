@@ -3,8 +3,9 @@ import i18next from 'i18next';
 import axios from 'axios';
 import ReactDOM from 'react-dom';
 import store from '../../store';
+import {displayMessage} from '../tools';
 
-class FavMixModal extends Component {
+class OnlineProfileModal extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -13,13 +14,13 @@ class FavMixModal extends Component {
 		};
 	}
 
-    onClick = () => {
+    onClick = async () => {
     	var response;
     	if (this.props.type === 'convert') {
-    		response = axios.post('/api/public/myaccount/online', { instance: this.state.modalLoginServ, password: this.state.password });
+    		response = await axios.post('/api/public/myaccount/online', { instance: this.state.modalLoginServ, password: this.state.password });
     		displayMessage('success', i18next.t('PROFILE_CONVERTED'));
     	} else {
-    		response = axios.delete('/api/public/myaccount/online', {data:{ password: this.state.password }});
+    		response = await axios.delete('/api/public/myaccount/online', {data:{ password: this.state.password }});
     		displayMessage('success', i18next.t('PROFILE_ONLINE_DELETED'));
     	}
     	store.setLogInfos(response);
@@ -58,4 +59,4 @@ class FavMixModal extends Component {
     }
 }
 
-export default FavMixModal;
+export default OnlineProfileModal;
