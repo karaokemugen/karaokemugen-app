@@ -35,7 +35,7 @@ export async function initEngine() {
 	});
 	if (state.opt.validateV3) try {
 		logger.info('[Engine] V3 Validation in progress...');
-		await validateV3(state.appPath);
+		await validateV3();
 		logger.info('[Engine] V3 Validation OK');
 		await exit(0);
 	} catch(err) {

@@ -23,6 +23,7 @@ export interface State {
 	isDemo?: boolean,
 	isTest?: boolean,
 	appPath?: string,
+	dataPath?: string,
 	osURL?: string,
 	os?: string,
 	osHost?: string

@@ -130,9 +130,9 @@ async function startmpv() {
 		'--no-border',
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
-		`--log-file=${resolve(state.appPath,'mpv.log')}`,
+		`--log-file=${resolve(state.dataPath, 'mpv.log')}`,
 		`--volume=${+playerState.volume}`,
-		`--input-conf=${resolve(state.appPath,conf.System.Path.Temp,'input.conf')}`,
+		`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 		'--autoload-files=no'
 	];
 
@@ -371,7 +371,7 @@ export async function play(mediadata: MediaData) {
 			}
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
-				const defaultImageFile = resolve(getState().appPath,conf.System.Path.Temp,'default.jpg');
+				const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
 				options.push(`external-file=${defaultImageFile.replace(/\\/g,'/')}`);
 				options.push('force-window=yes');
 				options.push('image-display-duration=inf');

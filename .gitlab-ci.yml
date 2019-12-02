@@ -143,6 +143,7 @@ deploy_win:
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
     - cp -f ../config.sample.yml .
     - cp -Rf ../samples .
+    - touch portable
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
     - cd ..
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
@@ -164,6 +165,7 @@ deploy_win32:
     - cp -f ../bin/karaokemugen-app32.exe KaraokeMugen.exe
     - cp -f ../config.sample.yml .
     - cp -Rf ../samples .
+    - touch portable
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win32.zip *
     - cd ..
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win32/KaraokeMugen-$CI_COMMIT_REF_NAME-win32.zip"
