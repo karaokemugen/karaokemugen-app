@@ -1274,3 +1274,8 @@ input[type="text"]:focus, input[type="password"]:focus {
 		justify-content: flex-end;
 	}
 }
+
+#nav-userlist {
+	max-height: calc(100vh - 200px);
+}
+  
