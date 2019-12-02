@@ -109,7 +109,7 @@ export async function exportSession(seid: string) {
 			getKaras({mode: 'sessionPlayed', modeValue: seid, token: { role: 'admin', username: 'admin'}})
 		]);
 		const csvRequested = csvWriter({
-			path: resolve(getState().appPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.requested.csv')),
+			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.requested.csv')),
 			header: [
 				{id: 'requested_at', title: 'REQUESTED AT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
@@ -120,7 +120,7 @@ export async function exportSession(seid: string) {
 			alwaysQuote: true
 		});
 		const csvPlayed = csvWriter({
-			path: resolve(getState().appPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.played.csv')),
+			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.played.csv')),
 			header: [
 				{id: 'played_at', title: 'PLAYED AT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
@@ -131,7 +131,7 @@ export async function exportSession(seid: string) {
 			alwaysQuote: true
 		});
 		const csvPlayedCount = csvWriter({
-			path: resolve(getState().appPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.playedCount.csv')),
+			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.playedCount.csv')),
 			header: [
 				{id: 'count', title: 'PLAY COUNT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
@@ -142,7 +142,7 @@ export async function exportSession(seid: string) {
 			alwaysQuote: true
 		});
 		const csvRequestedCount = csvWriter({
-			path: resolve(getState().appPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.requestedCount.csv')),
+			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.requestedCount.csv')),
 			header: [
 				{id: 'count', title: 'REQUEST COUNT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},

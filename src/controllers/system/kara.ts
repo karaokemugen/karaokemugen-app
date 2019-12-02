@@ -1,10 +1,8 @@
 import { Router } from "express";
 import {requireAuth, requireValidUser, requireAdmin} from '../middlewares/auth';
-import {resolve} from 'path';
 import multer from 'multer';
 import {getRemoteKaras} from '../../services/download';
-import { getState } from "../../utils/state";
-import { getConfig } from "../../lib/utils/config";
+import { resolvedPathTemp } from "../../lib/utils/config";
 import { getLang } from "../middlewares/lang";
 import {deleteKara, getKaras, getKara, getTop50, getKaraPlayed, getKaraHistory} from '../../services/kara';
 import {editKara, createKara} from '../../services/kara_creation';
@@ -12,7 +10,7 @@ import { KaraList } from '../../lib/types/kara';
 import {requireNotDemo} from '../middlewares/demo';
 
 export default function systemKaraController(router: Router) {
-	let upload = multer({ dest: resolve(getState().appPath, getConfig().System.Path.Temp)});
+	let upload = multer({ dest: resolvedPathTemp()});
 
 
 	router.get('/system/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {

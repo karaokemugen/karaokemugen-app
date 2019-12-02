@@ -38,7 +38,7 @@ export async function sendPayload() {
 		logger.info(`[Stats] Sending payload (${prettyBytes(JSON.stringify(payload).length)})`);
 		logger.info('[Stats] Payload data saved locally to logs/statsPayload.json');
 		const conf = getConfig();
-		asyncWriteFile(resolve(getState().appPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
+		asyncWriteFile(resolve(getState().dataPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
 		try {
 			await got(`https://${conf.Online.Host}/api/stats`,{
 				json: true,

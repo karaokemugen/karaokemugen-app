@@ -17,9 +17,9 @@ export async function gitUpdate(gitDir: string, gitURL: string, element: string,
 				url: gitURL
 			})
 			logger.info(`[${element}] Finished downloading`);
-			const appPath = getState().appPath;
-			if (gitDir.includes(appPath)) {
-				gitDir = gitDir.split(appPath)[1].replace(/\\/g,'/');
+			const dataPath = getState().dataPath;
+			if (gitDir.includes(dataPath)) {
+				gitDir = gitDir.split(dataPath)[1].replace(/\\/g,'/');
 			}
 			if (!localDirs.includes(gitDir)) localDirs.push(gitDir);
 			return localDirs;

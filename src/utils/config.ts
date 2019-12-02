@@ -81,7 +81,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 export async function initConfig(argv: any) {
 	setConfigConstraints(configConstraints);
 	await configureLocale();
-	await loadConfigFiles(getState().appPath, argv.config, defaults);
+	await loadConfigFiles(getState().dataPath, argv.config, defaults);
 	const binaries = await checkBinaries(getConfig());
 	setState({binPath: binaries});
 	emit('configReady');
@@ -112,8 +112,8 @@ export function configureHost() {
 export async function backupConfig() {
 	logger.debug('[Config] Making a backup of config.yml');
 	return await asyncCopy(
-		resolve(getState().appPath, 'config.yml'),
-		resolve(getState().appPath, 'config.backup.yml'),
+		resolve(getState().dataPath, 'config.yml'),
+		resolve(getState().dataPath, 'config.backup.yml'),
 		{ overwrite: true }
 	);
 }

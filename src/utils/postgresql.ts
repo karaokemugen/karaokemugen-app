@@ -20,7 +20,7 @@ export async function killPG() {
 	shutdownInProgress = true;
 	const state = getState();
 	const conf = getConfig();
-	const pgDataDir = resolve(getState().appPath, conf.System.Path.DB, 'postgres');
+	const pgDataDir = resolve(getState().dataPath, conf.System.Path.DB, 'postgres');
 	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 	if (state.os === 'win32') binPath = `"${binPath}"`;
 	return await execa(binPath, ['-D', pgDataDir, '-w', 'stop'], {
@@ -49,7 +49,7 @@ export async function dumpPG() {
 	const conf = getConfig();
 	const state = getState();
 	try {
-		const options = ['-c','-E','UTF8','--if-exists','-U',conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.appPath, 'karaokemugen.sql'), conf.Database.prod.database ];
+		const options = ['-c','-E','UTF8','--if-exists','-U',conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.dataPath, 'karaokemugen.sql'), conf.Database.prod.database ];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
@@ -66,7 +66,7 @@ export async function restorePG() {
 	const conf = getConfig();
 	const state = getState();
 	try {
-		const options = ['-U', conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.appPath, 'karaokemugen.sql'), conf.Database.prod.database];
+		const options = ['-U', conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.dataPath, 'karaokemugen.sql'), conf.Database.prod.database];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_client);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
@@ -105,12 +105,12 @@ export async function updatePGConf() {
 	// Editing port in postgresql.conf
 	const conf = getConfig();
 	const state = getState();
-	const pgConfFile = resolve(state.appPath, conf.System.Path.DB, 'postgres/postgresql.conf');
+	const pgConfFile = resolve(state.dataPath, conf.System.Path.DB, 'postgres/postgresql.conf');
 	let pgConf = await asyncReadFile(pgConfFile, 'utf-8');
 	//Parsing the ini file by hand since it can't be parsed well with ini package
 	pgConf = setConfig(pgConf, 'port', conf.Database.prod.port);
 	pgConf = setConfig(pgConf, 'logging_collector', 'on');
-	pgConf = setConfig(pgConf, 'log_directory', `'${resolve(state.appPath, 'logs/').replace(/\\/g,'/')}'`);
+	pgConf = setConfig(pgConf, 'log_directory', `'${resolve(state.dataPath, 'logs/').replace(/\\/g,'/')}'`);
 	pgConf = setConfig(pgConf, 'log_filename', '\'postgresql-%Y-%m-%d.log\'');
 	state.opt.sql
 		? pgConf = setConfig(pgConf, 'log_statement', '\'all\'')
@@ -125,7 +125,7 @@ export async function checkPG() {
 	const state = getState();
 	if (!conf.Database.prod.bundledPostgresBinary) return false;
 	try {
-		const options = ['status', '-D', resolve(state.appPath, conf.System.Path.DB, 'postgres/') ];
+		const options = ['status', '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/') ];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
@@ -143,7 +143,7 @@ export async function checkPG() {
 export async function initPG() {
 	const conf = getConfig();
 	const state = getState();
-	const pgDataDir = resolve(state.appPath, conf.System.Path.DB, 'postgres');
+	const pgDataDir = resolve(state.dataPath, conf.System.Path.DB, 'postgres');
 	// If no data dir is present, we're going to init one
 	if (!await asyncExists(pgDataDir)) await initPGData();
 	if (await checkPG()) {

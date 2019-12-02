@@ -7,14 +7,12 @@ import { updateUserLoginTime, requireAuth, requireValidUser } from "../../middle
 import { requireWebappLimited, requireWebappLimitedNoAuth } from "../../middlewares/webapp_mode";
 import { getLang } from "../../middlewares/lang";
 import multer = require('multer');
-import { resolve } from "path";
-import { getState } from "../../../utils/state";
-import { getConfig } from "../../../lib/utils/config";
+import { resolvedPathTemp } from "../../../lib/utils/config";
 import { deleteUser } from "../../../dao/user";
 
 export default function publicUserController(router: Router) {
 	// Middleware for playlist and files import
-	let upload = multer({ dest: resolve(getState().appPath,getConfig().System.Path.Temp)});
+	let upload = multer({ dest: resolvedPathTemp()});
 
 	router.route('/public/users/:username')
 	/**

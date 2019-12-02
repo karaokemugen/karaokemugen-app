@@ -1,9 +1,10 @@
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove,  asyncCopyAlt} from './lib/utils/files';
-import {getConfig, setConfig} from './lib/utils/config';
+import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars} from './lib/utils/config';
 import {initConfig} from './utils/config';
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './args';
 import {copy} from 'fs-extra';
+import {mkdirSync, existsSync} from 'fs';
 import {join, resolve} from 'path';
 import logger, { configureLogger } from './lib/utils/logger';
 import minimist from 'minimist';
@@ -45,12 +46,22 @@ if (process.platform === 'win32' ) {
 }
 
 // Main app begins here.
-let appPath: string;
 // Testing if we're in a packaged version of KM or not.
-('pkg' in process)
-	? appPath = join(process['execPath'],'../')
-	: appPath = join(__dirname,'../');
-setState({appPath: appPath});
+const appPath = ('pkg' in process)
+	? join(process['execPath'], '../')
+	: join(__dirname, '../');
+
+let dataPath = appPath;
+
+// Testing if we're in portable mode or not
+if (!existsSync(resolve(appPath, 'portable'))) {
+	// Rewriting appPath to point to user home directory
+	dataPath = `${process.env.HOME}/KaraokeMugen`;
+}
+
+if (!existsSync(dataPath)) mkdirSync(dataPath);
+
+setState({appPath: appPath, dataPath: dataPath});
 
 process.env['NODE_ENV'] = 'production'; // Default
 
@@ -74,6 +85,7 @@ async function main() {
 	let config = getConfig();
 	await parseCommandLineArgs(argv);
 	logger.debug(`[Launcher] AppPath : ${appPath}`);
+	logger.debug(`[Launcher] DataPath : ${dataPath}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
 	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(config, null, 2)}`);
@@ -89,17 +101,17 @@ async function main() {
 	// See https://github.com/zeit/pkg/issues/420
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-	const tempInput = resolve(appPath, config.System.Path.Temp, 'input.conf');
+	const tempInput = resolve(resolvedPathTemp(), 'input.conf');
 	logger.debug(`[Launcher] Copying input.conf to ${tempInput}`);
 	await asyncCopyAlt(join(__dirname, '../assets/input.conf'), tempInput)
 
-	const tempBackground = resolve(appPath, config.System.Path.Temp, 'default.jpg');
+	const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
 	logger.debug(`[Launcher] Copying default background to ${tempBackground}`);
 	await asyncCopyAlt(join(__dirname, `../assets/${state.version.image}`), tempBackground);
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
-	logger.debug(`[Launcher] Copying blank.png to ${resolve(appPath, config.System.Path.Avatars)}`);
-	await asyncCopyAlt(join(__dirname, '../assets/blank.png'), resolve(appPath, config.System.Path.Avatars, 'blank.png'));
+	logger.debug(`[Launcher] Copying blank.png to ${resolvedPathAvatars()}`);
+	await asyncCopyAlt(join(__dirname, '../assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
 
 	/**
 	 * Test if network ports are available
@@ -124,15 +136,15 @@ async function main() {
 async function checkPaths(config: Config) {
 
 	const appPath = getState().appPath;
-
+	const dataPath = getState().dataPath;
 	// If no karaoke is found, copy the samples directory if it exists
-	if (!await asyncExists(resolve(appPath, 'app/data'))) {
+	if (!await asyncExists(resolve(dataPath, 'data'))) {
 		try {
 			await asyncReadDir(resolve(appPath, 'samples'));
 			logger.debug('[Launcher] Kara files are missing - copying samples');
 			await copy(
 				resolve(appPath, 'samples'),
-				resolve(appPath, 'app/data')
+				resolve(dataPath, 'data')
 			);
 		} catch(err) {
 			logger.warn('[Launcher] No samples directory found, will not copy them.');
@@ -140,14 +152,14 @@ async function checkPaths(config: Config) {
 	}
 
 	// Emptying temp directory
-	if (await asyncExists(resolve(appPath, config.System.Path.Temp))) await asyncRemove(resolve(appPath, config.System.Path.Temp));
+	if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());
 	// Checking paths
 	let checks = [];
 	const paths = config.System.Path;
 	for (const item of Object.keys(paths)) {
 		Array.isArray(paths[item])
-			? paths[item].forEach((dir: string) => checks.push(asyncCheckOrMkdir(appPath, dir)))
-			: checks.push(asyncCheckOrMkdir(appPath, paths[item]));
+			? paths[item].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))))
+			: checks.push(asyncCheckOrMkdir(resolve(dataPath, paths[item])));
 	}
 	await Promise.all(checks);
 	logger.debug('[Launcher] Directory checks complete');
