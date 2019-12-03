@@ -6,7 +6,7 @@ import {date} from '../lib/utils/date';
 import {profile} from '../lib/utils/logger';
 import {formatKaraList, isAllKaras} from './kara';
 import {KaraList} from '../lib/types/kara';
-import {FavParams, FavExport, AutoMixParams, AutoMixPlaylistInfo} from '../types/favorites';
+import {FavParams, FavExport, AutoMixParams, AutoMixPlaylistInfo, FavExportContent} from '../types/favorites';
 import { uuidRegexp } from '../lib/utils/constants';
 import { getRemoteToken } from '../dao/user';
 import got from 'got';
@@ -31,14 +31,14 @@ export async function fetchAndAddFavorites(instance: string, token: string, user
 			headers: {
 				authorization: token
 			},
-			json: true
+			responseType: 'json'
 		});
 		const favorites = {
 			Header: {
 				version: 1,
 				description: 'Karaoke Mugen Favorites List File'
 			},
-			Favorites: res.body
+			Favorites: res.body as FavExportContent[]
 		};
 		await importFavorites(favorites, username);
 	} catch(err) {
@@ -92,7 +92,7 @@ export async function deleteFavorites(username: string, kids: string[]) {
 	}
 }
 
-async function manageFavoriteInInstance(action: string, username: string, kid: string) {
+async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: string, kid: string) {
 	// If OnlineUsers is disabled, we return early and do not try to update favorites online.
 	if (!getConfig().Online.Users) return true;
 	const instance = username.split('@')[1];
@@ -100,13 +100,12 @@ async function manageFavoriteInInstance(action: string, username: string, kid: s
 	try {
 		return await got(`https://${instance}/api/favorites`, {
 			method: action,
-			body: {
+			form: {
 				kid: kid
 			},
 			headers: {
 				authorization: remoteToken.token
 			},
-			form: true
 		});
 	} catch(err) {
 		logger.error(`[RemoteFavorites] Unable to ${action} favorite ${kid} on ${username}'s online account : ${err}`);

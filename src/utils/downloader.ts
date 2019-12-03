@@ -48,7 +48,6 @@ export default class Downloader {
 			const tryURL = new Promise((resolve, reject) => {
 				// Try to run a HEAD to get the size
 				let options = {
-					method: 'HEAD',
 					agent: {
 						http: new HttpAgent(),
 						https: new HttpsAgent()
@@ -59,7 +58,7 @@ export default class Downloader {
 					auth: null
 				};
 				if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
-				got(nextUrl, options)
+				got.head(nextUrl, options)
 					.then((response: any) => {
 						resolve(response.headers['content-length']);
 					})
@@ -97,7 +96,6 @@ export default class Downloader {
 	DoDownload = (url: string, filename: string, size: number, id :string, onSuccess?: any, onError?: any) => {
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
 		const options = {
-			method: 'GET',
 			retry: 20,
 			agent: {
 				http: new HttpAgent(),
@@ -110,7 +108,7 @@ export default class Downloader {
 		};
 		let stream = createWriteStream(filename);
 		if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
-		got.stream(url, options)
+		got.stream.get(url, options)
 			.on('response', (res: Response) => {
 				size = +res.headers['content-length'];
 				if (this.opts.bar) {
