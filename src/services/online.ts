@@ -12,12 +12,11 @@ export async function publishURL() {
 	const localHost = conf.Karaoke.Display.ConnectionInfo.Host || getState().osHost;
 	try {
 		await got(`https://${conf.Online.Host}/api/shortener`, {
-			body: {
+			form: {
 				localIP: localHost,
 				localPort: conf.Frontend.Port,
 				IID: await getInstanceID(),
-			},
-			form: true
+			}
 		});
 		logger.debug('[ShortURL] Server accepted our publish');
 		configureHost();

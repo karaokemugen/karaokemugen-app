@@ -414,11 +414,10 @@ export async function remoteLogin(username: string, password: string): Promise<T
 	const [login, instance] = username.split('@');
 	try {
 		const res = await got(`https://${instance}/api/auth/login`, {
-			body: {
+			form: {
 				username: login,
 				password: password
-			},
-			form: true
+			}
 		});
 		return JSON.parse(res.body);
 	} catch(err) {
@@ -449,9 +448,9 @@ async function getAllRemoteUsers(instance: string): Promise<User[]> {
 	try {
 		const users = await got(`https://${instance}/api/users`,
 			{
-				json: true
+				responseType: 'json'
 			});
-		return users.body;
+		return users.body as User[];
 	} catch(err) {
 		logger.debug(`[RemoteUser] Got error when get all remote users : ${err}`);
 		throw {
@@ -471,11 +470,10 @@ async function createRemoteUser(user: User) {
 	};
 	try {
 		await got(`https://${instance}/api/users`, {
-			body: {
+			form: {
 				login: login,
 				password: user.password
-			},
-			form: true
+			}
 		});
 	} catch(err) {
 		logger.debug(`[RemoteUser] Got error when create remote user ${login} : ${err}`);
@@ -494,7 +492,7 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 			headers: {
 				authorization: token
 			},
-			json: true
+			responseType: 'json'
 		});
 		return res.body;
 	} catch(err) {
