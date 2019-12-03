@@ -180,29 +180,28 @@ System:
       Linux: app/bin/postgres/bin/
   Path:
     # Some paths like Background, karas lyrics medias, etc. can have multiple entries.
-    Avatars: app/avatars
+    Avatars: avatars
     Backgrounds:
-      - app/backgrounds
-    Bin: app/bin
-    Import: app/import
+      - backgrounds
+    Bin: bin
+    Import: import
     Jingles:
-      - app/jingles
-      - app/jingles/KaraokeMugen
+      - jingles
+      - jingles/KaraokeMugen
     Intros:
-      - app/intros
-      - app/intros/KaraokeMugen
+      - intros
+      - intros/KaraokeMugen
     Karas:
-      - app/data/karaokes
+      - data/karaokes
     Lyrics:
-      - app/data/lyrics
+      - data/lyrics
     Medias:
-      - app/data/medias
+      - data/medias
     # If set and if a video is not found locally, KM will attempt to load the video from this HTTP server.
-    MediasHTTP: null
-    Previews: app/previews
+    Previews: previews
     Series:
-      - app/data/series
+      - data/series
     Tags:
-      - app/data/tags
-    Temp: app/temp
-    DB: app/db
+      - data/tags
+    Temp: temp
+    DB: db

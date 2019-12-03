@@ -3,7 +3,7 @@ import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars} from './lib
 import {initConfig} from './utils/config';
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './args';
-import {copy} from 'fs-extra';
+import {copy, moveSync} from 'fs-extra';
 import {mkdirSync, existsSync} from 'fs';
 import {join, resolve} from 'path';
 import logger, { configureLogger } from './lib/utils/logger';
@@ -51,15 +51,20 @@ const appPath = ('pkg' in process)
 	? join(process['execPath'], '../')
 	: join(__dirname, '../');
 
-let dataPath = appPath;
+let dataPath = resolve(appPath, 'app');
 
 // Testing if we're in portable mode or not
 if (!existsSync(resolve(appPath, 'portable'))) {
 	// Rewriting dataPath to point to user home directory
-	dataPath = `${process.env.HOME}/KaraokeMugen`;
+	dataPath = resolve(process.env.HOME, 'KaraokeMugen');
 }
 
 if (!existsSync(dataPath)) mkdirSync(dataPath);
+
+// Move config file if it's in appPath to dataPath
+if (existsSync(resolve(appPath, 'config.yml')) && !existsSync(resolve(dataPath, 'config.yml'))) {
+	moveSync(resolve(appPath, 'config.yml'), resolve(dataPath, 'config.yml'));
+}
 
 setState({appPath: appPath, dataPath: dataPath});
 

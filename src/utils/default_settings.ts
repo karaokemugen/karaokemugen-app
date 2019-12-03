@@ -154,20 +154,20 @@ export const defaults: Config = {
 			}
 		},
 		Path: {
-			Avatars: 'app/avatars',
-			Backgrounds: ['app/backgrounds'],
-			Bin: 'app/bin',
-			Import: 'app/import',
-			Jingles: ['app/jingles', 'app/jingles/KaraokeMugen'],
-			Intros: ['app/intros', 'app/intros/KaraokeMugen'],
-			Karas: ['app/data/karaokes'],
-			Lyrics: ['app/data/lyrics'],
-			Medias: ['app/data/medias'],
-			Previews: 'app/previews',
-			Series: ['app/data/series'],
-			Tags: ['app/data/tags'],
-			Temp: 'app/temp',
-			DB: 'app/db'
+			Avatars: 'avatars',
+			Backgrounds: ['backgrounds'],
+			Bin: 'bin',
+			Import: 'import',
+			Jingles: ['jingles', 'jingles/KaraokeMugen'],
+			Intros: ['intros', 'intros/KaraokeMugen'],
+			Karas: ['data/karaokes'],
+			Lyrics: ['data/lyrics'],
+			Medias: ['data/medias'],
+			Previews: 'previews',
+			Series: ['data/series'],
+			Tags: ['data/tags'],
+			Temp: 'temp',
+			DB: 'db'
 		}
 	}
 };
