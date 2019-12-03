@@ -65,6 +65,9 @@ if (!existsSync(dataPath)) mkdirSync(dataPath);
 if (existsSync(resolve(appPath, 'config.yml')) && !existsSync(resolve(dataPath, 'config.yml'))) {
 	moveSync(resolve(appPath, 'config.yml'), resolve(dataPath, 'config.yml'));
 }
+if (existsSync(resolve(appPath, 'database.json')) && !existsSync(resolve(dataPath, 'database.json'))) {
+	moveSync(resolve(appPath, 'database.json'), resolve(dataPath, 'database.json'));
+}
 
 setState({appPath: appPath, dataPath: dataPath});
 
