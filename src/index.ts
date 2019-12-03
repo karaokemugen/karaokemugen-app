@@ -55,7 +55,7 @@ let dataPath = appPath;
 
 // Testing if we're in portable mode or not
 if (!existsSync(resolve(appPath, 'portable'))) {
-	// Rewriting appPath to point to user home directory
+	// Rewriting dataPath to point to user home directory
 	dataPath = `${process.env.HOME}/KaraokeMugen`;
 }
 
