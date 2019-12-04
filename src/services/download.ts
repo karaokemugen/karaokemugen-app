@@ -64,7 +64,7 @@ function initQueue(drainEvent = true) {
 	q.on('task_finish', () => {
 		if (q.length > 0) logger.info(`[Download] ${q.length - 1} items left in queue`);
 		taskCounter++;
-		if (taskCounter >= 5) {
+		if (taskCounter >= 100) {
 			logger.debug('[Download] Triggering database refresh');
 			compareKarasChecksum(true);
 			refreshAll();
