@@ -40,7 +40,7 @@ export async function sendPayload() {
 		const conf = getConfig();
 		asyncWriteFile(resolve(getState().dataPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
 		try {
-			await got(`https://${conf.Online.Host}/api/stats`,{
+			await got.post(`https://${conf.Online.Host}/api/stats`,{
 				json: payload
 			});
 		} catch(err) {

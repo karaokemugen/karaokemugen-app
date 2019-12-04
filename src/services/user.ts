@@ -413,7 +413,7 @@ export async function remoteCheckAuth(instance: string, token: string) {
 export async function remoteLogin(username: string, password: string): Promise<Token> {
 	const [login, instance] = username.split('@');
 	try {
-		const res = await got(`https://${instance}/api/auth/login`, {
+		const res = await got.post(`https://${instance}/api/auth/login`, {
 			form: {
 				username: login,
 				password: password
@@ -469,7 +469,7 @@ async function createRemoteUser(user: User) {
 		message: `User already exists on ${instance} or incorrect password`
 	};
 	try {
-		await got(`https://${instance}/api/users`, {
+		await got.post(`https://${instance}/api/users`, {
 			form: {
 				login: login,
 				password: user.password

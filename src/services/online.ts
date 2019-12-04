@@ -11,7 +11,7 @@ export async function publishURL() {
 	const conf = getConfig();
 	const localHost = conf.Karaoke.Display.ConnectionInfo.Host || getState().osHost;
 	try {
-		await got(`https://${conf.Online.Host}/api/shortener`, {
+		await got.post(`https://${conf.Online.Host}/api/shortener`, {
 			form: {
 				localIP: localHost,
 				localPort: conf.Frontend.Port,
