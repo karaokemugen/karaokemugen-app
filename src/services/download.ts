@@ -254,10 +254,11 @@ async function processDownload(download: KaraDownload) {
 }
 
 async function downloadFiles(download: KaraDownload, list: DownloadItem[]) {
-	const downloader = new Downloader(list, { bar: true });
+	const downloader = new Downloader({ bar: true });
 	// Launch downloads
 	return new Promise((resolve, reject) => {
-		downloader.download(fileErrors => {
+		downloader.download(list)
+			.then(fileErrors => {
 			if (fileErrors.length > 0) {
 				setDownloadStatus(download.uuid, 'DL_FAILED')
 					.then(() => {
@@ -703,17 +704,16 @@ function downloadMedias(files: File[], mediasPath: string, repo: string): Promis
 			size: file.size
 		});
 	}
-	const mediaDownloads = new Downloader(list, {
+	const mediaDownloads = new Downloader({
 		bar: true
 	});
 	return new Promise((resolve: any, reject: any) => {
-		mediaDownloads.download(fileErrors => {
-			if (fileErrors.length > 0) {
-				reject(`Error downloading these medias : ${fileErrors.toString()}`);
-			} else {
-				resolve();
-			}
-		});
+		mediaDownloads.download(list)
+			.then((fileErrors) => {
+				fileErrors.length > 0
+					? reject(`Error downloading these medias : ${fileErrors.toString()}`)
+					: resolve()
+			});
 	});
 }
 
