@@ -169,6 +169,7 @@ async function checkPaths(config: Config) {
 			? paths[item].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))))
 			: checks.push(asyncCheckOrMkdir(resolve(dataPath, paths[item])));
 	}
+	checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
 	await Promise.all(checks);
 	logger.debug('[Launcher] Directory checks complete');
 }
