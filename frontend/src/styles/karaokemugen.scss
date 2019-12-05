@@ -1267,9 +1267,12 @@ input[type="text"]:focus, input[type="password"]:focus {
 .karaTitle {
 	display: flex;
 	flex-grow: 1;
+	align-items: baseline;
+	flex-wrap: wrap;
 
 	.karaTitleSerie {
 		font-weight: bold;
+		white-space:nowrap;
 	}
 
 	.karaTitleTitle {
@@ -1277,6 +1280,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 	}
 
 	.tagConteneur {
+		margin-left: auto;
 		display: flex;
 		justify-content: flex-end;
 	}

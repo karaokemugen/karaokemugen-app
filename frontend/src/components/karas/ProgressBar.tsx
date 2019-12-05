@@ -138,7 +138,7 @@ class ProgressBar extends Component<IProps,IState> {
     				onClick={this.karaInfoClick}
     				onMouseDown={this.mouseDown} onMouseUp={() => this.setState({mouseDown: false})}
     				onMouseMove={this.mouseMove} onMouseOut={this.mouseOut}
-    			><span>{this.state.karaInfoText}</span></div>
+    			><div className="karaTitle">{this.state.karaInfoText}</div></div>
     			<div id="progressBarColor" style={{width: this.state.width}}></div>
     		</div>
     	);

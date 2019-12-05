@@ -135,7 +135,7 @@ export function buildKaraTitle(data:DBPLC) {
 	var songtypeText = data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name;
 	var songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
 
-	return (<div className='karaTitle'>
+	return (<React.Fragment>
 		<div>{langsText}</div>
 		<div>&nbsp;-&nbsp;</div>
 		<div className="karaTitleSerie">{serieText}</div>
@@ -143,7 +143,7 @@ export function buildKaraTitle(data:DBPLC) {
 		<div>{`${songtypeText} ${songorderText}`}</div>
 		<div>&nbsp;-&nbsp;</div>
 		<div className="karaTitleTitle">{data.title}</div>
-		</div>)
+		</React.Fragment>)
 };
 
 export function displayMessage (type:TypeOptions, message:any, time?:number) {
