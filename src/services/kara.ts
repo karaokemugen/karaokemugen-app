@@ -29,7 +29,7 @@ import { DBKaraHistory } from '../types/database/kara';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
 import { Token } from '../lib/types/user';
-import { consolidatei18n, removeUnusedTagData } from '../lib/services/kara';
+import { consolidateData, removeUnusedTagData } from '../lib/services/kara';
 import { getState } from '../utils/state';
 import {where} from 'langs';
 
@@ -204,7 +204,7 @@ export function formatKaraList(karaList: any, from: number, count: number, lang:
 	const languages = [where('1', getState().EngineDefaultLocale)['2B']];
 	languages.push(where('1', lang || getState().EngineDefaultLocale)['2B']);
 	languages.push('eng'); // English is mandatory
-	const {i18n, data} = consolidatei18n(karaList, languages);
+	let {i18n, avatars, data} = consolidateData(karaList, languages);
 	karaList = removeUnusedTagData(karaList);
 	return {
 		infos: {
@@ -213,6 +213,7 @@ export function formatKaraList(karaList: any, from: number, count: number, lang:
 			to: from + data.length
 		},
 		i18n: i18n,
+		avatars: avatars,
 		content: data
 	};
 }

@@ -146,10 +146,11 @@ class App extends Component<{}, IState> {
     						<Route path="/admin" render={(props) => <AdminPage {...props}
     							navigatorLanguage={this.state.navigatorLanguage}
     							powerOff={this.powerOff} tags={this.state.tags as FrontendTag[]}
-    							showVideo={this.showVideo} config={this.state.config as Config}  />} />
+    							showVideo={this.showVideo} config={this.state.config as Config} />} />
     						<Route exact path="/" render={(props) => <PublicPage {...props}
     							navigatorLanguage={this.state.navigatorLanguage}
-    							tags={this.state.tags as FrontendTag[]} showVideo={this.showVideo} config={this.state.config as Config}  />} />
+								tags={this.state.tags as FrontendTag[]} showVideo={this.showVideo}
+								config={this.state.config as Config} />} />
     						<Route component={NotFoundPage} />
     					</Switch>
     					<a id="downloadAnchorElem" />

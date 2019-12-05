@@ -133,10 +133,6 @@ select.form-control {
 	background-color: #222;
 }
 
-.list-group-item > div {
-	padding: 3px;
-}
-
 .playlistContainer > #playlist2 .list-group-item > .infoDiv > button, .playlistContainer > #playlist1 .list-group-item > .actionDiv > button {
 	float: right;
 	display: block;
@@ -702,6 +698,17 @@ input[type=range]:focus::-ms-fill-upper {
     max-width: 160px;
     border-radius: 0%;
 }
+
+.list-group-item .img-circle {
+    width: 100%;
+    max-width: 30px;
+	border-radius: 0%;
+	float: right;
+	display: block;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
 .modal .profileContent p {
     font-size: 2.3rem;
 	line-height: 2.3rem;
