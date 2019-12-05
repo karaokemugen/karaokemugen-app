@@ -216,7 +216,6 @@ export const configConstraints = {
 	'Karaoke.Display.Avatar': {inclusion : bools},
 	'Karaoke.Display.Nickname': {inclusion : bools},
 	'Karaoke.Display.ConnectionInfo.Enabled': {inclusion : bools},
-	'Karaoke.Display.ConnectionInfo.QRCode': {inclusion : bools},
 	'Karaoke.Display.ConnectionInfo.Message': {presence: {allowEmpty: true}},
 	'Player.FullScreen': {inclusion : bools},
 	'Player.Monitor': {inclusion : bools},
