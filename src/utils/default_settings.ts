@@ -1,5 +1,4 @@
 
-
 // Karaoke Mugen default configuration file
 
 // this file is overwritten during updates, editing is ill-advised .
@@ -44,7 +43,7 @@ export const defaults: Config = {
 		AuthExpireTime: 15,
 		Mode: 2,
 		Port: 1337,
-		SeriesLanguageMode: 3
+		SeriesLanguageMode: 3,
 		Permissions: {
 			AllowNicknameChange: true,
 			AllowViewBlacklist: true,
