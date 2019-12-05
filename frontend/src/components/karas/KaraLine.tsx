@@ -28,6 +28,7 @@ interface IProps {
 	scope: string;
 	playlistCommands?: boolean;
 	i18nTag: {[key: string]: {[key: string]: string}};
+	avatar_file:string;
 	showVideo: (file:string) => void;
 	checkKara: (id:number|string) => void;
 }
@@ -39,6 +40,7 @@ interface IState {
 	addKaraInProgress: boolean;
 }
 
+const pathAvatar = '/avatars/';
 class KaraLine extends Component<IProps,IState> {
 	constructor(props:IProps) {
 		super(props);
@@ -244,13 +246,14 @@ class KaraLine extends Component<IProps,IState> {
   				</div> :
   				<React.Fragment>
   					{is_touch_device() && scope !== 'admin' ? null :
-  						<div className="actionDiv"> {this.props.idPlaylistTo !== this.props.idPlaylist ?
-  							<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
-  								scope={this.props.scope} playlistToAddId={this.props.playlistToAddId}
-  								addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} /> : null}
-
-  						{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
-
+  						<div className="actionDiv"> 
+							{this.props.config.Frontend.ShowAvatarsOnPlaylist && this.props.avatar_file ? 
+								<img className="img-circle" src={pathAvatar + this.props.avatar_file} alt="User Pic" /> : null}
+							{this.props.idPlaylistTo !== this.props.idPlaylist ?
+								<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
+									scope={this.props.scope} playlistToAddId={this.props.playlistToAddId}
+									addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} /> : null}
+  							{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
   						</div>
   					}
   					{scope === 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ?

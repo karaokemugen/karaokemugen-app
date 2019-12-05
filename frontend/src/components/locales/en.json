@@ -242,7 +242,8 @@
 			"WEBAPPMODE_OPEN": "Opened (default)",
 			"ALLOW_VIEW_BLACKLIST": "Allow users to view blacklist",
 			"ALLOW_VIEW_BLACKLIST_CRITERIAS": "Allow users to view blacklist criterias",
-			"ALLOW_VIEW_WHITELIST": "Allow users to view whitelist"
+			"ALLOW_VIEW_WHITELIST": "Allow users to view whitelist",
+			"SHOW_AVATARS_ON_PLAYLIST": "Show avatars on playlist"
 		}
 	},
 	"JINGLE_TIME": "Jingle time!",

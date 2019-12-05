@@ -257,7 +257,8 @@
 			"WEBAPPMODE_OPEN": "Ouvert (par défaut)",
 			"ALLOW_VIEW_BLACKLIST": "Liste noire visible du public",
 			"ALLOW_VIEW_BLACKLIST_CRITERIAS": "Critères de liste noire visibles du public",
-			"ALLOW_VIEW_WHITELIST": "Liste blanche visible du public"
+			"ALLOW_VIEW_WHITELIST": "Liste blanche visible du public",
+			"SHOW_AVATARS_ON_PLAYLIST": "Afficher les avatars sur les playlists"
 		}
 	},
 	"JINGLE_TIME": "Instant jingle !",
