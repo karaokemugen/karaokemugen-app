@@ -25,7 +25,8 @@ export interface Config {
 			AllowViewWhitelist?: boolean,
 			AllowViewBlacklist?: boolean,
 			AllowViewBlacklistCriterias?: boolean
-		}
+		},
+		ShowAvatarsOnPlaylist?: boolean
 	},
 	Gitlab: {
 		Enabled?: boolean,

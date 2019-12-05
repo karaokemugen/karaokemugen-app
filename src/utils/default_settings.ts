@@ -50,7 +50,8 @@ export const defaults: Config = {
 			AllowViewBlacklistCriterias: true,
 			AllowViewWhitelist: true,
 		},
-		SeriesLanguageMode: 3
+		SeriesLanguageMode: 3,
+		ShowAvatarsOnPlaylist: true
 	},
 	Gitlab: {
 		Enabled: true,
@@ -193,6 +194,7 @@ export const configConstraints = {
 	'Frontend.AuthExpireTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Frontend.Mode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
 	'Frontend.SeriesLanguageMode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
+	'Frontend.ShowAvatarsOnPlaylist': {inclusion: bools},
 	'Karaoke.Autoplay': {inclusion : bools},
 	'Karaoke.ClassicMode': {inclusion : bools},
 	'Karaoke.StreamerMode.Enabled': {inclusion: bools},

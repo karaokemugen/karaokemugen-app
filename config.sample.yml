@@ -41,6 +41,7 @@ Frontend:
   # 2 : Use KM's language (fallbacks to english then original)
   # 3 : Use user language (fallbacks to english then original)
   SeriesLanguageMode: 3
+  ShowAvatarsOnPlaylist: true
 
 Gitlab:
   # Enable or not gitlab posting

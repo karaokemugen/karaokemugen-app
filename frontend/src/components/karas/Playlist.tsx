@@ -57,6 +57,7 @@ interface IState {
 
 interface KaraList {
 	content: KaraElement[];
+	avatars:any,
 	i18n?: any;
 	infos: {
 		count: number,
@@ -131,7 +132,7 @@ class Playlist extends Component<IProps, IState> {
   SortableList = SortableContainer((List as any), { withRef: true })
   SortableItem = SortableElement(({value,style}:any) => {
   	if(value.content) {
-  		let kara = value.content;
+  		let kara = value.content as KaraElement;
   		let s = JSON.parse(JSON.stringify(style));
   		s.zIndex = 999999999 - value.index;
   		return <li data-kid={kara.kid} key={value.key} style={s}>
@@ -149,7 +150,8 @@ class Playlist extends Component<IProps, IState> {
   				playlistCommands={this.state.playlistCommands}
   				idPlaylistTo={this.props.idPlaylistTo}
   				checkKara={this.checkKara}
-  				showVideo={this.props.showVideo}
+				showVideo={this.props.showVideo}
+				avatar_file={(this.state.data as KaraList).avatars[kara.username]}
   			/>
   		</li>;
   	} else {

@@ -77,6 +77,16 @@ class InterfaceOptions extends Component<IProps, IState> {
   				</div>
   			</div>
 
+			<div className="form-group">
+  				<label className="col-xs-4 control-label">
+  					{i18next.t('SETTINGS.INTERFACE.SHOW_AVATARS_ON_PLAYLIST')}
+  				</label>
+  				<div className="col-xs-6">
+  					<Switch idInput="Frontend.ShowAvatarsOnPlaylist" handleChange={this.onChange}
+  						isChecked={this.state.config['Frontend.ShowAvatarsOnPlaylist']} />
+  				</div>
+  			</div>
+
   			<div className="form-group">
   				<label className="col-xs-4 control-label">
   					{i18next.t('SETTINGS.INTERFACE.ALLOW_VIEW_BLACKLIST')}

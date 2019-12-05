@@ -17,7 +17,6 @@ interface IProps {
 }
 
 interface IState {
-	pathAvatar: string;
 	passwordDifferent: string;
 	activeView: number;
 	user: UserProfile;
@@ -48,11 +47,12 @@ type typesAttrUser =
 |'securityCode'
 'passwordConfirmation';
 
+const pathAvatar = '/avatars/';
+
 class ProfilModal extends Component<IProps, IState> {
 	constructor(props:IProps) {
 		super(props);
 		this.state = {
-			pathAvatar: '/avatars/',
 			users: [],
 			user: {},
 			passwordDifferent: 'form-control',
@@ -200,7 +200,7 @@ class ProfilModal extends Component<IProps, IState> {
     									<div className="col-md-3 col-lg-3 col-xs-12 col-sm-12">
     										<label title={i18next.t('AVATAR_IMPORT')} className="btn btn-default avatar">
     											<img className="img-circle"
-    												src={this.state.user.avatar_file ? this.state.pathAvatar + this.state.user.avatar_file : blankAvatar as string}
+    												src={this.state.user.avatar_file ? pathAvatar + this.state.user.avatar_file : blankAvatar as string}
     												alt="User Pic" />
     											{logInfos && logInfos.role !== 'guest' ?
     												<input id="avatar" className="import-file" type="file" accept="image/*" style={{ display: 'none' }} onChange={this.importAvatar} /> : null
@@ -308,7 +308,7 @@ class ProfilModal extends Component<IProps, IState> {
     										return <li key={user.login} className={user.flag_online ? 'list-group-item online' : 'list-group-item'} id={user.login} onClick={this.getUserDetails}>
     											<div className="userLine">
     												<span className="nickname">{user.nickname}</span>
-    												<img className="avatar" src={this.state.pathAvatar + user.avatar_file} />
+    												<img className="avatar" src={pathAvatar + user.avatar_file} />
     											</div>
     											{this.state.userDetails ?
     												<div className="userDetails">
