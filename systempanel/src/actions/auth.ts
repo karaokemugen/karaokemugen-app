@@ -3,9 +3,15 @@ import { Dispatch } from 'react';
 import { AuthentifactionApi } from '../api/authentication.api';
 import { AuthAction, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
 
+const adminMessage = 'Please use an admin account';
+
 export async function login(username: string, password: string, dispatch: Dispatch<LoginSuccess | LoginFailure>): Promise<void>  {
     try {
       const info = await AuthentifactionApi.login(username, password)
+
+	  if (info.role !== 'admin') {
+		  throw adminMessage;
+	  }
 
       // Store data, should be managed in a service and item should be enum and not string
       localStorage.setItem('kmToken', info.token);
@@ -21,7 +27,7 @@ export async function login(username: string, password: string, dispatch: Dispat
       dispatch({
         type: AuthAction.LOGIN_FAILURE,
         payload: {
-          error: 'Bad login info: ' + error
+          error: error === adminMessage ? error : 'Bad login info: ' + error
         }
       });
 
