@@ -408,30 +408,37 @@ export default function adminPlaylistsController(router: Router) {
 			})
 		/**
 	 * @api {post} /admin/playlists/:pl_id/karas Add karaokes to playlist
-	 * @apiName PatchPlaylistKaras
+	 * @apiName PostPlaylistKaras
 	 * @apiVersion 2.5.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {Number} pl_id Target playlist ID.
 	 * @apiParam {uuid[]} kid List of `kid` separated by commas (`,`).
-	 * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
-	 * @apiSuccess {String[]} args/plc_ids IDs of playlist contents copied
-	 * @apiSuccess {String} args/playlist_id ID of destinaton playlist
+	 * @apiParam {Number} [pos] Position in target playlist where to add the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
+	 * @apiSuccess {String} args/kara Karaoke title added
+	 * @apiSuccess {uuid} args/kid Karaoke ID added.
+	 * @apiSuccess {String} args/playlist Name of playlist the song was added to
+	 * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
 	 * @apiSuccess {String} code Message to display
+	 * @apiSuccess {String} data See `args` above.
 	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
 	 * {
 	 *   "args": {
-	 *       "playlist": 2,
-	 *       "plc_ids": [
-	 * 			"4946",
-	 * 			"639"
-	 * 		 ]
+	 *       "kara": "Dragon Screamer",
+	 *       "kid": "kid",
+	 *       "playlist": "Courante",
+	 *       "playlist_id": 1
 	 *   },
-	 *   "code": "PL_SONG_MOVED",
-	 *   "data": null
+	 *   "code": "PL_SONG_ADDED",
+	 *   "data": {
+	 *       "kara": "Dragon Screamer",
+	 *       "kid": "kid",
+	 *       "playlist": "Courante",
+	 *       "playlist_id": 1
+	 *   }
 	 * }
 	 * @apiError PL_ADD_SONG_ERROR Unable to add songs to the playlist
 	 *
