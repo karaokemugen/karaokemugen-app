@@ -20,6 +20,7 @@ import retry from 'p-retry';
 import { initializationCatchphrases } from '../utils/constants';
 import { getSingleIntro } from '../services/intros';
 import { Media } from '../types/medias';
+import { notificationNextSong } from '../services/playlist';
 
 const sleep = promisify(setTimeout);
 
@@ -28,6 +29,7 @@ let player: any;
 let playerMonitor: any;
 let monitorEnabled = false;
 let songNearEnd = false;
+let nextSongNotifSent = false;
 
 let playerState: PlayerState = {
 	volume: 100,
@@ -304,6 +306,11 @@ async function startmpv() {
 		// Returns the position in seconds in the current song
 		playerState.timeposition = position;
 		emitPlayerState();
+		// Send notification to frontend if timeposition is 15 seconds before end of song
+		if (position >= (playerState.duration - 15) && playerState.mediaType === 'song' && !nextSongNotifSent) {
+			nextSongNotifSent = true;
+			notificationNextSong();
+		}
 		// Display informations if timeposition is 8 seconds before end of song
 		if (position >= (playerState.duration - 8) &&
 			!displayingInfo &&
@@ -409,6 +416,7 @@ export async function play(mediadata: MediaData) {
 		playerState._playing = true;
 		emitPlayerState();
 		songNearEnd = false;
+		nextSongNotifSent = false;
 	} catch(err) {
 		logger.error(`[Player] Error loading media ${mediadata.media} : ${JSON.stringify(err)}`);
 		throw err;

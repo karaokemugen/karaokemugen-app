@@ -21,6 +21,7 @@ import ReactDOM from 'react-dom';
 import { Config } from '../../../src/types/config';
 import { Tag } from '../types/tag';
 import { Token } from '../../../src/lib/types/user';
+import { DBPLC } from '../../../src/types/database/playlist';
 
 interface IProps {
 	config: Config;
@@ -97,6 +98,16 @@ class PublicPage extends Component<IProps,IState> {
   	});
   	getSocket().on('adminMessage', (data:any) => displayMessage('info', 
   		<div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br/>{data.message}</div>, data.duration));
+	getSocket().on('nextSong', (data:DBPLC) => {
+		if (data) {
+			displayMessage('info', 
+				<div>
+					<label>{i18next.t('NEXT_SONG_MESSAGE')}</label>
+					<br/>
+					{buildKaraTitle(data, true)}
+				</div>)
+		}
+	});
   }
 
   displayClassicModeModal = async (data:any) => {
@@ -132,7 +143,7 @@ class PublicPage extends Component<IProps,IState> {
   	if (response.data.data && response.data.data.content && response.data.data.content[0]) {
   		var chosenOne = response.data.data.content[0].kid;
   		var response2 = await axios.get('/api/public/karas/' + chosenOne);
-  		callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data)}), () => {
+  		callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data, true)}), () => {
   			axios.post('/api/public/karas/' + chosenOne, { requestedby: (store.getLogInfos() as Token).username });
   		}, 'lucky');
   	}

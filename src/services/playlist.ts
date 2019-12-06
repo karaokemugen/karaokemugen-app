@@ -1038,14 +1038,19 @@ export async function previousSong() {
 }
 
 /** Move to next song */
-export async function nextSong() {
+export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 	const conf = getConfig();
-	const playlist = await getCurrentPlaylistContents();
+	let playlist: any;
+	try {
+		playlist = await getCurrentPlaylistContents();
+	} catch(err) {
+		throw err;
+	}
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (playlist.content.length === 0) throw 'Playlist is empty!';
 	if (playlist.index + 1 >= playlist.content.length && !conf.Karaoke.Repeat) {
 		logger.debug('[PLC] End of playlist.');
-		await setPlaying(null, playlist.id);
+		if (setPlayingSong) await setPlaying(null, playlist.id);
 		throw 'Current position is last song!';
 	} else {
 		// If we're here, it means either we're beyond the length of the playlist
@@ -1054,7 +1059,8 @@ export async function nextSong() {
 		if (conf.Karaoke.Repeat && playlist.index + 1 >= playlist.content.length) playlist.index = -1;
 		const kara = playlist.content[playlist.index + 1];
 		if (!kara) throw 'Karaoke received is empty!';
-		await setPlaying(kara.playlistcontent_id, playlist.id);
+		if (setPlayingSong) await setPlaying(kara.playlistcontent_id, playlist.id);
+		return kara;
 	}
 }
 
@@ -1078,6 +1084,16 @@ async function getCurrentPlaylistContents() {
 		content: playlist,
 		index: readpos
 	};
+}
+
+export async function notificationNextSong(): Promise<void> {
+	try {
+		const kara = await nextSong(false);
+		emitWS('nextSong', kara);
+	} catch(err) {
+		//Non-fatal
+		logger.warn(`[Playlist] Could not send next song notification : ${err}`);
+	}
 }
 
 /** Get currently playing song's data */
