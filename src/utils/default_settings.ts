@@ -1,5 +1,4 @@
 
-
 // Karaoke Mugen default configuration file
 
 // this file is overwritten during updates, editing is ill-advised .
@@ -17,28 +16,28 @@ export const defaults: Config = {
 		'sql-file': true,
 		defaultEnv: 'prod',
 		prod: {
-			driver: 'pg',
-			user: 'karaokemugen_app',
-			password: 'musubi',
-			host: 'localhost',
-			port: 6559,
+			bundledPostgresBinary: true,
 			database: 'karaokemugen_app',
+			driver: 'pg',
+			host: 'localhost',
+			password: 'musubi',
+			port: 6559,
 			schema: 'public',
 			superuser: 'postgres',
 			superuserPassword: null,
-			bundledPostgresBinary: true
+			user: 'karaokemugen_app'
 		}
 	},
 	Online: {
 		Host: 'kara.moe',
+		IntrosUpdate: true,
+		JinglesUpdate: true,
+		MediasHost: undefined,
 		Port: undefined,
 		Stats: undefined,
 		URL: true,
 		Users: true,
-		JinglesUpdate: true,
-		IntrosUpdate: true,
-		Updates: true,
-		MediasHost: undefined
+		Updates: true
 	},
 	Frontend: {
 		AuthExpireTime: 15,
@@ -56,9 +55,9 @@ export const defaults: Config = {
 	Gitlab: {
 		Enabled: true,
 		Host: 'lab.shelter.moe',
+		ProjectID: 2,
 		// This is a reporter-only access token, nothing of value is here.
 		Token: 'i5WnabG3fvda4oxx-FRb',
-		ProjectID: 2,
 		IssueTemplate: {
 			Suggestion: {
 				Labels: ['à intégrer']
@@ -68,13 +67,6 @@ export const defaults: Config = {
 	Karaoke: {
 		Autoplay: false,
 		ClassicMode: false,
-		StreamerMode: {
-			Enabled: false,
-			PauseDuration: 0,
-			Twitch: {
-				Enabled: false
-			}
-		},
 		JinglesInterval: 20,
 		Private: true,
 		Repeat: false,
@@ -84,8 +76,8 @@ export const defaults: Config = {
 			Nickname: true,
 			ConnectionInfo: {
 				Enabled: true,
-				Message: '',
-				Host: null
+				Host: null,
+				Message: ''
 			}
 		},
 		Poll: {
@@ -100,37 +92,44 @@ export const defaults: Config = {
 			FreeUpVotesRequiredPercent: 33,
 			Songs: 10000,
 			Time: 10000,
-			Type: 0,
+			Type: 0
+		},
+		StreamerMode: {
+			Enabled: false,
+			PauseDuration: 0,
+			Twitch: {
+				Enabled: false
+			}
 		}
 	},
 	Player: {
-		mpvVideoOutput: '',
 		Background: '',
 		FullScreen: false,
 		Monitor: false,
+		mpvVideoOutput: '',
 		NoBar: true,
 		NoHud: true,
 		Screen: 0,
 		StayOnTop: true,
+		VisualizationEffects: false,
 		PIP: {
 			Enabled: true,
 			PositionX: 'Right',
 			PositionY: 'Bottom',
 			Size: 30,
-		},
-		VisualizationEffects: false
+		}
 	},
 	Playlist: {
 		AllowDuplicates: false,
 		AllowDuplicateSeries: true,
-		MaxDejaVuTime: 60,
-		RemovePublicOnPlay: false,
 		IntroVideos: true,
 		IntroVideoFile: null,
+		MaxDejaVuTime: 60,
+		RemovePublicOnPlay: false,
 		MysterySongs: {
-			Hide: false,
 			AddedSongVisibilityAdmin: true,
 			AddedSongVisibilityPublic: true,
+			Hide: false,
 			Labels: [
 				'???',
 			]
@@ -149,26 +148,26 @@ export const defaults: Config = {
 				Windows: 'app/bin/ffmpeg.exe'
 			},
 			Postgres: {
-				Windows: 'app/bin/postgres/bin/',
-				OSX: 'app/bin/postgres/bin/',
 				Linux: 'app/bin/postgres/bin/',
+				OSX: 'app/bin/postgres/bin/',
+				Windows: 'app/bin/postgres/bin/'
 			}
 		},
 		Path: {
 			Avatars: 'avatars',
 			Backgrounds: ['backgrounds'],
 			Bin: 'bin',
+			DB: 'db',
 			Import: 'import',
-			Jingles: ['jingles', 'jingles/KaraokeMugen'],
 			Intros: ['intros', 'intros/KaraokeMugen'],
+			Jingles: ['jingles', 'jingles/KaraokeMugen'],
 			Karas: ['data/karaokes'],
 			Lyrics: ['data/lyrics'],
 			Medias: ['data/medias'],
 			Previews: 'previews',
 			Series: ['data/series'],
 			Tags: ['data/tags'],
-			Temp: 'temp',
-			DB: 'db'
+			Temp: 'temp'
 		}
 	}
 };

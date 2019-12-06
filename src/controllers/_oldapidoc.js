@@ -10066,3 +10066,103 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 401 Unauthorized
  */
+
+	/**
+ * @api {post} /public/karas/:kid Add karaoke to current/public playlist
+ * @apiName PostKaras
+ * @apiVersion 2.5.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
+ * @apiParam {uuid} kid Karaoke ID to add to current/public playlist
+ * @apiSuccess {String} args/kara Karaoke title added
+ * @apiSuccess {uuid} args/kid Karaoke ID added.
+ * @apiSuccess {String} args/playlist Name of playlist the song was added to
+ * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data See `args` above.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "kara": "Dragon Screamer",
+ *       "kid": "kid",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   },
+ *   "code": "PLAYLIST_MODE_SONG_ADDED",
+ *   "data": {
+ *       "kara": "Dragon Screamer",
+ *       "kid": "kid",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   }
+ * }
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED All songs are already present in playlist
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS No duplicate series or singers are allowed
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED Song is blacklisted and cannot be added
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR General error while adding song
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": {
+ *       "kid": "uuid",
+ *       "playlist": 1,
+ *       "user": "Axel"
+ *   },
+ *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
+ *   "message": "User quota reached"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+
+/**
+	 * @api {post} /admin/playlists/:pl_id/karas Add karaokes to playlist
+	 * @apiName PostPlaylistKaras
+	 * @apiVersion 2.5.0
+	 * @apiGroup Playlists
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {Number} pl_id Target playlist ID.
+	 * @apiParam {uuid[]} kid List of `kid` separated by commas (`,`).
+	 * @apiParam {Number} [pos] Position in target playlist where to add the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
+	 * @apiSuccess {String} args/kara Karaoke title added
+	 * @apiSuccess {uuid} args/kid Karaoke ID added.
+	 * @apiSuccess {String} args/playlist Name of playlist the song was added to
+	 * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
+	 * @apiSuccess {String} code Message to display
+	 * @apiSuccess {String} data See `args` above.
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "args": {
+	 *       "kara": "Dragon Screamer",
+	 *       "kid": "kid",
+	 *       "playlist": "Courante",
+	 *       "playlist_id": 1
+	 *   },
+	 *   "code": "PL_SONG_ADDED",
+	 *   "data": {
+	 *       "kara": "Dragon Screamer",
+	 *       "kid": "kid",
+	 *       "playlist": "Courante",
+	 *       "playlist_id": 1
+	 *   }
+	 * }
+	 * @apiError PL_ADD_SONG_ERROR Unable to add songs to the playlist
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * {
+	 *   "args": "Liste de lecture publique",
+	 *   "code": "PL_ADD_SONG_ERROR",
+	 *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
+	 * }
+	 */

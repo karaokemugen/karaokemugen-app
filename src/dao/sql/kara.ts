@@ -22,7 +22,7 @@ INSERT INTO playlist_content(
 	$7,
 	$8,
 	$9
-)
+) RETURNING pk_id_plcontent
 `;
 
 export const addViewcount = `

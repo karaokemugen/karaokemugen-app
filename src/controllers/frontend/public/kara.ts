@@ -327,7 +327,7 @@ export default function publicKaraController(router: Router) {
 	/**
  * @api {post} /public/karas/:kid Add karaoke to current/public playlist
  * @apiName PostKaras
- * @apiVersion 2.5.0
+ * @apiVersion 3.1.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -348,13 +348,15 @@ export default function publicKaraController(router: Router) {
  *       "kid": "kid",
  *       "playlist": "Courante",
  *       "playlist_id": 1
+ * 		 "plc": <See Playlist Contents in this doc>
  *   },
  *   "code": "PLAYLIST_MODE_SONG_ADDED",
  *   "data": {
  *       "kara": "Dragon Screamer",
  *       "kid": "kid",
  *       "playlist": "Courante",
- *       "playlist_id": 1
+ *       "playlist_id": 1,
+ * 		 "plc": <See Playlist Contents in this doc>
  *   }
  * }
  * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.

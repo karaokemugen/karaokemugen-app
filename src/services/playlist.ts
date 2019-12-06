@@ -415,8 +415,8 @@ export function isAllKarasInPlaylist(karas: PLC[], karasToRemove: PLC[]) {
 /** Add song to playlist */
 export async function addKaraToPlaylist(kids: string|string[], requester: string, playlist_id?: number, pos?: number) {
 	let addByAdmin = true;
-	const conf = getConfig();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
+	const conf = getConfig();
 	const state = getState();
 	let karas: string[] = (typeof kids === 'string') ? kids.split(',') : kids;
 	if (!playlist_id) {
@@ -568,12 +568,12 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		}
 
 		// Adding song to playlist at long last!
-		await addKaraToPL(karaList);
+		let plc_id = await addKaraToPL(karaList);
 		updatePlaylistLastEditTime(playlist_id);
 		// Checking if a flag_playing is present inside the playlist.
 		// If not, we'll have to set the karaoke we just added as the currently playing one. updatePlaylistDuration is done by setPlaying already.
 		if (!plContents.some((plc: PLC) => plc.flag_playing)) {
-			const plc_id = await getPLCIDByDate(playlist_id, date_add);
+			if (!plc_id) plc_id = await getPLCIDByDate(playlist_id, date_add);
 			await setPlaying(plc_id, playlist_id);
 		} else {
 			await updatePlaylistDuration(playlist_id);
@@ -585,12 +585,15 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			updatePlaylistKaraCount(playlist_id),
 			updateSongsLeft(user.login, playlist_id)
 		]);
-		return {
+		const ret = {
 			kara: kara.title,
 			playlist: pl.name,
 			kid: karaList.map(k => k.kid),
-			playlist_id: playlist_id
+			playlist_id: playlist_id,
+			plc: null
 		};
+		if (plc_id) ret.plc = await getPLCInfo(plc_id, true, requester);
+		return ret;
 	} catch(err) {
 		logger.error(`[Playlist] Unable to add karaokes : ${JSON.stringify(err)}`);
 		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';

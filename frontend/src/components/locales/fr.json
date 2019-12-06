@@ -392,5 +392,6 @@
     "INTRO_LABEL_PREV": "Précédent",
     "INTRO_LABEL_SKIP": "Quitter",
 	"INTRO_LABEL_DONE": "Terminer",
-	"NEXT_SONG_MESSAGE": "La suite avec :"
+	"NEXT_SONG_MESSAGE": "La suite avec :",
+	"TIME_BEFORE_PLAY": "Diffusion dans {{time}} ({{date}})"
 }

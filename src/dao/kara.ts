@@ -176,19 +176,39 @@ export async function selectAllKIDs(): Promise<string[]> {
 	return res.rows.map((k: Kara) => k.kid);
 }
 
-export async function addKaraToPlaylist(karaList: PLC[]) {
-	const karas: any[] = karaList.map(kara => ([
-		kara.playlist_id,
-		kara.username,
-		kara.nickname,
-		kara.kid,
-		kara.created_at,
-		kara.pos,
-		false,
-		false,
-		kara.flag_visible
-	]));
-	return await transaction([{params: karas, sql: sql.addKaraToPlaylist}]);
+export async function addKaraToPlaylist(karaList: PLC[]): Promise<number> {
+	try {
+		if (karaList.length > 1) {
+			const karas: any[] = karaList.map(kara => ([
+				kara.playlist_id,
+				kara.username,
+				kara.nickname,
+				kara.kid,
+				kara.created_at,
+				kara.pos,
+				false,
+				false,
+				kara.flag_visible
+			]));
+			await transaction([{params: karas, sql: sql.addKaraToPlaylist}]);
+		} else {
+			const kara = karaList[0];
+			const res = await db().query(sql.addKaraToPlaylist, [
+				kara.playlist_id,
+				kara.username,
+				kara.nickname,
+				kara.kid,
+				kara.created_at,
+				kara.pos,
+				false,
+				false,
+				kara.flag_visible
+			]);
+			return res.rows[0].pk_id_plcontent;
+		}
+	} catch(err) {
+		throw err;
+	}
 }
 
 export async function removeKaraFromPlaylist(karas: number[], playlist_id: number) {

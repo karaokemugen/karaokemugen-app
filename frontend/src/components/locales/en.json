@@ -371,5 +371,6 @@
 	"INTRO_PUBLIC_MENU": "We're almost there! Here's the menu.<br /><br />You can go through this tutorial again with the <i class='fas fa-question-circle'></i> button.<br /><br />The <i class='fas fa-user'></i> button will allow you to edit your profile and see who's logged in.<br /><br />It is also possible to replace the currently playing song title by its lyrics with the switch <i class='fas fa-info'></i> / <i class='fas fa-subtitles'></i> button.<br /><br />Last, if you like risk, you can click on the clover button to add a random song!<br />",
 	"INTRO_PUBLIC_MENU_WIDE": "We're almost there! Here's the menu.<br /><br />You can go through this tutorial again with the <i class='fas fa-question-circle'></i> button.<br /><br />The <i class='fas fa-user'></i> button will allow you to edit your profile and see who's logged in.",
 	"INTRO_PUBLIC_LAST": "Okay! Now let's sing!<br /><br />Have fun!<br /><br />Click on Finish.<br />",
-	"NEXT_SONG_MESSAGE": "Coming up next :"
+	"NEXT_SONG_MESSAGE": "Coming up next :",
+	"TIME_BEFORE_PLAY": "Airing in {{time}} ({{date}})"
 }
