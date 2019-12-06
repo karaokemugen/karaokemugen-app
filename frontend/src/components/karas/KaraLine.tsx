@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
-import { is_touch_device } from '../tools';
+import { is_touch_device, secondsTimeSpanToHMS } from '../tools';
 import KaraDetail from './KaraDetail';
 import axios from 'axios';
 import ActionsButtons from './ActionsButtons';
@@ -159,8 +159,22 @@ class KaraLine extends Component<IProps,IState> {
   			response = await axios.patch(url, data);
   		} else {
   			response = await axios.post(url, data);
-  		}
-  		displayMessage('success', i18next.t(response.data.code));
+		  }
+		  if (response.data.data.plc && response.data.data.plc.time_before_play) {
+			var playTime = new Date(Date.now() + response.data.data.plc.time_before_play * 1000);
+			var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+			var beforePlayTime = secondsTimeSpanToHMS(response.data.data.plc.time_before_play, 'hm');
+			displayMessage('success', <div>
+					{i18next.t(response.data.code)}
+					<br/>
+					{i18next.t('TIME_BEFORE_PLAY', {
+  					time: beforePlayTime,
+  					date: playTimeDate
+  					})}
+				</div>);
+		  } else {
+			displayMessage('success', i18next.t(response.data.code));
+		  }
   	} catch (error) {
   		displayMessage('warning', i18next.t(error.response.data.code));
   	}
