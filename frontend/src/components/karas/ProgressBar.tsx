@@ -17,7 +17,7 @@ interface IState {
 	oldState?: PublicState | undefined;
 	refreshTime: number;
 	status?: string;
-	karaInfoText: string;
+	karaInfoText: string |JSX.Element;
 	length: number;
 	width: string;
 }

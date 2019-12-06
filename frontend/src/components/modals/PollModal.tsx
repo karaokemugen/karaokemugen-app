@@ -61,7 +61,7 @@ class PollModal extends Component<{},IState> {
                                                         + Math.floor(Math.random() * 256)
                                                         + ',20%, 26%)'
     										}}>
-    										{buildKaraTitle(kara)}
+    										{buildKaraTitle(kara, true)}
     									</button>;
     								})}
     							</div>

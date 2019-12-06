@@ -391,5 +391,6 @@
     "INTRO_LABEL_NEXT": "Suivant",
     "INTRO_LABEL_PREV": "Précédent",
     "INTRO_LABEL_SKIP": "Quitter",
-    "INTRO_LABEL_DONE": "Terminer"
+	"INTRO_LABEL_DONE": "Terminer",
+	"NEXT_SONG_MESSAGE": "La suite avec :"
 }
