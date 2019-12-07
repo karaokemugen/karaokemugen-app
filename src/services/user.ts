@@ -131,8 +131,14 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		// Update user with new data
 		let avatar_file = null;
 		if (remoteUser.avatar_file !== 'blank.png') {
+			let avatarPath = '';
+			try {
+				avatarPath = await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file);
+			} catch(err) {
+				throw err;
+			}
 			avatar_file = {
-				path: await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file)
+				path: avatarPath
 			};
 		}
 		// Checking if user has already been fetched during this session or not
