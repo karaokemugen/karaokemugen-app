@@ -53,7 +53,11 @@ async function displayPoll(winner?: number) {
 	const voteMessage = winner
 		? i18n.t('VOTE_MESSAGE_SCREEN_WINNER')
 		: i18n.t('VOTE_MESSAGE_SCREEN');
-	message('{\\fscx80}{\\fscy80}{\\b1}'+voteMessage+'{\\b0}\\N{\\fscx70}{\\fscy70}'+votes.join('\\N'), 1000000, 4);
+	try {
+		await message('{\\fscx80}{\\fscy80}{\\b1}'+voteMessage+'{\\b0}\\N{\\fscx70}{\\fscy70}'+votes.join('\\N'), 1000000, 4);
+	} catch(err) {
+		throw err;
+	}
 }
 
 /** Create poll timer so it ends after a time */
