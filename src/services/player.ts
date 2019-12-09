@@ -162,18 +162,18 @@ async function next() {
 	}
 }
 
-function toggleFullScreenPlayer() {
+async function toggleFullScreenPlayer() {
 	let state = getState();
 	state = setState({fullscreen: !state.fullscreen});
-	setFullscreen(state.fullscreen);
+	await setFullscreen(state.fullscreen);
 	state.fullscreen
 		? logger.info('[Player] Player going to full screen')
 		: logger.info('[Player] Player going to windowed mode');
 }
 
-function toggleOnTopPlayer() {
+async function toggleOnTopPlayer() {
 	let state = getState();
-	state = setState({ontop: toggleOnTop()});
+	state = setState({ontop: await toggleOnTop()});
 	state.ontop
 		? logger.info('[Player] Player staying on top')
 		: logger.info('[Player] Player NOT staying on top');
@@ -193,7 +193,7 @@ export async function playPlayer(now?: boolean) {
 		}
 		setState({status: 'play'});
 	} else {
-		resume();
+		await resume();
 	}
 	profile('Play');
 }
@@ -201,7 +201,7 @@ export async function playPlayer(now?: boolean) {
 async function stopPlayer(now = true) {
 	if (now) {
 		logger.info('[Player] Karaoke stopping NOW');
-		stop();
+		await stop();
 		setState({status: 'stop', currentlyPlayingKara: null});
 	} else {
 		logger.info('[Player] Karaoke stopping after current song');
@@ -216,41 +216,41 @@ export async function prepareClassicPauseScreen() {
 	displaySongInfo(kara.infos, 10000000, true);
 }
 
-function pausePlayer() {
-	pause();
+async function pausePlayer() {
+	await pause();
 	logger.info('[Player] Karaoke paused');
 	setState({status: 'pause'});
 }
 
-function mutePlayer() {
-	mute();
+async function mutePlayer() {
+	await mute();
 	logger.info('[Player] Player muted');
 }
 
-function unmutePlayer() {
-	unmute();
+async function unmutePlayer() {
+	await unmute();
 	logger.info('[Player] Player unmuted');
 }
 
-function seekPlayer(delta: number) {
-	seek(delta);
+async function seekPlayer(delta: number) {
+	await seek(delta);
 }
 
-function goToPlayer(seconds: number) {
-	goTo(seconds);
+async function goToPlayer(seconds: number) {
+	await goTo(seconds);
 }
 
-function setVolumePlayer(volume: number) {
-	setVolume(volume);
+async function setVolumePlayer(volume: number) {
+	await setVolume(volume);
 }
 
-function showSubsPlayer() {
-	showSubs();
+async function showSubsPlayer() {
+	await showSubs();
 	logger.info('[Player] Showing lyrics on screen');
 }
 
-function hideSubsPlayer() {
-	hideSubs();
+async function hideSubsPlayer() {
+	await hideSubs();
 	logger.info('[Player] Hiding lyrics on screen');
 }
 

@@ -53,6 +53,17 @@ function emitPlayerState() {
 	setState({player: playerState});
 }
 
+async function ensureRunning() {
+	try {
+		const starts = []
+		if (!player.isRunning()) starts.push(player.start());
+		if (monitorEnabled && !playerMonitor.isRunning()) starts.push(playerMonitor.start());
+		await Promise.all(starts);
+	} catch(err) {
+		throw Error(`Unable to ensure mpv is running : ${err}`);
+	}
+}
+
 async function extractAllBackgroundFiles(): Promise<string[]> {
 	let backgroundFiles = [];
 	for (const resolvedPath of resolvedPathBackgrounds()) {
@@ -72,6 +83,11 @@ async function extractBackgroundFiles(backgroundDir: string): Promise<string[]> 
 }
 
 export async function loadBackground() {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	const conf = getConfig();
 	// Default background
 	let backgroundFiles = [];
@@ -336,6 +352,11 @@ async function startmpv() {
 }
 
 export async function play(mediadata: MediaData) {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	const conf = getConfig();
 	logger.debug('[Player] Play event triggered');
 	playerState.playing = true;
@@ -423,21 +444,31 @@ export async function play(mediadata: MediaData) {
 	}
 }
 
-export function setFullscreen(fsState: boolean): boolean {
+export async function setFullscreen(fsState: boolean): Promise<boolean> {
 	playerState.fullscreen = fsState;
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	fsState
 		? player.fullscreen()
 		: player.leaveFullscreen();
-	return playerState.fullscreen;
+	return fsState;
 }
 
-export function toggleOnTop(): boolean {
+export async function toggleOnTop(): Promise<boolean> {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	playerState.stayontop = !playerState.stayontop;
 	player.command('keypress',['T']);
 	return playerState.stayontop;
 }
 
-export function stop(): PlayerState {
+export async function stop(): Promise<PlayerState> {
 	// on stop do not trigger onEnd event
 	// => setting internal playing = false prevent this behavior
 	logger.debug('[Player] Stop event triggered');
@@ -445,14 +476,24 @@ export function stop(): PlayerState {
 	playerState.timeposition = 0;
 	playerState._playing = false;
 	playerState.playerstatus = 'stop';
-	loadBackground();
-	if (!getState().songPoll) displayInfo();
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
+	await loadBackground();
+	if (!getState().songPoll) await displayInfo();
 	setState({player: playerState});
 	return playerState;
 }
 
-export function pause(): PlayerState {
+export async function pause(): Promise<PlayerState> {
 	logger.debug('[Player] Pause event triggered');
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	player.pause();
 	if (monitorEnabled) playerMonitor.pause();
 	playerState.status = 'pause';
@@ -460,8 +501,13 @@ export function pause(): PlayerState {
 	return playerState;
 }
 
-export function resume(): PlayerState {
+export async function resume(): Promise<PlayerState> {
 	logger.debug('[Player] Resume event triggered');
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	player.play();
 	if (monitorEnabled) playerMonitor.play();
 	playerState.playing = true;
@@ -471,32 +517,62 @@ export function resume(): PlayerState {
 	return playerState;
 }
 
-export function seek(delta: number) {
+export async function seek(delta: number) {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	if (monitorEnabled) playerMonitor.seek(delta);
-	return player.seek(delta);
+	player.seek(delta);
 }
 
-export function goTo(pos: number) {
+export async function goTo(pos: number) {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	if (monitorEnabled) playerMonitor.goToPosition(pos);
-	return player.goToPosition(pos);
+	player.goToPosition(pos);
 }
 
-export function mute() {
+export async function mute() {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	return player.mute();
 }
 
-export function unmute() {
+export async function unmute() {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	return player.unmute();
 }
 
-export function setVolume(volume: number): PlayerState {
+export async function setVolume(volume: number): Promise<PlayerState> {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	playerState.volume = volume;
 	player.volume(volume);
 	setState({player: playerState});
 	return playerState;
 }
 
-export function hideSubs(): PlayerState {
+export async function hideSubs(): Promise<PlayerState> {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	player.hideSubtitles();
 	if (monitorEnabled) playerMonitor.hideSubtitles();
 	playerState.showsubs = false;
@@ -504,7 +580,12 @@ export function hideSubs(): PlayerState {
 	return playerState;
 }
 
-export function showSubs(): PlayerState {
+export async function showSubs(): Promise<PlayerState> {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	player.showSubtitles();
 	if (monitorEnabled) playerMonitor.showSubtitles();
 	playerState.showsubs = true;
@@ -514,6 +595,11 @@ export function showSubs(): PlayerState {
 
 export async function message(message: string, duration: number = 10000, alignCode = 5) {
 	if (!getState().player.ready) throw 'Player is not ready yet!';
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	const alignCommand = `{\\an${alignCode}}`;
 	const command = {
 		command: [
@@ -532,6 +618,11 @@ export async function message(message: string, duration: number = 10000, alignCo
 }
 
 export async function displaySongInfo(infos: string, duration = 8000, nextSong = false) {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	displayingInfo = true;
 	const nextSongString = nextSong ? `{\\u1}${i18n.t('NEXT_SONG')}{\\u0}\\N` : '';
 	const position = nextSong ? '{\\an5}' : '{\\an1}';
@@ -549,7 +640,12 @@ export async function displaySongInfo(infos: string, duration = 8000, nextSong =
 	displayingInfo = false;
 }
 
-export function displayInfo(duration: number = 10000000) {
+export async function displayInfo(duration: number = 10000000) {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	const conf = getConfig();
 	const ci = conf.Karaoke.Display.ConnectionInfo;
 	let text = '';
@@ -571,7 +667,12 @@ export function displayInfo(duration: number = 10000000) {
 	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
 }
 
-export function clearText() {
+export async function clearText() {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	const command = {
 		command: [
 			'expand-properties',
@@ -606,6 +707,11 @@ export async function quitmpv() {
 }
 
 export async function playMedia(mediaType: 'sponsor' | 'jingle' | 'intro') {
+	try {
+		await ensureRunning();
+	} catch(err) {
+		throw err;
+	}
 	playerState.playing = true;
 	playerState.mediaType = mediaType;
 	let media: Media;
