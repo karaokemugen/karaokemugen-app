@@ -100,7 +100,6 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 
 /** Edit series */
 export async function editSerie(sid: string, serieObj: Series, opts = { refresh: true }) {
-	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	const oldSerie = await testSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
 	if (oldSerie.name !== serieObj.name) await removeSeriesFile(oldSerie.seriefile);
