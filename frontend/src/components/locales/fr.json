@@ -246,8 +246,14 @@
 			"LABEL": "Karaoké",
 			"AUTO_UPDATE_JINGLES": "Mise à jour automatique des Jingles",
 			"AUTO_UPDATE_INTROS": "Mise à jour automatique des Intros",
+			"AUTO_UPDATE_OUTROS": "Mise à jour automatique des Outros",
+			"AUTO_UPDATE_ENCORES": "Mise à jour automatique des Encores",
 			"PLAYLIST_INTRO_VIDEOS": "Vidéo d'intro de playlist",
-			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Les intro vidéo sont jouées uniquement une fois si vous lancez la première chanson d'une playlist, sont suivies d'une vidéo sponsor si disponible dans les jingles."
+			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Les intro vidéo sont jouées uniquement une fois si vous lancez la première chanson d'une playlist, sont suivies d'une vidéo sponsor si disponible dans les jingles.",
+			"PLAYLIST_OUTRO_VIDEOS": "Playlist outro video",
+			"PLAYLIST_OUTRO_VIDEOS_TOOLTIP": "Les outro vidéo sont jouées uniquement une fois après la dernière chanson d'une playlist.",
+			"PLAYLIST_ENCORES_VIDEOS": "Playlist Encores",
+			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "Cette vidéo sera jouée avant la dernière chanson de la playlist en cours."
 		},
 		"INTERFACE": {
 			"LABEL": "Interface",
@@ -264,6 +270,8 @@
 	},
 	"JINGLE_TIME": "Instant jingle !",
 	"INTRO_TIME": "Intro de playlist",
+	"OUTRO_TIME": "Fin de playlist",
+	"ENCORES_TIME": "Encore! Encore!",
 	"SPONSOR_TIME": "LA PUB !",
 	"QUOTA_TYPE": "Type de quota",
 	"QUOTA_TYPE_TOOLTIP": "Le quota permet d'éviter que les utilisateurs n'ajoutent trop de chansons à la fois",

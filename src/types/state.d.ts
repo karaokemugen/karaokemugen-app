@@ -1,4 +1,5 @@
 import { PlayerState } from "./player";
+import { CurrentSong } from "./playlist";
 
 export interface State {
 	currentPlaylistID?: number,
@@ -8,8 +9,10 @@ export interface State {
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,
 	currentlyPlayingKara?: string,
+	currentSong: CurrentSong
 	counterToJingle?: number,
 	introPlayed?: boolean,
+	encorePlayed?: boolean,
 	status?: string,
 	private?: boolean,
 	fullscreen?: boolean,

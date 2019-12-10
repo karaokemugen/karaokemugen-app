@@ -21,8 +21,7 @@ import { generateDatabase } from '../lib/services/generation';
 import {validateV3} from '../lib/dao/karafile';
 import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from './session';
-import { updateJingles, buildJinglesList } from './jingles';
-import { updateIntros, buildIntrosList } from './intros';
+import { updatePlaylistMedias } from './medias';
 
 export async function initEngine() {
 	profile('Init');
@@ -108,18 +107,7 @@ export async function initEngine() {
 		profile('Init');
 	}
 	// This is done later because it's not important.
-	if (conf.Online.IntrosUpdate && !state.isTest && !state.isDemo) try {
-		await updateIntros();
-	} catch(err) {
-		// Non-fatal
-	}
-	buildIntrosList();
-	if (conf.Online.JinglesUpdate && !state.isTest && !state.isDemo) try {
-		await updateJingles();
-	} catch(err) {
-		// Non-fatal
-	}
-	buildJinglesList();
+	if (!state.isTest && !state.isDemo) updatePlaylistMedias();
 }
 
 export async function exit(rc: any) {

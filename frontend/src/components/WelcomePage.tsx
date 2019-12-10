@@ -73,7 +73,7 @@ class WelcomePage extends Component<IProps, IState> {
 
   stopAppUpdates = () => {
   	this.closeUpdateBanner();
-  	var data = expand('Online.Updates', false);
+  	var data = expand('Online.Updates.App', false);
   	axios.put('/api/admin/settings', { setting: JSON.stringify(data) });
   };
 

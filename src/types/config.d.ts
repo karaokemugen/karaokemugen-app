@@ -1,3 +1,5 @@
+import { ALPN_ENABLED } from "constants";
+
 export interface Config {
 	App: {
 		JwtSecret?: string,
@@ -10,9 +12,15 @@ export interface Config {
 		Users?: boolean,
 		URL?: boolean,
 		Stats?: boolean,
-		JinglesUpdate?: boolean,
-		IntrosUpdate?: boolean,
-		Updates?: boolean,
+		Updates?: {
+			Medias?: {
+				Jingles?: boolean,
+				Intros?: boolean,
+				Outros?: boolean,
+				Encores?: boolean
+			}
+			App?: boolean
+		}
 		MediasHost: string
 	},
 	Frontend: {
@@ -103,8 +111,26 @@ export interface Config {
 		AllowDuplicateSeries?: boolean,
 		MaxDejaVuTime?: number,
 		RemovePublicOnPlay?: boolean,
-		IntroVideos: boolean,
-		IntroVideoFile: string,
+		Medias: {
+			Sponsors: {
+				Enabled: boolean,
+			}
+			Intros: {
+				Enabled: boolean,
+				File: string,
+				Message?: string
+			}
+			Outros: {
+				Enabled: boolean,
+				File: string,
+				Message?: string
+			},
+			Encores: {
+				Enabled: boolean,
+				File: string,
+				Message?: string
+			}
+		}
 		MysterySongs: {
 			Hide?: boolean,
 			AddedSongVisibilityPublic?: boolean,
@@ -140,6 +166,8 @@ export interface Config {
 			Backgrounds?: string[],
 			Jingles?: string[],
 			Intros?: string[],
+			Outros?: string[],
+			Encores?: string[],
 			Temp?: string,
 			Previews?: string,
 			Import?: string,

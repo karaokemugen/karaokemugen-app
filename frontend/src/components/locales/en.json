@@ -232,8 +232,14 @@
 			"LABEL": "Karaoke",
 			"AUTO_UPDATE_JINGLES": "Auto-update Jingles",
 			"AUTO_UPDATE_INTROS": "Auto-update Intros",
+			"AUTO_UPDATE_OUTROS": "Auto-update Outros",
+			"AUTO_UPDATE_ENCORES": "Auto-update Encores",
 			"PLAYLIST_INTRO_VIDEOS": "Playlist intro video",
-			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Intro videos are played only once if you start playing the first song of the current playlist. A sponsor jingle video follows, if available."
+			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Intro videos are played only once if you start playing the first song of the current playlist. A sponsor jingle video follows, if available.",
+			"PLAYLIST_OUTRO_VIDEOS": "Playlist outro video",
+			"PLAYLIST_OUTRO_VIDEOS_TOOLTIP": "Outro videos are played only once after the last song of the current playlist.",
+			"PLAYLIST_ENCORES_VIDEOS": "Playlist Encores",
+			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "This video will played before the last song of the current playlist."
 		},
 		"INTERFACE": {
 			"LABEL": "Interface",
@@ -249,6 +255,8 @@
 	},
 	"JINGLE_TIME": "Jingle time!",
 	"INTRO_TIME": "Playlist intro",
+	"OUTRO_TIME": "Playlist ending",
+	"ENCORES_TIME": "Encore! Encore!",
 	"SPONSOR_TIME": "COMMERCIAL TIME !",
 	"QUOTA_TYPE": "Quota type",
 	"TIME_BY_USER": "Time per user (seconds)",

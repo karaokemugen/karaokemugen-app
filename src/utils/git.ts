@@ -1,6 +1,5 @@
 import {asyncExists, asyncMkdirp} from '../lib/utils/files';
 import logger from 'winston';
-import { getState } from '../utils/state';
 import fs from 'fs';
 import { plugins as gitPlugins, pull as gitPull, clone as gitClone} from 'isomorphic-git';
 
@@ -17,11 +16,6 @@ export async function gitUpdate(gitDir: string, gitURL: string, element: string,
 				url: gitURL
 			})
 			logger.info(`[${element}] Finished downloading`);
-			const dataPath = getState().dataPath;
-			if (gitDir.includes(dataPath)) {
-				gitDir = gitDir.split(dataPath)[1].replace(/\\/g,'/');
-			}
-			if (!localDirs.includes(gitDir)) localDirs.push(gitDir);
 			return localDirs;
 		} else {
 			logger.info(`[${element}] Updating...`);
