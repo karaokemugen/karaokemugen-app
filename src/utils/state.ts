@@ -9,6 +9,7 @@ let state: State = {
 	playerNeedsRestart: false,
 	currentRequester: null,
 	currentlyPlayingKara: null,
+	currentSong: null,
 	counterToJingle: 1,
 	introPlayed: false,
 	status: 'stop', // [stop,play,pause] // general engine status

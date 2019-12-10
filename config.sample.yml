@@ -14,11 +14,13 @@ Online:
   URL: true
   # Should we allow users to register/login accounts on kara.moe ?
   Users: true
-  JinglesUpdate: true
-  IntrosUpdate: true
-  # Should we look for updates ?
-  Updates: true
-
+  Updates:
+    App: true
+    Medias:
+      Intros: true
+      Jingles: true
+      Outros: true
+      Encores: true
 Frontend:
   # Minutes before users are considered signed out
   AuthExpireTime: 15
@@ -153,7 +155,16 @@ Playlist:
   # Enable/Disable Intro Videos
   IntroVideos: true
   # Specify an intro video file. KM will search in all Intro folders for that file and will play it instead of selecting a random one.
-  IntroVideoFile: PS1-Nanami.mp4
+  Medias:
+    Intros:
+      Enabled: true
+      File: PS1-Nanami.mp4
+    Outros:
+      Enabled: false
+      File: Byebye.mp4
+    Encores:
+      Enabled: false
+      File: encoru.mp4
   MysterySongs:
     # Invisible songs are not hidden (they appear as a slot in playlist)
     Hide: false
@@ -192,6 +203,10 @@ System:
     Intros:
       - intros
       - intros/KaraokeMugen
+    Outros:
+      - outros
+    Encores:
+      - encores
     Karas:
       - data/karaokes
     Lyrics:

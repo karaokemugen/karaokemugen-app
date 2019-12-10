@@ -6,10 +6,9 @@ import {playMedia, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, show
 import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
-import {previousSong, nextSong, getCurrentSong} from './playlist';
+import {previousSong, nextSong, getCurrentSong, getPlaylistInfo} from './playlist';
 import {promisify} from 'util';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
-import { getSingleIntro } from './intros';
 
 const sleep = promisify(setTimeout);
 
@@ -19,12 +18,14 @@ async function playCurrentSong(now: boolean) {
 	if (!getState().player.playing || now) {
 		profile('playCurrentSong');
 		try {
+			const conf = getConfig();
 			const kara = await getCurrentSong();
+			setState({currentSong: kara});
 			// Testing if we're on first position, if intro hasn't been played already and if we have at least one intro available
-			if (kara.pos === 1 && getSingleIntro() && !getState().introPlayed) {
+			if (conf.Playlist.Medias.Intros.Enabled && kara.pos === 1 && !getState().introPlayed) {
 				try {
-					setState({currentlyPlayingKara: -2, introPlayed: true});
-					await playMedia('intro');
+					setState({currentlyPlayingKara: 'Intros', introPlayed: true});
+					await playMedia('Intros');
 					return;
 				} catch(err) {
 					throw err;
@@ -45,7 +46,6 @@ async function playCurrentSong(now: boolean) {
 			setPLCVisible(kara.playlistcontent_id);
 			updatePlaylistDuration(kara.playlist_id),
 			updateUserQuotas(kara);
-			const conf = getConfig();
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch(err) {
 			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
@@ -74,47 +74,133 @@ export async function playingUpdated() {
 
 /* This is triggered when player ends its current song */
 export async function playerEnding() {
-	let state = getState();
-	logger.debug('[Player] Player Ending event triggered');
-	if (state.playerNeedsRestart) {
-		logger.info('[Player] Player restarts, please wait');
-		setState({playerNeedsRestart: false});
-		await restartPlayer();
-	}
-	// If we just played an intro, relaunch play.
-	if (getState().player.mediaType === 'intro') {
-		setState({currentlyPlayingKara: -3});
-		await playMedia('sponsor');
-		return;
-	}
-	if (getState().player.mediaType === 'sponsor') {
-		await playCurrentSong(true);
-		return;
-	}
+	const state = getState();
 	const conf = getConfig();
-	logger.info(`[Jingles] Songs before next jingle: ${conf.Karaoke.JinglesInterval - state.counterToJingle}`);
-	if (state.counterToJingle >= conf.Karaoke.JinglesInterval && conf.Karaoke.JinglesInterval > 0) {
-		setState({
-			currentlyPlayingKara: -1,
-			counterToJingle: 0
-		});
-		try {
-			await playMedia('jingle');
-		} catch(err) {
-			logger.error(`[Jingle] Unable to play jingle file : ${err}`);
+	logger.debug('[Player] Player Ending event triggered');
+	try {
+		if (state.playerNeedsRestart) {
+			logger.info('[Player] Player restarts, please wait');
+			setState({playerNeedsRestart: false});
+			await restartPlayer();
 		}
-	} else {
-		try {
+		// If we just played an intro, play a sponsor.
+		if (state.player.mediaType === 'Intros') {
+			if (conf.Playlist.Medias.Sponsors.Enabled) {
+				try {
+					await playMedia('Sponsors');
+					setState({currentlyPlayingKara: 'Sponsors'});
+				} catch(err) {
+					logger.warn(`[Player] Skipping sponsors due to error, playing current song : ${err}`);
+					await playCurrentSong(true);
+				}
+			}
+			return;
+		}
+		// If Outro, load the background.
+		if (state.player.mediaType === 'Outros') {
+			stopPlayer(true);
+			return;
+		}
+		// In other cases, just play currently selected song.
+		if (state.player.mediaType === 'Sponsors') {
+			try {
+				await playCurrentSong(true);
+			} catch(err) {
+				logger.error(`[Player] Unable to play current song, skipping : ${err}`);
+				try {
+					await next();
+				} catch(err) {
+					logger.error(`[Player] Failed going to next song : ${err}`);
+					throw err;
+				}
+			} finally {
+				return;
+			}
+		}
+		if (state.player.mediaType === 'Encores') {
+			try {
+				await next();
+				return;
+			} catch(err) {
+				logger.error(`[Player] Failed going to next song : ${err}`);
+				throw err;
+			}
+		}
+		// Testing for position before last to play an encore
+		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
+		if (conf.Playlist.Medias.Encores.Enabled && state.currentSong.pos === pl.karacount -1 && !getState().encorePlayed) {
+			try {
+				await playMedia('Encores');
+				setState({currentlyPlayingKara: 'Encores', encorePlayed: true});
+			} catch(err) {
+				logger.error(`[Player] Unable to play encore file, going to next song : ${err}`);
+				try {
+					await next();
+				} catch(err) {
+					logger.error(`[Player] Failed going to next song : ${err}`);
+					throw err;
+				}
+			} finally {
+				return;
+			}
+		} else {
+			setState({encorePlayed: false});
+		}
+		// Outros code, we're at the end of a playlist.
+		// Outros are played before the very last song.
+		if (conf.Playlist.Medias.Outros.Enabled && state.currentSong.pos === pl.karacount) {
+			try {
+				await playMedia('Outros');
+				setState({currentlyPlayingKara: 'Outros'});
+			} catch(err) {
+				logger.error(`[Player] Unable to play outro file, going to next song : ${err}`);
+				try {
+					await next();
+				} catch(err) {
+					logger.error(`[Player] Failed going to next song : ${err}`);
+					throw err;
+				}
+			} finally {
+				return;
+			}
+		}
+		// Jingle code
+		// Jingles are played inbetween songs so we need to load the next song
+		logger.info(`[Jingles] Songs before next jingle: ${conf.Karaoke.JinglesInterval - state.counterToJingle}`);
+		if (state.counterToJingle >= conf.Karaoke.JinglesInterval && conf.Karaoke.JinglesInterval > 0) {
+			try {
+				setState({counterToJingle: 0});
+				await playMedia('Jingles');
+				setState({currentlyPlayingKara: 'Jingles'});
+			} catch(err) {
+				logger.error(`[Player] Unable to play jingle file, going to next song : ${err}`);
+				try {
+					await next();
+				} catch(err) {
+					logger.error(`[Player] Failed going to next song : ${err}`);
+					throw err;
+				}
+			} finally {
+				return;
+			}
+		} else {
 			state.counterToJingle++;
 			setState({counterToJingle: state.counterToJingle});
 			if (state.status !== 'stop') {
-				await next();
+				try {
+					await next();
+					return;
+				} catch(err) {
+					logger.error(`[Player] Failed going to next song : ${err}`);
+					throw err;
+				}
 			} else {
 				stopPlayer(true);
 			}
-		} catch(err) {
-			stopPlayer(true);
 		}
+	} catch(err) {
+		logger.error('[Player] Unable to end play properly, stopping.')
+		stopPlayer(true);
 	}
 }
 

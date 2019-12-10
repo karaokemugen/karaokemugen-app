@@ -30,14 +30,20 @@ export const defaults: Config = {
 	},
 	Online: {
 		Host: 'kara.moe',
-		IntrosUpdate: true,
-		JinglesUpdate: true,
 		MediasHost: undefined,
 		Port: undefined,
 		Stats: undefined,
 		URL: true,
 		Users: true,
-		Updates: true
+		Updates: {
+			Medias: {
+				Jingles: true,
+				Outros: true,
+				Encores: true,
+				Intros: true
+			},
+			App: true,
+		}
 	},
 	Frontend: {
 		AuthExpireTime: 15,
@@ -122,10 +128,27 @@ export const defaults: Config = {
 	Playlist: {
 		AllowDuplicates: false,
 		AllowDuplicateSeries: true,
-		IntroVideos: true,
-		IntroVideoFile: null,
 		MaxDejaVuTime: 60,
-		RemovePublicOnPlay: false,
+		Medias: {
+			Sponsors: {
+				Enabled: true
+			},
+			Intros: {
+				Enabled: true,
+				File: null,
+				Message: null
+			},
+			Encores: {
+				Enabled: true,
+				File: null,
+				Message: null
+			},
+			Outros: {
+				Enabled: true,
+				File: null,
+				Message: null
+			}
+		},
 		MysterySongs: {
 			AddedSongVisibilityAdmin: true,
 			AddedSongVisibilityPublic: true,
@@ -133,7 +156,8 @@ export const defaults: Config = {
 			Labels: [
 				'???',
 			]
-		}
+		},
+		RemovePublicOnPlay: false
 	},
 	System: {
 		Binaries: {
@@ -158,12 +182,14 @@ export const defaults: Config = {
 			Backgrounds: ['backgrounds'],
 			Bin: 'bin',
 			DB: 'db',
+			Encores: ['encores', 'encores/KaraokeMugen'],
 			Import: 'import',
 			Intros: ['intros', 'intros/KaraokeMugen'],
 			Jingles: ['jingles', 'jingles/KaraokeMugen'],
 			Karas: ['data/karaokes'],
 			Lyrics: ['data/lyrics'],
 			Medias: ['data/medias'],
+			Outros: ['outros', 'outros/KaraokeMugen'],
 			Previews: 'previews',
 			Series: ['data/series'],
 			Tags: ['data/tags'],
@@ -182,10 +208,11 @@ export const configConstraints = {
 	'Online.Host': {presence: true},
 	'Online.URL': {inclusion : bools},
 	'Online.Users': {inclusion : bools},
-	'Online.Updates': {inclusion : bools},
-	'Online.JinglesUpdate': {inclusion : bools},
-	'Online.IntrosUpdate': {inclusion : bools},
-	'Online.LatestURL': {type: 'string'},
+	'Online.Updates.Medias.Jingles': {inclusion : bools},
+	'Online.Updates.Medias.Outros': {inclusion : bools},
+	'Online.Updates.Medias.Encores': {inclusion : bools},
+	'Online.Updates.Medias.Intros': {inclusion : bools},
+	'Online.Updates.App': {inclusion : bools},
 	'Frontend.Permissions.AllowNicknameChange': {inclusion : bools},
 	'Frontend.Permissions.AllowViewBlacklist': {inclusion : bools},
 	'Frontend.Permissions.AllowViewBlacklistCriterias': {inclusion : bools},
@@ -231,7 +258,10 @@ export const configConstraints = {
 	'Playlist.AllowDuplicateSeries': {inclusion : bools},
 	'Playlist.RemovePublicOnPlay': {inclusion : bools},
 	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
-	'Playlist.IntroVideos': {inclusion: bools},
+	'Playlist.Medias.Intros.Enabled': {inclusion: bools},
+	'Playlist.Medias.Outros.Enabled': {inclusion: bools},
+	'Playlist.Medias.Encores.Enabled': {inclusion: bools},
+	'Playlist.Medias.Jingles.Enabled': {inclusion: bools},
 	'Playlist.MysterySongs.Hide': {inclusion: bools},
 	'Playlist.MysterySongs.AddedSongVisibilityAdmin': {inclusion: bools},
 	'Playlist.MysterySongs.AddedSongVisibilityPublic': {inclusion: bools},

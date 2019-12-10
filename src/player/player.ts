@@ -2,9 +2,8 @@ import i18n from 'i18next';
 import logger from 'winston';
 import {resolvedPathBackgrounds, getConfig, resolvedPathMedias, resolvedPathTemp, resolvedPathSubs} from '../lib/utils/config';
 import {resolve, extname} from 'path';
-import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../lib/utils/files';
+import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists, replaceExt} from '../lib/utils/files';
 import sample from 'lodash.sample';
-import {getSingleJingle, getSingleSponsor} from '../services/jingles';
 import {exit} from '../services/engine';
 import {playerEnding} from '../services/player';
 import {getID3} from './id3tag';
@@ -18,8 +17,8 @@ import { imageFileTypes } from '../lib/utils/constants';
 import {PlayerState, MediaData, mpvStatus} from '../types/player';
 import retry from 'p-retry';
 import { initializationCatchphrases } from '../utils/constants';
-import { getSingleIntro } from '../services/intros';
-import { Media } from '../types/medias';
+import { getSingleMedia } from '../services/medias';
+import { MediaType } from '../types/medias';
 import { notificationNextSong } from '../services/playlist';
 
 const sleep = promisify(setTimeout);
@@ -706,7 +705,7 @@ export async function quitmpv() {
 	}
 }
 
-export async function playMedia(mediaType: 'sponsor' | 'jingle' | 'intro') {
+export async function playMedia(mediaType: MediaType) {
 	try {
 		await ensureRunning();
 	} catch(err) {
@@ -714,12 +713,11 @@ export async function playMedia(mediaType: 'sponsor' | 'jingle' | 'intro') {
 	}
 	playerState.playing = true;
 	playerState.mediaType = mediaType;
-	let media: Media;
-	if (mediaType === 'sponsor') media = getSingleSponsor();
-	if (mediaType === 'jingle') media = getSingleJingle();
-	if (mediaType === 'intro') media = getSingleIntro();
+	const media = getSingleMedia(mediaType);
 	if (media) {
 		try {
+			setState({currentlyPlayingKara: mediaType});
+			const conf = getConfig();
 			logger.debug(`[Player] Playing ${mediaType} : ${media.file}`);
 			const options = [`replaygain-fallback=${media.gain}`];
 			await retry(async () => load(media.file, 'replace', options), {
@@ -730,9 +728,16 @@ export async function playMedia(mediaType: 'sponsor' | 'jingle' | 'intro') {
 			});
 			await player.play();
 			if (monitorEnabled) await playerMonitor.play();
-			mediaType === 'jingle'
+			const subFile = replaceExt(media.file, '.ass');
+			if (await asyncExists(subFile)) {
+				player.addSubtitles(subFile);
+				if (monitorEnabled) playerMonitor.addSubtitles(subFile);
+			}
+			mediaType === 'Jingles' || mediaType === 'Sponsors'
 				? displayInfo()
-				: clearText();
+				: conf.Playlist.Medias[mediaType].Message
+					? message(conf.Playlist.Medias[mediaType].Message, 10)
+					: clearText();
 			playerState.playerstatus = 'play';
 			playerState._playing = true;
 			emitPlayerState();

@@ -51,12 +51,12 @@ const appPath = ('pkg' in process)
 	? join(process['execPath'], '../')
 	: join(__dirname, '../');
 
-let dataPath = resolve(appPath, 'app');
+let dataPath = resolve(appPath, 'app/');
 
 // Testing if we're in portable mode or not
 if (!existsSync(resolve(appPath, 'portable'))) {
 	// Rewriting dataPath to point to user home directory
-	dataPath = resolve(process.env.HOME, 'KaraokeMugen');
+	dataPath = resolve(process.env.HOME, 'KaraokeMugen/');
 }
 
 if (!existsSync(dataPath)) mkdirSync(dataPath);
