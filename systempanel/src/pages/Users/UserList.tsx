@@ -6,6 +6,7 @@ import {Avatar, Button, Checkbox, Divider, Icon, Layout, Modal, Table} from 'ant
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {Link} from 'react-router-dom';
 import {ReduxMappedProps} from '../../react-app-env';
+import i18next from 'i18next';
 
 interface UserListProps extends ReduxMappedProps {
 }
@@ -47,12 +48,12 @@ class UserList extends Component<UserListProps, UserListState> {
 	delete = (userLogin) => {
 		axios.delete(`/api/system/users/${userLogin}`)
 			.then(() => {
-				this.props.warnMessage('User deleted.');
+				this.props.warnMessage(i18next.t('USERS.USER_DELETED'));
 				this.setState({deleteModal: false, user: {}});
 				this.refresh();
 			})
 			.catch(err => {
-				this.props.errorMessage(`Error ${err.response.status} while deleting user: ${err.response.statusText}. ${err.response.data}`);
+				this.props.errorMessage(`${i18next.t('ERROR')} ${err.response.status} : ${err.response.statusText}. ${err.response.data}`);
 				this.setState({deleteModal: false, user: {}});
 			});
 	};
@@ -65,17 +66,16 @@ class UserList extends Component<UserListProps, UserListState> {
 					columns={this.columns}
 					rowKey='nickname'
 				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 				<Modal
-					title='Confirm user delete'
+					title={i18next.t('USERS.USER_DELETED_CONFIRM')}
 					visible={this.state.deleteModal}
 					onOk={() => this.delete(this.state.user.login)}
 					onCancel={() => this.setState({deleteModal: false, user: {}})}
-					okText='yes'
-					cancelText='no'
+					okText={i18next.t('YES')}
+					cancelText={i18next.t('NO')}
 				>
-					<p>Delete user <b>{this.state.user.login}</b></p>
-					<p>Are you sure?</p>
+					<p>{i18next.t('USERS.DELETE_USER_CONFIRM')} <b>{this.state.user.login}</b></p>
+					<p>{i18next.t('CONFIRM_SURE')}</p>
 				</Modal>
 			</Layout.Content>
 		);
@@ -86,54 +86,54 @@ class UserList extends Component<UserListProps, UserListState> {
 		dataIndex: 'type',
 		key: 'type',
 		filters: [
-			{ text: 'Admin', value: '0' },
-			{ text: 'User', value: '1' },
-			{ text: 'Guest', value: '2' },
+			{ text: i18next.t('USERS.ADMIN'), value: '0' },
+			{ text: i18next.t('USERS.USER'), value: '1' },
+			{ text: i18next.t('USERS.GUEST'), value: '2' },
 		],
 		render: text => {
-			if (+text === 0) return 'Admin';
-			if (+text === 1) return 'User';
-			if (+text === 2) return 'Guest';
+			if (+text === 0) return i18next.t('USERS.ADMIN');
+			if (+text === 1) return i18next.t('USERS.USER');
+			if (+text === 2) return i18next.t('USERS.GUEST');
 		},
 		filterMultiple: false,
 		onFilter: (value, record) => `${record.type}` === value,
 	}, {
-		title: 'Avatar',
+		title: i18next.t('USERS.AVATAR'),
 		dataIndex: 'avatar_file',
 		key: 'avatar_file',
 		render: (text, record) => <Avatar shape="square" size="large" src={`/avatars/${record.avatar_file}`}/>,
 		sorter: (a, b) => a.avatar_file.localeCompare(b.avatar_file)
 	}, {
-		title: 'Username',
+		title: i18next.t('USERS.LOGIN'),
 		dataIndex: 'login',
 		key: 'login',
 		render: (text, record) => <Link to={`/system/km/users/${record.login}`}>{text}</Link>,
 		sorter: (a, b) => a.login.localeCompare(b.login)
 	}, {
-		title: 'Nickname',
+		title: i18next.t('USERS.NICKNAME'),
 		dataIndex: 'nickname',
 		key: 'nickname',
 		render: (text, record) => <Link to={`/system/km/users/${record.login}`}>{text}</Link>,
 		sorter: (a, b) => a.nickname.localeCompare(b.nickname)
 	}, {
-		title: 'Last seen on',
+		title: i18next.t('USERS.LAST_LOGIN_AT'),
 		dataIndex: 'last_login_at',
 		key: 'last_login_at',
 		render: (date) => (new Date(date)).toLocaleString('en'),
 		sorter: (a,b) => a.last_login - b.last_login
 	}, {
-		title: 'Logged in?',
+		title: i18next.t('USERS.FLAG_ONLINE'),
 		dataIndex: 'flag_online',
 		key: 'flag_online',
 		filters: [
-			{ text: 'Online', value: '1' },
-			{ text: 'Offline', value: '0' },
+			{ text: i18next.t('USERS.ONLINE'), value: '1' },
+			{ text: i18next.t('USERS.OFFLINE'), value: '0' },
 		],
 		render: text => <Checkbox disabled defaultChecked={text === 1} />,
 		filterMultiple: false,
 		onFilter: (value, record) => `${record.flag_online}` === value,
 	}, {
-		title: 'Action',
+		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (<span>
 			<Link to={`/system/km/users/${record.login}`}><Icon type='edit'/></Link>

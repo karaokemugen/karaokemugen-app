@@ -3,6 +3,7 @@ import { Button, Form, Icon, Input, Table, Tooltip, Cascader } from 'antd';
 import axios from 'axios/index';
 import { buildKaraTitle } from '../../utils/kara';
 import { message } from 'antd';
+import i18next from 'i18next';
 interface SessionsFormProps {
 	sessions: any
 	session: any,
@@ -65,7 +66,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	exportSession() {
 		axios.get(`/api/system/sessions/${this.props.session.seid}/export`)
 		.then(res => {
-			message.success("Session data exported in application folder");
+			message.success(i18next.t('SESSIONS.SESSION_EXPORTED'));
 		})
 		.catch(err => {
 			message.error(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -84,15 +85,12 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 						wrapperCol={{ span: 4, offset: 3 }}
 					>
 						<Button type='default' icon='file-excel' onClick={this.exportSession.bind(this)}>
-						Export data as CSV
+							{i18next.t('SESSIONS.SESSION_EXPORTED_BUTTON')}
 						</Button>
 					</Form.Item> : null
 				}
 				<Form.Item hasFeedback
-					label={(
-						<span>Name&nbsp;
-						</span>
-					)}
+					label={i18next.t('SESSIONS.NAME')}
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 8, offset: 0 }}
 				>
@@ -103,14 +101,11 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 							message: 'Please enter a name'
 						}],
 					})(<Input
-						placeholder='session name'
+						placeholder={i18next.t('SESSIONS.NAME')}
 					/>)}
 				</Form.Item>
 				<Form.Item
-					label={(
-						<span>Date(s)&nbsp;
-						</span>
-					)}
+					label={i18next.t('SESSIONS.STARTED_AT')}
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 10, offset: 0 }}
 				>
@@ -121,14 +116,12 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 				<Form.Item
 					wrapperCol={{ span: 4, offset: 2 }}
 				>
-					<Button type='primary' htmlType='submit'>
-						Save session
-					</Button>
+					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 				<Form.Item hasFeedback
 					label={(
-						<span>Merge with&nbsp;
-							<Tooltip title="Merge the current session with another one">
+						<span>{i18next.t('SESSIONS.MERGE_WITH')}&nbsp;
+							<Tooltip title={i18next.t('SESSIONS.MERGE_WITH_TOOLTIP')}>
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
@@ -136,29 +129,28 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 8, offset: 0 }}
 					>
-					<Cascader options={this.mergeCascaderOption()} showSearch={{filter:this.mergeCascaderFilter}} onChange={this.handleSessionMergeSelection.bind(this)} placeholder="Please select" />
+					<Cascader options={this.mergeCascaderOption()} showSearch={{filter:this.mergeCascaderFilter}} 
+						onChange={this.handleSessionMergeSelection.bind(this)} placeholder={i18next.t('SESSIONS.MERGE_WITH_SELECT')} />
 				</Form.Item>
 
 				<Form.Item
 					wrapperCol={{ span: 8, offset: 3 }}
 					style={{textAlign:"right"}}
 					>
-					<Button type="danger" onClick={this.handleSessionMerge.bind(this)}>
-						Merge !
-					</Button>
+					<Button type="danger" onClick={this.handleSessionMerge.bind(this)}>{i18next.t('SESSIONS.MERGE_WITH_BUTTON')}</Button>
 				</Form.Item>
 				<Form.Item>
 					{getFieldDecorator('seid', {
 						initialValue: this.props.session.seid
 					})(<Input type="hidden" />)}
 				</Form.Item>
-				<h1>Karas Played</h1>
+				<h1>{i18next.t('SESSIONS.KARA_PLAYED')}</h1>
 				<Table
 							dataSource={this.state.sessionPlayed}
 							columns={this.columns}
 							rowKey='kid'
 				/>
-				<h1>Karas Requested</h1>
+				<h1>{i18next.t('SESSIONS.KARA_REQUESTED')}</h1>
 				<Table
 							dataSource={this.state.sessionRequested}
 							columns={this.columns}
@@ -169,17 +161,17 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	}
 
 	columns = [{
-		title: 'Last played at',
+		title: i18next.t('SESSIONS.LAST_PLAYED_AT'),
 		dataIndex: 'lastplayed_at',
 		key: 'lastplayed_at',
 		render: (text, kara) => text ? new Date(text).toLocaleString() : null
 	}, {
-		title: 'Last requested at',
+		title: i18next.t('SESSIONS.LAST_REQUESTED_AT'),
 		dataIndex: 'lastrequested_at',
 		key: 'lastrequested_at',
 		render: (text, kara) => text ? new Date(text).toLocaleString() : null
 	}, {
-		title: 'Title',
+		title: i18next.t('SESSIONS.TITLE'),
 		dataIndex: 'title',
 		key: 'title',
 		render: (text, kara) => buildKaraTitle(kara)

@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Icon, Button, Layout, Table} from 'antd';
+import {Icon, Button, Layout, Table, Divider} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
+import i18next from 'i18next';
 
 interface SessionListProps extends ReduxMappedProps {
 }
@@ -50,7 +51,7 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 	exportSession(session) {
 		axios.get(`/api/system/sessions/${session.seid}/export`)
 		.then(res => {
-			this.props.infoMessage("Session data exported in application folder");
+			this.props.infoMessage(i18next.t('SESSIONS.SESSION_EXPORTED'));
 		})
 		.catch(err => {
 			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -62,7 +63,7 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Layout>
 					<Layout.Header>
-					<span><Link to={`/system/km/sessions/new`}>New session : <Icon type="plus" /></Link></span>
+					<span><Link to={`/system/km/sessions/new`}>{i18next.t('SESSIONS.NEW_SESSION')}<Icon type="plus" /></Link></span>
 					</Layout.Header>
 					<Layout.Content>
 						<Table
@@ -77,49 +78,50 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 	}
 
 	columns = [{
-		title: 'Name(s)',
+		title: i18next.t('SESSIONS.NAME'),
 		dataIndex: 'name',
 		key: 'name'
 	}, {
-		title: 'Started at',
+		title: i18next.t('SESSIONS.STARTED_AT'),
 		dataIndex: 'started_at',
 		key: 'started_at'
 	}, {
-		title: 'Songs played',
+		title: i18next.t('SESSIONS.KARA_PLAYED'),
 		dataIndex: 'played',
 		key: 'played'
 	}, {
-		title: 'Songs requested',
+		title: i18next.t('SESSIONS.KARA_REQUESTED'),
 		dataIndex: 'requested',
 		key: 'requested'
 	}, {
-		title: 'Active',
+		title: i18next.t('SESSIONS.ACTIVE'),
 		dataIndex: 'active',
 		key: 'active',
 		render: (text, record) => (<span>
 			{record.active ?
-				"Active" : null
+				i18next.t('YES') : null
 			}
 		</span>)
 	}, {
-		title: 'Action',
-		key: 'action',
-		render: (text, record) => (<span>
-			<Link to={`/system/km/sessions/${record.seid}`}><Icon type='edit'/></Link>
-		</span>)
-	}, {
-		title: 'Export data as CSV',
+		title: i18next.t('SESSIONS.SESSION_EXPORTED_BUTTON'),
 		key: 'export',
 		render: (text, record) => {
 			return <Button type="default" icon='file-excel' onClick={this.exportSession.bind(this,record)}></Button>;
 		}
 	}, {
-		title: 'Delete',
-		key: 'delete',
-		render: (text, record) => {
-			return (record.active ? "" :
-                 (<Button type="danger" icon='delete' onClick={this.deleteSession.bind(this,record)}></Button>));
-		}
+		title: i18next.t('ACTION'),
+		key: 'action',
+		render: (text, record) => (
+			<span>
+				<Link to={`/system/km/sessions/${record.seid}`}><Icon type='edit'/></Link>
+				{record.active ? "" :
+					<React.Fragment>
+						<Divider type="vertical"/>
+						<Button type="danger" icon='delete' onClick={this.deleteSession.bind(this,record)}></Button>
+					</React.Fragment>
+				}
+			</span>
+		)
 	}];
 }
 

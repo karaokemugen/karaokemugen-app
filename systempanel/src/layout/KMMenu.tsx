@@ -3,8 +3,8 @@ import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
 import {Menu, Icon, Button} from 'antd';
 import styles from '../App.module.css';
-
 import {logout} from '../actions/auth';
+import i18next from 'i18next';
 
 interface KMenuProps {
 	username: string,
@@ -32,33 +32,33 @@ class KMMenu extends Component<KMenuProps, {}> {
 					theme='dark'
 					style={{ lineHeight: '56px' }}
 				>
-					<Menu.Item key='home'><Link to='/system/km/home'>Home</Link></Menu.Item>
-					<Menu.SubMenu key="system-dropdown" title='System'>
-						<Menu.Item key='log'><Link to='/system/km/log'>Logs</Link></Menu.Item>
-						<Menu.Item key='config'><Link to='/system/km/config'>Configuration</Link></Menu.Item>
-						<Menu.Item key='sessions'><Link to='/system/km/sessions'>Sessions</Link></Menu.Item>
+					<Menu.Item key='home'><Link to='/system/km/home'>{i18next.t('MENU.HOME')}</Link></Menu.Item>
+					<Menu.SubMenu key="system-dropdown" title={i18next.t('MENU.SYSTEM')}>
+						<Menu.Item key='log'><Link to='/system/km/log'>{i18next.t('MENU.LOGS')}</Link></Menu.Item>
+						<Menu.Item key='config'><Link to='/system/km/config'>{i18next.t('MENU.CONFIGURATION')}</Link></Menu.Item>
+						<Menu.Item key='sessions'><Link to='/system/km/sessions'>{i18next.t('MENU.SESSIONS')}</Link></Menu.Item>
 					</Menu.SubMenu>
-					<Menu.SubMenu key="kara-dropdown" title='Karas'>
-						<Menu.Item key='karalist'><Link to='/system/km/karas'>List</Link></Menu.Item>
-						<Menu.Item key='karaimport'><Link to='/system/km/karas/create'>New</Link></Menu.Item>
-						<Menu.Item key='karadownload'><Link to='/system/km/karas/download'>Download</Link></Menu.Item>
-						<Menu.Item key='karablacklist'><Link to='/system/km/karas/blacklist'>Blacklist</Link></Menu.Item>
-						<Menu.Item key='karahistory'><Link to='/system/km/karas/history'>History</Link></Menu.Item>
-						<Menu.Item key='kararanking'><Link to='/system/km/karas/ranking'>Most requested</Link></Menu.Item>
-						<Menu.Item key='karaviewcounts'><Link to='/system/km/karas/viewcounts'>Most played</Link></Menu.Item>
+					<Menu.SubMenu key="kara-dropdown" title={i18next.t('MENU.KARAS')}>
+						<Menu.Item key='karalist'><Link to='/system/km/karas'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
+						<Menu.Item key='karaimport'><Link to='/system/km/karas/create'>{i18next.t('MENU.NEW')}</Link></Menu.Item>
+						<Menu.Item key='karadownload'><Link to='/system/km/karas/download'>{i18next.t('MENU.DOWNLOAD')}</Link></Menu.Item>
+						<Menu.Item key='karablacklist'><Link to='/system/km/karas/blacklist'>{i18next.t('MENU.BLACKLIST')}</Link></Menu.Item>
+						<Menu.Item key='karahistory'><Link to='/system/km/karas/history'>{i18next.t('MENU.HISTORY')}</Link></Menu.Item>
+						<Menu.Item key='kararanking'><Link to='/system/km/karas/ranking'>{i18next.t('MENU.RANKING')}</Link></Menu.Item>
+						<Menu.Item key='karaviewcounts'><Link to='/system/km/karas/viewcounts'>{i18next.t('MENU.VIEWCOUNTS')}</Link></Menu.Item>
 					</Menu.SubMenu>
-					<Menu.SubMenu key="serie-dropdown" title='Series'>
-						<Menu.Item key='seriesmanage'><Link to='/system/km/series'>List</Link></Menu.Item>
-						<Menu.Item key='seriesnew'><Link to='/system/km/series/new'>New</Link></Menu.Item>
+					<Menu.SubMenu key="serie-dropdown" title={i18next.t('MENU.SERIES')}>
+						<Menu.Item key='seriesmanage'><Link to='/system/km/series'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
+						<Menu.Item key='seriesnew'><Link to='/system/km/series/new'>{i18next.t('MENU.NEW')}</Link></Menu.Item>
 					</Menu.SubMenu>
-					<Menu.SubMenu key="tags-dropdown" title='Tags'>
-						<Menu.Item key='tagsmanage'><Link to='/system/km/tags'>List</Link></Menu.Item>
-						<Menu.Item key='tagsnew'><Link to='/system/km/tags/new'>New</Link></Menu.Item>
+					<Menu.SubMenu key="tags-dropdown" title={i18next.t('MENU.TAGS')}>
+						<Menu.Item key='tagsmanage'><Link to='/system/km/tags'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
+						<Menu.Item key='tagsnew'><Link to='/system/km/tags/new'>{i18next.t('MENU.NEW')}</Link></Menu.Item>
 					</Menu.SubMenu>
-					<Menu.Item key='db'><Link to='/system/km/db'>Database</Link></Menu.Item>
-					<Menu.SubMenu key="user-dropdown" title='Users'>
-						<Menu.Item key='userlist'><Link to='/system/km/users'>User list</Link></Menu.Item>
-						<Menu.Item key='newuser'><Link to='/system/km/users/create'>Create new user</Link></Menu.Item>
+					<Menu.Item key='db'><Link to='/system/km/db'>{i18next.t('MENU.DATABASE')}</Link></Menu.Item>
+					<Menu.SubMenu key="user-dropdown" title={i18next.t('MENU.USERS')}>
+						<Menu.Item key='userlist'><Link to='/system/km/users'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
+						<Menu.Item key='newuser'><Link to='/system/km/users/create'>{i18next.t('MENU.NEW')}</Link></Menu.Item>
 					</Menu.SubMenu>
 				</Menu>
 
@@ -73,7 +73,7 @@ class KMMenu extends Component<KMenuProps, {}> {
 							<span><Icon type='user' /> {this.props.username}</span>
 						</Menu.Item>
 						<Menu.Item key='logout'>
-							<Button icon='logout' onClick={this.props.logout}>Log Out</Button>
+							<Button icon='logout' onClick={this.props.logout}>{i18next.t('MENU.LOG_OUT')}</Button>
 						</Menu.Item>
 				</Menu>
 			</div>

@@ -7,6 +7,7 @@ import {push} from 'connected-react-router';
 import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
 
 import {ReduxMappedProps} from '../../react-app-env';
+import i18next from 'i18next';
 
 interface SessionEditProps extends ReduxMappedProps {
 	push: (string) => any,
@@ -39,7 +40,7 @@ class SessionEdit extends Component<SessionEditProps, SessionEditState> {
 	saveNew = (session) => {
 		axios.post('/api/system/sessions', session)
 			.then(() => {
-				this.props.infoMessage('sessions successfully created');
+				this.props.infoMessage(i18next.t('SESSIONS.SESSION_CREATED'));
 				this.props.push('/system/km/sessions');
 			})
 			.catch(err => {
@@ -50,7 +51,7 @@ class SessionEdit extends Component<SessionEditProps, SessionEditState> {
 	saveUpdate = (session) => {
 		axios.put(`/api/system/sessions/${session.seid}`, session)
 			.then(() => {
-				this.props.infoMessage('sessions successfully edited');
+				this.props.infoMessage(i18next.t('SESSIONS.SESSION_EDITED'));
 				this.props.push('/system/km/sessions');
 			})
 			.catch(err => {
@@ -61,7 +62,7 @@ class SessionEdit extends Component<SessionEditProps, SessionEditState> {
 	handleSessionMerge = (seid1,seid2) => {
 		axios.post('/api/system/sessions/merge/', {seid1: seid1, seid2:seid2})
 			.then((data) => {
-				this.props.infoMessage('Sessions successfully merged');
+				this.props.infoMessage(i18next.t('SESSIONS.SESSIONS_MERGED'));
 				this.props.push('/system/km/sessions/');
 			})
 			.catch(err => {

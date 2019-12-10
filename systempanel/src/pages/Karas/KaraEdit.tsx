@@ -6,6 +6,7 @@ import {connect} from 'react-redux';
 import {push} from 'connected-react-router';
 import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
+import i18next from 'i18next';
 
 interface KaraEditProps extends ReduxMappedProps {
 	push: (string) => any,
@@ -52,7 +53,7 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 	saveNew = (kara) => {
 		axios.post('/api/system/karas', kara)
 			.then(() => {
-				this.props.infoMessage('Kara successfully created');
+				this.props.infoMessage(i18next.t('KARA.KARA_CREATED'));
 				this.props.push('/system/km/karas');
 			})
 			.catch(err => {
@@ -63,7 +64,7 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 	saveUpdate = (kara) => {
 		axios.put(`/api/system/karas/${kara.kid}`, kara)
 			.then(() => {
-				this.props.infoMessage('Kara successfully edited');
+				this.props.infoMessage(i18next.t('KARA.KARA_EDITED'));
 				this.props.push('/system/km/karas');
 			})
 			.catch(err => {

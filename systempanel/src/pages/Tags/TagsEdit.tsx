@@ -7,6 +7,7 @@ import {push} from 'connected-react-router';
 import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
 
 import {ReduxMappedProps} from '../../react-app-env';
+import i18next from 'i18next';
 
 interface TagEditProps extends ReduxMappedProps {
 	push: (url: string) => void;
@@ -40,7 +41,7 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 	saveNew = (tag) => {
 		axios.post('/api/system/tags', tag)
 			.then(() => {
-				this.props.infoMessage('Tags successfully created');
+				this.props.infoMessage(i18next.t('TAGS.TAG_CREATED'));
 				this.props.push('/system/km/tags');
 			})
 			.catch(err => {
@@ -51,7 +52,7 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 	saveUpdate = (tag) => {
 		axios.put(`/api/system/tags/${tag.tid}`, tag)
 			.then(() => {
-				this.props.infoMessage('Tags successfully edited');
+				this.props.infoMessage(i18next.t('TAGS.TAG_EDITED'));
 				this.props.push('/system/km/tags');
 			})
 			.catch(err => {
@@ -62,7 +63,7 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 	handleTagMerge = (tid1,tid2) => {
 		axios.get('/api/system/tags/merge/'+tid1+'/'+tid2)
 			.then((data) => {
-				this.props.infoMessage('Tags successfully merged');
+				this.props.infoMessage(i18next.t('TAGS.TAGS_MERGED'));
 				this.props.push('/system/km/tags/');
 			})
 			.catch(err => {
