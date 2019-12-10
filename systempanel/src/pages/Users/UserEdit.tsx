@@ -6,6 +6,7 @@ import {connect} from 'react-redux';
 import {push} from 'connected-react-router';
 import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
+import i18next from 'i18next';
 
 interface UserEditProps extends ReduxMappedProps {
 	push: (string) => any,
@@ -38,7 +39,7 @@ class UserEdit extends Component<UserEditProps, UserEditState> {
 	saveNew = (user) => {
 		axios.post('/api/system/users', user)
 			.then(() => {
-				this.props.infoMessage('User successfully created');
+				this.props.infoMessage(i18next.t('USERS.CREATED'));
 				this.props.push('/system/km/users');
 			})
 			.catch(err => {
@@ -49,7 +50,7 @@ class UserEdit extends Component<UserEditProps, UserEditState> {
 	saveUpdate = (user) => {
 		axios.put(`/api/system/users/${user.login}`, user)
 			.then(() => {
-				this.props.infoMessage('User successfully edited');
+				this.props.infoMessage(i18next.t('USERS.EDITED'));
 				this.props.push('/system/km/users');
 			})
 			.catch(err => {

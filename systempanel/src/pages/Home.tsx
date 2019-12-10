@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Layout} from 'antd';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
+import i18next from 'i18next';
 
 interface HomeProps {}
 
@@ -11,26 +12,30 @@ class Home extends Component<HomeProps, HomeState> {
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'left' }}>
-				<h1>Welcome to Karaoke Mugen's system panel</h1>
-				<p>Here are the different menus you can use :</p>
+				<h1>{i18next.t('HOME.WELCOME')}</h1>
+				<p>{i18next.t('HOME.DIFFERENTS_MENUS')}</p>
 				<ul>
 					<li>
-						<b>System : </b> See logs, change configuration options, and manage karaoke session datata
+						<b>{i18next.t('MENU.SYSTEM')} : </b> {i18next.t('HOME.SYSTEM_DESCRIPTION')}
 					</li>
 					<li>
-						<b>Karas : </b> View, edit, <Link to={`/system/km/karas/download`}>download</Link>, and create karaoke data files. You can also edit the download blacklist and view most requested, most played, and karaoke history
+						<b>{i18next.t('MENU.KARAS')} : </b> {i18next.t('HOME.KARAS_DESCRIPTION_1')} 
+						<Link to={`/system/km/karas/download`}>{i18next.t('HOME.KARAS_DESCRIPTION_2')}</Link>
+						{i18next.t('HOME.KARAS_DESCRIPTION_3')}
 					</li>
 					<li>
-						<b>Series : </b> Manage series from here
+						<b>{i18next.t('MENU.SERIES')} : </b> {i18next.t('HOME.SERIES_DESCRIPTION')}
 					</li>
 					<li>
-						<b>Tags : </b> Manage tags (singers, songwriters, creators, song types, etc.)
+						<b>{i18next.t('MENU.TAGS')} : </b> {i18next.t('HOME.TAGS_DESCRIPTION')}
 					</li>
 					<li>
-						<b>Database : </b> Backup/restore your database, trigger a manual generation or update your media files (if you are using a karaokebase under git)
+						<b>{i18next.t('MENU.DATABASE')} : </b> {i18next.t('HOME.DATABASE_DESCRIPTION')}
 					</li>
 					<li>
-						<b>Users : </b> Create/<Link to={`/system/km/users`}>edit/view users</Link>, change passwords, make new guests,
+						<b>{i18next.t('MENU.USERS')} : </b> {i18next.t('HOME.USERS_DESCRIPTION_1')}
+						<Link to={`/system/km/users`}>{i18next.t('HOME.USERS_DESCRIPTION_2')}</Link>
+						{i18next.t('HOME.USERS_DESCRIPTION_3')}
 					</li>
 				</ul>
 			</Layout.Content>

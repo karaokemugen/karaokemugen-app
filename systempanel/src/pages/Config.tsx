@@ -5,6 +5,7 @@ import {Input, Layout, Button, Table} from 'antd';
 
 import {loading, infoMessage, errorMessage, warnMessage} from '../actions/navigation';
 import {ReduxMappedProps} from '../react-app-env';
+import i18next from 'i18next';
 
 interface ConfigProps extends ReduxMappedProps {}
 
@@ -56,16 +57,16 @@ class Config extends Component<ConfigProps, ConfigState> {
 	}
 
 	settingSaved(key, value) {
-		this.props.infoMessage(`Setting '${key}' saved as '${value}'`);
+		this.props.infoMessage(i18next.t('CONFIG.SETTING_SAVED', {key: key, value:value}));
 		this.refresh();
 	}
 
 	columns = [{
-		title: 'Property',
+		title: i18next.t('CONFIG.PROPERTY'),
 		dataIndex: 'key',
 		key: 'key',
 	}, {
-		title: 'Value',
+		title: i18next.t('CONFIG.VALUE'),
 		dataIndex: 'value',
 		key: 'value',
 		render: (text, record) => (<span>
@@ -94,7 +95,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 	refresh() {
 		axios.get('/api/system/config')
 			.then(res => this.setState({config: this.configKeyValue(res.data), error: ''}))
-			.catch(err => this.props.errorMessage('Unable to fetch configuration ' + err));
+			.catch(err => this.props.errorMessage(i18next.t('CONFIG.FETCH_ERROR')+ ' ' + err));
 	}
 
 	configKeyValue = data => {
@@ -117,9 +118,11 @@ class Config extends Component<ConfigProps, ConfigState> {
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
-				<Button type='primary' onClick={this.configBackup.bind(this)}>Backup config file</Button>
-				<p>To modify a setting, just edit it and press enter. Not all settings are editable and will return an error if you try anywyay.</p>
+				<Button style={{ margin: '10px'}} type='primary' 
+					onClick={this.refresh.bind(this)}>{i18next.t('REFRESH')}</Button>
+				<Button style={{ margin: '10px'}} type='primary' 
+					onClick={this.configBackup.bind(this)}>{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}</Button>
+				<p>{i18next.t('CONFIG.MESSAGE')}</p>
 				<Table
 					columns={this.columns}
 					dataSource={this.state.config}

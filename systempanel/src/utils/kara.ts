@@ -1,19 +1,6 @@
-import langs from 'langs';
+import { getNavigatorLanguageIn2B } from '../isoLanguages';
 
-var navigatorLanguage;
-
-function getNavigatorLanguage() {
-	var languages = langs.all();
-	var index = 0;
-	while (!navigatorLanguage && index < languages.length) {
-		if (navigator.languages[0].substring(0, 2) === languages[index]['1']) {
-			navigatorLanguage = languages[index]['2B'];
-		}
-		index++;
-	}
-	return navigatorLanguage;
-}
-navigatorLanguage = getNavigatorLanguage();
+const navigatorLanguage:string = getNavigatorLanguageIn2B();
 
 export function getTagInLocale(champ) {
 	return champ.i18n[navigatorLanguage] ? champ.i18n[navigatorLanguage] : champ.i18n['eng'];

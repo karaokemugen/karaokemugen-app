@@ -7,6 +7,7 @@ import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/nav
 import {ReduxMappedProps} from '../../react-app-env';
 import {ColumnProps} from 'antd/lib/table';
 import {getNameTagInLocaleList} from "../../utils/kara";
+import i18next from 'i18next';
 
 interface ViewcountsProps extends ReduxMappedProps {
 }
@@ -51,7 +52,7 @@ class Viewcounts extends Component<ViewcountsProps, ViewcountsState> {
 					columns={this.columns}
 					rowKey='kid'
 				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
+				<Button type='primary' onClick={this.refresh.bind(this)}>{i18next.t('REFRESH')}</Button>
 			</Layout.Content>
 		);
 	}
@@ -60,26 +61,26 @@ class Viewcounts extends Component<ViewcountsProps, ViewcountsState> {
 		key: 'kid',
 		render: null
 	}, {
-		title: 'Language',
+		title: i18next.t('KARA.LANGUAGES'),
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => getNameTagInLocaleList(langs).join(', ')
 	}, {
-		title: 'Series/Singer',
+		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
 		dataIndex: 'serie',
 		key: 'serie',
 		render: (serie, record) => serie || getNameTagInLocaleList(record.singers).join(', ')
 	}, {
-		title: 'Type',
+		title: i18next.t('KARA.TYPE'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => getNameTagInLocaleList(songtypes)[0] + ' ' + (record.songorder || '')
 	}, {
-		title: 'Title',
+		title: i18next.t('KARA.TITLE'),
 		dataIndex: 'title',
 		key: 'title'
 	}, {
-		title: 'View count',
+		title: i18next.t('KARA.PLAYED'),
 		dataIndex: 'played',
 		key: 'played',
 		defaultSortOrder: 'descend',

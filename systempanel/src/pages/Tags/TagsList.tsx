@@ -5,25 +5,9 @@ import {Input, Divider, Modal, Tooltip, Tag, Icon, Button, Layout, Table} from '
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
+import i18next from 'i18next';
+import { getTagTypeName } from '../../utils/tagTypes';
 
-export function getTagTypeName(type: number): string {
-	return Object.keys(tagTypes).find(t => tagTypes[t] === type);
-}
-
-export const tagTypes = Object.freeze({
-	singers: 2,
-	songtypes: 3,
-	creators: 4,
-	langs: 5,
-	authors: 6,
-	misc: 7,
-	songwriters: 8,
-	groups: 9,
-	families: 10,
-	origins: 11,
-	genres: 12,
-	platforms: 13
-});
 
 interface TagsListProps extends ReduxMappedProps {}
 
@@ -67,12 +51,12 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 	delete = (tagsId) => {
 		axios.delete(`/api/system/tags/${tagsId}`)
 			.then(() => {
-				this.props.warnMessage('Tags deleted.');
+				this.props.warnMessage(i18next.t('TAGS.TAG_DELETED'));
 				this.setState({deleteModal: false, tag: {}});
 				this.refresh();
 			})
 			.catch(err => {
-				this.props.errorMessage(`Error ${err.response.status} : ${err.response.statusText}. ${err.response.data}`);
+				this.props.errorMessage(`${i18next.t('ERROR')} ${err.response.status} : ${err.response.statusText}. ${err.response.data}`);
 				this.setState({deleteModal: false, tag: {}});
 			});
 	};
@@ -84,9 +68,9 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 				<Layout>
 					<Layout.Header>
 						<Input.Search
-							placeholder="Search filter"
+							placeholder={i18next.t('SEARCH_FILTER')}
 							onChange={event => this.filter = event.target.value}
-							enterButton="Search"
+							enterButton={i18next.t('SEARCH')}
 							onSearch={this.refresh.bind(this)}
 						/>
 					</Layout.Header>
@@ -95,18 +79,17 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 						columns={this.columns}
 						rowKey='tid'
 					/>
-					<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 					<Modal
-						title='Confirm tags deletion'
+						title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
 						visible={this.state.deleteModal}
 						onOk={() => this.delete(this.state.tag.tid)}
 						onCancel={() => this.setState({deleteModal: false, tag: {}})}
-						okText='yes'
-						cancelText='no'
+						okText={i18next.t('YES')}
+						cancelText={i18next.t('NO')}
 					>
-						<p>Delete tags <b>{this.state.tag.name}</b></p>
-						<p>This will remove its tags.json file as well as in any .kara in your database!</p>
-						<p>Are you sure?</p>
+						<p>{i18next.t('TAGS.DELETE_TAG_CONFIRM')} <b>{this.state.tag.name}</b></p>
+						<p>{i18next.t('TAGS.DELETE_TAG_MESSAGE')}</p>
+						<p>{i18next.t('CONFIRM_SURE')}</p>
 					</Modal>
 					</Layout.Content>
 				</Layout>
@@ -115,17 +98,17 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 	}
 
 	columns = [{
-		title: 'Original Name',
+		title: i18next.t('TAGS.NAME'),
 		dataIndex: 'name',
 		key: 'name',
 		render: name => name
 	}, {
-		title: 'Types',
+		title: i18next.t('TAGS.TYPES'),
 		dataIndex: 'types',
 		key: 'types',
-		render: types => types.map(t => getTagTypeName(t)).join(', ')
+		render: types => types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}`)).join(', ')
 	}, {
-		title: 'International Names',
+		title: i18next.t('TAGS.I18N'),
 		dataIndex: 'i18n',
 		key: 'i18n',
 		render: i18n_names => {
@@ -145,7 +128,7 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 			return names;
 		}
 	}, {
-		title: 'Action',
+		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (<span>
 			<Link to={`/system/km/tags/${record.tid}`}><Icon type='edit'/></Link>

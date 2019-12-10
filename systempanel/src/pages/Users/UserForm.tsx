@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Select} from 'antd';
+import i18next from 'i18next';
 
 interface UserFormProps {
 	user: any,
@@ -21,12 +22,8 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 	}
 
 	passwordValidator = (rule, value, callback) => {
-		const form = this.props.form;
-		const type = form.getFieldValue('type');
-		if (+type === 2 && value) {
-			callback('A guest cannot have a password');
-		} else if (+type < 2 && !this.state.initialLogin && !value) {
-			callback('A user must have a password');
+		if (+this.props.form.getFieldValue('type') < 2 && !this.state.initialLogin && !value) {
+			callback(i18next.t('USERS.PASSWORD_VALIDATOR_MESSAGE'));
 		} else {
 			callback();
 		}
@@ -51,9 +48,9 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 						rules: [{required: true}],
 						initialValue: `${this.props.user.type}`
 					})(<Select>
-						<Select.Option value='0'>Admin</Select.Option>
-						<Select.Option value='1'>User</Select.Option>
-						<Select.Option value='2'>Guest</Select.Option>
+						<Select.Option value='0'>{i18next.t('USERS.ADMIN')}</Select.Option>
+						<Select.Option value='1'>{i18next.t('USERS.USER')}</Select.Option>
+						<Select.Option value='2'>{i18next.t('USERS.GUEST')}</Select.Option>
 					</Select>)}
 				</Form.Item>
 				<Form.Item hasFeedback>
@@ -63,25 +60,27 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 					})(<Input
 						prefix={<Icon type='user'/>}
 						onPressEnter={this.handleSubmit}
-						placeholder='Username'
+						placeholder={i18next.t('USERS.LOGIN')}
 					/>)}
 				</Form.Item>
-				<Form.Item hasFeedback>
-					{getFieldDecorator('password', {
-						rules: [{validator: this.passwordValidator}]
-					})(<Input
-						prefix={<Icon type='lock'/>}
-						type='password'
-						onPressEnter={this.handleSubmit}
-						placeholder='Password'
-					/>)}
-				</Form.Item>
+				{+this.props.form.getFieldValue('type') === 2 ? null :
+					<Form.Item hasFeedback>
+						{getFieldDecorator('password', {
+							rules: [{validator: this.passwordValidator}]
+						})(<Input
+							prefix={<Icon type='lock'/>}
+							type='password'
+							onPressEnter={this.handleSubmit}
+							placeholder={i18next.t('USERS.PASSWORD')}
+						/>)}
+					</Form.Item>
+				}
 				<Form.Item hasFeedback>
 					{getFieldDecorator('nickname', {
 						initialValue: this.props.user.nickname
 					})(<Input
 						onPressEnter={this.handleSubmit}
-						placeholder='Nickname'
+						placeholder={i18next.t('USERS.NICKNAME')}
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback>
@@ -89,7 +88,7 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 						initialValue: this.props.user.bio
 					})(<Input.TextArea
 						rows={3}
-						placeholder='Bio'
+						placeholder={i18next.t('USERS.BIO')}
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback>
@@ -98,7 +97,7 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 						initialValue: this.props.user.email
 					})(<Input
 						onPressEnter={this.handleSubmit}
-						placeholder='Email'
+						placeholder={i18next.t('USERS.EMAIL')}
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback>
@@ -107,13 +106,11 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 						initialValue: this.props.user.url
 					})(<Input
 						onPressEnter={this.handleSubmit}
-						placeholder='Website'
+						placeholder={i18next.t('USERS.URL')}
 					/>)}
 				</Form.Item>
 				<Form.Item>
-					<Button type='primary' htmlType='submit' className='login-form-button'>
-						Save
-					</Button>
+					<Button type='primary' htmlType='submit' className='login-form-button'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 			</Form>
 		);

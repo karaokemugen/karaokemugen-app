@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Icon, Button, Layout, Table, Input} from 'antd';
+import {Icon, Button, Layout, Table, Input, Divider} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import { deleteKaraByLocalId } from '../../api/local';
 import {ReduxMappedProps} from '../../react-app-env';
 import {getTagInLocaleList} from "../../utils/kara";
+import i18next from 'i18next';
 
 interface KaraListProps extends ReduxMappedProps {
 }
@@ -97,10 +98,10 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 				<Layout>
 					<Layout.Header>
 						<Input.Search
-							placeholder='Search filter'
+							placeholder={i18next.t('SEARCH_FILTER')}
 							value={this.state.filter}
 							onChange={event => this.changeFilter(event)}
-							enterButton="Search"
+							enterButton={i18next.t('SEARCH')}
 							onSearch={this.refresh.bind(this)}
 						/>
 					</Layout.Header>
@@ -117,7 +118,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 								showTotal: (total, range) => {
 									const to = range[1];
 									const from = range[0];
-									return `Showing ${from}-${to} of ${total} songs`;
+									return i18next.t('KARA.SHOWING', {from:from,to:to,total:total});
 								},
 								total: this.state.karas.length,
 								showSizeChanger: true,
@@ -132,21 +133,21 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 	}
 
 	columns = [{
-		title: 'Language(s)',
+		title: i18next.t('KARA.LANGUAGES'),
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => {
 			return getTagInLocaleList(this.state.i18nTag, langs).join(', ')
 		}
 	}, {
-		title: 'Series/Singer',
+		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
 		dataIndex: 'serie',
 		key: 'serie',
 		render: (serie, record) => {
 			return serie || getTagInLocaleList(this.state.i18nTag, record.singers).join(', ');
 		}
 	}, {
-		title: 'Type',
+		title: i18next.t('KARA.TYPE'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => {
@@ -154,24 +155,20 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 			return getTagInLocaleList(this.state.i18nTag, songtypes) + ' ' + songorder || '';
 		}
 	}, {
-		title: 'Title',
+		title: i18next.t('KARA.TITLE'),
 		dataIndex: 'title',
 		key: 'title'
 	}, {
-		title: 'Action',
+		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (<span>
 			<Link to={`/system/km/karas/${record.kid}`}><Icon type='edit'/></Link>
+			<Divider type="vertical"/>
+			{this.state.karas_removing.indexOf(record.kid)>=0 ?
+				<button type="button"><Icon type="sync" spin /></button> :
+				<Button type="danger" icon='delete' onClick={this.deleteKara.bind(this,record)}></Button>
+			}
 		</span>)
-	}, {
-		title: 'Delete',
-		key: 'delete',
-		render: (text, record) => {
-			if(this.state.karas_removing.indexOf(record.kid)>=0)
-				return (<button type="button"><Icon type="sync" spin /></button>);
-			else
-				return (<Button type="danger" icon='delete' onClick={this.deleteKara.bind(this,record)}></Button>);
-		}
 	}];
 }
 

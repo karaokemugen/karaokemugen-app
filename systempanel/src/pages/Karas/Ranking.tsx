@@ -6,6 +6,7 @@ import {Button, Layout, Table} from 'antd';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
 import {getNameTagInLocaleList} from "../../utils/kara";
+import i18next from 'i18next';
 
 interface RankingProps extends ReduxMappedProps {
 }
@@ -50,32 +51,32 @@ class Ranking extends Component<RankingProps, RankingState> {
 					columns={this.columns}
 					rowKey='requested'
 				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
+				<Button type='primary' onClick={this.refresh.bind(this)}>{i18next.t('REFRESH')}</Button>
 			</Layout.Content>
 		);
 	}
 
 	columns = [{
-		title: 'Language',
+		title: i18next.t('KARA.LANGUAGES'),
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => getNameTagInLocaleList(langs).join(', ')
 	}, {
-		title: 'Series/Singer',
+		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
 		dataIndex: 'serie',
 		key: 'serie',
 		render: (serie, record) => serie || getNameTagInLocaleList(record.singers).join(', ')
 	}, {
-		title: 'Type',
+		title: i18next.t('KARA.TYPE'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => getNameTagInLocaleList(songtypes)[0] + ' ' + (record.songorder || '')
 	}, {
-		title: 'Title',
+		title: i18next.t('KARA.TITLE'),
 		dataIndex: 'title',
 		key: 'title'
 	}, {
-		title: 'Requested',
+		title: i18next.t('KARA.REQUESTED'),
 		dataIndex: 'requested',
 		key: 'requested',
 		render: requested => requested,

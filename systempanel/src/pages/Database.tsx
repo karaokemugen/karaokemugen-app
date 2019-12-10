@@ -6,6 +6,7 @@ import openSocket from 'socket.io-client';
 
 import {loading, infoMessage, errorMessage, warnMessage} from '../actions/navigation';
 import {ReduxMappedProps} from '../react-app-env';
+import i18next from 'i18next';
 
 interface DatabaseProps extends ReduxMappedProps {}
 
@@ -108,27 +109,21 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 
 
 	dbregen = () => {
-		this.props.loading(true);
 		axios.post('/api/system/db/regenerate')
 			.then(res => {
-				this.props.loading(false);
 				this.props.infoMessage(res.data);
 			})
 			.catch(err => {
-				this.props.loading(false);
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
 			});
 	};
 
 	dbupdate() {
-		this.props.loading(true);
 		axios.post('/api/system/karas/update')
 			.then(res => {
-				this.props.loading(false);
 				this.props.infoMessage(res.data);
 			})
 			.catch(err => {
-				this.props.loading(false);
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
 			});
 	}
@@ -163,63 +158,62 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<div>
-					<Button
+					<Button style={{ margin: '10px' }}
 						type='primary'
 						onClick={this.dbregen}
 						disabled={this.props.loadingActive}
 					>
-						Regenerate your database (wow wow)
+						{i18next.t('DATABASE.REGENERATE_DB')}
 					</Button>
 				</div>
 				<div>
-					<Button
+					<Button style={{ margin: '10px' }}
 						type='primary'
 						onClick={
 							() => this.setState({updateModal: true})
 						}
 						disabled={this.props.loadingActive}
 					>
-						Update your media files from your configured instance (Karaoke base git users only)
+						{i18next.t('DATABASE.UPDATE_MEDIA')}
 					</Button>
 				</div>
-				<div>
-					<Button
+				<div style={{ marginTop: '10px' }}>
+					<Button style={{ margin: '10px' }}
 						type='primary'
 						onClick={this.dbdump.bind(this)}
 						disabled={this.props.loadingActive}
 					>
-						Dump database to karaokemugen.sql file
+						{i18next.t('DATABASE.DUMP_DATABASE')}
 					</Button>
-				</div>
-				<div>
-					<Button
+					<Button style={{ margin: '10px' }}
 						type='primary'
 						onClick={this.dbrestore.bind(this)}
 						disabled={this.props.loadingActive}
 					>
-						Restore database from karaokemugen.sql file
+						{i18next.t('DATABASE.RESTORE_DATASE')}
 					</Button>
 				</div>
 				<Modal
-					title='Confirm update'
+					title={i18next.t('DATABASE.CONFIRM_UPDATE')}
 					visible={this.state.updateModal}
 					onOk={() => {
 						this.dbupdate();
 						this.setState({updateModal: false});
 					}}
 					onCancel={() => this.setState({updateModal: false})}
-					okText='Yes, do it!'
-					cancelText='No'
+					okText={i18next.t('YES')}
+					cancelText={i18next.t('NO')}
 				>
-					<p>WARNING: Updating will delete <b>any file not in the official Karaoke Mugen repository</b>.</p>
-					<p>If you created karaokes but did not upload them, they will be deleted.</p>
-					<p>Are you sure?</p>
+					<p>{i18next.t('DATABASE.UPDATE_MESSAGE_WARNING')} <b>{i18next.t('DATABASE.UPDATE_MESSAGE_FILES')}</b>.</p>
+					<p>{i18next.t('DATABASE.UPDATE_MESSAGE_DELETED')}</p>
+					<p>{i18next.t('CONFIRM_SURE')}</p>
 				</Modal>
-				<h1>Progress</h1>
-				<h2>Generation</h2>
+				<h1 style={{ marginTop: '30px' }}>{i18next.t('DATABASE.PROGRESS')}</h1>
+	
+				<h3>{i18next.t('DATABASE.GENERATION')}</h3>
 				{this.state.generationProgress.text}<br/>
 				<Progress percent={this.state.generationProgress.percentage} />
-				<h2>Base update</h2>
+				<h3>{i18next.t('DATABASE.BASE_UPDATE')}</h3>
 				{this.state.downloadProgress.text}<br/>
 				<Progress percent={this.state.downloadProgress.percentage} />
 				{this.state.downloadBatchProgress.text}<br/>

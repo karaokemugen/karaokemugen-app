@@ -5,6 +5,7 @@ import {Input, Divider, Modal, Tooltip, Tag, Icon, Button, Layout, Table} from '
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
+import i18next from 'i18next';
 
 interface SeriesListProps extends ReduxMappedProps {}
 
@@ -48,12 +49,12 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 	delete = (seriesId) => {
 		axios.delete(`/api/system/series/${seriesId}`)
 			.then(() => {
-				this.props.warnMessage('Series deleted.');
+				this.props.warnMessage(i18next.t('SERIES.SERIE_DELETED'));
 				this.setState({deleteModal: false, serie: {}});
 				this.refresh();
 			})
 			.catch(err => {
-				this.props.errorMessage(`Error ${err.response.status} : ${err.response.statusText}. ${err.response.data}`);
+				this.props.errorMessage(`${i18next.t('ERROR')} ${err.response.status} : ${err.response.statusText}. ${err.response.data}`);
 				this.setState({deleteModal: false, serie: {}});
 			});
 	};
@@ -65,9 +66,9 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 				<Layout>
 					<Layout.Header>
 						<Input.Search
-							placeholder="Search filter"
+							placeholder={i18next.t('SEARCH_FILTER')}
 							onChange={event => this.filter = event.target.value}
-							enterButton="Search"
+							enterButton={i18next.t('SEARCH')}
 							onSearch={this.refresh.bind(this)}
 						/>
 					</Layout.Header>
@@ -76,18 +77,17 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 						columns={this.columns}
 						rowKey='serie_id'
 					/>
-					<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 					<Modal
-						title='Confirm series deletion'
+						title={i18next.t('SERIES.SERIE_DELETED_CONFIRM')}
 						visible={this.state.deleteModal}
 						onOk={() => this.delete(this.state.serie.sid)}
 						onCancel={() => this.setState({deleteModal: false, serie: {}})}
-						okText='yes'
-						cancelText='no'
+						okText={i18next.t('YES')}
+						cancelText={i18next.t('NO')}
 					>
-						<p>Delete series <b>{this.state.serie.name}</b></p>
-						<p>This will remove its series.json file as well as in any .kara in your database!</p>
-						<p>Are you sure?</p>
+						<p>{i18next.t('SERIES.DELETED_SERIE_CONFIRM')} <b>{this.state.serie.name}</b></p>
+						<p>{i18next.t('SERIES.DELETE_SERIE_MESSAGE')}</p>
+						<p>{i18next.t('CONFIRM_SURE')}</p>
 					</Modal>
 					</Layout.Content>
 				</Layout>
@@ -96,12 +96,12 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 	}
 
 	columns = [{
-		title: 'Original Name',
+		title: i18next.t('TAGS.NAME'),
 		dataIndex: 'name',
 		key: 'name',
 		render: name => name
 	}, {
-		title: 'Aliases',
+		title: i18next.t('TAGS.ALIASES'),
 		dataIndex: 'aliases',
 		key: 'aliases',
 		render: aliases => {
@@ -121,7 +121,7 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 			return tags;
 		}
 	}, {
-		title: 'International Names',
+		title: i18next.t('TAGS.I18N'),
 		dataIndex: 'i18n',
 		key: 'i18n',
 		render: i18n_names => {
@@ -140,7 +140,8 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 			return names;
 		}
 	}, {
-		title: 'Action',
+		width: '100px',
+		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (<span>
 			<Link to={`/system/km/series/${record.sid}`}><Icon type='edit'/></Link>

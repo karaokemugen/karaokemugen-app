@@ -5,6 +5,7 @@ import {Layout, Table, Input, InputNumber, Button, Select} from 'antd';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
 import criteras_types from './_blc_criterias_types';
+import i18next from 'i18next';
 
 
 const { Option } = Select;
@@ -115,12 +116,12 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	handleCriteriaSubmit() {
 		if(this.state.filter_value===null || this.state.filter_value==='')
 		{
-			this.props.errorMessage(`Critère invalide`);
+			this.props.errorMessage(i18next.t('BLACKLIST.INVALID_CRITERIA'));
 			return;
 		}
 		if(this.state.filter_type===1002 && this.state.filter_value===0)
 		{
-			this.props.errorMessage(`Durée minimum de 1s`);
+			this.props.errorMessage(i18next.t('BLACKLIST.SHORTER_THAN_ONE_SECOND'));
 			return;
 		}
 
@@ -190,7 +191,9 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 				<Layout>
 					<Layout.Header>
 						<Select style={{ width: 200 }} value={this.state.filter_type} onChange={this.handleCriteriasTypeChange.bind(this)}>
-							{criteras_types.map(o => <Option key={o.value} data-mode={o.mode} value={o.value}>{o.label}</Option>)}
+							{criteras_types.map(o => <Option key={o.value} data-mode={o.mode} value={o.value}>
+								{i18next.t(`BLACKLIST.BLCTYPE_${o.value}`)}
+								</Option>)}
 						</Select>
 						{" "}
 						{this.filter_input()}
@@ -213,15 +216,15 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 
 	criterias_columns = [
 		{
-			title: 'Type',
+			title: i18next.t('BLACKLIST.TYPE'),
 			dataIndex: 'type',
 			key: 'type',
 			render: type => {
 				var t = criteras_types.filter((t)=>{ return t.value===type})
-				return t.length>0 ? t[0].label : type;
+				return t.length>0 ? i18next.t(`BLACKLIST.BLCTYPE_${t[0].value}`) : type;
 			}
 		}, {
-			title: 'Value',
+			title: i18next.t('BLACKLIST.VALUE'),
 			dataIndex: 'value',
 			key: 'value',
 			render: (value, record)  => {

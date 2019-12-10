@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Alert, Button, Form, Icon, Input, message, Select, Tag, Tooltip, Cascader } from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
-import langs from 'langs';
+import {getListLanguagesInLocale, getLanguagesInLocaleFromCode } from '../../isoLanguages';
+import i18next from 'i18next';
+import { tagTypes } from '../../utils/tagTypes';
 
 interface TagsFormProps {
 	tags: any,
@@ -18,21 +20,6 @@ interface TagsFormState {
 	mergeSelection: string
 }
 
-export const tagTypes = Object.freeze({
-	Singers: 2,
-	Songtypes: 3,
-	Creators: 4,
-	Langs: 5,
-	Authors: 6,
-	Misc: 7,
-	Songwriters: 8,
-	Groups: 9,
-	Families: 10,
-	Origins: 11,
-	Genres: 12,
-	Platforms: 13
-});
-
 class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 	select: any;
@@ -41,11 +28,11 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		super(props);
 		this.state = {
 			i18n: [],
-			languages: [],
+			languages: getListLanguagesInLocale(),
 			selectVisible: false,
 			mergeSelection: ''
 		};
-		langs.all().forEach(lang => this.state.languages.push({ value: lang['2B'], text: lang.name }));
+		
 		Object.keys(this.props.tag.i18n).forEach(lang => {
 			var name = this.props.tag.i18n[lang];
 			this.state.i18n.push(lang);
@@ -82,7 +69,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				}
 			});
 		} else {
-			message.error('A tags must have at least one name by language');
+			message.error(i18next.t('TAGS.LANG_ERROR'));
 		}
 	};
 
@@ -117,7 +104,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			
 			let option = {
 				value:typeID,
-				label:type,
+				label:i18next.t(`TAG_TYPES.${type}`),
 				children: []
 			}
 			this.props.tags.forEach(tag => {
@@ -149,8 +136,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			>
 				<Form.Item hasFeedback
 					label={(
-						<span>Original Name&nbsp;
-							<Tooltip title="This is the internal name used to reference the tags in Karaoke Mugen's database">
+						<span>{i18next.t('TAGS.NAME')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.NAME_TOOLTIP')}>
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
@@ -162,16 +149,16 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						initialValue: this.props.tag.name,
 						rules: [{
 							required: true,
-							message: 'Please enter a name'
+							message: i18next.t('TAGS.NAME_REQUIRED')
 						}],
 					})(<Input
-						placeholder='Tags name'
+						placeholder={i18next.t('TAGS.NAME')}
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback
 					label={(
-						<span>Short Name&nbsp;
-							<Tooltip title="This is the short name used to reference the tags in Karaoke Mugen's database">
+						<span>{i18next.t('TAGS.SHORT_NAME')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.SHORT_NAME_TOOLTIP')}>
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
@@ -182,13 +169,13 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					{getFieldDecorator('short', {
 						initialValue: this.props.tag.short,
 					})(<Input
-						placeholder='short name'
+						placeholder={i18next.t('TAGS.SHORT_NAME')}
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback
 					label={(
-						<span>Tag type&nbsp;
-								<Tooltip title="This is the type of the tag in Karaoke Mugen's database">
+						<span>{i18next.t('TAGS.TYPES')}&nbsp;
+								<Tooltip title={i18next.t('TAGS.TYPES_TOOLTIP')}>
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
@@ -201,10 +188,12 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						rules: [{ required: true }],
 						initialValue: this.props.tag.types ? this.props.tag.types : []
 					})(
-						<Select mode="multiple" placeholder={"Tag type"}>
+						<Select mode="multiple" placeholder={i18next.t('TAGS.TYPES')}>
 							{Object.keys(tagTypes).map(type => {
 								const value = tagTypes[type];
-								return <Select.Option key={value} value={value}>{type}</Select.Option>
+								return <Select.Option key={value} value={value}>
+										{i18next.t(`TAG_TYPES.${type}`)}
+									</Select.Option>
 							})
 							}
 						</Select>
@@ -212,8 +201,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				</Form.Item>
 				<Form.Item
 					label={(
-						<span>Aliase(s)&nbsp;
-							<Tooltip title="Short names or alternative names a series could be searched. Example : DB for Dragon Ball, or FMA for Full Metal Alchemist, or AnoHana for that series which makes you cry everytime you watch it.">
+						<span>{i18next.t('TAGS.ALIASES')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.ALIASES_TOOLTIP')}>
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
@@ -232,8 +221,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				<Form.Item 
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 8, offset: 0 }}
-					label={(<span>Names by language&nbsp;
-						<Tooltip title="There must be at least one name in any language (enter the original name by default)">
+					label={(<span>{i18next.t('TAGS.I18N')}&nbsp;
+						<Tooltip title={i18next.t('TAGS.I18N_TOOLTIP')}>
 							<Icon type="question-circle-o" />
 						</Tooltip>
 					</span>)}
@@ -244,7 +233,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					<Form.Item
 						key={langKey}
 						hasFeedback
-						label={langs.where('2B', langKey).name}
+						label={getLanguagesInLocaleFromCode(langKey)}
 						labelCol={{ span: 3 }}
 						wrapperCol={{ span: 8, offset: 0 }}
 					>
@@ -252,16 +241,17 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 								initialValue: this.state[`lang_${langKey}`],
 								rules: [{
 									required: true,
-									message: 'Please enter a translation'
+									message: i18next.t('TAGS.I18N_ERROR')
 								}],
 							})(
 								<Input
-									placeholder='Name in that language'
+									placeholder={i18next.t('TAGS.I18N_NAME')}
 								/>
 							)}
 
 							{Object.keys(this.state.i18n).length > 1 ? (
-								<span style={{position:'absolute'}}><Tooltip title="Remove name">
+								<span style={{position:'absolute'}}>
+									<Tooltip title={i18next.t('TAGS.I18N_DELETE')}>
 									<Icon
 										className="dynamic-delete-button"
 										type="minus-circle-o"
@@ -274,21 +264,25 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				))}
 				{selectVisible && (
 					<Form.Item
-						label="Select a language"
+						label={i18next.t('TAGS.I18N_SELECT')}
 						labelCol={{ span: 3 }}
 						wrapperCol={{ span: 8, offset: 0 }}
 					>
 						<Select
 							showSearch
+							optionFilterProp="children"
 							ref={select => this.select = select}
 							onChange={value => this.addLang(value)}>
-							{this.state.languages.map(lang => (<Select.Option key={lang.value} value={lang.value}>"{lang.text} ({lang.value.toUpperCase()})"</Select.Option>))}
+							{this.state.languages.map(lang => (
+								<Select.Option key={lang.value} value={lang.value}>
+									{lang.text} ({lang.value.toUpperCase()})
+								</Select.Option>))}
 						</Select>
 					</Form.Item>
 				)}
 				{!selectVisible && (
 					<Form.Item
-						label="Select a language"
+						label={i18next.t('TAGS.I18N_SELECT')}
 						labelCol={{ span: 3 }}
 						wrapperCol={{ span: 8, offset: 0 }}
 					>
@@ -296,20 +290,19 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							onClick={this.showSelect}
 							style={{ borderStyle: 'dashed' }}
 							>
-							<Icon type="plus" /> Add
+							<Icon type="plus" />{i18next.t('ADD')}
 						</Tag>
 					</Form.Item>
 				)}
 				<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{textAlign:"right"}}>
-					<Button type='primary' htmlType='submit' className='tags-form-button'>
-						Save tags
-					</Button>
+					<Button type='primary' htmlType='submit' 
+						className='tags-form-button'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 				
 				<Form.Item hasFeedback
 					label={(
-						<span>Merge with&nbsp;
-							<Tooltip title="Merge the current tag with another one">
+						<span>{i18next.t('TAGS.MERGE_WITH')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.MERGE_WITH_TOOLTIP')}>
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
@@ -317,7 +310,10 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 8, offset: 0 }}
 					>
-					<Cascader options={this.mergeCascaderOption()} showSearch={{filter:this.mergeCascaderFilter}} onChange={this.handleTagMergeSelection.bind(this)} placeholder="Please select" />
+					<Cascader options={this.mergeCascaderOption()} 
+						showSearch={{filter:this.mergeCascaderFilter}} 
+						onChange={this.handleTagMergeSelection.bind(this)} 
+						placeholder={i18next.t('TAGS.MERGE_WITH_SELECT')} />
 				</Form.Item>
 
 				<Form.Item
@@ -325,11 +321,11 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					style={{textAlign:"right"}}
 					>
 					<Button type="danger" onClick={this.handleTagMerge.bind(this)}>
-						Merge !
+						{i18next.t('TAGS.MERGE_WITH_BUTTON')}
 					</Button>
                     <Alert style={{textAlign:"left"}}
-                        message="About Merging process"
-                        description="Resulting tags will have the current Name and Shortname. Types, Aliases and translation will be merged and the resulting tags will contain all the information from Current and targeted tags"
+                        message={i18next.t('TAGS.MERGE_ABOUT')}
+                        description={i18next.t('TAGS.MERGE_ABOUT_MESSAGE')}
                         type="warning"
                     />
 				

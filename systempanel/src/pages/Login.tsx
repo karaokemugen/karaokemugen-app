@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { login } from '../actions/auth';
 import styles from '../App.module.css';
 import logo from '../assets/Logo-fond-transp.png';
+import i18next from 'i18next';
 
 interface LoginForm {
   username: string;
@@ -49,10 +50,10 @@ class Login extends Component<LoginProps, {}> {
 
     const UsernameFormItem = (
       <Form.Item>
-        {loginFormDecorator('username', 'Please input your username!',
+        {loginFormDecorator('username', i18next.t('USERS.LOGIN_ERROR'),
           <Input
             prefix={<Icon type='user' className={styles.loginIconColor} />}
-            placeholder='Username'
+            placeholder={i18next.t('USERS.LOGIN')}
           />,
         )}
       </Form.Item>
@@ -60,11 +61,11 @@ class Login extends Component<LoginProps, {}> {
 
     const PasswordFormItem = (
       <Form.Item>
-        {loginFormDecorator('password', 'Please input your password!',
+        {loginFormDecorator('password', i18next.t('USERS.PASSWORD_ERROR'),
           <Input
             prefix={<Icon type='lock' className={styles.loginIconColor} />}
             type='password'
-            placeholder='Password'
+            placeholder={i18next.t('USERS.PASSWORD')}
           />,
         )}
       </Form.Item>
@@ -73,7 +74,7 @@ class Login extends Component<LoginProps, {}> {
     const SubmitButtonFormItem = (
       <Form.Item>
         <Button type='primary' htmlType='submit' className={styles.loginFormButton}>
-          Log in
+        {i18next.t('USERS.LOG_IN')}
         </Button>
       </Form.Item>
     );
@@ -84,7 +85,7 @@ class Login extends Component<LoginProps, {}> {
           <img src={logo} className={styles.loginImage} alt='logo'></img>
         </div>
         <div className={styles.loginForm}>
-          <p>If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field</p>
+          <p>{i18next.t('USERS.LOGIN_MESSAGE')}</p>
           <Form onSubmit={this.handleSubmit}>
             {UsernameFormItem}
             {PasswordFormItem}

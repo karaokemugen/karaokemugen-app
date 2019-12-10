@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import {Button, Form, Icon, Input, message, Select, Tag, Tooltip} from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
-import langs from 'langs';
+import {getListLanguagesInLocale, getLanguagesInLocaleFromCode } from '../../isoLanguages';
+import i18next from 'i18next';
 
 interface SeriesFormProps {
 	serie: any,
@@ -23,10 +24,9 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 		super(props);
 		this.state = {
 			i18n: [],
-			languages: [],
+			languages: getListLanguagesInLocale(),
 			selectVisible: false
 		};
-		langs.all().forEach(lang => this.state.languages.push({value: lang['2B'], text: lang.name}));
 		if (Array.isArray(this.props.serie.i18n)) {
 			this.props.serie.i18n.forEach(i18n => {
 				this.state.i18n.push(i18n.lang);
@@ -57,7 +57,7 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 				}
 			});
 		} else {
-			message.error('A series must have at least one name by language');
+			message.error(i18next.t('SERIES.LANG_ERROR'));
 		}
 	};
 
@@ -89,8 +89,8 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 			>
 				<Form.Item hasFeedback
 					label={(
-						<span>Original Name&nbsp;
-							<Tooltip title="This is the internal name used to reference the series in Karaoke Mugen's database">
+						<span>{i18next.t('TAGS.NAME')}&nbsp;
+							<Tooltip title={i18next.t('SERIES.NAME_TOOLTIP')}>
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
@@ -102,16 +102,16 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 						initialValue: this.props.serie.name,
 						rules: [{
 							required: true,
-							message: 'Please enter a name'
+							message: i18next.t('TAGS.NAME_REQUIRED')
 						}],
 					})(<Input
-						placeholder='Series name'
+						placeholder={i18next.t('TAGS.NAME')}
 					/>)}
 				</Form.Item>
 				<Form.Item
 					label={(
-						<span>Aliase(s)&nbsp;
-							<Tooltip title="Short names or alternative names a series could be searched. Example : DB for Dragon Ball, or FMA for Full Metal Alchemist, or AnoHana for that series which makes you cry everytime you watch it.">
+						<span>{i18next.t('TAGS.ALIASES')}&nbsp;
+							<Tooltip title={i18next.t('SERIES.ALIASES_TOOLTIP')}>
 								<Icon type="question-circle-o" />
 							</Tooltip>
 						</span>
@@ -126,20 +126,24 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 						onChange={ (tags) => this.props.form.setFieldsValue({ aliases: tags.join(',') }) }
 					/>)}
 				</Form.Item>
-				<div>
-					Names by language&nbsp;
-					<Tooltip title="There must be at least one name in any language (enter the original name by default)">
-						<Icon type="question-circle-o" />
-					</Tooltip>
-				</div>
+				<Form.Item 
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 8, offset: 0 }}
+					label={(<span>{i18next.t('TAGS.I18N')}&nbsp;
+						<Tooltip title={i18next.t('TAGS.I18N_TOOLTIP')}>
+							<Icon type="question-circle-o" />
+						</Tooltip>
+					</span>)}
+					>
+				</Form.Item>
 				{ this.state.i18n.map(langKey => (
 						<Form.Item
 							hasFeedback
 							label={(
 								<span>
-									{langs.where('2B', langKey).name+" "}
+									{getLanguagesInLocaleFromCode(langKey)+" "}
 									{Object.keys(this.state.i18n).length > 1 ? (
-										<Tooltip title="Remove name">
+										<Tooltip title={i18next.t('TAGS.I18N_DELETE')}>
 											<Icon
 												className="dynamic-delete-button"
 												type="minus-circle-o"
@@ -155,24 +159,28 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 								initialValue: this.state[`lang_${langKey}`],
 								rules: [{
 									required: true,
-									message: 'Please enter a translation'
+									message: i18next.t('TAGS.I18N_ERROR')
 								}],
 							})(
-								<Input placeholder='Name in that language' />
+								<Input placeholder={i18next.t('TAGS.I18N_NAME')} />
 							)}
 						</Form.Item>
 				))}
 				{selectVisible && (
 					<Form.Item
-						label="Select a language"
+						label={i18next.t('TAGS.I18N_SELECT')}
 						labelCol={{ span: 3 }}
 						wrapperCol={{ span: 4, offset: 0 }}
 					>
 						<Select
 							showSearch
+							optionFilterProp="children"
 							ref={select => this.select = select}
 							onChange={value => this.addLang(value)}>
-							{ this.state.languages.map(lang => (<Select.Option value={lang.value}>"{lang.text} ({lang.value.toUpperCase()})"</Select.Option>)) }
+							{ this.state.languages.map(lang => (
+							<Select.Option value={lang.value}>
+								{lang.text} ({lang.value.toUpperCase()})
+							</Select.Option>)) }
 						</Select>
 					</Form.Item>
 				)}
@@ -181,15 +189,14 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 						onClick={this.showSelect}
 						style={{ borderStyle: 'dashed' }}
 					>
-						<Icon type="plus" /> Add
+						<Icon type="plus" />{i18next.t('ADD')}
 					</Tag>
 				)}
 				<Form.Item
 					wrapperCol={{ span: 4, offset: 2 }}
 				>
-					<Button type='primary' htmlType='submit' className='series-form-button'>
-						Save series
-					</Button>
+					<Button type='primary' htmlType='submit'
+						className='series-form-button'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 				<Form.Item>
 					{getFieldDecorator('i18n', {
