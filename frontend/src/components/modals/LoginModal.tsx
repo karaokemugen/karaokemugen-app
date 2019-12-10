@@ -120,6 +120,10 @@ class LoginModal extends Component<IProps,IState> {
 			var data:{login:string, password:string, securityCode?:string, admin?:boolean} 
 				= { login: username, password: password, admin: this.state.adminSwitch };
     		if (this.state.adminSwitch) {
+				if (!this.state.securityCode) {
+					displayMessage('error', i18next.t('SECURITY_CODE_MANDATORY'));
+					return;
+				}
     			data.securityCode = this.state.securityCode;
     		}
     		axios.post('/api/public/users', data)
@@ -129,7 +133,8 @@ class LoginModal extends Component<IProps,IState> {
     				this.login(username, password);
     			})
     			.catch(err => {
-    				this.setState({ redBorders: 'redBorders' });
+					err.response.data.message ? displayMessage('error', err.response.data.message) : displayMessage('error', err);
+					this.setState({ redBorders: 'redBorders' });
     			});
     	}
     };

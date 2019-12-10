@@ -5,6 +5,7 @@
 	"404_2": "Do not panic, we can help you.",
 	"404_3": "You are here",
 	"CHAR_NOT_ALLOWED": "The character '{{char}}' is not allowed",
+	"SECURITY_CODE_MANDATORY": "The security code is mandatory for create an operator account",
 	"DETAILS_ADDED": "Added ",
 	"DETAILS_ADDED_2": "on ",
 	"DETAILS_ADDED_3": "by ",

@@ -5,6 +5,7 @@
 	"404_2": "Pas de panique, on va vous aider",
     "404_3": "vous êtes ici",
 	"CHAR_NOT_ALLOWED": "Le caractère '{{char}}' n'est pas autorisé",
+	"SECURITY_CODE_MANDATORY": "Le code de sécurité est obligatoire pour créer un compte opérateur",
 	"DETAILS_ADDED": "Ajouté ",
 	"DETAILS_ADDED_2": "le ",
 	"DETAILS_ADDED_3": "par ",
