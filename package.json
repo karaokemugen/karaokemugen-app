@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Karaoke playlist manager / player",
   "bin": {
     "karaokemugen": "./dist/index.js"
