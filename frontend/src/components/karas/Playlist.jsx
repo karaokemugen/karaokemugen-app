@@ -394,7 +394,7 @@ noRowsRenderer = () => {
   };
 
   playingUpdate = data => {
-  	if (this.state.idPlaylist === data.playlist_id && !this.stopUpdate) {
+  	if (this.state.idPlaylist === data.playlist_id && !this.state.stopUpdate) {
   		var playlistData = this.state.data;
   		playlistData.content.forEach((kara, index) => {
   			if (kara.flag_playing) {
@@ -409,7 +409,7 @@ noRowsRenderer = () => {
   				}
   			}
   		});
-  		this.setState({ data: playlistData });
+		  this.setState({ data: playlistData });
   	}
   };
 
