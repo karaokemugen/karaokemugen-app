@@ -240,7 +240,8 @@ class KaraLine extends Component {
   									className={'btn btn-sm btn-action btn-primary'}
   								><i className="fas fa-eye-slash"></i></button>
   							) : null}
-  						{scope !== 'admin' && this.props.flagPublic ? <button className={'likeKara btn btn-sm btn-action ' + this.state.isLike ? 'currentLike' : ''}
+  						{scope !== 'admin' && this.props.playlistInfo && this.props.playlistInfo.flag_public ? 
+						  <button className={'likeKara btn btn-sm btn-action ' + (this.state.isLike ? 'currentLike' : '')}
   							onClick={this.likeKara}><i className="fas fa-thumbs-up"></i></button> : null}
   						{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username == logInfos.username && (idPlaylist == this.props.playlistToAddId) ?
   							<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action deleteKara"
