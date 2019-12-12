@@ -1,7 +1,8 @@
 import {db} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import { User } from '../lib/types/user';
-import { DBUser, DBGuest, RemoteToken } from '../types/database/user';
+import { DBGuest, RemoteToken } from '../types/database/user';
+import { DBUser } from '../lib/types/database/user';
 const sql = require('./sql/user');
 
 export async function getUser(username: string): Promise<DBUser> {
