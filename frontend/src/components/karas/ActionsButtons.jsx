@@ -3,12 +3,18 @@ import i18next from 'i18next';
 import store from '../../store';
 
 class ActionsButtons extends Component {
-    onRightClick = e => {
+    onRightClickAdd = e => {
     	if (this.props.scope == 'admin') {
     		e.preventDefault();
     		e.stopPropagation(); 
     		this.props.addKara(e, store.getPosPlaying());
     	}
+	};
+	
+	onRightClickTransfer = e => {
+		e.preventDefault();
+		e.stopPropagation(); 
+		this.props.transferKara(e, store.getPosPlaying());
     };
 
     render() {
@@ -21,10 +27,10 @@ class ActionsButtons extends Component {
     			{(this.props.scope === 'admin' && this.props.idPlaylistTo !== -1) ||
                     (this.props.scope === 'public' && this.props.idPlaylist !== this.props.playlistToAddId) ?
     				<button title={i18next.t('TOOLTIP_ADDKARA') + (this.props.scope == 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : '')}
-    					name="addKara" className={classValue} onContextMenu={this.onRightClick} onClick={this.props.addKara}><i className="fas fa-plus"></i></button> : null}
+    					name="addKara" className={classValue} onContextMenu={this.onRightClickAdd} onClick={this.props.addKara}><i className="fas fa-plus"></i></button> : null}
     			{this.props.scope === 'admin' && this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
     				<button title={i18next.t('TOOLTIP_TRANSFERKARA')} name="transferKara" className={classValue}
-    					onClick={this.props.transferKara}><i className="fas fa-exchange-alt"></i></button> : null
+					onContextMenu={this.onRightClickTransfer} onClick={this.props.transferKara}><i className="fas fa-exchange-alt"></i></button> : null
     			}
     		</React.Fragment>
     	);

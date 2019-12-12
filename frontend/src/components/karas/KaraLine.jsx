@@ -101,7 +101,7 @@ class KaraLine extends Component {
   				if (pos) {
   					data = { plc_id: String(this.props.kara.playlistcontent_id) , pos: pos+1};
   				} else {
-  					data = { plc_id: String(this.props.kara.playlistcontent_id) };
+  				data = { plc_id: String(this.props.kara.playlistcontent_id) };
   				}
   				type = 'PATCH';
   			} else {
@@ -135,8 +135,8 @@ class KaraLine extends Component {
   	}
   };
 
-  transferKara = () => {
-	  this.addKara();
+  transferKara = (event, pos) => {
+	  this.addKara(event, pos);
 	  this.deleteKara();
   };
 
