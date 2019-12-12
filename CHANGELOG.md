@@ -1,5 +1,28 @@
 # Versions
 
+## v3.0.1 "Leafa Loyale" - 13/12/2019
+
+This is a bugfix release.
+
+### Improvements
+
+- Described where is the security code in the admin intro d71a5889
+- Bumped taskCounter from 5 to 100 during batch downloads so KM doesn't stop downloading every now and then db989b9e
+- Added proper error messages for login in operator panel c7fbb20f
+- Added proper error messages when using wrong security code in login window 46c9f81a
+
+### Fixes
+
+- Fixed avatar fetching for online users d68c8748
+- Fixed API documentation 48ccf953
+- Fixed moving songs from one playlist to the other e1f6bd89
+- Fixed playlist buttons not refreshed when you change the other side in operator window 7ae4e647
+- Fixed adding blacklist criterias with enter 8c7a7228
+- Fixed like button on karas 653fe77d, 512901b5
+- Fixed free button 91b855f3
+- Fixed who's online modal 80ac08f9
+- Fixed import playlist 3a829eda, daf52009
+
 ## v3.0.0 "Leafa Lumineuse" - 29/11/2019
 
 This is a VERY MAJOR release.
