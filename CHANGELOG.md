@@ -10,6 +10,7 @@ This is a bugfix release.
 - Bumped taskCounter from 5 to 100 during batch downloads so KM doesn't stop downloading every now and then db989b9e
 - Added proper error messages for login in operator panel c7fbb20f
 - Added proper error messages when using wrong security code in login window 46c9f81a
+- Ensures mpv is running before issuing any command, restarts it if it's not present
 
 ### Fixes
 
