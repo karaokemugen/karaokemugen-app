@@ -22,6 +22,9 @@ This is a bugfix release.
 - Fixed free button 91b855f3
 - Fixed who's online modal 80ac08f9
 - Fixed import playlist 3a829eda, daf52009
+- Fixed right click transfer button 4fdf9c0f
+- Fixed right click add button from public playlist to current playlist de2a88a8
+- Fixed blue color display change for playing kara b629c8a0
 
 ## v3.0.0 "Leafa Lumineuse" - 29/11/2019
 
