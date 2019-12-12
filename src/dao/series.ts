@@ -3,7 +3,7 @@ import {pg as yesql} from 'yesql';
 import { KaraParams } from '../lib/types/kara';
 import { Series } from '../lib/types/series';
 import { WhereClause } from '../types/database';
-import { DBSeries } from '../types/database/series';
+import { DBSeries } from '../lib/types/database/series';
 
 const sql = require('./sql/series');
 
