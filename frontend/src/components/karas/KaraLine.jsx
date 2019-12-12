@@ -97,12 +97,8 @@ class KaraLine extends Component {
   	} else if (this.props.scope === 'admin') {
   		if (this.props.idPlaylistTo > 0) {
   			url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
-  			if (this.props.idPlaylist > 0) {
-  				if (pos) {
-  					data = { plc_id: String(this.props.kara.playlistcontent_id) , pos: pos+1};
-  				} else {
+  			if (this.props.idPlaylist > 0 && !pos) {
   				data = { plc_id: String(this.props.kara.playlistcontent_id) };
-  				}
   				type = 'PATCH';
   			} else {
   				if (pos) {
