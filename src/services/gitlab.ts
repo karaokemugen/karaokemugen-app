@@ -7,7 +7,7 @@ export async function postSuggestionToKaraBase(karaName: string, username: strin
 	const conf = getConfig().Gitlab.IssueTemplate;
 	let title = conf && conf.Suggestion && conf.Suggestion.Title
 		? conf.Suggestion.Title
-		: 'New kara suggestion: $kara';
+		: '$kara';
 	title = title.replace('$kara', karaName);
 	let desc = conf && conf.Suggestion && conf.Suggestion.Description
 		? conf.Suggestion.Description
@@ -17,6 +17,6 @@ export async function postSuggestionToKaraBase(karaName: string, username: strin
 	try {
 		return await gitlabPostNewIssue(title, desc, conf.Suggestion.Labels);
 	} catch(err) {
-		logger.error(`[Gitlab] Call to Gitlab API failed : ${err}`);
+		logger.error(`[KaraSuggestion] Call to Gitlab API failed : ${err}`);
 	}
 }
