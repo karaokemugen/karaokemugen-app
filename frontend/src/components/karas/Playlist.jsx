@@ -197,7 +197,7 @@ noRowsRenderer = () => {
   	)
   		playlistList.push({
   			playlist_id: -2,
-  			name: 'Blacklist'
+  			name: i18next.t('PLAYLIST_BLACKLIST')
   		});
   	if (
   		this.props.scope === 'admin' ||
@@ -205,7 +205,7 @@ noRowsRenderer = () => {
   	)
   		playlistList.push({
   			playlist_id: -4,
-  			name: 'Blacklist criterias'
+  			name: i18next.t('PLAYLIST_BLACKLIST_CRITERIAS')
   		});
   	if (
   		this.props.scope === 'admin' ||
@@ -213,17 +213,17 @@ noRowsRenderer = () => {
   	)
   		playlistList.push({
   			playlist_id: -3,
-  			name: 'Whitelist'
+  			name: i18next.t('PLAYLIST_WHITELIST')
   		});
   	if (this.props.scope === 'admin')
   		playlistList.push({
   			playlist_id: -5,
-  			name: 'Favs'
+  			name: i18next.t('PLAYLIST_FAVORITES')
   		});
   	if (this.props.scope === 'admin')
   		playlistList.push({
   			playlist_id: -1,
-  			name: 'Karas',
+  			name: i18next.t('PLAYLIST_KARAS'),
   			karacount: kmStats.data.data.karas
   		});
   	this.setState({ playlistList: playlistList });
@@ -545,7 +545,7 @@ noRowsRenderer = () => {
 
   deleteCheckedKaras = async () => {
   	var url;
-  	var data;
+	var data;
 	let listKara = this.state.data.content.filter(a => a.checked);
 	if (listKara.length === 0) {
 		displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
