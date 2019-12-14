@@ -30,6 +30,8 @@ This is a bugfix release.
 - Fixed mute button bfb64a44
 - Fixed open login modal after log out a9349c54
 - Fixed error display for patch kara a263013f
+- Fixed right click add button for multiple karas in admin page 7ff87aa2
+- Fixed export playlist button d2a3e85f
 
 ## v3.0.0 "Leafa Lumineuse" - 29/11/2019
 
