@@ -523,7 +523,9 @@ noRowsRenderer = () => {
   		}
   		displayMessage('success', i18next.t(response.data.code));
   	} catch (error) {
-  		displayMessage('warning', i18next.t(error.response.data.code));
+		(error.response.data && error.response.data.plc_id && error.response.data.plc_id.length > 0) ?
+			displayMessage('warning', error.response.data.plc_id[0]) :
+			displayMessage('warning', i18next.t(error.response.data.code));
   	}
   };
 
