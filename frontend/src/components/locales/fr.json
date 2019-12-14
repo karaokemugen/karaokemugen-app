@@ -342,6 +342,7 @@
 	"PL_SONG_DELETED" : "Chanson supprimée de la liste de lecture",
 	"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Ajout de chanson impossible, quota atteint",
 	"PL_SONG_ADDED": "Chanson ajoutée avec succès !",
+	"SELECT_KARAS_REQUIRED": "Vous devez sélectionner au moins une chanson",
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
 	"PLAYLIST_ADDED": "Liste de lecture importée : {{name}}",
 	"UNKNOWN_KARAS": "Chansons inconnus : {{count}}",

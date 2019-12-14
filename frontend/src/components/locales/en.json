@@ -321,6 +321,7 @@
 	"PL_SONG_DELETED" : "Song deleted from playlist",
 	"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Can't add any song, quota reached",
 	"PL_SONG_ADDED": "Successfully added song!",
+	"SELECT_KARAS_REQUIRED": "You have to select at least one song",
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
 	"PLAYLIST_ADDED": "Playlist added : {{name}}",
 	"UNKNOWN_KARAS": "Unknow songs : {{count}}",
