@@ -76,7 +76,10 @@ class AdminHeader extends Component {
   								<i className="fas fa-user"></i>
   							</li>
   							<li
-  								title={i18next.t('LOGOUT')} onClick={store.logOut}
+  								title={i18next.t('LOGOUT')} onClick={() => {
+									store.logOut();
+									this.props.toggleProfileModal();
+								  }}
   								className="btn btn-default btn-dark"
   							>
   								<i className="fas fa-sign-out-alt"></i>

@@ -254,7 +254,10 @@ class PublicPage extends Component {
   													<a
   														href="#"
   														className="logout"
-  														onClick={store.logOut}
+  														onClick={() => {
+															store.logOut();
+															this.openLoginOrProfileModal();
+														  }}
   													>
   														<i className="fas fa-sign-out-alt" />&nbsp;
   														{i18next.t('LOGOUT')}
