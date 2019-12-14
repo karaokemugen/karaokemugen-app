@@ -102,9 +102,12 @@ SELECT
   ak.modified_at AS modified_at,
   bl.created_at AS blacklisted_at,
   bl.reason AS reason,
+  bl.fk_id_blcriteria AS blc_id,
+  blc.type AS blc_type,
   count(fk_kid) OVER()::integer AS count
   FROM all_karas AS ak
   INNER JOIN blacklist AS bl ON bl.fk_kid = ak.kid
+  LEFT JOIN blacklist_criteria AS blc ON blc.pk_id_blcriteria = bl.fk_id_blcriteria
   WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 ORDER BY ak.languages_sortable, ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, lower(unaccent(ak.title))
