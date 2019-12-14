@@ -489,7 +489,7 @@ noRowsRenderer = () => {
   	axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: store.getLogInfos().username });
   };
 
-  addCheckedKaras = async () => {
+  addCheckedKaras = async (event, pos) => {
   	var idKara = this.state.data.content.filter(a => a.checked).map(a => a.kid).join();
   	var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => String(a.playlistcontent_id)).join();
   	var url;
@@ -498,11 +498,15 @@ noRowsRenderer = () => {
 
   	if (this.props.idPlaylistTo > 0) {
   		url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
-  		if (this.state.idPlaylist > 0) {
+  		if (this.state.idPlaylist > 0  && !pos) {
   			data = { plc_id: idKaraPlaylist };
   			type = 'PATCH';
   		} else {
-  			data = { requestedby: store.getLogInfos().username, kid: idKara };
+			if (pos) {
+				data = { requestedby: store.getLogInfos().username, kid: idKara, pos: pos+1 };
+			} else {
+				data = { requestedby: store.getLogInfos().username, kid: idKara };
+			}
   		}
   	} else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
   		url = '/api/' + this.props.scope + '/blacklist/criterias';
