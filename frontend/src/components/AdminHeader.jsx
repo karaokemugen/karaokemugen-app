@@ -123,11 +123,12 @@ class AdminHeader extends Component {
   				type="button"
   				title={i18next.t('MUTE_UNMUTE')}
   				id="mutestatus"
-  				name="mute"
-  				className="btn btn-dark volumeButton"
+  				namecommand={(volume === 0 || this.state.statusPlayer.muteStatus)  ? "unmute" : "mute"}
+				className="btn btn-dark volumeButton"
+				onClick={this.props.putPlayerCommando}
   			>
   				{
-  					volume === 0 || this.state.statusPlayer.mutestatus 
+  					volume === 0 || this.state.statusPlayer.muteStatus 
   						? <i className="fas fa-volume-mute"></i>
   						: (
   							volume > 66
