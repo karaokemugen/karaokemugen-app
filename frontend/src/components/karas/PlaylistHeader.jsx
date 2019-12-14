@@ -77,8 +77,8 @@ class PlaylistHeader extends Component {
   };
 
   exportPlaylist = async () => {
-  	var url = this.props.idPlaylist === -5 ? '/api/public/favorites' : '/api' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export';
-  	var response = await axios.get(url);
+	var url = this.props.idPlaylist === -5 ? '/api/public/favorites' : '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export';
+	var response = await axios.get(url);
   	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
   	var dlAnchorElem = document.getElementById('downloadAnchorElem');
   	dlAnchorElem.setAttribute('href', dataStr);
