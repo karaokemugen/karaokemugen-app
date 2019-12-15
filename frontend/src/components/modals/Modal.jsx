@@ -59,8 +59,8 @@ class Modal extends Component {
     							<div className="modal-message">{this.props.message}</div>
     							{this.props.type === 'prompt' ?
     								<div className="form">
-    									<input type="text" className="form-control" id="modalInput" name="modalInput" 
-    										defaultValue={this.state.promptText} onChange={(event) => this.setState({ promptText: event.target.value })} />
+    									<input type="text" className="modal-input form-control" defaultValue={this.state.promptText} 
+											onChange={(event) => this.setState({ promptText: event.target.value })} />
     								</div> : null
     							}
     						</div> : null
