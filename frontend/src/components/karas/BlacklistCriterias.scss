@@ -1,4 +1,21 @@
 
 .blacklist-criterias-input {
 	background-color: rgba(51, 51, 51, 0.67);
+	padding: 10px;
+
+	select {
+		margin: 5px 0px;
+		background-color: #343434;
+		color: white;
+		border-radius: 0;
+		border: 1px solid #fafafa70;
+		height: 30px;
+		padding: 5px 10px;
+		font-size: 12px;
+		line-height: 1.5;
+	}
+
+	.input-sm {
+		margin: 5px !important;
+	}
 }

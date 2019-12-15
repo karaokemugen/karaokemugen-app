@@ -51,8 +51,8 @@ class BlacklistCriterias extends Component {
     	return (
     		<React.Fragment>
     			{this.props.scope === 'admin' ?
-    				<span id="blacklistCriteriasInputs" className="blacklist-criterias-input" style={{ padding: '10px' }}>
-    					<select id="bcType" className="input-sm form-control" onChange={e => this.setState({ bcType: Number(e.target.value), bcVal: '' })}>
+    				<span id="blacklistCriteriasInputs" className="blacklist-criterias-input">
+    					<select onChange={e => this.setState({ bcType: Number(e.target.value), bcVal: '' })}>
     						{listTypeBlc.map((value) => {
     							return <option key={value} value={value.replace('BLCTYPE_', '')}>{i18next.t(value)}</option>;
     						})
