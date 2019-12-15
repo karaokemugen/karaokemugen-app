@@ -1,27 +1,24 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Icon, Button, Layout, Table, Divider} from 'antd';
+import {Icon, Button, Layout, Table, Divider, Checkbox} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
 import i18next from 'i18next';
-
-interface SessionListProps extends ReduxMappedProps {
-}
+import { Session } from '../../../../src/types/session';
 
 interface SessionListState {
-	sessions: any[],
-	session: any
+	sessions: Array<Session>,
+	session?: Session
 }
 
-class SessionList extends Component<SessionListProps, SessionListState> {
+class SessionList extends Component<ReduxMappedProps, SessionListState> {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			sessions: [],
-			session: ""
+			sessions: []
 		};
 
 	}
@@ -57,6 +54,19 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
 		});
 	}
+
+	majPrivate = (sessionParam:Session) => {
+		let session = sessionParam;
+		session.private = !sessionParam.private;
+		axios.put(`/api/system/sessions/${session.seid}`, session)
+			.then(() => {
+				this.props.infoMessage(i18next.t('SESSIONS.SESSION_EDITED'));
+				this.refresh();
+			})
+			.catch(err => {
+				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			});
+	};
 
 	render() {
 		return (
@@ -102,6 +112,11 @@ class SessionList extends Component<SessionListProps, SessionListState> {
 				i18next.t('YES') : null
 			}
 		</span>)
+	}, {
+	title: i18next.t('SESSIONS.PRIVATE'),
+	dataIndex: 'private',
+	key: 'private',
+	render: (text, record) => (<Checkbox checked={record.private} onClick={() => this.majPrivate(record)} />)
 	}, {
 		title: i18next.t('SESSIONS.SESSION_EXPORTED_BUTTON'),
 		key: 'export',

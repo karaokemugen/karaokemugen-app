@@ -21,7 +21,7 @@ export default function systemSessionController(router: Router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					await addSession(req.body.name, req.body.date);
+					await addSession(req.body.name, req.body.date, req.body.private);
 					res.status(200).send('Session created');
 				} catch(err) {
 					res.status(500).send(`Session creation error : ${err}`);				}
@@ -59,7 +59,7 @@ export default function systemSessionController(router: Router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					await editSession(req.params.seid, req.body.name, req.body.started_at);
+					await editSession(req.params.seid, req.body.name, req.body.started_at, req.body.private);
 					res.status(200).send('Session updated');
 				} catch(err) {
 					res.status(500).send(`Error updating session : ${err}`);

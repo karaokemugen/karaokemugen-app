@@ -2,6 +2,7 @@ export const selectSessions = `
 SELECT pk_seid AS seid,
 	name,
 	started_at,
+	private,
 	COUNT(p.fk_kid) AS played,
 	COUNT(r.fk_kid) AS requested
 FROM session
@@ -12,10 +13,11 @@ ORDER BY started_at DESC
 `;
 
 export const insertSession = `
-INSERT INTO session(pk_seid, name, started_at) VALUES(
+INSERT INTO session(pk_seid, name, started_at, private) VALUES(
 	$1,
 	$2,
-	$3
+	$3,
+	$4
 )
 `;
 
@@ -34,7 +36,8 @@ WHERE fk_seid = $1;
 export const updateSession = `
 UPDATE session SET
 	name = $2,
-	started_at = $3
+	started_at = $3,
+	private = $4
 WHERE pk_seid = $1
 `;
 

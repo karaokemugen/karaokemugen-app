@@ -4,5 +4,6 @@ export interface Session {
 	started_at: Date,
 	played?: number,
 	requested?: number,
-	active?: boolean
+	active?: boolean,
+	private?: boolean
 }

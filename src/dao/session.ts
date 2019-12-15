@@ -17,7 +17,8 @@ export async function insertSession(session: Session) {
 	return await db().query(sql.insertSession, [
 		session.seid,
 		session.name,
-		session.started_at
+		session.started_at,
+		session.private,
 	]);
 }
 
@@ -29,7 +30,8 @@ export async function updateSession(session: Session) {
 	return await db().query(sql.updateSession, [
 		session.seid,
 		session.name,
-		session.started_at
+		session.started_at,
+		session.private
 	]);
 }
 
