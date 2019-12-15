@@ -79,7 +79,7 @@ class PlaylistHeader extends Component {
   exportPlaylist = async () => {
 	var url = this.props.idPlaylist === -5 ? '/api/public/favorites' : '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export';
 	var response = await axios.get(url);
-  	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
+  	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data.data, null, 4));
   	var dlAnchorElem = document.getElementById('downloadAnchorElem');
   	dlAnchorElem.setAttribute('href', dataStr);
   	if (this.props.idPlaylist === -5) {
@@ -90,34 +90,34 @@ class PlaylistHeader extends Component {
   	dlAnchorElem.click();
   };
 
-  importPlaylist = () => {
-  	if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
-  	var input = this;
-  	if (input.files && input.files[0]) {
-  		file = input.files[0];
-  		fr = new FileReader();
-  		fr.onload = async () => {
-  			var data = {};
-  			var name;
-  			if (file.name.includes('KaraMugen_fav')) {
-  				data['favorites'] = fr['result'];
-  				url = '/api/public/favorites/import';
-  				name = 'Favs';
-  			} else {
-  				url = '/api/' + scope + '/playlists/import';
-  				data['playlist'] = fr['result'];
-  				name = JSON.parse(fr.result).PlaylistInformation.name;
-  			}
-  			var response = await axios.post(url, data);
-			displayMessage('success', i18next.t('PLAYLIST_ADDED', { name: name }));
-			if (response.unknownKaras && response.unknownKaras.length > 0) {
-				displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.unknownKaras }));
-			}
-			var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
-			this.props.changeIdPlaylist(playlist_id);
-  		};
-  		fr.readAsText(file);
-  	}
+  importPlaylist = (e) => {
+	  	if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
+		if (e.target.files && e.target.files[0]) {
+			let file = e.target.files[0];
+			let fr = new FileReader();
+			fr.onload = async () => {
+				var data = {};
+				var name;
+				let url;
+				if (file.name.includes('KaraMugen_fav')) {
+					data['favorites'] = fr['result'];
+					url = '/api/public/favorites/import';
+					name = 'Favs';
+				} else {
+					url = '/api/' + this.props.scope + '/playlists/import';
+					data['playlist'] = fr['result'];
+					name = JSON.parse(fr.result).PlaylistInformation.name;
+				}
+				var response = await axios.post(url, data);
+				displayMessage('success', i18next.t('PLAYLIST_ADDED', { name: name }));
+				if (response.unknownKaras && response.unknownKaras.length > 0) {
+					displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.unknownKaras }));
+				}
+				var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.data.data.playlist_id;
+				this.props.changeIdPlaylist(playlist_id);
+			};
+			fr.readAsText(file);
+		}
   };
 
   deleteAllKaras = () => {
@@ -190,7 +190,7 @@ class PlaylistHeader extends Component {
   			<label htmlFor={'import-file' + this.props.side} title={i18next.t('PLAYLIST_IMPORT')} className="btn btn-default" name="import">
   				<i className="fas fa-download"></i>
   				<input id={'import-file' + this.props.side} className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }}
-  					onClick={this.importPlaylist} />
+  					onChange={this.importPlaylist} />
   			</label>
   			<button title={i18next.t('PLAYLIST_EXPORT')} className="btn btn-default" name="export" onClick={this.exportPlaylist} >
   				<i className="fas fa-upload"></i>
