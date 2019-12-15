@@ -281,7 +281,10 @@ class WelcomePage extends Component<IProps, IState> {
   							href="#"
   							title={i18next.t('LOGOUT')}
   							className="logout"
-  							onClick={store.logOut}
+  							onClick={() => {
+								store.logOut();
+								this.openLoginOrProfileModal();
+							  }}
   						>
   							<i className="fas fa-sign-out-alt" />&nbsp;
   							<span>{i18next.t('LOGOUT')}</span>

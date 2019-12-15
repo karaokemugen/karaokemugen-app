@@ -92,7 +92,10 @@ class AdminHeader extends Component<IProps, IState> {
   								<i className="fas fa-user"></i>
   							</li>
   							<li
-  								title={i18next.t('LOGOUT')} onClick={store.logOut}
+  								title={i18next.t('LOGOUT')} onClick={() => {
+									store.logOut();
+									this.props.toggleProfileModal();
+								  }}
   								className="btn btn-default btn-dark"
   							>
   								<i className="fas fa-sign-out-alt"></i>
@@ -139,8 +142,9 @@ class AdminHeader extends Component<IProps, IState> {
   				type="button"
   				title={i18next.t('MUTE_UNMUTE')}
   				id="mutestatus"
-  				name="mute"
-  				className="btn btn-dark volumeButton"
+  				namecommand={(volume === 0 || this.state.statusPlayer.muteStatus)  ? "unmute" : "mute"}
+				className="btn btn-dark volumeButton"
+				onClick={this.props.putPlayerCommando}
   			>
   				{
   					volume === 0 || this.state.statusPlayer && this.state.statusPlayer.muteStatus 

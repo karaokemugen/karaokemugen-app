@@ -259,7 +259,10 @@ class AdminPage extends Component<IProps, IState> {
   								<a
   									className="z-depth-3 btn-floating btn-large logout"
   									style={{ backgroundColor: '#111' }}
-  									onClick={store.logOut}
+  									onClick={() => {
+										  store.logOut();
+										  this.openLoginOrProfileModal();
+										}}
   								>
   									<i className="fas fa-sign-out-alt" />
   								</a>

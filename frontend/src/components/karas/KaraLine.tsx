@@ -100,7 +100,10 @@ class KaraLine extends Component<IProps,IState> {
   	var response;
   	try {
   		if (this.props.idPlaylist == -5) {
-  			response = await axios.delete('/api/public/favorites', { data: { kid: [this.props.kara.kid] }});
+			response = await axios.delete('/api/public/favorites', { data: { kid: [this.props.kara.kid] }});
+		} else if (this.props.idPlaylist == -2) {
+			this.props.deleteCriteria(this.props.kara);
+			return;
   		} else if (this.props.scope === 'admin') {
   			response = await axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/', { data: { plc_id: String(this.props.kara.playlistcontent_id) } });
   		} else {

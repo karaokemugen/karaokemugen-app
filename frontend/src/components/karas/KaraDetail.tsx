@@ -35,7 +35,8 @@ class KaraDetail extends Component<IProps,IState> {
 		super(props);
 		this.state = {
 			showLyrics: false,
-			isFavorite: false
+			isFavorite: false,
+			isVisible: false
 		};
 		this.fullLyricsRef = React.createRef();
 		this.getKaraDetail();
@@ -72,7 +73,8 @@ class KaraDetail extends Component<IProps,IState> {
   	const kara = response.data.data;
 	  this.setState({
   		kara: kara,
-  		isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
+		isFavorite: kara.flag_favorites || this.props.idPlaylist === -5,
+		isVisible: kara.flag_visible
   	});
   };
 
@@ -201,7 +203,8 @@ class KaraDetail extends Component<IProps,IState> {
   changeVisibilityKara = () => {
   	if(this.props.scope === 'admin') {
   		axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/karas/' + (this.state.kara as DBPLCInfo).playlistcontent_id, 
-  			{ flag_visible: !(this.state.kara as DBPLCInfo).flag_visible });
+  			{ flag_visible: !this.state.isVisible });
+		this.setState({isVisible: !this.state.isVisible});
   	}
   };
 
@@ -372,9 +375,10 @@ class KaraDetail extends Component<IProps,IState> {
   								{this.props.scope === 'admin' && this.props.publicOuCurrent ? (
   									<button
   										type="button"
-  										title={data.flag_visible ? i18next.t('TOOLTIP_VISIBLE_OFF') : i18next.t('TOOLTIP_VISIBLE_ON')} onClick={this.changeVisibilityKara}
-  										className={'btn btn-action ' + (data.flag_visible ? '': 'btn-primary')}
-  									>{data.flag_visible ? <i className="fas fa-eye"/> : <i className="fas fa-eye-slash"/>}</button>
+										title={this.state.isVisible ? i18next.t('TOOLTIP_VISIBLE_OFF') : i18next.t('TOOLTIP_VISIBLE_ON')} 
+										onClick={this.changeVisibilityKara}
+  										className={'btn btn-action ' + (this.state.isVisible ? '': 'btn-primary')}
+  									>{this.state.isVisible ? <i className="fas fa-eye"/> : <i className="fas fa-eye-slash"/>}</button>
   								) : null}
   							</div>
   							<table>

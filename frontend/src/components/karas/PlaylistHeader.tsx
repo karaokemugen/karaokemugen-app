@@ -118,8 +118,8 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
   exportPlaylist = async () => {
-  	var url = this.props.idPlaylist === -5 ? '/api/public/favorites' : '/api' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export';
-  	var response = await axios.get(url);
+	var url = this.props.idPlaylist === -5 ? '/api/public/favorites' : '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export';
+	var response = await axios.get(url);
   	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
 	if (dlAnchorElem) {
@@ -246,17 +246,17 @@ class PlaylistHeader extends Component<IProps,IState> {
   		<div className="btn-group plCommands actionDiv">
   			{this.props.idPlaylistTo >= 0 ?
   				<React.Fragment>
-  					<button title={i18next.t('ADD_RANDOM_KARAS')} name="addRandomKaras" className="btn btn-default clusterAction" onClick={this.addRandomKaras}>
+  					<button title={i18next.t('ADD_RANDOM_KARAS')} name="addRandomKaras" className="btn btn-default" onClick={this.addRandomKaras}>
   						<img src={getLucky} />
   					</button>
-  					<button title={i18next.t('ADD_ALL_KARAS')} name="addAllKaras" className="btn btn-danger clusterAction" onClick={this.props.addAllKaras}>
+  					<button title={i18next.t('ADD_ALL_KARAS')} name="addAllKaras" className="btn btn-danger" onClick={this.props.addAllKaras}>
   						<i className="fas fa-share"></i>
   					</button>
   				</React.Fragment>
   				: null
   			}
   			{this.props.idPlaylist >= 0 ?
-  				<button title={i18next.t('EMPTY_LIST')} name="deleteAllKaras" className="btn btn-danger clusterAction" onClick={this.deleteAllKaras}>
+  				<button title={i18next.t('EMPTY_LIST')} name="deleteAllKaras" className="btn btn-danger" onClick={this.deleteAllKaras}>
   					<i className="fas fa-eraser"></i>
   				</button> : null
   			}
@@ -270,7 +270,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   					this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
   					this.props.selectAllKaras();
   				}}
-  				className="btn btn-default clusterAction"
+  				className="btn btn-default"
   			>
   				{
   					this.state.selectAllKarasChecked
@@ -396,7 +396,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   						<React.Fragment>
   							{this.props.idPlaylist > 0 ?
   								<div className="controlsContainer">
-  									<div className="btn-group plCommands controls">
+  									<div className="btn-group plCommands">
   										<button title={i18next.t('PLAYLIST_SHUFFLE')} className="btn btn-default" name="shuffle" onClick={this.shuffle}>
   											<i className="fas fa-random"></i>
   										</button>

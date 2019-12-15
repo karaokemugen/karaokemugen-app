@@ -4,7 +4,7 @@ import PlaylistHeader from './PlaylistHeader';
 import KaraDetail from './KaraDetail';
 import KaraLine from './KaraLine';
 import axios from 'axios';
-import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage, callModal} from '../tools';
+import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage, callModal, buildKaraTitle} from '../tools';
 import BlacklistCriterias from './BlacklistCriterias';
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 import { AutoSizer, InfiniteLoader, CellMeasurer, CellMeasurerCache, List, Index, ListRowProps, IndexRange } from 'react-virtualized';
@@ -152,6 +152,7 @@ class Playlist extends Component<IProps, IState> {
   				checkKara={this.checkKara}
 				showVideo={this.props.showVideo}
 				avatar_file={(this.state.data as KaraList).avatars[kara.username]}
+				deleteCriteria={this.deleteCriteria}
   			/>
   		</li>;
   	} else {
@@ -248,7 +249,7 @@ noRowsRenderer = () => {
   	)
   		playlistList.push({
   			playlist_id: -2,
-  			name: 'Blacklist'
+  			name: i18next.t('PLAYLIST_BLACKLIST')
   		});
   	if (
   		this.props.scope === 'admin' ||
@@ -256,7 +257,7 @@ noRowsRenderer = () => {
   	)
   		playlistList.push({
   			playlist_id: -4,
-  			name: 'Blacklist criterias'
+  			name: i18next.t('PLAYLIST_BLACKLIST_CRITERIAS')
   		});
   	if (
   		this.props.scope === 'admin' ||
@@ -264,17 +265,17 @@ noRowsRenderer = () => {
   	)
   		playlistList.push({
   			playlist_id: -3,
-  			name: 'Whitelist'
+  			name: i18next.t('PLAYLIST_WHITELIST')
   		});
   	if (this.props.scope === 'admin')
   		playlistList.push({
   			playlist_id: -5,
-  			name: 'Favs'
+  			name: i18next.t('PLAYLIST_FAVORITES')
   		});
   	if (this.props.scope === 'admin')
   		playlistList.push({
   			playlist_id: -1,
-  			name: 'Karas',
+  			name: i18next.t('PLAYLIST_KARAS'),
   			karacount: kmStats.data.data.karas
   		});
   	this.setState({ playlistList: playlistList });
@@ -529,20 +530,29 @@ noRowsRenderer = () => {
   };
 
   addCheckedKaras = async () => {
-	  var stateData = this.state.data as KaraList;
-  	var idKara = stateData.content.filter(a => a.checked).map(a => a.kid).join();
-  	var idKaraPlaylist = stateData.content.filter(a => a.checked).map(a => String(a.playlistcontent_id)).join();
+	var stateData = this.state.data as KaraList;
+	let listKara = stateData.content.filter(a => a.checked);
+	if (listKara.length === 0) {
+		displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+		return ;
+	}
+  	var idKara = listKara.map(a => a.kid).join();
+  	var idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id)).join();
   	var url:string = '';
   	var data;
   	var type;
 
   	if (this.props.idPlaylistTo > 0) {
   		url = '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylistTo + '/karas';
-  		if (this.state.idPlaylist > 0) {
+  		if (this.state.idPlaylist > 0  && !pos) {
   			data = { plc_id: idKaraPlaylist };
   			type = 'PATCH';
   		} else {
-  			data = { requestedby: (store.getLogInfos() as Token).username, kid: idKara };
+			if (pos) {
+				data = { requestedby: (store.getLogInfos() as Token).username, kid: idKara, pos: pos+1 };
+			} else {
+				data = { requestedby: (store.getLogInfos() as Token).username, kid: idKara };
+			}
   		}
   	} else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
   		url = '/api/' + this.props.scope + '/blacklist/criterias';
@@ -563,7 +573,9 @@ noRowsRenderer = () => {
   		}
   		displayMessage('success', i18next.t(response.data.code));
   	} catch (error) {
-  		displayMessage('warning', i18next.t(error.response.data.code));
+		(error.response.data && error.response.data.plc_id && error.response.data.plc_id.length > 0) ?
+			displayMessage('warning', error.response.data.plc_id[0]) :
+			displayMessage('warning', i18next.t(error.response.data.code));
   	}
   };
 
@@ -574,19 +586,24 @@ noRowsRenderer = () => {
 
   deleteCheckedKaras = async () => {
   	var url;
-	  var data;
-	  var stateData = this.state.data as KaraList;
+	var data;
+	var stateData = this.state.data as KaraList;
+	let listKara = stateData.content.filter(a => a.checked);
+	if (listKara.length === 0) {
+		displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+		return ;
+	}
   	if (this.state.idPlaylist > 0) {
-  		var idKaraPlaylist = stateData.content.filter(a => a && a.checked).map(a => String(a.playlistcontent_id)).join();
+  		var idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id)).join();
   		url = '/api/' + this.props.scope + '/playlists/' + this.state.idPlaylist + '/karas/';
   		data = { plc_id: idKaraPlaylist };
   	} else if (this.state.idPlaylist == -3) {
-  		var idKara = stateData.content.filter(a => a.checked).map(a => a.kid).join();
+  		var idKara = listKara.map(a => a.kid).join();
   		url = '/api/ ' + this.props.scope + '/whitelist';
   		data = { kid: idKara };
   	} else if (this.state.idPlaylist == -5) {
   		url = '/api/public/favorites';
-  		data = { kid: stateData.content.filter(a => a.checked).map(a => a.kid) };
+  		data = { kid: listKara.map(a => a.kid) };
   	}
   	if (url) {
   		try {
@@ -617,6 +634,24 @@ noRowsRenderer = () => {
   	var searchCriteria = (type === 'serie' || type === 'year') ? type : 'tag';
   	var stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
   	this.setState({searchCriteria: searchCriteria, searchValue: stringValue}, () => this.getPlaylist('search'));
+  };
+
+  deleteCriteria = (kara) => {
+	callModal('confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`BLCTYPE_${kara.blc_type}`) }),
+		<div style={{maxHeight: '200px'}}>
+		{this.state.data.content.filter(e => e.blc_id === kara.blc_id).map(criteria => {
+			return <label key={kara.kid}>{buildKaraTitle(criteria)}</label>
+		})}
+		</div>, async (confirm) => {
+			if (confirm) {
+				try {
+					let response = await axios.delete(`/api/${this.props.scope}/blacklist/criterias/${kara.blc_id}`);
+					displayMessage('success', i18next.t(response.data.code));
+				} catch (error) {
+					displayMessage('warning', i18next.t(error.response.data.code));
+				}
+			}
+		});
   };
 
   sortRow = ({oldIndex, newIndex}:{oldIndex:number, newIndex:number}) => {

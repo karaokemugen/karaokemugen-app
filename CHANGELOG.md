@@ -10,7 +10,10 @@ This is a bugfix release.
 - Bumped taskCounter from 5 to 100 during batch downloads so KM doesn't stop downloading every now and then db989b9e
 - Added proper error messages for login in operator panel c7fbb20f
 - Added proper error messages when using wrong security code in login window 46c9f81a
-- Ensures mpv is running before issuing any command, restarts it if it's not present
+- Ensures mpv is running before issuing any command, restarts it if it's not present 473dc256
+- Added close button for automix modal 0ea139aa
+- Added i18n for playlists names af4565b5
+- Added modal for delete criteria from blacklist 2dae9632 3c636e7c f5dd39de
 
 ### Fixes
 
@@ -21,11 +24,18 @@ This is a bugfix release.
 - Fixed adding blacklist criterias with enter 8c7a7228
 - Fixed like button on karas 653fe77d, 512901b5
 - Fixed free button 91b855f3
-- Fixed who's online modal 80ac08f9
+- Fixed convert and delete online profile 80ac08f9
 - Fixed import playlist 3a829eda, daf52009
 - Fixed right click transfer button 4fdf9c0f
 - Fixed right click add button from public playlist to current playlist de2a88a8
 - Fixed blue color display change for playing kara b629c8a0
+- Fixed mute button bfb64a44
+- Fixed open login modal after log out a9349c54
+- Fixed error display for patch kara a263013f
+- Fixed right click add button for multiple karas in admin page 7ff87aa2, 9c45a866
+- Fixed export playlist button d2a3e85f
+- Fixed change visibility of a kara twice without close details da546927
+- Fixed buttons display in playlist header 26c9af11
 
 ## v3.0.0 "Leafa Lumineuse" - 29/11/2019
 

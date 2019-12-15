@@ -5,22 +5,22 @@ export const emptyBlacklistCriterias = 'DELETE FROM blacklist_criteria;';
 
 export const generateBlacklist = `
 TRUNCATE blacklist;
-INSERT INTO blacklist (fk_kid, created_at, reason)
-	SELECT kt.fk_kid, now() ,'Blacklisted Tag : ' || t.name || ' (type ' || blc.type || ')'
+INSERT INTO blacklist (fk_kid, created_at, reason, fk_id_blcriteria)
+	SELECT kt.fk_kid, now() ,'Blacklisted Tag : ' || t.name || ' (type ' || blc.type || ')', blc.pk_id_blcriteria
 	FROM blacklist_criteria AS blc
 	INNER JOIN tag t ON t.types @> ARRAY[blc.type] AND blc.value = t.pk_tid::varchar
 	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
 	WHERE blc.type BETWEEN 1 and 999
 		AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
 UNION
-	SELECT kt.fk_kid, now() ,'Blacklisted Tag by name : ' || blc.value
+	SELECT kt.fk_kid, now() ,'Blacklisted Tag by name : ' || blc.value, blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
 	INNER JOIN tag t ON unaccent(t.name) LIKE ('%' || blc.value || '%')
 	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
 	WHERE blc.type = 0
 	AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
 UNION
-	SELECT k.pk_kid, now() ,'Blacklisted Series by name : ' ||  blc.value
+	SELECT k.pk_kid, now() ,'Blacklisted Series by name : ' ||  blc.value, blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
 	INNER JOIN serie_lang sl ON unaccent(sl.name) LIKE ('%' || blc.value || '%')
 	INNER JOIN kara_serie ks ON sl.fk_sid = ks.fk_sid
@@ -28,25 +28,25 @@ UNION
 	WHERE blc.type = 1000
 	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
 UNION
-	SELECT k.pk_kid, now() ,'Blacklisted Song manually'
+	SELECT k.pk_kid, now() ,'Blacklisted Song manually', blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
 	INNER JOIN kara k ON k.pk_kid = blc.value::uuid
 	WHERE blc.type = 1001
 	AND   blc.value::uuid NOT IN (select fk_kid from whitelist)
 UNION
-	SELECT k.pk_kid, now() ,'Blacklisted Song longer than ' || blc.value || ' seconds'
+	SELECT k.pk_kid, now() ,'Blacklisted Song longer than ' || blc.value || ' seconds', blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
 	INNER JOIN kara k on k.duration >= blc.value::integer
 	WHERE blc.type = 1002
 	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
 UNION
-	SELECT k.pk_kid, now() ,'Blacklisted Song shorter than ' || blc.value || ' seconds'
+	SELECT k.pk_kid, now() ,'Blacklisted Song shorter than ' || blc.value || ' seconds', blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
 	INNER JOIN kara k on k.duration <= blc.value::integer
 	WHERE blc.type = 1003
 	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
 UNION
-	SELECT k.pk_kid, now() ,'Blacklisted Title by name : ' ||  blc.value
+	SELECT k.pk_kid, now() ,'Blacklisted Title by name : ' ||  blc.value, blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
 	INNER JOIN kara k ON unaccent(k.title) LIKE ('%' || blc.value || '%')
 	WHERE blc.type = 1004
@@ -102,9 +102,12 @@ SELECT
   ak.modified_at AS modified_at,
   bl.created_at AS blacklisted_at,
   bl.reason AS reason,
+  bl.fk_id_blcriteria AS blc_id,
+  blc.type AS blc_type,
   count(fk_kid) OVER()::integer AS count
   FROM all_karas AS ak
   INNER JOIN blacklist AS bl ON bl.fk_kid = ak.kid
+  LEFT JOIN blacklist_criteria AS blc ON blc.pk_id_blcriteria = bl.fk_id_blcriteria
   WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 ORDER BY ak.languages_sortable, ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, lower(unaccent(ak.title))
