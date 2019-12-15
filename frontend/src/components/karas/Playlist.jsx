@@ -596,10 +596,12 @@ noRowsRenderer = () => {
   };
 
   deleteCriteria = (kara) => {
-	callModal('confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`BLCTYPE_${kara.blc_type}`) }), 
-		this.state.data.content.filter(e => e.blc_id === kara.blc_id).map(criteria => {
+	callModal('confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`BLCTYPE_${kara.blc_type}`) }),
+		<div style={{maxHeight: '200px'}}>
+		{this.state.data.content.filter(e => e.blc_id === kara.blc_id).map(criteria => {
 			return <label key={kara.kid}>{buildKaraTitle(criteria)}</label>
-		}), async (confirm) => {
+		})}
+		</div>, async (confirm) => {
 			if (confirm) {
 				try {
 					let response = await axios.delete(`/api/${this.props.scope}/blacklist/criterias/${kara.blc_id}`);
