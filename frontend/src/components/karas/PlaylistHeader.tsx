@@ -106,7 +106,8 @@ class PlaylistHeader extends Component<IProps,IState> {
   deletePlaylist = () => {
   	callModal('confirm', i18next.t('CL_DELETE_PLAYLIST', { playlist: (this.props.playlistInfo as DBPL).name }), '', (confirm:boolean) => {
   		if (confirm) {
-  			axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist);
+			  axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist);
+			  this.props.changeIdPlaylist(this.props.playlistToAddId);
   		}
   	});
   };
@@ -120,7 +121,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   exportPlaylist = async () => {
 	var url = this.props.idPlaylist === -5 ? '/api/public/favorites' : '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export';
 	var response = await axios.get(url);
-  	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
+  	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data.data, null, 4));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
 	if (dlAnchorElem) {
 		dlAnchorElem.setAttribute('href', dataStr);
@@ -134,35 +135,35 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
   importPlaylist = (e:any) => {
-	  var url: string;
-	  var fr:FileReader;
-	  var file:File;
-  	if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
-  	if (e.target.files && e.target.files[0]) {
-  		file = e.target.files[0];
-  		fr = new FileReader();
-  		fr.onload = async () => {
-  			var data:{playlist?:string | ArrayBuffer | null,favorites?:string | ArrayBuffer | null} = {};
+	var url: string;
+	var fr:FileReader;
+	var file:File;
+	if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
+	if (e.target.files && e.target.files[0]) {
+		file = e.target.files[0];
+		fr = new FileReader();
+		fr.onload = async () => {
+			var data:{playlist?:string | ArrayBuffer | null,favorites?:string | ArrayBuffer | null} = {};
   			var name:string;
-  			if (file.name.includes('KaraMugen_fav')) {
-  				data['favorites'] = fr['result'];
-  				url = '/api/public/favorites/import';
-  				name = 'Favs';
-  			} else {
-  				url = '/api/' + this.props.scope + '/playlists/import';
-  				data['playlist'] = fr['result'];
-  				name = JSON.parse(fr.result as string).PlaylistInformation.name;
-  			}
+			if (file.name.includes('KaraMugen_fav')) {
+				data['favorites'] = fr['result'];
+				url = '/api/public/favorites/import';
+				name = 'Favs';
+			} else {
+				url = '/api/' + this.props.scope + '/playlists/import';
+				data['playlist'] = fr['result'];
+				name = JSON.parse(fr.result as string).PlaylistInformation.name;
+			}
 			var response:{unknownKaras:Array<any>, playlist_id:number} = await axios.post(url, data);
 			displayMessage('success', i18next.t('PLAYLIST_ADDED', { name: name }));
 			if (response.unknownKaras && response.unknownKaras.length > 0) {
 				displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.unknownKaras.length }));
 			}
-			var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.playlist_id;
+			var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.data.data.playlist_id;
 			this.props.changeIdPlaylist(playlist_id);
-  		};
-  		fr.readAsText(file);
-  	}
+		};
+		fr.readAsText(file);
+	}
   };
 
   deleteAllKaras = () => {

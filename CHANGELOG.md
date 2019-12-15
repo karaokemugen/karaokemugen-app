@@ -13,7 +13,7 @@ This is a bugfix release.
 - Ensures mpv is running before issuing any command, restarts it if it's not present 473dc256
 - Added close button for automix modal 0ea139aa
 - Added i18n for playlists names af4565b5
-- Added modal for delete criteria from blacklist 2dae9632 3c636e7c f5dd39de
+- Added modal for delete criteria from blacklist 2dae9632, 3c636e7c, f5dd39de
 
 ### Fixes
 
@@ -25,8 +25,8 @@ This is a bugfix release.
 - Fixed like button on karas 653fe77d, 512901b5
 - Fixed free button 91b855f3
 - Fixed convert and delete online profile 80ac08f9
-- Fixed import playlist 3a829eda, daf52009
-- Fixed right click transfer button 4fdf9c0f
+- Fixed import playlist 3a829eda, daf52009, 6407261d
+- Fixed right click transfer button 4fdf9c0f, 80ac390e
 - Fixed right click add button from public playlist to current playlist de2a88a8
 - Fixed blue color display change for playing kara b629c8a0
 - Fixed mute button bfb64a44
@@ -36,6 +36,9 @@ This is a bugfix release.
 - Fixed export playlist button d2a3e85f
 - Fixed change visibility of a kara twice without close details da546927
 - Fixed buttons display in playlist header 26c9af11
+- Fixed nickname is now mandatory 871fb6b4, 101befe3
+- Fixed switch to another playlist when delete one f4e895fa
+- Fixed input display in rename playlist modal 17ee2a0c
 
 ## v3.0.0 "Leafa Lumineuse" - 29/11/2019
 
