@@ -1,21 +1,23 @@
 import React, {Component} from 'react';
-import { Button, Form, Icon, Input, Table, Tooltip, Cascader } from 'antd';
+import { Button, Form, Icon, Input, Table, Tooltip, Cascader, Checkbox } from 'antd';
 import axios from 'axios/index';
 import { buildKaraTitle } from '../../utils/kara';
 import { message } from 'antd';
 import i18next from 'i18next';
+import { Session } from '../../../../src/types/session';
+
 interface SessionsFormProps {
-	sessions: any
-	session: any,
-	form: any
-	save: any,
-	mergeAction: any
+	sessions: Array<Session>;
+	session: Session;
+	form: any;
+	save: any;
+	mergeAction: any;
 }
 
 interface SessionsFormState {
-	mergeSelection: string,
-	sessionPlayed: any,
-	sessionRequested : any
+	mergeSelection: string;
+	sessionPlayed: any;
+	sessionRequested : any;
 }
 
 class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
@@ -112,6 +114,26 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 					{getFieldDecorator('started_at', {
 						initialValue: this.props.session.started_at,
 					})(<Input/>)}
+				</Form.Item>
+				<Form.Item
+					label={i18next.t('SESSIONS.ACTIVE')}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 10, offset: 0 }}
+				>
+					{getFieldDecorator('active', {
+						valuePropName: "checked",
+						initialValue: this.props.session.active,
+					})(<Checkbox />)}
+				</Form.Item>
+				<Form.Item
+					label={i18next.t('SESSIONS.PRIVATE')}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 10, offset: 0 }}
+				>
+					{getFieldDecorator('private', {
+						valuePropName: "checked",
+						initialValue: this.props.session.private,
+					})(<Checkbox />)}
 				</Form.Item>
 				<Form.Item
 					wrapperCol={{ span: 4, offset: 2 }}

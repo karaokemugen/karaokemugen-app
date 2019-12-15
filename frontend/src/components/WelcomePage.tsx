@@ -13,6 +13,7 @@ import { Config } from '../../../src/types/config';
 import { Token } from '~../../../src/lib/types/user';
 import { Session } from '../../../src/types/session';
 import { News } from '../types/news';
+import Switch from './generic/Switch';
 require ('../styles/welcome/WelcomePage.scss');
 require('../styles/welcome/updateBanner.scss');
 
@@ -26,7 +27,7 @@ interface IState {
 	open: boolean;
 	news: Array<News>;
 	sessions: Array<Session>;
-	activeSession: string;
+	activeSession?: Session;
 	logInfos?: Token;
 	latestVersion?: string;
 	catchphrase?: string
@@ -37,8 +38,7 @@ class WelcomePage extends Component<IProps, IState> {
 		this.state = {
 			news: [],
 			open: false,
-			sessions: [],
-			activeSession: ''
+			sessions: []
 		};
 		if (!store.getLogInfos() || !(store.getLogInfos() as Token).token) {
 			this.openLoginOrProfileModal();
@@ -86,7 +86,7 @@ class WelcomePage extends Component<IProps, IState> {
 		  const res = await axios.get('/api/admin/sessions');
   		this.setState({
   			sessions: res.data.data,
-  			activeSession: res.data.data.filter((valueSession:Session) => valueSession.active)[0].name
+  			activeSession: res.data.data.filter((valueSession:Session) => valueSession.active)[0]
 		  });
   	}
   };
@@ -102,14 +102,21 @@ class WelcomePage extends Component<IProps, IState> {
   		const sessionsList = await axios.get('/api/admin/sessions');
   		this.setState({
   			sessions: sessionsList.data.data,
-  			activeSession: sessionsList.data.data.filter((valueSession:Session) => valueSession.active)[0].name
+  			activeSession: sessionsList.data.data.filter((valueSession:Session) => valueSession.active)[0]
   		});
   	} else {
-  		this.setState({ activeSession: sessions[0].name });
+  		this.setState({ activeSession: sessions[0] });
   		sessionId = sessions[0].seid;
   		axios.post('/api/admin/sessions/' + sessionId);
   	}
   };
+
+	majPrivate = async () => {
+		let session = this.state.activeSession as Session;
+		session.private = !(this.state.activeSession as Session).private;
+		await axios.put(`/api/system/sessions/${session.seid}`, session);
+		this.getSessions();
+	};
 
   getCatchphrase = async () => {
   	const res = await axios.get('/api/public/catchphrase');
@@ -249,11 +256,13 @@ class WelcomePage extends Component<IProps, IState> {
   					<div className="menu-top-left">
   						<label className="menu-top-sessions-label">{i18next.t('ACTIVE_SESSION')}&nbsp;</label>
   						<Autocomplete
-  							value={this.state.activeSession}
+  							value={this.state.activeSession?.name}
   							options={sessions}
   							onChange={this.setActiveSession}
   							acceptNewValues={true}
   						/>
+						<label className="menu-top-sessions-label">{i18next.t('PRIVATE_SESSION')}&nbsp;</label>
+						<Switch handleChange={this.majPrivate} isChecked={this.state.activeSession?.private} />
   					</div>
   				) : null}
   				<div className="menu-top-right">

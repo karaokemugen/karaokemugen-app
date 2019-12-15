@@ -208,7 +208,8 @@
 		"KARA_PLAYED": "Karas played",
 		"KARA_REQUESTED": "Karas requested",
 		"NEW_SESSION": "New session :",
-		"ACTIVE": "Active ?"
+		"ACTIVE": "Active ?",
+		"PRIVATE": "Private ?"
 	},
 	"BLACKLIST": {
 		"TYPE": "Type",

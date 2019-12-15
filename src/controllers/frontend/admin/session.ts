@@ -9,7 +9,7 @@ export default function adminSessionController(router: Router) {
 	/**
  * @api {get} /admin/sessions List karaoke sessions (by date)
  * @apiName GetSessions
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Sessions
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -17,6 +17,7 @@ export default function adminSessionController(router: Router) {
  * @apiSuccess {String} data/[]/seid Session UUID
  * @apiSuccess {String} data/[]/name Session name
  * @apiSuccess {String} data/[]/started_at Session starting date
+ * @apiSuccess {Boolean} data/[]/private Is session private or public (stats will be sent to KM Server)
  * @apiSuccess {Boolean} data/[]/active Is session the current one?
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -44,13 +45,14 @@ export default function adminSessionController(router: Router) {
 	/**
  * @api {post} /admin/sessions Create karaoke session
  * @apiName CreateSession
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Sessions
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  *
  * @apiParam {String} name Session name
  * @apiParam {String} [date] Optional. Date in ISO format for session. If not provided, session starts now.
+ * @apiParam {Boolean} [private] Optional. Is the session private or public ? Default to false.
  * @apiSuccess {String} data Session ID of the newly created session
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -76,7 +78,7 @@ export default function adminSessionController(router: Router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					const seid = await addSession(req.body.name, req.body.date, true);
+					const seid = await addSession(req.body.name, req.body.date, true, req.body.private);
 					res.json(OKMessage(seid,'SESSION_CREATED'));
 				} catch(err) {
 					res.status(500).json(errMessage('SESSION_CREATION_ERROR',err));

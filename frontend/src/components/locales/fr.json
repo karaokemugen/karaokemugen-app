@@ -347,6 +347,7 @@
 	"MAIN_SERIES_LANG": "Langue des noms de séries",
 	"FALLBACK_SERIES_LANG": "Langue de secours des noms de séries",
 	"ACTIVE_SESSION": "Session Active : ",
+	"PRIVATE_SESSION" : "Privée ? ",
 	"PLAYLIST_MODE_SONG_ADDED": "Chanson ajoutée avec succès !",
 	"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Cette chanson a déjà été ajoutée.",
 	"UPDATE_BANNER_TITLE": "Nouvelle version de Karaoke Mugen disponible !",

@@ -21,9 +21,9 @@
     "installSystemPanel": "cd systempanel && yarn install",
     "buildSystemPanel": "cd systempanel && yarn build",
     "startSystemPanel": "cd systempanel && yarn start",
-    "migrate": "node node_modules/db-migrate/bin/db-migrate sync [all]",
-    "migrateDown": "node node_modules/db-migrate/bin/db-migrate down",
-    "migrateUp": "node node_modules/db-migrate/bin/db-migrate up",
+    "migrate": "db-migrate sync [all] --config app/database.json",
+    "migrateDown": "db-migrate down --config app/database.json",
+    "migrateUp": "db-migrate up --config app/database.json",
     "dropDatabase": "ts-node util/dropDatabase.ts"
   },
   "homepage": "https://karaokes.moe",

@@ -208,7 +208,8 @@
 		"KARA_PLAYED": "Karaokés joués",
 		"KARA_REQUESTED": "Karaokés demandés",
 		"NEW_SESSION": "Nouvelle session :",
-		"ACTIVE": "Active ?"
+		"ACTIVE": "Active ?",
+		"PRIVATE": "Privée ?"
 	},
 	"BLACKLIST": {
 		"TYPE": "Type",

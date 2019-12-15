@@ -10166,3 +10166,59 @@
 	 *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
 	 * }
 	 */
+
+	/**
+ * @api {get} /admin/sessions List karaoke sessions (by date)
+ * @apiName GetSessions
+ * @apiVersion 3.0.0
+ * @apiGroup Sessions
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ *
+ * @apiSuccess {String} data/[]/seid Session UUID
+ * @apiSuccess {String} data/[]/name Session name
+ * @apiSuccess {String} data/[]/started_at Session starting date
+ * @apiSuccess {Boolean} data/[]/active Is session the current one?
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ * 		{
+ * 			"name": "Jonetsu IV Day 1",
+ * 			"seid": "..."
+ * 			"started_at": "Sat 13 Oct 2019 09:30:00"
+ * 		},
+ * 		...
+ * 	]
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+	/**
+ * @api {post} /admin/sessions Create karaoke session
+ * @apiName CreateSession
+ * @apiVersion 3.0.0
+ * @apiGroup Sessions
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ *
+ * @apiParam {String} name Session name
+ * @apiParam {String} [date] Optional. Date in ISO format for session. If not provided, session starts now.
+ * @apiSuccess {String} data Session ID of the newly created session
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ * 	"data": "..."
+ * 	}
+ * }
+ * @apiError SESSION_CREATION_ERROR Error creating session
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ * 		"code": "SESSION_CREATION_ERROR",
+ * 		"message": "..."
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 400 Validation error
+ */

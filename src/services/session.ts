@@ -15,7 +15,7 @@ export async function getSessions() {
 	return sessions;
 }
 
-export async function addSession(name: string, started_at?: string, activate?: boolean): Promise<string> {
+export async function addSession(name: string, started_at?: string, activate?: boolean, flag_private?: boolean): Promise<string> {
 	const date = started_at
 		? new Date(started_at)
 		: new Date();
@@ -23,7 +23,8 @@ export async function addSession(name: string, started_at?: string, activate?: b
 	await insertSession({
 		seid: seid,
 		name: name,
-		started_at: date
+		started_at: date,
+		private: flag_private || false
 	});
 	if (activate) setActiveSession(seid);
 	return seid;
@@ -33,13 +34,14 @@ export function setActiveSession(seid: string) {
 	setState({currentSessionID: seid});
 }
 
-export async function editSession(seid: string, name: string, started_at: string) {
+export async function editSession(seid: string, name: string, started_at: string, flag_private: boolean) {
 	const session = await findSession(seid);
 	if (!session) throw 'Session does not exist';
 	return await updateSession({
 		seid: seid,
 		name: name,
-		started_at: new Date(started_at)
+		started_at: new Date(started_at),
+		private: flag_private || false
 	});
 }
 

@@ -5,6 +5,7 @@ import axios from 'axios/index';
 import {connect} from 'react-redux';
 import {push} from 'connected-react-router';
 import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
+import { Session } from '../../../../src/types/session';
 
 import {ReduxMappedProps} from '../../react-app-env';
 import i18next from 'i18next';
@@ -15,13 +16,14 @@ interface SessionEditProps extends ReduxMappedProps {
 }
 
 interface SessionEditState {
-	session: any,
-	sessions: any,
+	session: Session,
+	sessions: Array<Session>,
 	save: any
 }
 
-const newsession = {
+const newsession:Session = {
 	name: null,
+	seid: null,
 	started_at: new Date()
 };
 
