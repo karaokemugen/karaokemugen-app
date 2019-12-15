@@ -52,6 +52,16 @@
 		flex-direction: row-reverse;
 	}
 
+	.controls {
+		display: flex;
+		flex-direction: row;
+		float: left;
+	}
+
+	#panel2 .controls {
+		flex-direction: row-reverse;
+	}
+
 	span[name="checkboxKara"] {
 		padding: 6px;
 		font-size: 19px;
@@ -208,5 +218,19 @@
 		#panel2 .flagsContainer {
 			order: 3;
 		}
+	}
+
+	#panel2 .actionDivContainer .btn:first-child:not(.dropdown-toggle) {
+		border-top-left-radius: 0 !important;
+		border-bottom-left-radius: 0 !important;
+		border-top-right-radius: 4px !important;
+  		border-bottom-right-radius: 4px !important;
+	}
+
+	#panel2 .actionDivContainer .btn:last-child:not(.dropdown-toggle) {
+		border-top-right-radius: 0 !important;
+		border-bottom-right-radius: 0 !important;
+		border-top-left-radius: 4px !important;
+  		border-bottom-left-radius: 4px !important;
 	}
 }
