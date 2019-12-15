@@ -78,6 +78,7 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 				</Form.Item>
 				<Form.Item hasFeedback>
 					{getFieldDecorator('nickname', {
+						rules: [{required: true}],
 						initialValue: this.props.user.nickname
 					})(<Input
 						onPressEnter={this.handleSubmit}

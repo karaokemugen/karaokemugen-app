@@ -17,6 +17,7 @@ class ProfilModal extends Component {
 			users: [],
 			user: {},
 			passwordDifferent: 'form-control',
+			nicknameMandatory: 'form-control',
 			activeView: 1
 		};
 	}
@@ -29,28 +30,31 @@ class ProfilModal extends Component {
     onKeyPress = event => {
     	const user = this.state.user;
     	user[event.target.name] = event.target.value;
-    	this.setState({ user: user });
-    	if (event.which === 13) {
-    		if (this.state.user.password && this.state.user.password === this.state.user.passwordConfirmation || !this.state.user.password) {
-    			this.setState({ passwordDifferent: 'form-control' });
-    			axios.put('/api/public/myaccount/', this.state.user);
-    		} else {
-    			this.setState({ passwordDifferent: 'form-control redBorders' });
-    		}
+		this.setState({ user: user });
+    	if (event.keyCode === 13) {
+			this.updateUser();
     	}
     };
 
-    onClick(name, value) {
+    onClick = (name, value) => {
     	const user = this.state.user;
     	user[name] = value;
-    	this.setState({ user: user });
-    	if (this.state.user.password && this.state.user.password === this.state.user.passwordConfirmation || !this.state.user.password) {
-    		this.setState({ passwordDifferent: 'form-control' });
-    		axios.put('/api/public/myaccount/', this.state.user);
-    	} else {
-    		this.setState({ passwordDifferent: 'form-control redBorders' });
-    	}
-    }
+		this.setState({ user: user });
+		this.updateUser();
+	}
+	
+	updateUser = () => {
+		if (this.state.user.nickname && (this.state.user.password 
+			&& this.state.user.password === this.state.user.passwordConfirmation 
+			|| !this.state.user.password)) {
+			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
+			axios.put('/api/public/myaccount/', this.state.user);
+		} else if (!this.state.user.nickname) {
+			this.setState({ nicknameMandatory: 'form-control redBorders' });
+		} else {
+			this.setState({ passwordDifferent: 'form-control redBorders' });
+		}
+	}
 
     async getUser() {
     	var response = await axios.get('/api/public/myaccount/');
@@ -169,7 +173,9 @@ class ProfilModal extends Component {
     										<div className="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
     											<div className="profileLine">
     												<i className="fas fa-user"></i>
-    												<input className="form-control" name="nickname" type="text" placeholder={i18next.t('PROFILE_USERNAME')} defaultValue={this.state.user.nickname} onKeyUp={this.onKeyPress} />
+													<input className={this.state.nicknameMandatory} name="nickname" type="text" 
+														placeholder={i18next.t('PROFILE_USERNAME')} defaultValue={this.state.user.nickname}
+														 onKeyUp={this.onKeyPress} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-envelope"></i>
