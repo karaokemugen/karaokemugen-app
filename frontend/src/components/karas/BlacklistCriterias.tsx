@@ -65,8 +65,8 @@ class BlacklistCriterias extends Component<IProps, IState> {
     	return (
     		<React.Fragment>
     			{this.props.scope === 'admin' ?
-    				<span id="blacklistCriteriasInputs" className="blacklist-criterias-input" style={{ padding: '10px' }}>
-    					<select id="bcType" className="input-sm form-control" onChange={e => this.setState({ bcType: Number(e.target.value) })}>
+    				<span id="blacklistCriteriasInputs" className="blacklist-criterias-input">
+    					<select onChange={e => this.setState({ bcType: Number(e.target.value), bcVal: '' })}>
     						{listTypeBlc.map((value) => {
     							return <option key={value} value={value.replace('BLCTYPE_', '')}>{i18next.t(value)}</option>;
     						})
@@ -99,7 +99,18 @@ class BlacklistCriterias extends Component<IProps, IState> {
     									</button>
     								</div>
     								<div className="typeDiv">{i18next.t('BLCTYPE_' + criteria.type)}</div>
-    								<div className="contentDiv">{criteria.type == 1001 ? buildKaraTitle(Array.isArray(criteria.value) ? criteria.value[0] : criteria.value) : criteria.value}</div>
+									<div className="contentDiv">
+										{criteria.type == 1001 ? 
+										buildKaraTitle(
+											Array.isArray(criteria.value) ?
+											criteria.value[0] : 
+											criteria.value) :
+										(criteria.value_i18n ?
+											criteria.value_i18n :
+											criteria.value
+										)
+										}
+									</div>
     							</li> : null
     						);
     					})}

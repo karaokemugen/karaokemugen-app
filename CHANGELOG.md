@@ -14,6 +14,7 @@ This is a bugfix release.
 - Added close button for automix modal 0ea139aa
 - Added i18n for playlists names af4565b5
 - Added modal for delete criteria from blacklist 2dae9632, 3c636e7c, f5dd39de
+- Changed songs display order 4aa306fa
 
 ### Fixes
 
@@ -39,6 +40,7 @@ This is a bugfix release.
 - Fixed nickname is now mandatory 871fb6b4, 101befe3
 - Fixed switch to another playlist when delete one f4e895fa
 - Fixed input display in rename playlist modal 17ee2a0c
+- Fixed blacklist criterias tags display 88a338ae
 
 ## v3.0.0 "Leafa Lumineuse" - 29/11/2019
 
