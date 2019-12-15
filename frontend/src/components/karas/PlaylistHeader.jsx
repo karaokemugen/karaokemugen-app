@@ -112,7 +112,7 @@ class PlaylistHeader extends Component {
 				var response = await axios.post(url, data);
 				displayMessage('success', i18next.t('PLAYLIST_ADDED', { name: name }));
 				if (response.unknownKaras && response.unknownKaras.length > 0) {
-					displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.unknownKaras }));
+					displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.unknownKaras.length }));
 				}
 				var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.data.data.playlist_id;
 				this.props.changeIdPlaylist(playlist_id);
