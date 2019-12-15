@@ -14,6 +14,7 @@ This is a bugfix release.
 - Added close button for automix modal 0ea139aa
 - Added i18n for playlists names af4565b5
 - Added modal for delete criteria from blacklist 2dae9632, 3c636e7c, f5dd39de
+- Changed songs display order 4aa306fa
 
 ### Fixes
 
