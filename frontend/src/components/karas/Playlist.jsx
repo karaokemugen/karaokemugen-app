@@ -4,7 +4,7 @@ import PlaylistHeader from './PlaylistHeader';
 import KaraDetail from './KaraDetail';
 import KaraLine from './KaraLine';
 import axios from 'axios';
-import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage, callModal} from '../tools';
+import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage, callModal, buildKaraTitle} from '../tools';
 import BlacklistCriterias from './BlacklistCriterias';
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 import { AutoSizer, InfiniteLoader, CellMeasurer, CellMeasurerCache, List } from 'react-virtualized';
@@ -100,7 +100,8 @@ class Playlist extends Component {
   				playlistCommands={this.state.playlistCommands}
   				idPlaylistTo={this.props.idPlaylistTo}
   				checkKara={this.checkKara}
-  				showVideo={this.props.showVideo}
+				showVideo={this.props.showVideo}
+				deleteCriteria={this.deleteCriteria}
   			/>
   		</li>;
   	} else {
@@ -496,7 +497,7 @@ noRowsRenderer = () => {
 		return ;
 	}
   	var idKara = listKara.map(a => a.kid).join();
-  	var idKaraPlaylist = this.state.data.content.filter(a => a.checked).map(a => String(a.playlistcontent_id)).join();
+  	var idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id)).join();
   	var url;
   	var data;
   	var type;
@@ -592,6 +593,22 @@ noRowsRenderer = () => {
   	var searchCriteria = (type === 'serie' || type === 'year') ? type : 'tag';
   	var stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
   	this.setState({searchCriteria: searchCriteria, searchValue: stringValue}, () => this.getPlaylist('search'));
+  };
+
+  deleteCriteria = (kara) => {
+	callModal('confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`BLCTYPE_${kara.blc_type}`) }), 
+		this.state.data.content.filter(e => e.blc_id === kara.blc_id).map(criteria => {
+			return <label key={kara.kid}>{buildKaraTitle(criteria)}</label>
+		}), async (confirm) => {
+			if (confirm) {
+				try {
+					let response = await axios.delete(`/api/${this.props.scope}/blacklist/criterias/${kara.blc_id}`);
+					displayMessage('success', i18next.t(response.data.code));
+				} catch (error) {
+					displayMessage('warning', i18next.t(error.response.data.code));
+				}
+			}
+		});
   };
 
   sortRow = ({oldIndex, newIndex}) => {
