@@ -40,6 +40,7 @@ This is a bugfix release.
 - Fixed nickname is now mandatory 871fb6b4, 101befe3
 - Fixed switch to another playlist when delete one f4e895fa
 - Fixed input display in rename playlist modal 17ee2a0c
+- Fixed blacklist criterias tags display 88a338ae
 
 ## v3.0.0 "Leafa Lumineuse" - 29/11/2019
 
