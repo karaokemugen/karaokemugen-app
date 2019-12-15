@@ -65,7 +65,8 @@ class PlaylistHeader extends Component {
   deletePlaylist = () => {
   	callModal('confirm', i18next.t('CL_DELETE_PLAYLIST', { playlist: this.props.playlistInfo.name }), '', confirm => {
   		if (confirm) {
-  			axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist);
+			  axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist);
+			  this.props.changeIdPlaylist(this.props.playlistToAddId);
   		}
   	});
   };
