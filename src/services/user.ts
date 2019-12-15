@@ -232,10 +232,9 @@ async function editRemoteUser(user: User) {
 	const remoteToken = getRemoteToken(user.login);
 	const [login, instance] = user.login.split('@');
 	const form = new formData();
-	const conf = getConfig();
 
 	// Create the form data sent as payload to edit remote user
-	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(getState().appPath, conf.System.Path.Avatars, user.avatar_file)), user.avatar_file);
+	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(resolvedPathAvatars(), user.avatar_file)), user.avatar_file);
 	form.append('nickname', user.nickname);
 	if (user.bio) form.append('bio', user.bio);
 	if (user.email) form.append('email', user.email);
