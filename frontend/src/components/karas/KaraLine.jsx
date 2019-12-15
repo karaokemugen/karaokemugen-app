@@ -134,8 +134,8 @@ class KaraLine extends Component {
   	}
   };
 
-  transferKara = (event, pos) => {
-	  this.addKara(event, pos);
+  transferKara = async (event, pos) => {
+	  await this.addKara(event, pos);
 	  this.deleteKara();
   };
 
