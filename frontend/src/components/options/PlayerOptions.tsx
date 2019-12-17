@@ -43,7 +43,7 @@ class PlayerOptions extends Component<IProps, IState> {
   onChange = (e:any) => {
   	var config = this.state.config;
   	var value = e.target.type === 'checkbox' ? e.target.checked : 
-  		(Number(e.target.value) ? Number(e.target.value) : e.target.value);
+  		(Number(e.target.value) && !e.target.value.includes('.')) ? Number(e.target.value) : e.target.value);
   	if (value === 'true') {
   		value = true;
   	} else if (value === 'false') {
