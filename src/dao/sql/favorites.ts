@@ -32,7 +32,7 @@ SELECT
   INNER JOIN favorites AS f ON f.fk_kid = ak.kid
   WHERE fk_login = :username
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-ORDER BY ak.languages_sortable, ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, lower(unaccent(ak.title))
+ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, lower(unaccent(ak.title))
 ${limitClause}
 ${offsetClause}
 `;
