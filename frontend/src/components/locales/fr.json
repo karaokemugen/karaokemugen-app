@@ -217,7 +217,7 @@
 	"TOOLTIP_ADDKARA": "Ajouter cette chanson à la liste",
 	"TOOLTIP_ADDKARA_ADMIN": "Clic droit l'ajoute après le morceau en cours",
 	"TOOLTIP_DELETEKARA": "Supprimer cette chanson",
-	"TOOLTIP_DELETECRITERIA": "Supprimer ce critère de liste noire",
+	"TOOLTIP_DELETECRITERIA": "Supprimer ce critère de blacklist",
 	"TOOLTIP_TRANSFERKARA": "Transférer cette chanson - clic droit le transfére après le morceau en cours",
 	"TOOLTIP_SHOWINFO": "Afficher les détails",
 	"TOOLTIP_CLOSEPARENT": "Fermer",
@@ -262,9 +262,9 @@
 			"WEBAPPMODE_CLOSED": "Fermé",
 			"WEBAPPMODE_LIMITED": "Chanson en cours et playlists uniquement",
 			"WEBAPPMODE_OPEN": "Ouvert (par défaut)",
-			"ALLOW_VIEW_BLACKLIST": "Liste noire visible du public",
-			"ALLOW_VIEW_BLACKLIST_CRITERIAS": "Critères de liste noire visibles du public",
-			"ALLOW_VIEW_WHITELIST": "Liste blanche visible du public"
+			"ALLOW_VIEW_BLACKLIST": "Blacklist visible du public",
+			"ALLOW_VIEW_BLACKLIST_CRITERIAS": "Critères de blacklist visibles du public",
+			"ALLOW_VIEW_WHITELIST": "Whitelist visible du public"
 		}
 	},
 	"JINGLE_TIME": "Instant jingle !",
