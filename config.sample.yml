@@ -4,6 +4,8 @@ App:
   FirstRun: true
   # JWT secret used to salt passwords (uuid)
   JwtSecret: Change me
+  # Application quick start (like --noBaseCheck)
+  QuickStart: false
 
 Online:
   # Host for your KM Server
