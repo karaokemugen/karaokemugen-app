@@ -23,6 +23,7 @@ Options :
 --noBaseCheck                   Disable data file checking on startup
 --noBrowser                     Do not open a browser window upon launch
 --noMedia                       (generation only) Do not try to fetch data from media files
+--noPlayer                      Do not open player on startup
 --forceAdminPassword <password> Set admin account's password
 `;
 
@@ -67,6 +68,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.noBaseCheck) {
 		logger.info('[Launcher] Data files will not be checked. ENABLED AT YOUR OWN RISK');
 		setState({opt: {noBaseCheck: true}});
+	}
+	if (argv.noPlayer) {
+		logger.info('[Launcher] Player will not start.');
+		setState({opt: {noPlayer: true}});
 	}
 	if (argv.strict) {
 		logger.info('[Launcher] Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.');

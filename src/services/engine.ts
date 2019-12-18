@@ -87,7 +87,7 @@ export async function initEngine() {
 	let inits = [];
 	if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 	inits.push(initPlaylistSystem());
-	if (!state.isDemo && !state.isTest) inits.push(initPlayer());
+	if (!state.isDemo && !state.isTest && state.opt.noPlayer) inits.push(initPlayer());
 	inits.push(initFrontend());
 	inits.push(initSession());
 	testPlaylists();
@@ -112,10 +112,6 @@ export async function initEngine() {
 
 export async function exit(rc: any) {
 	logger.info('[Engine] Shutdown in progress');
-	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
-	//On other systems or if terminal is not a TTY we exit immediately.
-	// non-TTY terminals have no stdin support.
-
 	if (getState().player.ready) {
 		try {
 			await quitmpv();
@@ -128,8 +124,8 @@ export async function exit(rc: any) {
 	if (getTwitchClient()) await stopTwitch();
 
 	await closeDB();
+	if (getTwitchClient() || (getConfig() && getConfig().Karaoke.StreamerMode.Twitch.Enabled)) await stopTwitch();
 	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
-	if (getConfig() && getConfig().Karaoke.StreamerMode.Twitch.Enabled) await stopTwitch();
 	try {
 		if (await checkPG()) {
 			try {
@@ -151,6 +147,9 @@ export async function exit(rc: any) {
 
 function mataNe(rc: any) {
 	console.log('\nMata ne !\n');
+	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
+	//On other systems or if terminal is not a TTY we exit immediately.
+	// non-TTY terminals have no stdin support.
 	if (process.platform !== 'win32' || !process.stdout.isTTY) process.exit(rc);
 	if (rc !== 0) readlineSync.question('Press enter to exit', {hideEchoBack: true});
 	process.exit(rc);

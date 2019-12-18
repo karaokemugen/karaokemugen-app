@@ -51,6 +51,7 @@ export interface State {
 		generateDB?: boolean,
 		reset?: boolean,
 		noBaseCheck?: boolean,
+		noPlayer?: boolean,
 		strict?: boolean,
 		noMedia?: boolean,
 		baseUpdate?: boolean,
