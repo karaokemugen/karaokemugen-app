@@ -115,7 +115,7 @@ export async function initDBSystem(): Promise<boolean> {
 			: setInstanceID(uuidV4());
 	}
 	if (state.opt.reset) await resetUserData();
-	if (!state.opt.noBaseCheck) {
+	if (!state.opt.noBaseCheck && !conf.App.QuickStart) {
 		const filesChanged = await compareKarasChecksum();
 		if (filesChanged === true) {
 			logger.info('[DB] Data files have changed: database generation triggered');

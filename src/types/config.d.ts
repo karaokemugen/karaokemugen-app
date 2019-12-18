@@ -4,7 +4,8 @@ export interface Config {
 	App: {
 		JwtSecret?: string,
 		InstanceID?: string,
-		FirstRun?: boolean
+		FirstRun?: boolean,
+		QuickStart?: boolean
 	},
 	Online: {
 		Host?: string,

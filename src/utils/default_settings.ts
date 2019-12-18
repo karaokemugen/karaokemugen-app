@@ -10,7 +10,8 @@ import { bools } from '../lib/utils/constants';
 export const defaults: Config = {
 	App: {
 		FirstRun: true,
-		JwtSecret: 'Change me'
+		JwtSecret: 'Change me',
+		QuickStart: false
 	},
 	Database: {
 		'sql-file': true,
