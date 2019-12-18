@@ -259,7 +259,9 @@
 			"PLAYLIST_OUTRO_VIDEOS": "Playlist outro video",
 			"PLAYLIST_OUTRO_VIDEOS_TOOLTIP": "Les outro vidéo sont jouées uniquement une fois après la dernière chanson d'une playlist.",
 			"PLAYLIST_ENCORES_VIDEOS": "Playlist Encores",
-			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "Cette vidéo sera jouée avant la dernière chanson de la playlist en cours."
+			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "Cette vidéo sera jouée avant la dernière chanson de la playlist en cours.",
+			"QUICKSTART": "Démarrage rapide de l'application",
+			"QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données."
 		},
 		"INTERFACE": {
 			"LABEL": "Interface",

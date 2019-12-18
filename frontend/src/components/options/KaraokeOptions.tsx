@@ -249,6 +249,18 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
 
+				<div className="form-group">
+  					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.QUICKSTART_TOOLTIP')}>
+  						{i18next.t('SETTINGS.KARAOKE.QUICKSTART')}
+              &nbsp;
+  						<i className="far fa-question-circle"></i>
+  					</label>
+  					<div className="col-xs-6">
+  						<Switch idInput="App.QuickStart" handleChange={this.onChange}
+  							isChecked={this.state.config['App.QuickStart']} />
+  					</div>
+  				</div>
+
   				<div className="form-group">
   					<label className="col-xs-4 control-label" title={i18next.t('CLASSIC_MODE_TOOLTIP')}>
   						{i18next.t('CLASSIC_MODE')}

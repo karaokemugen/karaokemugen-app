@@ -245,7 +245,9 @@
 			"PLAYLIST_OUTRO_VIDEOS": "Playlist outro video",
 			"PLAYLIST_OUTRO_VIDEOS_TOOLTIP": "Outro videos are played only once after the last song of the current playlist.",
 			"PLAYLIST_ENCORES_VIDEOS": "Playlist Encores",
-			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "This video will played before the last song of the current playlist."
+			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "This video will played before the last song of the current playlist.",
+			"QUICKSTART": "Quick start of the application",
+			"QUICKSTART_TOOLTIP": "This disables data verification. You will have to generate your database in case of modification manually from the system panel, database tab."
 		},
 		"INTERFACE": {
 			"LABEL": "Interface",

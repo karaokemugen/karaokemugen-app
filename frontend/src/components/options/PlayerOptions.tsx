@@ -223,53 +223,53 @@ class PlayerOptions extends Component<IProps, IState> {
   							</select>
   						</div>
   					</div>
-
-  					<div className="form-group">
-  						<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYNICKNAME_TOOLTIP')}>
-  							{i18next.t('ENGINEDISPLAYNICKNAME')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
-  						</label>
-  						<div className="col-xs-6">
-  							<Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
-  								isChecked={this.state.config['Karaoke.Display.Nickname']} />
-  						</div>
-  					</div>
-
-  					<div className="form-group">
-  						<label className="col-xs-4 control-label">
-  							{i18next.t('ENGINEDISPLAYAVATAR')}
-  						</label>
-  						<div className="col-xs-6">
-  							<Switch idInput="Karaoke.Display.Avatar" handleChange={this.onChange}
-  								isChecked={this.state.config['Karaoke.Display.Avatar']} />
-  						</div>
-  					</div>
-
-  					<div className="form-group">
-  						<label className="col-xs-4 control-label" title={i18next.t('PLAYERMONITOR_TOOLTIP')}>
-  							{i18next.t('PLAYERMONITOR')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
-  						</label>
-  						<div className="col-xs-6">
-  							<Switch idInput="Player.Monitor" handleChange={this.onChange}
-  								isChecked={this.state.config['Player.Monitor']} />
-  						</div>
-  					</div>
-
-  					<div className="form-group">
-  						<label className="col-xs-4 control-label" title={i18next.t('PLAYERVISUALIZATIONEFFECTS_TOOLTIP')}>
-  							{i18next.t('PLAYERVISUALIZATIONEFFECTS')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
-  						</label>
-  						<div className="col-xs-6">
-  							<Switch idInput="Player.VisualizationEffects" handleChange={this.onChange}
-  								isChecked={this.state.config['Player.VisualizationEffects']} />
-  						</div>
-  					</div>
   				</div> : null}
+
+				<div className="form-group">
+					<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYNICKNAME_TOOLTIP')}>
+						{i18next.t('ENGINEDISPLAYNICKNAME')}
+			&nbsp;
+						<i className="far fa-question-circle"></i>
+					</label>
+					<div className="col-xs-6">
+						<Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
+							isChecked={this.state.config['Karaoke.Display.Nickname']} />
+					</div>
+				</div>
+
+				<div className="form-group">
+					<label className="col-xs-4 control-label">
+						{i18next.t('ENGINEDISPLAYAVATAR')}
+					</label>
+					<div className="col-xs-6">
+						<Switch idInput="Karaoke.Display.Avatar" handleChange={this.onChange}
+							isChecked={this.state.config['Karaoke.Display.Avatar']} />
+					</div>
+				</div>
+
+				<div className="form-group">
+					<label className="col-xs-4 control-label" title={i18next.t('PLAYERMONITOR_TOOLTIP')}>
+						{i18next.t('PLAYERMONITOR')}
+			&nbsp;
+						<i className="far fa-question-circle"></i>
+					</label>
+					<div className="col-xs-6">
+						<Switch idInput="Player.Monitor" handleChange={this.onChange}
+							isChecked={this.state.config['Player.Monitor']} />
+					</div>
+				</div>
+
+				<div className="form-group">
+					<label className="col-xs-4 control-label" title={i18next.t('PLAYERVISUALIZATIONEFFECTS_TOOLTIP')}>
+						{i18next.t('PLAYERVISUALIZATIONEFFECTS')}
+			&nbsp;
+						<i className="far fa-question-circle"></i>
+					</label>
+					<div className="col-xs-6">
+						<Switch idInput="Player.VisualizationEffects" handleChange={this.onChange}
+							isChecked={this.state.config['Player.VisualizationEffects']} />
+					</div>
+				</div>
   		</React.Fragment>
   	);
   }
