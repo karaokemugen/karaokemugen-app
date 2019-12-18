@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {Input, Layout, Button, Table} from 'antd';
+import {Input, Layout, Button, Table, Switch} from 'antd';
 
 import {loading, infoMessage, errorMessage, warnMessage} from '../actions/navigation';
 import {ReduxMappedProps} from '../react-app-env';
@@ -12,6 +12,11 @@ interface ConfigProps extends ReduxMappedProps {}
 interface ConfigState {
 	config: any[],
 	error: string,
+}
+
+interface Record {
+	key: string;
+	value: string;
 }
 
 // Transforms object to dot notation
@@ -44,11 +49,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 	};
 
 	saveSetting(record, value) {
-		if (value === 'true') {
-			value = true;
-		} else if (value === 'false') {
-			value = false;
-		}
 		axios.put('/api/system/config', {
 			setting: this.expand(record.key, value)
 		})
@@ -69,15 +69,34 @@ class Config extends Component<ConfigProps, ConfigState> {
 		title: i18next.t('CONFIG.VALUE'),
 		dataIndex: 'value',
 		key: 'value',
-		render: (text, record) => (<span>
-			<Input
-				onPressEnter={(e) => {
-					const target = e.target as HTMLInputElement;
-					this.saveSetting(record, target.value)
-				}}
-				defaultValue={record.value}
-			/>
-		</span>)
+		render: (text, record:Record) => 
+			typeof record.value === 'boolean' ? 
+				<Switch onChange={(e) => this.saveSetting(record, e)} defaultChecked={record.value} /> : 
+					(typeof record.value === 'number' ? 
+						<Input type='number'
+							onPressEnter={(e) => {
+								const target = e.target as HTMLInputElement;
+								this.saveSetting(record, target.value)
+							}}
+							defaultValue={record.value}
+						/> :
+						(record.key.includes('System.Binaries') || record.key.includes('System.Path') ? 
+							<Input
+								onPressEnter={(e) => {
+									const target = e.target as HTMLInputElement;
+									this.saveSetting(record, target.value)
+								}}
+								defaultValue={record.value}
+							/> :
+							<Input
+								onPressEnter={(e) => {
+									const target = e.target as HTMLInputElement;
+									this.saveSetting(record, target.value)
+								}}
+								defaultValue={record.value}
+							/>
+						)
+				)
 	}];
 
 	constructor(props) {
