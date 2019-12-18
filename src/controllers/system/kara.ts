@@ -60,7 +60,8 @@ export default function systemKaraController(router: Router) {
 					q: req.query.q ? req.query.q : '',
 					from: +req.query.from,
 					size: +req.query.size
-				});
+				},
+				req.query.compare || null);
 			} else {
 				karas = await getKaras({
 					filter: req.query.filter,
