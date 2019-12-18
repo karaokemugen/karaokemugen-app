@@ -8,7 +8,7 @@ import internet from 'internet-available';
 import logger from '../lib/utils/logger';
 import {asyncMove, resolveFileInDirs, asyncStat, asyncUnlink, asyncReadDir} from '../lib/utils/files';
 import {uuidRegexp, getTagTypeName} from '../lib/utils/constants';
-import {integrateKaraFile, getAllKaras} from './kara';
+import {integrateKaraFile, getAllKaras, getKaras} from './kara';
 import {integrateSeriesFile} from './series';
 import { compareKarasChecksum } from '../dao/database';
 import { vacuum } from '../lib/dao/database';
@@ -400,16 +400,28 @@ export async function emptyDownloadBLC() {
 	return await truncateDownloadBLC();
 }
 
-export async function getRemoteKaras(repo: string, params: KaraParams): Promise<KaraList> {
-	const URLParams = [];
-	if (params.filter) URLParams.push(['filter', params.filter])
-	if (params.size) URLParams.push(['size', params.size + ''])
-	if (params.from) URLParams.push(['from', params.from + ''])
-	params.q
-		? URLParams.push(['q', params.q])
-		: URLParams.push(['q', '']);
-	const queryParams = new URLSearchParams(URLParams);
-	const res = await got(`https://${repo}/api/karas/search?${queryParams.toString()}`);
+export async function getRemoteKaras(repo: string, params: KaraParams, compare?: 'missing' | 'updated' | null): Promise<KaraList> {
+	//First get all karas we currently own
+	let localKIDs = {};
+	if (compare === 'missing' || compare === 'updated') {
+		const karas = await getKaras({
+			filter: params.filter,
+			token: {username: 'admin', role: 'admin'},
+			mode: params.q ? 'search' : null,
+			modeValue: params.q
+		});
+		karas.content.forEach(k => localKIDs[k.kid] = k.modified_at);
+	}
+	const res = await got.post(`https://${repo}/api/karas/search`, {
+		json: {
+			filter: params.filter,
+			size: params.size,
+			from: params.from,
+			q: params.q || '',
+			localKaras: compare ? localKIDs : null,
+			compare: compare
+		}
+	});
 	return JSON.parse(res.body);
 }
 

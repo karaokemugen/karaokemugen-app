@@ -63,7 +63,11 @@
 		"DOWNLOAD": "Download",
 		"DOWNLOAD_ALL_TOOLTIP": "Download all retrieved karas at once",
 		"SHOWING": "Showing {{from}}-{{to}} of {{total}} songs",
-		"IN_BLACKLIST": "In blacklist"
+		"IN_BLACKLIST": "In blacklist",
+		"FILTER_SONGS": "Filter songs from server: ",
+		"FILTER_ALL": "All",
+		"FILTER_UPDATED": "Updated",
+		"FILTER_NOT_DOWNLOADED": "Not downloaded"
 	},
 	"MENU": {
 		"HOME": "Home",

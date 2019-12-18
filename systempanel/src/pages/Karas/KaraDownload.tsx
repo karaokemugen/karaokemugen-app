@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Row, Col, Icon, Layout, Table, Input, Button, Cascader} from 'antd';
+import {Row, Col, Icon, Layout, Table, Input, Button, Cascader, Radio} from 'antd';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import openSocket from 'socket.io-client';
 import {
@@ -38,7 +38,8 @@ interface KaraDownloadState {
 	currentPageSize: number,
 	filter: string,
 	tagFilter: string,
-	tags: any[]
+	tags: any[],
+	compare: string
 }
 
 class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
@@ -58,6 +59,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			filter: localStorage.getItem('karaDownloadFilter') || '',
 			tagFilter: '',
 			tags: [],
+			compare: ''
 		};
 
 	}
@@ -254,7 +256,8 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
 
-				axios.get(`/api/system/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
+				axios.get(`/api/system/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`
+					+ this.state.compare)
 			.then(res => {
 				let karas = res.data.content;
 				karas = karas.map((kara) => {
@@ -357,6 +360,24 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 								&nbsp;
 								<Button type="primary" key="queueUpdateAll" onClick={() => postUpdateToDownloadQueue()}>{i18next.t('KARA.UPDATE_ALL')}</Button>
 							</Col>
+							<Col style={{ paddingTop: '25px'}}>
+								<label>{i18next.t('KARA.FILTER_SONGS')}</label>
+								<Radio checked={this.state.compare === ''} 
+									onChange={async () => {
+										await this.setState({compare: ''});
+										this.api_get_online_karas();
+								}}>{i18next.t('KARA.FILTER_ALL')}</Radio>
+								<Radio checked={this.state.compare === '&compare=missing'} 
+									onChange={async () => {
+										await this.setState({compare: '&compare=missing'});
+										this.api_get_online_karas();
+									}}>{i18next.t('KARA.FILTER_UPDATED')}</Radio>
+								<Radio checked={this.state.compare === '&compare=updated'} 
+									onChange={async () => {
+										await this.setState({compare: '&compare=updated'});
+										this.api_get_online_karas();
+								}}>{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}</Radio>
+							</Col>
 							<Col style={{ paddingTop: '20px'}}>
 								<Button type="primary" key="queueDelete" onClick={deleteDownloadQueue}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
 								&nbsp;
@@ -396,7 +417,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	}
 
 	is_local_kara(kara) {
-		return this.state.karas_local.find(item => item.kid === kara.kid);
+		return this.state.karas_local && this.state.karas_local.find(item => item.kid === kara.kid);
 	}
 	is_queued_kara(kara) {
 		return this.state.karas_queue.find(item => item.name === kara.name);

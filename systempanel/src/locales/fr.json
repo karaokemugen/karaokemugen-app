@@ -63,7 +63,11 @@
 		"DOWNLOAD": "Télécharger",
 		"DOWNLOAD_ALL_TOOLTIP": "Télécharger tout les karaokés récupérés en une seule fois",
 		"SHOWING": "Affichage des {{from}}-{{to}} de {{total}} karaokés",
-		"IN_BLACKLIST": "Dans la blacklist"
+		"IN_BLACKLIST": "Dans la blacklist",
+		"FILTER_SONGS": "Filtrer les chansons du serveur : ",
+		"FILTER_ALL": "Tous",
+		"FILTER_UPDATED": "Mis à jour",
+		"FILTER_NOT_DOWNLOADED": "Non téléchargés"
 	},
 	"MENU": {
 		"HOME": "Home",
