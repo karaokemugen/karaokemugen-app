@@ -135,9 +135,11 @@ export async function integrateSeriesFile(file: string): Promise<string> {
 	try {
 		const seriesFileData = await getDataFromSeriesFile(file);
 		const seriesDBData = await testSerie(seriesFileData.sid);
+		console.log(seriesFileData);
+		console.log(seriesDBData);
 		if (seriesDBData) {
 			await editSerie(seriesFileData.sid, seriesFileData, { refresh: false });
-			if (seriesDBData.name !== seriesFileData.name) try {
+			if (seriesDBData.seriefile !== seriesFileData.seriefile) try {
 					await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, resolvedPathSeries()));
 				} catch(err) {
 					logger.warn(`[Series] Could not remove old series file ${seriesDBData.seriefile}`);
