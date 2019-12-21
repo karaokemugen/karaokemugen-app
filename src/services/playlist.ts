@@ -364,10 +364,10 @@ export async function getPlaylistContentsMini(playlist_id: number) {
 
 /** Get playlist contents */
 export async function getPlaylistContents(playlist_id: number, token: Token, filter: string, lang: string, from = 0, size = 99999999999, random = 0) {
-	const plInfo = await getPlaylistInfo(playlist_id, token);
 	try {
 		profile('getPLC');
-		if (token.role !== 'admin' && !plInfo.flag_visible) throw `Playlist ${playlist_id} unknown`;
+		const plInfo = await getPlaylistInfo(playlist_id, token);
+		if (!plInfo) throw `Playlist ${playlist_id} unknown`;
 		const pl = await getPLContents({
 			playlist_id: playlist_id,
 			username: token.username,
