@@ -4055,10 +4055,10 @@ tough-cookie@~2.4.3:
     psl "^1.1.24"
     punycode "^1.4.1"
 
-toyunda2ass@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/toyunda2ass/-/toyunda2ass-1.0.7.tgz#c04058b3ad077dd8b3f8c7dcdd9e6cdf6f1a8639"
-  integrity sha512-wpQkEVCZw/Z5sZQF+MG19pdgRmMV8vZimkY6ucQ6ZPttSxZncwcDt3AKqyOae9CNi3a3NcpGzz1ygOVikyLejQ==
+toyunda2ass@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/toyunda2ass/-/toyunda2ass-1.0.9.tgz#473fa00a66c4351af73a60b68697b31013ee4978"
+  integrity sha512-WCY7FXJCGZWmqkaGf62U3eB9dVQF/sJTx10bDOtwzLiku3iS7aFKr+rlYOqlj0p12Kf1iFMbaebFA71LLAAbWQ==
   dependencies:
     ass-stringify "^0.1.3"
     execa "^2.0.4"
