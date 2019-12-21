@@ -175,7 +175,7 @@ export async function integrateTagFile(file: string): Promise<string> {
 		const tagDBData = await getTag(tagFileData.tid);
 		if (tagDBData) {
 			await editTag(tagFileData.tid, tagFileData, { refresh: false });
-			if (tagDBData.name !== tagFileData.name) try {
+			if (tagDBData.tagfile !== tagFileData.tagfile) try {
 					await asyncUnlink(await resolveFileInDirs(tagDBData.tagfile, resolvedPathTags()));
 				} catch(err) {
 					logger.warn(`[Tags] Could not remove old tag file ${tagDBData.tagfile}`);
