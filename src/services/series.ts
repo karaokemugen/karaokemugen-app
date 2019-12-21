@@ -135,8 +135,6 @@ export async function integrateSeriesFile(file: string): Promise<string> {
 	try {
 		const seriesFileData = await getDataFromSeriesFile(file);
 		const seriesDBData = await testSerie(seriesFileData.sid);
-		console.log(seriesFileData);
-		console.log(seriesDBData);
 		if (seriesDBData) {
 			await editSerie(seriesFileData.sid, seriesFileData, { refresh: false });
 			if (seriesDBData.seriefile !== seriesFileData.seriefile) try {
