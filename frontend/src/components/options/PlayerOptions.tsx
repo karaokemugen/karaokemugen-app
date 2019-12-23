@@ -24,8 +24,8 @@ class PlayerOptions extends Component<IProps, IState> {
 	}
 
   getDisplays = async () => {
-  	const res = await axios.get('/api/admin/displays');
-  	this.setState({ displays: res.data.data });
+  	const res = await axios.get('/api/displays');
+  	this.setState({ displays: res.data });
   };
 
   putPlayerCommando = (e:any) => {
@@ -34,7 +34,7 @@ class PlayerOptions extends Component<IProps, IState> {
   		(Number(e.target.value) ? Number(e.target.value) : e.target.value);
 	config[e.target.id] = value;
   	this.setState({ config: config });
-  	axios.put('/api/admin/player', {
+  	axios.put('/api/player', {
   		command: e.target.getAttribute('data-namecommand')
   	});
   	this.props.onChange(e);

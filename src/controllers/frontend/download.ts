@@ -6,9 +6,9 @@ import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, get
 import {getRepos} from '../../services/repo';
 import { Router } from 'express';
 
-export default function systemDownloadController(router: Router) {
+export default function downloadController(router: Router) {
 
-	router.get('/system/repos', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+	router.get('/repos', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
 			const repos = await getRepos();
 			res.json(repos);
@@ -16,7 +16,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error getting repositories: ${err}`);
 		}
 	});
-	router.post('/system/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	router.post('/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			const msg = await addDownloads(req.body.repository,req.body.downloads);
 			res.status(200).send(msg);
@@ -24,7 +24,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error while adding download: ${err}`);
 		}
 	});
-	router.get('/system/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+	router.get('/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
 			const downloads = await getDownloads();
 			res.json(downloads);
@@ -32,7 +32,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error getting downloads: ${err}`);
 		}
 	});
-	router.delete('/system/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+	router.delete('/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
 			await wipeDownloads();
 			res.status(200).send('Download queue emptied completely');
@@ -40,7 +40,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error wiping downloads: ${err}`);
 		}
 	});
-	router.delete('/system/downloads/:uuid', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	router.delete('/downloads/:uuid', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			await removeDownload(req.params.uuid);
 			res.status(200).send('Download removed');
@@ -48,7 +48,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error removing download: ${err}`);
 		}
 	});
-	router.put('/system/downloads/:uuid/retry', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	router.put('/downloads/:uuid/retry', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			await retryDownload(req.params.uuid);
 			res.status(200).send('Download back into queue');
@@ -56,7 +56,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error retrying download: ${err}`);
 		}
 	});
-	router.put('/system/downloads/pause', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+	router.put('/downloads/pause', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
 			await pauseQueue();
 			res.status(200).send('Downloads paused');
@@ -64,7 +64,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error pausing downloads: ${err}`);
 		}
 	});
-	router.put('/system/downloads/start', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+	router.put('/downloads/start', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
 			await startDownloads();
 			res.status(200).send('Downloads starting');
@@ -72,7 +72,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error starting downloads: ${err}`);
 		}
 	});
-	router.get('/system/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+	router.get('/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
 			const blc = await getDownloadBLC();
 			res.status(200).json(blc);
@@ -80,7 +80,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error getting download BLCs : ${err}`);
 		}
 	});
-	router.post('/system/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	router.post('/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			await addDownloadBLC({ type: req.body.type, value: req.body.value});
 			res.status(200).send('Download blacklist criteria added');
@@ -88,7 +88,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error adding download BLC : ${err}`);
 		}
 	});
-	router.delete('/system/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	router.delete('/downloads/blacklist/criterias/:id', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			await removeDownloadBLC(parseInt(req.params.id));
 			res.status(200).send('Download blacklist criteria removed');
@@ -96,7 +96,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error removing download BLC : ${err}`);
 		}
 	});
-	router.delete('/system/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+	router.delete('/downloads/blacklist/criterias', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
 			await emptyDownloadBLC();
 			res.status(200).send('Download blacklist criterias emptied');
@@ -104,7 +104,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error emptying download BLC : ${err}`);
 		}
 	});
-	router.post('/system/downloads/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+	router.post('/downloads/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			await updateAllKaras(req.body.repository);
 			res.status(200).send('Update in progress');
@@ -112,7 +112,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error computing update: ${err}`);
 		}
 	});
-	router.post('/system/downloads/all', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+	router.post('/downloads/all', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			await downloadAllKaras(req.body.repository);
 			res.status(200).send('Download in progress');
@@ -120,7 +120,7 @@ export default function systemDownloadController(router: Router) {
 			res.status(500).send(`Error computing update: ${err}`);
 		}
 	});
-	router.post('/system/downloads/clean', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+	router.post('/downloads/clean', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			await cleanAllKaras(req.body.repository);
 			res.status(200).send('Cleanup in progress');

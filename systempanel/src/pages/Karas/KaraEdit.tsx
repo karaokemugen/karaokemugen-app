@@ -51,7 +51,7 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 	}
 
 	saveNew = (kara) => {
-		axios.post('/api/system/karas', kara)
+		axios.post('/api/karas', kara)
 			.then(() => {
 				this.props.infoMessage(i18next.t('KARA.KARA_CREATED'));
 				this.props.push('/system/km/karas');
@@ -62,7 +62,7 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 	};
 
 	saveUpdate = (kara) => {
-		axios.put(`/api/system/karas/${kara.kid}`, kara)
+		axios.put(`/api/karas/${kara.kid}`, kara)
 			.then(() => {
 				this.props.infoMessage(i18next.t('KARA.KARA_EDITED'));
 				this.props.push('/system/km/karas');
@@ -75,7 +75,7 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 	loadKara = () => {
 		this.props.loading(true);
 		if (this.props.match && this.props.match.params.kid) {
-			axios.get(`/api/system/karas/${this.props.match.params.kid}`)
+			axios.get(`/api/karas/${this.props.match.params.kid}`)
 				.then(res => {
 					var kara = res.data;
 					this.setState({kara: kara, save: this.saveUpdate});

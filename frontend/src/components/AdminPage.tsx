@@ -124,7 +124,7 @@ class AdminPage extends Component<IProps, IState> {
   			command: namecommand
   		};
   	}
-  	axios.put('/api/admin/player', data);
+  	axios.put('/api/player', data);
   }
 
   render() {

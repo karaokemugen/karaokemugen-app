@@ -32,7 +32,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/system/karas/history')
+		axios.get('/api/karas/history')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data});

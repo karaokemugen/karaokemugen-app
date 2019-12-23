@@ -49,7 +49,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 	};
 
 	saveSetting(record, value) {
-		axios.put('/api/system/config', {
+		axios.put('/api/config', {
 			setting: this.expand(record.key, value)
 		})
 			.then(() => this.settingSaved(record.key, value))
@@ -112,7 +112,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 	}
 
 	refresh() {
-		axios.get('/api/system/config')
+		axios.get('/api/config')
 			.then(res => this.setState({config: this.configKeyValue(res.data), error: ''}))
 			.catch(err => this.props.errorMessage(i18next.t('CONFIG.FETCH_ERROR')+ ' ' + err));
 	}
@@ -123,7 +123,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 
 	configBackup() {
 		this.props.loading(true);
-		axios.post('/api/system/config/backup')
+		axios.post('/api/config/backup')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);

@@ -13,6 +13,7 @@ let tuto:any;
 let config:Config;
 let logInfos:Token|undefined;
 let version:Version;
+let modePlaylistID:number;
 
 if (!logInfos) {
 	var token = readCookie('mugenToken');
@@ -92,6 +93,14 @@ class Store extends EventEmmiter {
 
 	setVersion(ver:Version) {
 		version = ver;
+	}
+
+	getModePlaylistID() {
+		return modePlaylistID;
+	}
+
+	setModePlaylistID(modePlaylist:number) {
+		modePlaylistID = modePlaylist;;
 	}
 
 	getLogInfos() {

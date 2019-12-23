@@ -32,7 +32,7 @@ class Ranking extends Component<RankingProps, RankingState> {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/system/karas/ranking')
+		axios.get('/api/karas/ranking')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data});

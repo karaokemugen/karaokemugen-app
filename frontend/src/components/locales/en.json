@@ -393,5 +393,16 @@
 	"INTRO_PUBLIC_MENU_WIDE": "We're almost there! Here's the menu.<br /><br />You can go through this tutorial again with the <i class='fas fa-question-circle'></i> button.<br /><br />The <i class='fas fa-user'></i> button will allow you to edit your profile and see who's logged in.",
 	"INTRO_PUBLIC_LAST": "Okay! Now let's sing!<br /><br />Have fun!<br /><br />Click on Finish.<br />",
 	"NEXT_SONG_MESSAGE": "Coming up next :",
-	"TIME_BEFORE_PLAY": "Airing in {{time}} ({{date}})"
+	"TIME_BEFORE_PLAY": "Airing in {{time}} ({{date}})",
+	"ERROR_CODES": {
+		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
+		"BLC_EMPTY_ERROR": "Unable to empty list of blacklist criterias",
+		"BL_VIEW_FORBIDDEN": "Blacklist could not be viewed",
+		"BL_VIEW_ERROR": "Blacklist view is not allowed for users",
+		"BLC_VIEW_FORBIDDEN": "Blacklist criterias could not be viewed",
+		"BLC_VIEW_ERROR": "Blacklist criterias view is not allowed for users",
+		"BLC_ADD_ERROR": "Blacklist criteria could not be added",
+		"BLC_DELETE_ERROR": "Unable to delete Blacklist criteria"
+	},
+	"HIDDEN_PLAYLIST": "Hidden playlist"
 }

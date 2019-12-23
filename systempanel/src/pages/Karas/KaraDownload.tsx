@@ -148,7 +148,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
 
-		axios.get(`/api/system/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
+		axios.get(`/api/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
 			.then(res => {
 				let karas = res.data.content;
 				karas.forEach((kara) => {
@@ -174,7 +174,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 
 	async api_get_blacklist_criterias() {
 		try {
-			const res = await axios.get('/api/system/downloads/blacklist/criterias');
+			const res = await axios.get('/api/downloads/blacklist/criterias');
 			if(res.data.length)
 			{
 				let criterias = res.data.map(function(criteria){
@@ -256,7 +256,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
 
-				axios.get(`/api/system/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`
+				axios.get(`/api/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`
 					+ this.state.compare)
 			.then(res => {
 				let karas = res.data.content;
@@ -278,7 +278,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 
 	async api_read_kara_queue() {
 		try {
-			const res = await axios.get('/api/system/downloads');
+			const res = await axios.get('/api/downloads');
 			this.setState({karas_queue: res.data});
 		} catch (e) {
 			console.log('Error KaraDownload.js in api_read_kara_queue');

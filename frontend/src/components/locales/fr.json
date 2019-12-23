@@ -414,5 +414,16 @@
     "INTRO_LABEL_SKIP": "Quitter",
 	"INTRO_LABEL_DONE": "Terminer",
 	"NEXT_SONG_MESSAGE": "La suite avec :",
-	"TIME_BEFORE_PLAY": "Diffusion dans {{time}} ({{date}})"
+	"TIME_BEFORE_PLAY": "Diffusion dans {{time}} ({{date}})",
+	"ERROR_CODES": {
+		"WEBAPPMODE_CLOSED_API_MESSAGE": "L'API est désactivé pour le moment",
+		"BLC_EMPTY_ERROR": "Erreur lors la suppression des critères de blacklist",
+		"BL_VIEW_FORBIDDEN": "La blacklist ne peut pas être lue",
+		"BL_VIEW_ERROR": "La vue blacklist n'est pas autorisé pour les utilisateurs",
+		"BLC_VIEW_FORBIDDEN": "Les critères de blacklist ne peuvent pas être lus",
+		"BLC_VIEW_ERROR": "La vue des critères de blacklist n'est pas autorisé pour les utilisateurs",
+		"BLC_ADD_ERROR": "Le critère de blacklist ne peut pas être ajouté",
+		"BLC_DELETE_ERROR": "Erreur lors de la suppression du critère de blacklist"
+	},
+	"HIDDEN_PLAYLIST": "Playlist cachée"
 }

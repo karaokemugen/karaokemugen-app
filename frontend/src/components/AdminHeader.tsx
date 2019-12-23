@@ -57,13 +57,13 @@ class AdminHeader extends Component<IProps, IState> {
   saveMode = (mode:boolean) => {
   	var data = expand('Karaoke.Private', mode);
   	this.setState({ privateMode: mode });
-  	axios.put('/api/admin/settings', { setting: JSON.stringify(data) });
+  	axios.put('/api/settings', { setting: JSON.stringify(data) });
   };
 
   saveOperatorAdd = (songVisibility: boolean) => {
   	var data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
   	this.setState({ songVisibilityOperator: songVisibility });
-  	axios.put('/api/admin/settings', { setting: JSON.stringify(data) });
+  	axios.put('/api/settings', { setting: JSON.stringify(data) });
   };
 
   render() {

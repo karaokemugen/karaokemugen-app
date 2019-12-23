@@ -34,7 +34,6 @@ var tagsTypesList = [
 interface IProps {
 	idPlaylist: number;
 	idPlaylistTo: number;
-	playlistToAddId: number;
 	scope: string;
 	side: number;
 	playlistInfo: DBPL | undefined;
@@ -80,10 +79,10 @@ class PlaylistHeader extends Component<IProps,IState> {
   addRandomKaras = () => {
   	callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', (nbOfRandoms:number) => {
   		axios.get(`${this.props.getPlaylistUrl()}?random=${nbOfRandoms}`).then(randomKaras => {
-  			if (randomKaras.data.data.content.length > 0) {
-  				let textContent = randomKaras.data.data.content.map((e:KaraElement) => <React.Fragment key={e.kid}>{buildKaraTitle(e)} <br /><br /></React.Fragment>);
+  			if (randomKaras.data.content.length > 0) {
+  				let textContent = randomKaras.data.content.map((e:KaraElement) => <React.Fragment key={e.kid}>{buildKaraTitle(e)} <br /><br /></React.Fragment>);
   				callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
-  					var karaList = randomKaras.data.data.content.map((a:KaraElement) => {
+  					var karaList = randomKaras.data.content.map((a:KaraElement) => {
   						return a.kid;
   					}).join();
   					var urlPost = this.props.getPlaylistUrl();
@@ -96,8 +95,8 @@ class PlaylistHeader extends Component<IProps,IState> {
 
   addPlaylist = () => {
   	callModal('prompt', i18next.t('CL_CREATE_PLAYLIST'), '', (playlistName:string) => {
-  		axios.post('/api/admin/playlists', { name: playlistName, flag_visible: false, flag_current: false, flag_public: false }).then(response => {
-  			this.props.changeIdPlaylist(response.data.data);
+  		axios.post('/api/playlists', { name: playlistName, flag_visible: false, flag_current: false, flag_public: false }).then(response => {
+  			this.props.changeIdPlaylist(response.data);
   		});
   	}
   	);
@@ -106,22 +105,22 @@ class PlaylistHeader extends Component<IProps,IState> {
   deletePlaylist = () => {
   	callModal('confirm', i18next.t('CL_DELETE_PLAYLIST', { playlist: (this.props.playlistInfo as DBPL).name }), '', (confirm:boolean) => {
   		if (confirm) {
-			  axios.delete('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist);
-			  this.props.changeIdPlaylist(this.props.playlistToAddId);
+			  axios.delete('/api/playlists/' + this.props.idPlaylist);
+			  this.props.changeIdPlaylist(store.getModePlaylistID());
   		}
   	});
   };
 
   startFavMix = async () => {
-  	var response = await axios.get('/api/public/users/');
-  	var userList = response.data.data.filter((u:User) => (u.type as number) < 2);
+  	var response = await axios.get('/api/users/');
+  	var userList = response.data.filter((u:User) => (u.type as number) < 2);
   	ReactDOM.render(<FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList} />, document.getElementById('modal'));
   };
 
   exportPlaylist = async () => {
-	var url = this.props.idPlaylist === -5 ? '/api/public/favorites' : '/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/export';
+	var url = this.props.idPlaylist === -5 ? '/api/favorites' : '/api/playlists/' + this.props.idPlaylist + '/export';
 	var response = await axios.get(url);
-  	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data.data, null, 4));
+  	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
 	if (dlAnchorElem) {
 		dlAnchorElem.setAttribute('href', dataStr);
@@ -147,19 +146,19 @@ class PlaylistHeader extends Component<IProps,IState> {
   			var name:string;
 			if (file.name.includes('KaraMugen_fav')) {
 				data['favorites'] = fr['result'];
-				url = '/api/public/favorites/import';
+				url = '/api/favorites/import';
 				name = 'Favs';
 			} else {
-				url = '/api/' + this.props.scope + '/playlists/import';
+				url = '/api/playlists/import';
 				data['playlist'] = fr['result'];
 				name = JSON.parse(fr.result as string).PlaylistInformation.name;
 			}
-			var response:{unknownKaras:Array<any>, playlist_id:number} = await axios.post(url, data);
+			var response:{data:{unknownKaras:Array<any>, playlist_id:number}} = await axios.post(url, data);
 			displayMessage('success', i18next.t('PLAYLIST_ADDED', { name: name }));
-			if (response.unknownKaras && response.unknownKaras.length > 0) {
-				displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.unknownKaras.length }));
+			if (response.data.unknownKaras && response.data.unknownKaras.length > 0) {
+				displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.data.unknownKaras.length }));
 			}
-			var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.data.data.playlist_id;
+			var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.data.playlist_id;
 			this.props.changeIdPlaylist(playlist_id);
 		};
 		fr.readAsText(file);
@@ -167,35 +166,45 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
   deleteAllKaras = () => {
-  	axios.put(this.props.getPlaylistUrl().replace('/karas', '') + '/empty');
+	try {
+	  if (this.props.idPlaylist !== -2 || this.props.idPlaylist as number !== -4) {
+		axios.put('/api/blacklist/criterias/empty');
+	  } else if (this.props.idPlaylist as number !== -3) {
+		axios.put('/api/whitelist/empty');
+	  } else {
+		axios.put(this.props.getPlaylistUrl().replace('/karas', '') + '/empty');
+	  }
+	} catch (error) {
+		displayMessage('error', `ERROR_CODES.${error.response.code}`);
+	}
   };
 
   setFlagCurrent = () => {
   	if (!(this.props.playlistInfo as DBPL).flag_current) {
-  		axios.put('/api/admin/playlists/' + this.props.idPlaylist + '/setCurrent');
+  		axios.put('/api/playlists/' + this.props.idPlaylist + '/setCurrent');
   	}
   };
 
   setFlagPublic = () => {
   	if (!(this.props.playlistInfo as DBPL).flag_public) {
-  		axios.put('/api/admin/playlists/' + this.props.idPlaylist + '/setPublic');
+  		axios.put('/api/playlists/' + this.props.idPlaylist + '/setPublic');
   	}
   };
 
   setFlagVisible = () => {
-  	axios.put('/api/admin/playlists/' + this.props.idPlaylist,
+  	axios.put('/api/playlists/' + this.props.idPlaylist,
   		{ name: (this.props.playlistInfo as DBPL).name, flag_visible: !(this.props.playlistInfo as DBPL).flag_visible });
   };
 
   shuffle = async () => {
   	this.props.playlistWillUpdate();
-  	await axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle');
+  	await axios.put('/api/playlists/' + this.props.idPlaylist + '/shuffle');
   	this.props.playlistDidUpdate();
   };
 
   smartShuffle = () => {
   	this.props.playlistWillUpdate();
-  	axios.put('/api/' + this.props.scope + '/playlists/' + this.props.idPlaylist + '/shuffle', { smartShuffle: 1 });
+  	axios.put('/api/playlists/' + this.props.idPlaylist + '/shuffle', { smartShuffle: 1 });
   	this.props.playlistDidUpdate();
   };
 
@@ -262,7 +271,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   				</button> : null
   			}
   			<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
-  				scope={this.props.scope} playlistToAddId={this.props.playlistToAddId} isHeader={true}
+  				scope={this.props.scope} isHeader={true}
   				addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
   			<button
   				title={i18next.t('SELECT_ALL')}
@@ -363,7 +372,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   					}
   				</div>
   			</div> : null
-  	);
+	  );
 
   	return (
   		<React.Fragment>
@@ -380,15 +389,21 @@ class PlaylistHeader extends Component<IProps,IState> {
   							<select className="selectPlaylist"
   								value={this.props.idPlaylist} onChange={(e) => this.props.changeIdPlaylist(Number(e.target.value))}>
   								{(this.props.scope === 'public' && this.props.side === 1 && this.props.config.Frontend.Mode === 1) ?
-  									<option value={this.props.playlistToAddId} ></option> :
+  									<option value={store.getModePlaylistID()} ></option> :
   									this.props.scope === 'public' && this.props.side === 1 ? (
   										<React.Fragment>
   											<option value={-1}></option>
   											<option value={-5}></option>
-  										</React.Fragment>) :
-  										this.props.playlistList && this.props.playlistList.map(playlist => {
-  											return <option key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}</option>;
-  										})
+										</React.Fragment>) :
+										(<React.Fragment>
+											{this.props.playlistList && this.props.playlistList.map(playlist => {
+												return <option key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}</option>;
+											})}
+											{this.props.playlistList && this.props.idPlaylist !== 0 
+												&& this.props.playlistList.filter(playlist => playlist.playlist_id === this.props.idPlaylist).length === 0 ?
+											<option key={this.props.idPlaylist} value={this.props.idPlaylist}>{i18next.t('HIDDEN_PLAYLIST')}</option> : null
+											}
+										</React.Fragment>)
   								}
   							</select>
   						</React.Fragment> : null

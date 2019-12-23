@@ -61,6 +61,30 @@ export const requireRegularUser = (req: any, res: any, next: any) => {
 		: next();
 };
 
+export function optionalAuth(req: any, res: any, next: any) {
+	try {
+		const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
+		req.authToken = token;
+		const onlineToken = req.get('onlineAuthorization');
+		checkValidUser(token, {
+			username: null,
+			token: onlineToken,
+			role: 'user'
+		})
+		.then((user: User) => {
+			req.user = user;
+			next();
+		})
+		.catch(err => {
+			logger.error(`[API] Error checking user : ${JSON.stringify(token)} : ${err}`);
+			res.status(403).send('User logged in unknown');
+		});
+	} catch(_err) {
+		// request has no authToken, continuing
+		next();
+	}
+}
+
 export const requireValidUser = (req: any, res: any, next: any) => {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	const onlineToken = req.get('onlineAuthorization');
@@ -74,8 +98,9 @@ export const requireValidUser = (req: any, res: any, next: any) => {
 			req.user = user;
 			next();
 		})
-		.catch(_err => {
-			res.status(404).send('User logged in unknown');
+		.catch(err => {
+			logger.error(`[API] Error checking user : ${JSON.stringify(token)} : ${err}`);
+			res.status(403).send('User logged in unknown');
 		});
 };
 

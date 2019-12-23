@@ -24,7 +24,7 @@ class Log extends Component<LogProps, LogState> {
 
 	refresh() {
 		this.props.loading(true);
-		Axios.get('/api/system/log')
+		Axios.get('/api/log')
 			.then(res => {
 				this.props.loading(false);
 				this.parseLogs(res.data);

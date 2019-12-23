@@ -124,7 +124,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	}
 
 	getSongtypes = async () => {
-		const res = await axios.get("/api/system/tags", {
+		const res = await axios.get("/api/tags", {
 			params: {
 				type: 3
 			}
@@ -238,7 +238,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					<Upload
-						action="/api/system/karas/importfile"
+						action="/api/karas/importfile"
 						accept="video/*,audio/*"
 						multiple={false}
 						onChange={this.onMediaUploadChange}
@@ -261,7 +261,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					<Upload
-						action="/api/system/karas/importfile"
+						action="/api/karas/importfile"
 						multiple={false}
 						onChange={this.onSubUploadChange}
 						fileList={this.state.subfile}

@@ -15,7 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import store from './store';
 import { Config } from '../../src/types/config';
 import { KaraTag } from '../../src/lib/types/kara'; 
-import { DBSeries } from '../../src/types/database/series';
+import { DBSeries } from '../../src/lib/types/database/series';
 import { DBYear } from '../../src/lib/types/database/kara';
 import { Tag }  from '../../src/lib/types/tag'; 
 import { Tag as FrontendTag }  from './types/tag'; 
@@ -43,8 +43,8 @@ class App extends Component<{}, IState> {
 
 	async parseTags() {
 		try {
-			const response = await axios.get('/api/public/tags');
-			return response.data.data.content.filter((val:Tag) => val.karacount !== null)
+			const response = await axios.get('/api/tags');
+			return response.data.content.filter((val:Tag) => val.karacount !== null)
 				.map((val:{i18n:{[key: string]: string}, tid:string, name:string, types:Array<number|string>, karacount:string}) => {
 				var trad = val.i18n![this.state.navigatorLanguage];
 				return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
@@ -56,8 +56,8 @@ class App extends Component<{}, IState> {
 	}
 
 	async parseSeries() {
-		const response = await axios.get('/api/public/series');
-		return response.data.data.content.map((val:DBSeries) => {
+		const response = await axios.get('/api/series');
+		return response.data.content.map((val:DBSeries) => {
 			return {
 				value: val.sid, label: val.i18n_name, type: ['serie'],
 				aliases: val.aliases, karacount: val.karacount
@@ -66,8 +66,8 @@ class App extends Component<{}, IState> {
 	}
 
 	async parseYears() {
-		const response = await axios.get('/api/public/years');
-		return response.data.data.content.map((val:DBYear) => {
+		const response = await axios.get('/api/years');
+		return response.data.content.map((val:DBYear) => {
 			return { value: val.year, label: val.year, type: ['year'], karacount: val.karacount };
 		});
 	}
@@ -96,10 +96,11 @@ class App extends Component<{}, IState> {
     }
 
     getSettings = async () => {
-    	const res = await axios.get('/api/public/settings');
-		store.setConfig(res.data.data.config);
-		store.setVersion(res.data.data.version);
-    	this.setState({ config: res.data.data.config});
+    	const res = await axios.get('/api/settings');
+		store.setConfig(res.data.config);
+		store.setVersion(res.data.version);
+		store.setModePlaylistID(res.data.state.modePlaylistID);
+    	this.setState({ config: res.data.config});
     };
 
     getNavigatorLanguage() {
@@ -116,7 +117,7 @@ class App extends Component<{}, IState> {
     }
 
     powerOff = () => {
-    	axios.post('/api/admin/shutdown');
+    	axios.post('/api/shutdown');
     	this.setState({ shutdownPopup: true });
     };
 

@@ -8,5 +8,7 @@ export interface DBBLC {
 
 export interface DBBlacklist extends DBKara {
 	blacklisted_at: Date,
-	reason: string
+	reason: string,
+	blc_id: number,
+	blc_type: number
 }
