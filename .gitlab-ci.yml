@@ -82,8 +82,8 @@ pkg_win:
     - build
   script:
     - mkdir -p bin
-    - npm install -g pkg@4.3.8
-    - pkg . -d --targets node10-win-x64 --out-path bin
+    - npm install -g pkg@4.4.2
+    - pkg . -d --targets node12-win-x64 --out-path bin
   only:
     - master
     - next
@@ -104,8 +104,8 @@ pkg_win32:
     - apt-get update
     - apt-get -qq install libc6:i386 libstdc++6:i386
     - mkdir -p bin
-    - npm install -g pkg@4.3.8
-    - pkg . -d --targets node10-win-x86 -o bin/karaokemugen-app32.exe
+    - npm install -g pkg@4.4.2
+    - pkg . -d --targets node12-win-x86 -o bin/karaokemugen-app32.exe
   only:
     - master
     - next
@@ -123,8 +123,8 @@ pkg_osx:
     - build
   script:
     - mkdir -p bin
-    - npm install -g pkg@4.3.8
-    - pkg . -d --targets node10-macos-x64 --out-path bin
+    - npm install -g pkg@4.4.2
+    - pkg . -d --targets node12-macos-x64 --out-path bin
   only:
     - master
     - next
