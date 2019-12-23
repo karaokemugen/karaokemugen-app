@@ -26,6 +26,7 @@ export async function gitUpdate(gitDir: string, gitURL: string, element: string,
 			return null;
 		}
 	} catch(err) {
+		console.log(JSON.stringify(err,null,2))
 		throw Error(err);
 	}
 }
