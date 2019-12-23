@@ -108,6 +108,9 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 			},
 		});
 	} catch(err) {
+		console.log(err);
+		console.log(remoteToken.token);
+		console.log(kid);
 		logger.error(`[RemoteFavorites] Unable to ${action} favorite ${kid} on ${username}'s online account : ${err}`);
 	}
 }
