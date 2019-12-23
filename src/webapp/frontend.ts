@@ -11,32 +11,21 @@ import {createServer} from 'http';
 import { initWS } from '../lib/utils/ws';
 
 // Api routes
-import systemConfigController from '../controllers/system/config';
 import authController from '../controllers/auth';
 import { getState } from '../utils/state';
-import systemDBController from '../controllers/system/database';
-import systemKaraController from '../controllers/system/kara';
-import systemTagController from '../controllers/system/tag';
-import systemSeriesController from '../controllers/system/series';
-import systemUsersController from '../controllers/system/user';
-import systemDownloadController from '../controllers/system/download';
-import adminBlacklistController from '../controllers/frontend/admin/blacklist';
-import adminFavoritesController from '../controllers/frontend/admin/favorites';
-import adminMiscController from '../controllers/frontend/admin/misc';
-import adminPlayerController from '../controllers/frontend/admin/player';
-import adminPlaylistsController from '../controllers/frontend/admin/playlists';
-import adminUserController from '../controllers/frontend/admin/user';
-import adminWhitelistController from '../controllers/frontend/admin/whitelist';
-import publicBlacklistController from '../controllers/frontend/public/blacklist';
-import publicFavoritesController from '../controllers/frontend/public/favorites';
-import publicMiscController from '../controllers/frontend/public/misc';
-import publicPlaylistsController from '../controllers/frontend/public/playlists';
-import publicKaraController from '../controllers/frontend/public/kara';
-import publicPollController from '../controllers/frontend/public/poll';
-import publicUserController from '../controllers/frontend/public/user';
-import publicWhitelistController from '../controllers/frontend/public/whitelist';
-import systemSessionController from '../controllers/system/session';
-import adminSessionController from '../controllers/frontend/admin/session';
+import pollController from '../controllers/frontend/poll';
+import downloadController from '../controllers/frontend/download';
+import userController from '../controllers/frontend/user';
+import whitelistController from '../controllers/frontend/whitelist';
+import blacklistController from '../controllers/frontend/blacklist';
+import favoritesController from '../controllers/frontend/favorites';
+import miscController from '../controllers/frontend/misc';
+import playerController from '../controllers/frontend/player';
+import sessionController from '../controllers/frontend/session';
+import karaController from '../controllers/frontend/kara';
+import tagsController from '../controllers/frontend/tags';
+import seriesController from '../controllers/frontend/series';
+import playlistsController from '../controllers/frontend/playlists';
 
 /** Declare all routers for API types */
 function apiRouter() {
@@ -44,34 +33,20 @@ function apiRouter() {
 
 	// Add auth routes
 	authController(apiRouter);
-	// Add system routes
-	systemConfigController(apiRouter);
-	systemDBController(apiRouter);
-	systemKaraController(apiRouter);
-	systemTagController(apiRouter);
-	systemSeriesController(apiRouter);
-	systemUsersController(apiRouter);
-	systemDownloadController(apiRouter);
-	systemSessionController(apiRouter);
-	// Add public/admin routes
-	adminBlacklistController(apiRouter);
-	adminFavoritesController(apiRouter);
-	adminMiscController(apiRouter);
-	adminPlayerController(apiRouter);
-	adminPlaylistsController(apiRouter);
-	adminUserController(apiRouter);
-	adminWhitelistController(apiRouter);
-	adminSessionController(apiRouter);
-
-	publicBlacklistController(apiRouter);
-	publicFavoritesController(apiRouter);
-	publicMiscController(apiRouter);
-	publicPlaylistsController(apiRouter);
-	publicKaraController(apiRouter);
-	publicPollController(apiRouter);
-	publicUserController(apiRouter);
-	publicWhitelistController(apiRouter);
-
+	downloadController(apiRouter);
+	blacklistController(apiRouter);
+	favoritesController(apiRouter);
+	miscController(apiRouter);
+	playerController(apiRouter);
+	playlistsController(apiRouter);
+	userController(apiRouter);
+	whitelistController(apiRouter);
+	sessionController(apiRouter);
+	karaController(apiRouter);
+	tagsController(apiRouter);
+	seriesController(apiRouter);
+	pollController(apiRouter);
+	
 	return apiRouter;
 }
 

@@ -1,16 +1,64 @@
 import { Router } from "express";
-import { errMessage, OKMessage } from "../../common";
-import { importFavorites, exportFavorites, deleteFavorites, addToFavorites, getFavorites } from "../../../services/favorites";
-import { check } from "../../../lib/utils/validators";
-import { requireWebappLimited } from "../../middlewares/webapp_mode";
-import { updateUserLoginTime, requireAuth, requireValidUser, requireRegularUser } from "../../middlewares/auth";
-import { getLang } from "../../middlewares/lang";
-import { emitWS } from "../../../lib/utils/ws";
+import { errMessage } from "../common";
+import { emitWS } from "../../lib/utils/ws";
+import { createAutoMix, getFavorites, addToFavorites, deleteFavorites, exportFavorites, importFavorites } from "../../services/favorites";
+import { check } from "../../lib/utils/validators";
+import { updateUserLoginTime, requireAdmin, requireValidUser, requireAuth, requireRegularUser } from "../middlewares/auth";
+import { getLang } from "../middlewares/lang";
+import { requireWebappLimited } from "../middlewares/webapp_mode";
 
-export default function publicFavoritesController(router: Router) {
-	router.route('/public/favorites')
+export default function favoritesController(router: Router) {
+
+	router.route('/automix')
 	/**
- * @api {get} /public/favorites View own favorites
+ * @api {post} /automix Generate a automix playlist
+ * @apiName PostMix
+ * @apiGroup Favorites
+ * @apiVersion 2.1.0
+ * @apiPermission admin
+ *
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} users Comma-separated list of usernames to pick favorites from
+ * @apiParam {Number} duration Duration wished for the generatedplaylist in minutes
+ * @apiSuccess {String} message Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 201 OK
+ * "AUTOMIX_CREATED"
+ * @apiError AUTOMIX_ERROR Unable to create the automix playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * "AUTOMIX_ERROR"
+ */
+
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			const validationErrors = check(req.body, {
+				users: {presence: {allowEmpty: false}},
+				duration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}}
+			});
+			if (!validationErrors) {
+				// No errors detected
+				try {
+					await createAutoMix({
+						duration: +req.body.duration,
+						users: req.body.users.split(',')
+					}, req.authToken.username);
+					emitWS('playlistsUpdated');
+					res.status(201).send('AUTOMIX_CREATED');
+				} catch(err) {
+					errMessage('AUTOMIX_ERROR', err);
+					res.status(500).send('AUTOMIX_ERROR');
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+		});
+		router.route('/favorites')
+	/**
+ * @api {get} /favorites View own favorites
  * @apiName GetFavorites
  * @apiVersion 3.0.0
  * @apiGroup Favorites
@@ -20,15 +68,14 @@ export default function publicFavoritesController(router: Router) {
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
- * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
- * @apiSuccess {Number} data/infos/from Starting position of listing
- * @apiSuccess {Number} data/infos/to End position of listing
+ * @apiSuccess {Object[]} content/karas Array of `kara` objects
+ * @apiSuccess {Number} infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} infos/from Starting position of listing
+ * @apiSuccess {Number} infos/to End position of listing
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "data": {
  *       "content": [
  *           {
  *            <See public/karas/[id] object without i18n in tags>
@@ -47,7 +94,6 @@ export default function publicFavoritesController(router: Router) {
  * 			 "from": 0,
  * 			 "to": 120
  *       }
- *   }
  * }
  * @apiError FAVORITES_VIEW_ERROR Unable to fetch list of karaokes in favorites
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
@@ -65,42 +111,30 @@ export default function publicFavoritesController(router: Router) {
 					from: +req.query.from || 0,
 					size: +req.query.size || 9999999
 				});
-				res.json(OKMessage(karas));
+				res.json(karas);
 			} catch(err) {
-				res.status(500).json(errMessage('FAVORITES_VIEW_ERROR',err));
+				errMessage('FAVORITES_VIEW_ERROR',err);
+				res.status(500).send('FAVORITES_VIEW_ERROR');
 			}
 		})
 	/**
- * @api {post} /public/favorites Add karaoke to your favorites
+ * @api {post} /favorites Add karaoke to your favorites
  * @apiName PostFavorites
  * @apiVersion 3.0.0
  * @apiGroup Favorites
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {uuid[]} kid kara IDs to add
- * @apiSuccess {Number} args/kid ID of kara added
- * @apiSuccess {Number} args/kara Name of kara added
- * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} message Message to display
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {
- *   "args": {
- * 		 "kara": "Les Nuls - MV - Vous me subirez",
- *       "kid": "uuid"
- *   },
- *   "code": "FAVORITES_ADDED",
- *   "data": null
- * }
+ * "FAVORITES_ADDED"
  * @apiError FAVORITES_ADD_SONG_ERROR Unable to add songs to the playlist
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * {
- *   "args": null,
- *   "code": "FAVORITES_ADD_SONG_ERROR",
- *   "message": "Karaoke unknown"
- * }
+ * "FAVORITES_ADD_SONG_ERROR"
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
@@ -110,23 +144,21 @@ export default function publicFavoritesController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await addToFavorites(req.authToken.username, req.body.kid);
+					await addToFavorites(req.authToken.username, req.body.kid);
 					emitWS('favoritesUpdated', req.authToken.username);
-					res.json(OKMessage(null,'FAVORITES_ADDED',data));
+					res.status(200).send('FAVORITES_ADDED');
 				} catch(err) {
-					res.status(500).json(errMessage('FAVORITES_ADD_SONG_ERROR',err.message,err.data));
+					errMessage('FAVORITES_ADD_SONG_ERROR', err);
+					res.status(500).send('FAVORITES_ADD_SONG_ERROR');
 				}
-
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.status(400).json(validationErrors);
 			}
 		})
-
-
 	/**
- * @api {delete} /public/favorites/ Delete karaoke from your favorites
+ * @api {delete} /favorites Delete karaoke from your favorites
  * @apiName DeleteFavorites
  * @apiVersion 3.0.0
  * @apiGroup Favorites
@@ -137,21 +169,12 @@ export default function publicFavoritesController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {
- *   "args": {
- *       "playlist_id": 1
- *   },
- *   "code": "FAVORITES_DELETED",
- *   "data": null
- * }
+ * "FAVORITES_DELETED"
  * @apiError FAVORITES_DELETE_ERROR Unable to delete the favorited song
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "FAVORITES_DELETE_ERROR",
- *   "message": "Kara ID unknown"
- * }
+ * "FAVORITES_DELETE_ERROR"
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
@@ -163,18 +186,18 @@ export default function publicFavoritesController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await deleteFavorites(req.authToken.username, req.body.kid );
+					await deleteFavorites(req.authToken.username, req.body.kid );
 					emitWS('favoritesUpdated', req.authToken.username);
-					res.json(OKMessage(null, 'FAVORITES_DELETED', data));
+					res.status(200).send('FAVORITES_DELETED');
 				} catch(err) {
-					res.status(500).json(errMessage('FAVORITES_DELETE_ERROR', err.message, err.data));
+					errMessage('FAVORITES_DELETE_ERROR', err);
+					res.status(500).send('FAVORITES_DELETE_ERROR');
 				}
 			}
-
 		});
-	router.route('/public/favorites/export')
+	router.route('/favorites/export')
 	/**
- * @api {get} /public/favorites/export Export favorites
+ * @api {get} /favorites/export Export favorites
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getFavoritesExport
  * @apiVersion 2.5.0
@@ -185,7 +208,7 @@ export default function publicFavoritesController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "data": {
+ *   "favorites": {
  * 		<See admin/playlists/[id]/export object>
  *   }
  * }
@@ -201,14 +224,15 @@ export default function publicFavoritesController(router: Router) {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
 				const favorites = await exportFavorites(req.authToken.username);
-				res.json(OKMessage(favorites));
+				res.json(favorites);
 			} catch(err) {
-				res.status(500).json(errMessage('FAVORITES_EXPORT_ERROR',err.message,err.data));
+				errMessage('FAVORITES_EXPORT_ERROR', err);
+				res.status(500).send('FAVORITES_EXPORT_ERROR');
 			}
 		});
-	router.route('/public/favorites/import')
+	router.route('/favorites/import')
 	/**
- * @api {post} /public/favorites/import Import favorites
+ * @api {post} /favorites/import Import favorites
  * @apiName postFavoritesImport
  * @apiVersion 2.5.0
  * @apiGroup Favorites
@@ -218,21 +242,12 @@ export default function publicFavoritesController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {
- *   "code": "FAVORITES_IMPORTED",
- *   "data": {
- *       "message": "Favorites imported",
- *       "unknownKaras": []
- *   }
- * }
+ * "FAVORITES_IMPORTED"
  * @apiError FAVORITES_IMPORT_ERROR Unable to import playlist
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "FAVORITES_IMPORT_ERROR",
- *   "message": "No header section"
- * }
+ * "FAVORITES_IMPORT_ERROR"
  */
 		.post(getLang, requireAuth, requireValidUser, requireRegularUser,updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
@@ -240,16 +255,12 @@ export default function publicFavoritesController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await importFavorites(JSON.parse(req.body.favorites), req.authToken.username);
-					const response = {
-						message: 'Favorites imported',
-						unknownKaras: undefined
-					};
-					if (data.karasUnknown && data.karasUnknown.length > 0) response.unknownKaras = data.karasUnknown;
+					await importFavorites(JSON.parse(req.body.favorites), req.authToken.username);
 					emitWS('favoritesUpdated', req.authToken.username);
-					res.json(OKMessage(response,'FAVORITES_IMPORTED'));
+					res.status(200).send('FAVORITES_IMPORTED');
 				} catch(err) {
-					res.status(500).json(errMessage('FAVORITES_IMPORT_ERROR',err));
+					errMessage('FAVORITES_IMPORT_ERROR',err);
+					res.status(500).send('FAVORITES_IMPORT_ERROR');
 				}
 			} else {
 				// Errors detected
@@ -258,5 +269,4 @@ export default function publicFavoritesController(router: Router) {
 			}
 
 		});
-
 }

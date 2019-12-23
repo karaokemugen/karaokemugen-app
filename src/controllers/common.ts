@@ -1,17 +1,7 @@
-export function errMessage(code: any, message?: string, args?: any) {
-	return {
-		code: code,
-		args: args,
-		message: message
-	};
-}
+import logger from "../lib/utils/logger";
 
-export function OKMessage(data: any, code?: any, args?: any) {
-	return {
-		code: code,
-		args: args,
-		data: data,
-	};
+export function errMessage(code: string, message?: string) {
+	logger.error(`[API] ${code} : ${JSON.stringify(message)}`);
 }
 
 /**

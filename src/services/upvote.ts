@@ -16,9 +16,11 @@ export async function addUpvote(plc_id: number, username: string) {
 	try {
 		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {message: 'PLC ID unknown'};
+		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 'UPVOTE_FAILED'};
 		if (plc.username === username) throw {code: 'UPVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
 		if (userList.some(u => u.username === username)) throw {code: 'UPVOTE_ALREADY_DONE'};
+
 		await insertUpvote(plc_id, username);
 		plc.upvotes++;
 		const ret = {
@@ -41,6 +43,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 	try {
 		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {message: 'PLC ID unknown'};
+		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 'UPVOTE_FAILED'};
 		if (plc.username === username) throw {code: 'DOWNVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
 		const users = userList.map(u => u.username);

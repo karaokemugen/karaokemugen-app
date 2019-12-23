@@ -66,15 +66,15 @@ class WelcomePage extends Component<IProps, IState> {
 
 	async checkAppUpdates() {
 		if (store.getLogInfos() && (store.getLogInfos() as Token).role === 'admin') {
-			const res = await axios.get('/api/admin/checkUpdates');
-			if (res.data.data) this.setState({ latestVersion: res.data.data });
+			const res = await axios.get('/api/checkUpdates');
+			if (res.data) this.setState({ latestVersion: res.data });
 		}
 	}
 
   stopAppUpdates = () => {
   	this.closeUpdateBanner();
   	var data = expand('Online.Updates.App', false);
-  	axios.put('/api/admin/settings', { setting: JSON.stringify(data) });
+  	axios.put('/api/settings', { setting: JSON.stringify(data) });
   };
 
   closeUpdateBanner = () => {
@@ -83,10 +83,10 @@ class WelcomePage extends Component<IProps, IState> {
 
   getSessions = async () => {
   	if (store.getLogInfos() && (store.getLogInfos() as Token).role === 'admin') {
-		  const res = await axios.get('/api/admin/sessions');
+		  const res = await axios.get('/api/sessions');
   		this.setState({
-  			sessions: res.data.data,
-  			activeSession: res.data.data.filter((valueSession:Session) => valueSession.active)[0]
+  			sessions: res.data,
+  			activeSession: res.data.filter((valueSession:Session) => valueSession.active)[0]
 		  });
   	}
   };
@@ -97,34 +97,34 @@ class WelcomePage extends Component<IProps, IState> {
   	);
   	var sessionId;
   	if (sessions.length === 0) {
-  		const res = await axios.post('/api/admin/sessions', { name: value });
-  		sessionId = res.data.data;
-  		const sessionsList = await axios.get('/api/admin/sessions');
+  		const res = await axios.post('/api/sessions', { name: value });
+  		sessionId = res.data;
+  		const sessionsList = await axios.get('/api/sessions');
   		this.setState({
-  			sessions: sessionsList.data.data,
-  			activeSession: sessionsList.data.data.filter((valueSession:Session) => valueSession.active)[0]
+  			sessions: sessionsList.data,
+  			activeSession: sessionsList.data.filter((valueSession:Session) => valueSession.active)[0]
   		});
   	} else {
   		this.setState({ activeSession: sessions[0] });
   		sessionId = sessions[0].seid;
-  		axios.post('/api/admin/sessions/' + sessionId);
+  		axios.post('/api/sessions/' + sessionId);
   	}
   };
 
 	majPrivate = async () => {
 		let session = this.state.activeSession as Session;
 		session.private = !(this.state.activeSession as Session).private;
-		await axios.put(`/api/system/sessions/${session.seid}`, session);
+		await axios.put(`/api/sessions/${session.seid}`, session);
 		this.getSessions();
 	};
 
   getCatchphrase = async () => {
-  	const res = await axios.get('/api/public/catchphrase');
+  	const res = await axios.get('/api/catchphrase');
   	this.setState({ catchphrase: res.data });
   };
 
   getNewsFeed = async () => {
-  	const res = await axios.get('/api/public/newsfeed');
+  	const res = await axios.get('/api/newsfeed');
   	const data = res.data;
   	var base = data[0];
   	var appli = data[1];

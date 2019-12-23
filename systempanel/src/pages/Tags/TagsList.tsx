@@ -37,7 +37,7 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/system/tags',  { params: { filter: this.filter }})
+		axios.get('/api/tags',  { params: { filter: this.filter }})
 			.then(res => {
 				this.props.loading(false);
 				this.setState({tags: res.data.content});
@@ -49,7 +49,7 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 	}
 
 	delete = (tagsId) => {
-		axios.delete(`/api/system/tags/${tagsId}`)
+		axios.delete(`/api/tags/${tagsId}`)
 			.then(() => {
 				this.props.warnMessage(i18next.t('TAGS.TAG_DELETED'));
 				this.setState({deleteModal: false, tag: {}});

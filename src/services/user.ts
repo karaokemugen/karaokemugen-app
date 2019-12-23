@@ -270,7 +270,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
-		if (!user.nickname) throw 'Nickname cannot be empty'
+		if (!user.nickname) user.nickname = currentUser.nickname;
 		if (!user.series_lang_mode) user.series_lang_mode = -1;
 		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw 'Invalid series_lang_mode';
 		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw `main_series_lang is not a valid ISO639-2B code (received ${user.main_series_lang})`;
@@ -508,9 +508,12 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 }
 
 /** Create ADMIN user only if security code matches */
-export async function createAdminUser(user: User) {
-	if (user.securityCode !== getState().securityCode) throw `Wrong security code`;
-	return await createUser(user, { admin: true });
+export async function createAdminUser(user: User, remote: boolean, requester: User) {
+	if (requester.type === 0 || user.securityCode === getState().securityCode) {
+		return await createUser(user, { createRemote: remote, admin: true });
+	} else {
+		throw `Wrong security code`;
+	}
 }
 
 /** Create new user (either local or online. Defaults to online) */

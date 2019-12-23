@@ -65,7 +65,7 @@ class LoginModal extends Component<IProps,IState> {
     	} else {
 			if (this.props.scope === 'admin' && store.getConfig().App.FirstRun 
             && axios.defaults.headers.common['authorization'] && username !== 'admin') {
-			url = '/api/admin/users/login';
+			url = '/api/users/login';
 			}
 			if (this.state.forgotPassword && !this.state.onlineSwitch) {
 				data.securityCode = this.state.securityCode;
@@ -126,7 +126,7 @@ class LoginModal extends Component<IProps,IState> {
 				}
     			data.securityCode = this.state.securityCode;
     		}
-    		axios.post('/api/public/users', data)
+    		axios.post('/api/users', data)
     			.then(response => {
     				displayMessage('info', i18next.t('CL_NEW_USER', {username: username}));
     				this.setState({ redBorders: '' });
@@ -147,7 +147,7 @@ class LoginModal extends Component<IProps,IState> {
 
     forgetOnlinePassword = () => {
     	if (this.state.login)
-    		axios.post(`/api/public/users/${this.state.login}@${this.state.serv}/resetpassword`)
+    		axios.post(`/api/users/${this.state.login}@${this.state.serv}/resetpassword`)
     			.then(response => {
     				displayMessage('success', i18next.t('FORGOT_PASSWORD_SUCCESS'));
     			})

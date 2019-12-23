@@ -85,7 +85,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		if (filter === '') {
 			return ({data: []});
 		}
-		return axios.get('/api/system/tags', {
+		return axios.get('/api/tags', {
 			params: {
 				type: type,
 				filter: filter
@@ -97,7 +97,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		if (filter === '') {
 			return ({data: []});
 		}
-		return axios.get('/api/system/series', {
+		return axios.get('/api/series', {
 			params: {
 				filter: filter
 			}

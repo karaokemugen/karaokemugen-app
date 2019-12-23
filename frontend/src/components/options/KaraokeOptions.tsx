@@ -46,7 +46,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 
   saveMysterySongsLabels = async (labels:Array<string>) => {
   	var data = expand('Playlist.MysterySongs.Labels', labels);
-  	axios.put('/api/admin/settings', { setting: JSON.stringify(data) });
+  	axios.put('/api/settings', { setting: JSON.stringify(data) });
   };
 
   onChange = (e:any) => {

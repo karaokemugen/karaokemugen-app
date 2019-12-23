@@ -1,18 +1,23 @@
 import { Router } from "express";
-import { errMessage, OKMessage } from "../../common";
-import { getKaraLyrics, getKara, getKaras } from "../../../services/kara";
-import { updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
-import { requireWebappLimited, requireWebappOpen } from "../../middlewares/webapp_mode";
-import { getLang } from "../../middlewares/lang";
-import { emitWS } from "../../../lib/utils/ws";
-import { addKaraToPlaylist } from "../../../services/playlist";
-import { getConfig } from "../../../lib/utils/config";
-import { postSuggestionToKaraBase } from "../../../services/gitlab";
+import { errMessage } from "../common";
+import { getKaraLyrics, getKara, getKaras, deleteKara, getKaraHistory, getTop50, getKaraPlayed } from "../../services/kara";
+import { updateUserLoginTime, requireAuth, requireValidUser, requireAdmin } from "../middlewares/auth";
+import { requireWebappLimited, requireWebappOpen } from "../middlewares/webapp_mode";
+import { getLang } from "../middlewares/lang";
+import { emitWS } from "../../lib/utils/ws";
+import { addKaraToPlaylist } from "../../services/playlist";
+import { getConfig, resolvedPathTemp } from "../../lib/utils/config";
+import { postSuggestionToKaraBase } from "../../services/gitlab";
+import { updateMedias } from "../../services/download";
+import multer = require("multer");
+import { createKara, editKara } from "../../services/kara_creation";
 
-export default function publicKaraController(router: Router) {
-	router.route('/public/karas/suggest')
+export default function karaController(router: Router) {
+	let upload = multer({ dest: resolvedPathTemp()});
+
+	router.route('/karas/suggest')
 	/**
-	 * @api {post} /public/karas/suggest Suggest a new song to your karaokebase project
+	 * @api {post} /karas/suggest Suggest a new song to your karaokebase project
 	 * @apiName SuggestKara
 	 * @apiVersion 3.0.0
 	 * @apiGroup Karaokes
@@ -22,11 +27,7 @@ export default function publicKaraController(router: Router) {
 	 * @apiSuccess {String} issueURL New issue's URL
 	 * @apiSuccessExample Success-Response:
  	 * HTTP/1.1 200 OK
- 	 * {
- 	 *   "data": {
-	 * 		 "issueURL": "https://lab.shelter.moe/xxx/issues/1234"
-	 *   }
-	 * }
+ 	 * "https://lab.shelter.moe/xxx/issues/1234"
 	 * @apiErrorExample Error-Response:
  	 * HTTP/1.1 500 Internal Server Error
 	 * @apiErrorExample Error-Response:
@@ -36,18 +37,19 @@ export default function publicKaraController(router: Router) {
 		try {
 			if (getConfig().Gitlab.Enabled) {
 				const url = await postSuggestionToKaraBase(req.body.karaName, req.authToken.username);
-				res.json(OKMessage({issueURL: url}));
+				res.status(200).send(url);
 			} else {
-				res.status(403).json(null);
+				res.status(403).json();
 			}
 		} catch(err) {
-			res.status(500).json(err);
+			errMessage('KARA_SUGGESTION_ERROR', err);
+			res.status(500).json();
 		}
 	});
 
-	router.route('/public/karas')
+	router.route('/karas')
 	/**
- * @api {get} /public/karas Get complete list of karaokes
+ * @api {get} /karas Get complete list of karaokes
  * @apiName GetKaras
  * @apiVersion 3.0.0
  * @apiGroup Karaokes
@@ -60,15 +62,14 @@ export default function publicKaraController(router: Router) {
  * @apiParam {String} [searchValue] Value to search for. For `kid` it's a UUID, for `search` it's a string comprised of criterias separated by `!`. Criterias are `s:` for series, `y:` for year et `t:` for tag + type. Example, all songs with tags UUIDs a (singer) and b (songwriter) and year 1990 is `t:a~2,b~8!y:1990`. Refer to tag types to find out which number is which type.
  * @apiParam {Number} [random] If specified, will return a `number` random list of songs
  *
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
- * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
- * @apiSuccess {Number} data/infos/from Starting position of listing
- * @apiSuccess {Number} data/infos/to End position of listing
+ * @apiSuccess {Object[]} content/karas Array of `kara` objects
+ * @apiSuccess {Number} infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} infos/from Starting position of listing
+ * @apiSuccess {Number} infos/to End position of listing
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "data": {
  *       "content": [
  *           {
  *               <See public/karas/:id object without i18n in tags>
@@ -87,7 +88,6 @@ export default function publicKaraController(router: Router) {
  * 			 "from": 0,
  * 			 "to": 120
  *       }
- *   }
  * }
  * @apiError SONG_LIST_ERROR Unable to fetch list of karaokes
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
@@ -110,49 +110,81 @@ export default function publicKaraController(router: Router) {
 					token: req.authToken,
 					random: req.query.random
 				});
-				res.json(OKMessage(karas));
+				res.json(karas);
 			} catch(err) {
-				res.statusCode = 500;
-				res.json(errMessage('SONG_LIST_ERROR',err));
+				errMessage('SONG_LIST_ERROR', err);
+				res.status(500).send('SONG_LIST_ERROR');
+			}
+		})
+		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+			try {
+				await createKara(req.body);
+				res.status(200).send('Kara successfully generated');
+			} catch(err) {
+				res.status(500).send(`Error while generating kara : ${err}`);
 			}
 		});
-	router.route('/public/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
+	router.get('/karas/history', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) =>{
+		try {
+			const karas = await getKaraHistory();
+			res.json(karas);
+		} catch(err) {
+			res.status(500).send(`Error while fetching karas history: ${err}`);
+		}
+	});
+
+	router.get('/karas/ranking', getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) =>{
+		try {
+			const karas = await getTop50(req.authToken, req.lang);
+			res.json(karas);
+		} catch(err) {
+			res.status(500).send(`Error while fetching karas most requested: ${err}`);
+		}
+	});
+
+	router.get('/karas/viewcounts', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+		try {
+			const karas = await getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
+			res.json(karas);
+		} catch(err) {
+			res.status(500).send(`Error while fetching karas most played: ${err}`);
+		}
+	});
+	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
 	/**
- * @api {get} /public/karas/:kid Get song info from database
+ * @api {get} /karas/:kid Get song info from database
  * @apiName GetKaraInfo
  * @apiVersion 3.0.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {uuid} kid Karaoke ID you want to fetch information from
- * @apiSuccess {Object[]} data/authors Karaoke authors' names
- * @apiSuccess {Number} data/created_at In `Date()` format
- * @apiSuccess {Object[]} data/creators Show's creators names
- * @apiSuccess {Number} data/duration Song duration in seconds
- * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
- * @apiSuccess {Number} data/flag_favorites `true` if the song is in the user's favorites, `false`if not.
- * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
- * @apiSuccess {uuid} data/kid Karaoke's unique ID (survives accross database generations)
- * @apiSuccess {Object[]} data/languages Song's languages in ISO639-2B format
- * @apiSuccess {Date} data/lastplayed_at When the song has been played last, in `Date()` format
- * @apiSuccess {Interval} data/lastplayed_ago When the song has been played last, in hours/minutes/seconds ago
- * @apiSuccess {Object[]} data/misc_tags Internal tag list (`TAG_VIDEOGAME`, etc.)
- * @apiSuccess {String} data/requested Number of times the song has been requested.
- * @apiSuccess {String} data/serie Name of series/show the song belongs to
- * @apiSuccess {Object[][]} data/serie_i18n array of array of JSON objects with series' names depending on their language.
- * @apiSuccess {String[]} data/serie_altname Alternative name(s) of series/show this song belongs to
- * @apiSuccess {String} data/serie_orig Original name for the series
- * @apiSuccess {Object[]} data/singers Singers' names, if known.
- * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
- * @apiSuccess {Object[]} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
- * @apiSuccess {String} data/title Song's title
- * @apiSuccess {String} data/mediafile Media's filename
- * @apiSuccess {Number} data/played Counts how many times the song has been played
- * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
+ * @apiSuccess {Object[]} authors Karaoke authors' names
+ * @apiSuccess {Number} created_at In `Date()` format
+ * @apiSuccess {Object[]} creators Show's creators names
+ * @apiSuccess {Number} duration Song duration in seconds
+ * @apiSuccess {Number} flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
+ * @apiSuccess {Number} flag_favorites `true` if the song is in the user's favorites, `false`if not.
+ * @apiSuccess {Number} gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
+ * @apiSuccess {uuid} kid Karaoke's unique ID (survives accross database generations)
+ * @apiSuccess {Object[]} languages Song's languages in ISO639-2B format
+ * @apiSuccess {Date} lastplayed_at When the song has been played last, in `Date()` format
+ * @apiSuccess {Interval} lastplayed_ago When the song has been played last, in hours/minutes/seconds ago
+ * @apiSuccess {Object[]} misc_tags Internal tag list (`TAG_VIDEOGAME`, etc.)
+ * @apiSuccess {String} requested Number of times the song has been requested.
+ * @apiSuccess {String} serie Name of series/show the song belongs to
+ * @apiSuccess {Object[][]} serie_i18n array of array of JSON objects with series' names depending on their language.
+ * @apiSuccess {String[]} serie_altname Alternative name(s) of series/show this song belongs to
+ * @apiSuccess {String} serie_orig Original name for the series
+ * @apiSuccess {Object[]} singers Singers' names, if known.
+ * @apiSuccess {Number} songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
+ * @apiSuccess {Object[]} songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
+ * @apiSuccess {String} title Song's title
+ * @apiSuccess {String} mediafile Media's filename
+ * @apiSuccess {Number} played Counts how many times the song has been played
+ * @apiSuccess {String} year Song's creation year. Empty string is returned if no year is known.
  * HTTP/1.1 200 OK
  * {
- *   "data": [
- *       {
  *           "authors": [
  *               {
  *                   "i18n": {},
@@ -302,31 +334,35 @@ export default function publicKaraController(router: Router) {
  *           "subfile": "ENG - Dokidoki! PreCure - OP - Glitter Force Doki Doki Theme Song.ass",
  *           "title": "Glitter Force Doki Doki Theme Song",
  *           "year": 2017
- *       }
- *   ]
  * }
  * @apiError SONG_VIEW_ERROR Unable to list songs
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "SONG_VIEW_ERROR",
- *   "message": null
- * }
+ * "SONG_VIEW_ERROR"
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
-				const kara = await getKara(req.params.kid,req.authToken,req.lang);
-				res.json(OKMessage(kara));
+				const kara = await getKara(req.params.kid, req.authToken, req.lang);
+				res.json(kara);
 			} catch(err) {
-				res.status(500).json(errMessage('SONG_VIEW_ERROR',err));
+				errMessage('SONG_VIEW_ERROR',err)
+				res.status(500).send('SONG_VIEW_ERROR');
+			}
+		})
+		.delete(getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+			try {
+				const kara = await deleteKara(req.params.kid);
+				res.json(kara);
+			} catch(err) {
+				res.status(500).send('Error while deleting kara: ' + err);
 			}
 		})
 	/**
- * @api {post} /public/karas/:kid Add karaoke to current/public playlist
- * @apiName PostKaras
+ * @api {post} /karas/:kid Add karaoke to current/public playlist
+ * @apiName PatchKaras
  * @apiVersion 3.1.0
  * @apiGroup Playlists
  * @apiPermission public
@@ -338,7 +374,6 @@ export default function publicKaraController(router: Router) {
  * @apiSuccess {String} args/playlist Name of playlist the song was added to
  * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
  * @apiSuccess {String} code Message to display
- * @apiSuccess {String} data See `args` above.
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -367,15 +402,7 @@ export default function publicKaraController(router: Router) {
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * {
- *   "args": {
- *       "kid": "uuid",
- *       "playlist": 1,
- *       "user": "Axel"
- *   },
- *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
- *   "message": "User quota reached"
- * }
+ * "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
@@ -385,16 +412,29 @@ export default function publicKaraController(router: Router) {
 				const data = await addKaraToPlaylist(req.params.kid, req.authToken.username);
 				emitWS('playlistContentsUpdated',data.playlist_id);
 				emitWS('playlistInfoUpdated',data.playlist_id);
-				res.status(201).json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
+				res.status(201).json({
+					data: data,
+					code: 'PLAYLIST_MODE_SONG_ADDED'
+				});
 			} catch(err) {
-				res.status(500).json(errMessage(err.code,err.message,err.data));
+				errMessage(err.code, `${err.message} ${err.data}`);
+				res.status(500).send(err.code);
 			}
-
+		})
+		.put(getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+			try {
+				await editKara(req.body);
+				res.status(200).send('Kara successfully edited');
+			} catch(err) {
+				res.status(500).send(`Error while editing kara: ${err}`);
+			}
 		});
-
-	router.route('/public/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/lyrics')
+	router.post('/karas/importfile', upload.single('file'), (req: any, res: any) => {
+		res.status(200).send(JSON.stringify(req.file));
+	});
+	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/lyrics')
 	/**
- * @api {post} /public/karas/:kid/lyrics Get song lyrics
+ * @api {post} /karas/:kid/lyrics Get song lyrics
  * @apiName GetKarasLyrics
  * @apiVersion 2.5.0
  * @apiGroup Karaokes
@@ -405,7 +445,9 @@ export default function publicKaraController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "data": "Lyrics for this song are not available"
+ *   "lyrics": [
+ * 		"Lyrics for this song are not available"
+ * 	 ]
  * }
  * @apiError LYRICS_VIEW_ERROR Unable to fetch lyrics data
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
@@ -413,18 +455,20 @@ export default function publicKaraController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
- * {
- *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
- * }
+ * "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const kara = await getKaraLyrics(req.params.kid);
-				res.json(OKMessage(kara));
+				res.json(kara);
 			} catch(err) {
-				res.status(500).json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
+				errMessage('LYRICS_VIEW_ERROR',err.message);
+				res.status(500).send('LYRICS_VIEW_ERROR');
 			}
 		});
-
-
+	router.post('/karas/updateMedias', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+			updateMedias(getConfig().Online.Host);
+			res.status(200).send('Medias are being updated, check Karaoke Mugen\'s console to follow its progression');
+		});
+	
 }

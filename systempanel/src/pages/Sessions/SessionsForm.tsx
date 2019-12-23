@@ -66,7 +66,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	}
 
 	exportSession() {
-		axios.get(`/api/system/sessions/${this.props.session.seid}/export`)
+		axios.get(`/api/sessions/${this.props.session.seid}/export`)
 		.then(res => {
 			message.success(i18next.t('SESSIONS.SESSION_EXPORTED'));
 		})

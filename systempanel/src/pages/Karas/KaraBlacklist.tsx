@@ -45,7 +45,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 
 	componentDidMount() {
 		this.props.loading(true);
-		axios.get('/api/system/tags?instance=kara.moe')
+		axios.get('/api/tags?instance=kara.moe')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({
@@ -60,7 +60,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 	}
 
 	refresh() {
-		axios.get('/api/system/downloads/blacklist/criterias')
+		axios.get('/api/downloads/blacklist/criterias')
 			.then(res => {
 				this.setState({criterias: res.data});
 			})
@@ -126,7 +126,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 		}
 
 		this.props.loading(true);
-		axios.post('/api/system/downloads/blacklist/criterias',encodeForm({
+		axios.post('/api/downloads/blacklist/criterias',encodeForm({
 			type:this.state.filter_type,
 			value:this.state.filter_value,
 		}))
@@ -148,7 +148,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 
 	handleCriteriaDelete(id){
 		this.props.loading(true);
-		axios.delete('/api/system/downloads/blacklist/criterias/'+id)
+		axios.delete('/api/downloads/blacklist/criterias/'+id)
 			.then(res => {
 				this.props.loading(false);
 				this.refresh();

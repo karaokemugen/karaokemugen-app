@@ -18,7 +18,7 @@ class OnlineStatsModal extends Component<{},IState> {
 
     onClick = (value:boolean) => {
     	var data = expand('Online.Stats', value);
-    	axios.put('/api/admin/settings', {
+    	axios.put('/api/settings', {
     		setting: JSON.stringify(data)
 		});
 		var element = document.getElementById('modal');

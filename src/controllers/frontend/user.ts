@@ -1,75 +1,213 @@
 import { Router } from "express";
-import { errMessage, OKMessage } from "../../common";
-import { removeRemoteUser, convertToRemoteUser, editUser, findUserByName, updateSongsLeft, createUser, listUsers, createAdminUser, resetRemotePassword } from "../../../services/user";
-import { emitWS } from "../../../lib/utils/ws";
-import { check } from "../../../lib/utils/validators";
-import { updateUserLoginTime, requireAuth, requireValidUser } from "../../middlewares/auth";
-import { requireWebappLimited, requireWebappLimitedNoAuth } from "../../middlewares/webapp_mode";
-import { getLang } from "../../middlewares/lang";
-import multer = require('multer');
-import { resolvedPathTemp } from "../../../lib/utils/config";
-import { deleteUser } from "../../../dao/user";
+import { emitWS } from "../../lib/utils/ws";
+import { errMessage } from "../common";
+import { deleteUser, findUserByName, createUser, editUser, convertToRemoteUser, removeRemoteUser, listUsers, createAdminUser, resetRemotePassword, updateSongsLeft } from "../../services/user";
+import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser, optionalAuth } from "../middlewares/auth";
+import { getLang } from "../middlewares/lang";
+import { check } from "../../lib/utils/validators";
+import multer = require("multer");
+import { resolvedPathTemp } from "../../lib/utils/config";
+import { requireWebappLimited, requireWebappLimitedNoAuth } from "../middlewares/webapp_mode";
 
-export default function publicUserController(router: Router) {
+export default function userController(router: Router) {
 	// Middleware for playlist and files import
-	let upload = multer({ dest: resolvedPathTemp()});
+	const upload = multer({ dest: resolvedPathTemp()});
 
-	router.route('/public/users/:username')
+	router.route('/users')
 	/**
- * @api {get} /public/users/:username View user details (public)
+	 * @api {get} /users List users
+	 * @apiName GetUsers
+	 * @apiVersion 2.5.0
+	 * @apiGroup Users
+	 * @apiPermission public
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiSuccess {Object[]} data User objects
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "users": [
+	 *       {
+	 *            <See users/[username] object
+	 *       },
+	 * 		...
+	 *   ]
+	 * }
+	 * @apiError USER_LIST_ERROR Unable to list users
+	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * {
+	 *   "code": "USER_LIST_ERROR",
+	 *   "message": null
+	 * }
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 403 Forbidden
+	 */
+	.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
+		try {
+			const users = await	listUsers();
+			res.json(users);
+		} catch(err) {
+			errMessage('USER_LIST_ERROR',err);
+			res.series(500).send('USER_LIST_ERROR');
+		}
+	})
+
+	/**
+ * @api {post} /users Create new user
+ * @apiName PostUser
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ *
+ * @apiParam {String} login Login name for the user
+ * @apiParam {String} password Password for the user
+ * @apiParam {String} role `admin` or `user`.
+ * @apiParam {Number} securityCode Security code if `admin` is set to `true`
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * "USER_CREATED"
+ * @apiError USER_CREATE_ERROR Unable to create user
+ * @apiError USER_ALREADY_EXISTS This username already exists
+ * @apiError USER_ALREADY_EXISTS_ONLINE This username already exists on that online instance
+ * @apiError USER_CREATE_ERROR_ONLINE Unable to create the online user
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * "USER_ALREADY_EXISTS"
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+		.post(getLang, optionalAuth, requireWebappLimitedNoAuth, async (req: any, res) => {
+			//Validate form data
+			const validationErrors = check(req.body, {
+				login: {presence: {allowEmpty: false}},
+				password: {presence: {allowEmpty: false}},
+				role: {inclusion: ['user', 'admin']}
+			});
+			if (!validationErrors) {
+				// No errors detected
+				if (req.body.login) req.body.login = unescape(req.body.login.trim());
+				if (req.body.role) req.body.role = unescape(req.body.role);
+				if (req.body.password) req.body.password = unescape(req.body.password);
+				try {
+					if (req.body.role === 'admin' && req.user) {
+						await createAdminUser(req.body, req.body.login.includes('@'), req.user);
+					} else {
+						await createUser(req.body, {createRemote: req.body.login.includes('@')});
+					}
+					res.status(200).send('USER_CREATED');
+				} catch(err) {
+					errMessage(err.code, err.message);
+					res.status(500).send(err.code);
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+		});
+
+	router.route('/users/:username')
+	/**
+ * @api {get} /users/:username View user details
  * @apiName GetUser
- * @apiVersion 2.5.0
+ * @apiVersion 3.0.0
  * @apiGroup Users
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {String} username Username to check details for.
- * @apiSuccess {String} data/login User's login
- * @apiSuccess {String} data/nickname User's nickname
- * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
- * @apiSuccess {Number} data/flag_online Is the user an online account ?
- * @apiSuccess {Number} data/type Type of account (`0` = admin, `1` = user, `2` = guest)
- * @apiSuccess {Number} data/last_login_at Last login time in `Date()` format
- * @apiSuccess {String} data/url User's URL in its profile
- * @apiSuccess {String} data/bio User's bio
+ *
+ * @apiparam {String} username Username to get data from
+ * @apiSuccess {String} login User's login
+ * @apiSuccess {String} nickname User's nickname
+ * @apiSuccess {String} [avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
+ * @apiSuccess {Number} flag_online Is the user an online account ?
+ * @apiSuccess {Number} type Type of account (0 = admin, 1 = user, 2 = guest)
+ * @apiSuccess {Number} last_login Last login time in `Date()` format
+ * @apiSuccess {Number} user_id User's ID in the database
+ * @apiSuccess {String} url User's URL in its profile
+ * @apiSuccess {String} fingerprint User's fingerprint
+ * @apiSuccess {String} bio User's bio
+ * @apiSuccess {String} email User's email
+ * @apiSuccess {Number} series_lang_mode Mode (0-4) for series' names display : -1 = Let KM settings decide, 0 = Original/internal name, 1 = Depending on song's language, 2 = Depending on KM's language, 3 = Depending on user browser's language (default), 4 = Force languages with `main_series_lang` and `fallback_series_lang`
+ * @apiSuccess {String} main_series_lang ISO639-2B code for language to use as main language for series names (in case of mode 4).
+ * @apiSuccess {String} fallback_series_lang ISO639-2B code for language to use as fallback language for series names (in case of mode 4).
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "data": [
- *       {
  *           "avatar_file": "",
  *           "flag_online": false,
  *           "type": 0,
- *           "last_login_at": null,
+ *           "last_login": "2019-01-01T13:34:00.000Z",
  *           "login": "admin",
  *           "nickname": "Administrator",
+ *           "user_id": 1,
  * 			 "url": null,
+ * 			 "email": null,
  * 			 "bio": null,
- *       },
- *   ]
+ * 			 "fingerprint": null,
+ * 			 "series_lang_mode": 4,
+ * 			 "main_series_lang": "fre",
+ * 			 "fallback_series_lang": "eng"
  * }
  * @apiError USER_VIEW_ERROR Unable to view user details
- * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "USER_VIEW_ERROR",
- *   "message": null
- * }
- * @apiErrorExample Error-Response:
- * HTTP/1.1 403 Forbidden
+ * "USER_VIEW_ERROR"
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req: any,res) => {
 			try {
-				const userdata = await findUserByName(req.params.username, {public:true});
-				res.json(OKMessage(userdata));
+				const userdata = await findUserByName(req.params.username, {public: req.authToken.role !== 'admin'});
+				delete userdata.password;
+				res.json(userdata);
 			} catch(err) {
-				res.status(500).json(errMessage('USER_VIEW_ERROR',err));
+				errMessage('USER_VIEW_ERROR', err);
+				res.status(500).send('USER_VIEW_ERROR');
 			}
 		})
-	router.route('/public/users/:username/resetpassword')
+	/**
+ * @api {delete} /users/:username Delete an user
+ * @apiName DeleteUser
+ * @apiVersion 2.5.0
+ * @apiGroup Users
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} username User name to delete
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * "USER_DELETED"
+ * @apiError USER_DELETE_ERROR Unable to delete a user
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			try {
+				await deleteUser(req.params.username);
+				emitWS('usersUpdated');
+				res.status(200).send('USER_DELETED');
+			} catch(err) {
+				errMessage('USER_DELETE_ERROR',err.message);
+				res.status(500).send('USER_DELETE_ERROR');
+			}
+		})
+		.put(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+			try {
+				await editUser(req.body.login, req.body, req.body.avatar, req.authToken.role);
+				res.status(200).send('User edited');
+			} catch(err) {
+				res.status(500).send(`Error editing user: ${err}`);
+			}
+		});
+		router.route('/users/:username/resetpassword')
 		/**
-	 * @api {post} /public/users/:username/resetpassword Reset password (online account only)
+	 * @api {post} /users/:username/resetpassword Reset password (online account only)
 	 * @apiName PostResetPassword
 	 * @apiVersion 3.0.0
 	 * @apiGroup Users
@@ -101,15 +239,15 @@ export default function publicUserController(router: Router) {
 						res.status(500).json(errMessage('USER_RESETPASSWORD_NOTONLINE_ERROR',null));
 					} else {
 						await resetRemotePassword(req.params.username);
-						res.status(200).json(OKMessage(null));
+						res.status(200).json(null);
 					}
 				} catch(err) {
 					res.status(500).json(errMessage('USER_RESETPASSWORD_ERROR',err));
 				}
 			})
-	router.route('/public/myaccount')
+	router.route('/myaccount')
 	/**
- * @api {get} /public/myaccount View own user details
+ * @api {get} /myaccount View own user details
  * @apiName GetMyAccount
  * @apiVersion 3.0.0
  * @apiGroup Users
@@ -166,13 +304,13 @@ export default function publicUserController(router: Router) {
 			try {
 				const userData = await findUserByName(req.authToken.username, {public:false});
 				updateSongsLeft(userData.login);
-				res.json(OKMessage(userData));
+				res.json(userData);
 			} catch(err) {
 				res.status(500).json(errMessage('USER_VIEW_ERROR',err));
 			}
 		})
 	/**
-	 * @api {delete} /public/myaccount Delete your local account
+	 * @api {delete} /myaccount Delete your local account
 	 * @apiName ConvertToLocal
 	 * @apiVersion 2.5.0
 	 * @apiGroup Users
@@ -195,14 +333,14 @@ export default function publicUserController(router: Router) {
 		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				await deleteUser(req.authToken.username);
-				res.json(OKMessage(null,'USER_DELETED'));
+				res.status(200).send('USER_DELETED');
 			} catch(err) {
 				res.status(500).json(errMessage('USER_DELETED_ERROR',err));
 			}
 		})
 
 	/**
- * @api {put} /public/myaccount Edit your own account
+ * @api {put} /myaccount Edit your own account
  * @apiName EditMyAccount
  * @apiVersion 3.0.0
  * @apiGroup Users
@@ -217,23 +355,9 @@ export default function publicUserController(router: Router) {
  * @apiParam {Number} [series_lang_mode] Mode (0-4) for series' names display : -1 = Let KM settings decide, 0 = Original/internal name, 1 = Depending on song's language, 2 = Depending on KM's language, 3 = Depending on user browser's language (default), 4 = Force languages with `main_series_lang` and `fallback_series_lang`
  * @apiParam {String} [main_series_lang] ISO639-2B code for language to use as main language for series names (in case of mode 4).
  * @apiParam {String} [fallback_series_lang] ISO639-2B code for language to use as fallback language for series names (in case of mode 4).
- * @apiSuccess {String} args Username
- * @apiSuccess {String} code Message to display
- * @apiSuccess {Number} user data edited
- *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {
- *   "args": "lol",
- *   "code": "USER_UPDATED",
- *   "data": {
- *       "bio": "lol2",
- *       "email": "lol3@lol.fr",
- *       "login": "test2",
- *       "nickname": "lol",
- *       "url": "http://lol4"
- *   }
- * }
+ * "USER_UPDATED"
  * @apiError USER_UPDATE_ERROR Unable to edit user
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
@@ -252,15 +376,15 @@ export default function publicUserController(router: Router) {
 				if (req.body.url) req.body.url = unescape(req.body.url.trim());
 				if (req.body.nickname) req.body.nickname = unescape(req.body.nickname.trim());
 				//Now we edit user
-				let avatar: Express.Multer.File;
-				if (req.file) avatar = req.file;
+				const avatar: Express.Multer.File = req.file || null;
 				//Get username
 				try {
-					const userdata = await editUser(req.authToken.username,req.body,avatar,req.authToken.role);
+					await editUser(req.authToken.username, req.body, avatar ,req.authToken.role);
 					emitWS('userUpdated',req.authToken.username);
-					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));
+					res.status(200).send('USER_UPDATED');
 				} catch(err) {
-					res.status(500).json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
+					errMessage('USER_UPDATE_ERROR',err.message);
+					res.status(500).send('USER_UPDATE_ERROR');
 				}
 			} else {
 				// Errors detected
@@ -268,9 +392,9 @@ export default function publicUserController(router: Router) {
 				res.status(400).json(validationErrors);
 			}
 		});
-	router.route('/public/myaccount/online')
+	router.route('/myaccount/online')
 		/**
-	 * @api {post} /public/myaccount/online Convert your account to an online one
+	 * @api {post} /myaccount/online Convert your account to an online one
 	 * @apiName ConvertToOnline
 	 * @apiVersion 2.5.0
 	 * @apiGroup Users
@@ -308,23 +432,22 @@ export default function publicUserController(router: Router) {
 				try {
 					const tokens = await convertToRemoteUser(req.authToken, req.body.password, req.body.instance);
 					emitWS('userUpdated',req.authToken.username);
-					res.json(OKMessage(tokens,'USER_CONVERTED'));
+					res.json({
+						code: 'USER_CONVERTED',
+						data: tokens
+					});
 				} catch(err) {
-					if (err.code) {
-						res.status(500).json(errMessage(err.code,err.message));
-					} else {
-						res.status(500).json(errMessage('USER_CONVERT_ERROR',err));
-					}
+					errMessage(err.code || 'USER_CONVERT_ERROR',err)
+					res.status(500).send(err.code || 'USER_CONVERT_ERROR');
 				}
 			} else {
 			// Errors detected
 			// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(400).json(validationErrors);
 			}
 		})
 	/**
-	 * @api {delete} /public/myaccount/online Delete your online account
+	 * @api {delete} /myaccount/online Delete your online account
 	 * @apiName ConvertToLocal
 	 * @apiVersion 2.5.0
 	 * @apiGroup Users
@@ -356,121 +479,18 @@ export default function publicUserController(router: Router) {
 				try {
 					const newToken = await removeRemoteUser(req.authToken, req.body.password);
 					emitWS('userUpdated', req.authToken.username);
-					res.json(OKMessage(newToken,'USER_DELETED_ONLINE'));
+					res.json({
+						code: 'USER_DELETED_ONLINE',
+						data: newToken
+					});
 				} catch(err) {
-					res.status(500).json(errMessage('USER_DELETE_ERROR_ONLINE',err));
+					errMessage('USER_DELETE_ERROR_ONLINE',err);
+					res.status(500).send('USER_DELETE_ERROR_ONLINE');
 				}
 			} else {
 			// Errors detected
 			// Sending BAD REQUEST HTTP code and error object.
-				res.statusCode = 400;
-				res.json(validationErrors);
+				res.status(500).json(validationErrors);
 			}
 		});
-		router.route('/public/users')
-		/**
-	 * @api {get} /public/users List users
-	 * @apiName GetUsers
-	 * @apiVersion 2.5.0
-	 * @apiGroup Users
-	 * @apiPermission public
-	 * @apiHeader authorization Auth token received from logging in
-	 * @apiSuccess {Object[]} data User objects
-	 * @apiSuccessExample Success-Response:
-	 * HTTP/1.1 200 OK
-	 * {
-	 *   "data": [
-	 *       {
-	 *            <See admin/users/[username] object
-	 *       },
-	 * 		...
-	 *   ]
-	 * }
-	 * @apiError USER_LIST_ERROR Unable to list users
-	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
-	 * {
-	 *   "code": "USER_LIST_ERROR",
-	 *   "message": null
-	 * }
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 403 Forbidden
-	 */
-			.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
-				try {
-					const users = await	listUsers();
-					res.json(OKMessage(users));
-				} catch(err) {
-					res.series(500).json(errMessage('USER_LIST_ERROR',err));
-				}
-			})
-
-		/**
-	 * @api {post} /public/users Create new user
-	 * @apiName PostUser
-	 * @apiVersion 3.0.0
-	 * @apiGroup Users
-	 * @apiPermission NoAuth
-	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {String} login Login name for the user
-	 * @apiParam {String} password Password for the user
-	 * @apiParam {Boolean} admin Is it an admin account creation ?
-	 * @apiParam {Number} securityCode Security code if `admin` is set to `true`
-	 * @apiSuccess {String} code Message to display
-	 * @apiSuccess {Boolean} data Returns `true` if success
-	 *
-	 * @apiSuccessExample Success-Response:
-	 * HTTP/1.1 200 OK
-	 * {
-	 *   "code": "USER_CREATED",
-	 *   "data": true
-	 * }
-	 * @apiError USER_CREATE_ERROR Unable to create user
-	 * @apiError USER_ALREADY_EXISTS This username already exists
-	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
-	 * @apiError USER_ALREADY_EXISTS_ONLINE This username already exists on that online instance
-	 * @apiError USER_CREATE_ERROR_ONLINE Unable to create the online user
-	 *
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
-	 * {
-	 *   "args": "Axel",
-	 *   "code": "USER_ALREADY_EXISTS",
-	 *   "message": null
-	 * }
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 403 Forbidden
-	 */
-
-			.post(requireWebappLimitedNoAuth, async (req: any, res: any) => {
-				//Validate form data
-				const validationErrors = check(req.body, {
-					login: {presence: true},
-					password: {presence: true}
-				});
-				if (!validationErrors) {
-					req.body.login = unescape(req.body.login.trim());
-					// No errors detected
-					try {
-						if (req.body.admin) {
-							await createAdminUser(req.body);
-						} else {
-							await createUser(req.body);
-						}
-						res.json(OKMessage(true,'USER_CREATED'));
-					} catch(err) {
-						if (err.code) {
-							res.status(500).json(errMessage(err.code,err.message));
-						} else {
-							res.status(500).json(errMessage('USER_CREATE_ERROR_ONLINE', err));
-						}
-					}
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.status(400).json(validationErrors);
-				}
-			});
-
 }

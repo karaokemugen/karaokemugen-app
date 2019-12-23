@@ -109,7 +109,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 
 
 	dbregen = () => {
-		axios.post('/api/system/db/regenerate')
+		axios.post('/api/db/generate')
 			.then(res => {
 				this.props.infoMessage(res.data);
 			})
@@ -119,7 +119,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 	};
 
 	dbupdate() {
-		axios.post('/api/system/karas/update')
+		axios.post('/api/karas/updateMedias')
 			.then(res => {
 				this.props.infoMessage(res.data);
 			})
@@ -130,7 +130,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 
 	dbdump() {
 		this.props.loading(true);
-		axios.post('/api/system/db/dump')
+		axios.get('/api/db')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);
@@ -143,7 +143,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 
 	dbrestore() {
 		this.props.loading(true);
-		axios.post('/api/system/db/restore')
+		axios.post('/api/db')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);

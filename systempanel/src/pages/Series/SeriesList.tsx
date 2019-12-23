@@ -35,7 +35,7 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/system/series',  { params: { filter: this.filter }})
+		axios.get('/api/series',  { params: { filter: this.filter }})
 			.then(res => {
 				this.props.loading(false);
 				this.setState({series: res.data.content});
@@ -47,7 +47,7 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 	}
 
 	delete = (seriesId) => {
-		axios.delete(`/api/system/series/${seriesId}`)
+		axios.delete(`/api/series/${seriesId}`)
 			.then(() => {
 				this.props.warnMessage(i18next.t('SERIES.SERIE_DELETED'));
 				this.setState({deleteModal: false, serie: {}});

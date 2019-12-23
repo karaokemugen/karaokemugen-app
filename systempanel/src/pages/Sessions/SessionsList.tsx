@@ -29,7 +29,7 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 	}
 
 	refresh() {
-		axios.get('/api/system/sessions')
+		axios.get('/api/sessions')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({sessions: res.data});
@@ -41,12 +41,12 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 	}
 
 	deleteSession(session) {
-		axios.delete('/api/system/sessions/' + session.seid);
+		axios.delete('/api/sessions/' + session.seid);
 		this.refresh();
 	}
 
 	exportSession(session) {
-		axios.get(`/api/system/sessions/${session.seid}/export`)
+		axios.get(`/api/sessions/${session.seid}/export`)
 		.then(res => {
 			this.props.infoMessage(i18next.t('SESSIONS.SESSION_EXPORTED'));
 		})
@@ -58,7 +58,7 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 	majPrivate = (sessionParam:Session) => {
 		let session = sessionParam;
 		session.private = !sessionParam.private;
-		axios.put(`/api/system/sessions/${session.seid}`, session)
+		axios.put(`/api/sessions/${session.seid}`, session)
 			.then(() => {
 				this.props.infoMessage(i18next.t('SESSIONS.SESSION_EDITED'));
 				this.refresh();

@@ -34,7 +34,7 @@ class UserList extends Component<UserListProps, UserListState> {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/system/users')
+		axios.get('/api/users')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({users: res.data});
@@ -46,7 +46,7 @@ class UserList extends Component<UserListProps, UserListState> {
 	}
 
 	delete = (userLogin) => {
-		axios.delete(`/api/system/users/${userLogin}`)
+		axios.delete(`/api/users/${userLogin}`)
 			.then(() => {
 				this.props.warnMessage(i18next.t('USERS.USER_DELETED'));
 				this.setState({deleteModal: false, user: {}});

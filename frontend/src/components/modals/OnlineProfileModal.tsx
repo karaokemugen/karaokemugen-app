@@ -27,10 +27,10 @@ class OnlineProfileModal extends Component<IProps,IState> {
     onClick = async () => {
     	var response:{ token: string; onlineToken: string; };
     	if (this.props.type === 'convert') {
-    		response = await axios.post('/api/public/myaccount/online', { instance: this.state.modalLoginServ, password: this.state.password });
+    		response = await axios.post('/api/myaccount/online', { instance: this.state.modalLoginServ, password: this.state.password });
     		displayMessage('success', i18next.t('PROFILE_CONVERTED'));
     	} else {
-    		response = await axios.delete('/api/public/myaccount/online', {data:{ password: this.state.password }});
+    		response = await axios.delete('/api/myaccount/online', {data:{ password: this.state.password }});
     		displayMessage('success', i18next.t('PROFILE_ONLINE_DELETED'));
     	}
 		store.setLogInfos(response);

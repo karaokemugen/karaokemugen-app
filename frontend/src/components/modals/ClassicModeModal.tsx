@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 class ClassicModeModal extends Component {
 
 	playSong() {
-		axios.post('/api/public/player/play');
+		axios.post('/api/player/play');
 		var element = document.getElementById('modal');
 		if (element) ReactDOM.unmountComponentAtNode(element);
 	}

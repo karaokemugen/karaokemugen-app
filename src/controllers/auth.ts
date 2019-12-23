@@ -57,7 +57,7 @@ export default function authController(router) {
 				});
 			}
 			const token = await checkLogin(req.body.username, req.body.password);
-			res.send(token);
+			res.status(200).send(token);
 		} catch(err) {
 			res.status(401).send(loginErr);
 		}
@@ -104,7 +104,7 @@ export default function authController(router) {
 					const token = await checkLogin(guest, req.body.fingerprint);
 					updateUserFingerprint(guest, req.body.fingerprint);
 					updateLastLoginName(guest);
-					res.send(token);
+					res.status(200).send(token);
 				} else {
 					res.status(500).send({
 						code: 'NO_MORE_GUESTS_AVAILABLE',
@@ -120,7 +120,7 @@ export default function authController(router) {
 	});
 
 	router.get('/auth/checkauth', requireAuth, (req, res) => {
-		res.send(decodeJwtToken(req.get('authorization')));
+		res.status(200).send(decodeJwtToken(req.get('authorization')));
 	});
 	router.post('/admin/users/login', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		/**
@@ -165,7 +165,7 @@ export default function authController(router) {
 			});
 			token.role = 'admin';
 			token.token = createJwtToken(user.login, token.role);
-			res.send(token);
+			res.status(200).send(token);
 		} catch(err) {
 			res.status(401).send(loginErr);
 		}

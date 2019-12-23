@@ -139,18 +139,18 @@ class PublicPage extends Component<IProps,IState> {
 
   // pick a random kara & add it after (not) asking user's confirmation
   getLucky = async () => {
-  	var response = await axios.get('/api/public/karas?filter=' + store.getFilterValue(1)+'&random=1');
-  	if (response.data.data && response.data.data.content && response.data.data.content[0]) {
-  		var chosenOne = response.data.data.content[0].kid;
-  		var response2 = await axios.get('/api/public/karas/' + chosenOne);
-  		callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data.data, true)}), () => {
-  			axios.post('/api/public/karas/' + chosenOne, { requestedby: (store.getLogInfos() as Token).username });
+  	var response = await axios.get('/api/karas?filter=' + store.getFilterValue(1)+'&random=1');
+  	if (response.data && response.data.content && response.data.content[0]) {
+  		var chosenOne = response.data.content[0].kid;
+  		var response2 = await axios.get('/api/karas/' + chosenOne);
+  		callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data, true)}), () => {
+  			axios.post('/api/karas/' + chosenOne, { requestedby: (store.getLogInfos() as Token).username });
   		}, 'lucky');
   	}
   };
 
   changePseudo = async (e:any) => {
-  	var response = await axios.put('/api/public/myaccount', { nickname : e.target.value });
+  	var response = await axios.put('/api/myaccount', { nickname : e.target.value });
   	this.setState({pseudoValue: response.data.nickname});
   };
 

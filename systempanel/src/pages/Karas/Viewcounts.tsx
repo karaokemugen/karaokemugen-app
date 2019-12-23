@@ -33,7 +33,7 @@ class Viewcounts extends Component<ViewcountsProps, ViewcountsState> {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/system/karas/viewcounts')
+		axios.get('/api/karas/viewcounts')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data});

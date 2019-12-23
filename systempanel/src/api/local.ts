@@ -8,7 +8,7 @@ import axios from 'axios';
 // GET karas with/without filter.
 export async function getLocalKaras() {
 	try {
-		const res = await axios.get('/api/system/karas');
+		const res = await axios.get('/api/karas');
 		return res.data.content;
 	} catch (e) {
 		console.log('Error from /api/local.js:getLocalKaras()');
@@ -19,7 +19,7 @@ export async function getLocalKaras() {
 // START karas download queue
 export async function putToDownloadQueueStart() {
 	try {
-		const res = await axios.put('/api/system/downloads/start');
+		const res = await axios.put('/api/downloads/start');
 		return res.data;
 	} catch (e) {
 		console.log('Error from /api/local.js:putToDownloadQueueStart');
@@ -30,7 +30,7 @@ export async function putToDownloadQueueStart() {
 // PAUSE karas download queue
 export async function putToDownloadQueuePause() {
 	try {
-		const res = await axios.put('/api/system/downloads/pause');
+		const res = await axios.put('/api/downloads/pause');
 		return res.data;
 	} catch (e) {
 		console.log('Error from /api/local.js:putToDownloadQueuePause');
@@ -41,7 +41,7 @@ export async function putToDownloadQueuePause() {
 // GET karas download queue
 export async function getDownloadQueue() {
 	try {
-		const res = await axios.get('/api/system/downloads');
+		const res = await axios.get('/api/downloads');
 		return res.data;
 	} catch (e) {
 		console.log('Error from /api/local.js:getDownloadQueue');
@@ -52,7 +52,7 @@ export async function getDownloadQueue() {
 // DELETE all karas download queue
 export async function deleteDownloadQueue() {
 	try {
-		const res = await axios.delete('/api/system/downloads');
+		const res = await axios.delete('/api/downloads');
 		return res.data;
 	} catch (e) {
 		console.log('Error from /api/local.js:deleteDownloadQueue');
@@ -63,7 +63,7 @@ export async function deleteDownloadQueue() {
 // DELETE s pecific karas download queue
 export async function deleteKAraFromDownloadQueue(kid) {
 	try {
-		const res = await axios.delete('/api/system/downloads/'+kid);
+		const res = await axios.delete('/api/downloads/'+kid);
 		return res.data;
 	} catch (e) {
 		console.log('Error from /api/local.js:deleteKAraFromDownloadQueue');
@@ -78,7 +78,7 @@ export async function postToDownloadQueue(repo = 'kara.moe', downloads) {
 			repository: repo,
 			downloads
 		};
-		await axios.post('/api/system/downloads', dl);
+		await axios.post('/api/downloads', dl);
 	} catch (e) {
 		console.log('Error from /api/local.js:postToDownloadQueue');
 		throw e;
@@ -91,7 +91,7 @@ export async function postAllToDownloadQueue(repo = 'kara.moe') {
 		const data = {
 			repository: repo
 		};
-		const res = await axios.post('/api/system/downloads/all', data);
+		const res = await axios.post('/api/downloads/all', data);
 		return res.data;
 	} catch (e) {
 		console.log('Error from /api/local.js:downloadAllToDownloadQueue');
@@ -105,7 +105,7 @@ export async function postUpdateToDownloadQueue(repo = 'kara.moe') {
 		const data = {
 			repository: repo
 		};
-		const res = await axios.post('/api/system/downloads/update', data);
+		const res = await axios.post('/api/downloads/update', data);
 		return res.data;
 	} catch (e) {
 		console.log('Error from /api/local.js:updateAllToDownloadQueue');
@@ -115,7 +115,7 @@ export async function postUpdateToDownloadQueue(repo = 'kara.moe') {
 
 export async function deleteKaraByLocalId(karaId) {
 	try {
-		const response = await axios.delete(`/api/system/karas/${karaId}`);
+		const response = await axios.delete(`/api/karas/${karaId}`);
 		return response.status === 200;
 	} catch (e) {
 		console.log('Error from /api/local.js:deleteKaraByLocalId');
