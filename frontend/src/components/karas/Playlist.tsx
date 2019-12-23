@@ -137,6 +137,7 @@ class Playlist extends Component<IProps, IState> {
   		s.zIndex = 999999999 - value.index;
   		return <li data-kid={kara.kid} key={value.key} style={s}>
   			<KaraLine
+			  	index={value.index}
   				key={kara.kid}
   				kara={kara}
   				scope={this.props.scope}

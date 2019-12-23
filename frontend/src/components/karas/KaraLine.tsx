@@ -29,6 +29,7 @@ interface IProps {
 	playlistCommands?: boolean;
 	i18nTag: {[key: string]: {[key: string]: string}};
 	avatar_file:string;
+	index: number;
 	showVideo: (file:string) => void;
 	checkKara: (id:number|string) => void;
 }
@@ -246,7 +247,8 @@ class KaraLine extends Component<IProps,IState> {
   	var scope = this.props.scope;
   	var idPlaylist = this.props.idPlaylist;
   	return (
-  		<div className={'list-group-item ' + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu' : '')}
+		  <div className={'list-group-item ' + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu ' : ' ')
+			+(this.props.index % 2 === 0 ? 'list-group-item-binaire': '')}
   			style={this.state.addKaraInProgress ? { transform: 'translate(100%)' } : {}}
   			onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
   			{scope === 'public' && logInfos && kara.username !== logInfos.username && kara.flag_visible === false ?
