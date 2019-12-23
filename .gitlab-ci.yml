@@ -105,10 +105,9 @@ pkg_win32:
     - apt-get -qq install libc6:i386 libstdc++6:i386
     - mkdir -p bin
     - npm install -g pkg@4.4.2
-    - pkg . -d --targets node10-win-x86 -o bin/karaokemugen-app32.exe
+    - pkg . -d --targets node12-win-x86 -o bin/karaokemugen-app32.exe
   only:
     - master
-    - next
     - tags
 
 pkg_osx:
@@ -171,7 +170,6 @@ deploy_win32:
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win32/KaraokeMugen-$CI_COMMIT_REF_NAME-win32.zip"
   only:
     - master
-    - next
     - tags
 
 latest_tag:
