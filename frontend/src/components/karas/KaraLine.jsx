@@ -201,7 +201,8 @@ class KaraLine extends Component {
   	var scope = this.props.scope;
   	var idPlaylist = this.props.idPlaylist;
   	return (
-  		<div className={'list-group-item ' + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu' : '')}
+		  <div className={'list-group-item ' + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu ' : ' ')
+			+(this.props.index % 2 === 0 ? 'list-group-item-binaire': '')}
   			style={this.state.addKaraInProgress ? { transform: 'translate(100%)' } : {}}
   			onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
   			{scope === 'public' && kara.username !== logInfos.username && kara.flag_visible === false ?
