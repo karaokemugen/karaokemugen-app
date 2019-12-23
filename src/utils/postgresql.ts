@@ -88,7 +88,7 @@ export async function initPGData() {
 	try {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		if (deburr(binPath) !== binPath || deburr(conf.System.Path.DB) !== conf.System.Path.DB) throw 'DB path or Postgres path contain non-ASCII characters. Please put Karaoke Mugen in a path with no accent characters or the like and try again.';
-		const options = [ 'init','-o', `-U ${conf.Database.prod.superuser} -E UTF8`, '-D', resolve(state.appPath, conf.System.Path.DB, 'postgres/') ];
+		const options = [ 'init','-o', `-U ${conf.Database.prod.superuser} -E UTF8`, '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/') ];
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
