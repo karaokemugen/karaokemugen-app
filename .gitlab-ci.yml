@@ -105,7 +105,7 @@ pkg_win32:
     - apt-get -qq install libc6:i386 libstdc++6:i386
     - mkdir -p bin
     - npm install -g pkg@4.4.2
-    - pkg . -d --targets node12-win-x86 -o bin/karaokemugen-app32.exe
+    - pkg . -d --targets node10-win-x86 -o bin/karaokemugen-app32.exe
   only:
     - master
     - next
