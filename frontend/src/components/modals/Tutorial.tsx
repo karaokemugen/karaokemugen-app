@@ -336,7 +336,6 @@ class Tutorial extends Component<IProps,IState> {
     					backgroundColor: 'hsla(133, 15%, 24%, .97)',
     					overlayColor: 'rgba(0, 0, 0, 0.7)',
     					textColor: '#eee',
-    					width: 650,
     					zIndex: 20000
     				},
     				tooltip : {

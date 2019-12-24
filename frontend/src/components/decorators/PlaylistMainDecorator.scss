@@ -72,18 +72,18 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 
 .playlist-main li.list-group-item.karaSuggestion {
 	background-color: rgba(93, 131, 119, 0.55);
-	text-align: center;
-	cursor: pointer;
-
-	line-height: 55px;
     font-size: 120%;
-	height: 64px;
-	
     padding: 5px;
-	overflow: hidden !important;
-	width: 100% !important;
-	margin-bottom: 100px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: center;
+
+	div a {
+		cursor: pointer;
+	}
 }
+
 .playlist-main .list-group-item.liType {
 	background-color: #607e97;
 	padding-left: 20px;
