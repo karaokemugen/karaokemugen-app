@@ -144,7 +144,7 @@ export default function miscController(router: Router) {
 			const version = await checkForUpdates();
 			res.json(version);
 		});
-		router.route('/public/stats')
+	router.route('/stats')
 /**
  * @api {get} /stats Get statistics
  * @apiName GetStats

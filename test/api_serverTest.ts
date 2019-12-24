@@ -83,12 +83,9 @@ describe('Blacklist', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(response => {
-				strictEqual(response.body.code,'BLC_ADDED');
-				strictEqual(response.body.data.blcriteria_type,data.blcriteria_type);
-				strictEqual(response.body.data.blcriteria_value,data.blcriteria_value);
+				strictEqual(response.text,'BLC_ADDED');
 			});
 	});
 
@@ -101,8 +98,8 @@ describe('Blacklist', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				blc_id = response.body.data[0].blcriteria_id.toString();
-				strictEqual(response.body.data.length >= 1,true);
+				blc_id = response.body[0].blcriteria_id.toString();
+				strictEqual(response.body.length >= 1,true);
 			});
 	});
 
@@ -114,7 +111,7 @@ describe('Blacklist', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.content.length >= 1,true);
+				strictEqual(response.body.content.length >= 1,true);
 			});
 	});
 
@@ -123,11 +120,9 @@ describe('Blacklist', function() {
 			.delete('/api/blacklist/criterias/'+blc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'BLC_DELETED');
-				strictEqual(response.body.data,blc_id);
+				strictEqual(response.text,'BLC_DELETED');
 			});
 	});
 
@@ -138,7 +133,7 @@ describe('Blacklist', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body,'BLC_EMPTIED');
+				strictEqual(response.text,'BLC_EMPTIED');
 			});
 	});
 });
@@ -155,7 +150,7 @@ describe('Favorites', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body,'FAVORITES_ADDED');
+				strictEqual(response.text,'FAVORITES_ADDED');
 			});
 	});
 
@@ -167,9 +162,9 @@ describe('Favorites', function() {
 			.set('Accept', 'application/json')
 			.expect(200)
 			.then(response => {
-				favoritesExport = response.body.data;
-				strictEqual(response.body.data.Header.description,'Karaoke Mugen Favorites List File');
-				strictEqual(response.body.data.Favorites.length, 1);
+				favoritesExport = response.body;
+				strictEqual(response.body.Header.description,'Karaoke Mugen Favorites List File');
+				strictEqual(response.body.Favorites.length, 1);
 			});
 	});
 
@@ -180,8 +175,8 @@ describe('Favorites', function() {
 			.set('Accept', 'application/json')
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.content.length, 1);
-				strictEqual(response.body.data.infos.count, 1);
+				strictEqual(response.body.content.length, 1);
+				strictEqual(response.body.infos.count, 1);
 			});
 	});
 
@@ -197,8 +192,7 @@ describe('Favorites', function() {
 			.send(data)
 			.expect(201)
 			.then(response => {
-				notStrictEqual(response.body.data.playlist_id, null);
-				notStrictEqual(response.body.data.playlist_name, null);
+				strictEqual(response.text, 'AUTOMIX_CREATED');
 			});
 	});
 
@@ -213,7 +207,7 @@ describe('Favorites', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body,'FAVORITES_DELETED');
+				strictEqual(response.text,'FAVORITES_DELETED');
 			});
 	});
 
@@ -229,8 +223,7 @@ describe('Favorites', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'FAVORITES_IMPORTED');
-				strictEqual(response.body.data.message,'Favorites imported');
+				strictEqual(response.text,'FAVORITES_IMPORTED');
 			});
 	});
 });
@@ -244,7 +237,7 @@ describe('Karas information', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				notStrictEqual(response.body.data.content, null);
+				notStrictEqual(response.body.content, null);
 			});
 	});
 
@@ -256,7 +249,7 @@ describe('Karas information', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.content[0].serie, 'Dragon Ball Z');
+				strictEqual(response.body.content[0].serie, 'Dragon Ball Z');
 			});
 	});
 
@@ -268,7 +261,7 @@ describe('Karas information', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.kid, 'a6108863-0ae9-48ad-adb5-cb703651f6bf');
+				strictEqual(response.body.kid, 'a6108863-0ae9-48ad-adb5-cb703651f6bf');
 			});
 	});
 
@@ -280,7 +273,7 @@ describe('Karas information', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.length>=1, true);
+				strictEqual(response.body.length>=1, true);
 			});
 	});
 
@@ -296,8 +289,8 @@ describe('Series and year', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.content.length>=1, true);
-				strictEqual(response.body.data.infos.count, 6);
+				strictEqual(response.body.content.length>=1, true);
+				strictEqual(response.body.infos.count, 6);
 			});
 	});
 
@@ -309,8 +302,8 @@ describe('Series and year', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.content.length>=1, true);
-				strictEqual(response.body.data.infos.count, 6);
+				strictEqual(response.body.content.length>=1, true);
+				strictEqual(response.body.infos.count, 6);
 			});
 	});
 });
@@ -343,7 +336,6 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(response => {
 				strictEqual(response.body.code,'PL_SONG_ADDED');
@@ -360,12 +352,9 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
-				strictEqual(response.body.message,'No karaoke could be added,'+
-				' all are in destination playlist already (PLID : '+playlist+')');
+				strictEqual(response.text,'PL_ADD_SONG_ERROR');
 			});
 	});
 
@@ -379,11 +368,9 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
-				strictEqual(response.body.message,'One of the karaokes does not exist');
+				strictEqual(response.text,'PL_ADD_SONG_ERROR');
 			});
 	});
 
@@ -397,10 +384,9 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
+				strictEqual(response.text,'PL_ADD_SONG_ERROR');
 			});
 	});
 
@@ -412,8 +398,8 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id.toString();
-				strictEqual(response.body.data.content.length >= 1, true);
+				plc_id = response.body.content[response.body.content.length-1].playlistcontent_id.toString();
+				strictEqual(response.body.content.length >= 1, true);
 			});
 	});
 
@@ -486,10 +472,9 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(response => {
-				strictEqual(response.body.code, 'PL_SONG_MOVED');
+				strictEqual(response.text, 'PL_SONG_MOVED');
 			});
 	});
 
@@ -513,8 +498,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.body.code,'PL_DELETE_ERROR');
-				strictEqual(response.body.message,'Playlist '+new_playlist_current_id+' is current. Unable to delete it. Make another playlist current first.');
+				strictEqual(response.text,'PL_DELETE_ERROR');
 			});
 	});
 
@@ -523,11 +507,9 @@ describe('Playlists', function() {
 			.delete('/api/playlists/'+new_playlist_public_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.body.code,'PL_DELETE_ERROR');
-				strictEqual(response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it. Make another playlist public first.');
+				strictEqual(response.text,'PL_DELETE_ERROR');
 			});
 	});
 
@@ -540,10 +522,9 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type',  /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'PL_SONG_DELETED');
+				strictEqual(response.text,'PL_SONG_DELETED');
 			});
 	});
 
@@ -552,11 +533,9 @@ describe('Playlists', function() {
 			.put('/api/playlists/1/shuffle')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'PL_SHUFFLED');
-				strictEqual(response.body.data, '1');
+				strictEqual(response.text,'PL_SHUFFLED');
 			});
 	});
 
@@ -568,9 +547,9 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				playlistExport = response.body.data;
-				strictEqual(response.body.data.Header.description,'Karaoke Mugen Playlist File');
-				notStrictEqual(response.body.data.PlaylistContents.length, 0);
+				playlistExport = response.body;
+				strictEqual(response.body.Header.description,'Karaoke Mugen Playlist File');
+				notStrictEqual(response.body.PlaylistContents.length, 0);
 			});
 	});
 
@@ -602,7 +581,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.body.code,'PL_IMPORT_ERROR');
+				strictEqual(response.text,'PL_IMPORT_ERROR');
 			});
 	});
 
@@ -619,35 +598,47 @@ describe('Playlists', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body,'PL_UPDATED');
+				strictEqual(response.text,'PL_UPDATED');
+			});
+	});
+
+	it('Get list of playlists', function() {
+		return request
+			.get('/api/playlists')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(response => {
+				strictEqual(response.body.length >= 2, true);
+				response.body.forEach(playlist => {
+					if (playlist.flag_current) current_playlist_id = playlist.playlist_id;
+				});
 			});
 	});
 
 	it('Get current playlist information', function() {
 		return request
-			.get('/api/playlists/current')
+			.get('/api/playlists/' + current_playlist_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
-			.expect(200)
-			.then((response) => {
-				current_playlist_id = response.body.data.playlist_id;
-			});
+			.expect(200);
 	});
 
 
 	it('List contents from current playlist', function() {
 		return request
-			.get('/api/playlists/current/karas')
+			.get('/api/playlists/' + current_playlist_id + '/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
 				// We get the PLC_ID of our last karaoke, the one we just added
-				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id;
+				plc_id = response.body.content[response.body.content.length-1].playlistcontent_id;
 				current_plc_id = plc_id.toString();
-				strictEqual(response.body.data.content.length >= 1, true);
+				strictEqual(response.body.content.length >= 1, true);
 			});
 	});
 
@@ -661,11 +652,9 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'PL_CONTENT_MODIFIED');
-				strictEqual(response.body.data, current_plc_id);
+				strictEqual(response.text,'PL_CONTENT_MODIFIED');
 			});
 	});
 
@@ -678,23 +667,9 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'PL_CONTENT_MODIFIED');
-				strictEqual(response.body.data, current_plc_id);
-			});
-	});
-
-	it('Get list of playlists', function() {
-		return request
-			.get('/api/playlists')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.data.length >= 2, true);
+				strictEqual(response.text,'PL_CONTENT_MODIFIED');
 			});
 	});
 
@@ -706,16 +681,15 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.playlist_id, 1);
+				strictEqual(response.body.playlist_id, 1);
 			});
 	});
 
 	it('List public playlist contents', function() {
 		return request
-			.get('/api/playlists/karas')
+			.get('/api/playlists/' + new_playlist_public_id + '/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(200);
 	});
 
@@ -724,10 +698,9 @@ describe('Playlists', function() {
 			.put('/api/playlists/'+playlist+'/setCurrent')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code, 'PL_SET_CURRENT');
+				strictEqual(response.text, 'PL_SET_CURRENT');
 			});
 	});
 
@@ -736,22 +709,20 @@ describe('Playlists', function() {
 			.put('/api/playlists/'+new_playlist_public_id+'/setPublic')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code, 'PL_SET_PUBLIC');
+				strictEqual(response.text, 'PL_SET_PUBLIC');
 			});
 	});
 
 	it('Up/downvote a song in public playlist Error 500', function() {
 		return request
-			.post('/api/playlists/karas/'+current_plc_id+'/vote')
+			.post('/api/playlists/'+new_playlist_public_id+'/karas/'+current_plc_id+'/vote')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.body.code, 'UPVOTE_NO_SELF');
+				strictEqual(response.text, 'UPVOTE_NO_SELF');
 			});
 	});
 
@@ -760,11 +731,9 @@ describe('Playlists', function() {
 			.put('/api/playlists/'+new_playlist_public_id+'/empty')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'PL_EMPTIED');
-				strictEqual(response.body.data,new_playlist_public_id);
+				strictEqual(response.text,'PL_EMPTIED');
 			});
 	});
 
@@ -773,11 +742,9 @@ describe('Playlists', function() {
 			.delete('/api/playlists/'+new_playlist_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'PL_DELETED');
-				strictEqual(response.body.data,new_playlist_id);
+				strictEqual(response.text,'PL_DELETED');
 			});
 	});
 
@@ -789,10 +756,9 @@ describe('Song Poll', function() {
 			.get('/api/songpoll')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
+				strictEqual(response.text, 'POLL_NOT_ACTIVE');
 			});
 	});
 
@@ -805,10 +771,9 @@ describe('Song Poll', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
+				strictEqual(response.text, 'POLL_NOT_ACTIVE');
 			});
 	});
 
@@ -823,8 +788,8 @@ describe('Tags', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.content.length>=1, true);
-				strictEqual(response.body.data.infos.count>=1, true);
+				strictEqual(response.body.content.length>=1, true);
+				strictEqual(response.body.infos.count>=1, true);
 			});
 	});
 });
@@ -841,7 +806,7 @@ describe('Users', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body,'USER_CREATED');
+				strictEqual(response.text,'USER_CREATED');
 			});
 	});
 
@@ -858,7 +823,7 @@ describe('Users', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body,'USER_CREATED');
+				strictEqual(response.text,'USER_CREATED');
 			});
 	});
 
@@ -873,7 +838,7 @@ describe('Users', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body,'USER_UPDATED');
+				strictEqual(response.text,'USER_UPDATED');
 			});
 	});
 
@@ -884,7 +849,7 @@ describe('Users', function() {
 			.set('Accept', 'application/json')
 			.expect(200)
 			.then(response => {
-				response.body.data.forEach(element => {
+				response.body.forEach(element => {
 					if (element.login === 'BakaToTest') {
 						strictEqual(element.type, 1);
 					}
@@ -899,7 +864,7 @@ describe('Users', function() {
 			.set('Accept', 'application/json')
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.nickname, 'toto');
+				strictEqual(response.body.nickname, 'toto');
 			});
 	});
 
@@ -921,7 +886,7 @@ describe('Users', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code, 'USER_DELETED');
+				strictEqual(response.text, 'USER_DELETED');
 			});
 	});
 });
@@ -937,10 +902,9 @@ describe('Whitelist', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(response => {
-				strictEqual(response.body,'WL_SONG_ADDED');
+				strictEqual(response.text,'WL_SONG_ADDED');
 			});
 	});
 
@@ -952,7 +916,7 @@ describe('Whitelist', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.content.length, 1);
+				strictEqual(response.body.content.length, 1);
 			});
 	});
 
@@ -967,7 +931,7 @@ describe('Whitelist', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body,'WL_SONG_DELETED');
+				strictEqual(response.text,'WL_SONG_DELETED');
 			});
 	});
 
@@ -978,7 +942,7 @@ describe('Whitelist', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body,'WL_EMPTIED');
+				strictEqual(response.text,'WL_EMPTIED');
 			});
 	});
 });
@@ -992,7 +956,7 @@ describe('Main', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response =>{
-				strictEqual(response.body.data.config.Frontend.Port, port);
+				strictEqual(response.body.config.Frontend.Port, port);
 				SETTINGS = response.body;
 			});
 	});
@@ -1008,12 +972,12 @@ describe('Main', function() {
 
 	it('Update settings', function() {
 		var data = SETTINGS;
-		data.data.Frontend = { Permissions: {AllowViewWhitelist: false }};
+		data.Frontend = { Permissions: {AllowViewWhitelist: false }};
 		return request
 			.put('/api/settings')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.send(data.data)
+			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(200);
 	});
@@ -1025,10 +989,9 @@ describe('Main - Shutdown', function() {
 			.post('/api/shutdown')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response =>{
-				strictEqual(response.body,'Shutdown in progress');
+				strictEqual(response.text,'Shutdown in progress');
 			});
 	});
 });

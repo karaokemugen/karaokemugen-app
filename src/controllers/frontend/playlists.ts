@@ -826,7 +826,7 @@ export default function playlistsController(router: Router) {
 
 	router.route('/playlists/:pl_id([0-9]+)/shuffle')
 	/**
- * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
+ * @api {put} /playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
  * @apiName putPlaylistShuffle
  * @apiVersion 2.3.0
