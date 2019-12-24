@@ -138,8 +138,7 @@ describe('Blacklist', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'BLC_EMPTIED');
-				strictEqual(response.body.data,null);
+				strictEqual(response.body,'BLC_EMPTIED');
 			});
 	});
 });
@@ -156,8 +155,7 @@ describe('Favorites', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'FAVORITES_ADDED');
-				strictEqual(response.body.data, null);
+				strictEqual(response.body,'FAVORITES_ADDED');
 			});
 	});
 
@@ -215,8 +213,7 @@ describe('Favorites', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'FAVORITES_DELETED');
-				strictEqual(response.body.data, null);
+				strictEqual(response.body,'FAVORITES_DELETED');
 			});
 	});
 
@@ -622,8 +619,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'PL_UPDATED');
-				strictEqual(response.body.data,playlist.toString());
+				strictEqual(response.body,'PL_UPDATED');
 			});
 	});
 
@@ -845,8 +841,7 @@ describe('Users', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'USER_CREATED');
-				strictEqual(response.body.data, true);
+				strictEqual(response.body,'USER_CREATED');
 			});
 	});
 
@@ -863,8 +858,7 @@ describe('Users', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'USER_CREATED');
-				strictEqual(response.body.data, true);
+				strictEqual(response.body,'USER_CREATED');
 			});
 	});
 
@@ -879,8 +873,7 @@ describe('Users', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'USER_UPDATED');
-				strictEqual(response.body.data.nickname, 'toto');
+				strictEqual(response.body,'USER_UPDATED');
 			});
 	});
 
@@ -917,7 +910,7 @@ describe('Users', function() {
 			.set('Accept', 'application/json')
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.data.type, 1);
+				strictEqual(response.body.type, 1);
 			});
 	});
 
@@ -928,7 +921,6 @@ describe('Users', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.args,'BakaToTest');
 				strictEqual(response.body.code, 'USER_DELETED');
 			});
 	});
@@ -948,9 +940,7 @@ describe('Whitelist', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(response => {
-				strictEqual(response.body.code,'WL_SONG_ADDED');
-				strictEqual(response.body.data.kid, data.kid);
-				strictEqual(response.body.data.reason, data.reason);
+				strictEqual(response.body,'WL_SONG_ADDED');
 			});
 	});
 
@@ -977,8 +967,7 @@ describe('Whitelist', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'WL_SONG_DELETED');
-				strictEqual(response.body.data, data.kid);
+				strictEqual(response.body,'WL_SONG_DELETED');
 			});
 	});
 
@@ -989,7 +978,7 @@ describe('Whitelist', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'WL_EMPTIED');
+				strictEqual(response.body,'WL_EMPTIED');
 			});
 	});
 });
