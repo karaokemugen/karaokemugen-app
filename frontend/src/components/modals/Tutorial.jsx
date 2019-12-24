@@ -331,11 +331,8 @@ class Tutorial extends Component {
     					overlayColor: 'rgba(0, 0, 0, 0.7)',
     					textColor: '#eee',
     					borderRadius: '0px',
-    					width: 650,
     					zIndex: 20000,
     					padding: 15,
-    					'min-width': '360px',
-    					'max-width': '500px',
     					'box-shadow': '0 1px 10px hsla(133, 15%, 24%, 0.4)'
     				},
     				tooltip : {
