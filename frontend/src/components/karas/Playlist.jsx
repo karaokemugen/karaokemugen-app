@@ -160,8 +160,16 @@ noRowsRenderer = () => {
 		{this.props.config &&
     this.props.config.Gitlab.Enabled &&
     this.state.idPlaylist === -1 ? (
-				<li className="list-group-item karaSuggestion" onClick={this.karaSuggestion}>
-					{i18next.t('KARA_SUGGESTION_MAIL')}
+				<li className="list-group-item karaSuggestion">
+					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
+					{this.props.scope === 'admin' ?
+						<>
+							<div><a href="/system/km/karas/download">{i18next.t('KARA_SUGGESTION_DOWNLOAD')}</a></div>
+							<div>{i18next.t('KARA_SUGGESTION_OR')}</div>
+							<div><a onClick={this.karaSuggestion}>{i18next.t('KARA_SUGGESTION_GITLAB_ADMIN')}</a></div>
+						</> :
+						<div><a onClick={this.karaSuggestion}>{i18next.t('KARA_SUGGESTION_GITLAB')}</a></div>
+					}
 				</li>
 			) : null}
 	</React.Fragment>; 
@@ -579,14 +587,14 @@ noRowsRenderer = () => {
   };
 
   karaSuggestion() {
-  	callModal('prompt', i18next.t('KARA_SUGGESTION_NAME'), '', function (text) {
+  	callModal('prompt', i18next.t('KARA_SUGGESTION_NAME'), '', (text) => {
   		axios.post('/api/public/karas/suggest', { karaName: text }).then(response => {
   			setTimeout(() => {
   				displayMessage('info', <div><label>{i18next.t('KARA_SUGGESTION_INFO')}</label> <br/> 
   					{i18next.t('KARA_SUGGESTION_LINK', response.data.data.issueURL, 'console')}</div>, '30000');
   			}, 200);
   		});
-  	}, store.getFilterValue(this.props.side));
+  	});
   }
 
   onChangeTags = (type, value) => {
