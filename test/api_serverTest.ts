@@ -623,9 +623,7 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
-			.expect(200).then(response => {	
-				notStrictEqual(response.body.content.length === 0, true);
-			});
+			.expect(200);
 	});
 
 
