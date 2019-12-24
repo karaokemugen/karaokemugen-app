@@ -317,7 +317,7 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 	if (+opts.current && +opts.public) throw 'A playlist cannot be current and public at the same time!';
 	if (+opts.public) await unsetPublicAllPlaylists();
 	if (+opts.current) await unsetCurrentAllPlaylists();
-	return await createPL({
+	let playlist_id = await createPL({
 		name: name,
 		created_at: new Date(),
 		modified_at: new Date(),
@@ -326,6 +326,9 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 		flag_public: opts.public,
 		username: username
 	});
+	if (+opts.current) setState({currentPlaylistID: playlist_id});
+	if (+opts.public) setState({publicPlaylistID: playlist_id});
+	return playlist_id;
 }
 
 /** Get playlist properties */
