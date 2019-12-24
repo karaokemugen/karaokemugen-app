@@ -623,7 +623,9 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
-			.expect(200);
+			.expect(200).then(response => {	
+				notStrictEqual(response.body.content.length === 0, true);
+			});
 	});
 
 
@@ -722,7 +724,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.text, 'UPVOTE_NO_SELF');
+				strictEqual(response.text, 'UPVOTE_FAILED');
 			});
 	});
 
