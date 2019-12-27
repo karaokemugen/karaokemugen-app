@@ -14,7 +14,7 @@ import 'react-virtualized/styles.css';
 require('./Playlist.scss');
 
 const chunksize = 400;
-const _cache = new CellMeasurerCache({ defaultHeight: 50, fixedWidth: true });
+const _cache = new CellMeasurerCache({ defaultHeight: 36, fixedWidth: true });
 let timer;
 
 class Playlist extends Component {
@@ -39,7 +39,7 @@ class Playlist extends Component {
 
 	async componentDidMount() {
 		if (axios.defaults.headers.common['authorization']) {
-			this.initCall();
+			await this.initCall();
 		}
 		getSocket().on('playingUpdated', this.playingUpdate);
 		getSocket().on('playlistsUpdated', this.getPlaylistList);
@@ -65,6 +65,9 @@ class Playlist extends Component {
 			this.playlistContentsUpdated(idPlaylist);
 		});
 		store.addChangeListener('loginUpdated', this.initCall);
+		setTimeout(() => {
+			this.playlistForceRefresh();
+		}, 50);
 	}
 
   initCall = async () => {
@@ -398,9 +401,9 @@ noRowsRenderer = () => {
   	} else {
   		data = karas;
 	  }
-  	_cache.clearAll();
 	  this.setState({ data: data, getPlaylistInProgress: false });
 	  this.playlistForceRefresh();
+	  _cache.clearAll();
   };
 
   playingUpdate = data => {
