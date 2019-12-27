@@ -19,7 +19,7 @@ import { Token } from '../../../../src/lib/types/user';
 require('./Playlist.scss');
 
 const chunksize = 400;
-const _cache = new CellMeasurerCache({ defaultHeight: 50, fixedWidth: true });
+const _cache = new CellMeasurerCache({ defaultHeight: 36, fixedWidth: true });
 let timer:any;
 
 interface IProps {
@@ -87,7 +87,7 @@ class Playlist extends Component<IProps, IState> {
 
 	async componentDidMount() {
 		if (axios.defaults.headers.common['authorization']) {
-			this.initCall();
+			await this.initCall();
 		}
 		getSocket().on('playingUpdated', this.playingUpdate);
 		getSocket().on('playlistsUpdated', this.getPlaylistList);
@@ -120,6 +120,9 @@ class Playlist extends Component<IProps, IState> {
 				this.changeIdPlaylist(idPlaylist);
 			}
 		});
+		setTimeout(() => {
+			this.playlistForceRefresh();
+		}, 50);
 	}
 
   initCall = async () => {
@@ -446,9 +449,9 @@ noRowsRenderer = () => {
 		} else {
 			data = karas;
 		}
-		_cache.clearAll();
 		this.setState({ data: data, getPlaylistInProgress: false });
 		this.playlistForceRefresh();
+		_cache.clearAll();
 	} catch (error) {
 		displayMessage('error', `ERROR_CODES.${error.response.code}`);
 	}
