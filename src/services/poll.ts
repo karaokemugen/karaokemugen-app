@@ -39,6 +39,7 @@ async function displayPoll(winner?: number) {
 			boldWinnerClose = '{\\b0}';
 		}
 		if (isNaN(percentage)) percentage = 0;
+		const percentageStr = percentage.toFixed(2);
 		// If series is empty, pick singer information instead
 
 		let series = kara.serie;
@@ -48,7 +49,7 @@ async function displayPoll(winner?: number) {
 		let songorder: string = `${kara.songorder}`;
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
 
-		return `${boldWinnerOpen}${kara.index}. ${percentage}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes[0].name}${songorder} - ${kara.title}${boldWinnerClose}`;
+		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes[0].name}${songorder} - ${kara.title}${boldWinnerClose}`;
 	})
 	const voteMessage = winner
 		? i18n.t('VOTE_MESSAGE_SCREEN_WINNER')
