@@ -82,7 +82,9 @@ async function buildInstanceStats() {
 		si.diskLayout()
 	]);
 	let total_disk_size = 0;
-	disks.forEach(d => { total_disk_size += d.size});
+	disks.forEach(d => {
+		total_disk_size += d.size;
+	});
 	return {
 		config: {...conf},
 		instance_id: await getInstanceID(),

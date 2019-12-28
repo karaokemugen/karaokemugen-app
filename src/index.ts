@@ -111,7 +111,7 @@ async function main() {
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	const tempInput = resolve(resolvedPathTemp(), 'input.conf');
 	logger.debug(`[Launcher] Copying input.conf to ${tempInput}`);
-	await asyncCopyAlt(join(__dirname, '../assets/input.conf'), tempInput)
+	await asyncCopyAlt(join(__dirname, '../assets/input.conf'), tempInput);
 
 	const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
 	logger.debug(`[Launcher] Copying default background to ${tempBackground}`);
