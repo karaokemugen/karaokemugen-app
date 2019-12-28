@@ -9,7 +9,7 @@ import {playerEnding} from '../services/player';
 import {getID3} from './id3tag';
 import mpv from 'node-mpv-km';
 import {promisify} from 'util';
-import {endPoll} from '../services/poll';
+import {endPoll, displayPoll} from '../services/poll';
 import {getState, setState} from '../utils/state';
 import execa from 'execa';
 import semver from 'semver';
@@ -332,9 +332,10 @@ async function startmpv() {
 			playerState.mediaType === 'song')
 			displaySongInfo(playerState.currentSongInfos);
 		// Display KM's banner if position reaches halfpoint in the song
+		const state = getState();
 		if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
 		!displayingInfo &&
-		playerState.mediaType === 'song' && !getState().songPoll) displayInfo(8000);
+		playerState.mediaType === 'song' && state.songPoll) displayInfo(8000);
 		const conf = getConfig();
 		// Stop poll if position reaches 10 seconds before end of song
 		if (Math.floor(position) >= Math.floor(playerState.duration - 10) &&
@@ -481,7 +482,9 @@ export async function stop(): Promise<PlayerState> {
 		throw err;
 	}
 	await loadBackground();
-	if (!getState().songPoll) displayInfo();
+	getState().songPoll
+		? displayPoll()
+		: displayInfo();
 	setState({player: playerState});
 	return playerState;
 }
