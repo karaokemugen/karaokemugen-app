@@ -13,7 +13,7 @@ const medias = {
 	Outros: [] as Media[],
 	Encores: [] as Media[],
 	Jingles: [] as Media[],
-}
+};
 
 const currentMedias = {};
 

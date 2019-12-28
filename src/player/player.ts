@@ -54,7 +54,7 @@ function emitPlayerState() {
 
 async function ensureRunning() {
 	try {
-		const starts = []
+		const starts = [];
 		if (!player.isRunning()) starts.push(player.start());
 		if (monitorEnabled && !playerMonitor.isRunning()) starts.push(playerMonitor.start());
 		await Promise.all(starts);
@@ -330,7 +330,7 @@ async function startmpv() {
 		if (position >= (playerState.duration - 8) &&
 			!displayingInfo &&
 			playerState.mediaType === 'song')
-				displaySongInfo(playerState.currentSongInfos);
+			displaySongInfo(playerState.currentSongInfos);
 		// Display KM's banner if position reaches halfpoint in the song
 		if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
 		!displayingInfo &&
@@ -481,7 +481,7 @@ export async function stop(): Promise<PlayerState> {
 		throw err;
 	}
 	await loadBackground();
-	if (!getState().songPoll) await displayInfo();
+	if (!getState().songPoll) displayInfo();
 	setState({player: playerState});
 	return playerState;
 }
