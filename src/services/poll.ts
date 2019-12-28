@@ -26,7 +26,7 @@ on('stateUpdated', (state: State) => {
 	if (!state.songPoll === false && poll.length > 0) stopPoll();
 });
 
-export async function displayPoll(winner?: number) {
+async function displayPoll(winner?: number) {
 	const data = await getPoll({role: 'admin', username: 'admin'}, 0, 999999999);
 	let maxVotes = 0;
 	data.poll.forEach(s => maxVotes = maxVotes + s.votes);
