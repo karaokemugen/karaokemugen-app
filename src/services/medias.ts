@@ -75,10 +75,15 @@ export function getSingleMedia(type: MediaType): Media {
 	if (type === 'Sponsors') return sample(medias.Jingles.filter(m => m.series === 'Sponsor'));
 	// If a default file is provided, search for it. If undefined or not found, pick one from a random series
 	const series = sample(currentMedias[type].map((m: Media) => m.series));
-	const media =
-		currentMedias[type].find((m: Media) => m.file === getConfig().Playlist.Medias[type].File)
+	let media = null;
+	//Jingles do not have a specific file to use in options
+	if (type !== 'Jingles') {
+		media = sample(currentMedias[type].filter((m: Media) => m.series === series));
+	} else {
+		media = currentMedias[type].find((m: Media) => m.file === getConfig().Playlist.Medias[type].File)
 		||
 		sample(currentMedias[type].filter((m: Media) => m.series === series));
+	}
 	//Let's remove the serie of the jingle we just selected so it won't be picked again next time.
 	currentMedias[type] = currentMedias[type].filter((m: Media) => m.series !== media.series);
 	logger.info(`[Player] ${type} time !`);
