@@ -157,6 +157,7 @@ export async function addPollVote(index: number, token: Token) {
 /** Start poll system */
 export async function startPoll() {
 	const conf = getConfig();
+	setState({songPoll: true});
 	if (poll.length > 0) {
 		logger.info('[Poll] Unable to start poll, another one is already in progress');
 		return false;
