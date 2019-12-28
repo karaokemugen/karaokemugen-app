@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "bundle.js",
   "scripts": {
-    "dev": "rm -rf ./build/ && npx parcel watch ./src/index.html --out-dir ./build/",
-    "build": "rm -rf ./build/ && npx parcel build ./src/index.html --out-dir ./build/"
+    "dev": "npx rimraf ./build/ && npx parcel watch ./src/index.html --out-dir ./build/",
+    "build": "npx rimraf ./build/ && npx parcel build ./src/index.html --out-dir ./build/"
   },
   "dependencies": {
     "autoprefixer": "^9.7.3",
