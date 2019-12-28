@@ -40,7 +40,9 @@ async function displayPoll(winner?: number) {
 			boldWinnerClose = '{\\b0}';
 		}
 		if (isNaN(percentage)) percentage = 0;
-		const percentageStr = percentage.toFixed(2);
+		const percentageStr = percentage !== Math.floor(percentage)
+			? percentage.toFixed(2)
+			: +percentage;
 		// If series is empty, pick singer information instead
 
 		let series = kara.serie;
