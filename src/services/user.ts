@@ -444,7 +444,8 @@ export async function resetRemotePassword(user: string) {
 	try {
 		await got.post(`https://${instance}/api/users/${username}/resetpassword`);
 	} catch (err) {
-		logger.error(`[RemoteUser] Could not trigger reset password for ${user} : ${err}`);
+
+		logger.error(`[RemoteUser] Could not trigger reset password for ${user} : ${err.response ? err.response.body : err}`);
 		throw err;
 	}
 }
@@ -512,7 +513,7 @@ export async function createAdminUser(user: User, remote: boolean, requester: Us
 	if (requester.type === 0 || user.securityCode === getState().securityCode) {
 		return await createUser(user, { createRemote: remote, admin: true });
 	} else {
-		throw `Wrong security code`;
+		throw 'Wrong security code';
 	}
 }
 
@@ -617,24 +618,24 @@ async function updateGuestAvatar(user: User) {
 		const tempFile = resolve(await resolvedPathTemp(), bundledAvatarFile);
 		let buffer = readFileSync(bundledAvatarPath);
 		writeFile(tempFile, buffer, null, () => {
-				editUser(user.login, user, {
-					fieldname: null,
-					path: tempFile,
-					originalname: null,
-					encoding: null,
-					mimetype: null,
-					destination: null,
-					filename: null,
-					buffer: null,
-					size: null,
-					location: null
-				} , 'admin', {
-					renameUser: false,
-					editRemote: false
-				}).catch((err) => {
-					logger.error(`[User] Unable to change guest avatar for ${user.login} : ${JSON.stringify(err)}`);
-				});
+			editUser(user.login, user, {
+				fieldname: null,
+				path: tempFile,
+				originalname: null,
+				encoding: null,
+				mimetype: null,
+				destination: null,
+				filename: null,
+				buffer: null,
+				size: null,
+				location: null
+			} , 'admin', {
+				renameUser: false,
+				editRemote: false
+			}).catch((err) => {
+				logger.error(`[User] Unable to change guest avatar for ${user.login} : ${JSON.stringify(err)}`);
 			});
+		});
 
 	}
 }

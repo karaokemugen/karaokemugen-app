@@ -50,7 +50,7 @@ async function displayPoll(winner?: number) {
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
 
 		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes[0].name}${songorder} - ${kara.title}${boldWinnerClose}`;
-	})
+	});
 	const voteMessage = winner
 		? i18n.t('VOTE_MESSAGE_SCREEN_WINNER')
 		: i18n.t('VOTE_MESSAGE_SCREEN');
@@ -117,7 +117,7 @@ export async function addPollVoteIndex(index: number, nickname: string) {
 		await addPollVote(index, {
 			username: nickname,
 			role: 'guest',
-		})
+		});
 		return 'POLL_VOTED';
 	} catch(err) {
 		throw err.code;
