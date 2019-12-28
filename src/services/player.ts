@@ -231,9 +231,12 @@ async function next() {
 		} else if (conf.Karaoke.StreamerMode.Enabled) {
 			setState({currentRequester: null});
 			const kara = await getCurrentSong();
-			stopPlayer(true);
-			displaySongInfo(kara.infos, 10000000);
-			if (conf.Karaoke.Poll.Enabled) await startPoll();
+			await stopPlayer(true);
+			if (conf.Karaoke.Poll.Enabled) {
+				await startPoll();
+			} else {
+				displaySongInfo(kara.infos, 10000000, true);
+			}
 			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
 				if (getState().status === 'stop') await playPlayer(true);
