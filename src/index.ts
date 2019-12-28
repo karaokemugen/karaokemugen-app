@@ -91,12 +91,16 @@ async function main() {
 	await configureLogger(dataPath, !!argv.debug, true);
 	await initConfig(argv);
 	let config = getConfig();
+	const publicConfig = getConfig();
+	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
+	publicConfig.App.JwtSecret = 'xxxxx';
+	publicConfig.App.InstanceID = 'xxxxx';
 	await parseCommandLineArgs(argv);
 	logger.debug(`[Launcher] AppPath : ${appPath}`);
 	logger.debug(`[Launcher] DataPath : ${dataPath}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
-	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(config, null, 2)}`);
+	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(publicConfig, null, 2)}`);
 	logger.debug(`[Launcher] Initial state : ${JSON.stringify(state, null, 2)}`);
 
 	// Checking paths, create them if needed.
