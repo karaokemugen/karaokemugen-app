@@ -199,7 +199,7 @@ export async function playerEnding() {
 			}
 		}
 	} catch(err) {
-		logger.error('[Player] Unable to end play properly, stopping.')
+		logger.error('[Player] Unable to end play properly, stopping.');
 		stopPlayer(true);
 	}
 }
