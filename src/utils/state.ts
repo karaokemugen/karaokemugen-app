@@ -10,7 +10,7 @@ let state: State = {
 	currentRequester: null,
 	currentlyPlayingKara: null,
 	currentSong: null,
-	counterToJingle: 1,
+	counterToJingle: 0,
 	introPlayed: false,
 	status: 'stop', // [stop,play,pause] // general engine status
 	private: true, // Karaoke Mode
@@ -68,7 +68,7 @@ export function getState() {
 export function getPublicState() {
 	return {
 		modePlaylistID: state.modePlaylistID
-	}	
+	};
 }
 
 /** Set one or more settings in app state */
