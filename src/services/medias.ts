@@ -77,7 +77,7 @@ export function getSingleMedia(type: MediaType): Media {
 	const series = sample(currentMedias[type].map((m: Media) => m.series));
 	let media = null;
 	//Jingles do not have a specific file to use in options
-	if (type !== 'Jingles') {
+	if (type === 'Jingles') {
 		media = sample(currentMedias[type].filter((m: Media) => m.series === series));
 	} else {
 		media = currentMedias[type].find((m: Media) => m.file === getConfig().Playlist.Medias[type].File)
