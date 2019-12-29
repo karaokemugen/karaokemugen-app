@@ -14,6 +14,7 @@ import { PollResults, PollItem } from '../types/poll';
 import { on } from '../lib/utils/pubsub';
 import { State } from '../types/state';
 import i18n from 'i18next';
+import { sayTwitch } from '../utils/twitch';
 const sleep = promisify(setTimeout);
 
 let poll: PollItem[] = [];
@@ -75,7 +76,11 @@ export async function timerPoll() {
 export async function endPoll() {
 	if (poll.length > 0) {
 		const winner = await getPollResults();
-		if (getConfig().Karaoke.StreamerMode.Enabled && getState().status !== 'play') displayPoll(winner.index);
+		const streamConfig = getConfig().Karaoke.StreamerMode;
+		if (streamConfig.Enabled) {
+			if (getState().status !== 'play') displayPoll(winner.index);
+			if (streamConfig.Twitch.Channel) sayTwitch(`Poll winner : ${winner.kara} (${winner.votes} votes)`);
+		}
 		pollEnding = true;
 		logger.debug(`[Poll] Ending poll with ${JSON.stringify(winner)}`);
 		emitWS('songPollResult', winner);
