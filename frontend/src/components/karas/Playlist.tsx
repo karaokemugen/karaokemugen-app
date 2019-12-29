@@ -391,7 +391,10 @@ noRowsRenderer = () => {
 	var stateData = this.state.data as KaraList;
   	var data:any = {getPlaylistInProgress: true};
   	if (searchType) {
-  		data.searchType = searchType;
+		data.searchType = searchType;
+		data.data = this.state.data;
+		data.data.infos.from = 0;
+		data.scrollToIndex = 0;
   	} else if (stateData && stateData.infos && stateData.infos.from == 0) {
   		data.searchType = undefined;
   	}

@@ -59,7 +59,7 @@ class PublicPage extends Component<IProps,IState> {
 		};
 		if (!store.getLogInfos() || !(store.getLogInfos() as Token).token) {
 			this.openLoginOrProfileModal();
-		} else if (this.props.config.Frontend.Mode === 1) {
+		} else if (this.props.config.Frontend.Mode === 1 && is_touch_device()) {
 			callModal('confirm', i18next.t('WEBAPPMODE_LIMITED_NAME'),
 				(<React.Fragment>
 					<div className="text">
