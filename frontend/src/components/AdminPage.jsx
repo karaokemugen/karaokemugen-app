@@ -117,6 +117,7 @@ class AdminPage extends Component {
   					config={this.props.settings.config}
   					toggleProfileModal={this.openLoginOrProfileModal}
   					setOptionMode={() => {
+						if (!this.state.options) this.props.getSettings();
   						this.setState({ options: !this.state.options });
   						store.getTuto() && store.getTuto().move(1);
   					}}

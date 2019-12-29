@@ -131,7 +131,7 @@ class App extends Component {
     						<Route path="/admin" render={(props) => <AdminPage {...props}
     							navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings}
     							powerOff={this.powerOff} tags={this.state.tags}
-    							showVideo={this.showVideo} />} />
+    							showVideo={this.showVideo} getSettings={this.getSettings}/>} />
     						<Route exact path="/" render={(props) => <PublicPage {...props}
     							navigatorLanguage={this.state.navigatorLanguage} settings={this.state.settings}
     							tags={this.state.tags} showVideo={this.showVideo} />} />
