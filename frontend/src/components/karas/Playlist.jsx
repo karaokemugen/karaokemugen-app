@@ -339,7 +339,10 @@ noRowsRenderer = () => {
   getPlaylist = async (searchType) => {
   	var data = {getPlaylistInProgress: true};
   	if (searchType) {
-  		data.searchType = searchType;
+		data.searchType = searchType;
+		data.data = this.state.data;
+		data.data.infos.from = 0;
+		data.scrollToIndex = 0;
   	} else if (this.state.data && this.state.data.infos && this.state.data.infos.from == 0) {
   		data.searchType = undefined;
   	}
