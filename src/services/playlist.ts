@@ -469,10 +469,10 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		});
 
 		const [userMaxPosition, numUsersInPlaylist, playlistMaxPos] = await Promise.all([
-				getMaxPosInPlaylistForUser(playlist_id, user.login),
-				countPlaylistUsers(playlist_id),
-				getMaxPosInPlaylist(playlist_id),
-			]);
+			getMaxPosInPlaylistForUser(playlist_id, user.login),
+			countPlaylistUsers(playlist_id),
+			getMaxPosInPlaylist(playlist_id),
+		]);
 		const plContents = await getPlaylistKaraIDs(playlist_id);
 		// Making a unique ID depending on if we're in public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not
@@ -515,22 +515,22 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		// If AllowDuplicateSeries is set to false, remove all songs with the same SIDs
 		if (!conf.Playlist.AllowDuplicateSeries && user.type > 0) {
 			const seriesSingersInPlaylist = plContentsBeforePlay.map(plc => {
-				if (plc.serie) return plc.serie
+				if (plc.serie) return plc.serie;
 				return plc.singer[0].name;
 			});
 			for (const i in karaList) {
 				const karaInfo = await getKara(karaList[i].kid, {username: 'admin', role: 'admin'});
 				karaInfo.serie
 					? karaList[i].uniqueSerieSinger = karaInfo.serie
-					: karaList[i].uniqueSerieSinger = karaInfo.singers[0].name
+					: karaList[i].uniqueSerieSinger = karaInfo.singers[0].name;
 			}
 			karaList = karaList.filter(k => {
 				return !seriesSingersInPlaylist.includes(k.uniqueSerieSinger);
 			});
 			if (karaList.length === 0) throw {
 				code: 5,
-				msg: `Adding karaokes from the same series / singer is not allowed`
-			}
+				msg: 'Adding karaokes from the same series / singer is not allowed'
+			};
 		}
 		if (karaList.length === 0) throw {
 			code: 4,
@@ -817,7 +817,7 @@ const PLImportConstraints = {
 	'PlaylistInformation.name': {presence: {allowEmpty: false}},
 	'PlaylistInformation.flag_visible': {inclusion: bools},
 	PlaylistContents: {PLCsValidator: true}
-}
+};
 
 export const PLCImportConstraints = {
 	kid: {presence: true, uuidArrayValidator: true},
@@ -826,7 +826,7 @@ export const PLCImportConstraints = {
 	pos: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	nickname: {presence: {allowEmpty: false}},
 	username: {presence: {allowEmpty: false}}
-}
+};
 
 /** Import playlist from JSON */
 export async function importPlaylist(playlist: any, username: string, playlist_id?: number) {
@@ -848,7 +848,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	// Playlist can end up empty if no karaokes are found in database
 	try {
 		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist, null, 2)}`);
-		const validationErrors = check(playlist, PLImportConstraints)
+		const validationErrors = check(playlist, PLImportConstraints);
 		if (validationErrors) throw `Playlist file is invalid : ${JSON.stringify(validationErrors)}`;
 		let playingKara: PLC = {
 			playlist_id: null
@@ -1146,7 +1146,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 			const plc = await getPLCByKIDUser(kara.kid, kara.username, playlist_id);
 			if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id], playlist_id, {username: 'admin', role: 'admin'});
 		}
-		const currentSong: CurrentSong = {...kara}
+		const currentSong: CurrentSong = {...kara};
 		// Construct mpv message to display.
 		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes[0].name+songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 		currentSong.avatar = avatarfile;
