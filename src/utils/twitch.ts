@@ -28,6 +28,14 @@ export async function initTwitch() {
 	}
 }
 
+export function sayTwitch(message: string) {
+	if (client) try {
+		client.say(getConfig().Karaoke.StreamerMode.Twitch.Channel, message);
+	} catch(err) {
+		logger.warn(`[Twitch] Unable to say to channel : ${err}`);
+	}
+}
+
 function listenVoteEvents(chat: any) {
 	chat.on('message', (target: string, context: ChatUserstate, msg: string, self: boolean) => {
 		if (self) return;
