@@ -1,5 +1,27 @@
 # Versions
 
+## v3.0.2 "Leafa Langoureuse" - 15/01/2020
+
+This is a bugfix release
+
+### Improvements
+
+- Poll winner is sent to Twitch chat when available (df5d27f1)
+- Config settings are correctly updated when displaying the settings page (d7acf199)
+- When in restricted mode, the frontend will display a modal only on mobile (fad65274)
+- Quotes are not being removed anymore during searches. So "May'n" won't search for "May" and "n" anymore. (49cbc80d)
+
+### Fixes
+
+- Fix issues when playlists are set to invisible (6c2bf0b5)
+- When downloading songs, tags/series are now correctly deleted when their name has changed (0751bcf1)
+- Toyunda2ASS has been updated to 1.0.8 - correctly detects CRLF line breaks now (0eec58af)
+- Percentages in poll votes are now rounded to two decimal digits (e8e3f6c7)
+- Polls should work pollfectly now. (84bf4818)
+- When going from the kara list to a filtered list (applying a filter) the scroll placement is reset (af79e412)
+- Remaining time of a playlist is now correctly updated (32698f3c)
+- Various frontend UI fixes (check commits)
+
 ## v3.0.1 "Leafa Loyale" - 13/12/2019
 
 This is a bugfix release.
