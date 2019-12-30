@@ -332,13 +332,8 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 		};
 	});
 	await insertDownloads(dls);
-	try {
-		await internet();
-		dls.forEach(dl => q.push(dl));
-		return `${dls.length} download(s) queued`;
-	} catch(err) {
-		return `${dls.length} Download(s) queued but no internet connection available`;
-	}
+	dls.forEach(dl => q.push(dl));
+	return `${dls.length} download(s) queued`;
 }
 
 export async function getDownloads() {

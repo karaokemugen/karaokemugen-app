@@ -119,7 +119,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 	};
 
 	dbupdate() {
-		axios.post('/api/karas/updateMedias')
+		axios.post('/api/downloads/updateMedias')
 			.then(res => {
 				this.props.infoMessage(res.data);
 			})
@@ -209,7 +209,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 					<p>{i18next.t('CONFIRM_SURE')}</p>
 				</Modal>
 				<h1 style={{ marginTop: '30px' }}>{i18next.t('DATABASE.PROGRESS')}</h1>
-	
+
 				<h3>{i18next.t('DATABASE.GENERATION')}</h3>
 				{this.state.generationProgress.text}<br/>
 				<Progress percent={this.state.generationProgress.percentage} />

@@ -17,7 +17,7 @@ export default function userController(router: Router) {
 	/**
 	 * @api {get} /users List users
 	 * @apiName GetUsers
-	 * @apiVersion 2.5.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Users
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -115,7 +115,7 @@ export default function userController(router: Router) {
 	/**
  * @api {get} /users/:username View user details
  * @apiName GetUser
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Users
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -173,7 +173,7 @@ export default function userController(router: Router) {
 	/**
  * @api {delete} /users/:username Delete an user
  * @apiName DeleteUser
- * @apiVersion 2.5.0
+ * @apiVersion 3.1.0
  * @apiGroup Users
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -209,7 +209,7 @@ export default function userController(router: Router) {
 		/**
 	 * @api {post} /users/:username/resetpassword Reset password (online account only)
 	 * @apiName PostResetPassword
-	 * @apiVersion 3.0.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Users
 	 * @apiPermission noAuth
 	 * @apiParam {String} username Username for password reset
@@ -249,7 +249,7 @@ export default function userController(router: Router) {
 	/**
  * @api {get} /myaccount View own user details
  * @apiName GetMyAccount
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Users
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -312,7 +312,7 @@ export default function userController(router: Router) {
 	/**
 	 * @api {delete} /myaccount Delete your local account
 	 * @apiName ConvertToLocal
-	 * @apiVersion 2.5.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Users
 	 * @apiPermission own
 	 * @apiHeader authorization Auth token received from logging in
@@ -342,7 +342,7 @@ export default function userController(router: Router) {
 	/**
  * @api {put} /myaccount Edit your own account
  * @apiName EditMyAccount
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Users
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -396,7 +396,7 @@ export default function userController(router: Router) {
 		/**
 	 * @api {post} /myaccount/online Convert your account to an online one
 	 * @apiName ConvertToOnline
-	 * @apiVersion 2.5.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Users
 	 * @apiPermission own
 	 * @apiHeader authorization Auth token received from logging in
@@ -449,7 +449,7 @@ export default function userController(router: Router) {
 	/**
 	 * @api {delete} /myaccount/online Delete your online account
 	 * @apiName ConvertToLocal
-	 * @apiVersion 2.5.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Users
 	 * @apiPermission own
 	 * @apiHeader authorization Auth token received from logging in

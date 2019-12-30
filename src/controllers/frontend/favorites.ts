@@ -14,7 +14,7 @@ export default function favoritesController(router: Router) {
  * @api {post} /automix Generate a automix playlist
  * @apiName PostMix
  * @apiGroup Favorites
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiPermission admin
  *
  * @apiHeader authorization Auth token received from logging in
@@ -56,11 +56,11 @@ export default function favoritesController(router: Router) {
 				res.status(400).json(validationErrors);
 			}
 		});
-		router.route('/favorites')
+	router.route('/favorites')
 	/**
  * @api {get} /favorites View own favorites
  * @apiName GetFavorites
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Favorites
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -120,7 +120,7 @@ export default function favoritesController(router: Router) {
 	/**
  * @api {post} /favorites Add karaoke to your favorites
  * @apiName PostFavorites
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Favorites
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -160,7 +160,7 @@ export default function favoritesController(router: Router) {
 	/**
  * @api {delete} /favorites Delete karaoke from your favorites
  * @apiName DeleteFavorites
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Favorites
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -200,7 +200,7 @@ export default function favoritesController(router: Router) {
  * @api {get} /favorites/export Export favorites
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getFavoritesExport
- * @apiVersion 2.5.0
+ * @apiVersion 3.1.0
  * @apiGroup Favorites
  * @apiPermission public
  * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
@@ -234,7 +234,7 @@ export default function favoritesController(router: Router) {
 	/**
  * @api {post} /favorites/import Import favorites
  * @apiName postFavoritesImport
- * @apiVersion 2.5.0
+ * @apiVersion 3.1.0
  * @apiGroup Favorites
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in

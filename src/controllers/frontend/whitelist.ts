@@ -13,7 +13,7 @@ export default function whitelistController(router: Router) {
 	/**
  * @api {put} /whitelist/empty Empty whitelist
  * @apiName PutEmptyWhitelist
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -45,7 +45,7 @@ export default function whitelistController(router: Router) {
 	/**
  * @api {get} /whitelist Get whitelist
  * @apiName GetWhitelist
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Whitelist
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -107,7 +107,7 @@ export default function whitelistController(router: Router) {
 	/**
  * @api {post} /whitelist Add song to whitelist
  * @apiName PostWhitelist
- * @apiVersion 2.5.0
+ * @apiVersion 3.1.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in

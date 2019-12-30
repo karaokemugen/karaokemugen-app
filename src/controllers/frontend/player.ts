@@ -14,7 +14,7 @@ export default function playerController(router: Router) {
 	/**
 	 * @api {post} /player/play Start a song (classic mode)
 	 * @apiName PlayPlayer
-	 * @apiVersion 3.0.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Player
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -41,7 +41,7 @@ export default function playerController(router: Router) {
 	/**
  * @api {post} /player/message Send a message to screen or user's devices
  * @apiName PostPlayerMessage
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Player
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -87,7 +87,7 @@ export default function playerController(router: Router) {
 		/**
 	 * @api {put} /player Send commands to player
 	 * @apiName PutPlayerCommando
-	 * @apiVersion 2.1.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Player
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in

@@ -11,7 +11,7 @@ export default function pollController(router: Router) {
 	/**
  * @api {get} /songpoll Get current poll status
  * @apiName GetPoll
- * @apiVersion 2.5.0
+ * @apiVersion 3.1.0
  * @apiGroup Song Poll
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -65,7 +65,7 @@ export default function pollController(router: Router) {
 	/**
  * @api {post} /songpoll Vote in a poll
  * @apiName PostPoll
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Song Poll
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in

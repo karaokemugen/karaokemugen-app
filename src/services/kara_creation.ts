@@ -21,7 +21,6 @@ export async function editKara(kara: Kara) {
 			mediaFile = await resolveFileInDirs(kara.mediafile, resolvedPathMedias());
 			mediaDir = dirname(mediaFile);
 		}
-
 		let subFile = kara.subfile;
 		let subDir: string;
 		if (kara.subfile) {

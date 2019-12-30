@@ -15,7 +15,7 @@ export default function playlistsController(router: Router) {
  * @api {get} /playlists Get list of playlists
  * @apiName GetPlaylists
  * @apiGroup Playlists
- * @apiVersion 2.5.0
+ * @apiVersion 3.1.0
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  *
@@ -49,7 +49,7 @@ export default function playlistsController(router: Router) {
 	/**
  * @api {post} /playlists Create a playlist
  * @apiName PostPlaylist
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -114,7 +114,7 @@ export default function playlistsController(router: Router) {
  * @apiName GetPlaylist
  * @apiGroup Playlists
  * @apiPermission public
- * @apiVersion 2.5.0
+ * @apiVersion 3.1.0
  *
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
@@ -162,7 +162,7 @@ export default function playlistsController(router: Router) {
 	/**
  * @api {put} /playlists/:pl_id Update a playlist's information
  * @apiName PutPlaylist
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -211,7 +211,7 @@ export default function playlistsController(router: Router) {
 	/**
  * @api {delete} /playlists/:pl_id Delete a playlist
  * @apiName DeletePlaylist
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -241,7 +241,7 @@ export default function playlistsController(router: Router) {
 	/**
  * @api {put} /playlists/:pl_id/empty Empty a playlist
  * @apiName PutEmptyPlaylist
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -273,7 +273,7 @@ export default function playlistsController(router: Router) {
 		/**
 	 * @api {put} /playlists/:pl_id/setCurrent Set playlist to current
 	 * @apiName PutSetCurrentPlaylist
-	 * @apiVersion 2.1.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -305,7 +305,7 @@ export default function playlistsController(router: Router) {
 		/**
 	 * @api {put} /playlists/:pl_id/setPublic Set playlist to public
 	 * @apiName PutSetPublicPlaylist
-	 * @apiVersion 2.1.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -337,7 +337,7 @@ export default function playlistsController(router: Router) {
 		/**
 	 * @api {get} /playlists/:pl_id/karas Get list of karaokes in a playlist
 	 * @apiName GetPlaylistKaras
-	 * @apiVersion 3.0.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -455,7 +455,7 @@ export default function playlistsController(router: Router) {
 		/**
 	 * @api {patch} /playlists/:pl_id/karas Copy karaokes to another playlist
 	 * @apiName PatchPlaylistKaras
-	 * @apiVersion 2.1.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -505,7 +505,7 @@ export default function playlistsController(router: Router) {
 		/**
 	 * @api {delete} /playlists/:pl_id/karas Delete karaokes from playlist
 	 * @apiName DeletePlaylistKaras
-	 * @apiVersion 2.1.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -556,7 +556,7 @@ export default function playlistsController(router: Router) {
 		/**
 	 * @api {get} /playlists/:pl_id/karas/:plc_id Get song info from a playlist item
 	 * @apiName GetPlaylistPLC
-	 * @apiVersion 3.0.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -613,7 +613,7 @@ export default function playlistsController(router: Router) {
 		/**
 	 * @api {put} /playlists/:pl_id([0-9]+)/karas/:plc_id Update song in a playlist
 	 * @apiName PutPlaylistKara
-	 * @apiVersion 3.0.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -669,7 +669,7 @@ export default function playlistsController(router: Router) {
 		/**
 		 * @api {post} /playlists/:pl_id/karas/:plc_id/vote Up/downvote a song in public playlist
 		 * @apiName PostVote
-		 * @apiVersion 2.3.0
+		 * @apiVersion 3.1.0
 		 * @apiGroup Playlists
 		 * @apiPermission public
 		 * @apiHeader authorization Auth token received from logging in
@@ -707,7 +707,7 @@ export default function playlistsController(router: Router) {
  * @api {get} /playlists/:pl_id/export Export a playlist
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getPlaylistExport
- * @apiVersion 2.5.0
+ * @apiVersion 3.1.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -765,7 +765,7 @@ export default function playlistsController(router: Router) {
 	/**
  * @api {post} /playlists/import Import a playlist
  * @apiName postPlaylistImport
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -829,7 +829,7 @@ export default function playlistsController(router: Router) {
  * @api {put} /playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
  * @apiName putPlaylistShuffle
- * @apiVersion 2.3.0
+ * @apiVersion 3.1.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in

@@ -55,33 +55,57 @@ export default function tagsController(router: Router) {
 		* @apiErrorExample Error-Response:
 		* HTTP/1.1 403 Forbidden
 		*/
-			.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-				try {
-					const tags = await getTags({
-						filter: req.query.filter,
-						type: req.query.type,
-						from: +req.query.from,
-						size: +req.query.size
-					});
-					res.json(tags);
-				} catch(err) {
-					errMessage('TAGS_LIST_ERROR', err);
-					res.status(500).send('TAGS_LIST_ERROR');
-				}
-			});
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+			try {
+				const tags = await getTags({
+					filter: req.query.filter,
+					type: req.query.type,
+					from: +req.query.from,
+					size: +req.query.size
+				});
+				res.json(tags);
+			} catch(err) {
+				errMessage('TAGS_LIST_ERROR', err);
+				res.status(500).send('TAGS_LIST_ERROR');
+			}
+		})
+	/**
+	* @api {post} /tags Add tag
+	* @apiName addTag
+	* @apiVersion 3.1.0
+	* @apiGroup Tags
+	* @apiPermission admin
+	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {number[]} types Types of tag
+	* @apiParam {string} name Tag name
+	* @apiParam {string} short Short name of tag (max 3 letters)
+	* @apiParam {Object} i18n i18n object, where properties are ISO639-2B codes and values the name of tag in that language
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	*/
+		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+			try {
+				await addTag(req.body);
+				res.status(200).send('Tag added');
+			} catch(err) {
+				res.status(500).send(`Error adding tag: ${err}`);
+			}
+		});
 	router.route('/years')
 	/**
 	* @api {get} /years Get year list
 	* @apiName GetYears
 	* @apiVersion 2.3.0
-	* @apiGroup Karaokes
+	* @apiGroup Tags
 	* @apiPermission public
 	* @apiHeader authorization Auth token received from logging in
 	* @apiSuccess {String[]} data Array of years
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
 	* {
-	*     "years": [
+	*     "content": [
 	*       {
 	*			"year": "1969"
 	*		},
@@ -104,7 +128,26 @@ export default function tagsController(router: Router) {
 					res.status(500).send('YEARS_LIST_ERROR');
 				}
 			});
-		router.get('/tags/dupes', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+	router.route('/tags/dupes')
+	/**
+	* @api {get} /tags/dupes List tags with same names
+	* @apiName GetDupeTags
+	* @apiVersion 3.1.0
+	* @apiGroup Tags
+	* @apiPermission admin
+	* @apiHeader authorization Auth token received from logging in
+	* @apiSuccess {Taglist} data Array of years
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* {
+	*     "content": [
+	*      	<See Tag object>
+	*	   ]
+	* }
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	*/
+		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				const tags = await getDuplicateTags();
 				res.json(tags);
@@ -112,7 +155,26 @@ export default function tagsController(router: Router) {
 				res.status(500).send(`Error while fetching tags: ${err}`);
 			}
 		});
-		router.get('/tags/merge/:tid1/:tid2', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	router.route('/tags/merge/:tid1/:tid2')
+	/**
+	* @api {post} /tags/merge/:tid1/:tid2 Merge tags
+	* @apiName MergeTags
+	* @apiVersion 3.1.0
+	* @apiGroup Tags
+	* @apiPermission admin
+	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {uuid} tid1 First tag to merge (will be kept)
+	* @apiParam {uuid} tid2 Second tag to merge (will be removed)
+	* @apiSuccess {Object} Tag Tag object
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* {
+	*    <See Tag object>
+	* }
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	*/
+		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				const tag = await mergeTags(req.params.tid1, req.params.tid2);
 				res.json(tag);
@@ -120,38 +182,76 @@ export default function tagsController(router: Router) {
 				res.status(500).send(`Error while merging tags: ${err}`);
 			}
 		});
-		router.delete('/tags/:tid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	router.route('/tags/:tid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
+	/**
+	* @api {delete} /tags/:tid Delete tag
+	* @apiName DeleteTag
+	* @apiVersion 3.1.0
+	* @apiGroup Tags
+	* @apiPermission admin
+	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {uuid} tid Tag to delete
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	*/
+		.delete(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await deleteTag(req.params.tid);
 				res.status(200).send('Tag deleted');
 			} catch(err) {
 				res.status(500).send(`Error deleting tag: ${err}`);
 			}
-		});
-		router.get('/tags/:tid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+		})
+	/**
+	* @api {get} /tags/:tid Get single tag
+	* @apiName GetTagSingle
+	* @apiVersion 3.1.0
+	* @apiGroup Tags
+	* @apiPermission admin
+	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {uuid} tid
+	* @apiSuccess {Object} Tag Tag object
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* {
+	*    <See Tag object>
+	* }
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	*/
+		.get(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				const tag = await getTag(req.params.tid);
 				res.json(tag);
 			} catch(err) {
 				res.status(500).send(`Error getting tag: ${err}`)
 			}
-		});
-	
-		router.put('/tags/:tid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+		})
+		/**
+	* @api {put} /tags/:tid Edit tag
+	* @apiName editTag
+	* @apiVersion 3.1.0
+	* @apiGroup Tags
+	* @apiPermission admin
+	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {uuid} tid tag to edit
+	* @apiParam {number[]} types Types of tag
+	* @apiParam {string} name Tag name
+	* @apiParam {string} short Short name of tag (max 3 letters)
+	* @apiParam {Object} i18n i18n object, where properties are ISO639-2B codes and values the name of tag in that language
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	*/
+		.put(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				const tag = editTag(req.params.tid, req.body);
 				res.json(tag);
 			} catch(err) {
 				res.status(500).send(`Error editing tag: ${err}`);
-			}
-		});
-	
-		router.post('/tags', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await addTag(req.body);
-				res.status(200).send('Tag added');
-			} catch(err) {
-				res.status(500).send(`Error adding tag: ${err}`);
 			}
 		});
 }

@@ -10,7 +10,7 @@ export default function seriesController(router: Router) {
 	/**
 	* @api {get} /series Get series list
 	* @apiName GetSeries
-	* @apiVersion 2.5.0
+	* @apiVersion 3.1.0
 	* @apiGroup Karaokes
 	* @apiPermission public
 	* @apiHeader authorization Auth token received from logging in
@@ -68,7 +68,7 @@ export default function seriesController(router: Router) {
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 403 Forbidden
 	*/
-	.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const series = await getSeries({
 					filter: req.query.filter,
@@ -82,6 +82,22 @@ export default function seriesController(router: Router) {
 				res.status(500).send('SERIES_LIST_ERROR');
 			}
 		})
+	/**
+ * @api {post} /series Add new series
+ * @apiName PostSeries
+ * @apiVersion 3.1.0
+ * @apiGroup Series
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {string} name Series name
+ * @apiParam {string[]} aliases Series aliases
+ * @apiParam {Object} i18n Object where each property is a ISO839-3 code and its value the name of the series in that language
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * "Error adding series: ..."
+ */
 		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await addSerie(req.body);
@@ -90,25 +106,84 @@ export default function seriesController(router: Router) {
 				res.status(500).send(`Error adding series: ${err}`);
 			}
 		});
-	router.delete('/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	router.route('/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
+	/**
+ * @api {delete} /series/:sid Delete series
+ * @apiName DeleteSeries
+ * @apiVersion 3.1.0
+ * @apiGroup Series
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {uuid} sid Series ID to delete
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * "Error deleting series: ..."
+ */
+		.delete(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			await deleteSerie(req.params.sid);
 			res.status(200).send('Series deleted');
 		} catch(err) {
 			res.status(500).send(`Error deleting series: ${err}`);
 		}
-	});
-
-	router.get('/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	})
+	/**
+ * @api {get} /series/:sid Get series info
+ * @apiName GetSeries
+ * @apiVersion 3.1.0
+ * @apiGroup Series
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {uuid} sid Series ID to get
+ * @apiSuccess {string} name Series name
+ * @apiSuccess {string[]} aliases Series aliases
+ * @apiSuccess {Object} i18n Object where each property is a ISO839-3 code and its value the name of the series in that language.
+ * @apiSuccess {string} seriesfile Series metadata filename
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ * 		name: "Eternity",
+ * 		sid: "72cdce0a-656c-4076-99a7-9e2a0cea8e2a"
+ * 		aliases: [],
+ * 		i18n: {
+ * 			fre: "Eternité"
+ * 			eng: "Eternity"
+ * 			jpn: "Eteruniti"
+ * 		},
+ * 		seriesfile: "Eternity.series.json"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * "Error getting series: ..."
+ */
+		.get(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			const series = await getSerie(req.params.sid);
 			res.json(series);
 		} catch(err) {
 			res.status(500).send(`Error getting series: ${err}`)
 		}
-	});
-
-	router.put('/series/:sid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+	})
+	/**
+ * @api {put} /series/:sid Edit series
+ * @apiName PutSeries
+ * @apiVersion 3.1.0
+ * @apiGroup Series
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {string} sid Series ID to edit
+ * @apiParam {string} name Series name
+ * @apiParam {string[]} aliases Series aliases
+ * @apiParam {Object} i18n Object where each property is a ISO839-3 code and its value the name of the series in that language
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * "Error editing series: ..."
+ */
+		.put(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			const series = editSerie(req.params.sid, req.body);
 			res.json(series);

@@ -85,7 +85,7 @@ export default function sessionController(router: Router) {
 			}
 		});
 	router.route('/sessions/merge')
-	.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		const validationErrors = check(req.body, {
 			seid1: {uuidArrayValidator: true},
 			seid2: {uuidArrayValidator: true}
@@ -103,19 +103,26 @@ export default function sessionController(router: Router) {
 			res.status(400).json(validationErrors);
 		}
 	});
+
+	router.route('/sessions/:seid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
 	/**
- * @api {post} /sessions/:seid/activate Activate session
- * @apiName SetSession
- * @apiVersion 3.0.0
+ * @api {put} /sessions/:seid Edit session
+ * @apiName EditSession
+ * @apiVersion 3.1.0
  * @apiGroup Sessions
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  *
  * @apiParam {String} seid Session ID
+ * @apiParam {String} name Name of session
+ * @apiParam {boolean} [private] Is session private or public? Private sessions are not uploaded to KM Server
+ * @apiParam {Date} started_at Session start time
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * "Error updating session : ..."
  */
-	router.route('/sessions/:seid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
 		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			//Validate form data
 			const validationErrors = check(req.body, {
@@ -135,10 +142,34 @@ export default function sessionController(router: Router) {
 				res.status(400).json(validationErrors);
 			}
 		})
+/**
+ * @api {post} /sessions/:seid Activate session
+ * @apiName SetSession
+ * @apiVersion 3.1.0
+ * @apiGroup Sessions
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ *
+ * @apiParam {String} seid Session ID
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ */
 		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			setActiveSession(req.params.seid);
 			res.status(200).send('Session activated');
 		})
+/**
+ * @api {delete} /sessions/:seid Delete session
+ * @apiName DeleteSession
+ * @apiVersion 3.1.0
+ * @apiGroup Sessions
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ *
+ * @apiParam {String} seid Session ID
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ */
 		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 				await removeSession(req.params.seid);
@@ -148,6 +179,19 @@ export default function sessionController(router: Router) {
 			}
 		});
 	router.route('/sessions/:seid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/export')
+/**
+ * @api {get} /sessions/:seid/export Export session to CSV file
+ * @apiName exportSession
+ * @apiVersion 3.1.0
+ * @apiGroup Sessions
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} seid Session ID
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			try {
 				await exportSession(req.params.seid);

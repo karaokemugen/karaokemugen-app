@@ -13,7 +13,7 @@ export default function blacklistController(router: Router) {
 	/**
  * @api {put} /blacklist/criterias/empty Empty list of blacklist criterias
  * @apiName PutEmptyBlacklist
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Blacklist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -43,7 +43,7 @@ export default function blacklistController(router: Router) {
 	/**
 	 * @api {get} /blacklist Get blacklist
 	 * @apiName GetBlacklist
-	 * @apiVersion 3.0.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Blacklist
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -114,7 +114,7 @@ export default function blacklistController(router: Router) {
 	/**
 	 * @api {get} /blacklist/criterias Get list of blacklist criterias
 	 * @apiName GetBlacklistCriterias
-	 * @apiVersion 3.0.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Blacklist
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -160,7 +160,7 @@ export default function blacklistController(router: Router) {
 	/**
 	 * @api {post} /blacklist/criterias Add a blacklist criteria
 	 * @apiName PostBlacklistCriterias
-	 * @apiVersion 2.1.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -204,7 +204,7 @@ export default function blacklistController(router: Router) {
 	/**
 	 * @api {delete} blacklist/criterias/:blc_id Delete a blacklist criteria
 	 * @apiName DeleteBlacklistCriterias
-	 * @apiVersion 2.1.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in

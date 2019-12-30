@@ -61,7 +61,7 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 	};
 
 	handleTagMerge = (tid1,tid2) => {
-		axios.get('/api/tags/merge/'+tid1+'/'+tid2)
+		axios.post('/api/tags/merge/'+tid1+'/'+tid2)
 			.then((data) => {
 				this.props.infoMessage(i18next.t('TAGS.TAGS_MERGED'));
 				this.props.push('/system/km/tags/');

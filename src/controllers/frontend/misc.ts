@@ -24,7 +24,7 @@ export default function miscController(router: Router) {
  * Shutdowns application completely. Kind of a self-destruct button.
  * @apiName PostShutdown
  * @apiGroup Main
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  *
  * @apiHeader authorization Auth token received from logging in
  * @apiPermission admin
@@ -50,7 +50,7 @@ export default function miscController(router: Router) {
 	/**
  * @api {get} /settings Get settings
  * @apiName GetSettings
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Main
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -84,7 +84,7 @@ export default function miscController(router: Router) {
 	/**
  * @api {put} /settings Update settings
  * @apiName PutSettings
- * @apiVersion 2.5.0
+ * @apiVersion 3.1.0
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiGroup Main
@@ -112,7 +112,7 @@ export default function miscController(router: Router) {
 /**
  * @api {get} /displays get displays
  * @apiName GetDisplays
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiGroup Main
@@ -130,7 +130,7 @@ export default function miscController(router: Router) {
 /**
  * @api {get} /checkUpdates Get latest KM version
  * @apiName GetLatestVersion
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiGroup Main
@@ -148,7 +148,7 @@ export default function miscController(router: Router) {
 /**
  * @api {get} /stats Get statistics
  * @apiName GetStats
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Main
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -187,7 +187,7 @@ export default function miscController(router: Router) {
 	/**
 	 * @api {get} /player Get player status
 	 * @apiName GetPlayer
-	 * @apiVersion 2.5.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Player
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -238,7 +238,7 @@ export default function miscController(router: Router) {
 		/**
 	 * @api {get} /newsfeed Get latest KM news
 	 * @apiName GetNews
-	 * @apiVersion 2.4.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
 	 * @apiPermission NoAuth
 	 * @apiSuccess {Array} Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if RSS feed could not be obtained.
@@ -255,7 +255,7 @@ export default function miscController(router: Router) {
 		/**
 	 * @api {get} /catchphrase Get a random Catchphrase
 	 * @apiName GetCatchPhrase
-	 * @apiVersion 3.0.0
+	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
 	 * @apiPermission NoAuth
 	 * @apiSuccess a random catchphrase
@@ -264,20 +264,55 @@ export default function miscController(router: Router) {
 				res.json(sample(initializationCatchphrases));
 		});
 
-	router.get('/log', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		res.status(200).send(await readLog());
+	router.route('/log')
+	/**
+	 * @api {get} /log Get KM logs
+	 * @apiName GetLogs
+	 * @apiVersion 3.1.0
+	 * @apiGroup Misc
+	 * @apiPermission admin
+	 * @apiSuccess {string} The current day's log file. Have fun parsing it :)
+	 */
+		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+			try {
+				res.status(200).send(await readLog());
+			} catch(err) {
+				res.status(500).send(`Unable to read log file : ${err}`);
+			}
 	});
 
-	router.post('/settings/backup', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+	router.route('/settings/backup')
+	/**
+	 * @api {post} /settings/backup Create backup of your config file
+	 * @apiName BackupConfig
+	 * @apiVersion 3.1.0
+	 * @apiGroup Misc
+	 * @apiPermission admin
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
 			await backupConfig();
-			res.status(200).send('Configuration file backuped to config.ini.backup');
+			res.status(200).send('Configuration file backuped to config.yml.backup');
 		} catch(err) {
 			res.status(500).send(`Error backuping config file: ${err}`);
 		}
 	});
-	
-	router.post('/db/generate', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+
+	router.route('/db/generate')
+	/**
+	 * @api {post} /db/generate Trigger manual DB generation
+	 * @apiName PostGenerate
+	 * @apiVersion 3.1.0
+	 * @apiGroup Misc
+	 * @apiPermission admin
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		try {
 			await generateDB();
 			res.status(200).send('DB successfully regenerated');
@@ -286,20 +321,43 @@ export default function miscController(router: Router) {
 		}
 	});
 
-	router.get('/db', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		try {
-			await dumpPG();
-			res.status(200).send('Database dumped to karaokemugen.sql');
-		} catch(err) {
-			res.status(500).send(`Error dumping database : ${err}`);
-		}
-	});
-	router.post('/db', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		try {
-			await restorePG();
-			res.status(200).send('Database restored from karaokemugen.sql');
-		} catch(err) {
-			res.status(500).send(`Error restoring database : ${err}`);
-		}
+	router.route('/db')
+	/**
+	 * @api {get} /db Dump database to a file
+	 * @apiName GetDB
+	 * @apiVersion 3.1.0
+	 * @apiGroup Misc
+	 * @apiPermission admin
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+			try {
+				await dumpPG();
+				res.status(200).send('Database dumped to karaokemugen.sql');
+			} catch(err) {
+				res.status(500).send(`Error dumping database : ${err}`);
+			}
+	})
+	/**
+	 * @api {post} /db Restore database from file
+	 * @apiName PostDB
+	 * @apiVersion 3.1.0
+	 * @apiGroup Misc
+	 * @apiPermission admin
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+			try {
+				await restorePG();
+				res.status(200).send('Database restored from karaokemugen.sql');
+			} catch(err) {
+				res.status(500).send(`Error restoring database : ${err}`);
+			}
 	});
 }

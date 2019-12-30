@@ -11,7 +11,7 @@ export interface KaraDownload {
 	}
 	size: number,
 	uuid: string
-	status?: string
+	status?: 'DL_RUNNING' | 'DL_PLANNED' | 'DL_DONE' | 'DL_FAILED'
 }
 
 export interface KaraDownloadBLC {
