@@ -454,7 +454,7 @@ noRowsRenderer = () => {
 		_cache.clearAll();
 		setTimeout(() => {
 			this.playlistForceRefresh();
-		}, 250);
+		}, 50);
 	} catch (error) {
 		displayMessage('error', `ERROR_CODES.${error.response.code}`);
 	}
