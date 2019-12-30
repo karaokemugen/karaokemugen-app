@@ -406,7 +406,7 @@ noRowsRenderer = () => {
 	  _cache.clearAll();
 	  setTimeout(() => {
   		this.playlistForceRefresh();
-	  }, 250);
+	  }, 50);
   };
 
   playingUpdate = data => {
