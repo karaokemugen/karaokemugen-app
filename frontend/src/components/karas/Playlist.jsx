@@ -750,6 +750,7 @@ noRowsRenderer = () => {
   															onSortEnd={this.sortRow}
   															onScroll={this.clearScrollToIndex}
   															scrollToIndex={this.state.scrollToIndex}
+															scrollToAlignment="start"
   														/>)}
   												</AutoSizer>
   											)}
