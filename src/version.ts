@@ -1,5 +1,5 @@
 export const version = {
-	number: '3.0.1',
-	name: 'Leafa Loyale',
-	image: 'LeafaLoyale.jpg'
+	number: '3.0.2',
+	name: 'Leafa Langoureuse',
+	image: 'LeafaLangoureuse.jpg'
 }
