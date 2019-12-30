@@ -65,9 +65,6 @@ class Playlist extends Component {
 			this.playlistContentsUpdated(idPlaylist);
 		});
 		store.addChangeListener('loginUpdated', this.initCall);
-		setTimeout(() => {
-			this.playlistForceRefresh();
-		}, 50);
 	}
 
   initCall = async () => {
@@ -407,6 +404,9 @@ noRowsRenderer = () => {
 	  this.setState({ data: data, getPlaylistInProgress: false });
 	  this.playlistForceRefresh();
 	  _cache.clearAll();
+	  setTimeout(() => {
+  		this.playlistForceRefresh();
+	  }, 250);
   };
 
   playingUpdate = data => {
