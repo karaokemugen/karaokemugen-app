@@ -33,6 +33,7 @@ export function sayTwitch(message: string) {
 		client.say(getConfig().Karaoke.StreamerMode.Twitch.Channel, message);
 	} catch(err) {
 		logger.warn(`[Twitch] Unable to say to channel : ${err}`);
+		throw err;
 	}
 }
 

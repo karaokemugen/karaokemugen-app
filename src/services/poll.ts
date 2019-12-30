@@ -81,7 +81,11 @@ export async function endPoll() {
 		const streamConfig = getConfig().Karaoke.StreamerMode;
 		if (streamConfig.Enabled) {
 			if (getState().status !== 'play') displayPoll(winner.index);
-			if (streamConfig.Twitch.Channel) sayTwitch(`Poll winner : ${winner.kara} (${winner.votes} votes)`);
+			if (streamConfig.Twitch.Channel) try {
+				sayTwitch(`Poll winner : ${winner.kara} (${winner.votes} votes)`);
+			} catch(err) {
+				//Non fatal
+			}
 		}
 		pollEnding = true;
 		logger.debug(`[Poll] Ending poll with ${JSON.stringify(winner)}`);
