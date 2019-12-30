@@ -167,9 +167,9 @@ class PlaylistHeader extends Component<IProps,IState> {
 
   deleteAllKaras = () => {
 	try {
-	  if (this.props.idPlaylist !== -2 || this.props.idPlaylist as number !== -4) {
+	  if (this.props.idPlaylist === -2 || this.props.idPlaylist as number === -4) {
 		axios.put('/api/blacklist/criterias/empty');
-	  } else if (this.props.idPlaylist as number !== -3) {
+	  } else if (this.props.idPlaylist as number === -3) {
 		axios.put('/api/whitelist/empty');
 	  } else {
 		axios.put(this.props.getPlaylistUrl().replace('/karas', '') + '/empty');
