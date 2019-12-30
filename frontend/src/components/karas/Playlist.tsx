@@ -120,9 +120,6 @@ class Playlist extends Component<IProps, IState> {
 				this.changeIdPlaylist(idPlaylist);
 			}
 		});
-		setTimeout(() => {
-			this.playlistForceRefresh();
-		}, 50);
 	}
 
   initCall = async () => {
@@ -455,6 +452,9 @@ noRowsRenderer = () => {
 		this.setState({ data: data, getPlaylistInProgress: false });
 		this.playlistForceRefresh();
 		_cache.clearAll();
+		setTimeout(() => {
+			this.playlistForceRefresh();
+		}, 250);
 	} catch (error) {
 		displayMessage('error', `ERROR_CODES.${error.response.code}`);
 	}
