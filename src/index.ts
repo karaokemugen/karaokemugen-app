@@ -15,6 +15,7 @@ import {createInterface} from 'readline';
 import { setState, getState } from './utils/state';
 import { version } from './version';
 import { getPortPromise } from 'portfinder';
+import cloneDeep from 'lodash.clonedeep';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -91,7 +92,7 @@ async function main() {
 	await configureLogger(dataPath, !!argv.debug, true);
 	await initConfig(argv);
 	let config = getConfig();
-	const publicConfig = getConfig();
+	const publicConfig = cloneDeep(getConfig());
 	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 	publicConfig.App.JwtSecret = 'xxxxx';
 	publicConfig.App.InstanceID = 'xxxxx';
