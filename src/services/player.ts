@@ -44,9 +44,9 @@ async function playCurrentSong(now: boolean) {
 			});
 			setState({currentlyPlayingKara: kara.kid});
 			addPlayedKara(kara.kid);
-			setPLCVisible(kara.playlistcontent_id);
-			updatePlaylistDuration(kara.playlist_id),
-			updateUserQuotas(kara);
+			await setPLCVisible(kara.playlistcontent_id);
+			await updatePlaylistDuration(kara.playlist_id),
+			await updateUserQuotas(kara);
 			emitWS('playlistInfoUpdated', kara.playlist_id);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch(err) {
