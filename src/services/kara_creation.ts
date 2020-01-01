@@ -62,14 +62,6 @@ export async function editKara(kara: Kara) {
 		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) {
 			logger.info(`[KaraGen] Removing ${karaFile}`);
 			await asyncUnlink(karaFile);
-			// Remove karav3 file
-			const karaV3File = karaFile.replace('\\karaokes\\','\\karas\\').replace('/karaokes/','/karas/').replace('.json','');
-			logger.info(`[KaraGen] Removing ${karaV3File}`);
-			try {
-				await asyncUnlink(karaV3File);
-			} catch(err) {
-				logger.warn('[KaraGen] Could not remove karaV3 file. Non fatal, continuing...');
-			}
 		}
 		if (newKara.data.subfile && oldKara.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
 			const oldSubFile = await resolveFileInDirs(oldKara.subfile, resolvedPathSubs());

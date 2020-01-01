@@ -18,7 +18,6 @@ import {initStats} from './stats';
 import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {initPlaylistSystem, testPlaylists} from './playlist';
 import { generateDatabase } from '../lib/services/generation';
-import {validateV3} from '../lib/dao/karafile';
 import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from './session';
 import { updatePlaylistMedias } from './medias';
@@ -32,15 +31,6 @@ export async function initEngine() {
 		ontop: conf.Player.StayOnTop,
 		private: conf.Karaoke.Private,
 	});
-	if (state.opt.validateV3) try {
-		logger.info('[Engine] V3 Validation in progress...');
-		await validateV3();
-		logger.info('[Engine] V3 Validation OK');
-		await exit(0);
-	} catch(err) {
-		logger.error(`[Engine] V3 Validation error : ${err}`);
-		await exit(1);
-	}
 	if (state.opt.validate) try {
 		await generateDatabase(true, true);
 		await exit(0);
