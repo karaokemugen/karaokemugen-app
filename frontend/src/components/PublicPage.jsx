@@ -91,7 +91,8 @@ class PublicPage extends Component {
   };
 
   openLoginOrProfileModal = () => {
-  	if (store.getLogInfos().token) {
+	this.closeMobileMenu();
+  	if (store.getLogInfos() && store.getLogInfos().token) {
   		ReactDOM.render(<ProfilModal
   			settingsOnline={this.props.settings.config.Online}
   		/>, document.getElementById('modal'));
@@ -104,11 +105,13 @@ class PublicPage extends Component {
   };
 
   setLyrics = () => {
+	this.closeMobileMenu();
   	this.setState({ lyrics: !this.state.lyrics });
   };
 
   // pick a random kara & add it after (not) asking user's confirmation
   getLucky = async () => {
+  	this.closeMobileMenu();
   	var response = await axios.get('/api/public/karas?filter=' + store.getFilterValue(1)+'&random=1');
   	if (response.data.data && response.data.data.content && response.data.data.content[0]) {
   		var chosenOne = response.data.data.content[0].kid;
@@ -145,6 +148,10 @@ class PublicPage extends Component {
 			}
 		}
 	};
+
+	closeMobileMenu = () => {
+		this.setState({ mobileMenu: false })
+	}
 
   render() {
   	var logInfos = store.getLogInfos();
@@ -236,7 +243,7 @@ class PublicPage extends Component {
 
   								{is_touch_device() ? 
 									<button
-										className={`btn btn-dark ${this.state.currentSide === 2 ? 'side2Button' : ''}`}
+										className={`btn btn-dark ${this.state.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
 										type="button" onClick={this.changeCurrentSide}>
 											<i className="fas fa-tasks"></i>
 									</button> : (
@@ -371,7 +378,10 @@ class PublicPage extends Component {
   									>
   										<a
   											className="btn-floating btn-large waves-effect z-depth-3 showPoll"
-  											onClick={() => ReactDOM.render(<PollModal />, document.getElementById('modal'))}
+  											onClick={() => {
+												this.closeMobileMenu();
+												ReactDOM.render(<PollModal />, document.getElementById('modal'))
+											}}
   										>
   											<i className="fas fa-bar-chart" />
   										</a>
@@ -397,7 +407,10 @@ class PublicPage extends Component {
   													<a
   														className="z-depth-3 btn-floating btn-large logout"
   														style={{ backgroundColor: '#111' }}
-  														onClick={store.logOut}
+  														onClick={() => {
+															this.closeMobileMenu();
+															store.logOut();
+														}}
   													>
   														<i className="fas fa-sign-out-alt" />
   													</a>
@@ -420,7 +433,10 @@ class PublicPage extends Component {
   											<a
   												className="z-depth-3 btn-floating btn-large"
   												style={{ backgroundColor: '#613114' }}
-  												onClick={() => ReactDOM.render(<HelpModal />, document.getElementById('modal'))}
+  												onClick={() => {
+													this.closeMobileMenu();
+													ReactDOM.render(<HelpModal/>, document.getElementById('modal'))
+													}}
   											>
   												<i className="fas fa-question-circle" />
   											</a>

@@ -12,6 +12,8 @@ class HelpModal extends Component {
     };
 
     tourAgain = async () => {
+		var tutorial = document.getElementById('tuto');
+		if (tutorial) ReactDOM.unmountComponentAtNode(tutorial);
     	var tuto = startIntro('public');
     	tuto.move(1);
     	ReactDOM.unmountComponentAtNode(document.getElementById('modal'));

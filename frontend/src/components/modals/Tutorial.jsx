@@ -140,12 +140,14 @@ class Tutorial extends Component {
 				{ 
 					requiresUser: false,
 					placement: 'auto',
-					target: '#panel1',
-					content: i18nAsDiv('INTRO_PUBLIC_KARA')
+					target: '.plFooter',
+					content: i18nAsDiv('INTRO_PUBLIC_KARA'),
+					disableOverlay: true,
+					label: 'karadetails'
 				},
 				{
-					target: '#panel1',
-					label: 'karadetails',
+					target: '.plFooter',
+					disableOverlay: true,
 					placement: 'auto',
 					content: i18nAsDiv('INTRO_PUBLIC_KARADETAILS')
 				},
@@ -153,6 +155,7 @@ class Tutorial extends Component {
 					requiresUser: false,
 					placement: 'auto',
 					target: '.plFooter',
+					label: "publicFooter",
 					content: i18nAsDiv('INTRO_PUBLIC_FOOTER')
 				},
 				{ 
@@ -163,7 +166,7 @@ class Tutorial extends Component {
 					content: i18nAsDiv('INTRO_PUBLIC_FAVORITES')
 				},
 				{
-					target: '#playlist',
+					target: '.side1Button',
 					label: 'change_screen',
 					placement: 'auto',
 					content: i18nAsDiv('INTRO_PUBLIC_CHANGE_SCREEN'),
@@ -196,7 +199,7 @@ class Tutorial extends Component {
 					disableOverlay: true,
 				},
 				{
-					target: '#playlist',
+					target: '.side2Button',
 					label: 'change_screen2',
 					placement: 'auto',
 					content: i18nAsDiv('INTRO_PUBLIC_CHANGE_SCREEN2'),
@@ -260,9 +263,10 @@ class Tutorial extends Component {
     handleJoyrideCallback = data => {
     	const { joyride } = this.props;
     	const { action, index, status, type } = data;
-    	if(index===3) { 
-    		// if for some reasons the login modal is still open by now, we have to close it
-    		ReactDOM.unmountComponentAtNode(document.getElementById('modal'));
+    	if(index===3 || this.state.steps[index].label === 'publicFooter') { 
+			// if for some reasons the login modal is still open by now, we have to close it
+			var element = document.getElementById('modal');
+    		if(element) ReactDOM.unmountComponentAtNode(element);
     	}
     	if (type === EVENTS.TOUR_END && this.state.run) {
     		// Need to set our running state to false, so we can restart if we click start again.

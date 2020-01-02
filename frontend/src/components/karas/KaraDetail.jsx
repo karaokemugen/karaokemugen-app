@@ -17,6 +17,9 @@ class KaraDetail extends Component {
 		if (this.props.kid || this.props.idPlaylist) {
 			this.getKaraDetail();
 		}
+		if(store.getTuto() && store.getTuto().getStepLabel() === 'karadetails') {
+			store.getTuto().move(1);
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
