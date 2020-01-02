@@ -37,7 +37,9 @@ class ActionsButtons extends Component<IProps, {}> {
     			{(this.props.scope === 'admin' && this.props.idPlaylistTo !== -1) ||
                     (this.props.scope === 'public' && this.props.idPlaylist !== store.getModePlaylistID()) ?
     				<button title={i18next.t('TOOLTIP_ADDKARA') + (this.props.scope == 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : '')}
-    					name="addKara" className={classValue} onContextMenu={this.onRightClickAdd} onClick={this.props.addKara}><i className="fas fa-plus"></i></button> : null}
+						name="addKara" className={`${classValue} addKara`} onContextMenu={this.onRightClickAdd} onClick={this.props.addKara}>
+						<i className="fas fa-plus"></i>
+					</button> : null}
     			{this.props.scope === 'admin' && this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
     				<button title={i18next.t('TOOLTIP_TRANSFERKARA')} name="transferKara" className={classValue}
 					onContextMenu={this.onRightClickTransfer} onClick={this.props.transferKara}><i className="fas fa-exchange-alt"></i></button> : null
