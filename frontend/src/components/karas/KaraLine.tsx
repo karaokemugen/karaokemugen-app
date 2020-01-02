@@ -180,6 +180,11 @@ class KaraLine extends Component<IProps,IState> {
   	}
   };
 
+  changeVisibilityKara = () => {
+		axios.put('/api/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, 
+			{ flag_visible: true });
+};
+
   karaFamilies = this.props.kara.families ? this.props.kara.families.map(tag => {
   	return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>;
   }) : [] ;
@@ -264,7 +269,9 @@ class KaraLine extends Component<IProps,IState> {
   							onClick={this.playKara}><i className="fas fa-play"></i></button> : null}
   						{scope === 'admin' &&  this.props.playlistInfo && idPlaylist > 0 && !kara.flag_visible
                 			&& (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ? 
-  								<button type="button" className={'btn btn-sm btn-action btn-primary'}><i className="fas fa-eye-slash"></i></button> : null
+  								<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>
+									<i className="fas fa-eye-slash"></i>
+								</button> : null
 						}
   						{scope !== 'admin' && this.props.playlistInfo && this.props.playlistInfo.flag_public ? 
 						  <button className={'likeKara btn btn-sm btn-action ' + (this.state.isLike ? 'currentLike' : '')}
