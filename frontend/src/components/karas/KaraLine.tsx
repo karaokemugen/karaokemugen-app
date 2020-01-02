@@ -241,7 +241,8 @@ class KaraLine extends Component<IProps,IState> {
   				<React.Fragment>
 					<div className="actionDiv"> 
 						{this.props.config.Frontend.ShowAvatarsOnPlaylist && this.props.avatar_file ? 
-							<img className="img-circle" src={pathAvatar + this.props.avatar_file} alt="User Pic" /> : null}
+							<img className="img-circle" src={pathAvatar + this.props.avatar_file} alt="User Pic" 
+								title={kara.nickname} /> : null}
 						{this.props.idPlaylistTo !== this.props.idPlaylist ?
 							<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
 								scope={this.props.scope}
