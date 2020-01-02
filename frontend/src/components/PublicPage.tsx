@@ -99,7 +99,7 @@ class PublicPage extends Component<IProps,IState> {
   	getSocket().on('adminMessage', (data:any) => displayMessage('info', 
   		<div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br/>{data.message}</div>, data.duration));
 	getSocket().on('nextSong', (data:DBPLC) => {
-		if (data) {
+		if (data && data.flag_visible) {
 			displayMessage('info', 
 				<div>
 					<label>{i18next.t('NEXT_SONG_MESSAGE')}</label>
