@@ -523,7 +523,7 @@ export default function playlistsController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * "PL_DELETE_SONG_ERROR"
 	 */
-			.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 				// Delete kara from playlist
 				// Deletion is through playlist content's ID.
 				// There is actually no need for a playlist number to be used at this moment.
