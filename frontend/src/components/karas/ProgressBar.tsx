@@ -125,7 +125,7 @@ class ProgressBar extends Component<IProps,IState> {
     				if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
     				karaInfoText = text;
     			} else {
-    				karaInfoText = buildKaraTitle(kara);
+    				karaInfoText = buildKaraTitle(kara, true);
     			}
     			this.setState({karaInfoText: karaInfoText, length: kara.duration});
     		}
