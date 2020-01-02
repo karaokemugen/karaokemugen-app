@@ -26,19 +26,20 @@ class App extends Component {
 		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 	}
 
-
-
-	async parseTags() {
+	async checkAuth() {
 		try {
-			const response = await axios.get('/api/public/tags');
-			return response.data.data.content.filter(val => val.karacount !== null).map(val => {
-				var trad = val.i18n[this.state.navigatorLanguage];
-				return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
-			});
+			await axios.get('/api/auth/checkauth')
 		} catch (error) {
 			// if error the authorization must be broken so we delete it
 			store.logOut();
 		}
+	}
+
+	async parseTags() {
+		const response = await axios.get('/api/public/tags');
+		return response.data.data.content.filter(val => val.karacount !== null).map(val => {
+			var trad = val.i18n[this.state.navigatorLanguage];
+			return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
 	}
 
 	async parseSeries() {
@@ -59,6 +60,9 @@ class App extends Component {
 	}
 
 	async componentDidMount() {
+		if (axios.defaults.headers.common['authorization']) {
+			await this.checkAuth();
+		}
 		await this.getSettings();
 		getSocket().on('settingsUpdated', this.getSettings);
 		getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
