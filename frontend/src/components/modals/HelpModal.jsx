@@ -61,7 +61,7 @@ class HelpModal extends Component {
     								</span>
     								<br />
     								<span id="version">
-    									{this.props.version.name + ' ' + this.props.version.number}
+										{store.getVersion().name + ' ' + store.getVersion().number}
     								</span>
     								<br />
     							</div>

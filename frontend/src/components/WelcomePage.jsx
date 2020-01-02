@@ -198,7 +198,7 @@ class WelcomePage extends Component {
   							<dt>{i18next.t('UPDATE_BANNER_TITLE')}</dt>
   							<dd className="updateBanner--message">
   								{i18next.t('UPDATE_BANNER_MESSAGE', {
-  									actualVersion: this.props.settings.version.number
+  									actualVersion: store.getVersion().number
   								})}
   								<b> {this.state.latestVersion}</b>
   							</dd>

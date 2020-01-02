@@ -9,6 +9,7 @@ let timer;
 let tuto;
 let config = {};
 let logInfos;
+let version;
 
 if (!logInfos) {
 	var token = readCookie('mugenToken');
@@ -80,6 +81,14 @@ class Store extends EventEmmiter {
 
 	setConfig(conf) {
 		config = conf;
+	}
+
+	getVersion() {
+		return version;
+	}
+
+	setVersion(ver) {
+		version = ver;
 	}
 
 	getLogInfos() {

@@ -88,7 +88,8 @@ class App extends Component {
 
     getSettings = async () => {
     	const res = await axios.get('/api/public/settings');
-    	store.setConfig(res.data.data.config);
+		store.setConfig(res.data.data.config);
+		store.setVersion(res.data.data.version);
     	this.setState({ settings: res.data.data });
     };
 
