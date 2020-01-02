@@ -580,7 +580,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		}
 		if (conf.Karaoke.Autoplay &&
 			+playlist_id === state.currentPlaylistID &&
-			state.status === 'stop' ) playPlayer();
+			state.status === 'stop' ) playPlayer(true);
 		await Promise.all([
 			updatePlaylistKaraCount(playlist_id),
 			updateSongsLeft(user.login, playlist_id)
