@@ -41,18 +41,22 @@ class App extends Component<{}, IState> {
 		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 	}
 
-	async parseTags() {
+	async checkAuth() {
 		try {
-			const response = await axios.get('/api/tags');
-			return response.data.content.filter((val:Tag) => val.karacount !== null)
-				.map((val:{i18n:{[key: string]: string}, tid:string, name:string, types:Array<number|string>, karacount:string}) => {
-				var trad = val.i18n![this.state.navigatorLanguage];
-				return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
-			});
+			await axios.get('/api/auth/checkauth')
 		} catch (error) {
 			// if error the authorization must be broken so we delete it
 			store.logOut();
 		}
+	}
+
+	async parseTags() {
+		const response = await axios.get('/api/tags');
+		return response.data.content.filter((val:Tag) => val.karacount !== null)
+			.map((val:{i18n:{[key: string]: string}, tid:string, name:string, types:Array<number|string>, karacount:string}) => {
+			var trad = val.i18n![this.state.navigatorLanguage];
+			return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
+		});
 	}
 
 	async parseSeries() {
@@ -73,6 +77,9 @@ class App extends Component<{}, IState> {
 	}
 
 	async componentDidMount() {
+		if (axios.defaults.headers.common['authorization']) {
+			await this.checkAuth();
+		}
 		await this.getSettings();
 		getSocket().on('settingsUpdated', this.getSettings);
 		getSocket().on('connect', () => this.setState({ shutdownPopup: false }));

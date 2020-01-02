@@ -119,7 +119,7 @@ export default function authController(router) {
 		}
 	});
 
-	router.get('/auth/checkauth', requireAuth, (req, res) => {
+	router.get('/auth/checkauth', requireAuth, requireValidUser, (req, res) => {
 		res.status(200).send(decodeJwtToken(req.get('authorization')));
 	});
 	router.post('/admin/users/login', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
