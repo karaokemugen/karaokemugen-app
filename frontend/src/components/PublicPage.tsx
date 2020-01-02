@@ -43,6 +43,8 @@ interface IState {
 	kidPlaying?: string;
 }
 
+let timer:any;
+
 class PublicPage extends Component<IProps,IState> {
 	constructor(props:IProps) {
 		super(props);
@@ -100,12 +102,14 @@ class PublicPage extends Component<IProps,IState> {
   		<div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br/>{data.message}</div>, data.duration));
 	getSocket().on('nextSong', (data:DBPLC) => {
 		if (data && data.flag_visible) {
-			displayMessage('info', 
-				<div>
-					<label>{i18next.t('NEXT_SONG_MESSAGE')}</label>
-					<br/>
-					{buildKaraTitle(data, true)}
-				</div>)
+			if (timer) clearTimeout(timer);
+			timer = setTimeout(() => {
+				displayMessage('info', 
+					<div>
+						<label>{i18next.t('NEXT_SONG_MESSAGE')}</label>
+						<br/>
+						{buildKaraTitle(data, true)}
+					</div>)}, 500);
 		}
 	});
 	store.addChangeListener('loginOut', this.openLoginOrProfileModal);
