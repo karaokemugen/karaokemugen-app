@@ -40,6 +40,7 @@ class App extends Component {
 		return response.data.data.content.filter(val => val.karacount !== null).map(val => {
 			var trad = val.i18n[this.state.navigatorLanguage];
 			return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
+		});
 	}
 
 	async parseSeries() {
