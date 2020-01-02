@@ -82,7 +82,14 @@
         .fullLyrics, .showVideo, .makeFav, .deleteKara, .moreInfo {
             width: 46px;
             height: 46px;
-            font-size: 18px;
+			font-size: 18px;
+		}
+		
+		.addKara {
+			width: 66px;
+            height: 66px;
+			font-size: 18px;
+			margin: 5px
         }
 
         .deleteCriteria {

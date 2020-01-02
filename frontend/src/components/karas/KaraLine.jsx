@@ -17,23 +17,8 @@ class KaraLine extends Component {
 		this.state = {
 			displayedKaraDetail: false,
 			isLike: this.props.kara.flag_upvoted,
-			startSwipeX: 0,
-			addKaraInProgress: false
 		};
 	}
-
-  handleSwipe = e => {
-  	if (this.props.side === 1 && this.props.config.Frontend.Mode === 2
-      && e.changedTouches[0].clientX > this.state.startSwipeX + 100) {
-  		this.setState({ addKaraInProgress: true });
-  		this.addKara();
-  		setTimeout(() => this.setState({ addKaraInProgress: false }), 800);
-  	}
-  };
-
-  handleStart = e => {
-  	this.setState({ startSwipeX: e.changedTouches[0].clientX });
-  };
 
   toggleKaraDetail = () => {
   	if (this.state.displayedKaraDetail) {
@@ -202,24 +187,18 @@ class KaraLine extends Component {
   	var idPlaylist = this.props.idPlaylist;
   	return (
 		  <div className={'list-group-item ' + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu ' : ' ')
-			+(this.props.index % 2 === 0 ? 'list-group-item-binaire': '')}
-  			style={this.state.addKaraInProgress ? { transform: 'translate(100%)' } : {}}
-  			onTouchEnd={this.handleSwipe} onTouchStart={this.handleStart}>
-  			{scope === 'public' && kara.username !== logInfos.username && kara.flag_visible === false ?
+			+(this.props.index % 2 === 0 ? 'list-group-item-binaire': '')}>
+  			{scope === 'public' && logInfos && kara.username !== logInfos.username && kara.flag_visible === false ?
   				<div className="contentDiv">
   					<div style={{height:'33px'}}>{this.props.config.Playlist.MysterySongs.Labels[this.props.config.Playlist.MysterySongs.Labels.length * Math.random() | 0]}</div>
   				</div> :
   				<React.Fragment>
-  					{is_touch_device() && scope !== 'admin' ? null :
-  						<div className="actionDiv"> {this.props.idPlaylistTo !== this.props.idPlaylist ?
-  							<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
-  								scope={this.props.scope} playlistToAddId={this.props.playlistToAddId}
-  								addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} /> : null}
-
-  						{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
-
+					<div className="actionDiv"> {this.props.idPlaylistTo !== this.props.idPlaylist ?
+						<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
+							scope={this.props.scope} playlistToAddId={this.props.playlistToAddId}
+							addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} /> : null}
+						{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
   						</div>
-  					}
   					{scope === 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ?
   						<span name="checkboxKara" onClick={this.checkKara}>
   							{kara.checked ? <i className="far fa-check-square"></i>
