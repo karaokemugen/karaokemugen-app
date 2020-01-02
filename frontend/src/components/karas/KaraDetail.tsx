@@ -175,7 +175,7 @@ class KaraDetail extends Component<IProps,IState> {
 
   showFullLyrics = async () => {
   	var response = await axios.get('/api/karas/' + (this.state.kara as DBPLCInfo).kid + '/lyrics');
-  	if (is_touch_device()) {
+  	if (is_touch_device() && this.props.mode !== 'karaCard') {
 			callModal('alert', i18next.t('LYRICS'),
 				<div style={{ textAlign: 'center' }}>
 					{response.data.map((value:string) =>
