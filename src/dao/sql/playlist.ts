@@ -226,7 +226,7 @@ SELECT ak.kid AS kid,
 	pc.pk_id_plcontent AS playlistcontent_id,
 	pc.fk_login AS username,
 	pc.flag_free AS flag_free,
-	pc.flag_visible AS flag_visible
+	pc.flag_visible AS flag_visible,
 	ak.duration AS duration
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
