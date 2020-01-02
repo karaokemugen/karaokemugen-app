@@ -1185,6 +1185,14 @@ input[type="text"]:focus, input[type="password"]:focus {
     background-position: center;
 }
 
+.side2Button {
+	order: -1 !important;
+}
+
+.side1Button {
+	order: 99 !important;
+}
+
 .accountLabel {
 	margin: 10px;
 }

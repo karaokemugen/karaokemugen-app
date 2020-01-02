@@ -35,6 +35,7 @@ interface IState {
 	searchMenuOpen2: boolean;
 	mobileMenu: boolean;
 	statusPlayer?: PublicState;
+	currentSide: number;
 }
 class AdminPage extends Component<IProps, IState> {
 	constructor(props:IProps) {
@@ -44,7 +45,8 @@ class AdminPage extends Component<IProps, IState> {
 			idsPlaylist: {left: 0, right: 0},
 			searchMenuOpen1: false,
 			searchMenuOpen2: false,
-			mobileMenu: false
+			mobileMenu: false,
+			currentSide: 1
 		};
 		if (!store.getLogInfos() || !(store.getLogInfos() as Token).token || (store.getLogInfos() as Token).role !== 'admin') {
 			if (store.getLogInfos() && (store.getLogInfos() as Token).token && (store.getLogInfos() as Token).role !== 'admin') {
@@ -133,6 +135,14 @@ class AdminPage extends Component<IProps, IState> {
   	axios.put('/api/player', data);
   }
 
+  changeCurrentSide = () => {
+		if (this.state.currentSide==1) {
+			this.setState({currentSide:2});
+		} else if (this.state.currentSide==2) {
+			this.setState({currentSide:1});
+		}
+	};
+
   render() {
   	return (
   		<div id="adminPage">      
@@ -150,6 +160,8 @@ class AdminPage extends Component<IProps, IState> {
 					  options={this.state.options}
 					  adminMessage={this.adminMessage}
 					  putPlayerCommando={this.putPlayerCommando}
+					  changeCurrentSide={this.changeCurrentSide}
+					  currentSide={this.state.currentSide}
   				></AdminHeader>
 
   				<ProgressBar scope='admin' webappMode={this.props.config.Frontend.Mode}></ProgressBar>
@@ -162,7 +174,7 @@ class AdminPage extends Component<IProps, IState> {
   							</div>
   							: null
   					}
-  					<PlaylistMainDecorator>
+  					<PlaylistMainDecorator currentSide={this.state.currentSide}>
   						<Playlist 
 							scope='admin'
 							side={1}

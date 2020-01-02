@@ -11,11 +11,13 @@ import { PublicState } from '~../../../src/types/state';
 interface IProps {
 	config: Config;
 	options: boolean;
+	currentSide: number;
 	toggleProfileModal: () => void;
 	powerOff: () => void;
 	adminMessage: () => void;
 	putPlayerCommando: (event: any) => void;
 	setOptionMode: () => void;
+	changeCurrentSide: () => void;
 }
 
 interface IState {
@@ -71,7 +73,12 @@ class AdminHeader extends Component<IProps, IState> {
 
   	return (
   		<KmAppHeaderDecorator mode="admin">
-			  {is_touch_device() ? null :
+			  {is_touch_device() ? 
+				<button
+					className={`btn btn-dark ${this.props.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
+					type="button" onClick={this.props.changeCurrentSide}>
+						<i className="fas fa-tasks"></i>
+				</button> :
 			  <React.Fragment>
   				<div
   					className="btn btn-default btn-dark"

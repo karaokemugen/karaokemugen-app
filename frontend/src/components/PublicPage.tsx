@@ -41,6 +41,7 @@ interface IState {
 	searchMenuOpen: boolean;
 	classicModeModal: boolean;
 	kidPlaying?: string;
+	currentSide: number;
 }
 
 let timer:any;
@@ -57,7 +58,8 @@ class PublicPage extends Component<IProps,IState> {
 			idsPlaylist: {left: 0, right: 0},
 			dropDownMenu: false,
 			searchMenuOpen: false,
-			classicModeModal: false
+			classicModeModal: false,
+			currentSide: 1
 		};
 		if (!store.getLogInfos() || !(store.getLogInfos() as Token).token) {
 			this.openLoginOrProfileModal();
@@ -171,6 +173,20 @@ class PublicPage extends Component<IProps,IState> {
   	this.setState({kidPlaying: kid});
   };
 
+	changeCurrentSide = () => {
+		if (this.state.currentSide==1) {
+			this.setState({currentSide:2});
+			if(store.getTuto() && store.getTuto().getStepLabel() === 'change_screen') {
+				store.getTuto().move(1);
+			}
+		} else if (this.state.currentSide==2) {
+			this.setState({currentSide:1});
+			if(store.getTuto() && store.getTuto().getStepLabel() === 'change_screen2') {
+				store.getTuto().move(1);
+			}
+		}
+	};
+
   render() {
   	var logInfos = store.getLogInfos();
   	return (
@@ -263,7 +279,12 @@ class PublicPage extends Component<IProps,IState> {
 
 							{this.props.config.Frontend.Mode === 2 ? (
 								<React.Fragment>
-									{is_touch_device() ? null : (
+									{is_touch_device() ?
+										<button
+											className={`btn btn-dark ${this.state.currentSide === 2 ? 'side2Button' : ''}`}
+											type="button" onClick={this.changeCurrentSide}>
+												<i className="fas fa-tasks"></i>
+										</button> : (
 										<div className="dropdown">
 											<button
 												className="btn btn-dark dropdown-toggle klogo"
@@ -358,7 +379,7 @@ class PublicPage extends Component<IProps,IState> {
   									: ''
   							}
   						>
-  							<PlaylistMainDecorator>
+  							<PlaylistMainDecorator currentSide={this.state.currentSide}>
   								<Playlist
 									scope="public"
 									side={1}
