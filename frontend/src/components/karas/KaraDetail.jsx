@@ -148,7 +148,7 @@ class KaraDetail extends Component {
 
   showFullLyrics = async () => {
   	var response = await axios.get('/api/public/karas/' + this.state.kara.kid + '/lyrics');
-  	if (is_touch_device()) {
+  	if (is_touch_device() && this.props.mode !== 'karaCard') {
   		callModal('alert', i18next.t('LYRICS'), <center>{response.data.data.map(value => 
   			<React.Fragment>{value} <br/></React.Fragment>)}</center>);
   	} else {

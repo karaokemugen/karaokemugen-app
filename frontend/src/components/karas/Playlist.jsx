@@ -676,14 +676,10 @@ noRowsRenderer = () => {
       this.props.side === 1 && this.props.config &&
       this.props.config.Frontend.Mode === 1 ? (
   			<div className="playlist--wrapper">
-  				<div className="playlistContainer">
-  					<ul id="playlist1" className="list-group" side="1">
-  						<li className="list-group-item">
-  							<KaraDetail kid={this.props.kidPlaying} mode="karaCard" scope={this.props.scope} 
-  								navigatorLanguage={this.props.navigatorLanguage} />
-  						</li>
-  					</ul>
-  				</div>
+				<li className="list-group-item">
+					<KaraDetail kid={this.props.kidPlaying} mode="karaCard" scope={this.props.scope} 
+						navigatorLanguage={this.props.navigatorLanguage} />
+				</li>
   			</div>
   		) : (
   			<div className="playlist--wrapper">
