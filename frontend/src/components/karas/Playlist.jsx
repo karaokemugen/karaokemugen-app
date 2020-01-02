@@ -355,7 +355,7 @@ noRowsRenderer = () => {
       '&from=' +
       (this.state.data && this.state.data.infos && this.state.data.infos.from > 0 ? this.state.data.infos.from : 0) +
       '&size=' + chunksize;
-  	if(this.state.searchType) {
+  	if(this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) {
   		let searchCriteria = this.state.searchCriteria ?
   			{
   				'year' : 'y',
@@ -363,7 +363,6 @@ noRowsRenderer = () => {
   				'tag' : 't'
   			}[this.state.searchCriteria]
   			: '';
-  
   		url += '&searchType=' + this.state.searchType
           + ((searchCriteria && this.state.searchValue) ? ('&searchValue=' + searchCriteria + ':' + this.state.searchValue) : '');
   	}
