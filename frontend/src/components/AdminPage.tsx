@@ -25,6 +25,7 @@ interface IProps {
 	navigatorLanguage: string;
 	tags?: Array<Tag>;
 	showVideo: (file:string) => void;
+	getSettings: () => void;
 }
 
 interface IState {
