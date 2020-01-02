@@ -164,11 +164,11 @@ noRowsRenderer = () => {
 				<li className="list-group-item karaSuggestion">
 					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
 					{this.props.scope === 'admin' ?
-						<>
+						<React.Fragment>
 							<div><a href="/system/km/karas/download">{i18next.t('KARA_SUGGESTION_DOWNLOAD')}</a></div>
 							<div>{i18next.t('KARA_SUGGESTION_OR')}</div>
 							<div><a onClick={this.karaSuggestion}>{i18next.t('KARA_SUGGESTION_GITLAB_ADMIN')}</a></div>
-						</> :
+						</React.Fragment> :
 						<div><a onClick={this.karaSuggestion}>{i18next.t('KARA_SUGGESTION_GITLAB')}</a></div>
 					}
 				</li>

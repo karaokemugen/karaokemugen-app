@@ -28,7 +28,7 @@ class Options extends Component {
 
 	render() {
 		return (
-			<>
+			<React.Fragment>
 				<div className="col-lg-2 col-xs-0" />
 				<div
 					className="panel col-lg-8 col-xs-12 modalPage"
@@ -61,7 +61,7 @@ class Options extends Component {
 						</div>
 					</form>
 				</div>
-			</>
+			</React.Fragment>
 		);
 	};
 }
