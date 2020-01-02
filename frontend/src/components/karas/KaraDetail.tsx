@@ -40,7 +40,9 @@ class KaraDetail extends Component<IProps,IState> {
 			isVisible: false
 		};
 		this.fullLyricsRef = React.createRef();
-		this.getKaraDetail();
+		if (this.props.kid || this.props.idPlaylist) {
+			this.getKaraDetail();
+		}
 	}
 
 	componentWillReceiveProps(nextProps:IProps) {
