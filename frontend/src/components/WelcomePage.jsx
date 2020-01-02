@@ -32,6 +32,11 @@ class WelcomePage extends Component {
 		this.getNewsFeed();
 		this.getSessions();
 		this.checkAppUpdates();
+		store.addChangeListener('loginOut', this.openLoginOrProfileModal);
+	}
+  
+	componentWillUnmount() {
+		store.removeChangeListener('loginOut', this.openLoginOrProfileModal);
 	}
 
 	async checkAppUpdates() {

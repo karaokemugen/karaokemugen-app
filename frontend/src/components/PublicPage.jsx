@@ -72,7 +72,12 @@ class PublicPage extends Component {
   	});
   	getSocket().on('adminMessage', data => displayMessage('info', 
   		<div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br/>{data.message}</div>, data.duration));
+	store.addChangeListener('loginOut', this.openLoginOrProfileModal);
   }
+
+	componentWillUnmount() {
+		store.removeChangeListener('loginOut', this.openLoginOrProfileModal);
+	}
 
   displayClassicModeModal = async data => {
   	if (data.status === 'stop' && data.playerStatus === 'pause' && data.currentRequester === store.getLogInfos().username && !this.state.classicModeModal) {
