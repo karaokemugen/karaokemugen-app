@@ -152,8 +152,10 @@ export function buildKaraTitle(data:DBPLC, onlyText?:boolean) {
 };
 
 export function displayMessage (type:TypeOptions, message:any, time?:number) {
-	if (!time) time = 3500;
-	toast(message, {type: type, autoClose: time, position: 'top-center'});
+	if (!document.hidden) {
+		if (!time) time = 3500;
+		toast(message, {type: type, autoClose: time, position: 'top-center', pauseOnFocusLoss: false});
+	}
 }
 
 export function callModal(type:string, title:any, message:any, callback?:any, placeholder?:string) {
