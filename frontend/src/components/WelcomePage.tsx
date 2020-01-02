@@ -28,7 +28,6 @@ interface IState {
 	news: Array<News>;
 	sessions: Array<Session>;
 	activeSession?: Session;
-	logInfos?: Token;
 	latestVersion?: string;
 	catchphrase?: string
 }
@@ -52,16 +51,6 @@ class WelcomePage extends Component<IProps, IState> {
 		this.getNewsFeed();
 		this.getSessions();
 		this.checkAppUpdates();
-		this.setLogInfos();
-		store.addChangeListener('loginUpdated', this.setLogInfos);
-	}
-
-	setLogInfos = () => {
-		this.setState({logInfos: store.getLogInfos()});
-	}
-
-	componentWillUnmount() {
-    	store.removeChangeListener('loginUpdated', this.setLogInfos);
 	}
 
 	async checkAppUpdates() {
