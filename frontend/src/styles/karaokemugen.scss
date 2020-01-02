@@ -1261,6 +1261,6 @@ input[type="text"]:focus, input[type="password"]:focus {
 	background-color: white !important;
 }
 
-#nav-userlist,#nav-login {
+#nav-userlist,#nav-login,.modal-message {
 	max-height: calc(100vh - 150px);
 }
