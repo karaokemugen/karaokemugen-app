@@ -213,9 +213,11 @@ class PlaylistHeader extends Component<IProps,IState> {
   	if (activeFilter === 2 && this.props.idPlaylist !== -5) {
   		this.props.changeIdPlaylist(-5);
   	} else if (activeFilter !== 2 && this.props.idPlaylist !== -1) {
-  		this.props.changeIdPlaylist(-1);
-  	}
-  	this.props.getPlaylist(searchType);
+		  this.props.changeIdPlaylist(-1);
+		  this.props.getPlaylist(searchType);
+  	} else {
+		this.props.getPlaylist(searchType);
+	  }
   };
 
   onChangeTags = (value:string) => {
@@ -326,7 +328,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   				</div>
   			</div>
   			<div className="filterContainer">
-  				<div className={'filterElement ' + (this.state.activeFilter === 1 ? 'filterElementActive' : '')} onClick={() => this.getKarasList(1)}>
+  				<div className={'filterElement ' + (this.state.activeFilter === 1 ? 'filterElementActive' : '')} onClick={() => this.getKarasList(1, 'search')}>
   					<i className="fas fa-sort-alpha-down"></i> {i18next.t('VIEW_STANDARD')}
   				</div>
   				<div className={'filterElement ' + (this.state.activeFilter === 2 ? 'filterElementActive' : '')}  onClick={() => this.getKarasList(2)}>

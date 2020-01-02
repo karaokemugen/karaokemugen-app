@@ -407,11 +407,10 @@ noRowsRenderer = () => {
       '&from=' +
       (stateData && stateData.infos && stateData.infos.from > 0 ? stateData.infos.from : 0) +
       '&size=' + chunksize;
-  	if(this.state.searchType) {
+  	if(this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) {
   		let searchCriteria = this.state.searchCriteria ?
 		  criterias[this.state.searchCriteria]
   			: '';
-  
   		url += '&searchType=' + this.state.searchType
           + ((searchCriteria && this.state.searchValue) ? ('&searchValue=' + searchCriteria + ':' + this.state.searchValue) : '');
 	}
