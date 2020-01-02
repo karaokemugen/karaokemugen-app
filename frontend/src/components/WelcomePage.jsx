@@ -18,8 +18,7 @@ class WelcomePage extends Component {
 			news: [],
 			open: false,
 			sessions: [],
-			activeSession: '',
-			logInfos : {}
+			activeSession: ''
 		};
 		if (!store.getLogInfos().token) {
 			this.openLoginOrProfileModal();
@@ -33,16 +32,6 @@ class WelcomePage extends Component {
 		this.getNewsFeed();
 		this.getSessions();
 		this.checkAppUpdates();
-		this.setLogInfos();
-		store.addChangeListener('loginUpdated', this.setLogInfos);
-	}
-
-	setLogInfos = () => {
-		this.setState({logInfos: store.getLogInfos()});
-	}
-
-	componentWillUnmount() {
-    	store.removeChangeListener('loginUpdated', this.setLogInfos);
 	}
 
 	async checkAppUpdates() {
