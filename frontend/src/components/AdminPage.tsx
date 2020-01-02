@@ -65,6 +65,11 @@ class AdminPage extends Component<IProps, IState> {
 				this.setState({ statusPlayer: data });
 			});
 		}
+		store.addChangeListener('loginOut', this.openLoginOrProfileModal);
+	}
+  
+	componentWillUnmount() {
+		store.removeChangeListener('loginOut', this.openLoginOrProfileModal);
 	}
 
   majIdsPlaylist = (side:number, value:number) => {

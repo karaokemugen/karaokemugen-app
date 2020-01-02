@@ -51,6 +51,11 @@ class WelcomePage extends Component<IProps, IState> {
 		this.getNewsFeed();
 		this.getSessions();
 		this.checkAppUpdates();
+		store.addChangeListener('loginOut', this.openLoginOrProfileModal);
+	}
+  
+	componentWillUnmount() {
+		store.removeChangeListener('loginOut', this.openLoginOrProfileModal);
 	}
 
 	async checkAppUpdates() {

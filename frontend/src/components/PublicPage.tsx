@@ -108,7 +108,12 @@ class PublicPage extends Component<IProps,IState> {
 				</div>)
 		}
 	});
+	store.addChangeListener('loginOut', this.openLoginOrProfileModal);
   }
+
+	componentWillUnmount() {
+		store.removeChangeListener('loginOut', this.openLoginOrProfileModal);
+	}
 
   displayClassicModeModal = async (data:any) => {
   	if (data.status === 'stop' && data.playerStatus === 'pause' && data.currentRequester === (store.getLogInfos() as Token).username && !this.state.classicModeModal) {
