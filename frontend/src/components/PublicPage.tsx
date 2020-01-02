@@ -133,6 +133,7 @@ class PublicPage extends Component<IProps,IState> {
   };
 
   openLoginOrProfileModal = () => {
+	this.closeMobileMenu();
   	if (store.getLogInfos() && (store.getLogInfos() as Token).token) {
   		ReactDOM.render(<ProfilModal
   			config={this.props.config}
@@ -145,11 +146,13 @@ class PublicPage extends Component<IProps,IState> {
   };
 
   setLyrics = () => {
+	this.closeMobileMenu();
   	this.setState({ lyrics: !this.state.lyrics });
   };
 
   // pick a random kara & add it after (not) asking user's confirmation
   getLucky = async () => {
+	this.closeMobileMenu();
   	var response = await axios.get('/api/karas?filter=' + store.getFilterValue(1)+'&random=1');
   	if (response.data && response.data.content && response.data.content[0]) {
   		var chosenOne = response.data.content[0].kid;
@@ -186,6 +189,10 @@ class PublicPage extends Component<IProps,IState> {
 			}
 		}
 	};
+
+	closeMobileMenu = () => {
+		this.setState({ mobileMenu: false })
+	}
 
   render() {
   	var logInfos = store.getLogInfos();
@@ -281,7 +288,7 @@ class PublicPage extends Component<IProps,IState> {
 								<React.Fragment>
 									{is_touch_device() ?
 										<button
-											className={`btn btn-dark ${this.state.currentSide === 2 ? 'side2Button' : ''}`}
+											className={`btn btn-dark ${this.state.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
 											type="button" onClick={this.changeCurrentSide}>
 												<i className="fas fa-tasks"></i>
 										</button> : (
@@ -418,7 +425,10 @@ class PublicPage extends Component<IProps,IState> {
   									>
   										<a
   											className="btn-floating btn-large waves-effect z-depth-3 showPoll"
-  											onClick={() => ReactDOM.render(<PollModal />, document.getElementById('modal'))}
+  											onClick={() => {
+												this.closeMobileMenu();
+												ReactDOM.render(<PollModal />, document.getElementById('modal'))
+											}}
   										>
   											<i className="fas fa-bar-chart" />
   										</a>
@@ -444,7 +454,10 @@ class PublicPage extends Component<IProps,IState> {
   													<a
   														className="z-depth-3 btn-floating btn-large logout"
   														style={{ backgroundColor: '#111' }}
-  														onClick={store.logOut}
+  														onClick={() => {
+															this.closeMobileMenu();
+															store.logOut();
+														}}
   													>
   														<i className="fas fa-sign-out-alt" />
   													</a>
@@ -467,7 +480,10 @@ class PublicPage extends Component<IProps,IState> {
   											<a
   												className="z-depth-3 btn-floating btn-large"
   												style={{ backgroundColor: '#613114' }}
-  												onClick={() => ReactDOM.render(<HelpModal/>, document.getElementById('modal'))}
+  												onClick={() => {
+													this.closeMobileMenu();
+													ReactDOM.render(<HelpModal/>, document.getElementById('modal'))
+													}}
   											>
   												<i className="fas fa-question-circle" />
   											</a>
