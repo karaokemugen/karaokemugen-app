@@ -54,7 +54,12 @@ class AdminHeader extends Component {
 
   	return (
   		<KmAppHeaderDecorator mode="admin">
-			  {is_touch_device() ? null :
+			  {is_touch_device() ? 
+				<button
+					className={`btn btn-dark ${this.props.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
+					type="button" onClick={this.props.changeCurrentSide}>
+						<i className="fas fa-tasks"></i>
+				</button> :
 			  <React.Fragment>
   				<div
   					className="btn btn-default btn-dark"

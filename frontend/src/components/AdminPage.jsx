@@ -24,7 +24,8 @@ class AdminPage extends Component {
 			searchMenuOpen1: false,
 			searchMenuOpen2: false,
 			mobileMenu: false,
-			statusPlayer: {}
+			statusPlayer: {},
+			currentSide: 1
 		};
 		if (!store.getLogInfos() || !store.getLogInfos().token || store.getLogInfos().role !== 'admin') {
 			if (store.getLogInfos() && store.getLogInfos().token && store.getLogInfos().role !== 'admin') {
@@ -113,6 +114,14 @@ class AdminPage extends Component {
   	axios.put('/api/admin/player', data);
   }
 
+  changeCurrentSide = () => {
+		if (this.state.currentSide==1) {
+			this.setState({currentSide:2});
+		} else if (this.state.currentSide==2) {
+			this.setState({currentSide:1});
+		}
+	};
+
   render() {
   	return (
   		<div id="adminPage">      
@@ -130,6 +139,8 @@ class AdminPage extends Component {
 					  options={this.state.options}
 					  adminMessage={this.adminMessage}
 					  putPlayerCommando={this.putPlayerCommando}
+					  changeCurrentSide={this.changeCurrentSide}
+					  currentSide={this.state.currentSide}
   				></AdminHeader>
 
   				<ProgressBar scope='admin' webappMode={this.props.settings.config.Frontend.Mode}></ProgressBar>
@@ -142,7 +153,7 @@ class AdminPage extends Component {
   							</div>
   							: null
   					}
-  					<PlaylistMainDecorator className={this.state.options ? 'hidden' : ''}>
+  					<PlaylistMainDecorator currentSide={this.state.currentSide}>
   						<Playlist 
   							scope='admin'
   							side={1}

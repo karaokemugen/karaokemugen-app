@@ -30,7 +30,8 @@ class PublicPage extends Component {
 			idsPlaylist: {left: '', right: ''},
 			dropDownMenu: false,
 			searchMenuOpen: false,
-			classicModeModal: false
+			classicModeModal: false,
+			currentSide: 1
 		};
 		if (!store.getLogInfos().token) {
 			this.openLoginOrProfileModal();
@@ -131,6 +132,20 @@ class PublicPage extends Component {
   	this.setState({kidPlaying: kid});
   };
 
+	changeCurrentSide = () => {
+		if (this.state.currentSide==1) {
+			this.setState({currentSide:2});
+			if(store.getTuto() && store.getTuto().getStepLabel() === 'change_screen') {
+				store.getTuto().move(1);
+			}
+		} else if (this.state.currentSide==2) {
+			this.setState({currentSide:1});
+			if(store.getTuto() && store.getTuto().getStepLabel() === 'change_screen2') {
+				store.getTuto().move(1);
+			}
+		}
+	};
+
   render() {
   	var logInfos = store.getLogInfos();
   	return (
@@ -219,7 +234,12 @@ class PublicPage extends Component {
   										</div>
   									) : null}
 
-  								{is_touch_device() ? null : (
+  								{is_touch_device() ? 
+									<button
+										className={`btn btn-dark ${this.state.currentSide === 2 ? 'side2Button' : ''}`}
+										type="button" onClick={this.changeCurrentSide}>
+											<i className="fas fa-tasks"></i>
+									</button> : (
   									<div className="dropdown">
   										<button
   											className="btn btn-dark dropdown-toggle klogo"
@@ -314,7 +334,7 @@ class PublicPage extends Component {
   									: ''
   							}
   						>
-  							<PlaylistMainDecorator>
+  							<PlaylistMainDecorator currentSide={this.state.currentSide}>
   								<Playlist
   									scope="public"
   									side={1}
