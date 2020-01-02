@@ -147,7 +147,7 @@
 	"LYRICS": "Lyrics",
 	"NOLYRICS": "No lyrics available for this song",
 	"CL_HELP_DISCORD": "Come to our {{- discord}} if you have any questions!",
-	"CL_HELP_PUBLIC_MOBILE": "Add songs by <b>sliding them to the right</b>.<br/><b>Swipe left/right</b> to go from search mode to playlist mode.<br/><b>Tap a song</b> to see its details.",
+	"CL_HELP_PUBLIC_MOBILE": "<b>Click on the button at the top right of the screen</b> to go from search mode to playlist mode.<br/><b>Tap a song</b> to see its details.",
 	"CL_HELP_PUBLIC_MOBILE_RESTRICTED": "The app was put in restricted mode by the karaoke operator.",
 	"CL_HELP_PUBLIC_MOBILE_RESTRICTED_DESCRIPTION": "You can't add any more songs for now, but you can see the one playing and the current playlist by swiping left.",
 	"CL_HELP": "Help",
