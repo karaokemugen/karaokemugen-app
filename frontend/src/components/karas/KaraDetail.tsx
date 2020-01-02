@@ -333,7 +333,7 @@ class KaraDetail extends Component<IProps,IState> {
   								<button
   									type="button"
   									title={i18next.t('TOOLTIP_CLOSEPARENT')}
-  									className="closeParent btn btn-action"
+  									className={`closeParent btn btn-action ${is_touch_device() ? 'mobile' : ''}`}
   									onClick={this.props.toggleKaraDetail}
   								><i className="fas fa-times"></i></button>
   								{(store.getLogInfos() as Token).role === 'guest'
@@ -353,18 +353,13 @@ class KaraDetail extends Component<IProps,IState> {
   								<button
   									type="button"
   									title={i18next.t('TOOLTIP_SHOWVIDEO')}
-  									className={
-  										'showVideo btn btn-action' +
-                      (is_touch_device() ? 'mobile' : '')
-  									}
+  									className={`showVideo btn btn-action ${is_touch_device() ? 'mobile' : ''}`}
   									onClick={() => this.props.showVideo!((this.state.kara as DBPLCInfo).mediafile)}
   								><i className="fas fa-video"></i></button>
   								{data.serie ? (
   									<button
   										type="button"
-  										className={
-  											'moreInfo btn btn-action' + (is_touch_device() ? 'mobile' : '')
-  										}
+  										className={`moreInfo btn btn-action ${is_touch_device() ? 'mobile' : ''}`}
   										onClick={this.moreInfo}
   									><i className="fas fa-info-circle"></i></button>
   								) : null}
