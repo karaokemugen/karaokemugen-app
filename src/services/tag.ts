@@ -5,7 +5,7 @@ import uuidV4 from 'uuid/v4';
 import { resolvedPathTags } from '../lib/utils/config';
 import { addTagToStore, sortTagsStore, getStoreChecksum, editTagInStore, removeTagInStore, editKaraInStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
-import { sanitizeFile, asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
+import { sanitizeFile } from '../lib/utils/files';
 import { writeTagFile, formatTagFile, removeTagFile, removeTagInKaras, getDataFromTagFile } from '../lib/dao/tagfile';
 import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
 import { refreshKaras } from '../lib/dao/kara';
@@ -50,7 +50,7 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 	const promises = [
 		insertTag(tagObj),
 		writeTagFile(tagObj, resolvedPathTags()[0])
-	]
+	];
 	await Promise.all(promises);
 
 	const tagData = formatTagFile(tagObj).tag;
@@ -140,8 +140,12 @@ export async function mergeTags(tid1: string, tid2: string) {
 export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }) {
 	const oldTag = await getTag(tid);
 	if (!oldTag) throw 'Tag ID unknown';
-	if (oldTag.name !== tagObj.name) await removeTagFile(oldTag.tagfile);
 	tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
+	if (oldTag.tagfile !== tagObj.tagfile) try {
+		await removeTagFile(oldTag.tagfile);
+	} catch(err) {
+		// Non-fatal.
+	}
 	const tagfile = tagObj.tagfile;
 	await Promise.all([
 		updateTag(tagObj),
@@ -174,13 +178,7 @@ export async function integrateTagFile(file: string): Promise<string> {
 	try {
 		const tagDBData = await getTag(tagFileData.tid);
 		if (tagDBData) {
-			await editTag(tagFileData.tid, tagFileData, { refresh: false });
-			if (tagDBData.tagfile !== tagFileData.tagfile) try {
-					await asyncUnlink(await resolveFileInDirs(tagDBData.tagfile, resolvedPathTags()));
-				} catch(err) {
-					logger.warn(`[Tags] Could not remove old tag file ${tagDBData.tagfile}`);
-				}
-			return tagFileData.name;
+			await editTag(tagFileData.tid, tagFileData, { refresh: false });return tagFileData.name;
 		} else {
 			await addTag(tagFileData, { refresh: false });
 			return tagFileData.name;
