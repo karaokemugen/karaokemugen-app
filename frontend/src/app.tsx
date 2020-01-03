@@ -3,8 +3,6 @@ import WelcomePage from './components/WelcomePage';
 import AdminPage from './components/AdminPage';
 import PublicPage from './components/PublicPage';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
 import i18n from './components/i18n';
 import NotFoundPage from './components/NotfoundPage';
 import langs from 'langs';
@@ -175,4 +173,3 @@ class App extends Component<{}, IState> {
 }
 
 export default App;
-ReactDOM.render(<BrowserRouter><App /></BrowserRouter>, document.getElementById('root'));
