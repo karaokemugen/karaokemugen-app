@@ -271,7 +271,11 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
+<<<<<<< HEAD
 		if (!user.nickname) user.nickname = currentUser.nickname;
+=======
+		if (!user.nickname) throw 'Nickname cannot be empty';
+>>>>>>> Forgot a ;
 		if (!user.series_lang_mode) user.series_lang_mode = -1;
 		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw 'Invalid series_lang_mode';
 		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw `main_series_lang is not a valid ISO639-2B code (received ${user.main_series_lang})`;
