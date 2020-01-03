@@ -158,10 +158,9 @@ class AdminHeader extends Component {
   				/>
   			</button>
           
-  			<div className="header-group switchs">
+  			<div className="header-group switchs" id="optionsButton">
   				<RadioButton
   					title={i18next.t('SWITCH_OPTIONS')}
-  					name="optionsButton"
   					orientation="vertical"
   					buttons={[
   						{
@@ -178,10 +177,9 @@ class AdminHeader extends Component {
   					]}
   				></RadioButton>
   			</div>
-  			<div className="header-group switchs">
+  			<div className="header-group switchs" id="KaraokePrivate">
   				<RadioButton
   					title={i18next.t('SWITCH_PRIVATE')}
-  					name="Karaoke.Private"
   					orientation="vertical"
   					buttons={[
   						{

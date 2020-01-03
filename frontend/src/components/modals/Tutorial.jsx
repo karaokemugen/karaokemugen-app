@@ -55,7 +55,7 @@ class Tutorial extends Component {
 				},
 				{ 
 					placement:'auto',
-					target:'.header-group.switchs > .radiobutton-ui:first-child',
+					target:'#KaraokePrivate',
 					content: i18nAsDiv('INTRO_ADMIN_MODE'),
 				},
 				{ 
@@ -82,7 +82,7 @@ class Tutorial extends Component {
 				},
 				{ 
 					placement:'auto',
-					target:'.header-group.switchs > .radiobutton-ui:last-child',
+					target:'#optionsButton',
 					content: i18nAsDiv('INTRO_ADMIN_SETTINGS'),
 					hideFooter: true,
 				},
