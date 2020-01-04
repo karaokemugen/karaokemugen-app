@@ -123,53 +123,6 @@ export default function authController(router) {
 	router.get('/auth/checkauth', requireAuth, requireValidUser, (req, res) => {
 		res.status(200).send(decodeJwtToken(req.get('authorization')));
 	});
-	router.post('/users/login', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
-		/**
- * @api {post} /users/login Login / Sign in from the admin panel
- * @apiName AdminAuthLogin
- * @apiVersion 3.1.0
- * @apiGroup Auth
- * @apiPermission Admin
- * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
- * @apiHeader {String} charset Must be `UTF-8`
- * @apiParam {String} username Login name for the user
- * @apiParam {String} password Password for the user. Can be empty if user is a guest.
- * @apiSuccess {String} onlineToken If username is a remote one, `onlineToken` is defined. You need to pass it via headers along `token` for user to be authentified.
- * @apiSuccess {String} token Identification token for this session
- * @apiSuccess {String} username Username logged in ( contains @host if remote, with host being the instance's host)
- * @apiSuccess {String} role Role of this user (`user` or `admin`)
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE1MTMxNjAxMTEzMjMsInJvbGUiOiJ1c2VyIn0.UWgsc5XEfFtk34IpUAQid_IEWCj2ffNjQ--FJ9eAYd0",
- *   "username": "Axel",
- *   "role": "admin",
- *   "onlineToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE1MTMxNjAxMTEzMjMsInJvbGUiOiJ1c2VyIn0.UWgsc5XEfFtk34IpUAQid_IEWCj2ffNjQ--FJ9eAYd0"
- * }
- * @apiError 401 Unauthorized
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 401 Unauthorized
- */
-		if (!req.body.password) req.body.password = '';
-		try {
-			const token = await checkLogin(req.body.username, req.body.password);
 
-			// Edit the user to make it admin
-			let user = await findUserByName(req.body.username);
-			user.type = 0;
-			user.password = req.body.password;
-			await editUser(token.username, user, null, 'admin', {
-				editRemote: false,
-				renameUser: false
-			});
-			token.role = 'admin';
-			token.token = createJwtToken(user.login, token.role);
-			res.status(200).send(token);
-		} catch(err) {
-			res.status(401).send(loginErr);
-		}
-	});
 }
 
