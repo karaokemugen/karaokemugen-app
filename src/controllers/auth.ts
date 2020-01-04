@@ -43,20 +43,21 @@ export default function authController(router) {
  */
 		if (!req.body.password) req.body.password = '';
 		try {
-			// Check if security code is correct and user does not contain a @
-			if (req.body.securityCode === getState().securityCode && !req.body.username.includes('@')) {
-				// Reset security code
+			let token = await checkLogin(req.body.username, req.body.password);
+			// Check if security code is correct
+			if (req.body.securityCode === getState().securityCode) {
+				// Reset security code once it's been used
 				resetSecurityCode();
-				// Edit user and change its password first
+				// Edit user and change its type to admin
 				await editUser(req.body.username, {
-					login: req.body.username,
-					password: req.body.password
+					type: 0
 				}, null, 'admin', {
 					editRemote: false,
 					renameUser: false
 				});
+				// Redefine the token
+				token = await checkLogin(req.body.username, req.body.password);
 			}
-			const token = await checkLogin(req.body.username, req.body.password);
 			res.status(200).send(token);
 		} catch(err) {
 			res.status(401).send(loginErr);
