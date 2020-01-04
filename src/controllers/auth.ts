@@ -15,7 +15,7 @@ export default function authController(router) {
 		/**
  * @api {post} /auth/login Login / Sign in
  * @apiName AuthLogin
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Auth
  * @apiPermission NoAuth
  * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
@@ -68,7 +68,7 @@ export default function authController(router) {
 		/**
  * @api {post} /auth/login/guest Login / Sign in (as guest)
  * @apiName AuthLoginGuest
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Auth
  * @apiPermission NoAuth
  * @apiDescription
@@ -127,7 +127,7 @@ export default function authController(router) {
 		/**
  * @api {post} /users/login Login / Sign in from the admin panel
  * @apiName AdminAuthLogin
- * @apiVersion 3.0.0
+ * @apiVersion 3.1.0
  * @apiGroup Auth
  * @apiPermission Admin
  * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
