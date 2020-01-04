@@ -10,6 +10,11 @@ This is a bugfix release
 - Config settings are correctly updated when displaying the settings page (d7acf199)
 - When in restricted mode, the frontend will display a modal only on mobile (fad65274)
 - Quotes are not being removed anymore during searches. So "May'n" won't search for "May" and "n" anymore. (49cbc80d)
+- Add a message to check if the song is not available for download before make a suggestion (95db6039)
+- Now use checkAuth route to verify authorization in frontend (824f8b7d)
+- Remove use of swipe in mobile for add Kara and change view (#547 - 735b3851, c8cdf0ba, 6756e3c2, b3e2c9b9)
+- Icon to tell the difference between mystery karas and others is now clickable (925374eb)
+- Add search aliases or locales in serie field on kara page (429458e1, d0ea6b3f)
 
 ### Fixes
 
@@ -20,7 +25,20 @@ This is a bugfix release
 - Polls should work pollfectly now. (84bf4818)
 - When going from the kara list to a filtered list (applying a filter) the scroll placement is reset (af79e412)
 - Remaining time of a playlist is now correctly updated (32698f3c)
-- Various frontend UI fixes (check commits)
+- Update FR locales (c9948e11, 9e47e80a)
+- No more flickering when scroll in a playlist (ee38366a)
+- Fix scroll on user list in profile modal (#476) 
+- Fix add an ip for Host in system panel config page (f2f01947)
+- Fix modals on small screen (9cbe227e, 2eed7ef4, 5fdb1997)
+- Fix initial render for playlist (8b1ece19, 92c73fa5)
+- Fix favorites display in public page (12b67a1b)
+- Fix alignement ro playing karaoke in start of a playlist (08b17f43)
+- Fix open the login modal when logout (013a421f)
+- Fix spam of toast when page was hidden (e6ac7ca7)
+- Fix restricted mode (d738745b, 158d7ff2)
+- Fix songtype display in mobile when title is multiline (631daded)
+- Fix wrong color display for buttons in karaDetail (daddc90f)
+- Fix help modal display (a1975f83)
 
 ## v3.0.1 "Leafa Loyale" - 13/12/2019
 

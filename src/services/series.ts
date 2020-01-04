@@ -11,7 +11,6 @@ import {Series} from '../lib/types/series';
 import { KaraParams, KaraList, IDQueryResult } from '../lib/types/kara';
 import { removeSeriesInStore, editSeriesInStore, addSeriesToStore, sortSeriesStore, getStoreChecksum } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
-import {asyncUnlink, resolveFileInDirs, } from '../lib/utils/files';
 import {resolvedPathSeries} from '../lib/utils/config';
 import {getDataFromSeriesFile} from '../lib/dao/seriesfile';
 import { getAllKaras } from './kara';
@@ -102,8 +101,12 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 export async function editSerie(sid: string, serieObj: Series, opts = { refresh: true }) {
 	const oldSerie = await testSerie(sid);
 	if (!oldSerie) throw 'Series ID unknown';
-	if (oldSerie.name !== serieObj.name) await removeSeriesFile(oldSerie.seriefile);
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
+	if (oldSerie.seriefile !== serieObj.seriefile) try {
+		await removeSeriesFile(oldSerie.seriefile);
+	} catch(err) {
+		//Non fatal. Can be triggered if the series file has already been removed.
+	}
 	const seriefile = serieObj.seriefile;
 	await Promise.all([
 		updateSerie(serieObj),
@@ -136,11 +139,6 @@ export async function integrateSeriesFile(file: string): Promise<string> {
 		const seriesDBData = await testSerie(seriesFileData.sid);
 		if (seriesDBData) {
 			await editSerie(seriesFileData.sid, seriesFileData, { refresh: false });
-			if (seriesDBData.seriefile !== seriesFileData.seriefile) try {
-					await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, resolvedPathSeries()));
-				} catch(err) {
-					logger.warn(`[Series] Could not remove old series file ${seriesDBData.seriefile}`);
-				}
 			return seriesFileData.name;
 		} else {
 			await addSerie(seriesFileData, { refresh: false });

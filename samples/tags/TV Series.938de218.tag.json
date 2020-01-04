@@ -5,11 +5,11 @@
   },
   "tag": {
     "i18n": {
-      "eng": "TV Show/Serie",
-      "fre": "Emission/Série TV"
+      "eng": "TV Series",
+      "fre": "Série TV"
     },
-    "name": "TV Show",
-    "short": "TV",
+    "name": "TV Series",
+    "short": "SERIE",
     "tid": "938de218-5343-4865-94d3-fb33f2eaa152",
     "types": [
       "origins"
