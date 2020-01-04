@@ -122,9 +122,9 @@ export default function authController(router) {
 	router.get('/auth/checkauth', requireAuth, requireValidUser, (req, res) => {
 		res.status(200).send(decodeJwtToken(req.get('authorization')));
 	});
-	router.post('/admin/users/login', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+	router.post('/users/login', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		/**
- * @api {post} /admin/users/login Login / Sign in from the admin panel
+ * @api {post} /users/login Login / Sign in from the admin panel
  * @apiName AdminAuthLogin
  * @apiVersion 3.0.0
  * @apiGroup Auth
