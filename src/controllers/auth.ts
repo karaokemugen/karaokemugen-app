@@ -22,7 +22,7 @@ export default function authController(router) {
  * @apiHeader {String} charset Must be `UTF-8`
  * @apiParam {String} username Login name for the user
  * @apiParam {String} password Password for the user. Can be empty if user is a guest.
- * @apiParam {Number} securityCode Security Code in case a local admin forgot its password
+ * @apiParam {Number} securityCode Security Code to turn a normal user into an admin
  * @apiSuccess {String} onlineToken If username is a remote one, `onlineToken` is defined. You need to pass it via headers along `token` for user to be authentified.
  * @apiSuccess {String} token Identification token for this session
  * @apiSuccess {String} username Username logged in ( contains @host if remote, with host being the instance's host)
