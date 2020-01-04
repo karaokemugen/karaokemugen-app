@@ -1,5 +1,5 @@
-import {requireAuth, requireValidUser, requireAdmin} from './middlewares/auth';
-import { updateLastLoginName, createJwtToken, decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint, findUserByName, editUser, resetSecurityCode } from '../services/user';
+import {requireAuth, requireValidUser} from './middlewares/auth';
+import { updateLastLoginName, decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint, editUser, resetSecurityCode } from '../services/user';
 import { getState } from '../utils/state';
 
 const loginErr = {
