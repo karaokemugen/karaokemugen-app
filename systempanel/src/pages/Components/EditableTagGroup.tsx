@@ -107,17 +107,16 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	};
 
 	search = (val?: any) => {
-		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => {
-			if (this.props.search === 'tag') this.searchTags(val);
-			if (this.props.search === 'serie') this.searchSeries(val);
-		}, 500);
+		if (this.props.search === 'tag') this.searchTags(val);
+		if (this.props.search === 'serie') this.searchSeries(val);
 	};
 
-	searchSeries = (val) => {
+	searchSeries = (val) => {	
+		if (timer) clearTimeout(timer);
+		timer = setTimeout(() => {
 		this.getSeries(val).then(series => {
 			this.setState({ DS: (series.data.content && series.data.content.map(serie => serie.name)) || [] });
-		});
+		})}, 500);
 	};
 
 	searchTags = (val?: any) => {
