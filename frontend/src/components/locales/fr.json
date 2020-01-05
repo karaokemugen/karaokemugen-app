@@ -367,6 +367,8 @@
 	"ADMIN_ACCOUNT": "Compte opérateur ?",
 	"SECURITY_CODE": "Code de sécurité",
 	"FORGOT_PASSWORD": "Mot de passe oublié ?",
+	"FORGOT_PASSWORD_ADMIN": "Mot de passe oublié ou compte non admin ?",
+	"NOT_ADMIN_ACCOUNT": "Compte non admin ?",
 	"FORGOT_PASSWORD_SUCCESS": "Un email avec un lien pour réinitialiser votre mot de passe vous a été envoyé.",
 	"FORGOT_PASSWORD_ERROR": "Impossible de vous envoyer un email de réinitialisation : contacter l'administrateur du serveur dont vous dépendez",
     "INTRO_ADMIN_INTRO1": "Bienvenue sur Karaoke Mugen ! <br /><br /> Avant que l'on commence, notez le mot de passe du compte <b>admin</b> bien précieusement : <br/>{{password}}<br /><br />Ce compte ne peut être supprimé et vous permettra de vous connecter en cas de problème avec le compte que nous allons créer ensuite.<br/>",

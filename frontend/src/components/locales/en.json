@@ -346,6 +346,8 @@
 	"ADMIN_ACCOUNT": "Admin account?",
 	"SECURITY_CODE": "Security code",
 	"FORGOT_PASSWORD": "Forgot password?",
+	"FORGOT_PASSWORD_ADMIN": "Forgot password or not admin account?",
+	"NOT_ADMIN_ACCOUNT": "Not admin account?",
 	"FORGOT_PASSWORD_SUCCESS": "An email has been sent with a link to reset your password.",
 	"FORGOT_PASSWORD_ERROR": "Could not reset your password: contact the the server's administrator your account belongs to.",
     "INTRO_ADMIN_INTRO1": "Welcome to Karaoke Mugen!<br/><br/>Before we begin, write down the <b>admin</b> account password somewhere: <br/>{{password}}<br/><br/>This account can't be deleted and will allow you to login in case there's a problem with the account we are going to create next.<br/>",

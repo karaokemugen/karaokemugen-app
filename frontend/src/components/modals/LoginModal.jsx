@@ -190,15 +190,20 @@ class LoginModal extends Component {
     										placeholder={this.state.forgotPassword & !this.state.onlineSwitch ? i18next.t('NEW_PASSWORD') : i18next.t('PASSWORD')}
     										defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
     								</div>
+									{this.state.onlineSwitch ?
     								<div>
-    									<label className="accountLabel">{i18next.t('FORGOT_PASSWORD')}</label>                                    
-    									{this.state.onlineSwitch ? 
-    										<button type="button" className="forgotPasswordButton" onClick={this.forgetOnlinePassword}><i className="fas fa-lock"></i></button> : 
-    										<Switch handleChange={() => this.setState({forgotPassword: !this.state.forgotPassword})}
-    											isChecked={this.state.forgotPassword} />
-    									}
-    								</div>
-    								{this.state.forgotPassword & !this.state.onlineSwitch ?
+    									<label className="accountLabel">{ i18next.t('FORGOT_PASSWORD')}</label>
+    										<button type="button" className="forgotPasswordButton" onClick={this.forgetOnlinePassword}><i className="fas fa-lock"></i></button>
+									</div> : null
+									}
+									{this.props.scope != 'public' ?
+    								<div>
+    									<label className="accountLabel">{this.state.onlineSwitch ? i18next.t('NOT_ADMIN_ACCOUNT') : i18next.t('FORGOT_PASSWORD_ADMIN')}</label>
+										<Switch handleChange={() => this.setState({forgotPassword: !this.state.forgotPassword})}
+											isChecked={this.state.forgotPassword} />
+									</div> : null
+									}
+    								{this.state.forgotPassword && this.props.scope != 'public' ?
     									<input type="text" placeholder={i18next.t('SECURITY_CODE')}
     										defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: event.target.value })} /> : null
     								}
@@ -223,15 +228,13 @@ class LoginModal extends Component {
     										required onKeyPress={this.onKeyPress} defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
     									<input type="password" className={this.state.redBorders} id="signupPasswordConfirmation" name="modalPassword" placeholder={i18next.t('PASSWORDCONF')}
     										required onKeyPress={this.onKeyPress} defaultValue={this.state.passwordConfirmation} required onChange={(event) => this.setState({ passwordConfirmation: event.target.value })} />
-    									<div>
-    										<label className="accountLabel">{i18next.t('ADMIN_ACCOUNT')}</label>                                    
-    										<Switch handleChange={() => this.setState({adminSwitch: !this.state.adminSwitch})}
-    											isChecked={this.state.adminSwitch} />
-    									</div>
-    									{this.state.adminSwitch ?
-    										<input type="text" placeholder={i18next.t('SECURITY_CODE')}
-    											defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: event.target.value })} /> : null
-    									}
+										{this.props.scope != 'public' ?
+											<div>
+												<br/>
+												<input type="text" placeholder={i18next.t('SECURITY_CODE')}
+													defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: event.target.value })} />
+											</div> : null
+										}
     								</div>
     								<div>
     									<button id="signup" type="button" className="btn btn-default login" onClick={this.signup}>
