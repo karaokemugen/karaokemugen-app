@@ -1,11 +1,12 @@
 # Versions
 
-## v3.0.2 "Leafa Langoureuse" - 15/01/2020
+## v3.0.2 "Leafa Langoureuse" - 07/01/2020
 
 This is a bugfix release
 
 ### Improvements
 
+- Security code can't be used anymore to reset your local password. If you lost your password, use the security code to create a new admin account (c7dad84b)
 - Poll winner is sent to Twitch chat when available (df5d27f1)
 - Config settings are correctly updated when displaying the settings page (d7acf199)
 - When in restricted mode, the frontend will display a modal only on mobile (fad65274)
@@ -18,6 +19,11 @@ This is a bugfix release
 
 ### Fixes
 
+- Fix autoplay setting not working as intended (f0f2f18c)
+- When downloading a song, tags or series could have needed to be removed if their filename were different, but it throwed an error if the file didn't exist anymore, which could happen inbetween database refreshes. Now the error won't throw anymore, just display in debug logs (77af237b)
+- Fix samples' TV Series tag. (3bbf5eb2)
+- Fix nickname can't be empty error when modifying password (1a4ae993)
+- Fix admin tutorial (030c3069)
 - Fix issues when playlists are set to invisible (6c2bf0b5)
 - When downloading songs, tags/series are now correctly deleted when their name has changed (0751bcf1)
 - Toyunda2ASS has been updated to 1.0.8 - correctly detects CRLF line breaks now (0eec58af)
@@ -27,7 +33,7 @@ This is a bugfix release
 - Remaining time of a playlist is now correctly updated (32698f3c)
 - Update FR locales (c9948e11, 9e47e80a)
 - No more flickering when scroll in a playlist (ee38366a)
-- Fix scroll on user list in profile modal (#476) 
+- Fix scroll on user list in profile modal (#476)
 - Fix add an ip for Host in system panel config page (f2f01947)
 - Fix modals on small screen (9cbe227e, 2eed7ef4, 5fdb1997)
 - Fix initial render for playlist (8b1ece19, 92c73fa5)
@@ -39,6 +45,7 @@ This is a bugfix release
 - Fix songtype display in mobile when title is multiline (631daded)
 - Fix wrong color display for buttons in karaDetail (daddc90f)
 - Fix help modal display (a1975f83)
+
 
 ## v3.0.1 "Leafa Loyale" - 13/12/2019
 
