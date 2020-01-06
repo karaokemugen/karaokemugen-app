@@ -1,5 +1,37 @@
 # Versions
 
+## v3.1.0 "Mitsuha Mélodramatique" -
+
+This is a major release.
+
+### New Features
+
+- The config page in the System Panel is improved, allowing you to change all settings, even some internal ones, paths, etc. (#533)
+- Sessions can now be flagged as private if you want to avoid sending them over to Karaoke Mugen Server (#543)
+- Added a `--noPlayer` option to avoid starting the player along with KM when you only want to manage your karaoke database. (#541)
+- Added a QuickStart setting which equals `--noBaseCheck`. This allows you to bypass the karaoke base verification to save some time on startup when you're absolutely certain nothing has changed. (#541)
+- When the current song nears its end, a message appears on users' devices to tell them what the next song is (#537)
+- When adding a song, the message also gives you how long before it should be playing (#536)
+- This version of Karaoke Mugen does not generate Kara V3 files anymore when creating new karaokes (yes this is a new feature) (#534)
+- Download page now has a filter to only show missing or updated songs (#532)
+- Playlists now have two new medias in addition of intros and jingles : (#531)
+  - Outros are played at the very end of the playlist
+  - Encores are played before the last song plays.
+  - We offer a few of those in our git repos, they will be downloaded automagically by Karaoke Mugen.
+- KM is now bundled with a `portable` file. If this file exists, KM will store everything in the `app` folder, just like before. If not, KM will store all its data files in the user's home folder : `$HOME/KaraokeMugen` (#525)
+- User avatars are now displayed next to the songs they added in playlist (#423)
+- System panel is now translated in french and english (#263)
+
+### Improvements
+
+- The swipe movement to switch from the song list to the playlists in mobile view has been deprecated in favor of a button, as it was causing too many misuses (#547)
+- Player (mpv) is now restarted if it's been closed by mistake or voluntarily by the user whenever an action requiring it is made (#540)
+- The frontend's and system's APIs have been merged into one, just so we could create more bugs (#539)
+- Upgraded all dependencies, notably Got (HTTP client) to version 10 (#535)
+- Frontend is now written in typescript, yay. (#528)
+- Downloader has been rewritten with async functions and a queue system (#511)
+- Logged in users now is a scrollable list in frontend (#476)
+
 ## v3.0.2 "Leafa Langoureuse" - 15/01/2020
 
 This is a bugfix release
@@ -27,7 +59,7 @@ This is a bugfix release
 - Remaining time of a playlist is now correctly updated (32698f3c)
 - Update FR locales (c9948e11, 9e47e80a)
 - No more flickering when scroll in a playlist (ee38366a)
-- Fix scroll on user list in profile modal (#476) 
+- Fix scroll on user list in profile modal (#476)
 - Fix add an ip for Host in system panel config page (f2f01947)
 - Fix modals on small screen (9cbe227e, 2eed7ef4, 5fdb1997)
 - Fix initial render for playlist (8b1ece19, 92c73fa5)
