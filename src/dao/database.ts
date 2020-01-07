@@ -141,9 +141,9 @@ export async function initDBSystem(): Promise<boolean> {
 	generateBlacklist();
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
-	logger.info(`[DB] Songs        : ${stats.karas} (${duration(+stats.duration)})`);
-	logger.info(`[DB] Playlists    : ${stats.playlists}`);
-	logger.info(`[DB] Songs played : ${stats.played}`);
+	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
+	logger.info(`Playlists    : ${stats.playlists}`);
+	logger.info(`Songs played : ${stats.played}`);
 	return true;
 }
 

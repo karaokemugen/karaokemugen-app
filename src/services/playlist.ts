@@ -115,7 +115,7 @@ export async function isUserAllowedToAddKara(playlist_id: number, user: User, du
 		try {
 			const count = await getSongCountForUser(playlist_id,user.login);
 			if (count >= limit) {
-				logger.debug(`[Playlist] User ${user.login} tried to add more songs than he/she was allowed (${limit})`);
+				logger.debug(`[PLC] User ${user.login} tried to add more songs than he/she was allowed (${limit})`);
 				return false;
 			}
 			return true;
@@ -128,7 +128,7 @@ export async function isUserAllowedToAddKara(playlist_id: number, user: User, du
 			let time = await getSongTimeSpentForUser(playlist_id,user.login);
 			if (!time) time = 0;
 			if ((limit - time - duration) < 0) {
-				logger.debug(`[Playlist] User ${user.login} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`);
+				logger.debug(`[PLC] User ${user.login} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`);
 				return false;
 			}
 			return true;
@@ -1054,7 +1054,7 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (playlist.content.length === 0) throw 'Playlist is empty!';
 	if (playlist.index + 1 >= playlist.content.length && !conf.Karaoke.Repeat) {
-		logger.debug('[Playlist] End of playlist.');
+		logger.debug('[PLC] End of playlist.');
 		if (setPlayingSong) await setPlaying(null, playlist.id);
 		throw 'Current position is last song!';
 	} else {
@@ -1164,19 +1164,19 @@ export async function buildDummyPlaylist() {
 	// Limiting to 5 sample karas to add if there's more.
 	if (karaCount > 5) karaCount = 5;
 	if (karaCount > 0) {
-		logger.info(`[Playlist] Dummy Plug : Adding ${karaCount} karas into current playlist`);
+		logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);
 		const karas = await getKaras({
 			size: karaCount,
 			token: {username: 'admin', role: 'admin'},
 			random: karaCount
 		});
 		await addKaraToPlaylist(karas.content.map(k => k.kid), 'admin', state.currentPlaylistID);
-		logger.info(`[Playlist] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
+		logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
 		emitWS('playlistInfoUpdated', state.currentPlaylistID);
 		emitWS('playlistContentsUpdated', state.currentPlaylistID);
 		return true;
 	} else {
-		logger.warn('[Playlist] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
+		logger.warn('[PLC] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
 		return true;
 	}
 }
