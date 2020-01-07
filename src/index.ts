@@ -88,7 +88,7 @@ async function main() {
 	console.log(chalk.blue(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
-	console.log('================================================================');
+	console.log('================================================================================');
 	await configureLogger(dataPath, !!argv.debug, true);
 	await initConfig(argv);
 	let config = getConfig();
