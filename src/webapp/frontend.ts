@@ -46,7 +46,7 @@ function apiRouter() {
 	tagsController(apiRouter);
 	seriesController(apiRouter);
 	pollController(apiRouter);
-	
+
 	return apiRouter;
 }
 
@@ -65,7 +65,7 @@ export async function initFrontend() {
 		app.use('/api', apiRouter());
 		// Add headers
 		app.use((req, res, next) => {
-		// Website you wish to allow to connect
+			// Website you wish to allow to connect
 			res.setHeader('Access-Control-Allow-Origin', '*');
 			// Request methods you wish to allow
 			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -89,6 +89,7 @@ export async function initFrontend() {
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 
+		//Frontend
 		app.use(express.static(resolve(__dirname, '../../frontend/build')));
 		app.get('/*', (_req, res) => {
 			res.sendFile(resolve(__dirname, '../../frontend/build/index.html'));

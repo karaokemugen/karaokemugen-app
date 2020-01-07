@@ -65,6 +65,7 @@ export function getState() {
 	return {...state};
 }
 
+/** Get public state */
 export function getPublicState() {
 	return {
 		modePlaylistID: state.modePlaylistID
@@ -88,7 +89,7 @@ function manageMode() {
 		: state.modePlaylistID = state.publicPlaylistID;
 	if (state.private !== previousState.private) {
 		state.private
-			? logger.info('[Engine] Karaoke mode switching to private')
-			: logger.info('[Engine] Karaoke mode switching to public');
+			? logger.info('[State] Karaoke mode switching to private')
+			: logger.info('[State] Karaoke mode switching to public');
 	}
 }

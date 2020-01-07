@@ -3,12 +3,15 @@ import { addPollVoteIndex } from '../services/poll';
 import tmi, { Client, ChatUserstate } from 'tmi.js';
 import { getConfig } from '../lib/utils/config';
 
-let client: Client;
+// We declare our client here se we can interact with it from different functions.
+let client: Client = null;
 
-export function getTwitchClient() {
+/** Returns twitch client */
+export function getTwitchClient(): Client {
 	return client;
 }
 
+/** Initialize Twitch with provided OAuth token in config */
 export async function initTwitch() {
 	if (client) return;
 	try {
@@ -28,6 +31,7 @@ export async function initTwitch() {
 	}
 }
 
+/** Simple function to say something to Twitch chat */
 export function sayTwitch(message: string) {
 	if (client) try {
 		client.say(getConfig().Karaoke.StreamerMode.Twitch.Channel, message);
@@ -37,8 +41,10 @@ export function sayTwitch(message: string) {
 	}
 }
 
-function listenVoteEvents(chat: any) {
+/** Vote Events are listened here and reacted upon */
+function listenVoteEvents(chat: Client) {
 	chat.on('message', (target: string, context: ChatUserstate, msg: string, self: boolean) => {
+		// If it's something we said, don't do anything
 		if (self) return;
 		if (msg.startsWith('!vote ')) {
 			const choice = msg.split(' ')[1];
@@ -54,7 +60,9 @@ function listenVoteEvents(chat: any) {
 	});
 }
 
+/** Stops Twitch chat and disconnects */
 export async function stopTwitch() {
+	// Let's properly stop Twitch. If it fails, it's not a big issue
 	if (client) try {
 		await client.disconnect();
 	} catch(err) {
