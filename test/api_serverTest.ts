@@ -22,7 +22,7 @@ describe('Auth', function() {
 			.then(response => {
 				notStrictEqual(response.body.token, '');
 				notStrictEqual(response.body.username, '');
-				notStrictEqual(response.body.role, 'user');
+				notStrictEqual(response.body.role, 'guest');
 			});
 	});
 	it('Login / Sign in (as guest) Error 500', function() {
