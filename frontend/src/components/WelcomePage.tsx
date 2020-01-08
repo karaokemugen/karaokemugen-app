@@ -193,11 +193,7 @@ class WelcomePage extends Component<IProps, IState> {
   openLoginOrProfileModal = () => {
   	if (!store.getLogInfos() || !(store.getLogInfos() as Token).token) {
   		ReactDOM.render(<LoginModal
-  			scope={
-  				this.props.admpwd && this.props.config.App.FirstRun
-  					? 'admin'
-  					: 'public'
-  			}
+  			scope='admin'
   			admpwd={this.props.admpwd}
   		/>, document.getElementById('modal'));
   	} else {
