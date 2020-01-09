@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import i18next from 'i18next';
 import Fingerprint2 from 'fingerprintjs2';
 import axios from 'axios';
-import { is_touch_device,startIntro,readCookie,displayMessage  } from '../tools';
+import { is_touch_device,startIntro,readCookie,displayMessage, callModal  } from '../tools';
 import HelpModal from './HelpModal';
 import ReactDOM from 'react-dom';
 import Switch from '../generic/Switch';
@@ -62,31 +62,39 @@ class LoginModal extends Component<IProps,IState> {
     	if (!username) {
     		url = '/api/auth/login/guest';
     		data = { fingerprint: password };
-    	} else {
-			if (this.props.scope === 'admin' && store.getConfig().App.FirstRun 
-            && axios.defaults.headers.common['authorization'] && username !== 'admin') {
-			url = '/api/users/login';
-			}
-			if (this.state.forgotPassword && !this.state.onlineSwitch) {
-				data.securityCode = this.state.securityCode;
-			}
+    	} else if (this.state.forgotPassword && !this.state.onlineSwitch) {
+			data.securityCode = this.state.securityCode;
     	}
 
     	var result = await axios.post(url, data);
 		var response = result.data;
-		var element = document.getElementById('modal');
-    	if (element) ReactDOM.unmountComponentAtNode(element);
     	if (this.props.scope === 'admin' && response.role !== 'admin') {
-    		displayMessage('warning', i18next.t('ADMIN_PLEASE'));
-    		store.logOut();
-    	}
-    	store.setLogInfos(response);
-    	displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
+			if (!username) {
+				displayMessage('warning', i18next.t('ADMIN_PLEASE'));
+				store.logOut();
+			} else {
+				callModal('prompt', i18next.t('MAKE_ACCOUNT_ADMN'), i18next.t('MAKE_ACCOUNT_ADMN_MESSAGE'), async (securityCode:string) => {
+					(data as {username:string|undefined, password:string, securityCode?:string}).securityCode = securityCode;
+					result = await axios.post(url, data);
+					response = result.data;
+					var element = document.getElementById('modal');
+					if (element) ReactDOM.unmountComponentAtNode(element);
+					store.setLogInfos(response);
+					displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
+					store.getTuto() && store.getTuto().move(1);
+				});
+			}
+		} else {
+			var element = document.getElementById('modal');
+			if (element) ReactDOM.unmountComponentAtNode(element);
+			store.setLogInfos(response);
+			displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
 
-    	if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
-    		ReactDOM.render(<HelpModal/>, document.getElementById('modal'));
-    	}
-    	store.getTuto() && store.getTuto().move(1);
+			if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
+				ReactDOM.render(<HelpModal/>, document.getElementById('modal'));
+			}
+			store.getTuto() && store.getTuto().move(1);
+		}
     };
 
     loginGuest = () => {
