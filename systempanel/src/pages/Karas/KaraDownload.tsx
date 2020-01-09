@@ -121,8 +121,8 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	{
 		this.api_get_local_karas();
 		this.api_read_kara_queue();
-		api_get_local_karas_interval = setInterval(this.api_get_local_karas.bind(this),2000);
-		api_read_kara_queue_interval = setInterval(this.api_read_kara_queue.bind(this),2000);
+		api_get_local_karas_interval = setInterval(this.api_get_local_karas.bind(this), 5000);
+		api_read_kara_queue_interval = setInterval(this.api_read_kara_queue.bind(this), 5000);
 	}
 	stopObserver()
 	{
