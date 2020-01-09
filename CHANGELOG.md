@@ -32,7 +32,7 @@ This is a major release.
 - Downloader has been rewritten with async functions and a queue system (#511)
 - Logged in users now is a scrollable list in frontend (#476)
 
-## v3.0.2 "Leafa Langoureuse" - 07/01/2020
+## v3.0.2 "Leafa Langoureuse" - 09/01/2020
 
 This is a bugfix release
 
@@ -48,6 +48,7 @@ This is a bugfix release
 - Remove use of swipe in mobile for add Kara and change view (#547 - 735b3851, c8cdf0ba, 6756e3c2, b3e2c9b9)
 - Icon to tell the difference between mystery karas and others is now clickable (925374eb)
 - Add search aliases or locales in serie field on kara page (429458e1, d0ea6b3f)
+- Security Code input is now display only in admin (c7dad84b)
 
 ### Fixes
 
@@ -63,7 +64,6 @@ This is a bugfix release
 - Polls should work pollfectly now. (84bf4818)
 - When going from the kara list to a filtered list (applying a filter) the scroll placement is reset (af79e412)
 - Remaining time of a playlist is now correctly updated (32698f3c)
-- Update FR locales (c9948e11, 9e47e80a)
 - No more flickering when scroll in a playlist (ee38366a)
 - Fix scroll on user list in profile modal (#476)
 - Fix add an ip for Host in system panel config page (f2f01947)
@@ -77,6 +77,8 @@ This is a bugfix release
 - Fix songtype display in mobile when title is multiline (631daded)
 - Fix wrong color display for buttons in karaDetail (daddc90f)
 - Fix help modal display (a1975f83)
+- Fix update songs in download page (7c92302e)
+- Fix filter songs in download page (12d13b1d)
 
 
 ## v3.0.1 "Leafa Loyale" - 13/12/2019
