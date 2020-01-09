@@ -72,7 +72,7 @@ export default function systemKaraController(router: Router) {
 					token: req.authToken
 				});
 			}
-			res.json(karas);
+			res.status(200).json(karas);
 		} catch(err) {
 			res.status(500).send(`Error while fetching karas: ${err}`);
 		}
@@ -81,7 +81,7 @@ export default function systemKaraController(router: Router) {
 	router.get('/system/karas/history', requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) =>{
 		try {
 			const karas = await getKaraHistory();
-			res.json(karas);
+			res.status(200).json(karas);
 		} catch(err) {
 			res.status(500).send(`Error while fetching karas history: ${err}`);
 		}
@@ -90,7 +90,7 @@ export default function systemKaraController(router: Router) {
 	router.get('/system/karas/ranking', getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) =>{
 		try {
 			const karas = await getTop50(req.authToken, req.lang);
-			res.json(karas);
+			res.status(200).json(karas);
 		} catch(err) {
 			res.status(500).send(`Error while fetching karas most requested: ${err}`);
 		}
@@ -99,7 +99,7 @@ export default function systemKaraController(router: Router) {
 	router.get('/system/karas/viewcounts', requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 		try {
 			const karas = await getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
-			res.json(karas);
+			res.status(200).json(karas);
 		} catch(err) {
 			res.status(500).send(`Error while fetching karas most played: ${err}`);
 		}
