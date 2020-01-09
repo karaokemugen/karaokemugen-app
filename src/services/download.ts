@@ -585,6 +585,7 @@ export async function cleanAllKaras(repo: string, local?: KaraList, remote?: Kar
 }
 
 export async function updateAllKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
+	logger.info('[Update] Starting update process...');
 	if (!local || !remote) {
 		const karas = await getKaraInventory(repo);
 		local = karas.local;
@@ -592,7 +593,8 @@ export async function updateAllKaras(repo: string, local?: KaraList, remote?: Ka
 	}
 	const karasToUpdate = local.content.filter(k => {
 		const rk = remote.content.find(rk => rk.kid === k.kid);
-		if (rk && rk.modified_at > k.modified_at) return true;
+		// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
+		if (rk && rk.modified_at as unknown > k.modified_at.toISOString()) return true;
 	}).map(k => k.kid);
 	const downloads = remote.content.filter(k => karasToUpdate.includes(k.kid)).map(k => {
 		return {
