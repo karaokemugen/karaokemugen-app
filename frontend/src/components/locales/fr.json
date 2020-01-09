@@ -188,7 +188,7 @@
 	"CL_HELP_DISCORD": "N'hésitez pas à venir sur le {{- discord}} !",
     "CL_HELP_PUBLIC_MOBILE": "<b>Cliquer sur le bouton en haut à droite de l'écran</b> pour afficher les playlists.<br/><b>Appuyez sur une chanson</b> pour en afficher les détails.",
 	"CL_HELP_PUBLIC_MOBILE_RESTRICTED": "L'interface a été mise en mode restreint par l'opérateur du karaoké.",
-	"CL_HELP_PUBLIC_MOBILE_RESTRICTED_DESCRIPTION": "Vous ne pouvez pas ajouter de karaoké pour le moment, mais pouvez consulter celui en cours, ainsi que la liste de lecture en swipant vers la gauche.",
+	"CL_HELP_PUBLIC_MOBILE_RESTRICTED_DESCRIPTION": "Vous ne pouvez pas ajouter de karaoké pour le moment, mais pouvez consulter celui en cours, ainsi que la liste de lecture en cliquant sur le bouton en haut.",
 	"CL_HELP": "Aide",
 	"CL_PLAYLISTS": "Listes",
 	"CL_NEW_USER": "Nouveau compte {{username}} créé et connecté",
