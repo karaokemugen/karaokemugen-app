@@ -298,7 +298,7 @@ class WelcomePage extends Component<IProps, IState> {
   							<img className="logo-1" height="122" src={logo} alt="LOGO" />
   						</h1>
   					</div>
-  					<div className="col-md-12 text-center catchPhrase">
+  					<div className="col-md-12 catchPhrase">
   						{this.state.catchphrase}
   					</div>
   					<div className="col-md-12 block wow menu zoomIn">

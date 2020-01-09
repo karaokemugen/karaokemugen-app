@@ -119,7 +119,7 @@ class PlayerOptions extends Component<IProps, IState> {
   			{this.state.config['Karaoke.Display.ConnectionInfo.Enabled'] ? (
   				<div
   					id="connexionInfoSettings"
-  					className="well well-sm settingsGroupPanel"
+  					className="settingsGroupPanel"
   				>
   					<div className="form-group">
   						<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYCONNECTIONINFOHOST_TOOLTIP')}>
@@ -167,7 +167,7 @@ class PlayerOptions extends Component<IProps, IState> {
   				</div>
   			</div>
   			{this.state.config['Player.PIP.Enabled'] ?
-  				<div id="pipSettings" className="well well-sm settingsGroupPanel">
+  				<div id="pipSettings" className="settingsGroupPanel">
   					<div className="form-group">
   						<label className="col-xs-4 control-label" title={i18next.t('VIDEO_SIZE_TOOLTIP')}>
   							{`${i18next.t('VIDEO_SIZE')} (${this.state.config['Player.PIP.Size']}%)`}

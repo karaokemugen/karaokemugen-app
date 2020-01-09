@@ -201,7 +201,7 @@ class ProfilModal extends Component<IProps, IState> {
     						{this.state.activeView === 1 ?
     							<div id="nav-profil" className="modal-body" >
     								<div className="profileContent">
-    									<div className="col-md-3 col-lg-3 col-xs-12 col-sm-12">
+    									<div>
     										<label title={i18next.t('AVATAR_IMPORT')} className="btn btn-default avatar">
     											<img className="img-circle"
     												src={this.state.user.avatar_file ? pathAvatar + this.state.user.avatar_file : blankAvatar as string}
@@ -213,7 +213,7 @@ class ProfilModal extends Component<IProps, IState> {
     										<p>{this.state.user.login}</p>
     									</div>
     									{logInfos && logInfos.role !== 'guest' ?
-    										<div className="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
+    										<div className="profileData">
     											<div className="profileLine">
     												<i className="fas fa-user"></i>
 													<input className={this.state.nicknameMandatory} name="nickname" type="text" 
@@ -242,22 +242,22 @@ class ProfilModal extends Component<IProps, IState> {
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-star"></i>
-    												<div title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
+    												<div title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
     													<i className="fas fa-download"></i> {i18next.t('IMPORT')}
     													<input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
     												</div>
-    												<button type="button" title={i18next.t('FAVORITES_EXPORT')} className="btn btn-action btn-default col-xs-6 col-lg-6 favExport" onClick={this.favExport}>
+    												<button type="button" title={i18next.t('FAVORITES_EXPORT')} className="btn btn-action btn-default favExport" onClick={this.favExport}>
     													<i className="fas fa-upload"></i> {i18next.t('EXPORT')}
     												</button>
     											</div>
     											{this.props.config.Online.Users ?
     												<div className="profileLine">
     													{logInfos && logInfos.onlineToken ?
-    														<button type="button" title={i18next.t('PROFILE_ONLINE_DELETE')} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileDelete" onClick={this.profileDelete}>
+    														<button type="button" title={i18next.t('PROFILE_ONLINE_DELETE')} className="btn btn-primary btn-action btn-default profileDelete" onClick={this.profileDelete}>
     															<i className="fas fa-retweet"></i> {i18next.t('PROFILE_ONLINE_DELETE')}
     														</button>
     														:
-    														<button type="button" title={i18next.t('PROFILE_CONVERT')} className="btn btn-primary btn-action btn-default col-xs-12 col-lg-12 profileConvert" onClick={this.profileConvert}>
+    														<button type="button" title={i18next.t('PROFILE_CONVERT')} className="btn btn-primary btn-action btn-default profileConvert" onClick={this.profileConvert}>
     															<i className="fas fa-retweet"></i> {i18next.t('PROFILE_CONVERT')}
     														</button>
     													}
@@ -270,7 +270,7 @@ class ProfilModal extends Component<IProps, IState> {
     						{this.state.activeView === 2 ? 
     							<div id="nav-lang" className="modal-body">
     								<div className="profileContent">
-    									<div className="col-md-12 col-lg-12 col-xs-12 col-sm-12 profileData">
+    									<div className="profileData">
     										<div className="profileLine row">
     											<label className="col-xs-6 control-label">{i18next.t('SERIE_NAME_MODE')}</label>
     											<div className="col-xs-6">
@@ -309,7 +309,7 @@ class ProfilModal extends Component<IProps, IState> {
     						}
     						{this.state.activeView === 3 ?
     							<div id="nav-userlist" className="modal-body">
-    								<div className="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
+    								<div className="userlist list-group">
     									{this.state.users.map(user => {
     										return <li key={user.login} className={user.flag_online ? 'list-group-item online' : 'list-group-item'} id={user.login} onClick={this.getUserDetails}>
     											<div className="userLine">

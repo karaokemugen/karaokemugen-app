@@ -284,7 +284,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   				{this.state.config['Karaoke.StreamerMode.Enabled'] ?
   					<div
   						id="streamSettings"
-  						className="well well-sm settingsGroupPanel"
+  						className="settingsGroupPanel"
   					>
   						<div className="form-group">
   							<label className="col-xs-4 control-label">
@@ -313,7 +313,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   						{this.state.config['Karaoke.StreamerMode.Twitch.Enabled'] ?
   							<div
   								id="twitchSettings"
-  								className="well well-sm settingsGroupPanel"
+  								className="settingsGroupPanel"
   							>
   								<div className="form-group">
   									<a className="col-xs-4 control-label" href="https://twitchapps.com/tmi/" target='_blank'>{i18next.t('STREAM_TWITCH_OAUTH_TOKEN_GET')}</a>
@@ -350,7 +350,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div> : null
   				}
 
-  				<div className="form-group settingsGroupPanel subCategoryGroupPanel">
+  				<div className="form-group subCategoryGroupPanel">
   					<div className="col-xs-12" style={{ textAlign: 'center' }}>
   						{i18next.t('MYSTERY_SONG_SETTINGS')}
   					</div>
@@ -433,7 +433,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
   			</div>
-  			<div className="form-group settingsGroupPanel subCategoryGroupPanel">
+  			<div className="form-group subCategoryGroupPanel">
   				<div className="col-xs-12" style={{ textAlign: 'center' }}>
   					{i18next.t('ONLINESETTINGS')}
   				</div>
@@ -515,7 +515,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
   			</div>
-  			<div className="form-group settingsGroupPanel subCategoryGroupPanel">
+  			<div className="form-group subCategoryGroupPanel">
   				<div className="col-xs-12" style={{ textAlign: 'center' }}>
   					{i18next.t('PUBLICMODESETTINGS')}
   				</div>
@@ -534,7 +534,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   				{this.state.config['Karaoke.Quota.FreeUpVote'] ?
   					<div
   						id="freeUpvotesSettings"
-  						className="well well-sm settingsGroupPanel"
+  						className="settingsGroupPanel"
   					>
   						<div className="form-group">
   							<label className="col-xs-4 control-label">
@@ -579,7 +579,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   				</div>
 
   				{this.state.config['Karaoke.Poll.Enabled'] ?
-  					<div id="songPollSettings" className="well well-sm settingsGroupPanel">
+  					<div id="songPollSettings" className="settingsGroupPanel">
   						<div className="form-group">
   							<label className="col-xs-4 control-label">
   								{i18next.t('ENGINESONGPOLLCHOICES')}

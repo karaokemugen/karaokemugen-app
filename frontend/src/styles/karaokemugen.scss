@@ -441,12 +441,8 @@ button.closePopupParent {
 	height: auto;
 }
 
-
-.input-lg, .input-md {
+.input-md {
 	border-radius: 0;
-}
-.input-lg {
-	padding-top: 15px;
 }
 
 #video {
@@ -666,10 +662,6 @@ input[type=range]:focus::-ms-fill-upper {
     justify-content: space-between;
     flex-direction: column;
 }
-.modal .profileData strong{
-	width: 80px;
-	line-height: 39px;
-}
 .modal .profileData .profileLine {
 	display: flex;
 }
@@ -694,6 +686,11 @@ input[type=range]:focus::-ms-fill-upper {
 	line-height: 2.3rem;
 	padding: 1.5rem;
 }
+
+.profileContent {
+	display: flex;
+}
+
 .modal .profileContent .img-circle {
     width: 100%;
     max-width: 160px;
@@ -716,16 +713,13 @@ input[type=range]:focus::-ms-fill-upper {
 	padding-top: 1rem;
 }
 
-.favExport, .favImport, .profileConvert {
+.favExport, .favImport, .profileConvert, .profileDelete {
     line-height: 2.42;
 	font-family: inherit;
+	width: 100%;
 }
 .modal .profileData label {
     align-items: flex-start;
-}
-
-.profileConvert, .profileDelete {
-    font-family: inherit;
 }
 
 #loginModal input[type="text"]:not(:focus), #loginModal input[type="password"]:not(:focus) {
@@ -894,6 +888,9 @@ input[type=range]:focus::-ms-fill-upper {
 #loginModal .redBorders, #profilModal .redBorders {
 	border: hsla(0, 87%, 50%, .5) solid 1px;
     border-width: 0px 0px 0px 5px;
+}
+.userlist {
+	width: 100%;
 }
 .userlist .userLine {
     display: flex;

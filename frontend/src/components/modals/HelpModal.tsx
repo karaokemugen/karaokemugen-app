@@ -5,6 +5,7 @@ import { is_touch_device,startIntro } from '../tools';
 import ReactDOM from 'react-dom';
 import store from '../../store';
 
+require('./HelpModal.scss');
 class HelpModal extends Component<{},{}> {
     mugenTouchscreenHelp = () => {
 		createCookie('mugenTouchscreenHelp', true, -1);
@@ -50,23 +51,25 @@ class HelpModal extends Component<{},{}> {
     									{i18next.t('FOLLOW_TOUR')}
     								</button>
     							</div>
-    							<hr />
-    							<div className="col-lg-3 col-xs-3">
-    								<b>{i18next.t('MODE')}</b>
-    								<br />
-    								<b>{i18next.t('VERSION')}</b>
-    								<br />
-    							</div>
-    							<div className="col-lg-9 col-xs-9">
-    								<span id="mode">
-    									{store.getConfig().Karaoke.Private ? 'Privé' : 'Public'}
-    								</span>
-    								<br />
-    								<span id="version">
-    									{store.getVersion().name + ' ' + store.getVersion().number}
-    								</span>
-    								<br />
-    							</div>
+								<hr />
+								<div className="versionMode">
+									<div>
+										<b>{i18next.t('MODE')}</b>
+										<br />
+										<b>{i18next.t('VERSION')}</b>
+										<br />
+									</div>
+									<div>
+										<span id="mode">
+											{store.getConfig().Karaoke.Private ? 'Privé' : 'Public'}
+										</span>
+										<br />
+										<span id="version">
+											{store.getVersion().name + ' ' + store.getVersion().number}
+										</span>
+										<br />
+									</div>
+								</div>
     						</div>
     					</div>
     				</div>
