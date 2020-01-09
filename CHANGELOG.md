@@ -1,6 +1,6 @@
 # Versions
 
-## v3.0.2 "Leafa Langoureuse" - 07/01/2020
+## v3.0.2 "Leafa Langoureuse" - 09/01/2020
 
 This is a bugfix release
 
