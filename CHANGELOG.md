@@ -48,7 +48,6 @@ This is a bugfix release
 - Remove use of swipe in mobile for add Kara and change view (#547 - 735b3851, c8cdf0ba, 6756e3c2, b3e2c9b9)
 - Icon to tell the difference between mystery karas and others is now clickable (925374eb)
 - Add search aliases or locales in serie field on kara page (429458e1, d0ea6b3f)
-- Security Code input is now display only in admin (c7dad84b)
 
 ### Fixes
 
