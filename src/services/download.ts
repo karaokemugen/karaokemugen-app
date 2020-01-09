@@ -150,7 +150,7 @@ async function processDownload(download: KaraDownload) {
 				filename: tempLyrics,
 				url: download.urls.lyrics.remote,
 				id: download.name
-			})
+			});
 		};
 		list.push({
 			filename: tempKara,
@@ -238,7 +238,7 @@ async function processDownload(download: KaraDownload) {
 			try {
 				await integrateKaraFile(bundle.kara);
 				logger.info(`[Download] Song "${download.name}" added to database`);
-				await setDownloadStatus(download.uuid, 'DL_DONE')
+				await setDownloadStatus(download.uuid, 'DL_DONE');
 			} catch(err) {
 				logger.error(`[Download] Song "${download.name}" not properly added to database`);
 				throw err;
@@ -259,17 +259,17 @@ async function downloadFiles(download: KaraDownload, list: DownloadItem[]) {
 	return new Promise((resolve, reject) => {
 		downloader.download(list)
 			.then(fileErrors => {
-			if (fileErrors.length > 0) {
-				setDownloadStatus(download.uuid, 'DL_FAILED')
-					.then(() => {
-						reject(`Error downloading file : ${fileErrors.toString()}`);
-					}).catch(err => {
-						reject(`Error downloading file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
-					});
-			} else {
-				resolve();
-			}
-		});
+				if (fileErrors.length > 0) {
+					setDownloadStatus(download.uuid, 'DL_FAILED')
+						.then(() => {
+							reject(`Error downloading file : ${fileErrors.toString()}`);
+						}).catch(err => {
+							reject(`Error downloading file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
+						});
+				} else {
+					resolve();
+				}
+			});
 	});
 }
 
@@ -290,7 +290,7 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 		if (currentDls.find(cdl => dl.name === cdl.name &&
 			(cdl.status === 'DL_RUNNING' ||
 			cdl.status === 'DL_PLANNED')
-			)
+		)
 		) return false;
 		return true;
 	});
@@ -300,13 +300,13 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 			return {
 				remote: `https://${repo}/downloads/series/${s}`,
 				local: s
-			}
+			};
 		});
 		const tagfiles = dl.tagfiles.map(t => {
 			return {
 				remote: `https://${repo}/downloads/tags/${t}`,
 				local: t
-			}
+			};
 		});
 		return {
 			uuid: uuidV4(),
@@ -456,15 +456,15 @@ async function waitForUpdateQueueToFinish() {
 	return new Promise((resolve, reject) => {
 		// We'll redefine the drain event of the queue to resolve once the queue is drained.
 		q.on('drain', () => {
-			compareKarasChecksum()
+			compareKarasChecksum();
 			refreshAll()
-			.then(() => {
-				vacuum();
-				resolve();
-			}).catch(err => {
-				logger.error(`[Download] Error while draining queue : ${err}`);
-				reject();
-			});
+				.then(() => {
+					vacuum();
+					resolve();
+				}).catch(err => {
+					logger.error(`[Download] Error while draining queue : ${err}`);
+					reject();
+				});
 		});
 	});
 }
@@ -476,7 +476,7 @@ async function getKaraInventory(repo: string) {
 	return {
 		local,
 		remote
-	}
+	};
 }
 
 export async function downloadAllKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
@@ -517,7 +517,7 @@ export async function downloadAllKaras(repo: string, local?: KaraList, remote?: 
 			seriefiles: k.seriefiles,
 			tagfiles: k.tagfiles,
 			name: k.karafile.replace('.kara.json','')
-		}
+		};
 	});
 	logger.info(`[Update] Adding ${karasToAdd.length} new songs.`);
 	if (initialKarasToAddCount !== karasToAdd.length) logger.info(`[Update] ${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`);
@@ -549,7 +549,7 @@ function filterTagID(k: DBKara, value: string, type: number, tags: Tag[]): boole
 		return k[typeName].every((e: Tag) => !e.tid.includes(tag.tid));
 	} else {
 		// Tag isn't found in database, weird but could happen for some obscure reasons. We'll return true.
-		logger.warn(`[Update] Tag ${value} not found in database when trying to blacklist songs to download, will ignore it.`)
+		logger.warn(`[Update] Tag ${value} not found in database when trying to blacklist songs to download, will ignore it.`);
 		return true;
 	}
 }
@@ -611,7 +611,7 @@ export async function updateAllKaras(repo: string, local?: KaraList, remote?: Ka
 			seriefiles: k.seriefiles,
 			tagfiles: k.tagfiles,
 			name: k.karafile.replace('.kara.json','')
-		}
+		};
 	});
 	logger.info(`[Update] Updating ${karasToUpdate.length} songs`);
 	if (karasToUpdate.length > 0) await addDownloads(repo, downloads);
@@ -719,7 +719,7 @@ function downloadMedias(files: File[], mediasPath: string, repo: string): Promis
 			.then((fileErrors) => {
 				fileErrors.length > 0
 					? reject(`Error downloading these medias : ${fileErrors.toString()}`)
-					: resolve()
+					: resolve();
 			});
 	});
 }
