@@ -1,7 +1,12 @@
+// Node modules
 import got from 'got';
-import logger from '../lib/utils/logger';
 import {xml2json} from 'xml-js';
 import internet from 'internet-available';
+
+// KM Imports
+import logger from '../lib/utils/logger';
+
+// Types
 import { Feed } from '../types/feeds';
 
 const feeds = [

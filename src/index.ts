@@ -1,19 +1,24 @@
+// KM Imports
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove,  asyncCopyAlt} from './lib/utils/files';
 import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars} from './lib/utils/config';
 import {initConfig} from './utils/config';
-import {Config} from './types/config';
 import {parseCommandLineArgs} from './args';
+import logger, { configureLogger } from './lib/utils/logger';
+import {exit, initEngine} from './services/engine';
+import {logo} from './logo';
+import { setState, getState } from './utils/state';
+import { version } from './version';
+
+// Types
+import {Config} from './types/config';
+
+// Node modules
 import {copy, moveSync} from 'fs-extra';
 import {mkdirSync, existsSync} from 'fs';
 import {join, resolve} from 'path';
-import logger, { configureLogger } from './lib/utils/logger';
 import minimist from 'minimist';
-import {exit, initEngine} from './services/engine';
-import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
-import { setState, getState } from './utils/state';
-import { version } from './version';
 import { getPortPromise } from 'portfinder';
 import cloneDeep from 'lodash.clonedeep';
 

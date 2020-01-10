@@ -1,14 +1,20 @@
+// Node modules
 import _cliProgress from 'cli-progress';
-import logger from '../lib/utils/logger';
 import {basename} from 'path';
 import got from 'got';
 import prettyBytes from 'pretty-bytes';
 import {createWriteStream} from 'fs';
-import { getState } from './state';
-import { emitWS } from '../lib/utils/ws';
-import { DownloadItem, DownloadOpts } from '../types/downloader';
 import Queue from 'better-queue';
 
+// KM Imports
+import logger from '../lib/utils/logger';
+import { getState } from './state';
+import { emitWS } from '../lib/utils/ws';
+
+// Types
+import { DownloadItem, DownloadOpts } from '../types/downloader';
+
+// for downloads we need keepalive or else connections can timeout and get stuck. Such is life.
 const HttpAgent = require('agentkeepalive');
 const {HttpsAgent} = HttpAgent;
 
@@ -31,15 +37,15 @@ export default class Downloader {
 	constructor(opts: DownloadOpts) {
 		this.opts = opts;
 		this.onEnd = null;
-		this.q = new Queue(this.queueDownload, this.queueOptions);
+		this.q = new Queue(this._queueDownload, this.queueOptions);
 		if (opts.bar)	this.bar = new _cliProgress.Bar({
 				format:  'Downloading {bar} {percentage}% {value}/{total} Mb',
 				stopOnComplete: true
 		}, _cliProgress.Presets.shades_classic);
 	}
 
-	queueDownload = (input: DownloadItem, done: any) => {
-		this.doDownload(input)
+	_queueDownload = (input: DownloadItem, done: any) => {
+		this._download(input)
 			.then(() => done())
 			.catch((err: Error) => done(err));
 	}
@@ -50,7 +56,7 @@ export default class Downloader {
 		list.forEach(item => {
 			this.q.push(item);
 		});
-		return new Promise((resolve) => {
+		return new Promise(resolve => {
 			this.q.on('drain', () => {
 				resolve(this.fileErrors);
 			});
@@ -58,7 +64,7 @@ export default class Downloader {
 	}
 
 	/** Do the download dance now */
-	doDownload = async (dl: DownloadItem) => {
+	_download = async (dl: DownloadItem) => {
 		this.pos++;
 		let options = {
 			agent: {
@@ -94,7 +100,7 @@ export default class Downloader {
 			dl.url = `${arr[0]}://${this.opts.auth.user}:${this.opts.auth.pass}@${arr[1]}`;
 		}
 		try {
-			await this.fetchFile(dl, options);
+			await this._fetchFile(dl, options);
 		} catch(err) {
 			logger.error(`[Download] Error during download of ${basename(dl.filename)} : ${err}`);
 			this.fileErrors.push(basename(dl.filename));
@@ -102,7 +108,7 @@ export default class Downloader {
 		}
 	}
 
-	fetchFile = async (dl: DownloadItem, options: any) => {
+	_fetchFile = async (dl: DownloadItem, options: any) => {
 		return new Promise((resolve, reject) => {
 			let size: number = 0;
 			got.stream.get(dl.url, options)

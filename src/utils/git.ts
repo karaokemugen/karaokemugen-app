@@ -1,5 +1,8 @@
+// KM Imports
 import {asyncExists, asyncMkdirp} from '../lib/utils/files';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
+
+// Node modules
 import fs from 'fs';
 import { plugins as gitPlugins, pull as gitPull, clone as gitClone} from 'isomorphic-git';
 

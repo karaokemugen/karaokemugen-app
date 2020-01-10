@@ -1,12 +1,15 @@
 // Manages Postgresql server binary
 
+// Node modules
 import execa from 'execa';
 import {resolve} from 'path';
+import deburr from 'lodash.deburr';
+
+// KM Imports
 import {asyncExists, asyncWriteFile, asyncReadFile} from '../lib/utils/files';
 import {getConfig} from '../lib/utils/config';
 import {getState} from './state';
 import logger from '../lib/utils/logger';
-import deburr from 'lodash.deburr';
 
 let shutdownInProgress = false;
 
@@ -88,6 +91,7 @@ export async function initPGData() {
 	try {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		if (deburr(binPath) !== binPath || deburr(conf.System.Path.DB) !== conf.System.Path.DB) throw 'DB path or Postgres path contain non-ASCII characters. Please put Karaoke Mugen in a path with no accent characters or the like and try again.';
+
 		const options = [ 'init','-o', `-U ${conf.Database.prod.superuser} -E UTF8`, '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/') ];
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
@@ -102,7 +106,7 @@ export async function initPGData() {
 
 /** Update postgreSQL configuration */
 export async function updatePGConf() {
-	// Editing port in postgresql.conf
+	// Editing port and other important settings in postgresql.conf
 	const conf = getConfig();
 	const state = getState();
 	const pgConfFile = resolve(state.dataPath, conf.System.Path.DB, 'postgres/postgresql.conf');

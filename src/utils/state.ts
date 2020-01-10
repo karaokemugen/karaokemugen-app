@@ -1,7 +1,12 @@
+// KM Imports
 import {emitWS} from '../lib/utils/ws';
 import {emit} from '../lib/utils/pubsub';
 import logger from '../lib/utils/logger';
+
+// Node modules
 import merge from 'lodash.merge';
+
+// Types
 import {State, PublicState} from '../types/state';
 
 // Internal settings

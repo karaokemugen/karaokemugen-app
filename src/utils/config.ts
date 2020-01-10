@@ -1,7 +1,13 @@
 /** Centralized configuration management for Karaoke Mugen. */
 
+// Node modules
 import {resolve} from 'path';
 import {address} from 'ip';
+import merge from 'lodash.merge';
+import isEqual from 'lodash.isequal';
+import cloneDeep from 'lodash.clonedeep';
+
+// KM Imports
 import logger from '../lib/utils/logger';
 import {asyncCopy, asyncRequired} from '../lib/utils/files';
 import {configureIDs, configureLocale, loadConfigFiles, setConfig, verifyConfig, getConfig, setConfigConstraints} from '../lib/utils/config';
@@ -11,9 +17,6 @@ import {playerNeedsRestart, prepareClassicPauseScreen} from '../services/player'
 import {getState, setState} from './state';
 import {setSongPoll} from '../services/poll';
 import {initStats, stopStats} from '../services/stats';
-import merge from 'lodash.merge';
-import isEqual from 'lodash.isequal';
-import cloneDeep from 'lodash.clonedeep';
 import {Config} from '../types/config';
 import { listUsers } from '../dao/user';
 import { updateSongsLeft } from '../services/user';
