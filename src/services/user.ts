@@ -2,7 +2,7 @@ import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars} from '../li
 import {Config} from '../types/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
 import {convertToRemoteFavorites} from './favorites';
-import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy, asyncStat} from '../lib/utils/files';
+import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy, asyncStat, asyncCopyAlt} from '../lib/utils/files';
 import {createHash} from 'crypto';
 import {resolve, join} from 'path';
 import logger from 'winston';
@@ -18,7 +18,7 @@ import {getState, setState} from '../utils/state';
 import got from 'got';
 import { getRemoteToken, upsertRemoteToken } from '../dao/user';
 import formData from 'form-data';
-import { createReadStream, writeFile, readFileSync } from 'fs';
+import { createReadStream } from 'fs';
 import { writeStreamToFile } from '../lib/utils/files';
 import { fetchAndAddFavorites } from './favorites';
 import {encode, decode} from 'jwt-simple';
@@ -615,28 +615,25 @@ async function updateGuestAvatar(user: User) {
 	if (avatarStats.size !== bundledAvatarStats.size) {
 		// bundledAvatar is different from the current guest Avatar, replacing it.
 		// Since pkg is fucking up with copy(), we're going to read/write file in order to save it to a temporary directory
-		const tempFile = resolve(await resolvedPathTemp(), bundledAvatarFile);
-		let buffer = readFileSync(bundledAvatarPath);
-		writeFile(tempFile, buffer, null, () => {
-			editUser(user.login, user, {
-				fieldname: null,
-				path: tempFile,
-				originalname: null,
-				encoding: null,
-				mimetype: null,
-				destination: null,
-				filename: null,
-				buffer: null,
-				size: null,
-				location: null
-			} , 'admin', {
-				renameUser: false,
-				editRemote: false
-			}).catch((err) => {
-				logger.error(`[User] Unable to change guest avatar for ${user.login} : ${JSON.stringify(err)}`);
-			});
+		const tempFile = resolve(resolvedPathTemp(), bundledAvatarFile);
+		await asyncCopyAlt(bundledAvatarPath, tempFile);
+		editUser(user.login, user, {
+			fieldname: null,
+			path: tempFile,
+			originalname: null,
+			encoding: null,
+			mimetype: null,
+			destination: null,
+			filename: null,
+			buffer: null,
+			size: null,
+			location: null
+		}, 'admin', {
+			renameUser: false,
+			editRemote: false
+		}).catch((err) => {
+			logger.error(`[User] Unable to change guest avatar for ${user.login} : ${JSON.stringify(err)}`);
 		});
-
 	}
 }
 
