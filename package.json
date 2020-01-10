@@ -78,6 +78,7 @@
     ]
   },
   "dependencies": {
+    "@types/cli-progress": "^3.4.1",
     "agentkeepalive": "^4.1.0",
     "ass-compiler": "^0.0.11",
     "async-await-parallel": "^1.0.0",
