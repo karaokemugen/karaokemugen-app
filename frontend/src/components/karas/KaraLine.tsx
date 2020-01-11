@@ -245,9 +245,10 @@ class KaraLine extends Component<IProps,IState> {
   				</div> :
   				<React.Fragment>
 					<div className="actionDiv"> 
-						{this.props.config.Frontend.ShowAvatarsOnPlaylist && this.props.avatar_file ? 
-							<img className="img-circle" src={pathAvatar + this.props.avatar_file} alt="User Pic" 
-								title={kara.nickname} /> : null}
+						{((store.getLogInfos() && kara.username !== (store.getLogInfos() as Token).username) || !is_touch_device())
+							&& this.props.config.Frontend.ShowAvatarsOnPlaylist && this.props.avatar_file ? 
+							<img className={`img-circle ${is_touch_device() ? 'mobile': ''}`}
+							 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
 						{this.props.idPlaylistTo !== this.props.idPlaylist ?
 							<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
 								scope={this.props.scope}
