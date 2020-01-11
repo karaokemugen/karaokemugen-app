@@ -610,12 +610,6 @@ class KaraokeOptions extends Component<IProps, IState> {
   						</div>
   					</div> : null}
   			</div>
-  			<input
-  				id="App.FirstRun"
-  				className="hideInput hidden"
-  				onChange={this.onChange}
-  				value={this.state.config['App.FirstRun']}
-  			/>
   		</React.Fragment>
   	);
   }
