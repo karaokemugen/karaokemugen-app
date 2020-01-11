@@ -866,15 +866,6 @@ input[type=range]:focus::-ms-fill-upper {
 	width: 100%;
 	background-color: rgb(15, 95, 108);
 }
-#loginModal .tour {
-	display: none;
-}
-#loginModal.firstRun .tour {
-	display: block;
-}
-#loginModal.hideLogin .loginRelated {
-	display: none;
-}
 .modal button.ok {
 	background-color: hsla(139, 14%, 22%, 1);
 }

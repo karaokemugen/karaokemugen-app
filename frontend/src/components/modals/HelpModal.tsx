@@ -46,7 +46,7 @@ class HelpModal extends Component<{},{}> {
     							</div>
     							<br />
 
-    							<div className="modal-message tour">
+    							<div className="modal-message">
     								<button className="btn btn-default tourAgain" onClick={this.tourAgain}>
     									{i18next.t('FOLLOW_TOUR')}
     								</button>

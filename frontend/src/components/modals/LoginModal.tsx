@@ -165,9 +165,8 @@ class LoginModal extends Component<IProps,IState> {
     }
 
     render() {
-    	var loginModalClassName = readCookie('publicTuto') ? 'modal modalPage' : 'modal modalPage firstRun';
     	return (
-    		<div className={loginModalClassName} id="loginModal">
+    		<div className="modal modalPage" id="loginModal">
     			<div className="modal-dialog modal-sm">
     				<div className="modal-content">
     					<ul className="nav nav-tabs nav-justified modal-header">
@@ -190,27 +189,24 @@ class LoginModal extends Component<IProps,IState> {
     							<div id="nav-login" className="modal-body">
     								{this.props.scope !== 'admin' && store.getConfig().Frontend.Mode === 2 ? 
     									<React.Fragment>
-    										<div className="tour hidden">
-    											{i18next.t('FIRST_PUBLIC_RUN_WELCOME')}
-    										</div>
-    										<div className="modal-message tour">
+    										<div style={{height: '60px'}}>
     											<button className="btn btn-default tour" onClick={() => startIntro('public')}>
-    												{i18next.t('FOLLOW_TOUR')}
+													{readCookie('publicTuto') ? i18next.t('FIRST_PUBLIC_RUN_WELCOME') : i18next.t('FOLLOW_TOUR')}
     											</button>
     										</div>
-    										<div className="tour">
+    										<div>
     											{i18next.t('OR')}
     										</div>
     									</React.Fragment> : null
     								}
     								{this.props.scope !== 'admin' ?
     									<React.Fragment>
-    										<div className="modal-message">
+    										<div style={{height: '60px'}}>
     											<button className="btn btn-default guest" onClick={this.loginGuest}>
     												{i18next.t('GUEST_CONTINUE')}
     											</button>
     										</div>
-    										<div className="loginRelated">
+    										<div>
     											{i18next.t('OR')}
     										</div>
     									</React.Fragment> : null
@@ -220,7 +216,7 @@ class LoginModal extends Component<IProps,IState> {
     									<Switch handleChange={() => this.setState({onlineSwitch: !this.state.onlineSwitch})}
     										isChecked={this.state.onlineSwitch} />
     								</div>
-    								<div className="modal-message loginRelated">
+    								<div className="modal-message">
     									<input className={this.state.onlineSwitch ? 'modalLogin' : ''} type="text" id="login" name="modalLogin" placeholder={i18next.t('NICKNAME')}
     										defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
     									{this.state.onlineSwitch ? <input type="text" id="loginServ" name="modalLoginServ" placeholder={i18next.t('INSTANCE_NAME_SHORT')}
@@ -246,7 +242,7 @@ class LoginModal extends Component<IProps,IState> {
     									<input type="text" placeholder={i18next.t('SECURITY_CODE')}
     										defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: event.target.value })} /> : null
     								}
-    								<div className="loginRelated">
+    								<div>
     									<button type="button" className="btn btn-default login" onClick={this.loginUser}>
     										<i className="fas fa-check"></i>
     									</button>
