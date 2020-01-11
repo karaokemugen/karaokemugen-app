@@ -1,21 +1,22 @@
-import { Router } from "express";
-import { getLang } from "../middlewares/lang";
-import { requireAuth, requireValidUser, requireAdmin, updateUserLoginTime, optionalAuth } from "../middlewares/auth";
-import { shutdown, getKMStats } from "../../services/engine";
-import { getConfig } from "../../lib/utils/config";
-import { editSetting, getPublicConfig, backupConfig } from "../../utils/config";
-import { getDisplays } from "../../utils/displays";
-import { errMessage } from "../common";
-import { checkForUpdates } from "../../services/appUpdates";
-import { getState, getPlayerState, getPublicState } from "../../utils/state";
-import { findUserByName, updateSongsLeft } from "../../services/user";
-import { requireWebappLimited } from "../middlewares/webapp_mode";
-import { getFeeds } from "../../webapp/proxy_feeds";
-import { initializationCatchphrases } from "../../utils/constants";
+import { Router } from 'express';
+import { getLang } from '../middlewares/lang';
+import { requireAuth, requireValidUser, requireAdmin, updateUserLoginTime, optionalAuth } from '../middlewares/auth';
+import { shutdown, getKMStats } from '../../services/engine';
+import { getConfig } from '../../lib/utils/config';
+import { editSetting, getPublicConfig, backupConfig } from '../../utils/config';
+import { getDisplays } from '../../utils/displays';
+import { errMessage } from '../common';
+import { checkForUpdates } from '../../services/appUpdates';
+import { getState, getPlayerState, getPublicState } from '../../utils/state';
+import { findUserByName, updateSongsLeft } from '../../services/user';
+import { requireWebappLimited } from '../middlewares/webapp_mode';
+import { getFeeds } from '../../webapp/proxy_feeds';
+import { initializationCatchphrases } from '../../utils/constants';
 import sample from 'lodash.sample';
-import { readLog } from "../../lib/utils/logger";
-import { generateDB } from "../../dao/database";
-import { dumpPG, restorePG } from "../../utils/postgresql";
+import { readLog } from '../../lib/utils/logger';
+import { generateDB } from '../../dao/database';
+import { dumpPG, restorePG } from '../../utils/postgresql';
+import { browseFs } from '../../lib/utils/files';
 
 export default function miscController(router: Router) {
 	/**
@@ -36,15 +37,15 @@ export default function miscController(router: Router) {
  *
  */
 	router.route('/shutdown')
-	.post(getLang, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+		.post(getLang, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 		// Sends command to shutdown the app.
-		try {
-			shutdown();
-			res.status(200).send('Shutdown in progress');
-		} catch(err) {
-			res.status(500).json(err);
-		}
-	});
+			try {
+				shutdown();
+				res.status(200).send('Shutdown in progress');
+			} catch(err) {
+				res.status(500).json(err);
+			}
+		});
 
 	router.route('/settings')
 	/**
@@ -74,8 +75,8 @@ export default function miscController(router: Router) {
 			const response = {
 				version: getState().version,
 				config: null,
-				state: getPublicState()
-			}
+				state: getPublicState(req.user && req.user.type === 0)
+			};
 			response.config = (req.user && req.user.type === 0) 
 				? getConfig()
 				: getPublicConfig();
@@ -109,7 +110,7 @@ export default function miscController(router: Router) {
 			}
 		});
 
-/**
+	/**
  * @api {get} /displays get displays
  * @apiName GetDisplays
  * @apiVersion 3.1.0
@@ -127,7 +128,7 @@ export default function miscController(router: Router) {
 			res.json(displays);
 		});
 
-/**
+	/**
  * @api {get} /checkUpdates Get latest KM version
  * @apiName GetLatestVersion
  * @apiVersion 3.1.0
@@ -145,7 +146,7 @@ export default function miscController(router: Router) {
 			res.json(version);
 		});
 	router.route('/stats')
-/**
+	/**
  * @api {get} /stats Get statistics
  * @apiName GetStats
  * @apiVersion 3.1.0
@@ -240,16 +241,17 @@ export default function miscController(router: Router) {
 	 * @apiName GetNews
 	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
+	 * @apiHeader authorization Auth token received from logging in
 	 * @apiPermission NoAuth
 	 * @apiSuccess {Array} Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if RSS feed could not be obtained.
 	 */
 		.get(getLang, async (_req: any, res: any) => {
-				try {
-					res.json(await getFeeds());
-				} catch(err) {
-					res.status(500).send(err);
-				}
-			});
+			try {
+				res.json(await getFeeds());
+			} catch(err) {
+				res.status(500).send(err);
+			}
+		});
 
 	router.route('/catchphrase')
 		/**
@@ -257,11 +259,12 @@ export default function miscController(router: Router) {
 	 * @apiName GetCatchPhrase
 	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
+	 * @apiHeader authorization Auth token received from logging in
 	 * @apiPermission NoAuth
 	 * @apiSuccess a random catchphrase
 	 */
 		.get(getLang, async (_req: any, res: any) => {
-				res.json(sample(initializationCatchphrases));
+			res.json(sample(initializationCatchphrases));
 		});
 
 	router.route('/log')
@@ -270,6 +273,7 @@ export default function miscController(router: Router) {
 	 * @apiName GetLogs
 	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
+	 * @apiHeader authorization Auth token received from logging in
 	 * @apiPermission admin
 	 * @apiSuccess {string} The current day's log file. Have fun parsing it :)
 	 */
@@ -279,7 +283,7 @@ export default function miscController(router: Router) {
 			} catch(err) {
 				res.status(500).send(`Unable to read log file : ${err}`);
 			}
-	});
+		});
 
 	router.route('/settings/backup')
 	/**
@@ -288,17 +292,18 @@ export default function miscController(router: Router) {
 	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
 	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		try {
-			await backupConfig();
-			res.status(200).send('Configuration file backuped to config.yml.backup');
-		} catch(err) {
-			res.status(500).send(`Error backuping config file: ${err}`);
-		}
-	});
+			try {
+				await backupConfig();
+				res.status(200).send('Configuration file backuped to config.yml.backup');
+			} catch(err) {
+				res.status(500).send(`Error backuping config file: ${err}`);
+			}
+		});
 
 	router.route('/db/generate')
 	/**
@@ -307,19 +312,20 @@ export default function miscController(router: Router) {
 	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
 	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		try {
-			await generateDB();
-			res.status(200).send('DB successfully regenerated');
-		} catch(err) {
-			res.status(500).send(`Error while regenerating DB: ${err}`);
-		}
-	});
+			try {
+				await generateDB();
+				res.status(200).send('DB successfully regenerated');
+			} catch(err) {
+				res.status(500).send(`Error while regenerating DB: ${err}`);
+			}
+		});
 
 	router.route('/db')
 	/**
@@ -328,6 +334,7 @@ export default function miscController(router: Router) {
 	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
 	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
 	 * @apiErrorExample Error-Response:
@@ -340,13 +347,14 @@ export default function miscController(router: Router) {
 			} catch(err) {
 				res.status(500).send(`Error dumping database : ${err}`);
 			}
-	})
+		})
 	/**
 	 * @api {post} /db Restore database from file
 	 * @apiName PostDB
 	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
 	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
 	 * @apiErrorExample Error-Response:
@@ -359,5 +367,31 @@ export default function miscController(router: Router) {
 			} catch(err) {
 				res.status(500).send(`Error restoring database : ${err}`);
 			}
-	});
+		});
+	router.route('/fs')
+	/**
+	 * @api {post} /fs Get filesystem contents
+	 * @apiName PostFS
+	 * @apiVersion 3.1.0
+	 * @apiGroup Misc
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {string} path Path to browse
+	 * @apiParam {boolean} [onlyMedias=false] Only display media files
+	 * @apiSuccess {Object[]} contents Directory contents
+	 * @apiSuccess {string} contents/name File/directory name
+	 * @apiSuccess {boolean} contents/isDirectory is it a directory?
+	 * @apiSuccess {Object[]} drivers `null` if not under Windows. on Windows contains an object array with drive data. use `name` of each object to get drive letters present in system.
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+			try {
+				res.status(200).json(await browseFs(req.body.path, req.body.onlyMedias));
+			} catch(err) {
+				res.status(500).send(`Error browsing filesystem : ${err}`);
+			}
+		});
 }

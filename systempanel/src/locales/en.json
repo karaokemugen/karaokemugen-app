@@ -180,7 +180,13 @@
 		"BACKUP_CONFIG_FILE": "Backup config file",
 		"MESSAGE": "To modify a setting, just edit it and press enter. Not all settings are editable and will return an error if you try anywyay.",
 		"SETTING_SAVED": "Setting '{{key}}' saved as '{{value}}'",
-		"LOG_FAILED": "Unable to fetch logs"
+		"LOG_FAILED": "Unable to fetch logs",
+		"SAVE": "Save",
+		"CHOOSE_FILE": "Choose a file",
+		"CHOOSE_DIRECTORY": "Choose a directory",
+		"PRIMARY_DIRECTORY": "Primary directory",
+		"DELETE_DIRECTORY": "Delete directory",
+		"ADD_DIRECTORY": "Add a directory"
 	},
 	"SERIES": {
 		"SERIE_DELETED": "Serie successfully deleted",

@@ -191,7 +191,6 @@ export const defaults: Config = {
 			Lyrics: ['data/lyrics'],
 			Medias: ['data/medias'],
 			Outros: ['outros', 'outros/KaraokeMugen'],
-			Previews: 'previews',
 			Series: ['data/series'],
 			Tags: ['data/tags'],
 			Temp: 'temp'
