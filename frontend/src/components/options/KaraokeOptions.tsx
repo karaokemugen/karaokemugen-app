@@ -27,21 +27,20 @@ class KaraokeOptions extends Component<IProps, IState> {
   	var mysterySongsLabels = this.state.config['Playlist.MysterySongs.Labels'];
   	mysterySongsLabels.push(this.state.mysterySongLabel);
   	var config = this.state.config;
-  	this.state.config['Playlist.MysterySongs.Labels'] = mysterySongsLabels;
+  	config['Playlist.MysterySongs.Labels'] = mysterySongsLabels;
   	this.setState({ config: config });
   	this.saveMysterySongsLabels(mysterySongsLabels);
   	this.setState({ mysterySongLabel: '' });
   };
 
   deleteMysterySongLabel = (value:string) => {
-  	var config = this.state.config;
-  	this.state.config['Playlist.MysterySongs.Labels'] = this.state.config['Playlist.MysterySongs.Labels'].filter((ele:string) => {
-  		return ele != value; 
-  	});
+	  var config = this.state.config;
+  	config['Playlist.MysterySongs.Labels'].splice(
+		config['Playlist.MysterySongs.Labels'].indexOf(value), 1, null);	
+	this.saveMysterySongsLabels(config['Playlist.MysterySongs.Labels']);
+	config['Playlist.MysterySongs.Labels'].splice(
+		config['Playlist.MysterySongs.Labels'].indexOf(null), 1);
   	this.setState({ config: config });
-  	this.saveMysterySongsLabels(this.state.config['Playlist.MysterySongs.Labels'].filter((ele:string) => {
-  		return ele != value; 
-  	}));
   };
 
   saveMysterySongsLabels = async (labels:Array<string>) => {
@@ -425,8 +424,10 @@ class KaraokeOptions extends Component<IProps, IState> {
   							return (
   								<div key={value}>
   									<label style={{ margin: '10px' }}>{value}</label>
-  									<button type="button" className="btn btn-default"
-  										onClick={() => this.deleteMysterySongLabel(value)}>{i18next.t('ENGINE_LABELS_MYSTERY_SONGS_DELETE')}</button>
+									{this.state.config['Playlist.MysterySongs.Labels'].length > 1 ?
+  										<button type="button" className="btn btn-default"
+										  onClick={() => this.deleteMysterySongLabel(value)}>{i18next.t('ENGINE_LABELS_MYSTERY_SONGS_DELETE')}</button> : null
+							  		}
   								</div>
   							);
   						})}

@@ -215,8 +215,6 @@ System:
       - data/lyrics
     Medias:
       - data/medias
-    # If set and if a video is not found locally, KM will attempt to load the video from this HTTP server.
-    Previews: previews
     Series:
       - data/series
     Tags:

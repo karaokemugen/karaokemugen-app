@@ -9,7 +9,7 @@ import cloneDeep from 'lodash.clonedeep';
 
 // KM Imports
 import logger from '../lib/utils/logger';
-import {asyncCopy, asyncRequired} from '../lib/utils/files';
+import {relativePath, asyncCopy, asyncRequired} from '../lib/utils/files';
 import {configureIDs, configureLocale, loadConfigFiles, setConfig, verifyConfig, getConfig, setConfigConstraints} from '../lib/utils/config';
 import {configConstraints, defaults} from './default_settings';
 import {publishURL} from '../services/online';
@@ -25,6 +25,7 @@ import { emit } from '../lib/utils/pubsub';
 import { BinariesConfig } from '../types/binChecker';
 import { exit } from '../services/engine';
 import { initTwitch, stopTwitch } from './twitch';
+import { removeNulls } from '../lib/utils/object_helpers';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editSetting(part: object) {
@@ -32,6 +33,7 @@ export async function editSetting(part: object) {
 		const config = getConfig();
 		const oldConfig = cloneDeep(config);
 		const newConfig = merge(config, part);
+		removeNulls(newConfig);
 		verifyConfig(newConfig);
 		await mergeConfig(newConfig, oldConfig);
 		emitWS('settingsUpdated', config);
@@ -61,6 +63,27 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	}
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
 	if (newConfig.Karaoke.ClassicMode && getState().status === 'stop') prepareClassicPauseScreen();
+	// Browse through paths and define if it's relative or absolute
+	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(newConfig.System.Binaries.Player.Windows);
+	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) 	newConfig.System.Binaries.Player.Linux = relativePath(newConfig.System.Binaries.Player.Linux);
+	if (oldConfig.System.Binaries.Player.OSX !== newConfig.System.Binaries.Player.OSX) newConfig.System.Binaries.Player.OSX = relativePath(newConfig.System.Binaries.Player.OSX);
+	if (oldConfig.System.Binaries.ffmpeg.Windows !== newConfig.System.Binaries.ffmpeg.Windows) newConfig.System.Binaries.ffmpeg.Windows = relativePath(newConfig.System.Binaries.ffmpeg.Windows);
+	if (oldConfig.System.Binaries.ffmpeg.Linux !== newConfig.System.Binaries.ffmpeg.Linux)  newConfig.System.Binaries.ffmpeg.Linux = relativePath(newConfig.System.Binaries.ffmpeg.Linux);
+	if (oldConfig.System.Binaries.ffmpeg.OSX !== newConfig.System.Binaries.ffmpeg.OSX)  newConfig.System.Binaries.ffmpeg.OSX = relativePath(newConfig.System.Binaries.ffmpeg.OSX);
+	if (oldConfig.System.Binaries.Postgres.Windows !== newConfig.System.Binaries.Postgres.Windows)  newConfig.System.Binaries.Postgres.Windows = relativePath(newConfig.System.Binaries.Postgres.Windows);
+	if (oldConfig.System.Binaries.Postgres.Linux !== newConfig.System.Binaries.Postgres.Linux)   newConfig.System.Binaries.Postgres.Linux = relativePath(newConfig.System.Binaries.Postgres.Linux);
+	if (oldConfig.System.Binaries.Postgres.OSX !== newConfig.System.Binaries.Postgres.OSX)   newConfig.System.Binaries.Postgres.OSX = relativePath(newConfig.System.Binaries.Postgres.OSX);
+	for (const path of Object.keys(newConfig.System.Path)) {
+		if (!isEqual(newConfig.System.Path[path], oldConfig.System.Path[path])) {
+			if (Array.isArray(newConfig.System.Path[path])) {
+				for (const i in newConfig.System.Path[path]) {
+					newConfig.System.Path[path][i] = relativePath(newConfig.System.Path[path][i]);
+				}
+			} else {
+				newConfig.System.Path[path] = relativePath(newConfig.System.Path[path]);
+			}
+		}
+	}
 	const config = setConfig(newConfig);
 	setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch

@@ -60,7 +60,7 @@ export function expand(str:string, val:any) {
 export function dotify(obj:any) {
 	//Code from the package node-dotify
 	let res:any = {};
-	function recurse(obj:any, current:any) {
+	function recurse(obj:any, current?:any) {
 		for (var key in obj) {
 			let value = obj[key];
 			let newKey = (current ? current + '.' + key : key);  // joined key with dot
@@ -71,7 +71,7 @@ export function dotify(obj:any) {
 			}
 		}
 	}
-	recurse(obj, undefined);
+	recurse(obj);
 	return res;
 };
 

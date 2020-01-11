@@ -180,7 +180,13 @@
 		"BACKUP_CONFIG_FILE": "Sauvegarder le fichier de configuration",
 		"MESSAGE": "Pour modifier un paramètre, éditez-le et pressez sur entrée. Tout les paramètres ne sont pas modifiables et retournerons une erreur si vous essayez de les modifier.",
 		"SETTING_SAVED": "Paramètre '{{key}}' sauvegardé comme '{{value}}'",
-		"LOG_FAILED": "Impossible de récupérer les logs"
+		"LOG_FAILED": "Impossible de récupérer les logs",
+		"SAVE": "Sauvegarder",
+		"CHOOSE_FILE": "Choisissez un fichier",
+		"CHOOSE_DIRECTORY": "Choisissez un dossier",
+		"PRIMARY_DIRECTORY": "Dossier par défaut",
+		"DELETE_DIRECTORY": "Supprimer le dossier",
+		"ADD_DIRECTORY": "Ajouter un dossier"
 	},
 	"SERIES": {
 		"SERIE_DELETED": "Série supprimée avec succès",
