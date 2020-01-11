@@ -85,7 +85,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   					var karaList = randomKaras.data.content.map((a:KaraElement) => {
   						return a.kid;
   					}).join();
-  					var urlPost = this.props.getPlaylistUrl();
+  					var urlPost = '/api/playlists/' + this.props.idPlaylistTo + '/karas';
   					axios.post(urlPost, { kid: karaList });
   				}, '');
   			}
