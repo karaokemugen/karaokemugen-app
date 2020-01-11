@@ -245,7 +245,8 @@ class KaraLine extends Component<IProps,IState> {
   				</div> :
   				<React.Fragment>
 					<div className="actionDiv"> 
-						{((store.getLogInfos() && kara.username !== (store.getLogInfos() as Token).username) || !is_touch_device())
+						{((store.getLogInfos() && kara.username !== (store.getLogInfos() as Token).username) 
+							&& !(is_touch_device() && scope === 'admin') || !is_touch_device())
 							&& this.props.config.Frontend.ShowAvatarsOnPlaylist && this.props.avatar_file ? 
 							<img className={`img-circle ${is_touch_device() ? 'mobile': ''}`}
 							 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
@@ -261,12 +262,13 @@ class KaraLine extends Component<IProps,IState> {
   								: <i className="far fa-square"></i>}
   						</span> : null}
   					<div className="infoDiv">
-  						{scope === 'admin' || !is_touch_device() ? <button title={i18next.t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
+  						{!is_touch_device() ? <button title={i18next.t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
   							style={this.state.displayedKaraDetail ? { borderColor: '#8aa9af' } : {}} onClick={this.toggleKaraDetail}
   						>
   							<i className="fas fa-info-circle"></i>
   						</button> : null}
-  						{scope === 'admin' && idPlaylist > 0 ? <button title={i18next.t('TOOLTIP_PLAYKARA')} className="btn btn-sm btn-action playKara"
+						{scope === 'admin' && idPlaylist > 0 ? <button title={i18next.t('TOOLTIP_PLAYKARA')} 
+						  	className="btn btn-sm btn-action playKara karaLineButton"
   							onClick={this.playKara}><i className="fas fa-play"></i></button> : null}
   						{scope === 'admin' &&  this.props.playlistInfo && idPlaylist > 0 && !kara.flag_visible
                 			&& (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ? 
@@ -279,7 +281,7 @@ class KaraLine extends Component<IProps,IState> {
   							onClick={this.likeKara}><i className="fas fa-thumbs-up"></i></button> : null}
 						{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && logInfos && kara.username == logInfos.username 
 						  	&& (idPlaylist == store.getModePlaylistID()) ?
-  							<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action deleteKara"
+  							<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
   								onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
   					</div>
   					{is_touch_device() ?
