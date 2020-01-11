@@ -1286,6 +1286,6 @@ input[type="text"]:focus, input[type="password"]:focus {
 	}
 }
 
-#nav-userlist,#nav-login,.modal-message {
-	max-height: calc(100vh - 150px);
+.modal-body,.modal-message {
+	max-height: calc(100vh - 200px);
 }
