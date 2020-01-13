@@ -122,7 +122,7 @@ class Playlist extends Component<IProps, IState> {
 			}
 		});
 
-    resizeListener = window.addEventListener('resize', this.refreshUiOnResize.bind(this), true);
+    resizeListener = window.addEventListener('resize', this.refreshUiOnResize, true);
 	}
 
   initCall = async () => {
@@ -135,12 +135,12 @@ class Playlist extends Component<IProps, IState> {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.refreshUiOnResize.bind(this), true);
+    window.removeEventListener('resize', this.refreshUiOnResize, true);
   	store.removeChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
   	store.removeChangeListener('loginUpdated', this.initCall);
   }
 
-  refreshUiOnResize(event) {
+  refreshUiOnResize = () => {
     _cache.clearAll();
     this.playlistForceRefresh();
   }
