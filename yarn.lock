@@ -1803,10 +1803,10 @@ file-stream-rotator@^0.5.5:
   dependencies:
     moment "^2.11.2"
 
-file-type@^13.0.2:
-  version "13.0.2"
-  resolved "https://registry.yarnpkg.com/file-type/-/file-type-13.0.2.tgz#99baeffc3989e4fdb189534700b6b494e114da74"
-  integrity sha512-7ZgM94zayCOwYUxUzsyI32TCd4cX1VepB75cqJR3DAnm4WS/lZKxc4LyhbBhCK71XPhZWKvLHD2voVcWeOv0MA==
+file-type@^13.0.3:
+  version "13.0.3"
+  resolved "https://registry.yarnpkg.com/file-type/-/file-type-13.0.3.tgz#38ec631acda18103da09d4f1750836932e6711c4"
+  integrity sha512-fe3+9mnMLbpP8nRQm/cJgehypv375SOFOXFdLYyYe7hWxdWgS5hkDpWnld5At/vvfVEN6rVqKA3EOKMP03tJGg==
   dependencies:
     readable-web-to-node-stream "^2.0.0"
     strtok3 "^5.0.1"
@@ -2032,10 +2032,10 @@ globrex@^0.1.2:
   resolved "https://registry.yarnpkg.com/globrex/-/globrex-0.1.2.tgz#dd5d9ec826232730cd6793a5e33a9302985e6098"
   integrity sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==
 
-got@^10.2.1:
-  version "10.2.1"
-  resolved "https://registry.yarnpkg.com/got/-/got-10.2.1.tgz#7087485482fb31aa6e6399fd493dd04639da117b"
-  integrity sha512-IQX//hGm5oLjUj743GJG30U2RzjS58ZlhQQjwQXjsyR50TTD+etVMHlMEbNxYJGWVFa0ASgDVhRkAvQPe6M9iQ==
+got@^10.2.2:
+  version "10.2.2"
+  resolved "https://registry.yarnpkg.com/got/-/got-10.2.2.tgz#3cd61dc07db0533c6190a2889b78e0c39c0f52d6"
+  integrity sha512-QibZN13xHH/mc7H5uuU2xq28xxs8moEPsJrW9AQQX0jAV4DkGdllHDVE9cxw1nntIPFk8xzzOrgJZBg194AWrg==
   dependencies:
     "@sindresorhus/is" "^1.0.0"
     "@szmarczak/http-timer" "^4.0.0"
@@ -2404,10 +2404,10 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-isomorphic-git@^0.72.1:
-  version "0.72.1"
-  resolved "https://registry.yarnpkg.com/isomorphic-git/-/isomorphic-git-0.72.1.tgz#d6d1183e6eb12eb4b9e25e27a7b4b0c345537ba3"
-  integrity sha512-1I1zdlWOwO0RKbjTzOikZuNfgtiugqhOvPYNLLNDLOKaFjcp+JKo4qFmJIJm1gNg7IKBI2jyTV0sSZKn7Bc+jQ==
+isomorphic-git@^0.74.0:
+  version "0.74.0"
+  resolved "https://registry.yarnpkg.com/isomorphic-git/-/isomorphic-git-0.74.0.tgz#0ffac143aedf33054c7eefd49f91ce96794df1e4"
+  integrity sha512-k5phrbDD/2yv8hBgSt62fZLSiiEwsvbX4MpxLCEWRiqaSW+kGSrB5RNoXaMrfmIxVCYDfzfstzwForpT+029Gw==
   dependencies:
     async-lock "^1.1.0"
     clean-git-ref "^2.0.1"
@@ -3312,10 +3312,10 @@ pg-types@^2.1.0:
     postgres-date "~1.0.4"
     postgres-interval "^1.1.0"
 
-pg@^7.17.0:
-  version "7.17.0"
-  resolved "https://registry.yarnpkg.com/pg/-/pg-7.17.0.tgz#1fcf82238dcbebea63e192c944345c25c86992fc"
-  integrity sha512-70Q4ZzIdPgwMPb3zUIzAUwigNJ4v5vsWdMED6OzXMfOECeYTvTm7iSC3FpKizu/R1BHL8Do3bLs6ltGfOTAnqg==
+pg@^7.17.1:
+  version "7.17.1"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-7.17.1.tgz#1eb4d900e1f21f43978b306972b02a2329138755"
+  integrity sha512-SYWEip6eADsgDQIZk0bmB2JDOrC8Xu6z10KlhlXl03NSomwVmHB6ZTVyDCwOfT6bXHI8QndJdk5XxSSRXikaSA==
   dependencies:
     buffer-writer "2.0.0"
     packet-reader "1.0.0"
@@ -4136,10 +4136,10 @@ supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
-systeminformation@^4.18.1:
-  version "4.18.1"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.18.1.tgz#18f906722734b9ccb750daae58b54ae01166223d"
-  integrity sha512-VvJ0SKvo8tXAYwFjQkJVzQyy9x/4ubPn2CMdFHER3r1K7AIXSFUZHNlNghi6uBRp5MYTalo9BrIYMx6nSuqU1A==
+systeminformation@^4.19.0:
+  version "4.19.0"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.19.0.tgz#a0e43e1db161ae8e559352491e977bc6e984e9a8"
+  integrity sha512-/IxTW0g43oQKLFGyfrpkiZ4/mWO2whzfXdsh4zXEPPNDaVSTPy3t5m/07Quf2nmt65RoykYxUhzWSRNc6K86PQ==
 
 table@^5.2.3:
   version "5.4.6"
@@ -4244,16 +4244,16 @@ truncate-utf8-bytes@^1.0.0:
   dependencies:
     utf8-byte-length "^1.0.1"
 
-ts-node@^8.5.4:
-  version "8.5.4"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.5.4.tgz#a152add11fa19c221d0b48962c210cf467262ab2"
-  integrity sha512-izbVCRV68EasEPQ8MSIGBNK9dc/4sYJJKYA+IarMQct1RtEot6Xp0bXuClsbUSnKpg50ho+aOAx8en5c+y4OFw==
+ts-node@^8.6.1:
+  version "8.6.1"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.6.1.tgz#a31838d93cb67bbe2c56026848ab6c9224564c4e"
+  integrity sha512-KqPbO7/UuOPE4ANAOV9geZjk6tet6rK2K+DFeEJq6kIXUi0nLkrOMksozGkIlFopOorkStlwar3DdWYrdl7zCw==
   dependencies:
     arg "^4.1.0"
     diff "^4.0.1"
     make-error "^1.1.1"
     source-map-support "^0.5.6"
-    yn "^3.0.0"
+    yn "^4.0.0"
 
 tslib@^1.8.1, tslib@^1.9.0:
   version "1.10.0"
@@ -4609,7 +4609,7 @@ yesql@^4.1.0:
   resolved "https://registry.yarnpkg.com/yesql/-/yesql-4.1.0.tgz#2c42d1cb7a02de7383bbe7a1821121546d3bbecd"
   integrity sha512-ORr6uBR0r6rlbn+A9utrjIAQMO4mti6RAxJiVmwDyYrfBOB7YWuFyLUU9ypMnHDOBRLyvuU2clC0U+kPdHUYPQ==
 
-yn@^3.0.0:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
-  integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
+yn@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/yn/-/yn-4.0.0.tgz#611480051ea43b510da1dfdbe177ed159f00a979"
+  integrity sha512-huWiiCS4TxKc4SfgmTwW1K7JmXPPAmuXWYy4j9qjQo4+27Kni8mGhAAi1cloRWmBe2EqcLgt3IGqQoRL/MtPgg==
