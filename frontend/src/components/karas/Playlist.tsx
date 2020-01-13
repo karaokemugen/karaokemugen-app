@@ -21,6 +21,7 @@ require('./Playlist.scss');
 const chunksize = 400;
 const _cache = new CellMeasurerCache({ defaultHeight: 36, fixedWidth: true });
 let timer:any;
+let resizeListener = null;
 
 interface IProps {
 	scope: string;
@@ -120,6 +121,8 @@ class Playlist extends Component<IProps, IState> {
 				this.changeIdPlaylist(idPlaylist);
 			}
 		});
+
+    resizeListener = window.addEventListener('resize', this.refreshUiOnResize.bind(this), true);
 	}
 
   initCall = async () => {
@@ -132,8 +135,14 @@ class Playlist extends Component<IProps, IState> {
   }
 
   componentWillUnmount() {
+    window.removeEventListener('resize', this.refreshUiOnResize.bind(this), true);
   	store.removeChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
   	store.removeChangeListener('loginUpdated', this.initCall);
+  }
+
+  refreshUiOnResize(event) {
+    _cache.clearAll();
+    this.playlistForceRefresh();
   }
 
   SortableList = SortableContainer((List as any), { withRef: true })
