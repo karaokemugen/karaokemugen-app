@@ -26,7 +26,8 @@
     "react-toastify": "^5.4.1",
     "react-virtualized": "^9.21.2",
     "socket.io-client": "^2.3.0",
-    "styles": "^0.2.1"
+    "styles": "^0.2.1",
+    "trim-right": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.7.7",
@@ -43,7 +44,7 @@
     "@types/socket.io-client": "^1.4.32",
     "babel-polyfill": "^6.26.0",
     "node-sass": "^4.13.0",
-	"parcel-bundler": "^1.12.4",
+    "parcel-bundler": "^1.12.4",
     "typescript": "^3.7.4"
   },
   "license": "MIT"
