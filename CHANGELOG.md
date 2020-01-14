@@ -1,6 +1,6 @@
 # Versions
 
-## v3.1.0 "Mitsuha Mélodramatique" -
+## v3.1.0 "Mitsuha Mélodramatique" - 22/01/2020
 
 This is a major release.
 
