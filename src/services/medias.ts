@@ -1,6 +1,6 @@
 import {extractMediaFiles} from '../lib/utils/files';
 import {resolve} from 'path';
-import {getConfig, resolvedPathIntros, resolvedPathOutros, resolvedPathEncores, resolvedPathJingles} from '../lib/utils/config';
+import {getConfig, resolvedPathIntros, resolvedPathOutros, resolvedPathEncores, resolvedPathJingles, resolvedPathSponsors} from '../lib/utils/config';
 import logger from 'winston';
 import sample from 'lodash.sample';
 import { Media, MediaType } from '../types/medias';
@@ -13,6 +13,7 @@ const medias = {
 	Outros: [] as Media[],
 	Encores: [] as Media[],
 	Jingles: [] as Media[],
+	Sponsors: [] as Media[],
 };
 
 const currentMedias = {};
@@ -34,6 +35,7 @@ function resolveMediaPath(type: MediaType): string[] {
 	if (type === 'Outros') return resolvedPathOutros();
 	if (type === 'Encores') return resolvedPathEncores();
 	if (type === 'Jingles') return resolvedPathJingles();
+	if (type === 'Sponsors') return resolvedPathSponsors();
 }
 
 export async function updateMediasGit(type: MediaType) {
@@ -71,13 +73,11 @@ export function getSingleMedia(type: MediaType): Media {
 	// If our current files list is empty after the previous removal
 	// Fill it again with the original list.
 	if (!currentMedias[type] || (currentMedias[type] && currentMedias[type].length === 0)) return null;
-	// Special case for sponsors since they can be jingles too.
-	if (type === 'Sponsors') return sample(medias.Jingles.filter(m => m.series === 'Sponsor'));
 	// If a default file is provided, search for it. If undefined or not found, pick one from a random series
 	const series = sample(currentMedias[type].map((m: Media) => m.series));
 	let media = null;
 	//Jingles do not have a specific file to use in options
-	if (type === 'Jingles') {
+	if (type === 'Jingles' || type === 'Sponsors') {
 		media = sample(currentMedias[type].filter((m: Media) => m.series === series));
 	} else {
 		media = currentMedias[type].find((m: Media) => m.file === getConfig().Playlist.Medias[type].File)

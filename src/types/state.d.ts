@@ -11,6 +11,7 @@ export interface State {
 	currentlyPlayingKara?: string,
 	currentSong: CurrentSong
 	counterToJingle?: number,
+	counterToSponsor?: number,
 	introPlayed?: boolean,
 	encorePlayed?: boolean,
 	status?: string,

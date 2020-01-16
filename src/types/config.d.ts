@@ -18,7 +18,8 @@ export interface Config {
 				Jingles?: boolean,
 				Intros?: boolean,
 				Outros?: boolean,
-				Encores?: boolean
+				Encores?: boolean,
+				Sponsors?: boolean
 			}
 			App?: boolean
 		}
@@ -66,6 +67,7 @@ export interface Config {
 		Repeat?: boolean,
 		SmartInsert?: boolean,
 		JinglesInterval?: number,
+		SponsorsInterval?: number,
 		Display: {
 			Avatar?: boolean,
 			Nickname?: boolean,
@@ -169,6 +171,7 @@ export interface Config {
 			Intros?: string[],
 			Outros?: string[],
 			Encores?: string[],
+			Sponsors?: string[],
 			Temp?: string,
 			Previews?: string,
 			Import?: string,

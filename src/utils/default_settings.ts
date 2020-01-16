@@ -41,7 +41,8 @@ export const defaults: Config = {
 				Jingles: true,
 				Outros: true,
 				Encores: true,
-				Intros: true
+				Intros: true,
+				Sponsors: true
 			},
 			App: true,
 		}
@@ -75,6 +76,7 @@ export const defaults: Config = {
 		Autoplay: false,
 		ClassicMode: false,
 		JinglesInterval: 20,
+		SponsorsInterval: 50,
 		Private: true,
 		Repeat: false,
 		SmartInsert: false,
@@ -132,7 +134,7 @@ export const defaults: Config = {
 		MaxDejaVuTime: 60,
 		Medias: {
 			Sponsors: {
-				Enabled: true
+				Enabled: true,
 			},
 			Intros: {
 				Enabled: true,
@@ -191,6 +193,7 @@ export const defaults: Config = {
 			Lyrics: ['data/lyrics'],
 			Medias: ['data/medias'],
 			Outros: ['outros', 'outros/KaraokeMugen'],
+			Sponsors: ['sponsors', 'sponsors/KaraokeMugen'],
 			Series: ['data/series'],
 			Tags: ['data/tags'],
 			Temp: 'temp'
@@ -229,6 +232,7 @@ export const configConstraints = {
 	'Karaoke.Repeat': {inclusion : bools},
 	'Karaoke.SmartInsert': {inclusion : bools},
 	'Karaoke.JinglesInterval': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	'Karaoke.SponsorsInterval': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Karaoke.Poll.Choices': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Karaoke.Poll.Timeout': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Karaoke.Poll.Enabled': {inclusion : bools},
