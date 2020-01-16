@@ -89,27 +89,6 @@ pkg_win:
     - next
     - tags
 
-pkg_win32:
-  stage: package
-  interruptible: true
-  artifacts:
-    expire_in: 1 day
-    name: km-app-pkgwin32-${CI_COMMIT_REF_SLUG}
-    paths:
-    - bin/
-  dependencies:
-    - build
-  script:
-    - dpkg --add-architecture i386
-    - apt-get update
-    - apt-get -qq install libc6:i386 libstdc++6:i386
-    - mkdir -p bin
-    - npm install -g pkg
-    - pkg . -d --targets node10-win-x86 -o bin/karaokemugen-app32.exe
-  only:
-    - master
-    - tags
-
 pkg_osx:
   stage: package
   interruptible: true
@@ -149,27 +128,6 @@ deploy_win:
   only:
     - master
     - next
-    - tags
-
-deploy_win32:
-  stage: deploy
-  interruptible: true
-  dependencies:
-    - pkg_win32
-  cache: {}
-  script:
-    - mkdir build_win32
-    - cd build_win32
-    - wget -qO- http://mugen.karaokes.moe/downloads/dist_win32.tar.gz | tar xvz
-    - cp -f ../bin/karaokemugen-app32.exe KaraokeMugen.exe
-    - cp -f ../config.sample.yml .
-    - cp -Rf ../samples .
-    - touch portable
-    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win32.zip *
-    - cd ..
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win32/KaraokeMugen-$CI_COMMIT_REF_NAME-win32.zip"
-  only:
-    - master
     - tags
 
 latest_tag:
