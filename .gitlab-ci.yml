@@ -92,6 +92,7 @@ pkg_win:
 pkg_win32:
   stage: package
   interruptible: true
+  allow_failure: true
   artifacts:
     expire_in: 1 day
     name: km-app-pkgwin32-${CI_COMMIT_REF_SLUG}
@@ -154,6 +155,7 @@ deploy_win:
 deploy_win32:
   stage: deploy
   interruptible: true
+  allow_failure: true
   dependencies:
     - pkg_win32
   cache: {}
