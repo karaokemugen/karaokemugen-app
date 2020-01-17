@@ -17,6 +17,7 @@ let state: State = {
 	currentSong: null,
 	counterToJingle: 0,
 	introPlayed: false,
+	encorePlayed: false,
 	status: 'stop', // [stop,play,pause] // general engine status
 	private: true, // Karaoke Mode
 	fullscreen: false,

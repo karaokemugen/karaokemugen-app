@@ -166,10 +166,8 @@ export async function playerEnding() {
 				return;
 			}
 		}
-		// Jingle code
-		// Jingles are played inbetween songs so we need to load the next song
-		logger.info(`[Player] Songs before next jingle: ${conf.Karaoke.JinglesInterval - state.counterToJingle}`);
-		logger.info(`[Player] Songs before next sponsor: ${conf.Karaoke.SponsorsInterval - state.counterToSponsor}`);
+		// Jingles and sponsors are played inbetween songs so we need to load the next song
+		logger.info(`[Player] Songs before next jingle: ${conf.Karaoke.JinglesInterval - state.counterToJingle} / before next sponsor: ${conf.Karaoke.SponsorsInterval - state.counterToSponsor}`);
 		if (state.counterToSponsor >= conf.Karaoke.SponsorsInterval && conf.Karaoke.SponsorsInterval > 0) {
 			try {
 				setState({counterToSponsor: 0});
