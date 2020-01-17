@@ -1096,8 +1096,7 @@ export async function notificationNextSong(): Promise<void> {
 		const kara = await nextSong(false);
 		emitWS('nextSong', kara);
 	} catch(err) {
-		//Non-fatal
-		logger.warn(`[Playlist] Could not send next song notification : ${err}`);
+		//Non-fatal, it usually means we're at the last song
 	}
 }
 
