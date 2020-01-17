@@ -1,6 +1,7 @@
 // KM Imports
 import {asyncExists, asyncMkdirp} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
+import internet from 'internet-available';
 
 // Node modules
 import fs from 'fs';
@@ -12,6 +13,7 @@ export async function gitUpdate(gitDir: string, gitURL: string, element: string,
 	try {
 		if (!await asyncExists(gitDir) || !await asyncExists(gitDir + '/.git')) {
 			logger.info(`[${element}] Downloading...`);
+			if (!await internet()) throw 'Internet not available'
 			// Git clone
 			if (!await asyncExists(gitDir)) await asyncMkdirp(gitDir);
 			await gitClone({
@@ -21,6 +23,7 @@ export async function gitUpdate(gitDir: string, gitURL: string, element: string,
 			logger.info(`[${element}] Finished downloading`);
 			return localDirs;
 		} else {
+			if (!await internet()) throw 'Internet not available'
 			logger.info(`[${element}] Updating...`);
 			await gitPull({
 				dir: gitDir
@@ -29,7 +32,6 @@ export async function gitUpdate(gitDir: string, gitURL: string, element: string,
 			return null;
 		}
 	} catch(err) {
-		console.log(JSON.stringify(err,null,2))
 		throw Error(err);
 	}
 }
