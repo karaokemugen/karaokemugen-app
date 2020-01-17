@@ -115,9 +115,6 @@ export interface Config {
 		MaxDejaVuTime?: number,
 		RemovePublicOnPlay?: boolean,
 		Medias: {
-			Sponsors: {
-				Enabled: boolean,
-			}
 			Intros: {
 				Enabled: boolean,
 				File: string,

@@ -133,9 +133,6 @@ export const defaults: Config = {
 		AllowDuplicateSeries: true,
 		MaxDejaVuTime: 60,
 		Medias: {
-			Sponsors: {
-				Enabled: true,
-			},
 			Intros: {
 				Enabled: true,
 				File: null,

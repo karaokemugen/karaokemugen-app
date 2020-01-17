@@ -23,6 +23,7 @@ Online:
       Jingles: true
       Outros: true
       Encores: true
+      Sponsors: true
 Frontend:
   # Minutes before users are considered signed out
   AuthExpireTime: 15
@@ -77,6 +78,8 @@ Karaoke:
       Channel: 'AxelTerizaki'
   # Number of songs between jingles
   JinglesInterval: 20
+  # Number of songs between sponsors
+  SponsorsInterval: 50
   # Private karaoke mode or public karaoke mode.
   Private: true
   # Repeat playlist once reaching the end

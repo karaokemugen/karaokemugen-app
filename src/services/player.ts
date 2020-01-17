@@ -87,7 +87,7 @@ export async function playerEnding() {
 		}
 		// If we just played an intro, play a sponsor.
 		if (state.player.mediaType === 'Intros') {
-			if (conf.Playlist.Medias.Sponsors.Enabled) {
+		if (conf.Karaoke.SponsorsInterval > 0) {
 				try {
 					await playMedia('Sponsors');
 					setState({currentlyPlayingKara: 'Sponsors'});
