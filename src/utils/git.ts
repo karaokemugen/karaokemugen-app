@@ -13,7 +13,11 @@ export async function gitUpdate(gitDir: string, gitURL: string, element: string,
 	try {
 		if (!await asyncExists(gitDir) || !await asyncExists(gitDir + '/.git')) {
 			logger.info(`[${element}] Downloading...`);
-			if (!await internet()) throw 'Internet not available'
+			try {
+				await internet();
+			} catch (err) {
+				throw 'Internet not available';
+			}
 			// Git clone
 			if (!await asyncExists(gitDir)) await asyncMkdirp(gitDir);
 			await gitClone({
@@ -23,7 +27,11 @@ export async function gitUpdate(gitDir: string, gitURL: string, element: string,
 			logger.info(`[${element}] Finished downloading`);
 			return localDirs;
 		} else {
-			if (!await internet()) throw 'Internet not available'
+			try {
+				await internet();
+			} catch (err) {
+				throw 'Internet not available';
+			}
 			logger.info(`[${element}] Updating...`);
 			await gitPull({
 				dir: gitDir
