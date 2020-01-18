@@ -141,10 +141,10 @@ class KaraLine extends Component<IProps,IState> {
   		} else {
   			response = await axios.post(url, data);
 		  }
-		  if (response.data && response.data.plc && response.data.plc.time_before_play) {
-			var playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
+		  if (response.data && response.data.data && response.data.data.plc && response.data.data.plc.time_before_play) {
+			var playTime = new Date(Date.now() + response.data.data.plc.time_before_play * 1000);
 			var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-			var beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+			var beforePlayTime = secondsTimeSpanToHMS(response.data.data.plc.time_before_play, 'hm');
 			displayMessage('success', <div>
 					{i18next.t(response.data.code)}
 					<br/>
