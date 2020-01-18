@@ -16,6 +16,7 @@ let state: State = {
 	currentlyPlayingKara: null,
 	currentSong: null,
 	counterToJingle: 0,
+	counterToSponsor: 0,
 	introPlayed: false,
 	encorePlayed: false,
 	status: 'stop', // [stop,play,pause] // general engine status
