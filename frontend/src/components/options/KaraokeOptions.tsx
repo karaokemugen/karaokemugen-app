@@ -141,8 +141,8 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div> : null}
 
   				<div className="form-group">
-  					<label className="col-xs-4 control-label" title={i18next.t('ENGINEJINGLESINTERVAL_TOOLTIP')}>
-  						{i18next.t('ENGINEJINGLESINTERVAL')}
+  					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP')}>
+  						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL')}
               &nbsp;
   						<i className="far fa-question-circle"></i>
   					</label>
@@ -155,6 +155,24 @@ class KaraokeOptions extends Component<IProps, IState> {
   							onChange={this.onChange}
   							value={this.state.config['Karaoke.JinglesInterval']}
   						/>
+  					</div>
+  				</div>
+
+				<div className="form-group">
+  					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP')}>
+  						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL')}
+              &nbsp;
+  						<i className="far fa-question-circle"></i>
+  					</label>
+
+					<div className="col-xs-6">
+						<input
+							type="number"
+							className="form-control"
+							id="Karaoke.SponsorsInterval"
+							onChange={this.onChange}
+							value={this.state.config['Karaoke.SponsorsInterval']}
+						/>
   					</div>
   				</div>
 
@@ -486,6 +504,15 @@ class KaraokeOptions extends Component<IProps, IState> {
   					<div className="col-xs-6">
   						<Switch idInput="Online.Updates.Medias.Jingles" handleChange={this.onChange}
   							isChecked={this.state.config['Online.Updates.Medias.Jingles']} />
+  					</div>
+  				</div>
+				<div className="form-group">
+  					<label className="col-xs-4 control-label">
+  						{i18next.t('SETTINGS.KARAOKE.AUTO_UPDATE_SPONSORS')}
+  					</label>
+  					<div className="col-xs-6">
+  						<Switch idInput="Online.Updates.Medias.Sponsors" handleChange={this.onChange}
+  							isChecked={this.state.config['Online.Updates.Medias.Sponsors']} />
   					</div>
   				</div>
   				<div className="form-group">
