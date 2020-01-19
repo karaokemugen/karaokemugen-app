@@ -18,6 +18,7 @@ interface IProps {
 
 interface IState {
 	passwordDifferent: string;
+	nicknameMandatory: string;
 	activeView: number;
 	user: UserProfile;
 	users: Array<User>;
@@ -157,10 +158,8 @@ class ProfilModal extends Component<IProps, IState> {
     	}
     	dataFile.append('nickname', (store.getLogInfos() as Token).username);
 
-    	const response = await axios.put('/api/myaccount', dataFile);
-    	const user = this.state.user;
-    	user['avatar_file'] = response.data.avatar_file;
-    	this.setState({ user: user });
+    	await axios.put('/api/myaccount', dataFile);
+		this.getUser();
     };
 
     render() {
