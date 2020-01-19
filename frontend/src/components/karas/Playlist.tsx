@@ -45,6 +45,7 @@ interface IState {
 	getPlaylistInProgress: boolean;
 	stopUpdate: boolean;
 	forceUpdate: boolean;
+	forceUpdateFirst: boolean;
 	scope?: string;
 	idPlaylist: number;
 	data: KaraList | Array<DBBLC> | undefined;
@@ -73,6 +74,7 @@ class Playlist extends Component<IProps, IState> {
 			getPlaylistInProgress: false,
 			stopUpdate: false,
 			forceUpdate: false,
+			forceUpdateFirst: false,
 			idPlaylist: 0,
 			data: undefined,
 			playlistList: []
@@ -81,7 +83,7 @@ class Playlist extends Component<IProps, IState> {
 
 	componentWillReceiveProps(nextProps:IProps) {
 		if (nextProps.idPlaylistTo && nextProps.idPlaylistTo !== this.props.idPlaylistTo) {
-			this.playlistForceRefresh();
+			this.playlistForceRefresh(true);
 		}
 	}
 
@@ -140,12 +142,7 @@ class Playlist extends Component<IProps, IState> {
   }
 
   refreshUiOnResize = () => {
-    _cache.clearAll();
-	this.playlistForceRefresh();
-	_cache.clearAll();
-	setTimeout(() => {
-		this.playlistForceRefresh();
-	}, 50);
+	this.playlistForceRefresh(true);
   }
 
   SortableList = SortableContainer((List as any), { withRef: true })
@@ -461,11 +458,7 @@ noRowsRenderer = () => {
 			data = karas;
 		}
 		this.setState({ data: data, getPlaylistInProgress: false });
-		this.playlistForceRefresh();
-		_cache.clearAll();
-		setTimeout(() => {
-			this.playlistForceRefresh();
-		}, 50);
+		this.playlistForceRefresh(true);
 	} catch (error) {
 		displayMessage('error', `ERROR_CODES.${error.response.code}`);
 	}
@@ -532,7 +525,7 @@ noRowsRenderer = () => {
 		  if(kara) kara.checked = !kara.checked;
   	});
 	  this.setState({ data: data });
-	  this.playlistForceRefresh();
+	  this.playlistForceRefresh(true);
   };
 
   checkKara = (id:string|number) => {
@@ -547,7 +540,7 @@ noRowsRenderer = () => {
   		}
   	});
 	  this.setState({ data: data });
-	  this.playlistForceRefresh();
+	  this.playlistForceRefresh(true);
   };
 
   addAllKaras = async () => {
@@ -719,8 +712,17 @@ noRowsRenderer = () => {
 	  this.setState({stopUpdate : true});
   }
 
-  playlistForceRefresh = () => {
-	  this.setState({forceUpdate: !this.state.forceUpdate});
+  playlistForceRefresh = (forceUpdateFirstParam: boolean) => {
+	  this.setState({forceUpdate: !this.state.forceUpdate, forceUpdateFirst: forceUpdateFirstParam});
+	  _cache.clearAll();
+  }
+
+  componentDidUpdate() {
+	  if (this.state.forceUpdateFirst) {
+		setTimeout(() => {
+			this.playlistForceRefresh(false);
+		}, 50);
+	  }
   }
   
   render() {
