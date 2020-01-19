@@ -39,7 +39,7 @@ class UserEdit extends Component<UserEditProps, UserEditState> {
 	saveNew = (user) => {
 		axios.post('/api/users', user)
 			.then(() => {
-				this.props.infoMessage(i18next.t('USERS.CREATED'));
+				this.props.infoMessage(i18next.t('USERS.USER_CREATED'));
 				this.props.push('/system/km/users');
 			})
 			.catch(err => {
@@ -50,7 +50,7 @@ class UserEdit extends Component<UserEditProps, UserEditState> {
 	saveUpdate = (user) => {
 		axios.put(`/api/users/${user.login}`, user)
 			.then(() => {
-				this.props.infoMessage(i18next.t('USERS.EDITED'));
+				this.props.infoMessage(i18next.t('USERS.USER_EDITED'));
 				this.props.push('/system/km/users');
 			})
 			.catch(err => {
