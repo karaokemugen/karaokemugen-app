@@ -231,7 +231,7 @@ export default function userController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 * {
-	 *   "code": "USER_RESETPASSWORD_NOTONLINE_ERROR",
+	 *   "code": "USER_RESETPASSWORD_WRONGSECURITYCODE",
 	 *   "message": null
 	 * }
 	  */
@@ -245,14 +245,14 @@ export default function userController(router: Router) {
 						resetSecurityCode();
 						res.status(200).json(null);
 					} else {
-						res.status(500).json(errMessage('USER_RESETPASSWORD_WRONGSECURITYCODE'));
+						res.status(500).send('USER_RESETPASSWORD_WRONGSECURITYCODE');
 					}
 				} else {
 					await resetRemotePassword(req.params.username);
 					res.status(200).json(null);
 				}
 			} catch(err) {
-				res.status(500).json(errMessage('USER_RESETPASSWORD_ERROR',err));
+				res.status(500).send('USER_RESETPASSWORD_ERROR');
 			}
 		});
 	router.route('/myaccount')
@@ -316,7 +316,7 @@ export default function userController(router: Router) {
 				updateSongsLeft(userData.login);
 				res.json(userData);
 			} catch(err) {
-				res.status(500).json(errMessage('USER_VIEW_ERROR',err));
+				res.status(500).send('USER_VIEW_ERROR');
 			}
 		})
 	/**
@@ -345,7 +345,7 @@ export default function userController(router: Router) {
 				await deleteUser(req.authToken.username);
 				res.status(200).send('USER_DELETED');
 			} catch(err) {
-				res.status(500).json(errMessage('USER_DELETED_ERROR',err));
+				res.status(500).send('USER_DELETED_ERROR');
 			}
 		})
 

@@ -382,7 +382,7 @@ export default function playlistsController(router: Router) {
 					res.json(playlist);
 				} catch(err) {
 					errMessage('PL_VIEW_SONGS_ERROR', err);
-					res.status(500).send(errMessage('PL_VIEW_SONGS_ERROR'));
+					res.status(500).send('PL_VIEW_SONGS_ERROR');
 				}
 			})
 		/**
