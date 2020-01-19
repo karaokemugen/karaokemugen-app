@@ -232,8 +232,8 @@ class LoginModal extends Component<IProps,IState> {
 									</div> : null
 									}
 									{this.props.scope != 'public' ?
-    								<div>
-    									<label className="accountLabel">{this.state.onlineSwitch ? i18next.t('NOT_ADMIN_ACCOUNT') : i18next.t('FORGOT_PASSWORD_ADMIN')}</label>
+    								<div style={{display: 'flex'}}>
+    									<label title={i18next.t('MAKE_ACCOUNT_ADMIN_MESSAGE')} className="accountLabel">{this.state.onlineSwitch ? i18next.t('MAKE_ACCOUNT_ADMIN') : i18next.t('FORGOT_PASSWORD_ADMIN')}</label>
 										<Switch handleChange={() => this.setState({forgotPassword: !this.state.forgotPassword})}
 											isChecked={this.state.forgotPassword} />
 									</div> : null
@@ -262,7 +262,7 @@ class LoginModal extends Component<IProps,IState> {
     									<input type="password" className={this.state.redBorders} id="signupPassword" name="modalPassword" placeholder={i18next.t('PASSWORD')}
     										required onKeyPress={this.onKeyPress} defaultValue={this.state.password} onChange={(event) => this.setState({ password: event.target.value })} />
     									<input type="password" className={this.state.redBorders} id="signupPasswordConfirmation" name="modalPassword" placeholder={i18next.t('PASSWORDCONF')}
-    										required onKeyPress={this.onKeyPress} defaultValue={this.state.passwordConfirmation} required onChange={(event) => this.setState({ passwordConfirmation: event.target.value })} />
+    										required onKeyPress={this.onKeyPress} defaultValue={this.state.passwordConfirmation} onChange={(event) => this.setState({ passwordConfirmation: event.target.value })} />
 										{this.props.scope != 'public' ?
 											<div>
 												<br/>
