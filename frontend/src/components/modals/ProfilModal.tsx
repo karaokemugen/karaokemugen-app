@@ -74,6 +74,13 @@ class ProfilModal extends Component<IProps, IState> {
     	if (event.keyCode === 13) {
 			this.updateUser();
     	}
+	};
+	
+	onClickSelect = (event:any) => {
+    	const user = this.state.user;
+    	user[event.target.name as typesAttrUser] = event.target.value;
+		this.setState({ user: user });
+		this.updateUser();
     };
 
     changeLanguageFallback(name:'main_series_lang'|'fallback_series_lang', value:string) {
@@ -274,7 +281,7 @@ class ProfilModal extends Component<IProps, IState> {
     											<label className="col-xs-6 control-label">{i18next.t('SERIE_NAME_MODE')}</label>
     											<div className="col-xs-6">
 													<select className="form-control" name="series_lang_mode" defaultValue={this.state.user.series_lang_mode}
-													 onChange={this.onKeyPress}>
+													 onChange={this.onClickSelect}>
     													<option value={-1}>{i18next.t('SERIE_NAME_MODE_NO_PREF')}</option>
     													<option value={0}>{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
     													<option value={1}>{i18next.t('SERIE_NAME_MODE_SONG')}</option>
