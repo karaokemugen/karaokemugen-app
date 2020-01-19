@@ -296,10 +296,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   	const plCommandsContainer =(
   		this.props.scope === 'admin' && this.props.playlistCommands && this.props.idPlaylist !== -4 ?
   			<div className="plCommandsContainer actionDivContainer">
-  				{this.props.side === 1 ?
-  					<React.Fragment>{commandsControls} {actionDivContainer}</React.Fragment> :
-  					<React.Fragment>{actionDivContainer}{commandsControls} </React.Fragment>
-  				}
+  				<React.Fragment>{commandsControls} {actionDivContainer}</React.Fragment>
   			</div> : null);
 
   	const searchMenu = (this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).length > 0 ? 

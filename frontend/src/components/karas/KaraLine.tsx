@@ -250,10 +250,13 @@ class KaraLine extends Component<IProps,IState> {
 							&& this.props.config.Frontend.ShowAvatarsOnPlaylist && this.props.avatar_file ? 
 							<img className={`img-circle ${is_touch_device() ? 'mobile': ''}`}
 							 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
-						{this.props.idPlaylistTo !== this.props.idPlaylist ?
-							<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
-								scope={this.props.scope}
-								addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} /> : null}
+							 <div style={{display:'flex'}}>
+								{this.props.idPlaylistTo !== this.props.idPlaylist ?
+									<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
+										scope={this.props.scope}
+										addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} />
+								: null}
+							 </div>
 						{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
 					</div>
   					{scope === 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ?
