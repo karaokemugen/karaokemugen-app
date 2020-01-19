@@ -62,7 +62,7 @@ class LoginModal extends Component<IProps,IState> {
     	if (!username) {
     		url = '/api/auth/login/guest';
     		data = { fingerprint: password };
-    	} else if (this.state.forgotPassword && !this.state.onlineSwitch) {
+    	} else if (this.state.forgotPassword) {
 			data.securityCode = this.state.securityCode;
     	}
 
@@ -73,7 +73,7 @@ class LoginModal extends Component<IProps,IState> {
 				displayMessage('warning', i18next.t('ADMIN_PLEASE'));
 				store.logOut();
 			} else {
-				callModal('prompt', i18next.t('MAKE_ACCOUNT_ADMN'), i18next.t('MAKE_ACCOUNT_ADMN_MESSAGE'), async (securityCode:string) => {
+				callModal('prompt', i18next.t('MAKE_ACCOUNT_ADMIN'), i18next.t('MAKE_ACCOUNT_ADMIN_MESSAGE'), async (securityCode:string) => {
 					(data as {username:string|undefined, password:string, securityCode?:string}).securityCode = securityCode;
 					result = await axios.post(url, data);
 					response = result.data;
