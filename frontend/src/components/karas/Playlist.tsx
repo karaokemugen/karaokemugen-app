@@ -141,7 +141,11 @@ class Playlist extends Component<IProps, IState> {
 
   refreshUiOnResize = () => {
     _cache.clearAll();
-    this.playlistForceRefresh();
+	this.playlistForceRefresh();
+	_cache.clearAll();
+	setTimeout(() => {
+		this.playlistForceRefresh();
+	}, 50);
   }
 
   SortableList = SortableContainer((List as any), { withRef: true })
