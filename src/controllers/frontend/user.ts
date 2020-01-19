@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import { emitWS } from '../../lib/utils/ws';
 import { errMessage } from '../common';
-import { deleteUser, findUserByName, createUser, editUser, convertToRemoteUser, removeRemoteUser, listUsers, createAdminUser, resetRemotePassword, updateSongsLeft } from '../../services/user';
+import { deleteUser, findUserByName, createUser, editUser, convertToRemoteUser, removeRemoteUser, listUsers, createAdminUser, resetRemotePassword, updateSongsLeft, resetSecurityCode } from '../../services/user';
 import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser, optionalAuth } from '../middlewares/auth';
 import { getLang } from '../middlewares/lang';
 import { check } from '../../lib/utils/validators';
 import multer = require('multer');
 import { resolvedPathTemp } from '../../lib/utils/config';
 import { requireWebappLimited, requireWebappLimitedNoAuth } from '../middlewares/webapp_mode';
+import { getState } from '../../utils/state';
 
 export default function userController(router: Router) {
 	// Middleware for playlist and files import
@@ -212,6 +213,7 @@ export default function userController(router: Router) {
 	 * @apiGroup Users
 	 * @apiPermission noAuth
 	 * @apiParam {String} username Username for password reset
+	 * @apiParam {String} password New password (for local users only)
 	 * @apiParam {String} securityCode Security code in case you want to change your local password (admin only)
 	 * @apiSuccess {String} data/login User's login
 	 *
@@ -224,8 +226,8 @@ export default function userController(router: Router) {
 	 *       },
 	 *   ]
 	 * }
-	 * @apiError USER_RESETPASSWORD_NOTONLINE_ERROR Only online users can have their password automatically reset
 	 * @apiError USER_RESETPASSWORD_ERROR Reset password generic error
+	 * @apiError USER_RESETPASSWORD_WRONGSECURITYCODE Wrong security code for local user password change
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 * {
@@ -236,7 +238,15 @@ export default function userController(router: Router) {
 		.post(async (req: any, res: any) => {
 			try {
 				if (!req.params.username.includes('@')) {
-					res.status(500).json(errMessage('USER_RESETPASSWORD_NOTONLINE_ERROR',null));
+					if (req.body.securityCode === getState().securityCode) {
+						await editUser(req.params.username, {
+							password: req.body.password
+						}, null, 'admin');
+						resetSecurityCode();
+						res.status(200).json(null);
+					} else {
+						res.status(500).json(errMessage('USER_RESETPASSWORD_WRONGSECURITYCODE'));
+					}
 				} else {
 					await resetRemotePassword(req.params.username);
 					res.status(200).json(null);
