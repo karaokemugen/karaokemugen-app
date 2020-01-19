@@ -46,11 +46,11 @@ export async function fetchAndAddFavorites(instance: string, token: string, user
 	}
 }
 
-export async function addToFavorites(username: string, kids: string[]) {
+export async function addToFavorites(username: string, kids: string[], sendOnline = true) {
 	try {
 		profile('addToFavorites');
 		await insertFavorites(kids, username);
-		if (username.includes('@') && getConfig().Online.Users) {
+		if (username.includes('@') && sendOnline && getConfig().Online.Users) {
 			kids.forEach(k => manageFavoriteInInstance('POST', username, k));
 		}
 	} catch(err) {
@@ -146,7 +146,7 @@ export async function importFavorites(favs: FavExport, username: string) {
 	let favorites = favs.Favorites.map(f => f.kid);
 	const karasUnknown = await isAllKaras(favorites);
 	favorites = favorites.filter(f => !karasUnknown.includes(f));
-	await addToFavorites(username, favorites);
+	await addToFavorites(username, favorites, false);
 	return { karasUnknown: karasUnknown };
 }
 
