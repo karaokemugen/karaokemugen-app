@@ -46,12 +46,18 @@ export async function fetchAndAddFavorites(instance: string, token: string, user
 	}
 }
 
+export async function manageFavoriteInInstanceBatch(action: 'POST' | 'DELETE', username: string, kids: string[]) {
+	for (const kid of kids) {
+		await manageFavoriteInInstance(action, username, kid);
+	}
+};
+
 export async function addToFavorites(username: string, kids: string[], sendOnline = true) {
 	try {
 		profile('addToFavorites');
 		await insertFavorites(kids, username);
 		if (username.includes('@') && sendOnline && getConfig().Online.Users) {
-			kids.forEach(k => manageFavoriteInInstance('POST', username, k));
+			manageFavoriteInInstanceBatch('POST', username, kids);
 		}
 	} catch(err) {
 		throw err;
@@ -83,7 +89,7 @@ export async function deleteFavorites(username: string, kids: string[]) {
 		profile('deleteFavorites');
 		await removeFavorites(kids, username);
 		if (username.includes('@') && getConfig().Online.Users) {
-			kids.forEach(k => manageFavoriteInInstance('DELETE', username, k));
+			manageFavoriteInInstanceBatch('DELETE', username, kids);
 		}
 	} catch(err) {
 		throw {message: err};
