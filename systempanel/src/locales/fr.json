@@ -90,7 +90,7 @@
 		"LOG_OUT": "Déconnexion"
 	},
 	"USERS": {
-		"ADMIN": "Administrateur",
+		"ADMIN": "Opérateur",
 		"USER": "Utilisateur",
 		"GUEST": "Invité",
 		"LOGIN": "Nom d'utilisateur",

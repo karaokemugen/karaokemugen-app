@@ -90,7 +90,7 @@
 		"LOG_OUT": "Log Out"
 	},
 	"USERS": {
-		"ADMIN": "Admin",
+		"ADMIN": "Operator",
 		"USER": "User",
 		"GUEST": "Guest",
 		"LOGIN": "Username",
