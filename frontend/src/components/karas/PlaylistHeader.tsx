@@ -356,14 +356,18 @@ class PlaylistHeader extends Component<IProps,IState> {
   		this.props.idPlaylist >= 0 && this.props.scope !== 'public' && this.props.playlistInfo ?
   			<div className="flagsContainer " >
   				<div className="btn-group plCommands flags" id={'flag' + this.props.side}>
-  					<button title={i18next.t('PLAYLIST_CURRENT')} name="flag_current" onClick={this.setFlagCurrent}
-  						className={'btn ' + (this.props.playlistInfo.flag_current ? 'btn-primary' : 'btn-default')} >
-  						<i className="fas fa-video"></i>
-  					</button>
-  					<button title={i18next.t('PLAYLIST_PUBLIC')} name="flag_public" onClick={this.setFlagPublic}
-  						className={'btn ' + (this.props.playlistInfo.flag_public ? 'btn-primary' : 'btn-default')} >
-  						<i className="fas fa-globe"></i>
-  					</button>
+				  	{!this.props.playlistInfo.flag_public ?
+						<button title={i18next.t('PLAYLIST_CURRENT')} name="flag_current" onClick={this.setFlagCurrent}
+							className={'btn ' + (this.props.playlistInfo.flag_current ? 'btn-primary' : 'btn-default')} >
+							<i className="fas fa-video"></i>
+						</button> : null
+  					}
+					{!this.props.playlistInfo.flag_current ?
+						<button title={i18next.t('PLAYLIST_PUBLIC')} name="flag_public" onClick={this.setFlagPublic}
+							className={'btn ' + (this.props.playlistInfo.flag_public ? 'btn-primary' : 'btn-default')} >
+							<i className="fas fa-globe"></i>
+						</button> : null
+  					}
   					{this.props.idPlaylist >= 0 ?
   						<button title={i18next.t('PLAYLIST_VISIBLE')} className="btn btn-default" name="flag_visible" onClick={this.setFlagVisible}>
   							{this.props.playlistInfo.flag_visible ?
