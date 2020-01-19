@@ -154,7 +154,7 @@ class KaraLine extends Component<IProps,IState> {
   					})}
 				</div>);
 		  } else {
-			displayMessage('success', i18next.t(response.data.code));
+			displayMessage('success', i18next.t(response.data.code ? response.data.code : response.data));
 		  }
   	} catch (error) {
   		displayMessage('warning', i18next.t(error.response.data));
