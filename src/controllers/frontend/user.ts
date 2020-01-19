@@ -207,14 +207,14 @@ export default function userController(router: Router) {
 		});
 	router.route('/users/:username/resetpassword')
 		/**
-	 * @api {post} /users/:username/resetpassword Reset password (online account only)
+	 * @api {post} /users/:username/resetpassword Reset password
 	 * @apiName PostResetPassword
 	 * @apiVersion 3.1.0
 	 * @apiGroup Users
 	 * @apiPermission noAuth
 	 * @apiParam {String} username Username for password reset
 	 * @apiParam {String} password New password (for local users only)
-	 * @apiParam {String} securityCode Security code in case you want to change your local password (admin only)
+	 * @apiParam {String} securityCode Security code in case you want to change your local password (for local users only)
 	 * @apiSuccess {String} data/login User's login
 	 *
 	 * @apiSuccessExample Success-Response:

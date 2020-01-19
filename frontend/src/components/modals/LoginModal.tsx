@@ -23,7 +23,6 @@ interface IState {
 	serv: string;
 	activeView?: number;
 	onlineSwitch: boolean;
-	adminSwitch: boolean | undefined;
 	forgotPassword: boolean;
 	login:string;
 	password:string;
@@ -42,7 +41,6 @@ class LoginModal extends Component<IProps,IState> {
 			role: this.props.role ? this.props.role : 'user',
 			activeView: this.props.activeView ? this.props.activeView : 1,
 			onlineSwitch : true,
-			adminSwitch : this.props.role === 'admin',
 			forgotPassword: false,
 			password: '',
 			login: ''
@@ -57,13 +55,13 @@ class LoginModal extends Component<IProps,IState> {
 
     login = async (username:string|undefined, password:string) => {
     	var url = '/api/auth/login';
-    	var data:{username:string|undefined, password:string, securityCode?:string} | {fingerprint?:string} = { username: username, password: password };
+    	var data:{username:string|undefined, password:string} | {fingerprint?:string} = { username: username, password: password };
 
     	if (!username) {
     		url = '/api/auth/login/guest';
     		data = { fingerprint: password };
     	} else if (this.state.forgotPassword) {
-			data.securityCode = this.state.securityCode;
+			await this.callForgetPasswordApi();
     	}
 
     	var result = await axios.post(url, data);
@@ -125,9 +123,9 @@ class LoginModal extends Component<IProps,IState> {
     	if (password !== this.state.passwordConfirmation) {
     		this.setState({ redBorders: 'redBorders' });
     	} else {
-			var data:{login:string, password:string, securityCode?:string, admin?:boolean} 
-				= { login: username, password: password, admin: this.state.adminSwitch };
-    		if (this.state.adminSwitch) {
+			var data:{login:string, password:string, securityCode?:string, role:string} 
+				= { login: username, password: password, role: this.props.scope === 'admin' ? 'admin' : 'user' };
+    		if (this.props.scope === 'admin') {
 				if (!this.state.securityCode) {
 					displayMessage('error', i18next.t('SECURITY_CODE_MANDATORY'));
 					return;
@@ -153,16 +151,28 @@ class LoginModal extends Component<IProps,IState> {
     	}
     };
 
-    forgetOnlinePassword = () => {
-    	if (this.state.login)
-    		axios.post(`/api/users/${this.state.login}@${this.state.serv}/resetpassword`)
-    			.then(response => {
-    				displayMessage('success', i18next.t('FORGOT_PASSWORD_SUCCESS'));
-    			})
-    			.catch(err => {
-    				displayMessage('error', i18next.t('FORGOT_PASSWORD_ERROR'));
-    			});
-    }
+    callForgetPasswordApi = async () => {
+		if (this.state.login)
+		try {
+    		await axios.post(`/api/users/${this.state.login}/resetpassword`, this.state.onlineSwitch ? {} : {
+				securityCode: this.state.securityCode,
+				password: this.state.password
+			})
+			if (this.state.onlineSwitch) {
+				displayMessage('success', i18next.t('FORGOT_ONLINE_PASSWORD_SUCCESS'));
+			}
+		} catch(err) {
+    		displayMessage('error', i18next.t(this.state.onlineSwitch ? 'FORGOT_ONLINE_PASSWORD_ERROR': `ERROR_CODES.${err.response.code}`));
+    	};
+	}
+	
+	forgetPasswordClick = () => {
+		if (this.state.onlineSwitch) {
+			this.callForgetPasswordApi();
+		} else {
+			this.setState({forgotPassword: !this.state.forgotPassword});
+		}
+	}
 
     render() {
     	return (
@@ -225,20 +235,14 @@ class LoginModal extends Component<IProps,IState> {
     										placeholder={this.state.forgotPassword && !this.state.onlineSwitch ? i18next.t('NEW_PASSWORD') : i18next.t('PASSWORD')}
     										defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
     								</div>
-									{this.state.onlineSwitch ?
-    								<div>
-    									<label className="accountLabel">{ i18next.t('FORGOT_PASSWORD')}</label>
-    										<button type="button" className="forgotPasswordButton" onClick={this.forgetOnlinePassword}><i className="fas fa-lock"></i></button>
-									</div> : null
+									
+									{this.props.scope === 'admin' || this.state.onlineSwitch ?
+										<div>
+											<label className="accountLabel">{ i18next.t('FORGOT_PASSWORD')}</label>
+												<button type="button" className="forgotPasswordButton" onClick={this.forgetPasswordClick}><i className="fas fa-lock"></i></button>
+										</div> : null
 									}
-									{this.props.scope != 'public' ?
-    								<div style={{display: 'flex'}}>
-    									<label title={i18next.t('MAKE_ACCOUNT_ADMIN_MESSAGE')} className="accountLabel">{this.state.onlineSwitch ? i18next.t('MAKE_ACCOUNT_ADMIN') : i18next.t('FORGOT_PASSWORD_ADMIN')}</label>
-										<Switch handleChange={() => this.setState({forgotPassword: !this.state.forgotPassword})}
-											isChecked={this.state.forgotPassword} />
-									</div> : null
-									}
-    								{this.state.forgotPassword && this.props.scope != 'public' ?
+    								{this.state.forgotPassword && this.props.scope != 'public' && !this.state.onlineSwitch ?
     									<input type="text" placeholder={i18next.t('SECURITY_CODE')}
     										defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: event.target.value })} /> : null
     								}
