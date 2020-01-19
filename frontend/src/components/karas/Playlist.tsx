@@ -21,7 +21,6 @@ require('./Playlist.scss');
 const chunksize = 400;
 const _cache = new CellMeasurerCache({ defaultHeight: 36, fixedWidth: true });
 let timer:any;
-let resizeListener = null;
 
 interface IProps {
 	scope: string;
@@ -122,7 +121,7 @@ class Playlist extends Component<IProps, IState> {
 			}
 		});
 
-    resizeListener = window.addEventListener('resize', this.refreshUiOnResize, true);
+    	window.addEventListener('resize', this.refreshUiOnResize, true);
 	}
 
   initCall = async () => {
@@ -733,9 +732,10 @@ noRowsRenderer = () => {
   			<div className="playlist--wrapper">
   				<PlaylistHeader
   					side={this.props.side}
-					  scope={this.props.scope}
-					  config={this.props.config}
-  					playlistList={this.state.playlistList}
+					scope={this.props.scope}
+					config={this.props.config}
+  					playlistList={this.state.playlistList.filter(
+						  (playlist:PlaylistList) => playlist.playlist_id !== this.props.idPlaylistTo)}
   					idPlaylist={this.state.idPlaylist}
   					changeIdPlaylist={this.changeIdPlaylist}
   					playlistInfo={this.state.playlistInfo}
