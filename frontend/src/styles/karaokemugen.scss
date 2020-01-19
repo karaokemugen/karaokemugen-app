@@ -133,12 +133,15 @@ select.form-control {
 	background-color: #222;
 }
 
-.playlistContainer > #playlist2 .list-group-item > .infoDiv > button, .playlistContainer > #playlist1 .list-group-item > .actionDiv > button {
+.playlistContainer > #playlist2 .list-group-item > .infoDiv > button, .playlistContainer > #playlist1 .list-group-item > .actionDiv > button,
+.playlistContainer > #playlist1 .list-group-item > .actionDiv > .actionButtonsDiv
+ {
 	float: right;
 	display: block;
 }
 
-.playlistContainer > #playlist1 .list-group-item > .infoDiv > button, .playlistContainer > #playlist2 .list-group-item > .actionDiv > button {
+.playlistContainer > #playlist1 .list-group-item > .infoDiv > button, .playlistContainer > #playlist2 .list-group-item > .actionDiv > button,
+.playlistContainer > #playlist2 .list-group-item > .actionDiv > .actionButtonsDiv {
 	float: left;
 	display: block;
 }

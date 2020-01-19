@@ -250,7 +250,7 @@ class KaraLine extends Component<IProps,IState> {
 							&& this.props.config.Frontend.ShowAvatarsOnPlaylist && this.props.avatar_file ? 
 							<img className={`img-circle ${is_touch_device() ? 'mobile': ''}`}
 							 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
-							 <div style={{display:'flex'}}>
+							 <div className="actionButtonsDiv">
 								{this.props.idPlaylistTo !== this.props.idPlaylist ?
 									<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
 										scope={this.props.scope}
