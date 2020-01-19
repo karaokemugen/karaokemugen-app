@@ -98,11 +98,8 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 	const instance = username.split('@')[1];
 	const remoteToken = getRemoteToken(username);
 	try {
-		return await got(`https://${instance}/api/favorites`, {
+		return await got(`https://${instance}/api/favorites/${kid}`, {
 			method: action,
-			form: {
-				kid: kid
-			},
 			headers: {
 				authorization: remoteToken.token || undefined
 			},
