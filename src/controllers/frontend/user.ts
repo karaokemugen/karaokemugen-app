@@ -1,13 +1,13 @@
-import { Router } from "express";
-import { emitWS } from "../../lib/utils/ws";
-import { errMessage } from "../common";
-import { deleteUser, findUserByName, createUser, editUser, convertToRemoteUser, removeRemoteUser, listUsers, createAdminUser, resetRemotePassword, updateSongsLeft } from "../../services/user";
-import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser, optionalAuth } from "../middlewares/auth";
-import { getLang } from "../middlewares/lang";
-import { check } from "../../lib/utils/validators";
-import multer = require("multer");
-import { resolvedPathTemp } from "../../lib/utils/config";
-import { requireWebappLimited, requireWebappLimitedNoAuth } from "../middlewares/webapp_mode";
+import { Router } from 'express';
+import { emitWS } from '../../lib/utils/ws';
+import { errMessage } from '../common';
+import { deleteUser, findUserByName, createUser, editUser, convertToRemoteUser, removeRemoteUser, listUsers, createAdminUser, resetRemotePassword, updateSongsLeft } from '../../services/user';
+import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser, optionalAuth } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
+import { check } from '../../lib/utils/validators';
+import multer = require('multer');
+import { resolvedPathTemp } from '../../lib/utils/config';
+import { requireWebappLimited, requireWebappLimitedNoAuth } from '../middlewares/webapp_mode';
 
 export default function userController(router: Router) {
 	// Middleware for playlist and files import
@@ -43,20 +43,20 @@ export default function userController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-	.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
-		try {
-			const users = await	listUsers();
-			res.json(users);
-		} catch(err) {
-			errMessage('USER_LIST_ERROR',err);
-			res.series(500).send('USER_LIST_ERROR');
-		}
-	})
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
+			try {
+				const users = await	listUsers();
+				res.json(users);
+			} catch(err) {
+				errMessage('USER_LIST_ERROR',err);
+				res.series(500).send('USER_LIST_ERROR');
+			}
+		})
 
 	/**
  * @api {post} /users Create new user
  * @apiName PostUser
- * @apiVersion 2.1.0
+ * @apiVersion 3.1.0
  * @apiGroup Users
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -64,7 +64,6 @@ export default function userController(router: Router) {
  * @apiParam {String} login Login name for the user
  * @apiParam {String} password Password for the user
  * @apiParam {String} role `admin` or `user`.
- * @apiParam {Number} securityCode Security code if `admin` is set to `true`
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -205,7 +204,7 @@ export default function userController(router: Router) {
 				res.status(500).send(`Error editing user: ${err}`);
 			}
 		});
-		router.route('/users/:username/resetpassword')
+	router.route('/users/:username/resetpassword')
 		/**
 	 * @api {post} /users/:username/resetpassword Reset password (online account only)
 	 * @apiName PostResetPassword
@@ -213,6 +212,7 @@ export default function userController(router: Router) {
 	 * @apiGroup Users
 	 * @apiPermission noAuth
 	 * @apiParam {String} username Username for password reset
+	 * @apiParam {String} securityCode Security code in case you want to change your local password (admin only)
 	 * @apiSuccess {String} data/login User's login
 	 *
 	 * @apiSuccessExample Success-Response:
@@ -233,18 +233,18 @@ export default function userController(router: Router) {
 	 *   "message": null
 	 * }
 	  */
-			.post(async (req: any, res: any) => {
-				try {
-					if (!req.params.username.includes('@')) {
-						res.status(500).json(errMessage('USER_RESETPASSWORD_NOTONLINE_ERROR',null));
-					} else {
-						await resetRemotePassword(req.params.username);
-						res.status(200).json(null);
-					}
-				} catch(err) {
-					res.status(500).json(errMessage('USER_RESETPASSWORD_ERROR',err));
+		.post(async (req: any, res: any) => {
+			try {
+				if (!req.params.username.includes('@')) {
+					res.status(500).json(errMessage('USER_RESETPASSWORD_NOTONLINE_ERROR',null));
+				} else {
+					await resetRemotePassword(req.params.username);
+					res.status(200).json(null);
 				}
-			})
+			} catch(err) {
+				res.status(500).json(errMessage('USER_RESETPASSWORD_ERROR',err));
+			}
+		});
 	router.route('/myaccount')
 	/**
  * @api {get} /myaccount View own user details
@@ -437,7 +437,7 @@ export default function userController(router: Router) {
 						data: tokens
 					});
 				} catch(err) {
-					errMessage(err.code || 'USER_CONVERT_ERROR',err)
+					errMessage(err.code || 'USER_CONVERT_ERROR',err);
 					res.status(500).send(err.code || 'USER_CONVERT_ERROR');
 				}
 			} else {
