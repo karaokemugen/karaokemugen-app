@@ -70,9 +70,14 @@ export async function buildMediasList(type: MediaType) {
 }
 
 export function getSingleMedia(type: MediaType): Media {
-	// If our current files list is empty after the previous removal
-	// Fill it again with the original list.
-	if (!currentMedias[type] || (currentMedias[type] && currentMedias[type].length === 0)) return null;
+	// If no medias exist, return null.
+	if (!medias[type] || (medias[type] && medias[type].length === 0)) {
+		return null;
+	} else {
+		// If our current files list is empty after the previous removal
+		// Fill it again with the original list.
+		currentMedias[type] = cloneDeep(medias[type]);
+	}
 	// If a default file is provided, search for it. If undefined or not found, pick one from a random series
 	const series = sample(currentMedias[type].map((m: Media) => m.series));
 	let media = null;
