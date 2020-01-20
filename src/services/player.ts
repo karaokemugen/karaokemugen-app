@@ -87,7 +87,7 @@ export async function playerEnding() {
 		}
 		// If we just played an intro, play a sponsor.
 		if (state.player.mediaType === 'Intros') {
-		if (conf.Karaoke.SponsorsInterval > 0) {
+			if (conf.Karaoke.SponsorsInterval > 0) {
 				try {
 					await playMedia('Sponsors');
 					setState({currentlyPlayingKara: 'Sponsors'});
@@ -168,13 +168,13 @@ export async function playerEnding() {
 		}
 		// Jingles and sponsors are played inbetween songs so we need to load the next song
 		logger.info(`[Player] Songs before next jingle: ${conf.Karaoke.JinglesInterval - state.counterToJingle} / before next sponsor: ${conf.Karaoke.SponsorsInterval - state.counterToSponsor}`);
-		if (state.counterToSponsor >= conf.Karaoke.SponsorsInterval && conf.Karaoke.SponsorsInterval > 0) {
+		if (state.counterToJingle >= conf.Karaoke.JinglesInterval && conf.Karaoke.JinglesInterval > 0) {
 			try {
-				setState({counterToSponsor: 0});
-				await playMedia('Sponsors');
-				setState({currentlyPlayingKara: 'Sponsors'});
+				setState({counterToJingle: 0});
+				await playMedia('Jingles');
+				setState({currentlyPlayingKara: 'Jingles'});
 			} catch(err) {
-				logger.error(`[Player] Unable to play sponsor file, going to next song : ${err}`);
+				logger.error(`[Player] Unable to play jingle file, going to next song : ${err}`);
 				try {
 					await next();
 				} catch(err) {
@@ -184,13 +184,14 @@ export async function playerEnding() {
 			} finally {
 				return;
 			}
-		} else if (state.counterToJingle >= conf.Karaoke.JinglesInterval && conf.Karaoke.JinglesInterval > 0) {
+		} else if (state.counterToSponsor >= conf.Karaoke.SponsorsInterval && conf.Karaoke.SponsorsInterval > 0) {
 			try {
-				setState({counterToJingle: 0});
-				await playMedia('Jingles');
-				setState({currentlyPlayingKara: 'Jingles'});
+				setState({counterToSponsor: 0});
+				await playMedia('Sponsors');
+				setState({currentlyPlayingKara: 'Sponsors'});
+
 			} catch(err) {
-				logger.error(`[Player] Unable to play jingle file, going to next song : ${err}`);
+				logger.error(`[Player] Unable to play sponsor file, going to next song : ${err}`);
 				try {
 					await next();
 				} catch(err) {
