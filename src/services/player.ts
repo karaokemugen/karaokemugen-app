@@ -14,6 +14,7 @@ import { emitWS } from '../lib/utils/ws';
 const sleep = promisify(setTimeout);
 
 let commandInProgress = false;
+let introSequence = false;
 
 async function playCurrentSong(now: boolean) {
 	if (!getState().player.playing || now) {
@@ -27,6 +28,7 @@ async function playCurrentSong(now: boolean) {
 				try {
 					setState({currentlyPlayingKara: 'Intros', introPlayed: true});
 					await playMedia('Intros');
+					introSequence = true;
 					return;
 				} catch(err) {
 					throw err;
@@ -103,10 +105,12 @@ export async function playerEnding() {
 			stopPlayer(true);
 			return;
 		}
-		// In other cases, just play currently selected song.
-		if (state.player.mediaType === 'Sponsors') {
+		// If Sponsor, just play currently selected song.
+		if (state.player.mediaType === 'Sponsors' && introSequence) {
 			try {
+				// If it's played just after an intro, play next sonc. If not, proceed as usual
 				await playCurrentSong(true);
+				introSequence = false;
 			} catch(err) {
 				logger.error(`[Player] Unable to play current song, skipping : ${err}`);
 				try {
@@ -130,7 +134,7 @@ export async function playerEnding() {
 		}
 		// Testing for position before last to play an encore
 		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
-		if (conf.Playlist.Medias.Encores.Enabled && state.currentSong.pos === pl.karacount -1 && !getState().encorePlayed) {
+		if (conf.Playlist.Medias.Encores.Enabled && state.currentSong.pos === pl.karacount - 1 && !getState().encorePlayed) {
 			try {
 				await playMedia('Encores');
 				setState({currentlyPlayingKara: 'Encores', encorePlayed: true});
