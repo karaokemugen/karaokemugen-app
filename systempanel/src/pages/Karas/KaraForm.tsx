@@ -196,7 +196,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		if (info.file.status === "uploading") {
 			this.props.form.setFieldsValue({ subfile: null, subfile_orig: null });
 		} else if (info.file.status === "done") {
-			if (info.file.name.endsWith(".ass") || info.file.name.endsWith(".txt") || info.file.name.endsWith(".kfn")) {
+			if (info.file.name.endsWith(".ass") || info.file.name.endsWith(".txt") || info.file.name.endsWith(".kfn") || info.file.name.endsWith(".kar")) {
 				this.props.form.setFieldsValue({
 					subfile: info.file.response.filename,
 					subfile_orig: info.file.response.originalname
