@@ -68,7 +68,7 @@ export const defaults: Config = {
 		Token: 'i5WnabG3fvda4oxx-FRb',
 		IssueTemplate: {
 			Suggestion: {
-				Labels: ['à intégrer']
+				Labels: ['suggestion']
 			}
 		}
 	},
