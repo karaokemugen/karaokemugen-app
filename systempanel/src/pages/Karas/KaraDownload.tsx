@@ -12,7 +12,8 @@ import {
   putToDownloadQueueStart,
   putToDownloadQueuePause,
   postAllToDownloadQueue,
-  postUpdateToDownloadQueue
+  postUpdateToDownloadQueue,
+  postCleanToDownloadQueue
 } from "../../api/local";
 import {ReduxMappedProps} from '../../react-app-env';
 import {getCriterasByValue} from './_blc_criterias_types';
@@ -359,6 +360,8 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 								<Button type="primary" key="queueDownloadAll" onClick={() => postAllToDownloadQueue()}>{i18next.t('KARA.DOWNLOAD_ALL')}</Button>
 								&nbsp;
 								<Button type="primary" key="queueUpdateAll" onClick={() => postUpdateToDownloadQueue()}>{i18next.t('KARA.UPDATE_ALL')}</Button>
+								&nbsp;
+								<Button type="primary" key="queueCleanAll" onClick={() => postCleanToDownloadQueue()}>{i18next.t('KARA.CLEAN_ALL')}</Button>
 							</Col>
 							<Col style={{ paddingTop: '25px'}}>
 								<label>{i18next.t('KARA.FILTER_SONGS')}</label>

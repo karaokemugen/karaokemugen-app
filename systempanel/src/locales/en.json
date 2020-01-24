@@ -57,6 +57,7 @@
 		"TAG_FILTER": "Tag filter",
 		"DOWNLOAD_ALL": "Download all",
 		"UPDATE_ALL": "Update all",
+		"CLEAN_ALL": "Purge all",
 		"WIPE_DOWNLOAD_QUEUE": "Wipe download queue",
 		"START_DOWNLOAD_QUEUE": "Start download queue",
 		"PAUSE_DOWNLOAD_QUEUE": "Pause download queue",

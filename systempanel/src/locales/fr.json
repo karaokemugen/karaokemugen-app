@@ -57,6 +57,7 @@
 		"TAG_FILTER": "Filtre sur les tags",
 		"DOWNLOAD_ALL": "Tout télécharger",
 		"UPDATE_ALL": "Tout mettre à jour",
+		"CLEAN_ALL": "Tout purger",
 		"WIPE_DOWNLOAD_QUEUE": "Vider la file de téléchargements",
 		"START_DOWNLOAD_QUEUE": "Démarrer la file de téléchargements",
 		"PAUSE_DOWNLOAD_QUEUE": "Mettre en pause la file de téléchargements",
