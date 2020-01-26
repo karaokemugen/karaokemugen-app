@@ -67,16 +67,10 @@
         border-left-color: hsla(151, 37%, 25%, 0.7);
     }
 
-    .header > div > div.switchParent {
-        height: calc(100% - 1px);
-        padding: 0;
-        display: flex;
-    }
-
     .showPoll, .btn-floating.btn-large.showPoll {
         background-color:#9c5600;
     }
-    /* mobile */
+
     @media (max-width: 1023px) {
 
         .fullLyrics, .showVideo, .makeFav, .moreInfo {
@@ -101,9 +95,6 @@
             display: block;
         }
 
-        .mobileHelp, .mobileActions {
-        display: block;
-        }
         .plFooter {
             font-size: 1.5rem;
             width: calc(100% - 70px); /* leaving room for the menu button */
@@ -126,5 +117,11 @@
             max-height: 7vh;
             min-height: 32px;
         }
-    }
+	}
+	
+	@media (max-width: 767px) {
+		.getLucky,.switchParent {
+			display: none;
+		}
+	}
 }

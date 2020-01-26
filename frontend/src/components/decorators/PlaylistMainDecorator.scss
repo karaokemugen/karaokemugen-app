@@ -106,6 +106,8 @@ body .playlist-main li.list-group-item.filler {
     margin-bottom: 19px;
 }
 
-.mobile .ReactVirtualized__Grid__innerScrollContainer {
-    margin-bottom: 63px;
+@media (max-width:767px) {
+	.ReactVirtualized__Grid__innerScrollContainer {
+		margin-bottom: 63px;
+	}
 }

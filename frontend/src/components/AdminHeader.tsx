@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
-import { expand, getSocket, is_touch_device } from './tools';
+import { expand, getSocket } from './tools';
 import axios from 'axios';
 import RadioButton from './generic/RadioButton';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
@@ -73,78 +73,74 @@ class AdminHeader extends Component<IProps, IState> {
 
   	return (
   		<KmAppHeaderDecorator mode="admin">
-			  {is_touch_device() ? 
+			<button
+				className={`btn btn-dark sideButton ${this.props.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
+				type="button" onClick={this.props.changeCurrentSide}>
+					<i className="fas fa-tasks"></i>
+			</button>
+			<div
+				className="btn btn-default btn-dark buttonsNotMobile"
+				id="manageButton"
+			>
 				<button
-					className={`btn btn-dark ${this.props.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
-					type="button" onClick={this.props.changeCurrentSide}>
-						<i className="fas fa-tasks"></i>
-				</button> :
-			  <React.Fragment>
-  				<div
-  					className="btn btn-default btn-dark"
-  					id="manageButton"
-  				>
-  					<button
-  						className="btn btn-dark klogo"
-  						type="button"
-  						onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}
-  					/>
-  					{this.state.dropDownMenu ?
-  						<ul className="dropdown-menu">
-  							<li
-  								title={i18next.t('ACCOUNT')}
-  								className="btn btn-default btn-dark"
-  								onClick={this.props.toggleProfileModal}
-  							>
-  								<i className="fas fa-user"></i>
-  							</li>
-  							<li
-  								title={i18next.t('LOGOUT')} onClick={() => {
-									store.logOut();
-									this.props.toggleProfileModal();
-								  }}
-  								className="btn btn-default btn-dark"
-  							>
-  								<i className="fas fa-sign-out-alt"></i>
-  							</li>
-  							<li
-  								title={i18next.t('SHUTDOWN')}
-  								className="btn btn-default btn-dark"
-  								onClick={this.props.powerOff}
-  							>
-  								<i className="fas fa-power-off"></i>
-  							</li>
-  						</ul> : null
-  					}
-  				</div>
+					className="btn btn-dark klogo"
+					type="button"
+					onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}
+				/>
+				{this.state.dropDownMenu ?
+					<ul className="dropdown-menu">
+						<li
+							title={i18next.t('ACCOUNT')}
+							className="btn btn-default btn-dark"
+							onClick={this.props.toggleProfileModal}
+						>
+							<i className="fas fa-user"></i>
+						</li>
+						<li
+							title={i18next.t('LOGOUT')} onClick={() => {
+								store.logOut();
+								this.props.toggleProfileModal();
+								}}
+							className="btn btn-default btn-dark"
+						>
+							<i className="fas fa-sign-out-alt"></i>
+						</li>
+						<li
+							title={i18next.t('SHUTDOWN')}
+							className="btn btn-default btn-dark"
+							onClick={this.props.powerOff}
+						>
+							<i className="fas fa-power-off"></i>
+						</li>
+					</ul> : null
+				}
+			</div>
 
-  					<button
-  						title={i18next.t('MESSAGE')}
-  						id="adminMessage"
-  						className="btn btn-dark messageButton"
-  						onClick={this.props.adminMessage}
-  					>
-  						<i className="fas fa-comment"></i>
-  					</button>
+			<button
+				title={i18next.t('MESSAGE')}
+				id="adminMessage"
+				className="btn btn-dark messageButton buttonsNotMobile"
+				onClick={this.props.adminMessage}
+			>
+				<i className="fas fa-comment"></i>
+			</button>
 
-  					<button
-  						title={i18next.t('SHOW_HIDE_SUBS')}
-  						id="showSubs"
-  						data-namecommand={this.state.statusPlayer && this.state.statusPlayer.showSubs ? 'hideSubs' : 'showSubs'}
-  						className="btn btn-dark subtitleButton"
-  						onClick={this.props.putPlayerCommando}
-  					>
-  						{this.state.statusPlayer && this.state.statusPlayer.showSubs ? (
-  							<i className="fas fa-closed-captioning"></i>
-  						) : (
-  							<span className="fa-stack">
-  								<i className="fas fa-closed-captioning fa-stack-1x"></i>
-  								<i className="fas fa-ban fa-stack-2x" style={{color:'#943d42',opacity:0.7}}></i>
-  							</span>
-  						)}
-  					</button>
-			  </React.Fragment>
-  			}
+			<button
+				title={i18next.t('SHOW_HIDE_SUBS')}
+				id="showSubs"
+				data-namecommand={this.state.statusPlayer && this.state.statusPlayer.showSubs ? 'hideSubs' : 'showSubs'}
+				className="btn btn-dark subtitleButton buttonsNotMobile"
+				onClick={this.props.putPlayerCommando}
+			>
+				{this.state.statusPlayer && this.state.statusPlayer.showSubs ? (
+					<i className="fas fa-closed-captioning"></i>
+				) : (
+					<span className="fa-stack">
+						<i className="fas fa-closed-captioning fa-stack-1x"></i>
+						<i className="fas fa-ban fa-stack-2x" style={{color:'#943d42',opacity:0.7}}></i>
+					</span>
+				)}
+			</button>
   			<button 
   				type="button"
   				title={i18next.t('MUTE_UNMUTE')}
@@ -214,30 +210,28 @@ class AdminHeader extends Component<IProps, IState> {
   					]}
   				></RadioButton>
   			</div>
-  			{is_touch_device() ? null :
-  				<div className="header-group switchs">
-  					<RadioButton
-  						title={i18next.t('ENGINE_ADDED_SONG_VISIBILITY_ADMIN')}
-  						orientation="vertical"
-  						buttons={[
-  							{
-  								label:i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL'),
-  								active:this.state.songVisibilityOperator,
-  								activeColor:'#57bb00',
-  								onClick:() => this.saveOperatorAdd(true),
-						
-  							},
-  							{
-  								label:i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY'),
-  								active:!this.state.songVisibilityOperator,
-  								activeColor:'#994240',
-  								onClick:() => this.saveOperatorAdd(false),
-						
-  							}
-  						]}
-  					></RadioButton>
-  				</div>
-  			}
+			<div className="header-group switchs visibilitySwitch">
+				<RadioButton
+					title={i18next.t('ENGINE_ADDED_SONG_VISIBILITY_ADMIN')}
+					orientation="vertical"
+					buttons={[
+						{
+							label:i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL'),
+							active:this.state.songVisibilityOperator,
+							activeColor:'#57bb00',
+							onClick:() => this.saveOperatorAdd(true),
+					
+						},
+						{
+							label:i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY'),
+							active:!this.state.songVisibilityOperator,
+							activeColor:'#994240',
+							onClick:() => this.saveOperatorAdd(false),
+					
+						}
+					]}
+				></RadioButton>
+			</div>
   			<button
   				title={i18next.t('STOP_AFTER')}
   				id="stopAfter"
@@ -247,29 +241,25 @@ class AdminHeader extends Component<IProps, IState> {
   			>
   				<i className="fas fa-clock"></i>
   			</button>
-			  {is_touch_device() ? null :
-  				<React.Fragment>
-  					<button
-  						title={i18next.t('STOP_NOW')}
-  						id="stopNow"
-  						data-namecommand="stopNow"
-  						className="btn btn-danger"
-  						onClick={this.props.putPlayerCommando}
-  					>
-  						<i className="fas fa-stop"></i>
-  					</button>
-  					<button
-  						title={i18next.t('REWIND')}
-  						id="goTo"
-  						data-namecommand="goTo"
-  						defaultValue="0"
-  						className="btn btn-dark"
-  						onClick={this.props.putPlayerCommando}
-  					>
-  						<i className="fas fa-backward"></i>
-  					</button>
-  				</React.Fragment>
-  			}
+			<button
+				title={i18next.t('STOP_NOW')}
+				id="stopNow"
+				data-namecommand="stopNow"
+				className="btn btn-danger buttonsNotMobile"
+				onClick={this.props.putPlayerCommando}
+			>
+				<i className="fas fa-stop"></i>
+			</button>
+			<button
+				title={i18next.t('REWIND')}
+				id="goTo"
+				data-namecommand="goTo"
+				defaultValue="0"
+				className="btn btn-dark buttonsNotMobile"
+				onClick={this.props.putPlayerCommando}
+			>
+				<i className="fas fa-backward"></i>
+			</button>
   			<div className="header-group controls">
   				<button
   					title={i18next.t('PREVIOUS_SONG')}

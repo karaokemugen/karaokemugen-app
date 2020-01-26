@@ -37,6 +37,7 @@ interface IState {
 	statusPlayer?: PublicState;
 	currentSide: number;
 }
+
 class AdminPage extends Component<IProps, IState> {
 	constructor(props:IProps) {
 		super(props);
@@ -204,102 +205,100 @@ class AdminPage extends Component<IProps, IState> {
   				</KmAppBodyDecorator>
 
   			</KmAppWrapperDecorator>
-			  {is_touch_device() ? (
-  				<div className="fixed-action-btn right mobileActions">
-  					<a
-  						className="btn-floating btn-large waves-effect z-depth-3 klogo"
-  						onClick={() =>
-  							this.setState({ mobileMenu: !this.state.mobileMenu })
-  						}
-  						style={{
-  							backgroundColor: '#1b4875',
-  							border: '.5px solid #FFFFFF12'
-  						}}
-  					/>
-  					{this.state.mobileMenu ? (
-  						<ul>
-						  <li>
-							  <a
-								  className="z-depth-3 btn-floating btn-large btn-danger"
-								  style={{ backgroundColor: '#111' }}
-								  data-namecommand="stopNow"
-								  onClick={this.putPlayerCommando}
-							  >
-								  <i className="fas fa-stop"></i>
-							  </a>
-						  </li>
-						  <li>
-							  <a
-								  className="z-depth-3 btn-floating btn-large"
-								  style={{ backgroundColor: '#111' }}
-								  data-namecommand="goTo"
-								  defaultValue="0"
-								  onClick={this.putPlayerCommando}
-							  >
-								  <i className="fas fa-backward"></i>
-							  </a>
-						  </li>
-						  <li>
-							  <a
-								  className="z-depth-3 btn-floating btn-large"
-								  style={{ backgroundColor: '#111' }}
-								  data-namecommand={this.state.statusPlayer && this.state.statusPlayer.showSubs ? 'hideSubs' : 'showSubs'}
-								  onClick={this.putPlayerCommando}
-							  >
-  									{this.state.statusPlayer && this.state.statusPlayer.showSubs ? (
-  										<i className="fas fa-closed-captioning"></i>
-  									) : (
-  										<span className="fa-stack">
-  											<i className="fas fa-closed-captioning fa-stack-1x"></i>
-  											<i className="fas fa-ban fa-stack-2x" style={{color:'#943d42',opacity:0.7}}></i>
-  										</span>
-  									)}
-							  </a>
-						  </li>
-						  <li>
-							  <a
-								  className="z-depth-3 btn-floating btn-large"
-								  style={{ backgroundColor: '#111' }}
-								  onClick={this.adminMessage}
-							  >
-								  <i className="fas fa-comment" />
-							  </a>
-						  </li>
-						  <li>
-							  <a
-								  className="z-depth-3 btn-floating btn-large"
-								  style={{ backgroundColor: '#111' }}
-								  onClick={this.props.powerOff}
-							  >
-								  <i className="fas fa-power-off" />
-							  </a>
-						  </li>
-  							<li>
-  								<a
-  									className="z-depth-3 btn-floating btn-large logout"
-  									style={{ backgroundColor: '#111' }}
-  									onClick={() => {
-										  store.logOut();
-										  this.openLoginOrProfileModal();
-										}}
-  								>
-  									<i className="fas fa-sign-out-alt" />
-  								</a>
-  							</li>
-  							<li>
-  								<a
-  									className="z-depth-3 btn-floating btn-large changePseudo"
-  									id="changePseudo"
-  									style={{ backgroundColor: '#431b50' }}
-  									onClick={this.openLoginOrProfileModal}
-  								>
-  									<i className="fas fa-user" />
-  								</a>
-  							</li>
-  						</ul>
-  					) : null}
-  				</div>
-  				) : null}
+			<div className="fixed-action-btn right mobileActions">
+				<a
+					className="btn-floating btn-large waves-effect z-depth-3 klogo"
+					onClick={() =>
+						this.setState({ mobileMenu: !this.state.mobileMenu })
+					}
+					style={{
+						backgroundColor: '#1b4875',
+						border: '.5px solid #FFFFFF12'
+					}}
+				/>
+				{this.state.mobileMenu ? (
+					<ul>
+						<li>
+							<a
+								className="z-depth-3 btn-floating btn-large btn-danger"
+								style={{ backgroundColor: '#111' }}
+								data-namecommand="stopNow"
+								onClick={this.putPlayerCommando}
+							>
+								<i className="fas fa-stop"></i>
+							</a>
+						</li>
+						<li>
+							<a
+								className="z-depth-3 btn-floating btn-large"
+								style={{ backgroundColor: '#111' }}
+								data-namecommand="goTo"
+								defaultValue="0"
+								onClick={this.putPlayerCommando}
+							>
+								<i className="fas fa-backward"></i>
+							</a>
+						</li>
+						<li>
+							<a
+								className="z-depth-3 btn-floating btn-large"
+								style={{ backgroundColor: '#111' }}
+								data-namecommand={this.state.statusPlayer && this.state.statusPlayer.showSubs ? 'hideSubs' : 'showSubs'}
+								onClick={this.putPlayerCommando}
+							>
+								{this.state.statusPlayer && this.state.statusPlayer.showSubs ? (
+									<i className="fas fa-closed-captioning"></i>
+								) : (
+									<span className="fa-stack">
+										<i className="fas fa-closed-captioning fa-stack-1x"></i>
+										<i className="fas fa-ban fa-stack-2x" style={{color:'#943d42',opacity:0.7}}></i>
+									</span>
+								)}
+							</a>
+						</li>
+						<li>
+							<a
+								className="z-depth-3 btn-floating btn-large"
+								style={{ backgroundColor: '#111' }}
+								onClick={this.adminMessage}
+							>
+								<i className="fas fa-comment" />
+							</a>
+						</li>
+						<li>
+							<a
+								className="z-depth-3 btn-floating btn-large"
+								style={{ backgroundColor: '#111' }}
+								onClick={this.props.powerOff}
+							>
+								<i className="fas fa-power-off" />
+							</a>
+						</li>
+						<li>
+							<a
+								className="z-depth-3 btn-floating btn-large logout"
+								style={{ backgroundColor: '#111' }}
+								onClick={() => {
+										store.logOut();
+										this.openLoginOrProfileModal();
+									}}
+							>
+								<i className="fas fa-sign-out-alt" />
+							</a>
+						</li>
+						<li>
+							<a
+								className="z-depth-3 btn-floating btn-large changePseudo"
+								id="changePseudo"
+								style={{ backgroundColor: '#431b50' }}
+								onClick={this.openLoginOrProfileModal}
+							>
+								<i className="fas fa-user" />
+							</a>
+						</li>
+					</ul>
+				) : null}
+			</div>
   		</div>
   	);
   }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
 import { createCookie } from '../tools';
-import { is_touch_device,startIntro } from '../tools';
+import { startIntro } from '../tools';
 import ReactDOM from 'react-dom';
 import store from '../../store';
 
@@ -35,11 +35,9 @@ class HelpModal extends Component<{},{}> {
     					</ul>
     					<div className="tab-content" id="nav-tabContent-help">
     						<div id="nav-help" className="modal-body">
-    							{is_touch_device() ?
-    								<div className="text mobileHelp"
-    									dangerouslySetInnerHTML={{ __html: i18next.t('CL_HELP_PUBLIC_MOBILE') }}>
-    								</div> : null
-    							}
+								<div className="text mobileHelp"
+									dangerouslySetInnerHTML={{ __html: i18next.t('CL_HELP_PUBLIC_MOBILE') }}>
+								</div>
 
     							<div className="text"
     								dangerouslySetInnerHTML={{ __html: i18next.t('CL_HELP_DISCORD', { discord: '<a href="https://discord.gg/XFXCqzU">Discord</a>' }) }}>

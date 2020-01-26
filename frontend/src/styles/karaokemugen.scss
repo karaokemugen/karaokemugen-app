@@ -1301,3 +1301,22 @@ input[type="text"]:focus, input[type="password"]:focus {
 .modal-body,.modal-message {
 	max-height: calc(100vh - 200px);
 }
+
+.mobileHelp, .mobileActions, .sideButton {
+	display: none;
+}
+
+@media (max-width:767px) {
+	.mobileHelp, .mobileActions {
+		display: block;
+	}
+	.buttonsNotMobile {
+		display: none;
+	}
+}
+
+@media (max-width:1023px) {
+	.sideButton {
+		display: block;
+	}
+}

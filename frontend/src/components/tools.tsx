@@ -50,7 +50,6 @@ export function is_touch_device() {
 	return window.outerWidth <= 1023;
 };
 
-
 export function expand(str:string, val:any) {
 	return str.split('.').reduceRight((acc, currentValue) => {
 		return { [currentValue]: acc };

@@ -254,15 +254,13 @@ class PublicPage extends Component<IProps,IState> {
 										/>
 									</div>
 
-									{is_touch_device() ? null : (
-										<button
-											title={i18next.t('GET_LUCKY')}
-											className="btn btn-lg btn-action btn-default getLucky"
-											onClick={this.getLucky}
-										>
-											<img src={getLuckyImage} />
-										</button>
-									)}
+									<button
+										title={i18next.t('GET_LUCKY')}
+										className="btn btn-lg btn-action btn-default getLucky"
+										onClick={this.getLucky}
+									>
+										<img src={getLuckyImage} />
+									</button>
 								</React.Fragment>
 							) : null}
 
@@ -285,64 +283,62 @@ class PublicPage extends Component<IProps,IState> {
 
 							{this.props.config.Frontend.Mode === 2 ? (
 								<React.Fragment>
-									{is_touch_device() ?
+									<button
+										className={`btn btn-dark sideButton ${this.state.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
+										type="button" onClick={this.changeCurrentSide}>
+											<i className="fas fa-tasks"></i>
+									</button>
+									<div className="dropdown buttonsNotMobile">
 										<button
-											className={`btn btn-dark ${this.state.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
-											type="button" onClick={this.changeCurrentSide}>
-												<i className="fas fa-tasks"></i>
-										</button> : (
-										<div className="dropdown">
-											<button
-												className="btn btn-dark dropdown-toggle klogo"
-												id="menuPC"
-												type="button"
-												onClick={() =>
-													this.setState({
-														dropDownMenu: !this.state.dropDownMenu
-													})
-												}
-											/>
-											{this.state.dropDownMenu ? (
-												<ul className="dropdown-menu">
-													<li>
-														<a
-															href="#"
-															className="changePseudo"
-															onClick={this.openLoginOrProfileModal}
-														>
-															<i className="fas fa-user" />&nbsp;
-														{i18next.t('ACCOUNT')}
-														</a>
-													</li>
-													<li>
-														<a href="/admin" id="logAdmin" target="_blank">
-															<i className="fas fa-wrench" /> Admin
+											className="btn btn-dark dropdown-toggle klogo"
+											id="menuPC"
+											type="button"
+											onClick={() =>
+												this.setState({
+													dropDownMenu: !this.state.dropDownMenu
+												})
+											}
+										/>
+										{this.state.dropDownMenu ? (
+											<ul className="dropdown-menu">
+												<li>
+													<a
+														href="#"
+														className="changePseudo"
+														onClick={this.openLoginOrProfileModal}
+													>
+														<i className="fas fa-user" />&nbsp;
+													{i18next.t('ACCOUNT')}
 													</a>
-													</li>
-													<li>
-														<a href="#" onClick={() =>
-															ReactDOM.render(<HelpModal />, document.getElementById('modal'))}>
-															<i className="fas fa-info-circle" />&nbsp;
-														{i18next.t('HELP')}
-														</a>
-													</li>
-													<li>
-														<a
-															href="#"
-															className="logout"
-															onClick={() => {
-															store.logOut();
-															this.openLoginOrProfileModal();
-														  }}
-														>
-															<i className="fas fa-sign-out-alt" />&nbsp;
-														{i18next.t('LOGOUT')}
-														</a>
-													</li>
-												</ul>
-											) : null}
-										</div>
-									)}
+												</li>
+												<li>
+													<a href="/admin" id="logAdmin" target="_blank">
+														<i className="fas fa-wrench" /> Admin
+												</a>
+												</li>
+												<li>
+													<a href="#" onClick={() =>
+														ReactDOM.render(<HelpModal />, document.getElementById('modal'))}>
+														<i className="fas fa-info-circle" />&nbsp;
+													{i18next.t('HELP')}
+													</a>
+												</li>
+												<li>
+													<a
+														href="#"
+														className="logout"
+														onClick={() => {
+														store.logOut();
+														this.openLoginOrProfileModal();
+														}}
+													>
+														<i className="fas fa-sign-out-alt" />&nbsp;
+													{i18next.t('LOGOUT')}
+													</a>
+												</li>
+											</ul>
+										) : null}
+									</div>
 
 									<div className="switchParent">
 										{this.state.isPollActive ? (
@@ -353,23 +349,21 @@ class PublicPage extends Component<IProps,IState> {
 												<i className="fas fa-chart-line" />
 											</button>
 										) : null}
-										{is_touch_device() ? null : (
-											<RadioButton
-												title={i18next.t('SWITCH_OPTIONS')}
-												buttons={[
-													{
-														label: i18next.t('SWITCH_BAR_INFOS_TITLE'),
-														active: !this.state.lyrics,
-														onClick: this.setLyrics
-													},
-													{
-														label: i18next.t('SWITCH_BAR_INFOS_LYRICS'),
-														active: this.state.lyrics,
-														onClick: this.setLyrics
-													}
-												]}
-											/>
-										)}
+										<RadioButton
+											title={i18next.t('SWITCH_OPTIONS')}
+											buttons={[
+												{
+													label: i18next.t('SWITCH_BAR_INFOS_TITLE'),
+													active: !this.state.lyrics,
+													onClick: this.setLyrics
+												},
+												{
+													label: i18next.t('SWITCH_BAR_INFOS_LYRICS'),
+													active: this.state.lyrics,
+													onClick: this.setLyrics
+												}
+											]}
+										/>
 									</div>
 								</React.Fragment>
 							) : null}
@@ -415,107 +409,103 @@ class PublicPage extends Component<IProps,IState> {
   						</KmAppBodyDecorator>
   					</KmAppWrapperDecorator>
 
-  					{is_touch_device() ? (
-  						<React.Fragment>
-  							{this.props.config.Frontend.Mode === 2 &&
-                this.state.isPollActive ? (
-  									<div
-  										className="fixed-action-btn right right2 mobileActions"
-  									>
-  										<a
-  											className="btn-floating btn-large waves-effect z-depth-3 showPoll"
-  											onClick={() => {
-												this.closeMobileMenu();
-												ReactDOM.render(<PollModal />, document.getElementById('modal'))
-											}}
-  										>
-  											<i className="fas fa-bar-chart" />
-  										</a>
-  									</div>
-  								) : null}
+					{this.props.config.Frontend.Mode === 2 &&
+		this.state.isPollActive ? (
+							<div
+								className="fixed-action-btn right right2 mobileActions"
+							>
+								<a
+									className="btn-floating btn-large waves-effect z-depth-3 showPoll"
+									onClick={() => {
+										this.closeMobileMenu();
+										ReactDOM.render(<PollModal />, document.getElementById('modal'))
+									}}
+								>
+									<i className="fas fa-bar-chart" />
+								</a>
+							</div>
+						) : null}
 
-  							<div className="fixed-action-btn right mobileActions">
-  								<a
-  									className="btn-floating btn-large waves-effect z-depth-3 klogo"
-  									onClick={() =>
-  										this.setState({ mobileMenu: !this.state.mobileMenu })
-  									}
-  									style={{
-  										backgroundColor: '#1b4875',
-  										border: '.5px solid #FFFFFF12'
-  									}}
-  								/>
-  								{this.state.mobileMenu ? (
-  									<ul>
-  										{this.props.config.Frontend.Mode === 2 ? (
-  											<React.Fragment>
-  												<li>
-  													<a
-  														className="z-depth-3 btn-floating btn-large logout"
-  														style={{ backgroundColor: '#111' }}
-  														onClick={() => {
-															this.closeMobileMenu();
-															store.logOut();
-														}}
-  													>
-  														<i className="fas fa-sign-out-alt" />
-  													</a>
-  												</li>
-  												<li>
-  													<a
-  														className="z-depth-3 btn-floating btn-large getLucky"
-  														style={{ backgroundColor: '#111' }}
-  														onClick={this.getLucky}
-  													>
-  														<img
-  															style={{ height: '80%', marginTop: '10%' }}
-  															src={getLuckyImage}
-  														/>
-  													</a>
-  												</li>
-  											</React.Fragment>
-  										) : null}
-  										<li>
-  											<a
-  												className="z-depth-3 btn-floating btn-large"
-  												style={{ backgroundColor: '#613114' }}
-  												onClick={() => {
+					<div className="fixed-action-btn right mobileActions">
+						<a
+							className="btn-floating btn-large waves-effect z-depth-3 klogo"
+							onClick={() =>
+								this.setState({ mobileMenu: !this.state.mobileMenu })
+							}
+							style={{
+								backgroundColor: '#1b4875',
+								border: '.5px solid #FFFFFF12'
+							}}
+						/>
+						{this.state.mobileMenu ? (
+							<ul>
+								{this.props.config.Frontend.Mode === 2 ? (
+									<React.Fragment>
+										<li>
+											<a
+												className="z-depth-3 btn-floating btn-large logout"
+												style={{ backgroundColor: '#111' }}
+												onClick={() => {
 													this.closeMobileMenu();
-													ReactDOM.render(<HelpModal/>, document.getElementById('modal'))
-													}}
-  											>
-  												<i className="fas fa-question-circle" />
-  											</a>
-  										</li>
-  										<li>
-  											<a
-  												className="z-depth-3 btn-floating btn-large changePseudo"
-  												id="changePseudo"
-  												style={{ backgroundColor: '#431b50' }}
-  												onClick={this.openLoginOrProfileModal}
-  											>
-  												<i className="fas fa-user" />
-  											</a>
-  										</li>
-  										<li>
-  											<a
-  												className="z-depth-3 btn-floating btn-large"
-  												id="switchInfoBar"
-  												style={{ backgroundColor: '#125633' }}
-  												onClick={this.setLyrics}
-  											>
-  												{this.state.lyrics ? (
-  													<i className="fas fa-cc lyrics" />
-  												) : (
-  													<i className="fas fa-info-circle infos" />
-  												)}
-  											</a>
-  										</li>
-  									</ul>
-  								) : null}
-  							</div>
-  						</React.Fragment>
-  					) : null}
+													store.logOut();
+												}}
+											>
+												<i className="fas fa-sign-out-alt" />
+											</a>
+										</li>
+										<li>
+											<a
+												className="z-depth-3 btn-floating btn-large getLucky"
+												style={{ backgroundColor: '#111' }}
+												onClick={this.getLucky}
+											>
+												<img
+													style={{ height: '80%', marginTop: '10%' }}
+													src={getLuckyImage}
+												/>
+											</a>
+										</li>
+									</React.Fragment>
+								) : null}
+								<li>
+									<a
+										className="z-depth-3 btn-floating btn-large"
+										style={{ backgroundColor: '#613114' }}
+										onClick={() => {
+											this.closeMobileMenu();
+											ReactDOM.render(<HelpModal/>, document.getElementById('modal'))
+											}}
+									>
+										<i className="fas fa-question-circle" />
+									</a>
+								</li>
+								<li>
+									<a
+										className="z-depth-3 btn-floating btn-large changePseudo"
+										id="changePseudo"
+										style={{ backgroundColor: '#431b50' }}
+										onClick={this.openLoginOrProfileModal}
+									>
+										<i className="fas fa-user" />
+									</a>
+								</li>
+								<li>
+									<a
+										className="z-depth-3 btn-floating btn-large"
+										id="switchInfoBar"
+										style={{ backgroundColor: '#125633' }}
+										onClick={this.setLyrics}
+									>
+										{this.state.lyrics ? (
+											<i className="fas fa-cc lyrics" />
+										) : (
+											<i className="fas fa-info-circle infos" />
+										)}
+									</a>
+								</li>
+							</ul>
+						) : null}
+					</div>
   				</React.Fragment>
   			)}
   		</div>
