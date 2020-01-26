@@ -79,7 +79,11 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 	align-items: baseline;
 	justify-content: center;
 
-	div a {
+	div {
+		margin-left: 5px;
+	}
+
+	a {
 		cursor: pointer;
 	}
 }
