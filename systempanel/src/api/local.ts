@@ -113,6 +113,20 @@ export async function postUpdateToDownloadQueue(repo = 'kara.moe') {
 	}
 }
 
+// Remove all local karas not on remote repositories
+export async function postCleanToDownloadQueue(repo = 'kara.moe') {
+	try {
+		const data = {
+			repository: repo
+		};
+		const res = await axios.post('/api/downloads/clean ', data);
+		return res.data;
+	} catch (e) {
+		console.log('Error from /api/local.js:postCleanToDownloadQueue');
+		throw e;
+	}
+}
+
 export async function deleteKaraByLocalId(karaId) {
 	try {
 		const response = await axios.delete(`/api/karas/${karaId}`);

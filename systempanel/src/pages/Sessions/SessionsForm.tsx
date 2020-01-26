@@ -34,7 +34,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	async componentDidMount() {
 		var played = await axios.get(`/api/public/karas/?searchType=sessionPlayed&searchValue=${this.props.session.seid}`)
 		var requested = await axios.get(`/api/public/karas/?searchType=sessionRequested&searchValue=${this.props.session.seid}`)
-		this.setState({sessionPlayed: played.data.data.content, sessionRequested: requested.data.data.content});
+		this.setState({sessionPlayed: played.data.content, sessionRequested: requested.data.content});
 	}
 
 	handleSubmit = (e) => {
