@@ -256,7 +256,7 @@ class ProfilModal extends Component<IProps, IState> {
     													<i className="fas fa-upload"></i> {i18next.t('EXPORT')}
     												</button>
     											</div>
-    											{this.props.config.Online.Users ?
+    											{this.props.config.Online.Users && logInfos.username !== 'admin' ?
     												<div className="profileLine">
     													{logInfos && logInfos.onlineToken ?
     														<button type="button" title={i18next.t('PROFILE_ONLINE_DELETE')} className="btn btn-primary btn-action btn-default profileDelete" onClick={this.profileDelete}>
