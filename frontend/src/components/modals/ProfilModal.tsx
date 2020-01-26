@@ -269,6 +269,16 @@ class ProfilModal extends Component<IProps, IState> {
     													}
     												</div> : null
     											}
+												<div className="profileLine saveButton">
+													<button type="button" className="btn btn-action" 
+														onClick={() => {
+																this.updateUser();
+																var element = document.getElementById('modal');
+																if (element) ReactDOM.unmountComponentAtNode(element);
+															}}>
+														{i18next.t('SUBMIT')}
+    												</button>
+    											</div> 
     										</div> : null
     									}
     								</div>
