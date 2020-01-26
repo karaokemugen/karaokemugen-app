@@ -81,7 +81,11 @@ class App extends Component<{}, IState> {
 		await this.getSettings();
 		getSocket().on('settingsUpdated', this.getSettings);
 		getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
-		getSocket().on('disconnect', () => this.setState({ shutdownPopup: true }));
+		getSocket().on('disconnect', (reason:any) => {
+			if (reason === 'transport error') {
+				this.setState({ shutdownPopup: true })
+			}
+		});
 		this.addTags();
 		if (this.state.admpwd && this.state.config && this.state.config.App.FirstRun && window.location.pathname === '/admin') {
 			startIntro('admin');
