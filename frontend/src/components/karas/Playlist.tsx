@@ -700,7 +700,7 @@ noRowsRenderer = () => {
   			);
   		}
   		data.content = karas;
-  		this.setState({data:data, scrollToIndex: oldIndex, stopUpdate: false});
+  		this.setState({data:data, stopUpdate: false});
   	}
   }
   
