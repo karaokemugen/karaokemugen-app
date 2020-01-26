@@ -243,7 +243,7 @@ noRowsRenderer = () => {
 }
 
   playlistContentsUpdated = (idPlaylist:number) => {
-  	if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) this.getPlaylist();
+  	if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) this.getPlaylist(this.state.searchType);
   };
 
   updateQuotaAvailable = (data:{username:string, quotaType:number, quotaLeft:number}) => {
