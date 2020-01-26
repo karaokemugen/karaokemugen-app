@@ -767,7 +767,7 @@ noRowsRenderer = () => {
   					id={'playlistContainer' + this.props.side}
   					className="playlistContainer"
   				>
-  					<ul id={'playlist' + this.props.side} className="list-group" style={{height: '100%'}}>
+  					<ul id={'playlist' + this.props.side} className={`list-group ${is_touch_device() ? 'mobile' : ''}`} style={{height: '100%'}}>
   						{
 							  (!this.state.data || this.state.data && (this.state.data as KaraList).infos 
 							  && ((this.state.data as KaraList).infos.count === 0 || !(this.state.data as KaraList).infos.count)) 
