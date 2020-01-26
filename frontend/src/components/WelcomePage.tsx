@@ -14,6 +14,7 @@ import { Token } from '~../../../src/lib/types/user';
 import { Session } from '../../../src/types/session';
 import { News } from '../types/news';
 import Switch from './generic/Switch';
+import WelcomePageArticle from './WelcomePageArticle';
 require ('../styles/welcome/WelcomePage.scss');
 require('../styles/welcome/updateBanner.scss');
 
@@ -24,7 +25,6 @@ interface IProps {
 }
 
 interface IState {
-	open: boolean;
 	news: Array<News>;
 	sessions: Array<Session>;
 	activeSession?: Session;
@@ -36,7 +36,6 @@ class WelcomePage extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			news: [],
-			open: false,
 			sessions: []
 		};
 		if (!store.getLogInfos() || !(store.getLogInfos() as Token).token) {
@@ -363,22 +362,7 @@ class WelcomePage extends Component<IProps, IState> {
   						<ul className="news">
   							{this.state.news.map(article => {
   								return (
-  									<li
-  										key={Math.random()}
-  										className={this.state.open ? 'new open' : 'new'}
-  										data-type={article.type}
-  										onClick={() =>
-  											this.setState({ open: !this.state.open })
-  										}
-  									>
-  										<p className="new-header">
-  											<b>{article.title}</b>
-  											<a href={article.link} target="_blank">
-  												{article.dateStr}
-  											</a>
-  										</p>
-  										<p dangerouslySetInnerHTML={{ __html: article.html }} />
-  									</li>
+									<WelcomePageArticle article={article} />
   								);
   							})}
   						</ul>
