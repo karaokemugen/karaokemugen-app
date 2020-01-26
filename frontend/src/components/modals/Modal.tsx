@@ -60,7 +60,7 @@ class Modal extends Component<IProps,IState> {
     }
 
     render() {
-    	var modalDialogClass = window.innerWidth < 1025 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
+    	var modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
     	return (
     		<div className="modal" id="modalBox">
     			<div className={modalDialogClass}>

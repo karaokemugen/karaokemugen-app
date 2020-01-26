@@ -34,7 +34,7 @@ class Tutorial extends Component<IProps,IState> {
 		super(props);
 		const query = new URLSearchParams(window.location.search);
 		const admpwd = query.get('admpwd');
-		const isSmall =window.innerWidth < 1025;
+		const isSmall =window.innerWidth <= 1023;
 
 		this.state = {
 			scope : props.scope,

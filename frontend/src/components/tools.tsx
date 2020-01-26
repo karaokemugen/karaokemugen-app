@@ -47,7 +47,7 @@ export function eraseCookie(name:string) {
 };
 
 export function is_touch_device() {
-	return window.outerWidth < 1025;
+	return window.outerWidth <= 1023;
 };
 
 
