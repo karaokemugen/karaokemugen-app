@@ -69,7 +69,7 @@ class ProfilModal extends Component<IProps, IState> {
 
     onKeyPress = (event:any) => {
     	const user = this.state.user;
-    	user[event.target.name as typesAttrUser] = event.target.value;
+		user[event.target.name as typesAttrUser] = event.target.value;
 		this.setState({ user: user });
     	if (event.keyCode === 13) {
 			this.updateUser();
@@ -224,27 +224,35 @@ class ProfilModal extends Component<IProps, IState> {
     												<i className="fas fa-user"></i>
 													<input className={this.state.nicknameMandatory} name="nickname" type="text" 
 														placeholder={i18next.t('PROFILE_USERNAME')} defaultValue={this.state.user.nickname}
-														 onKeyUp={this.onKeyPress} />
+														 onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-envelope"></i>
-    												<input className="form-control" name="email" type="text" placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email} onKeyUp={this.onKeyPress} />
+													<input className="form-control" name="email" type="text" 
+														placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email}
+														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-link"></i>
-    												<input className="form-control" name="url" type="text" placeholder={i18next.t('PROFILE_URL')} defaultValue={this.state.user.url} onKeyUp={this.onKeyPress} />
+													<input className="form-control" name="url" type="text" 
+														placeholder={i18next.t('PROFILE_URL')} defaultValue={this.state.user.url}
+														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-leaf"></i>
-    												<input className="form-control" name="bio" type="text" placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio} onKeyUp={this.onKeyPress} />
+													<input className="form-control" name="bio" type="text" 
+														placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
+														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-lock"></i>
     												<input className={this.state.passwordDifferent} name="password" type="password"
-    													placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password} onKeyUp={this.onKeyPress} />
+														placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password} 
+														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
     												<input className={this.state.passwordDifferent}
     													name="passwordConfirmation" type="password" placeholder={i18next.t('PROFILE_PASSWORDCONF')}
-    													defaultValue={this.state.user.passwordConfirmation} onKeyUp={this.onKeyPress} style={{ marginLeft: 3 + 'px' }} />
+														defaultValue={this.state.user.passwordConfirmation} 
+														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} style={{ marginLeft: 3 + 'px' }} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-star"></i>
