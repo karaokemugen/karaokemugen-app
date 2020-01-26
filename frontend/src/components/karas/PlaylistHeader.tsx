@@ -344,9 +344,8 @@ class PlaylistHeader extends Component<IProps,IState> {
 
     
   	const plSearch = (<div className="pull-left plSearch">
-  		<input type="text" className="plSearch-input form-control input-md"
-  			defaultValue={store.getFilterValue(this.props.side)} onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)}
-  			id={'searchPlaylist' + this.props.side} placeholder="&#xF002;" name="searchPlaylist" />
+		  <input type="text" placeholder="&#xF002;" defaultValue={store.getFilterValue(this.props.side)}
+		  	onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)} />
   	</div>);
 
   	const flagsContainer = (

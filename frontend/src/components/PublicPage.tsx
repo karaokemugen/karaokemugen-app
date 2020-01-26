@@ -243,7 +243,6 @@ class PublicPage extends Component<IProps,IState> {
 										<input
 											type="text"
 											className="form-control"
-											name="searchPlaylist"
 											defaultValue={store.getFilterValue(1)}
 											onChange={e =>
 												store.setFilterValue(

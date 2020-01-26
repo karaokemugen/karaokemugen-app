@@ -360,9 +360,15 @@ button.closeParent.bottom  {
 	z-index: 50;
 }
 
-.plSearch-input {
-	font-weight: bold;
-	font-family: "Font Awesome 5 Free", Arial;
+.plSearch {
+	input {
+		font-weight: bold;
+		font-family: "Font Awesome 5 Free", Arial;
+	}
+
+	i {
+		pointer-events: none;
+	}
 }
 
 .playlistContainer > ul {
@@ -442,10 +448,6 @@ button.closePopupParent {
 	right: 5px;
 	width: auto;
 	height: auto;
-}
-
-.input-md {
-	border-radius: 0;
 }
 
 #video {
