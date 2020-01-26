@@ -711,6 +711,7 @@ input[type=range]:focus::-ms-fill-upper {
 	display: block;
 	margin-left: 2px;
 	margin-right: 2px;
+	user-select: none;
 }
 
 .list-group-item .img-circle.mobile {
