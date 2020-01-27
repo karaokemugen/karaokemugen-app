@@ -336,7 +336,8 @@ SELECT pc.fk_kid AS kid,
 	pc.pk_id_plcontent AS playlistcontent_id,
 	pc.fk_id_playlist AS playlist_id,
 	COUNT(up.fk_login)::integer AS upvotes,
-	pc.flag_visible AS flag_visible
+	pc.flag_visible AS flag_visible,
+	pc.flag_playing AS flag_playing
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent

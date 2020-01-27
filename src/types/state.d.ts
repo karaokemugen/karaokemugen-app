@@ -14,7 +14,7 @@ export interface State {
 	counterToSponsor?: number,
 	introPlayed?: boolean,
 	encorePlayed?: boolean,
-	status?: string,
+	status?: 'stop' |  'play' | 'pause',
 	private?: boolean,
 	fullscreen?: boolean,
 	ontop?: boolean,
