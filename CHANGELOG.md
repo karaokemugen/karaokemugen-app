@@ -14,13 +14,17 @@ This is a major release.
 - When adding a song, the message also gives you how long before it should be playing (#536)
 - This version of Karaoke Mugen does not generate Kara V3 files anymore when creating new karaokes (yes this is a new feature) (#534)
 - Download page now has a filter to only show missing or updated songs (#532)
-- Playlists now have two new medias in addition of intros and jingles : (#531)
+- Download page now has a clean all button (956711e6)
+- Playlists now have three new medias in addition of intros and jingles : (#531)
   - Outros are played at the very end of the playlist
-  - Encores are played before the last song plays.
+  - Encores are played before the last song plays
+  - Sponsors are played every interval you have set
   - We offer a few of those in our git repos, they will be downloaded automagically by Karaoke Mugen.
 - KM is now bundled with a `portable` file. If this file exists, KM will store everything in the `app` folder, just like before. If not, KM will store all its data files in the user's home folder : `$HOME/KaraokeMugen` (#525)
 - User avatars are now displayed next to the songs they added in playlist (#423)
 - System panel is now translated in french and english (#263)
+- Improve system panel's config page (#486)
+- The karaoke submission form now accepts a new karaoke format, karaWin files (.kar). The files will be converted to the ASS format on import. (#550)
 
 ### Improvements
 
@@ -31,6 +35,19 @@ This is a major release.
 - Frontend is now written in typescript, yay. (#528)
 - Downloader has been rewritten with async functions and a queue system (#511)
 - Logged in users now is a scrollable list in frontend (#476)
+- If you login in operator page without an operator account, add a modal to propose to change the type of account (2ad52c9a)
+- Change display for tablets (cfeb689a, 934dcfa8, f35b3245)
+- Change buttons order in playlist's header and in a song for admin (3be92d61)
+- Change login modal in operator page (817ef98b)
+- Remove drag&drop useless refresh (747c78e5)
+- Playlist is now refresh when resize (#548)
+- Forbid users from removing a song being played while playback is active (#556)
+- Kara creation now include long tag automagic support (#555)
+
+### Fixes
+- Display shutdown popup only when disconnect is cause by transport error (0276f4e6)
+- Fix Filter by tag + search a value now work (c50dd0c4)
+- Fix add Random Karas in operator page (1d85f6c0)
 
 ## v3.0.2 "Leafa Langoureuse" - 09/01/2020
 
