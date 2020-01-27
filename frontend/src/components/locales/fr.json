@@ -430,7 +430,8 @@
 		"BLC_VIEW_ERROR": "La vue des critères de blacklist n'est pas autorisé pour les utilisateurs",
 		"BLC_ADD_ERROR": "Le critère de blacklist ne peut pas être ajouté",
 		"BLC_DELETE_ERROR": "Erreur lors de la suppression du critère de blacklist",
-		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Mauvais code de sécurité"
+		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Mauvais code de sécurité",
+		"PL_DELETE_SONG_ERROR": "Vous ne pouvez pas supprimer un morceau en cours de lecture. Arrêtez d'abord la lecture."
 	},
 	"HIDDEN_PLAYLIST": "Playlist cachée",
 	"SUBMIT": "Sauvegarder"

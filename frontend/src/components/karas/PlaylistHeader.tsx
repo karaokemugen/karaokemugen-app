@@ -175,7 +175,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 		axios.put(this.props.getPlaylistUrl().replace('/karas', '') + '/empty');
 	  }
 	} catch (error) {
-		displayMessage('error', `ERROR_CODES.${error.response.code}`);
+		displayMessage('error', i18next.t(`ERROR_CODES.${error.response.code}`));
 	}
   };
 

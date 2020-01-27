@@ -460,7 +460,7 @@ noRowsRenderer = () => {
 		this.setState({ data: data, getPlaylistInProgress: false });
 		this.playlistForceRefresh(true);
 	} catch (error) {
-		displayMessage('error', `ERROR_CODES.${error.response.code}`);
+		displayMessage('error', i18next.t(`ERROR_CODES.${error.response.code}`));
 	}
   };
 
@@ -631,7 +631,7 @@ noRowsRenderer = () => {
   			var response = await axios.delete(url, {data:data});
   			displayMessage('success', i18next.t(response.data));
   		} catch (error) {
-  			displayMessage('warning', i18next.t(error.response.data));
+			displayMessage('warning', i18next.t(`ERROR_CODES.${error.response.data}`));
   		}
   	}
   };

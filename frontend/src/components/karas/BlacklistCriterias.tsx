@@ -52,7 +52,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 			axios.post('/api/blacklist/criterias',
 				{ blcriteria_type: this.state.bcType, blcriteria_value: this.state.bcVal });
 		} catch (error) {
-			displayMessage('error', `ERROR_CODES.${error.response.code}`);
+			displayMessage('error', i18next.t(`ERROR_CODES.${error.response.code}`));
 		}
     };
 
@@ -60,7 +60,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 		try {
 			axios.delete('/api/blacklist/criterias/' + bcId);
 		} catch (error) {
-			displayMessage('error', `ERROR_CODES.${error.response.code}`);
+			displayMessage('error', i18next.t(`ERROR_CODES.${error.response.code}`));
 		}
     };
 

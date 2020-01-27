@@ -94,7 +94,7 @@ class KaraLine extends Component<IProps,IState> {
   		}
   		displayMessage('success', i18next.t(response.data));
   	} catch (error) {
-  		displayMessage('error', error.response.data);
+  		displayMessage('error', i18next.t(`ERROR_CODES.${error.response.data}`));
   	}
   };
 
