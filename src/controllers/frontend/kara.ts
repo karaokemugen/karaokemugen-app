@@ -11,6 +11,7 @@ import { postSuggestionToKaraBase } from "../../services/gitlab";
 import multer = require("multer");
 import { createKara, editKara } from "../../services/kara_creation";
 import { getRemoteKaras } from "../../services/download";
+import { KaraList } from "../../lib/types/kara";
 
 export default function karaController(router: Router) {
 	let upload = multer({ dest: resolvedPathTemp()});
@@ -99,19 +100,14 @@ export default function karaController(router: Router) {
  */
 		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
-				let karas: any;
-				if (req.query.repo) {
-					karas = await getRemoteKaras(req.query.repo, {
+				let karas: KaraList;
+				if (req.query.instance) {
+					karas = await getRemoteKaras(req.query.instance, {
 						filter: req.query.filter,
-						lang: req.lang,
+						q: req.query.q ? req.query.q : '',
 						from: +req.query.from || 0,
 						size: +req.query.size || 9999999,
-						mode: req.query.searchType,
-						modeValue: req.query.searchValue,
-						token: req.authToken,
-						random: req.query.random
-					}, req.query.compare
-					)
+					}, req.query.compare || null);
 				} else {
 					karas = await getKaras({
 						filter: req.query.filter,
