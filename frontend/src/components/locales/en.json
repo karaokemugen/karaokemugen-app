@@ -411,7 +411,7 @@
 		"BLC_ADD_ERROR": "Blacklist criteria could not be added",
 		"BLC_DELETE_ERROR": "Unable to delete Blacklist criteria",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Wrong security code",
-		"PL_DELETE_SONG_ERROR": "You cannot delete a song being currently played. Stop playback first."
+		"PL_DELETE_SONG_ERROR": "You cannot delete that song"
 	},
 	"HIDDEN_PLAYLIST": "Hidden playlist",
 	"SUBMIT": "Submit"
