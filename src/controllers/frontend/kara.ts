@@ -10,6 +10,7 @@ import { getConfig, resolvedPathTemp } from "../../lib/utils/config";
 import { postSuggestionToKaraBase } from "../../services/gitlab";
 import multer = require("multer");
 import { createKara, editKara } from "../../services/kara_creation";
+import { getRemoteKaras } from "../../services/download";
 
 export default function karaController(router: Router) {
 	let upload = multer({ dest: resolvedPathTemp()});
@@ -60,7 +61,8 @@ export default function karaController(router: Router) {
  * @apiParam {String} [searchType] Can be `search`, `kid`, `requested`, `recent` or `played`
  * @apiParam {String} [searchValue] Value to search for. For `kid` it's a UUID, for `search` it's a string comprised of criterias separated by `!`. Criterias are `s:` for series, `y:` for year et `t:` for tag + type. Example, all songs with tags UUIDs a (singer) and b (songwriter) and year 1990 is `t:a~2,b~8!y:1990`. Refer to tag types to find out which number is which type.
  * @apiParam {Number} [random] If specified, will return a `number` random list of songs
- *
+ * @apiParam {String} [repo] If specified, will check karas at the indicated online repository
+ * @apiParam {String} [compare] Either undefined, `missing` or `updated` to further filter the repository's songs compared to the local ones
  * @apiSuccess {Object[]} content/karas Array of `kara` objects
  * @apiSuccess {Number} infos/count Number of karaokes in playlist
  * @apiSuccess {Number} infos/from Starting position of listing
@@ -96,19 +98,32 @@ export default function karaController(router: Router) {
  * HTTP/1.1 403 Forbidden
  */
 		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			// if the query has a &filter=xxx
-			// then the playlist returned gets filtered with the text.
 			try {
-				const karas = await getKaras({
-					filter: req.query.filter,
-					lang: req.lang,
-					from: +req.query.from || 0,
-					size: +req.query.size || 9999999,
-					mode: req.query.searchType,
-					modeValue: req.query.searchValue,
-					token: req.authToken,
-					random: req.query.random
-				});
+				let karas: any;
+				if (req.query.repo) {
+					karas = await getRemoteKaras(req.query.repo, {
+						filter: req.query.filter,
+						lang: req.lang,
+						from: +req.query.from || 0,
+						size: +req.query.size || 9999999,
+						mode: req.query.searchType,
+						modeValue: req.query.searchValue,
+						token: req.authToken,
+						random: req.query.random
+					}, req.query.compare
+					)
+				} else {
+					karas = await getKaras({
+						filter: req.query.filter,
+						lang: req.lang,
+						from: +req.query.from || 0,
+						size: +req.query.size || 9999999,
+						mode: req.query.searchType,
+						modeValue: req.query.searchValue,
+						token: req.authToken,
+						random: req.query.random
+					});
+				}
 				res.json(karas);
 			} catch(err) {
 				errMessage('SONG_LIST_ERROR', err);
