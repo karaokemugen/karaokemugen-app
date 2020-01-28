@@ -43,7 +43,6 @@ This is a major release.
 - Changed login modal in operator page (817ef98b)
 - Removed drag&drop useless refresh (747c78e5)
 - Playlist is now refreshed when resized (#548)
-- Forbid users from removing a song being played while playback is active (#556)
 - Kara creation now include long tag automagic support (#555)
 
 ### Fixes
