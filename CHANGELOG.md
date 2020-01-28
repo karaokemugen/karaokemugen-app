@@ -25,6 +25,8 @@ This is a major release.
 - System panel is now translated in french and english (#263)
 - Improve system panel's config page (#486)
 - The karaoke submission form now accepts a new karaoke format, karaWin files (.kar). The files will be converted to the ASS format on import. (#550)
+- A repository property is added to tag and series files automatically for now in preparation for 3.2's multi-repo (e57ca80a)
+- Dropped compatibility for Windows 32 bit OSes (219eaf53)
 
 ### Improvements
 
@@ -36,18 +38,22 @@ This is a major release.
 - Downloader has been rewritten with async functions and a queue system (#511)
 - Logged in users now is a scrollable list in frontend (#476)
 - If you login in operator page without an operator account, add a modal to propose to change the type of account (2ad52c9a)
-- Change display for tablets (cfeb689a, 934dcfa8, f35b3245)
-- Change buttons order in playlist's header and in a song for admin (3be92d61)
-- Change login modal in operator page (817ef98b)
-- Remove drag&drop useless refresh (747c78e5)
-- Playlist is now refresh when resize (#548)
+- Changed display for tablets (cfeb689a, 934dcfa8, f35b3245)
+- Changed buttons order in playlist's header and in a song for admin (3be92d61)
+- Changed login modal in operator page (817ef98b)
+- Removed drag&drop useless refresh (747c78e5)
+- Playlist is now refreshed when resized (#548)
 - Forbid users from removing a song being played while playback is active (#556)
 - Kara creation now include long tag automagic support (#555)
 
 ### Fixes
+
 - Display shutdown popup only when disconnect is cause by transport error (0276f4e6)
 - Fix Filter by tag + search a value now work (c50dd0c4)
 - Fix add Random Karas in operator page (1d85f6c0)
+- Users now cannot remove a song from a playlist while that same song is playing and the player is effectively playing it. (#556)
+- The Omega character is now translated as O in filenames (e5379db7)
+- Suggestion issue template now adds the right suggestion tag to gitlab issues (103aa8de)
 
 ## v3.0.2 "Leafa Langoureuse" - 09/01/2020
 
