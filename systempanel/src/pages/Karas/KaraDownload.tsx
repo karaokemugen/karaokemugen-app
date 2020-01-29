@@ -370,14 +370,14 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 										await this.setState({compare: ''});
 										this.api_get_online_karas();
 								}}>{i18next.t('KARA.FILTER_ALL')}</Radio>
-								<Radio checked={this.state.compare === '&compare=missing'} 
-									onChange={async () => {
-										await this.setState({compare: '&compare=missing'});
-										this.api_get_online_karas();
-									}}>{i18next.t('KARA.FILTER_UPDATED')}</Radio>
 								<Radio checked={this.state.compare === '&compare=updated'} 
 									onChange={async () => {
 										await this.setState({compare: '&compare=updated'});
+										this.api_get_online_karas();
+									}}>{i18next.t('KARA.FILTER_UPDATED')}</Radio>
+								<Radio checked={this.state.compare === '&compare=missing'} 
+									onChange={async () => {
+										await this.setState({compare: '&compare=missing'});
 										this.api_get_online_karas();
 								}}>{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}</Radio>
 							</Col>
