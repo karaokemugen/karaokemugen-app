@@ -2,7 +2,7 @@
 import {requireAuth, requireValidUser, requireAdmin} from '../middlewares/auth';
 import {requireNotDemo} from '../middlewares/demo';
 
-import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateMedias} from '../../services/download';
+import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateMedias, getRemoteTags} from '../../services/download';
 import {getRepos} from '../../services/repo';
 import { Router } from 'express';
 import { getConfig } from '../../lib/utils/config';
@@ -405,5 +405,33 @@ export default function downloadController(router: Router) {
 			updateMedias(getConfig().Online.Host);
 			res.status(200).send('Medias are being updated, check Karaoke Mugen\'s console to follow its progression');
 	});
-
+	router.route('/tags/remote')
+	/**
+ * @api {get} /tags/remote List all remote Tags
+ * @apiName GetTagsRemote
+ * @apiVersion 3.1.0
+ * @apiGroup Downloader
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {string} [repository] Repository to get tags from. If not specified, all repositories are queried.
+ * @apiParam {number} [type] Tag type to display. If none it'll return everything
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * [
+ * 	<See GET /blacklist/criterias>
+ * ]
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * "Error getting download BLCs : ..."
+ */
+	.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const tags = await getRemoteTags(req.query.repo, {
+				type: req.query.type
+			});
+			res.json(tags);
+		} catch(err) {
+			res.status(500).send(`Unable to get all remote tags : ${err}`);
+		}
+	});
 }

@@ -420,7 +420,7 @@ export async function getRemoteKaras(repo: string, params: KaraParams, compare?:
 	return JSON.parse(res.body);
 }
 
-export async function getRemoteTags(repo: string, params: TagParams): Promise<any> {
+export async function getRemoteTags(repo: string, params: TagParams): Promise<Tag[]> {
 	const queryParams = new URLSearchParams([
 		['type', params.type + '']
 	]);
