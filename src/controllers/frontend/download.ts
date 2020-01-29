@@ -424,7 +424,7 @@ export default function downloadController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * "Error getting download BLCs : ..."
  */
-	.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+	.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			const tags = await getRemoteTags(req.query.repo, {
 				type: req.query.type
