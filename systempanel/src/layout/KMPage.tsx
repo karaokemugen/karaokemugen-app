@@ -23,6 +23,9 @@ import UserList from '../pages/Users/UserList';
 import KMHeader from './KMHeader';
 import SessionsList from '../pages/Sessions/SessionsList';
 import SessionsEdit from '../pages/Sessions/SessionsEdit';
+import RepositoriesList from '../pages/Repositories/RepositoriesList';
+import RepositoriesEdit from '../pages/Repositories/RepositoriesEdit';
+import UnusedList from '../pages/UnusedList';
 
 
 class KMPage extends Component<{}, {}> {
@@ -38,9 +41,15 @@ class KMPage extends Component<{}, {}> {
 
           <Route path='/system/km/config' component={Config}/>
 
+		  <Route path='/system/km/unused' component={UnusedList}/>
+
           <Route path='/system/km/sessions/new' component={SessionsEdit}/>
           <Route path='/system/km/sessions/:seid' component={SessionsEdit}/>
           <Route path='/system/km/sessions' component={SessionsList}/>
+
+		  <Route path='/system/km/repositories/new' component={RepositoriesEdit}/>
+          <Route path='/system/km/repositories/:name' component={RepositoriesEdit}/>
+          <Route path='/system/km/repositories' component={RepositoriesList}/>
 
           <Route path='/system/km/karas/download' component={KaraDownload}/>
           <Route path='/system/km/karas/blacklist' component={KaraBlacklist}/>

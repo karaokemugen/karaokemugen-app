@@ -46,7 +46,8 @@ export async function insertTag(tag: Tag) {
 		tag.short || null,
 		tag.i18n || {},
 		JSON.stringify(tag.aliases) || null,
-		tag.tagfile
+		tag.tagfile,
+		tag.repository
 	]);
 }
 
@@ -89,6 +90,7 @@ export async function updateTag(tag: Tag) {
 		tag.types,
 		tag.i18n || {},
 		tag.tid,
+		tag.repository
 	]);
 }
 

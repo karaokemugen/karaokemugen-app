@@ -11,9 +11,9 @@ import {Series} from '../lib/types/series';
 import { KaraParams, KaraList, IDQueryResult } from '../lib/types/kara';
 import { removeSeriesInStore, editSeriesInStore, addSeriesToStore, sortSeriesStore, getStoreChecksum } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
-import {resolvedPathSeries} from '../lib/utils/config';
 import {getDataFromSeriesFile} from '../lib/dao/seriesfile';
 import { getAllKaras } from './kara';
+import { resolvedPathRepos } from '../lib/utils/config';
 
 /** Get all series */
 export async function getSeries(params: KaraParams) {
@@ -82,7 +82,7 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 	await insertSerie(serieObj);
 	await Promise.all([
 		insertSeriei18n(serieObj),
-		writeSeriesFile(serieObj, resolvedPathSeries()[0])
+		writeSeriesFile(serieObj, resolvedPathRepos('Series', serieObj.repository)[0])
 	]);
 
 	const seriesData = formatSeriesFile(serieObj).series;
@@ -110,7 +110,7 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 	const seriefile = serieObj.seriefile;
 	await Promise.all([
 		updateSerie(serieObj),
-		writeSeriesFile(serieObj, resolvedPathSeries()[0])
+		writeSeriesFile(serieObj, resolvedPathRepos('Series', serieObj.repository)[0])
 	]);
 	const seriesData = formatSeriesFile(serieObj).series;
 	seriesData.seriefile = seriefile;

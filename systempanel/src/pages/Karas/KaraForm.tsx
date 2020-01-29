@@ -19,6 +19,7 @@ interface KaraFormProps {
 	kara: any;
 	form: any;
 	save: any;
+	handleCopy: (kid, repo) => void
 }
 
 interface Tag {
@@ -46,10 +47,12 @@ interface KaraFormState {
 	families?: Tag[];
 	genres?: Tag[];
 	platforms?: Tag[];
-	origins?: Tag[],
-	created_at?: Date,
-	modified_at?: Date,
-	songtypesValue: Tag[]
+	origins?: Tag[];
+	created_at?: Date;
+	modified_at?: Date;
+	songtypesValue: Tag[];
+	repositoriesValue: string[];
+	repoToCopySong: string;
 }
 
 class KaraForm extends Component<KaraFormProps, KaraFormState> {
@@ -57,6 +60,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		super(props);
 		const kara = this.props.kara;
 		this.getSongtypes();
+		this.getRepositories();
 		this.state = {
 			serieSingersRequired: false,
 			subfile: kara.subfile
@@ -92,7 +96,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			origins: this.getTagArray(kara.origins),
 			created_at: kara.created_at ? kara.created_at : new Date(),
 			modified_at: kara.modified_at ? kara.modified_at : new Date(),
-			songtypesValue: null
+			songtypesValue: null,
+			repositoriesValue: null,
+			repoToCopySong: null
 		};
 	}
 
@@ -131,6 +137,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		});
 		this.setState({ songtypesValue: this.getTagArray(res.data.content) });
 	};
+
+	getRepositories = async () => {
+		const res = await axios.get("/api/repos");
+		this.setState({ repositoriesValue: res.data.map(repo => repo.Name)});
+	};
+
 
 	componentDidMount() {
 		this.props.form.validateFields();
@@ -574,6 +586,24 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						onChange={(tags) => this.props.form.setFieldsValue({ groups: tags })}
 					/>)}
 				</Form.Item>
+				{this.state.repositoriesValue ?
+					<Form.Item
+						label={i18next.t('KARA.REPOSITORY')}
+						labelCol={{ span: 3 }}
+						wrapperCol={{ span: 3, offset: 0 }}
+					>
+						{getFieldDecorator("repository", {
+							initialValue: this.props.kara.repository ? this.props.kara.repository : this.state.repositoriesValue[0]
+						})(
+							<Select disabled={this.props.kara.repository !== undefined} placeholder={i18next.t('KARA.REPOSITORY')}>
+								{this.state.repositoriesValue.map(repo => {
+									return <Select.Option key={repo} value={repo}>{repo}</Select.Option>
+								})
+								}
+							</Select>
+						)}
+					</Form.Item> : null
+				}
 				<Form.Item
 					label={i18next.t('KARA.CREATED_AT')}
 					labelCol={{ span: 3 }}
@@ -629,6 +659,31 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						initialValue: this.props.kara.subfile
 					})(<Input type="hidden" />)}
 				</Form.Item>
+				{this.state.repositoriesValue && this.props.kara.repository ?
+				<React.Fragment>
+					<Form.Item hasFeedback
+						label={i18next.t('KARA.REPOSITORY')}
+						labelCol={{ span: 3 }}
+						wrapperCol={{ span: 8, offset: 0 }}
+						>
+						<Select placeholder={i18next.t('KARA.REPOSITORY')} onChange={(value:string) => this.setState({repoToCopySong: value})}>
+							{this.state.repositoriesValue.filter(value => value !== this.props.kara.repository).map(repo => {
+								return <Select.Option key={repo} value={repo}>{repo}</Select.Option>
+							})
+							}
+						</Select>
+					</Form.Item>
+
+					<Form.Item
+						wrapperCol={{ span: 8, offset: 3 }}
+						style={{textAlign:"right"}}
+						>
+						<Button disabled={!this.state.repoToCopySong} type="danger" onClick={() => this.props.handleCopy(this.props.kara.kid, this.state.repoToCopySong)}>
+							{i18next.t('KARA.MOVE_SONG')}
+						</Button>
+					</Form.Item>
+				</React.Fragment> : null
+				}
 			</Form>
 		);
 	}

@@ -2,7 +2,6 @@ import {getAllTags, selectTagByNameAndType, insertTag, selectTag, updateTag, rem
 import logger, {profile} from '../lib/utils/logger';
 import { TagParams, Tag } from '../lib/types/tag';
 import uuidV4 from 'uuid/v4';
-import { resolvedPathTags } from '../lib/utils/config';
 import { addTagToStore, sortTagsStore, getStoreChecksum, editTagInStore, removeTagInStore, editKaraInStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import { sanitizeFile } from '../lib/utils/files';
@@ -12,6 +11,7 @@ import { refreshKaras } from '../lib/dao/kara';
 import { getAllKaras } from './kara';
 import { replaceTagInKaras } from '../lib/dao/karafile';
 import { IDQueryResult } from '../lib/types/kara';
+import { resolvedPathRepos } from '../lib/utils/config';
 
 export function formatTagList(tagList: Tag[], from: number, count: number) {
 	return {
@@ -49,7 +49,7 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 
 	const promises = [
 		insertTag(tagObj),
-		writeTagFile(tagObj, resolvedPathTags()[0])
+		writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0])
 	];
 	await Promise.all(promises);
 
@@ -108,7 +108,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 			tagfile: `${tag1.name}.${tid.substring(0, 8)}.tag.json`
 		};
 		await insertTag(tagObj);
-		await writeTagFile(tagObj, resolvedPathTags()[0]);
+		await writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0]);
 		addTagToStore(tagObj);
 		sortTagsStore();
 		await Promise.all([
@@ -149,7 +149,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 	const tagfile = tagObj.tagfile;
 	await Promise.all([
 		updateTag(tagObj),
-		writeTagFile(tagObj, resolvedPathTags()[0])
+		writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0])
 	]);
 	const tagData = formatTagFile(tagObj).tag;
 	tagData.tagfile = tagfile;

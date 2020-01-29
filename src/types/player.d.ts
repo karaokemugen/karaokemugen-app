@@ -40,5 +40,6 @@ export interface MediaData {
 	gain: number,
 	infos: string,
 	avatar: string,
-	duration: number
+	duration: number,
+	repo: string
 }

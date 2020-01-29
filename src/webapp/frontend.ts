@@ -9,7 +9,7 @@ import {createServer} from 'http';
 
 // KM Imports
 import logger from '../lib/utils/logger';
-import {getConfig, resolvedPathAvatars, resolvedPathMedias} from '../lib/utils/config';
+import {getConfig, resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/config';
 import {configurePassport} from '../lib/utils/passport_manager';
 import { initWS } from '../lib/utils/ws';
 import { getState } from '../utils/state';
@@ -29,6 +29,7 @@ import karaController from '../controllers/frontend/kara';
 import tagsController from '../controllers/frontend/tags';
 import seriesController from '../controllers/frontend/series';
 import playlistsController from '../controllers/frontend/playlists';
+import repoController from '../controllers/frontend/repo';
 
 /** Declare all routers for API types */
 function apiRouter() {
@@ -49,6 +50,7 @@ function apiRouter() {
 	tagsController(apiRouter);
 	seriesController(apiRouter);
 	pollController(apiRouter);
+	repoController(apiRouter);
 
 	return apiRouter;
 }
@@ -88,7 +90,7 @@ export async function initFrontend() {
 		}
 
 		//Path to video previews
-		resolvedPathMedias().forEach(dir => app.use('/medias', express.static(dir)));
+		resolvedPathRepos('Medias').forEach(dir => app.use('/medias', express.static(dir)));
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 

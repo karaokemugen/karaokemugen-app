@@ -4,6 +4,7 @@ import EditableTagGroup from '../Components/EditableTagGroup';
 import {getListLanguagesInLocale, getLanguagesInLocaleFromCode } from '../../isoLanguages';
 import i18next from 'i18next';
 import { tagTypes } from '../../utils/tagTypes';
+import axios from 'axios/index';
 
 interface TagsFormProps {
 	tags: any,
@@ -17,7 +18,8 @@ interface TagsFormState {
 	i18n: any[],
 	languages: any[],
 	selectVisible: boolean,
-	mergeSelection: string
+	mergeSelection: string,
+	repositoriesValue: string[]
 }
 
 class TagForm extends Component<TagsFormProps, TagsFormState> {
@@ -26,11 +28,13 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 	constructor(props) {
 		super(props);
+		this.getRepositories();
 		this.state = {
 			i18n: [],
 			languages: getListLanguagesInLocale(),
 			selectVisible: false,
-			mergeSelection: ''
+			mergeSelection: '',
+			repositoriesValue: null
 		};
 		
 		Object.keys(this.props.tag.i18n).forEach(lang => {
@@ -49,6 +53,11 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			this.props.form.setFieldsValue(obj);
 		}
 	}
+
+	getRepositories = async () => {
+		const res = await axios.get("/api/repos");
+		this.setState({ repositoriesValue: res.data.map(repo => repo.Name)});
+	};
 
 	showSelect = () => {
 		this.setState({ selectVisible: true }, () => this.select.focus());
@@ -199,6 +208,36 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</Select>
 					)}
 				</Form.Item>
+				{this.state.repositoriesValue ?
+					<Form.Item
+						label={i18next.t('TAGS.REPOSITORY')}
+						labelCol={{ span: 3 }}
+						wrapperCol={{ span: 3, offset: 0 }}
+					>
+						{getFieldDecorator("repository", {
+							initialValue: this.props.tag.repository ? this.props.tag.repository : this.state.repositoriesValue[0]
+						})(
+							<Select placeholder={i18next.t('TAGS.REPOSITORY')}>
+								{this.state.repositoriesValue.map(repo => {
+									return <Select.Option key={repo} value={repo}>{repo}</Select.Option>
+								})
+								}
+							</Select>
+						)}
+					</Form.Item> : null
+				}
+				
+				{this.props.tag.repository && this.props.tag.repository !== this.props.form.getFieldValue('repository') ?
+					<Form.Item
+						wrapperCol={{ span: 8, offset: 3 }}
+						style={{textAlign:"right"}}
+						>
+						<Alert style={{textAlign:"left"}}
+							message={i18next.t('TAGS.REPOSITORY_CHANGED')}
+							type="error"
+						/>
+					</Form.Item>: null	
+				}
 				<Form.Item
 					label={(
 						<span>{i18next.t('TAGS.ALIASES')}&nbsp;

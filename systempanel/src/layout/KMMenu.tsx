@@ -37,6 +37,8 @@ class KMMenu extends Component<KMenuProps, {}> {
 						<Menu.Item key='log'><Link to='/system/km/log'>{i18next.t('MENU.LOGS')}</Link></Menu.Item>
 						<Menu.Item key='config'><Link to='/system/km/config'>{i18next.t('MENU.CONFIGURATION')}</Link></Menu.Item>
 						<Menu.Item key='sessions'><Link to='/system/km/sessions'>{i18next.t('MENU.SESSIONS')}</Link></Menu.Item>
+						<Menu.Item key='repositories'><Link to='/system/km/repositories'>{i18next.t('MENU.REPOSITORIES')}</Link></Menu.Item>
+						<Menu.Item key='config'><Link to='/system/km/unused'>{i18next.t('MENU.UNUSED_FILES')}</Link></Menu.Item>
 					</Menu.SubMenu>
 					<Menu.SubMenu key="kara-dropdown" title={i18next.t('MENU.KARAS')}>
 						<Menu.Item key='karalist'><Link to='/system/km/karas'>{i18next.t('MENU.LIST')}</Link></Menu.Item>

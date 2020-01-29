@@ -98,7 +98,7 @@ export const getAllKaras = (filterClauses: string[], lang: LangClause, typeClaus
 		THEN FALSE
 		ELSE TRUE
   END) as flag_favorites,
-  ak.repo AS repo,
+  ak.repository as repository,
   ak.tid AS tid,
   count(ak.kid) OVER()::integer AS count
 FROM all_karas AS ak
@@ -112,7 +112,7 @@ LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.kid
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ${groupClauses} ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_singer_sortable, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.repo, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid, ak.tid, ak.languages_sortable
+GROUP BY ${groupClauses} ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_singer_sortable, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.repository, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid, ak.tid, ak.languages_sortable
 ${havingClause}
 ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.title
 ${limitClause}
@@ -127,7 +127,8 @@ SELECT
 	ak.karafile AS karafile,
 	ak.subfile AS subfile,
 	ak.duration AS duration,
-	ak.sid AS sid
+	ak.sid AS sid,
+	ak.repository as repository
 FROM all_karas AS ak
 WHERE ak.kid = $1
 `;
@@ -206,7 +207,7 @@ INSERT INTO kara(
 	created_at,
 	karafile,
 	pk_kid,
-	fk_repo_name
+	repository
 )
 VALUES(
 	:title,
@@ -220,7 +221,7 @@ VALUES(
 	:created_at,
 	:karafile,
 	:kid,
-	:repo
+	:repository
 );
 `;
 

@@ -11,7 +11,8 @@ export interface KaraDownload {
 	}
 	size: number,
 	uuid: string
-	status?: 'DL_RUNNING' | 'DL_PLANNED' | 'DL_DONE' | 'DL_FAILED'
+	status?: 'DL_RUNNING' | 'DL_PLANNED' | 'DL_DONE' | 'DL_FAILED',
+	repository: string
 }
 
 export interface KaraDownloadBLC {
@@ -28,7 +29,8 @@ export interface KaraDownloadRequest {
 	mediafile: string,
 	subfile: string,
 	name: string,
-	size: number
+	size: number,
+	repository: string
 }
 
 interface DownloadFile {

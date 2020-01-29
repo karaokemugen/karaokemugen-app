@@ -1,7 +1,7 @@
 // SQL for tags
 
 export const getTag = `
-SELECT tid, name, types, short, aliases, i18n, karacount, tagfile
+SELECT tid, name, types, short, aliases, i18n, karacount, tagfile, repository
 FROM all_tags
 WHERE tid = $1
 `;
@@ -19,7 +19,8 @@ SELECT tid,
 	aliases,
 	i18n,
 	karacount,
-	tagfile
+	tagfile,
+	repository
 FROM all_tags
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
@@ -37,7 +38,8 @@ INSERT INTO tag(
 	short,
 	i18n,
 	aliases,
-	tagfile
+	tagfile,
+	repository
 )
 VALUES(
 	$1,
@@ -46,7 +48,8 @@ VALUES(
 	$4,
 	$5,
 	$6,
-	$7
+	$7,
+	$8
 )
 ON CONFLICT (pk_tid) DO UPDATE SET
 	types = $3
@@ -88,7 +91,8 @@ SET
 	tagfile = $3,
 	short = $4,
 	types = $5,
-	i18n = $6
+	i18n = $6,
+	repository = $8
 WHERE pk_tid = $7;
 `;
 

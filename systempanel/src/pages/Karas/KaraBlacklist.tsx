@@ -45,7 +45,7 @@ class KaraBlacklist extends Component<KaraBlacklistProps, KaraBlacklistState> {
 
 	componentDidMount() {
 		this.props.loading(true);
-		axios.get('/api/tags?instance=kara.moe')
+		axios.get('/api/tags/remote')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({

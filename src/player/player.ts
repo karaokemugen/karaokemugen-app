@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 import logger from 'winston';
-import {resolvedPathBackgrounds, getConfig, resolvedPathMedias, resolvedPathTemp, resolvedPathSubs} from '../lib/utils/config';
+import {resolvedPathBackgrounds, getConfig, resolvedPathTemp, resolvedPathRepos} from '../lib/utils/config';
 import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists, replaceExt} from '../lib/utils/files';
 import sample from 'lodash.sample';
@@ -363,7 +363,7 @@ export async function play(mediadata: MediaData) {
 	let mediaFile: string;
 	let subFile: string;
 	try {
-		mediaFile = await resolveFileInDirs(mediadata.media, resolvedPathMedias());
+		mediaFile = await resolveFileInDirs(mediadata.media, resolvedPathRepos('Medias', mediadata.repo))[0];
 	} catch (err) {
 		logger.debug(`[Player] Error while resolving media path : ${err}`);
 		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
@@ -371,11 +371,11 @@ export async function play(mediadata: MediaData) {
 			mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(mediadata.media)}`;
 			logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`);
 		} else {
-			throw `No media source for ${mediadata.media} (tried in ${resolvedPathMedias().toString()} and HTTP source)`;
+			throw `No media source for ${mediadata.media} (tried in ${resolvedPathRepos('Medias', mediadata.repo).toString()} and HTTP source)`;
 		}
 	}
 	try {
-		if (mediadata.subfile) subFile = await resolveFileInDirs(mediadata.subfile, resolvedPathSubs());
+		if (mediadata.subfile) subFile = await resolveFileInDirs(mediadata.subfile, resolvedPathRepos('Lyrics', mediadata.repo))[0];
 	} catch(err) {
 		logger.debug(`[Player] Error while resolving subs path : ${err}`);
 		logger.warn(`[Player] Subs NOT FOUND : ${mediadata.subfile}`);

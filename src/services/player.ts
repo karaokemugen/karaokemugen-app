@@ -42,7 +42,8 @@ async function playCurrentSong(now: boolean) {
 				gain: kara.gain,
 				infos: kara.infos,
 				avatar: kara.avatar,
-				duration: kara.duration
+				duration: kara.duration,
+				repo: kara.repo
 			});
 			setState({currentlyPlayingKara: kara.kid});
 			addPlayedKara(kara.kid);

@@ -13,7 +13,7 @@ import {closeDB} from '../lib/dao/database';
 import {initFrontend} from '../webapp/frontend';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from './player';
-import {initDownloader, updateBase, updateMedias} from './download';
+import {initDownloader, updateAllBases, updateAllMedias} from './download';
 import {initStats} from './stats';
 import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {initPlaylistSystem, testPlaylists} from './playlist';
@@ -39,7 +39,7 @@ export async function initEngine() {
 		await exit(1);
 	}
 	if (state.opt.mediaUpdate) try {
-		await updateMedias(conf.Online.Host);
+		await updateAllMedias();
 		await exit(0)
 	} catch(err) {
 		logger.error(`[Engine] Updating medias failed : ${err}`);
@@ -60,7 +60,7 @@ export async function initEngine() {
 		await exit(1);
 	}
 	if (state.opt.baseUpdate) try {
-		await updateBase(conf.Online.Host);
+		await updateAllBases();
 		logger.info('[Engine] Done updating karaoke base');
 		await exit(0);
 	} catch (err) {
