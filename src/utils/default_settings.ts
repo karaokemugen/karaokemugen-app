@@ -177,6 +177,30 @@ export const defaults: Config = {
 				Windows: 'app/bin/postgres/bin/'
 			}
 		},
+		Repositories: [
+			{
+				Name: 'kara.moe',
+				Online: true,
+				Path: {
+					Karas: ['repos/kara.moe/karaokes'],
+					Lyrics: ['repos/kara.moe/lyrics'],
+					Medias: ['repos/kara.moe/medias'],
+					Series: ['repos/kara.moe/series'],
+					Tags: ['repos/kara.moe/tags']
+				}
+			},
+			{
+				Name: 'Local',
+				Online: false,
+				Path: {
+					Karas: ['repos/Local/karaokes'],
+					Lyrics: ['repos/Local/lyrics'],
+					Medias: ['repos/Local/medias'],
+					Series: ['repos/Local/series'],
+					Tags: ['repos/Local/tags']
+				}
+			}
+		],
 		Path: {
 			Avatars: 'avatars',
 			Backgrounds: ['backgrounds'],
@@ -186,13 +210,8 @@ export const defaults: Config = {
 			Import: 'import',
 			Intros: ['intros', 'intros/KaraokeMugen'],
 			Jingles: ['jingles', 'jingles/KaraokeMugen'],
-			Karas: ['data/karaokes'],
-			Lyrics: ['data/lyrics'],
-			Medias: ['data/medias'],
 			Outros: ['outros', 'outros/KaraokeMugen'],
 			Sponsors: ['sponsors', 'sponsors/KaraokeMugen'],
-			Series: ['data/series'],
-			Tags: ['data/tags'],
 			Temp: 'temp'
 		}
 	}

@@ -37,7 +37,7 @@ export function deleteKara(kid) {
 	};
 }
 
-// Fetch recent karas from kara.moe. Defaults to recent if no filter is applied (for now)
+// Fetch recent karas from repository. Defaults to recent if no filter is applied (for now)
 export function filterOnlineKaras(filter) {
 	return {
 		type: KARAS_FILTER_ONLINE,

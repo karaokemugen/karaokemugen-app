@@ -21,6 +21,7 @@ import chalk from 'chalk';
 import {createInterface} from 'readline';
 import { getPortPromise } from 'portfinder';
 import cloneDeep from 'lodash.clonedeep';
+import { migrateOldFoldersToRepo } from './services/repo';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -96,7 +97,6 @@ async function main() {
 	console.log('================================================================================');
 	await configureLogger(dataPath, !!argv.debug, true);
 	await initConfig(argv);
-	let config = getConfig();
 	const publicConfig = cloneDeep(getConfig());
 	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 	publicConfig.App.JwtSecret = 'xxxxx';
@@ -110,7 +110,12 @@ async function main() {
 	logger.debug(`[Launcher] Initial state : ${JSON.stringify(state, null, 2)}`);
 
 	// Checking paths, create them if needed.
-	await checkPaths(config);
+	await checkPaths(getConfig());
+
+	// Migrate old folder config to new repository one :
+	await migrateOldFoldersToRepo();
+	// Re-check paths
+	await checkPaths(getConfig());
 
 	// Copying files from the app's sources to the app's working folder.
 	// This is an ugly hack : we could use fs.copy but due to a bug in pkg,
@@ -134,7 +139,7 @@ async function main() {
 	/**
 	 * Test if network ports are available
 	 */
-	verifyOpenPort(config.Frontend.Port);
+	verifyOpenPort(getConfig().Frontend.Port);
 
 	/**
 	 * Gentlemen, start your engines.
@@ -152,17 +157,17 @@ async function main() {
  * Checking if application paths exist.
  */
 async function checkPaths(config: Config) {
-
+	const conf = getConfig();
 	const appPath = getState().appPath;
 	const dataPath = getState().dataPath;
 	// If no karaoke is found, copy the samples directory if it exists
-	if (!await asyncExists(resolve(dataPath, 'data'))) {
+	if (!await asyncExists(resolve(dataPath, conf.System.Repositories[0].Path.Karas[0]))) {
 		try {
 			await asyncReadDir(resolve(appPath, 'samples'));
 			logger.debug('[Launcher] Kara files are missing - copying samples');
 			await copy(
 				resolve(appPath, 'samples'),
-				resolve(dataPath, 'data')
+				resolve(dataPath, conf.System.Repositories[0].Path.Karas[0], '../')
 			);
 		} catch(err) {
 			logger.warn('[Launcher] No samples directory found, will not copy them.');
@@ -175,11 +180,17 @@ async function checkPaths(config: Config) {
 	let checks = [];
 	const paths = config.System.Path;
 	for (const item of Object.keys(paths)) {
-		Array.isArray(paths[item])
+		Array.isArray(paths[item]) && paths[item]
 			? paths[item].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))))
 			: checks.push(asyncCheckOrMkdir(resolve(dataPath, paths[item])));
 	}
+	for (const repo of config.System.Repositories) {
+		for (const paths of Object.keys(repo.Path)) {
+			repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))))
+		}
+	}
 	checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
+
 	await Promise.all(checks);
 	logger.debug('[Launcher] Directory checks complete');
 }

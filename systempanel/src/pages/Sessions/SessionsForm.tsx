@@ -100,7 +100,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 						initialValue: this.props.session.name,
 						rules: [{
 							required: true,
-							message: 'Please enter a name'
+							message: i18next.t('TAGS.NAME_REQUIRED')
 						}],
 					})(<Input
 						placeholder={i18next.t('SESSIONS.NAME')}

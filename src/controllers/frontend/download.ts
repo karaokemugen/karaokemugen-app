@@ -1,45 +1,14 @@
 
-import {requireAuth, requireValidUser, requireAdmin} from '../middlewares/auth';
+import {requireAuth, requireValidUser, requireAdmin, updateUserLoginTime} from '../middlewares/auth';
 import {requireNotDemo} from '../middlewares/demo';
 
-import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateMedias, getRemoteTags} from '../../services/download';
-import {getRepos} from '../../services/repo';
+import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateAllMedias, getAllRemoteKaras, getAllRemoteTags} from '../../services/download';
 import { Router } from 'express';
-import { getConfig } from '../../lib/utils/config';
+import { getLang } from '../middlewares/lang';
+import { errMessage } from '../common';
 
 export default function downloadController(router: Router) {
 
-	router.route('/repos')
-	/**
- * @api {get} /repos Get repository list
- * @apiName GetRepos
- * @apiVersion 3.1.0
- * @apiGroup Downloader
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiSuccess {Object[]} repo Repository object
- * @apiSuccess {string} repo/name Repository name
- * @apiSuccess {date} repo/last_downloaded_at Last time a song has been downloaded from there
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * [
- * 	{
- * 		"name": "kara.moe",
- * 		"last_downloaded_at": "2019-12-31"
- * 	}
- * ]
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- */
-		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		try {
-			const repos = await getRepos();
-			res.json(repos);
-		} catch(err) {
-			res.status(500).send(`Error getting repositories: ${err}`);
-		}
-	});
 	router.route('/downloads')
 	/**
  * @api {post} /downloads Add downloads to queue
@@ -48,7 +17,6 @@ export default function downloadController(router: Router) {
  * @apiGroup Downloader
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {string} repository Name (domain) of the repository to download from
  * @apiParam {Object[]} downloads Download object
  * @apiParam {string[]} downloads/seriefiles List of serie files to download
  * @apiParam {string[]} downloads/tagfiles List of tag files to download
@@ -57,6 +25,7 @@ export default function downloadController(router: Router) {
  * @apiParam {string} downloads/subfile Lyrics file to download
  * @apiParam {string} downloads/name Song name (purely cosmetic)
  * @apiParam {number} downloads/size Size in bytes of downloads (usually mediasize)
+ * @apiParam {string} downloads/repository Name (domain) of the repository to download from
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * "5 download(s) queued"
@@ -66,7 +35,7 @@ export default function downloadController(router: Router) {
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
-				const msg = await addDownloads(req.body.repository,req.body.downloads);
+				const msg = await addDownloads(req.body.downloads);
 				res.status(200).send(msg);
 			} catch(err) {
 				res.status(500).send(`Error while adding download: ${err}`);
@@ -320,24 +289,86 @@ export default function downloadController(router: Router) {
 			res.status(500).send(`Error removing download BLC : ${err}`);
 		}
 	});
+	router.route('/karas/remote')
+/**
+ * @api {get} /karas/remote Get complete list of karaokes (remote)
+ * @apiName GetKarasRemote
+ * @apiVersion 3.2.0
+ * @apiGroup Downloader
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiParam {String} [q] Query. It's a string comprised of criterias separated by `!`. Criterias are `s:` for series, `y:` for year et `t:` for tag + type. Example, all songs with tags UUIDs a (singer) and b (songwriter) and year 1990 is `t:a~2,b~8!y:1990`. Refer to tag types to find out which number is which type.
+ * @apiParam {String} [repository] If specified, will check karas at the indicated online repository. If not, will check all repositories
+ * @apiParam {String} [compare] Either null, `missing` or `updated` to further filter the repository's songs compared to the local ones
+ * @apiSuccess {Object[]} content/karas Array of `kara` objects
+ * @apiSuccess {Number} infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} infos/from Starting position of listing
+ * @apiSuccess {Number} infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *       "content": [
+ *           {
+ *               <See public/karas/:id object without i18n in tags>
+ *           },
+ *           ...
+ *       ],
+ * 		 "i18n": {
+ * 			 "<tag UUID>": {
+ * 				"eng": "English version",
+ * 				"fre": "Version française"
+ * 			 }
+ * 			 ...
+ * 		 },
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ * }
+ * @apiError SONG_LIST_ERROR Unable to fetch list of karaokes
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+	.get(getLang, requireAuth, requireNotDemo, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+		try {
+			const karas = await getAllRemoteKaras(req.query.repository, {
+				filter: req.query.filter,
+				q: req.query.q ? req.query.q : '',
+				from: +req.query.from || 0,
+				size: +req.query.size || 9999999,
+			}, req.query.compare);
+			res.json(karas);
+		} catch(err) {
+			errMessage('SONG_LIST_ERROR', err);
+			res.status(500).send('SONG_LIST_ERROR');
+		}
+	});
+
 	router.route('/downloads/update')
 		/**
- * @api {post} /downloads/update Update all local songs with remote
+ * @api {post} /downloads/update Update all local songs with remote repository
  * @apiName updateDownloads
  * @apiVersion 3.1.0
  * @apiGroup Downloader
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {string} repository Repository to query for updates
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * "Error computing update : ..."
  */
-		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 		try {
-			await updateAllKaras(req.body.repository);
+			await updateAllKaras();
 			res.status(200).send('Update in progress');
 		} catch(err) {
 			res.status(500).send(`Error computing update: ${err}`);
@@ -345,22 +376,21 @@ export default function downloadController(router: Router) {
 	});
 	router.route('/downloads/all')
 	/**
- * @api {post} /downloads/all Download all songs from remote
+ * @api {post} /downloads/all Download all songs from all repositories
  * @apiName PostDownloadAll
  * @apiVersion 3.1.0
  * @apiGroup Downloader
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {string} repository Repository to query for updates
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * "Error computing update: ..."
  */
-		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 		try {
-			await downloadAllKaras(req.body.repository);
+			await downloadAllKaras();
 			res.status(200).send('Download in progress');
 		} catch(err) {
 			res.status(500).send(`Error computing update: ${err}`);
@@ -368,22 +398,21 @@ export default function downloadController(router: Router) {
 	});
 	router.route('/downloads/clean')
 		/**
- * @api {post} /downloads/clean Remove all local karas not on remote
+ * @api {post} /downloads/clean Remove all local karas not on remote repositories
  * @apiName CleanDownloads
  * @apiVersion 3.1.0
  * @apiGroup Downloader
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {string} repository Repository to query for updates
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * "Error computing update: ..."
  */
-		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 		try {
-			await cleanAllKaras(req.body.repository);
+			await cleanAllKaras();
 			res.status(200).send('Cleanup in progress');
 		} catch(err) {
 			res.status(500).send(`Error computing update: ${err}`);
@@ -402,7 +431,7 @@ export default function downloadController(router: Router) {
  * HTTP/1.1 200 OK
  */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-			updateMedias(getConfig().Online.Host);
+			updateAllMedias();
 			res.status(200).send('Medias are being updated, check Karaoke Mugen\'s console to follow its progression');
 	});
 	router.route('/tags/remote')
@@ -426,7 +455,7 @@ export default function downloadController(router: Router) {
  */
 	.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
-			const tags = await getRemoteTags(req.query.repository, {
+			const tags = await getAllRemoteTags(req.query.repository, {
 				type: req.query.type
 			});
 			res.json(tags);

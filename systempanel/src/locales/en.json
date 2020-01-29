@@ -68,7 +68,9 @@
 		"FILTER_SONGS": "Filter songs from server: ",
 		"FILTER_ALL": "All",
 		"FILTER_UPDATED": "Updated",
-		"FILTER_NOT_DOWNLOADED": "Not downloaded"
+		"FILTER_NOT_DOWNLOADED": "Not downloaded",
+		"REPOSITORY": "Repository",
+		"MOVE_SONG": "Move song to another repository"
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -76,6 +78,7 @@
 		"LOGS": "Logs",
 		"CONFIGURATION": "Configuration",
 		"SESSIONS": "Sessions",
+		"REPOSITORIES": "Repositories",
 		"KARAS": "Karas",
 		"LIST": "List",
 		"NEW": "New",
@@ -88,7 +91,17 @@
 		"TAGS": "Tags",
 		"DATABASE": "Database",
 		"USERS": "Users",
-		"LOG_OUT": "Log Out"
+		"LOG_OUT": "Log Out",
+		"UNUSED_FILES": "Unused files"
+	},
+	"UNUSED_FILES": {
+		"NAME": "Name",
+		"FILE": "File",
+		"MEDIAS": "Medias",
+		"TAGS": "Tags",
+		"SERIES": "Series",
+		"REPOSITORY": "Repository",
+		"TYPE": "Type"
 	},
 	"USERS": {
 		"ADMIN": "Operator",
@@ -158,7 +171,9 @@
 		"TAG_DELETED_CONFIRM": "Confirm tag deletion",
 		"DELETE_TAG_CONFIRM": "Delete tag",
 		"DELETE_TAG_MESSAGE": "This will remove its tags.json file as well as in any .kara.json in your database!",
-		"LANG_ERROR": "A tag must have at least one name by language"
+		"LANG_ERROR": "A tag must have at least one name by language",
+		"REPOSITORY": "Repository",
+		"REPOSITORY_CHANGED": "You must know what you're doing by editing this, as it won't move tag files out of the repository for you, and it won't affect any karaoke linked to it."
 	},
 	"TAGS_TYPES": {
 		"SINGERS": "Singer",
@@ -187,7 +202,8 @@
 		"CHOOSE_DIRECTORY": "Choose a directory",
 		"PRIMARY_DIRECTORY": "Primary directory",
 		"DELETE_DIRECTORY": "Delete directory",
-		"ADD_DIRECTORY": "Add a directory"
+		"ADD_DIRECTORY": "Add a directory",
+		"REPOSITORIES_PAGES": "Repositories page"
 	},
 	"SERIES": {
 		"SERIE_DELETED": "Serie successfully deleted",
@@ -199,7 +215,7 @@
 		"ALIASES_TOOLTIP": "Short names or alternative names of a series could be searched. Example : DB for Dragon Ball, or FMA for Full Metal Alchemist, or AnoHana for that series which makes you cry everytime you watch it.",
 		"NAME_TOOLTIP": "This is the internal name used to reference the series in Karaoke Mugen's database",
 		"SHORT_NAME_TOOLTIP": "This is the short name used to reference the series in Karaoke Mugen's database",
-		"LANG_ERROR": "A series must have at least one name by language"
+		"LANG_ERROR": "A serie must have at least one name by language"
 	},
 	"SESSIONS": {
 		"SESSION_CREATED": "Session successfully created",
@@ -221,6 +237,19 @@
 		"NEW_SESSION": "New session :",
 		"ACTIVE": "Active ?",
 		"PRIVATE": "Private ?"
+	},
+	"REPOSITORIES": {
+		"REPOSITORY_CREATED": "Repository successfully created",
+		"REPOSITORY_EDITED": "Repository successfully edited",
+		"NAME": "Name",
+		"PATH_KARAS": "Karaokes",
+		"PATH_LYRICS": "Lyrics",
+		"PATH_MEDIAS": "Medias",
+		"PATH_SERIES": "Series",
+		"PATH_TAGS": "Tags",
+		"NEW_REPOSITORY": "New repository :",
+		"ONLINE": "Online",
+		"FOLDERS_REQUIRED": "A folder of {{name}} is required."
 	},
 	"BLACKLIST": {
 		"TYPE": "Type",

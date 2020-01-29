@@ -7,6 +7,7 @@ import {loading, infoMessage, errorMessage, warnMessage} from '../actions/naviga
 import {ReduxMappedProps} from '../react-app-env';
 import i18next from 'i18next';
 import FileSystem from './Components/FileSystem';
+import { Link } from 'react-router-dom';
 
 interface ConfigProps extends ReduxMappedProps {}
 
@@ -173,69 +174,72 @@ class Config extends Component<ConfigProps, ConfigState> {
 		dataIndex: 'value',
 		key: 'value',
 		render: (text, record:Record) => 
-			typeof record.value === 'boolean' ? 
-				<Switch onChange={(e) => this.saveSetting(record.key, e)} defaultChecked={record.value} /> : 
-					(typeof record.value === 'number' ? 
-						<Input type='number'
-							onPressEnter={(e) => {
-								const target = e.target as HTMLInputElement;
-								this.saveSetting(record.key, target.value)
-							}}
-							defaultValue={record.value}
-						/> :
-						((record.key.includes('System.Binaries') || record.key.includes('System.Path')) ? 
-							(Array.isArray(record.value) ? 
-								<div>
-									<div style={{ display: 'flex'}}>
-										<div style={{ width: '150px'}}>{i18next.t('CONFIG.PRIMARY_DIRECTORY')}</div>
-										{record.value.length > 1 ?
-											<div style={{ width: '150px'}}>{i18next.t('CONFIG.DELETE_DIRECTORY')}</div> : null
-										}
-									</div>
-									{record.value.map((element, index) =>
-										<div key={element} style={{ display: 'flex', margin: '10px'}}>
-											<Radio style={{ width: '200px'}} checked={record.primary === element} 
-												onChange={() => {
-													this.saveSetting(record.key, 
-														(record.value as Array<string>).filter(val => val === element)
-														.concat((record.value as Array<string>).filter(val => val !== element)));
-													}}> </Radio>
+			record.key === 'System.Repositories' ?
+				<label><Link to={`/system/km/repositories`}>{i18next.t('CONFIG.REPOSITORIES_PAGES')}</Link></label> :
+				(typeof record.value === 'boolean' ? 
+					<Switch onChange={(e) => this.saveSetting(record.key, e)} defaultChecked={record.value} /> : 
+						(typeof record.value === 'number' ? 
+							<Input type='number'
+								onPressEnter={(e) => {
+									const target = e.target as HTMLInputElement;
+									this.saveSetting(record.key, target.value)
+								}}
+								defaultValue={record.value}
+							/> :
+							((record.key.includes('System.Binaries') || record.key.includes('System.Path')) ? 
+								(Array.isArray(record.value) ? 
+									<div>
+										<div style={{ display: 'flex'}}>
+											<div style={{ width: '150px'}}>{i18next.t('CONFIG.PRIMARY_DIRECTORY')}</div>
 											{record.value.length > 1 ?
-												<div style={{ width: '200px'}}> 
-													<Button type='danger' icon='delete'
-														onClick={() => {
-															record.value.splice(index, 1, null);
-															this.saveSetting(record.key, record.value);
-														}} />
-												</div> : null
+												<div style={{ width: '150px'}}>{i18next.t('CONFIG.DELETE_DIRECTORY')}</div> : null
 											}
-											<Input onClick={() => this.openFileSystemModal(record, index)} defaultValue={element} />
 										</div>
-									)}
-									<Button type='primary' onClick={() => this.openFileSystemModal(record, -1)}>
-										<Icon type="plus" />{i18next.t('CONFIG.ADD_DIRECTORY')}
-									</Button>
-								</div> :
-								<Input onClick={() => this.openFileSystemModal(record)} defaultValue={record.value} />)
-							:
-							(configWithSelectFileInFolder.includes(record.key) ?
-								<Select style={{ width: '100%'}} onChange={(value) => {
-										this.saveSetting(record.key, value ? value : null);
-									}}
-									value={record.value} allowClear={true}>
-									{this.state.files[record.key] && this.state.files[record.key].map((value) => {
-    									return <Select.Option key={Math.random()} value={value}>{value}</Select.Option>;
-    							})}
-								</Select> :
-								<Input
-									onPressEnter={(e) => {
-										const target = e.target as HTMLInputElement;
-										this.saveSetting(record.key, target.value)
-									}}
-									defaultValue={record.value}
-								/>
+										{record.value.map((element, index) =>
+											<div key={element} style={{ display: 'flex', margin: '10px'}}>
+												<Radio style={{ width: '200px'}} checked={record.primary === element} 
+													onChange={() => {
+														this.saveSetting(record.key, 
+															(record.value as Array<string>).filter(val => val === element)
+															.concat((record.value as Array<string>).filter(val => val !== element)));
+														}}> </Radio>
+												{record.value.length > 1 ?
+													<div style={{ width: '200px'}}> 
+														<Button type='danger' icon='delete'
+															onClick={() => {
+																record.value.splice(index, 1, null);
+																this.saveSetting(record.key, record.value);
+															}} />
+													</div> : null
+												}
+												<Input onClick={() => this.openFileSystemModal(record, index)} defaultValue={element} />
+											</div>
+										)}
+										<Button type='primary' onClick={() => this.openFileSystemModal(record, -1)}>
+											<Icon type="plus" />{i18next.t('CONFIG.ADD_DIRECTORY')}
+										</Button>
+									</div> :
+									<Input onClick={() => this.openFileSystemModal(record)} defaultValue={record.value} />)
+								:
+								(configWithSelectFileInFolder.includes(record.key) ?
+									<Select style={{ width: '100%'}} onChange={(value) => {
+											this.saveSetting(record.key, value ? value : null);
+										}}
+										value={record.value} allowClear={true}>
+										{this.state.files[record.key] && this.state.files[record.key].map((value) => {
+											return <Select.Option key={Math.random()} value={value}>{value}</Select.Option>;
+									})}
+									</Select> :
+									<Input
+										onPressEnter={(e) => {
+											const target = e.target as HTMLInputElement;
+											this.saveSetting(record.key, target.value)
+										}}
+										defaultValue={record.value}
+									/>
+								)
 							)
-						)
+					)
 				)
 	}];
 

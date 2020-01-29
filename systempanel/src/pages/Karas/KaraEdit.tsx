@@ -90,12 +90,22 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 			this.props.loading(false);
 		}
 	};
-	
+
+	handleCopy = (kid,repo) => {
+		axios.post(`/api/karas/${kid}/copyToRepo`, {repo:repo})
+			.then((data) => {
+				this.props.infoMessage(i18next.t('KARA.KARA_EDITED'));
+				this.props.push('/system/km/karas');
+			})
+			.catch(err => {
+				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			});
+	}
 
 	render() {
 		return (
 			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.kara && (<KaraForm kara={this.state.kara} save={this.state.save} />)}
+				{this.state.kara && (<KaraForm kara={this.state.kara} save={this.state.save} handleCopy={this.handleCopy}/>)}
 			</Layout.Content>
 		);
 	}

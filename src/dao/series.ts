@@ -52,7 +52,8 @@ export async function insertSerie(serieObj: Series) {
 		name: serieObj.name,
 		aliases: JSON.stringify(serieObj.aliases || []),
 		sid: serieObj.sid,
-		seriefile: serieObj.seriefile
+		seriefile: serieObj.seriefile,
+		repository: serieObj.repository
 	}));
 }
 
@@ -71,7 +72,8 @@ export async function updateSerie(serie: Series) {
 		sid: serie.sid,
 		name: serie.name,
 		aliases: JSON.stringify(serie.aliases || []),
-		seriefile: serie.seriefile
+		seriefile: serie.seriefile,
+		repository: serie.repository
 	}));
 	await db().query(sql.deleteSeriesi18n, [serie.sid]);
 	await insertSeriei18n(serie);

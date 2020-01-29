@@ -4,7 +4,8 @@ SELECT name,
 	size,
 	status,
 	pk_uuid as uuid,
-	started_at
+	started_at,
+	repository
 FROM download
 ORDER BY started_at DESC
 `;
@@ -15,7 +16,8 @@ SELECT name,
 	size,
 	status,
 	pk_uuid as uuid,
-	started_at
+	started_at,
+	repository
 FROM download
 WHERE status = 'DL_PLANNED'
 ORDER BY started_at DESC
@@ -27,7 +29,8 @@ SELECT name,
 	size,
 	status,
 	pk_uuid as uuid,
-	started_at
+	started_at,
+	repository
 FROM download
 WHERE pk_uuid = $1
 `;
@@ -49,13 +52,15 @@ INSERT INTO download(
 	urls,
 	size,
 	status,
-	pk_uuid
+	pk_uuid,
+	repository
 ) VALUES(
 	$1,
 	$2,
 	$3,
 	$4,
-	$5)
+	$5,
+	$6)
 `;
 
 export const updateDownloadStatus = `

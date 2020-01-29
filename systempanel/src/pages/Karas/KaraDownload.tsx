@@ -136,7 +136,8 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		downloadObject.tagfiles = kara.tagfiles;
 		downloadObject.size = kara.mediasize;
 		downloadObject.name = kara.name;
-		postToDownloadQueue('kara.moe', [downloadObject]);
+		downloadObject.repository = kara.repo;
+		postToDownloadQueue([downloadObject]);
 		this.api_read_kara_queue();
 	}
 
@@ -149,7 +150,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
 
-		axios.get(`/api/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`)
+		axios.get(`/api/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}`)
 			.then(res => {
 				let karas = res.data.content;
 				karas.forEach((kara) => {
@@ -257,7 +258,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
 
-				axios.get(`/api/karas?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}&instance=kara.moe`
+				axios.get(`/api/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}`
 					+ this.state.compare)
 			.then(res => {
 				let karas = res.data.content;
@@ -468,6 +469,10 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			return <span>{title}</span>;
 
 		}
+	}, {
+		title: i18next.t('KARA.REPOSITORY'),
+		dataIndex: 'repository',
+		key: 'repository',
 	}, {
 		title: <span><Button title={i18next.t('KARA.DOWNLOAD_ALL_TOOLTIP')} type="default" 
 			onClick={this.downloadAll.bind(this)}><Icon type='download'/></Button>{i18next.t('KARA.DOWNLOAD')}

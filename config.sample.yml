@@ -195,6 +195,33 @@ System:
       Windows: app/bin/postgres/bin/
       OSX: app/bin/postgres/bin/
       Linux: app/bin/postgres/bin/
+  Repositories:
+    - Name: kara.moe
+      Online: true
+      Path:
+        Karas:
+          - repos/online/kara.moe/karaokes
+        Lyrics:
+          - repos/online/kara.moe/lyrics
+        Medias:
+          - repos/online/kara.moe/medias
+        Series:
+          - repos/online/kara.moe/series
+        Tags:
+          - repos/online/kara.moe/tags
+    - Name: Local
+      Online: false
+      Path:
+        Karas:
+          - repos/offline/Local/karaokes
+        Lyrics:
+          - repos/offline/Local/lyrics
+        Medias:
+          - repos/offline/Local/medias
+        Series:
+          - repos/offline/Local/series
+        Tags:
+          - repos/offline/Local/tags
   Path:
     # Some paths like Background, karas lyrics medias, etc. can have multiple entries.
     Avatars: avatars
@@ -212,15 +239,5 @@ System:
       - outros
     Encores:
       - encores
-    Karas:
-      - data/karaokes
-    Lyrics:
-      - data/lyrics
-    Medias:
-      - data/medias
-    Series:
-      - data/series
-    Tags:
-      - data/tags
     Temp: temp
     DB: db

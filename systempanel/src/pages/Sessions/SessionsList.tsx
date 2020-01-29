@@ -40,8 +40,8 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 			});
 	}
 
-	deleteSession(session) {
-		axios.delete('/api/sessions/' + session.seid);
+	async deleteSession(session) {
+		await axios.delete('/api/sessions/' + session.seid);
 		this.refresh();
 	}
 

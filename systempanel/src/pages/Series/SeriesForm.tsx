@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {Button, Form, Icon, Input, message, Select, Tag, Tooltip} from 'antd';
+import {Button, Form, Icon, Input, message, Select, Tag, Tooltip, Alert} from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
 import {getListLanguagesInLocale, getLanguagesInLocaleFromCode } from '../../isoLanguages';
 import i18next from 'i18next';
+import axios from 'axios/index';
 
 interface SeriesFormProps {
 	serie: any,
@@ -14,6 +15,7 @@ interface SeriesFormState {
 	i18n: any[],
 	languages: any[],
 	selectVisible: boolean,
+	repositoriesValue: string[]
 }
 
 class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
@@ -22,10 +24,12 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 
 	constructor(props) {
 		super(props);
+		this.getRepositories();
 		this.state = {
 			i18n: [],
 			languages: getListLanguagesInLocale(),
-			selectVisible: false
+			selectVisible: false,
+			repositoriesValue: null
 		};
 		if (Array.isArray(this.props.serie.i18n)) {
 			this.props.serie.i18n.forEach(i18n => {
@@ -35,8 +39,10 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 		}
 	}
 
-	componentDidMount() {
-	}
+	getRepositories = async () => {
+		const res = await axios.get("/api/repos");
+		this.setState({ repositoriesValue: res.data.map(repo => repo.Name)});
+	};
 
 	showSelect = () => {
 		this.setState({ selectVisible: true }, () => this.select.focus());
@@ -108,6 +114,35 @@ class SerieForm extends Component<SeriesFormProps, SeriesFormState> {
 						placeholder={i18next.t('TAGS.NAME')}
 					/>)}
 				</Form.Item>
+				{this.state.repositoriesValue ?
+					<Form.Item
+						label={i18next.t('TAGS.REPOSITORY')}
+						labelCol={{ span: 3 }}
+						wrapperCol={{ span: 3, offset: 0 }}
+					>
+						{getFieldDecorator("repository", {
+							initialValue: this.props.serie.repository ? this.props.serie.repository : this.state.repositoriesValue[0]
+						})(
+							<Select placeholder={i18next.t('TAGS.REPOSITORY')}>
+								{this.state.repositoriesValue.map(repo => {
+									return <Select.Option key={repo} value={repo}>{repo}</Select.Option>
+								})
+								}
+							</Select>
+						)}
+					</Form.Item> : null
+				}
+				{this.props.serie.repository && this.props.serie.repository !== this.props.form.getFieldValue('repository') ?
+					<Form.Item
+						wrapperCol={{ span: 8, offset: 3 }}
+						style={{textAlign:"right"}}
+						>
+						<Alert style={{textAlign:"left"}}
+							message={i18next.t('TAGS.REPOSITORY_CHANGED')}
+							type="error"
+						/>
+					</Form.Item>: null	
+				}
 				<Form.Item
 					label={(
 						<span>{i18next.t('TAGS.ALIASES')}&nbsp;

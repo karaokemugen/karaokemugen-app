@@ -73,6 +73,19 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (oldConfig.System.Binaries.Postgres.Windows !== newConfig.System.Binaries.Postgres.Windows)  newConfig.System.Binaries.Postgres.Windows = relativePath(newConfig.System.Binaries.Postgres.Windows);
 	if (oldConfig.System.Binaries.Postgres.Linux !== newConfig.System.Binaries.Postgres.Linux)   newConfig.System.Binaries.Postgres.Linux = relativePath(newConfig.System.Binaries.Postgres.Linux);
 	if (oldConfig.System.Binaries.Postgres.OSX !== newConfig.System.Binaries.Postgres.OSX)   newConfig.System.Binaries.Postgres.OSX = relativePath(newConfig.System.Binaries.Postgres.OSX);
+	for (const i in Object.keys(newConfig.System.Repositories)) {
+		for (const path of Object.keys(newConfig.System.Repositories[i].Path)) {
+			if (!isEqual(newConfig.System.Repositories[i].Path[path], oldConfig.System.Repositories[i].Path[path])) {
+				if (Array.isArray(newConfig.System.Repositories[i].Path[path])) {
+					for (const y in newConfig.System.Repositories[i].Path[path]) {
+						newConfig.System.Repositories[i].Path[path][y] = relativePath(newConfig.System.Repositories[y].Path[path][y]);
+					}
+				} else {
+					newConfig.System.Repositories[i].Path[path] = relativePath(newConfig.System.Repositories[i].Path[path]);
+				}
+			}
+		}
+	}
 	for (const path of Object.keys(newConfig.System.Path)) {
 		if (!isEqual(newConfig.System.Path[path], oldConfig.System.Path[path])) {
 			if (Array.isArray(newConfig.System.Path[path])) {

@@ -104,7 +104,7 @@ class TagEdit extends Component<TagEditProps, TagEditState> {
 	render() {
 		return (
 			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.tag && (<TagsForm tag={this.state.tag} tags={this.state.tags} save={this.state.save} mergeAction={this.handleTagMerge.bind(this)} />)}
+				{this.state.tag && (<TagsForm tag={this.state.tag} tags={this.state.tags} save={this.state.save} mergeAction={this.handleTagMerge} />)}
 			</Layout.Content>
 		);
 	}

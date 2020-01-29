@@ -1,4 +1,5 @@
 import { ALPN_ENABLED } from "constants";
+import { Repository } from "../lib/types/repo";
 
 export interface Config {
 	App: {
@@ -156,6 +157,7 @@ export interface Config {
 				Linux?: string
 			}
 		},
+		Repositories: Repository[]
 		Path: {
 			Bin?: string,
 			Karas?: string[],

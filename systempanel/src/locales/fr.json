@@ -68,7 +68,9 @@
 		"FILTER_SONGS": "Filtrer les chansons du serveur : ",
 		"FILTER_ALL": "Tous",
 		"FILTER_UPDATED": "Mis à jour",
-		"FILTER_NOT_DOWNLOADED": "Non téléchargés"
+		"FILTER_NOT_DOWNLOADED": "Non téléchargés",
+		"REPOSITORY": "Dépôt",
+		"MOVE_SONG": "Déplacer la chanson vers un autre dépôt"
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -76,6 +78,7 @@
 		"LOGS": "Logs",
 		"CONFIGURATION": "Configuration",
 		"SESSIONS": "Sessions",
+		"REPOSITORIES": "Dépôts",
 		"KARAS": "Karaokés",
 		"LIST": "Liste",
 		"NEW": "Nouveau",
@@ -88,7 +91,17 @@
 		"TAGS": "Tags",
 		"DATABASE": "Base de données",
 		"USERS": "Utilisateurs",
-		"LOG_OUT": "Déconnexion"
+		"LOG_OUT": "Déconnexion",
+		"UNUSED_FILES": "Fichiers inutilisés"
+	},
+	"UNUSED_FILES": {
+		"NAME": "Nom",
+		"FILE": "Fichier",
+		"MEDIAS": "Médias",
+		"TAGS": "Tags",
+		"SERIES": "Séries",
+		"REPOSITORY": "Dépôt",
+		"TYPE": "Type"
 	},
 	"USERS": {
 		"ADMIN": "Opérateur",
@@ -158,7 +171,9 @@
 		"TAG_DELETED_CONFIRM": "Confirmer la suppression du tag",
 		"DELETE_TAG_CONFIRM": "Suppression du tag",
 		"DELETE_TAG_MESSAGE": "Cela va supprimer le fichier tags.json ainsi que la référence du tag dans les fichiers .kara.json de votre base de données !",
-		"LANG_ERROR": "Un tag doit avoir au moins un nom par langue."
+		"LANG_ERROR": "Un tag doit avoir au moins un nom par langue.",
+		"REPOSITORY": "Dépôt",
+		"REPOSITORY_CHANGED": "Vous devez savoir ce que vous faites en le modifiant, car cela ne déplacera pas les fichiers de tags hors du dépôt pour vous, et cela n'affectera aucun karaoké qui y est lié."
 	},
 	"TAG_TYPES": {		
 		"SINGERS": "Chanteur",
@@ -187,7 +202,8 @@
 		"CHOOSE_DIRECTORY": "Choisissez un dossier",
 		"PRIMARY_DIRECTORY": "Dossier par défaut",
 		"DELETE_DIRECTORY": "Supprimer le dossier",
-		"ADD_DIRECTORY": "Ajouter un dossier"
+		"ADD_DIRECTORY": "Ajouter un dossier",
+		"REPOSITORIES_PAGES": "Page des dépôts"
 	},
 	"SERIES": {
 		"SERIE_DELETED": "Série supprimée avec succès",
@@ -199,7 +215,7 @@
 		"ALIASES_TOOLTIP": "Noms courts ou alternatifs d'une série qui peut être recherché. Exemple : DB pour Dragon Ball, FMA pour Full Metal Alchemist ou AnoHana pour cette série qui vous fait pleurer à chaque fois que vous la regardez.",
 		"NAME_TOOLTIP": "Ceci est le nom interne utilisé pour référencer les séries dans la base de données de Karaoke Mugen",
 		"SHORT_NAME_TOOLTIP": "Ceci est le nom court utilisé pour référencer les séries dans la base de données de Karaoke Mugen",
-		"LANG_ERROR": "Un tag doit avoir au moins un nom par langue."
+		"LANG_ERROR": "Une série doit avoir au moins un nom par langue."
 	},
 	"SESSIONS": {
 		"SESSION_CREATED": "Session créée avec succès",
@@ -221,6 +237,19 @@
 		"NEW_SESSION": "Nouvelle session :",
 		"ACTIVE": "Active ?",
 		"PRIVATE": "Privée ?"
+	},
+	"REPOSITORIES": {
+		"REPOSITORY_CREATED": "Dépôt créé avec succès",
+		"REPOSITORY_EDITED": "Dépôt édité avec succès",
+		"NAME": "Nom",
+		"PATH_KARAS": "Karaokés",
+		"PATH_LYRICS": "Paroles",
+		"PATH_MEDIAS": "Medias",
+		"PATH_SERIES": "Séries",
+		"PATH_TAGS": "Tags",
+		"NEW_REPOSITORY": "Nouveau dépôt :",
+		"ONLINE": "En ligne",
+		"FOLDERS_REQUIRED": "Un dossier de {{name}} est obligatoire."
 	},
 	"BLACKLIST": {
 		"TYPE": "Type",
