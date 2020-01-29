@@ -90,7 +90,7 @@ async function main() {
 	const argv = minimist(process.argv.slice(2));
 	setState({ os: process.platform, version: version });
 	const state = getState();
-	console.log(chalk.blue(logo));
+	console.log(chalk.white(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
 	console.log('================================================================================');
