@@ -426,7 +426,7 @@ export default function downloadController(router: Router) {
  */
 	.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
-			const tags = await getRemoteTags(req.query.repo, {
+			const tags = await getRemoteTags(req.query.repository, {
 				type: req.query.type
 			});
 			res.json(tags);
