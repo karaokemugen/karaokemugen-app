@@ -12,7 +12,6 @@ import { KaraTag } from '../lib/types/kara';
 import { getTag } from './tag';
 import { Series } from '../lib/types/series';
 import { getSerie } from './series';
-import logger from '../lib/utils/logger';
 
 type UUIDSet = Set<string>
 
@@ -118,8 +117,6 @@ export async function migrateOldFoldersToRepo() {
 	*/
 	const conf = getConfig();
 	const state = getState();
-	logger.debug(JSON.stringify(conf, null, 2));
-	logger.debug(JSON.stringify(state, null, 2));
 	// Case 1
 	if (!await asyncExists(resolve(state.dataPath, 'data/')) &&
 		!conf.System.Path.Karas &&
@@ -156,9 +153,6 @@ export async function migrateOldFoldersToRepo() {
 		});
 	}
 	// Case 3
-	const test1 = await asyncExists(resolve(state.dataPath, 'data/'));
-	const test2 = !await asyncExists(resolve(state.dataPath, conf.System.Repositories[0].Path.Karas[0]));
-	logger.debug(`${test1} ${test2}`);
 	if (await asyncExists(resolve(state.dataPath, 'data/')) &&
 		!await asyncExists(resolve(state.dataPath, conf.System.Repositories[0].Path.Karas[0]))) {
 		const repos = cloneDeep(conf.System.Repositories);
