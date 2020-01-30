@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "WIU"
+    "short": "WIU",
+    "repository": "Samples"
   }
 }

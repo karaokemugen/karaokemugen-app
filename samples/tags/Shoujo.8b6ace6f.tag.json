@@ -12,6 +12,7 @@
     "types": [
       "genres"
     ],
-    "short": "SHJ"
+    "short": "SHJ",
+    "repository": "Samples"
   }
 }

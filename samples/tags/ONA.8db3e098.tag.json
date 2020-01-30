@@ -12,6 +12,7 @@
     "types": [
       "origins"
     ],
-    "short": "ONA"
+    "short": "ONA",
+    "repository": "Samples"
   }
 }

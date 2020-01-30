@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "360"
+    "short": "360",
+    "repository": "Samples"
   }
 }

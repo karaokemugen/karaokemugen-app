@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "PS4"
+    "short": "PS4",
+    "repository": "Samples"
   }
 }

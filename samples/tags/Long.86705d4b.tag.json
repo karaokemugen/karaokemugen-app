@@ -12,6 +12,7 @@
     "types": [
       "misc"
     ],
-    "short": "LON"
+    "short": "LON",
+    "repository": "Samples"
   }
 }

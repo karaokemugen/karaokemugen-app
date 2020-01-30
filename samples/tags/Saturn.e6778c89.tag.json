@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "SAT"
+    "short": "SAT",
+    "repository": "Samples"
   }
 }

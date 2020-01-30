@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "DC"
+    "short": "DC",
+    "repository": "Samples"
   }
 }

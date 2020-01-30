@@ -12,6 +12,7 @@
     "types": [
       "genres"
     ],
-    "short": "MAG"
+    "short": "MAG",
+    "repository": "Samples"
   }
 }

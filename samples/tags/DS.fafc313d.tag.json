@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "DS"
+    "short": "DS",
+    "repository": "Samples"
   }
 }

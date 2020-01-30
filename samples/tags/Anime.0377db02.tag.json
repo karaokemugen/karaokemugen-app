@@ -12,6 +12,7 @@
     "types": [
       "families"
     ],
-    "short": "ANI"
+    "short": "ANI",
+    "repository": "Samples"
   }
 }

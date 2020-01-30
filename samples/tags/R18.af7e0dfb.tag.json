@@ -13,6 +13,7 @@
     "types": [
       "misc"
     ],
-    "short": "R18"
+    "short": "R18",
+    "repository": "Samples"
   }
 }

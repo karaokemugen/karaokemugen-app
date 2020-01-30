@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "SCD"
+    "short": "SCD",
+    "repository": "Samples"
   }
 }

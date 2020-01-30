@@ -12,6 +12,7 @@
     "types": [
       "genres"
     ],
-    "short": "MCH"
+    "short": "MCH",
+    "repository": "Samples"
   }
 }

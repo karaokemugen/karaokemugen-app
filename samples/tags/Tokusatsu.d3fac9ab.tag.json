@@ -12,6 +12,7 @@
     "types": [
       "origins"
     ],
-    "short": "TKU"
+    "short": "TKU",
+    "repository": "Samples"
   }
 }

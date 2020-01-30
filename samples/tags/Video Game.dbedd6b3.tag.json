@@ -13,6 +13,7 @@
     "types": [
       "families"
     ],
-    "short": "VG"
+    "short": "VG",
+    "repository": "Samples"
   }
 }

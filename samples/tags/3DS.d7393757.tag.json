@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "3DS"
+    "short": "3DS",
+    "repository": "Samples"
   }
 }

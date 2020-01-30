@@ -12,6 +12,7 @@
     "types": [
       "genres"
     ],
-    "short": "BL"
+    "short": "BL",
+    "repository": "Samples"
   }
 }

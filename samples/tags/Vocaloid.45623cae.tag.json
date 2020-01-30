@@ -12,6 +12,7 @@
     "types": [
       "origins"
     ],
-    "short": "VOC"
+    "short": "VOC",
+    "repository": "Samples"
   }
 }

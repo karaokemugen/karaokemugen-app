@@ -13,6 +13,7 @@
     "types": [
       "origins"
     ],
-    "short": "MOV"
+    "short": "MOV",
+    "repository": "Samples"
   }
 }

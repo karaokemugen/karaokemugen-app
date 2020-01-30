@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "PS2"
+    "short": "PS2",
+    "repository": "Samples"
   }
 }

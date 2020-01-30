@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "PSX"
+    "short": "PSX",
+    "repository": "Samples"
   }
 }

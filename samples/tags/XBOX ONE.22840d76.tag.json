@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "XBO"
+    "short": "XBO",
+    "repository": "Samples"
   }
 }

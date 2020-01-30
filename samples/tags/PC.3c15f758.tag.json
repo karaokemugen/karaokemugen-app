@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "PC"
+    "short": "PC",
+    "repository": "Samples"
   }
 }

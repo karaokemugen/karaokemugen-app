@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "N64"
+    "short": "N64",
+    "repository": "Samples"
   }
 }

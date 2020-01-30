@@ -13,6 +13,7 @@
     "types": [
       "misc"
     ],
-    "short": "HRD"
+    "short": "HRD",
+    "repository": "Samples"
   }
 }

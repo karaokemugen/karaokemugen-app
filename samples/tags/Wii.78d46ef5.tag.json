@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "WII"
+    "short": "WII",
+    "repository": "Samples"
   }
 }

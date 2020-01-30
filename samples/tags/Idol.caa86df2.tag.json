@@ -12,6 +12,7 @@
     "types": [
       "genres"
     ],
-    "short": "IDL"
+    "short": "IDL",
+    "repository": "Samples"
   }
 }

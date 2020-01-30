@@ -13,6 +13,7 @@
     "types": [
       "misc"
     ],
-    "short": "PAR"
+    "short": "PAR",
+    "repository": "Samples"
   }
 }

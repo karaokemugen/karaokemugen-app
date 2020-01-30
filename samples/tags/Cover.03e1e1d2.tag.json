@@ -12,6 +12,7 @@
     "types": [
       "misc"
     ],
-    "short": "COV"
+    "short": "COV",
+    "repository": "Samples"
   }
 }

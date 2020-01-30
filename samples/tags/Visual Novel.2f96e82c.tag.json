@@ -12,6 +12,7 @@
     "types": [
       "origins"
     ],
-    "short": "VN"
+    "short": "VN",
+    "repository": "Samples"
   }
 }

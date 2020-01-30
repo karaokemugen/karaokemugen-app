@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "PSP"
+    "short": "PSP",
+    "repository": "Samples"
   }
 }

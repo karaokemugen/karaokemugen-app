@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "SWI"
+    "short": "SWI",
+    "repository": "Samples"
   }
 }

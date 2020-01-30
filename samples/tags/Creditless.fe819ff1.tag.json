@@ -12,6 +12,7 @@
     "types": [
       "misc"
     ],
-    "short": "CRE"
+    "short": "CRE",
+    "repository": "Samples"
   }
 }

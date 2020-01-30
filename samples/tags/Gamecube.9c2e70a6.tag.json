@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "GC"
+    "short": "GC",
+    "repository": "Samples"
   }
 }

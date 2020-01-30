@@ -13,6 +13,7 @@
     "types": [
       "misc"
     ],
-    "short": "SPL"
+    "short": "SPL",
+    "repository": "Samples"
   }
 }

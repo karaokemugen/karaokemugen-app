@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "PSV"
+    "short": "PSV",
+    "repository": "Samples"
   }
 }

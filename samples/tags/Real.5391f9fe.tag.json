@@ -13,6 +13,7 @@
     "types": [
       "families"
     ],
-    "short": "REA"
+    "short": "REA",
+    "repository": "Samples"
   }
 }

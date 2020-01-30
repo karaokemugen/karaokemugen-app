@@ -12,6 +12,7 @@
     "types": [
       "misc"
     ],
-    "short": "DUO"
+    "short": "DUO",
+    "repository": "Samples"
   }
 }

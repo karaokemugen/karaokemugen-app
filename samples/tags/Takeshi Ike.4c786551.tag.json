@@ -12,6 +12,7 @@
     "types": [
       "songwriters",
       "singers"
-    ]
+    ],
+    "repository": "Samples"
   }
 }

@@ -12,6 +12,7 @@
     "types": [
       "misc"
     ],
-    "short": "RMX"
+    "short": "RMX",
+    "repository": "Samples"
   }
 }

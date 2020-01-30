@@ -12,6 +12,7 @@
     "types": [
       "genres"
     ],
-    "short": "SA"
+    "short": "SA",
+    "repository": "Samples"
   }
 }

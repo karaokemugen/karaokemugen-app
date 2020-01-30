@@ -12,6 +12,7 @@
     "types": [
       "origins"
     ],
-    "short": "DRM"
+    "short": "DRM",
+    "repository": "Samples"
   }
 }

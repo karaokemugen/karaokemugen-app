@@ -12,6 +12,7 @@
     "types": [
       "authors",
       "creators"
-    ]
+    ],
+    "repository": "Samples"
   }
 }

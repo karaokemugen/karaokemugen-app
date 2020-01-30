@@ -12,6 +12,7 @@
     "types": [
       "platforms"
     ],
-    "short": "PS3"
+    "short": "PS3",
+    "repository": "Samples"
   }
 }

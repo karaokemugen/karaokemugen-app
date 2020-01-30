@@ -12,6 +12,7 @@
     "types": [
       "origins"
     ],
-    "short": "OVA"
+    "short": "OVA",
+    "repository": "Samples"
   }
 }

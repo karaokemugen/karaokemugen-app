@@ -12,6 +12,7 @@
     "types": [
       "origins"
     ],
-    "short": "SPE"
+    "short": "SPE",
+    "repository": "Samples"
   }
 }
