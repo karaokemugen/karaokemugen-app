@@ -2,7 +2,7 @@
 // This is used for CI/CD to drop the database contents and start anew.
 // DO NOT DO THIS AT HOME.
 
-import dbConfigFile from '../database.json';
+import dbConfigFile from '../app/database.json';
 import {Pool} from 'pg';
 
 const dbConfig = {
