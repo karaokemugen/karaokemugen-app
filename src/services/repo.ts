@@ -125,7 +125,7 @@ export async function migrateOldFoldersToRepo() {
 		!conf.System.Path.Series &&
 		!conf.System.Path.Tags) return;
 	// Case 2
-	if ((conf.System.Path.Karas && conf.System.Path.Karas.length > 0) ||
+	if ((conf. System.Path.Karas && conf.System.Path.Karas.length > 0) ||
 		(conf.System.Path.Lyrics && conf.System.Path.Lyrics.length > 0) ||
 		(conf.System.Path.Medias && conf.System.Path.Medias.length > 0) ||
 		(conf.System.Path.Series && conf.System.Path.Series.length > 0) ||
@@ -155,11 +155,11 @@ export async function migrateOldFoldersToRepo() {
 	// Case 3
 	if (await asyncExists(resolve(state.dataPath, 'data/')) &&
 		!await asyncExists(resolve(state.dataPath, conf.System.Repositories[0].Path.Karas[0])) &&
-		!conf.System.Path.Karas &&
-		!conf.System.Path.Medias &&
-		!conf.System.Path.Lyrics &&
-		!conf.System.Path.Series &&
-		!conf.System.Path.Tags) {
+		conf.System.Path.Karas &&
+		conf.System.Path.Medias &&
+		conf.System.Path.Lyrics &&
+		conf.System.Path.Series &&
+		conf.System.Path.Tags) {
 		const repos = cloneDeep(conf.System.Repositories);
 		repos[0].Path.Karas = ['data/karaokes'];
 		repos[0].Path.Lyrics = ['data/lyrics'];
