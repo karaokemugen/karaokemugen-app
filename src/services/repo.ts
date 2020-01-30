@@ -154,12 +154,7 @@ export async function migrateOldFoldersToRepo() {
 	}
 	// Case 3
 	if (await asyncExists(resolve(state.dataPath, 'data/')) &&
-		!await asyncExists(resolve(state.dataPath, conf.System.Repositories[0].Path.Karas[0])) &&
-		conf.System.Path.Karas &&
-		conf.System.Path.Medias &&
-		conf.System.Path.Lyrics &&
-		conf.System.Path.Series &&
-		conf.System.Path.Tags) {
+		!await asyncExists(resolve(state.dataPath, conf.System.Repositories[0].Path.Karas[0]))) {
 		const repos = cloneDeep(conf.System.Repositories);
 		repos[0].Path.Karas = ['data/karaokes'];
 		repos[0].Path.Lyrics = ['data/lyrics'];
