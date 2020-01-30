@@ -324,9 +324,9 @@ noRowsRenderer = () => {
 		}
 		
   		if (this.props.side === 1) {
-  			value = Number(plVal1Cookie) !== NaN ? Number(plVal1Cookie) : -1;
+			value = plVal1Cookie != null && Number(plVal1Cookie) !== NaN ? Number(plVal1Cookie) : -1;
   		} else {
-  			value = Number(plVal2Cookie) !== NaN ? Number(plVal2Cookie)  : store.getModePlaylistID();
+			value = plVal2Cookie != null && Number(plVal2Cookie) !== NaN ? Number(plVal2Cookie)  : store.getModePlaylistID();
   		}
 	  }
   	this.setState({ idPlaylist: value });
