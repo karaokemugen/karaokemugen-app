@@ -171,7 +171,7 @@ async function checkPaths(config: Config) {
 					Series: [resolve(appPath, 'samples/series')]
 				}
 			});
-			console.log(JSON.stringify(getConfig(),null,2));
+
 		} catch (err) {
 			// Non-fatal
 			logger.warn(`[Launcher] Unable to add samples repository : ${err}`);

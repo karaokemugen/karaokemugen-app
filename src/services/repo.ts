@@ -12,6 +12,7 @@ import { KaraTag } from '../lib/types/kara';
 import { getTag } from './tag';
 import { Series } from '../lib/types/series';
 import { getSerie } from './series';
+import logger from '../lib/utils/logger';
 
 type UUIDSet = Set<string>
 
@@ -28,19 +29,22 @@ export function getRepo(name: string) {
 
 /** Remove a repository */
 export function removeRepo(name: string) {
-	return deleteRepo(name);
+	deleteRepo(name);
+	logger.info(`[Repo] Removed ${name}`);
 }
 
 /** Add a repository. Folders will be created if necessary */
 export async function addRepo(repo: Repository) {
 	insertRepo(repo);
 	await checkRepoPaths(repo);
+	logger.info(`[Repo] Added ${repo.Name}`);
 }
 
 /** Edit a repository. Folders will eb created if necessary */
 export async function editRepo(name: string, repo: Repository) {
 	updateRepo(repo, name);
 	await checkRepoPaths(repo);
+	logger.info(`[Repo] Updated ${name}`);
 }
 
 async function checkRepoPaths(repo: Repository) {
