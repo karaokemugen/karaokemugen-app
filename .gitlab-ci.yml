@@ -32,8 +32,6 @@ test:
     - yarn installFrontend --check-files --force
     - touch mpv
     - cp -f config.CICD.yml config.yml
-    - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
-    - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
     - cp -f database.CICD.json database.json
     - export LANG=en_US
     - node --version
