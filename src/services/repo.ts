@@ -46,7 +46,7 @@ export async function editRepo(name: string, repo: Repository) {
 async function checkRepoPaths(repo: Repository) {
 	const checks = [];
 	for (const path of Object.keys(repo.Path)) {
-		repo.Path[path].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, dir))))
+		repo.Path[path].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, dir))));
 	}
 	return Promise.all(checks);
 }
@@ -130,28 +130,28 @@ export async function migrateOldFoldersToRepo() {
 		(conf.System.Path.Medias && conf.System.Path.Medias.length > 0) ||
 		(conf.System.Path.Series && conf.System.Path.Series.length > 0) ||
 		(conf.System.Path.Tags && conf.System.Path.Tags.length > 0)
-		) {
-			const repos = cloneDeep(conf.System.Repositories);
-			repos[0].Path.Karas = [].concat(conf.System.Path.Karas);
-			repos[0].Path.Lyrics = [].concat(conf.System.Path.Lyrics);
-			repos[0].Path.Series = [].concat(conf.System.Path.Series);
-			repos[0].Path.Tags = [].concat(conf.System.Path.Tags);
-			repos[0].Path.Medias = [].concat(conf.System.Path.Medias);
+	) {
+		const repos = cloneDeep(conf.System.Repositories);
+		repos[0].Path.Karas = [].concat(conf.System.Path.Karas);
+		repos[0].Path.Lyrics = [].concat(conf.System.Path.Lyrics);
+		repos[0].Path.Series = [].concat(conf.System.Path.Series);
+		repos[0].Path.Tags = [].concat(conf.System.Path.Tags);
+		repos[0].Path.Medias = [].concat(conf.System.Path.Medias);
 
-			// Treat all secondary targets as local repository and remove them from first (kara.moe) repository
-			for (const type of Object.keys(repos[0].Path)) {
-				if (repos[0].Path[type].length > 1) {
-					repos[1].Path[type] = repos[0].Path[type].filter((_: any, i: number) => i > 0);
-					repos[0].Path[type] = repos[0].Path[type].filter((_: any, i: number) => i === 0);
-				}
+		// Treat all secondary targets as local repository and remove them from first (kara.moe) repository
+		for (const type of Object.keys(repos[0].Path)) {
+			if (repos[0].Path[type].length > 1) {
+				repos[1].Path[type] = repos[0].Path[type].filter((_: any, i: number) => i > 0);
+				repos[0].Path[type] = repos[0].Path[type].filter((_: any, i: number) => i === 0);
 			}
-			deleteOldPaths();
-			setConfig({
-				System: {
-					Repositories: cloneDeep(repos),
-				}
-			});
 		}
+		deleteOldPaths();
+		setConfig({
+			System: {
+				Repositories: cloneDeep(repos),
+			}
+		});
+	}
 	// Case 3
 	if (await asyncExists(resolve(state.dataPath, 'data/')) &&
 		!await asyncExists(resolve(state.dataPath, conf.System.Repositories[0].Path.Karas[0])) &&
@@ -160,17 +160,17 @@ export async function migrateOldFoldersToRepo() {
 		!conf.System.Path.Lyrics &&
 		!conf.System.Path.Series &&
 		!conf.System.Path.Tags) {
-			const repos = cloneDeep(conf.System.Repositories);
-			repos[0].Path.Karas = ['data/karaokes'];
-			repos[0].Path.Lyrics = ['data/lyrics'];
-			repos[0].Path.Series = ['data/series'];
-			repos[0].Path.Tags = ['data/tags'];
-			repos[0].Path.Medias = ['data/medias'];
-			deleteOldPaths();
-			setConfig({
-				System: {
-					Repositories: cloneDeep(repos),
-				}
-			});
-		}
+		const repos = cloneDeep(conf.System.Repositories);
+		repos[0].Path.Karas = ['data/karaokes'];
+		repos[0].Path.Lyrics = ['data/lyrics'];
+		repos[0].Path.Series = ['data/series'];
+		repos[0].Path.Tags = ['data/tags'];
+		repos[0].Path.Medias = ['data/medias'];
+		deleteOldPaths();
+		setConfig({
+			System: {
+				Repositories: cloneDeep(repos),
+			}
+		});
+	}
 }
