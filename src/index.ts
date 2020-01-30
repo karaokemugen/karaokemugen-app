@@ -8,7 +8,7 @@ import {exit, initEngine} from './services/engine';
 import {logo} from './logo';
 import { setState, getState } from './utils/state';
 import { version } from './version';
-import { migrateOldFoldersToRepo, addRepo } from './services/repo';
+import { migrateOldFoldersToRepo, addRepo, getRepo } from './services/repo';
 
 // Types
 import {Config} from './types/config';
@@ -112,11 +112,6 @@ async function main() {
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 
-	// Migrate old folder config to new repository one :
-	await migrateOldFoldersToRepo();
-	// Re-check paths
-	await checkPaths(getConfig());
-
 	// Copying files from the app's sources to the app's working folder.
 	// This is an ugly hack : we could use fs.copy but due to a bug in pkg,
 	// using a writeFile/readFile combination is making it work with recent versions
@@ -157,22 +152,30 @@ async function main() {
  * Checking if application paths exist.
  */
 async function checkPaths(config: Config) {
+	// Migrate old folder config to new repository one :
+	await migrateOldFoldersToRepo();
 	const conf = getConfig();
 	const appPath = getState().appPath;
 	const dataPath = getState().dataPath;
 	// If no karaoke is found, copy the samples directory if it exists
-	if (!await asyncExists(resolve(dataPath, conf.System.Repositories[0].Path.Karas[0])) && await asyncExists(resolve(appPath, 'samples/'))) {
-		addRepo({
-			Name: 'Samples',
-			Online: false,
-			Path: {
-				Lyrics: [resolve(appPath, 'samples/lyrics')],
-				Medias: [resolve(appPath, 'samples/medias')],
-				Karas: [resolve(appPath, 'samples/karas')],
-				Tags: [resolve(appPath, 'samples/tags')],
-				Series: [resolve(appPath, 'samples/series')]
-			}
-		});
+	if (!await asyncExists(resolve(dataPath, conf.System.Repositories[0].Path.Karas[0])) && await asyncExists(resolve(appPath, 'samples/')) && !getRepo('Samples')) {
+		try {
+			await addRepo({
+				Name: 'Samples',
+				Online: false,
+				Path: {
+					Lyrics: [resolve(appPath, 'samples/lyrics')],
+					Medias: [resolve(appPath, 'samples/medias')],
+					Karas: [resolve(appPath, 'samples/karaokes')],
+					Tags: [resolve(appPath, 'samples/tags')],
+					Series: [resolve(appPath, 'samples/series')]
+				}
+			});
+			console.log(JSON.stringify(getConfig(),null,2));
+		} catch (err) {
+			// Non-fatal
+			logger.warn(`[Launcher] Unable to add samples repository : ${err}`);
+		}
 	}
 
 	// Emptying temp directory
