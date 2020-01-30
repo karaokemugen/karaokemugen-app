@@ -1,5 +1,5 @@
 // KM Imports
-import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove,  asyncCopyAlt} from './lib/utils/files';
+import {asyncCheckOrMkdir, asyncExists, asyncRemove,  asyncCopyAlt} from './lib/utils/files';
 import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars} from './lib/utils/config';
 import {initConfig} from './utils/config';
 import {parseCommandLineArgs} from './args';
@@ -8,12 +8,13 @@ import {exit, initEngine} from './services/engine';
 import {logo} from './logo';
 import { setState, getState } from './utils/state';
 import { version } from './version';
+import { migrateOldFoldersToRepo, addRepo } from './services/repo';
 
 // Types
 import {Config} from './types/config';
 
 // Node modules
-import {copy, moveSync} from 'fs-extra';
+import {moveSync} from 'fs-extra';
 import {mkdirSync, existsSync} from 'fs';
 import {join, resolve} from 'path';
 import minimist from 'minimist';
@@ -21,7 +22,6 @@ import chalk from 'chalk';
 import {createInterface} from 'readline';
 import { getPortPromise } from 'portfinder';
 import cloneDeep from 'lodash.clonedeep';
-import { migrateOldFoldersToRepo } from './services/repo';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -161,17 +161,18 @@ async function checkPaths(config: Config) {
 	const appPath = getState().appPath;
 	const dataPath = getState().dataPath;
 	// If no karaoke is found, copy the samples directory if it exists
-	if (!await asyncExists(resolve(dataPath, conf.System.Repositories[0].Path.Karas[0]))) {
-		try {
-			await asyncReadDir(resolve(appPath, 'samples'));
-			logger.debug('[Launcher] Kara files are missing - copying samples');
-			await copy(
-				resolve(appPath, 'samples'),
-				resolve(dataPath, conf.System.Repositories[0].Path.Karas[0], '../')
-			);
-		} catch(err) {
-			logger.warn('[Launcher] No samples directory found, will not copy them.');
-		}
+	if (!await asyncExists(resolve(dataPath, conf.System.Repositories[0].Path.Karas[0])) && await asyncExists(resolve(appPath, 'samples/'))) {
+		addRepo({
+			Name: 'Samples',
+			Online: false,
+			Path: {
+				Lyrics: [resolve(appPath, 'samples/lyrics')],
+				Medias: [resolve(appPath, 'samples/medias')],
+				Karas: [resolve(appPath, 'samples/karas')],
+				Tags: [resolve(appPath, 'samples/tags')],
+				Series: [resolve(appPath, 'samples/series')]
+			}
+		});
 	}
 
 	// Emptying temp directory
@@ -186,7 +187,7 @@ async function checkPaths(config: Config) {
 	}
 	for (const repo of config.System.Repositories) {
 		for (const paths of Object.keys(repo.Path)) {
-			repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))))
+			repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))));
 		}
 	}
 	checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
