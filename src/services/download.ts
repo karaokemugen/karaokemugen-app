@@ -128,9 +128,9 @@ async function processDownload(download: KaraDownload) {
 		// Check if media already exists in any media dir. If it does, do not try to redownload it.
 		let mediaAlreadyExists = false;
 		try {
-			const existingMediaFile = await resolveFileInDirs(download.urls.media.local, resolvedPathRepos('Medias', download.repository));
+			const existingMediaFiles = await resolveFileInDirs(download.urls.media.local, resolvedPathRepos('Medias', download.repository));
 			// Check if file size are different
-			const localMediaStat = await asyncStat(existingMediaFile);
+			const localMediaStat = await asyncStat(existingMediaFiles[0]);
 			if (localMediaStat.size !== download.size) throw null;
 			mediaAlreadyExists = true;
 		} catch(err) {
@@ -836,7 +836,8 @@ async function listLocalMedias(repo: string): Promise<File[]> {
 	const mediaFiles = await asyncReadDir(resolvedPathRepos('Medias', repo)[0]);
 	let localMedias = [];
 	for (const file of mediaFiles) {
-		const mediaStats = await asyncStat(resolveFileInDirs(file, resolvedPathRepos('Medias', repo)));
+		const mediaPath = resolveFileInDirs(file, resolvedPathRepos('Medias', repo));
+		const mediaStats = await asyncStat(mediaPath[0]);
 		localMedias.push({
 			basename: file,
 			size: mediaStats.size

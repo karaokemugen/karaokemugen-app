@@ -363,7 +363,8 @@ export async function play(mediadata: MediaData) {
 	let mediaFile: string;
 	let subFile: string;
 	try {
-		mediaFile = await resolveFileInDirs(mediadata.media, resolvedPathRepos('Medias', mediadata.repo))[0];
+		const mediaFiles = await resolveFileInDirs(mediadata.media, resolvedPathRepos('Medias', mediadata.repo));
+		mediaFile = mediaFiles[0];
 	} catch (err) {
 		logger.debug(`[Player] Error while resolving media path : ${err}`);
 		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
@@ -375,7 +376,7 @@ export async function play(mediadata: MediaData) {
 		}
 	}
 	try {
-		if (mediadata.subfile) subFile = await resolveFileInDirs(mediadata.subfile, resolvedPathRepos('Lyrics', mediadata.repo))[0];
+		if (mediadata.subfile) subFile = (await resolveFileInDirs(mediadata.subfile, resolvedPathRepos('Lyrics', mediadata.repo)))[0];
 	} catch(err) {
 		logger.debug(`[Player] Error while resolving subs path : ${err}`);
 		logger.warn(`[Player] Subs NOT FOUND : ${mediadata.subfile}`);
