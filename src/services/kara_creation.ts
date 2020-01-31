@@ -16,7 +16,8 @@ export async function editKara(kara: Kara) {
 		let mediaDir: string;
 		if (kara.mediafile_orig) {
 			mediaFile = resolve(resolvedPathTemp(), kara.mediafile);
-			mediaDir = dirname(await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository))[0]);
+			const mediaPaths = (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
+			mediaDir = dirname(mediaPaths);
 		} else {
 			mediaFile = (await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
 			mediaDir = dirname(mediaFile);
@@ -27,7 +28,7 @@ export async function editKara(kara: Kara) {
 			if (kara.subfile_orig) {
 				subFile = resolve(resolvedPathTemp(), kara.subfile);
 				if (oldKara.subfile) {
-					subDir = dirname(await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository))[0]);
+					subDir = dirname((await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]);
 				} else {
 					subDir = resolvedPathRepos('Lyrics', kara.repository)[0];
 				}
@@ -79,7 +80,9 @@ export async function editKara(kara: Kara) {
 		}
 	} catch(err) {
 		logger.error(`[KaraGen] Error while editing kara : ${err}`);
+		console.log(err);
 		throw err;
+
 	}
 	editKaraInStore(newKara.data.kid, newKara.fileData);
 	saveSetting('baseChecksum', getStoreChecksum());
