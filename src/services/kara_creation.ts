@@ -80,9 +80,7 @@ export async function editKara(kara: Kara) {
 		}
 	} catch(err) {
 		logger.error(`[KaraGen] Error while editing kara : ${err}`);
-		console.log(err);
 		throw err;
-
 	}
 	editKaraInStore(newKara.data.kid, newKara.fileData);
 	saveSetting('baseChecksum', getStoreChecksum());
