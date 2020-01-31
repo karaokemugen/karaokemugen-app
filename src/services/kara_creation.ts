@@ -65,16 +65,16 @@ export async function editKara(kara: Kara) {
 		}
 		if (newKara.data.subfile && oldKara.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
 			const oldSubFile = (await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0];
-			if (await asyncExists(oldSubFile)) {
-				logger.info(`[KaraGen] Removing ${oldSubFile}`);
-				await asyncUnlink(oldSubFile);
+			if (await asyncExists(oldSubFile[0])) {
+				logger.info(`[KaraGen] Removing ${oldSubFile[9]}`);
+				await asyncUnlink(oldSubFile[0]);
 			}
 		}
 		if (newKara.data.mediafile.toLowerCase() !== oldKara.mediafile.toLowerCase()) {
 			const oldMediaFiles = await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository));
 			if (await asyncExists(oldMediaFiles[0])) {
 				logger.info(`[KaraGen] Removing ${oldMediaFiles[0]}`);
-				await asyncUnlink(oldMediaFiles);
+				await asyncUnlink(oldMediaFiles[0]);
 			}
 		}
 	} catch(err) {
