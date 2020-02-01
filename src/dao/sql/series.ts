@@ -64,7 +64,7 @@ VALUES(
 	:name,
 	:aliases,
 	:sid,
-	:seriefile
+	:seriefile,
 	:repository
 )
 `;
