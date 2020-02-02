@@ -105,7 +105,8 @@ export async function mergeTags(tid1: string, tid2: string) {
 			i18n: i18n,
 			short: tag1.short,
 			aliases: aliases,
-			tagfile: `${tag1.name}.${tid.substring(0, 8)}.tag.json`
+			tagfile: `${tag1.name}.${tid.substring(0, 8)}.tag.json`,
+			repository: tag1.repository
 		};
 		await insertTag(tagObj);
 		await writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0]);
