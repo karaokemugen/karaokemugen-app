@@ -29,13 +29,15 @@ class SuggestionModal extends Component<IProps, IState> {
 	}
 
 	confirmModal = async () => {
-		let response = await axios.post('/api/karas/suggest', 
-			{ title: this.state.name, serie: this.state.serie, type: this.state.songtype, link: this.state.link });
-		displayMessage('info', <div><label>{i18next.t('KARA_SUGGESTION_INFO')}</label> <br/> 
-			{i18next.t('KARA_SUGGESTION_LINK')} <a href={response.data}>{i18next.t('KARA_SUGGESTION_LINK_LIST')}</a>
-		</div>, 30000);
-		var element = document.getElementById('modal');
-    	if (element) ReactDOM.unmountComponentAtNode(element);
+		if (this.state.name && this.state.serie && this.state.songtype) {
+			let response = await axios.post('/api/karas/suggest', 
+				{ title: this.state.name, serie: this.state.serie, type: this.state.songtype, link: this.state.link });
+			displayMessage('info', <div><label>{i18next.t('KARA_SUGGESTION_INFO')}</label> <br/> 
+				{i18next.t('KARA_SUGGESTION_LINK')} <a href={response.data}>{i18next.t('KARA_SUGGESTION_LINK_LIST')}</a>
+			</div>, 30000);
+			var element = document.getElementById('modal');
+			if (element) ReactDOM.unmountComponentAtNode(element);
+		}
     };
 
     abortModal = () => {
