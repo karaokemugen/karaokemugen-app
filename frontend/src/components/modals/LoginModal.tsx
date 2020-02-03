@@ -147,7 +147,7 @@ class LoginModal extends Component<IProps,IState> {
 
     onKeyPress = (e:any) => {
     	if (e.which == 13) {
-    		this.signup();
+			this.state.activeView === 1 ? this.loginUser() : this.signup();
     	}
     };
 
@@ -231,7 +231,7 @@ class LoginModal extends Component<IProps,IState> {
     										defaultValue={this.state.login} required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
     									{this.state.onlineSwitch ? <input type="text" id="loginServ" name="modalLoginServ" placeholder={i18next.t('INSTANCE_NAME_SHORT')}
     										defaultValue={this.state.serv} onChange={(event) => this.setState({ serv: event.target.value })} /> : null}
-    									<input type="password" className={this.state.redBorders} id="password" name="modalPassword" 
+    									<input type="password" onKeyPress={this.onKeyPress} className={this.state.redBorders} id="password" name="modalPassword" 
     										placeholder={this.state.forgotPassword && !this.state.onlineSwitch ? i18next.t('NEW_PASSWORD') : i18next.t('PASSWORD')}
     										defaultValue={this.state.password} required onChange={(event) => this.setState({ password: event.target.value })} />
     								</div>
