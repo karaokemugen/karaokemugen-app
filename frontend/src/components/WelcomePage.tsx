@@ -361,7 +361,7 @@ class WelcomePage extends Component<IProps, IState> {
   						<ul className="news">
   							{this.state.news.map(article => {
   								return (
-									<WelcomePageArticle article={article} />
+									<WelcomePageArticle key={article.date} article={article} />
   								);
   							})}
   						</ul>
