@@ -28,7 +28,7 @@ class WelcomePageArticle extends Component<IProps, IState> {
 	>
 		<p className="new-header">
 			<b>{this.props.article.title}</b>
-			<a href={this.props.article.link} target="_blank">
+			<a href={this.props.article.link}>
 				{this.props.article.dateStr}
 			</a>
 		</p>

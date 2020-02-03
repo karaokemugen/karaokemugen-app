@@ -68,6 +68,21 @@ export const defaults: Config = {
 		Token: 'i5WnabG3fvda4oxx-FRb',
 		IssueTemplate: {
 			Suggestion: {
+				Description: `
+# Suggestion de karaoké
+
+
+**Titre** : $title
+
+
+**Série** : $serie
+
+
+**Type** : $type
+
+
+**Lien** : $link`,
+				Title: "[Suggestion] $serie - $title",
 				Labels: ['suggestion']
 			}
 		}

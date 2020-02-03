@@ -257,12 +257,11 @@ class WelcomePage extends Component<IProps, IState> {
   				<div className="menu-top-right">
   					<a
   						href="http://mugen.karaokes.moe/contact.html"
-  						target="_blank"
   					>
   						<i className="fas fa-pencil-alt" />&nbsp;
   						{i18next.t('WLCM_CONTACT')}
   					</a>
-  					<a href="http://mugen.karaokes.moe/" target="_blank">
+  					<a href="http://mugen.karaokes.moe/">
   						<i className="fas fa-link" />&nbsp;
   						{i18next.t('WLCM_SITE')}
   					</a>
@@ -310,7 +309,7 @@ class WelcomePage extends Component<IProps, IState> {
   										: 'manage'
   								}
   								onClick={() =>
-  									window.open('/admin' + window.location.search, '_blank')
+  									window.open('/admin' + window.location.search)
   								}
   							>
   								<div className="dash days_dash">
@@ -327,7 +326,7 @@ class WelcomePage extends Component<IProps, IState> {
   							<li>
   								<div
   									className="dash hours_dash"
-  									onClick={() => window.open('/system', '_blank')}
+  									onClick={() => window.open('/system')}
   								>
   									<i className="digit fas fa-cog" />
   									<div className="dash_title">
@@ -339,7 +338,7 @@ class WelcomePage extends Component<IProps, IState> {
   								<div
   									className="dash seconds_dash"
   									onClick={() =>
-  										window.open('/' + window.location.search, '_blank')
+  										window.open('/' + window.location.search)
   									}
   								>
   									<i className="digit fas fa-user" />
@@ -348,7 +347,7 @@ class WelcomePage extends Component<IProps, IState> {
   							</li>
   							<li
   								onClick={() =>
-  									window.open('http://mugen.karaokes.moe/docs/', '_blank')
+  									window.open('http://mugen.karaokes.moe/docs/')
   								}
   							>
   								<div className="dash minutes_dash">

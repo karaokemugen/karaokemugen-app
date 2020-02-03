@@ -16,6 +16,8 @@ import { Tag } from '../../types/tag';
 import { KaraElement } from '../../types/kara';
 import { DBBLC,DBBlacklist } from '../../../../src/types/database/blacklist';
 import { Token } from '../../../../src/lib/types/user';
+import SuggestionModal from '../modals/SuggestionModal';
+import ReactDOM from 'react-dom';
 require('./Playlist.scss');
 
 const chunksize = 400;
@@ -636,15 +638,9 @@ noRowsRenderer = () => {
   	}
   };
 
-  karaSuggestion() {
-  	callModal('prompt', i18next.t('KARA_SUGGESTION_NAME'), '', (text:string) => {
-  		axios.post('/api/karas/suggest', { karaName: text }).then(response => {
-  			setTimeout(() => {
-  				displayMessage('info', <div><label>{i18next.t('KARA_SUGGESTION_INFO')}</label> <br/> 
-  					{i18next.t('KARA_SUGGESTION_LINK', response.data.issueURL, 'console')}</div>, 30000);
-  			}, 200);
-  		});
-  	});
+  karaSuggestion = () => {
+	ReactDOM.render(<SuggestionModal
+		songtypes={this.props.tags?.filter(tag => tag.type.includes(3)).map((tag: any) => tag.label)}/>, document.getElementById('modal'));
   }
 
   onChangeTags = (type:number|string, value:string) => {
