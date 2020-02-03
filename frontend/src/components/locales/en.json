@@ -306,7 +306,8 @@
 	"KARA_SUGGESTION_GITLAB": "Click here.",
 	"KARA_SUGGESTION_NAME": "Name of the song",
 	"KARA_SUGGESTION_INFO": "Thanks for your suggestion.",
-	"KARA_SUGGESTION_LINK": "You will soon be able to see it at this address :  <a target='_blank' href='%s'>issues list</a>",
+	"KARA_SUGGESTION_LINK": "You will soon be able to see it at this address :",
+	"KARA_SUGGESTION_LINK_LIST": "issues list",
 	"BASE_UPDATE": "Database update",
 	"APP_UPDATE": "New version",
 	"ONLINE_STATS": {
@@ -376,7 +377,7 @@
 	"INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "In advanced mode, you can act on several songs at once by selecting them first.<br/> Use the action buttons like <i class='fas fa-minus'></i> or <i class='fas fa-plus'></i>.<br/><br/>Possible actions change depending on the type of playlist displayed and the destination playlist.<br/><br/> There are other advanced actions available, hover your mouse over a button to see what it does, or read the documentation for more information.",
 	"INTRO_ADMIN_SETTINGS": "Karaoke Mugen is very customizable via its options panel.<br/> You can access it by pressing this button.",
 	"INTRO_ADMIN_SETTINGS_SCREEN": "This is where you can configure Karaoke Mugen. Try out different settings to see what suits you best.<br /> Some of them will only be taken into account after the current song ends.",
-	"INTRO_ADMIN_INTROFINAL": "We're done! You can now sing!<br /><br />Thanks for reading this far. We are now going to disable the Dummy Plug System so you can pilot your EV... karaoke.<br /><br /><b>Note : to be able to use the public interface, your users will need to be on the same Wifi network as you.</b><br /><br />If you want more songs than the default ones provided here, go to <a href='/system' target='_blank'>the system panel</a> to browse through the online database and choose which songs you'd like to get, or download everything.<br /><br />Read more :<br /><br />-<a href='http://docs.karaokes.moe/en/' target='_blank'> Documentation</a><br />- <a href='http://docs.karaokes.moe/en/user-guide/faq/' target='_blank'>FAQ</a><br />- <a href='http://mugen.karaokes.moe/en/contact.html' target='_blank'>Contact the team</a> (twitter / discord)<br /><br />Click on Finish!<br />",
+	"INTRO_ADMIN_INTROFINAL": "We're done! You can now sing!<br /><br />Thanks for reading this far. We are now going to disable the Dummy Plug System so you can pilot your EV... karaoke.<br /><br /><b>Note : to be able to use the public interface, your users will need to be on the same Wifi network as you.</b><br /><br />If you want more songs than the default ones provided here, go to <a href='/system'>the system panel</a> to browse through the online database and choose which songs you'd like to get, or download everything.<br /><br />Read more :<br /><br />-<a href='http://docs.karaokes.moe/en/'> Documentation</a><br />- <a href='http://docs.karaokes.moe/en/user-guide/faq/'>FAQ</a><br />- <a href='http://mugen.karaokes.moe/en/contact.html'>Contact the team</a> (twitter / discord)<br /><br />Click on Finish!<br />",
 	"INTRO_LABEL_NEXT": "Next",
 	"INTRO_LABEL_PREV": "Previous",
 	"INTRO_LABEL_SKIP": "Quit",
@@ -416,5 +417,14 @@
 		"SONG_LIST_ERROR": "Error when loading the songs list"
 	},
 	"HIDDEN_PLAYLIST": "Hidden playlist",
-	"SUBMIT": "Submit"
+	"SUBMIT": "Submit",
+	"MODAL": {
+		"SUGGESTION_MODAL": {
+			"TITLE": "Suggestion of a song",
+			"SERIE": "Serie / Singers",
+			"SONGTYPE": "Songtype",
+			"NAME": "Name of the song",
+			"LINK": "Link to a video"
+		}
+	}
 }

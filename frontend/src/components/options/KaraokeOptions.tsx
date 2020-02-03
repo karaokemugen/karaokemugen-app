@@ -333,7 +333,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   								className="settingsGroupPanel"
   							>
   								<div className="form-group">
-  									<a className="col-xs-4 control-label" href="https://twitchapps.com/tmi/" target='_blank'>{i18next.t('STREAM_TWITCH_OAUTH_TOKEN_GET')}</a>
+  									<a className="col-xs-4 control-label" href="https://twitchapps.com/tmi/">{i18next.t('STREAM_TWITCH_OAUTH_TOKEN_GET')}</a>
   								</div>
   								<div className="form-group">
   									<label className="col-xs-4 control-label">

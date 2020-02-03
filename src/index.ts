@@ -134,7 +134,7 @@ async function main() {
 	/**
 	 * Test if network ports are available
 	 */
-	verifyOpenPort(getConfig().Frontend.Port);
+	verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
 
 	/**
 	 * Gentlemen, start your engines.
@@ -198,13 +198,13 @@ async function checkPaths(config: Config) {
 	logger.debug('[Launcher] Directory checks complete');
 }
 
-async function verifyOpenPort(portConfig: number) {
+async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 	try {
 		const port = await getPortPromise({
 			port: portConfig,
 			stopPort: 7331
 		});
-		if (port !== portConfig) {
+		if (firstRun && port !== portConfig) {
 			logger.warn(`[Launcher] Port ${portConfig} is already in use. Switching to ${port} and saving configuration`);
 			setConfig({Frontend: {Port: port}});
 		}

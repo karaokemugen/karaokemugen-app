@@ -150,7 +150,7 @@ class KaraDetail extends Component<IProps,IState> {
           detailsUrl !== '') {
   				var extract = contentResult[0].extract;
   				callModal('alert',
-  					<a target="_blank" href={externalUrl}>{serie}&nbsp;
+  					<a href={externalUrl}>{serie}&nbsp;
   						<i className="fas fa-external-link-alt"></i></a>,extract);
   			} else if (
   				searchInfo &&

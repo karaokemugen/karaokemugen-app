@@ -59,8 +59,21 @@ Gitlab:
   ProjectID: 1234
   Template:
     Suggestion:
-      Description: Hello, please add this! Thank you, $username
-      Title: New kara suggestion - $kara
+      Description: >
+        # Karaoke suggestion
+
+
+        **Title** : $title
+
+
+        **Serie** : $serie
+
+
+        **Type** : $type
+
+
+        **Link** : $link
+      Title: "[Suggestion] $serie - $title"
       Labels:
         - suggestion
 Karaoke:
