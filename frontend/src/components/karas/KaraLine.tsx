@@ -36,7 +36,6 @@ interface IProps {
 }
 
 interface IState {
-	displayedKaraDetail: boolean;
 	isLike: boolean;
 }
 
@@ -45,23 +44,16 @@ class KaraLine extends Component<IProps,IState> {
 	constructor(props:IProps) {
 		super(props);
 		this.state = {
-			displayedKaraDetail: false,
 			isLike: this.props.kara.flag_upvoted,
 		};
 	}
 
   toggleKaraDetail = () => {
-  	if (this.state.displayedKaraDetail) {
-		var element = document.getElementById('modal');
-  		if(element) ReactDOM.unmountComponentAtNode(element);
-  	} else {
-  		ReactDOM.render(<KaraDetail kid={this.props.kara.kid} playlistcontentId={this.props.kara.playlistcontent_id} scope={this.props.scope} 
-  			idPlaylist={this.props.idPlaylist} mode='list' toggleKaraDetail={this.toggleKaraDetail}
-  			publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
-  			showVideo={this.props.showVideo} navigatorLanguage={this.props.navigatorLanguage} freeKara={this.freeKara}>
-			  </KaraDetail>, document.getElementById('modal'));
-  	}
-  	this.setState({ displayedKaraDetail: !this.state.displayedKaraDetail });
+	ReactDOM.render(<KaraDetail kid={this.props.kara.kid} playlistcontentId={this.props.kara.playlistcontent_id} scope={this.props.scope} 
+		idPlaylist={this.props.idPlaylist} mode='list'
+		publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
+		showVideo={this.props.showVideo} navigatorLanguage={this.props.navigatorLanguage} freeKara={this.freeKara}>
+			</KaraDetail>, document.getElementById('modal'));
   };
 
 
@@ -266,8 +258,7 @@ class KaraLine extends Component<IProps,IState> {
   						</span> : null}
   					<div className="infoDiv">
   						{!is_touch_device() ? <button title={i18next.t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
-  							style={this.state.displayedKaraDetail ? { borderColor: '#8aa9af' } : {}} onClick={this.toggleKaraDetail}
-  						>
+  							onClick={this.toggleKaraDetail}>
   							<i className="fas fa-info-circle"></i>
   						</button> : null}
 						{scope === 'admin' && idPlaylist > 0 ? <button title={i18next.t('TOOLTIP_PLAYKARA')} 
