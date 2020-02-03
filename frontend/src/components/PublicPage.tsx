@@ -312,7 +312,7 @@ class PublicPage extends Component<IProps,IState> {
 													</a>
 												</li>
 												<li>
-													<a href="/admin" id="logAdmin" target="_blank">
+													<a href="/admin" id="logAdmin">
 														<i className="fas fa-wrench" /> Admin
 												</a>
 												</li>

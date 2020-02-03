@@ -7,7 +7,7 @@ import { getLang } from "../middlewares/lang";
 import { emitWS } from "../../lib/utils/ws";
 import { addKaraToPlaylist } from "../../services/playlist";
 import { getConfig, resolvedPathTemp } from "../../lib/utils/config";
-import { postSuggestionToKaraBase } from "../../services/gitlab";
+import { postSuggestionToKaraBase } from '../../lib/services/gitlab';
 import multer = require("multer");
 import { createKara, editKara } from "../../services/kara_creation";
 import { getRemoteKaras } from "../../services/download";
@@ -20,11 +20,14 @@ export default function karaController(router: Router) {
 	/**
 	 * @api {post} /karas/suggest Suggest a new song to your karaokebase project
 	 * @apiName SuggestKara
-	 * @apiVersion 3.1.0
+	 * @apiVersion 3.1.1
 	 * @apiGroup Karaokes
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {String} karaName Name of song + series / artist
+	 * @apiParam {String} karaSerie Series / artist
+	 * @apiParam {String} karaType songtype
+	 * @apiParam {String} link link to a video
 	 * @apiSuccess {String} issueURL New issue's URL
 	 * @apiSuccessExample Success-Response:
  	 * HTTP/1.1 200 OK
@@ -37,7 +40,7 @@ export default function karaController(router: Router) {
 		.post(requireAuth, requireValidUser, requireWebappOpen, updateUserLoginTime, async(req: any, res: any) => {
 			try {
 				if (getConfig().Gitlab.Enabled) {
-					const url = await postSuggestionToKaraBase(req.body.karaName, req.authToken.username);
+					const url = await postSuggestionToKaraBase(req.body.title, req.body.serie, req.body.type, req.body.link, req.authToken.username);
 					res.status(200).send(url);
 				} else {
 					res.status(403).json();

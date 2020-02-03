@@ -326,7 +326,8 @@
 	"KARA_SUGGESTION_GITLAB": "Cliquez ici.",
 	"KARA_SUGGESTION_NAME": "Titre de la chanson",
 	"KARA_SUGGESTION_INFO": "Merci pour votre suggestion.",
-	"KARA_SUGGESTION_LINK": "Vous pourrez la voir sous peu en suivant ce lien : <a target='_blank' href='%s'>liste des issues</a>",
+	"KARA_SUGGESTION_LINK": "Vous pourrez la voir sous peu en suivant ce lien :",
+	"KARA_SUGGESTION_LINK_LIST": "liste des issues",
 	"BASE_UPDATE": "Nouvelles de la base",
 	"APP_UPDATE": "Nouvelle version de l'application",
 	"ONLINE_STATS": {
@@ -396,7 +397,7 @@
     "INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "En mode avancé, vous pouvez effectuer des actions sur plusieurs chansons en les sélectionnant.<br/> Utilisez ensuite les boutons d'action tel que <i class='fas fa-minus'></i> ou <i class='fas fa-plus'></i>.<br/><br/>Les actions possibles changent selon le type de la liste de lecture actuelle et de celle de destination.<br/><br/> D'autres opérations avancées sont possibles, survoler le bouton avec la souris vous renseignera sur sa fonction.",
     "INTRO_ADMIN_SETTINGS": "Karaoke Mugen est personnalisable à souhait, via son panneau d'options.<br/> Vous pouvez y accéder en cliquant sur ce bouton.",
     "INTRO_ADMIN_SETTINGS_SCREEN": "C'est ici que ça se passe, n'hésitez pas à essayer les différents paramètres.<br /> Certains ne prendront effet qu'au changement de chanson, si la lecture est en cours.",
-    "INTRO_ADMIN_INTROFINAL": "Fini ! Vous pouvez chanter !<br /><br />Merci d'avoir lu jusqu'ici. Nous allons désactiver le Dummy Plug System et vous allez pouvoir piloter votre EV... karaoké.<br /><br /><b>Note : pour se connecter à l'interface publique, vos utilisateurs doivent être sur le même réseau Wifi que vous.</b><br /><br />Si vous souhaitez récupérer d'autres chansons que celles par défaut, rendez-vous dans <a href='/system' target='_blank'>le panneau système</a> pour consulter la base en ligne et faire votre sélection, ou tout télécharger d'un coup.<br /><br />Pour plus d'informations :<br /><br />-<a href='http://docs.karaokes.moe/fr' target='_blank'> Consulter la documentation </a><br />- <a href='http://docs.karaokes.moe/fr/user-guide/faq/' target='_blank'>FAQ</a><br />- <a href='http://mugen.karaokes.moe/contact.html' target='_blank'>Contacter l'équipe</a> (twitter / discord)<br /><br />Cliquez sur Terminer !<br />",
+    "INTRO_ADMIN_INTROFINAL": "Fini ! Vous pouvez chanter !<br /><br />Merci d'avoir lu jusqu'ici. Nous allons désactiver le Dummy Plug System et vous allez pouvoir piloter votre EV... karaoké.<br /><br /><b>Note : pour se connecter à l'interface publique, vos utilisateurs doivent être sur le même réseau Wifi que vous.</b><br /><br />Si vous souhaitez récupérer d'autres chansons que celles par défaut, rendez-vous dans <a href='/system'>le panneau système</a> pour consulter la base en ligne et faire votre sélection, ou tout télécharger d'un coup.<br /><br />Pour plus d'informations :<br /><br />-<a href='http://docs.karaokes.moe/fr'> Consulter la documentation </a><br />- <a href='http://docs.karaokes.moe/fr/user-guide/faq/'>FAQ</a><br />- <a href='http://mugen.karaokes.moe/contact.html'>Contacter l'équipe</a> (twitter / discord)<br /><br />Cliquez sur Terminer !<br />",
     "INTRO_PUBLIC_INTRO1": "Bienvenue dans Karaoke Mugen !<br /><br />Vous allez pouvoir proposer vos chansons préférées durant cette session de karaoké.<br /><br />Si vous le souhaitez, vous pouvez créer un <b>Nouveau compte</b>. Sinon, cliquez simplement sur  <b>Continuer comme invité</b>. Dans ce cas un compte aléatoire vous sera attribué, à vos risques et périls.",
     "INTRO_PUBLIC_INTRO2": "Bonjour {{username}} !<br /><br /> <b>Karaoke Mugen</b> se compose de deux écrans : <br />L'écran de recherche (en arrière-plan actuellement), et l'écran de consultation.",
     "INTRO_PUBLIC_INTRO2_WIDE": "Bonjour {{username}} !<br /><br /> <b>Karaoke Mugen</b> se compose en deux parties : <br />L'écran de recherche (à gauche), et l'écran de consultation (à droite).",
@@ -434,5 +435,14 @@
 		"PL_DELETE_SONG_ERROR": "Vous ne pouvez pas supprimer ce morceau"
 	},
 	"HIDDEN_PLAYLIST": "Playlist cachée",
-	"SUBMIT": "Sauvegarder"
+	"SUBMIT": "Sauvegarder",
+	"MODAL": {
+		"SUGGESTION_MODAL": {
+			"TITLE": "Suggestion d'une chanson",
+			"SERIE": "Série / Chanteurs",
+			"SONGTYPE": "Type",
+			"NAME": "Nom de la chanson",
+			"LINK": "Lien vers une vidéo"
+		}
+	}
 }
