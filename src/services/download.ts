@@ -147,15 +147,15 @@ async function processDownload(download: KaraDownload) {
 			writes.push(await asyncWriteFile(tempLyrics, bundle.lyrics.data, 'utf-8'));
 		};
 		const tempKara = resolve(tempDir, bundle.kara.file);
-		writes.push(await asyncWriteFile(tempKara, bundle.kara.data, 'utf-8'));
+		writes.push(await asyncWriteFile(tempKara, JSON.stringify(bundle.kara.data, null, 2), 'utf-8'));
 
 		for (const serie of bundle.series) {
 			const tempSeries = resolve(tempDir, serie.file);
-			writes.push(await asyncWriteFile(tempSeries, serie.data, 'utf-8'));
+			writes.push(await asyncWriteFile(tempSeries, JSON.stringify(serie.data, null, 2), 'utf-8'));
 		}
 		for (const tag of bundle.tags) {
 			const tempTag = resolve(tempDir, tag.file);
-			writes.push(await asyncWriteFile(tempTag, tag.data, 'utf-8'));
+			writes.push(await asyncWriteFile(tempTag, JSON.stringify(tag.data, null, 2), 'utf-8'));
 		}
 
 		// Delete files if they're already present
