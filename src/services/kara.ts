@@ -23,7 +23,7 @@ import {profile} from '../lib/utils/logger';
 import {Kara, KaraParams, KaraList, YearList, KaraFileV4} from '../lib/types/kara';
 import {asyncUnlink, resolveFileInDirs, asyncCopy, asyncReadFile, asyncWriteFile} from '../lib/utils/files';
 import logger from 'winston';
-import { editKaraInStore, removeKaraInStore, getStoreChecksum } from '../dao/dataStore';
+import { editKaraInStore, removeKaraInStore, getStoreChecksum, sortKaraStore, addKaraToStore } from '../dao/dataStore';
 import { DBKaraHistory } from '../types/database/kara';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
@@ -299,12 +299,20 @@ export async function integrateKaraFile(file: string) {
 	const karaDB = await getKaraDB(karaData.kid, 'admin', null, 'admin');
 	if (karaDB) {
 		await editKaraInDB(karaData, { refresh: false });
-		if (karaDB.karafile !== karaData.karafile) await asyncUnlink((await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karas', karaDB.repository)))[0]);
+		const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karas', karaDB.repository)))[0];
+		if (karaDB.karafile !== karaData.karafile) {
+			await asyncUnlink(oldKaraFile);
+			removeKaraInStore(oldKaraFile);
+			addKaraToStore(file);
+		} else {
+			editKaraInStore(oldKaraFile);
+		}
 		if (karaDB.mediafile !== karaData.mediafile) await asyncUnlink((await resolveFileInDirs(karaDB.mediafile, resolvedPathRepos('Medias', karaDB.repository)))[0]);
 		if (karaDB.subfile && karaDB.subfile !== karaData.subfile) await asyncUnlink((await resolveFileInDirs(karaDB.subfile, resolvedPathRepos('Lyrics', karaDB.repository)))[0]);
+		sortKaraStore();
+
 	} else {
 		await createKaraInDB(karaData, { refresh: false });
 	}
-	editKaraInStore(karaData.kid, karaFileData);
 	saveSetting('baseChecksum', getStoreChecksum());
 }

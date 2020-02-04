@@ -1,6 +1,6 @@
 import {dirname, basename, resolve} from 'path';
 import {createKaraInDB, editKaraInDB, getKara} from './kara';
-import { addKaraToStore, editKaraInStore, sortKaraStore, getStoreChecksum } from '../dao/dataStore';
+import { addKaraToStore, editKaraInStore, sortKaraStore, getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPathRepos, resolvedPathTemp } from '../lib/utils/config';
@@ -10,6 +10,7 @@ import logger from '../lib/utils/logger';
 
 export async function editKara(kara: Kara) {
 	let newKara: NewKara;
+	let karaFile: string;
 	try {
 		const oldKara = await getKara(kara.kid, {role: 'admin', username: 'admin'});
 		let mediaFile: string;
@@ -37,7 +38,7 @@ export async function editKara(kara: Kara) {
 				subDir = dirname(subFile);
 			}
 		};
-		const karaFile = (await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0];
+		karaFile = (await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0];
 		const karaDir = dirname(karaFile);
 
 		// Removing useless data
@@ -82,7 +83,13 @@ export async function editKara(kara: Kara) {
 		logger.error(`[KaraGen] Error while editing kara : ${err}`);
 		throw err;
 	}
-	editKaraInStore(newKara.data.kid, newKara.fileData);
+	if (karaFile === newKara.file) {
+		await editKaraInStore(newKara.file);
+	} else {
+		removeKaraInStore(karaFile);
+		await addKaraToStore(newKara.file);
+		sortKaraStore();
+	}
 	saveSetting('baseChecksum', getStoreChecksum());
 	newKara.data.karafile = basename(newKara.file);
 	// Update in database
@@ -97,7 +104,7 @@ export async function editKara(kara: Kara) {
 
 export async function createKara(kara: Kara) {
 	const newKara = await generateKara(kara, resolvedPathRepos('Karas', kara.repository)[0], resolvedPathRepos('Medias', kara.repository)[0], resolvedPathRepos('Lyrics', kara.repository)[0]);
-	addKaraToStore(newKara.fileData);
+	await addKaraToStore(newKara.file);
 	sortKaraStore();
 	saveSetting('baseChecksum', getStoreChecksum());
 	try {

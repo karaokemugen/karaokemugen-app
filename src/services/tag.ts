@@ -4,7 +4,7 @@ import { TagParams, Tag } from '../lib/types/tag';
 import uuidV4 from 'uuid/v4';
 import { addTagToStore, sortTagsStore, getStoreChecksum, editTagInStore, removeTagInStore, editKaraInStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
-import { sanitizeFile } from '../lib/utils/files';
+import { sanitizeFile, resolveFileInDirs } from '../lib/utils/files';
 import { writeTagFile, formatTagFile, removeTagFile, removeTagInKaras, getDataFromTagFile } from '../lib/dao/tagfile';
 import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
 import { refreshKaras } from '../lib/dao/kara';
@@ -12,6 +12,7 @@ import { getAllKaras } from './kara';
 import { replaceTagInKaras } from '../lib/dao/karafile';
 import { IDQueryResult } from '../lib/types/kara';
 import { resolvedPathRepos } from '../lib/utils/config';
+import { resolve } from 'path';
 
 export function formatTagList(tagList: Tag[], from: number, count: number) {
 	return {
@@ -55,7 +56,8 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 
 	const tagData = formatTagFile(tagObj).tag;
 	tagData.tagfile = tagfile;
-	addTagToStore(tagData);
+	const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
+	addTagToStore(newTagFiles[0]);
 	sortTagsStore();
 	saveSetting('baseChecksum', getStoreChecksum());
 
@@ -110,7 +112,8 @@ export async function mergeTags(tid1: string, tid2: string) {
 		};
 		await insertTag(tagObj);
 		await writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0]);
-		addTagToStore(tagObj);
+		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);
+		addTagToStore(newTagFiles[0]);
 		sortTagsStore();
 		await Promise.all([
 			updateKaraTagsTID(tid1, tagObj.tid),
@@ -127,7 +130,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		const karas = await getAllKaras();
 		const modifiedKaras = await replaceTagInKaras(tid1, tid2,tagObj.tid, karas);
 		for (const kara of modifiedKaras) {
-			editKaraInStore(kara.data.kid, kara);
+			await editKaraInStore(kara);
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
 		await refreshTagsAfterDBChange();
@@ -142,11 +145,6 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 	const oldTag = await getTag(tid);
 	if (!oldTag) throw 'Tag ID unknown';
 	tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
-	if (oldTag.tagfile !== tagObj.tagfile) try {
-		await removeTagFile(oldTag.tagfile);
-	} catch(err) {
-		// Non-fatal.
-	}
 	const tagfile = tagObj.tagfile;
 	await Promise.all([
 		updateTag(tagObj),
@@ -154,7 +152,20 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 	]);
 	const tagData = formatTagFile(tagObj).tag;
 	tagData.tagfile = tagfile;
-	editTagInStore(tid, tagData);
+	if (oldTag.tagfile !== tagObj.tagfile) {
+		try {
+			const oldTagFiles = await resolveFileInDirs(oldTag.tagfile, resolvedPathRepos('Tags', oldTag.repository));
+			const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
+			await removeTagFile(oldTag.tagfile);
+			await addTagToStore(newTagFiles[0]);
+			removeTagInStore(oldTagFiles[0]);
+			sortTagsStore();
+		} catch(err) {
+			//Non fatal. Can be triggered if the tag file has already been removed.
+		}
+	} else {
+		await editTagInStore(tagObj.tagfile);
+	}
 	saveSetting('baseChecksum', getStoreChecksum());
 	if (opts.refresh) await refreshTagsAfterDBChange();
 }

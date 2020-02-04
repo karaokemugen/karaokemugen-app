@@ -106,4 +106,4 @@ export const deleteSeries = 'DELETE FROM serie WHERE pk_sid = $1';
 
 export const deleteSeriesi18n = 'DELETE FROM serie_lang WHERE fk_sid = $1';
 
-export const testSerie = 'SELECT seriefile, name FROM serie WHERE pk_sid = $1';
+export const testSerie = 'SELECT seriefile, name, repository FROM serie WHERE pk_sid = $1';

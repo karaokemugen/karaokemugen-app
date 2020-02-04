@@ -1,12 +1,6 @@
-import { KaraFileV4 } from "../lib/types/kara";
-import { Series } from "../lib/types/series";
-import { checksum, extractAllFiles } from "../lib/utils/files";
+import { checksum, extractAllFiles, asyncStat } from "../lib/utils/files";
 import logger, { profile } from "../lib/utils/logger";
 import Bar from "../lib/utils/bar";
-import { parseKara } from "../lib/dao/karafile";
-import { getDataFromSeriesFile } from "../lib/dao/seriesfile";
-import { Tag } from "../lib/types/tag";
-import { getDataFromTagFile } from "../lib/dao/tagfile";
 import parallel from 'async-await-parallel';
 
 let dataStore = {
@@ -15,16 +9,19 @@ let dataStore = {
 	tags: new Map()
 };
 
-export function addKaraToStore(kara: KaraFileV4) {
-	dataStore.karas.set(kara.data.kid, kara);
+export async function addKaraToStore(file: string) {
+	const stats = await asyncStat(file);
+	dataStore.karas.set(file, stats.mtimeMs);
 }
 
-export function addSeriesToStore(series: Series) {
-	dataStore.series.set(series.sid, series);
+export async function addSeriesToStore(file: string) {
+	const stats = await asyncStat(file);
+	dataStore.series.set(file, stats.mtimeMs);
 }
 
-export function addTagToStore(tag: Tag) {
-	dataStore.tags.set(tag.tid, tag);
+export async function addTagToStore(file: string) {
+	const stats = await asyncStat(file);
+	dataStore.tags.set(file, stats.mtimeMs);
 }
 
 export function sortKaraStore() {
@@ -48,20 +45,23 @@ export function getStoreChecksum() {
 	return checksum(store);
 }
 
-export function editKaraInStore(kid: string, kara: KaraFileV4) {
-	dataStore.karas.set(kid, kara);
+export async function editKaraInStore(file: string) {
+	const stats = await asyncStat(file);
+	dataStore.karas.set(file, stats.mtimeMs);
 }
 
-export function removeKaraInStore(kid: string) {
-	dataStore.karas.delete(kid);
+export function removeKaraInStore(file: string) {
+	dataStore.karas.delete(file);
 }
 
-export function editSeriesInStore(sid: string, series: Series) {
-	dataStore.series.set(sid, series);
+export async function editSeriesInStore(file: string) {
+	const stats = await asyncStat(file);
+	dataStore.series.set(file, stats.mtimeMs);
 }
 
-export function editTagInStore(tid: string, tag: Tag) {
-	dataStore.tags.set(tid, tag);
+export async function editTagInStore(file: string) {
+	const stats = await asyncStat(file);
+	dataStore.tags.set(file, stats.mtimeMs);
 }
 
 export function removeTagInStore(tid: string) {
@@ -73,9 +73,9 @@ export function removeSeriesInStore(sid: string) {
 }
 
 async function processDataFile(file: string, silent?: boolean, bar?: any) {
-	if (file.endsWith('kara.json')) addKaraToStore(await parseKara(file));
-	if (file.endsWith('series.json')) addSeriesToStore(await getDataFromSeriesFile(file));
-	if (file.endsWith('tag.json')) addTagToStore(await getDataFromTagFile(file));
+	if (file.endsWith('kara.json')) await addKaraToStore(file);
+	if (file.endsWith('series.json')) await addSeriesToStore(file);
+	if (file.endsWith('tag.json')) await addTagToStore(file);
 	if (!silent) bar.incr();
 }
 
