@@ -18,11 +18,8 @@ SELECT name,
 	status,
 	pk_uuid as uuid,
 	started_at,
-<<<<<<< HEAD
-	repository
-=======
+	repository,
 	kid
->>>>>>> master
 FROM download
 WHERE status = 'DL_PLANNED'
 ORDER BY started_at DESC
