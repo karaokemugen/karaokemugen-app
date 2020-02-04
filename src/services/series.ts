@@ -113,10 +113,11 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 	]);
 	const seriesData = formatSeriesFile(serieObj).series;
 	seriesData.seriefile = seriefile;
+	const oldSerieFiles = await resolveFileInDirs(oldSerie.seriefile, resolvedPathRepos('Series', oldSerie.repository));
+	const newSerieFiles = await resolveFileInDirs(serieObj.seriefile, resolvedPathRepos('Series', serieObj.repository));
+
 	if (oldSerie.seriefile !== serieObj.seriefile) {
 		try {
-			const oldSerieFiles = await resolveFileInDirs(oldSerie.seriefile, resolvedPathRepos('Series', oldSerie.repository));
-			const newSerieFiles = await resolveFileInDirs(serieObj.seriefile, resolvedPathRepos('Series', serieObj.repository));
 			await removeSeriesFile(oldSerie.seriefile);
 			await addSeriesToStore(newSerieFiles[0]);
 			removeSeriesInStore(oldSerieFiles[0]);
@@ -125,7 +126,7 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 			//Non fatal. Can be triggered if the series file has already been removed.
 		}
 	} else {
-		await editSeriesInStore(serieObj.seriefile);
+		await editSeriesInStore(newSerieFiles[0]);
 	}
 	saveSetting('baseChecksum', getStoreChecksum());
 	if (opts.refresh) {

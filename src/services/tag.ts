@@ -152,10 +152,10 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 	]);
 	const tagData = formatTagFile(tagObj).tag;
 	tagData.tagfile = tagfile;
+	const oldTagFiles = await resolveFileInDirs(oldTag.tagfile, resolvedPathRepos('Tags', oldTag.repository));
+	const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
 	if (oldTag.tagfile !== tagObj.tagfile) {
 		try {
-			const oldTagFiles = await resolveFileInDirs(oldTag.tagfile, resolvedPathRepos('Tags', oldTag.repository));
-			const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
 			await removeTagFile(oldTag.tagfile);
 			await addTagToStore(newTagFiles[0]);
 			removeTagInStore(oldTagFiles[0]);
@@ -164,7 +164,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 			//Non fatal. Can be triggered if the tag file has already been removed.
 		}
 	} else {
-		await editTagInStore(tagObj.tagfile);
+		await editTagInStore(newTagFiles[0]);
 	}
 	saveSetting('baseChecksum', getStoreChecksum());
 	if (opts.refresh) await refreshTagsAfterDBChange();
