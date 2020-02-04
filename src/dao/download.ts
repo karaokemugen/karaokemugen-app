@@ -9,7 +9,8 @@ export async function insertDownloads(downloads: KaraDownload[] ) {
 		dl.urls,
 		dl.size,
 		'DL_PLANNED',
-		dl.uuid
+		dl.uuid,
+		dl.kid
 	]);
 	return await transaction([{sql: sql.insertDownload, params: dls}]);
 }
