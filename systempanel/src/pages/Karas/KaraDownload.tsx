@@ -20,6 +20,7 @@ import {getCriterasByValue} from './_blc_criterias_types';
 import getTags from '../../api/getTags';
 import i18next from 'i18next';
 import { tagTypes } from '../../utils/tagTypes';
+import { KaraDownloadRequest } from '../../../../src/types/download';
 
 var blacklist_cache = {}
 var api_get_local_karas_interval = null;
@@ -127,16 +128,13 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	}
 
 	downloadKara(kara) {
-		let downloadObject: any = {};
-		downloadObject.kid = kara.kid;
-		downloadObject.mediafile = kara.mediafile;
-		downloadObject.subfile = kara.subfile;
-		downloadObject.karafile = kara.karafile;
-		downloadObject.seriefiles = kara.seriefiles;
-		downloadObject.tagfiles = kara.tagfiles;
-		downloadObject.size = kara.mediasize;
-		downloadObject.name = kara.name;
-		downloadObject.repository = kara.repo;
+		let downloadObject:KaraDownloadRequest = {
+			kid: kara.kid,
+			mediafile: kara.mediafile,
+			size: kara.mediasize,
+			name: kara.name,
+			repository: kara.repo
+		};
 		postToDownloadQueue([downloadObject]);
 		this.api_read_kara_queue();
 	}

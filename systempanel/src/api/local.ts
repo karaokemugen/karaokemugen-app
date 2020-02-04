@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {KaraDownloadRequest} from '../../../src/types/download';
 
 /**
  * I'll be naming api requests with the first word being the http method.
@@ -72,7 +73,7 @@ export async function deleteKAraFromDownloadQueue(kid) {
 }
 
 // POST (add) items to download queue
-export async function postToDownloadQueue(downloads) {
+export async function postToDownloadQueue(downloads:KaraDownloadRequest[]) {
 	try {
 		const dl = {
 			downloads
