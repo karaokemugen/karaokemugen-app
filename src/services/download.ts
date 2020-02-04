@@ -148,15 +148,15 @@ async function processDownload(download: KaraDownload) {
 			writes.push(await asyncWriteFile(tempLyrics, bundle.lyrics.data, 'utf-8'));
 		};
 		const tempKara = resolve(tempDir, bundle.kara.file);
-		writes.push(await asyncWriteFile(tempKara, bundle.kara.data, 'utf-8'));
+		writes.push(await asyncWriteFile(tempKara, JSON.stringify(bundle.kara.data, null, 2), 'utf-8'));
 
 		for (const serie of bundle.series) {
 			const tempSeries = resolve(tempDir, serie.file);
-			writes.push(await asyncWriteFile(tempSeries, serie.data, 'utf-8'));
+			writes.push(await asyncWriteFile(tempSeries, JSON.stringify(serie.data, null, 2), 'utf-8'));
 		}
 		for (const tag of bundle.tags) {
 			const tempTag = resolve(tempDir, tag.file);
-			writes.push(await asyncWriteFile(tempTag, tag.data, 'utf-8'));
+			writes.push(await asyncWriteFile(tempTag, JSON.stringify(tag.data, null, 2), 'utf-8'));
 		}
 
 		// Delete files if they're already present
@@ -191,38 +191,43 @@ async function processDownload(download: KaraDownload) {
 		}
 		logger.info(`[Download] Finished downloading "${download.name}"`);
 		// Now adding our newly downloaded kara
-		try {
-			for (const serie of bundle.series) {
-				try {
-					const serieName = await integrateSeriesFile(resolve(localSeriesPath, serie.file));
-					logger.debug(`[Download] Series "${serieName}" in database`);
-				} catch(err) {
-					logger.error(`[Download] Series "${serie.file}" not properly added to database`);
-					throw err;
-				}
-			}
-			for (const tag of bundle.tags) {
-				try {
-					const tagName = await integrateTagFile(resolve(localTagsPath, tag.file));
-					logger.debug(`[Download] Tag "${tagName}" in database`);
-				} catch(err) {
-					logger.error(`[Download] Tag "${tag.file}" not properly added to database`);
-					throw err;
-				}
-			}
+		integrateDownload(bundle, localSeriesPath, localKaraPath, localTagsPath, download);
+	} catch(err) {
+		setDownloadStatus(download.uuid, 'DL_FAILED');
+		throw err;
+	}
+}
+
+async function integrateDownload(bundle: DownloadBundle, localSeriesPath: string, localKaraPath: string, localTagsPath: string, download: KaraDownload ) {
+	try {
+		for (const serie of bundle.series) {
 			try {
-				await integrateKaraFile(resolve(localKaraPath, bundle.kara.file));
-				logger.info(`[Download] Song "${download.name}" added to database`);
-				await setDownloadStatus(download.uuid, 'DL_DONE');
+				const serieName = await integrateSeriesFile(resolve(localSeriesPath, serie.file));
+				logger.debug(`[Download] Series "${serieName}" in database`);
 			} catch(err) {
-				logger.error(`[Download] Song "${download.name}" not properly added to database`);
+				logger.error(`[Download] Series "${serie.file}" not properly added to database`);
 				throw err;
 			}
+		}
+		for (const tag of bundle.tags) {
+			try {
+				const tagName = await integrateTagFile(resolve(localTagsPath, tag.file));
+				logger.debug(`[Download] Tag "${tagName}" in database`);
+			} catch(err) {
+				logger.error(`[Download] Tag "${tag.file}" not properly added to database`);
+				throw err;
+			}
+		}
+		try {
+			await integrateKaraFile(resolve(localKaraPath, bundle.kara.file));
+			logger.info(`[Download] Song "${download.name}" added to database`);
+			await setDownloadStatus(download.uuid, 'DL_DONE');
 		} catch(err) {
-			logger.error(`[Download] Song "${download.name}" downloaded but not properly added to database. Regenerate your database manually after fixing errors`);
+			logger.error(`[Download] Song "${download.name}" not properly added to database`);
 			throw err;
 		}
 	} catch(err) {
+		logger.error(`[Download] Song "${download.name}" downloaded but not properly added to database. Regenerate your database manually after fixing errors`);
 		setDownloadStatus(download.uuid, 'DL_FAILED');
 		throw err;
 	}

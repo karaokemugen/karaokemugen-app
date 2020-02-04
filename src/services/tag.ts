@@ -41,7 +41,7 @@ export async function getDuplicateTags() {
 export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> {
 	const tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
 	if (tag) {
-		logger.warn(`[Tag] Tag original name already exists "${tagObj.name} and ${tagObj.types}"`);
+		logger.debug(`[Tag] Tag original name already exists "${tagObj.name} and ${tagObj.types}"`);
 		return tag;
 	}
 	if (!tagObj.tid) tagObj.tid = uuidV4();
