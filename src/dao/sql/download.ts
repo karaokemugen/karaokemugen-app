@@ -5,7 +5,11 @@ SELECT name,
 	status,
 	pk_uuid as uuid,
 	started_at,
+<<<<<<< HEAD
 	repository
+=======
+	kid
+>>>>>>> master
 FROM download
 ORDER BY started_at DESC
 `;
@@ -17,7 +21,11 @@ SELECT name,
 	status,
 	pk_uuid as uuid,
 	started_at,
+<<<<<<< HEAD
 	repository
+=======
+	kid
+>>>>>>> master
 FROM download
 WHERE status = 'DL_PLANNED'
 ORDER BY started_at DESC
@@ -30,7 +38,11 @@ SELECT name,
 	status,
 	pk_uuid as uuid,
 	started_at,
+<<<<<<< HEAD
 	repository
+=======
+	kid
+>>>>>>> master
 FROM download
 WHERE pk_uuid = $1
 `;
@@ -54,13 +66,15 @@ INSERT INTO download(
 	status,
 	pk_uuid,
 	repository
+	kid
 ) VALUES(
 	$1,
 	$2,
 	$3,
 	$4,
 	$5,
-	$6)
+	$6,
+	$7)
 `;
 
 export const updateDownloadStatus = `
