@@ -66,7 +66,7 @@ export async function editKara(kara: Kara) {
 			await asyncUnlink(karaFile);
 		}
 		if (newKara.data.subfile && oldKara.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
-			const oldSubFiles = await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository)));
+			const oldSubFiles = await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository));
 			if (await asyncExists(oldSubFiles[0])) {
 				logger.info(`[KaraGen] Removing ${oldSubFiles[0]}`);
 				await asyncUnlink(oldSubFiles[0]);
