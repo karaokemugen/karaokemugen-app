@@ -3,7 +3,6 @@ import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByNam
 import {refreshSeries, refreshKaraSeries, refreshKaraSeriesLang, refreshSeriesi18n} from '../lib/dao/series';
 import {profile} from '../lib/utils/logger';
 import logger from 'winston';
-import {removeSerieInKaras} from '../lib/dao/karafile';
 import uuidV4 from 'uuid/v4';
 import { sanitizeFile, resolveFileInDirs } from '../lib/utils/files';
 import { refreshKaras } from '../lib/dao/kara';
@@ -12,7 +11,7 @@ import { KaraParams, KaraList, IDQueryResult } from '../lib/types/kara';
 import { removeSeriesInStore, editSeriesInStore, addSeriesToStore, sortSeriesStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import {getDataFromSeriesFile} from '../lib/dao/seriesfile';
-import { getAllKaras } from './kara';
+import { removeSerieInKaras, getAllKaras } from './kara';
 import { resolvedPathRepos } from '../lib/utils/config';
 
 /** Get all series */

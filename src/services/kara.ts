@@ -316,3 +316,20 @@ export async function integrateKaraFile(file: string) {
 	}
 	saveSetting('baseChecksum', getStoreChecksum());
 }
+
+export async function removeSerieInKaras(sid: string, karas: KaraList) {
+	logger.info(`[Kara] Removing serie ${sid} in .kara.json files`);
+	const karasWithSerie = karas.content.filter((k: any) => {
+		if (k.sid && k.sid.includes(sid)) return true;
+	});
+	if (karasWithSerie.length > 0) logger.info(`[Kara] Removing in ${karasWithSerie.length} files`);
+	for (const karaWithSerie of karasWithSerie) {
+		logger.info(`[Kara] Removing in ${karaWithSerie.karafile}...`);
+		const karaPath = (await resolveFileInDirs(karaWithSerie.karafile, resolvedPathRepos('Karas', karaWithSerie.repository)))[0];
+		const kara = await parseKara(karaPath[0]);
+		kara.data.sids = kara.data.sids.filter((s: any) => s !== sid);
+		kara.data.modified_at = new Date().toString();
+		await asyncWriteFile(karaPath, JSON.stringify(kara, null, 2));
+		await editKaraInStore(karaPath);
+	}
+}
