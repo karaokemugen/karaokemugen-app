@@ -48,6 +48,7 @@ interface KaraFormState {
 	genres?: Tag[];
 	platforms?: Tag[];
 	origins?: Tag[];
+	seasons?: Tag[];
 	created_at?: Date;
 	modified_at?: Date;
 	songtypesValue: Tag[];
@@ -94,6 +95,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			platforms: this.getTagArray(kara.platforms),
 			genres: this.getTagArray(kara.genres),
 			origins: this.getTagArray(kara.origins),
+			seasons: this.getTagArray(kara.seasons),
 			created_at: kara.created_at ? kara.created_at : new Date(),
 			modified_at: kara.modified_at ? kara.modified_at : new Date(),
 			songtypesValue: null,
@@ -165,6 +167,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			kara.platforms = this.getTagObject(kara.platforms);
 			kara.genres = this.getTagObject(kara.genres);
 			kara.origins = this.getTagObject(kara.origins);
+			kara.seasons = this.getTagObject(kara.seasons);
 			kara.songtypes = this.getTagObject(this.state.songtypesValue).filter(value => values.songtypes === value.tid);
 			if (!err) this.props.save(kara);
 		});
@@ -413,6 +416,20 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						min={0}
 						placeholder='Year'
 						style={{ width: '100%' }}
+					/>)}
+				</Form.Item>
+				<Form.Item
+					label={i18next.t('KARA.SEASONS')}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 10, offset: 0 }}
+				>
+					{getFieldDecorator('seasons', {
+						initialValue: this.state.seasons
+					})(<EditableTagGroup
+						tagType={14}
+						checkboxes={true}
+						search={'tag'}
+						onChange={(tags) => this.props.form.setFieldsValue({ seasons: tags })}
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback

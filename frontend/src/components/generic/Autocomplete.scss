@@ -52,7 +52,7 @@ $option-active-background:#00b0ed;
   background:$options-background;
   .UI-autocomplete-option {
     cursor: pointer;
-    padding: .25em;
+    padding: .25em 1.50em .25em .25em;
     margin: 0;
     text-align: left;
     &[data-active="true"] {

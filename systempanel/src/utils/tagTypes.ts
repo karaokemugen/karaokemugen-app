@@ -11,7 +11,8 @@ export const tagTypes = Object.freeze({
 	FAMILIES: 10,
 	ORIGINS: 11,
 	GENRES: 12,
-	PLATFORMS: 13
+	PLATFORMS: 13,
+	SEASONS: 14
 });
 
 export function getTagTypeName(type: number): string {
