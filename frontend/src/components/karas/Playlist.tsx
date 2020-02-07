@@ -598,7 +598,7 @@ noRowsRenderer = () => {
   	} catch (error) {
 		(error.response.data && error.response.data.plc_id && error.response.data.plc_id.length > 0) ?
 			displayMessage('warning', error.response.data.plc_id[0]) :
-			displayMessage('warning', i18next.t(error.response.data));
+			displayMessage('warning', i18next.t(`ERROR_CODES.${error.response.data}`));
   	}
   };
 

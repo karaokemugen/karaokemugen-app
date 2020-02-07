@@ -487,7 +487,7 @@ export default function playlistsController(router: Router) {
 							plc_ids = req.body.plc_id.split(',');
 							plc_ids.forEach((e: string|number, i) => plc_ids[i] = +e)
 						}
-						const pl_id = await	copyKaraToPlaylist(plc_ids,req.params.pl_id,+req.body.pos);
+						const pl_id = await	copyKaraToPlaylist(plc_ids,+req.params.pl_id,+req.body.pos);
 						emitWS('playlistContentsUpdated', pl_id);
 						res.status(201).send('PL_SONG_MOVED');
 					} catch(err) {
