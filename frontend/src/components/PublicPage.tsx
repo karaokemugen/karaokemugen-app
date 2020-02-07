@@ -15,13 +15,13 @@ import ClassicModeModal from './modals/ClassicModeModal';
 import RadioButton from './generic/RadioButton';
 import axios from 'axios';
 import ProgressBar from './karas/ProgressBar';
-import {buildKaraTitle, getSocket, is_touch_device,displayMessage,callModal} from './tools';
+import {buildKaraTitle, getSocket, is_touch_device,displayMessage,callModal, secondsTimeSpanToHMS} from './tools';
 import store from '../store';
 import ReactDOM from 'react-dom';
 import { Config } from '../../../src/types/config';
 import { Tag } from '../types/tag';
 import { Token } from '../../../src/lib/types/user';
-import { DBPLC } from '../../../src/types/database/playlist';
+import { DBPLC, DBPLCInfo } from '../../../src/types/database/playlist';
 
 interface IProps {
 	config: Config;
@@ -102,6 +102,18 @@ class PublicPage extends Component<IProps,IState> {
   	});
   	getSocket().on('adminMessage', (data:any) => displayMessage('info', 
   		<div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br/>{data.message}</div>, data.duration));
+	getSocket().on('userSongPlaysIn', (data:DBPLCInfo) => {
+		if (data && data.username === (store.getLogInfos() as Token).username) {
+			let playTime = new Date(Date.now() + data.time_before_play * 1000);
+			let playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+			let beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
+			displayMessage('info', i18next.t('USER_SONG_PLAYS_IN', {
+				kara: buildKaraTitle(data, true),
+				time: beforePlayTime,
+				date: playTimeDate
+			}));
+		}
+	});
 	getSocket().on('nextSong', (data:DBPLC) => {
 		if (data && data.flag_visible) {
 			if (timer) clearTimeout(timer);

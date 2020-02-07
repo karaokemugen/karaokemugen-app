@@ -402,6 +402,7 @@
 	"INTRO_PUBLIC_LAST": "Okay! Now let's sing!<br /><br />Have fun!<br /><br />Click on Finish.<br />",
 	"NEXT_SONG_MESSAGE": "Coming up next :",
 	"TIME_BEFORE_PLAY": "Airing in {{time}} ({{date}})",
+	"USER_SONG_PLAYS_IN": "Your song {{kara}} has been added and will airing in {{time}} ({{date}})",
 	"ERROR_CODES": {
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
 		"BLC_EMPTY_ERROR": "Unable to empty list of blacklist criterias",
@@ -414,7 +415,8 @@
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Wrong security code",
 		"PL_DELETE_SONG_ERROR": "You cannot delete that song",
 		"PL_VIEW_SONGS_ERROR": "Error when loading the playlist",
-		"SONG_LIST_ERROR": "Error when loading the songs list"
+		"SONG_LIST_ERROR": "Error when loading the songs list",
+		"PL_MOVE_SONG_ERROR": "Unable to copy karaoke song to the destination playlist"
 	},
 	"HIDDEN_PLAYLIST": "Hidden playlist",
 	"SUBMIT": "Submit",

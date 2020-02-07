@@ -422,6 +422,7 @@
 	"INTRO_LABEL_DONE": "Terminer",
 	"NEXT_SONG_MESSAGE": "La suite avec :",
 	"TIME_BEFORE_PLAY": "Diffusion dans {{time}} ({{date}})",
+	"USER_SONG_PLAYS_IN": "Votre chanson {{kara}} a été ajoutée et sera diffusée dans {{time}} ({{date}})",
 	"ERROR_CODES": {
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "L'API est désactivé pour le moment",
 		"BLC_EMPTY_ERROR": "Erreur lors la suppression des critères de blacklist",
@@ -434,7 +435,8 @@
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Mauvais code de sécurité",
 		"PL_DELETE_SONG_ERROR": "Vous ne pouvez pas supprimer ce morceau",
 		"PL_VIEW_SONGS_ERROR": "Erreur au chargement de la liste de lecture",
-		"SONG_LIST_ERROR": "Erreur au chargement de la liste des chansons disponibles"
+		"SONG_LIST_ERROR": "Erreur au chargement de la liste des chansons disponibles",
+		"PL_MOVE_SONG_ERROR": "Impossible de copier la chanson vers la liste de lecture de destination"
 	},
 	"HIDDEN_PLAYLIST": "Playlist cachée",
 	"SUBMIT": "Sauvegarder",
