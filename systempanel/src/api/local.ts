@@ -91,7 +91,18 @@ export async function postAllToDownloadQueue() {
 		const res = await axios.post('/api/downloads/all');
 		return res.data;
 	} catch (e) {
-		console.log('Error from /api/local.js:downloadAllToDownloadQueue');
+		console.log('Error from /api/local.js:postAllToDownloadQueue');
+		throw e;
+	}
+}
+
+// Synchronize
+export async function postSyncToDownloadQueue() {
+	try {
+		const res = await axios.post('/api/downloads/sync');
+		return res.data;
+	} catch (e) {
+		console.log('Error from /api/local.js:postSyncToDownloadQueue');
 		throw e;
 	}
 }
@@ -102,7 +113,7 @@ export async function postUpdateToDownloadQueue() {
 		const res = await axios.post('/api/downloads/update');
 		return res.data;
 	} catch (e) {
-		console.log('Error from /api/local.js:updateAllToDownloadQueue');
+		console.log('Error from /api/local.js:postUpdateToDownloadQueue');
 		throw e;
 	}
 }

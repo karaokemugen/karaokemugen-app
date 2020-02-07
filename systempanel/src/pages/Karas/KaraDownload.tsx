@@ -13,7 +13,8 @@ import {
   putToDownloadQueuePause,
   postAllToDownloadQueue,
   postUpdateToDownloadQueue,
-  postCleanToDownloadQueue
+  postCleanToDownloadQueue,
+  postSyncToDownloadQueue
 } from "../../api/local";
 import {ReduxMappedProps} from '../../react-app-env';
 import {getCriterasByValue} from './_blc_criterias_types';
@@ -335,7 +336,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
+			<Layout.Content style={{ padding: '25px 50px' }}>
 				<Layout>
 					<Layout.Header>
 						<Row type="flex" justify="space-between">
@@ -354,38 +355,75 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 									onChange={this.handleFilterTagSelection.bind(this)} placeholder={i18next.t('KARA.TAG_FILTER')} />
 							</Col>
 						</Row>
-						<Row type="flex" justify="space-between">
-							<Col style={{ paddingTop: '20px'}}>
-								<Button type="primary" key="queueDownloadAll" onClick={() => postAllToDownloadQueue()}>{i18next.t('KARA.DOWNLOAD_ALL')}</Button>
+						<Row style={{ paddingTop: '20px'}} type="flex">
+							<Col span={11}>
+								<Button style={{width: '230px'}} type="primary" key="synchronize" 
+									onClick={() => postSyncToDownloadQueue()}>{i18next.t('KARA.SYNCHRONIZE')}</Button>
 								&nbsp;
-								<Button type="primary" key="queueUpdateAll" onClick={() => postUpdateToDownloadQueue()}>{i18next.t('KARA.UPDATE_ALL')}</Button>
-								&nbsp;
-								<Button type="primary" key="queueCleanAll" onClick={() => postCleanToDownloadQueue()}>{i18next.t('KARA.CLEAN_ALL')}</Button>
+								{i18next.t('KARA.SYNCHRONIZE_DESC')}
 							</Col>
-							<Col style={{ paddingTop: '25px'}}>
+							<Col span={8}>
 								<label>{i18next.t('KARA.FILTER_SONGS')}</label>
-								<Radio checked={this.state.compare === ''} 
-									onChange={async () => {
-										await this.setState({compare: ''});
-										this.api_get_online_karas();
-								}}>{i18next.t('KARA.FILTER_ALL')}</Radio>
-								<Radio checked={this.state.compare === '&compare=updated'} 
-									onChange={async () => {
-										await this.setState({compare: '&compare=updated'});
-										this.api_get_online_karas();
-									}}>{i18next.t('KARA.FILTER_UPDATED')}</Radio>
-								<Radio checked={this.state.compare === '&compare=missing'} 
-									onChange={async () => {
-										await this.setState({compare: '&compare=missing'});
-										this.api_get_online_karas();
-								}}>{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}</Radio>
 							</Col>
-							<Col style={{ paddingTop: '20px'}}>
-								<Button type="primary" key="queueDelete" onClick={deleteDownloadQueue}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
+							<Col span={5}>
+								<label>{i18next.t('KARA.QUEUE_LABEL')}</label>
+							</Col>
+						</Row>
+						<Row style={{ paddingTop: '5px'}} type="flex">
+							<Col span={11}>
+								<Button style={{width: '230px'}} type="primary" key="queueDownloadAll" 
+									onClick={() => postAllToDownloadQueue()}>{i18next.t('KARA.DOWNLOAD_ALL')}</Button>
 								&nbsp;
-								<Button type="primary" key="queueStart" onClick={putToDownloadQueueStart}>{i18next.t('KARA.START_DOWNLOAD_QUEUE')}</Button>
+								{i18next.t('KARA.DOWNLOAD_ALL_DESC')}
+							</Col>
+							<Col span={9}>
+								<Radio checked={this.state.compare === ''} 
+										onChange={async () => {
+											await this.setState({compare: ''});
+											this.api_get_online_karas();
+									}}>{i18next.t('KARA.FILTER_ALL')}</Radio>
+							</Col>
+							<Col span={4}>
+								<Button style={{width: '100px'}} type="primary" key="queueStart"
+									onClick={putToDownloadQueueStart}>{i18next.t('KARA.START_DOWNLOAD_QUEUE')}</Button>
+							</Col>
+						</Row>
+						<Row style={{ paddingTop: '5px'}} type="flex">
+							<Col span={11}>
+								<Button style={{width: '230px'}} type="primary" key="queueUpdateAll"
+									onClick={() => postUpdateToDownloadQueue()}>{i18next.t('KARA.UPDATE_ALL')}</Button>
 								&nbsp;
-								<Button type="primary" key="queuePause" onClick={putToDownloadQueuePause}>{i18next.t('KARA.PAUSE_DOWNLOAD_QUEUE')}</Button>
+								{i18next.t('KARA.UPDATE_ALL_DESC')}
+							</Col>
+							<Col span={9}>
+								<Radio checked={this.state.compare === '&compare=updated'} 
+										onChange={async () => {
+											await this.setState({compare: '&compare=updated'});
+											this.api_get_online_karas();
+										}}>{i18next.t('KARA.FILTER_UPDATED')}</Radio>
+							</Col>
+							<Col span={4}>
+								<Button style={{width: '100px'}} type="primary" key="queuePause"
+									onClick={putToDownloadQueuePause}>{i18next.t('KARA.PAUSE_DOWNLOAD_QUEUE')}</Button>
+							</Col>
+						</Row>
+						<Row style={{ paddingTop: '5px'}} type="flex">
+							<Col span={11}>
+								<Button style={{width: '230px'}} type="primary" key="queueCleanAll"
+									onClick={() => postCleanToDownloadQueue()}>{i18next.t('KARA.CLEAN_ALL')}</Button>
+								&nbsp;
+								{i18next.t('KARA.CLEAN_ALL_DESC')}
+							</Col>
+							<Col span={9}>
+								<Radio checked={this.state.compare === '&compare=missing'} 
+										onChange={async () => {
+											await this.setState({compare: '&compare=missing'});
+											this.api_get_online_karas();
+									}}>{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}</Radio>
+							</Col>
+							<Col span={4}>
+								<Button style={{width: '100px'}} type="primary" key="queueDelete"
+									onClick={deleteDownloadQueue}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
 							</Col>
 						</Row>
 					</Layout.Header>

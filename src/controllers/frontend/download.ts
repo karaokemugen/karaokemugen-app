@@ -2,7 +2,7 @@
 import {requireAuth, requireValidUser, requireAdmin, updateUserLoginTime} from '../middlewares/auth';
 import {requireNotDemo} from '../middlewares/demo';
 
-import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateAllMedias, getAllRemoteKaras, getAllRemoteTags} from '../../services/download';
+import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateAllMedias, getAllRemoteKaras, getAllRemoteTags, updateAllBases} from '../../services/download';
 import { Router } from 'express';
 import { getLang } from '../middlewares/lang';
 import { errMessage } from '../common';
@@ -368,8 +368,30 @@ export default function downloadController(router: Router) {
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 		try {
-			await updateAllKaras();
-			res.status(200).send('Update in progress');
+			updateAllKaras();
+			res.status(200).send('Update in progress - follow in console');
+		} catch(err) {
+			res.status(500).send(`Error computing update: ${err}`);
+		}
+	});
+	router.route('/downloads/sync')
+		/**
+ * @api {post} /downloads/sync Sync with remote repositories
+ * @apiName syncDownloads
+ * @apiVersion 3.2.0
+ * @apiGroup Downloader
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * "Error computing update : ..."
+ */
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
+		try {
+			updateAllBases();
+			res.status(200).send('Sync in progress - follow it in console');
 		} catch(err) {
 			res.status(500).send(`Error computing update: ${err}`);
 		}
@@ -390,8 +412,8 @@ export default function downloadController(router: Router) {
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 		try {
-			await downloadAllKaras();
-			res.status(200).send('Download in progress');
+			downloadAllKaras();
+			res.status(200).send('Download in progress - follow in console');
 		} catch(err) {
 			res.status(500).send(`Error computing update: ${err}`);
 		}
@@ -412,8 +434,8 @@ export default function downloadController(router: Router) {
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 		try {
-			await cleanAllKaras();
-			res.status(200).send('Cleanup in progress');
+			cleanAllKaras();
+			res.status(200).send('Cleanup in progress - follow in console');
 		} catch(err) {
 			res.status(500).send(`Error computing update: ${err}`);
 		}
