@@ -1,5 +1,5 @@
 // KM Imports
-import {asyncExists, asyncMkdirp} from '../lib/utils/files';
+import {asyncExists, asyncCheckOrMkdir, asyncRemove} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import internet from 'internet-available';
 
@@ -19,13 +19,17 @@ export async function gitUpdate(gitDir: string, gitURL: string, element: string,
 				throw 'Internet not available';
 			}
 			// Git clone
-			if (!await asyncExists(gitDir)) await asyncMkdirp(gitDir);
-			await gitClone({
-				dir: gitDir,
-				url: gitURL
-			})
-			logger.info(`[${element}] Finished downloading`);
-			return localDirs;
+			try {
+				await asyncCheckOrMkdir(gitDir);
+				await gitClone({
+					dir: gitDir,
+					url: gitURL
+				});
+				logger.info(`[${element}] Finished downloading`);
+				return localDirs;
+			} catch(err) {
+				throw err;
+			}
 		} else {
 			try {
 				await internet();
@@ -33,11 +37,27 @@ export async function gitUpdate(gitDir: string, gitURL: string, element: string,
 				throw 'Internet not available';
 			}
 			logger.info(`[${element}] Updating...`);
-			await gitPull({
-				dir: gitDir
-			})
-			logger.info(`[${element}] Finished updating`);
-			return null;
+			try {
+				await gitPull({
+					dir: gitDir
+				})
+			} catch(err) {
+				//Pull failed, trying a clone
+				//Issue is reported here :
+				//https://github.com/isomorphic-git/isomorphic-git/issues/963
+				logger.warn(`[${element}] Updating failed, trying wipe and reclone`)
+				try {
+					await asyncRemove(gitDir);
+					return await gitUpdate(gitDir, gitURL, element, localDirs);
+				} catch(err) {
+					//Clone also failed, error might be elsewhere
+					logger.error(`[${element}] Failed updating even with a reclone : ${err}`);
+					throw 'git Error';
+				}
+			} finally {
+				logger.info(`[${element}] Finished updating`);
+				return null;
+			}
 		}
 	} catch(err) {
 		throw Error(err);
