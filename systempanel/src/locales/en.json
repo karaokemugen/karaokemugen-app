@@ -206,9 +206,9 @@
 		"REPOSITORIES_PAGES": "Repositories page"
 	},
 	"SERIES": {
-		"SERIE_DELETED": "Serie successfully deleted",
-		"SERIE_CREATED": "Serie successfully created",
-		"SERIE_EDITED": "Serie successfully edited",
+		"SERIE_DELETED": "Series successfully deleted",
+		"SERIE_CREATED": "Series successfully created",
+		"SERIE_EDITED": "Series successfully edited",
 		"SERIE_DELETED_CONFIRM": "Confirm series deletion",
 		"DELETED_SERIE_CONFIRM": "Delete series",
 		"DELETE_SERIE_MESSAGE": "This will remove its series.json file as well as in any .kara in your database!",
