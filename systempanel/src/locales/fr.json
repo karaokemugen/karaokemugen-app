@@ -45,6 +45,7 @@
 		"PLATFORMS": "Plateforme(s)",
 		"GENRES": "Genre(s)",
 		"ORIGINS": "Origine(s)",
+		"SEASONS": "Saison(s)",
 		"MISC": "Divers",
 		"TAGS_TOOLTIP": "Tags à lier à ce karaoké",
 		"GROUPS": "Groupe(s)",
@@ -187,7 +188,8 @@
 		"FAMILIES": "Famille",
 		"ORIGINS": "Origine",
 		"GENRES": "Genre",
-		"PLATFORMS": "Plateforme"
+		"PLATFORMS": "Plateforme",
+		"SEASONS": "Saisons"
 	},
 	"CONFIG": {
 		"PROPERTY": "Propriété",

@@ -18,27 +18,6 @@ interface KaraEditState {
 	save: any,
 }
 
-const newKara = {
-	kid: null,
-	songorder: null,
-	songtypes: null,
-	serie: null,
-	title: null,
-	langs: null,
-	singers: null,
-	songwriters: null,
-	year: null,
-	creators: null,
-	authors: null,
-	misc: null,
-	groups: null,
-	created_at: null,
-	families: null,
-	platforms: null,
-	genres: null,
-	origins: null
-};
-
 class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 
 	state = {
@@ -86,7 +65,7 @@ class KaraEdit extends Component<KaraEditProps, KaraEditState> {
 					this.props.loading(false);
 				});
 		} else {
-			this.setState({kara: {...newKara}, save: this.saveNew});
+			this.setState({kara: {}, save: this.saveNew});
 			this.props.loading(false);
 		}
 	};

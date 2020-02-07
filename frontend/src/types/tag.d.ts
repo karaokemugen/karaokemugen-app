@@ -1,5 +1,7 @@
-import { DBKaraTag } from "../../../src/lib/types/database/kara";
 
-interface Tag extends DBKaraTag {
+export interface Tag {
 	type: Array<number|string>;
+	value: string;
+	label: string;
+	karacount: number;
 }

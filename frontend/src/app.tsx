@@ -16,7 +16,7 @@ import { KaraTag } from '../../src/lib/types/kara';
 import { DBSeries } from '../../src/lib/types/database/series';
 import { DBYear } from '../../src/lib/types/database/kara';
 import { Tag }  from '../../src/lib/types/tag'; 
-import { Tag as FrontendTag }  from './types/tag'; 
+import { Tag as FrontendTag }  from './types/tag';
 
 interface IState {
 	navigatorLanguage: string;
