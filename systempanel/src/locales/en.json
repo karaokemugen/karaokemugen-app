@@ -257,7 +257,9 @@
 		"PATH_TAGS": "Tags",
 		"NEW_REPOSITORY": "New repository :",
 		"ONLINE": "Online",
-		"FOLDERS_REQUIRED": "A folder of {{name}} is required."
+		"FOLDERS_REQUIRED": "A folder of {{name}} is required.",
+		"MOVE": "Define the priority of repositories",
+		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke"
 	},
 	"BLACKLIST": {
 		"TYPE": "Type",

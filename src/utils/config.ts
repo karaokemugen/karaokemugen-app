@@ -78,7 +78,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			if (!isEqual(newConfig.System.Repositories[i].Path[path], oldConfig.System.Repositories[i].Path[path])) {
 				if (Array.isArray(newConfig.System.Repositories[i].Path[path])) {
 					for (const y in newConfig.System.Repositories[i].Path[path]) {
-						newConfig.System.Repositories[i].Path[path][y] = relativePath(newConfig.System.Repositories[y].Path[path][y]);
+						newConfig.System.Repositories[i].Path[path][y] = relativePath(newConfig.System.Repositories[i].Path[path][y]);
 					}
 				} else {
 					newConfig.System.Repositories[i].Path[path] = relativePath(newConfig.System.Repositories[i].Path[path]);

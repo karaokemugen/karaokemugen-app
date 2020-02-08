@@ -257,7 +257,9 @@
 		"PATH_TAGS": "Tags",
 		"NEW_REPOSITORY": "Nouveau dépôt :",
 		"ONLINE": "En ligne",
-		"FOLDERS_REQUIRED": "Un dossier de {{name}} est obligatoire."
+		"FOLDERS_REQUIRED": "Un dossier de {{name}} est obligatoire.",
+		"MOVE": "Définir la priorité des dépôts",
+		"MOVE_TOOLTIP": "Cela vous permet de définir quels dépôts ont priorité lors de la création de votre base de données : les dépôts le plus en haut seront pris en compte d'abord si jamais deux dépôts ont le même karaoké"
 	},
 	"BLACKLIST": {
 		"TYPE": "Type",
