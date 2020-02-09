@@ -391,11 +391,7 @@ export async function play(mediadata: MediaData) {
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
 			// Courtesy of @nah :)
 			if (conf.Player.VisualizationEffects) {
-				if (mediadata.avatar && conf.Karaoke.Display.Avatar) {
-					options.push(`lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt=axis=0[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl];movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[logo][ovrl]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 7},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
-				} else {
-					options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt=axis=0[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
-				}
+				options = fillVisualizationOptions(options, mediadata, (mediadata.avatar && conf.Karaoke.Display.Avatar));
 			}
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
@@ -442,6 +438,35 @@ export async function play(mediadata: MediaData) {
 		logger.error(`[Player] Error loading media ${mediadata.media} : ${JSON.stringify(err)}`);
 		throw err;
 	}
+}
+
+/**
+ * Fill up options object with visualization-specific options
+ * @param options Options object to fill up
+ * @param mediadata MediaData object
+ * @param withAvatar Please use both MediaData and conf object to check if Avatar is required
+ */
+function fillVisualizationOptions(options: string[], mediadata: MediaData, withAvatar:boolean): string[] {
+	const subOptions = [
+		'lavfi-complex=[aid1]asplit[ao][a]',
+		'[a]showcqt=axis=0[vis]',
+		'[vis]scale=600:400[vecPrep]',
+		'nullsrc=size=1920x1080[nl]',
+		'[nl]setsar=1,format=rgba[emp]',
+		'[emp][vecPrep]overlay=main_w-overlay_w:main_h-overlay_h:x=0[visu]',
+		'[vid1]scale=-2:1080[vidInp]',
+		'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
+	];
+	if(withAvatar) {
+		subOptions.push('[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl]');
+		subOptions.push(`movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo]`);
+		subOptions.push('[logo][ovrl]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]');
+		subOptions.push(`[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 7},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
+	} else {
+		subOptions.push('[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
+	}
+	options.push(subOptions.join(';'));
+	return options;
 }
 
 export async function setFullscreen(fsState: boolean): Promise<boolean> {
