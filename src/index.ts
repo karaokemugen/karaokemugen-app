@@ -57,7 +57,7 @@ if (process.platform === 'win32' ) {
 const appPath = ('pkg' in process)
 	? join(process['execPath'], '../')
 	: join(__dirname, '../');
-
+const resourcePath = appPath;
 let dataPath = resolve(appPath, 'app/');
 
 // Testing if we're in portable mode or not
@@ -76,7 +76,7 @@ if (existsSync(resolve(appPath, 'database.json')) && !existsSync(resolve(dataPat
 	moveSync(resolve(appPath, 'database.json'), resolve(dataPath, 'database.json'));
 }
 
-setState({appPath: appPath, dataPath: dataPath});
+setState({appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
 
 process.env['NODE_ENV'] = 'production'; // Default
 
