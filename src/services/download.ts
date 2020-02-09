@@ -17,7 +17,7 @@ import got from 'got';
 import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC, File } from '../types/download';
 import { DownloadItem } from '../types/downloader';
 import { KaraList, KaraParams, CompareParam } from '../lib/types/kara';
-import { TagParams, Tag } from '../lib/types/tag';
+import { TagParams, Tag, TagList } from '../lib/types/tag';
 import { deleteKara } from '../services/kara';
 import { refreshAll } from '../lib/dao/database';
 import { DBKara } from '../lib/types/database/kara';
@@ -414,26 +414,35 @@ export async function getRemoteKaras(repo: string, params: KaraParams, compare?:
 	return JSON.parse(res.body);
 }
 
-export async function getAllRemoteTags(repository: string, params: TagParams): Promise<Tag[]> {
+export async function getAllRemoteTags(repository: string, params: TagParams): Promise<TagList> {
 	if (repository) {
 		return getRemoteTags(repository, params);
 	} else {
 		const repos = getConfig().System.Repositories.filter(r => r.Online);
 		const tasks = [];
 		repos.forEach(repo => tasks.push(getRemoteTags(repo.Name, params)));
-		const allTags: Tag[][] = await Promise.all(tasks);
-		// Let's concatenate our stuff here
-		const everything = [].concat.apply([], allTags);
-		everything.sort((a: Tag, b: Tag) => (a.name > b.name) ? 1 : -1);
+		const allTags: TagList[] = await Promise.all(tasks);
+		const everything: TagList = {
+			content: [],
+			infos: {
+				count: 0,
+				from: 0,
+				to: 0
+			}
+		};
+		allTags.forEach(l => merge(everything, l));
+		// To get total count we're going to remove all duplicated by repo to keep only one tag from each repo.
+		// Each tag has a count property which gives us the number of tags for that query, so by adding them we get our total maximum count.
+		everything.infos.count = 0;
+		const everythingUnique = everything.content.filter((t: any, i, self) => self.findIndex((t2:any) => t2.repository === t.repo) === i);
+		everythingUnique.forEach(t => everything.infos.count = +everything.infos.count + +t.count);
+		everything.infos.to = +params.from + +params.size;
 		return everything;
 	}
-
 }
-export async function getRemoteTags(repo: string, params: TagParams): Promise<Tag[]> {
-	const queryParams = new URLSearchParams([
-		['type', params.type + '']
-	]);
-	const res = await got(`https://${repo}/api/karas/tags?${queryParams.toString()}`);
+
+export async function getRemoteTags(repo: string, params: TagParams): Promise<TagList> {
+	const res = await got(`https://${repo}/api/karas/tags${params.type ? '/' + params.type : '' }`);
 	return JSON.parse(res.body);
 }
 

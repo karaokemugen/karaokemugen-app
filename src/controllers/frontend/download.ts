@@ -85,7 +85,7 @@ export default function downloadController(router: Router) {
 			} catch(err) {
 				res.status(500).send(`Error getting downloads: ${err}`);
 			}
-	})
+		})
 		/**
  * @api {delete} /downloads Empty download queue
  * @apiName DeleteDownloads
@@ -100,15 +100,15 @@ export default function downloadController(router: Router) {
  * "Error wiping downloads: ..."
  */
 		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		try {
-			await wipeDownloads();
-			res.status(200).send('Download queue emptied completely');
-		} catch(err) {
-			res.status(500).send(`Error wiping downloads: ${err}`);
-		}
-	});
+			try {
+				await wipeDownloads();
+				res.status(200).send('Download queue emptied completely');
+			} catch(err) {
+				res.status(500).send(`Error wiping downloads: ${err}`);
+			}
+		});
 	router.route('/downloads/:uuid')
-/**
+	/**
  * @api {delete} /downloads/:uuid Remove download from queue
  * @apiName DeleteDownload
  * @apiVersion 3.1.0
@@ -123,15 +123,15 @@ export default function downloadController(router: Router) {
  * "Error removing download: ..."
  */
 		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-		try {
-			await removeDownload(req.params.uuid);
-			res.status(200).send('Download removed');
-		} catch(err) {
-			res.status(500).send(`Error removing download: ${err}`);
-		}
-	});
+			try {
+				await removeDownload(req.params.uuid);
+				res.status(200).send('Download removed');
+			} catch(err) {
+				res.status(500).send(`Error removing download: ${err}`);
+			}
+		});
 	router.route('/downloads/:uuid/retry')
-/**
+	/**
  * @api {put} /downloads/:uuid/retry Retry a failed download
  * @apiName RetryDownload
  * @apiVersion 3.1.0
@@ -146,15 +146,15 @@ export default function downloadController(router: Router) {
  * "Error retrying download: ..."
  */
 		.put(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-		try {
-			await retryDownload(req.params.uuid);
-			res.status(200).send('Download back into queue');
-		} catch(err) {
-			res.status(500).send(`Error retrying download: ${err}`);
-		}
-	});
+			try {
+				await retryDownload(req.params.uuid);
+				res.status(200).send('Download back into queue');
+			} catch(err) {
+				res.status(500).send(`Error retrying download: ${err}`);
+			}
+		});
 	router.route('/downloads/pause')
-/**
+	/**
  * @api {put} /downloads/pause Pause queue
  * @apiName PauseDownloads
  * @apiVersion 3.1.0
@@ -168,15 +168,15 @@ export default function downloadController(router: Router) {
  * "Error pausing downloads: ..."
  */
 		.put(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		try {
-			await pauseQueue();
-			res.status(200).send('Downloads paused');
-		} catch(err) {
-			res.status(500).send(`Error pausing downloads: ${err}`);
-		}
-	});
+			try {
+				await pauseQueue();
+				res.status(200).send('Downloads paused');
+			} catch(err) {
+				res.status(500).send(`Error pausing downloads: ${err}`);
+			}
+		});
 	router.route('/downloads/start')
-/**
+	/**
  * @api {put} /downloads/start Start queue
  * @apiName StartDownloads
  * @apiVersion 3.1.0
@@ -190,13 +190,13 @@ export default function downloadController(router: Router) {
  * "Error starting downloads: ..."
  */
 		.put(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		try {
-			await startDownloads();
-			res.status(200).send('Downloads starting');
-		} catch(err) {
-			res.status(500).send(`Error starting downloads: ${err}`);
-		}
-	});
+			try {
+				await startDownloads();
+				res.status(200).send('Downloads starting');
+			} catch(err) {
+				res.status(500).send(`Error starting downloads: ${err}`);
+			}
+		});
 	router.route('/downloads/blacklist/criterias')
 	/**
  * @api {get} /downloads/blacklist/criterias List download blacklist criterias
@@ -215,13 +215,13 @@ export default function downloadController(router: Router) {
  * "Error getting download BLCs : ..."
  */
 		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		try {
-			const blc = await getDownloadBLC();
-			res.status(200).json(blc);
-		} catch(err) {
-			res.status(500).send(`Error getting download BLCs : ${err}`);
-		}
-	})
+			try {
+				const blc = await getDownloadBLC();
+				res.status(200).json(blc);
+			} catch(err) {
+				res.status(500).send(`Error getting download BLCs : ${err}`);
+			}
+		})
 	/**
  * @api {post} /downloads/blacklist/criterias Add download blacklist criteria
  * @apiName PostDownloadBLC
@@ -238,13 +238,13 @@ export default function downloadController(router: Router) {
  * "Error adding download BLC : ..."
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-		try {
-			await addDownloadBLC({ type: req.body.type, value: req.body.value});
-			res.status(200).send('Download blacklist criteria added');
-		} catch(err) {
-			res.status(500).send(`Error adding download BLC : ${err}`);
-		}
-	})
+			try {
+				await addDownloadBLC({ type: req.body.type, value: req.body.value});
+				res.status(200).send('Download blacklist criteria added');
+			} catch(err) {
+				res.status(500).send(`Error adding download BLC : ${err}`);
+			}
+		})
 	/**
  * @api {delete} /downloads/blacklist/criterias Empty download blacklist criterias
  * @apiName DeleteDownloadBLCs
@@ -259,15 +259,15 @@ export default function downloadController(router: Router) {
  * "Error emptying download BLC : ..."
  */
 		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-		try {
-			await emptyDownloadBLC();
-			res.status(200).send('Download blacklist criterias emptied');
-		} catch(err) {
-			res.status(500).send(`Error emptying download BLC : ${err}`);
-		}
-	});
+			try {
+				await emptyDownloadBLC();
+				res.status(200).send('Download blacklist criterias emptied');
+			} catch(err) {
+				res.status(500).send(`Error emptying download BLC : ${err}`);
+			}
+		});
 	router.route('/downloads/blacklist/criterias/:id')
-/**
+	/**
  * @api {delete} /downloads/blacklist/criterias/:id Remove download criteria
  * @apiName DeleteDownloadBLC
  * @apiVersion 3.1.0
@@ -282,15 +282,15 @@ export default function downloadController(router: Router) {
  * "Error removing download BLC : ..."
  */
 		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-		try {
-			await removeDownloadBLC(parseInt(req.params.id));
-			res.status(200).send('Download blacklist criteria removed');
-		} catch(err) {
-			res.status(500).send(`Error removing download BLC : ${err}`);
-		}
-	});
+			try {
+				await removeDownloadBLC(parseInt(req.params.id));
+				res.status(200).send('Download blacklist criteria removed');
+			} catch(err) {
+				res.status(500).send(`Error removing download BLC : ${err}`);
+			}
+		});
 	router.route('/karas/remote')
-/**
+	/**
  * @api {get} /karas/remote Get complete list of karaokes (remote)
  * @apiName GetKarasRemote
  * @apiVersion 3.2.0
@@ -337,20 +337,20 @@ export default function downloadController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	.get(getLang, requireAuth, requireNotDemo, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-		try {
-			const karas = await getAllRemoteKaras(req.query.repository, {
-				filter: req.query.filter,
-				q: req.query.q ? req.query.q : '',
-				from: +req.query.from || 0,
-				size: +req.query.size || 9999999,
-			}, req.query.compare);
-			res.json(karas);
-		} catch(err) {
-			errMessage('SONG_LIST_ERROR', err);
-			res.status(500).send('SONG_LIST_ERROR');
-		}
-	});
+		.get(getLang, requireAuth, requireNotDemo, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			try {
+				const karas = await getAllRemoteKaras(req.query.repository, {
+					filter: req.query.filter,
+					q: req.query.q ? req.query.q : '',
+					from: +req.query.from || 0,
+					size: +req.query.size || 9999999,
+				}, req.query.compare);
+				res.json(karas);
+			} catch(err) {
+				errMessage('SONG_LIST_ERROR', err);
+				res.status(500).send('SONG_LIST_ERROR');
+			}
+		});
 
 	router.route('/downloads/update')
 		/**
@@ -367,13 +367,13 @@ export default function downloadController(router: Router) {
  * "Error computing update : ..."
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
-		try {
-			updateAllKaras();
-			res.status(200).send('Update in progress - follow in console');
-		} catch(err) {
-			res.status(500).send(`Error computing update: ${err}`);
-		}
-	});
+			try {
+				updateAllKaras();
+				res.status(200).send('Update in progress - follow in console');
+			} catch(err) {
+				res.status(500).send(`Error computing update: ${err}`);
+			}
+		});
 	router.route('/downloads/sync')
 		/**
  * @api {post} /downloads/sync Sync with remote repositories
@@ -389,13 +389,13 @@ export default function downloadController(router: Router) {
  * "Error computing update : ..."
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
-		try {
-			updateAllBases();
-			res.status(200).send('Sync in progress - follow it in console');
-		} catch(err) {
-			res.status(500).send(`Error computing update: ${err}`);
-		}
-	});
+			try {
+				updateAllBases();
+				res.status(200).send('Sync in progress - follow it in console');
+			} catch(err) {
+				res.status(500).send(`Error computing update: ${err}`);
+			}
+		});
 	router.route('/downloads/all')
 	/**
  * @api {post} /downloads/all Download all songs from all repositories
@@ -411,13 +411,13 @@ export default function downloadController(router: Router) {
  * "Error computing update: ..."
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
-		try {
-			downloadAllKaras();
-			res.status(200).send('Download in progress - follow in console');
-		} catch(err) {
-			res.status(500).send(`Error computing update: ${err}`);
-		}
-	});
+			try {
+				downloadAllKaras();
+				res.status(200).send('Download in progress - follow in console');
+			} catch(err) {
+				res.status(500).send(`Error computing update: ${err}`);
+			}
+		});
 	router.route('/downloads/clean')
 		/**
  * @api {post} /downloads/clean Remove all local karas not on remote repositories
@@ -433,13 +433,13 @@ export default function downloadController(router: Router) {
  * "Error computing update: ..."
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
-		try {
-			cleanAllKaras();
-			res.status(200).send('Cleanup in progress - follow in console');
-		} catch(err) {
-			res.status(500).send(`Error computing update: ${err}`);
-		}
-	});
+			try {
+				cleanAllKaras();
+				res.status(200).send('Cleanup in progress - follow in console');
+			} catch(err) {
+				res.status(500).send(`Error computing update: ${err}`);
+			}
+		});
 	router.route('/downloads/updateMedias')
 	/**
  * @api {post} /downloads/updateMedias Only syncs medias, not kara data files
@@ -455,7 +455,7 @@ export default function downloadController(router: Router) {
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			updateAllMedias();
 			res.status(200).send('Medias are being updated, check Karaoke Mugen\'s console to follow its progression');
-	});
+		});
 	router.route('/tags/remote')
 	/**
  * @api {get} /tags/remote List all remote Tags
@@ -475,14 +475,14 @@ export default function downloadController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * "Error getting download BLCs : ..."
  */
-	.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
-		try {
-			const tags = await getAllRemoteTags(req.query.repository, {
-				type: req.query.type
-			});
-			res.json(tags);
-		} catch(err) {
-			res.status(500).send(`Unable to get all remote tags : ${err}`);
-		}
-	});
+		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+			try {
+				const tags = await getAllRemoteTags(req.query.repository, {
+					type: req.query.type
+				});
+				res.json(tags);
+			} catch(err) {
+				res.status(500).send(`Unable to get all remote tags : ${err}`);
+			}
+		});
 }
