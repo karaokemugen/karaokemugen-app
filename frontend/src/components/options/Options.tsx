@@ -5,7 +5,7 @@ import KaraokeOptions from './KaraokeOptions';
 import InterfaceOptions from './InterfaceOptions';
 import axios from 'axios';
 import {expand} from '../tools';
-import { Config } from '~../../../src/types/config';
+import { Config } from '../../../../src/types/config';
 
 interface IProps {
 	config: Config;

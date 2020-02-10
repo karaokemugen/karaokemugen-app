@@ -9,8 +9,8 @@ import ReactDOM from 'react-dom';
 import OnlineProfileModal from './OnlineProfileModal';
 require('babel-polyfill');
 import store from '../../store';
-import { Config } from '~../../../src/types/config';
-import { User, Token } from '~/../../../src/lib/types/user';
+import { Config } from '../../../../src/types/config';
+import { User, Token } from '../../../../src/lib/types/user';
 
 interface IProps {
 	config: Config;

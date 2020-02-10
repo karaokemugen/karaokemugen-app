@@ -5,8 +5,8 @@ import axios from 'axios';
 import RadioButton from './generic/RadioButton';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import store from '../store';
-import { Config } from '~../../../src/types/config';
-import { PublicState } from '~../../../src/types/state';
+import { Config } from '../../../src/types/config';
+import { PublicState } from '../../../src/types/state';
 
 interface IProps {
 	config: Config;

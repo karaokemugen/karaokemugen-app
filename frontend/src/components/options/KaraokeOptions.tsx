@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import Switch from '../generic/Switch';
 import { expand, dotify } from '../tools';
 import axios from 'axios';
-import { Config } from '~../../../src/types/config';
+import { Config } from '../../../../src/types/config';
 
 interface IProps {
 	config: Config;

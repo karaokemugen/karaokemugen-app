@@ -10,7 +10,7 @@ import ReactDOM from 'react-dom';
 import store from '../store';
 import OnlineStatsModal from './modals/OnlineStatsModal';
 import { Config } from '../../../src/types/config';
-import { Token } from '~../../../src/lib/types/user';
+import { Token } from '../../../src/lib/types/user';
 import { Session } from '../../../src/types/session';
 import { News } from '../types/news';
 import Switch from './generic/Switch';

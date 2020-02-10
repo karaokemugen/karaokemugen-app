@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import i18next from 'i18next';
 import Switch from '../generic/Switch';
 import { dotify } from '../tools';
-import { Config } from '~../../../src/types/config';
+import { Config } from '../../../../src/types/config';
 
 interface IProps {
 	config: Config;

@@ -4,7 +4,7 @@ import { is_touch_device, secondsTimeSpanToHMS, displayMessage, callModal } from
 import axios from 'axios';
 import store from '../../store';
 import ReactDOM from 'react-dom';
-import { DBPLCInfo } from '~../../../src/types/database/playlist';
+import { DBPLCInfo } from '../../../../src/types/database/playlist';
 import { DBKaraTag, lastplayed_ago } from '../../../../src/lib/types/database/kara';
 import { Token } from '../../../../src/lib/types/user';
 
