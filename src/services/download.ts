@@ -454,7 +454,7 @@ export async function updateAllBases() {
 				await updateBase(repo.Name);
 			}
 		} catch(err) {
-			logger.warn(`[Update] Repository ${repo.Name} failed to update properly`);
+			logger.warn(`[Update] Repository ${repo.Name} failed to update properly: ${err}`);
 		}
 	}
 }
@@ -656,7 +656,7 @@ export async function updateAllKaras() {
 				await updateKaras(repo.Name);
 			}
 		} catch(err) {
-			logger.warn(`[Update] Repository ${repo.Name} failed to update songs properly`);
+			logger.warn(`[Update] Repository ${repo.Name} failed to update songs properly: ${err}`);
 		}
 	}
 }
@@ -797,7 +797,7 @@ async function listLocalMedias(repo: string): Promise<File[]> {
 	const mediaFiles = await asyncReadDir(resolvedPathRepos('Medias', repo)[0]);
 	let localMedias = [];
 	for (const file of mediaFiles) {
-		const mediaPath = resolveFileInDirs(file, resolvedPathRepos('Medias', repo));
+		const mediaPath = await resolveFileInDirs(file, resolvedPathRepos('Medias', repo));
 		const mediaStats = await asyncStat(mediaPath[0]);
 		localMedias.push({
 			basename: file,
@@ -823,7 +823,7 @@ export async function updateAllMedias() {
 				await updateMedias(repo.Name);
 			}
 		} catch(err) {
-			logger.warn(`[Update] Repository ${repo.Name} failed to update medias properly`);
+			logger.warn(`[Update] Repository ${repo.Name} failed to update medias properly: ${err}`);
 		}
 	}
 }
@@ -851,6 +851,7 @@ export async function updateMedias(repo: string): Promise<boolean> {
 		});
 		return !!updateVideos;
 	} catch (err) {
+		console.log(err);
 		emitWS('downloadProgress', {
 			text: 'Done',
 			value: 100,
