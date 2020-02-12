@@ -162,7 +162,12 @@ export const defaultGuestNames = [
 	'Tubacabra',
 	'Hideyoshi',
 	'POÏ',
-	'A classified information'
+	'A classified information',
+	'Madeline',
+	'Badeline',
+	'Nezuko',
+	'Boss',
+	'Un Miam'
 ];
 
 /** Initialization catchphrases. We need more of them. */
@@ -172,7 +177,7 @@ export const initializationCatchphrases = [
 	'"Smile! Sweet! Sister! Sadistic! Surprise! SING!" ‒The Karaoke Mugen Dev Team',
 	'"Let us achieve world domination through karaoke!" ‒Axel Terizaki',
 	'"Listen to my song!" ‒Every Macross Idol',
-	'"DATABASE DATABASE WOW WOW" ‒MAN WITH A MISSION',
+	'"Regenerate the DATABASE DATABASE WOW WOW" ‒MAN WITH A KARAOKE',
 	'"Shinji, get in the f*cking karaoke room!" ‒Gendô Ikari',
 	'"Everything is going according to the purerisuto. (Translator note : purerisuto means playlist)" ‒Bad Fansubs 101',
 	'"Are people silent when they stop singing?" ‒Shirô',
@@ -209,7 +214,7 @@ export const initializationCatchphrases = [
 	'"I don\'t sing everything, I\'m just singing the karaoke that I know." ‒Tsubasa Hanekawa',
 	'"This karaoke can only be executed a single time. Once it starts, it will be deleted. If you have chosen not to run the playlist, it will delete itself without executing. Ｒｅａｄｙ？" ‒YUKI.N',
 	'"We still don\'t know the name of the karaoke we sang that day." ‒Super Peace Buster\'s members',
-	'"DEJA FAIT! I just timed this karaoke before!" ‒Guy in Trueno GT APEX AE86',
+	'"DEJA FAIT! I just sang this karaoke before!" ‒Guy in Trueno GT APEX AE86',
 	'"Pirikaraoke Royal !" ‒Doremi Harukaze',
 	'"Karaoke that conceals the power of darkness, reveal your true timing to me! By my power, I command you, release!" ‒Sakura Kinomoto',
 	'"I hold the mic with my right hand, and with my left, I\'ll write the name of the next karaoke. I\'ll take a potato chip... AND EAT IT!" ‒Light Yagami',
