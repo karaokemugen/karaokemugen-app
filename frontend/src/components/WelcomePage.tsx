@@ -241,19 +241,21 @@ class WelcomePage extends Component<IProps, IState> {
   				</div>
   			) : null}
   			<div className="menu-top">
-  				{logInfos && logInfos.role === 'admin' && sessions.length > 0 ? (
-  					<div className="menu-top-left">
-  						<label className="menu-top-sessions-label">{i18next.t('ACTIVE_SESSION')}&nbsp;</label>
-  						<Autocomplete
-  							value={this.state.activeSession?.name}
-  							options={sessions}
-  							onChange={this.setActiveSession}
-  							acceptNewValues={true}
-  						/>
-						<label className="menu-top-sessions-label">{i18next.t('PRIVATE_SESSION')}&nbsp;</label>
-						<Switch handleChange={this.majPrivate} isChecked={this.state.activeSession?.private} />
-  					</div>
-  				) : null}
+				<div className="menu-top-left">
+					{logInfos && logInfos.role === 'admin' && sessions.length > 0 ? (
+						<React.Fragment>
+							<label className="menu-top-sessions-label">{i18next.t('ACTIVE_SESSION')}&nbsp;</label>
+							<Autocomplete
+								value={this.state.activeSession?.name}
+								options={sessions}
+								onChange={this.setActiveSession}
+								acceptNewValues={true}
+							/>
+							<label className="menu-top-sessions-label">{i18next.t('PRIVATE_SESSION')}&nbsp;</label>
+							<Switch handleChange={this.majPrivate} isChecked={this.state.activeSession?.private} />
+						</React.Fragment>
+					) : null}
+				</div>
   				<div className="menu-top-right">
   					<a
   						href="http://mugen.karaokes.moe/contact.html"
