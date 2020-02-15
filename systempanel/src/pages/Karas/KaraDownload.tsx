@@ -68,10 +68,8 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	}
 
 	componentDidMount() {
-		const socket = openSocket('http://localhost:1337');
-		socket.on('downloadBatchProgress', (data) => {
-
-		});
+		let url = window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:1337` : window.location.origin;
+		const socket = openSocket(url);
 		socket.on('downloadProgress', (data) => {
 			let active_download = null;
 			if(this.state.karas_online) {

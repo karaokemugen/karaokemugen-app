@@ -62,7 +62,8 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 	}
 
 	componentDidMount() {
-		const socket = openSocket('http://localhost:1337');
+		let url = window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:1337` : window.location.origin;
+		const socket = openSocket(url);
 		socket.on('generationProgress', (data) => {
 			if (!data.text) data.text = this.state.generationProgress.text;
 			const percentage = Math.floor((data.value / data.total) * 100);
