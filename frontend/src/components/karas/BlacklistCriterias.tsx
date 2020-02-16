@@ -112,7 +112,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 										buildKaraTitle(
 											Array.isArray(criteria.value) ?
 											criteria.value[0] : 
-											criteria.value) :
+											criteria.value, true) :
 										(criteria.value_i18n ?
 											criteria.value_i18n :
 											criteria.value
