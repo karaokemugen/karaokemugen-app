@@ -656,7 +656,7 @@ noRowsRenderer = () => {
 		<div style={{maxHeight: '200px'}}>
 		{((this.state.data as KaraList).content as unknown as DBBlacklist[])
 			.filter((e:DBBlacklist) => e.blc_id === kara.blc_id).map((criteria:DBBlacklist) => {
-			return <label key={kara.kid}>{buildKaraTitle(criteria as unknown as KaraElement)}</label>
+			return <label key={kara.kid}>{buildKaraTitle(criteria as unknown as KaraElement, true)}</label>
 		})}
 		</div>, async (confirm:boolean) => {
 			if (confirm) {
