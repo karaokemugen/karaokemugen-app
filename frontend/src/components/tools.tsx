@@ -143,10 +143,10 @@ export function displayMessage (type:TypeOptions, message:any, time?:number) {
 	}
 }
 
-export function callModal(type:string, title:any, message:any, callback?:any, placeholder?:string) {
+export function callModal(type:string, title:any, message:any, callback?:any, placeholder?:string, forceSmall?:boolean) {
 	ReactDOM.render(
 		React.createElement(Modal, 
-			{type: type, title: title, message: message, callback: callback, placeholder: placeholder}),
+			{type: type, title: title, message: message, callback: callback, placeholder: placeholder, forceSmall:forceSmall}),
 		document.getElementById('modal')
 	);
 }

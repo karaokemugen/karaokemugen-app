@@ -80,7 +80,7 @@ class LoginModal extends Component<IProps,IState> {
 					store.setLogInfos(response);
 					displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
 					store.getTuto() && store.getTuto().move(1);
-				});
+				}, undefined, true);
 			}
 		} else {
 			var element = document.getElementById('modal');

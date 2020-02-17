@@ -6,6 +6,7 @@ interface IProps {
 	type: string;
 	title: string;
 	message: any;
+	forceSmall: boolean | undefined;
 	callback: (param?: boolean |string) => void;
 }
 
@@ -60,7 +61,7 @@ class Modal extends Component<IProps,IState> {
     }
 
     render() {
-    	var modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
+    	var modalDialogClass = window.innerWidth <= 1023 || this.props.forceSmall ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
     	return (
     		<div className="modal" id="modalBox">
     			<div className={modalDialogClass}>
