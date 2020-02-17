@@ -120,7 +120,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 export async function initConfig(argv: any) {
 	setConfigConstraints(configConstraints);
 	await configureLocale();
-	await loadConfigFiles(getState().dataPath, argv.config, defaults);
+	await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().appPath);
 	const binaries = await checkBinaries(getConfig());
 	setState({binPath: binaries});
 	emit('configReady');
