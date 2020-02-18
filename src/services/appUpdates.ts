@@ -7,7 +7,7 @@ import semver from 'semver';
 
 export async function checkForUpdates(): Promise<string> {
 	const conf = getConfig();
-	if (!conf.Online.Updates) return null;
+	if (!conf.Online.Updates.App) return null;
 	try {
 		await internet()
 	} catch(err) {
