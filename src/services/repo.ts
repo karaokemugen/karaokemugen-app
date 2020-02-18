@@ -1,5 +1,5 @@
 import { selectRepos, deleteRepo, updateRepo, insertRepo } from '../dao/repo';
-import { asyncCheckOrMkdir, asyncExists, extractAllFiles } from '../lib/utils/files';
+import { asyncCheckOrMkdir, asyncExists, extractAllFiles, asyncMoveAll, relativePath } from '../lib/utils/files';
 import { resolve, basename } from 'path';
 import { getState } from '../utils/state';
 import { Repository } from '../lib/types/repo';
@@ -40,7 +40,7 @@ export async function addRepo(repo: Repository) {
 	logger.info(`[Repo] Added ${repo.Name}`);
 }
 
-/** Edit a repository. Folders will eb created if necessary */
+/** Edit a repository. Folders will be created if necessary */
 export async function editRepo(name: string, repo: Repository) {
 	updateRepo(repo, name);
 	await checkRepoPaths(repo);
@@ -177,4 +177,33 @@ export async function migrateOldFoldersToRepo() {
 			}
 		});
 	}
+}
+
+export async function consolidateRepo(repoName: string, newPath: string) {
+	const repo = getRepo(repoName);
+	const state = getState();
+	if (!repo) throw 'Unknown repository';
+	if (!await asyncExists(newPath)) throw 'Directory not found';
+	logger.info(`[Repo] Moving ${repoName} repository to ${newPath}...`);
+	for (const dir of repo.Path.Karas) {
+		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'karaokes/'));
+	}
+	for (const dir of repo.Path.Lyrics) {
+		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'lyrics/'));
+	}
+	for (const dir of repo.Path.Series) {
+		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'series/'));
+	}
+	for (const dir of repo.Path.Tags) {
+		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'tags/'));
+	}
+	for (const dir of repo.Path.Medias) {
+		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'medias/'));
+	}
+	repo.Path.Karas = [relativePath(resolve(newPath, 'karaokes/'))];
+	repo.Path.Lyrics = [relativePath(resolve(newPath, 'lyrics/'))];
+	repo.Path.Medias = [relativePath(resolve(newPath, 'medias/'))];
+	repo.Path.Series = [relativePath(resolve(newPath, 'series/'))];
+	repo.Path.Tags = [relativePath(resolve(newPath, 'tags/'))];
+	await editRepo(repoName, repo);
 }

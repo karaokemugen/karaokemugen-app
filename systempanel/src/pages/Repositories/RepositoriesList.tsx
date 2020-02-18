@@ -132,10 +132,12 @@ class RepositoryList extends Component<ReduxMappedProps, RepositoryListState> {
 		render: (text, record:Repository) => (
 			<span>
 				<Link to={`/system/km/repositories/${record.Name}`}><Icon type='edit'/></Link>
-				<React.Fragment>
-					<Divider type="vertical"/>
-					<Button type="danger" icon='delete' onClick={this.deleteRepository.bind(this,record)}></Button>
-				</React.Fragment>
+				{this.state.repositories.length > 1 ?
+					<React.Fragment>
+						<Divider type="vertical"/>
+						<Button type="danger" icon='delete' onClick={this.deleteRepository.bind(this,record)}></Button>
+					</React.Fragment> : null
+				}
 			</span>
 		)
 	}];

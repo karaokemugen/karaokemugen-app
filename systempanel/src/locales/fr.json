@@ -249,6 +249,7 @@
 	"REPOSITORIES": {
 		"REPOSITORY_CREATED": "Dépôt créé avec succès",
 		"REPOSITORY_EDITED": "Dépôt édité avec succès",
+		"REPOSITORY_CONSOLIDATED": "Dépôt consolidé avec succès",
 		"NAME": "Nom",
 		"PATH_KARAS": "Karaokés",
 		"PATH_LYRICS": "Paroles",
@@ -259,7 +260,11 @@
 		"ONLINE": "En ligne",
 		"FOLDERS_REQUIRED": "Un dossier de {{name}} est obligatoire.",
 		"MOVE": "Définir la priorité des dépôts",
-		"MOVE_TOOLTIP": "Cela vous permet de définir quels dépôts ont priorité lors de la création de votre base de données : les dépôts le plus en haut seront pris en compte d'abord si jamais deux dépôts ont le même karaoké"
+		"MOVE_TOOLTIP": "Cela vous permet de définir quels dépôts ont priorité lors de la création de votre base de données : les dépôts le plus en haut seront pris en compte d'abord si jamais deux dépôts ont le même karaoké",
+		"CONSOLIDATE": "Opérations sur le dépôt",
+		"CONSOLIDATE_BUTTON": "Consolider le dépôt...",
+		"CONSOLIDATE_ABOUT": "Attention !",
+		"CONSOLIDATE_ABOUT_MESSAGE": "Tous les fichiers du dépôt (karas, médias, séries, tags...) seront déplacés avec le nouveau dossier par racine. Si votre dépôt contient des types de données avec plusieurs dossiers (plusieurs dossiers de médias par exemple), tous les fichiers de tous les dossiers seront copiés dans le même dossier destination. S'il y a des doublons, ils seront écrasés sauvagement."
 	},
 	"BLACKLIST": {
 		"TYPE": "Type",

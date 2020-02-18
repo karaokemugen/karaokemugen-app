@@ -83,11 +83,25 @@ class RepositoriesEdit extends Component<RepositoriesEditProps, RepositoriesEdit
 		}
 	};
 
+	
+	consolidate = (consolidatePath: string) => {
+		if (consolidatePath) {
+			axios.post(`/api/repos/${this.props.match.params.name}/consolidate`, {path: consolidatePath})
+			.then(() => {
+				this.props.infoMessage(i18next.t('REPOSITORIES.REPOSITORY_CONSOLIDATED'));
+				this.props.push('/system/km/repositories');
+			})
+			.catch(err => {
+				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			});
+		}
+	}
 
 	render() {
 		return (
 			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.repository && (<RepositoryForm repository={this.state.repository} save={this.state.save} />)}
+				{this.state.repository && (<RepositoryForm repository={this.state.repository}
+				 save={this.state.save} consolidate={this.consolidate} />)}
 			</Layout.Content>
 		);
 	}

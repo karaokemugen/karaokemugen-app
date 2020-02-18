@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Button, Form, Input, Checkbox } from 'antd';
+import { Button, Form, Input, Checkbox, Alert } from 'antd';
 import i18next from 'i18next';
 import { Repository } from '../../../../src/lib/types/repo';
 import FoldersElement from '../Components/FoldersElement';
@@ -8,9 +8,18 @@ interface RepositoriesFormProps {
 	repository: Repository;
 	form: any;
 	save: any;
+	consolidate : (consolidatePath:string) => void;
 }
 
-class RepositoryForm extends Component<RepositoriesFormProps, {}> {
+interface RepositoriesFormState {
+	consolidatePath?: string;
+}
+
+class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormState> {
+
+	state = {
+		consolidatePath: undefined
+	};
 
 	handleSubmit = (e) => {
 		e.preventDefault();
@@ -118,11 +127,36 @@ class RepositoryForm extends Component<RepositoriesFormProps, {}> {
 						initialValue: this.props.repository.Path.Tags,
 					})(<FoldersElement onChange={(value) => this.props.form.setFieldsValue({ 'Path.Tags': value })} />)}
 				</Form.Item>
-				<Form.Item
-					wrapperCol={{ span: 4, offset: 2 }}
-				>
+				<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{textAlign:"right"}}>
 					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
+			
+				{this.props.repository.Name ?
+					<React.Fragment>
+						<Form.Item hasFeedback
+							label={i18next.t('REPOSITORIES.CONSOLIDATE')}
+							labelCol={{ span: 3 }}
+							wrapperCol={{ span: 8, offset: 0 }}
+							>
+							<FoldersElement onChange={(value) => this.setState({consolidatePath: value[0]})} />
+						</Form.Item>
+
+						<Form.Item
+							wrapperCol={{ span: 8, offset: 3 }}
+							style={{textAlign:"right"}}
+							>
+							<Button type="danger" onClick={() => this.props.consolidate(this.state.consolidatePath)}>
+								{i18next.t('REPOSITORIES.CONSOLIDATE_BUTTON')}
+							</Button>
+							<Alert style={{textAlign:"left"}}
+								message={i18next.t('REPOSITORIES.CONSOLIDATE_ABOUT')}
+								description={i18next.t('REPOSITORIES.CONSOLIDATE_ABOUT_MESSAGE')}
+								type="warning"
+							/>
+						
+						</Form.Item>
+					</React.Fragment> : null
+				}
 			</Form>
 		);
 	}
