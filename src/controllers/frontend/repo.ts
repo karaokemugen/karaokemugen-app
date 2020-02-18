@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { requireNotDemo } from '../middlewares/demo';
 import { requireAuth, requireValidUser, requireAdmin } from '../middlewares/auth';
-import { getRepos, getRepo, removeRepo, addRepo, editRepo, findUnusedTags, findUnusedSeries, findUnusedMedias } from '../../services/repo';
+import { getRepos, getRepo, removeRepo, addRepo, editRepo, findUnusedTags, findUnusedSeries, findUnusedMedias, consolidateRepo } from '../../services/repo';
 
 export default function repoController(router: Router) {
 	router.route('/repos')
@@ -144,35 +144,6 @@ export default function repoController(router: Router) {
 				res.status(500).send(`Error editing repository: ${err}`);
 			}
 		})
-	/**
- * @api {put} /repos/:name Edit a repository
- * @apiName PutRepo
- * @apiVersion 3.2.0
- * @apiGroup Repositories
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {string} name Old Repository name
- * @apiParam {string} Name New Repository name
- * @apiParam {boolean} Online Is the repository an online or local one ?
- * @apiParam {string[]} Path.Karas Directories where to store files
- * @apiParam {string[]} Path.Lyrics Directories where to store files
- * @apiParam {string[]} Path.Medias Directories where to store files
- * @apiParam {string[]} Path.Series Directories where to store files
- * @apiParam {string[]} Path.Tags Directories where to store files
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- */
-		.put(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await editRepo(req.params.name, req.body);
-				res.json();
-			} catch(err) {
-				res.status(500).send(`Error editing repository: ${err}`);
-			}
-		});
 	router.route('/repos/:name/unusedTags')
 	/**
  * @api {get} /repos/:name/unusedTags Get all unused tags from a repo
@@ -256,4 +227,27 @@ export default function repoController(router: Router) {
 				res.status(500).send(`Error getting tags: ${err}`);
 			}
 		});
+	router.route('/repos/:name/consolidate')
+		/**
+	 * @api {post} /repos/:name/consolidate Consolidate (move) all data from a repo
+	 * @apiName PostRepoConsolidate
+	 * @apiVersion 3.2.0
+	 * @apiGroup Repositories
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {string} name Repository name to consolidate
+	 * @apiParam {string} path New path to move all files to
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+			.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+				try {
+					consolidateRepo(req.params.name, req.body.path);
+					res.status(200).send('Consolidation in progress. See logs or terminal for details');
+				} catch(err) {
+					res.status(500).send(`Error consolidate repository: ${err}`);
+				}
+			});
 }

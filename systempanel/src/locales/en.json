@@ -249,6 +249,7 @@
 	"REPOSITORIES": {
 		"REPOSITORY_CREATED": "Repository successfully created",
 		"REPOSITORY_EDITED": "Repository successfully edited",
+		"REPOSITORY_CONSOLIDATED": "Repository successfully consolidated",
 		"NAME": "Name",
 		"PATH_KARAS": "Karaokes",
 		"PATH_LYRICS": "Lyrics",
@@ -259,7 +260,11 @@
 		"ONLINE": "Online",
 		"FOLDERS_REQUIRED": "A folder of {{name}} is required.",
 		"MOVE": "Define the priority of repositories",
-		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke"
+		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke",
+		"CONSOLIDATE": "Repository operations",
+		"CONSOLIDATE_BUTTON": "Consolidate repository...",
+		"CONSOLIDATE_ABOUT": "Warning !",
+		"CONSOLIDATE_ABOUT_MESSAGE": "All repository fiels (karaokes, medias, series, tags...) will be moved to the new folder as their root. If your repository has several folders for the same type of data (several media folders for example), all filles of all folders will be moved into the same target folder. If there are duplicate files, they'll be savagely overwritten."
 	},
 	"BLACKLIST": {
 		"TYPE": "Type",
