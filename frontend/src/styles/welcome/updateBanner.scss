@@ -1,71 +1,68 @@
-#welcomePage {
+.updateBanner {
+	background : #d9edf7;
+}
 
-    .updateBanner {
-        background : #d9edf7;
-    }
+.updateBanner--wrapper  {
+	margin: auto;
+	max-width: 1100px;
+	padding: 1em;
+	font-family: 'Lato', sans-serif;
+	font-size: 1.3em;
+	font-weight: 300;
+	line-height: 25px;
+	color: #3b4045;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	@media (max-width:980px) {
+		align-items: flex-start;
+	}
+}
 
-    .updateBanner--wrapper  {
-        margin: auto;
-        max-width: 1100px;
-        padding: 1em;
-        font-family: 'Lato', sans-serif;
-        font-size: 1.3em;
-        font-weight: 300;
-        line-height: 25px;
-        color: #3b4045;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        @media (max-width:980px) {
-            align-items: flex-start;
-        }
-    }
+.updateBanner--description  {
+	margin: 0;
+	padding: 0;
+}
 
-    .updateBanner--description  {
-        margin: 0;
-        padding: 0;
-    }
+.updateBanner--download {
+	a {
+		display: inline-block;
+		background: #179F5D;
+		color:#fff;
+		padding: .5em 1em;
+		margin: .2em 0;
+		border-radius: .25em;
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
 
-    .updateBanner--download {
-        a {
-            display: inline-block;
-            background: #179F5D;
-            color:#fff;
-            padding: .5em 1em;
-            margin: .2em 0;
-            border-radius: .25em;
-            &:hover {
-                text-decoration: underline;
-            }
-        }
-    }
+.updateBanner--actions {
+	display: flex;
+	flex-direction: column;
+	padding-left: 1em;
+	button {
+		white-space: nowrap;
+		font-size: 0.9em;
+		border: none;
+		padding: .4em .7em;
+		margin: .2em 0;
+		text-align: center;
+		border-radius: .25em;
+		i {
+			width: 1.3em;
+			text-align: center;
+		}
+		&[data-action="later"] {
+			background: #ff9800;
+			color: #fff;
+		}
+		&[data-action="never"] {
+			background: #da5246;
+			color: #fff;
+		}
+	}
 
-    .updateBanner--actions {
-        display: flex;
-        flex-direction: column;
-        padding-left: 1em;
-        button {
-            white-space: nowrap;
-            font-size: 0.9em;
-            border: none;
-            padding: .4em .7em;
-            margin: .2em 0;
-            text-align: center;
-            border-radius: .25em;
-            i {
-                width: 1.3em;
-                text-align: center;
-            }
-            &[data-action="later"] {
-                background: #ff9800;
-                color: #fff;
-            }
-            &[data-action="never"] {
-                background: #da5246;
-                color: #fff;
-            }
-        }
-
-    }
 }

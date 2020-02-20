@@ -1,6 +1,6 @@
 import {setState, getState} from '../utils/state';
 import {getConfig} from '../lib/utils/config';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 import {profile} from '../lib/utils/logger';
 import {playMedia, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo} from '../player/player';
 import {addPlayedKara} from './kara';

@@ -1,0 +1,53 @@
+h1 {
+	font-size: 25px;
+}
+
+.new {
+	width: 100%;
+	background-color: hsla(0, 12%, 24%, 0.4);
+	max-height: 200px;
+	overflow: hidden;
+	cursor: pointer;
+	font-size: 16px;
+	line-height: 25px;
+	margin-bottom: 10px;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+	padding: 10px 15px 10px;
+	transition: all 0.5s ease-in-out 0s;
+	list-style: none;
+
+	.new-header{
+		position: relative;
+		margin-bottom: 14px;
+		a {
+			float: right;
+		}
+	}
+	.new-header:after {
+		content: "";
+		position: absolute;
+		left: -50%;
+		bottom: -9px;
+		background: #ffffff60;
+		height: 2px;
+		width: 200%;
+	}
+
+	a {
+        color: hsla(208, 91%, 79%, 1);
+    }
+}
+
+.new.open {
+	max-height: none;
+}
+
+.new[data-type="mast"] .new-header:after {
+	background: #ffffff60;
+}
+.new[data-type="app"] .new-header:after {
+	background: #ffbd79bd;
+}
+.new[data-type="base"] .new-header:after {
+	background: #d46cb9ad;
+}

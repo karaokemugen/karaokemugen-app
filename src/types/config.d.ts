@@ -108,7 +108,8 @@ export interface Config {
 			Size?: number,
 			PositionX?: PositionX,
 			PositionY?: PositionY
-		}
+		},
+		ProgressBarDock?: boolean
 	},
 	Playlist: {
 		AllowDuplicates?: boolean,

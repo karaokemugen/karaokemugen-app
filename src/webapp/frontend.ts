@@ -83,9 +83,9 @@ export async function initFrontend() {
 		//path for system control panel
 		// System is not served in demo mode.
 		if (!state.isDemo) {
-			app.use('/system', express.static(resolve(__dirname, '../../systempanel/build')));
+			app.use('/system', express.static(resolve(state.resourcePath, 'systempanel/build')));
 			app.get('/system/*', (_req, res) => {
-				res.sendFile(resolve(__dirname, '../../systempanel/build/index.html'));
+				res.sendFile(resolve(state.resourcePath, 'systempanel/build/index.html'));
 			});
 		}
 
@@ -95,9 +95,9 @@ export async function initFrontend() {
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 
 		//Frontend
-		app.use(express.static(resolve(__dirname, '../../frontend/build')));
+		app.use(express.static(resolve(state.resourcePath, 'frontend/build')));
 		app.get('/*', (_req, res) => {
-			res.sendFile(resolve(__dirname, '../../frontend/build/index.html'));
+			res.sendFile(resolve(state.resourcePath, 'frontend/build/index.html'));
 		});
 
 		const server = createServer(app);

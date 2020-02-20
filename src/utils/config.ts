@@ -10,7 +10,7 @@ import cloneDeep from 'lodash.clonedeep';
 // KM Imports
 import logger from '../lib/utils/logger';
 import {relativePath, asyncCopy, asyncRequired} from '../lib/utils/files';
-import {configureIDs, configureLocale, loadConfigFiles, setConfig, verifyConfig, getConfig, setConfigConstraints} from '../lib/utils/config';
+import {configureIDs, loadConfigFiles, setConfig, verifyConfig, getConfig, setConfigConstraints} from '../lib/utils/config';
 import {configConstraints, defaults} from './default_settings';
 import {publishURL} from '../services/online';
 import {playerNeedsRestart, prepareClassicPauseScreen} from '../services/player';
@@ -23,9 +23,10 @@ import { updateSongsLeft } from '../services/user';
 import { emitWS } from '../lib/utils/ws';
 import { emit } from '../lib/utils/pubsub';
 import { BinariesConfig } from '../types/binChecker';
-import { exit } from '../services/engine';
 import { initTwitch, stopTwitch } from './twitch';
 import { removeNulls } from '../lib/utils/object_helpers';
+import { errorStep } from './electron_logger';
+import i18next from 'i18next';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editSetting(part: object) {
@@ -119,7 +120,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 /** Initializing configuration */
 export async function initConfig(argv: any) {
 	setConfigConstraints(configConstraints);
-	await configureLocale();
 	await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().appPath);
 	const binaries = await checkBinaries(getConfig());
 	setState({binPath: binaries});
@@ -163,7 +163,7 @@ export function getPublicConfig() {
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.Database;
 	delete publicSettings.System;
-	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = '*********'
+	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = '*********';
 	return publicSettings;
 }
 
@@ -180,12 +180,12 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 
 	try {
 		await Promise.all(requiredBinariesChecks);
+		return binariesPath;
 	} catch (err) {
-		binMissing(binariesPath, err);
-		await exit(1);
+		const error = binMissing(binariesPath, err);
+		errorStep(i18next.t('ERROR_MISSING_BINARIES'));
+		throw error;
 	}
-
-	return binariesPath;
 }
 
 /** Return all configured paths for binaries */
@@ -229,12 +229,16 @@ function binMissing(binariesPath: any, err: string) {
 	logger.error('[BinCheck] mpv : ' + binariesPath.mpv);
 	logger.error('[BinCheck] Postgres : ' + binariesPath.postgres);
 	logger.error('[BinCheck] Exiting...');
-	console.log('\n');
-	console.log('One or more binaries needed by Karaoke Mugen could not be found.');
-	console.log('Check the paths above and make sure these are available.');
-	console.log('Edit your config.yml and set System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres variables correctly for your OS.');
-	console.log('You can download mpv for your OS from http://mpv.io/');
-	console.log('You can download postgreSQL for your OS from http://postgresql.org/');
-	console.log('You can download ffmpeg for your OS from http://ffmpeg.org');
-	if (process.platform === 'win32') console.log('If the missing file is msvcr120.dll, download Microsoft Visual C++ 2013 Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784')
+	const error = `One or more binaries needed by Karaoke Mugen could not be found.
+
+Check the paths above and make sure these are available.
+
+Edit your config.yml and set System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres variables correctly for your OS.
+
+You can download mpv for your OS from http://mpv.io/
+You can download postgreSQL for your OS from http://postgresql.org/
+You can download ffmpeg for your OS from http://ffmpeg.org
+(Windows Only) If the missing file is msvcr120.dll, download Microsoft Visual C++ 2013 Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784
+`;
+	return Error(error);
 }

@@ -260,6 +260,15 @@ class PlayerOptions extends Component<IProps, IState> {
 				</div>
 
 				<div className="form-group">
+					<label className="col-xs-4 control-label">
+						{i18next.t('SETTINGS.PLAYER.PROGRESS_BAR_DOCK')}
+					</label>
+					<div className="col-xs-6">
+						<Switch idInput="Player.ProgressBarDock" handleChange={this.onChange}
+							isChecked={this.state.config['Player.ProgressBarDock']} />
+					</div>
+				</div>
+				<div className="form-group">
 					<label className="col-xs-4 control-label" title={i18next.t('PLAYERVISUALIZATIONEFFECTS_TOOLTIP')}>
 						{i18next.t('PLAYERVISUALIZATIONEFFECTS')}
 			&nbsp;

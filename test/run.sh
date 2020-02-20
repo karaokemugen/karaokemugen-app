@@ -1,5 +1,5 @@
 #!/bin/bash
 pwd
-ls -l /builds/karaokemugen/karaokemugen-app/app/data/*
-sleep 3m
+ls -l /builds/karaokemugen/karaokemugen-app/app/repos/*
+sleep 1m
 npm test

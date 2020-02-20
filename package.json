@@ -5,22 +5,26 @@
   "bin": {
     "karaokemugen": "./dist/index.js"
   },
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node src/index.ts --files tsconfig.json",
-    "frontend-dev": "cd frontend && yarn dev",
-    "frontend-prod": "cd frontend && yarn build",
+    "startNoElectron": "yarn build && node dist/index.js",
+    "start": "yarn build && electron .",
+    "startFrontend": "cd frontend && yarn dev",
+    "buildFrontend": "cd frontend && yarn build",
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
-    "qstart": "node dist/index.js",
+    "qstart": "electron .",
+    "qstartNoElectron": "node dist/index.js",
     "test": "mocha --require ts-node/register --timeout 20000 test/*.ts",
     "build": "npx rimraf \"dist\" && tsc --build",
-    "setup": "git submodule sync --recursive && git submodule update --init --recursive && yarn install && yarn build && yarn installFrontend && yarn frontend-prod && yarn installSystemPanel && yarn buildSystemPanel",
+    "setup": "git submodule sync --recursive && git submodule update --init --recursive && yarn install && yarn build && yarn installFrontend && yarn buildFrontend && yarn installSystemPanel && yarn buildSystemPanel",
     "gitconfig": "git config diff.submodule log && git config fetch.recursesubmodules on-demand && git config status.submodulesummary true && git config push.recursesubmodules on-demand && git config submodule.recurse true",
     "pull": "git pull && git submodule sync --recursive && git submodule update --init --recursive",
     "installFrontend": "cd frontend && yarn install",
     "installSystemPanel": "cd systempanel && yarn install",
     "buildSystemPanel": "cd systempanel && yarn build",
     "startSystemPanel": "cd systempanel && yarn start",
+    "packer": "yarn build && electron-builder --dir",
+    "dist": "yarn build && electron-builder",
     "migrate": "db-migrate sync [all] --config app/database.json",
     "migrateDown": "db-migrate down --config app/database.json",
     "migrateUp": "db-migrate up --config app/database.json",
@@ -141,6 +145,7 @@
     "uuid": "^3.4.0",
     "validate.js": "^0.13.1",
     "winston": "^3.2.1",
+    "winston-console-for-electron": "^0.0.7",
     "winston-daily-rotate-file": "^4.4.2",
     "xml-js": "^1.6.11",
     "yesql": "^4.1.1"
@@ -180,6 +185,8 @@
     "@typescript-eslint/eslint-plugin": "^2.19.2",
     "@typescript-eslint/parser": "^2.19.2",
     "chai": "^4.2.0",
+    "electron": "^8.0.0",
+    "electron-builder": "^22.3.2",
     "eslint": "^6.8.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "mocha": "^7.0.1",
@@ -190,5 +197,37 @@
   },
   "apidoc": {
     "url": "http://localhost:1337/api"
+  },
+  "build": {
+    "appId": "KaraokeMugen",
+    "win": {
+      "target": "portable",
+	  "compression": "normal",
+      "publisherName": "Karaoke Mugen Team"
+    },
+    "mac": {
+	  "compression": "normal",
+      "category": "public.app-category.entertainment"
+    },
+    "productName": "KaraokeMugen",
+    "extraResources": [
+      "migrations/**",
+      "locales/*",
+      "assets/**",
+      "frontend/build/**",
+	  "systempanel/build/**",
+	  "initpage/**",
+	  "samples/**"
+    ],
+    "extraFiles": [
+      "app/bin/**"
+    ],
+    "directories": {
+      "output": "packages",
+      "buildResources": "assets"
+    },
+    "files": [
+      "dist/**/*"
+    ]
   }
 }

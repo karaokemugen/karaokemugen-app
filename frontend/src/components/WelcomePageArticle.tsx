@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { News } from '../types/news';
+require ('../styles/welcome/WelcomePageArticle.scss');
 
 interface IProps {
 	article: News;
@@ -26,13 +27,13 @@ class WelcomePageArticle extends Component<IProps, IState> {
 			this.setState({ open: !this.state.open })
 		}
 	>
-		<p className="new-header">
+		<div className="new-header">
 			<b>{this.props.article.title}</b>
 			<a href={this.props.article.link}>
 				{this.props.article.dateStr}
 			</a>
-		</p>
-		<p dangerouslySetInnerHTML={{ __html: this.props.article.html }} />
+		</div>
+		<div dangerouslySetInnerHTML={{ __html: this.props.article.html }} />
 	</li>
   	);
   }

@@ -556,7 +556,7 @@ export async function createUser(user: User, opts: UserOpts = {
 		await DBAddUser(user);
 		if (user.type < 2) logger.info(`[User] Created user ${user.login}`);
 		delete user.password;
-		logger.debug(`[User] User data : ${JSON.stringify(user, null, 2)}`);
+		logger.debug(`[User] User data : ${JSON.stringify(user)}`);
 		return true;
 	} catch (err) {
 		logger.error(`[User] Unable to create user ${user.login} : ${err}`);

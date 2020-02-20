@@ -82,7 +82,7 @@ export const defaults: Config = {
 
 
 **Lien** : $link`,
-				Title: "[Suggestion] $serie - $title",
+				Title: '[Suggestion] $serie - $title',
 				Labels: ['suggestion']
 			}
 		}
@@ -141,7 +141,8 @@ export const defaults: Config = {
 			PositionX: 'Right',
 			PositionY: 'Bottom',
 			Size: 30,
-		}
+		},
+		ProgressBarDock: true
 	},
 	Playlist: {
 		AllowDuplicates: false,
@@ -285,6 +286,7 @@ export const configConstraints = {
 	'Player.StayOnTop': {inclusion : bools},
 	'Player.Screen': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Player.VisualizationEffects': {inclusion : bools},
+	'Player.ProgressBarDock': {inclusion : bools},
 	'Player.PIP.Enabled': {inclusion : bools},
 	'Player.PIP.PositionX': {inclusion : horizontalPosArray},
 	'Player.PIP.PositionY': {inclusion : verticalPosArray},

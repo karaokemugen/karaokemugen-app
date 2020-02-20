@@ -159,6 +159,8 @@ Player:
     PositionY: Bottom
     # Size in %
     Size: 30
+  # Play progress bar in Dock / Taskbar
+  ProgressBarDock: true
   # When playing mp3s, enable/disable visualization effects.
   VisualizationEffects: false
 Playlist:

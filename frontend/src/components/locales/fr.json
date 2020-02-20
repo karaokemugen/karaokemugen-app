@@ -245,7 +245,8 @@
 	"LOGOUT": "Déconnexion",
 	"SETTINGS": {
 		"PLAYER": {
-			"LABEL": "Lecteur"
+			"LABEL": "Lecteur",
+			"PROGRESS_BAR_DOCK": "Barre de progression de la lecture dans le Dock/Barre des tâches"
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",

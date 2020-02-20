@@ -10,6 +10,8 @@ import {asyncExists, asyncWriteFile, asyncReadFile} from '../lib/utils/files';
 import {getConfig} from '../lib/utils/config';
 import {getState} from './state';
 import logger from '../lib/utils/logger';
+import i18next from 'i18next';
+import { errorStep } from './electron_logger';
 
 let shutdownInProgress = false;
 
@@ -99,7 +101,8 @@ export async function initPGData() {
 			stdio: 'inherit'
 		});
 	} catch(err) {
-		logger.error(`[DB] Failed to initialize database : ${JSON.stringify(err, null, 2)}`);
+		logger.error(`[DB] Failed to initialize database : ${JSON.stringify(err)}`);
+		errorStep(i18next.t('ERROR_INIT_PG_DATA'));
 		throw `Init failed : ${err}`;
 	}
 }
@@ -166,7 +169,8 @@ export async function initPG() {
 			stdio: 'ignore'
 		});
 	} catch(err) {
-		logger.error(`[DB] Failed to start PostgreSQL : ${JSON.stringify(err, null, 2)}`);
+		logger.error(`[DB] Failed to start PostgreSQL : ${JSON.stringify(err)}`);
+		errorStep(i18next.t('ERROR_START_PG'));
 		throw err.message;
 	}
 }

@@ -23,7 +23,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 
 * Accepted formats :
   * Video: AVI, MP4, MKV (anything supported by [mpv](http://mpv.io) really)
-  * Subtitles: ASS, Epitanime Toyunda, Ultrastar .txt files (for those last two, they will be converted to ASS upon importation, and cannot be used directly)
+  * Subtitles: ASS, Karafun, KAR, Epitanime Toyunda, Ultrastar .txt files (if not ASS, they will be converted to ASS upon importation, and cannot be used directly)
   * Music: MP3, M4A, OGG
 * Complete player controls : Skip, pause, play, stop, rewind playback, hide/show lyrics, mute/unmute and volume control
 * Playlist management : Reorder, shuffle, copy and move songs around between playlists
@@ -32,7 +32,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 * Complete filter system and search engine based on the aforementionned metadata.
 * User profiles with access rights, favorites list, and other info
 * Web interface for smartphone/tablet/PC ~~IE6 compatible~~
-* Highly configurable experience to tailor the app to your specific needs (in front of a crowd, between friends, for karaoke contests, etc.)
+* Highly customized experience to tailor the app to your specific needs (in front of a crowd, between friends, for karaoke contests, etc.)
 * Displays karaoke information or admin announcements during song playback
 * Public or private mode :
   * In private mode (default) songs added by users are directly played one after the other in the current playlist
@@ -67,6 +67,14 @@ If you don't want to install manually, binaries are available [on the website](h
 ### Download
 
 To install, git clone this repository with the `--recursive` flag since it uses git submodules or download one of the available binaries for macOS or Windows on [Karaoke Mugen's website](http://mugen.karaokes.moe)
+
+### Config files and portability
+
+If a file named `portable` exists in the same directory as KM, it will seek its config files in a `app` folder from that directory.
+
+If that file does not exist, config files will be read from `~/KaraokeMugen/`.
+
+Portable mode is useful if you're storing Karaoke Mugen on a removeable media or an external hard drive.
 
 ### Required binaries
 
@@ -104,7 +112,7 @@ Earlier PostgreSQL versions (9.x, 10.x...) should work but have not been tested.
 
 Karaoke Mugen can use PostgreSQL in two ways :
 
-- **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `database.json` file to point out to the correct server and database)
+- **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `database.json` file to point to the correct server and database)
 - **Bundlded PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `database.json` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
 
 ### Yarn
@@ -113,7 +121,7 @@ If you don't have `yarn`, install it first from [Yarn's website](http://yarnpkg.
 
 ### Git submodules
 
-Initialize some git config values either via `yarn gitconfig` or
+Initialize some git config values either via `yarn gitconfig` or by hand :
 
 Warning : these are global. If you wish to make them local, put `local` after `config` in each command.
 
@@ -188,6 +196,14 @@ yarn start
 Generating a database ie required on first launch and is done automatically if the database specified in `database.json` is empty. You can trigger it manually later by connecting to the admin panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
 
 On first run, the app will make you create an admin user and follow a guided tour of the operator/admin panel. You can trigger this tour/admin creation process again by setting `FirstRun` to `true` in your config file. Check the sample config file for example.
+
+#### Launch without Electron
+
+If you need to launch the app without Electron (like, for a Raspberry Pi system), use
+
+```sh
+yarn startNoElectron
+```
 
 ## Translations
 
