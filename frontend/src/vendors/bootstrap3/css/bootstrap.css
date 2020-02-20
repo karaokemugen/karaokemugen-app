@@ -12,16 +12,6 @@ html {
 body {
   margin: 0;
 }
-article,
-details,
-footer,
-header,
-main,
-menu,
-nav {
-  display: block;
-}
-progress,
 video {
   display: inline-block;
   vertical-align: baseline;
@@ -295,32 +285,11 @@ pre code {
   background-color: transparent;
   border-radius: 0;
 }
-.container {
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto;
-}
-@media (min-width: 768px) {
-  .container {
-    width: 750px;
-  }
-}
-@media (min-width: 992px) {
-  .container {
-    width: 970px;
-  }
-}
-@media (min-width: 1200px) {
-  .container {
-    width: 1170px;
-  }
-}
 .row {
   margin-right: -15px;
   margin-left: -15px;
 }
-.col-lg-2, .col-xs-4, .col-xs-6, .col-lg-8, .col-xs-12, .col-md-12 {
+.col-lg-2, .col-xs-4, .col-xs-6, .col-lg-8, .col-xs-12 {
   position: relative;
   min-height: 1px;
   padding-right: 15px;
@@ -337,11 +306,6 @@ pre code {
 }
 .col-xs-4 {
   width: 33.33333333%;
-}
-@media (min-width: 992px) {
-  .col-md-12 {
-    float: left;
-  }
 }
 @media (min-width: 1200px) {
   .col-lg-2, .col-lg-8 {
@@ -1515,8 +1479,6 @@ button.close {
     width: 900px;
   }
 }
-.container:before,
-.container:after,
 .row:before,
 .row:after,
 .form-horizontal .form-group:before,
@@ -1532,7 +1494,6 @@ button.close {
   display: table;
   content: " ";
 }
-.container:after,
 .row:after,
 .form-horizontal .form-group:after,
 .nav:after,

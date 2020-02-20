@@ -71,14 +71,14 @@ export function optionalAuth(req: any, res: any, next: any) {
 			token: onlineToken,
 			role: 'user'
 		})
-		.then((user: User) => {
-			req.user = user;
-			next();
-		})
-		.catch(err => {
-			logger.error(`[API] Error checking user : ${JSON.stringify(token)} : ${err}`);
-			res.status(403).send('User logged in unknown');
-		});
+			.then((user: User) => {
+				req.user = user;
+				next();
+			})
+			.catch(err => {
+				logger.error(`[API] Error checking user : ${JSON.stringify(token)} : ${err}`);
+				res.status(403).send('User logged in unknown');
+			});
 	} catch(_err) {
 		// request has no authToken, continuing
 		next();

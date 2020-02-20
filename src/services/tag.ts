@@ -134,7 +134,6 @@ export async function mergeTags(tid1: string, tid2: string) {
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
 		await refreshTagsAfterDBChange();
-		console.log('Done');
 		return tagObj;
 	} catch(err) {
 		logger.error(`[Tags] Error merging tag ${tid1} and ${tid2} : ${err}`);

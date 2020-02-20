@@ -1,13 +1,13 @@
-import { Router } from "express";
-import { errMessage } from "../common";
-import { message } from "../../player/player";
-import { emitWS } from "../../lib/utils/ws";
-import { check } from "../../lib/utils/validators";
-import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from "../middlewares/auth";
-import { getLang } from "../middlewares/lang";
-import { sendCommand, playPlayer } from "../../services/player";
-import { requireWebappLimited } from "../middlewares/webapp_mode";
-import { getState } from "../../utils/state";
+import { Router } from 'express';
+import { errMessage } from '../common';
+import { message } from '../../player/player';
+import { emitWS } from '../../lib/utils/ws';
+import { check } from '../../lib/utils/validators';
+import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
+import { sendCommand, playPlayer } from '../../services/player';
+import { requireWebappLimited } from '../middlewares/webapp_mode';
+import { getState } from '../../utils/state';
 
 export default function playerController(router: Router) {
 	router.route('/player/play')
@@ -72,7 +72,7 @@ export default function playerController(router: Router) {
 					try {
 						await message(req.body.message, +req.body.duration);
 					} catch(err) {
-						errMessage('MESSAGE_SEND_ERROR', err)
+						errMessage('MESSAGE_SEND_ERROR', err);
 						res.status(500).send('MESSAGE_SEND_ERROR');
 					}
 				}
@@ -83,7 +83,7 @@ export default function playerController(router: Router) {
 				res.status(400).json(validationErrors);
 			}
 		});
-		router.route('/player')
+	router.route('/player')
 		/**
 	 * @api {put} /player Send commands to player
 	 * @apiName PutPlayerCommando
@@ -101,38 +101,38 @@ export default function playerController(router: Router) {
 	 * HTTP/1.1 200 OK
 	 * "COMMAND_SENT"
 	 */
-			.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-				const validationErrors = check(req.body, {
-					command: {inclusion: [
-						'play',
-						'pause',
-						'stopNow',
-						'stopAfter',
-						'skip',
-						'prev',
-						'toggleFullscreen',
-						'toggleAlwaysOnTop',
-						'seek',
-						'goTo',
-						'mute',
-						'unmute',
-						'setVolume',
-						'showSubs',
-						'hideSubs'
-					]}
-				});
-				if (!validationErrors) {
-					try {
-						await sendCommand(req.body.command, req.body.options);
-						res.status(200).send('COMMAND_SENT');
-					} catch(err) {
-						errMessage('COMMAND_SEND_ERROR',err)
-						res.status(500).send('COMMAND_SEND_ERROR');
-					}
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.status(400).json(validationErrors);
-				}
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			const validationErrors = check(req.body, {
+				command: {inclusion: [
+					'play',
+					'pause',
+					'stopNow',
+					'stopAfter',
+					'skip',
+					'prev',
+					'toggleFullscreen',
+					'toggleAlwaysOnTop',
+					'seek',
+					'goTo',
+					'mute',
+					'unmute',
+					'setVolume',
+					'showSubs',
+					'hideSubs'
+				]}
 			});
+			if (!validationErrors) {
+				try {
+					await sendCommand(req.body.command, req.body.options);
+					res.status(200).send('COMMAND_SENT');
+				} catch(err) {
+					errMessage('COMMAND_SEND_ERROR',err);
+					res.status(500).send('COMMAND_SEND_ERROR');
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
+		});
 }

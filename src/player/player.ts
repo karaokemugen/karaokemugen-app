@@ -20,6 +20,9 @@ import { initializationCatchphrases } from '../utils/constants';
 import { getSingleMedia } from '../services/medias';
 import { MediaType } from '../types/medias';
 import { notificationNextSong } from '../services/playlist';
+import randomstring from 'randomstring';
+import { errorStep } from '../utils/electron_logger';
+import { setProgressBar } from '..';
 
 const sleep = promisify(setTimeout);
 
@@ -125,9 +128,14 @@ export async function initPlayerSystem() {
 	const state = getState();
 	playerState.fullscreen = state.fullscreen;
 	playerState.stayontop = state.ontop;
-	await startmpv();
-	emitPlayerState();
-	logger.debug('[Player] Player is READY');
+	try {
+		await startmpv();
+		emitPlayerState();
+		logger.debug('[Player] Player is READY');
+	} catch(err) {
+		errorStep(i18n.t('ERROR_START_PLAYER'));
+		throw err;
+	}
 }
 
 async function getmpvVersion(path: string): Promise<string> {
@@ -207,9 +215,13 @@ async function startmpv() {
 
 	let socket: string;
 	// Name socket file accordingly depending on OS.
+	const random = randomstring.generate({
+		length: 3,
+		charset: 'numeric'
+	});
 	state.os === 'win32'
-		? socket = '\\\\.\\pipe\\mpvsocket'
-		: socket = '/tmp/km-node-mpvsocket';
+		? socket = '\\\\.\\pipe\\mpvsocket' + random
+		: socket = '/tmp/km-node-mpvsocket' + random;
 
 	player = new mpv(
 		{
@@ -266,7 +278,7 @@ async function startmpv() {
 		if (monitorEnabled) promises.push(playerMonitor.start());
 		await Promise.all(promises);
 	} catch(err) {
-		logger.error(`[Player] mpvAPI : ${err}`);
+		logger.error(`[Player] mpvAPI : ${JSON.stringify(err)}`);
 		throw err;
 	}
 
@@ -318,8 +330,14 @@ async function startmpv() {
 		emitPlayerState();
 	});
 	player.on('timeposition', (position: number) => {
+		const conf = getConfig();
 		// Returns the position in seconds in the current song
 		playerState.timeposition = position;
+		if (conf.Player.ProgressBarDock) {
+			playerState.mediaType === 'song'
+				? setProgressBar(position / playerState.duration)
+				: setProgressBar(-1);
+		}
 		emitPlayerState();
 		// Send notification to frontend if timeposition is 15 seconds before end of song
 		if (position >= (playerState.duration - 15) && playerState.mediaType === 'song' && !nextSongNotifSent) {
@@ -335,7 +353,6 @@ async function startmpv() {
 		if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
 		!displayingInfo &&
 		playerState.mediaType === 'song' && !getState().songPoll) displayInfo(8000);
-		const conf = getConfig();
 		// Stop poll if position reaches 10 seconds before end of song
 		if (Math.floor(position) >= Math.floor(playerState.duration - 10) &&
 		playerState.mediaType === 'song' &&
@@ -509,6 +526,7 @@ export async function stop(): Promise<PlayerState> {
 	await loadBackground();
 	if (!getState().songPoll) displayInfo();
 	setState({player: playerState});
+	setProgressBar(-1);
 	return playerState;
 }
 

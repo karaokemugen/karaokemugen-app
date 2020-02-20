@@ -1,13 +1,10 @@
 #welcomePage {
     height:100vh;
     display: flex;
-    flex-direction: column;
-    padding: 0;
+	flex-direction: column;
+	align-items: center;
     background: rgba(0, 0, 0, 0) linear-gradient(135deg, hsla(205, 39%, 20%, 1) 0%, hsla(151, 17%, 40%, 1) 100%) repeat scroll 0 0;
 
-    html,  body {
-        height: 100%;
-    }
     body {
         font-family: 'Lato', sans-serif;
         font-size: 14px;
@@ -18,116 +15,16 @@
         -webkit-font-smoothing: antialiased;
     }
     
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-        font-weight: 300;
-        margin: 0px;
-    }
-    h1 {
-        font-size: 44px;
-        line-height: 56px;
-        color: #fff;
-    }
-    h2 {
-    font-size: 30px;
-    line-height: 35px;
-    }
-    h3 {
-        font-size: 23px;
-        line-height: 25px;
-    }
-    h4 {
-    font-size: 20px;
-    line-height: 24px;
-    font-weight: 400;
-    }
-    p {
-        font-size: 16px;
-        line-height: 25px;
-        margin: 0px;
-    }
-    ul {
-        padding: 0;
-        margin: 0;
-        list-style: none;
-    }
-
-    a, li {
-        transition: all 0.5s ease-in-out 0s;
-    }
-
-    a:focus,
-    .btn:focus,
-    .btn:active:focus {
-        box-shadow: none;
-        outline: 0 none;
-    }
-    a,
-    a:active,
-    a:focus,
-    a:active {
+    a {
         text-decoration: none;
     }
 
-    .btn {    
-        border-radius: 0;
-    }
-
-    .btn-home {
-    background-color: hsla(274, 49%, 34%, 0.3);
-    border: 1px solid #fff;
-    border-radius: 0px;
-    color: #fff;
-    font-size: 18px;
-    padding: 10px 40px;
-    margin-top: 30px;
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
-    }
-
-    .btn-home:hover,
-    .btn-home:focus {
-        background-color: #fff;
-        color: #555;
-    }
-
-    .btn-border {
-        border: 1px solid #fff;
-        padding: 13px 40px;
-        color: #fff;
-        font-size: 15px;
-        text-transform: uppercase;
-        text-shadow: none;
-	}
-    
     .menu-top {
-        padding:20px;
+		width: 100%;
+        padding: 15px;
         display: flex;
         justify-content: space-around;
         
-        a:focus{
-            color: #009ee5;
-        }
-
-        a, a:hover {
-            color: #fff;
-            padding: 7px;
-        }
-
-        li {
-            padding: 0px 15px;
-        }
-        li a {
-            color: #fff;
-            padding: 10px 0px;
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400;
-            font-size: 14px;
-        }
-
         .menu-top-left {
             display: flex;         
             .menu-top-sessions-label {
@@ -136,218 +33,117 @@
         }
 
         .menu-top-right {
-            display: flex;
+			display: flex;
+			
+			a {
+				color: #fff;
+				padding: 7px;
+			}
+
+			a:hover, a:focus {
+				color: #009ee5;
+			}
         }
-    }
-
-    .container {
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    .container,
-    .container > .row {
-        height: 100%;
+	}
+	
+    .row {
+		height: 100%;
+		width: 90%;
         padding: 5px;
+        display: flex;
+        flex-direction: column;
     }
-    .logoDiv {
-        margin-bottom: 20px;
+    .row > div:last-child {
+		overflow: auto;
+		height: calc(100% - 400px);
     }
-    .catchPhrase {
-		font-size: 16px;
-		text-align: center;
-    }
+
     .block {
-    padding-top: 5px;
-    }
-    .block h1.wow {
-    margin-bottom: 35px;
-    margin-top: 5px;
-    text-transform: uppercase;
-    font-size: 40px;
-    letter-spacing: 6px;
-    position: relative;
-    }
-    h1.wow:before {
-        content: "";
-        position: absolute;
-        left: -6px;
-        bottom: -12px;
-        background: #ffffffad;
-        height: 2px;
-        width: 51%;
-        transform: translateX(50%);
-    }
-
-    .menu .tutorialText {
-        display: none;
-    }
-    .tutorial .normalText {
-        display: none;
-    }
-    .tutorial .tutorialText {
-        display: block;
-    }
-    .tutorial {
-        border: 3px solid  #d83838a8;
-    }
-
-    .logo-1, .logo-2 {
-        position: relative;    
-        margin-bottom: 5px;
-        margin-left: 3px;
-        transform: translateX(-50%);
-        left: 50%;
-        filter: hue-rotate(427deg) saturate(0) brightness(156%);
-    }
-
-    a {
-        color: hsla(208, 91%, 79%, 1);
-    }
-    li.new .new-header > a {
-        float: right;
-    }
-    li.new .new-header{
-        position: relative;
-        margin-bottom: 14px;
-    }
-    li.new .new-header:after {
-        content: "";
-        position: absolute;
-        left: -50%;
-        bottom: -9px;
-        background: #ffffff60;
-        height: 2px;
-        width: 200%;
-    }
-    li.new[data-type="mast"] .new-header:after {
-        background: #ffffff60;
-    }
-    li.new[data-type="app"] .new-header:after {
-        background: #ffbd79bd;
-    }
-    li.new[data-type="base"] .new-header:after {
-        background: #d46cb9ad;
-    }
-
-    .block,
-    .counter.wow {
         background: rgba(255, 255, 255, 0.2);
         margin: 5px;
         padding:13px;
         box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2)
     }
 
-    .block h2 {
-        color: #fff;
-        font-size: 30px;
-        font-weight: 300;
-        letter-spacing: 5px;
-        padding-bottom: 19px;
-        text-align: center;
-    }
-    .container > .row,
-    .news ul {
-        display: flex;
-        flex-direction: column;
-    }
-    .new h1 {
-        font-size: 25px;
-    }
-    .container > .row > div {
-        flex: 0 0 auto;
-    }
-    .container > .row > div:last-child {
-        flex-shrink: 1;
-        overflow: auto;
-        width: auto;
+    .logoDiv {
+		margin: 5px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		img {
+			filter: hue-rotate(427deg) saturate(0) brightness(156%);
+			height: 122px;
+		}
+		
+		.separatorLogo {
+			background: #ffffffad;
+			height: 2px;
+			width: 50%;
+			margin: 5px;
+		}
+		
+		.catchPhrase {
+			font-size: 16px;
+			text-align: center;
+		}
     }
 
-    ul.news li.new {
-        flex: 0 1 auto;
-        width: 100%;
-        text-align: left;
-        font-size: 110%;
-        margin-bottom: 5px;
-        background-color: hsla(0, 12%, 24%, 0.4) !important;
-        max-height: 200px;
-        overflow: hidden;
-        position: relative;
-    }
-    li.new.overflowed:before {
-        content:'';
-        width:100%;
-        height:100%;    
-        position:absolute;
-        left:0;
-        top:0;
-        background:linear-gradient(transparent 150px, hsl(165, 4%, 37%));
-    }
-    li.new.open:before {
-        display: none;
-    }
-    ul.news li.new.open {
-    max-height: none;
-    }
-    #welcome_dashboard {
-        display: flex;
-    }
-    .menu > ul  > li {
-        text-align: center;
-        padding: 25px 28px 20px;
-    }
-    .block.wow > ul > li,
-    .news li.new {
-        background-color: rgba(255, 255, 255, 0.3);
-        color: #fff;
-        display: inline-block;
-        line-height: 25px;
-        padding: 10px 15px 10px;
-        flex-grow: 1;
-        flex-basis: 0;
-        margin-bottom: 3px;
-        box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
-        cursor: pointer;
-    }
-    .menu ul li:nth-child(1) {
-        background-color: hsla(234, 44%, 67%, 0.2)
-    }
-    .menu ul li:nth-child(2) {
-        background-color: hsla(140, 47%, 67%, 0.2);
-    }
-    .menu ul li:nth-child(3) {
-        background-color: hsla(60, 50%, 58%, 0.2)
-    }
-    .menu ul li:last-child {
-        background-color: hsla(0, 12%, 54%, 0.4)
-    }
+	.menuWelcome {
+		display: flex;
 
-    .menu ul li:nth-child(1):hover {
-        background-color: hsla(234, 44%, 47%, 0.2)
-    }
-    .menu ul li:nth-child(2):hover {
-        background-color: hsla(140, 47%, 47%, 0.2);
-    }
-    .menu ul li:nth-child(3):hover {
-        background-color: hsla(60, 50%, 38%, 0.2)
-    }
-    .menu ul li:nth-child(4):hover {
-        background-color: hsla(0, 22%, 34%, 0.4)
-    }
+		.tutorial {
+			border: 3px solid  #d83838a8;
+		}
 
-    ul li:active {
-        background-color: rgba(255, 255, 255, 0.12);
-    }
+		li {
+			padding: 10px 15px 10px;
+			box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+			cursor: pointer;
+			line-height: 25px;
+			text-align: center;
+			list-style: none;
+			flex-grow: 1;
+			flex-basis: 0;
 
-    ul li span {
-        font-size: 16px;
-        font-weight: 300;
-    }
-    ul li .digit {
-        display: inline-block;
-        font-size: 50px;
-        line-height: 50px;
-        position: relative;
-        overflow: hidden;
-        height: 60px;
-    }
+			i {
+				font-size: 50px;
+				height: 60px;
+			}
+		}
+
+		// operator page
+		li:nth-child(1) {
+			background-color: hsla(234, 44%, 67%, 0.2)
+		}
+		li:nth-child(1):hover {
+			background-color: hsla(234, 44%, 47%, 0.2)
+		}
+
+		// system panel
+		li:nth-child(2) {
+			background-color: hsla(140, 47%, 67%, 0.2);
+		}
+		li:nth-child(2):hover {
+			background-color: hsla(140, 47%, 47%, 0.2);
+		}
+
+		// public page
+		li:nth-child(3) {
+			background-color: hsla(60, 50%, 58%, 0.2)
+		}
+		li:nth-child(3):hover {
+			background-color: hsla(60, 50%, 38%, 0.2)
+		}
+
+		// help page
+		li:last-child {
+			background-color: hsla(0, 12%, 54%, 0.4)
+		}
+		li:nth-child(4):hover {
+			background-color: hsla(0, 22%, 34%, 0.4)
+		}
+	
+	}
+
 }

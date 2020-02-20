@@ -232,7 +232,8 @@
 	"LOGOUT": "Logout",
 	"SETTINGS": {
 		"PLAYER": {
-			"LABEL": "Player"
+			"LABEL": "Player",
+			"PROGRESS_BAR_DOCK": "Play progress bar in Dock / Taskbar"
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoke",

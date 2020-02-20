@@ -33,6 +33,7 @@ let state: State = {
 	isTest: false,
 	EngineDefaultLocale: 'fr',
 	securityCode: null,
+	wsLogNamespace: null,
 	player: {
 		ready: false
 	},
@@ -78,7 +79,8 @@ export function getPublicState(admin: boolean) {
 		modePlaylistID: state.modePlaylistID,
 		appPath: admin ? state.appPath : undefined,
 		dataPath: admin ? state.dataPath : undefined,
-		os: admin ? state.os : undefined
+		os: admin ? state.os : undefined,
+		wsLogNamespace: admin ? state.wsLogNamespace : undefined
 	};
 }
 

@@ -858,7 +858,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
 	try {
-		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist, null, 2)}`);
+		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist)}`);
 		const validationErrors = check(playlist, PLImportConstraints);
 		if (validationErrors) throw `Playlist file is invalid : ${JSON.stringify(validationErrors)}`;
 		let playingKara: PLC = {

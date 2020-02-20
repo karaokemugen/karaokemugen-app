@@ -5,13 +5,16 @@ import {exit} from '../services/engine';
 import {duration} from '../lib/utils/date';
 import {generateDatabase} from '../lib/services/generation';
 import DBMigrate from 'db-migrate';
-import {join} from 'path';
+
 import {isShutdownPG, initPG} from '../utils/postgresql';
 import { baseChecksum } from './dataStore';
 import { DBStats } from '../types/database/database';
 import { getSettings, saveSetting, connectDB, db, vacuum, getInstanceID, setInstanceID } from '../lib/dao/database';
 import { generateBlacklist } from '../services/blacklist';
 import uuidV4 from 'uuid/v4';
+import { resolve } from 'path';
+import { initStep, errorStep } from '../utils/electron_logger';
+import i18next from 'i18next';
 
 const sql = require('./sql/database');
 
@@ -73,7 +76,7 @@ async function migrateDB() {
 			}
 		},
 		cmdOptions: {
-			'migrations-dir': join(__dirname, '../../migrations/'),
+			'migrations-dir': resolve(getState().resourcePath, 'migrations/'),
 			'log-level': 'warn|error'
 		}
 	};
@@ -131,9 +134,11 @@ export async function initDBSystem(): Promise<boolean> {
 		doGenerate = true;
 	}
 	if (doGenerate) try {
+		initStep(i18next.t('INIT_GEN'));
 		await generateDB();
 	} catch(err) {
 		logger.error(`[DB] Generation failed : ${err}`);
+		errorStep(i18next.t('ERROR_GENERATION'));
 		throw 'Generation failure';
 	}
 	// Run this in the background

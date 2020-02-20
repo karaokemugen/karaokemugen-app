@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+	<title>Karaoke Mugen</title>
+    <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+	<meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+	<link rel="stylesheet" type="text/css" href="initpage.css">
+  </head>
+  <body>
+	<img class="logo" src='./public/km-logo.png' />
+	<div id="init"></div>
+	<div id="nanamiSD"></div>
+	<div id="error"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+	<button id="buttonLogs">Logs</button>
+	<div class="hidden" id="logs"></div>
+  </body>
+  <script src="initpage.js"></script>
+</html>
