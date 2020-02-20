@@ -32,8 +32,6 @@ interface CustomStep extends Step {
 class Tutorial extends Component<IProps,IState> {
 	constructor(props:IProps) {
 		super(props);
-		const query = new URLSearchParams(window.location.search);
-		const admpwd = query.get('admpwd');
 		const isSmall =window.innerWidth <= 1023;
 
 		this.state = {
@@ -44,7 +42,7 @@ class Tutorial extends Component<IProps,IState> {
 				{
 					target: 'body',
 					placement: 'center',
-					content: i18nAsDiv('INTRO_ADMIN_INTRO1', { password : admpwd }), 
+					content: i18nAsDiv('INTRO_ADMIN_INTRO1'), 
 				}, 
 				{
 					target: '.modal-content',
