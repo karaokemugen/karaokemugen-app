@@ -98,7 +98,7 @@ pkg_mac:
   interruptible: true
   artifacts:
     expire_in: 2 hours
-    name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
+    name: km-app-pkgmac-${CI_COMMIT_REF_SLUG}
     paths:
       - release
   dependencies:
