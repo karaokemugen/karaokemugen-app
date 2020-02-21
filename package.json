@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "3.2.0",
+  "version": "3.2.0-next",
   "description": "Karaoke playlist manager / player",
   "bin": {
     "karaokemugen": "./dist/index.js"
@@ -68,19 +68,6 @@
   },
   "license": "MIT",
   "private": true,
-  "pkg": {
-    "scripts": [
-      "node_modules/db-migrate/lib/commands/**",
-      "dist/**/*.js"
-    ],
-    "assets": [
-      "migrations/**",
-      "dist/locales/*",
-      "assets/**",
-      "frontend/build/**",
-      "systempanel/build/**"
-    ]
-  },
   "dependencies": {
     "agentkeepalive": "^4.1.0",
     "ass-compiler": "^0.0.11",
@@ -94,6 +81,7 @@
     "csv-writer": "^1.6.0",
     "db-migrate": "^0.11.6",
     "db-migrate-pg": "^1.0.0",
+    "electron-updater": "^4.2.2",
     "execa": "^4.0.0",
     "express": "^4.17.1",
     "file-type": "^14.1.2",
@@ -199,25 +187,48 @@
     "url": "http://localhost:1337/api"
   },
   "build": {
-    "appId": "KaraokeMugen",
+	"appId": "KaraokeMugen",
+	"nsis": {
+		"oneClick": false,
+		"allowToChangeInstallationDirectory": true,
+		"license": "LICENSE.md"
+	},
+	"appImage": {
+		"license": "LICENSE.md",
+		"category": "AudioVideo",
+		"publish": {
+			"provider": "generic",
+			"url": "https://mugen.karaokes.moe/downloads/"
+		}
+	},
     "win": {
-      "target": "portable",
-	  "compression": "normal",
-      "publisherName": "Karaoke Mugen Team"
+      "target": ["nsis", "zip"],
+      "compression": "normal",
+	  "publisherName": "Karaoke Mugen Team",
+	  "publish": {
+		  "provider": "generic",
+		  "url": "https://mugen.karaokes.moe/downloads/"
+	  }
     },
     "mac": {
-	  "compression": "normal",
+      "compression": "normal",
       "category": "public.app-category.entertainment"
     },
-    "productName": "KaraokeMugen",
+	"linux": {
+	  "target": "AppImage",
+	  "vendor": "Karaoke Mugen Team",
+	  "executableName": "karaokemugen",
+	  "category": "AudioVideo"
+	},
+    "productName": "Karaoke Mugen",
     "extraResources": [
       "migrations/**",
       "locales/*",
       "assets/**",
       "frontend/build/**",
-	  "systempanel/build/**",
-	  "initpage/**",
-	  "samples/**"
+      "systempanel/build/**",
+      "initpage/**",
+      "samples/**"
     ],
     "extraFiles": [
       "app/bin/**"

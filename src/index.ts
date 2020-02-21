@@ -10,6 +10,9 @@ import {logo} from './logo';
 import { setState, getState } from './utils/state';
 import { version } from './version';
 import { migrateOldFoldersToRepo, addRepo, getRepo } from './services/repo';
+import { welcomeToYoukousoKaraokeMugen } from './services/welcome';
+import { initStep, errorStep } from './utils/electron_logger';
+
 // Types
 import {Config} from './types/config';
 
@@ -26,8 +29,7 @@ import { getPortPromise } from 'portfinder';
 import { app, BrowserWindow, Menu, MenuItem, ipcMain, dialog } from 'electron';
 import cloneDeep from 'lodash.clonedeep';
 import open from 'open';
-import { welcomeToYoukousoKaraokeMugen } from './services/welcome';
-import { initStep, errorStep } from './utils/electron_logger';
+import {autoUpdater} from 'electron-updater';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -130,6 +132,7 @@ if (app && !argv.batch) {
 				${state.securityCode}` });
 			}}));
 			Menu.setApplicationMenu(menu);
+			autoUpdater.checkForUpdatesAndNotify();
 		});
 		ipcMain.on('initPageReady', async () => {
 			try {
@@ -363,3 +366,4 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 export function setProgressBar(number: number) {
 	if (win) win.setProgressBar(number);
 }
+
