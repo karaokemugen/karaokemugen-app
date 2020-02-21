@@ -9,6 +9,8 @@ cache:
     - node_modules/
     - systempanel/node_modules/
     - frontend/node_modules/
+    - $HOME/.cache/electron
+    - $HOME/.cache/electron-builder
 
 stages:
   - test
@@ -63,9 +65,35 @@ build:
     - next
     - tags
 
+pkg_linux:
+  stage: package
+  image: electronuserland/builder:latest
+  interruptible: true
+  artifacts:
+    expire_in: 2 hours
+    name: km-app-pkglinux-${CI_COMMIT_REF_SLUG}
+    paths:
+      - release
+  dependencies:
+    - build
+  variables:
+    ELECTRON_CACHE: ~/.cache/electron
+    ELETCRON_BUILDER_CACHE: ~/.cache/electron-builder
+  script:
+    - ./node_modules/.bin/electron-builder -l --publish always
+    - ls -la packages/
+    - mkdir release
+    - mv packages/*.AppImage release/
+    - mv packages/*.yml release/
+    - cd release
+  only:
+    - master
+    - next
+    - tags
+
 pkg_win:
   stage: package
-  image: electronuserland/builder:wine
+  image: electronuserland/builder:wine-mono
   interruptible: true
   artifacts:
     name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
@@ -73,18 +101,22 @@ pkg_win:
       - release
   dependencies:
     - build
+  variables:
+    ELECTRON_CACHE: ~/.cache/electron
+    ELETCRON_BUILDER_CACHE: ~/.cache/electron-builder
   script:
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-3.2.tar.gz | tar xvz
-    - ./node_modules/.bin/electron-builder -w
+    - ./node_modules/.bin/electron-builder -w --publish always
     - ls -la packages/
-    - mkdir out
     - mkdir release
-    - mv packages/*.exe out/
-    - cp -f config.sample.yml out/
-    - cd out
+    - mv packages/*.exe release
+    - mv packages/*.yml release
+    - mv packages/*.blockmap release/
     - touch portable
-    - zip -r ../release/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
+    - zip -rv packages/*.zip portable
+    - mv packages/*.zip release/
+    - cd release
   only:
     - master
     - next
@@ -101,15 +133,18 @@ pkg_mac:
       - release
   dependencies:
     - build
+  variables:
+    CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    ELECTRON_CACHE: ~/.cache/electron
+    ELETCRON_BUILDER_CACHE: ~/.cache/electron-builder
   script:
-    - export CSC_IDENTITY_AUTO_DISCOVERY=false
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-3.2.tar.gz | tar xvz
     - ./node_modules/.bin/electron-builder -m
     - ls -la packages/
     - mkdir release
     - mv packages/*.dmg release/
     - cd release
-    - mv * KaraokeMugen-$CI_COMMIT_REF_NAME-macos.dmg
+    - mv * KaraokeMugen-$CI_COMMIT_REF_NAME.dmg
   only:
     - master
     - next
@@ -122,7 +157,8 @@ deploy_mac:
   dependencies:
     - pkg_mac
   script:
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put release/KaraokeMugen-$CI_COMMIT_REF_NAME-macos.dmg"
+    - ls -la release/*
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put release/KaraokeMugen-$CI_COMMIT_REF_NAME.dmg"
   only:
     - master
     - next
@@ -135,17 +171,22 @@ deploy_win:
   dependencies:
     - pkg_win
   script:
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put release/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
+    - ls -la release/*
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
   only:
     - master
     - next
     - tags
 
-latest_tag:
+deploy_linux:
   stage: deploy
   interruptible: true
+  dependencies:
+    - pkg_linux
   script:
-    - echo $CI_COMMIT_REF_NAME >latest
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put latest"
+    - ls -la release/*
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
   only:
+    - master
+    - next
     - tags
