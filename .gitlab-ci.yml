@@ -125,7 +125,7 @@ pkg_win:
 pkg_mac:
   stage: package
   retry:
-    max: 5
+    max: 2
   tags:
     - macos
   interruptible: true
