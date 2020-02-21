@@ -119,6 +119,7 @@ pkg_mac:
 
 deploy_mac:
   stage: deploy
+  image: minidocks/lftp
   interruptible: true
   dependencies:
     - pkg_mac
@@ -131,6 +132,7 @@ deploy_mac:
 
 deploy_win:
   stage: deploy
+  image: minidocks/lftp
   interruptible: true
   dependencies:
     - pkg_win
