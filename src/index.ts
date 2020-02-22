@@ -26,6 +26,7 @@ import {createInterface} from 'readline';
 import { getPortPromise } from 'portfinder';
 import { app } from 'electron';
 import cloneDeep from 'lodash.clonedeep';
+import { startElectron } from './electron';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -112,7 +113,7 @@ process.env['NODE_ENV'] = 'production'; // Default
 const argv = minimist(process.argv.slice(2));
 
 if (app && !argv.batch) {
-
+	startElectron();
 } else {
 	// This is in case we're running with yarn startNoElectron
 	configureLocale()
