@@ -4,7 +4,7 @@ import { welcomeToYoukousoKaraokeMugen } from './services/welcome';
 import i18next from 'i18next';
 import { on } from './lib/utils/pubsub';
 import { autoUpdater } from 'electron-updater';
-import { configureLocale } from './lib/utils/config';
+import { configureLocale, getConfig } from './lib/utils/config';
 import { main } from './index';
 import logger from './lib/utils/logger';
 import { exit } from './services/engine';
@@ -28,7 +28,7 @@ export async function startElectron() {
 				${state.securityCode}` });
 			}}));
 			Menu.setApplicationMenu(menu);
-			autoUpdater.checkForUpdatesAndNotify();
+			if (getConfig().Online.Updates.App) autoUpdater.checkForUpdatesAndNotify();
 		});
 		ipcMain.on('initPageReady', async () => {
 			try {
