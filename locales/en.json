@@ -29,7 +29,18 @@
 	"MENU_FILE_QUIT": "Quit",
 	"MENU_FILE_RELOAD": "Reload",
 	"MENU_FILE_ABOUT": "About Karaoke Mugen",
+	"MENU_FILE_UPDATE": "Search for update...",
 	"MENU_SHOW_SECURITY_CODE": "Show security code",
 	"SECURITY_CODE_TITLE": "Security code",
-	"SECURITY_CODE_MESSAGE": "This is the actual security code:"
+	"SECURITY_CODE_MESSAGE": "This is the actual security code:",
+	"ERROR": "Error",
+	"UNKNOWN": "unknown",
+	"YES": "Yes",
+	"NO": "No",
+	"UPDATE_FOUND": "Update available",
+	"UPDATE_PROMPT": "Do you want to update Karaoke Mugen ?",
+	"UPDATE_NOT_AVAILABLE": "No update available",
+	"CURRENT_VERSION_OK": "You already are using the latest version of Karaoke Mugen !",
+	"UPDATE_DOWNLOADED": "Updated downloaded",
+	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karoake Mugen will restart to install the update..."
 }

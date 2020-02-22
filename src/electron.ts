@@ -32,14 +32,14 @@ export async function startElectron() {
 			if (getConfig().Online.Updates.App) {
 				autoUpdater.logger = logger;
 				autoUpdater.on('error', (error) => {
-					dialog.showErrorBox('Error: ', error == null ? 'unknown' : (error.stack || error).toString());
+					dialog.showErrorBox(`${i18next.t('ERROR')}: `, error === null ? 'unknown' : (error.stack || error).toString());
 				});
 				autoUpdater.on('update-available', async () => {
 					const buttonIndex = await dialog.showMessageBox(win, {
 					  type: 'info',
-					  title: 'Found Updates',
-					  message: 'Found updates, do you want update now?',
-					  buttons: ['Sure', 'No']
+					  title: i18next.t('UPDATE_FOUND'),
+					  message: i18next.t('UPDATE_PROMPT'),
+					  buttons: [i18next.t('YES'), i18next.t('NO')]
 					});
 					if (buttonIndex.response === 0) {
 					  autoUpdater.downloadUpdate();
@@ -48,15 +48,15 @@ export async function startElectron() {
 
 				  autoUpdater.on('update-not-available', () => {
 					dialog.showMessageBox({
-					  title: 'No Updates',
-					  message: 'Current version is up-to-date.'
+					  title: i18next.t('UPDATE_NOT_AVAILABLE'),
+					  message: i18next.t('CURRENT_VERSION_OK')
 					});
 				  });
 
 				  autoUpdater.on('update-downloaded', async () => {
 					await dialog.showMessageBox(win, {
-					  title: 'Install Updates',
-					  message: 'Updates downloaded, application will be quit for update...'
+					  title: i18next.t('UPDATE_DOWNLOADED'),
+					  message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING')
 					});
 					autoUpdater.quitAndInstall();
 				});
@@ -102,7 +102,7 @@ export async function startElectron() {
 				label: process.platform === 'darwin' ? 'KaraokeMugen' : i18next.t('MENU_FILE'),
 				submenu: [
 					{
-						label: 'Check for updates',
+						label: i18next.t('MENU_FILE_UPDATE'),
 						click() {
 							autoUpdater.checkForUpdates();
 						}
