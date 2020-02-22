@@ -10,7 +10,7 @@ karaokemugen [options]
 Options :
 --help                          Displays this message
 --version                       Displays version info
---batch                         Do not open the GUI
+--cli                           Do not open the GUI
 --debug                         Displays additional debug messages
 --sql                           Traces SQL query at the debug log level
 --generate                      Generates a new database then quits

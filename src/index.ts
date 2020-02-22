@@ -112,7 +112,7 @@ process.env['NODE_ENV'] = 'production'; // Default
 
 const argv = minimist(process.argv.slice(2));
 
-if (app && !argv.batch) {
+if (app && !argv.cli) {
 	startElectron();
 } else {
 	// This is in case we're running with yarn startNoElectron
