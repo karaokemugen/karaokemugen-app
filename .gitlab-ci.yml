@@ -164,7 +164,7 @@ deploy_mac:
     - pkg_mac
   script:
     - ls -la release/*
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put release/KaraokeMugen-$CI_COMMIT_REF_NAME.dmg"
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
   only:
     - master
     - next
