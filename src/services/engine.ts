@@ -141,7 +141,7 @@ export async function exit(rc: any) {
 				logger.info('[Engine] PostgreSQL has shutdown');
 				mataNe(rc);
 			} catch(err) {
-				logger.error('[Engine] PostgreSQL could not be stopped!');
+				logger.warn(`[Engine] PostgreSQL could not be stopped! : ${JSON.stringify(err)}`);
 				mataNe(rc);
 			}
 		} else {
