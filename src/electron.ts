@@ -28,7 +28,39 @@ export async function startElectron() {
 				${state.securityCode}` });
 			}}));
 			Menu.setApplicationMenu(menu);
-			if (getConfig().Online.Updates.App) autoUpdater.checkForUpdatesAndNotify();
+			if (getConfig().Online.Updates.App) {
+				autoUpdater.logger = logger;
+				autoUpdater.on('error', (error) => {
+					dialog.showErrorBox('Error: ', error == null ? 'unknown' : (error.stack || error).toString());
+				});
+				autoUpdater.on('update-available', async () => {
+					const buttonIndex = await dialog.showMessageBox(win, {
+					  type: 'info',
+					  title: 'Found Updates',
+					  message: 'Found updates, do you want update now?',
+					  buttons: ['Sure', 'No']
+					});
+					if (buttonIndex.response === 0) {
+					  autoUpdater.downloadUpdate();
+					}
+				  });
+
+				  autoUpdater.on('update-not-available', () => {
+					dialog.showMessageBox({
+					  title: 'No Updates',
+					  message: 'Current version is up-to-date.'
+					});
+				  });
+
+				  autoUpdater.on('update-downloaded', async () => {
+					await dialog.showMessageBox(win, {
+					  title: 'Install Updates',
+					  message: 'Updates downloaded, application will be quit for update...'
+					});
+					autoUpdater.quitAndInstall();
+				});
+				autoUpdater.checkForUpdatesAndNotify();
+			}
 		});
 		ipcMain.on('initPageReady', async () => {
 			try {
@@ -69,6 +101,12 @@ export async function startElectron() {
 			menu.append(new MenuItem({
 				label: process.platform === 'darwin' ? 'KaraokeMugen' : i18next.t('MENU_FILE'),
 				submenu: [
+					{
+						label: 'Check for updates',
+						click() {
+							autoUpdater.checkForUpdates();
+						}
+					},
 					{
 						label: i18next.t('MENU_FILE_ABOUT'),
 						click() {
@@ -124,3 +162,4 @@ function createWindow () {
 export function setProgressBar(number: number) {
 	if (win) win.setProgressBar(number);
 }
+
