@@ -26,6 +26,7 @@ import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from './session';
 import { updatePlaylistMedias } from './medias';
 import { initStep } from '../utils/electron_logger';
+import { app } from 'electron';
 
 export async function initEngine() {
 	profile('Init');
@@ -158,9 +159,13 @@ function mataNe(rc: any) {
 	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
 	//On other systems or if terminal is not a TTY we exit immediately.
 	// non-TTY terminals have no stdin support.
-	if ((process.platform !== 'win32' || !process.stdout.isTTY) && !getState().electron) process.exit(rc);
-	if (rc !== 0 && !getState().electron) readlineSync.question('Press enter to exit', {hideEchoBack: true});
-	if (!getState().electron) process.exit(rc);
+	if ((process.platform !== 'win32' || !process.stdout.isTTY) && !app) process.exit(rc);
+	if (rc !== 0 && !app) readlineSync.question('Press enter to exit', {hideEchoBack: true});
+	if (!app) {
+		process.exit(rc);
+	} else {
+		app.exit();
+	}
 }
 
 export function shutdown() {
