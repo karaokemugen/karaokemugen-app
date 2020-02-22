@@ -111,7 +111,11 @@ setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath
 process.env['NODE_ENV'] = 'production'; // Default
 
 const argv = minimist(process.argv.slice(2));
-
+if (app) {
+	app.on('will-quit', () => {
+		exit(0);
+	});
+}
 if (app && !argv.cli) {
 	startElectron();
 } else {
