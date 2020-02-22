@@ -211,6 +211,7 @@
 	  }
     },
     "mac": {
+	  "target": ["dmg", "zip"],
       "compression": "normal",
       "category": "public.app-category.entertainment"
     },

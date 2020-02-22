@@ -145,6 +145,10 @@ pkg_mac:
     - ls -la packages/
     - mkdir release
     - mv packages/*.dmg release/
+    - mv packages/*.blockmap release/
+    - touch portable
+    - zip -rv packages/*.zip portable
+    - mv packages/*.zip release/
     - cd release
     - mv * KaraokeMugen-$CI_COMMIT_REF_NAME.dmg
   only:
