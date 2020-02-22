@@ -155,7 +155,7 @@ async function startmpv() {
 		'--no-border',
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
-		`--log-file=${resolve(state.dataPath, 'mpv.log')}`,
+		`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
 		`--volume=${+playerState.volume}`,
 		`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 		'--autoload-files=no'
