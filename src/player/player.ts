@@ -22,7 +22,7 @@ import { MediaType } from '../types/medias';
 import { notificationNextSong } from '../services/playlist';
 import randomstring from 'randomstring';
 import { errorStep } from '../utils/electron_logger';
-import { setProgressBar } from '..';
+import { setProgressBar } from '../electron';
 
 const sleep = promisify(setTimeout);
 

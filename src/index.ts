@@ -5,12 +5,10 @@ import {initConfig} from './utils/config';
 import {parseCommandLineArgs} from './args';
 import logger, { configureLogger } from './lib/utils/logger';
 import {exit, initEngine} from './services/engine';
-import {on} from './lib/utils/pubsub';
 import {logo} from './logo';
 import { setState, getState } from './utils/state';
 import { version } from './version';
 import { migrateOldFoldersToRepo, addRepo, getRepo } from './services/repo';
-import { welcomeToYoukousoKaraokeMugen } from './services/welcome';
 import { initStep, errorStep } from './utils/electron_logger';
 
 // Types
@@ -26,10 +24,8 @@ import minimist from 'minimist';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
 import { getPortPromise } from 'portfinder';
-import { app, BrowserWindow, Menu, MenuItem, ipcMain, dialog } from 'electron';
+import { app } from 'electron';
 import cloneDeep from 'lodash.clonedeep';
-import open from 'open';
-import {autoUpdater} from 'electron-updater';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -109,8 +105,6 @@ if (existsSync(resolve(originalAppPath, 'database.json')) && !existsSync(resolve
 	moveSync(resolve(originalAppPath, 'database.json'), resolve(dataPath, 'database.json'));
 }
 
-export let win: Electron.BrowserWindow;
-
 setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
 
 process.env['NODE_ENV'] = 'production'; // Default
@@ -118,82 +112,7 @@ process.env['NODE_ENV'] = 'production'; // Default
 const argv = minimist(process.argv.slice(2));
 
 if (app && !argv.batch) {
-	setState({electron: app });
-	// This is called when Electron finished initializing
-	app.on('ready', async () => {
-		createWindow();
-		on('KMReady', async () => {
-			win.loadURL(await welcomeToYoukousoKaraokeMugen());
-			let menu = Menu.getApplicationMenu();
-			menu.append(new MenuItem({ label: i18n.t('MENU_SHOW_SECURITY_CODE'), click() {
-				const state = getState();
-				dialog.showMessageBox({ type: 'none', title : i18n.t('SECURITY_CODE_TITLE'),
-					message: `${i18n.t('SECURITY_CODE_MESSAGE')}
-				${state.securityCode}` });
-			}}));
-			Menu.setApplicationMenu(menu);
-			autoUpdater.checkForUpdatesAndNotify();
-		});
-		ipcMain.on('initPageReady', async () => {
-			try {
-				await main();
-			} catch(err) {
-				logger.error(`[Launcher] Error during launch : ${err}`);
-				console.log(err);
-				exit(1);
-			}
-		});
-	});
 
-	app.on('window-all-closed', () => {
-		// On macOS it is common that the application won't quit when all windows are closed until the user doesn't quit with Cmd + Q
-		if (process.platform !== 'darwin') {
-			exit(0).then(() => app.quit());
-		}
-	});
-
-	app.on('activate', () => {
-		// Recreate the window if the app is clicked on in the dock(for macOS)
-		if (win === null) {
-			createWindow();
-		}
-	});
-
-	configureLocale()
-		.then(() => {
-			app.setAboutPanelOptions({
-				applicationName: 'Karaoke Mugen',
-				applicationVersion: `${version.number} (${version.name})`,
-				copyright: `(c) 2017-${new Date().getFullYear()} Karaoke Mugen Team`,
-				version: version.number,
-				website: 'https://karaokes.moe'
-			});
-			const menu = new Menu();
-			menu.append(new MenuItem({
-				label: process.platform === 'darwin' ? 'KaraokeMugen' : i18n.t('MENU_FILE'),
-				submenu: [
-					{
-						label: i18n.t('MENU_FILE_ABOUT'),
-						click() {
-							app.showAboutPanel();
-						}
-					},
-					{
-						label: i18n.t('MENU_FILE_RELOAD'),
-						accelerator: 'CmdOrCtrl+R',
-						role: 'reload'
-					},
-					{
-						label: i18n.t('MENU_FILE_QUIT'),
-						accelerator: 'CmdOrCtrl+Q',
-						click() {
-							exit(0).then(() => app.quit());
-						}
-					}
-				]
-			}));
-			Menu.setApplicationMenu(menu);
-		});
 } else {
 	// This is in case we're running with yarn startNoElectron
 	configureLocale()
@@ -205,35 +124,7 @@ if (app && !argv.batch) {
 		});
 }
 
-function createWindow () {
-	// Create the browser window
-	win = new BrowserWindow({
-		width: 980,
-		height: 720,
-		backgroundColor: '#36393f',
-		icon: resolve(resourcePath, 'assets/icon.png'),
-		webPreferences: {
-			nodeIntegration: true
-		}
-	});
-
-	// and load the index.html of the app.
-	win.loadURL(`file://${resolve(resourcePath, 'initpage/index.html')}`);
-	win.show();
-
-	win.webContents.on('new-window', (event, url) => {
-		event.preventDefault();
-		open(url);
-	});
-
-	// What to do when the window is closed.
-	win.on('closed', () => {
-	  win = null;
-	});
-}
-
-
-async function main() {
+export async function main() {
 	initStep(i18n.t('INIT_INIT'));
 	setState({ os: process.platform, version: version});
 	const state = getState();
@@ -361,9 +252,5 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 	} catch(err) {
 		throw 'Failed to find a free port to use';
 	}
-}
-
-export function setProgressBar(number: number) {
-	if (win) win.setProgressBar(number);
 }
 
