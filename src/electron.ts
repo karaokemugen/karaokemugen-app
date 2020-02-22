@@ -10,6 +10,7 @@ import logger from './lib/utils/logger';
 import { exit } from './services/engine';
 import { resolve } from 'path';
 import open from 'open';
+import {version} from './version';
 
 export let win: Electron.BrowserWindow;
 
@@ -89,12 +90,11 @@ export async function startElectron() {
 
 	configureLocale()
 		.then(() => {
-			const state = getState();
 			app.setAboutPanelOptions({
 				applicationName: 'Karaoke Mugen',
-				applicationVersion: `${state.version.number} (${state.version.name})`,
+				applicationVersion: `${version.number} (${version.name})`,
 				copyright: `(c) 2017-${new Date().getFullYear()} Karaoke Mugen Team`,
-				version: state.version.number,
+				version: version.number,
 				website: 'https://karaokes.moe'
 			});
 			const menu = new Menu();
