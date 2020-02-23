@@ -110,7 +110,7 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 				aliases.forEach((alias) => {
 					const isLongTag = alias.length > 20;
 					const tagElem = (
-						<Tag>
+						<Tag key={alias} style={{margin: '2px'}}>
 							{isLongTag ? `${alias.slice(0, 20)}...` : alias}
 						</Tag>
 					);
@@ -130,7 +130,7 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 				const isLongTag = i18n.name.length > 40;
 				const i18n_name = `[${i18n.lang.toUpperCase()}] ${i18n.name}`;
 				const tagElem = (
-					<Tag>
+					<Tag key={i18n} style={{margin: '2px'}}>
 						{isLongTag ? `${i18n_name.slice(0, 20)}...` : i18n_name}
 					</Tag>
 				);
