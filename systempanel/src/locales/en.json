@@ -45,7 +45,6 @@
 		"PLATFORMS": "Platform(s)",
 		"GENRES": "Genre(s)",
 		"ORIGINS": "Origin(s)",
-		"SEASONS": "Season(s)",
 		"MISC": "Misc",
 		"TAGS_TOOLTIP": "Tags that define the song",
 		"GROUPS": "Group(s)",
@@ -194,8 +193,7 @@
 		"FAMILIES": "Familie",
 		"ORIGINS": "Origin",
 		"GENRES": "Genre",
-		"PLATFORMS": "Platform",
-		"SEASONS": "Seasons"
+		"PLATFORMS": "Platform"
 	},
 	"CONFIG": {
 		"PROPERTY": "Property",

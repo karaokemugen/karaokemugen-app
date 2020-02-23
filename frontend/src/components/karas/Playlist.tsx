@@ -55,7 +55,6 @@ interface IState {
 	playlistList: Array<PlaylistList>;
 	scrollToIndex?: number;
 	playlistInfo?: DBPL;
-	yearSeason?: string;
 }
 
 interface KaraList {
@@ -424,8 +423,7 @@ noRowsRenderer = () => {
 		  criterias[this.state.searchCriteria]
   			: '';
   		url += '&searchType=' + this.state.searchType
-		  + ((searchCriteria && this.state.searchValue) ? ('&searchValue=' + searchCriteria + ':' + this.state.searchValue) : '')
-		  + ((searchCriteria && this.state.yearSeason) ? ('!y:' + this.state.yearSeason) : '')
+          + ((searchCriteria && this.state.searchValue) ? ('&searchValue=' + searchCriteria + ':' + this.state.searchValue) : '');
 	}
 	try {
 	  	var response = await axios.get(url);
@@ -645,10 +643,10 @@ noRowsRenderer = () => {
 		songtypes={(this.props.tags as Tag[]).filter(tag => tag.type.includes(3)).map((tag: any) => tag.label)}/>, document.getElementById('modal'));
   }
 
-  onChangeTags = (type:number|string, value:string, yearSeason?:string) => {
+  onChangeTags = (type:number|string, value:string) => {
   	var searchCriteria = (type === 'serie' || type === 'year') ? type : 'tag';
   	var stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
-  	this.setState({searchCriteria: searchCriteria, searchValue: stringValue, yearSeason: yearSeason}, () => this.getPlaylist('search'));
+  	this.setState({searchCriteria: searchCriteria, searchValue: stringValue}, () => this.getPlaylist('search'));
   };
 
   deleteCriteria = (kara:DBBlacklist) => {

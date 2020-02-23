@@ -29,8 +29,7 @@ var tagsTypesList = [
 	'BLCTYPE_10',
 	'BLCTYPE_11',
 	'BLCTYPE_12',
-	'BLCTYPE_13',
-	'BLCTYPE_14'];
+	'BLCTYPE_13',];
 
 interface IProps {
 	idPlaylist: number;
@@ -48,7 +47,7 @@ interface IProps {
 	playlistWillUpdate: () => void;
 	playlistDidUpdate: () => void;
 	getPlaylist: (searchType?:string) => void;
-	onChangeTags: (type:number|string, value:string, yearSeason?:string) => void;
+	onChangeTags: (type:number|string, value:string) => void;
 	editNamePlaylist: () => void;
 	addAllKaras: () => void;
 	selectAllKaras: () => void;
@@ -222,31 +221,9 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
   onChangeTags = (value:string) => {
-	let yearSeason;
-	if (this.state.tagType === 14) {
-		let valueSplit = value.split(' ');
-		value = valueSplit[0];
-		yearSeason = valueSplit[1];
-	}
   	this.setState({ activeFilter: 5, activeFilterUUID: value });
-  	this.props.onChangeTags(this.state.tagType, value, yearSeason);
+  	this.props.onChangeTags(this.state.tagType, value);
   };
-
-  getTagsForSearch = () => {
-	if (this.state.tagType === 14) {
-		let tags:Tag[] = [];
-		let seasons = (this.props.tags as Tag[]).filter(tag => tag.type.includes(this.state.tagType));
-		(this.props.tags as Tag[]).filter(tag => tag.type.includes('year')).forEach(year => {
-			seasons.forEach(season => {
-				tags.push({label: `${season.label} ${year.label}`, value: `${season.value} ${year.value}`, 
-					type: season.type, karacount: season.karacount});
-			});
-		});
-		return tags;
-	} else {
-		return (this.props.tags as Tag[]).filter(tag => tag.type.includes(this.state.tagType));
-	}
-  }
 
   render() {
   	const commandsControls = (
@@ -343,7 +320,8 @@ class PlaylistHeader extends Component<IProps,IState> {
   				</select>
   				<div className="filterElement filterTagsOptions">
   					<Autocomplete value={this.state.activeFilterUUID || ''}
-  						options={this.getTagsForSearch()} onChange={this.onChangeTags} />
+  						options={this.props.tags.filter(tag => tag.type.includes(this.state.tagType))}
+  						onChange={this.onChangeTags} />
   				</div>
   			</div>
   			<div className="filterContainer">
