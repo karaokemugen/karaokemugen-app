@@ -13,6 +13,7 @@ import open from 'open';
 import {version} from './version';
 
 export let win: Electron.BrowserWindow;
+let manualUpdate = false;
 
 export async function startElectron() {
 	setState({electron: app });
@@ -29,37 +30,38 @@ export async function startElectron() {
 				${state.securityCode}` });
 			}}));
 			Menu.setApplicationMenu(menu);
-			if (getConfig().Online.Updates.App) {
-				autoUpdater.logger = logger;
-				autoUpdater.on('error', (error) => {
-					dialog.showErrorBox(`${i18next.t('ERROR')}: `, error === null ? 'unknown' : (error.stack || error).toString());
+			autoUpdater.logger = logger;
+			autoUpdater.on('error', (error) => {
+				dialog.showErrorBox(`${i18next.t('ERROR')}: `, error === null ? 'unknown' : (error.stack || error).toString());
+			});
+			autoUpdater.on('update-available', async () => {
+				const buttonIndex = await dialog.showMessageBox(win, {
+				  type: 'info',
+				  title: i18next.t('UPDATE_FOUND'),
+				  message: i18next.t('UPDATE_PROMPT'),
+				  buttons: [i18next.t('YES'), i18next.t('NO')]
 				});
-				autoUpdater.on('update-available', async () => {
-					const buttonIndex = await dialog.showMessageBox(win, {
-					  type: 'info',
-					  title: i18next.t('UPDATE_FOUND'),
-					  message: i18next.t('UPDATE_PROMPT'),
-					  buttons: [i18next.t('YES'), i18next.t('NO')]
-					});
-					if (buttonIndex.response === 0) {
-					  autoUpdater.downloadUpdate();
-					}
-				  });
+				if (buttonIndex.response === 0) {
+				  autoUpdater.downloadUpdate();
+				}
+			  });
 
-				  autoUpdater.on('update-not-available', () => {
-					dialog.showMessageBox({
-					  title: i18next.t('UPDATE_NOT_AVAILABLE'),
-					  message: i18next.t('CURRENT_VERSION_OK')
-					});
-				  });
-
-				  autoUpdater.on('update-downloaded', async () => {
-					await dialog.showMessageBox(win, {
-					  title: i18next.t('UPDATE_DOWNLOADED'),
-					  message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING')
-					});
-					autoUpdater.quitAndInstall();
+			autoUpdater.on('update-not-available', () => {
+				if (manualUpdate) dialog.showMessageBox({
+				  title: i18next.t('UPDATE_NOT_AVAILABLE'),
+				  message: i18next.t('CURRENT_VERSION_OK')
 				});
+			  });
+
+			autoUpdater.on('update-downloaded', async () => {
+				await dialog.showMessageBox(win, {
+				  title: i18next.t('UPDATE_DOWNLOADED'),
+				  message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING')
+				});
+				autoUpdater.quitAndInstall();
+			});
+
+			if (getConfig().Online.Updates.App && process.platform !== 'darwin') {
 				autoUpdater.checkForUpdatesAndNotify();
 			}
 		});
@@ -102,9 +104,14 @@ export async function startElectron() {
 				label: process.platform === 'darwin' ? 'KaraokeMugen' : i18next.t('MENU_FILE'),
 				submenu: [
 					{
+						// Updater menu disabled on macs until we can sign our code
 						label: i18next.t('MENU_FILE_UPDATE'),
+						enabled: process.platform !== 'darwin',
 						click() {
-							autoUpdater.checkForUpdates();
+							manualUpdate = true;
+							autoUpdater.checkForUpdates().then(() => {
+								manualUpdate = false;
+							});
 						}
 					},
 					{
