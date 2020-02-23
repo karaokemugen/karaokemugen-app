@@ -118,7 +118,7 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 				const isLongTag = name.length > 40;
 				const i18n_name = `[${lang.toUpperCase()}] ${name}`;
 				const tagElem = (
-					<Tag key={lang}>
+					<Tag key={lang} style={{margin: '2px'}}>
 						{isLongTag ? `${i18n_name.slice(0, 20)}...` : i18n_name}
 					</Tag>
 				);
