@@ -39,6 +39,7 @@ class KMMenu extends Component<KMenuProps, {}> {
 						<Menu.Item key='sessions'><Link to='/system/km/sessions'>{i18next.t('MENU.SESSIONS')}</Link></Menu.Item>
 						<Menu.Item key='repositories'><Link to='/system/km/repositories'>{i18next.t('MENU.REPOSITORIES')}</Link></Menu.Item>
 						<Menu.Item key='unused'><Link to='/system/km/unused'>{i18next.t('MENU.UNUSED_FILES')}</Link></Menu.Item>
+						<Menu.Item key='db'><Link to='/system/km/db'>{i18next.t('MENU.DATABASE')}</Link></Menu.Item>
 					</Menu.SubMenu>
 					<Menu.SubMenu key="kara-dropdown" title={i18next.t('MENU.KARAS')}>
 						<Menu.Item key='karalist'><Link to='/system/km/karas'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
@@ -57,7 +58,6 @@ class KMMenu extends Component<KMenuProps, {}> {
 						<Menu.Item key='tagsmanage'><Link to='/system/km/tags'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
 						<Menu.Item key='tagsnew'><Link to='/system/km/tags/new'>{i18next.t('MENU.NEW')}</Link></Menu.Item>
 					</Menu.SubMenu>
-					<Menu.Item key='db'><Link to='/system/km/db'>{i18next.t('MENU.DATABASE')}</Link></Menu.Item>
 					<Menu.SubMenu key="user-dropdown" title={i18next.t('MENU.USERS')}>
 						<Menu.Item key='userlist'><Link to='/system/km/users'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
 						<Menu.Item key='newuser'><Link to='/system/km/users/create'>{i18next.t('MENU.NEW')}</Link></Menu.Item>

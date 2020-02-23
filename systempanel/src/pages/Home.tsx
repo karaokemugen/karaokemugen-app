@@ -30,9 +30,6 @@ class Home extends Component<HomeProps, HomeState> {
 						<b>{i18next.t('MENU.TAGS')} : </b> {i18next.t('HOME.TAGS_DESCRIPTION')}
 					</li>
 					<li>
-						<b>{i18next.t('MENU.DATABASE')} : </b> {i18next.t('HOME.DATABASE_DESCRIPTION')}
-					</li>
-					<li>
 						<b>{i18next.t('MENU.USERS')} : </b> {i18next.t('HOME.USERS_DESCRIPTION_1')}
 						<Link to={`/system/km/users`}>{i18next.t('HOME.USERS_DESCRIPTION_2')}</Link>
 						{i18next.t('HOME.USERS_DESCRIPTION_3')}

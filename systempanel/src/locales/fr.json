@@ -292,13 +292,12 @@
 	"HOME": {
 		"WELCOME": "Bienvenue dans le panneau de configuration de Karaoke Mugen",
 		"DIFFERENTS_MENUS": "Voici les différents menus que vous pouvez utiliser :",
-		"SYSTEM_DESCRIPTION": "Voir les logs, changer les options de configuration et gérer les sessions de karaokés",
+		"SYSTEM_DESCRIPTION": "Voir les logs, changer les options de configuration, sauvegarder et restore votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
 		"KARAS_DESCRIPTION_1": "Voir, modifier, ",
 		"KARAS_DESCRIPTION_2": "télécharger",
 		"KARAS_DESCRIPTION_3": ", et créer des fichiers de karaokés. Vous pouvez aussi éditer la blacklist de téléchargement, voir les karaokés les plus demandés, joués et l'historique",
 		"SERIES_DESCRIPTION": "Gérer les séries",
 		"TAGS_DESCRIPTION": "Gérer les tags (chanteurs, compositeurs, créateurs, types de chanson, etc.)",
-		"DATABASE_DESCRIPTION": "Sauvegarder et restore votre base de données, lancer une génération manuelle ou mettre à jour vos fichiers médias (si vous utilisez Karaoke Base sous Git)",
 		"USERS_DESCRIPTION_1": "Créer/",
 		"USERS_DESCRIPTION_2": "éditer/voir les utilisateurs",
 		"USERS_DESCRIPTION_3": ", changer les mots de passe, créer de nouveaux comptes invités"

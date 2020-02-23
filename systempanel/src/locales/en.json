@@ -292,13 +292,12 @@
 	"HOME": {
 		"WELCOME": "Welcome to Karaoke Mugen's system panel",
 		"DIFFERENTS_MENUS": "Here are the different menus you can use :",
-		"SYSTEM_DESCRIPTION": "See logs, change configuration options, and manage karaoke session",
+		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
 		"KARAS_DESCRIPTION_1": "View, edit, ",
 		"KARAS_DESCRIPTION_2": "download",
 		"KARAS_DESCRIPTION_3": ", and create karaoke data files. You can also edit the download blacklist and view most requested, most played, and karaoke history",
 		"SERIES_DESCRIPTION": "Manage series from here",
 		"TAGS_DESCRIPTION": "Manage tags (singers, songwriters, creators, song types, etc.)",
-		"DATABASE_DESCRIPTION": "Backup/restore your database, trigger a manual generation or update your media files (if you are using a karaokebase under git)",
 		"USERS_DESCRIPTION_1": "Create/",
 		"USERS_DESCRIPTION_2": "edit/view users",
 		"USERS_DESCRIPTION_3": ", change passwords, make new guests account"
