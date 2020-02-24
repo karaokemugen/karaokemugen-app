@@ -11,9 +11,15 @@ import { exit } from './services/engine';
 import { resolve } from 'path';
 import open from 'open';
 import {version} from './version';
+import { initMenu, getMenu } from './electron_menu';
 
 export let win: Electron.BrowserWindow;
+
 let manualUpdate = false;
+
+export function setManualUpdate(state: boolean) {
+	manualUpdate = state;
+}
 
 export async function startElectron() {
 	setState({electron: app });
@@ -90,53 +96,17 @@ export async function startElectron() {
 		}
 	});
 
-	configureLocale()
-		.then(() => {
-			app.setAboutPanelOptions({
-				applicationName: 'Karaoke Mugen',
-				applicationVersion: `${version.number} (${version.name})`,
-				copyright: `(c) 2017-${new Date().getFullYear()} Karaoke Mugen Team`,
-				version: version.number,
-				website: 'https://karaokes.moe'
-			});
-			const menu = new Menu();
-			const isMac = process.platform === 'darwin'
-			menu.append(new MenuItem({
-				label: process.platform === 'darwin' ? 'KaraokeMugen' : i18next.t('MENU_FILE'),
-				submenu: [
-					!isMac ? {
-						// Updater menu disabled on macs until we can sign our code
-						label: i18next.t('MENU_FILE_UPDATE'),
-						click() {
-							manualUpdate = true;
-							autoUpdater.checkForUpdates().then(() => {
-								manualUpdate = false;
-							});
-						}
-					},
-					{
-						label: i18next.t('MENU_FILE_ABOUT'),
-						click() {
-							app.showAboutPanel();
-						}
-					},
-					{
-						label: i18next.t('MENU_FILE_RELOAD'),
-						accelerator: 'CmdOrCtrl+R',
-						role: 'reload'
-					},
-					{ type: 'separator'},
-					{
-						label: i18next.t('MENU_FILE_QUIT'),
-						accelerator: 'CmdOrCtrl+Q',
-						click() {
-							exit(0);
-						}
-					}
-				]
-			}));
-			Menu.setApplicationMenu(menu);
-		});
+	await configureLocale();
+	app.setAboutPanelOptions({
+		applicationName: 'Karaoke Mugen',
+		applicationVersion: `${version.number} (${version.name})`,
+		copyright: `(c) 2017-${new Date().getFullYear()} Karaoke Mugen Team`,
+		version: version.number,
+		website: 'https://karaokes.moe'
+	});
+	await initMenu();
+	const menu = Menu.buildFromTemplate(getMenu());
+	Menu.setApplicationMenu(menu);
 }
 
 function createWindow () {
