@@ -51,6 +51,9 @@ export interface Config {
 				Labels?: string[]
 			}
 		}
+	},
+	GUI: {
+		OpenInElectron?: boolean,
 	}
 	Karaoke: {
 		Private?: boolean,
