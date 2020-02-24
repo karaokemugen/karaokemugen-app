@@ -127,7 +127,7 @@ export async function updatePGConf() {
 }
 
 /** Check if bundled postgreSQL is running or not. It won't launch another one if it's already running, and will instead connect to it. */
-export async function checkPG() {
+export async function checkPG(): Promise<boolean> {
 	const conf = getConfig();
 	const state = getState();
 	if (!conf.Database.prod.bundledPostgresBinary) return false;
