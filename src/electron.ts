@@ -100,13 +100,13 @@ export async function startElectron() {
 				website: 'https://karaokes.moe'
 			});
 			const menu = new Menu();
+			const isMac = process.platform === 'darwin'
 			menu.append(new MenuItem({
 				label: process.platform === 'darwin' ? 'KaraokeMugen' : i18next.t('MENU_FILE'),
 				submenu: [
-					{
+					!isMac ? {
 						// Updater menu disabled on macs until we can sign our code
 						label: i18next.t('MENU_FILE_UPDATE'),
-						enabled: process.platform !== 'darwin',
 						click() {
 							manualUpdate = true;
 							autoUpdater.checkForUpdates().then(() => {
@@ -125,6 +125,7 @@ export async function startElectron() {
 						accelerator: 'CmdOrCtrl+R',
 						role: 'reload'
 					},
+					{ type: 'separator'},
 					{
 						label: i18next.t('MENU_FILE_QUIT'),
 						accelerator: 'CmdOrCtrl+Q',
