@@ -14,6 +14,11 @@ export function getMenu() {
 
 export async function initMenu() {
 	menuItems = [
+		/**
+		 *
+		 * MAIN MENU / FILE MENU
+		 *
+		 */
 		{
 			label: isMac ? app.name : i18next.t('MENU_FILE'),
 			submenu: [
@@ -42,6 +47,11 @@ export async function initMenu() {
 				}
 			]
 		},
+		/**
+		 *
+		 * EDIT MENU
+		 *
+		 */
 		{
 			label: i18next.t('MENU_EDIT'),
 			submenu: [
@@ -70,6 +80,11 @@ export async function initMenu() {
 			  ])
 			]
 		  },
+		  /**
+		   *
+		   * VIEW MENU
+		   *
+		   */
 		  {
 			label: i18next.t('MENU_VIEW'),
 			submenu: [
@@ -84,7 +99,11 @@ export async function initMenu() {
 			  { label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
 			]
 		  },
-		  // { role: 'windowMenu' }
+		  /**
+		   *
+		   * WINDOW MENU
+		   *
+		   */
 		  {
 			label: i18next.t('MENU_WINDOW'),
 			submenu: [
@@ -98,6 +117,11 @@ export async function initMenu() {
 			  ])
 			]
 		  },
+		  /**
+		   *
+		   * HELP MENU
+		   *
+		   */
 		  {
 			label: i18next.t('MENU_HELP'),
 			role: 'help',
