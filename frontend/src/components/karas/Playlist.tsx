@@ -112,7 +112,7 @@ class Playlist extends Component<IProps, IState> {
 		getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
 		store.addChangeListener('playlistContentsUpdated', (idPlaylist:number) => {
 			var data = this.state.data as KaraList;
-			data.infos.from = 0;
+			if (this.state.idPlaylist > 0) data.infos.from = 0;
 			this.setState({data: data});
 			this.playlistContentsUpdated(idPlaylist);
 		});
