@@ -1,20 +1,16 @@
 import logger from 'winston';
-import {getConfig, setConfig} from '../lib/utils/config';
+import {getConfig} from '../lib/utils/config';
 import {getState} from '../utils/state';
 import {exit} from '../services/engine';
-import {duration} from '../lib/utils/date';
 import {generateDatabase} from '../lib/services/generation';
 import DBMigrate from 'db-migrate';
 
 import {isShutdownPG, initPG} from '../utils/postgresql';
 import { baseChecksum } from './dataStore';
 import { DBStats } from '../types/database/database';
-import { getSettings, saveSetting, connectDB, db, vacuum, getInstanceID, setInstanceID } from '../lib/dao/database';
-import { generateBlacklist } from '../services/blacklist';
+import { getSettings, saveSetting, connectDB, db, getInstanceID, setInstanceID } from '../lib/dao/database';
 import uuidV4 from 'uuid/v4';
 import { resolve } from 'path';
-import { initStep, errorStep } from '../utils/electron_logger';
-import i18next from 'i18next';
 
 const sql = require('./sql/database');
 
@@ -91,10 +87,8 @@ async function migrateDB() {
 
 
 export async function initDBSystem(): Promise<boolean> {
-	let doGenerate: boolean;
 	const conf = getConfig();
 	const state = getState();
-	if (state.opt.generateDB) doGenerate = true;
 	// Only for bundled postgres binary :
 	// First login as super user to make sure user, database and extensions are created
 	try {
@@ -118,37 +112,8 @@ export async function initDBSystem(): Promise<boolean> {
 			: setInstanceID(uuidV4());
 	}
 	if (state.opt.reset) await resetUserData();
-	if (!state.opt.noBaseCheck && !conf.App.QuickStart) {
-		const filesChanged = await compareKarasChecksum();
-		if (filesChanged === true) {
-			logger.info('[DB] Data files have changed: database generation triggered');
-			doGenerate = true;
-		}
-		// If karasChecksum returns null, it means there were no files to check. We run generation anyway (it'll return an empty database) to avoid making the current startup procedure any more complex.
-		if (filesChanged === undefined) doGenerate = true;
-	}
-	const settings = await getSettings();
-	if (!doGenerate && !settings.lastGeneration) {
-		setConfig({ App: { FirstRun: true }});
-		logger.info('[DB] Unable to tell when last generation occured: database generation triggered');
-		doGenerate = true;
-	}
-	if (doGenerate) try {
-		initStep(i18next.t('INIT_GEN'));
-		await generateDB();
-	} catch(err) {
-		logger.error(`[DB] Generation failed : ${err}`);
-		errorStep(i18next.t('ERROR_GENERATION'));
-		throw 'Generation failure';
-	}
-	// Run this in the background
-	vacuum();
-	generateBlacklist();
+
 	logger.debug( '[DB] Database Interface is READY');
-	const stats = await getStats();
-	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
-	logger.info(`Playlists    : ${stats.playlists}`);
-	logger.info(`Songs played : ${stats.played}`);
 	return true;
 }
 
