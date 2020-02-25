@@ -77,7 +77,7 @@ export async function addBlacklistCriteria(type: number, value: any) {
 		await addBLC(blcList);
 		return await generateBlacklist();
 	} catch(err) {
-		logger.error(`[Blacklist] Error adding criteria : ${JSON.stringify(err)}`)
+		logger.error(`[Blacklist] Error adding criteria : ${JSON.stringify(err)}`);
 		throw err;
 	} finally {
 		profile('addBLC');
@@ -105,9 +105,13 @@ async function translateBlacklistCriterias(blcList: BLC[], lang: string): Promis
 		if (blcList[i].type === 1001) {
 			// We have a kara ID, let's get the kara itself and append it to the value
 			const kara = await getKara(blcList[i].value, 'admin', lang, 'admin');
-			blcList[i].value = kara;
+			// If it doesn't exist anymore, remove the entry with null.
+			kara
+				? blcList[i].value = kara
+				: blcList[i] = null;
 		}
 		// No need to do anything, values have been modified if necessary
 	}
-	return blcList;
+	// Filter all nulls
+	return blcList.filter(blc => blc !== null);
 }
