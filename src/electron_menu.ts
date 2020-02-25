@@ -4,6 +4,7 @@ import {setManualUpdate, win} from './electron';
 import {autoUpdater} from 'electron-updater';
 import {exit} from './services/engine';
 import { getConfig, setConfig } from './lib/utils/config';
+import open from 'open';
 
 const isMac = process.platform === 'darwin'
 
@@ -128,6 +129,7 @@ export async function initMenu() {
 			submenu: [
 				{
 					label: i18next.t('MENU_GOTO_HOME'),
+					accelerator: 'CmdOrCtrl+1',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.home)
@@ -136,6 +138,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_GOTO_OPERATOR'),
+					accelerator: 'CmdOrCtrl+2',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.operator)
@@ -144,6 +147,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_GOTO_SYSTEM'),
+					accelerator: 'CmdOrCtrl+3',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.system)
@@ -152,6 +156,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_GOTO_PUBLIC'),
+					accelerator: 'CmdOrCtrl+4',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.public)
@@ -170,6 +175,7 @@ export async function initMenu() {
 			submenu: [
 				{
 					label: i18next.t('MENU_TOOLS_LOGS'),
+					accelerator: 'CmdOrCtrl+L',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.logs)
@@ -178,6 +184,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_TOOLS_DOWNLOADS'),
+					accelerator: 'CmdOrCtrl+D',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.download)
@@ -186,6 +193,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_TOOLS_KARAOKES'),
+					accelerator: 'CmdOrCtrl+K',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.karas)
@@ -194,6 +202,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_TOOLS_DATABASE'),
+					accelerator: 'CmdOrCtrl+B',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.database)
@@ -220,6 +229,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG'),
+					accelerator: 'CmdOrCtrl+O',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.operatorOptions)
@@ -228,6 +238,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_OPTIONS_SYSTEMCONFIG'),
+					accelerator: 'CmdOrCtrl+P',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.systemOptions)

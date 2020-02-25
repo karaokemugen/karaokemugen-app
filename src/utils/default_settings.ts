@@ -88,7 +88,7 @@ export const defaults: Config = {
 		}
 	},
 	GUI: {
-		OpenInElectron: false
+		OpenInElectron: true
 	},
 	Karaoke: {
 		Autoplay: false,

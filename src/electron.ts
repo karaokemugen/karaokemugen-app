@@ -104,10 +104,13 @@ export async function startElectron() {
 		version: version.number,
 		website: 'https://karaokes.moe'
 	});
+}
+
+on('configReady', async() => {
 	await initMenu();
 	const menu = Menu.buildFromTemplate(getMenu());
 	Menu.setApplicationMenu(menu);
-}
+});
 
 function createWindow () {
 	// Create the browser window
