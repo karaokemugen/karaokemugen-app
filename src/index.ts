@@ -180,7 +180,6 @@ export async function main() {
 	try {
 		await initEngine();
 	} catch(err) {
-		console.log(new Error)
 		console.log(err);
 		logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
 		exit(1);
