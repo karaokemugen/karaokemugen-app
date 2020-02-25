@@ -70,6 +70,7 @@ export async function initEngine() {
 			await initDBSystem();
 			initStep(i18n.t('INIT_RESTOREDB'));
 			await restorePG();
+			await exit(0);
 		} catch(err) {
 			await exit(1);
 		}
@@ -136,7 +137,6 @@ export async function initEngine() {
 			profile('Init');
 		}
 	}
-	await exit(0);
 }
 
 export async function exit(rc: any) {
