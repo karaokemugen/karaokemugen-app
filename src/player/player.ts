@@ -445,7 +445,7 @@ export async function play(mediadata: MediaData) {
 			throw err;
 		}
 		// Displaying infos about current song on screen.
-		displaySongInfo(mediadata.infos);
+		displaySongInfo(mediadata.infos, 8000, false, mediadata.spoiler);
 		playerState.currentSongInfos = mediadata.infos;
 		playerState._playing = true;
 		emitPlayerState();
@@ -660,20 +660,21 @@ export async function message(message: string, duration: number = 10000, alignCo
 	}
 }
 
-export async function displaySongInfo(infos: string, duration = 8000, nextSong = false) {
+export async function displaySongInfo(infos: string, duration = 8000, nextSong = false, spoilerAlert = false) {
 	try {
 		await ensureRunning();
 	} catch(err) {
 		throw err;
 	}
 	displayingInfo = true;
+	const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}SPOILER WARNING{\\b0}\\N{\\c&HFFFFFF&}' : '';
 	const nextSongString = nextSong ? `{\\u1}${i18n.t('NEXT_SONG')}{\\u0}\\N` : '';
 	const position = nextSong ? '{\\an5}' : '{\\an1}';
 	const command = {
 		command: [
 			'expand-properties',
 			'show-text',
-			'${osd-ass-cc/0}'+position+nextSongString+infos,
+			'${osd-ass-cc/0}'+position+spoilerString+nextSongString+infos,
 			duration,
 		]
 	};

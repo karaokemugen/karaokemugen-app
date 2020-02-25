@@ -42,4 +42,5 @@ export interface MediaData {
 	avatar: string,
 	duration: number,
 	repo: string
+	spoiler: boolean
 }
