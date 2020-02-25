@@ -131,7 +131,9 @@ function createWindow () {
 
 	win.webContents.on('new-window', (event, url) => {
 		event.preventDefault();
-		open(url);
+		getConfig().GUI.OpenInElectron
+		    ? win.loadURL(url)
+			: open(url);
 	});
 
 	// What to do when the window is closed.
