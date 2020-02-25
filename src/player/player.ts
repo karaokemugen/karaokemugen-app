@@ -623,7 +623,7 @@ export async function displaySongInfo(infos: string, duration = 8000, nextSong =
 		throw err;
 	}
 	displayingInfo = true;
-	const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}SPOILER WARNING{\\b0}\\N{\\c&HFFFFFF&}' : '';
+	const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
 	const nextSongString = nextSong ? `{\\u1}${i18n.t('NEXT_SONG')}{\\u0}\\N` : '';
 	const position = nextSong ? '{\\an5}' : '{\\an1}';
 	const command = {
