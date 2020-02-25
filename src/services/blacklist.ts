@@ -100,7 +100,13 @@ async function translateBlacklistCriterias(blcList: BLC[], lang: string): Promis
 		if (blcList[i].type >= 2 && blcList[i].type <= 999) {
 			// We need to get the tag name and then translate it if needed
 			const tag = await getTag(blcList[i].value);
-			blcList[i].value_i18n = tag.i18n[langObj['2B']]? tag.i18n[langObj['2B']] : (tag.i18n['eng'] ? tag.i18n['eng'] : tag.name);
+			tag
+				? blcList[i].value_i18n = tag.i18n[langObj['2B']]
+					? tag.i18n[langObj['2B']]
+					: (tag.i18n['eng']
+						? tag.i18n['eng']
+						: tag.name)
+				: blcList[i] = null;
 		}
 		if (blcList[i].type === 1001) {
 			// We have a kara ID, let's get the kara itself and append it to the value
