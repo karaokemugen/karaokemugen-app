@@ -36,13 +36,15 @@ async function playCurrentSong(now: boolean) {
 			}
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
 			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
+
 			await play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
 				gain: kara.gain,
 				infos: kara.infos,
 				avatar: kara.avatar,
-				duration: kara.duration
+				duration: kara.duration,
+				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
 			});
 			setState({currentlyPlayingKara: kara.kid});
 			addPlayedKara(kara.kid);
