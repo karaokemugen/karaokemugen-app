@@ -181,6 +181,20 @@
 		"REPOSITORY": "Repository",
 		"REPOSITORY_CHANGED": "You must know what you're doing by editing this, as it won't move tag files out of the repository for you, and it won't affect any karaoke linked to it."
 	},
+	"TAG_TYPES": {
+		"SINGERS": "Singer",
+		"SONGTYPES": "Song type",
+		"CREATORS": "Creator",
+		"LANGS": "Languages",
+		"AUTHORS": "Kara Author",
+		"MISC": "Misc",
+		"SONGWRITERS": "Songwriter",
+		"GROUPS": "Group",
+		"FAMILIES": "Familie",
+		"ORIGINS": "Origin",
+		"GENRES": "Genre",
+		"PLATFORMS": "Platform"
+	},
 	"CONFIG": {
 		"PROPERTY": "Property",
 		"VALUE": "Value",

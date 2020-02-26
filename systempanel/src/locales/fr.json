@@ -181,7 +181,7 @@
 		"REPOSITORY": "Dépôt",
 		"REPOSITORY_CHANGED": "Vous devez savoir ce que vous faites en le modifiant, car cela ne déplacera pas les fichiers de tags hors du dépôt pour vous, et cela n'affectera aucun karaoké qui y est lié."
 	},
-	"TAG_TYPES": {		
+	"TAG_TYPES": {
 		"SINGERS": "Chanteur",
 		"SONGTYPES": "Type de chanson",
 		"CREATORS": "Créateur",
