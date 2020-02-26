@@ -2,6 +2,8 @@ image: axelterizaki/karaokemugen-ci:node-12
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  ELECTRON_CACHE: .cache/electron
+  ELETCRON_BUILDER_CACHE: .cache/electron-builder
 
 cache:
   key: km-app-${CI_COMMIT_REF_SLUG}
@@ -9,8 +11,8 @@ cache:
     - node_modules/
     - systempanel/node_modules/
     - frontend/node_modules/
-    - $HOME/.cache/electron
-    - $HOME/.cache/electron-builder
+    - .cache/electron
+    - .cache/electron-builder
 
 stages:
   - test
@@ -76,9 +78,6 @@ pkg_linux:
       - release
   dependencies:
     - build
-  variables:
-    ELECTRON_CACHE: ~/.cache/electron
-    ELETCRON_BUILDER_CACHE: ~/.cache/electron-builder
   script:
     - ./node_modules/.bin/electron-builder -l --publish always
     - ls -la packages/
@@ -101,9 +100,6 @@ pkg_win:
       - release
   dependencies:
     - build
-  variables:
-    ELECTRON_CACHE: ~/.cache/electron
-    ELETCRON_BUILDER_CACHE: ~/.cache/electron-builder
   script:
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-3.2.tar.gz | tar xvz
@@ -137,8 +133,6 @@ pkg_mac:
     - build
   variables:
     CSC_IDENTITY_AUTO_DISCOVERY: "false"
-    ELECTRON_CACHE: ~/.cache/electron
-    ELETCRON_BUILDER_CACHE: ~/.cache/electron-builder
   script:
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-3.2.tar.gz | tar xvz
     - ./node_modules/.bin/electron-builder -m
