@@ -1,12 +1,12 @@
 import {extractMediaFiles} from '../lib/utils/files';
 import {resolve} from 'path';
 import {getConfig, resolvedPathIntros, resolvedPathOutros, resolvedPathEncores, resolvedPathJingles, resolvedPathSponsors} from '../lib/utils/config';
-import logger from 'winston';
+import logger from '../lib/utils/logger';
 import sample from 'lodash.sample';
 import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
-import {gitUpdate} from '../utils/git';
 import cloneDeep from 'lodash.clonedeep';
+import { Worker } from 'worker_threads';
 
 const medias = {
 	Intros: [] as Media[],
@@ -39,18 +39,51 @@ function resolveMediaPath(type: MediaType): string[] {
 }
 
 export async function updateMediasGit(type: MediaType) {
-
-	try {
-		const localDirs = await gitUpdate(resolve(resolveMediaPath(type)[0], 'KaraokeMugen/'), `https://lab.shelter.moe/karaokemugen/medias/${type}.git`, type, getConfig().System.Path[type]);
-		if (localDirs) {
-			const config = {System: {Path: {}}};
-			config.System.Path[type] = localDirs;
-			editSetting(config);
+	return new Promise((done, error) => {
+		try {
+			const worker = new Worker(resolve(__dirname, '../utils/git.js'), {
+				workerData: {
+					options: {
+						gitDir: resolve(resolveMediaPath(type)[0], 'KaraokeMugen/'),
+						gitURL: `https://lab.shelter.moe/karaokemugen/medias/${type}.git`,
+						type: type,
+						configPaths: getConfig().System.Path[type]
+					}
+				}
+			});
+			worker.on('online', () => {
+				logger.debug(`[${type}] Worker online!`);
+			});
+			worker.on('message', res => {
+				if (res.type === 'log') {
+					logger.info(res.data);
+				} else if (res.type === 'status-failed') {
+					error(res.data);
+				} else if (res.type === 'status-success') {
+					if (res.data) {
+						const config = {System: {Path: {}}};
+						config.System.Path[type] = res.data;
+						editSetting(config);
+					}
+					done();
+				}
+			});
+			worker.on('error', err => {
+				logger.debug(`[${type}] ${err}`);
+				error(err);
+			});
+			worker.on('exit', code => {
+				if (code !== 0) {
+					const err = new Error(`Worker stopped with exit code ${code}`);
+					logger.debug(`[${type}] ${err}`);
+					error(err);
+				}
+			});
+		} catch(err) {
+			logger.warn(`[${type}] Error updating : ${err}`);
+			error(err);
 		}
-	} catch(err) {
-		logger.warn(`[${type}] Error updating : ${err}`);
-		throw err;
-	}
+	});
 }
 
 export async function buildMediasList(type: MediaType) {
