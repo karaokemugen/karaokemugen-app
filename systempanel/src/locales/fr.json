@@ -160,7 +160,7 @@
 		"DELETE_TAG_MESSAGE": "Cela va supprimer le fichier tags.json ainsi que la référence du tag dans les fichiers .kara.json de votre base de données !",
 		"LANG_ERROR": "Un tag doit avoir au moins un nom par langue."
 	},
-	"TAG_TYPES": {		
+	"TAG_TYPES": {
 		"SINGERS": "Chanteur",
 		"SONGTYPES": "Type de chanson",
 		"CREATORS": "Créateur",

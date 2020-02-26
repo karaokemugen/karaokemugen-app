@@ -160,7 +160,7 @@
 		"DELETE_TAG_MESSAGE": "This will remove its tags.json file as well as in any .kara.json in your database!",
 		"LANG_ERROR": "A tag must have at least one name by language"
 	},
-	"TAGS_TYPES": {
+	"TAG_TYPES": {
 		"SINGERS": "Singer",
 		"SONGTYPES": "Song type",
 		"CREATORS": "Creator",
