@@ -9,7 +9,7 @@ import {isShutdownPG, initPG} from '../utils/postgresql';
 import { baseChecksum } from './dataStore';
 import { DBStats } from '../types/database/database';
 import { getSettings, saveSetting, connectDB, db, getInstanceID, setInstanceID } from '../lib/dao/database';
-import uuidV4 from 'uuid/v4';
+import { v4 as uuidV4 } from 'uuid';
 import { resolve } from 'path';
 
 const sql = require('./sql/database');

@@ -6,7 +6,7 @@ import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy, async
 import {createHash} from 'crypto';
 import {resolve, join} from 'path';
 import logger from 'winston';
-import uuidV4 from 'uuid/v4';
+import { v4 as uuidV4 } from 'uuid';
 import {imageFileTypes} from '../lib/utils/constants';
 import {defaultGuestNames} from '../utils/constants';
 import randomstring from 'randomstring';

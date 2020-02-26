@@ -1,5 +1,5 @@
 import {selectSessions, insertSession, updateSession, deleteSession, cleanSessions, replaceSession} from '../dao/session';
-import uuidV4 from 'uuid/v4';
+import { v4 as uuidV4 } from 'uuid';
 import { getState, setState } from '../utils/state';
 import { Session } from '../types/session';
 import { getKaras } from './kara';

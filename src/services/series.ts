@@ -3,7 +3,7 @@ import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByNam
 import {refreshSeries, refreshKaraSeries, refreshKaraSeriesLang, refreshSeriesi18n} from '../lib/dao/series';
 import {profile} from '../lib/utils/logger';
 import logger from 'winston';
-import uuidV4 from 'uuid/v4';
+import { v4 as uuidV4 } from 'uuid';
 import { sanitizeFile, resolveFileInDirs } from '../lib/utils/files';
 import { refreshKaras } from '../lib/dao/kara';
 import {Series} from '../lib/types/series';

@@ -1,7 +1,7 @@
 import {selectDownloadBLC, truncateDownloadBLC, insertDownloadBLC,  deleteDownloadBLC, emptyDownload, selectDownload, selectDownloads, updateDownload, deleteDownload, insertDownloads, selectPendingDownloads, initDownloads} from '../dao/download';
 import Downloader from '../utils/downloader';
 import Queue from 'better-queue';
-import uuidV4 from 'uuid/v4';
+import { v4 as uuidV4 } from 'uuid';
 import {resolvedPathTemp, resolvedPathRepos, getConfig} from '../lib/utils/config';
 import {resolve} from 'path';
 import internet from 'internet-available';
