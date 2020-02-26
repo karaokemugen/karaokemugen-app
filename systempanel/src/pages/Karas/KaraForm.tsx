@@ -404,7 +404,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback
-					label={i18next.t('KARA.SINGERS')}
+					label={i18next.t('TAGS_TYPES.SINGERS')}
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
