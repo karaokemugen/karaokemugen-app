@@ -116,7 +116,7 @@ function createWindow () {
 	// Create the browser window
 	const state = getState();
 	win = new BrowserWindow({
-		width: 980,
+		width: 1280,
 		height: 720,
 		backgroundColor: '#36393f',
 		icon: resolve(state.resourcePath, 'assets/icon.png'),
