@@ -1,5 +1,39 @@
 # Versions
 
+## v3.1.1 "Mitsuha Mélancolique" - 05/03/2020
+
+This is a minor release containing fixes AND new features.
+
+### New Features
+
+- Songs with the "Spoiler" tag will get a red SPOILER WARNING above its details when the song starts on screen (96d3dafb, a67c2e80, d7d1dc2c and aa84a0b4)
+- Admin account password is no longer displayed in terminal or tutorial (d5971b98)
+
+### Improvements
+
+- ultrastar2ass has been upgraded to 1.0.8
+- Downloading lots of songs should be faster now :
+  - The next song is downloaded as soon as the first one is downloaded. Integration of songs is done asynchronously (98868a04)
+  - Instead of downloading tag, series, karas and ass files separately, they're downloaded in one bundle and separated again aftar download (#562)
+- The enter key can now be used to login (58ec5d14)
+- Song suggestions (when you can't find what you're looking for) now ask for more information because we were tired of getting useless demands for songs we did have no clue what they were (#560)
+- Deciding to run KM on another port than the default 1337 one is only decided on first run of the app. If the port is busy and it's not the first time you run KM, it'll throw an error (9eaccd60)
+
+### Fixes
+
+- When tags or songs have disappeared from database but are still in the app's blacklist criterias, they are now completely removed from output but still kept in database. (b8d32f04 and e62f0fe4)
+- Fixed bug in blacklist criteria search (8360154b)
+- "Look for application software updates" was ignored in config, this is fixed now (e2e577d1)
+- Various fixes to tutorial (cce04418)
+- Songs should be displayed correctly now in blacklist criterias (aaf44844)
+- Various fixes to specific login/account issues (ff0d6466, bba4aebc)
+- Fix system panel behaviour with unusual host/port combinations (df82b603)
+- Fix issues with playlist medias updates through git (encores, intros, outros, etc.) (cd9fd878)
+  - This is a temporary fix : the issue (#582) is resolved entirely in the future 3.2.0 version.
+- Various fixes with Safari on operator interface.
+- Download manager now lists remote tags instead of local ones which caused issues when your database was nearly empty (8d98227f, 0b334eb6, 319c88a5 and f607e7ae)
+- Various fixes to download manager
+
 ## v3.1.0 "Mitsuha Mélodramatique" - 17/01/2020
 
 This is a major release.
