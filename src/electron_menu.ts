@@ -23,7 +23,7 @@ export async function initMenu() {
 	const port = getConfig().Frontend.Port;
 	const base = 'http://localhost';
 	const urls = {
-		operatorOptions: `${base}:${port}/admin/?config`,
+		operatorOptions: `${base}:${port}/admin?config`,
 		systemOptions: `${base}:${port}/system/km/config`,
 		home: `${base}:${port}/welcome`,
 		operator: `${base}:${port}/admin`,
