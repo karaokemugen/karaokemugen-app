@@ -43,6 +43,7 @@ export async function initEngine() {
 		try {
 			initStep(i18n.t('INIT_VALIDATION'));
 			await generateKaraBase(true, true);
+			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Validation error : ${err}`);
 			await exit(1);
@@ -51,6 +52,7 @@ export async function initEngine() {
 		try {
 			initStep(i18n.t('INIT_UPDATEMEDIAS'));
 			await updateAllMedias();
+			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Updating medias failed : ${err}`);
 			await exit(1);
@@ -61,6 +63,7 @@ export async function initEngine() {
 			await initDBSystem();
 			initStep(i18n.t('INIT_DUMPDB'));
 			await dumpPG();
+			await exit(0);
 		} catch(err) {
 			await exit(1);
 		}
@@ -81,6 +84,7 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_BASEUPDATE'));
 			await updateAllBases();
 			logger.info('[Engine] Done updating karaoke base');
+			await exit(0);
 		} catch (err) {
 			logger.error(`[Engine] Update failed : ${err}`);
 			await exit(1);
@@ -91,6 +95,7 @@ export async function initEngine() {
 			await initDBSystem();
 			initStep(i18n.t('INIT_GEN'));
 			await generateDB();
+			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Generation failed : ${err}`);
 			await exit(1);
