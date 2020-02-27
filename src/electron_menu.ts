@@ -1,10 +1,11 @@
-import { app } from 'electron';
+import { app, dialog } from 'electron';
 import i18next from 'i18next';
 import {setManualUpdate, win} from './electron';
 import {autoUpdater} from 'electron-updater';
 import {exit} from './services/engine';
 import { getConfig, setConfig } from './lib/utils/config';
 import open from 'open';
+import { getState } from './utils/state';
 
 const isMac = process.platform === 'darwin'
 
@@ -40,8 +41,17 @@ export async function initMenu() {
 		 *
 		 */
 		{
-			label: isMac ? app.name : i18next.t('MENU_FILE'),
+			label: isMac ? 'Karaoke Mugen' : i18next.t('MENU_FILE'),
 			submenu: [
+				{ label: i18next.t('MENU_SHOW_SECURITY_CODE'), click() {
+					const state = getState();
+					dialog.showMessageBox({ 
+						type: 'none', 
+						title: i18next.t('SECURITY_CODE_TITLE'),
+						message: `${i18next.t('SECURITY_CODE_MESSAGE')} ${state.securityCode}`
+						});
+					}
+				},
 				!isMac ? {
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),

@@ -1,5 +1,5 @@
 import { setState, getState } from './utils/state';
-import { app, BrowserWindow, Menu, MenuItem, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
 import { welcomeToYoukousoKaraokeMugen } from './services/welcome';
 import i18next from 'i18next';
 import { on } from './lib/utils/pubsub';
@@ -28,14 +28,6 @@ export async function startElectron() {
 		createWindow();
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());
-			let menu = Menu.getApplicationMenu();
-			menu.append(new MenuItem({ label: i18next.t('MENU_SHOW_SECURITY_CODE'), click() {
-				const state = getState();
-				dialog.showMessageBox({ type: 'none', title : i18next.t('SECURITY_CODE_TITLE'),
-					message: `${i18next.t('SECURITY_CODE_MESSAGE')}
-				${state.securityCode}` });
-			}}));
-			Menu.setApplicationMenu(menu);
 			autoUpdater.logger = logger;
 			autoUpdater.on('error', (error) => {
 				dialog.showErrorBox(`${i18next.t('ERROR')}: `, error === null ? 'unknown' : (error.stack || error).toString());
@@ -115,6 +107,7 @@ on('configReady', async() => {
 function createWindow () {
 	// Create the browser window
 	const state = getState();
+	
 	win = new BrowserWindow({
 		width: 1280,
 		height: 720,
