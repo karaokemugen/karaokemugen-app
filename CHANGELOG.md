@@ -1,5 +1,42 @@
 # Versions
 
+## v3.2.0 "Nadia Naturiste" - xx/04/2020
+
+This is a major release with almost only UX features and improvements, so you should be safe to upgrade.
+
+### New features
+
+- The app now uses Electron for a better user experience on all
+platforms (#533)
+  - All links are opened in Electron by default, but you can disable this behavior in the application's menu (#581)
+  - A new command flag `--cli` has been added to launch the app without any GUI (for non-interactive operations like updates or generation, or for use on Raspberry Pi (#575)
+  - Player progress bar is now visible in the Dock (macOS) or taskbar (Windows) (#572)
+  - A initialization page with optional logs is shown at startup (#568)
+  - Karaoke Mugen is now packaged in these formats :
+    - macOS: portable (.zip) and .dmg for easy install
+    - Windows: portable (.zip) and .exe installer
+    - Linux: appImage
+  - There is an auto-update system in place which will download updates and install them on startup (unless told not to) or when manually told to. (#7)
+- Multiple repository management for songs (#549)
+  - Songs aer now organized in repositories.
+  - You can have multiple repositories in your Karaoke Mugen
+  - By default you have a "kara.moe" repository and a "Local" one. The Local one is for your own songs that you don't necessarily want to share with the community through kara.moe.
+  - You can add, remove, or edit repositories, if for example someone adds a new song database completely foreign to kara.moe.
+  - A "Consolidate repository" button allows to move repositories' contents to a new folder (like on a external hard drive) (#569)
+- Users are notified when their song is going to play as soon as they add it (#564)
+
+### Improvements
+
+- Initialization is now faster since we're checking file modification dates instead of contents to decide if we need to generate or not (#563)
+- Audio visualizer on audio-only songs is now smaller and in a corner of the screen to give more room to artwork (#559)
+- Various improvements have been made to the system panel, especially its navigation and to download manager (#579)
+- mpv (player) logs have been moved to the logs/ directory (#574)
+- Logs are in JSON format now which allows a standardized display in the control panel logs. Logs are now updated in real time on that page (#567)
+
+### Fixes
+
+- Fix issues with playlist medias updates through git (encores, intros, outros, etc.) by using a worker thread (#582)
+
 ## v3.1.1 "Mitsuha Mélancolique" - 05/03/2020
 
 This is a minor release containing fixes AND new features.
