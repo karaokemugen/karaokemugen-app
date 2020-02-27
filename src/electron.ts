@@ -76,8 +76,6 @@ export async function startElectron() {
 				await main();
 			} catch(err) {
 				logger.error(`[Launcher] Error during launch : ${err}`);
-				console.log(err);
-				exit(1);
 			}
 		});
 	});
