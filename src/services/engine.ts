@@ -146,6 +146,7 @@ export async function initEngine() {
 
 export async function exit(rc: any) {
 	logger.info('[Engine] Shutdown in progress');
+	emit('exiting-app');
 	if (getState().player.ready) {
 		try {
 			await quitmpv();
@@ -156,7 +157,6 @@ export async function exit(rc: any) {
 		}
 	}
 	if (getTwitchClient()) await stopTwitch();
-
 	await closeDB();
 	if (getTwitchClient() || (getConfig() && getConfig().Karaoke.StreamerMode.Twitch.Enabled)) await stopTwitch();
 	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.

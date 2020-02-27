@@ -7,6 +7,7 @@ import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
 import cloneDeep from 'lodash.clonedeep';
 import { Worker } from 'worker_threads';
+import { on } from '../lib/utils/pubsub';
 
 const medias = {
 	Intros: [] as Media[],
@@ -50,6 +51,9 @@ export async function updateMediasGit(type: MediaType) {
 						configPaths: getConfig().System.Path[type]
 					}
 				}
+			});
+			on('exiting-app', async () => {
+				await worker.terminate();
 			});
 			worker.on('online', () => {
 				logger.debug(`[${type}] Worker online!`);
