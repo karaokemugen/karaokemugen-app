@@ -140,11 +140,6 @@ pkg_mac:
     - mkdir release
     - mv packages/*.dmg release/
     - mv packages/*.blockmap release/
-    - mkdir out
-    - touch out/portable
-    - mv packages/*.zip out/
-    - cd out
-    - zip -0 "../release/Karaoke Mugen-$CI_COMMIT_REF_NAME-mac.zip" *
   only:
     - master
     - next
