@@ -7,9 +7,9 @@ import { getConfig, setConfig } from './lib/utils/config';
 import open from 'open';
 import { getState } from './utils/state';
 
-const isMac = process.platform === 'darwin'
+const isMac = process.platform === 'darwin';
 
-let menuItems: any
+let menuItems: any;
 
 export function getMenu() {
 	return menuItems;
@@ -33,7 +33,7 @@ export async function initMenu() {
 		download: `${base}:${port}/system/km/karas/download`,
 		karas: `${base}:${port}/system/km/karas`,
 		database: `${base}:${port}/system/km/db`
-	}
+	};
 	menuItems = [
 		/**
 		 *
@@ -45,12 +45,12 @@ export async function initMenu() {
 			submenu: [
 				{ label: i18next.t('MENU_SHOW_SECURITY_CODE'), click() {
 					const state = getState();
-					dialog.showMessageBox({ 
-						type: 'none', 
+					dialog.showMessageBox({
+						type: 'none',
 						title: i18next.t('SECURITY_CODE_TITLE'),
 						message: `${i18next.t('SECURITY_CODE_MESSAGE')} ${state.securityCode}`
-						});
-					}
+					});
+				}
 				},
 				!isMac ? {
 					// Updater menu disabled on macs until we can sign our code
@@ -110,7 +110,7 @@ export async function initMenu() {
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.home)
-							: open(urls.home)
+							: open(urls.home);
 					}
 				},
 				{
@@ -119,7 +119,7 @@ export async function initMenu() {
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.operator)
-							: open(urls.operator)
+							: open(urls.operator);
 					}
 				},
 				{
@@ -128,7 +128,7 @@ export async function initMenu() {
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.system)
-							: open(urls.system)
+							: open(urls.system);
 					}
 				},
 				{
@@ -137,7 +137,7 @@ export async function initMenu() {
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.public)
-							: open(urls.public)
+							: open(urls.public);
 					}
 				},
 			]
@@ -156,7 +156,7 @@ export async function initMenu() {
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.logs)
-							: open(urls.logs)
+							: open(urls.logs);
 					}
 				},
 				{
@@ -165,7 +165,7 @@ export async function initMenu() {
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.download)
-							: open(urls.download)
+							: open(urls.download);
 					}
 				},
 				{
@@ -174,7 +174,7 @@ export async function initMenu() {
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.karas)
-							: open(urls.karas)
+							: open(urls.karas);
 					}
 				},
 				{
@@ -183,7 +183,7 @@ export async function initMenu() {
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.database)
-							: open(urls.database)
+							: open(urls.database);
 					}
 				},
 			]
@@ -210,7 +210,7 @@ export async function initMenu() {
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.operatorOptions)
-							: open(urls.operatorOptions)
+							: open(urls.operatorOptions);
 					}
 				},
 				{
@@ -219,7 +219,7 @@ export async function initMenu() {
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.systemOptions)
-							: open(urls.systemOptions)
+							: open(urls.systemOptions);
 					}
 				},
 			]
@@ -234,11 +234,11 @@ export async function initMenu() {
 			submenu: [
 			  { label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
 			  ...(isMac ? [
-				{ type: 'separator' },
-				{ label: i18next.t('MENU_WINDOW_TOFRONT'), role: 'front' },
-				{ type: 'separator' }
+					{ type: 'separator' },
+					{ label: i18next.t('MENU_WINDOW_TOFRONT'), role: 'front' },
+					{ type: 'separator' }
 			  ] : [
-				{ label: i18next.t('MENU_WINDOW_CLOSE'), role: 'close' }
+					{ label: i18next.t('MENU_WINDOW_CLOSE'), role: 'close' }
 			  ])
 			]
 		  },
@@ -252,10 +252,10 @@ export async function initMenu() {
 			role: 'help',
 			submenu: [
 			  {
-				label: i18next.t('MENU_HELP_WEBSITE'),
-				click: () => {
-				  open('https://karaokes.moe')
-				}
+					label: i18next.t('MENU_HELP_WEBSITE'),
+					click: () => {
+				  open('https://karaokes.moe');
+					}
 			  }
 			]
 		  }
