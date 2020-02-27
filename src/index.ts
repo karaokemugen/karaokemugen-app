@@ -76,7 +76,9 @@ if (process.versions.electron) {
 // On OSX, process.cwd() returns /, which is utter stupidity but let's go along with it.
 // What's funny is that originalAppPath is correct on OSX no matter if you're using Electron or not.
 const appPath = process.platform === 'darwin'
-	? resolve(dirname(process.execPath), '../')
+	? app && app.isPackaged 
+		? resolve(dirname(process.execPath), '../')
+		: originalAppPath
 	: process.cwd();
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 const resourcePath = process.versions.electron && existsSync(resolve(appPath, 'resources/'))
@@ -143,6 +145,7 @@ export async function main() {
 	logger.debug(`[Launcher] DataPath : ${dataPath}`);
 	logger.debug(`[Launcher] ResourcePath : ${resourcePath}`);
 	logger.debug(`[Launcher] Electron ResourcePath: ${process.resourcesPath}`);
+	logger.debug(`[Launcher] OriginalAppPath: ${originalAppPath}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
 	await initConfig(argv);
