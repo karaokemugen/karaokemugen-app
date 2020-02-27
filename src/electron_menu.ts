@@ -43,15 +43,6 @@ export async function initMenu() {
 		{
 			label: isMac ? 'Karaoke Mugen' : i18next.t('MENU_FILE'),
 			submenu: [
-				{ label: i18next.t('MENU_SHOW_SECURITY_CODE'), click() {
-					const state = getState();
-					dialog.showMessageBox({
-						type: 'none',
-						title: i18next.t('SECURITY_CODE_TITLE'),
-						message: `${i18next.t('SECURITY_CODE_MESSAGE')} ${state.securityCode}`
-					});
-				}
-				},
 				!isMac ? {
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),
@@ -74,6 +65,25 @@ export async function initMenu() {
 					click() {
 						exit(0);
 					}
+				}
+			]
+		},
+		   /**
+		    *
+		    * SECURITY CODE MENU
+		    *
+			*/
+		{
+			label: i18next.t('MENU_SECURITYCODE'),
+			submenu: [
+				{ label: i18next.t('MENU_SECURITYCODE_SHOW'), click() {
+					const state = getState();
+					dialog.showMessageBox({
+						type: 'none',
+						title: i18next.t('SECURITY_CODE_TITLE'),
+						message: `${i18next.t('SECURITY_CODE_MESSAGE')} ${state.securityCode}`
+					});
+				}
 				}
 			]
 		},
