@@ -139,17 +139,17 @@ export async function main() {
 	console.log('================================================================================');
 	await configureLogger(dataPath, argv.debug || (app && app.commandLine.hasSwitch('debug')), true);
 	await parseCommandLineArgs(argv, app ? app.commandLine : null);
-	await initConfig(argv);
-	const publicConfig = cloneDeep(getConfig());
-	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
-	publicConfig.App.JwtSecret = 'xxxxx';
-	publicConfig.App.InstanceID = 'xxxxx';
 	logger.debug(`[Launcher] AppPath : ${appPath}`);
 	logger.debug(`[Launcher] DataPath : ${dataPath}`);
 	logger.debug(`[Launcher] ResourcePath : ${resourcePath}`);
 	logger.debug(`[Launcher] Electron ResourcePath: ${process.resourcesPath}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
+	await initConfig(argv);
+	const publicConfig = cloneDeep(getConfig());
+	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
+	publicConfig.App.JwtSecret = 'xxxxx';
+	publicConfig.App.InstanceID = 'xxxxx';
 	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(publicConfig)}`);
 	logger.debug(`[Launcher] Initial state : ${JSON.stringify(state)}`);
 
