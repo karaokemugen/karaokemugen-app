@@ -77,39 +77,6 @@ export async function initMenu() {
 				}
 			]
 		},
-		/**
-		 *
-		 * EDIT MENU
-		 *
-		 */
-		{
-			label: i18next.t('MENU_EDIT'),
-			submenu: [
-			  { label: i18next.t('MENU_EDIT_UNDO'), role: 'undo' },
-			  { label: i18next.t('MENU_EDIT_REDO'), role: 'redo' },
-			  { type: 'separator' },
-			  { label: i18next.t('MENU_EDIT_CUT'), role: 'cut' },
-			  { label: i18next.t('MENU_EDIT_COPY'), role: 'copy' },
-			  { label: i18next.t('MENU_EDIT_PASTE'), role: 'paste' },
-			  ...(isMac ? [
-				{ label: i18next.t('MENU_EDIT_PASTEWITHSTYLE'), role: 'pasteAndMatchStyle' },
-				{ label: i18next.t('MENU_EDIT_DELETE'), role: 'delete' },
-				{ label: i18next.t('MENU_EDIT_SELECT_ALL'), role: 'selectAll' },
-				{ type: 'separator' },
-				{
-				  label: i18next.t('MENU_EDIT_SPEECH'),
-				  submenu: [
-					{ label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startspeaking' },
-					{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopspeaking' }
-				  ]
-				}
-			  ] : [
-				{ label: i18next.t('MENU_EDIT_DELETE'), role: 'delete' },
-				{ type: 'separator' },
-				{ label: i18next.t('MENU_EDIT_SELECTALL'), role: 'selectAll' }
-			  ])
-			]
-		  },
 		  /**
 		   *
 		   * VIEW MENU
