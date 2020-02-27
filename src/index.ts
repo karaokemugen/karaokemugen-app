@@ -68,11 +68,10 @@ if (process.versions.electron) {
 	// The last one is when running an unpackaged electron for testing purposes (yarn packer) (dev)
 	originalAppPath = process.env.INIT_CWD || process.env.PORTABLE_EXECUTABLE_DIR || join(__dirname, '../../../');
 	// Because OSX packages are structured differently, we'll modify our path
-	if (process.platform === 'darwin') originalAppPath = resolve(originalAppPath, '../../');
+	if (process.platform === 'darwin' && app.isPackaged) originalAppPath = resolve(originalAppPath, '../../');
 } else {
 	originalAppPath = process.cwd();
 }
-
 // On OSX, process.cwd() returns /, which is utter stupidity but let's go along with it.
 // What's funny is that originalAppPath is correct on OSX no matter if you're using Electron or not.
 const appPath = process.platform === 'darwin'

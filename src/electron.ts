@@ -105,9 +105,11 @@ export async function startElectron() {
 }
 
 on('configReady', async() => {
-	await initMenu();
-	const menu = Menu.buildFromTemplate(getMenu());
-	Menu.setApplicationMenu(menu);
+	if (app) {
+		await initMenu();
+		const menu = Menu.buildFromTemplate(getMenu());
+		Menu.setApplicationMenu(menu);
+	}
 });
 
 function createWindow () {
