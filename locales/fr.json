@@ -50,7 +50,7 @@
 	"MENU_EDIT_PASTE": "Coller",
 	"MENU_EDIT_PASTEWITHSTYLE": "Coller avec style",
 	"MENU_EDIT_DELETE": "Effacer",
-	"MENU_EDIT_SELECTALL": "Selectionner tout",
+	"MENU_EDIT_SELECT_ALL": "Selectionner tout",
 	"MENU_EDIT_SPEECH": "Parole",
 	"MENU_EDIT_STARTSPEECH": "Commencer à parler",
 	"MENU_EDIT_STOPSPEECH": "Arrêter de parler",
