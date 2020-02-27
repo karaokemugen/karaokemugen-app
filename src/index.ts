@@ -10,6 +10,7 @@ import { setState, getState } from './utils/state';
 import { version } from './version';
 import { migrateOldFoldersToRepo, addRepo, getRepo } from './services/repo';
 import { initStep, errorStep } from './utils/electron_logger';
+import { startElectron } from './electron';
 
 // Types
 import {Config} from './types/config';
@@ -26,7 +27,6 @@ import {createInterface} from 'readline';
 import { getPortPromise } from 'portfinder';
 import { app } from 'electron';
 import cloneDeep from 'lodash.clonedeep';
-import { startElectron } from './electron';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
