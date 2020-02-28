@@ -3,13 +3,20 @@
 		"__": true
     },
     "env": {
-        "es6": true,
+        "es2020": true,
 		"node": true,
-		"mocha":true
-    },
-    "plugins": [
-        "@typescript-eslint"
-    ],
+		"mocha": true
+	},
+	"plugins": [
+		"@typescript-eslint",
+		"security"
+	],
+	"extends": [
+		"plugin:you-dont-need-lodash-underscore/compatible",
+		"eslint:recommended",
+		"plugin:node/recommended",
+		"plugin:security/recommended"
+  	],
     "rules": {
 		"jsx-a11y/href-no-hash": [0],
         "brace-style": [
@@ -19,7 +26,7 @@
         "no-console": 0,
         "indent": [
             "error",
-            "tab"
+            "space"
         ],
         "quotes": [
             "error",
@@ -29,10 +36,25 @@
             "error",
             "always"
         ],
-        "no-throw-literal": "off"
+		"no-throw-literal": "off",
+		"default-case": 1,
+		"default-case-last": "on",
+		"default-param-last": "on",
+		"eqeqeq": 2,
+		"no-return-await": 1,
+		"prefer-promise-reject-errors": 1,
+		"require-await": 1,
+		"no-tabs": 1,
+		"sort-keys": 1,
+		"no-duplicate-imports": 1,
+		"no-var": 2,
+		"prefer-const": 1,
+		"prefer-destructuring": 1,
+		"sort-imports": 1
     },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "sourceType": "module"
+		"sourceType": "module",
+		"ecmaVersion": 2020
     }
 }
