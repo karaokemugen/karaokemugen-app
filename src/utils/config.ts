@@ -6,6 +6,7 @@ import {address} from 'ip';
 import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
 import cloneDeep from 'lodash.clonedeep';
+import i18next from 'i18next';
 
 // KM Imports
 import logger from '../lib/utils/logger';
@@ -26,7 +27,6 @@ import { BinariesConfig } from '../types/binChecker';
 import { initTwitch, stopTwitch } from './twitch';
 import { removeNulls } from '../lib/utils/object_helpers';
 import { errorStep } from './electron_logger';
-import i18next from 'i18next';
 import { setProgressBar } from '../electron';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
