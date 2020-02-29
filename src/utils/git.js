@@ -4,10 +4,9 @@ const internet = require('internet-available');
 // Node modules
 const fs = require('fs');
 const {mkdirpSync, removeSync} = require('fs-extra');
-const { plugins, pull, clone}  = require('isomorphic-git');
+const { pull, clone}  = require('isomorphic-git');
 const { parentPort, workerData } = require('worker_threads');
-
-plugins.set('fs', fs);
+const http = require('isomorphic-git/http/node');
 
 function logger(msg) {
 	parentPort.postMessage({
@@ -33,6 +32,8 @@ async function gitUpdate(o) {
 					// Non-fatal
 				}
 				await clone({
+					fs: fs,
+					http: http,
 					dir: o.gitDir,
 					url: o.gitURL
 				});
@@ -50,13 +51,19 @@ async function gitUpdate(o) {
 			logger(`[${o.type}] Updating...`);
 			try {
 				await pull({
-					dir: o.gitDir
+					fs: fs,
+					http: http,
+					dir: o.gitDir,
+					author: {
+						name: 'KMApp',
+						email: 'kmapp@karaokes.moe'
+					}
 				});
 			} catch(err) {
 				//Pull failed, trying a clone
 				//Issue is reported here :
 				//https://github.com/isomorphic-git/isomorphic-git/issues/963
-				logger(`[${o.type}] Updating failed, trying wipe and reclone`);
+				logger(`[${o.type}] Updating failed, trying wipe and reclone: ${err}`);
 				try {
 					removeSync(o.gitDir);
 					return await gitUpdate({
