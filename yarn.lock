@@ -3549,10 +3549,10 @@ node-id3@^0.1.13:
   dependencies:
     iconv-lite "^0.4.15"
 
-node-mpv-km@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/node-mpv-km/-/node-mpv-km-2.0.0.tgz#598be1bf96031475db2d1821fdf43e842e366e55"
-  integrity sha512-5kWx/ivNnHjPdH8iJbdVGyonG/OkUZbPznCPwE74vN1cqryMdPu8UezkwSSKz78zRoUIBft0AxuCyWw3KGErKA==
+node-mpv-km@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/node-mpv-km/-/node-mpv-km-2.0.1.tgz#c5210ef3e3906952a7d594291814f6b80e25b1f1"
+  integrity sha512-JUUNyU9VT6mdx49AAxt6RlX+jyfb4F+PIkztd4gUDl9+cW3DMemMp3QuwsTfQhr3Gd0OKOQLW/P2YSCPmRXHaQ==
   dependencies:
     cuid "^2.1.1"
 
