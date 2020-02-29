@@ -11,6 +11,7 @@ import { DBStats } from '../types/database/database';
 import { getSettings, saveSetting, connectDB, db, getInstanceID, setInstanceID } from '../lib/dao/database';
 import { v4 as uuidV4 } from 'uuid';
 import { resolve } from 'path';
+import { getPlaylists, reorderPlaylist } from './playlist';
 
 const sql = require('./sql/database');
 
@@ -135,6 +136,10 @@ export async function generateDB(): Promise<boolean> {
 		if (modified) {
 			logger.info('[DB] Kara files have been modified during generation, re-evaluating store');
 			await compareKarasChecksum(true);
+		}
+		const pls = await getPlaylists(false);
+		for (const pl of pls) {
+			await reorderPlaylist(pl.playlist_id);
 		}
 		if (state.opt.generateDB) await exit(0);
 	} catch(err) {
