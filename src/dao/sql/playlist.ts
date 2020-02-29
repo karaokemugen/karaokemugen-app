@@ -76,6 +76,7 @@ UPDATE playlist_content
 SET pos = A.new_pos
 FROM  (SELECT ROW_NUMBER() OVER (ORDER BY pos) AS new_pos, pk_id_plcontent
     FROM playlist_content
+	INNER JOIN kara k ON playlist_content.fk_kid = k.pk_kid
     WHERE fk_id_playlist = $1) AS A
 WHERE A.pk_id_plcontent = playlist_content.pk_id_plcontent
 `;

@@ -137,7 +137,7 @@ export async function playerEnding() {
 		}
 		// Testing for position before last to play an encore
 		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
-		if (conf.Playlist.Medias.Encores.Enabled && state.currentSong.pos === pl.karacount - 1 && !getState().encorePlayed) {
+		logger.debug(`[Player] CurrentSong Pos : ${state.currentSong.pos} - Playlist Kara Count : ${pl.karacount} - Playlist name: ${pl.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl.playlist_id}`);if (conf.Playlist.Medias.Encores.Enabled && state.currentSong.pos === pl.karacount - 1 && !getState().encorePlayed) {
 			try {
 				await playMedia('Encores');
 				setState({currentlyPlayingKara: 'Encores', encorePlayed: true});
