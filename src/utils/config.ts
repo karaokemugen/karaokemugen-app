@@ -150,7 +150,7 @@ export function getPublicConfig() {
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.Database;
 	delete publicSettings.System;
-	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = '*********'
+	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = '*********';
 	return publicSettings;
 }
 
@@ -223,5 +223,5 @@ function binMissing(binariesPath: any, err: string) {
 	console.log('You can download mpv for your OS from http://mpv.io/');
 	console.log('You can download postgreSQL for your OS from http://postgresql.org/');
 	console.log('You can download ffmpeg for your OS from http://ffmpeg.org');
-	if (process.platform === 'win32') console.log('If the missing file is msvcr120.dll, download Microsoft Visual C++ 2013 Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784')
+	if (process.platform === 'win32') console.log('If the missing file is msvcr120.dll, download Microsoft Visual C++ 2013 Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784');
 }

@@ -89,10 +89,6 @@ Karaoke:
       Enabled: false
       OAuth: 'abcdefgh'
       Channel: 'AxelTerizaki'
-  # Number of songs between jingles
-  JinglesInterval: 20
-  # Number of songs between sponsors
-  SponsorsInterval: 50
   # Private karaoke mode or public karaoke mode.
   Private: true
   # Repeat playlist once reaching the end
@@ -174,9 +170,16 @@ Playlist:
   IntroVideos: true
   # Specify an intro video file. KM will search in all Intro folders for that file and will play it instead of selecting a random one.
   Medias:
+    Jingles:
+      Enabled: true
+      Interval: 20
+    Sponsors:
+      Enabled: true
+      Interval: 50
     Intros:
       Enabled: true
       File: PS1-Nanami.mp4
+      Message: "Let's Karaoke !"
     Outros:
       Enabled: false
       File: Byebye.mp4
