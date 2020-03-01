@@ -92,7 +92,7 @@ export async function playerEnding() {
 		}
 		// If we just played an intro, play a sponsor.
 		if (state.player.mediaType === 'Intros') {
-			if (conf.Karaoke.SponsorsInterval > 0) {
+			if (conf.Playlist.Medias.Sponsors.Enabled) {
 				try {
 					await playMedia('Sponsors');
 					setState({currentlyPlayingKara: 'Sponsors'});
@@ -174,8 +174,8 @@ export async function playerEnding() {
 			}
 		}
 		// Jingles and sponsors are played inbetween songs so we need to load the next song
-		logger.info(`[Player] Songs before next jingle: ${conf.Karaoke.JinglesInterval - state.counterToJingle} / before next sponsor: ${conf.Karaoke.SponsorsInterval - state.counterToSponsor}`);
-		if (state.counterToJingle >= conf.Karaoke.JinglesInterval && conf.Karaoke.JinglesInterval > 0) {
+		logger.info(`[Player] Songs before next jingle: ${conf.Playlist.Medias.Jingles.Interval - state.counterToJingle} / before next sponsor: ${conf.Playlist.Medias.Sponsors.Interval - state.counterToSponsor}`);
+		if (state.counterToJingle >= conf.Playlist.Medias.Jingles.Interval && conf.Playlist.Medias.Jingles.Enabled) {
 			try {
 				setState({counterToJingle: 0});
 				await playMedia('Jingles');
@@ -191,12 +191,11 @@ export async function playerEnding() {
 			} finally {
 				return;
 			}
-		} else if (state.counterToSponsor >= conf.Karaoke.SponsorsInterval && conf.Karaoke.SponsorsInterval > 0) {
+		} else if (state.counterToSponsor >= conf.Playlist.Medias.Sponsors.Interval && conf.Playlist.Medias.Sponsors.Enabled) {
 			try {
 				setState({counterToSponsor: 0});
 				await playMedia('Sponsors');
 				setState({currentlyPlayingKara: 'Sponsors'});
-
 			} catch(err) {
 				logger.error(`[Player] Unable to play sponsor file, going to next song : ${err}`);
 				try {

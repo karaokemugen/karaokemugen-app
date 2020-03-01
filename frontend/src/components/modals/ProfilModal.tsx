@@ -11,6 +11,7 @@ require('babel-polyfill');
 import store from '../../store';
 import { Config } from '../../../../src/types/config';
 import { User, Token } from '../../../../src/lib/types/user';
+require('./ProfilModal.scss');
 
 interface IProps {
 	config: Config;
@@ -75,7 +76,7 @@ class ProfilModal extends Component<IProps, IState> {
 			this.updateUser();
     	}
 	};
-	
+
 	onClickSelect = (event:any) => {
     	const user = this.state.user;
     	user[event.target.name as typesAttrUser] = event.target.value;
@@ -89,10 +90,10 @@ class ProfilModal extends Component<IProps, IState> {
 		this.setState({ user: user });
 		this.updateUser();
 	}
-	
+
 	updateUser = () => {
-		if (this.state.user.nickname && (this.state.user.password 
-			&& this.state.user.password === this.state.user.passwordConfirmation 
+		if (this.state.user.nickname && (this.state.user.password
+			&& this.state.user.password === this.state.user.passwordConfirmation
 			|| !this.state.user.password)) {
 			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
 			axios.put('/api/myaccount/', this.state.user);
@@ -172,7 +173,7 @@ class ProfilModal extends Component<IProps, IState> {
     render() {
     	var logInfos = store.getLogInfos();
     	var listLangs = Object.keys(iso639.iso_639_2).map(k => {
-    		return { 'label': iso639.iso_639_2[k][i18next.languages[0]][0], 'value': k }; 
+    		return { 'label': iso639.iso_639_2[k][i18next.languages[0]][0], 'value': k };
     	});
     	if (!this.props.config.Online.Users && logInfos && logInfos.username.includes('@')) {
     		setTimeout(function () {
@@ -195,7 +196,7 @@ class ProfilModal extends Component<IProps, IState> {
     						<li className={'modal-title ' + (this.state.activeView === 3 ? 'active' : '')}>
     							<a onClick={() => this.setState({activeView: 3})}> {i18next.t('USERLIST')}</a>
     						</li>
-    						<button className="closeModal btn btn-action" 
+    						<button className="closeModal btn btn-action"
     							onClick={() => {
 									var element = document.getElementById('modal');
 									if (element) ReactDOM.unmountComponentAtNode(element);
@@ -208,58 +209,60 @@ class ProfilModal extends Component<IProps, IState> {
     							<div id="nav-profil" className="modal-body" >
     								<div className="profileContent">
     									<div>
-    										<label title={i18next.t('AVATAR_IMPORT')} className="btn btn-default avatar">
-    											<img className="img-circle"
+											<img className="img-circle avatar"
     												src={this.state.user.avatar_file ? pathAvatar + this.state.user.avatar_file : blankAvatar as string}
     												alt="User Pic" />
-    											{logInfos && logInfos.role !== 'guest' ?
-    												<input id="avatar" className="import-file" type="file" accept="image/*" style={{ display: 'none' }} onChange={this.importAvatar} /> : null
-    											}
-    										</label>
+											{logInfos && logInfos.role !== 'guest' ?
+												<label htmlFor="avatar" className="btn btn-default avatarButton">
+													<input id="avatar" className="import-file" type="file" accept="image/*"
+														style={{ display: 'none' }} onChange={this.importAvatar} />
+													{i18next.t('AVATAR_IMPORT')}
+												</label> : null
+											}
     										<p>{this.state.user.login}</p>
     									</div>
     									{logInfos && logInfos.role !== 'guest' ?
     										<div className="profileData">
     											<div className="profileLine">
     												<i className="fas fa-user"></i>
-													<input className={this.state.nicknameMandatory} name="nickname" type="text" 
+													<input className={this.state.nicknameMandatory} name="nickname" type="text"
 														placeholder={i18next.t('PROFILE_USERNAME')} defaultValue={this.state.user.nickname}
 														 onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-envelope"></i>
-													<input className="form-control" name="email" type="text" 
+													<input className="form-control" name="email" type="text"
 														placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email}
 														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-link"></i>
-													<input className="form-control" name="url" type="text" 
+													<input className="form-control" name="url" type="text"
 														placeholder={i18next.t('PROFILE_URL')} defaultValue={this.state.user.url}
 														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-leaf"></i>
-													<input className="form-control" name="bio" type="text" 
+													<input className="form-control" name="bio" type="text"
 														placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
 														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-lock"></i>
     												<input className={this.state.passwordDifferent} name="password" type="password"
-														placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password} 
+														placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password}
 														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
     												<input className={this.state.passwordDifferent}
     													name="passwordConfirmation" type="password" placeholder={i18next.t('PROFILE_PASSWORDCONF')}
-														defaultValue={this.state.user.passwordConfirmation} 
+														defaultValue={this.state.user.passwordConfirmation}
 														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} style={{ marginLeft: 3 + 'px' }} />
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-star"></i>
-    												<div title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
+    												<label htmlFor="favImport" title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
     													<i className="fas fa-download"></i> {i18next.t('IMPORT')}
-    													<input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
-    												</div>
+    												</label>
+													<input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
     												<button type="button" title={i18next.t('FAVORITES_EXPORT')} className="btn btn-action btn-default favExport" onClick={this.favExport}>
     													<i className="fas fa-upload"></i> {i18next.t('EXPORT')}
     												</button>
@@ -278,7 +281,7 @@ class ProfilModal extends Component<IProps, IState> {
     												</div> : null
     											}
 												<div className="profileLine saveButton">
-													<button type="button" className="btn btn-action" 
+													<button type="button" className="btn btn-action"
 														onClick={() => {
 																this.updateUser();
 																var element = document.getElementById('modal');
@@ -286,12 +289,12 @@ class ProfilModal extends Component<IProps, IState> {
 															}}>
 														{i18next.t('SUBMIT')}
     												</button>
-    											</div> 
+    											</div>
     										</div> : null
     									}
     								</div>
     							</div> : null}
-    						{this.state.activeView === 2 ? 
+    						{this.state.activeView === 2 ?
     							<div id="nav-lang" className="modal-body">
     								<div className="profileContent">
     									<div className="profileData">
@@ -314,14 +317,14 @@ class ProfilModal extends Component<IProps, IState> {
     												<div className="profileLine row">
     													<label className="col-xs-6 control-label">{i18next.t('MAIN_SERIES_LANG')}</label>
     													<div className="col-xs-6">
-															<Autocomplete value={this.state.user.main_series_lang} options={listLangs} 
+															<Autocomplete value={this.state.user.main_series_lang} options={listLangs}
 																onChange={(value) => this.changeLanguageFallback('main_series_lang', value)} />
     													</div>
     												</div>
     												<div className="profileLine row">
     													<label className="col-xs-6 control-label">{i18next.t('FALLBACK_SERIES_LANG')}</label>
     													<div className="col-xs-6">
-															<Autocomplete value={this.state.user.fallback_series_lang} options={listLangs} 
+															<Autocomplete value={this.state.user.fallback_series_lang} options={listLangs}
 																onChange={(value) => this.changeLanguageFallback('fallback_series_lang', value)} />
     													</div>
     												</div>

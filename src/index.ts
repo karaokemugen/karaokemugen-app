@@ -27,6 +27,7 @@ import {createInterface} from 'readline';
 import { getPortPromise } from 'portfinder';
 import { app } from 'electron';
 import cloneDeep from 'lodash.clonedeep';
+import { createCircleAvatar } from './utils/imageProcessing';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -75,7 +76,7 @@ if (process.versions.electron) {
 // On OSX, process.cwd() returns /, which is utter stupidity but let's go along with it.
 // What's funny is that originalAppPath is correct on OSX no matter if you're using Electron or not.
 const appPath = process.platform === 'darwin'
-	? app && app.isPackaged 
+	? app && app.isPackaged
 		? resolve(dirname(process.execPath), '../')
 		: originalAppPath
 	: process.cwd();
@@ -147,14 +148,41 @@ export async function main() {
 	logger.debug(`[Launcher] OriginalAppPath: ${originalAppPath}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
-	await initConfig(argv);
-	const publicConfig = cloneDeep(getConfig());
+	const config = await initConfig(argv);
+	const publicConfig = cloneDeep(config);
 	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 	publicConfig.App.JwtSecret = 'xxxxx';
 	publicConfig.App.InstanceID = 'xxxxx';
 	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(publicConfig)}`);
 	logger.debug(`[Launcher] Initial state : ${JSON.stringify(state)}`);
 
+	// 3.1.1 and up migration, setting jingles and sponsors correctly depending on the user's config
+	if (!isNaN(config.Karaoke.SponsorsInterval)) {
+		if (config.Karaoke.JinglesInterval > 0) {
+			setConfig({
+				Karaoke: {JinglesInterval: null},
+				Playlist: {Medias: {Jingles: {Interval: config.Karaoke.JinglesInterval}}}}
+			);
+		} else {
+			setConfig({
+				Karaoke: {JinglesInterval: null},
+				Playlist: {Medias: {Jingles: {Enabled: false}}}}
+			);
+		}
+	}
+	if (!isNaN(config.Karaoke.SponsorsInterval)) {
+		if (config.Karaoke.SponsorsInterval > 0) {
+			setConfig({
+				Karaoke: {SponsorsInterval: null},
+				Playlist: {Medias: {Sponsors: {Interval: config.Karaoke.SponsorsInterval}}}}
+			);
+		} else {
+			setConfig({
+				Karaoke: {SponsorsInterval: null},
+				Playlist: {Medias: {Sponsors: {Enabled: false}}}}
+			);
+		}
+	}
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 
@@ -170,6 +198,7 @@ export async function main() {
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`[Launcher] Copying blank.png to ${resolvedPathAvatars()}`);
 	await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
+	createCircleAvatar(resolve(resolvedPathAvatars(), 'blank.png'));
 
 	/**
 	 * Test if network ports are available

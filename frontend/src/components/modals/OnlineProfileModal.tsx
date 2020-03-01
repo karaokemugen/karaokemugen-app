@@ -47,6 +47,13 @@ class OnlineProfileModal extends Component<IProps,IState> {
     						<label className="modal-title">
     							{this.props.type === 'convert' ? i18next.t('PROFILE_CONVERT') : i18next.t('PROFILE_ONLINE_DELETE')}
     						</label>
+							<button className="closeModal btn btn-action" 
+								onClick={() => {
+										var element = document.getElementById('modal');
+										if (element) ReactDOM.unmountComponentAtNode(element);
+									}}>
+								<i className="fas fa-times"></i>
+							</button>
     					</ul>
     					<div className="modal-body">
     						{this.props.type === 'convert' ?

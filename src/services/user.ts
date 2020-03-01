@@ -2,7 +2,7 @@ import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars} from '../li
 import {Config} from '../types/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
 import {convertToRemoteFavorites} from './favorites';
-import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy, asyncStat, asyncCopyAlt} from '../lib/utils/files';
+import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy, asyncStat, asyncCopyAlt, replaceExt} from '../lib/utils/files';
 import {createHash} from 'crypto';
 import {resolve, join} from 'path';
 import logger from 'winston';
@@ -43,6 +43,7 @@ import {updateExpiredUsers as DBUpdateExpiredUsers,
 } from '../dao/user';
 import {has as hasLang} from 'langs';
 import slugify from 'slugify';
+import { createCircleAvatar } from '../utils/imageProcessing';
 
 let userLoginTimes = new Map();
 let usersFetched = new Set();
@@ -285,6 +286,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			// Let's move it to the avatar user directory and update avatar info in database
 			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
 			user.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
+			createCircleAvatar(resolve(resolvedPathAvatars(), user.avatar_file));
 		} else {
 			user.avatar_file = currentUser.avatar_file;
 		}
@@ -331,6 +333,12 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 				await asyncUnlink(oldAvatarPath);
 			} catch(err) {
 				logger.warn(`[User] Unable to unlink old avatar ${oldAvatarPath} : ${err}`);
+			}
+			const oldAvatarCirclePath = replaceExt(oldAvatarPath, '.circle.png');
+			try {
+				if (await asyncExists(oldAvatarCirclePath)) await asyncUnlink(oldAvatarCirclePath);
+			} catch(err) {
+				logger.warn(`[User] Unable to unlink old avatar circle path ${oldAvatarCirclePath} : ${err}`);
 			}
 		}
 		try {
@@ -694,11 +702,27 @@ export async function initUserSystem() {
 		if (await findUserByName('adminTest')) await deleteUser('adminTest');
 	}
 
-	createDefaultGuests().then(() => checkGuestAvatars());
-	cleanupAvatars();
+	userChecks();
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 	setState({securityCode: generateSecurityCode()});
 	logger.info(`[User] SECURITY CODE FOR THIS SESSION : ${getState().securityCode}`);
+}
+
+/** Performs defaults checks and creations for avatars/guests. This is done synchronously here because these are linked, but userChecks is called asynchronously to speed up init process */
+async function userChecks() {
+	await createDefaultGuests();
+	await checkGuestAvatars();
+	await checkCircledAvatars();
+	await cleanupAvatars();
+}
+
+/** Verifies if all avatars have a circled version available */
+async function checkCircledAvatars() {
+	const users = await listUsers();
+	for (const user of users) {
+		const file = resolve(resolvedPathAvatars(), user.avatar_file);
+		if (!await asyncExists(replaceExt(file, '.circle.png'))) createCircleAvatar(file);
+	}
 }
 
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
@@ -710,7 +734,18 @@ async function cleanupAvatars() {
 	}
 	const avatarFiles = await asyncReadDir(resolvedPathAvatars());
 	for (const file of avatarFiles) {
-		if (!avatars.includes(file) && file !== 'blank.png') asyncUnlink(resolve(resolvedPathAvatars(), file));
+		const avatar = avatars.find(a => a === file);
+		if (!avatar && !file.endsWith('.circle.png') && file !== 'blank.png') {
+			const fullFile = resolve(resolvedPathAvatars(), file);
+			const fullCircleFile = replaceExt(fullFile, '.circle.png');
+			try {
+				asyncUnlink(fullFile);
+				asyncUnlink(fullCircleFile);
+			} catch(err) {
+				console.log(err);
+				//Non-fatal
+			}
+		}
 	}
 	return true;
 }
