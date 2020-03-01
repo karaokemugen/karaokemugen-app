@@ -205,21 +205,26 @@ class KaraokeOptions extends Component<IProps, IState> {
   				</div>
 
 				{this.state.config['Playlist.Medias.Jingles.Enabled'] ?
-					<div className="form-group">
-						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP')}>
-							{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL')}
-				&nbsp;
-							<i className="far fa-question-circle"></i>
-						</label>
-						<div className="col-xs-6">
-							<input
-								type="number"
-								className="form-control"
-								id="Playlist.Medias.Jingles.Interval"
-								placeholder="20"
-								onChange={this.onChange}
-								value={this.state.config['Playlist.Medias.Jingles.Interval']}
-							/>
+					<div
+					id="jinglesSettings"
+					className="settingsGroupPanel"
+					>
+						<div className="form-group">
+							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP')}>
+								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL')}
+					&nbsp;
+								<i className="far fa-question-circle"></i>
+							</label>
+							<div className="col-xs-6">
+								<input
+									type="number"
+									className="form-control"
+									id="Playlist.Medias.Jingles.Interval"
+									placeholder="20"
+									onChange={this.onChange}
+									value={this.state.config['Playlist.Medias.Jingles.Interval']}
+								/>
+							</div>
 						</div>
 					</div> : null
   				}
@@ -235,22 +240,27 @@ class KaraokeOptions extends Component<IProps, IState> {
   				</div>
 
 				{this.state.config['Playlist.Medias.Sponsors.Enabled'] ?
-					<div className="form-group">
-						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP')}>
-							{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL')}
-				&nbsp;
-							<i className="far fa-question-circle"></i>
-						</label>
+					<div
+					id="sponsorsSettings"
+					className="settingsGroupPanel"
+					>
+						<div className="form-group">
+							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP')}>
+								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL')}
+					&nbsp;
+								<i className="far fa-question-circle"></i>
+							</label>
 
-						<div className="col-xs-6">
-							<input
-								type="number"
-								className="form-control"
-								id="Karaoke.Medias.Sponsors.Interval"
-								placeholder="50"
-								onChange={this.onChange}
-								value={this.state.config['Playlist.Medias.Sponsors.Interval']}
-							/>
+							<div className="col-xs-6">
+								<input
+									type="number"
+									className="form-control"
+									id="Karaoke.Medias.Sponsors.Interval"
+									placeholder="50"
+									onChange={this.onChange}
+									value={this.state.config['Playlist.Medias.Sponsors.Interval']}
+								/>
+							</div>
 						</div>
 					</div> : null
   				}
@@ -267,6 +277,30 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
 
+				{this.state.config['Playlist.Medias.Intros.Enabled'] ?
+					<div
+					id="introsSettings"
+					className="settingsGroupPanel"
+					>
+						<div className="form-group">
+							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_MESSAGE_TOOLTIP')}>
+								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_MESSAGE')}
+					&nbsp;
+								<i className="far fa-question-circle"></i>
+							</label>
+
+							<div className="col-xs-6">
+								<input
+									className="form-control"
+									id="Karaoke.Medias.Intros.Message"
+									onChange={this.onChange}
+									value={this.state.config['Playlist.Medias.Intros.Message']}
+								/>
+							</div>
+						</div>
+					</div> : null
+  				}
+
 				<div className="form-group">
   					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_TOOLTIP')}>
   						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS')}
@@ -279,6 +313,30 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
 
+				{this.state.config['Playlist.Medias.Outros.Enabled'] ?
+					<div
+					id="outrosSettings"
+					className="settingsGroupPanel"
+					>
+						<div className="form-group">
+							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_MESSAGE_TOOLTIP')}>
+								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_MESSAGE')}
+					&nbsp;
+								<i className="far fa-question-circle"></i>
+							</label>
+
+							<div className="col-xs-6">
+								<input
+									className="form-control"
+									id="Karaoke.Medias.Outros.Message"
+									onChange={this.onChange}
+									value={this.state.config['Playlist.Medias.Outros.Message']}
+								/>
+							</div>
+						</div>
+					</div> : null
+  				}
+
 				<div className="form-group">
   					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_TOOLTIP')}>
   						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS')}
@@ -290,6 +348,30 @@ class KaraokeOptions extends Component<IProps, IState> {
   							isChecked={this.state.config['Playlist.Medias.Encores.Enabled']} />
   					</div>
   				</div>
+
+				{this.state.config['Playlist.Medias.Encores.Enabled'] ?
+					<div
+						id="encoreSettings"
+						className="settingsGroupPanel"
+					>
+						<div className="form-group">
+							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_MESSAGE_TOOLTIP')}>
+								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_MESSAGE')}
+					&nbsp;
+								<i className="far fa-question-circle"></i>
+							</label>
+
+							<div className="col-xs-6">
+								<input
+									className="form-control"
+									id="Karaoke.Medias.Encores.Message"
+									onChange={this.onChange}
+									value={this.state.config['Playlist.Medias.Encores.Message']}
+								/>
+							</div>
+						</div>
+					</div> : null
+  				}
 
 				<div className="form-group">
   					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.QUICKSTART_TOOLTIP')}>
