@@ -21,6 +21,7 @@ import chalk from 'chalk';
 import {createInterface} from 'readline';
 import { getPortPromise } from 'portfinder';
 import cloneDeep from 'lodash.clonedeep';
+import { createCircleAvatar } from './utils/imageProcessing';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -157,6 +158,7 @@ async function main() {
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`[Launcher] Copying blank.png to ${resolvedPathAvatars()}`);
 	await asyncCopyAlt(join(__dirname, '../assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
+	createCircleAvatar(resolve(resolvedPathAvatars(), 'blank.png'));
 
 	/**
 	 * Test if network ports are available

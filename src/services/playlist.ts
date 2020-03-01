@@ -70,6 +70,7 @@ import { Playlist, PLC, Pos, PlaylistOpts, PlaylistExport, PLCEditParams, Curren
 import { DBPLC } from '../types/database/playlist';
 import { bools } from '../lib/utils/constants';
 import { check } from '../lib/utils/validators';
+import { replaceExt, asyncExists } from '../lib/utils/files';
 
 let databaseBusy = false;
 
@@ -1127,7 +1128,8 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 			requester = `${i18n.t('REQUESTED_BY')} ${kara.nickname}`;
 			// Get user avatar
 			const user = await findUserByName(kara.username);
-			avatarfile = resolve(resolvedPathAvatars(), user.avatar_file);
+			avatarfile = replaceExt(resolve(resolvedPathAvatars(), user.avatar_file), '.circle.png');
+			if (!await asyncExists(avatarfile)) avatarfile = resolve(resolvedPathAvatars(), 'blank.circle.png');
 		} else {
 			requester = '';
 		}

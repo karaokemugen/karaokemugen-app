@@ -2,7 +2,7 @@ import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars} from '../li
 import {Config} from '../types/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
 import {convertToRemoteFavorites} from './favorites';
-import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy, asyncStat, asyncCopyAlt} from '../lib/utils/files';
+import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy, asyncStat, asyncCopyAlt, replaceExt} from '../lib/utils/files';
 import {createHash} from 'crypto';
 import {resolve, join} from 'path';
 import logger from 'winston';
@@ -43,6 +43,7 @@ import {updateExpiredUsers as DBUpdateExpiredUsers,
 } from '../dao/user';
 import {has as hasLang} from 'langs';
 import slugify from 'slugify';
+import { createCircleAvatar } from '../utils/imageProcessing';
 
 let userLoginTimes = new Map();
 let usersFetched = new Set();
@@ -285,6 +286,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			// Let's move it to the avatar user directory and update avatar info in database
 			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
 			user.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
+			createCircleAvatar(resolve(resolvedPathAvatars(), user.avatar_file));
 		} else {
 			user.avatar_file = currentUser.avatar_file;
 		}
@@ -711,7 +713,18 @@ async function cleanupAvatars() {
 	}
 	const avatarFiles = await asyncReadDir(resolvedPathAvatars());
 	for (const file of avatarFiles) {
-		if (!avatars.includes(file) && file !== 'blank.png') asyncUnlink(resolve(resolvedPathAvatars(), file));
+		const avatar = avatars.find(a => a === file);
+		if (!avatar && !file.endsWith('.circle.png') && file !== 'blank.png') {
+			const fullFile = resolve(resolvedPathAvatars(), file);
+			const fullCircleFile = replaceExt(fullFile, '.circle.png');
+			try {
+				asyncUnlink(fullFile);
+				asyncUnlink(fullCircleFile);
+			} catch(err) {
+				console.log(err);
+				//Non-fatal
+			}
+		}
 	}
 	return true;
 }

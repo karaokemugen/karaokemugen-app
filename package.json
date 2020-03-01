@@ -78,6 +78,7 @@
     ]
   },
   "dependencies": {
+    "@jimp/plugin-circle": "^0.9.3",
     "agentkeepalive": "^4.1.0",
     "ass-compiler": "^0.0.11",
     "async-await-parallel": "^1.0.0",
@@ -101,6 +102,7 @@
     "internet-available": "^1.0.0",
     "ip": "^1.1.5",
     "isomorphic-git": "^0.78.2",
+    "jimp": "^0.9.3",
     "js-yaml": "^3.13.1",
     "jwt-simple": "^0.5.6",
     "kar-to-ass": "^1.0.4",
