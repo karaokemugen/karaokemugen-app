@@ -703,11 +703,27 @@ export async function initUserSystem() {
 		if (await findUserByName('adminTest')) await deleteUser('adminTest');
 	}
 
-	createDefaultGuests().then(() => checkGuestAvatars());
-	cleanupAvatars();
+	userChecks();
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 	setState({securityCode: generateSecurityCode()});
 	logger.info(`[User] SECURITY CODE FOR THIS SESSION : ${getState().securityCode}`);
+}
+
+/** Performs defaults checks and creations for avatars/guests. This is done synchronously here because these are linked, but userChecks is called asynchronously to speed up init process */
+async function userChecks() {
+	await createDefaultGuests();
+	await checkGuestAvatars();
+	await checkCircledAvatars();
+	await cleanupAvatars();
+}
+
+/** Verifies if all avatars have a circled version available */
+async function checkCircledAvatars() {
+	const users = await listUsers();
+	for (const user of users) {
+		const file = resolve(resolvedPathAvatars(), user.avatar_file);
+		if (!await asyncExists(replaceExt(file, '.circle.png'))) createCircleAvatar(file);
+	}
 }
 
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
