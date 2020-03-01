@@ -11,6 +11,7 @@ require('babel-polyfill');
 import store from '../../store';
 import { Config } from '~../../../src/types/config';
 import { User, Token } from '~/../../../src/lib/types/user';
+require('./ProfilModal.scss');
 
 interface IProps {
 	config: Config;
@@ -208,14 +209,16 @@ class ProfilModal extends Component<IProps, IState> {
     							<div id="nav-profil" className="modal-body" >
     								<div className="profileContent">
     									<div>
-    										<label title={i18next.t('AVATAR_IMPORT')} className="btn btn-default avatar">
-    											<img className="img-circle"
+											<img className="img-circle avatar"
     												src={this.state.user.avatar_file ? pathAvatar + this.state.user.avatar_file : blankAvatar as string}
     												alt="User Pic" />
-    											{logInfos && logInfos.role !== 'guest' ?
-    												<input id="avatar" className="import-file" type="file" accept="image/*" style={{ display: 'none' }} onChange={this.importAvatar} /> : null
-    											}
-    										</label>
+											{logInfos && logInfos.role !== 'guest' ?
+												<label htmlFor="avatar" className="btn btn-default avatarButton">
+													<input id="avatar" className="import-file" type="file" accept="image/*" 
+														style={{ display: 'none' }} onChange={this.importAvatar} />
+													{i18next.t('AVATAR_IMPORT')}
+												</label> : null
+											}
     										<p>{this.state.user.login}</p>
     									</div>
     									{logInfos && logInfos.role !== 'guest' ?
