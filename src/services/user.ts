@@ -740,8 +740,9 @@ async function cleanupAvatars() {
 			const fullFile = resolve(resolvedPathAvatars(), file);
 			const fullCircleFile = replaceExt(fullFile, '.circle.png');
 			try {
-				asyncUnlink(fullFile);
-				if (await asyncExists(fullCircleFile)) asyncUnlink(fullCircleFile);
+				logger.debug(`[Users] Deleting old file ${fullFile} and ${fullCircleFile}`);
+				await asyncUnlink(fullFile);
+				if (await asyncExists(fullCircleFile)) await asyncUnlink(fullCircleFile);
 			} catch(err) {
 				console.log(err);
 				//Non-fatal
