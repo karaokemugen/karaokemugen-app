@@ -334,6 +334,12 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 			} catch(err) {
 				logger.warn(`[User] Unable to unlink old avatar ${oldAvatarPath} : ${err}`);
 			}
+			const oldAvatarCirclePath = replaceExt(oldAvatarPath, '.circle.png');
+			try {
+				if (await asyncExists(oldAvatarCirclePath)) await asyncUnlink(oldAvatarCirclePath);
+			} catch(err) {
+				logger.warn(`[User] Unable to unlink old avatar circle path ${oldAvatarCirclePath} : ${err}`);
+			}
 		}
 		try {
 			await asyncCopy(avatar.path, newAvatarPath, {overwrite: true});
