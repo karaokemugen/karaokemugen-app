@@ -256,10 +256,10 @@ class ProfilModal extends Component<IProps, IState> {
     											</div>
     											<div className="profileLine">
     												<i className="fas fa-star"></i>
-    												<div title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
+    												<label htmlFor="favImport" title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
     													<i className="fas fa-download"></i> {i18next.t('IMPORT')}
-    													<input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
-    												</div>
+    												</label>
+													<input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
     												<button type="button" title={i18next.t('FAVORITES_EXPORT')} className="btn btn-action btn-default favExport" onClick={this.favExport}>
     													<i className="fas fa-upload"></i> {i18next.t('EXPORT')}
     												</button>
