@@ -140,7 +140,7 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 		title: i18next.t('UNUSED_FILES.TYPE'),
 		dataIndex: 'types',
 		key: 'types',
-		render: types => types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}`)).join(', ')
+		render: types => types && types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}`)).join(', ')
 	}, {
 		title: i18next.t('UNUSED_FILES.FILE'),
 		dataIndex: 'file',
