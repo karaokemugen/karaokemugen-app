@@ -141,42 +141,6 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div> : null}
 
   				<div className="form-group">
-  					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP')}>
-  						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL')}
-              &nbsp;
-  						<i className="far fa-question-circle"></i>
-  					</label>
-  					<div className="col-xs-6">
-  						<input
-  							type="number"
-  							className="form-control"
-  							id="Karaoke.JinglesInterval"
-  							placeholder="20"
-  							onChange={this.onChange}
-  							value={this.state.config['Karaoke.JinglesInterval']}
-  						/>
-  					</div>
-  				</div>
-
-				<div className="form-group">
-  					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP')}>
-  						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL')}
-              &nbsp;
-  						<i className="far fa-question-circle"></i>
-  					</label>
-
-					<div className="col-xs-6">
-						<input
-							type="number"
-							className="form-control"
-							id="Karaoke.SponsorsInterval"
-							onChange={this.onChange}
-							value={this.state.config['Karaoke.SponsorsInterval']}
-						/>
-  					</div>
-  				</div>
-
-  				<div className="form-group">
   					<label className="col-xs-4 control-label">
   						{i18next.t('ENGINEREPEATPLAYLIST')}
   					</label>
@@ -229,6 +193,67 @@ class KaraokeOptions extends Component<IProps, IState> {
   							isChecked={this.state.config['Playlist.AllowDuplicateSeries']} />
   					</div>
   				</div>
+
+				<div className="form-group">
+  					<label className="col-xs-4 control-label">
+  						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS')}
+  					</label>
+  					<div className="col-xs-6">
+  						<Switch idInput="Playlist.Medias.Jingles.Enabled" handleChange={this.onChange}
+  							isChecked={this.state.config['Playlist.Medias.Jingles.Enabled']} />
+  					</div>
+  				</div>
+
+				{this.state.config['Playlist.Medias.Jingles.Enabled'] ?
+					<div className="form-group">
+						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP')}>
+							{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL')}
+				&nbsp;
+							<i className="far fa-question-circle"></i>
+						</label>
+						<div className="col-xs-6">
+							<input
+								type="number"
+								className="form-control"
+								id="Playlist.Medias.Jingles.Interval"
+								placeholder="20"
+								onChange={this.onChange}
+								value={this.state.config['Playlist.Medias.Jingles.Interval']}
+							/>
+						</div>
+					</div> : null
+  				}
+
+				<div className="form-group">
+  					<label className="col-xs-4 control-label">
+  						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS')}
+  					</label>
+  					<div className="col-xs-6">
+  						<Switch idInput="Playlist.Medias.Sponsors.Enabled" handleChange={this.onChange}
+  							isChecked={this.state.config['Playlist.Medias.Sponsors.Enabled']} />
+  					</div>
+  				</div>
+
+				{this.state.config['Playlist.Medias.Sponsors.Enabled'] ?
+					<div className="form-group">
+						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP')}>
+							{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL')}
+				&nbsp;
+							<i className="far fa-question-circle"></i>
+						</label>
+
+						<div className="col-xs-6">
+							<input
+								type="number"
+								className="form-control"
+								id="Karaoke.Medias.Sponsors.Interval"
+								placeholder="50"
+								onChange={this.onChange}
+								value={this.state.config['Playlist.Medias.Sponsors.Interval']}
+							/>
+						</div>
+					</div> : null
+  				}
 
   				<div className="form-group">
   					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_TOOLTIP')}>

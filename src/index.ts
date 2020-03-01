@@ -101,6 +101,33 @@ async function main() {
 	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 	publicConfig.App.JwtSecret = 'xxxxx';
 	publicConfig.App.InstanceID = 'xxxxx';
+	// 3.1.1 and up migration, setting jingles and sponsors correctly depending on the user's config
+	if (!isNaN(config.Karaoke.SponsorsInterval)) {
+		if (config.Karaoke.JinglesInterval > 0) {
+			setConfig({
+				Karaoke: {JinglesInterval: null},
+				Playlist: {Medias: {Jingles: {Interval: config.Karaoke.JinglesInterval}}}}
+			);
+		} else {
+			setConfig({
+				Karaoke: {JinglesInterval: null},
+				Playlist: {Medias: {Jingles: {Enabled: false}}}}
+			);
+		}
+	}
+	if (!isNaN(config.Karaoke.SponsorsInterval)) {
+		if (config.Karaoke.SponsorsInterval > 0) {
+			setConfig({
+				Karaoke: {SponsorsInterval: null},
+				Playlist: {Medias: {Sponsors: {Interval: config.Karaoke.SponsorsInterval}}}}
+			);
+		} else {
+			setConfig({
+				Karaoke: {SponsorsInterval: null},
+				Playlist: {Medias: {Sponsors: {Enabled: false}}}}
+			);
+		}
+	}
 	await parseCommandLineArgs(argv);
 	logger.debug(`[Launcher] AppPath : ${appPath}`);
 	logger.debug(`[Launcher] DataPath : ${dataPath}`);

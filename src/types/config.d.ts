@@ -1,4 +1,3 @@
-import { ALPN_ENABLED } from "constants";
 
 export interface Config {
 	App: {
@@ -66,8 +65,8 @@ export interface Config {
 		Autoplay?: boolean,
 		Repeat?: boolean,
 		SmartInsert?: boolean,
-		JinglesInterval?: number,
-		SponsorsInterval?: number,
+		JinglesInterval?: number, // Obsolete since 3.1.1
+		SponsorsInterval?: number, // Obsolete since 3.1.1
 		Display: {
 			Avatar?: boolean,
 			Nickname?: boolean,
@@ -115,6 +114,14 @@ export interface Config {
 		MaxDejaVuTime?: number,
 		RemovePublicOnPlay?: boolean,
 		Medias: {
+			Jingles: {
+				Enabled: boolean,
+				Interval: number,
+			},
+			Sponsors: {
+				Enabled: boolean,
+				Interval: number,
+			}
 			Intros: {
 				Enabled: boolean,
 				File: string,

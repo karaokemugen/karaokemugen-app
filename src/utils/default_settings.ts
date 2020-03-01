@@ -82,7 +82,7 @@ export const defaults: Config = {
 
 
 **Lien** : $link`,
-				Title: "[Suggestion] $serie - $title",
+				Title: '[Suggestion] $serie - $title',
 				Labels: ['suggestion']
 			}
 		}
@@ -90,8 +90,6 @@ export const defaults: Config = {
 	Karaoke: {
 		Autoplay: false,
 		ClassicMode: false,
-		JinglesInterval: 20,
-		SponsorsInterval: 50,
 		Private: true,
 		Repeat: false,
 		SmartInsert: false,
@@ -148,6 +146,14 @@ export const defaults: Config = {
 		AllowDuplicateSeries: true,
 		MaxDejaVuTime: 60,
 		Medias: {
+			Sponsors: {
+				Enabled: true,
+				Interval: 50
+			},
+			Jingles: {
+				Enabled: true,
+				Interval: 20
+			},
 			Intros: {
 				Enabled: true,
 				File: null,
@@ -243,8 +249,6 @@ export const configConstraints = {
 	'Karaoke.Private': {inclusion : bools},
 	'Karaoke.Repeat': {inclusion : bools},
 	'Karaoke.SmartInsert': {inclusion : bools},
-	'Karaoke.JinglesInterval': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	'Karaoke.SponsorsInterval': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Karaoke.Poll.Choices': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Karaoke.Poll.Timeout': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Karaoke.Poll.Enabled': {inclusion : bools},
@@ -275,9 +279,12 @@ export const configConstraints = {
 	'Playlist.RemovePublicOnPlay': {inclusion : bools},
 	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Playlist.Medias.Intros.Enabled': {inclusion: bools},
+	'Playlist.Medias.Sponsors.Enabled': {inclusion: bools},
+	'Playlist.Medias.Sponsors.Interval': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Playlist.Medias.Outros.Enabled': {inclusion: bools},
 	'Playlist.Medias.Encores.Enabled': {inclusion: bools},
 	'Playlist.Medias.Jingles.Enabled': {inclusion: bools},
+	'Playlist.Medias.Jingles.Interval': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Playlist.MysterySongs.Hide': {inclusion: bools},
 	'Playlist.MysterySongs.AddedSongVisibilityAdmin': {inclusion: bools},
 	'Playlist.MysterySongs.AddedSongVisibilityPublic': {inclusion: bools},
