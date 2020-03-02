@@ -718,15 +718,19 @@ async function userChecks() {
 
 /** Verifies if all avatars have a circled version available */
 async function checkCircledAvatars() {
+	logger.debug('[User] Checking if all avatars have circled versions');
 	const users = await listUsers();
 	for (const user of users) {
 		const file = resolve(resolvedPathAvatars(), user.avatar_file);
-		if (!await asyncExists(replaceExt(file, '.circle.png'))) createCircleAvatar(file);
+		if (await asyncExists(file) && !await asyncExists(replaceExt(file, '.circle.png'))) {
+			await createCircleAvatar(file);
+		}
 	}
 }
 
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
 async function cleanupAvatars() {
+	logger.debug('[User] Cleaning up unused avatars');
 	const users = await listUsers();
 	const avatars = [];
 	for (const user of users) {
@@ -739,8 +743,9 @@ async function cleanupAvatars() {
 			const fullFile = resolve(resolvedPathAvatars(), file);
 			const fullCircleFile = replaceExt(fullFile, '.circle.png');
 			try {
-				asyncUnlink(fullFile);
-				if (await asyncExists(fullCircleFile)) asyncUnlink(fullCircleFile);
+				logger.debug(`[Users] Deleting old file ${fullFile} and ${fullCircleFile}`);
+				await asyncUnlink(fullFile);
+				if (await asyncExists(fullCircleFile)) await asyncUnlink(fullCircleFile);
 			} catch(err) {
 				console.log(err);
 				//Non-fatal

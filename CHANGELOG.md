@@ -45,10 +45,15 @@ This is a minor release containing fixes AND new features.
 
 - Songs with the "Spoiler" tag will get a red SPOILER WARNING above its details when the song starts on screen (96d3dafb, a67c2e80, d7d1dc2c and aa84a0b4)
 - Admin account password is no longer displayed in terminal or tutorial (d5971b98)
+- The player and profile modal will now display rounded avatars (#590 and a few other commits)
+- Jingles and sponsors can now be disabled completely (instead of you having to set them to 0 to disable) (31f76202 and 943823c5)
+- You can now add a message being shown on screen during encore/outros/intros (511ec410)
 
 ### Improvements
 
-- ultrastar2ass has been upgraded to 1.0.8
+- Profile modal now has a close button (1d3e2c5c)
+- ultrastar2ass has been upgraded to 1.0.9
+- toyunda2ass has been upgraded to 1.0.10
 - Downloading lots of songs should be faster now :
   - The next song is downloaded as soon as the first one is downloaded. Integration of songs is done asynchronously (98868a04)
   - Instead of downloading tag, series, karas and ass files separately, they're downloaded in one bundle and separated again aftar download (#562)
@@ -58,6 +63,8 @@ This is a minor release containing fixes AND new features.
 
 ### Fixes
 
+- Importing favorites is now fixed (650ce09a)
+- Reworked playlist reordering so it takes into account songs not available in database anymore (5798d60b)
 - When tags or songs have disappeared from database but are still in the app's blacklist criterias, they are now completely removed from output but still kept in database. (b8d32f04 and e62f0fe4)
 - Fixed bug in blacklist criteria search (8360154b)
 - "Look for application software updates" was ignored in config, this is fixed now (e2e577d1)
