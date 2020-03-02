@@ -13,7 +13,7 @@ platforms (#533)
   - Player progress bar is now visible in the Dock (macOS) or taskbar (Windows) (#572)
   - A initialization page with optional logs is shown at startup (#568)
   - Karaoke Mugen is now packaged in these formats :
-    - macOS: portable (.zip) and .dmg for easy install
+    - macOS: .dmg for easy install
     - Windows: portable (.zip) and .exe installer
     - Linux: appImage
   - There is an auto-update system in place which will download updates and install them on startup (unless told not to) or when manually told to. (#7)
