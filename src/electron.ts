@@ -5,7 +5,7 @@ import i18next from 'i18next';
 import { on } from './lib/utils/pubsub';
 import { autoUpdater } from 'electron-updater';
 import { configureLocale, getConfig } from './lib/utils/config';
-import { main } from './index';
+import { main, preInit } from './index';
 import logger from './lib/utils/logger';
 import { exit } from './services/engine';
 import { resolve } from 'path';
@@ -25,7 +25,15 @@ export async function startElectron() {
 	setState({electron: app });
 	// This is called when Electron finished initializing
 	app.on('ready', async () => {
+		try {
+			await preInit();
+		} catch(err) {
+			throw Error(err);
+		}
 		createWindow();
+		await initMenu();
+		const menu = Menu.buildFromTemplate(getMenu());
+		Menu.setApplicationMenu(menu);
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());
 			autoUpdater.logger = logger;
@@ -96,18 +104,9 @@ export async function startElectron() {
 	});
 }
 
-on('configReady', async() => {
-	if (app) {
-		await initMenu();
-		const menu = Menu.buildFromTemplate(getMenu());
-		Menu.setApplicationMenu(menu);
-	}
-});
-
 function createWindow () {
 	// Create the browser window
 	const state = getState();
-	
 	win = new BrowserWindow({
 		width: 1280,
 		height: 720,
@@ -117,11 +116,9 @@ function createWindow () {
 			nodeIntegration: true
 		}
 	});
-
 	// and load the index.html of the app.
 	win.loadURL(`file://${resolve(state.resourcePath, 'initpage/index.html')}`);
 	win.show();
-
 	win.webContents.on('new-window', (event, url) => {
 		event.preventDefault();
 		getConfig().GUI.OpenInElectron

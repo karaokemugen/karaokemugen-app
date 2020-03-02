@@ -122,13 +122,28 @@ if (app && !argv.cli) {
 	startElectron();
 } else {
 	// This is in case we're running with yarn startNoElectron
-	configureLocale()
+	preInit()
 		.then(() => main())
 		.catch(err => {
 			logger.error(`[Launcher] Error during launch : ${err}`);
 			console.log(err);
 			exit(1);
 		});
+}
+
+export async function preInit() {
+	await configureLocale();
+	await configureLogger(dataPath, argv.debug || (app && app.commandLine.hasSwitch('debug')), true);
+	const state = getState();
+	await parseCommandLineArgs(argv, app ? app.commandLine : null);
+	logger.debug(`[Launcher] AppPath : ${appPath}`);
+	logger.debug(`[Launcher] DataPath : ${dataPath}`);
+	logger.debug(`[Launcher] ResourcePath : ${resourcePath}`);
+	logger.debug(`[Launcher] Electron ResourcePath: ${process.resourcesPath}`);
+	logger.debug(`[Launcher] OriginalAppPath: ${originalAppPath}`);
+	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
+	logger.debug(`[Launcher] OS : ${state.os}`);
+	await initConfig(argv);
 }
 
 export async function main() {
@@ -139,16 +154,7 @@ export async function main() {
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
 	console.log('================================================================================');
-	await configureLogger(dataPath, argv.debug || (app && app.commandLine.hasSwitch('debug')), true);
-	await parseCommandLineArgs(argv, app ? app.commandLine : null);
-	logger.debug(`[Launcher] AppPath : ${appPath}`);
-	logger.debug(`[Launcher] DataPath : ${dataPath}`);
-	logger.debug(`[Launcher] ResourcePath : ${resourcePath}`);
-	logger.debug(`[Launcher] Electron ResourcePath: ${process.resourcesPath}`);
-	logger.debug(`[Launcher] OriginalAppPath: ${originalAppPath}`);
-	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
-	logger.debug(`[Launcher] OS : ${state.os}`);
-	const config = await initConfig(argv);
+	const config = getConfig();
 	const publicConfig = cloneDeep(config);
 	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 	publicConfig.App.JwtSecret = 'xxxxx';
