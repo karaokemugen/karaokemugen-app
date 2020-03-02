@@ -30,6 +30,8 @@ import { app } from 'electron';
 import { generateBlacklist } from '../dao/blacklist';
 import { duration } from '../lib/utils/date';
 
+let shutdownInProgress = false;
+
 export async function initEngine() {
 	profile('Init');
 	const conf = getConfig();
@@ -145,7 +147,9 @@ export async function initEngine() {
 }
 
 export async function exit(rc: any) {
+	if (shutdownInProgress) return;
 	logger.info('[Engine] Shutdown in progress');
+	shutdownInProgress = true;
 	emit('exiting-app');
 	if (getState().player.ready) {
 		try {
