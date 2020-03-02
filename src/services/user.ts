@@ -719,15 +719,19 @@ async function userChecks() {
 
 /** Verifies if all avatars have a circled version available */
 async function checkCircledAvatars() {
+	logger.debug('[User] Checking if all avatars have circled versions');
 	const users = await listUsers();
 	for (const user of users) {
 		const file = resolve(resolvedPathAvatars(), user.avatar_file);
-		if (!await asyncExists(replaceExt(file, '.circle.png'))) createCircleAvatar(file);
+		if (await asyncExists(file) && !await asyncExists(replaceExt(file, '.circle.png'))) {
+			await createCircleAvatar(file);
+		}
 	}
 }
 
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
 async function cleanupAvatars() {
+	logger.debug('[User] Cleaning up unused avatars');
 	const users = await listUsers();
 	const avatars = [];
 	for (const user of users) {
