@@ -112,8 +112,8 @@ Earlier PostgreSQL versions (9.x, 10.x...) should work but have not been tested.
 
 Karaoke Mugen can use PostgreSQL in two ways :
 
-- **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `database.json` file to point to the correct server and database)
-- **Bundlded PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `database.json` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
+* **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `database.json` file to point to the correct server and database)
+* **Bundlded PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `database.json` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
 
 ### Yarn
 
