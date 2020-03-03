@@ -6,6 +6,32 @@
 import {Config} from '../types/config';
 import { bools } from '../lib/utils/constants';
 
+const dbConfig = process.platform === 'linux'
+	? {
+		bundledPostgresBinary: true,
+		database: 'karaokemugen_app',
+		driver: 'pg',
+		host: 'localhost',
+		password: 'musubi',
+		port: 6559,
+		schema: 'public',
+		superuser: 'postgres',
+		superuserPassword: null,
+		user: 'karaokemugen_app'
+	}
+	: {
+		bundledPostgresBinary: false,
+		database: 'karaokemugen_app',
+		driver: 'pg',
+		host: 'localhost',
+		password: 'musubi',
+		port: 5432,
+		schema: 'public',
+		superuser: null,
+		superuserPassword: null,
+		user: 'karaokemugen_app'
+	};
+
 /** Default configuration */
 export const defaults: Config = {
 	App: {
@@ -16,18 +42,7 @@ export const defaults: Config = {
 	Database: {
 		'sql-file': true,
 		defaultEnv: 'prod',
-		prod: {
-			bundledPostgresBinary: true,
-			database: 'karaokemugen_app',
-			driver: 'pg',
-			host: 'localhost',
-			password: 'musubi',
-			port: 6559,
-			schema: 'public',
-			superuser: 'postgres',
-			superuserPassword: null,
-			user: 'karaokemugen_app'
-		}
+		prod: dbConfig
 	},
 	Online: {
 		Host: 'kara.moe',
