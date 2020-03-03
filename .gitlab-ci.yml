@@ -3,7 +3,6 @@ image: axelterizaki/karaokemugen-ci:node-12
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   ELECTRON_CACHE: .cache/electron
-  ELETCRON_BUILDER_CACHE: .cache/electron-builder
 
 cache:
   key: km-app-${CI_COMMIT_REF_SLUG}
@@ -12,7 +11,6 @@ cache:
     - systempanel/node_modules/
     - frontend/node_modules/
     - .cache/electron
-    - .cache/electron-builder
 
 stages:
   - test
@@ -106,8 +104,8 @@ pkg_win:
     - ./node_modules/.bin/electron-builder -w --publish always
     - ls -la packages/
     - mkdir release
-    - mv packages/*.exe release
-    - mv packages/*.yml release
+    - mv packages/*.exe release/
+    - mv packages/*.yml release/
     - mv packages/*.blockmap release/
     - touch portable
     - zip -rv packages/*.zip portable
@@ -175,6 +173,7 @@ deploy_win:
 
 deploy_linux:
   stage: deploy
+  image: minidocks/lftp
   interruptible: true
   dependencies:
     - pkg_linux
@@ -185,3 +184,4 @@ deploy_linux:
     - master
     - next
     - tags
+
