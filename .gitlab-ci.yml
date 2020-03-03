@@ -132,6 +132,9 @@ pkg_mac:
     - build
   variables:
     CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    ARTIFACT_DOWNLOAD_ATTEMPTS: 10
+    RESTORE_CACHE_ATTEMPTS: 10
+
   script:
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-3.2.tar.gz | tar xvz
     - ./node_modules/.bin/electron-builder -m
