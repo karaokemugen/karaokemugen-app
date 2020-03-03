@@ -100,12 +100,17 @@ const dataPath = existsSync(resolve(originalAppPath, 'portable'))
 if (!existsSync(dataPath)) mkdirSync(dataPath);
 
 // Move config file if it's in appPath to dataPath
-if (existsSync(resolve(originalAppPath, 'config.yml')) && !existsSync(resolve(dataPath, 'config.yml'))) {
-	moveSync(resolve(originalAppPath, 'config.yml'), resolve(dataPath, 'config.yml'));
+
+const rootConfig = resolve(originalAppPath, 'config.yml');
+const dataConfig = resolve(dataPath, 'config.yml');
+if (existsSync(rootConfig) && !existsSync(dataConfig)) {
+	moveSync(rootConfig, dataConfig);
 }
 
-if (existsSync(resolve(originalAppPath, 'database.json')) && !existsSync(resolve(dataPath, 'database.json'))) {
-	moveSync(resolve(originalAppPath, 'database.json'), resolve(dataPath, 'database.json'));
+const rootDatabase = resolve(originalAppPath, 'database.json');
+const dataDatabase = resolve(dataPath, 'database.json');
+if (existsSync(rootDatabase) && !existsSync(dataDatabase)) {
+	moveSync(rootDatabase, dataDatabase);
 }
 
 setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
