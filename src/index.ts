@@ -8,7 +8,7 @@ import {exit, initEngine} from './services/engine';
 import {logo} from './logo';
 import { setState, getState } from './utils/state';
 import { version } from './version';
-import { migrateOldFoldersToRepo, addRepo, getRepo } from './services/repo';
+import { migrateOldFoldersToRepo } from './services/repo';
 import { initStep, errorStep } from './utils/electron_logger';
 import { startElectron } from './electron';
 
@@ -234,31 +234,6 @@ export async function main() {
 async function checkPaths(config: Config) {
 	// Migrate old folder config to new repository one :
 	await migrateOldFoldersToRepo();
-	const conf = getConfig();
-	// If no karaoke is found, copy the samples directory if it exists
-	if (!await asyncExists(resolve(dataPath, conf.System.Repositories[0].Path.Karas[0])) && await asyncExists(resolve(resourcePath, 'samples/')) && !getRepo('Samples')) {
-		try {
-			await asyncCopy(
-				resolve(resourcePath, 'samples'),
-				resolve(dataPath, 'repos/samples'),
-				{overwrite: true}
-			);
-			await addRepo({
-				Name: 'Samples',
-				Online: false,
-				Path: {
-					Lyrics: [resolve(dataPath, 'repos/samples/lyrics')],
-					Medias: [resolve(dataPath, 'repos/samples/medias')],
-					Karas: [resolve(dataPath, 'repos/samples/karaokes')],
-					Tags: [resolve(dataPath, 'repos/samples/tags')],
-					Series: [resolve(dataPath, 'repos/samples/series')]
-				}
-			});
-		} catch (err) {
-			// Non-fatal
-			logger.warn(`[Launcher] Unable to add samples repository : ${err}`);
-		}
-	}
 
 	// Emptying temp directory
 	if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());

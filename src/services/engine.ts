@@ -17,7 +17,7 @@ import {closeDB, getSettings, vacuum} from '../lib/dao/database';
 import {initFrontend} from '../webapp/frontend';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from './player';
-import {initDownloader, updateAllBases, updateAllMedias} from './download';
+import {initDownloader, updateAllBases, updateAllMedias, downloadTestSongs, downloadRandomSongs} from './download';
 import {initStats} from './stats';
 import {welcomeToYoukousoKaraokeMugen} from './welcome';
 import {initPlaylistSystem, testPlaylists} from './playlist';
@@ -29,6 +29,7 @@ import { initStep, errorStep } from '../utils/electron_logger';
 import { app } from 'electron';
 import { generateBlacklist } from '../dao/blacklist';
 import { duration } from '../lib/utils/date';
+import { DBStats } from '../types/database/database';
 
 let shutdownInProgress = false;
 
@@ -105,7 +106,7 @@ export async function initEngine() {
 	} else {
 		initStep(i18n.t('INIT_DB'));
 		await initDBSystem();
-		await preFlightCheck();
+		const stats = await preFlightCheck();
 		initStep(i18n.t('INIT_USER'));
 		await initUserSystem();
 		if (conf.Online.URL) try {
@@ -138,6 +139,11 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
 			if (!state.isTest && !state.isDemo) updatePlaylistMedias();
+			if (conf.App.FirstRun && stats.karas === 0) {
+				state.isTest
+					? downloadTestSongs()
+					: downloadRandomSongs();
+			}
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
 		} finally {
@@ -207,7 +213,7 @@ export async function getKMStats() {
 	return await getStats();
 }
 
-async function preFlightCheck() {
+async function preFlightCheck(): Promise<DBStats> {
 	const state = getState();
 	const conf = getConfig();
 	let doGenerate = false;
@@ -241,4 +247,5 @@ async function preFlightCheck() {
 	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
 	logger.info(`Playlists    : ${stats.playlists}`);
 	logger.info(`Songs played : ${stats.played}`);
+	return stats;
 }
