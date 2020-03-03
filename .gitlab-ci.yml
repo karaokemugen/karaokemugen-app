@@ -118,6 +118,7 @@ pkg_win:
 
 pkg_mac:
   stage: package
+  allow_failure: true
   retry:
     max: 2
   tags:
@@ -149,6 +150,8 @@ deploy_mac:
   interruptible: true
   dependencies:
     - pkg_mac
+  needs:
+    - pkg_mac
   script:
     - ls -la release/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
@@ -163,6 +166,8 @@ deploy_win:
   interruptible: true
   dependencies:
     - pkg_win
+  needs:
+    - pkg_win
   script:
     - ls -la release/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
@@ -176,6 +181,8 @@ deploy_linux:
   image: minidocks/lftp
   interruptible: true
   dependencies:
+    - pkg_linux
+  needs:
     - pkg_linux
   script:
     - ls -la release/*
