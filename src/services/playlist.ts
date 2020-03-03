@@ -1,5 +1,4 @@
 //Utils
-import {getStats} from '../dao/database';
 import {getConfig, resolvedPathAvatars} from '../lib/utils/config';
 import {now} from '../lib/utils/date';
 import logger from '../lib/utils/logger';
@@ -55,7 +54,7 @@ import {
 //KM Modules
 import {updateSongsLeft, findUserByName} from './user';
 import {Token, User} from '../lib/types/user';
-import { isAllKaras, formatKaraList, getKaras, getKara} from './kara';
+import { isAllKaras, formatKaraList, getKara} from './kara';
 import {playPlayer, playingUpdated} from './player';
 import {getBlacklist} from './blacklist';
 import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
@@ -1168,31 +1167,6 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 	}
 }
 
-/** Build initial dummy playlist */
-export async function buildDummyPlaylist() {
-	const stats = await getStats();
-	const state = getState();
-	let karaCount = stats.karas;
-	// Limiting to 5 sample karas to add if there's more.
-	if (karaCount > 5) karaCount = 5;
-	if (karaCount > 0) {
-		logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);
-		const karas = await getKaras({
-			size: karaCount,
-			token: {username: 'admin', role: 'admin'},
-			random: karaCount
-		});
-		await addKaraToPlaylist(karas.content.map(k => k.kid), 'admin', state.currentPlaylistID);
-		logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
-		emitWS('playlistInfoUpdated', state.currentPlaylistID);
-		emitWS('playlistContentsUpdated', state.currentPlaylistID);
-		return true;
-	} else {
-		logger.warn('[PLC] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
-		return true;
-	}
-}
-
 /** Flag songs as free if they are older than X minutes */
 async function updateFreeOrphanedSongs() {
 	try {
@@ -1219,7 +1193,6 @@ export async function testCurrentPlaylist() {
 		},'admin')
 		});
 		logger.debug('[Playlist] Initial current playlist created');
-		if (!getState().isTest) buildDummyPlaylist();
 	}
 }
 

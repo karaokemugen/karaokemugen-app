@@ -56,7 +56,7 @@ INSERT INTO download(
 	size,
 	status,
 	pk_uuid,
-	repository
+	repository,
 	kid
 ) VALUES(
 	$1,
