@@ -8,6 +8,18 @@ import { bools } from '../lib/utils/constants';
 
 const dbConfig = process.platform === 'linux'
 	? {
+		bundledPostgresBinary: false,
+		database: 'karaokemugen_app',
+		driver: 'pg',
+		host: 'localhost',
+		password: 'musubi',
+		port: 5432,
+		schema: 'public',
+		superuser: null,
+		superuserPassword: null,
+		user: 'karaokemugen_app'
+	}
+	: {
 		bundledPostgresBinary: true,
 		database: 'karaokemugen_app',
 		driver: 'pg',
@@ -19,18 +31,6 @@ const dbConfig = process.platform === 'linux'
 		superuserPassword: null,
 		user: 'karaokemugen_app'
 	}
-	: {
-		bundledPostgresBinary: false,
-		database: 'karaokemugen_app',
-		driver: 'pg',
-		host: 'localhost',
-		password: 'musubi',
-		port: 5432,
-		schema: 'public',
-		superuser: null,
-		superuserPassword: null,
-		user: 'karaokemugen_app'
-	};
 
 /** Default configuration */
 export const defaults: Config = {
