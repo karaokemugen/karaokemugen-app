@@ -147,7 +147,7 @@ This runs install on the app, system panel and frontend then builds them.
 
 Karaoke Mugen needs a PostgreSQL database to work.
 
-Use the supplied `database.sample.json` file and copy it to `database.json`. Edit it and fill in the blanks (username, password, port, host and database name of your choosing.) and switch `bundledPostgresBinary` to `false`. Leave `superuser` and `superuserPassword` blank. It should look like this :
+Use the supplied `database.sample.json` file and copy it to `database.json` and place it in your data directory (`$HOME/KaraokeMugen` or `app/` in portable configurations). Edit it and fill in the blanks (username, password, port, host and database name of your choosing.) and switch `bundledPostgresBinary` to `false`. Leave `superuser` and `superuserPassword` blank. It should look like this :
 
 ```JSON
 {
