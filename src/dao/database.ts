@@ -12,6 +12,8 @@ import { getSettings, saveSetting, connectDB, db, getInstanceID, setInstanceID }
 import { v4 as uuidV4 } from 'uuid';
 import { resolve } from 'path';
 import { getPlaylists, reorderPlaylist } from './playlist';
+import { errorStep } from '../utils/electron_logger';
+import i18next from 'i18next';
 
 const sql = require('./sql/database');
 
@@ -105,7 +107,8 @@ export async function initDBSystem(): Promise<boolean> {
 		}, errorFunction);
 		await migrateDB();
 	} catch(err) {
-		throw `Database initialization failed : ${err}`;
+		errorStep(i18next.t('ERROR_CONNECT_PG'));
+		throw `Database system initialization failed : ${err}`;
 	}
 	if (!await getInstanceID()) {
 		conf.App.InstanceID

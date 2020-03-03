@@ -22,6 +22,7 @@
 	"ERROR_MISSING_BINARIES": "Some needed binaries (mpv/postgresql/ffmpeg) seem to be missing.",
 	"ERROR_INIT_PG_DATA": "Error initializing database data",
 	"ERROR_START_PG": "Error starting up database server",
+	"ERROR_CONNECT_PG": "Error connecting to database server",
 	"ERROR_GENERATION": "Error generating database",
 	"ERROR_START_PLAYER": "Error starting up media player",
 	"ERROR_INIT_PATHS": "Error creating default directories",

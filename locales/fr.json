@@ -22,6 +22,7 @@
 	"ERROR_MISSING_BINARIES": "Des executables nécessaires (mpv/psotgresql/ffmpeg) sont introuvables.",
 	"ERROR_INIT_PG_DATA": "Erreur d'initialisation de la base de données",
 	"ERROR_START_PG": "Erreur de démarrage de la base de données",
+	"ERROR_CONNECT_PG": "Erreur de connexion à la base de données",
 	"ERROR_GENERATION": "Erreur de génération de la base de données",
 	"ERROR_START_PLAYER": "Erreur de démarrage du lecteur vidéo",
 	"ERROR_INIT_PATHS": "Error de création des dossiers par défaut",
