@@ -116,7 +116,7 @@ export async function initMenu() {
 			submenu: [
 				{
 					label: i18next.t('MENU_GOTO_HOME'),
-					accelerator: 'CmdOrCtrl+1',
+					accelerator: 'CmdOrCtrl+H',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.home)
@@ -125,7 +125,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_GOTO_OPERATOR'),
-					accelerator: 'CmdOrCtrl+2',
+					accelerator: 'CmdOrCtrl+O',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.operator)
@@ -134,7 +134,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_GOTO_SYSTEM'),
-					accelerator: 'CmdOrCtrl+3',
+					accelerator: 'CmdOrCtrl+S',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.system)
@@ -143,7 +143,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_GOTO_PUBLIC'),
-					accelerator: 'CmdOrCtrl+4',
+					accelerator: 'CmdOrCtrl+P',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.public)
@@ -216,7 +216,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG'),
-					accelerator: 'CmdOrCtrl+O',
+					accelerator: 'CmdOrCtrl+C',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.operatorOptions)
@@ -225,7 +225,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_OPTIONS_SYSTEMCONFIG'),
-					accelerator: 'CmdOrCtrl+P',
+					accelerator: 'CmdOrCtrl+V',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.systemOptions)
