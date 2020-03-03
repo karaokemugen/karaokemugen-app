@@ -224,7 +224,7 @@ export async function main() {
 	} catch(err) {
 		console.log(err);
 		logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
-		exit(1);
+		if (!app || argv.cli) exit(1);
 	}
 }
 
