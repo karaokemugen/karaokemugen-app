@@ -1,7 +1,7 @@
 // KM Imports
 import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncCopy} from './lib/utils/files';
 import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars, configureLocale} from './lib/utils/config';
-import {initConfig} from './utils/config';
+import {initConfig, getPublicConfig} from './utils/config';
 import {parseCommandLineArgs} from './args';
 import logger, { configureLogger } from './lib/utils/logger';
 import {exit, initEngine} from './services/engine';
@@ -11,6 +11,7 @@ import { version } from './version';
 import { migrateOldFoldersToRepo } from './services/repo';
 import { initStep, errorStep } from './utils/electron_logger';
 import { startElectron } from './electron';
+import { createCircleAvatar } from './utils/imageProcessing';
 
 // Types
 import {Config} from './types/config';
@@ -27,7 +28,8 @@ import {createInterface} from 'readline';
 import { getPortPromise } from 'portfinder';
 import { app } from 'electron';
 import cloneDeep from 'lodash.clonedeep';
-import { createCircleAvatar } from './utils/imageProcessing';
+import unhandled from 'electron-unhandled';
+import { gitlabPostNewIssue } from './lib/services/gitlab';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -122,7 +124,15 @@ if (app) {
 	app.on('will-quit', () => {
 		exit(0);
 	});
+	unhandled({
+		showDialog: true,
+		reportButton: error => {
+			const conf = getConfig().Gitlab;
+			gitlabPostNewIssue(conf.Host, conf.AppProjectID, 'Automatic bug report for Unhandled Exception', JSON.stringify(error, null, 2) + JSON.stringify(getState(), null, 2) + JSON.stringify(getPublicConfig(), null, 2), ['bug']);
+		}
+	});
 }
+
 if (app && !argv.cli) {
 	startElectron();
 } else {

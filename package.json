@@ -29,7 +29,8 @@
     "migrate": "db-migrate sync [all] --config app/database.json",
     "migrateDown": "db-migrate down --config app/database.json",
     "migrateUp": "db-migrate up --config app/database.json",
-    "dropDatabase": "ts-node util/dropDatabase.ts"
+	"dropDatabase": "ts-node util/dropDatabase.ts",
+	"localElectron": "echo -n electron.exe >node_modules/electron/path.txt && cp -Rfvp ../electron node_modules/electron/dist"
   },
   "homepage": "https://karaokes.moe",
   "repository": {
@@ -85,6 +86,7 @@
     "csv-writer": "^1.6.0",
     "db-migrate": "^0.11.6",
     "db-migrate-pg": "^1.0.0",
+    "electron-unhandled": "^3.0.2",
     "electron-updater": "^4.2.2",
     "execa": "^4.0.0",
     "express": "^4.17.1",

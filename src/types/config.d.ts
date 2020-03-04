@@ -42,7 +42,9 @@ export interface Config {
 		Enabled?: boolean,
 		Host?: string,
 		Token?: string,
-		ProjectID?: number,
+		ProjectID?: number, // Obsolete since 3.2.0, replaced by baseProjectID
+		BaseProjectID?: number,
+		AppProjectID?: number,
 		IssueTemplate?: {
 			Suggestion?: {
 				Description?: string,
