@@ -151,6 +151,7 @@ deploy_mac:
   stage: deploy
   image: minidocks/lftp
   interruptible: true
+  allow_failure: true
   dependencies:
     - pkg_mac
   needs:
