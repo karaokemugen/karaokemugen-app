@@ -70,8 +70,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@jimp/custom": "^0.9.3",
-    "@jimp/plugin-circle": "^0.9.3",
+    "@jimp/custom": "^0.9.5",
+    "@jimp/plugin-circle": "^0.9.5",
     "agentkeepalive": "^4.1.0",
     "ass-compiler": "^0.0.11",
     "async-await-parallel": "^1.0.0",
@@ -96,7 +96,7 @@
     "internet-available": "^1.0.0",
     "ip": "^1.1.5",
     "isomorphic-git": "^1.1.4",
-    "jimp": "^0.9.3",
+    "jimp": "^0.9.5",
     "js-yaml": "^3.13.1",
     "jwt-simple": "^0.5.6",
     "kar-to-ass": "^1.0.4",
@@ -160,7 +160,7 @@
     "@types/lodash.shuffle": "^4.2.6",
     "@types/lodash.transform": "^4.6.6",
     "@types/minimist": "^1.2.0",
-    "@types/mocha": "^7.0.1",
+    "@types/mocha": "^7.0.2",
     "@types/multer": "^1.4.2",
     "@types/node": "^12.12.21",
     "@types/passport": "^1.0.2",
@@ -228,11 +228,15 @@
       "category": "public.app-category.entertainment"
     },
     "linux": {
-      "target": "AppImage",
+      "target": ["AppImage", "deb", "tar.bz2"],
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",
-      "category": "AudioVideo"
-    },
+	  "category": "AudioVideo",
+	  "synopsis": "Karaoke manager and player",
+	},
+	"deb": {
+	  "depends": ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3", "mpv", "ffmpeg", "postgresql", "postgresql-client"]
+	},
     "productName": "Karaoke Mugen",
     "extraResources": [
       "migrations/**",
