@@ -247,8 +247,7 @@
       "assets/**",
       "frontend/build/**",
       "systempanel/build/**",
-      "initpage/**",
-      "samples/**"
+	  "initpage/**"
     ],
     "extraFiles": [
       "app/bin/**"
