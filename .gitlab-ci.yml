@@ -24,7 +24,7 @@ test:
     max: 2
   interruptible: true
   services:
-    - postgres:10.6
+    - postgres:12.2
   variables:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi
