@@ -228,16 +228,13 @@
       "category": "public.app-category.entertainment"
     },
     "linux": {
-      "target": ["AppImage", "deb", "tar.bz2"],
+      "target": ["AppImage", "tar.bz2"],
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",
 	  "category": "AudioVideo",
 	  "synopsis": "Karaoke manager and player"
 	},
-	"deb": {
-	  "depends": ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3", "mpv", "ffmpeg", "postgresql", "postgresql-client"]
-	},
-    "productName": "Karaoke Mugen",
+	"productName": "Karaoke Mugen",
     "extraResources": [
       "migrations/**",
       "locales/*",
