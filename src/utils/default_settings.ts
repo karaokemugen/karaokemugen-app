@@ -78,8 +78,7 @@ export const defaults: Config = {
 	Gitlab: {
 		Enabled: true,
 		Host: 'https://lab.shelter.moe',
-		BaseProjectID: 2,
-		AppProjectID: 18,
+		ProjectID: 2,
 		// This is a reporter-only access token, nothing of value is here.
 		Token: 'i5WnabG3fvda4oxx-FRb',
 		IssueTemplate: {
