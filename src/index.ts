@@ -124,7 +124,11 @@ if (app) {
 	});
 }
 if (app && !argv.cli) {
-	startElectron();
+	try {
+		startElectron();
+	} catch(err) {
+		console.log(err);
+	}
 } else {
 	// This is in case we're running with yarn startNoElectron
 	preInit()
