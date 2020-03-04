@@ -10,7 +10,6 @@ import logger from './lib/utils/logger';
 import { exit } from './services/engine';
 import { resolve } from 'path';
 import open from 'open';
-import {version} from './version';
 import { initMenu, getMenu } from './electron_menu';
 
 export let win: Electron.BrowserWindow;
@@ -95,13 +94,6 @@ export async function startElectron() {
 	});
 
 	await configureLocale();
-	app.setAboutPanelOptions({
-		applicationName: 'Karaoke Mugen',
-		applicationVersion: `${version.number} (${version.name})`,
-		copyright: `(c) 2017-${new Date().getFullYear()} Karaoke Mugen Team`,
-		version: version.number,
-		website: 'https://karaokes.moe'
-	});
 }
 
 function createWindow () {
