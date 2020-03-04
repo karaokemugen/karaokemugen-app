@@ -138,7 +138,7 @@
 	"SELECT_ALL": "Tout sélectionner",
 	"PLAYLIST_ADD": "Créer une liste de lecture",
 	"MESSAGE": "Passer un message au public",
-	"ENGINEREPEATPLAYLIST": "Répéter liste de lecture",
+	"ENGINEREPEATPLAYLIST": "Répéter la liste de lecture",
 	"ENGINEENABLESMARTINSERT": "Activer l'insertion intelligente pour éviter les monopoles",
 	"ENGINEENABLESMARTINSERT_TOOLTIP": "Au moment de l'ajout d'une chanson par le public, celle-ci sera placée de façon à permettre à ceux qui n'ont pas beaucoup demandé de chansons de passer plus tôt",
 	"ENGINEAUTOPLAY": "Lecture automatique sur premier ajout",
