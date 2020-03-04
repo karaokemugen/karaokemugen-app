@@ -118,7 +118,6 @@ pkg_win:
 
 pkg_mac:
   stage: package
-  allow_failure: true
   retry:
     max: 2
   tags:
@@ -151,7 +150,6 @@ deploy_mac:
   stage: deploy
   image: minidocks/lftp
   interruptible: true
-  allow_failure: true
   dependencies:
     - pkg_mac
   needs:
