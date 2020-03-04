@@ -72,6 +72,7 @@
   "dependencies": {
     "@jimp/custom": "^0.9.5",
     "@jimp/plugin-circle": "^0.9.5",
+    "about-window": "^1.13.2",
     "agentkeepalive": "^4.1.0",
     "ass-compiler": "^0.0.11",
     "async-await-parallel": "^1.0.0",
@@ -228,13 +229,16 @@
       "category": "public.app-category.entertainment"
     },
     "linux": {
-      "target": ["AppImage", "tar.bz2"],
+      "target": [
+        "AppImage",
+        "tar.bz2"
+      ],
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",
-	  "category": "AudioVideo",
-	  "synopsis": "Karaoke manager and player"
-	},
-	"productName": "Karaoke Mugen",
+      "category": "AudioVideo",
+      "synopsis": "Karaoke manager and player"
+    },
+    "productName": "Karaoke Mugen",
     "extraResources": [
       "migrations/**",
       "locales/*",

@@ -1,4 +1,4 @@
-import { app, dialog } from 'electron';
+import { dialog } from 'electron';
 import i18next from 'i18next';
 import {setManualUpdate, win} from './electron';
 import {autoUpdater} from 'electron-updater';
@@ -6,6 +6,9 @@ import {exit} from './services/engine';
 import { getConfig, setConfig } from './lib/utils/config';
 import open from 'open';
 import { getState } from './utils/state';
+import openAboutWindow from 'about-window';
+import { resolve } from 'path';
+import {version} from './version';
 
 const isMac = process.platform === 'darwin';
 
@@ -55,7 +58,17 @@ export async function initMenu() {
 				{
 					label: i18next.t('MENU_FILE_ABOUT'),
 					click() {
-						app.showAboutPanel();
+						openAboutWindow({
+							icon_path: resolve(getState().resourcePath, 'assets/icon.png'),
+							product_name: `Karaoke Mugen (${version.name})`,
+							bug_link_text: i18next.t('ABOUT.BUG_REPORT'),
+							bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
+							homepage: 'https://mugen.karaokes.moe',
+							description: 'Karaoke Manager / Player',
+							license: 'MIT',
+							use_version_info: true,
+						})
+
 					}
 				},
 				{ type: 'separator'},

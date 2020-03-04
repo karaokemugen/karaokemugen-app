@@ -72,5 +72,8 @@
 	"UPDATE_NOT_AVAILABLE": "Aucune mise à jour disponible",
 	"CURRENT_VERSION_OK": "Vous avez déjà la dernière version de Karaoke Mugen !",
 	"UPDATE_DOWNLOADED": "Mise à jour téléchargée",
-	"UPDATE_READY_TO_INSTALL_RESTARTING": "L'installation de la mise à jour va démarrer..."
+	"UPDATE_READY_TO_INSTALL_RESTARTING": "L'installation de la mise à jour va démarrer...",
+	"ABOUT": {
+		"BUG_REPORT": "Rapporter un bug"
+	}
 }
