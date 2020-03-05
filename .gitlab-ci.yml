@@ -28,10 +28,13 @@ test:
   variables:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi
+  artifacts:
+    expire_in: 2 hours
+    name: km-app-test-${CI_COMMIT_REF_SLUG}
+    paths:
+    - dist/
   script:
     - yarn install --check-files --force
-    - yarn installSystemPanel --check-files --force
-    - yarn installFrontend --check-files --force
     - touch mpv
     - cp -f config.CICD.yml config.yml
     - cp -f database.CICD.json database.json
@@ -46,7 +49,11 @@ test:
     - tags
 
 build:
-  stage: build
+  stage: build_react
+  cache:
+    policy: pull
+  dependencies:
+    - test
   interruptible: true
   artifacts:
     expire_in: 2 hours
@@ -57,7 +64,8 @@ build:
     - frontend/build/
   script:
     - npm install -g parcel-bundler
-    - yarn build
+    - yarn installSystemPanel --check-files --force
+    - yarn installFrontend --check-files --force
     - yarn buildSystemPanel
     - yarn buildFrontend
   only:
@@ -75,7 +83,7 @@ pkg_linux:
     paths:
       - release
   dependencies:
-    - build
+    - build_react
   script:
     - ./node_modules/.bin/electron-builder -l --publish always
     - ls -la packages/
@@ -97,7 +105,7 @@ pkg_win:
     paths:
       - release
   dependencies:
-    - build
+    - build_react
   script:
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-3.2.tar.gz | tar xvz
@@ -128,7 +136,7 @@ pkg_mac:
     paths:
       - release
   dependencies:
-    - build
+    - build_react
   variables:
     CSC_IDENTITY_AUTO_DISCOVERY: "false"
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
@@ -150,6 +158,7 @@ deploy_mac:
   stage: deploy
   image: minidocks/lftp
   interruptible: true
+  cache: {}
   dependencies:
     - pkg_mac
   needs:
@@ -166,6 +175,7 @@ deploy_win:
   stage: deploy
   image: minidocks/lftp
   interruptible: true
+  cache: {}
   dependencies:
     - pkg_win
   needs:
@@ -182,6 +192,7 @@ deploy_linux:
   stage: deploy
   image: minidocks/lftp
   interruptible: true
+  cache: {}
   dependencies:
     - pkg_linux
   needs:
