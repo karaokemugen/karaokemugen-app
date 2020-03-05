@@ -83,7 +83,7 @@ pkg_linux:
     paths:
       - release
   dependencies:
-    - build_react
+    - build-react
   script:
     - ./node_modules/.bin/electron-builder -l --publish always
     - ls -la packages/
@@ -105,7 +105,7 @@ pkg_win:
     paths:
       - release
   dependencies:
-    - build_react
+    - build-react
   script:
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-3.2.tar.gz | tar xvz
@@ -136,7 +136,7 @@ pkg_mac:
     paths:
       - release
   dependencies:
-    - build_react
+    - build-react
   variables:
     CSC_IDENTITY_AUTO_DISCOVERY: "false"
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
