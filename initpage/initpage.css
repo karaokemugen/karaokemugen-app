@@ -1,108 +1,160 @@
+html,body {
+	font-size: 16px;
+	padding: 0;
+	margin: 0;
+	color:#fff;
+	height: 100%;
+	position: relative;
+	font-family: sans-serif;
+}
+
 body {
-	color: white;
 	display: flex;
-	flex-direction: column;
 	align-items: center;
+	justify-content: center;
+	flex-direction: column;
 }
 
-#init,#error {
-	font-size: large;
+.initpage--wrapper {
 	margin: 5px;
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+}
+.initpage--wrapper > main.ip--main {
+	flex:1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+.initpage--wrapper > aside.ip--logs-panel {
+	flex:1;
+	display: none; /* will be set to flex through ".initpage--wrapper[data-display-log="true"]" */
+	justify-content: center;
+	flex-direction: column;
 }
 
-.logo {
+.ip--logo {
+	margin: 1em;
 	height: 35vh;
 }
 
-.nanamiSD {
+.ip--message {
+}
+
+.ip--loading-dots {
+	margin-top: .5em;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: row;
+}
+.ip--loading-dots span {
+	display: inline-block;
+	flex:1;
+	max-width:0.7em;
+	height: 0.7em;
+	background: hsl(225, 7%, 63%);
+	color: hsl(225, 7%, 63%);
+	margin: 0 0.2em;
+	border-radius: 0.1em;
+}
+
+.ip--nanami {
+	margin: 2em 1em 1em;
+}
+.ip--nanami img {
 	height: 100px;
 }
 
-.hidden {
-	display:none;
-}
-
-button {
-	padding-left: 10px;
-	padding-right: 10px;
-	margin: 5px;
-}
-
-.lds-spinner {
-	color: official;
+.ip--button-logs {
+	margin: 1em;
 	display: inline-block;
+	border: none;
+	background: hsl(225, 7%, 18%);
+	color: hsl(225, 7%, 33%);
+	padding: .5em 1em;
+	border-radius: .2em;
+	font-family: sans-serif;
+	cursor: pointer;
+}
+
+.ip--logs {
+	font-size: .8em;
+	list-style: none;
+	background: hsl(225, 7%, 18%);
+	border: 1px solid hsl(225, 7%, 38%);
+	padding: .7em 1em;
+	margin: 1em;
+	max-height: 90vh;
+	width: 90%;
+	overflow: auto;
+}
+.ip--logs li {
+	padding: .3em 0 .3em 2em;
+	margin: 0;
 	position: relative;
-	width: 40px;
-	height: 40px;
-  }
-  .lds-spinner div {
-	transform-origin: 20px 20px;
-	animation: lds-spinner 1.2s linear infinite;
-  }
-  .lds-spinner div:after {
-	content: " ";
-	display: block;
+	line-height: 1.5em;
+	color: hsl(225, 7%, 63%);
+}
+.ip--logs li::before {
+	display: inline-block;
+	content:"\2000";
 	position: absolute;
-	top: 1.5px;
-	left: 18.5px;
-	width: 3px;
-	height: 9px;
-	border-radius: 20%;
-	background: #fff;
-  }
-  .lds-spinner div:nth-child(1) {
-	transform: rotate(0deg);
-	animation-delay: -1.1s;
-  }
-  .lds-spinner div:nth-child(2) {
-	transform: rotate(30deg);
-	animation-delay: -1s;
-  }
-  .lds-spinner div:nth-child(3) {
-	transform: rotate(60deg);
-	animation-delay: -0.9s;
-  }
-  .lds-spinner div:nth-child(4) {
-	transform: rotate(90deg);
-	animation-delay: -0.8s;
-  }
-  .lds-spinner div:nth-child(5) {
-	transform: rotate(120deg);
-	animation-delay: -0.7s;
-  }
-  .lds-spinner div:nth-child(6) {
-	transform: rotate(150deg);
-	animation-delay: -0.6s;
-  }
-  .lds-spinner div:nth-child(7) {
-	transform: rotate(180deg);
-	animation-delay: -0.5s;
-  }
-  .lds-spinner div:nth-child(8) {
-	transform: rotate(210deg);
-	animation-delay: -0.4s;
-  }
-  .lds-spinner div:nth-child(9) {
-	transform: rotate(240deg);
-	animation-delay: -0.3s;
-  }
-  .lds-spinner div:nth-child(10) {
-	transform: rotate(270deg);
-	animation-delay: -0.2s;
-  }
-  .lds-spinner div:nth-child(11) {
-	transform: rotate(300deg);
-	animation-delay: -0.1s;
-  }
-  .lds-spinner div:nth-child(12) {
-	transform: rotate(330deg);
-	animation-delay: 0s;
-  }
-  @keyframes lds-spinner {
-	0% {
-	  opacity: 1;
-	}
-	100% {
-	  opacity: 0;
-	}
-  }
+	top: calc(.5em + 3px);
+	left: calc(1em - 3px);
+	background: hsl(225, 7%, 63%);
+	border-radius: 1px;
+	z-index: 2;
+	width: 6px;
+	height: 6px;
+}
+.ip--logs li::after {
+	display: inline-block;
+	content:"\2000";
+	position: absolute;
+	top: 0;
+	left: calc(1em - 1px);
+	border-left:2px solid hsl(235, 6%, 43%);
+	z-index: 1;
+	width: 0;
+	height: 100%;
+}
+.ip--logs li:first-child::after {
+	top: 1em;
+}
+.ip--logs li:last-child::after {
+	top: initial;
+	bottom: 1em;
+}
+.ip--logs li:first-child::last-child::after {
+	display: none;
+}
+
+/*-----------------------------------------------------------------------------------*/
+
+@-webkit-keyframes pulse {
+    0% { -webkit-transform: scale(0.95); opacity: 0.5; }
+    50% { -webkit-transform: scale(1); opacity: 1; }
+    100% { -webkit-transform: scale(0.95); opacity: 0.5; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.5; }
+    50% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+.initpage--wrapper[data-loading="true"] .ip--logo {
+    -webkit-animation: pulse 3s infinite ease-in-out;
+    -o-animation: pulse 3s infinite ease-in-out;
+    -ms-animation: pulse 3s infinite ease-in-out;
+    -moz-animation: pulse 3s infinite ease-in-out;
+    animation: pulse 3s infinite ease-in-out;
+}
+
+.initpage--wrapper[data-display-log="true"] aside.ip--logs-panel {
+	display: flex;
+}
