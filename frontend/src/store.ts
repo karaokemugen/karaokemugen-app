@@ -118,8 +118,8 @@ class Store extends EventEmmiter {
 
 		logInfos.token = data.token;
 		logInfos.onlineToken = data.onlineToken;
-		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)kmToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
-		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)kmOnlineToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
+		axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
 		store.emitChange('loginUpdated');
 	}
 
@@ -127,8 +127,8 @@ class Store extends EventEmmiter {
 		localStorage.removeItem('kmToken');
 		localStorage.removeItem('kmOnlineToken');
 		logInfos = undefined;
-		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)kmToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
-		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)kmOnlineToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.defaults.headers.common['authorization'] = null;
+		axios.defaults.headers.common['onlineAuthorization'] = null;
 		store.emitChange('loginOut');
 		if (window.location.search.length > 0) window.location.search = '';
 	}
