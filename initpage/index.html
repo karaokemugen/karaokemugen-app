@@ -9,12 +9,19 @@
 	<link rel="stylesheet" type="text/css" href="initpage.css">
   </head>
   <body>
-	<img class="logo" src='./public/km-logo.png' />
-	<div id="init"></div>
-	<div id="nanamiSD"></div>
-	<div id="error"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-	<button id="buttonLogs">Logs</button>
-	<div class="hidden" id="logs"></div>
+  	<div class="initpage--wrapper" data-loading="true" data-display-log="false">
+  		<main class="ip--main">
+			<img class="ip--logo" src='./public/km-logo.png' />
+			<div class="ip--message"></div>
+			<div class="ip--loading-dots"></div>
+			<div class="ip--nanami"></div>
+			<div class="ip-error"></div>
+			<button class="ip--button-logs">Display logs</button>
+		</main>
+		<aside class="ip--logs-panel">
+			<ul class="ip--logs"></ul>
+		</aside>
+	</div>
   </body>
   <script src="initpage.js"></script>
 </html>
