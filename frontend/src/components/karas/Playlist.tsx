@@ -4,7 +4,7 @@ import PlaylistHeader from './PlaylistHeader';
 import KaraDetail from './KaraDetail';
 import KaraLine from './KaraLine';
 import axios from 'axios';
-import {readCookie, createCookie, secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage, callModal, buildKaraTitle} from '../tools';
+import {secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage, callModal, buildKaraTitle} from '../tools';
 import BlacklistCriterias from './BlacklistCriterias';
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 import { AutoSizer, InfiniteLoader, CellMeasurer, CellMeasurerCache, List, Index, ListRowProps, IndexRange } from 'react-virtualized';
@@ -318,8 +318,8 @@ noRowsRenderer = () => {
         	? -1
         	: store.getModePlaylistID();
   	} else {
-  		var plVal1Cookie = readCookie('mugenPlVal1');
-  		var plVal2Cookie = readCookie('mugenPlVal2');
+  		var plVal1Cookie = localStorage.getItem('mugenPlVal1');
+  		var plVal2Cookie = localStorage.getItem('mugenPlVal2');
   		if (plVal1Cookie == plVal2Cookie) {
   			plVal2Cookie = null;
   			plVal1Cookie = null;
@@ -336,7 +336,7 @@ noRowsRenderer = () => {
   };
 
   changeIdPlaylist = (idPlaylist:number) => {
-  	createCookie('mugenPlVal' + this.props.side, idPlaylist, 365);
+	localStorage.setItem(`mugenPlVal ${this.props.side}`, idPlaylist.toString());
   	this.setState({ idPlaylist: Number(idPlaylist),data: undefined }, this.getPlaylist);
   	this.props.majIdsPlaylist(this.props.side, idPlaylist);
   };

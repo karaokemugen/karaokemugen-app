@@ -35,8 +35,8 @@ class App extends Component<{}, IState> {
 			admpwd: window.location.search.indexOf('admpwd') ? window.location.search.split('=')[1] : undefined,
 			shutdownPopup: false
 		};
-		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
-		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)kmToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)kmOnlineToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 	}
 
 	async checkAuth() {

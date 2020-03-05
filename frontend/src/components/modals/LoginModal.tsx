@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import i18next from 'i18next';
 import Fingerprint2 from 'fingerprintjs2';
 import axios from 'axios';
-import { is_touch_device,startIntro,readCookie,displayMessage, callModal  } from '../tools';
+import { is_touch_device, startIntro, displayMessage, callModal } from '../tools';
 import HelpModal from './HelpModal';
 import ReactDOM from 'react-dom';
 import Switch from '../generic/Switch';
@@ -88,7 +88,7 @@ class LoginModal extends Component<IProps,IState> {
 			store.setLogInfos(response);
 			displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
 
-			if (is_touch_device() && !readCookie('mugenTouchscreenHelp') && this.props.scope === 'public') {
+			if (is_touch_device() && !localStorage.getItem('mugenTouchscreenHelp') && this.props.scope === 'public') {
 				ReactDOM.render(<HelpModal/>, document.getElementById('modal'));
 			}
 			store.getTuto() && store.getTuto().move(1);
@@ -201,7 +201,7 @@ class LoginModal extends Component<IProps,IState> {
     									<React.Fragment>
     										<div style={{height: '60px'}}>
     											<button className="btn btn-default tour" onClick={() => startIntro('public')}>
-													{readCookie('publicTuto') ? i18next.t('FIRST_PUBLIC_RUN_WELCOME') : i18next.t('FOLLOW_TOUR')}
+													{localStorage.getItem('publicTuto') ? i18next.t('FIRST_PUBLIC_RUN_WELCOME') : i18next.t('FOLLOW_TOUR')}
     											</button>
     										</div>
     										<div>

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
-import { createCookie } from '../tools';
 import { startIntro } from '../tools';
 import ReactDOM from 'react-dom';
 import store from '../../store';
@@ -8,7 +7,7 @@ import store from '../../store';
 require('./HelpModal.scss');
 class HelpModal extends Component<{},{}> {
     mugenTouchscreenHelp = () => {
-		createCookie('mugenTouchscreenHelp', true, -1);
+		localStorage.setItem('mugenTouchscreenHelp', 'true');
 		var element = document.getElementById('modal');
     	if (element) ReactDOM.unmountComponentAtNode(element);
     };

@@ -20,32 +20,6 @@ export function parseJwt(token:string) {
 	return JSON.parse(window.atob(base64));
 };
 
-export function createCookie(name:string, value:any, days?:number) {
-	var expires;
-	if (days) {
-		var date = new Date();
-		if (days === -1) days = 365 * 15;
-		date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-		expires = '; expires=' + date.toUTCString();
-	} else expires = '';
-	document.cookie = name + '=' + value + expires + '; path=/';
-};
-
-export function readCookie(name:string) {
-	var nameEQ = name + '=';
-	var ca = document.cookie.split(';');
-	for (var i = 0; i < ca.length; i++) {
-		var c = ca[i];
-		while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-	}
-	return null;
-};
-
-export function eraseCookie(name:string) {
-	createCookie(name, '', -1);
-};
-
 export function is_touch_device() {
 	return window.outerWidth <= 1023;
 };

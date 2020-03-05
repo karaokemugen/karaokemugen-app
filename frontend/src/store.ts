@@ -1,6 +1,6 @@
 import EventEmmiter from 'events';
 import axios from 'axios';
-import { readCookie, parseJwt, createCookie, eraseCookie} from './components/tools';
+import { parseJwt} from './components/tools';
 import { Token } from '../../src/lib/types/user';
 import { Config } from '../../src/types/config';
 import { Version } from './types/version';
@@ -16,8 +16,8 @@ let version:Version;
 let modePlaylistID:number;
 
 if (!logInfos) {
-	var token = readCookie('mugenToken');
-	var onlineToken = readCookie('mugenTokenOnline');
+	var token = localStorage.getItem('kmToken');
+	var onlineToken = localStorage.getItem('kmOnlineToken');
 	if (token) {
 		logInfos = parseJwt(token) as Token;
 		logInfos.token = token;
@@ -109,26 +109,26 @@ class Store extends EventEmmiter {
 
 	setLogInfos(data:{token: string, onlineToken:string}) {
 		logInfos = parseJwt(data.token) as Token;
-		createCookie('mugenToken', data.token, -1);
+		localStorage.setItem('kmToken', data.token);
 		if (data.onlineToken) {
-			createCookie('mugenTokenOnline', data.onlineToken, -1);
+			localStorage.setItem('kmOnlineToken', data.onlineToken);
 		} else if (!logInfos.username.includes('@')) {
-			eraseCookie('mugenTokenOnline');
+			localStorage.removeItem('kmOnlineToken');
 		}
 
 		logInfos.token = data.token;
 		logInfos.onlineToken = data.onlineToken;
-		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
-		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)kmToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)kmOnlineToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 		store.emitChange('loginUpdated');
 	}
 
 	logOut() {
-		eraseCookie('mugenToken');
-		eraseCookie('mugenTokenOnline');
+		localStorage.removeItem('kmToken');
+		localStorage.removeItem('kmOnlineToken');
 		logInfos = undefined;
-		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
-		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)mugenTokenOnline\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.defaults.headers.common['authorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)kmToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.defaults.headers.common['onlineAuthorization'] = document.cookie.replace(/(?:(?:^|.*;\s*)kmOnlineToken\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 		store.emitChange('loginOut');
 		if (window.location.search.length > 0) window.location.search = '';
 	}

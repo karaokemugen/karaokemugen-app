@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import i18next from 'i18next';
 import axios from 'axios';
-import { createCookie } from '../tools';
 import { is_touch_device } from '../tools';
 import PropTypes from 'prop-types';
 import ReactJoyride, { ACTIONS, EVENTS, STATUS, Step } from 'react-joyride';
@@ -279,7 +278,7 @@ class Tutorial extends Component<IProps,IState> {
     		if (this.state.scope  === 'admin') {
     			axios.put('/api/settings', { 'setting': JSON.stringify({ 'App': { 'FirstRun': false } } )});
     		} else {
-    			createCookie('publicTuto', 'true');
+    			localStorage.setItem('publicTuto', 'true');
     		}
     	}
     	if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as Array<string>).includes(type)) {
