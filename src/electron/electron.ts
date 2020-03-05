@@ -1,9 +1,7 @@
 import { setState, getState } from '../utils/state';
-import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
-import i18next from 'i18next';
 import { on } from '../lib/utils/pubsub';
-import { autoUpdater } from 'electron-updater';
 import { configureLocale, getConfig } from '../lib/utils/config';
 import { main, preInit } from '../index';
 import logger from '../lib/utils/logger';
@@ -11,14 +9,9 @@ import { exit } from '../components/engine';
 import { resolve } from 'path';
 import open from 'open';
 import { initMenu, getMenu } from './electronMenu';
+import {initAutoUpdate} from './electronAutoUpdate';
 
 export let win: Electron.BrowserWindow;
-
-let manualUpdate = false;
-
-export function setManualUpdate(state: boolean) {
-	manualUpdate = state;
-}
 
 export async function startElectron() {
 	setState({electron: app });
@@ -35,40 +28,7 @@ export async function startElectron() {
 		Menu.setApplicationMenu(menu);
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());
-			autoUpdater.logger = logger;
-			autoUpdater.on('error', (error) => {
-				dialog.showErrorBox(`${i18next.t('ERROR')}: `, error === null ? 'unknown' : (error.stack || error).toString());
-			});
-			autoUpdater.on('update-available', async () => {
-				const buttonIndex = await dialog.showMessageBox(win, {
-				  type: 'info',
-				  title: i18next.t('UPDATE_FOUND'),
-				  message: i18next.t('UPDATE_PROMPT'),
-				  buttons: [i18next.t('YES'), i18next.t('NO')]
-				});
-				if (buttonIndex.response === 0) {
-				  autoUpdater.downloadUpdate();
-				}
-			  });
-
-			autoUpdater.on('update-not-available', () => {
-				if (manualUpdate) dialog.showMessageBox({
-				  title: i18next.t('UPDATE_NOT_AVAILABLE'),
-				  message: i18next.t('CURRENT_VERSION_OK')
-				});
-			  });
-
-			autoUpdater.on('update-downloaded', async () => {
-				await dialog.showMessageBox(win, {
-				  title: i18next.t('UPDATE_DOWNLOADED'),
-				  message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING')
-				});
-				autoUpdater.quitAndInstall();
-			});
-
-			if (getConfig().Online.Updates.App && process.platform !== 'darwin') {
-				autoUpdater.checkForUpdatesAndNotify();
-			}
+			initAutoUpdate();
 		});
 		ipcMain.on('initPageReady', async () => {
 			try {
