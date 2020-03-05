@@ -255,7 +255,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<input
 									type="number"
 									className="form-control"
-									id="Karaoke.Medias.Sponsors.Interval"
+									id="Playlist.Medias.Sponsors.Interval"
 									placeholder="50"
 									onChange={this.onChange}
 									value={this.state.config['Playlist.Medias.Sponsors.Interval']}
@@ -292,7 +292,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<div className="col-xs-6">
 								<input
 									className="form-control"
-									id="Karaoke.Medias.Intros.Message"
+									id="Playlist.Medias.Intros.Message"
 									onChange={this.onChange}
 									value={this.state.config['Playlist.Medias.Intros.Message']}
 								/>
@@ -328,7 +328,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<div className="col-xs-6">
 								<input
 									className="form-control"
-									id="Karaoke.Medias.Outros.Message"
+									id="Playlist.Medias.Outros.Message"
 									onChange={this.onChange}
 									value={this.state.config['Playlist.Medias.Outros.Message']}
 								/>
@@ -364,7 +364,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<div className="col-xs-6">
 								<input
 									className="form-control"
-									id="Karaoke.Medias.Encores.Message"
+									id="Playlist.Medias.Encores.Message"
 									onChange={this.onChange}
 									value={this.state.config['Playlist.Medias.Encores.Message']}
 								/>
