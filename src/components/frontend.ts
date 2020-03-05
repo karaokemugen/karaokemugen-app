@@ -1,7 +1,6 @@
 // Node Modules
 import {resolve} from 'path';
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
@@ -64,7 +63,6 @@ export async function initFrontend() {
 		app.use(passport.initialize());
 		configurePassport();
 		app.use(compression());
-		app.use(cookieParser());
 		app.use(urlencoded({ extended: true, limit: '50mb' }));
 		app.use(json({limit: '50mb'}));
 		app.use('/api', apiRouter());
