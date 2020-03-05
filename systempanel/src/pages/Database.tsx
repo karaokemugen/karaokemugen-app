@@ -1,14 +1,14 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
-import {connect} from 'react-redux';
-import {Progress, Modal, Button, Layout} from 'antd';
+import { connect } from 'react-redux';
+import { Progress, Modal, Button, Layout, Row, Col } from 'antd';
 import openSocket from 'socket.io-client';
 
-import {loading, infoMessage, errorMessage, warnMessage} from '../actions/navigation';
-import {ReduxMappedProps} from '../react-app-env';
+import { loading, infoMessage, errorMessage, warnMessage } from '../actions/navigation';
+import { ReduxMappedProps } from '../react-app-env';
 import i18next from 'i18next';
 
-interface DatabaseProps extends ReduxMappedProps {}
+interface DatabaseProps extends ReduxMappedProps { }
 
 interface DatabaseState {
 	updateModal: boolean,
@@ -157,51 +157,71 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<div>
-					<Button style={{ margin: '10px' }}
-						type='primary'
-						onClick={this.dbregen}
-						disabled={this.props.loadingActive}
-					>
-						{i18next.t('DATABASE.REGENERATE_DB')}
-					</Button>
-				</div>
-				<div>
-					<Button style={{ margin: '10px' }}
-						type='primary'
-						onClick={
-							() => this.setState({updateModal: true})
-						}
-						disabled={this.props.loadingActive}
-					>
-						{i18next.t('DATABASE.UPDATE_MEDIA')}
-					</Button>
-				</div>
-				<div style={{ marginTop: '10px' }}>
-					<Button style={{ margin: '10px' }}
-						type='primary'
-						onClick={this.dbdump.bind(this)}
-						disabled={this.props.loadingActive}
-					>
-						{i18next.t('DATABASE.DUMP_DATABASE')}
-					</Button>
-					<Button style={{ margin: '10px' }}
-						type='primary'
-						onClick={this.dbrestore.bind(this)}
-						disabled={this.props.loadingActive}
-					>
-						{i18next.t('DATABASE.RESTORE_DATASE')}
-					</Button>
-				</div>
+			<Layout.Content style={{ padding: '25px' }}>
+				<Row type="flex" justify="space-between">
+					<Col span={4}>
+						<Button
+							type='primary'
+							onClick={this.dbregen}
+							disabled={this.props.loadingActive}
+						>
+							{i18next.t('DATABASE.REGENERATE_DB')}
+						</Button>
+					</Col>
+					<Col span={20} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.REGENERATE_DB_DESCRIPTION')}}>
+					</Col>
+				</Row>
+				<Row type="flex" justify="space-between" style={{ marginTop: '10px' }}>
+					<Col span={4}>
+						<Button
+							type='primary'
+							onClick={
+								() => this.setState({ updateModal: true })
+							}
+							disabled={this.props.loadingActive}
+						>
+							{i18next.t('DATABASE.UPDATE_MEDIA')}
+						</Button>
+					</Col>
+					<Col span={20} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.UPDATE_MEDIA_DESCRIPTION')}}>
+					</Col>
+				</Row>
+				<Row type="flex" justify="space-between" style={{ marginTop: '10px' }}>
+					<Col span={4}>
+						<Button
+							type='primary'
+							onClick={this.dbdump.bind(this)}
+							disabled={this.props.loadingActive}
+						>
+							{i18next.t('DATABASE.DUMP_DATABASE')}
+						</Button>
+					</Col>
+					<Col span={20} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.DUMP_DATABASE_DESCRIPTION')}}>
+					</Col>
+				</Row>
+
+				<Row type="flex" justify="space-between" style={{ marginTop: '20px' }}>
+					<Col span={4}>
+
+						<Button
+							type='primary'
+							onClick={this.dbrestore.bind(this)}
+							disabled={this.props.loadingActive}
+						>
+							{i18next.t('DATABASE.RESTORE_DATABASE')}
+						</Button>
+					</Col>
+					<Col span={20} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.RESTORE_DATABASE_DESCRIPTION')}}>
+					</Col>
+				</Row>
 				<Modal
 					title={i18next.t('DATABASE.CONFIRM_UPDATE')}
 					visible={this.state.updateModal}
 					onOk={() => {
 						this.dbupdate();
-						this.setState({updateModal: false});
+						this.setState({ updateModal: false });
 					}}
-					onCancel={() => this.setState({updateModal: false})}
+					onCancel={() => this.setState({ updateModal: false })}
 					okText={i18next.t('YES')}
 					cancelText={i18next.t('NO')}
 				>
@@ -212,12 +232,12 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 				<h1 style={{ marginTop: '30px' }}>{i18next.t('DATABASE.PROGRESS')}</h1>
 
 				<h3>{i18next.t('DATABASE.GENERATION')}</h3>
-				{this.state.generationProgress.text}<br/>
+				{this.state.generationProgress.text}<br />
 				<Progress percent={this.state.generationProgress.percentage} />
 				<h3>{i18next.t('DATABASE.BASE_UPDATE')}</h3>
-				{this.state.downloadProgress.text}<br/>
+				{this.state.downloadProgress.text}<br />
 				<Progress percent={this.state.downloadProgress.percentage} />
-				{this.state.downloadBatchProgress.text}<br/>
+				{this.state.downloadBatchProgress.text}<br />
 				<Progress percent={this.state.downloadBatchProgress.percentage} />
 			</Layout.Content>
 		);
