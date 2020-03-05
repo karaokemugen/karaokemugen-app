@@ -171,33 +171,6 @@ export async function main() {
 	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(publicConfig)}`);
 	logger.debug(`[Launcher] Initial state : ${JSON.stringify(state)}`);
 
-	// 3.1.1 and up migration, setting jingles and sponsors correctly depending on the user's config
-	if (!isNaN(config.Karaoke.SponsorsInterval)) {
-		if (config.Karaoke.JinglesInterval > 0) {
-			setConfig({
-				Karaoke: {JinglesInterval: null},
-				Playlist: {Medias: {Jingles: {Interval: config.Karaoke.JinglesInterval}}}}
-			);
-		} else {
-			setConfig({
-				Karaoke: {JinglesInterval: null},
-				Playlist: {Medias: {Jingles: {Enabled: false}}}}
-			);
-		}
-	}
-	if (!isNaN(config.Karaoke.SponsorsInterval)) {
-		if (config.Karaoke.SponsorsInterval > 0) {
-			setConfig({
-				Karaoke: {SponsorsInterval: null},
-				Playlist: {Medias: {Sponsors: {Interval: config.Karaoke.SponsorsInterval}}}}
-			);
-		} else {
-			setConfig({
-				Karaoke: {SponsorsInterval: null},
-				Playlist: {Medias: {Sponsors: {Enabled: false}}}}
-			);
-		}
-	}
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 

@@ -797,6 +797,7 @@ export async function playMedia(mediaType: MediaType) {
 		displayInfo();
 		playerState._playing = true;
 		emitPlayerState();
+		playerEnding();
 	}
 }
 
