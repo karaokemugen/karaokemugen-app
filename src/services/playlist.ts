@@ -1195,10 +1195,8 @@ async function updateFreeOrphanedSongs() {
 /** Initialize playlist tasks */
 export async function initPlaylistSystem() {
 	setInterval(updateFreeOrphanedSongs, 60 * 1000);
-	const pls = await getPlaylists({role: 'admin', username: 'admin'});
-	for (const pl of pls) {
-		reorderPlaylist(pl.playlist_id);
-	}
+	const pls = await getPLs(false);
+	pls.forEach(pl => reorderPlaylist(pl.playlist_id));
 }
 
 /** Create current playlist if it doesn't exist */
