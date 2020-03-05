@@ -48,8 +48,8 @@ test:
     - next
     - tags
 
-build:
-  stage: build_react
+build-react:
+  stage: build
   cache:
     policy: pull
   dependencies:
