@@ -26,8 +26,8 @@ import { emit } from '../lib/utils/pubsub';
 import { BinariesConfig } from '../types/binChecker';
 import { initTwitch, stopTwitch } from './twitch';
 import { removeNulls } from '../lib/utils/object_helpers';
-import { errorStep } from './electron_logger';
-import { setProgressBar } from '../electron';
+import { errorStep } from '../electron/electronLogger';
+import { setProgressBar } from '../electron/electron';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editSetting(part: object) {

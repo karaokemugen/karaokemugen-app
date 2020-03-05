@@ -9,7 +9,7 @@ import logger from '../lib/utils/logger';
 import {timer} from '../lib/utils/date';
 import {getState, setState} from '../utils/state';
 import { Token } from '../lib/types/user';
-import { message, displayInfo } from '../player/player';
+import { message, displayInfo } from '../components/mpv';
 import { PollResults, PollItem } from '../types/poll';
 import { on } from '../lib/utils/pubsub';
 import { State } from '../types/state';

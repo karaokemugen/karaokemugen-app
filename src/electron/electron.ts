@@ -1,16 +1,16 @@
-import { setState, getState } from './utils/state';
+import { setState, getState } from '../utils/state';
 import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
-import { welcomeToYoukousoKaraokeMugen } from './services/welcome';
+import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import i18next from 'i18next';
-import { on } from './lib/utils/pubsub';
+import { on } from '../lib/utils/pubsub';
 import { autoUpdater } from 'electron-updater';
-import { configureLocale, getConfig } from './lib/utils/config';
-import { main, preInit } from './index';
-import logger from './lib/utils/logger';
-import { exit } from './services/engine';
+import { configureLocale, getConfig } from '../lib/utils/config';
+import { main, preInit } from '../index';
+import logger from '../lib/utils/logger';
+import { exit } from '../components/engine';
 import { resolve } from 'path';
 import open from 'open';
-import { initMenu, getMenu } from './electron_menu';
+import { initMenu, getMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
 

@@ -2,13 +2,13 @@ import { dialog } from 'electron';
 import i18next from 'i18next';
 import {setManualUpdate, win} from './electron';
 import {autoUpdater} from 'electron-updater';
-import {exit} from './services/engine';
-import { getConfig, setConfig } from './lib/utils/config';
+import {exit} from '../components/engine';
+import { getConfig, setConfig } from '../lib/utils/config';
 import open from 'open';
-import { getState } from './utils/state';
+import { getState } from '../utils/state';
 import openAboutWindow from 'about-window';
 import { resolve } from 'path';
-import {version} from './version';
+import {version} from '../version';
 
 const isMac = process.platform === 'darwin';
 

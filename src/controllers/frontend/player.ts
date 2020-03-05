@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { errMessage } from '../common';
-import { message } from '../../player/player';
+import { playerMessage } from '../../services/player';
 import { emitWS } from '../../lib/utils/ws';
 import { check } from '../../lib/utils/validators';
 import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from '../middlewares/auth';
@@ -70,7 +70,7 @@ export default function playerController(router: Router) {
 				if (req.body.destination === 'users' || req.body.destination === 'all') emitWS('adminMessage', req.body );
 				if (req.body.destination === 'screen' || req.body.destination === 'all') {
 					try {
-						await message(req.body.message, +req.body.duration);
+						await playerMessage(req.body.message, +req.body.duration);
 					} catch(err) {
 						errMessage('MESSAGE_SEND_ERROR', err);
 						res.status(500).send('MESSAGE_SEND_ERROR');

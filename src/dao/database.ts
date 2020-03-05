@@ -12,7 +12,7 @@ import { getSettings, saveSetting, connectDB, db, getInstanceID, setInstanceID }
 import { v4 as uuidV4 } from 'uuid';
 import { resolve } from 'path';
 import { getPlaylists, reorderPlaylist } from './playlist';
-import { errorStep } from '../utils/electron_logger';
+import { errorStep } from '../electron/electronLogger';
 import i18next from 'i18next';
 
 const sql = require('./sql/database');

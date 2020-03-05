@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getLang } from '../middlewares/lang';
 import { requireAuth, requireValidUser, requireAdmin, updateUserLoginTime, optionalAuth } from '../middlewares/auth';
-import { shutdown, getKMStats } from '../../services/engine';
+import { shutdown, getKMStats } from '../../components/engine';
 import { getConfig } from '../../lib/utils/config';
 import { editSetting, getPublicConfig, backupConfig } from '../../utils/config';
 import { getDisplays } from '../../utils/displays';
@@ -10,7 +10,7 @@ import { checkForUpdates } from '../../services/appUpdates';
 import { getState, getPlayerState, getPublicState } from '../../utils/state';
 import { findUserByName, updateSongsLeft } from '../../services/user';
 import { requireWebappLimited } from '../middlewares/webapp_mode';
-import { getFeeds } from '../../webapp/proxy_feeds';
+import { getFeeds } from '../../services/proxyFeeds';
 import { initializationCatchphrases } from '../../utils/constants';
 import sample from 'lodash.sample';
 import { readLog } from '../../lib/utils/logger';

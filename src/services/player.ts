@@ -2,7 +2,7 @@ import {setState, getState} from '../utils/state';
 import {getConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import {profile} from '../lib/utils/logger';
-import {playMedia, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo} from '../player/player';
+import {playMedia, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo, message} from '../components/mpv';
 import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
@@ -15,6 +15,10 @@ const sleep = promisify(setTimeout);
 
 let commandInProgress = false;
 let introSequence = false;
+
+export async function playerMessage(msg: string, duration: number) {
+	return await message(msg, duration);
+}
 
 async function playCurrentSong(now: boolean) {
 	if (!getState().player.playing || now) {

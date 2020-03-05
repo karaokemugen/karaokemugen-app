@@ -2,15 +2,15 @@
 import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncCopy} from './lib/utils/files';
 import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars, configureLocale} from './lib/utils/config';
 import {initConfig} from './utils/config';
-import {parseCommandLineArgs} from './args';
+import {parseCommandLineArgs} from './utils/args';
 import logger, { configureLogger } from './lib/utils/logger';
-import {exit, initEngine} from './services/engine';
+import {exit, initEngine} from './components/engine';
 import {logo} from './logo';
 import { setState, getState } from './utils/state';
 import { version } from './version';
 import { migrateOldFoldersToRepo } from './services/repo';
-import { initStep, errorStep } from './utils/electron_logger';
-import { startElectron } from './electron';
+import { initStep, errorStep } from './electron/electronLogger';
+import { startElectron } from './electron/electron';
 
 // Types
 import {Config} from './types/config';

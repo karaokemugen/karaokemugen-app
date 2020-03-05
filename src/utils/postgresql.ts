@@ -11,7 +11,7 @@ import {getConfig} from '../lib/utils/config';
 import {getState} from './state';
 import logger from '../lib/utils/logger';
 import i18next from 'i18next';
-import { errorStep } from './electron_logger';
+import { errorStep } from '../electron/electronLogger';
 
 let shutdownInProgress = false;
 

@@ -4,9 +4,9 @@ import {resolvedPathBackgrounds, getConfig, resolvedPathTemp, resolvedPathRepos}
 import {resolve, extname} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists, replaceExt} from '../lib/utils/files';
 import sample from 'lodash.sample';
-import {exit} from '../services/engine';
+import {exit} from './engine';
 import {playerEnding} from '../services/player';
-import {getID3} from './id3tag';
+import {getID3} from '../utils/id3tag';
 import mpv from 'node-mpv-km';
 import {promisify} from 'util';
 import {endPoll} from '../services/poll';
@@ -21,8 +21,8 @@ import { getSingleMedia } from '../services/medias';
 import { MediaType } from '../types/medias';
 import { notificationNextSong } from '../services/playlist';
 import randomstring from 'randomstring';
-import { errorStep } from '../utils/electron_logger';
-import { setProgressBar } from '../electron';
+import { errorStep } from '../electron/electronLogger';
+import { setProgressBar } from '../electron/electron';
 
 const sleep = promisify(setTimeout);
 

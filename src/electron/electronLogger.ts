@@ -1,5 +1,5 @@
 import Transport from 'winston-transport';
-import {win} from '../electron';
+import {win} from './electron';
 import i18next from 'i18next';
 
 export function initStep(step: string, lastEvent?: boolean) {
