@@ -34,7 +34,7 @@ test:
     paths:
     - dist/
   script:
-    - yarn install --check-files --force
+    - yarn install
     - touch mpv
     - cp -f config.CICD.yml config.yml
     - cp -f database.CICD.json database.json
@@ -64,8 +64,8 @@ build-react:
     - frontend/build/
   script:
     - npm install -g parcel-bundler
-    - yarn installSystemPanel --check-files --force
-    - yarn installFrontend --check-files --force
+    - yarn installSystemPanel
+    - yarn installFrontend
     - yarn buildSystemPanel
     - yarn buildFrontend
   only:
