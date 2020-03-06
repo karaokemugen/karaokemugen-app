@@ -26,6 +26,7 @@ This is a minor release containing fixes AND new features.
 
 ### Fixes
 
+- Fix karaoke stopping after intro if sponsors are disabled or non-existant (f6e09d84)
 - Importing favorites is now fixed (650ce09a)
 - Reworked playlist reordering so it takes into account songs not available in database anymore (5798d60b)
 - When tags or songs have disappeared from database but are still in the app's blacklist criterias, they are now completely removed from output but still kept in database. (b8d32f04 and e62f0fe4)
