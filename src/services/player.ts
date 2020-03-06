@@ -104,6 +104,8 @@ export async function playerEnding() {
 					logger.warn(`[Player] Skipping sponsors due to error, playing current song : ${err}`);
 					await playCurrentSong(true);
 				}
+			} else {
+				await playCurrentSong(true);
 			}
 			return;
 		}
