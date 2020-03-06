@@ -94,6 +94,7 @@ pkg_linux:
     - mv packages/*.AppImage release/
     - mv packages/*.yml release/
     - cd release
+    - ls -la release/*
   only:
     - master
     - next
@@ -128,7 +129,7 @@ pkg_win:
     - touch portable
     - zip -rv packages/*.zip portable
     - mv packages/*.zip release/
-    - cd release
+    - ls -la release/*
   only:
     - master
     - next
@@ -165,6 +166,7 @@ pkg_mac:
     - mkdir release
     - mv packages/*.dmg release/
     - mv packages/*.blockmap release/
+    - ls -la release/*
   only:
     - master
     - next
