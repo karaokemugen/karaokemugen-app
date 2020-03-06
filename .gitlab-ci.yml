@@ -10,7 +10,6 @@ cache:
     - node_modules/
     - systempanel/node_modules/
     - frontend/node_modules/
-    - .cache/electron
 
 stages:
   - test
@@ -74,6 +73,11 @@ pkg_linux:
   stage: package
   image: electronuserland/builder:latest
   cache:
+    key: km-app-${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - systempanel/node_modules/
+      - frontend/node_modules/
     policy: pull
   interruptible: true
   artifacts:
@@ -99,6 +103,7 @@ pkg_win:
   stage: package
   image: electronuserland/builder:wine-mono
   cache:
+    key: km-app-${CI_COMMIT_REF_SLUG}
     policy: pull
   interruptible: true
   artifacts:
@@ -128,6 +133,7 @@ pkg_win:
 pkg_mac:
   stage: package
   cache:
+    key: km-app-${CI_COMMIT_REF_SLUG}
     policy: pull
   retry:
     max: 2
@@ -211,6 +217,7 @@ apidoc:
   stage: deploy
   interruptible: true
   cache:
+    key: km-app-${CI_COMMIT_REF_SLUG}
     policy: pull
   script:
     - ./node_modules/.bin/apidoc -i src/controllers -o apidoc -t apidoc_template
