@@ -175,6 +175,7 @@
     "@types/yesql": "^3.2.2",
     "@typescript-eslint/eslint-plugin": "^2.22.0",
     "@typescript-eslint/parser": "^2.22.0",
+    "apidoc": "^0.20.0",
     "chai": "^4.2.0",
     "electron": "^8.0.3",
     "electron-builder": "^22.3.2",
@@ -243,7 +244,7 @@
       "assets/**",
       "frontend/build/**",
       "systempanel/build/**",
-	  "initpage/**"
+      "initpage/**"
     ],
     "extraFiles": [
       "app/bin/**"
