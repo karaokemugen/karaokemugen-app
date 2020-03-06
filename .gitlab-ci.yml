@@ -224,8 +224,11 @@ deploy_linux:
 apidoc:
   stage: deploy
   interruptible: true
+  dependencies: []
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
     policy: pull
   script:
     - ./node_modules/.bin/apidoc -i src/controllers -o apidoc -t apidoc_template
