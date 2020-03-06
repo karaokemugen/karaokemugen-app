@@ -11,7 +11,6 @@ cache:
     - systempanel/node_modules/
     - frontend/node_modules/
     - .cache/electron
-    - .npm
 
 stages:
   - test
@@ -62,9 +61,6 @@ build-react:
     - dist/
     - frontend/build/
   script:
-    - npm config set prefix '.npm'
-    - export PATH=.npm/bin:$PATH
-    - npm install -g parcel-bundler
     - yarn installSystemPanel
     - yarn installFrontend
     - yarn buildSystemPanel
@@ -211,3 +207,15 @@ deploy_linux:
     - next
     - tags
 
+apidoc:
+  stage: deploy
+  interruptible: true
+  cache:
+    policy: pull
+  script:
+    - ./node_modules/.bin/apidoc -i src/controllers -o apidoc -t apidoc_template
+    - cd apidoc
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; mkdir -p site/apidoc/$CI_COMMIT_REF_NAME; cd site/apidoc/$CI_COMMIT_REF_NAME; mirror -Rnev --parallel=10"
+  only:
+    - master
+    - next
