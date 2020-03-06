@@ -11,6 +11,7 @@ cache:
     - systempanel/node_modules/
     - frontend/node_modules/
     - .cache/electron
+    - .npm
 
 stages:
   - test
@@ -34,7 +35,7 @@ test:
     paths:
     - dist/
   script:
-    - yarn install
+    - yarn install --cache-folder .yarn
     - touch mpv
     - cp -f config.CICD.yml config.yml
     - cp -f database.CICD.json database.json
@@ -50,8 +51,6 @@ test:
 
 build-react:
   stage: build
-  cache:
-    policy: pull
   dependencies:
     - test
   interruptible: true
@@ -63,6 +62,8 @@ build-react:
     - dist/
     - frontend/build/
   script:
+    - npm config set prefix '.npm'
+    - export PATH=.npm/bin:$PATH
     - npm install -g parcel-bundler
     - yarn installSystemPanel
     - yarn installFrontend
@@ -76,6 +77,8 @@ build-react:
 pkg_linux:
   stage: package
   image: electronuserland/builder:latest
+  cache:
+    policy: pull
   interruptible: true
   artifacts:
     expire_in: 2 hours
@@ -99,6 +102,8 @@ pkg_linux:
 pkg_win:
   stage: package
   image: electronuserland/builder:wine-mono
+  cache:
+    policy: pull
   interruptible: true
   artifacts:
     name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
@@ -126,6 +131,8 @@ pkg_win:
 
 pkg_mac:
   stage: package
+  cache:
+    policy: pull
   retry:
     max: 2
   tags:
@@ -141,7 +148,6 @@ pkg_mac:
     CSC_IDENTITY_AUTO_DISCOVERY: "false"
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
     RESTORE_CACHE_ATTEMPTS: 10
-
   script:
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-3.2.tar.gz | tar xvz
     - ./node_modules/.bin/electron-builder -m
