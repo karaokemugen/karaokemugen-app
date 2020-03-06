@@ -290,7 +290,6 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 			status: 'DL_PLANNED'
 		};
 	});
-
 	await insertDownloads(dls);
 	dls.forEach(dl => {
 		logger.debug(`[Downloads] Pushing download ${dl.name}`);
