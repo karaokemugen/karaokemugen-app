@@ -1,6 +1,6 @@
 # Versions
 
-## v3.1.1 "Mitsuha Mélancolique" - 05/03/2020
+## v3.1.1 "Mitsuha Mélancolique" - 06/03/2020
 
 This is a minor release containing fixes AND new features.
 
