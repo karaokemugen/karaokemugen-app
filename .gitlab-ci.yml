@@ -93,7 +93,6 @@ pkg_linux:
     - mkdir release
     - mv packages/*.AppImage release/
     - mv packages/*.yml release/
-    - cd release
     - ls -la release/*
   only:
     - master
