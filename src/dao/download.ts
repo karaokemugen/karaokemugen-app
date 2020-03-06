@@ -1,6 +1,7 @@
 import {db, transaction} from '../lib/dao/database';
 import { KaraDownload, KaraDownloadBLC } from '../types/download';
 import { DBDownload, DBDownloadBLC } from '../types/database/download';
+import logger from '../lib/utils/logger';
 const sql = require('./sql/download');
 
 export async function insertDownloads(downloads: KaraDownload[] ) {
@@ -12,6 +13,7 @@ export async function insertDownloads(downloads: KaraDownload[] ) {
 		dl.uuid,
 		dl.kid
 	]);
+	logger.debug('[Download DAO] Running transaction');
 	return await transaction([{sql: sql.insertDownload, params: dls}]);
 }
 

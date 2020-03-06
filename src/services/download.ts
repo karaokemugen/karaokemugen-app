@@ -275,6 +275,7 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 	});
 	if (downloads.length === 0) throw 'No downloads added, all are already in queue or running';
 	const dls: KaraDownload[] = downloads.map(dl => {
+		logger.debug(`[Download] Adding download ${dl.name}`);
 		return {
 			uuid: uuidV4(),
 			urls: {
@@ -289,8 +290,12 @@ export async function addDownloads(repo: string, downloads: KaraDownloadRequest[
 			status: 'DL_PLANNED'
 		};
 	});
+
 	await insertDownloads(dls);
-	dls.forEach(dl => q.push(dl));
+	dls.forEach(dl => {
+		logger.debug(`[Downloads] Pushing download ${dl.name}`);
+		q.push(dl);
+	});
 	return `${dls.length} download(s) queued`;
 }
 
