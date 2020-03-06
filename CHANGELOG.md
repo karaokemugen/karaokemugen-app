@@ -37,7 +37,7 @@ platforms (#533)
 
 - Fix issues with playlist medias updates through git (encores, intros, outros, etc.) by using a worker thread (#582)
 
-## v3.1.1 "Mitsuha Mélancolique" - 05/03/2020
+## v3.1.1 "Mitsuha Mélancolique" - 06/03/2020
 
 This is a minor release containing fixes AND new features.
 
@@ -63,6 +63,7 @@ This is a minor release containing fixes AND new features.
 
 ### Fixes
 
+- Fix karaoke stopping after intro if sponsors are disabled or non-existant (f6e09d84)
 - Importing favorites is now fixed (650ce09a)
 - Reworked playlist reordering so it takes into account songs not available in database anymore (5798d60b)
 - When tags or songs have disappeared from database but are still in the app's blacklist criterias, they are now completely removed from output but still kept in database. (b8d32f04 and e62f0fe4)
