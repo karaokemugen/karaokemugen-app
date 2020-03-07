@@ -737,7 +737,7 @@ export async function playMedia(mediaType: MediaType) {
 			mediaType === 'Jingles' || mediaType === 'Sponsors'
 				? displayInfo()
 				: conf.Playlist.Medias[mediaType].Message
-					? message(conf.Playlist.Medias[mediaType].Message, 10)
+					? message(conf.Playlist.Medias[mediaType].Message, 1000000)
 					: clearText();
 			playerState.playerstatus = 'play';
 			playerState._playing = true;
