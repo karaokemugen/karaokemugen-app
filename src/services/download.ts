@@ -138,7 +138,7 @@ async function processDownload(download: KaraDownload) {
 				id: download.name
 			});
 		}
-		await downloadFiles(download, list);
+		if (list.length > 0) await downloadFiles(download, list);
 
 		const writes = [];
 		let tempLyrics: string;
