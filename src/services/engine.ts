@@ -20,7 +20,7 @@ import {initPlaylistSystem, testPlaylists} from './playlist';
 import { generateDatabase } from '../lib/services/generation';
 import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from './session';
-import { updatePlaylistMedias } from './medias';
+import { updatePlaylistMedias, buildAllMediasList } from './medias';
 
 export async function initEngine() {
 	profile('Init');
@@ -40,10 +40,10 @@ export async function initEngine() {
 	}
 	if (state.opt.mediaUpdate) try {
 		await updateMedias(conf.Online.Host);
-		await exit(0)
+		await exit(0);
 	} catch(err) {
 		logger.error(`[Engine] Updating medias failed : ${err}`);
-		await exit(1)
+		await exit(1);
 	}
 	//Database system is the foundation of every other system
 	await initDBSystem();
@@ -97,7 +97,10 @@ export async function initEngine() {
 		profile('Init');
 	}
 	// This is done later because it's not important.
-	if (!state.isTest && !state.isDemo) updatePlaylistMedias();
+	if (!state.isTest && !state.isDemo) {
+		await updatePlaylistMedias();
+		await buildAllMediasList();
+	}
 }
 
 export async function exit(rc: any) {
