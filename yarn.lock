@@ -4712,10 +4712,10 @@ tough-cookie@~2.4.3:
     psl "^1.1.24"
     punycode "^1.4.1"
 
-toyunda2ass@^1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/toyunda2ass/-/toyunda2ass-1.0.10.tgz#edcec7bffda76e322b732cf69172fe01ba846cde"
-  integrity sha512-jhW0bmQUSCvjGD9+B3yTfB+0MQHE2bMTIqg+SpXFe4ty334wT/pbIsPkdNqxM9Ym0zcGkqKIa6dg6VTnAvgfTA==
+toyunda2ass@^1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/toyunda2ass/-/toyunda2ass-1.0.12.tgz#ed8a19e0309a147d33e862d3e9260c63020b9ea4"
+  integrity sha512-jro+K0CJPEl/vVbhOXhrweGGatJw2MiAyfdZU0Iqpk8tY/mVLvZpgyLDvfSEXWSGweoYy4SteYLSoH/s3khdrA==
   dependencies:
     ass-stringify "^0.1.3"
     execa "^2.0.4"
@@ -4823,10 +4823,10 @@ typescript@^3.7.5:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
   integrity sha512-/P5lkRXkWHNAbcJIiHPfRoKqyd7bsyCma1hZNUGfn20qm64T6ZBlrzprymeu918H+mB/0rIg2gGK/BXkhhYgBw==
 
-ultrastar2ass@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/ultrastar2ass/-/ultrastar2ass-1.0.9.tgz#55f84b9a0cc1b7c4bee6e8524f4e7f9b13bad9b6"
-  integrity sha512-C/Dahdk7XrAwl7KgYYeBUPAb0EYyZ8OihP046c67tKMQsjSXR1P/ReG4mGVsm4sypZcgLFtj6fIU5WGr4/n6Sg==
+ultrastar2ass@^1.0.10:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/ultrastar2ass/-/ultrastar2ass-1.0.11.tgz#bf80f7adb11945cfe90947f52de39931d00ee5bd"
+  integrity sha512-VfM4v3yd5LfWHo2C+sXyCdfVHN62o1ehL4AvMnO+bCHY/oEShGErTZln4xekFBEqmslqnkLVrLSaCKWAdhrs+A==
   dependencies:
     ass-stringify "^0.1.3"
 
