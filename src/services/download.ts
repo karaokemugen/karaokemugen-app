@@ -577,16 +577,18 @@ export async function updateAllKaras(repo: string, local?: KaraList, remote?: Ka
 		// Now checking for lyrics
 		if (rk.subfile) {
 			let localLyrics: string;
-			try {
-				localLyrics = await resolveFileInDirs(k.subfile, resolvedPathSubs());
-			} catch(err) {
-				//No local lyrics found, redownloading the song
-				return true;
+			// Subchecksum can be non existant if song was a hardsub
+			if (!k.subchecksum) {
+				try {
+					localLyrics = await resolveFileInDirs(k.subfile, resolvedPathSubs());
+					k.subchecksum = await extractAssInfos(localLyrics);
+				} catch(err) {
+					//No local lyrics found, redownloading the song
+					return true;
+				}
 			}
-			const localChecksum = await extractAssInfos(localLyrics);
-			if (rk.subchecksum !== localChecksum) return true;
+			if (rk.subchecksum !== k.subchecksum) return true;
 		}
-
 	}).map(k => k.kid);
 	profile('karasUpdate');
 	const downloads = remote.content.filter(k => karasToUpdate.includes(k.kid)).map(k => {

@@ -27,6 +27,8 @@ export async function updateKara(kara: Kara) {
 	await db().query(yesql(sql.updateKara)({
 		karafile: kara.karafile,
 		mediafile: kara.mediafile,
+		mediasize: kara.mediasize,
+		subchecksum: kara.subchecksum,
 		subfile: kara.subfile,
 		title: kara.title,
 		year: kara.year,
@@ -43,6 +45,7 @@ export async function addKara(kara: Kara) {
 		karafile: kara.karafile,
 		mediafile: kara.mediafile,
 		subfile: kara.subfile,
+		subchecksum: kara.subchecksum,
 		title: kara.title,
 		year: kara.year,
 		songorder: kara.order || null,
