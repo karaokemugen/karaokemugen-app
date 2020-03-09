@@ -1,7 +1,7 @@
 import {setState} from './state';
 import logger, { enableProfiling } from '../lib/utils/logger';
 import { CommandLine } from 'electron';
-import { exit } from '../services/engine';
+import { exit } from '../components/engine';
 
 const help = `Usage :
 

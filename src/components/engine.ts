@@ -24,7 +24,7 @@ import {initPlaylistSystem, testPlaylists} from '../services/playlist';
 import { generateDatabase as generateKaraBase } from '../lib/services/generation';
 import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from '../services/session';
-import { updatePlaylistMedias } from '../services/medias';
+import { updatePlaylistMedias, buildAllMediasList } from '../services/medias';
 import { initStep, errorStep } from '../electron/electronLogger';
 import { app } from 'electron';
 import { generateBlacklist } from '../dao/blacklist';
@@ -143,6 +143,10 @@ export async function initEngine() {
 				state.isTest
 					? downloadTestSongs()
 					: downloadRandomSongs();
+			}
+			if (!state.isTest && !state.isDemo) {
+				await updatePlaylistMedias();
+				await buildAllMediasList();
 			}
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);

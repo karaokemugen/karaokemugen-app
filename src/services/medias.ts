@@ -19,12 +19,22 @@ const medias = {
 
 const currentMedias = {};
 
+export async function buildAllMediasList() {
+	const medias = getConfig().Playlist.Medias;
+	for (const type of Object.keys(medias)){
+		try {
+			await buildMediasList(type as MediaType);
+		} catch(err) {
+			//Non fatal
+		}
+	}
+}
+
 export async function updatePlaylistMedias() {
 	const updates = getConfig().Online.Updates.Medias;
 	for (const type of Object.keys(updates)){
 		try {
 			if (updates[type]) await updateMediasGit(type as MediaType);
-			buildMediasList(type as MediaType);
 		} catch(err) {
 			//Non fatal
 		}

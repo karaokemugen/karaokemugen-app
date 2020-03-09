@@ -1,7 +1,7 @@
 import logger from 'winston';
 import {getConfig} from '../lib/utils/config';
 import {getState} from '../utils/state';
-import {exit} from '../services/engine';
+import {exit} from '../components/engine';
 import {generateDatabase} from '../lib/services/generation';
 import DBMigrate from 'db-migrate';
 

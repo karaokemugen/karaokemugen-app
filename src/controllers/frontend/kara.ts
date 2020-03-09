@@ -47,7 +47,7 @@ export default function karaController(router: Router) {
 				errMessage('KARA_SUGGESTION_ERROR', err);
 				res.status(500).json();
 			}
-	});
+		});
 
 	router.route('/karas')
 	/**
@@ -144,16 +144,16 @@ export default function karaController(router: Router) {
  * "Error while fetching karas history: ..."
  */
 		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) =>{
-		try {
-			const karas = await getKaraHistory();
-			res.json(karas);
-		} catch(err) {
-			res.status(500).send(`Error while fetching karas history: ${err}`);
-		}
-	});
+			try {
+				const karas = await getKaraHistory();
+				res.json(karas);
+			} catch(err) {
+				res.status(500).send(`Error while fetching karas history: ${err}`);
+			}
+		});
 
 	router.route('/karas/ranking')
-/**
+	/**
  * @api {get} /karas/ranking Get all karas sorted by most requested
  * @apiName GetKaraRanking
  * @apiVersion 3.1.0
@@ -173,13 +173,13 @@ export default function karaController(router: Router) {
  * "Error while fetching karas msot requested: ..."
  */
 		.get(getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) =>{
-		try {
-			const karas = await getTop50(req.authToken, req.lang);
-			res.json(karas);
-		} catch(err) {
-			res.status(500).send(`Error while fetching karas most requested: ${err}`);
-		}
-	});
+			try {
+				const karas = await getTop50(req.authToken, req.lang);
+				res.json(karas);
+			} catch(err) {
+				res.status(500).send(`Error while fetching karas most requested: ${err}`);
+			}
+		});
 
 	router.route('/karas/viewcounts')
 	/**
@@ -204,13 +204,13 @@ export default function karaController(router: Router) {
  * "Error while fetching karas most played: ..."
  */
 		.get(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-		try {
-			const karas = await getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999)
-			res.json(karas);
-		} catch(err) {
-			res.status(500).send(`Error while fetching karas most played: ${err}`);
-		}
-	});
+			try {
+				const karas = await getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999);
+				res.json(karas);
+			} catch(err) {
+				res.status(500).send(`Error while fetching karas most played: ${err}`);
+			}
+		});
 	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
 	/**
  * @api {get} /karas/:kid Get song info from database
@@ -409,7 +409,7 @@ export default function karaController(router: Router) {
 				const kara = await getKara(req.params.kid, req.authToken, req.lang);
 				res.json(kara);
 			} catch(err) {
-				errMessage('SONG_VIEW_ERROR',err)
+				errMessage('SONG_VIEW_ERROR',err);
 				res.status(500).send('SONG_VIEW_ERROR');
 			}
 		})
@@ -496,7 +496,7 @@ export default function karaController(router: Router) {
 				res.status(500).send(err.code);
 			}
 		})
-/**
+	/**
  * @api {put} /karas/:kid Edit karaoke data
  * @apiName PutKaras
  * @apiVersion 3.1.0
@@ -555,8 +555,8 @@ export default function karaController(router: Router) {
  * HTTP/1.1 200 OK
  */
 		.post(upload.single('file'), (req, res: any) => {
-		res.status(200).send(JSON.stringify(req.file));
-	});
+			res.status(200).send(JSON.stringify(req.file));
+		});
 	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/lyrics')
 	/**
  * @api {post} /karas/:kid/lyrics Get song lyrics

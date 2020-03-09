@@ -140,7 +140,7 @@ async function processDownload(download: KaraDownload) {
 				id: download.name
 			});
 		}
-		await downloadFiles(download, list);
+		if (list.length > 0) await downloadFiles(download, list);
 
 		const writes = [];
 		let tempLyrics: string;
@@ -277,6 +277,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<st
 	});
 	if (downloads.length === 0) throw 'No downloads added, all are already in queue or running';
 	const dls: KaraDownload[] = downloads.map(dl => {
+		logger.debug(`[Download] Adding download ${dl.name}`);
 		return {
 			uuid: uuidV4(),
 			urls: {
@@ -293,7 +294,10 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<st
 		};
 	});
 	await insertDownloads(dls);
-	dls.forEach(dl => q.push(dl));
+	dls.forEach(dl => {
+		logger.debug(`[Downloads] Pushing download ${dl.name}`);
+		q.push(dl);
+	});
 	return `${dls.length} download(s) queued`;
 }
 
