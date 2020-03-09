@@ -208,7 +208,7 @@
       }
 	},
 	"dmg": {
-		"icon": "buildResources/DMG.icns"
+		"icon": "build/DMG.icns"
 	},
     "win": {
       "target": [
