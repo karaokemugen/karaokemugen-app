@@ -49,21 +49,13 @@ class WelcomePage extends Component<IProps, IState> {
 		this.getCatchphrase();
 		this.getNewsFeed();
 		this.getSessions();
-		this.checkAppUpdates();
 		store.addChangeListener('loginOut', this.openLoginOrProfileModal);
 		store.addChangeListener('loginUpdated', this.getSessions);
 	}
-  
+
 	componentWillUnmount() {
 		store.removeChangeListener('loginOut', this.openLoginOrProfileModal);
 		store.removeChangeListener('loginUpdated', this.getSessions);
-	}
-
-	async checkAppUpdates() {
-		if (store.getLogInfos() && (store.getLogInfos() as Token).role === 'admin') {
-			const res = await axios.get('/api/checkUpdates');
-			if (res.data) this.setState({ latestVersion: res.data });
-		}
 	}
 
   stopAppUpdates = () => {
