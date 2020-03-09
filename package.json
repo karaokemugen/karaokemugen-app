@@ -206,7 +206,10 @@
         "provider": "generic",
         "url": "https://mugen.karaokes.moe/downloads/"
       }
-    },
+	},
+	"dmg": {
+		"icon": "buildResources/DMG.icns"
+	},
     "win": {
       "target": [
         "nsis",
