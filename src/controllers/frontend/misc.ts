@@ -6,7 +6,6 @@ import { getConfig } from '../../lib/utils/config';
 import { editSetting, getPublicConfig, backupConfig } from '../../utils/config';
 import { getDisplays } from '../../utils/displays';
 import { errMessage } from '../common';
-import { checkForUpdates } from '../../services/appUpdates';
 import { getState, getPlayerState, getPublicState } from '../../utils/state';
 import { findUserByName, updateSongsLeft } from '../../services/user';
 import { requireWebappLimited } from '../middlewares/webapp_mode';
@@ -109,7 +108,7 @@ export default function miscController(router: Router) {
 				res.status(500).send('SETTINGS_UPDATE_ERROR');
 			}
 		});
-
+	router.route('/displays')
 	/**
  * @api {get} /displays get displays
  * @apiName GetDisplays
@@ -122,28 +121,9 @@ export default function miscController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-	router.route('/displays')
 		.get(getLang, requireAuth, requireValidUser, requireAdmin, async (_req:any, res:any) => {
 			const displays = await getDisplays();
 			res.json(displays);
-		});
-
-	/**
- * @api {get} /checkUpdates Get latest KM version
- * @apiName GetLatestVersion
- * @apiVersion 3.1.0
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiGroup Main
- * @apiSuccess {String} data Latest version if there is a newer available. `null` if error or no new version available.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- */
-	router.route('/checkUpdates')
-		.get(getLang, requireAuth, requireValidUser, requireAdmin, async (_req:any, res:any) => {
-			const version = await checkForUpdates();
-			res.json(version);
 		});
 	router.route('/stats')
 	/**
