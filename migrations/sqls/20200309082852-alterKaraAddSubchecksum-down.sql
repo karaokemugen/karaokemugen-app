@@ -41,7 +41,7 @@ SELECT
   genres.genres AS genres,
   platforms.platforms AS platforms,
   origins.origins AS origins,
-  k.fk_repo_name AS repo
+  k.repository AS repository
 FROM kara k
 LEFT JOIN all_kara_series aks ON k.pk_kid = aks.kid
 LEFT JOIN all_kara_tag akt ON k.pk_kid = akt.kid
