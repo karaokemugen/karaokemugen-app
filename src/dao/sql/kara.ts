@@ -188,7 +188,7 @@ UPDATE kara SET
 	songorder = :songorder,
 	mediafile = :mediafile,
 	subchecksum = :subchecksum,
-	mediasize = :mediasize
+	mediasize = :mediasize,
 	subfile = :subfile,
 	duration = :duration,
 	gain = :gain,
@@ -211,11 +211,7 @@ INSERT INTO kara(
 	subchecksum,
 	karafile,
 	pk_kid,
-<<<<<<< HEAD
 	repository
-=======
-	fk_repo_name,
->>>>>>> WIP-reworkUpdate
 )
 VALUES(
 	:title,

@@ -250,19 +250,22 @@ async function integrateDownload(bundle: DownloadBundle, localSeriesPath: string
 async function downloadFiles(download: KaraDownload, list: DownloadItem[], task: Task) {
 	const downloader = new Downloader({ bar: true, task: task });
 	// Launch downloads
-	return new Promise(async (resolve, reject) => {
-		const fileErrors = await downloader.download(list)
-		if (fileErrors.length > 0) {
-			try {
-				await setDownloadStatus(download.uuid, 'DL_FAILED')
-				reject(`Error downloading file : ${fileErrors.toString()}`);
-			} catch (err) {
-				reject(`Error downloading file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
+	return new Promise((resolve, reject) => {
+		downloader.download(list)
+		.then(fileErrors => {
+			if (fileErrors.length > 0) {
+				setDownloadStatus(download.uuid, 'DL_FAILED')
+					.then(() => {
+						reject(`Error downloading file : ${fileErrors.toString()}`);
+					}).catch(err => {
+						reject(`Error downloading file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
+					});
+			} else {
+				resolve();
 			}
-		} else {
-			resolve();
-		}
-	});
+		});
+});
+
 }
 
 export function pauseQueue() {

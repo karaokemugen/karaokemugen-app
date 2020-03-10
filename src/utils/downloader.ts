@@ -9,7 +9,6 @@ import Queue from 'better-queue';
 // KM Imports
 import logger from '../lib/utils/logger';
 import { getState } from './state';
-import Task from '../lib/utils/taskManager';
 
 // Types
 import { DownloadItem, DownloadOpts } from '../types/downloader';
@@ -27,7 +26,6 @@ export default class Downloader {
 	opts: DownloadOpts;
 	fileErrors: string[] = [];
 	bar: _cliProgress.Bar;
-	task: Task;
 	onEnd: (this: void, errors: string[]) => void;
 	queueOptions = {
 		id: 'uuid',
@@ -88,10 +86,6 @@ export default class Downloader {
 		let prettySize = 'size unknown';
 		prettySize = prettyBytes(+size);
 		logger.info(`[Download] (${this.pos}/${this.list.length}) Downloading ${basename(dl.filename)} (${prettySize})`);
-		this.task.update({
-			subtext: `${basename(dl.filename)} (${prettySize})`,
-			value: 0
-		});
 		if (this.opts.bar && size) this.bar.start(Math.floor(+size / 1000) / 1000, 0);
 		// Insert auth in the url string
 		if (this.opts.auth) {
@@ -113,22 +107,14 @@ export default class Downloader {
 			got.stream.get(dl.url, options)
 				.on('response', (res: Response) => {
 					size = +res.headers['content-length'];
-					const total = Math.floor(size / 1000) / 1000;
 					if (this.opts.bar) {
-						this.bar.start(total, 0);
+						this.bar.start(Math.floor(size / 1000) / 1000, 0);
 					}
-					this.task.update({
-						total: total
-					})
 				})
 				.on('downloadProgress', state => {
-					const value = Math.floor(state.transferred / 1000) / 1000;
 					if (this.opts.bar) {
-						this.bar.update(value);
+						this.bar.update(Math.floor(state.transferred / 1000) / 1000);
 					}
-					this.task.update({
-						value: value
-					})
 				})
 				.on('error', (err: any) => {
 					if (this.opts.bar) {
@@ -137,14 +123,10 @@ export default class Downloader {
 					reject(err);
 				})
 				.on('end', () => {
-					const value = (Math.floor(size / 1000)) / 1000
 					if (this.opts.bar) {
-						this.bar.update(value);
+						this.bar.update((Math.floor(size / 1000)) / 1000);
 						this.bar.stop();
 					}
-					this.task.update({
-						value: (Math.floor(size / 1000)) / 1000
-					});
 					resolve();
 				})
 				.pipe(createWriteStream(dl.filename));
