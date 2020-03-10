@@ -12,6 +12,7 @@ import { getState } from './state';
 
 // Types
 import { DownloadItem, DownloadOpts } from '../types/downloader';
+import Task from '../lib/utils/taskManager';
 
 // for downloads we need keepalive or else connections can timeout and get stuck. Such is life.
 const HttpAgent = require('agentkeepalive');
@@ -26,6 +27,7 @@ export default class Downloader {
 	opts: DownloadOpts;
 	fileErrors: string[] = [];
 	bar: _cliProgress.Bar;
+	task: Task;
 	onEnd: (this: void, errors: string[]) => void;
 	queueOptions = {
 		id: 'uuid',
@@ -36,6 +38,7 @@ export default class Downloader {
 	constructor(opts: DownloadOpts) {
 		this.opts = opts;
 		this.onEnd = null;
+		this.task = this.opts.task;
 		this.q = new Queue(this._queueDownload, this.queueOptions);
 		if (opts.bar)	this.bar = new _cliProgress.Bar({
 				format:  'Downloading {bar} {percentage}% {value}/{total} Mb',
@@ -86,6 +89,11 @@ export default class Downloader {
 		let prettySize = 'size unknown';
 		prettySize = prettyBytes(+size);
 		logger.info(`[Download] (${this.pos}/${this.list.length}) Downloading ${basename(dl.filename)} (${prettySize})`);
+		this.task.update({
+			subtext: `${basename(dl.filename)} (${prettySize})`,
+			value: 0,
+			total: +size
+		})
 		if (this.opts.bar && size) this.bar.start(Math.floor(+size / 1000) / 1000, 0);
 		// Insert auth in the url string
 		if (this.opts.auth) {
@@ -112,9 +120,14 @@ export default class Downloader {
 					}
 				})
 				.on('downloadProgress', state => {
+					const value = Math.floor(state.transferred / 1000) / 1000;
 					if (this.opts.bar) {
-						this.bar.update(Math.floor(state.transferred / 1000) / 1000);
+						this.bar.update(value);
 					}
+					this.task.update({
+						value: value
+					})
+
 				})
 				.on('error', (err: any) => {
 					if (this.opts.bar) {
@@ -127,6 +140,9 @@ export default class Downloader {
 						this.bar.update((Math.floor(size / 1000)) / 1000);
 						this.bar.stop();
 					}
+					this.task.update({
+						value: (Math.floor(size / 1000)) / 1000
+					});
 					resolve();
 				})
 				.pipe(createWriteStream(dl.filename));
