@@ -85,6 +85,7 @@ export const getAllKaras = (filterClauses: string[], lang: LangClause, typeClaus
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
   ak.mediasize AS mediasize,
+  ak.subchecksum AS subchecksum,
   COUNT(p.*)::integer AS played,
   COUNT(rq.*)::integer AS requested,
   (CASE WHEN :dejavu_time < MAX(p.played_at)
@@ -112,7 +113,7 @@ LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.kid
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ${groupClauses} ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_singer_sortable, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.repository, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid, ak.tid, ak.languages_sortable
+GROUP BY ${groupClauses} ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_singer_sortable, ak.sid, ak.serie_altname,  ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.repository, ak.songtypes_sortable, ak.singers_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.subchecksum
 ${havingClause}
 ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.title
 ${limitClause}
@@ -186,6 +187,8 @@ UPDATE kara SET
 	year = :year,
 	songorder = :songorder,
 	mediafile = :mediafile,
+	subchecksum = :subchecksum,
+	mediasize = :mediasize
 	subfile = :subfile,
 	duration = :duration,
 	gain = :gain,
@@ -205,9 +208,14 @@ INSERT INTO kara(
 	gain,
 	modified_at,
 	created_at,
+	subchecksum,
 	karafile,
 	pk_kid,
+<<<<<<< HEAD
 	repository
+=======
+	fk_repo_name,
+>>>>>>> WIP-reworkUpdate
 )
 VALUES(
 	:title,
@@ -219,6 +227,7 @@ VALUES(
 	:gain,
 	:modified_at,
 	:created_at,
+	:subchecksum,
 	:karafile,
 	:kid,
 	:repository

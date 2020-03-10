@@ -5,7 +5,7 @@ import { v4 as uuidV4 } from 'uuid';
 import {resolvedPathTemp, resolvedPathRepos, getConfig} from '../lib/utils/config';
 import {resolve} from 'path';
 import internet from 'internet-available';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import {asyncMove, resolveFileInDirs, asyncStat, asyncUnlink, asyncReadDir, asyncWriteFile} from '../lib/utils/files';
 import {uuidRegexp, getTagTypeName} from '../lib/utils/constants';
 import {integrateKaraFile, getAllKaras, getKaras} from './kara';
@@ -28,6 +28,7 @@ import merge from 'lodash.merge';
 import { DownloadBundle } from '../lib/types/downloads';
 import sampleSize from 'lodash.samplesize';
 import Task from '../lib/utils/taskManager';
+import { extractAssInfos } from '../lib/dao/karafile';
 
 const queueOptions = {
 	id: 'uuid',
@@ -698,18 +699,45 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 			local = karas.local;
 			remote = karas.remote;
 		}
-		const karasToUpdate = local.content.filter(k => {
+		profile('karasUpdate');
+		const karasToUpdate = local.content.filter(async (k) => {
 			const rk = remote.content.find(rk => rk.kid === k.kid);
 			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
 			if (rk && rk.modified_at as unknown > k.modified_at.toISOString()) return true;
+			// We also check the case where there has been a mismatch between local and remote on media or lyrics.
+			let localMedia: string;
+			try {
+				localMedia = await resolveFileInDirs(k.mediafile, resolvedPathRepos('Medias', repo))[0];
+				const localMediaStats = await asyncStat(localMedia);
+				if (localMediaStats.size !== rk.mediasize) return true;
+			} catch(err) {
+				//No local media found, redownloading the song
+				return true;
+			}
+			// Now checking for lyrics
+			if (rk.subfile) {
+				let localLyrics: string;
+				// Subchecksum can be non existant if song was a hardsub
+				if (!k.subchecksum) {
+					try {
+						localLyrics = await resolveFileInDirs(k.subfile, resolvedPathRepos('Lyrics', repo))[0];
+						k.subchecksum = await extractAssInfos(localLyrics);
+					} catch(err) {
+						//No local lyrics found, redownloading the song
+						return true;
+					}
+				}
+				if (rk.subchecksum !== k.subchecksum) return true;
+			}
 		}).map(k => k.kid);
+		profile('karasUpdate');
 		const downloads = remote.content.filter(k => karasToUpdate.includes(k.kid)).map(k => {
 			return {
 				size: k.mediasize,
 				mediafile: k.mediafile,
 				kid: k.kid,
 				name: k.karafile.replace('.kara.json',''),
-				repository: repo
+				repository: k.repository
 			};
 		});
 		logger.info(`[Update] Updating ${karasToUpdate.length} songs`);
