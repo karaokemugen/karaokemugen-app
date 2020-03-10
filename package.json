@@ -239,7 +239,8 @@
       "category": "AudioVideo",
       "synopsis": "Karaoke manager and player"
     },
-    "productName": "Karaoke Mugen",
+	"productName": "Karaoke Mugen",
+	"copyright": "(c) 2017-2020 Karaoke Mugen Team",
     "extraResources": [
       "migrations/**",
       "locales/*",
