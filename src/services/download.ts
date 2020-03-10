@@ -175,7 +175,7 @@ async function processDownload(download: KaraDownload) {
 		try {
 			if (!mediaAlreadyExists) await asyncMove(tempMedia, localMedia, {overwrite: true});
 		} catch(err) {
-			logger.error(`[Debug] Unable to move ${tempMedia} to ${localMedia}`);
+			logger.error(`[Debug] Unable to move ${tempMedia} to ${localMedia} : ${err}`);
 		}
 		try {
 			if (bundle.lyrics.file !== null) await asyncMove(tempLyrics, resolve(localLyricsPath, bundle.lyrics.file), {overwrite: true});
