@@ -457,5 +457,15 @@
 			"NAME": "Nom de la chanson",
 			"LINK": "Lien vers une vidéo"
 		}
-	}
+	},
+	"DATASTORE_UPDATE": "Mise à jour des données locales...",
+	"GENERATING": "Génération de la base de données...",
+	"GENERATING_READING": "Lecture des données...",
+	"GENERATING_DATABASE": "Création de la base de données...",
+	"DOWNLOADING": "Téléchargement...",
+	"DOWNLOADING_MEDIAS": "Téléchargement de médias...",
+	"CLEANING_REPO": "Nettoyage des chansons supprimées du dépôt",
+	"UPDATING_REPO": "Mise à jour des chansons du dépôt",
+	"DOWNLOADING_REPO": "Ajout de chansons du dépôt",
+	"UPDATING_PLMEDIAS": "Mise à jour des médias de playlist..."
 }

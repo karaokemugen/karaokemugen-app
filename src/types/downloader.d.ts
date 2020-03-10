@@ -1,3 +1,5 @@
+import Task from "../lib/utils/taskManager";
+
 export interface DownloadItem {
 	url: string,
 	filename: string,
@@ -6,7 +8,8 @@ export interface DownloadItem {
 }
 
 export interface DownloadOpts {
-	bar: boolean
+	bar: boolean,
+	task: Task
 	auth?: {
 		user: string,
 		pass: string

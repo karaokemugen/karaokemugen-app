@@ -8,6 +8,7 @@ import { editSetting } from '../utils/config';
 import cloneDeep from 'lodash.clonedeep';
 import { Worker } from 'worker_threads';
 import { on } from '../lib/utils/pubsub';
+import Task from '../lib/utils/taskManager';
 
 const medias = {
 	Intros: [] as Media[],
@@ -32,13 +33,20 @@ export async function buildAllMediasList() {
 
 export async function updatePlaylistMedias() {
 	const updates = getConfig().Online.Updates.Medias;
+	const task = new Task({
+		text: 'UPDATING_PLMEDIAS'
+	});
 	for (const type of Object.keys(updates)){
 		try {
+			task.update({
+				subtext: type
+			});
 			if (updates[type]) await updateMediasGit(type as MediaType);
 		} catch(err) {
 			//Non fatal
 		}
 	}
+	task.end();
 }
 
 function resolveMediaPath(type: MediaType): string[] {
@@ -49,7 +57,7 @@ function resolveMediaPath(type: MediaType): string[] {
 	if (type === 'Sponsors') return resolvedPathSponsors();
 }
 
-export async function updateMediasGit(type: MediaType) {
+export function updateMediasGit(type: MediaType) {
 	return new Promise((done, error) => {
 		try {
 			const worker = new Worker(resolve(__dirname, '../utils/git.js'), {

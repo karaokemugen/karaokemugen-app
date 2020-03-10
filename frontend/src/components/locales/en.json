@@ -437,5 +437,15 @@
 			"NAME": "Name of the song",
 			"LINK": "Link to a video"
 		}
-	}
+	},
+	"DATASTORE_UPDATE": "Updating local data store...",
+	"GENERATING": "Generating database...",
+	"GENERATING_READING": "Reading data...",
+	"GENERATING_DATABASE": "Creating database...",
+	"DOWNLOADING": "Downloading...",
+	"DOWNLOADING_MEDIAS": "Downloading media files...",
+	"CLEANING_REPO": "Cleaning up songs removed from repository",
+	"UPDATING_REPO": "Updating songs from repository",
+	"DOWNLOADING_REPO": "Adding songs from repository",
+	"UPDATING_PLMEDIAS": "Updating playlist medias..."
 }

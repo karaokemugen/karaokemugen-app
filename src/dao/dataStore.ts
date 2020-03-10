@@ -1,7 +1,8 @@
-import { checksum, extractAllFiles, asyncStat } from "../lib/utils/files";
-import logger, { profile } from "../lib/utils/logger";
-import Bar from "../lib/utils/bar";
+import { checksum, extractAllFiles, asyncStat } from '../lib/utils/files';
+import logger, { profile } from '../lib/utils/logger';
+import Bar from '../lib/utils/bar';
 import parallel from 'async-await-parallel';
+import Task from '../lib/utils/taskManager';
 
 let dataStore = {
 	karas: new Map(),
@@ -72,17 +73,18 @@ export function removeSeriesInStore(sid: string) {
 	dataStore.series.delete(sid);
 }
 
-async function processDataFile(file: string, silent?: boolean, bar?: any) {
+async function processDataFile(file: string, silent?: boolean, bar?: Bar, task?: Task) {
 	if (file.endsWith('kara.json')) await addKaraToStore(file);
 	if (file.endsWith('series.json')) await addSeriesToStore(file);
 	if (file.endsWith('tag.json')) await addTagToStore(file);
 	if (!silent) bar.incr();
+	task.incr();
 }
 
 export async function baseChecksum(silent?: boolean) {
 	profile('baseChecksum');
 	try {
-		let bar: any;
+		let bar: Bar;
 		const [karaFiles, seriesFiles, tagFiles] = await Promise.all([
 			extractAllFiles('Karas'),
 			extractAllFiles('Series'),
@@ -94,14 +96,20 @@ export async function baseChecksum(silent?: boolean) {
 		if (!silent) bar = new Bar({
 			message: 'Checking files...    '
 		}, fileCount);
+		const task = new Task({
+			text: 'DATASTORE_UPDATE',
+			value: 0,
+			total: fileCount
+		});
 		const files = [].concat(karaFiles, seriesFiles, tagFiles);
 		const promises = [];
-		files.forEach(f => promises.push(() => processDataFile(f, silent, bar)));
+		files.forEach(f => promises.push(() => processDataFile(f, silent, bar, task)));
 		await parallel(promises, 32);
 		sortKaraStore();
 		sortSeriesStore();
 		sortTagsStore();
 		if (!silent) bar.stop();
+		task.end();
 		const checksum = getStoreChecksum();
 		logger.debug(`[Store] Store checksum : ${checksum}`);
 		return checksum;
@@ -110,5 +118,4 @@ export async function baseChecksum(silent?: boolean) {
 	} finally {
 		profile('baseChecksum');
 	}
-
 }

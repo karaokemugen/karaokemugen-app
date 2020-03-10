@@ -27,13 +27,17 @@ import { refreshKaras } from '../lib/dao/kara';
 import merge from 'lodash.merge';
 import { DownloadBundle } from '../lib/types/downloads';
 import sampleSize from 'lodash.samplesize';
+import Task from '../lib/utils/taskManager';
 
 const queueOptions = {
 	id: 'uuid',
-	precondition: (cb: any) => {
-		internet()
-			.then(cb(null, true))
-			.catch(cb(null, false));
+	precondition: async (cb: any) => {
+		try {
+			await internet();
+			cb(null, true);
+		} catch(err) {
+			cb(null, false);
+		}
 	},
 	preconditionRetryTimeout: 10 * 1000,
 	cancelIfRunning: true
@@ -108,6 +112,12 @@ export async function startDownloads() {
 }
 
 async function processDownload(download: KaraDownload) {
+	const task = new Task({
+		text: 'DOWNLOADING',
+		subtext: download.name,
+		value: 0,
+		total: download.size
+	});
 	try {
 		await setDownloadStatus(download.uuid, 'DL_RUNNING');
 		let list = [];
@@ -140,7 +150,7 @@ async function processDownload(download: KaraDownload) {
 				id: download.name
 			});
 		}
-		if (list.length > 0) await downloadFiles(download, list);
+		if (list.length > 0) await downloadFiles(download, list, task);
 
 		const writes = [];
 		let tempLyrics: string;
@@ -196,6 +206,8 @@ async function processDownload(download: KaraDownload) {
 	} catch(err) {
 		setDownloadStatus(download.uuid, 'DL_FAILED');
 		throw err;
+	} finally {
+		task.end();
 	}
 }
 
@@ -234,23 +246,21 @@ async function integrateDownload(bundle: DownloadBundle, localSeriesPath: string
 	}
 }
 
-async function downloadFiles(download: KaraDownload, list: DownloadItem[]) {
-	const downloader = new Downloader({ bar: true });
+async function downloadFiles(download: KaraDownload, list: DownloadItem[], task: Task) {
+	const downloader = new Downloader({ bar: true, task: task });
 	// Launch downloads
-	return new Promise((resolve, reject) => {
-		downloader.download(list)
-			.then(fileErrors => {
-				if (fileErrors.length > 0) {
-					setDownloadStatus(download.uuid, 'DL_FAILED')
-						.then(() => {
-							reject(`Error downloading file : ${fileErrors.toString()}`);
-						}).catch(err => {
-							reject(`Error downloading file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
-						});
-				} else {
-					resolve();
-				}
-			});
+	return new Promise(async (resolve, reject) => {
+		const fileErrors = await downloader.download(list)
+		if (fileErrors.length > 0) {
+			try {
+				await setDownloadStatus(download.uuid, 'DL_FAILED')
+				reject(`Error downloading file : ${fileErrors.toString()}`);
+			} catch (err) {
+				reject(`Error downloading file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
+			}
+		} else {
+			resolve();
+		}
 	});
 }
 
@@ -491,16 +501,16 @@ export async function updateBase(repo: string) {
 async function waitForUpdateQueueToFinish() {
 	return new Promise((resolve, reject) => {
 		// We'll redefine the drain event of the queue to resolve once the queue is drained.
-		q.on('drain', () => {
+		q.on('drain', async () => {
 			compareKarasChecksum();
-			refreshAll()
-				.then(() => {
-					vacuum();
-					resolve();
-				}).catch(err => {
-					logger.error(`[Download] Error while draining queue : ${err}`);
-					reject();
-				});
+			try {
+				await refreshAll();
+				await vacuum();
+				resolve();
+			} catch(err) {
+				logger.error(`[Download] Error while draining queue : ${err}`);
+				reject();
+			}
 		});
 	});
 }
@@ -634,22 +644,32 @@ export async function cleanAllKaras() {
 }
 
 export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraList) {
-	if (!local || !remote) {
-		const karas = await getKaraInventory(repo);
-		local = karas.local;
-		remote = karas.remote;
-	}
-	const localKIDs = local.content.map(k => k.kid);
-	const remoteKIDs = remote.content.map(k => k.kid);
-	const karasToRemove = localKIDs.filter(kid => !remoteKIDs.includes(kid));
-	// Now we have a list of KIDs to remove
-	logger.info(`[Update] Removing ${karasToRemove.length} songs`);
-	const promises = [];
-	karasToRemove.forEach(kid => promises.push(deleteKara(kid, false)));
-	await Promise.all(promises);
-	if (karasToRemove.length > 0) {
-		compareKarasChecksum(true);
-		refreshKaras();
+	const task = new Task({
+		text: 'CLEANING_REPO',
+		subtext: repo
+	});
+	try {
+		if (!local || !remote) {
+			const karas = await getKaraInventory(repo);
+			local = karas.local;
+			remote = karas.remote;
+		}
+		const localKIDs = local.content.map(k => k.kid);
+		const remoteKIDs = remote.content.map(k => k.kid);
+		const karasToRemove = localKIDs.filter(kid => !remoteKIDs.includes(kid));
+		// Now we have a list of KIDs to remove
+		logger.info(`[Update] Removing ${karasToRemove.length} songs`);
+		const promises = [];
+		karasToRemove.forEach(kid => promises.push(deleteKara(kid, false)));
+		await Promise.all(promises);
+		if (karasToRemove.length > 0) {
+			compareKarasChecksum(true);
+			refreshKaras();
+		}
+	} catch(err) {
+		throw err;
+	} finally {
+		task.end();
 	}
 }
 
@@ -668,44 +688,44 @@ export async function updateAllKaras() {
 
 export async function updateKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
 	logger.info('[Update] Starting update process...');
-	if (!local || !remote) {
-		const karas = await getKaraInventory(repo);
-		local = karas.local;
-		remote = karas.remote;
-	}
-	const karasToUpdate = local.content.filter(k => {
-		const rk = remote.content.find(rk => rk.kid === k.kid);
-		// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
-		if (rk && rk.modified_at as unknown > k.modified_at.toISOString()) return true;
-	}).map(k => k.kid);
-	const downloads = remote.content.filter(k => karasToUpdate.includes(k.kid)).map(k => {
-		return {
-			size: k.mediasize,
-			mediafile: k.mediafile,
-			kid: k.kid,
-			name: k.karafile.replace('.kara.json',''),
-			repository: repo
-		};
+	const task = new Task({
+		text: 'UPDATING_REPO',
+		subtext: repo
 	});
-	logger.info(`[Update] Updating ${karasToUpdate.length} songs`);
-	if (karasToUpdate.length > 0) await addDownloads(downloads);
-	return karasToUpdate.length;
+	try {
+		if (!local || !remote) {
+			const karas = await getKaraInventory(repo);
+			local = karas.local;
+			remote = karas.remote;
+		}
+		const karasToUpdate = local.content.filter(k => {
+			const rk = remote.content.find(rk => rk.kid === k.kid);
+			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
+			if (rk && rk.modified_at as unknown > k.modified_at.toISOString()) return true;
+		}).map(k => k.kid);
+		const downloads = remote.content.filter(k => karasToUpdate.includes(k.kid)).map(k => {
+			return {
+				size: k.mediasize,
+				mediafile: k.mediafile,
+				kid: k.kid,
+				name: k.karafile.replace('.kara.json',''),
+				repository: repo
+			};
+		});
+		logger.info(`[Update] Updating ${karasToUpdate.length} songs`);
+		if (karasToUpdate.length > 0) await addDownloads(downloads);
+		return karasToUpdate.length;
+	} catch(err) {
+		throw err;
+	} finally {
+		task.end();
+	}
 }
 
 let updateRunning = false;
 
 async function listRemoteMedias(repo: string): Promise<File[]> {
 	logger.info('[Update] Fetching current media list');
-	emitWS('downloadProgress', {
-		text: 'Listing media files to download',
-		value: 0,
-		total: 100
-	});
-	emitWS('downloadBatchProgress', {
-		text: 'Updating...',
-		value: 3,
-		total: 5
-	});
 	const remote = await getRemoteKaras(repo, {});
 	return remote.content.map(k => {
 		return {
@@ -721,16 +741,6 @@ async function compareMedias(localFiles: File[], remoteFiles: File[], repo: stri
 	let updatedFiles:File[] = [];
 	const mediasPath = resolvedPathRepos('Medias', repo)[0];
 	logger.info('[Update] Comparing your medias with the current ones');
-	emitWS('downloadProgress', {
-		text: 'Comparing your media files with Karaoke Mugen\'s latest files',
-		value: 0,
-		total: 100
-	});
-	emitWS('downloadBatchProgress', {
-		text: 'Updating...',
-		value: 4,
-		total: 5
-	});
 	for (const remoteFile of remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
 			if (localFile.basename === remoteFile.basename) {
@@ -753,11 +763,6 @@ async function compareMedias(localFiles: File[], remoteFiles: File[], repo: stri
 	}
 	const filesToDownload = addedFiles.concat(updatedFiles);
 	if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
-	emitWS('downloadProgress', {
-		text: 'Comparing your base with Karaoke Mugen\'s latest files',
-		value: 100,
-		total: 100
-	});
 	if (filesToDownload.length > 0) {
 		filesToDownload.sort((a,b) => {
 			return (a.basename > b.basename) ? 1 : ((b.basename > a.basename) ? -1 : 0);
@@ -786,15 +791,18 @@ function downloadMedias(files: File[], mediasPath: string, repo: string): Promis
 		});
 	}
 	const mediaDownloads = new Downloader({
-		bar: true
+		bar: true,
+		task: new Task({
+			text: 'DOWNLOADING_MEDIAS',
+			value: 0,
+			total: files.length
+		})
 	});
-	return new Promise((resolve: any, reject: any) => {
-		mediaDownloads.download(list)
-			.then((fileErrors) => {
-				fileErrors.length > 0
-					? reject(`Error downloading these medias : ${fileErrors.toString()}`)
-					: resolve();
-			});
+	return new Promise(async (resolve: any, reject: any) => {
+		const fileErrors = await mediaDownloads.download(list);
+		fileErrors.length > 0
+			? reject(`Error downloading these medias : ${fileErrors.toString()}`)
+			: resolve();
 	});
 }
 
@@ -836,6 +844,10 @@ export async function updateAllMedias() {
 export async function updateMedias(repo: string): Promise<boolean> {
 	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
 	updateRunning = true;
+	const task = new Task({
+		text: 'UPDATING_MEDIAS',
+		subtext: repo
+	});
 	try {
 		const [remoteMedias, localMedias] = await Promise.all([
 			listRemoteMedias(repo),
@@ -844,31 +856,13 @@ export async function updateMedias(repo: string): Promise<boolean> {
 		const updateVideos = await compareMedias(localMedias, remoteMedias, repo);
 
 		updateRunning = false;
-		emitWS('downloadProgress', {
-			text: 'Done',
-			value: 100,
-			total: 100
-		});
-		emitWS('downloadBatchProgress', {
-			text: 'Update done!',
-			value: 100,
-			total: 100
-		});
 		return !!updateVideos;
 	} catch (err) {
 		console.log(err);
-		emitWS('downloadProgress', {
-			text: 'Done',
-			value: 100,
-			total: 100
-		});
-		emitWS('downloadBatchProgress', {
-			text: 'Update failed!',
-			value: 100,
-			total: 100
-		});
 		updateRunning = false;
 		throw err;
+	} finally {
+		task.end();
 	}
 }
 
@@ -883,6 +877,7 @@ export async function downloadRandomSongs() {
 	try {
 		logger.info('[Samples] Downloading samples...')
 		const karas = await getRemoteKaras(getConfig().Online.Host, {});
+		// Downloading samples here, 3 japanese, 1 french, 1 english, 1 italian.
 		const samples = [
 			sampleSize(karas.content.filter(k => filterSamples(k, 'jpn')), 3),
 			sampleSize(karas.content.filter(k => filterSamples(k, 'fre')), 1),
@@ -904,7 +899,7 @@ export async function downloadRandomSongs() {
 	}
 }
 
-/** Only used for tests : downloads 6 test songs */
+/** Only used for tests : downloads 6 specific test songs */
 export async function downloadTestSongs() {
 	const defaultRepo = 'kara.moe';
 	await addDownloads([
@@ -953,6 +948,7 @@ export async function downloadTestSongs() {
 	]);
 }
 
+/* Filter rules for samples so we don't download giant songs */
 function filterSamples(k: DBKara, lang: string): boolean {
 	const maxDuration = 91;
 	const maxSize = 50000000;
