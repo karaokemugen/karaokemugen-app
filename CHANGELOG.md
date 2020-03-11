@@ -1,5 +1,19 @@
 # Versions
 
+## v3.1.2
+
+This is a bugfix release
+
+### Fixes
+
+- Added msvcp120.dll to files checked with other binaries (necessary for Postgresql) (c2492d85)
+- Updated ultrastar2ass to 1.0.11, toyunda2ass to 1.0.12 (0f25eff7, 80375c75)
+- Updated node-mpv-km to 2.0.2 to remove rogue console.log (9b4674a1)
+- Fix playlist medias list creation on startup not happening if no internet is available (9d0aa945)
+- Fix base update errors with songs with no updated media to download (19221c4b)
+- Fix encore/outro message time (cad586e3)
+- Made song integration synchronous again after download to avoid weird behavior near end of download queue (88f68235)
+
 ## v3.1.1 "Mitsuha Mélancolique" - 06/03/2020
 
 This is a minor release containing fixes AND new features.
