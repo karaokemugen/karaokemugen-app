@@ -190,7 +190,7 @@ async function processDownload(download: KaraDownload) {
 		}
 		logger.info(`[Download] Finished downloading "${download.name}"`);
 		// Now adding our newly downloaded kara
-		integrateDownload(bundle, localSeriesPath, localKaraPath, localTagsPath, download);
+		await integrateDownload(bundle, localSeriesPath, localKaraPath, localTagsPath, download);
 	} catch(err) {
 		setDownloadStatus(download.uuid, 'DL_FAILED');
 		throw err;
