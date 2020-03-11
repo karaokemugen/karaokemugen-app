@@ -195,6 +195,7 @@
   "build": {
     "appId": "KaraokeMugen",
     "nsis": {
+	  "warningsAsErrors": false,
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "license": "LICENSE.md"
