@@ -429,6 +429,7 @@ export async function play(mediadata: MediaData) {
 				logger.warn(`[Player] Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
 			}
 		});
+		logger.debug(`[Player] File ${mediaFile} loaded`);
 		playerState.mediaType = 'song';
 		await player.play();
 		if (monitorEnabled) {
