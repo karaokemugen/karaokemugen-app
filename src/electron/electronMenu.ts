@@ -60,7 +60,7 @@ export async function initMenu() {
 					label: i18next.t('MENU_FILE_ABOUT'),
 					click() {
 						openAboutWindow({
-							icon_path: resolve(getState().resourcePath, 'assets/icon.png'),
+							icon_path: resolve(getState().resourcePath, 'build/icon.png'),
 							product_name: `Karaoke Mugen (${version.name})`,
 							bug_link_text: i18next.t('ABOUT.BUG_REPORT'),
 							bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',

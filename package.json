@@ -247,14 +247,15 @@
       "assets/**",
       "frontend/build/**",
       "systempanel/build/**",
-      "initpage/**"
+      "initpage/**",
+	  "build/icon.png"
     ],
     "extraFiles": [
       "app/bin/**"
     ],
     "directories": {
       "output": "packages",
-      "buildResources": "assets"
+      "buildResources": "build"
     },
     "files": [
       "dist/**/*"

@@ -63,7 +63,7 @@ function createWindow () {
 		width: 1280,
 		height: 720,
 		backgroundColor: '#36393f',
-		icon: resolve(state.resourcePath, 'assets/icon.png'),
+		icon: resolve(state.resourcePath, 'build/icon.png'),
 		webPreferences: {
 			nodeIntegration: true
 		}
