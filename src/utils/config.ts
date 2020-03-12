@@ -177,7 +177,10 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
 	if (config.Database.prod.bundledPostgresBinary) {
 		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
-		if (process.platform === 'win32') requiredBinariesChecks.push(asyncRequired('C:/Windows/System32/msvcr120.dll'));
+		if (process.platform === 'win32') {
+			requiredBinariesChecks.push(asyncRequired('C:/Windows/System32/msvcr120.dll'));
+			requiredBinariesChecks.push(asyncRequired('C:/Windows/System32/msvcp120.dll'));
+		}
 	}
 	if (!getState().isTest && !getState().isDemo) requiredBinariesChecks.push(asyncRequired(binariesPath.mpv));
 
@@ -232,7 +235,7 @@ function binMissing(binariesPath: any, err: string) {
 	logger.error('[BinCheck] mpv : ' + binariesPath.mpv);
 	logger.error('[BinCheck] Postgres : ' + binariesPath.postgres);
 	logger.error('[BinCheck] Exiting...');
-	const error = `One or more binaries needed by Karaoke Mugen could not be found.
+	let error = `One or more binaries needed by Karaoke Mugen could not be found.
 
 Check the paths above and make sure these are available.
 
@@ -241,7 +244,9 @@ Edit your config.yml and set System.Binaries.ffmpeg, System.Binaries.Player and 
 You can download mpv for your OS from http://mpv.io/
 You can download postgreSQL for your OS from http://postgresql.org/
 You can download ffmpeg for your OS from http://ffmpeg.org
-(Windows Only) If the missing file is msvcr120.dll, download Microsoft Visual C++ 2013 Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784
+`;
+	if (process.platform === 'win32') error = `${error}
+(Windows Only) If the missing file is msvcr120.dll or msvcp120.dll, download Microsoft Visual C++ 2013 Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784
 `;
 	return Error(error);
 }
