@@ -1,6 +1,6 @@
 # Versions
 
-## v3.1.2
+## v3.1.2 "Mitsuha Matinale" - 12/03/2020
 
 This is a bugfix release
 
