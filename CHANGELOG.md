@@ -17,6 +17,7 @@ platforms (#533)
     - Windows: portable (.zip) and .exe installer
     - Linux: appImage
   - There is an auto-update system in place which will download updates and install them on startup (unless told not to) or when manually told to. (#7)
+  - The Visual C++ Redistribuable 2013 is now included during install on Windows, and installed if it appears you lack some vital DLL files for PostgreSQL (#595)
 - Multiple repository management for songs (#549)
   - Songs aer now organized in repositories.
   - You can have multiple repositories in your Karaoke Mugen
