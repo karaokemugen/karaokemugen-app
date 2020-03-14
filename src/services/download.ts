@@ -68,14 +68,16 @@ export async function initDownloader() {
 function initQueue(drainEvent = true) {
 	// We'll compare data dir checksum and execute refresh every 5 downloads and everytime the queue is drained
 	let taskCounter = 0;
+	let refreshing = false;
 	q = new Queue(queueDownload, queueOptions);
 	q.on('task_finish', () => {
 		if (q.length > 0) logger.info(`[Download] ${q.length - 1} items left in queue`);
 		taskCounter++;
-		if (taskCounter >= 100) {
+		if (taskCounter >= ) {
 			logger.debug('[Download] Triggering database refresh');
 			compareKarasChecksum(true);
-			refreshAll();
+			refreshing = true;
+			refreshAll().then(() => refreshing = false);
 			taskCounter = 0;
 		}
 		emitQueueStatus('updated');
@@ -87,8 +89,10 @@ function initQueue(drainEvent = true) {
 	q.on('empty', () => emitQueueStatus('updated'));
 	if (drainEvent) q.on('drain', () => {
 		logger.info('[Download] No tasks left, stopping queue');
-		refreshAll().then(() => vacuum());
-		compareKarasChecksum();
+		if (!refreshing) {
+			refreshAll().then(() => vacuum());
+			compareKarasChecksum();
+		}
 		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
