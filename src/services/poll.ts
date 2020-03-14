@@ -88,7 +88,7 @@ export async function endPoll() {
 		const winner = await getPollResults();
 		const streamConfig = getConfig().Karaoke.StreamerMode;
 		if (streamConfig.Enabled) {
-			if (getState().status !== 'play') displayPoll(winner.index);
+			if (getState().player.mediaType === 'background') displayPoll(winner.index);
 			if (streamConfig.Twitch.Channel) displayPollWinnerTwitch(winner)
 		}
 		pollEnding = true;
@@ -208,7 +208,7 @@ export async function startPoll() {
 	// Do not display modal for clients if twitch is enabled
 	if (!conf.Karaoke.StreamerMode.Twitch.Enabled) emitWS('newSongPoll',poll);
 	timerPoll();
-	if (getConfig().Karaoke.StreamerMode.Enabled) displayPoll();
+	if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.mediaType === 'background') displayPoll();
 }
 
 /** Get current poll options */
