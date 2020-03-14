@@ -119,6 +119,8 @@ export async function loadBackground() {
 		];
 		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile, 'replace'));
 		await Promise.all(loads);
+		playerState.mediaType = 'background';
+		emitPlayerState();
 	} catch(err) {
 		logger.error(`[Player] Unable to load background : ${JSON.stringify(err)}`);
 	}

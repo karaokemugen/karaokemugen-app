@@ -162,7 +162,7 @@ export async function addPollVote(index: number, token: Token) {
 		message: 'This song is not in the poll'
 	};
 	voters.add(token.username);
-	if (getConfig().Karaoke.StreamerMode.Enabled) displayPoll();
+	if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.mediaType === 'background') displayPoll();
 	return {
 		code: 'POLL_VOTED',
 		data: poll

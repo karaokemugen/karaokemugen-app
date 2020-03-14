@@ -1,14 +1,14 @@
 export interface PlayerState {
 	volume?: number,
 	playing?: boolean,
-	playerstatus?: string,
+	playerstatus?: 'stop' | 'pause' | 'play',
 	_playing?: boolean, // internal delay flag
 	timeposition?: number,
 	duration?: number,
 	mutestatus?: boolean,
 	subtext?: string,
 	currentSongInfos?: string,
-	mediaType?: string,
+	mediaType?: 'song' | 'background' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros',
 	showsubs?: boolean,
 	stayontop?: boolean,
 	fullscreen?: boolean,
