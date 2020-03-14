@@ -207,6 +207,17 @@ export async function startPoll() {
 	logger.debug(`[Poll] New poll : ${JSON.stringify(poll)}`);
 	// Do not display modal for clients if twitch is enabled
 	if (conf.Karaoke.StreamerMode.Twitch.Enabled) {
+		displayPollTwitch();
+	} else {
+		emitWS('newSongPoll',poll);
+	}
+	timerPoll();
+	if (conf.Karaoke.StreamerMode.Enabled && getState().player.mediaType === 'background') displayPoll();
+}
+
+async function displayPollTwitch() {
+	try {
+		logger.info('[Poll] Announcing vote on Twitch');
 		await sayTwitch('New vote : use !vote x where x is the song number :');
 		for (const kara of poll) {
 			let series = kara.serie;
@@ -215,15 +226,12 @@ export async function startPoll() {
 			// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 			let songorder: string = `${kara.songorder}`;
 			if (!kara.songorder || kara.songorder === 0) songorder = '';
-
+			await sleep(1000);
 			await sayTwitch(`${kara.index}. ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes[0].name}${songorder} - ${kara.title}`);
 		}
-	} else {
-		emitWS('newSongPoll',poll);
+	} catch(err) {
+		logger.error(`[Poll] Unable to post poll on twitch : ${err}`);
 	}
-
-	timerPoll();
-	if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.mediaType === 'background') displayPoll();
 }
 
 /** Get current poll options */

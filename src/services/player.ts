@@ -271,7 +271,7 @@ async function next() {
 			}
 			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-				if (getState().status === 'stop') await playPlayer(true);
+				if (conf.Karaoke.StreamerMode.Enabled && getState().status === 'stop') await playPlayer(true);
 			}
 		} else {
 			setState({currentRequester: null});
