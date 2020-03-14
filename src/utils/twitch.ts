@@ -35,9 +35,9 @@ export async function initTwitch() {
 }
 
 /** Simple function to say something to Twitch chat */
-export function sayTwitch(message: string) {
+export async function sayTwitch(message: string) {
 	if (client) try {
-		client.say(getConfig().Karaoke.StreamerMode.Twitch.Channel, message);
+		await client.say(getConfig().Karaoke.StreamerMode.Twitch.Channel, message);
 	} catch(err) {
 		logger.warn(`[Twitch] Unable to say to channel : ${err}`);
 		throw err;

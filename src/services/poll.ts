@@ -74,6 +74,14 @@ export async function timerPoll() {
 	if (internalDate === pollDate) endPoll();
 }
 
+async function displayPollWinnerTwitch(winner: PollResults) {
+	try {
+		await sayTwitch(`Poll winner : ${winner.kara} (${winner.votes} votes)`);
+	} catch(err) {
+		//Non fatal
+	}
+}
+
 /** Ends poll and emits results through websockets */
 export async function endPoll() {
 	if (poll.length > 0) {
@@ -81,11 +89,7 @@ export async function endPoll() {
 		const streamConfig = getConfig().Karaoke.StreamerMode;
 		if (streamConfig.Enabled) {
 			if (getState().status !== 'play') displayPoll(winner.index);
-			if (streamConfig.Twitch.Channel) try {
-				sayTwitch(`Poll winner : ${winner.kara} (${winner.votes} votes)`);
-			} catch(err) {
-				//Non fatal
-			}
+			if (streamConfig.Twitch.Channel) displayPollWinnerTwitch(winner)
 		}
 		pollEnding = true;
 		logger.debug(`[Poll] Ending poll with ${JSON.stringify(winner)}`);
