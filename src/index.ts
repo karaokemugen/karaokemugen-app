@@ -143,6 +143,7 @@ if (app && !argv.cli) {
 export async function preInit() {
 	await configureLocale();
 	await configureLogger(dataPath, argv.debug || (app && app.commandLine.hasSwitch('debug')), true);
+	setState({ os: process.platform, version: version});
 	const state = getState();
 	await parseCommandLineArgs(argv, app ? app.commandLine : null);
 	logger.debug(`[Launcher] AppPath : ${appPath}`);
@@ -157,7 +158,6 @@ export async function preInit() {
 
 export async function main() {
 	initStep(i18n.t('INIT_INIT'));
-	setState({ os: process.platform, version: version});
 	const state = getState();
 	console.log(chalk.white(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
