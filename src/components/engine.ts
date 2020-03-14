@@ -138,7 +138,6 @@ export async function initEngine() {
 			// This is done later because it's not important.
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
-			if (!state.isTest && !state.isDemo) updatePlaylistMedias();
 			if (conf.App.FirstRun && stats.karas === 0 && !state.isTest) {
 				downloadRandomSongs();
 			}
