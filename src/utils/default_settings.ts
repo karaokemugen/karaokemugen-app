@@ -357,7 +357,7 @@ export const configConstraints = {
 	'System.Path.Encores': {arrayOneItemValidator: true},
 	'System.Path.Jingles': {arrayOneItemValidator: true},
 	'System.Path.Intros': {arrayOneItemValidator: true},
-	'System.Path.Spnsors': {arrayOneItemValidator: true},
+	'System.Path.Sponsors': {arrayOneItemValidator: true},
 	'System.Path.Outros': {arrayOneItemValidator: true},
 	'System.Path.Import': {presence: true},
 	'System.Path.Temp': {presence: true},
