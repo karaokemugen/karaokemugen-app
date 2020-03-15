@@ -264,9 +264,7 @@ noRowsRenderer = () => {
   };
 
   getPlaylistList = async () => {
-  	const response = await axios.get(
-  		'/api/playlists/'
-  	);
+  	const response = await axios.get('/api/playlists/');
   	const kmStats = await axios.get('/api/stats');
 	var playlistList = response.data;
 	if (this.props.scope !== 'admin') {
@@ -353,9 +351,7 @@ noRowsRenderer = () => {
 
   getPlaylistInfo = async () => {
   	if (!this.state.getPlaylistInProgress) {
-  		var response = await axios.get(
-  			'/api/playlists/' + this.state.idPlaylist
-  		);
+  		var response = await axios.get(`/api/playlists/${this.state.idPlaylist}`);
   		this.setState({ playlistInfo: response.data });
   	}
   };

@@ -96,7 +96,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   addPlaylist = () => {
   	callModal('prompt', i18next.t('CL_CREATE_PLAYLIST'), '', (playlistName:string) => {
   		axios.post('/api/playlists', { name: playlistName, flag_visible: false, flag_current: false, flag_public: false }).then(response => {
-  			this.props.changeIdPlaylist(response.data);
+			this.props.changeIdPlaylist(response.data.data);
   		});
   	}
   	);
