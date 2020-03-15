@@ -147,7 +147,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
 
-		axios.get(`/api/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}`)
+		axios.get(`/api/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}${this.state.compare}`)
 			.then(res => {
 				let karas = res.data.content;
 				karas.forEach((kara) => {
