@@ -81,7 +81,7 @@ async function processDataFile(file: string, silent?: boolean, bar?: Bar, task?:
 	task.incr();
 }
 
-export async function baseChecksum(silent?: boolean) {
+export async function baseChecksum(silent?: boolean): Promise<string> {
 	profile('baseChecksum');
 	try {
 		let bar: Bar;

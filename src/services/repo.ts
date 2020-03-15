@@ -6,13 +6,14 @@ import { Repository } from '../lib/types/repo';
 import { getConfig, setConfig, deleteOldPaths } from '../lib/utils/config';
 import cloneDeep = require('lodash.clonedeep');
 import { Tag } from '../lib/types/tag';
-import { readAllSeries, readAllTags, readAllKaras } from '../lib/services/generation';
+import { readAllSeries, readAllTags, readAllKaras, generateDatabase } from '../lib/services/generation';
 import { tagTypes } from '../lib/utils/constants';
 import { KaraTag } from '../lib/types/kara';
 import { getTag } from './tag';
 import { Series } from '../lib/types/series';
 import { getSerie } from './series';
 import logger from '../lib/utils/logger';
+import { compareKarasChecksum } from '../dao/database';
 
 type UUIDSet = Set<string>
 
@@ -42,8 +43,13 @@ export async function addRepo(repo: Repository) {
 
 /** Edit a repository. Folders will be created if necessary */
 export async function editRepo(name: string, repo: Repository) {
+	const oldRepo = getRepo(name);
 	updateRepo(repo, name);
 	await checkRepoPaths(repo);
+	if (oldRepo.Enabled !== repo.Enabled) {
+		generateDatabase();
+		compareKarasChecksum(true);
+	}
 	logger.info(`[Repo] Updated ${name}`);
 }
 

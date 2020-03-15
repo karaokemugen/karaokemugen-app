@@ -23,6 +23,7 @@ interface RepositoriesEditState {
 const newrepository:Repository = {
 	Name: undefined,
 	Online: false,
+	Enabled: true,
 	Path: {
 		Karas: [],
 		Lyrics: [],

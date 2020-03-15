@@ -63,6 +63,16 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					})(<Checkbox />)}
 				</Form.Item>
 				<Form.Item
+					label={i18next.t('REPOSITORIES.ENABLED')}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 10, offset: 0 }}
+				>
+					{getFieldDecorator('Enabled', {
+						valuePropName: "checked",
+						initialValue: this.props.repository.Enabled,
+					})(<Checkbox />)}
+				</Form.Item>
+				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_KARAS')}
 					labelCol={{ span: 3 }}
 					wrapperCol={{ span: 10, offset: 0 }}

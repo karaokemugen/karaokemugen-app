@@ -472,7 +472,7 @@ export async function getRemoteTags(repo: string, params: TagParams): Promise<Ta
 export async function updateAllBases() {
 	for (const repo of getConfig().System.Repositories) {
 		try {
-			if (repo.Online) {
+			if (repo.Online && repo.Enabled) {
 				logger.info(`[Update] Updating base from repository ${repo.Name}`);
 				await updateBase(repo.Name);
 			}

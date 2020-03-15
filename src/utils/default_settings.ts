@@ -221,6 +221,7 @@ export const defaults: Config = {
 			{
 				Name: 'kara.moe',
 				Online: true,
+				Enabled: true,
 				Path: {
 					Karas: ['repos/kara.moe/karaokes'],
 					Lyrics: ['repos/kara.moe/lyrics'],
@@ -232,6 +233,7 @@ export const defaults: Config = {
 			{
 				Name: 'Local',
 				Online: false,
+				Enabled: true,
 				Path: {
 					Karas: ['repos/Local/karaokes'],
 					Lyrics: ['repos/Local/lyrics'],
