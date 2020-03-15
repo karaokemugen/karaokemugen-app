@@ -20,8 +20,12 @@ export async function editKara(kara: Kara) {
 			const mediaPaths = (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
 			mediaDir = dirname(mediaPaths);
 		} else {
-			mediaFile = (await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
-			mediaDir = dirname(mediaFile);
+			try {
+				mediaFile = (await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
+				mediaDir = dirname(mediaFile);
+			} catch(err) {
+				// Non fatal.
+			}
 		}
 		let subFile = kara.subfile;
 		let subDir: string;
@@ -47,8 +51,11 @@ export async function editKara(kara: Kara) {
 		if (!kara.mediafile_orig) {
 			kara.noNewVideo = true;
 			kara.mediafile_orig = kara.mediafile;
-			if (!await asyncExists(mediaFile)) throw `Mediafile ${mediaFile} does not exist! Check your base files or upload a new media`;
-			await asyncCopy(mediaFile, resolve(resolvedPathTemp(), kara.mediafile), {overwrite: true});
+			try {
+				await asyncCopy(mediaFile, resolve(resolvedPathTemp(), kara.mediafile), {overwrite: true});
+			} catch(err) {
+				logger.warn(`[KaraGen] Unable to copy ${mediaFile} to temp directory: ${err}`);
+			}
 		}
 		if (!kara.subfile_orig) {
 			kara.subfile_orig = kara.subfile;
