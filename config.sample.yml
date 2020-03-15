@@ -229,6 +229,20 @@ System:
           - repos/online/kara.moe/series
         Tags:
           - repos/online/kara.moe/tags
+    - Name: world.karaokes.moe
+      Online: true
+      Enabled: false
+      Path:
+        Karas:
+          - repos/world/karaokes
+        Lyrics:
+          - repos/world/lyrics
+        Medias:
+          - repos/world/medias
+        Series:
+          - repos/world/series
+        Tags:
+          - repos/world/tags
     - Name: Local
       Online: false
       Path:

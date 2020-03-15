@@ -112,6 +112,11 @@ class RepositoryList extends Component<ReduxMappedProps, RepositoryListState> {
 		key: 'online',
 		render: (text, record) => (<Checkbox disabled={true} checked={record.Online} />)
 	}, {
+		title: i18next.t('REPOSITORIES.ENABLED'),
+		dataIndex: 'Enabled',
+		key: 'enabled',
+		render: (text, record) => (<Checkbox disabled={true} checked={record.Enabled} />)
+	}, {
 		title: <span>{i18next.t('REPOSITORIES.MOVE')}&nbsp;
 			<Tooltip title={i18next.t('REPOSITORIES.MOVE_TOOLTIP')}>
 				<Icon type="question-circle-o" />
