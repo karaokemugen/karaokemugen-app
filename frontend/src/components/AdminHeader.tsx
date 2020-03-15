@@ -13,7 +13,7 @@ interface IProps {
 	options: boolean;
 	currentSide: number;
 	toggleProfileModal: () => void;
-	powerOff: () => void;
+	powerOff: (() => void) | undefined;
 	adminMessage: () => void;
 	putPlayerCommando: (event: any) => void;
 	setOptionMode: () => void;
@@ -105,13 +105,15 @@ class AdminHeader extends Component<IProps, IState> {
 						>
 							<i className="fas fa-sign-out-alt"></i>
 						</li>
-						<li
-							title={i18next.t('SHUTDOWN')}
-							className="btn btn-default btn-dark"
-							onClick={this.props.powerOff}
-						>
-							<i className="fas fa-power-off"></i>
-						</li>
+						{this.props.powerOff ?
+							<li
+								title={i18next.t('SHUTDOWN')}
+								className="btn btn-default btn-dark"
+								onClick={this.props.powerOff}
+							>
+								<i className="fas fa-power-off"></i>
+							</li> : null
+  						}
 					</ul> : null
 				}
 			</div>

@@ -25,6 +25,7 @@ interface IState {
 	config?: Config;
 	tags?: Array<KaraTag>;
 	mediaFile?: string;
+	electron: boolean;
   }
 
 class App extends Component<{}, IState> {
@@ -33,7 +34,8 @@ class App extends Component<{}, IState> {
 		this.state = {
 			navigatorLanguage: this.getNavigatorLanguage(),
 			admpwd: window.location.search.indexOf('admpwd') ? window.location.search.split('=')[1] : undefined,
-			shutdownPopup: false
+			shutdownPopup: false,
+			electron: false
 		};
 		axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
 		axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
@@ -109,7 +111,7 @@ class App extends Component<{}, IState> {
 		store.setConfig(res.data.config);
 		store.setVersion(res.data.version);
 		store.setModePlaylistID(res.data.state.modePlaylistID);
-    	this.setState({ config: res.data.config});
+    	this.setState({ config: res.data.config, electron: res.data.state.electron });
     };
 
     getNavigatorLanguage() {
@@ -155,7 +157,7 @@ class App extends Component<{}, IState> {
     							admpwd={this.state.admpwd} config={this.state.config as Config} />} />
     						<Route path="/admin" render={(props) => <AdminPage {...props}
     							navigatorLanguage={this.state.navigatorLanguage}
-    							powerOff={this.powerOff} tags={this.state.tags as FrontendTag[]}
+    							powerOff={this.state.electron ? undefined : this.powerOff} tags={this.state.tags as FrontendTag[]}
     							showVideo={this.showVideo} config={this.state.config as Config} 
 								getSettings={this.getSettings} />} />
     						<Route exact path="/" render={(props) => <PublicPage {...props}

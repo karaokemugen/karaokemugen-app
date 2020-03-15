@@ -21,7 +21,7 @@ import { Token } from '../../../src/lib/types/user';
 
 interface IProps {
 	config: Config;
-	powerOff: () => void;
+	powerOff: (() => void) | undefined;
 	navigatorLanguage: string;
 	tags?: Array<Tag>;
 	showVideo: (file:string) => void;
@@ -265,15 +265,17 @@ class AdminPage extends Component<IProps, IState> {
 								<i className="fas fa-comment" />
 							</a>
 						</li>
-						<li>
-							<a
-								className="z-depth-3 btn-floating btn-large"
-								style={{ backgroundColor: '#111' }}
-								onClick={this.props.powerOff}
-							>
-								<i className="fas fa-power-off" />
-							</a>
-						</li>
+						{this.props.powerOff ?
+							<li>
+								<a
+									className="z-depth-3 btn-floating btn-large"
+									style={{ backgroundColor: '#111' }}
+									onClick={this.props.powerOff}
+								>
+									<i className="fas fa-power-off" />
+								</a>
+							</li> : null
+  						}
 						<li>
 							<a
 								className="z-depth-3 btn-floating btn-large logout"

@@ -80,7 +80,8 @@ export function getPublicState(admin: boolean) {
 		appPath: admin ? state.appPath : undefined,
 		dataPath: admin ? state.dataPath : undefined,
 		os: admin ? state.os : undefined,
-		wsLogNamespace: admin ? state.wsLogNamespace : undefined
+		wsLogNamespace: admin ? state.wsLogNamespace : undefined,
+		electron: state.electron
 	};
 }
 
