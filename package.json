@@ -116,7 +116,7 @@
     "lodash.samplesize": "^4.2.0",
     "lodash.shuffle": "^4.2.0",
     "lodash.transform": "^4.6.0",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.2",
     "multer": "^1.4.2",
     "node-id3": "^0.1.13",
     "node-mpv-km": "^2.0.2",
