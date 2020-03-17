@@ -3,8 +3,6 @@ import i18next from 'i18next';
 import io from 'socket.io-client';
 import { TaskItem } from '../../../../src/lib/types/taskItem';
 
-import styles from '../../App.module.css';
-
 let socket = io();
 
 interface IProps {
@@ -33,12 +31,8 @@ class TasksEvent extends Component<IProps, IState> {
       this.setState({tasks:t});
 		});
 	}
-	componentWillUnmount() {
-	}
 
   render() {
-    console.log(this.state.tasks)
-
     let t = [];
     let tCount = 0;
     for(let i in this.state.tasks)
