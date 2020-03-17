@@ -58,7 +58,7 @@ async function displayPoll(winner?: number) {
 		? i18n.t('VOTE_MESSAGE_SCREEN_WINNER')
 		: i18n.t('VOTE_MESSAGE_SCREEN');
 	try {
-		await message('{\\fscx80}{\\fscy80}{\\b1}'+voteMessage+'{\\b0}\\N{\\fscx70}{\\fscy70}'+votes.join('\\N'), 1000000, 4);
+		await message('{\\fscx80}{\\fscy80}{\\b1}'+voteMessage+'{\\b0}\\N{\\fscx70}{\\fscy70}'+votes.join('\\N'), 10000000, 4);
 	} catch(err) {
 		throw err;
 	}
