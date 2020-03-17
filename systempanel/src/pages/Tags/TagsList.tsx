@@ -100,17 +100,14 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 	columns = [{
 		title: i18next.t('TAGS.NAME'),
 		dataIndex: 'name',
-		key: 'name',
 		render: name => name
 	}, {
 		title: i18next.t('TAGS.TYPES'),
 		dataIndex: 'types',
-		key: 'types',
 		render: types => types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}`)).join(', ')
 	}, {
 		title: i18next.t('TAGS.I18N'),
 		dataIndex: 'i18n',
-		key: 'i18n',
 		render: i18n_names => {
 			let names = [];
 			Object.keys(i18n_names).forEach((lang) => {
@@ -123,13 +120,11 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 					</Tag>
 				);
 				names.push(isLongTag ? (<Tooltip title={name} key={lang}>{tagElem}</Tooltip>) : tagElem);
-				return true;
 			});
 			return names;
 		}
 	}, {
 		title: i18next.t('ACTION'),
-		key: 'action',
 		render: (text, record) => (<span>
 			<Link to={`/system/km/tags/${record.tid}`}><Icon type='edit'/></Link>
 			<Divider type="vertical"/>

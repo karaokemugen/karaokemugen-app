@@ -75,7 +75,7 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 					<Layout.Content><Table
 						dataSource={this.state.series}
 						columns={this.columns}
-						rowKey='serie_id'
+						rowKey='sid'
 					/>
 					<Modal
 						title={i18next.t('SERIES.SERIE_DELETED_CONFIRM')}
@@ -98,12 +98,9 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 	columns = [{
 		title: i18next.t('TAGS.NAME'),
 		dataIndex: 'name',
-		key: 'name',
-		render: name => name
 	}, {
 		title: i18next.t('TAGS.ALIASES'),
 		dataIndex: 'aliases',
-		key: 'aliases',
 		render: aliases => {
 			let tags = [];
 			if (aliases) {
@@ -115,7 +112,6 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 						</Tag>
 					);
 					tags.push(isLongTag ? (<Tooltip title={alias} key={alias}>{tagElem}</Tooltip>) : tagElem);
-					return true;
 				});
 			}
 			return tags;
@@ -123,26 +119,23 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 	}, {
 		title: i18next.t('TAGS.I18N'),
 		dataIndex: 'i18n',
-		key: 'i18n',
 		render: i18n_names => {
 			let names = [];
 			i18n_names.forEach((i18n) => {
 				const isLongTag = i18n.name.length > 40;
 				const i18n_name = `[${i18n.lang.toUpperCase()}] ${i18n.name}`;
 				const tagElem = (
-					<Tag key={i18n} style={{margin: '2px'}}>
+					<Tag key={i18n_name} style={{margin: '2px'}}>
 						{isLongTag ? `${i18n_name.slice(0, 20)}...` : i18n_name}
 					</Tag>
 				);
 				names.push(isLongTag ? (<Tooltip title={i18n.name} key={i18n.lang}>{tagElem}</Tooltip>) : tagElem);
-				return true;
 			});
 			return names;
 		}
 	}, {
 		width: '100px',
 		title: i18next.t('ACTION'),
-		key: 'action',
 		render: (text, record) => (<span>
 			<Link to={`/system/km/series/${record.sid}`}><Icon type='edit'/></Link>
 			<Divider type="vertical"/>
