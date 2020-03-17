@@ -712,8 +712,33 @@ export async function initUserSystem() {
 async function userChecks() {
 	await createDefaultGuests();
 	await checkGuestAvatars();
+	await checkUserAvatars();
 	await checkCircledAvatars();
 	await cleanupAvatars();
+}
+
+/** Verifies that all avatars are > 0 bytes or exist. If they don't, recopy the blank avatar over them */
+async function checkUserAvatars() {
+	logger.debug('[User] Checking if all avatars exist');
+	const users = await listUsers();
+	const defaultAvatar = resolve(resolvedPathAvatars(), 'blank.png');
+	for (const user of users) {
+		const file = resolve(resolvedPathAvatars(), user.avatar_file);
+		if (!await asyncExists(file)) {
+			await asyncCopy(
+				defaultAvatar,
+				file,
+				{overwrite: true}
+			);
+		} else {
+			const stat = await asyncStat(file);
+			if (stat.size === 0) await asyncCopy(
+				defaultAvatar,
+				file,
+				{overwrite: true}
+			);
+		}
+	}
 }
 
 /** Verifies if all avatars have a circled version available */
