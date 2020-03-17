@@ -10,7 +10,7 @@ interface IProps {
 }
 
 interface IState {
-  tasks?: Array<TaskItem>;
+  tasks: Array<TaskItem>;
   i:number;
 }
 
@@ -25,22 +25,20 @@ class TasksEvent extends Component<IProps, IState> {
 
 	componentDidMount() {
 		socket.on('tasksUpdated', (tasks:Array<TaskItem>) => {
-      let t = this.state.tasks;
-			for(let i in tasks)
-      {
-        t[i] = tasks[i];
-        t[i].time = (new Date()).getTime();
-      }
-      this.setState({tasks:t});
-      setInterval(() => this.setState({i:this.state.i+1}), 1000)
+			let t = this.state.tasks;
+			for(let i in tasks)	{
+				t[i] = tasks[i];
+				t[i].time = (new Date()).getTime();
+			}
+			this.setState({tasks:t});
 		});
+		setInterval(() => this.setState({i:this.state.i+1}), 1000)
 	}
 
   render() {
     let t = [];
     let tCount = 0;
-    for(let i in this.state.tasks)
-    {
+    for(let i in this.state.tasks) {
       t.push(this.state.tasks[i])
     }
 

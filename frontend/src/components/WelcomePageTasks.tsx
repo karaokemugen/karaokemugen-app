@@ -12,7 +12,7 @@ interface IProps {
 }
 
 interface IState {
-  tasks?: Array<TaskItem>;
+  tasks: Array<TaskItem>;
   i:number;
 }
 
@@ -21,32 +21,26 @@ class WelcomePageTasks extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			tasks: [],
-      i:0;
+      		i:0
 		};
 	}
 
 	componentDidMount() {
 		getSocket().on('tasksUpdated', (tasks:Array<TaskItem>) => {
-      let t = this.state.tasks;
-			for(let i in tasks)
-      {
-        t[i] = tasks[i];
-        t[i].time = (new Date()).getTime();
-      }
-      this.setState({tasks:t});
-      setInterval(() => this.setState({i:this.state.i+1}), 1000)
+			let t = this.state.tasks;
+			for(let i in tasks)	{
+				t[i] = tasks[i];
+				t[i].time = (new Date()).getTime();
+			}
+			this.setState({tasks:t});
 		});
-	}
-	componentWillUnmount() {
+		setInterval(() => this.setState({i:this.state.i+1}), 1000)
 	}
 
   render() {
-    //console.log(this.state.tasks)
-
     let t = [];
     let tCount = 0;
-    for(let i in this.state.tasks)
-    {
+    for(let i in this.state.tasks) {
       t.push(this.state.tasks[i])
     }
 
