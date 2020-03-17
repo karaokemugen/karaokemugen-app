@@ -382,7 +382,7 @@ export async function getAllRemoteKaras(repository: string, params: KaraParams, 
 	if (repository) {
 		return getRemoteKaras(repository, params, compare);
 	} else {
-		const repos = getConfig().System.Repositories.filter(r => r.Online);
+		const repos = getConfig().System.Repositories.filter(r => r.Online && r.Enabled);
 		const tasks = [];
 		for (const repo of repos) {
 			tasks.push(getRemoteKaras(repo.Name, params, compare));
@@ -441,7 +441,7 @@ export async function getAllRemoteTags(repository: string, params: TagParams): P
 	if (repository) {
 		return getRemoteTags(repository, params);
 	} else {
-		const repos = getConfig().System.Repositories.filter(r => r.Online);
+		const repos = getConfig().System.Repositories.filter(r => r.Online && r.Enabled);
 		const tasks = [];
 		repos.forEach(repo => tasks.push(getRemoteTags(repo.Name, params)));
 		const allTags: TagList[] = await Promise.all(tasks);
