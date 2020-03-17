@@ -11,15 +11,6 @@
 	    100% { opacity: 0.5; }
 	}
 
-	@keyframes fadeout {
-		0% {
-			opacity: 1;
-		}
-		100% {
-			opacity: 0;
-		}
-	}
-
 	font-size: 0.8em;
 	display: flex;
 	flex-direction: column;
@@ -33,10 +24,6 @@
 		padding: .3em .5em;
 		margin: 0 0 .3em;
 		border-radius: 0.5em;
-		animation-name: fadeout;
-		animation-delay:5s;
-		animation-duration:1s;
-		animation-fill-mode:forwards;
 		.text {
 			font-size: 1em;
 			margin: 0;
@@ -50,6 +37,7 @@
 		.progress {
 			margin-top: 0.5em;
 			.progress-bar {
+				max-width: 100%;
 				background: rgba(#fff,0.5);
 				height:2px;
 				&.unknown {

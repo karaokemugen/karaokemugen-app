@@ -5,18 +5,23 @@ import { TaskItem } from '../../../src/lib/types/taskItem';
 
 require ('../styles/welcome/WelcomePageTasks.scss');
 
+
+
 interface IProps {
-  limit: number
+  limit: number;
 }
 
 interface IState {
   tasks?: Array<TaskItem>;
+  i:number;
 }
-class WelcomePage extends Component<IProps, IState> {
+
+class WelcomePageTasks extends Component<IProps, IState> {
 	constructor(props:IProps) {
 		super(props);
 		this.state = {
 			tasks: [],
+      i:0;
 		};
 	}
 
@@ -29,13 +34,14 @@ class WelcomePage extends Component<IProps, IState> {
         t[i].time = (new Date()).getTime();
       }
       this.setState({tasks:t});
+      setInterval(() => this.setState({i:this.state.i+1}), 1000)
 		});
 	}
 	componentWillUnmount() {
 	}
 
   render() {
-    console.log(this.state.tasks)
+    //console.log(this.state.tasks)
 
     let t = [];
     let tCount = 0;
@@ -47,16 +53,18 @@ class WelcomePage extends Component<IProps, IState> {
   	return (
       <div className="welcome-page-tasks-wrapper">
         {
-          t.map((item,i) => {
+          t.map((item,index) => {
             if(tCount>=this.props.limit) // no more than 3 tasks displayed
               return null;
 
-            if((new Date()).getTime() - item.item > 5000)
+            //console.log(item, (new Date()).getTime() - item.time)
+
+            if((new Date()).getTime() - item.time > 5000)
               return null;
 
             tCount++;
 
-            return (<blockquote key={i}>
+            return (<blockquote key={index}>
               <p className="text">
                 {i18next.t(item.text)}
                 <span className="subtext">{item.subtext}</span>
@@ -70,4 +78,4 @@ class WelcomePage extends Component<IProps, IState> {
   }
 }
 
-export default WelcomePage;
+export default WelcomePageTasks;
