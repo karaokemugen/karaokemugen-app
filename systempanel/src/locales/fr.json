@@ -311,5 +311,6 @@
 	"CLEANING_REPO": "Nettoyage des chansons supprimées du dépôt",
 	"UPDATING_REPO": "Mise à jour des chansons du dépôt",
 	"DOWNLOADING_REPO": "Ajout de chansons du dépôt",
-	"UPDATING_PLMEDIAS": "Mise à jour des médias de playlist..."
+	"UPDATING_PLMEDIAS": "Mise à jour des médias de playlist...",
+	"LOADING": "Chargement..."
 }
