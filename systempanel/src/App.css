@@ -75,3 +75,75 @@ select {
 .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open, .ant-menu-submenu-active {
     color: #5582bb;
 }
+
+
+@-webkit-keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+@keyframes fadeout {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.tasksEvent-wrapper {
+  padding: 0.5em;
+  position: fixed;
+  top: 5em;
+  right: 1em;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+.tasksEvent-wrapper  blockquote {
+  min-width: 300px;
+  background: rgba(255,255,255,.2);
+  color:#fff;
+  padding: .3em .5em;
+  margin: 0 0 .3em;
+  border-radius: 0.5em;
+  animation-name: fadeout;
+  animation-delay:5s;
+  animation-duration:1s;
+  animation-fill-mode:forwards;
+}
+.tasksEvent-wrapper  blockquote .text {
+  font-size: 1em;
+  margin: 0;
+  padding: 0;
+}
+.tasksEvent-wrapper  blockquote .subtext {
+  font-size: 0.8em;
+  opacity: 0.8;
+  margin-left: 0.5em;
+}
+.tasksEvent-wrapper  blockquote .progress {
+  margin-top: 0.5em;
+}
+.tasksEvent-wrapper  blockquote .progress .progress-bar {
+  background: rgba(255,255,255,0.5);
+  height:2px;
+}
+.tasksEvent-wrapper  blockquote .progress .progress-bar.unknown {
+  width: 100% !important;
+  -webkit-animation: pulse 1s infinite ease-in-out;
+  -o-animation: pulse 1s infinite ease-in-out;
+  -ms-animation: pulse 1s infinite ease-in-out;
+  -moz-animation: pulse 1s infinite ease-in-out;
+  animation: pulse 1s infinite ease-in-out;
+}

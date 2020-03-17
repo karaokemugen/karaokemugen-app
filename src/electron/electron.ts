@@ -73,15 +73,23 @@ function createWindow () {
 	win.show();
 	win.webContents.on('new-window', (event, url) => {
 		event.preventDefault();
-		getConfig().GUI.OpenInElectron
-		    ? win.loadURL(url)
-			: open(url);
+		openLink(url);
+	});
+	win.webContents.on('will-navigate', (event, url) => {
+		event.preventDefault();
+		openLink(url);
 	});
 
 	// What to do when the window is closed.
 	win.on('closed', () => {
 	  win = null;
 	});
+}
+
+function openLink(url) {
+	getConfig().GUI.OpenInElectron && url.indexOf('//localhost') != -1
+	? win.loadURL(url)
+	: open(url);
 }
 
 export function setProgressBar(number: number) {

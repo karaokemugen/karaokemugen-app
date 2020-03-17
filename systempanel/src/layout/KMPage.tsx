@@ -26,13 +26,14 @@ import SessionsEdit from '../pages/Sessions/SessionsEdit';
 import RepositoriesList from '../pages/Repositories/RepositoriesList';
 import RepositoriesEdit from '../pages/Repositories/RepositoriesEdit';
 import UnusedList from '../pages/UnusedList';
-
+import TasksEvent from '../pages/Components/TasksEvent';
 
 class KMPage extends Component<{}, {}> {
 	render() {
 		return (
       <Layout className={styles.pageLayout}>
         <KMHeader />
+        <TasksEvent limit={5} />
         <Switch>
           <Redirect from='/system/km' exact to='/system/km/home'></Redirect>
           <Route path='/system/km/home' component={Home}/>

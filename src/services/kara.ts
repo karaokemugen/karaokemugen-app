@@ -37,6 +37,7 @@ import { getSerie } from './series';
 import { writeSeriesFile } from '../lib/dao/seriesfile';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { getTag } from './tag';
+import { emitWS } from '../lib/utils/ws';
 
 /* Returns an array of unknown karaokes. If array is empty, all songs in "karas" are present in database */
 export async function isAllKaras(karas: string[]): Promise<string[]> {
@@ -100,6 +101,7 @@ export async function deleteKara(kid: string, refresh = true) {
 	if (!kara) throw `Unknown kara ID ${kid}`;
 	// Remove files
 	await deleteKaraDB(kid);
+	emitWS('statsRefresh');
 	try {
 		await asyncUnlink((await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]);
 	} catch(err) {
@@ -167,6 +169,7 @@ export async function updateTags(kara: Kara) {
 
 export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	await addKara(kara);
+	emitWS('statsRefresh');
 	await Promise.all([
 		updateSeries(kara),
 		updateTags(kara)

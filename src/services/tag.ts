@@ -13,6 +13,7 @@ import { replaceTagInKaras } from '../lib/dao/karafile';
 import { IDQueryResult } from '../lib/types/kara';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { resolve } from 'path';
+import { emitWS } from '../lib/utils/ws';
 
 export function formatTagList(tagList: Tag[], from: number, count: number) {
 	return {
@@ -53,7 +54,7 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 		writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0])
 	];
 	await Promise.all(promises);
-
+	emitWS('statsRefresh');
 	const tagData = formatTagFile(tagObj).tag;
 	tagData.tagfile = tagfile;
 	const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
@@ -173,6 +174,7 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 	const tag = await getTag(tid);
 	if (!tag) throw 'Tag ID unknown';
 	await removeTag(tid);
+	emitWS('statsRefresh');
 	const removes = [
 		removeTagFile(tag.tagfile),
 		removeTagInKaras(tid, await getAllKaras())
