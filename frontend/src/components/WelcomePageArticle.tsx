@@ -10,6 +10,7 @@ interface IState {
 	open: boolean;
 }
 class WelcomePageArticle extends Component<IProps, IState> {
+
 	constructor(props:IProps) {
 		super(props);
 		this.state = {
@@ -17,26 +18,30 @@ class WelcomePageArticle extends Component<IProps, IState> {
 		};
 	}
 
+	render() {
+		return (
+			<article
+				className="article-wrapper"
+				key={Math.random()}
+				data-open={this.state.open ? 1:0}
+				data-type={this.props.article.type}
+				onClick={() =>
+					this.setState({ open: !this.state.open })
+				}
+				>
+				<div className="article-header">
+					<b>{this.props.article.title}</b>
+					<a href={this.props.article.link}>
+						{this.props.article.dateStr}
+					</a>
+				</div>
+				<div className="article-body">
+					<div dangerouslySetInnerHTML={{ __html: this.props.article.html }} />
+				</div>
+			</article>
+		);
+	}
 
-  render() {
-  	return (<li
-		key={Math.random()}
-		className={this.state.open ? 'new open' : 'new'}
-		data-type={this.props.article.type}
-		onClick={() =>
-			this.setState({ open: !this.state.open })
-		}
-	>
-		<div className="new-header">
-			<b>{this.props.article.title}</b>
-			<a href={this.props.article.link}>
-				{this.props.article.dateStr}
-			</a>
-		</div>
-		<div dangerouslySetInnerHTML={{ __html: this.props.article.html }} />
-	</li>
-  	);
-  }
 }
 
 export default WelcomePageArticle;

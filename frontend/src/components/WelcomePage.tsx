@@ -5,8 +5,8 @@ import ProfilModal from './modals/ProfilModal';
 import LoginModal from './modals/LoginModal';
 import logo from '../assets/Logo-final-fond-transparent.png';
 import Autocomplete from './generic/Autocomplete';
-import { expand } from './tools';
 import ReactDOM from 'react-dom';
+import { getSocket } from './tools';
 import store from '../store';
 import OnlineStatsModal from './modals/OnlineStatsModal';
 import { Config } from '../../../src/types/config';
@@ -15,8 +15,10 @@ import { Session } from '../../../src/types/session';
 import { News } from '../types/news';
 import Switch from './generic/Switch';
 import WelcomePageArticle from './WelcomePageArticle';
+import WelcomePageTasks from './WelcomePageTasks';
+import { Repository } from '../../../src/lib/types/repo';
+
 require ('../styles/welcome/WelcomePage.scss');
-require('../styles/welcome/updateBanner.scss');
 
 interface IProps {
 	navigatorLanguage: string;
@@ -28,15 +30,17 @@ interface IState {
 	news: Array<News>;
 	sessions: Array<Session>;
 	activeSession?: Session;
-	latestVersion?: string;
-	catchphrase?: string
+	catchphrase?: string;
+	repositories: Array<Repository>;
+	stats?: any;
 }
 class WelcomePage extends Component<IProps, IState> {
 	constructor(props:IProps) {
 		super(props);
 		this.state = {
 			news: [],
-			sessions: []
+			sessions: [],
+			repositories: []
 		};
 		if (!store.getLogInfos() || !(store.getLogInfos() as Token).token) {
 			this.openLoginOrProfileModal();
@@ -49,24 +53,16 @@ class WelcomePage extends Component<IProps, IState> {
 		this.getCatchphrase();
 		this.getNewsFeed();
 		this.getSessions();
+		this.getRepositories();
+		this.getStats();
+		getSocket().on('statsRefresh', this.getStats);
 		store.addChangeListener('loginOut', this.openLoginOrProfileModal);
 		store.addChangeListener('loginUpdated', this.getSessions);
 	}
-
 	componentWillUnmount() {
 		store.removeChangeListener('loginOut', this.openLoginOrProfileModal);
 		store.removeChangeListener('loginUpdated', this.getSessions);
 	}
-
-  stopAppUpdates = () => {
-  	this.closeUpdateBanner();
-  	var data = expand('Online.Updates.App', false);
-  	axios.put('/api/settings', { setting: JSON.stringify(data) });
-  };
-
-  closeUpdateBanner = () => {
-  	this.setState({ latestVersion: undefined });
-  };
 
   getSessions = async () => {
   	if (store.getLogInfos() && (store.getLogInfos() as Token).role === 'admin') {
@@ -76,6 +72,20 @@ class WelcomePage extends Component<IProps, IState> {
   			activeSession: res.data.filter((valueSession:Session) => valueSession.active)[0]
 		  });
   	}
+  };
+
+  getRepositories = async () => {
+	const res = await axios.get('/api/repos');
+	this.setState({
+		repositories: res.data
+	});
+  };
+
+  getStats = async () => {
+	const res = await axios.get('/api/stats');
+	this.setState({
+		stats: res.data
+	});
   };
 
   setActiveSession = async (value:string) => {
@@ -205,119 +215,153 @@ class WelcomePage extends Component<IProps, IState> {
   		});
 	  }
   	return (
-  		<div id="welcomePage">
-  			{this.state.latestVersion ? (
-  				<div className="updateBanner">
-  					<div className="updateBanner--wrapper">
-  						<dl className="updateBanner--description">
-  							<dt>{i18next.t('UPDATE_BANNER_TITLE')}</dt>
-  							<dd className="updateBanner--message">
-  								{i18next.t('UPDATE_BANNER_MESSAGE', {
-  									actualVersion: store.getVersion().number
-  								})}
-  								<b> {this.state.latestVersion}</b>
-  							</dd>
-  							<dd className="updateBanner--download">
-  								<a href="http://mugen.karaokes.moe/blog.html">
-  									<i className="fas fa-download"></i> {i18next.t('UPDATE_BANNER_GET_IT')}
-  								</a>
-  							</dd>
-  						</dl>
-  						<div className="updateBanner--actions">
-  							<button type="button" data-action="later" onClick={this.closeUpdateBanner}>
-  								<i className="fas fa-stopwatch"></i> {i18next.t('UPDATE_BANNER_REMIND_ME_LATER')}
-  							</button>
-  							<button type="button" data-action="never" onClick={this.stopAppUpdates}>
-  								<i className="fas fa-bell-slash"></i> {i18next.t('UPDATE_BANNER_DONT_BOTHER_ME')}
-  							</button>
-  						</div>
-  					</div>
-  				</div>
-  			) : null}
-  			<div className="menu-top">
-				<div className="menu-top-left">
-					{logInfos && logInfos.role === 'admin' && sessions.length > 0 ? (
-						<React.Fragment>
-							<label className="menu-top-sessions-label">{i18next.t('ACTIVE_SESSION')}&nbsp;</label>
-							<Autocomplete
-								value={this.state.activeSession?.name}
-								options={sessions}
-								onChange={this.setActiveSession}
-								acceptNewValues={true}
-							/>
-							<label className="menu-top-sessions-label">{i18next.t('PRIVATE_SESSION')}&nbsp;</label>
-							<Switch handleChange={this.majPrivate} isChecked={this.state.activeSession?.private} />
-						</React.Fragment>
-					) : null}
-				</div>
-  				<div className="menu-top-right">
-  					<a href="http://mugen.karaokes.moe/contact.html">
-  						<i className="fas fa-pencil-alt" />&nbsp;
-  						{i18next.t('WLCM_CONTACT')}
-  					</a>
-  					<a href="http://mugen.karaokes.moe/">
-  						<i className="fas fa-link" />&nbsp;
-  						{i18next.t('WLCM_SITE')}
-  					</a>
-  					<a href="#" onClick={this.openLoginOrProfileModal}>
-  						<i className="fas fa-user" />&nbsp;
-  						<span>
-  							{logInfos && logInfos.token
-  								? decodeURIComponent(logInfos.username)
-  								: i18next.t('NOT_LOGGED')}
-  						</span>
-  					</a>
-  					{logInfos && logInfos.token ? (
-  						<a
-  							href="#"
-  							title={i18next.t('LOGOUT')}
-  							className="logout"
-  							onClick={() => {
-								store.logOut();
-								this.openLoginOrProfileModal();
-							  }}
-  						>
-  							<i className="fas fa-sign-out-alt" />&nbsp;
-  							<span>{i18next.t('LOGOUT')}</span>
-  						</a>
-  					) : null}
-  				</div>
-  			</div>
-			<div className="row">
-				<div className="logoDiv">
-					<img src={logo} alt="Logo Karaoke Mugen" />
-					<div className="separatorLogo" />
-					<div className="catchPhrase">{this.state.catchphrase}</div>
-				</div>
-				<div className="block menuWelcome">
-					<li className={`manage ${this.props.admpwd && this.props.config.App.FirstRun ? 'tutorial' : ''}`}
-						onClick={() => window.open('/admin' + window.location.search)}>
-						<i className={`fas ${this.props.admpwd && this.props.config.App.FirstRun ? 'fa-hand-point-right' : 'fa-list'}`} />
-						<div>
-							{this.props.admpwd && this.props.config.App.FirstRun ? i18next.t('WLCM_GETSTARTED') : i18next.t('WLCM_KARAMANAGER')}
-						</div>
+      <div id="welcomePage">
+        <div className="welcomePage--wrapper">
+
+          <div className="logo">
+            <img src={logo} alt="Logo Karaoke Mugen" />
+          </div>
+          <WelcomePageTasks limit={3}/>
+          <div className="aside">
+            <nav>
+              <ul>
+                <li><a href="http://mugen.karaokes.moe/contact.html"><i className="fas fa-pencil-alt" />{i18next.t('WLCM_CONTACT')}</a></li>
+                <li><a href="http://mugen.karaokes.moe/"><i className="fas fa-link" />{i18next.t('WLCM_SITE')}</a></li>
+                <li><a href="#" onClick={this.openLoginOrProfileModal}><i className="fas fa-user" /><span>{logInfos && logInfos.token ? decodeURIComponent(logInfos.username) : i18next.t('NOT_LOGGED')}</span></a></li>
+                <li>{
+                  logInfos && logInfos.token ? (
+                    <a
+                      href="#"
+                      title={i18next.t('LOGOUT')}
+                      className="logout"
+                      onClick={() => {
+                      store.logOut();
+                      this.openLoginOrProfileModal();
+                      }}
+                    ><i className="fas fa-sign-out-alt" /><span>{i18next.t('LOGOUT')}</span></a>
+                  ) : null
+                }</li>
+              </ul>
+            </nav>
+            <div className="session-setting">
+              {logInfos && logInfos.role === 'admin' && sessions.length > 0 ? (
+                <React.Fragment>
+                  <article className="active-session">
+                    <label className="menu-top-sessions-label">{i18next.t('ACTIVE_SESSION')}</label>
+                    <Autocomplete
+                      value={this.state.activeSession?.name}
+                      options={sessions}
+                      onChange={this.setActiveSession}
+                      acceptNewValues={true}
+                    />
+                  </article>
+                  <article className="private-session">
+                    <label className="menu-top-sessions-label">{i18next.t('PRIVATE_SESSION')}</label>
+                    <Switch handleChange={this.majPrivate} isChecked={this.state.activeSession?.private} />
+                  </article>
+                </React.Fragment>
+              ) : null}
+              </div>
+          </div>
+
+          <main className="main">
+
+            <section className="tiles-panel">
+              {
+                this.props.admpwd && this.props.config.App.FirstRun
+                ? <article className="tile-tutorial">
+                    <button type="button" onClick={() => window.open('/admin' + window.location.search)}>
+                      <i className="fas fa-hand-point-right" /><span>{i18next.t('WLCM_GETSTARTED')}</span>
+                    </button>
+                  </article>
+                : <article className="tile-manage">
+                  <button type="button" onClick={() => window.open('/admin' + window.location.search)}>
+                    <i className="fas fa-list" /><span>{i18next.t('WLCM_KARAMANAGER')}</span>
+                  </button>
+                </article>
+              }
+              <article className="tile-system">
+                <button type="button" onClick={() => window.open('/system')}>
+                  <i className="fas fa-cog" /><span>{i18next.t('WLCM_ADMINISTRATION')}</span>
+                </button>
+              </article>
+              <article className="tile-system">
+                <button type="button" onClick={() => window.open('/' + window.location.search)}>
+                  <i className="fas fa-user" /><span>{i18next.t('WLCM_PUBLIC')}</span>
+                </button>
+              </article>
+              <article className="tile-help">
+                <button type="button" onClick={() => window.open('https://mugen.karaokes.moe/docs/')}>
+                  <i className="fas fa-question-circle" /><span>{i18next.t('WLCM_HELP')}</span>
+                </button>
+              </article>
+              <article className="tile-download">
+                <button type="button" onClick={() => window.open('/system/km/karas/download')}>
+                  <i className="fas fa-download" /><span>{i18next.t('WLCM_DOWNLOAD')}</span>
+                </button>
+              </article>
+              <article className="tile-logs">
+                <button type="button" onClick={() => window.open('/system/km/log')}>
+                  <i className="fas fa-terminal" /><span>{i18next.t('WLCM_LOGS')}</span>
+                </button>
+              </article>
+              <article className="tile-stats">
+                <blockquote>
+                  <label>
+                    <i className="fas fa-chart-line" />{i18next.t('WLCM_STATS')}
+                  </label>
+                  <ul>
+                    <li onClick={() => window.open('/system/km/karas')}>
+						<strong>{i18next.t('WLCM_STATS_KARAS')}</strong>
+						<span>{this.state.stats?.karas}</span>
 					</li>
-					<li onClick={() => window.open('/system')}>
-						<i className="fas fa-cog" />
-						<div>{i18next.t('WLCM_ADMINISTRATION')}</div>
+                    <li onClick={() => window.open('/system/km/series')}>
+						<strong>{i18next.t('WLCM_STATS_SERIES')}</strong>
+						<span>{this.state.stats?.series}</span>
 					</li>
-					<li onClick={() => window.open('/' + window.location.search)}>
-						<i className="fas fa-user" />
-						<div>{i18next.t('WLCM_PUBLIC')}</div>
+                    <li onClick={() => window.open('/system/km/tags')}>
+						<strong>{i18next.t('WLCM_STATS_TAGS')}</strong>
+						<span>{this.state.stats?.tags}</span>
 					</li>
-					<li	onClick={() => window.open('https://mugen.karaokes.moe/docs/')}>
-						<i className="fas fa-question-circle" />
-						<div>{i18next.t('WLCM_HELP')}</div>
-					</li>
-				</div>
-				<div className="block">
-					{this.state.news.map(article => {
-						return (
-							<WelcomePageArticle key={article.date} article={article} />
-						);
-					})}
-				</div>
-  			</div>
+                  </ul>
+                </blockquote>
+              </article>
+              <article className="tile-repositories">
+                <blockquote>
+                  <button type="button" onClick={() => window.open('/system/km/repositories')}>
+                    <i className="fas fa-network-wired" />{i18next.t('WLCM_REPOSITORY')}
+                  </button>
+                  <ul>
+					  {this.state.repositories.map(repository => {
+						  return (
+							<li key={repository.Name} className={repository.Enabled ? '' : 'disabled'}
+								onClick={() => window.open(`/system/km/repositories/${repository.Name}`)}>
+								<i className={`fas ${repository.Online ? " fa-globe" : "fa-laptop"}`} />
+								<span>{repository.Name}</span>
+							</li>
+						  );
+					  })}
+                  </ul>
+                </blockquote>
+              </article>
+            </section>
+
+            <section className="feed-panel">
+              <header>
+                <p>{this.state.catchphrase}</p>
+              </header>
+              <div>
+                {this.state.news.map(article => {
+                  return (
+                    <WelcomePageArticle key={article.date} article={article} />
+                  );
+                })}
+              </div>
+            </section>
+
+          </main>
+
+        </div>
   		</div>
   	);
   }

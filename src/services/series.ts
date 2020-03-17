@@ -13,6 +13,7 @@ import { saveSetting } from '../lib/dao/database';
 import {getDataFromSeriesFile} from '../lib/dao/seriesfile';
 import { removeSerieInKaras, getAllKaras } from './kara';
 import { resolvedPathRepos } from '../lib/utils/config';
+import { emitWS } from '../lib/utils/ws';
 
 /** Get all series */
 export async function getSeries(params: KaraParams) {
@@ -56,6 +57,7 @@ export async function deleteSerie(sid: string) {
 	const serie = await testSerie(sid);
 	if (!serie) throw 'Series ID unknown';
 	await removeSerie(sid);
+	emitWS('statsRefresh');
 	await Promise.all([
 		refreshSeries(),
 		removeSeriesFile(serie.seriefile),
@@ -82,6 +84,7 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 	const seriefile = serieObj.seriefile;
 
 	await insertSerie(serieObj);
+	emitWS('statsRefresh');
 	await Promise.all([
 		insertSeriei18n(serieObj),
 		writeSeriesFile(serieObj, resolvedPathRepos('Series', serieObj.repository)[0])

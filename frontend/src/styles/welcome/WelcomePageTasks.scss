@@ -1,0 +1,66 @@
+.welcome-page-tasks-wrapper {
+	@-webkit-keyframes pulse {
+	    0% { opacity: 0.5; }
+	    50% { opacity: 1; }
+	    100% { opacity: 0.5; }
+	}
+
+	@keyframes pulse {
+	    0% { opacity: 0.5; }
+	    50% { opacity: 1; }
+	    100% { opacity: 0.5; }
+	}
+
+	@keyframes fadeout {
+		0% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+
+	font-size: 0.8em;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	pointer-events: none;
+	blockquote {
+		width: 90%;
+		background: rgba(0,0,0,0.2);
+		color:#fff;
+		padding: .3em .5em;
+		margin: 0 0 .3em;
+		border-radius: 0.5em;
+		animation-name: fadeout;
+		animation-delay:5s;
+		animation-duration:1s;
+		animation-fill-mode:forwards;
+		.text {
+			font-size: 1em;
+			margin: 0;
+			padding: 0;
+		}
+		.subtext {
+			font-size: 0.8em;
+			opacity: 0.8;
+			margin-left: 0.5em;
+		}
+		.progress {
+			margin-top: 0.5em;
+			.progress-bar {
+				background: rgba(#fff,0.5);
+				height:2px;
+				&.unknown {
+					width: 100% !important;
+					-webkit-animation: pulse 1s infinite ease-in-out;
+					-o-animation: pulse 1s infinite ease-in-out;
+					-ms-animation: pulse 1s infinite ease-in-out;
+					-moz-animation: pulse 1s infinite ease-in-out;
+					animation: pulse 1s infinite ease-in-out;
+				}
+			}
+		}
+	}
+}

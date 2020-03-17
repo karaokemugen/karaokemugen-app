@@ -29,7 +29,7 @@ export default function repoController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+		.get(requireNotDemo, async (_req: any, res: any) => {
 			try {
 				const repos = getRepos();
 				res.json(repos);

@@ -2,6 +2,7 @@
 
 export const getStats = `
 SELECT
+(SELECT COUNT(pk_tid) FROM tag)::integer AS tags,
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[2])::integer AS singers,
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[8])::integer AS songwriters,
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[4])::integer AS creators,
