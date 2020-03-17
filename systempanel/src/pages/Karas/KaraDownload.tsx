@@ -132,7 +132,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			mediafile: kara.mediafile,
 			size: kara.mediasize,
 			name: kara.name,
-			repository: kara.repo
+			repository: kara.repository
 		};
 		postToDownloadQueue([downloadObject]);
 		this.api_read_kara_queue();
@@ -348,14 +348,14 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 								/>
 							</Col>
 							<Col span={5}>
-								<Cascader style={{ width: '90%' }} options={this.FilterTagCascaderOption()} 
-									showSearch={{filter:this.FilterTagCascaderFilter,matchInputWidth:false}} 
+								<Cascader style={{ width: '90%' }} options={this.FilterTagCascaderOption()}
+									showSearch={{filter:this.FilterTagCascaderFilter,matchInputWidth:false}}
 									onChange={this.handleFilterTagSelection.bind(this)} placeholder={i18next.t('KARA.TAG_FILTER')} />
 							</Col>
 						</Row>
 						<Row style={{ paddingTop: '20px'}} type="flex">
 							<Col span={11}>
-								<Button style={{width: '230px'}} type="primary" key="synchronize" 
+								<Button style={{width: '230px'}} type="primary" key="synchronize"
 									onClick={() => postSyncToDownloadQueue()}>{i18next.t('KARA.SYNCHRONIZE')}</Button>
 								&nbsp;
 								{i18next.t('KARA.SYNCHRONIZE_DESC')}
@@ -369,13 +369,13 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 						</Row>
 						<Row style={{ paddingTop: '5px'}} type="flex">
 							<Col span={11}>
-								<Button style={{width: '230px'}} type="primary" key="queueDownloadAll" 
+								<Button style={{width: '230px'}} type="primary" key="queueDownloadAll"
 									onClick={() => postAllToDownloadQueue()}>{i18next.t('KARA.DOWNLOAD_ALL')}</Button>
 								&nbsp;
 								{i18next.t('KARA.DOWNLOAD_ALL_DESC')}
 							</Col>
 							<Col span={9}>
-								<Radio checked={this.state.compare === ''} 
+								<Radio checked={this.state.compare === ''}
 										onChange={async () => {
 											await this.setState({compare: ''});
 											this.api_get_online_karas();
@@ -394,7 +394,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 								{i18next.t('KARA.UPDATE_ALL_DESC')}
 							</Col>
 							<Col span={9}>
-								<Radio checked={this.state.compare === '&compare=updated'} 
+								<Radio checked={this.state.compare === '&compare=updated'}
 										onChange={async () => {
 											await this.setState({compare: '&compare=updated'});
 											this.api_get_online_karas();
@@ -413,7 +413,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 								{i18next.t('KARA.CLEAN_ALL_DESC')}
 							</Col>
 							<Col span={9}>
-								<Radio checked={this.state.compare === '&compare=missing'} 
+								<Radio checked={this.state.compare === '&compare=missing'}
 										onChange={async () => {
 											await this.setState({compare: '&compare=missing'});
 											this.api_get_online_karas();
@@ -508,7 +508,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		dataIndex: 'repository',
 		key: 'repository',
 	}, {
-		title: <span><Button title={i18next.t('KARA.DOWNLOAD_ALL_TOOLTIP')} type="default" 
+		title: <span><Button title={i18next.t('KARA.DOWNLOAD_ALL_TOOLTIP')} type="default"
 			onClick={this.downloadAll.bind(this)}><Icon type='download'/></Button>{i18next.t('KARA.DOWNLOAD')}
 			</span>,
 		key: 'download',
