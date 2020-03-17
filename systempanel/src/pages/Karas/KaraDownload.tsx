@@ -296,7 +296,6 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	};
 
 	handleFilterTagSelection = (value) => {
-		//console.log(value);
 		let t = '';
 		if(value && value[1])
 			t = 't:'+value[1]+'~'+value[0]

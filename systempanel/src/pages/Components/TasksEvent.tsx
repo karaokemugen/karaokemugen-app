@@ -19,7 +19,7 @@ class TasksEvent extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			tasks: [],
-      i:0;
+      		i: 0
 		};
 	}
 
@@ -50,8 +50,6 @@ class TasksEvent extends Component<IProps, IState> {
           t.map((item,index) => {
             if(tCount>=this.props.limit) // no more than 3 tasks displayed
               return null;
-
-            //console.log(item, (new Date()).getTime() - item.time)
 
             if((new Date()).getTime() - item.time > 5000)
               return null;
