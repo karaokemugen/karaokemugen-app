@@ -258,7 +258,10 @@ export function setSongPoll(enabled: boolean) {
 	setState({songPoll: enabled});
 	if (!oldState && enabled) startPoll();
 	if (oldState && !enabled) {
-		if (getConfig().Karaoke.StreamerMode.Enabled) displayInfo();
+		if (getConfig().Karaoke.StreamerMode.Enabled) {
+			logger.debug('[Player] SongPoll Toggle DI')
+			displayInfo();
+		}
 		stopPoll();
 	}
 }

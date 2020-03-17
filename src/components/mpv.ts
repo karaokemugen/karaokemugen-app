@@ -285,6 +285,7 @@ async function startmpv() {
 	}
 
 	await loadBackground();
+	logger.debug('[Player] Initial DI');
 	displayInfo();
 	player.observeProperty('sub-text', 13);
 	player.observeProperty('playtime-remaining', 14);
@@ -354,7 +355,10 @@ async function startmpv() {
 		// Display KM's banner if position reaches halfpoint in the song
 		if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
 		!displayingInfo &&
-		playerState.mediaType === 'song' && !getState().songPoll) displayInfo(8000);
+		playerState.mediaType === 'song' && !getState().songPoll) {
+			logger.debug('[Player] Middle of song DI');
+			displayInfo(8000);
+		}
 		// Stop poll if position reaches 10 seconds before end of song
 		if (Math.floor(position) >= Math.floor(playerState.duration - 10) &&
 		playerState.mediaType === 'song' &&
@@ -527,6 +531,7 @@ export async function stop(): Promise<PlayerState> {
 		throw err;
 	}
 	await loadBackground();
+	logger.debug('[Player] Stop DI');
 	if (!getState().songPoll) displayInfo();
 	setState({player: playerState});
 	setProgressBar(-1);
@@ -659,6 +664,7 @@ export async function message(message: string, duration: number = 10000, alignCo
 	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
 	if (playerState.playing === false) {
 		await sleep(duration);
+		logger.debug('[Player] AfterMessage DI');
 		displayInfo();
 	}
 }
@@ -797,6 +803,7 @@ export async function playMedia(mediaType: MediaType) {
 		logger.debug(`[Player] No ${mediaType} to play.`);
 		playerState.playerstatus = 'play';
 		loadBackground();
+		logger.debug('[Player] No jingle DI')
 		displayInfo();
 		playerState._playing = true;
 		emitPlayerState();

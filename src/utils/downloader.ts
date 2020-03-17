@@ -40,7 +40,7 @@ export default class Downloader {
 		this.onEnd = null;
 		this.task = this.opts.task;
 		this.q = new Queue(this._queueDownload, this.queueOptions);
-		if (opts.bar)	this.bar = new _cliProgress.Bar({
+		if (opts.bar) this.bar = new _cliProgress.Bar({
 				format:  'Downloading {bar} {percentage}% {value}/{total} Mb',
 				stopOnComplete: true
 		}, _cliProgress.Presets.shades_classic);
@@ -126,8 +126,7 @@ export default class Downloader {
 					}
 					this.task.update({
 						value: value
-					})
-
+					});
 				})
 				.on('error', (err: any) => {
 					if (this.opts.bar) {
