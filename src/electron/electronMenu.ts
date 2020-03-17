@@ -31,7 +31,7 @@ export async function initMenu() {
 		systemOptions: `${base}:${port}/system/km/config`,
 		home: `${base}:${port}/welcome`,
 		operator: `${base}:${port}/admin`,
-		public: `${base}:${port}/public`,
+		public: `${base}:${port}/`,
 		system: `${base}:${port}/system`,
 		logs: `${base}:${port}/system/km/log`,
 		download: `${base}:${port}/system/km/karas/download`,
