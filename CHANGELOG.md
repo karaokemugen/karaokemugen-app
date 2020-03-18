@@ -23,8 +23,10 @@ platforms (#533)
   - You can have multiple repositories in your Karaoke Mugen
   - By default you have a "kara.moe" repository and a "Local" one. The Local one is for your own songs that you don't necessarily want to share with the community through kara.moe.
   - You can add, remove, or edit repositories, if for example someone adds a new song database completely foreign to kara.moe.
+  - Repositories can be enabled or disabled depending on the situation. A disabled repository won't be taken into account when generating database or updating stuff.
   - A "Consolidate repository" button allows to move repositories' contents to a new folder (like on a external hard drive) (#569)
 - Users are notified when their song is going to play as soon as they add it (#564)
+- When streaming Karaoke Mugen to twitch, song polls will be sent to the twitch chat as well so users can vote for it as soon as it is happening, to avoid polls ending sooner without users being able to vote for it due to stream lag (#602)
 
 ### Improvements
 
@@ -33,6 +35,7 @@ platforms (#533)
 - Various improvements have been made to the system panel, especially its navigation and to download manager (#579)
 - mpv (player) logs have been moved to the logs/ directory (#574)
 - Logs are in JSON format now which allows a standardized display in the control panel logs. Logs are now updated in real time on that page (#567)
+- Login is now shared between the system panel and frontend (#594)
 
 ### Fixes
 
