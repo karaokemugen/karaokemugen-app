@@ -248,7 +248,7 @@ class LoginModal extends Component<IProps,IState> {
     								}
     								<div>
     									<button type="button" className="btn btn-default login" onClick={this.loginUser}>
-    										<i className="fas fa-check"></i>
+											{i18next.t('LOG_IN')}
     									</button>
     								</div>
     							</div> :
