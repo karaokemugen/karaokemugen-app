@@ -6,6 +6,7 @@ import { is_touch_device } from '../tools';
 import PropTypes from 'prop-types';
 import ReactJoyride, { ACTIONS, EVENTS, STATUS, Step } from 'react-joyride';
 import LoginModal from './LoginModal';
+import store from '../../store';
 
 
 export function i18nAsDiv(key:string, args?:any) {
@@ -49,16 +50,19 @@ class Tutorial extends Component<IProps,IState> {
 					content: i18nAsDiv('INTRO_ADMIN_INTRO2'),
 					styles: {
 						buttonNext: {
-							// backgroundColor: 'transparent',
-                            // color: 'hsla(0, 100%, 100%, .5)'
                             display: 'none'
 						}
 					},
-				}, 
+				},
 				{
 					target: 'body',
 					placement: 'center',
-					content:i18nAsDiv('INTRO_ADMIN_INTRO3', { username : '' }), 
+					content:i18nAsDiv('INTRO_ADMIN_EMAIL_ONLINE'), 
+				},
+				{
+					target: 'body',
+					placement: 'center',
+					content:i18nAsDiv('INTRO_ADMIN_INTRO3'), 
 				},
 				{ 
 					placement:'bottom',
@@ -91,7 +95,6 @@ class Tutorial extends Component<IProps,IState> {
 					content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON'),
 					hideFooter: true,
 				},
-
 				{ 
 					placement:'left',
 					target:'#panel2',
@@ -116,10 +119,15 @@ class Tutorial extends Component<IProps,IState> {
 				{ 
 					placement:'center',
 					target:'.panel.col-lg-8.modalPage',
+					content: i18nAsDiv('INTRO_ADMIN_INTRO_DOWNLOAD'),
+				},
+				{ 
+					placement:'center',
+					target:'.panel.col-lg-8.modalPage',
 					content: i18nAsDiv('INTRO_ADMIN_INTROFINAL'),
 				}]
-				:   // public tuto
-				[{
+				:   // public tuto mobile
+				is_touch_device() ? [{
 					label: 'preLogin',
 					placement: isSmall ? 'bottom' : 'right',
 					target: '#nav-login > .modal-message:not(.tour)',
@@ -131,20 +139,6 @@ class Tutorial extends Component<IProps,IState> {
 							display: 'none',
 						},
 					}
-				},{
-					target: 'body',
-					placement: 'center',
-					content: i18nAsDiv('INTRO_PUBLIC_INTRO2', { username : '' }), 
-				},
-				{ 
-					placement: 'auto',
-					target: '#progressBar',
-					content: i18nAsDiv('INTRO_PUBLIC_PROGRESSBAR')
-				},
-				{ 
-					placement: 'auto',
-					target: '.KmAppHeaderDecorator',
-					content: i18nAsDiv('INTRO_PUBLIC_SEARCH')
 				},
 				{ 
 					placement: 'auto',
@@ -171,30 +165,6 @@ class Tutorial extends Component<IProps,IState> {
 					content: i18nAsDiv('INTRO_PUBLIC_FOOTER')
 				},
 				{ 
-					placement: 'right',
-					target: '.searchMenuButton',
-					content: i18nAsDiv('INTRO_PUBLIC_FAVORITES')
-				},
-				{
-					target: '.side1Button',
-					label: 'change_screen',
-					placement: 'auto',
-					content: i18nAsDiv('INTRO_PUBLIC_CHANGE_SCREEN'),
-					disableOverlay: true,
-					tooltipClass : is_touch_device() ? 'hideNext' : '',
-					styles: {
-						buttonNext: {
-							display: is_touch_device() ? 'none' : '',
-						}
-					}
-                    
-				},{
-					target: '#playlist',
-					label: 'playlists',
-					placement: 'auto',
-					content: i18nAsDiv('INTRO_PUBLIC_PLAYLISTS'), 
-				},
-				{ 
 					label: 'public_menu',
 					placement: 'auto',
 					target: '.mobileActions > ul',
@@ -206,19 +176,147 @@ class Tutorial extends Component<IProps,IState> {
 					},
 					disableOverlay: true,
 				},
+				{ 
+					label: 'public_menu2',
+					placement: 'auto',
+					target: '.mobileActions > ul',
+					content: i18nAsDiv('INTRO_PUBLIC_MENU_2'),
+					styles: {
+						tooltip: {
+							width: 'calc(100vw - 128px)',
+						},
+					},
+					disableOverlay: true,
+				},
+				{
+					placement: 'auto',
+					target: '#progressBar',
+					content: i18nAsDiv('INTRO_PUBLIC_PROGRESSBAR')
+				},
+				{ 
+					placement: 'auto',
+					target: '.plSearch',
+					content: i18nAsDiv('INTRO_PUBLIC_SEARCH')
+				},
+				{ 
+					placement: 'right',
+					target: '.searchMenuButton',
+					content: i18nAsDiv('INTRO_PUBLIC_FAVORITES')
+				},
+				{
+					target: '.side1Button',
+					label: 'change_screen',
+					placement: 'auto',
+					content: i18nAsDiv('INTRO_PUBLIC_CHANGE_SCREEN'),
+					disableOverlay: true,
+					tooltipClass : 'hideNext',
+					styles: {
+						buttonNext: {
+							display: 'none',
+						}
+					}
+				},
+				{
+					target: '#playlist',
+					label: 'playlists',
+					placement: 'auto',
+					content: store.getConfig().Karaoke.Private ? i18nAsDiv('INTRO_PUBLIC_PLAYLISTS') : i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE'), 
+				},
 				{
 					target: '.side2Button',
 					label: 'change_screen2',
 					placement: 'auto',
 					content: i18nAsDiv('INTRO_PUBLIC_CHANGE_SCREEN2'),
 					disableOverlay: true,
-					tooltipClass : is_touch_device() ? 'hideNext' : '',
+					tooltipClass : 'hideNext',
 					styles: {
 						buttonNext: {
-							display: is_touch_device() ? 'none' : '',
+							display: 'none',
 						}
 					}
-				},{
+				},
+				{
+					target: 'body',
+					label: 'last',
+					tooltipClass : 'hideNext',
+					placement: 'center',
+					content: i18nAsDiv('INTRO_PUBLIC_LAST'), 
+				}
+				] :
+				// public non mobile
+				[{
+					label: 'preLogin',
+					placement: isSmall ? 'bottom' : 'right',
+					target: '#nav-login > .modal-message:not(.tour)',
+					content: i18nAsDiv('INTRO_PUBLIC_INTRO1'), 
+					disableOverlay: true,
+					disableBeacon: true,
+					styles: {
+						buttonNext: {
+							display: 'none',
+						},
+					}
+				},
+				{ 
+					placement: 'auto',
+					target: '#panel1',
+					content: i18nAsDiv('INTRO_PUBLIC_SEARCHRESULT')
+				},
+				{ 
+					placement: 'auto',
+					target: '.plFooter',
+					content: i18nAsDiv('INTRO_PUBLIC_KARA_WIDE'),
+					disableOverlay: true,
+					label: 'karadetails'
+				},
+				{
+					target: '.plFooter',
+					disableOverlay: true,
+					placement: 'auto',
+					content: i18nAsDiv('INTRO_PUBLIC_KARADETAILS')
+				},
+				{ 
+					placement: 'auto',
+					target: '.plFooter',
+					label: "publicFooter",
+					content: i18nAsDiv('INTRO_PUBLIC_FOOTER')
+				},
+				{
+					placement: 'auto',
+					target: '#progressBar',
+					content: i18nAsDiv('INTRO_PUBLIC_PROGRESSBAR')
+				},
+				{ 
+					label: 'public_menu_pc',
+					placement: 'auto',
+					target: '.buttonsNotMobile > ul',
+					content: i18nAsDiv('INTRO_PUBLIC_MENU_PC'),
+					disableOverlay: true,
+				},
+				{ 
+					label: 'public_menu2',
+					placement: 'auto',
+					target: '.switchParent',
+					content: i18nAsDiv('INTRO_PUBLIC_MENU_PC_2'),
+					disableOverlay: true,
+				},
+				{ 
+					placement: 'auto',
+					target: '.plSearch',
+					content: i18nAsDiv('INTRO_PUBLIC_SEARCH')
+				},
+				{ 
+					placement: 'right',
+					target: '.searchMenuButton',
+					content: i18nAsDiv('INTRO_PUBLIC_FAVORITES')
+				},
+				{
+					target: '#panel2',
+					label: 'playlists',
+					placement: 'auto',
+					content: store.getConfig().Karaoke.Private ? i18nAsDiv('INTRO_PUBLIC_PLAYLISTS') : i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE'), 
+				},
+				{
 					target: 'body',
 					label: 'last',
 					tooltipClass : 'hideNext',
@@ -284,10 +382,14 @@ class Tutorial extends Component<IProps,IState> {
     	if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as Array<string>).includes(type)) {
     		// Update state to advance the tour
     		if(this.state.steps[index + 1] && this.state.steps[index + 1].label === 'public_menu') {
-    			(document.getElementsByClassName('klogo')[0] as HTMLButtonElement).click();
+    			(document.getElementById('menuMobile') as HTMLButtonElement).click();
+    		} else if(this.state.steps[index + 1] && this.state.steps[index + 1].label === 'public_menu_pc') {
+    			(document.getElementById('menuPC') as HTMLButtonElement).click();
     		}
-    		if(this.state.steps[index].label === 'public_menu') {
-    			(document.getElementsByClassName('klogo')[0] as HTMLButtonElement).click();
+    		if(this.state.steps[index].label === 'public_menu2') {
+    			(document.getElementById('menuMobile') as HTMLButtonElement).click();
+    		} else if(this.state.steps[index].label === 'public_menu_pc') {
+    			(document.getElementById('menuPC') as HTMLButtonElement).click();
     		}
     		this.setState({ stepIndex: index + (action === ACTIONS.PREV ? -1 : 1) });
     	}

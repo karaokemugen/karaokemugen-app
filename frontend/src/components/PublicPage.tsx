@@ -203,7 +203,7 @@ class PublicPage extends Component<IProps,IState> {
 	};
 
 	closeMobileMenu = () => {
-		this.setState({ mobileMenu: false })
+		this.setState({ mobileMenu: false, dropDownMenu: false })
 	}
 
   render() {
@@ -324,14 +324,11 @@ class PublicPage extends Component<IProps,IState> {
 													</a>
 												</li>
 												<li>
-													<a href="/admin" id="logAdmin">
-														<i className="fas fa-wrench" /> Admin
-												</a>
-												</li>
-												<li>
-													<a href="#" onClick={() =>
-														ReactDOM.render(<HelpModal />, document.getElementById('modal'))}>
-														<i className="fas fa-info-circle" />&nbsp;
+													<a href="#" onClick={() => {
+															this.closeMobileMenu();
+															ReactDOM.render(<HelpModal />, document.getElementById('modal'))
+														}}>
+														<i className="fas fa-question-circle" />&nbsp;
 													{i18next.t('HELP')}
 													</a>
 												</li>
@@ -441,6 +438,7 @@ class PublicPage extends Component<IProps,IState> {
 					<div className="fixed-action-btn right mobileActions">
 						<a
 							className="btn-floating btn-large waves-effect z-depth-3 klogo"
+							id="menuMobile"
 							onClick={() =>
 								this.setState({ mobileMenu: !this.state.mobileMenu })
 							}
@@ -509,9 +507,9 @@ class PublicPage extends Component<IProps,IState> {
 										onClick={this.setLyrics}
 									>
 										{this.state.lyrics ? (
-											<i className="fas fa-cc lyrics" />
+											<i className="fas fa-closed-captioning"/>
 										) : (
-											<i className="fas fa-info-circle infos" />
+											<i className="fas fa-info-circle" />
 										)}
 									</a>
 								</li>

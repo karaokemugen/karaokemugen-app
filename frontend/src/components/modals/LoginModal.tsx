@@ -201,7 +201,7 @@ class LoginModal extends Component<IProps,IState> {
     									<React.Fragment>
     										<div style={{height: '60px'}}>
     											<button className="btn btn-default tour" onClick={() => startIntro('public')}>
-													{localStorage.getItem('publicTuto') ? i18next.t('FIRST_PUBLIC_RUN_WELCOME') : i18next.t('FOLLOW_TOUR')}
+													{i18next.t('FOLLOW_TOUR')}
     											</button>
     										</div>
     										<div>
