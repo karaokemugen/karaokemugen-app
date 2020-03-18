@@ -144,7 +144,7 @@ export default function blacklistController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * "BLC_VIEW_ERROR"
 	 */
-			.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, requireAdmin, async (_req: any, res: any) => {
+			.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
 				if (getConfig().Frontend.Permissions.AllowViewBlacklistCriterias) {
 					try {
 						const blc = await getBlacklistCriterias();
