@@ -230,7 +230,7 @@ export async function initMenu() {
 				},
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG'),
-					accelerator: 'CmdOrCtrl+C',
+					accelerator: 'CmdOrCtrl+R',
 					click() {
 						isOpenElectron()
 							? win.loadURL(urls.operatorOptions)
