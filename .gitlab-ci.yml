@@ -27,11 +27,6 @@ test:
   variables:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi
-  artifacts:
-    expire_in: 2 hours
-    name: km-app-test-${CI_COMMIT_REF_SLUG}
-    paths:
-    - dist/
   script:
     - yarn install --cache-folder .yarn
     - touch mpv
@@ -49,8 +44,6 @@ test:
 
 build-react:
   stage: build
-  dependencies:
-    - test
   interruptible: true
   artifacts:
     expire_in: 2 hours
