@@ -7,7 +7,7 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "startNoElectron": "yarn build && node dist/index.js",
+    "startNoElectron": "ts-node src/index.ts",
     "start": "yarn build && electron .",
     "startFrontend": "cd frontend && yarn dev",
     "buildFrontend": "cd frontend && yarn build",
