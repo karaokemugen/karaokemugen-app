@@ -60,6 +60,7 @@ build-react:
     - dist/
     - frontend/build/
   script:
+    - yarn build
     - yarn installSystemPanel
     - yarn installFrontend
     - yarn buildSystemPanel
