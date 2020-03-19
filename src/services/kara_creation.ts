@@ -51,11 +51,6 @@ export async function editKara(kara: Kara) {
 		if (!kara.mediafile_orig) {
 			kara.noNewVideo = true;
 			kara.mediafile_orig = kara.mediafile;
-			try {
-				await asyncCopy(mediaFile, resolve(resolvedPathTemp(), kara.mediafile), {overwrite: true});
-			} catch(err) {
-				logger.warn(`[KaraGen] Unable to copy ${mediaFile} to temp directory: ${err}`);
-			}
 		}
 		if (!kara.subfile_orig) {
 			kara.subfile_orig = kara.subfile;
@@ -80,10 +75,13 @@ export async function editKara(kara: Kara) {
 			}
 		}
 		if (newKara.data.mediafile.toLowerCase() !== oldKara.mediafile.toLowerCase()) {
-			const oldMediaFiles = await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository));
-			if (await asyncExists(oldMediaFiles[0])) {
+			try {
+				const oldMediaFiles = await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository));
 				logger.info(`[KaraGen] Removing ${oldMediaFiles[0]}`);
 				await asyncUnlink(oldMediaFiles[0]);
+			} catch(err) {
+				logger.warn(`[KaraGen] Unable to remove old mediafile ${oldKara.mediafile}: ${err}`);
+				// Non-fatal
 			}
 		}
 	} catch(err) {
