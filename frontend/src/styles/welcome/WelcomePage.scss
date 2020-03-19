@@ -52,8 +52,11 @@
 				list-style: none;
 				li {
 					margin-right: 1em;
-					i {
-						margin-right: 0.5em;
+					a {
+						text-decoration: none;
+						i {
+							margin-right: 0.5em;
+						}
 					}
 				}
 			}
@@ -81,7 +84,6 @@
 					width: 240px;
 					input {
 						text-align: center;
-						border-radius: 2em;
 					}
 				}
 			}
@@ -116,6 +118,7 @@
 				justify-content: center;
 				border: 1px solid rgba(#fff,0.5);
 				margin: 0 .5em .5em 0;
+				font-size: 1.5vmax;
 				> button {
 					background: rgba(#fff,0.2);
 					border: none;
