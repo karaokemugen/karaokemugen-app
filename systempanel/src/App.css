@@ -94,7 +94,7 @@ select {
   position: fixed;
   top: 5em;
   right: 1em;
-
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -103,7 +103,7 @@ select {
 }
 .tasksEvent-wrapper  blockquote {
   min-width: 300px;
-  background: rgba(255,255,255,.2);
+  background: #454545;
   color:#fff;
   padding: .3em .5em;
   margin: 0 0 .3em;
