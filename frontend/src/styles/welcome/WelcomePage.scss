@@ -21,6 +21,14 @@
 	grid-template-areas:
 		"logo tasks aside"
 		"main main main";
+		
+	@media (max-width:1000px) {
+		grid-template-columns: 200px auto;
+		grid-template-rows: 100px auto;
+		grid-template-areas:
+			"logo aside"
+			"main main";
+	}
 
 	a {
 		color:inherit;
@@ -35,6 +43,16 @@
 			filter: hue-rotate(427deg) saturate(0) brightness(156%);
 			max-height: 100%;
 			max-width: 100%;
+		}
+	}
+
+	.welcome-page-tasks-wrapper {
+		grid-area: tasks;
+		@media (max-width:1000px) {
+			position: fixed;
+			z-index: 100;
+			top: 1em;
+			left: .5em;
 		}
 	}
 
@@ -211,6 +229,7 @@
 
 		section.feed-panel {
 			flex: 1;
+			max-width:50%;
 			background: rgba(#fff,0.2);
 			padding: 1em;
 			display: flex;
