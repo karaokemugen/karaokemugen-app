@@ -83,7 +83,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 							{i18next.t('DATABASE.REGENERATE_DB')}
 						</Button>
 					</Col>
-					<Col span={20} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.REGENERATE_DB_DESCRIPTION')}}>
+					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.REGENERATE_DB_DESCRIPTION')}}>
 					</Col>
 				</Row>
 				<Row type="flex" justify="space-between" style={{ marginTop: '10px' }}>
@@ -98,7 +98,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 							{i18next.t('DATABASE.UPDATE_MEDIA')}
 						</Button>
 					</Col>
-					<Col span={20} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.UPDATE_MEDIA_DESCRIPTION')}}>
+					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.UPDATE_MEDIA_DESCRIPTION')}}>
 					</Col>
 				</Row>
 				<Row type="flex" justify="space-between" style={{ marginTop: '10px' }}>
@@ -111,7 +111,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 							{i18next.t('DATABASE.DUMP_DATABASE')}
 						</Button>
 					</Col>
-					<Col span={20} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.DUMP_DATABASE_DESCRIPTION')}}>
+					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.DUMP_DATABASE_DESCRIPTION')}}>
 					</Col>
 				</Row>
 
@@ -126,7 +126,7 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 							{i18next.t('DATABASE.RESTORE_DATABASE')}
 						</Button>
 					</Col>
-					<Col span={20} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.RESTORE_DATABASE_DESCRIPTION')}}>
+					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.RESTORE_DATABASE_DESCRIPTION')}}>
 					</Col>
 				</Row>
 				<Modal
