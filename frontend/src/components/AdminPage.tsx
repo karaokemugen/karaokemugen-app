@@ -42,7 +42,7 @@ class AdminPage extends Component<IProps, IState> {
 	constructor(props:IProps) {
 		super(props);
 		this.state = {
-			options: window.location.search.indexOf('config') !== -1 ? true : false,
+			options: window.location.search.indexOf('config') !== -1,
 			idsPlaylist: {left: 0, right: 0},
 			searchMenuOpen1: false,
 			searchMenuOpen2: false,
