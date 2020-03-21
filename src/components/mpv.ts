@@ -662,7 +662,7 @@ export async function message(message: string, duration: number = 10000, alignCo
 	};
 	player.freeCommand(JSON.stringify(command));
 	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
-	if (playerState.playing === false) {
+	if (playerState.playing === false && !getState().songPoll) {
 		await sleep(duration);
 		logger.debug('[Player] AfterMessage DI');
 		displayInfo();
