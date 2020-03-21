@@ -367,7 +367,6 @@
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
 	"PLAYLIST_ADDED": "Playlist added : {{name}}",
 	"UNKNOWN_KARAS": "Unknow songs : {{count}}",
-	"PL_ADD_SONG_ERROR": "No songs could be added, all are in destination playlist already",
 	"ESSENTIAL_MESSAGE": "Essential message",
 	"FAVORITES_ADDED": "Successfully added favorites!",
 	"FAVORITES_DELETED": "Favorites deleted",
@@ -434,6 +433,7 @@
 		"PL_DELETE_SONG_ERROR": "You cannot delete that song",
 		"PL_VIEW_SONGS_ERROR": "Error when loading the playlist",
 		"SONG_LIST_ERROR": "Error when loading the library",
+		"PL_ADD_SONG_ERROR": "No songs could be added, all are in destination playlist already",
 		"PL_MOVE_SONG_ERROR": "Unable to copy karaoke song to the destination playlist"
 	},
 	"HIDDEN_PLAYLIST": "Hidden playlist",

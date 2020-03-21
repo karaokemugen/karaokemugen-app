@@ -387,7 +387,6 @@
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
 	"PLAYLIST_ADDED": "Liste de lecture importée : {{name}}",
 	"UNKNOWN_KARAS": "Chansons inconnues : {{count}}",
-	"PL_ADD_SONG_ERROR": "Aucune chanson ne peut être ajoutée, elles sont déjà toutes dans la liste de lecture",
 	"ESSENTIAL_MESSAGE": "Message indispensable",
 	"FAVORITES_ADDED": "Favoris ajoutés avec succès !",
 	"FAVORITES_DELETED": "Favoris supprimés",
@@ -454,6 +453,7 @@
 		"PL_DELETE_SONG_ERROR": "Vous ne pouvez pas supprimer ce morceau",
 		"PL_VIEW_SONGS_ERROR": "Erreur au chargement de la liste de lecture",
 		"SONG_LIST_ERROR": "Erreur au chargement de la bibliothèque",
+		"PL_ADD_SONG_ERROR": "Aucune chanson ne peut être ajoutée, elles sont déjà toutes dans la liste de lecture",
 		"PL_MOVE_SONG_ERROR": "Impossible de copier la chanson vers la liste de lecture de destination"
 	},
 	"HIDDEN_PLAYLIST": "Liste de lecture cachée",
