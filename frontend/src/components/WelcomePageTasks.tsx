@@ -53,15 +53,15 @@ class WelcomePageTasks extends Component<IProps, IState> {
 
             //console.log(item, (new Date()).getTime() - item.time)
 
-            if((new Date()).getTime() - item.time > 5000)
+            if((new Date()).getTime() - (item.time as number) > 5000)
               return null;
 
             tCount++;
 
             return (<blockquote key={index}>
               <p className="text">
-                {i18next.t(item.text)}
-                <span className="subtext">{item.subtext}</span>
+                {i18next.t(item.text as string)}
+                <span className="subtext">{i18next.t(item.subtext as string)}</span>
               </p>
               <div className="progress"><div className={"progress-bar " + (item.percentage===null ? 'unknown' : '')} style={{width:(item.percentage!==null ? item.percentage+'%' : '100%')}}></div></div>
             </blockquote>);
