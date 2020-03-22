@@ -19,7 +19,7 @@ platforms (#533)
   - There is an auto-update system in place which will download updates and install them on startup (unless told not to) or when manually told to. (#7)
   - The Visual C++ Redistribuable 2013 is now included during install on Windows, and installed if it appears you lack some vital DLL files for PostgreSQL (#595)
 - Multiple repository management for songs (#549)
-  - Songs aer now organized in repositories.
+  - Songs are now organized in repositories.
   - You can have multiple repositories in your Karaoke Mugen
   - By default you have a "kara.moe" repository and a "Local" one. The Local one is for your own songs that you don't necessarily want to share with the community through kara.moe.
   - You can add, remove, or edit repositories, if for example someone adds a new song database completely foreign to kara.moe.
@@ -36,10 +36,17 @@ platforms (#533)
 - mpv (player) logs have been moved to the logs/ directory (#574)
 - Logs are in JSON format now which allows a standardized display in the control panel logs. Logs are now updated in real time on that page (#567)
 - Login is now shared between the system panel and frontend (#594)
+- You can modify songs without medias (#604)
+- Rework of operator tutorial and public tutorial (1130eb69, be5413a8)
+
 
 ### Fixes
 
 - Fix issues with playlist medias updates through git (encores, intros, outros, etc.) by using a worker thread (#582)
+- Fix getLucky button in PC display in public page (10351b73)
+- Fix get blacklist criterias from public (6a0fcbe3)
+- Fix bug display alias and i18n in system panel (90ce22d3)
+- Fix create playlist require to refresh (a5f11ef5)
 
 ## v3.1.2 "Mitsuha Matinale" - 12/03/2020
 
