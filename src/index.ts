@@ -31,10 +31,12 @@ import { createCircleAvatar } from './utils/imageProcessing';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
+	if (logger) logger.error(`[UncaughtException]` + exception);
 });
 
 process.on('unhandledRejection', (error) => {
 	console.log('Unhandled Rejection at:', error);
+	if (logger) logger.error(`[UnhandledRejection]` + error);
 });
 
 process.on('SIGINT', () => {
