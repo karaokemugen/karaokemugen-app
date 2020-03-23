@@ -8,7 +8,6 @@ import open from 'open';
 import { getState } from '../utils/state';
 import openAboutWindow from 'about-window';
 import { resolve } from 'path';
-import {version} from '../version';
 import { setManualUpdate } from './electronAutoUpdate';
 
 const isMac = process.platform === 'darwin';
@@ -59,13 +58,17 @@ export async function initMenu() {
 				{
 					label: i18next.t('MENU_FILE_ABOUT'),
 					click() {
+						const version = getState().version;
+						const versionSHA = version.sha
+							? `version ${version.sha}`
+							: '';
 						openAboutWindow({
 							icon_path: resolve(getState().resourcePath, 'build/icon.png'),
 							product_name: `Karaoke Mugen (${version.name})`,
 							bug_link_text: i18next.t('ABOUT.BUG_REPORT'),
 							bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
 							homepage: 'https://mugen.karaokes.moe',
-							description: 'Karaoke Manager / Player',
+							description: versionSHA,
 							license: 'MIT',
 							use_version_info: true,
 						})

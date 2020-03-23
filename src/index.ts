@@ -1,5 +1,5 @@
 // KM Imports
-import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncCopy} from './lib/utils/files';
+import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncCopy, asyncReadFile} from './lib/utils/files';
 import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars, configureLocale} from './lib/utils/config';
 import {initConfig} from './utils/config';
 import {parseCommandLineArgs} from './utils/args';
@@ -160,10 +160,15 @@ export async function preInit() {
 
 export async function main() {
 	initStep(i18n.t('INIT_INIT'));
+	// Set version number
+	let sha: string;
+	const SHAFile = resolve(resourcePath, 'assets/sha.txt');
+	if (await asyncExists(SHAFile)) sha = await asyncReadFile(SHAFile, 'utf-8');	setState({version: {sha: sha}});
 	const state = getState();
 	console.log(chalk.white(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
+	if (sha) console.log(`git commit : ${sha}`);
 	console.log('================================================================================');
 	const config = getConfig();
 	const publicConfig = cloneDeep(config);

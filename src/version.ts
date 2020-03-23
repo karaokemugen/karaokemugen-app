@@ -1,5 +1,6 @@
 export const version = {
-	number: '3.2.0-rc1',
+	number: '3.2.0-master',
 	name: 'Nadia Naturiste',
-	image: 'NadiaNaturiste.jpg'
+	image: 'NadiaNaturiste.jpg',
+	sha: null
 }
