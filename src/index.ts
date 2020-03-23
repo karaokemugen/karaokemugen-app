@@ -17,9 +17,9 @@ import {Config} from './types/config';
 
 // Node modules
 import i18n from 'i18next';
-import {moveSync} from 'fs-extra';
+import {mkdirpSync, moveSync} from 'fs-extra';
 import {dirname} from 'path';
-import {mkdirSync, existsSync} from 'fs';
+import {existsSync} from 'fs';
 import {join, resolve} from 'path';
 import minimist from 'minimist';
 import chalk from 'chalk';
@@ -99,7 +99,7 @@ const dataPath = existsSync(resolve(originalAppPath, 'portable'))
 	// Rewriting dataPath to point to user home directory
 	: resolve(process.env.HOME || process.env.HOMEPATH, 'KaraokeMugen');
 
-if (!existsSync(dataPath)) mkdirSync(dataPath);
+if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
 // Move config file if it's in appPath to dataPath
 
