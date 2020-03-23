@@ -83,6 +83,7 @@ pkg_linux:
     - build-react
   script:
     - yarn add --dev electron-builder
+    - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - ./node_modules/.bin/electron-builder -l --publish always
     - ls -la packages/
     - mkdir release
@@ -116,6 +117,7 @@ pkg_win:
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-3.2.tar.gz | tar xz
     - wget http://mugen.karaokes.moe/downloads/vcredist_x64.exe -O build/vc.exe
+    - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - ./node_modules/.bin/electron-builder -w --publish always
     - ls -la packages/
     - mkdir release
@@ -158,6 +160,7 @@ pkg_mac:
   script:
     - yarn add --dev electron-builder
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-3.2.tar.gz | tar xvz
+    - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - ./node_modules/.bin/electron-builder -m
     - ls -la packages/
     - mkdir release

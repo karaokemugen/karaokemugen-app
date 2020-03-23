@@ -42,7 +42,7 @@ export interface State {
 		number?: string,
 		name?: string,
 		image?: string,
-		latest?: string
+		sha?: string
 	},
 	binPath?: {
 		mpv?: string,
