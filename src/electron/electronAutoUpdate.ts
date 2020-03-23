@@ -24,7 +24,15 @@ export async function initAutoUpdate() {
 			buttons: [i18next.t('YES'), i18next.t('NO')]
 		});
 		if (buttonIndex.response === 0) {
-			autoUpdater.downloadUpdate();
+			try {
+				autoUpdater.downloadUpdate();
+			} catch(err) {
+				await dialog.showMessageBox(win, {
+					type: 'info',
+					title: i18next.t('UPDATE_FOUND'),
+					message: i18next.t('UPDATE_ERROR') + err
+				})
+			}
 		}
 	});
 
@@ -44,6 +52,11 @@ export async function initAutoUpdate() {
 	});
 
 	if (getConfig().Online.Updates.App && process.platform !== 'darwin') {
-		autoUpdater.checkForUpdatesAndNotify();
+		try {
+			autoUpdater.checkForUpdatesAndNotify();
+		} catch(err) {
+			//Non fatal, just report it
+			logger.warn('[Updater] Unable to check for app updates: ' + err)
+		}
 	}
 }
