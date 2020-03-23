@@ -25,18 +25,31 @@ import minimist from 'minimist';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
 import { getPortPromise } from 'portfinder';
-import { app } from 'electron';
+import { app, dialog } from 'electron';
 import cloneDeep from 'lodash.clonedeep';
 import { createCircleAvatar } from './utils/imageProcessing';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
 	if (logger) logger.error(`[UncaughtException]` + exception);
+	if (app) dialog.showMessageBox({
+		type: 'none',
+		title: 'Uncaught Exception',
+		message: `Name: ${exception.name}
+Message: ${exception.message}
+Stack: ${exception.stack}
+`
+	});
 });
 
 process.on('unhandledRejection', (error) => {
 	console.log('Unhandled Rejection at:', error);
 	if (logger) logger.error(`[UnhandledRejection]` + error);
+	if (app) dialog.showMessageBox({
+		type: 'none',
+		title: 'Unhandled Rejection',
+		message: error as string
+	});
 });
 
 process.on('SIGINT', () => {
