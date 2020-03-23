@@ -232,8 +232,7 @@
     },
     "linux": {
       "target": [
-        "AppImage",
-        "tar.bz2"
+        "AppImage"
       ],
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",
