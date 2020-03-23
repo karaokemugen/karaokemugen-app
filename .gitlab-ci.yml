@@ -183,9 +183,6 @@ deploy_mac:
   script:
     - ls -la release/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
-    - export NAME=`ls release/*.dmg`
-    - export LINK=KaraokeMugen-$CI_COMMIT_REF_SLUG.dmg
-    - if [ "$CI_COMMIT_REF_SLUG" == "master" ] || [ "$CI_COMMIT_REF_SLUG" == "next" ]; then lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; rm -f $LINK ; ln -s \"$NAME\" $LINK" ; fi
   only:
     - master
     - next
@@ -205,11 +202,6 @@ deploy_win:
   script:
     - ls -la release/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
-    - export NAME=`ls release/*.exe`
-    - export NAMEZIP=`ls release/*.zip`
-    - export LINK=KaraokeMugen-$CI_COMMIT_REF_SLUG.exe
-    - export LINKZIP=KaraokeMugen-$CI_COMMIT_REF_SLUG-win.zip
-    - if [ "$CI_COMMIT_REF_SLUG" == "master" ] || [ "$CI_COMMIT_REF_SLUG" == "next" ]; then lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; rm -f $LINK ; rm -f $LINKZIP ; ln -s \"$NAME\" $LINK; ln -s \"$NAMEZIP\" $LINKZIP" ; fi
   only:
     - master
     - next
@@ -229,9 +221,6 @@ deploy_linux:
   script:
     - ls -la release/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
-    - export NAME=`ls release/*.AppImage`
-    - export LINK=KaraokeMugen-$CI_COMMIT_REF_SLUG.AppImage
-    - if [ "$CI_COMMIT_REF_SLUG" == "master" ] || [ "$CI_COMMIT_REF_SLUG" == "next" ]; then lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; rm -f $LINK ; ln -s \"$NAME\" $LINK" ; fi
   only:
     - master
     - next
