@@ -82,6 +82,7 @@ pkg_linux:
   dependencies:
     - build-react
   script:
+    - rm -Rf release
     - yarn add --dev electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - ./node_modules/.bin/electron-builder -l --publish always
@@ -113,6 +114,7 @@ pkg_win:
   dependencies:
     - build-react
   script:
+    - rm -Rf release
     - yarn add --dev electron-builder
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-3.2.tar.gz | tar xz
@@ -158,6 +160,7 @@ pkg_mac:
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
     RESTORE_CACHE_ATTEMPTS: 10
   script:
+    - rm -Rf release
     - yarn add --dev electron-builder
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-3.2.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
