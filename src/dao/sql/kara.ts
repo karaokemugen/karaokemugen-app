@@ -212,7 +212,8 @@ INSERT INTO kara(
 	subchecksum,
 	karafile,
 	pk_kid,
-	repository
+	repository,
+	mediasize
 )
 VALUES(
 	:title,
@@ -227,7 +228,8 @@ VALUES(
 	:subchecksum,
 	:karafile,
 	:kid,
-	:repository
+	:repository,
+	:mediasize
 );
 `;
 
