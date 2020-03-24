@@ -54,7 +54,8 @@ export async function addKara(kara: Kara) {
 		modified_at: kara.modified_at,
 		created_at: kara.created_at,
 		kid: kara.kid,
-		repository: kara.repository
+		repository: kara.repository,
+		mediasize: kara.mediasize
 	}));
 }
 
