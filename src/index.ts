@@ -168,7 +168,7 @@ export async function preInit() {
 	logger.debug(`[Launcher] OriginalAppPath : ${originalAppPath}`);
 	logger.debug(`[Launcher] INIT_CWD : ${process.env.INIT_CWD}`);
 	logger.debug(`[Launcher] PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`);
-	logger.debug(`[Launcher] app.getAppPath : ${app ? app.getAppPath() || undefined}`);
+	logger.debug(`[Launcher] app.getAppPath : ${app ? app.getAppPath() : undefined}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
 	await initConfig(argv);
