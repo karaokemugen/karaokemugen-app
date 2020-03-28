@@ -326,7 +326,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<st
 	});
 	await insertDownloads(dls);
 	dls.forEach(dl => {
-		logger.debug(`[Downloads] Pushing download ${dl.name}`);
+		logger.debug(`[Download] Pushing download ${dl.name}`);
 		q.push(dl);
 	});
 	return `${dls.length} download(s) queued`;
