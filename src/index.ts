@@ -42,14 +42,16 @@ Stack: ${exception.stack}
 	});
 });
 
-process.on('unhandledRejection', (error) => {
+process.on('unhandledRejection', error => {
 	console.log('Unhandled Rejection at:', error);
-	if (logger) logger.error(`[UnhandledRejection]` + error);
-	if (app) dialog.showMessageBox({
+	if (logger) logger.error(`[UnhandledRejection]` + error.toString());
+	if (app) {
+		dialog.showMessageBox({
 		type: 'none',
 		title: 'Unhandled Rejection',
-		message: error as string
+		message: JSON.stringify(error)
 	});
+	}
 });
 
 process.on('SIGINT', () => {
