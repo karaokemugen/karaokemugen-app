@@ -33,12 +33,9 @@ import { extractAssInfos } from '../lib/dao/karafile';
 const queueOptions = {
 	id: 'uuid',
 	precondition: async (cb: any) => {
-		try {
-			await internet();
-			cb(null, true);
-		} catch(err) {
-			cb(null, false);
-		}
+		internet()
+            .then(cb(null, true))
+            .catch(cb(null, false));
 	},
 	preconditionRetryTimeout: 10 * 1000,
 	cancelIfRunning: true
