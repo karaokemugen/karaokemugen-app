@@ -49,7 +49,7 @@ process.on('unhandledRejection', error => {
 		dialog.showMessageBox({
 		type: 'none',
 		title: 'Unhandled Rejection',
-		message: JSON.stringify(error)
+		message: error.toString()
 	});
 	}
 });
