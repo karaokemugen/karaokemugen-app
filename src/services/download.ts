@@ -503,8 +503,10 @@ export async function updateBase(repo: string) {
 		logger.info('[Update] Removing songs...');
 		await cleanKaras(repo, karas.local, karas.remote);
 		logger.info('[Update] Adding updated/new songs...');
-		const updatedSongs = await updateKaras(repo, karas.local, karas.remote);
-		const newSongs = await downloadKaras(repo, karas.local, karas.remote);
+		const [updatedSongs, newSongs] = await Promise.all([
+			updateKaras(repo, karas.local, karas.remote),
+			downloadKaras(repo, karas.local, karas.remote)
+		]);
 		if (updatedSongs === 0 && newSongs === 0) return true;
 		await waitForUpdateQueueToFinish();
 		return true;
