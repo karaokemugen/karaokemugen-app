@@ -82,7 +82,7 @@ export default class Downloader {
 			const response = await got.head(dl.url, options)
 			size = response.headers['content-length'];
 		} catch(err) {
-			logger.error(`[Download] Error during download of ${basename(dl.filename)} : ${err}`);
+			logger.error(`[Download] Error during download of ${basename(dl.filename)} (HEAD) : ${err}`);
 			this.fileErrors.push(basename(dl.filename));
 			return;
 		}
@@ -103,7 +103,7 @@ export default class Downloader {
 		try {
 			await this._fetchFile(dl, options);
 		} catch(err) {
-			logger.error(`[Download] Error during download of ${basename(dl.filename)} : ${err}`);
+			logger.error(`[Download] Error during download of ${basename(dl.filename)} (GET) : ${err}`);
 			this.fileErrors.push(basename(dl.filename));
 			return;
 		}

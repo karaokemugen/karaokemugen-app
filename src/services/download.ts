@@ -45,6 +45,13 @@ const queueOptions = {
 };
 
 let q: any;
+let downloadTask: Task;
+
+function initTask() {
+	downloadTask = new Task({
+		text: 'DOWNLOADING'
+	});
+}
 
 function emitQueueStatus(status: QueueStatus) {
 	emitWS('downloadQueueStatus', status);
@@ -96,6 +103,8 @@ function initQueue(drainEvent = true) {
 		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
+		downloadTask.end();
+		downloadTask = null;
 	});
 }
 
@@ -117,13 +126,13 @@ export async function startDownloads() {
 }
 
 async function processDownload(download: KaraDownload) {
-	const task = new Task({
-		text: 'DOWNLOADING',
-		subtext: download.name,
-		value: 0,
-		total: download.size
-	});
 	try {
+		if (!downloadTask) initTask();
+		downloadTask.update({
+			subtext: download.name,
+			value: 0,
+			total: download.size
+		});
 		await setDownloadStatus(download.uuid, 'DL_RUNNING');
 		let list = [];
 		const localMedia = resolve(resolvedPathRepos('Medias', download.repository)[0], download.urls.media.local);
@@ -155,7 +164,7 @@ async function processDownload(download: KaraDownload) {
 				id: download.name
 			});
 		}
-		if (list.length > 0) await downloadFiles(download, list, task);
+		if (list.length > 0) await downloadFiles(download, list, downloadTask);
 
 		const writes = [];
 		let tempLyrics: string;
@@ -212,7 +221,11 @@ async function processDownload(download: KaraDownload) {
 		setDownloadStatus(download.uuid, 'DL_FAILED');
 		throw err;
 	} finally {
-		task.end();
+		downloadTask.update({
+			subtext: download.name,
+			value: download.size,
+			total: download.size
+		});
 	}
 }
 
