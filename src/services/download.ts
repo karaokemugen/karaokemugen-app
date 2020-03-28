@@ -32,6 +32,7 @@ import { extractAssInfos } from '../lib/dao/karafile';
 
 const queueOptions = {
 	id: 'uuid',
+	// not compatible with await
 	precondition: async (cb: any) => {
 		internet()
             .then(cb(null, true))
