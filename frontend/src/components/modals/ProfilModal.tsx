@@ -79,7 +79,7 @@ class ProfilModal extends Component<IProps, IState> {
 
 	onClickSelect = (event:any) => {
     	const user = this.state.user;
-    	user[event.target.name as typesAttrUser] = event.target.value;
+		(user[event.target.name as typesAttrUser] as number) = parseInt(event.target.value);
 		this.setState({ user: user });
 		this.updateUser();
     };
