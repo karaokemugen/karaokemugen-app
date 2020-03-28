@@ -856,12 +856,16 @@ async function listLocalMedias(repo: string): Promise<File[]> {
 	const mediaFiles = await asyncReadDir(resolvedPathRepos('Medias', repo)[0]);
 	let localMedias = [];
 	for (const file of mediaFiles) {
-		const mediaPath = await resolveFileInDirs(file, resolvedPathRepos('Medias', repo));
-		const mediaStats = await asyncStat(mediaPath[0]);
-		localMedias.push({
-			basename: file,
-			size: mediaStats.size
-		});
+		try {
+			const mediaPath = await resolveFileInDirs(file, resolvedPathRepos('Medias', repo));
+			const mediaStats = await asyncStat(mediaPath[0]);
+			localMedias.push({
+				basename: file,
+				size: mediaStats.size
+			});
+		} catch {
+			logger.info(`[Update] Local media file ${file} not found`);
+		}
 	}
 	logger.debug('[Update] Listed local media files');
 	return localMedias;
