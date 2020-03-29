@@ -170,11 +170,12 @@ export async function exit(rc: any) {
 	}
 	if (getTwitchClient()) await stopTwitch();
 	await closeDB();
-	if (getTwitchClient() || (getConfig() && getConfig().Karaoke.StreamerMode.Twitch.Enabled)) await stopTwitch();
+	const c = getConfig();
+	if (getTwitchClient() || (c && c.Karaoke && c.Karaoke.StreamerMode.Twitch.Enabled)) await stopTwitch();
 	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
 	try {
 		// Let's try to kill PGSQL anyway, not a problem if it fails.
-		if (getConfig().Database.prod.bundledPostgresBinary && await checkPG()) {
+		if (c && c.Database && c.Database.prod.bundledPostgresBinary && await checkPG()) {
 			try {
 				await killPG();
 				logger.info('[Engine] PostgreSQL has shutdown');
