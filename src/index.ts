@@ -112,7 +112,10 @@ const resourcePath = process.versions.electron && existsSync(resolve(appPath, 'r
 const dataPath = existsSync(resolve(originalAppPath, 'portable'))
 	? resolve(originalAppPath, 'app/')
 	// Rewriting dataPath to point to user home directory
-	: resolve(process.env.HOME || process.env.HOMEPATH, 'KaraokeMugen');
+	: app
+		? resolve(app.getPath('home'))
+		// process.env.HOMEPATH is broken in Windows as it does not reference the drive letter, so if you installed KM on D:\KM, it'll point to D:\Users\your_user\KaraokeMugen. Deal with it.
+		: resolve(process.env.HOME || process.env.HOMEPATH, 'KaraokeMugen');
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
@@ -174,6 +177,7 @@ export async function preInit() {
 	logger.debug(`[Launcher] ResourcePath : ${resourcePath}`);
 	logger.debug(`[Launcher] Electron ResourcePath : ${process.resourcesPath}`);
 	logger.debug(`[Launcher] OriginalAppPath : ${originalAppPath}`);
+	logger.debug(`[Launcher] env : ${JSON.stringify(process.env)}`);
 	logger.debug(`[Launcher] INIT_CWD : ${process.env.INIT_CWD}`);
 	logger.debug(`[Launcher] PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`);
 	logger.debug(`[Launcher] app.getAppPath : ${app ? app.getAppPath() : undefined}`);
