@@ -11,6 +11,7 @@ import { version } from './version';
 import { migrateOldFoldersToRepo } from './services/repo';
 import { initStep, errorStep } from './electron/electronLogger';
 import { startElectron } from './electron/electron';
+import { help } from './help';
 
 // Types
 import {Config} from './types/config';
@@ -186,45 +187,52 @@ export async function main() {
 	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
 	if (sha) console.log(`git commit : ${sha}`);
 	console.log('================================================================================');
-	const config = getConfig();
-	const publicConfig = cloneDeep(config);
-	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
-	publicConfig.App.JwtSecret = 'xxxxx';
-	publicConfig.App.InstanceID = 'xxxxx';
-	logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(publicConfig)}`);
-	logger.debug(`[Launcher] Initial state : ${JSON.stringify(state)}`);
+	if (argv.version) {
+		app.exit(0);
+	} else if (argv.help) {
+		console.log(help);
+		app.exit(0);
+	} else {
+		const config = getConfig();
+		const publicConfig = cloneDeep(config);
+		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
+		publicConfig.App.JwtSecret = 'xxxxx';
+		publicConfig.App.InstanceID = 'xxxxx';
+		logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(publicConfig)}`);
+		logger.debug(`[Launcher] Initial state : ${JSON.stringify(state)}`);
 
-	// Checking paths, create them if needed.
-	await checkPaths(getConfig());
+		// Checking paths, create them if needed.
+		await checkPaths(getConfig());
 
-	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-	const tempInput = resolve(resolvedPathTemp(), 'input.conf');
-	logger.debug(`[Launcher] Copying input.conf to ${tempInput}`);
-	await asyncCopy(resolve(resourcePath, 'assets/input.conf'), tempInput);
+		// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
+		const tempInput = resolve(resolvedPathTemp(), 'input.conf');
+		logger.debug(`[Launcher] Copying input.conf to ${tempInput}`);
+		await asyncCopy(resolve(resourcePath, 'assets/input.conf'), tempInput);
 
-	const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
-	logger.debug(`[Launcher] Copying default background to ${tempBackground}`);
-	await asyncCopy(resolve(resourcePath, `assets/${state.version.image}`), tempBackground);
+		const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
+		logger.debug(`[Launcher] Copying default background to ${tempBackground}`);
+		await asyncCopy(resolve(resourcePath, `assets/${state.version.image}`), tempBackground);
 
-	// Copy avatar blank.png if it doesn't exist to the avatar path
-	logger.debug(`[Launcher] Copying blank.png to ${resolvedPathAvatars()}`);
-	await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
-	createCircleAvatar(resolve(resolvedPathAvatars(), 'blank.png'));
+		// Copy avatar blank.png if it doesn't exist to the avatar path
+		logger.debug(`[Launcher] Copying blank.png to ${resolvedPathAvatars()}`);
+		await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
+		createCircleAvatar(resolve(resolvedPathAvatars(), 'blank.png'));
 
-	/**
-	 * Test if network ports are available
-	 */
-	verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
+		/**
+		 * Test if network ports are available
+		 */
+		verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
 
-	/**
-	 * Gentlemen, start your engines.
-	 */
-	try {
-		await initEngine();
-	} catch(err) {
-		console.log(err);
-		logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
-		if (!app || argv.cli) exit(1);
+		/**
+		 * Gentlemen, start your engines.
+		 */
+		try {
+			await initEngine();
+		} catch(err) {
+			console.log(err);
+			logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
+			if (!app || argv.cli) exit(1);
+		}
 	}
 }
 
