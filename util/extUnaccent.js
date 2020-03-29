@@ -1,7 +1,7 @@
 // This script installs the unaccent extension in a database.
 // It requires superuser access.
 
-const dbConfigFile = require('../database.json');
+const dbConfigFile = require('../app/database.json');
 const {Pool} = require('pg');
 
 const dbConfig = {
