@@ -17,7 +17,7 @@ import {Config} from './types/config';
 
 // Node modules
 import i18n from 'i18next';
-import {mkdirpSync, moveSync} from 'fs-extra';
+import {mkdirpSync} from 'fs-extra';
 import {dirname} from 'path';
 import {existsSync} from 'fs';
 import {join, resolve} from 'path';
@@ -113,25 +113,12 @@ const dataPath = existsSync(resolve(originalAppPath, 'portable'))
 	? resolve(originalAppPath, 'app/')
 	// Rewriting dataPath to point to user home directory
 	: app
-		? resolve(app.getPath('home'))
+		// With Electron we get the handy app.getPath()
+		? resolve(app.getPath('home'), 'KaraokeMugen')
 		// process.env.HOMEPATH is broken in Windows as it does not reference the drive letter, so if you installed KM on D:\KM, it'll point to D:\Users\your_user\KaraokeMugen. Deal with it.
 		: resolve(process.env.HOME || process.env.HOMEPATH, 'KaraokeMugen');
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
-
-// Move config file if it's in appPath to dataPath
-
-const rootConfig = resolve(originalAppPath, 'config.yml');
-const dataConfig = resolve(dataPath, 'config.yml');
-if (existsSync(rootConfig) && !existsSync(dataConfig)) {
-	moveSync(rootConfig, dataConfig);
-}
-
-const rootDatabase = resolve(originalAppPath, 'database.json');
-const dataDatabase = resolve(dataPath, 'database.json');
-if (existsSync(rootDatabase) && !existsSync(dataDatabase)) {
-	moveSync(rootDatabase, dataDatabase);
-}
 
 setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
 
