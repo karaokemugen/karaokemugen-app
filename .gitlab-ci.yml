@@ -30,8 +30,9 @@ test:
   script:
     - yarn install --cache-folder .yarn
     - touch mpv
-    - cp -f config.CICD.yml config.yml
-    - cp -f database.CICD.json database.json
+    - mkdir app
+    - cp -f config.CICD.yml app/config.yml
+    - cp -f database.CICD.json app/database.json
     - export LANG=en_US
     - node --version
     - node util/extUnaccent.js
