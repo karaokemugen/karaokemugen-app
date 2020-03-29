@@ -58,12 +58,6 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile),
 			{ overwrite: true }
 		));
-		// Until issue #497 is resolved, we're going to do something naughty.
-		const karaFile = resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile);
-		const karaFileRaw = await asyncReadFile(karaFile);
-		const karaFileData: KaraFileV4 = JSON.parse(karaFileRaw);
-		karaFileData.data.repository = repoName;
-		tasks.push(asyncWriteFile(karaFile, JSON.stringify(karaFileData, null, 2), 'utf-8'));
 		// End of naughtiness.
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
 		tasks.push(asyncCopy(
@@ -91,6 +85,12 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			tasks.push(writeTagFile(tag, resolvedPathRepos('Tags', repoName)[0]));
 		}
 		await Promise.all(tasks);
+		// Until issue #497 is resolved, we're going to do something naughty.
+		const karaFile = resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile);
+		const karaFileRaw = await asyncReadFile(karaFile);
+		const karaFileData: KaraFileV4 = JSON.parse(karaFileRaw);
+		karaFileData.data.repository = repoName;
+		await asyncWriteFile(karaFile, JSON.stringify(karaFileData, null, 2), 'utf-8');
 	} catch(err) {
 		throw err;
 	}
