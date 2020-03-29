@@ -145,10 +145,6 @@ if (app) {
 		exit(0);
 	});
 }
-console.log('pouet')
-console.log(process.argv);
-console.log(minimist(process.argv.slice(2)));
-console.log(minimist(process.argv.slice(1)));
 
 if (app && !argv.cli) {
 	try {
