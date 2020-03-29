@@ -10,6 +10,7 @@ import { getConfig, resolvedPathTemp } from "../../lib/utils/config";
 import { postSuggestionToKaraBase } from '../../lib/services/gitlab';
 import multer = require("multer");
 import { createKara, editKara } from "../../services/kara_creation";
+import logger from "../../lib/utils/logger";
 
 export default function karaController(router: Router) {
 	let upload = multer({ dest: resolvedPathTemp()});
@@ -611,7 +612,8 @@ export default function karaController(router: Router) {
 				await copyKaraToRepo(req.params.kid, req.body.repo);
 				res.send('Song successfully moved');
 			} catch(err) {
-				res.status(500).send(err);
+				logger.error('[API] CopyKaraToRepo: ' + JSON.stringify(err));
+				res.status(500).send(JSON.stringify(err));
 			}
 		});
 }
