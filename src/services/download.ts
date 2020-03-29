@@ -725,7 +725,7 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 			// We also check the case where there has been a mismatch between local and remote on media or lyrics.
 			let localMedia: string;
 			try {
-				localMedia = await resolveFileInDirs(k.mediafile, resolvedPathRepos('Medias', repo))[0];
+				localMedia = (await resolveFileInDirs(k.mediafile, resolvedPathRepos('Medias', repo)))[0];
 				const localMediaStats = await asyncStat(localMedia);
 				if (localMediaStats.size !== rk.mediasize) return true;
 			} catch(err) {
@@ -738,7 +738,7 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 				// Subchecksum can be non existant if song was a hardsub
 				if (!k.subchecksum) {
 					try {
-						localLyrics = await resolveFileInDirs(k.subfile, resolvedPathRepos('Lyrics', repo))[0];
+						localLyrics = (await resolveFileInDirs(k.subfile, resolvedPathRepos('Lyrics', repo)))[0];
 						k.subchecksum = await extractAssInfos(localLyrics);
 					} catch(err) {
 						//No local lyrics found, redownloading the song
