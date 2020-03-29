@@ -34,7 +34,7 @@ process.on('uncaughtException', exception => {
 	if (logger) logger.error(`[UncaughtException]` + exception);
 	if (app) dialog.showMessageBox({
 		type: 'none',
-		title: 'Uncaught Exception',
+		title: 'Karaoke Mugen Error : Uncaught Exception',
 		message: `Name: ${exception.name}
 Message: ${exception.message}
 Stack: ${exception.stack}
@@ -48,7 +48,7 @@ process.on('unhandledRejection', error => {
 	if (app) {
 		dialog.showMessageBox({
 		type: 'none',
-		title: 'Unhandled Rejection',
+		title: 'Karaoke Mugen Error : Unhandled Rejection',
 		message: error.toString()
 	});
 	}
@@ -134,12 +134,22 @@ setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath
 
 process.env['NODE_ENV'] = 'production'; // Default
 
-const argv = minimist(process.argv.slice(2));
+// Electron packaged app does not need a slice(2) but a (1) since it has no script argument
+const argArr = app && app.isPackaged
+	? process.argv.slice(1)
+	: process.argv.slice(2);
+const argv = minimist(argArr);
+
 if (app) {
 	app.on('will-quit', () => {
 		exit(0);
 	});
 }
+console.log('pouet')
+console.log(process.argv);
+console.log(minimist(process.argv.slice(2)));
+console.log(minimist(process.argv.slice(1)));
+
 if (app && !argv.cli) {
 	try {
 		startElectron();
@@ -171,6 +181,7 @@ export async function preInit() {
 	logger.debug(`[Launcher] INIT_CWD : ${process.env.INIT_CWD}`);
 	logger.debug(`[Launcher] PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`);
 	logger.debug(`[Launcher] app.getAppPath : ${app ? app.getAppPath() : undefined}`);
+	logger.debug(`[Launcher] argv: ${JSON.stringify(process.argv)}`);
 	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
 	await initConfig(argv);
