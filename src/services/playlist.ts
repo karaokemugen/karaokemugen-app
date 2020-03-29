@@ -1136,7 +1136,11 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 			kara.nickname = kara.nickname.replace(/[\{\}]/g,'');
 			requester = `${i18n.t('REQUESTED_BY')} ${kara.nickname}`;
 			// Get user avatar
-			const user = await findUserByName(kara.username);
+			let user = await findUserByName(kara.username);
+			if (!user) {
+				// User does not exist anymore, replacing it with admin
+				user = await findUserByName('admin');
+			}
 			avatarfile = replaceExt(resolve(resolvedPathAvatars(), user.avatar_file), '.circle.png');
 			if (!await asyncExists(avatarfile)) avatarfile = resolve(resolvedPathAvatars(), 'blank.circle.png');
 		} else {
