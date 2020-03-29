@@ -73,10 +73,12 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		));
 		// Now fetch all SIDs
 		for (const sid of kara.sid) {
-			const series = await getSerie(sid);
-			// Modify serie file we just copied to change its repo
-			series.repository = repoName;
-			tasks.push(writeSeriesFile(series, resolvedPathRepos('Series', repoName)[0]));
+			if (sid) {
+				const series = await getSerie(sid);
+				// Modify serie file we just copied to change its repo
+				series.repository = repoName;
+				tasks.push(writeSeriesFile(series, resolvedPathRepos('Series', repoName)[0]));
+			}
 		}
 		for (const tid of kara.tid) {
 			const tag = await getTag(tid.split('~')[0]);
