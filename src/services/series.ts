@@ -48,14 +48,14 @@ export function formatSeriesList(seriesList: any[], from: number, count: number)
 /** Get a single series */
 export async function getSerie(sid: string): Promise<Series> {
 	const serie = await selectSerie(sid);
-	if (!serie) throw 'Series ID unknown';
+	if (!serie) throw `Series ID ${sid} unknown`;
 	return serie;
 }
 
 /** Remove series from database and files */
 export async function deleteSerie(sid: string) {
 	const serie = await testSerie(sid);
-	if (!serie) throw 'Series ID unknown';
+	if (!serie) throw `Series ID ${sid} unknown`;
 	await removeSerie(sid);
 	emitWS('statsRefresh');
 	await Promise.all([
@@ -106,7 +106,7 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 /** Edit series */
 export async function editSerie(sid: string, serieObj: Series, opts = { refresh: true }) {
 	const oldSerie = await testSerie(sid);
-	if (!oldSerie) throw 'Series ID unknown';
+	if (!oldSerie) throw `Series ID ${sid} unknown`;
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	const seriefile = serieObj.seriefile;
 	await Promise.all([
