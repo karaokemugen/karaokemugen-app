@@ -323,10 +323,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<st
 		};
 	});
 	await insertDownloads(dls);
-	dls.forEach(dl => {
-		logger.debug(`[Download] Pushing download ${dl.name}`);
-		q.push(dl);
-	});
+	dls.forEach(dl => q.push(dl));
 	return `${dls.length} download(s) queued`;
 }
 
@@ -718,19 +715,28 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 			remote = karas.remote;
 		}
 		profile('karasUpdate');
-		const karasToUpdate = local.content.filter(async (k) => {
+		const karasToUpdate = [];
+		for (const k of local.content) {
 			const rk = remote.content.find(rk => rk.kid === k.kid);
 			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
-			if (rk && rk.modified_at as unknown > k.modified_at.toISOString()) return true;
+			if (rk && rk.modified_at as unknown > k.modified_at.toISOString())
+			{
+				karasToUpdate.push(k.kid)
+				break;
+			}
 			// We also check the case where there has been a mismatch between local and remote on media or lyrics.
 			let localMedia: string;
 			try {
 				localMedia = (await resolveFileInDirs(k.mediafile, resolvedPathRepos('Medias', repo)))[0];
 				const localMediaStats = await asyncStat(localMedia);
-				if (localMediaStats.size !== rk.mediasize) return true;
+				if (localMediaStats.size !== rk.mediasize) {
+					karasToUpdate.push(k.kid);
+					break;
+				}
 			} catch(err) {
 				//No local media found, redownloading the song
-				return true;
+				karasToUpdate.push(k.kid);
+				break;
 			}
 			// Now checking for lyrics
 			if (rk.subfile) {
@@ -742,12 +748,16 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 						k.subchecksum = await extractAssInfos(localLyrics);
 					} catch(err) {
 						//No local lyrics found, redownloading the song
-						return true;
+						karasToUpdate.push(k.kid);
+						break;
 					}
 				}
-				if (rk.subchecksum !== k.subchecksum) return true;
+				if (rk.subchecksum !== k.subchecksum) {
+					karasToUpdate.push(k.kid);
+					break;
+				}
 			}
-		}).map(k => k.kid);
+		}
 		profile('karasUpdate');
 		const downloads = remote.content.filter(k => karasToUpdate.includes(k.kid)).map(k => {
 			return {
