@@ -311,7 +311,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<st
 			uuid: uuidV4(),
 			urls: {
 				media: {
-					remote: `https://${dl.repository}/downloads/medias/${dl.mediafile}`,
+					remote: `https://${dl.repository}/downloads/medias/${encodeURIComponent(dl.mediafile)}`,
 					local: dl.mediafile
 				},
 			},
