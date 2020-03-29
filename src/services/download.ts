@@ -718,11 +718,12 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 		const karasToUpdate = [];
 		for (const k of local.content) {
 			const rk = remote.content.find(rk => rk.kid === k.kid);
+			if (!rk) continue;
 			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
 			if (rk && rk.modified_at as unknown > k.modified_at.toISOString())
 			{
 				karasToUpdate.push(k.kid)
-				break;
+				continue;
 			}
 			// We also check the case where there has been a mismatch between local and remote on media or lyrics.
 			let localMedia: string;
@@ -731,12 +732,12 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 				const localMediaStats = await asyncStat(localMedia);
 				if (localMediaStats.size !== rk.mediasize) {
 					karasToUpdate.push(k.kid);
-					break;
+					continue;
 				}
 			} catch(err) {
 				//No local media found, redownloading the song
 				karasToUpdate.push(k.kid);
-				break;
+				continue;
 			}
 			// Now checking for lyrics
 			if (rk.subfile) {
@@ -749,12 +750,12 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 					} catch(err) {
 						//No local lyrics found, redownloading the song
 						karasToUpdate.push(k.kid);
-						break;
+						continue;
 					}
 				}
 				if (rk.subchecksum !== k.subchecksum) {
 					karasToUpdate.push(k.kid);
-					break;
+					continue;
 				}
 			}
 		}
