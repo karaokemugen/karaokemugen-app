@@ -125,7 +125,7 @@ export default class Downloader {
 						this.bar.update(value);
 					}
 					this.task.update({
-						value: value
+						value: state.transferred
 					});
 				})
 				.on('error', (err: any) => {
@@ -140,7 +140,7 @@ export default class Downloader {
 						this.bar.stop();
 					}
 					this.task.update({
-						value: (Math.floor(size / 1000)) / 1000
+						value: size
 					});
 					resolve();
 				})
