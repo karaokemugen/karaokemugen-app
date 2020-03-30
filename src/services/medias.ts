@@ -1,4 +1,4 @@
-import {extractMediaFiles} from '../lib/utils/files';
+import {extractMediaFiles, asyncReadDir, asyncStat, asyncCheckOrMkdir, asyncRemove} from '../lib/utils/files';
 import {resolve} from 'path';
 import {getConfig, resolvedPathIntros, resolvedPathOutros, resolvedPathEncores, resolvedPathJingles, resolvedPathSponsors} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
@@ -6,9 +6,10 @@ import sample from 'lodash.sample';
 import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
 import cloneDeep from 'lodash.clonedeep';
-import { Worker } from 'worker_threads';
-import { on } from '../lib/utils/pubsub';
 import Task from '../lib/utils/taskManager';
+import {createClient} from 'webdav';
+import prettyBytes from 'pretty-bytes';
+import Downloader from '../utils/downloader';
 
 const medias = {
 	Intros: [] as Media[],
@@ -18,7 +19,18 @@ const medias = {
 	Sponsors: [] as Media[],
 };
 
+interface File {
+	basename: string,
+	size: number
+}
+
 const currentMedias = {};
+
+const KMSite = {
+	url: 'http://mugen.karaokes.moe/medias/',
+	username: 'km',
+	password: 'musubi'
+}
 
 export async function buildAllMediasList() {
 	const medias = getConfig().Playlist.Medias;
@@ -41,7 +53,7 @@ export async function updatePlaylistMedias() {
 			task.update({
 				subtext: type
 			});
-			if (updates[type]) await updateMediasGit(type as MediaType);
+			if (updates[type]) await updateMediasHTTP(type as MediaType, task);
 		} catch(err) {
 			//Non fatal
 		}
@@ -57,56 +69,118 @@ function resolveMediaPath(type: MediaType): string[] {
 	if (type === 'Sponsors') return resolvedPathSponsors();
 }
 
-export function updateMediasGit(type: MediaType) {
-	return new Promise((done, error) => {
-		try {
-			const worker = new Worker(resolve(__dirname, '../utils/git.js'), {
-				workerData: {
-					options: {
-						gitDir: resolve(resolveMediaPath(type)[0], 'KaraokeMugen/'),
-						gitURL: `https://lab.shelter.moe/karaokemugen/medias/${type}.git`,
-						type: type,
-						configPaths: getConfig().System.Path[type]
-					}
+async function listRemoteMedias(type: MediaType): Promise<File[]> {
+	let webdavClient = createClient(
+		KMSite.url,
+		{
+			username: KMSite.username,
+			password: KMSite.password
+		}
+	);
+	const contents = await webdavClient.getDirectoryContents('/' + type);
+	webdavClient = null;
+	return contents;
+}
+
+async function listLocalFiles(dir: string): Promise<File[]> {
+	const localFiles = await asyncReadDir(dir);
+	const files = [];
+	for (const file of localFiles) {
+		const stat = await asyncStat(resolve(dir, file));
+		files.push({
+			basename: file,
+			size: stat.size
+		});
+	}
+	return files;
+}
+
+async function removeFiles(files: string[], dir: string) {
+	for (const file of files) {
+		await asyncRemove(resolve(dir, file));
+		logger.info(`[Medias] Removed : ${file}`);
+	}
+}
+
+export async function updateMediasHTTP(type: MediaType, task: Task) {
+	try {
+		const remoteFiles = await listRemoteMedias(type);
+		const localDir = resolve(resolveMediaPath(type)[0], 'KaraokeMugen/');
+		await asyncCheckOrMkdir(localDir);
+		// Setting additional path if it doesn't exist in config (but it should if you used the defaults)
+		const conf = getConfig();
+		if (!conf.System.Path[type].includes(conf.System.Path[type][0] + '/KaraokeMugen')) {
+			conf.System.Path[type].push(conf.System.Path[type][0] + '/KaraokeMugen');
+			editSetting({ System:
+				{ Path:
+					conf.System.Path[type]
 				}
-			});
-			on('exiting-app', async () => {
-				await worker.terminate();
-			});
-			worker.on('online', () => {
-				logger.debug(`[${type}] Worker online!`);
-			});
-			worker.on('message', res => {
-				if (res.type === 'log') {
-					logger.info(res.data);
-				} else if (res.type === 'status-failed') {
-					error(res.data);
-				} else if (res.type === 'status-success') {
-					if (res.data) {
-						const config = {System: {Path: {}}};
-						config.System.Path[type] = res.data;
-						editSetting(config);
-					}
-					done();
+			})
+		}
+		const localFiles = await listLocalFiles(localDir);
+		let removedFiles: File[] = [];
+		let addedFiles: File[] = [];
+		let updatedFiles: File[] = [];
+		for (const remoteFile of remoteFiles) {
+			const filePresent = localFiles.some(localFile => {
+				if (localFile.basename === remoteFile.basename) {
+					if (localFile.size !== remoteFile.size) updatedFiles.push(remoteFile);
+					return true;
 				}
+				return false;
 			});
-			worker.on('error', err => {
-				logger.debug(`[${type}] ${err}`);
-				error(err);
+			if (!filePresent) addedFiles.push(remoteFile);
+		}
+		for (const localFile of localFiles) {
+			const filePresent = remoteFiles.some(remoteFile => {
+				return localFile.basename === remoteFile.basename;
 			});
-			worker.on('exit', code => {
-				if (code !== 0) {
-					const err = new Error(`Worker stopped with exit code ${code}`);
-					logger.debug(`[${type}] ${err}`);
-					error(err);
-				}
+			if (!filePresent) removedFiles.push(localFile);
+		}
+		// Remove files to update to start over their download
+		for (const file of updatedFiles) {
+			await asyncRemove(resolve(localDir, file.basename));
+		}
+		const filesToDownload = addedFiles.concat(updatedFiles);
+		if (removedFiles.length > 0) await removeFiles(removedFiles.map(f => f.basename), localDir);
+		if (filesToDownload.length > 0) {
+			filesToDownload.sort((a,b) => {
+				return (a.basename > b.basename) ? 1 : ((b.basename > a.basename) ? -1 : 0);
 			});
-		} catch(err) {
-			logger.warn(`[${type}] Error updating : ${err}`);
-			error(err);
+			let bytesToDownload = 0;
+			for (const file of filesToDownload) {
+				bytesToDownload = bytesToDownload + file.size;
+			}
+			logger.info(`[${type}] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);
+			await downloadMedias(filesToDownload, localDir, type, task);
+			logger.info(`[${type}] Update done`);
+		}
+	} catch(err) {
+		console.log(err);
+	}
+}
+
+async function downloadMedias(files: File[], dir: string, type: MediaType, task: Task) {
+	let list = [];
+	for (const file of files) {
+		list.push({
+			filename: resolve(dir, file.basename),
+			url: `${KMSite.url}/${type}/${encodeURIComponent(file.basename)}`,
+			size: file.size
+		});
+	}
+	const mediaDownloads = new Downloader({
+		bar: false,
+		task: task,
+		auth: {
+			user: KMSite.username,
+			pass: KMSite.password
 		}
 	});
+	const fileErrors = await mediaDownloads.download(list);
+	if (fileErrors.length > 0) throw `Error downloading these medias : ${fileErrors.toString()}`;
 }
+
 
 export async function buildMediasList(type: MediaType) {
 	medias[type] = [];

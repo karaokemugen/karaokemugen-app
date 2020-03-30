@@ -95,7 +95,6 @@
     "i18next-node-fs-backend": "^2.1.3",
     "internet-available": "^1.0.0",
     "ip": "^1.1.5",
-    "isomorphic-git": "^1.3.1",
     "jimp": "^0.9.6",
     "js-yaml": "^3.13.1",
     "jwt-simple": "^0.5.6",
@@ -136,6 +135,7 @@
     "ultrastar2ass": "^1.0.11",
     "uuid": "^7.0.2",
     "validate.js": "^0.13.1",
+    "webdav": "^3.2.0",
     "winston": "^3.2.1",
     "winston-console-for-electron": "^0.0.7",
     "winston-daily-rotate-file": "^4.4.2",
@@ -195,7 +195,7 @@
   "build": {
     "appId": "KaraokeMugen",
     "nsis": {
-	  "warningsAsErrors": false,
+      "warningsAsErrors": false,
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "license": "LICENSE.md"
@@ -207,10 +207,10 @@
         "provider": "generic",
         "url": "https://mugen.karaokes.moe/downloads/"
       }
-	},
-	"dmg": {
-		"icon": "build/DMG.icns"
-	},
+    },
+    "dmg": {
+      "icon": "build/DMG.icns"
+    },
     "win": {
       "target": [
         "nsis",
@@ -239,8 +239,8 @@
       "category": "AudioVideo",
       "synopsis": "Karaoke manager and player"
     },
-	"productName": "Karaoke Mugen",
-	"copyright": "(c) 2017-2020 Karaoke Mugen Team",
+    "productName": "Karaoke Mugen",
+    "copyright": "(c) 2017-2020 Karaoke Mugen Team",
     "extraResources": [
       "migrations/**",
       "locales/*",
@@ -248,7 +248,7 @@
       "frontend/build/**",
       "systempanel/build/**",
       "initpage/**",
-	  "build/icon.png"
+      "build/icon.png"
     ],
     "extraFiles": [
       "app/bin/**"
