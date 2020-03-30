@@ -746,9 +746,13 @@ async function checkCircledAvatars() {
 	logger.debug('[User] Checking if all avatars have circled versions');
 	const users = await listUsers();
 	for (const user of users) {
-		const file = resolve(resolvedPathAvatars(), user.avatar_file);
-		if (await asyncExists(file) && !await asyncExists(replaceExt(file, '.circle.png'))) {
-			await createCircleAvatar(file);
+		try {
+			const file = resolve(resolvedPathAvatars(), user.avatar_file);
+			if (await asyncExists(file) && !await asyncExists(replaceExt(file, '.circle.png'))) {
+				await createCircleAvatar(file);
+			}
+		} catch(err) {
+			logger.error(`[Users] Unable to create circled avatar for ${user.login} with ${user.avatar_file} : ${err}`);
 		}
 	}
 }
