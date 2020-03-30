@@ -78,7 +78,7 @@ class App extends Component<{}, IState> {
 
 	async componentDidMount() {
 		if (axios.defaults.headers.common['authorization']) {
-			await this.checkAuth();
+			this.checkAuth();
 		}
 		await this.getSettings();
 		getSocket().on('settingsUpdated', this.getSettings);
