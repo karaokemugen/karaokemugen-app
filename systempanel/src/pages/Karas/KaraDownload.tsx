@@ -3,7 +3,6 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {Row, Col, Icon, Layout, Table, Input, Button, Cascader, Radio} from 'antd';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
-import openSocket from 'socket.io-client';
 import {
   getLocalKaras,
   deleteDownloadQueue,
@@ -68,28 +67,6 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	}
 
 	componentDidMount() {
-		let url = window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:1337` : window.location.origin;
-		const socket = openSocket(url);
-		socket.on('downloadProgress', (data) => {
-			let active_download = null;
-			if(this.state.karas_online) {
-				this.state.karas_online.forEach((kara,i) => {
-					if(kara.name === data.id) {
-						let remain = parseInt(data.total) - parseInt(data.value);
-						if(remain>0) {
-							active_download = {
-								index: i,
-								progress:Math.round(100 * parseInt(data.value) / parseInt(data.total)),
-							};
-						}
-					}
-				});
-				if(JSON.stringify(this.state.active_download) !== JSON.stringify(active_download))
-					this.setState({active_download:active_download});
-			}
-		});
-
-
 
 		this.api_get_online_karas();
 		this.api_get_blacklist_criterias();
@@ -520,7 +497,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 				let queue = this.is_queued_kara(record);
 				if(queue) {
 					if(queue.status==='DL_RUNNING')
-						button = <span><Button disabled type="default"><Icon type="sync" spin /></Button> {this.state.active_download ? this.state.active_download.progress:null}%</span>;
+						button = <span><Button disabled type="default"><Icon type="sync" spin /></Button></span>;
 					else if(queue.status==='DL_PLANNED')
 						button = <Button onClick={deleteKAraFromDownloadQueue.bind(null,queue.pk_uuid)} type="default"><Icon type='clock-circle' theme="twoTone" twoToneColor="#dc4e41"/></Button>;
 					else if(queue.status==='DL_DONE') // done but not in local -> try again dude
