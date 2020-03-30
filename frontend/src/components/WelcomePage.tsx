@@ -228,19 +228,21 @@ class WelcomePage extends Component<IProps, IState> {
                 <li><a href="http://mugen.karaokes.moe/contact.html"><i className="fas fa-pencil-alt" />{i18next.t('WLCM_CONTACT')}</a></li>
                 <li><a href="http://mugen.karaokes.moe/"><i className="fas fa-link" />{i18next.t('WLCM_SITE')}</a></li>
                 <li><a href="#" onClick={this.openLoginOrProfileModal}><i className="fas fa-user" /><span>{logInfos && logInfos.token ? decodeURIComponent(logInfos.username) : i18next.t('NOT_LOGGED')}</span></a></li>
-                <li>{
-                  logInfos && logInfos.token ? (
-                    <a
-                      href="#"
-                      title={i18next.t('LOGOUT')}
-                      className="logout"
-                      onClick={() => {
-                      store.logOut();
-                      this.openLoginOrProfileModal();
-                      }}
-                    ><i className="fas fa-sign-out-alt" /><span>{i18next.t('LOGOUT')}</span></a>
+               {
+                logInfos && logInfos.token ? (
+					<li>
+						<a
+							href="#"
+							title={i18next.t('LOGOUT')}
+							className="logout"
+							onClick={() => {
+							store.logOut();
+							this.openLoginOrProfileModal();
+							}}
+						><i className="fas fa-sign-out-alt" /><span>{i18next.t('LOGOUT')}</span></a>
+					</li>
                   ) : null
-                }</li>
+                }
               </ul>
             </nav>
             <div className="session-setting">
