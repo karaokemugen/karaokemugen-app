@@ -6,8 +6,8 @@ import logger from 'winston';
 import { v4 as uuidV4 } from 'uuid';
 import { sanitizeFile, resolveFileInDirs } from '../lib/utils/files';
 import { refreshKaras } from '../lib/dao/kara';
-import {Series} from '../lib/types/series';
-import { KaraParams, KaraList, IDQueryResult } from '../lib/types/kara';
+import {Series, SeriesList} from '../lib/types/series';
+import { KaraParams, IDQueryResult } from '../lib/types/kara';
 import { removeSeriesInStore, editSeriesInStore, addSeriesToStore, sortSeriesStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import {getDataFromSeriesFile} from '../lib/dao/seriesfile';
@@ -34,7 +34,7 @@ export async function getOrAddSerieID(serieObj: Series): Promise<IDQueryResult> 
 }
 
 
-export function formatSeriesList(seriesList: any[], from: number, count: number): KaraList {
+export function formatSeriesList(seriesList: any[], from: number, count: number): SeriesList {
 	return {
 		infos: {
 			count: count,
@@ -79,6 +79,7 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 		logger.warn(`[Series] Series original name already exists "${serieObj.name}"`);
 		return serie.sid;
 	}
+	serieObj.modified_at = new Date().toISOString();
 	if (!serieObj.sid) serieObj.sid = uuidV4();
 	if (!serieObj.seriefile) serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
 	const seriefile = serieObj.seriefile;
@@ -109,6 +110,7 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 	if (!oldSerie) throw `Series ID ${sid} unknown`;
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	const seriefile = serieObj.seriefile;
+	serieObj.modified_at = new Date().toISOString();
 	await Promise.all([
 		updateSerie(serieObj),
 		writeSeriesFile(serieObj, resolvedPathRepos('Series', serieObj.repository)[0])

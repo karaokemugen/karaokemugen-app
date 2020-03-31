@@ -77,6 +77,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 				const series = await getSerie(sid);
 				// Modify serie file we just copied to change its repo
 				series.repository = repoName;
+				series.modified_at = new Date().toISOString();
 				tasks.push(writeSeriesFile(series, resolvedPathRepos('Series', repoName)[0]));
 			}
 		}
@@ -84,6 +85,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			const tag = await getTag(tid.split('~')[0]);
 			// Modify tag file we just copied to change its repo
 			tag.repository = repoName;
+			tag.modified_at = new Date().toISOString();
 			tasks.push(writeTagFile(tag, resolvedPathRepos('Tags', repoName)[0]));
 		}
 		await Promise.all(tasks);
@@ -333,7 +335,7 @@ export async function removeSerieInKaras(sid: string, karas: KaraList) {
 		const karaPath = (await resolveFileInDirs(karaWithSerie.karafile, resolvedPathRepos('Karas', karaWithSerie.repository)))[0];
 		const kara = await parseKara(karaPath[0]);
 		kara.data.sids = kara.data.sids.filter((s: any) => s !== sid);
-		kara.data.modified_at = new Date().toString();
+		kara.data.modified_at = new Date().toISOString();
 		await asyncWriteFile(karaPath, JSON.stringify(kara, null, 2));
 		await editKaraInStore(karaPath);
 	}

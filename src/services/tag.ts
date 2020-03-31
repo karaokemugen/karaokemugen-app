@@ -14,8 +14,9 @@ import { IDQueryResult } from '../lib/types/kara';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { resolve } from 'path';
 import { emitWS } from '../lib/utils/ws';
+import { DBTag } from '../lib/types/database/tag';
 
-export function formatTagList(tagList: Tag[], from: number, count: number) {
+export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
 		infos: {
 			count: count,
@@ -42,12 +43,16 @@ export async function getDuplicateTags() {
 export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> {
 	const tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
 	if (tag) {
+		// Doing this because DBTag has a Date object for modified_at while Tag has a string.
+		// Kill me please.
+		const tagObj: any = tag
 		logger.debug(`[Tag] Tag original name already exists "${tagObj.name} and ${tagObj.types}"`);
-		return tag;
+		return tagObj;
 	}
 	if (!tagObj.tid) tagObj.tid = uuidV4();
 	if (!tagObj.tagfile) tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
 	const tagfile = tagObj.tagfile;
+	tagObj.modified_at = new Date().toISOString();
 
 	const promises = [
 		insertTag(tagObj),
@@ -81,7 +86,7 @@ export async function getTag(tid: string) {
 }
 
 export async function getOrAddTagID(tagObj: Tag): Promise<IDQueryResult> {
-	let tag:Tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
+	let tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
 	if (tag) return {id: tag.tid, new: false};
 	await addTag(tagObj, {refresh: false});
 	return {id: tagObj.tid, new: true};
@@ -108,6 +113,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 			i18n: i18n,
 			short: tag1.short,
 			aliases: aliases,
+			modified_at: new Date().toISOString(),
 			tagfile: `${tag1.name}.${tid.substring(0, 8)}.tag.json`,
 			repository: tag1.repository
 		};
@@ -146,6 +152,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 	if (!oldTag) throw 'Tag ID unknown';
 	tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
 	const tagfile = tagObj.tagfile;
+	tagObj.modified_at = new Date().toISOString();
 	await Promise.all([
 		updateTag(tagObj),
 		writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0])

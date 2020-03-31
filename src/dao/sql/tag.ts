@@ -1,7 +1,7 @@
 // SQL for tags
 
 export const getTag = `
-SELECT tid, name, types, short, aliases, i18n, karacount, tagfile, repository
+SELECT tid, name, types, short, aliases, i18n, modified_at, karacount, tagfile, repository
 FROM all_tags
 WHERE tid = $1
 `;
@@ -20,6 +20,7 @@ SELECT tid,
 	i18n,
 	karacount,
 	tagfile,
+	modified_at,
 	repository
 FROM all_tags
 WHERE 1 = 1
@@ -39,7 +40,8 @@ INSERT INTO tag(
 	i18n,
 	aliases,
 	tagfile,
-	repository
+	repository,
+	modified_at
 )
 VALUES(
 	$1,
@@ -49,7 +51,8 @@ VALUES(
 	$5,
 	$6,
 	$7,
-	$8
+	$8,
+	$9
 )
 ON CONFLICT (pk_tid) DO UPDATE SET
 	types = $3
@@ -92,7 +95,8 @@ SET
 	short = $4,
 	types = $5,
 	i18n = $6,
-	repository = $8
+	repository = $8,
+	modified_at = $9
 WHERE pk_tid = $7;
 `;
 

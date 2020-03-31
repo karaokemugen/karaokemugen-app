@@ -2,6 +2,7 @@ import {db, paramWords} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import { TagParams, Tag, TagAndType } from '../lib/types/tag';
 import { WhereClause } from '../types/database';
+import { DBTag } from '../lib/types/database/tag';
 const sql = require('./sql/tag');
 
 export async function selectTag(id: string): Promise<Tag> {
@@ -9,7 +10,7 @@ export async function selectTag(id: string): Promise<Tag> {
 	return res.rows[0];
 }
 
-export async function getAllTags(params: TagParams): Promise<Tag[]> {
+export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 	let filterClauses = params.filter
 		? buildTagClauses(params.filter)
 		: {sql: [], params: {}};
@@ -47,7 +48,8 @@ export async function insertTag(tag: Tag) {
 		tag.i18n || {},
 		JSON.stringify(tag.aliases) || null,
 		tag.tagfile,
-		tag.repository
+		tag.repository,
+		tag.modified_at
 	]);
 }
 
@@ -58,7 +60,7 @@ export async function updateKaraTagsTID(oldTID: string, newTID: string) {
 	]);
 }
 
-export async function selectDuplicateTags(): Promise<Tag[]> {
+export async function selectDuplicateTags(): Promise<DBTag[]> {
 	return await db().query(sql.selectDuplicateTags);
 }
 
@@ -73,7 +75,7 @@ export async function updateKaraTags(kid: string, tags: TagAndType[]) {
 	}
 }
 
-export async function selectTagByNameAndType(name: string, type: number): Promise<Tag> {
+export async function selectTagByNameAndType(name: string, type: number): Promise<DBTag> {
 	const res = await db().query(sql.getTagByNameAndType, [
 		name,
 		[type]
@@ -90,7 +92,8 @@ export async function updateTag(tag: Tag) {
 		tag.types,
 		tag.i18n || {},
 		tag.tid,
-		tag.repository
+		tag.repository,
+		tag.modified_at
 	]);
 }
 
