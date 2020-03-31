@@ -517,6 +517,7 @@ export async function updateBase(repo: string) {
 		]);
 		if (updatedSongs > 0 || newSongs > 0) await waitForUpdateQueueToFinish();
 		// Now checking tags and series if we're missing any
+		logger.info('[Update] Getting local and remote series/tags inventory');
 		const [tags, series] = await Promise.all([
 			getTagsInventory(repo),
 			getSeriesInventory(repo)
@@ -780,9 +781,9 @@ async function updateSeries(repo: string, local: SeriesList, remote: SeriesList)
 		logger.info(`[Update] Updating ${seriesToUpdate.length} series`);
 		if (seriesToUpdate.length > 0) {
 			const list = [];
-			let newSerieFiles: string[];
+			let newSerieFiles = [];
 			for (const s of seriesToUpdate) {
-				const oldFiles = resolveFileInDirs(s.oldFile, resolvedPathRepos('Series', repo))
+				const oldFiles = await resolveFileInDirs(s.oldFile, resolvedPathRepos('Series', repo))
 				const oldPath = dirname(oldFiles[0]);
 				const newSerieFile = resolve(oldPath, s.serie.seriefile)
 				newSerieFiles.push(newSerieFile);
@@ -825,12 +826,12 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 			}
 		}
 
-		logger.info(`[Update] Updating ${tagsToUpdate.length} series`);
+		logger.info(`[Update] Updating ${tagsToUpdate.length} tags`);
 		if (tagsToUpdate.length > 0) {
 			const list = [];
-			let newTagFiles: string[];
+			let newTagFiles = [];
 			for (const t of tagsToUpdate) {
-				const oldFiles = resolveFileInDirs(t.oldFile, resolvedPathRepos('Tags', repo))
+				const oldFiles = await resolveFileInDirs(t.oldFile, resolvedPathRepos('Tags', repo))
 				const oldPath = dirname(oldFiles[0]);
 				const newTagFile = resolve(oldPath, t.tag.tagfile)
 				newTagFiles.push(newTagFile);
