@@ -24,6 +24,7 @@ SELECT
 	aseries.search AS search,
 	aseries.seriefile AS seriefile,
 	aseries.karacount::integer AS karacount,
+	aseries.modified_at AS modified_at,
 	aseries.repository AS repository
 FROM all_series aseries
 WHERE 1 = 1
@@ -47,6 +48,7 @@ SELECT
 	aseries.search AS search,
 	aseries.seriefile AS seriefile,
 	aseries.karacount::integer AS karacount,
+	aseries.modified_at AS modified_at,
 	aseries.repository AS repository
 FROM all_series aseries
 WHERE sid = $1;
@@ -58,6 +60,7 @@ INSERT INTO serie(
 	aliases,
 	pk_sid,
 	seriefile,
+	modified_at,
 	repository
 )
 VALUES(
@@ -65,6 +68,7 @@ VALUES(
 	:aliases,
 	:sid,
 	:seriefile,
+	:modified_at,
 	:repository
 )
 `;
@@ -75,6 +79,7 @@ SET
 	name = :name,
 	aliases = :aliases,
 	seriefile = :seriefile,
+	modified_at = :modified_at,
 	repository = :repository
 WHERE pk_sid = :sid;
 `;

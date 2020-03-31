@@ -3,13 +3,13 @@ import Downloader from '../utils/downloader';
 import Queue from 'better-queue';
 import { v4 as uuidV4 } from 'uuid';
 import {resolvedPathTemp, resolvedPathRepos, getConfig} from '../lib/utils/config';
-import {resolve} from 'path';
+import {resolve, dirname} from 'path';
 import internet from 'internet-available';
 import logger, { profile } from '../lib/utils/logger';
 import {asyncMove, resolveFileInDirs, asyncStat, asyncUnlink, asyncReadDir, asyncWriteFile} from '../lib/utils/files';
 import {uuidRegexp, getTagTypeName} from '../lib/utils/constants';
 import {integrateKaraFile, getAllKaras, getKaras} from './kara';
-import {integrateSeriesFile} from './series';
+import {integrateSeriesFile, getSeries} from './series';
 import { compareKarasChecksum } from '../dao/database';
 import { vacuum } from '../lib/dao/database';
 import { emitWS } from '../lib/utils/ws';
@@ -29,6 +29,7 @@ import { DownloadBundle } from '../lib/types/downloads';
 import sampleSize from 'lodash.samplesize';
 import Task from '../lib/utils/taskManager';
 import { extractAssInfos } from '../lib/dao/karafile';
+import { SeriesList } from '../lib/types/series';
 
 const queueOptions = {
 	id: 'uuid',
@@ -262,19 +263,23 @@ async function integrateDownload(bundle: DownloadBundle, localSeriesPath: string
 	}
 }
 
-async function downloadFiles(download: KaraDownload, list: DownloadItem[], task: Task) {
+async function downloadFiles(download?: KaraDownload, list?: DownloadItem[], task?: Task) {
 	const downloader = new Downloader({ bar: true, task: task });
 	// Launch downloads
 	return new Promise((resolve, reject) => {
 		downloader.download(list)
 		.then(fileErrors => {
 			if (fileErrors.length > 0) {
-				setDownloadStatus(download.uuid, 'DL_FAILED')
-					.then(() => {
-						reject(`Error downloading file : ${fileErrors.toString()}`);
-					}).catch(err => {
-						reject(`Error downloading file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
-					});
+				if (download) {
+					setDownloadStatus(download.uuid, 'DL_FAILED')
+						.then(() => {
+							reject(`Error downloading file : ${fileErrors.toString()}`);
+						}).catch(err => {
+							reject(`Error downloading file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
+						})
+				} else {
+					reject(`Error downloading file : ${fileErrors.toString()}`);
+				}
 			} else {
 				resolve();
 			}
@@ -472,8 +477,13 @@ export async function getAllRemoteTags(repository: string, params: TagParams): P
 	}
 }
 
-export async function getRemoteTags(repo: string, params: TagParams): Promise<TagList> {
+export async function getRemoteTags(repo: string, params: TagParams = {}): Promise<TagList> {
 	const res = await got(`https://${repo}/api/karas/tags${params.type ? '/' + params.type : '' }`);
+	return JSON.parse(res.body);
+}
+
+export async function getRemoteSeries(repo: string): Promise<SeriesList> {
+	const res = await got(`https://${repo}/api/karas/series`);
 	return JSON.parse(res.body);
 }
 
@@ -505,8 +515,17 @@ export async function updateBase(repo: string) {
 			updateKaras(repo, karas.local, karas.remote),
 			downloadKaras(repo, karas.local, karas.remote)
 		]);
-		if (updatedSongs === 0 && newSongs === 0) return true;
-		await waitForUpdateQueueToFinish();
+		if (updatedSongs > 0 || newSongs > 0) await waitForUpdateQueueToFinish();
+		// Now checking tags and series if we're missing any
+		const [tags, series] = await Promise.all([
+			getTagsInventory(repo),
+			getSeriesInventory(repo)
+		]);
+		const [updatedSeries, updatedTags] = await Promise.all([
+			updateSeries(repo, series.local, series.remote),
+			updateTags(repo, tags.local, tags.remote)
+		]);
+		if (updatedSeries > 0 || updatedTags > 0) await refreshAll();
 		return true;
 	} catch(err) {
 		logger.error(`[Update] Base update failed : ${err}`);
@@ -530,6 +549,31 @@ async function waitForUpdateQueueToFinish() {
 		});
 	});
 }
+
+async function getTagsInventory(repo: string) {
+	const [local, remote] = await Promise.all([
+		getTags({}),
+		getRemoteTags(repo)
+	]);
+	local.content = local.content.filter(t => t.repository === repo);
+	return {
+		local,
+		remote
+	};
+}
+
+async function getSeriesInventory(repo: string) {
+	const [local, remote] = await Promise.all([
+		getSeries({}),
+		getRemoteSeries(repo)
+	]);
+	local.content = local.content.filter(s => s.repository === repo);
+	return {
+		local,
+		remote
+	};
+}
+
 async function getKaraInventory(repo: string) {
 	const [local, remote] = await Promise.all([
 		getAllKaras(),
@@ -695,6 +739,17 @@ export async function updateAllKaras() {
 			if (repo.Online) {
 				logger.info(`[Update] Updating all songs from repository ${repo.Name}`);
 				await updateKaras(repo.Name);
+				await waitForUpdateQueueToFinish();
+				// Now checking tags and series if we're missing any
+				const [tags, series] = await Promise.all([
+					getTagsInventory(repo.Name),
+					getSeriesInventory(repo.Name)
+				]);
+				const [updatedSeries, updatedTags] = await Promise.all([
+					updateSeries(repo.Name, series.local, series.remote),
+					updateTags(repo.Name, tags.local, tags.remote)
+				]);
+				if (updatedSeries > 0 || updatedTags > 0) await refreshAll();
 			}
 		} catch(err) {
 			logger.warn(`[Update] Repository ${repo.Name} failed to update songs properly: ${err}`);
@@ -702,8 +757,104 @@ export async function updateAllKaras() {
 	}
 }
 
+async function updateSeries(repo: string, local: SeriesList, remote: SeriesList) {
+	logger.info('[Update] Starting series update process...');
+	const task = new Task({
+		text: 'UPDATING_REPO',
+		subtext: repo
+	});
+	try {
+		profile('seriesUpdate');
+		const seriesToUpdate = [];
+		for (const s of local.content) {
+			const rs = remote.content.find(rs => rs.sid === s.sid);
+			if (!rs) continue;
+			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
+			if (rs && rs.modified_at as unknown > s.modified_at.toISOString())
+			{
+				seriesToUpdate.push({serie: rs, oldFile: s.seriefile});
+				continue;
+			}
+		}
+		profile('seriesUpdate');
+		logger.info(`[Update] Updating ${seriesToUpdate.length} series`);
+		if (seriesToUpdate.length > 0) {
+			const list = [];
+			let newSerieFiles: string[];
+			for (const s of seriesToUpdate) {
+				const oldFiles = resolveFileInDirs(s.oldFile, resolvedPathRepos('Series', repo))
+				const oldPath = dirname(oldFiles[0]);
+				const newSerieFile = resolve(oldPath, s.serie.seriefile)
+				newSerieFiles.push(newSerieFile);
+				list.push({
+					filename: newSerieFile,
+					url: `https://${repo}/downloads/series/${encodeURIComponent(s.serie.seriefile)}`
+				});
+			}
+			await downloadFiles(null, list, task);
+			for (const f of newSerieFiles) {
+				await integrateSeriesFile(f);
+			}
+		}
+		return seriesToUpdate.length;
+	} catch(err) {
+		throw err;
+	} finally {
+		profile('seriesUpdate');
+		task.end();
+	}
+}
+
+async function updateTags(repo: string, local: TagList, remote: TagList) {
+	logger.info('[Update] Starting tag update process...');
+	const task = new Task({
+		text: 'UPDATING_REPO',
+		subtext: repo
+	});
+	try {
+		profile('tagUpdate');
+		const tagsToUpdate = [];
+		for (const t of local.content) {
+			const rt = remote.content.find(rt => rt.tid === t.tid);
+			if (!rt) continue;
+			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
+			if (rt && rt.modified_at as unknown > t.modified_at.toISOString())
+			{
+				tagsToUpdate.push({tag: rt, oldFile: t.tagfile});
+				continue;
+			}
+		}
+
+		logger.info(`[Update] Updating ${tagsToUpdate.length} series`);
+		if (tagsToUpdate.length > 0) {
+			const list = [];
+			let newTagFiles: string[];
+			for (const t of tagsToUpdate) {
+				const oldFiles = resolveFileInDirs(t.oldFile, resolvedPathRepos('Tags', repo))
+				const oldPath = dirname(oldFiles[0]);
+				const newTagFile = resolve(oldPath, t.tag.tagfile)
+				newTagFiles.push(newTagFile);
+				list.push({
+					filename: newTagFile,
+					url: `https://${repo}/downloads/tags/${encodeURIComponent(t.tag.tagfile)}`
+				});
+			}
+			await downloadFiles(null, list, task);
+			for (const f of newTagFiles) {
+				await integrateTagFile(f);
+			}
+		}
+		return tagsToUpdate.length;
+	} catch(err) {
+		throw err;
+	} finally {
+		profile('tagUpdate');
+		task.end();
+	}
+}
+
 export async function updateKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
-	logger.info('[Update] Starting update process...');
+	logger.info('[Update] Starting kara update process...');
 	const task = new Task({
 		text: 'UPDATING_REPO',
 		subtext: repo
