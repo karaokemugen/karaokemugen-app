@@ -14,6 +14,7 @@ import { Series } from '../lib/types/series';
 import { getSerie } from './series';
 import logger from '../lib/utils/logger';
 import { compareKarasChecksum } from '../dao/database';
+import { getRemoteKaras } from './download';
 
 type UUIDSet = Set<string>
 
@@ -36,6 +37,11 @@ export function removeRepo(name: string) {
 
 /** Add a repository. Folders will be created if necessary */
 export async function addRepo(repo: Repository) {
+	if (repo.Online) {
+		// Testing if repository is reachable
+		const karas = await getRemoteKaras(repo.Name, {from: 1, size: 1});
+		if (karas.content.length === 0) throw 'Repository unreachable. Did you mispell its name?';
+	}
 	insertRepo(repo);
 	await checkRepoPaths(repo);
 	logger.info(`[Repo] Added ${repo.Name}`);
@@ -44,6 +50,11 @@ export async function addRepo(repo: Repository) {
 /** Edit a repository. Folders will be created if necessary */
 export async function editRepo(name: string, repo: Repository) {
 	const oldRepo = getRepo(name);
+	if (!oldRepo.Online && repo.Online) {
+		// Testing if repository is reachable
+		const karas = await getRemoteKaras(repo.Name, {from: 1, size: 1});
+		if (karas.content.length === 0) throw 'Repository unreachable. Did you mispell its name?';
+	}
 	updateRepo(repo, name);
 	await checkRepoPaths(repo);
 	if (oldRepo.Enabled !== repo.Enabled) {
