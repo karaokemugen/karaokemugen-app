@@ -98,7 +98,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	}
 
 	changeFilter(event) {
-		this.setState({filter: event.target.value}, () => {
+		this.setState({filter: event.target.value, currentPage: 0}, () => {
 			localStorage.setItem('karaDownloadFilter', this.state.filter);
 		});
 	}
@@ -277,7 +277,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		if(value && value[1])
 			t = 't:'+value[1]+'~'+value[0]
 
-		this.setState({tagFilter:t}, () => {
+		this.setState({tagFilter:t, currentPage: 0}, () => {
 			localStorage.setItem('karaDownloadtagFilter', this.state.tagFilter);
 			setTimeout(this.api_get_online_karas.bind(this),10);
 		});
@@ -353,7 +353,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 							<Col span={9}>
 								<Radio checked={this.state.compare === ''}
 										onChange={async () => {
-											await this.setState({compare: ''});
+											await this.setState({compare: '', currentPage: 0});
 											this.api_get_online_karas();
 									}}>{i18next.t('KARA.FILTER_ALL')}</Radio>
 							</Col>
@@ -372,7 +372,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 							<Col span={9}>
 								<Radio checked={this.state.compare === '&compare=updated'}
 										onChange={async () => {
-											await this.setState({compare: '&compare=updated'});
+											await this.setState({compare: '&compare=updated', currentPage: 0});
 											this.api_get_online_karas();
 										}}>{i18next.t('KARA.FILTER_UPDATED')}</Radio>
 							</Col>
@@ -391,7 +391,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 							<Col span={9}>
 								<Radio checked={this.state.compare === '&compare=missing'}
 										onChange={async () => {
-											await this.setState({compare: '&compare=missing'});
+											await this.setState({compare: '&compare=missing', currentPage: 0});
 											this.api_get_online_karas();
 									}}>{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}</Radio>
 							</Col>

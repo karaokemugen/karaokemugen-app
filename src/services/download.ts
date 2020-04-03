@@ -437,17 +437,31 @@ export async function getRemoteKaras(repo: string, params: KaraParams, compare?:
 		});
 		karas.content.forEach(k => localKIDs[k.kid] = k.modified_at);
 	}
-	const res = await got.post(`https://${repo}/api/karas/search`, {
-		json: {
-			filter: params.filter,
-			size: params.size,
-			from: params.from,
-			q: params.q || '',
-			localKaras: compare ? localKIDs : null,
-			compare: compare
+	try {
+		const res = await got.post(`https://${repo}/api/karas/search`, {
+			json: {
+				filter: params.filter,
+				size: params.size,
+				from: params.from,
+				q: params.q || '',
+				localKaras: compare ? localKIDs : null,
+				compare: compare
+			}
+		});
+		return JSON.parse(res.body);
+	} catch(err) {
+		logger.warn(`[Download] Unable to fetch karas from repository ${repo} : ${err}`);
+		logger.warn(`[Download] Repository ${repo} ignored`);
+		return {
+			content: [],
+			i18n: {},
+			infos: {
+				count: 0,
+				from: 0,
+				to: 0
+			}
 		}
-	});
-	return JSON.parse(res.body);
+	}
 }
 
 export async function getAllRemoteTags(repository: string, params: TagParams): Promise<TagList> {
@@ -714,6 +728,11 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 			const karas = await getKaraInventory(repo);
 			local = karas.local;
 			remote = karas.remote;
+		}
+		//Return early if repository is not reachable / does return no songs
+		if (remote.content.length === 0) {
+			logger.warn(`[Download] Repository ${repo} likely unreachable or not returning any song. Ignoring its cleanup`);
+			return;
 		}
 		const localKIDs = local.content.map(k => k.kid);
 		const remoteKIDs = remote.content.map(k => k.kid);

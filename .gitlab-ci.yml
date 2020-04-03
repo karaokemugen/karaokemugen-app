@@ -162,7 +162,7 @@ pkg_mac:
     RESTORE_CACHE_ATTEMPTS: 10
   script:
     - rm -Rf release
-    - yarn add --dev electron-builder
+    - yarn add --dev electron-builder@22.4.0
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-3.2.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - ./node_modules/.bin/electron-builder -m

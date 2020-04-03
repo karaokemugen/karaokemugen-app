@@ -285,8 +285,13 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
 			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
-			user.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
-			createCircleAvatar(resolve(resolvedPathAvatars(), user.avatar_file));
+			try {
+				user.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
+				createCircleAvatar(resolve(resolvedPathAvatars(), user.avatar_file));
+			} catch(err) {
+				//Non-fatal
+				logger.warn(`[User] ${err}`);
+			}
 		} else {
 			user.avatar_file = currentUser.avatar_file;
 		}

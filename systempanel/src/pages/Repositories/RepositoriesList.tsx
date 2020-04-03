@@ -85,22 +85,22 @@ class RepositoryList extends Component<ReduxMappedProps, RepositoryListState> {
 		title: i18next.t('REPOSITORIES.PATH_KARAS'),
 		dataIndex: 'Path.Karas',
 		key: 'path_karas',
-		render: (text, record:Repository) => (record.Path.Karas.map(item => {return <div key={item}>{item}</div>}))
+		render: (text, record:Repository) => (record.Path.Karas.map(item => {return <div className="pathFolders" key={item}>{item}</div>}))
 	}, {
 		title: i18next.t('REPOSITORIES.PATH_LYRICS'),
 		dataIndex: 'Path.Lyrics',
 		key: 'path_lyrics',
-		render: (text, record:Repository) => (record.Path.Lyrics.map(item => {return <div key={item}>{item}</div>}))
+		render: (text, record:Repository) => (record.Path.Lyrics.map(item => {return <div className="pathFolders" key={item}>{item}</div>}))
 	}, {
 		title: i18next.t('REPOSITORIES.PATH_MEDIAS'),
 		dataIndex: 'Path.Medias',
 		key: 'path_medias',
-		render: (text, record:Repository) => (record.Path.Medias.map(item => {return <div key={item}>{item}</div>}))
+		render: (text, record:Repository) => (record.Path.Medias.map(item => {return <div className="pathFolders" key={item}>{item}</div>}))
 	}, {
 		title: i18next.t('REPOSITORIES.PATH_SERIES'),
 		dataIndex: 'Path.Series',
 		key: 'path_series',
-		render: (text, record:Repository) => (record.Path.Series.map(item => {return <div key={item}>{item}</div>}))
+		render: (text, record:Repository) => (record.Path.Series.map(item => {return <div className="pathFolders" key={item}>{item}</div>}))
 	}, {
 		title: i18next.t('REPOSITORIES.PATH_TAGS'),
 		dataIndex: 'Path.Tags',
