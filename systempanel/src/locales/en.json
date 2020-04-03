@@ -210,6 +210,7 @@
 		"PRIMARY_DIRECTORY": "Primary directory",
 		"DELETE_DIRECTORY": "Delete directory",
 		"ADD_DIRECTORY": "Add a directory",
+		"ADD_FILE": "Add a file",
 		"REPOSITORIES_PAGES": "Repositories page"
 	},
 	"SERIES": {

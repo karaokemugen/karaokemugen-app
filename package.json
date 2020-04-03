@@ -84,6 +84,7 @@
     "csv-writer": "^1.6.0",
     "db-migrate": "^0.11.6",
     "db-migrate-pg": "^1.0.0",
+    "electron-better-ipc": "^0.8.0",
     "electron-updater": "^4.2.5",
     "execa": "^4.0.0",
     "express": "^4.17.1",

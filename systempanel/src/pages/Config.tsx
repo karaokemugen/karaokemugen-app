@@ -1,13 +1,13 @@
 import axios from 'axios';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {Input, Layout, Button, Table, Switch, Modal, Radio, Icon, Select} from 'antd';
+import {Input, Layout, Button, Table, Switch, Select} from 'antd';
 
 import {loading, infoMessage, errorMessage, warnMessage} from '../actions/navigation';
 import {ReduxMappedProps} from '../react-app-env';
 import i18next from 'i18next';
-import FileSystem from './Components/FileSystem';
 import { Link } from 'react-router-dom';
+import FoldersElement from './Components/FoldersElement';
 
 interface ConfigProps extends ReduxMappedProps {}
 
@@ -113,19 +113,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 		this.setState({recordModal: record, indexModal: index, visibleModal: true})
 	}
 
-	saveFolders () {
-		let value = this.state.recordModal.value;
-		if (this.state.indexModal === undefined) {
-			this.saveSetting(this.state.recordModal.key, this.state.newValueModal);
-		} else if (this.state.indexModal === -1) {
-			value.push(this.state.newValueModal);
-			this.saveSetting(this.state.recordModal.key, value);
-		} else {
-			value[this.state.indexModal] = this.state.newValueModal
-			this.saveSetting(this.state.recordModal.key, value);
-		}
-	}
-
 	getConfigToSearch(key) {
 		if (key === 'Player.Background') {
 			return 'System.Path.Backgrounds';
@@ -188,38 +175,8 @@ class Config extends Component<ConfigProps, ConfigState> {
 							/> :
 							((record.key.includes('System.Binaries') || record.key.includes('System.Path')) ? 
 								(Array.isArray(record.value) ? 
-									<div>
-										<div style={{ display: 'flex'}}>
-											<div style={{ width: '150px'}}>{i18next.t('CONFIG.PRIMARY_DIRECTORY')}</div>
-											{record.value.length > 1 ?
-												<div style={{ width: '150px'}}>{i18next.t('CONFIG.DELETE_DIRECTORY')}</div> : null
-											}
-										</div>
-										{record.value.map((element, index) =>
-											<div key={element} style={{ display: 'flex', margin: '10px'}}>
-												<Radio style={{ width: '200px'}} checked={record.primary === element} 
-													onChange={() => {
-														this.saveSetting(record.key, 
-															(record.value as Array<string>).filter(val => val === element)
-															.concat((record.value as Array<string>).filter(val => val !== element)));
-														}}> </Radio>
-												{record.value.length > 1 ?
-													<div style={{ width: '200px'}}> 
-														<Button type='danger' icon='delete'
-															onClick={() => {
-																record.value.splice(index, 1, null);
-																this.saveSetting(record.key, record.value);
-															}} />
-													</div> : null
-												}
-												<Input onClick={() => this.openFileSystemModal(record, index)} defaultValue={element} />
-											</div>
-										)}
-										<Button type='primary' onClick={() => this.openFileSystemModal(record, -1)}>
-											<Icon type="plus" />{i18next.t('CONFIG.ADD_DIRECTORY')}
-										</Button>
-									</div> :
-									<Input onClick={() => this.openFileSystemModal(record)} defaultValue={record.value} />)
+									<FoldersElement keyModal={record.key} value={record.value} openDirectory={true} onChange={(value) => this.saveSetting(record.key, value)} /> :
+									<FoldersElement keyModal={record.key} value={record.value} openFile={true} onChange={(value) => this.saveSetting(record.key, value)} />)
 								:
 								(configWithSelectFileInFolder.includes(record.key) ?
 									<Select style={{ width: '100%'}} onChange={(value) => {
@@ -260,16 +217,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 			});
 	}
 
-	getTitleModal() {
-		if (this.state.recordModal 
-			&& (this.state.recordModal.key.includes('System.Binaries.ffmpeg') 
-			|| this.state.recordModal.key.includes('System.Binaries.Player'))) {
-			return i18next.t('CONFIG.CHOOSE_FILE');
-		} else {
-			return i18next.t('CONFIG.CHOOSE_DIRECTORY');
-		}
-	}
-
 	getPathForFileSystem(record:Record) {
 		var regexp = this.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
 		if ((Array.isArray(record.value) && record.value[0].match(regexp) === null) 
@@ -289,23 +236,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 				<Button style={{ margin: '10px'}} type='primary' 
 					onClick={this.configBackup.bind(this)}>{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}</Button>
 				<p>{i18next.t('CONFIG.MESSAGE')}</p>
-				<Modal
-					title={this.getTitleModal()}
-					 visible={this.state.visibleModal}
-					onOk={() => {
-						this.saveFolders();
-						this.setState({visibleModal: false});
-					}}
-					onCancel={() => this.setState({visibleModal: false})}
-					okText={i18next.t('CONFIG.SAVE')}
-					cancelText={i18next.t('NO')}
-					> 
-					{this.state.visibleModal ? <FileSystem saveValueModal={(value) => this.setState({newValueModal: value})}
-						fileRequired={this.state.recordModal.key.includes('System.Binaries.ffmpeg') 
-						|| this.state.recordModal.key.includes('System.Binaries.Player')} os={this.state.os} 
-						path={`${this.getPathForFileSystem(this.state.recordModal)}${this.state.indexModal === -1 ? '/' : (Array.isArray(this.state.recordModal.value) ? 
-							this.state.recordModal.value[this.state.indexModal] : this.state.recordModal.value)}`} /> : null}
-				</Modal>
 				<Table
 					columns={this.columns}
 					dataSource={this.state.config}

@@ -210,6 +210,7 @@
 		"PRIMARY_DIRECTORY": "Dossier par défaut",
 		"DELETE_DIRECTORY": "Supprimer le dossier",
 		"ADD_DIRECTORY": "Ajouter un dossier",
+		"ADD_FILE": "Ajouter un fichier",
 		"REPOSITORIES_PAGES": "Page des dépôts"
 	},
 	"SERIES": {
