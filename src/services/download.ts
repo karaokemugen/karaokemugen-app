@@ -729,6 +729,11 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 			local = karas.local;
 			remote = karas.remote;
 		}
+		//Return early if repository is not reachable / does return no songs
+		if (remote.content.length === 0) {
+			logger.warn(`[Download] Repository ${repo} likely unreachable or not returning any song. Ignoring its cleanup`);
+			return;
+		}
 		const localKIDs = local.content.map(k => k.kid);
 		const remoteKIDs = remote.content.map(k => k.kid);
 		const karasToRemove = localKIDs.filter(kid => !remoteKIDs.includes(kid));
