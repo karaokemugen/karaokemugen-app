@@ -109,8 +109,11 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 		await asyncCheckOrMkdir(localDir);
 		// Setting additional path if it doesn't exist in config (but it should if you used the defaults)
 		const conf = getConfig();
-		if (!conf.System.Path[type].includes(conf.System.Path[type][0] + '/KaraokeMugen')) {
-			conf.System.Path[type].push(conf.System.Path[type][0] + '/KaraokeMugen');
+		const slash = process.platform === 'win32'
+			 ? '\\'
+			 : '/';
+		if (!conf.System.Path[type].includes(conf.System.Path[type][0] + slash + 'KaraokeMugen')) {
+			conf.System.Path[type].push(conf.System.Path[type][0] + slash + 'KaraokeMugen');
 			editSetting({ System:
 				{ Path:
 					conf.System.Path[type]

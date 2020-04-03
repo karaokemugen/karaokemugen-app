@@ -1,5 +1,5 @@
 import { selectRepos, deleteRepo, updateRepo, insertRepo } from '../dao/repo';
-import { asyncCheckOrMkdir, asyncExists, extractAllFiles, asyncMoveAll, relativePath } from '../lib/utils/files';
+import { relativePath, asyncCheckOrMkdir, asyncExists, extractAllFiles, asyncMoveAll } from '../lib/utils/files';
 import { resolve, basename } from 'path';
 import { getState } from '../utils/state';
 import { Repository } from '../lib/types/repo';
@@ -217,10 +217,10 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 	for (const dir of repo.Path.Medias) {
 		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'medias/'));
 	}
-	repo.Path.Karas = [relativePath(resolve(newPath, 'karaokes/'))];
-	repo.Path.Lyrics = [relativePath(resolve(newPath, 'lyrics/'))];
-	repo.Path.Medias = [relativePath(resolve(newPath, 'medias/'))];
-	repo.Path.Series = [relativePath(resolve(newPath, 'series/'))];
-	repo.Path.Tags = [relativePath(resolve(newPath, 'tags/'))];
+	repo.Path.Karas = [relativePath(state.dataPath, resolve(newPath, 'karaokes/'))];
+	repo.Path.Lyrics = [relativePath(state.dataPath, resolve(newPath, 'lyrics/'))];
+	repo.Path.Medias = [relativePath(state.dataPath, resolve(newPath, 'medias/'))];
+	repo.Path.Series = [relativePath(state.dataPath, resolve(newPath, 'series/'))];
+	repo.Path.Tags = [relativePath(state.dataPath, resolve(newPath, 'tags/'))];
 	await editRepo(repoName, repo);
 }

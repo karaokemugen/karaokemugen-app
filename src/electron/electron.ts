@@ -1,5 +1,5 @@
 import { setState, getState } from '../utils/state';
-import { app, BrowserWindow, Menu, ipcMain } from 'electron';
+import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { on } from '../lib/utils/pubsub';
 import { configureLocale, getConfig } from '../lib/utils/config';
@@ -10,6 +10,7 @@ import { resolve } from 'path';
 import open from 'open';
 import { initMenu, getMenu } from './electronMenu';
 import {initAutoUpdate} from './electronAutoUpdate';
+import {ipcMain as ipc} from 'electron-better-ipc';
 
 export let win: Electron.BrowserWindow;
 
@@ -48,6 +49,10 @@ export async function startElectron() {
 		if (win === null) {
 			createWindow();
 		}
+	});
+
+	ipc.answerRenderer('get-file-paths', async options => {
+		return (await dialog.showOpenDialog(options)).filePaths
 	});
 
 	await configureLocale();

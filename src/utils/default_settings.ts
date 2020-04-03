@@ -204,17 +204,17 @@ export const defaults: Config = {
 			Player: {
 				Linux: '/usr/bin/mpv',
 				OSX: 'app/bin/mpv.app/Contents/MacOS/mpv',
-				Windows: 'app/bin/mpv.exe'
+				Windows: 'app\\bin\\mpv.exe'
 			},
 			ffmpeg: {
 				Linux: '/usr/bin/ffmpeg',
 				OSX: 'app/bin/ffmpeg',
-				Windows: 'app/bin/ffmpeg.exe'
+				Windows: 'app\\bin\\ffmpeg.exe'
 			},
 			Postgres: {
 				Linux: 'app/bin/postgres/bin/',
 				OSX: 'app/bin/postgres/bin/',
-				Windows: 'app/bin/postgres/bin/'
+				Windows: 'app\\bin\\postgres\\bin\\'
 			}
 		},
 		Repositories: [
@@ -222,7 +222,15 @@ export const defaults: Config = {
 				Name: 'kara.moe',
 				Online: true,
 				Enabled: true,
-				Path: {
+				Path: process.platform === 'win32'
+				? {
+					Karas: ['repos\\kara.moe\\karaokes'],
+					Lyrics: ['repos\\kara.moe\\lyrics'],
+					Medias: ['repos\\kara.moe\\medias'],
+					Series: ['repos\\kara.moe\\series'],
+					Tags: ['repos\\kara.moe\\tags']
+				}
+				: {
 					Karas: ['repos/kara.moe/karaokes'],
 					Lyrics: ['repos/kara.moe/lyrics'],
 					Medias: ['repos/kara.moe/medias'],
@@ -234,7 +242,15 @@ export const defaults: Config = {
 				Name: 'Local',
 				Online: false,
 				Enabled: true,
-				Path: {
+				Path: process.platform === 'win32'
+				? {
+					Karas: ['repos\\Local\\karaokes'],
+					Lyrics: ['repos\\Local\\lyrics'],
+					Medias: ['repos\\Local\\medias'],
+					Series: ['repos\\Local\\series'],
+					Tags: ['repos\\Local\\tags']
+				}
+				: {
 					Karas: ['repos/Local/karaokes'],
 					Lyrics: ['repos/Local/lyrics'],
 					Medias: ['repos/Local/medias'],
@@ -248,12 +264,12 @@ export const defaults: Config = {
 			Backgrounds: ['backgrounds'],
 			Bin: 'bin',
 			DB: 'db',
-			Encores: ['encores', 'encores/KaraokeMugen'],
+			Encores: process.platform === 'win32' ? ['encores', 'encores\\KaraokeMugen'] : ['encores', 'encores/KaraokeMugen'],
 			Import: 'import',
-			Intros: ['intros', 'intros/KaraokeMugen'],
-			Jingles: ['jingles', 'jingles/KaraokeMugen'],
-			Outros: ['outros', 'outros/KaraokeMugen'],
-			Sponsors: ['sponsors', 'sponsors/KaraokeMugen'],
+			Intros: process.platform === 'win32' ? ['intros', 'intros\\KaraokeMugen'] : ['intros', 'intros/KaraokeMugen'],
+			Jingles: process.platform === 'win32' ? ['jingles', 'jingles\\KaraokeMugen'] : ['jingles', 'jingles/KaraokeMugen'],
+			Outros: process.platform === 'win32' ? ['outros', 'outros\\KaraokeMugen'] : ['outros', 'outros/KaraokeMugen'],
+			Sponsors: process.platform === 'win32' ? ['sponsors', 'sponsors\\KaraokeMugen'] : ['sponsors', 'sponsors/KaraokeMugen'],
 			Temp: 'temp'
 		}
 	}

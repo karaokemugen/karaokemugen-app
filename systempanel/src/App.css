@@ -134,3 +134,7 @@ select {
   -moz-animation: pulse 1s infinite ease-in-out;
   animation: pulse 1s infinite ease-in-out;
 }
+
+.pathFolders {
+	word-break: break-all;
+}

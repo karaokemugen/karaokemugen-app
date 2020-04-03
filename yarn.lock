@@ -1939,6 +1939,13 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
+electron-better-ipc@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/electron-better-ipc/-/electron-better-ipc-0.8.0.tgz#d76a9f7d73d5890c3a0363ef368d5fd2a9e0e21f"
+  integrity sha512-cxGOHzOoZs9kQlWaJElLVu8tPnFpBzg7pZ0rObHDGcxw9Kai/w/NRq8Yad5dlA/3EK9eMOsT8+qdvQHWsJzgaA==
+  dependencies:
+    serialize-error "^5.0.0"
+
 electron-updater@^4.2.5:
   version "4.2.5"
   resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-4.2.5.tgz#dbced8da6f8c6fc2dc662f2776131f5a49ce018d"
