@@ -40,10 +40,7 @@ export async function startElectron() {
 	});
 
 	app.on('window-all-closed', () => {
-		// On macOS it is common that the application won't quit when all windows are closed until the user doesn't quit with Cmd + Q
-		if (process.platform !== 'darwin') {
-			exit(0);
-		}
+		exit(0);
 	});
 
 	app.on('activate', () => {
