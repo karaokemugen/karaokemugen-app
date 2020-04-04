@@ -40,8 +40,8 @@ export async function startElectron() {
 		});
 	});
 
-	app.on('window-all-closed', () => {
-		exit(0);
+	app.on('window-all-closed', async () => {
+		await exit(0);
 	});
 
 	app.on('activate', async () => {
