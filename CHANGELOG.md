@@ -54,6 +54,9 @@ platforms (#533)
 - Fix get blacklist criterias from public (6a0fcbe3)
 - Fix bug display alias and i18n in system panel (90ce22d3)
 - Fix create playlist require to refresh (a5f11ef5)
+- Fix welcome page loading when kara.moe is down (e910db1c)
+- Fix autocomplete tags with alias when create or edit a kara (457a41a2)
+- Fix force language in profil modal (b1047ae8)
 
 ## v3.1.2 "Mitsuha Matinale" - 12/03/2020
 
