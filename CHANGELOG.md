@@ -18,6 +18,8 @@ platforms (#533)
     - Linux: appImage
   - There is an auto-update system in place which will download updates and install them on startup (unless told not to) or when manually told to. (#7)
   - The Visual C++ Redistribuable 2013 is now included during install on Windows, and installed if it appears you lack some vital DLL files for PostgreSQL (#595)
+  - Errors will open a system dialog box
+  - When prompted to select a folder or file (in config page, in repositories pages) a Open File system dialog will be used if you're visiting these pages using the electron app instead of a browser. If you're in a browser, a HTML5 browser will be used
 - Multiple repository management for songs (#549)
   - Songs are now organized in repositories.
   - You can have multiple repositories in your Karaoke Mugen
@@ -27,10 +29,13 @@ platforms (#533)
   - A "Consolidate repository" button allows to move repositories' contents to a new folder (like on a external hard drive) (#569)
 - Users are notified when their song is going to play as soon as they add it (#564)
 - When streaming Karaoke Mugen to twitch, song polls will be sent to the twitch chat as well so users can vote for it as soon as it is happening, to avoid polls ending sooner without users being able to vote for it due to stream lag (#602)
+- Tags and series are now checked when running a song database update. Previously they were not checked, which meant that unless you download a song which used them, you wouldn't get the new data (#616)
+- A new "tasks" system allows you to quickly see which background tasks are running on Karaoke Mugen : media updates, downloads, database generation, etc. Tasks are visible on the system panel and the welcome screen
 
 ### Improvements
 
 - Initialization is now faster since we're checking file modification dates instead of contents to decide if we need to generate or not (#563)
+- Generation is faster as duplicate SID/TID/KIDs check is now done with maps instead of arrays
 - Audio visualizer on audio-only songs is now smaller and in a corner of the screen to give more room to artwork (#559)
 - Various improvements have been made to the system panel, especially its navigation and to download manager (#579)
 - mpv (player) logs have been moved to the logs/ directory (#574)
@@ -39,10 +44,12 @@ platforms (#533)
 - You can modify songs without medias (#604)
 - Rework of operator tutorial and public tutorial (1130eb69, be5413a8)
 
-
 ### Fixes
 
-- Fix issues with playlist medias updates through git (encores, intros, outros, etc.) by using a worker thread (#582)
+- Fix playlist not working if a user added a song to it before, and does not exist anymore or has been converted from local to online. Thanks @Yom for finding this.
+- Fix download of songs with # or % in their names.
+- Fix download page not showing songs if you change filter while being on a page other than the first one. Now page view is reset when you change filters. Thanks @Cattenize for spotting this and writing an issue! (#620)
+- Fix issues with playlist medias updates through git (encores, intros, outros, etc.) by using a HTTP download system instead of using git, which tended to block the main thread and make the app unresponsive for a bit while it decompressed files (#582)
 - Fix getLucky button in PC display in public page (10351b73)
 - Fix get blacklist criterias from public (6a0fcbe3)
 - Fix bug display alias and i18n in system panel (90ce22d3)
