@@ -1,6 +1,6 @@
 # Versions
 
-## v3.2.0 "Nadia Naturiste" - xx/04/2020
+## v3.2.0 "Nadia Naturiste" - 04/04/2020
 
 This is a major release with almost only UX features and improvements, so you should be safe to upgrade.
 
