@@ -73,7 +73,7 @@ export async function deleteSerie(sid: string) {
 }
 
 /** Add a new series */
-export async function addSerie(serieObj: Series, opts = {refresh: true}): Promise<string> {
+export async function addSerie(serieObj: Series, opts = {refresh: true}, overwrite?:boolean): Promise<string> {
 	const serie = await selectSerieByName(serieObj.name);
 	if (serie) {
 		logger.warn(`[Series] Series original name already exists "${serieObj.name}"`);
@@ -83,13 +83,15 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 	if (!serieObj.sid) serieObj.sid = uuidV4();
 	if (!serieObj.seriefile) serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
 	const seriefile = serieObj.seriefile;
-	let filesFound = [];
-	try {
-		filesFound = await resolveFileInDirs(seriefile, resolvedPathRepos('Series', serieObj.repository));
-	} catch(err) {
-		// If we couldn't find a file with that name, that's good.
+	if (!overwrite) {
+		let filesFound = [];
+		try {
+			filesFound = await resolveFileInDirs(seriefile, resolvedPathRepos('Series', serieObj.repository));
+		} catch(err) {
+			// If we couldn't find a file with that name, that's good.
+		}
+		if(filesFound.length > 0) throw Error(`File "${seriefile}" already present in repository ${serieObj.repository}`);
 	}
-	if(filesFound.length > 0) throw Error(`File "${seriefile}" already present in repository ${serieObj.repository}`);
 	await insertSerie(serieObj);
 	emitWS('statsRefresh');
 	await Promise.all([
@@ -173,7 +175,7 @@ export async function integrateSeriesFile(file: string): Promise<string> {
 			await editSerie(seriesFileData.sid, seriesFileData, { refresh: false });
 			return seriesFileData.name;
 		} else {
-			await addSerie(seriesFileData, { refresh: false });
+			await addSerie(seriesFileData, { refresh: false }, true);
 			return seriesFileData.name;
 		}
 	} catch(err) {
