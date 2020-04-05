@@ -83,11 +83,13 @@ export async function addSerie(serieObj: Series, opts = {refresh: true}): Promis
 	if (!serieObj.sid) serieObj.sid = uuidV4();
 	if (!serieObj.seriefile) serieObj.seriefile = `${sanitizeFile(serieObj.name)}.series.json`;
 	const seriefile = serieObj.seriefile;
+	let filesFound = [];
 	try {
-		await resolveFileInDirs(seriefile, resolvedPathRepos('Series', serieObj.repository));
+		filesFound = await resolveFileInDirs(seriefile, resolvedPathRepos('Series', serieObj.repository));
 	} catch(err) {
 		// If we couldn't find a file with that name, that's good.
 	}
+	if(filesFound.length > 0) throw Error(`File "${seriefile}" already present in repository ${serieObj.repository}`);
 	await insertSerie(serieObj);
 	emitWS('statsRefresh');
 	await Promise.all([
@@ -114,11 +116,13 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 	if (!oldSerie) throw `Series ID ${sid} unknown`;
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	const seriefile = serieObj.seriefile;
+	let filesFound = [];
 	try {
-		await resolveFileInDirs(seriefile, resolvedPathRepos('Series', serieObj.repository));
+		filesFound = await resolveFileInDirs(seriefile, resolvedPathRepos('Series', serieObj.repository));
 	} catch(err) {
 		// If we couldn't find a file with that name, that's good.
 	}
+	if(filesFound.length > 0) throw Error(`File "${seriefile}" already present in repository ${serieObj.repository}`);
 	serieObj.modified_at = new Date().toISOString();
 	await Promise.all([
 		updateSerie(serieObj),
