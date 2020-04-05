@@ -116,13 +116,15 @@ export async function editSerie(sid: string, serieObj: Series, opts = { refresh:
 	if (!oldSerie) throw `Series ID ${sid} unknown`;
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	const seriefile = serieObj.seriefile;
-	let filesFound = [];
-	try {
-		filesFound = await resolveFileInDirs(seriefile, resolvedPathRepos('Series', serieObj.repository));
-	} catch(err) {
-		// If we couldn't find a file with that name, that's good.
+	if (oldSerie.seriefile !== serieObj.seriefile) {
+		let filesFound = [];
+		try {
+			filesFound = await resolveFileInDirs(seriefile, resolvedPathRepos('Series', serieObj.repository));
+		} catch(err) {
+			// If we couldn't find a file with that name, that's good.
+		}
+		if(filesFound.length > 0) throw Error(`File "${seriefile}" already present in repository ${serieObj.repository}`);
 	}
-	if(filesFound.length > 0) throw Error(`File "${seriefile}" already present in repository ${serieObj.repository}`);
 	serieObj.modified_at = new Date().toISOString();
 	await Promise.all([
 		updateSerie(serieObj),
