@@ -14,6 +14,8 @@ import {ipcMain as ipc} from 'electron-better-ipc';
 
 export let win: Electron.BrowserWindow;
 
+let initDone = false;
+
 export async function startElectron() {
 	setState({electron: app });
 	// This is called when Electron finished initializing
@@ -23,15 +25,13 @@ export async function startElectron() {
 		} catch(err) {
 			throw Error(err);
 		}
-		createWindow();
-		await initMenu();
-		const menu = Menu.buildFromTemplate(getMenu());
-		Menu.setApplicationMenu(menu);
+		await initElectronWindow();
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());
 			initAutoUpdate();
+			initDone = true;
 		});
-		ipcMain.on('initPageReady', async () => {
+		ipcMain.once('initPageReady', async () => {
 			try {
 				await main();
 			} catch(err) {
@@ -40,14 +40,14 @@ export async function startElectron() {
 		});
 	});
 
-	app.on('window-all-closed', () => {
-		exit(0);
+	app.on('window-all-closed', async () => {
+		await exit(0);
 	});
 
-	app.on('activate', () => {
+	app.on('activate', async () => {
 		// Recreate the window if the app is clicked on in the dock(for macOS)
 		if (win === null) {
-			createWindow();
+			await initElectronWindow();
 		}
 	});
 
@@ -58,7 +58,14 @@ export async function startElectron() {
 	await configureLocale();
 }
 
-function createWindow () {
+async function initElectronWindow() {
+	await createWindow();
+	await initMenu();
+	const menu = Menu.buildFromTemplate(getMenu());
+	Menu.setApplicationMenu(menu);
+}
+
+async function createWindow() {
 	// Create the browser window
 	const state = getState();
 	win = new BrowserWindow({
@@ -71,7 +78,12 @@ function createWindow () {
 		}
 	});
 	// and load the index.html of the app.
-	win.loadURL(`file://${resolve(state.resourcePath, 'initpage/index.html')}`);
+	if (initDone) {
+		win.loadURL(await welcomeToYoukousoKaraokeMugen());
+	} else {
+		win.loadURL(`file://${resolve(state.resourcePath, 'initpage/index.html')}`);
+	}
+
 	win.show();
 	win.webContents.on('new-window', (event, url) => {
 		event.preventDefault();

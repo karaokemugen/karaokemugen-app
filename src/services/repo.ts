@@ -78,7 +78,7 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 		extractAllFiles('Karas', repo),
 		extractAllFiles('Medias', repo)
 	]);
-	const karas = await readAllKaras(karaFiles);
+	const karas = await readAllKaras(karaFiles, false);
 	karas.forEach(k => {
 		mediaFiles = mediaFiles.filter(file => basename(file) !== k.mediafile);
 	});
@@ -91,7 +91,7 @@ export async function findUnusedTags(repo: string): Promise<Tag[]> {
 		extractAllFiles('Karas', repo),
 		extractAllFiles('Tags', repo)
 	]);
-	const karas = await readAllKaras(karaFiles);
+	const karas = await readAllKaras(karaFiles, false);
 	const tags = await readAllTags(tagFiles);
 	const tids: UUIDSet = new Set();
 	tags.forEach(t => tids.add(t.tid));
@@ -114,7 +114,7 @@ export async function findUnusedSeries(repo: string): Promise<Series[]> {
 		extractAllFiles('Karas', repo),
 		extractAllFiles('Series', repo)
 	]);
-	const karas = await readAllKaras(karaFiles);
+	const karas = await readAllKaras(karaFiles, false);
 	const series = await readAllSeries(seriesFiles);
 	const sids: UUIDSet = new Set();
 	series.forEach(s => sids.add(s.sid));

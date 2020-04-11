@@ -146,24 +146,26 @@ class AdminHeader extends Component<IProps, IState> {
   			<button 
   				type="button"
   				title={i18next.t('MUTE_UNMUTE')}
-  				id="mutestatus"
-  				data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.muteStatus))  ? "unmute" : "mute"}
 				className="btn btn-dark volumeButton"
-				onClick={this.props.putPlayerCommando}
   			>
-  				{
-  					volume === 0 || this.state.statusPlayer && this.state.statusPlayer.muteStatus 
-  						? <i className="fas fa-volume-mute"></i>
-  						: (
-  							volume > 66
-  								? <i className="fas fa-volume-up"></i>
-  								: (
-  									volume > 33
-  										? <i className="fas fa-volume-down"></i>
-  										: <i className="fas fa-volume-off"></i>
-  								)
-  						)
-  				}
+				<div id="mutestatus"
+					data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.muteStatus))  ? "unmute" : "mute"} 
+				 	onClick={this.props.putPlayerCommando}
+				>
+					{
+						volume === 0 || this.state.statusPlayer && this.state.statusPlayer.muteStatus 
+							? <i className="fas fa-volume-mute"></i>
+							: (
+								volume > 66
+									? <i className="fas fa-volume-up"></i>
+									: (
+										volume > 33
+											? <i className="fas fa-volume-down"></i>
+											: <i className="fas fa-volume-off"></i>
+									)
+							)
+					}
+				</div>
   				<input
   					title={i18next.t('VOLUME_LEVEL')}
   					data-namecommand="setVolume"

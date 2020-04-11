@@ -369,7 +369,7 @@ export default function downloadController(router: Router) {
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 			try {
 				updateAllKaras();
-				res.status(200).send('Update in progress - follow in console');
+				res.status(200).send('Update in progress. Check tasks popups or logs.');
 			} catch(err) {
 				res.status(500).send(`Error computing update: ${err}`);
 			}
@@ -391,7 +391,7 @@ export default function downloadController(router: Router) {
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 			try {
 				updateAllBases();
-				res.status(200).send('Sync in progress - follow it in console');
+				res.status(200).send('Sync in progress. Check tasks popups or logs.');
 			} catch(err) {
 				res.status(500).send(`Error computing update: ${err}`);
 			}
@@ -413,7 +413,7 @@ export default function downloadController(router: Router) {
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 			try {
 				downloadAllKaras();
-				res.status(200).send('Download in progress - follow in console');
+				res.status(200).send('Download in progress. Check tasks popups or logs.');
 			} catch(err) {
 				res.status(500).send(`Error computing update: ${err}`);
 			}
@@ -435,7 +435,7 @@ export default function downloadController(router: Router) {
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 			try {
 				cleanAllKaras();
-				res.status(200).send('Cleanup in progress - follow in console');
+				res.status(200).send('Cleanup in progress. Check tasks popups or logs.');
 			} catch(err) {
 				res.status(500).send(`Error computing update: ${err}`);
 			}
@@ -454,7 +454,7 @@ export default function downloadController(router: Router) {
  */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			updateAllMedias();
-			res.status(200).send('Medias are being updated, check Karaoke Mugen\'s console to follow its progression');
+			res.status(200).send('Medias are being updated. Check tasks popups or logs.');
 		});
 	router.route('/tags/remote')
 	/**
