@@ -29,6 +29,7 @@ import { getPortPromise } from 'portfinder';
 import { app, dialog } from 'electron';
 import cloneDeep from 'lodash.clonedeep';
 import { createCircleAvatar } from './utils/imageProcessing';
+import i18next from 'i18next';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -229,8 +230,9 @@ export async function main() {
 		try {
 			await initEngine();
 		} catch(err) {
-			console.log(err);
 			logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
+			console.log(err);
+			errorStep(i18next.t('ERROR_UNKNOWN'));
 			if (!app || argv.cli) exit(1);
 		}
 	}
