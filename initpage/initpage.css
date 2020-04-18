@@ -27,6 +27,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
+	text-align: center;
 }
 .initpage--wrapper > aside.ip--logs-panel {
 	flex:1;
