@@ -100,7 +100,7 @@
     "js-yaml": "^3.13.1",
     "jwt-simple": "^0.5.6",
     "kar-to-ass": "^1.0.4",
-    "kfn-to-ass": "^1.0.8",
+    "kfn-to-ass": "^1.0.9",
     "langs": "^2.0.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.deburr": "^4.1.0",
