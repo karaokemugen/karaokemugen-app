@@ -41,6 +41,13 @@ export async function initDB() {
 	const conf = getConfig();
 	await connectDB({superuser: true, db: 'postgres', log: getState().opt.sql}, errorFunction);
 	try {
+		// Testing if database exists. If it does, no need to do the other stuff
+		const {rows} = await db().query(`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.Database.prod.database}'`);
+		if (rows.length > 0) return;
+	} catch(err) {
+		throw err;
+	}
+	try {
 		await db().query(`CREATE DATABASE ${conf.Database.prod.database} ENCODING 'UTF8'`);
 		logger.debug('[DB] Database created');
 	} catch(err) {
