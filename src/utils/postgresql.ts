@@ -4,6 +4,7 @@
 import execa from 'execa';
 import {resolve} from 'path';
 import deburr from 'lodash.deburr';
+import {StringDecoder} from 'string_decoder';
 
 // KM Imports
 import {asyncExists, asyncWriteFile, asyncReadFile} from '../lib/utils/files';
@@ -180,9 +181,12 @@ export async function initPG() {
 		try {
 			await execa(pgBinPath, pgBinOptions, {
 				cwd: pgBinDir,
+				encoding: null
 			});
 		} catch(err) {
-			logger.error(`[DB] PostgreSQL error : ${err.stderr}`);
+			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
+			const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
+			logger.error(`[DB] PostgreSQL error : ${decoder.write(err.stderr)}`);
 		}
 		errorStep(i18next.t('ERROR_START_PG'));
 		throw err.message;
