@@ -13,7 +13,7 @@ import {emit} from '../lib/utils/pubsub';
 //KM Modules
 import {initUserSystem} from '../services/user';
 import {initDBSystem, getStats, generateDB, compareKarasChecksum} from '../dao/database';
-import {closeDB, getSettings, vacuum} from '../lib/dao/database';
+import {closeDB, getSettings, vacuum, saveSetting} from '../lib/dao/database';
 import {initFrontend} from './frontend';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
@@ -30,6 +30,7 @@ import { app } from 'electron';
 import { generateBlacklist } from '../dao/blacklist';
 import { duration } from '../lib/utils/date';
 import { DBStats } from '../types/database/database';
+import { baseChecksum } from '../dao/dataStore';
 
 let shutdownInProgress = false;
 
@@ -97,7 +98,9 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18n.t('INIT_GEN'));
+			const checksum = await baseChecksum(false)
 			await generateDB();
+			await saveSetting('baseChecksum', checksum);
 			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Generation failed : ${err}`);
