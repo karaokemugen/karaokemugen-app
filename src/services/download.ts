@@ -108,7 +108,7 @@ function initQueue(drainEvent = true) {
 }
 
 export async function startDownloads() {
-	if (q.length && q.length > 0) {
+	if (q?.length > 0) {
 		resumeQueue();
 	} else {
 		const downloads = await selectPendingDownloads();
@@ -790,7 +790,7 @@ async function updateSeries(repo: string, local: SeriesList, remote: SeriesList)
 			const rs = remote.content.find(rs => rs.sid === s.sid);
 			if (!rs) continue;
 			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
-			if (rs && rs.modified_at as unknown > s.modified_at.toISOString())
+			if (rs?.modified_at as unknown > s.modified_at.toISOString())
 			{
 				seriesToUpdate.push({serie: rs, oldFile: s.seriefile});
 				continue;
@@ -838,7 +838,7 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 			const rt = remote.content.find(rt => rt.tid === t.tid);
 			if (!rt) continue;
 			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
-			if (rt && rt.modified_at as unknown > t.modified_at.toISOString())
+			if (rt?.modified_at as unknown > t.modified_at.toISOString())
 			{
 				tagsToUpdate.push({tag: rt, oldFile: t.tagfile});
 				continue;
@@ -891,7 +891,7 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 			const rk = remote.content.find(rk => rk.kid === k.kid);
 			if (!rk) continue;
 			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
-			if (rk && rk.modified_at as unknown > k.modified_at.toISOString())
+			if (rk?.modified_at as unknown > k.modified_at.toISOString())
 			{
 				karasToUpdate.push(k.kid)
 				continue;

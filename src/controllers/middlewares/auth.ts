@@ -21,7 +21,7 @@ export async function checkValidUser(token: { username: string; }, onlineToken: 
 	if (user) {
 		if (token.username.includes('@') && +getConfig().Online.Users) {
 			const remoteToken = getRemoteToken(token.username);
-			if (remoteToken && remoteToken.token === onlineToken.token) {
+			if (remoteToken?.token === onlineToken.token) {
 				// Remote token exists, no problem here
 				return user;
 			} else {

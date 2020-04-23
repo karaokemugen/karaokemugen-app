@@ -74,9 +74,9 @@ export default function miscController(router: Router) {
 			const response = {
 				version: getState().version,
 				config: null,
-				state: getPublicState(req.user && req.user.type === 0)
+				state: getPublicState(req.user?.type === 0)
 			};
-			response.config = (req.user && req.user.type === 0) 
+			response.config = (req.user?.type === 0) 
 				? getConfig()
 				: getPublicConfig();
 			res.json(response);

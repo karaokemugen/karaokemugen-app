@@ -95,7 +95,7 @@ if (process.versions.electron) {
 // On OSX, process.cwd() returns /, which is utter stupidity but let's go along with it.
 // What's funny is that originalAppPath is correct on OSX no matter if you're using Electron or not.
 const appPath = process.platform === 'darwin'
-	? app && app.isPackaged
+	? app?.isPackaged
 		? resolve(dirname(process.execPath), '../')
 		: originalAppPath
 	: process.cwd();
@@ -127,7 +127,7 @@ setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath
 process.env['NODE_ENV'] = 'production'; // Default
 
 // Electron packaged app does not need a slice(2) but a (1) since it has no script argument
-const argArr = app && app.isPackaged
+const argArr = app?.isPackaged
 	? process.argv.slice(1)
 	: process.argv.slice(2);
 const argv = minimist(argArr);
@@ -157,7 +157,7 @@ if (app && !argv.cli) {
 
 export async function preInit() {
 	await configureLocale();
-	await configureLogger(dataPath, argv.debug || (app && app.commandLine.hasSwitch('debug')), true);
+	await configureLogger(dataPath, argv.debug || (app?.commandLine.hasSwitch('debug')), true);
 	setState({ os: process.platform, version: version});
 	const state = getState();
 	await parseCommandLineArgs(argv, app ? app.commandLine : null);
