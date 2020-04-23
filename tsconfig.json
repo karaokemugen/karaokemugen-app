@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		// Target latest version of ECMAScript.
-		"target": "esNext",
+		"target": "es2019",
 		"module": "commonjs",
 		// Search under node_modules for non-relative imports.
 		"moduleResolution": "node",
