@@ -5,7 +5,7 @@
   "homepage": "/system",
   "dependencies": {
     "@cospired/i18n-iso-languages": "^2.1.1",
-    "antd": "3.26.12",
+    "antd": "3.26.15",
     "axios": "0.19.2",
     "babel-plugin-import": "^1.13.0",
     "connected-react-router": "6.8.0",
