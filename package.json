@@ -203,11 +203,7 @@
     },
     "appImage": {
       "license": "LICENSE.md",
-      "category": "AudioVideo",
-      "publish": {
-        "provider": "generic",
-        "url": "https://mugen.karaokes.moe/downloads/"
-      }
+      "category": "AudioVideo"
     },
     "dmg": {
       "icon": "build/DMG.icns"
@@ -238,7 +234,11 @@
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",
       "category": "AudioVideo",
-      "synopsis": "Karaoke manager and player"
+	  "synopsis": "Karaoke manager and player",
+	  "publish": {
+        "provider": "generic",
+        "url": "https://mugen.karaokes.moe/downloads/"
+      }
     },
     "productName": "Karaoke Mugen",
     "copyright": "(c) 2017-2020 Karaoke Mugen Team",
