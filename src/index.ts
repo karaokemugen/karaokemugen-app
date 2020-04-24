@@ -100,15 +100,25 @@ const appPath = process.platform === 'darwin'
 		: originalAppPath
 	: process.cwd();
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
-const resourcePath = process.versions.electron && existsSync(resolve(appPath, 'resources/'))
+let resourcePath: string;
+
+if (process.versions.electron && (existsSync(resolve(appPath, 'resources/')) || existsSync(resolve(originalAppPath, 'resources/')))) {
 	// If launched from electron we check if cwd/resources exists and set it to resourcePath. If not we'll use appPath
 	// CWD = current working directory, so if launched from a dist exe, this is $HOME/AppData/Local/ etc. on Windows, and equivalent path on Unix systems.
 	// It also works from unpackaged electron, if all things are well.
 	// If it doesn't exist, we'll assume the resourcePath is originalAppPath.
-	? process.platform === 'darwin'
-		? process.resourcesPath
-		: resolve(appPath, 'resources/')
-	: originalAppPath;
+	if (process.platform === 'darwin') {
+		resourcePath = process.resourcesPath
+	} else if (existsSync(resolve(appPath, 'resources/'))) {
+		resourcePath = resolve(appPath, 'resources/');
+	} else if (existsSync(resolve(originalAppPath, 'resources/'))) {
+		resourcePath = resolve(originalAppPath, 'resources/');
+	} else {
+		resourcePath = originalAppPath;
+	}
+} else {
+	resourcePath = originalAppPath;
+}
 
 // DataPath is by default appPath + app. This is default when running from source
 const dataPath = existsSync(resolve(originalAppPath, 'portable'))
