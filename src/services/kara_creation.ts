@@ -24,7 +24,7 @@ export async function editKara(kara: Kara) {
 				mediaFile = (await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
 				mediaDir = dirname(mediaFile);
 			} catch(err) {
-				// Non fatal.
+				mediaDir = resolvedPathRepos('Medias', kara.repository)[0];
 			}
 		}
 		let subFile = kara.subfile;
@@ -50,10 +50,8 @@ export async function editKara(kara: Kara) {
 		// Copying already present files in temp directory to be worked on with by generateKara
 		if (!kara.mediafile_orig) {
 			kara.noNewVideo = true;
-			kara.mediafile_orig = kara.mediafile;
 		}
 		if (!kara.subfile_orig) {
-			kara.subfile_orig = kara.subfile;
 			if (kara.subfile) {
 				if (!await asyncExists(subFile)) throw `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`;
 				await asyncCopy(subFile, resolve(resolvedPathTemp(), kara.subfile), {overwrite: true});
