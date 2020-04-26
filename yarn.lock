@@ -5567,10 +5567,10 @@ uc.micro@^1.0.1, uc.micro@^1.0.5:
   resolved "https://registry.yarnpkg.com/uc.micro/-/uc.micro-1.0.6.tgz#9c411a802a409a91fc6cf74081baba34b24499ac"
   integrity sha512-8Y75pvTYkLJW2hWQHXxoqRgV7qb9B+9vFEtidML+7koHUFapnVJAZ6cKs+Qjz5Aw3aZWHMC6u0wJE3At+nSGwA==
 
-ultrastar2ass@^1.0.11:
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/ultrastar2ass/-/ultrastar2ass-1.0.11.tgz#bf80f7adb11945cfe90947f52de39931d00ee5bd"
-  integrity sha512-VfM4v3yd5LfWHo2C+sXyCdfVHN62o1ehL4AvMnO+bCHY/oEShGErTZln4xekFBEqmslqnkLVrLSaCKWAdhrs+A==
+ultrastar2ass@^1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/ultrastar2ass/-/ultrastar2ass-1.0.12.tgz#6557c2a62c5c5a1d9bd9a0be4aee34902948be97"
+  integrity sha512-ZwkG3VOYVK/ZzzwBuaJwqkXSGiPCOP4ja8o/h9bfsPbIZgkKXRxpDja8nG7VvCowrZ3PWPWkYelb42lR6xfQIQ==
   dependencies:
     ass-stringify "^0.1.3"
 
