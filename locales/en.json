@@ -20,6 +20,7 @@
 	"INIT_DONE": "All done!",
 	"INIT_ERROR": "Initialization failed!",
 	"ERROR_MISSING_BINARIES": "Some needed binaries (mpv/postgresql/ffmpeg) seem to be missing.",
+	"ERROR_UNKNOWN": "An unknown error just happened! Take a look at logs for further details.",
 	"ERROR_INIT_PG_DATA": "Error initializing database data",
 	"ERROR_START_PG": "Error starting up database server",
 	"ERROR_CONNECT_PG": "Error connecting to database server",

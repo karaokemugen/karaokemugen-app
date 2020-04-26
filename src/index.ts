@@ -29,6 +29,7 @@ import { getPortPromise } from 'portfinder';
 import { app, dialog } from 'electron';
 import cloneDeep from 'lodash.clonedeep';
 import { createCircleAvatar } from './utils/imageProcessing';
+import i18next from 'i18next';
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -94,20 +95,30 @@ if (process.versions.electron) {
 // On OSX, process.cwd() returns /, which is utter stupidity but let's go along with it.
 // What's funny is that originalAppPath is correct on OSX no matter if you're using Electron or not.
 const appPath = process.platform === 'darwin'
-	? app && app.isPackaged
+	? app?.isPackaged
 		? resolve(dirname(process.execPath), '../')
 		: originalAppPath
 	: process.cwd();
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
-const resourcePath = process.versions.electron && existsSync(resolve(appPath, 'resources/'))
+let resourcePath: string;
+
+if (process.versions.electron && (existsSync(resolve(appPath, 'resources/')) || existsSync(resolve(originalAppPath, 'resources/')))) {
 	// If launched from electron we check if cwd/resources exists and set it to resourcePath. If not we'll use appPath
 	// CWD = current working directory, so if launched from a dist exe, this is $HOME/AppData/Local/ etc. on Windows, and equivalent path on Unix systems.
 	// It also works from unpackaged electron, if all things are well.
 	// If it doesn't exist, we'll assume the resourcePath is originalAppPath.
-	? process.platform === 'darwin'
-		? process.resourcesPath
-		: resolve(appPath, 'resources/')
-	: originalAppPath;
+	if (process.platform === 'darwin') {
+		resourcePath = process.resourcesPath
+	} else if (existsSync(resolve(appPath, 'resources/'))) {
+		resourcePath = resolve(appPath, 'resources/');
+	} else if (existsSync(resolve(originalAppPath, 'resources/'))) {
+		resourcePath = resolve(originalAppPath, 'resources/');
+	} else {
+		resourcePath = originalAppPath;
+	}
+} else {
+	resourcePath = originalAppPath;
+}
 
 // DataPath is by default appPath + app. This is default when running from source
 const dataPath = existsSync(resolve(originalAppPath, 'portable'))
@@ -126,7 +137,7 @@ setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath
 process.env['NODE_ENV'] = 'production'; // Default
 
 // Electron packaged app does not need a slice(2) but a (1) since it has no script argument
-const argArr = app && app.isPackaged
+const argArr = app?.isPackaged
 	? process.argv.slice(1)
 	: process.argv.slice(2);
 const argv = minimist(argArr);
@@ -156,7 +167,7 @@ if (app && !argv.cli) {
 
 export async function preInit() {
 	await configureLocale();
-	await configureLogger(dataPath, argv.debug || (app && app.commandLine.hasSwitch('debug')), true);
+	await configureLogger(dataPath, argv.debug || (app?.commandLine.hasSwitch('debug')), true);
 	setState({ os: process.platform, version: version});
 	const state = getState();
 	await parseCommandLineArgs(argv, app ? app.commandLine : null);
@@ -229,8 +240,9 @@ export async function main() {
 		try {
 			await initEngine();
 		} catch(err) {
-			console.log(err);
 			logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
+			console.log(err);
+			errorStep(i18next.t('ERROR_UNKNOWN'));
 			if (!app || argv.cli) exit(1);
 		}
 	}

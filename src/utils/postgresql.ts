@@ -4,6 +4,7 @@
 import execa from 'execa';
 import {resolve} from 'path';
 import deburr from 'lodash.deburr';
+import {StringDecoder} from 'string_decoder';
 
 // KM Imports
 import {asyncExists, asyncWriteFile, asyncReadFile} from '../lib/utils/files';
@@ -163,13 +164,30 @@ export async function initPG() {
 	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 	if (state.os === 'win32') binPath = `"${binPath}"`;
 	// We set all stdios on ignore or inherit since pg_ctl requires a TTY terminal and will hang if we don't do that
+	const pgBinDir = resolve(state.appPath, state.binPath.postgres);
 	try {
 		await execa(binPath, options, {
-			cwd: resolve(state.appPath, state.binPath.postgres),
+			cwd: pgBinDir,
 			stdio: 'ignore'
 		});
 	} catch(err) {
 		logger.error(`[DB] Failed to start PostgreSQL : ${JSON.stringify(err)}`);
+		// We're going to try launching it directoy to get THE error.
+		const pgBinExe = state.os === 'win32'
+			? 'postgres.exe'
+			: 'postgres'
+		const pgBinPath = `"${resolve(pgBinDir, pgBinExe)}"`;
+		const pgBinOptions = ['-D',`${pgDataDir}`];
+		try {
+			await execa(pgBinPath, pgBinOptions, {
+				cwd: pgBinDir,
+				encoding: null
+			});
+		} catch(err) {
+			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
+			const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
+			logger.error(`[DB] PostgreSQL error : ${decoder.write(err.stderr)}`);
+		}
 		errorStep(i18next.t('ERROR_START_PG'));
 		throw err.message;
 	}

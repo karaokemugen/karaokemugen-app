@@ -896,7 +896,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 				karasToImport[i].playlist_id = playlist_id;
 			}
 			await addKaraToPL(karasToImport);
-			if (playingKara && playingKara.kid) {
+			if (playingKara?.kid) {
 				const plcPlaying = await getPLCByKIDUser(playingKara.kid, playingKara.username, playlist_id);
 				await setPlaying(plcPlaying.playlistcontent_id, playlist_id);
 			}

@@ -21,7 +21,7 @@ ipcRenderer.on('error', (event, data)=> {
 	if (!buttonLogsStatus) clickButton();
 	let div =document.querySelector('.ip--message');
 	div.innerHTML = "<div>" + data.message + "</div>";
-	let nanamiSD =document.querySelector('ip--nanami');
+	let nanamiSD =document.querySelector('.ip--nanami');
 	nanamiSD.innerHTML = "<img src='./public/nanami-surpris.png' />";
 })
 

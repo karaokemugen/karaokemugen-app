@@ -13,6 +13,7 @@ export function setManualUpdate(state: boolean) {
 
 export async function initAutoUpdate() {
 	autoUpdater.logger = logger;
+	autoUpdater.autoDownload = false;
 	autoUpdater.on('error', (error) => {
 		dialog.showErrorBox(`${i18next.t('ERROR')}: `, error === null ? 'unknown' : (error.stack || error).toString());
 	});

@@ -13,7 +13,7 @@ import {emit} from '../lib/utils/pubsub';
 //KM Modules
 import {initUserSystem} from '../services/user';
 import {initDBSystem, getStats, generateDB, compareKarasChecksum} from '../dao/database';
-import {closeDB, getSettings, vacuum} from '../lib/dao/database';
+import {closeDB, getSettings, vacuum, saveSetting} from '../lib/dao/database';
 import {initFrontend} from './frontend';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
@@ -30,6 +30,7 @@ import { app } from 'electron';
 import { generateBlacklist } from '../dao/blacklist';
 import { duration } from '../lib/utils/date';
 import { DBStats } from '../types/database/database';
+import { baseChecksum } from '../dao/dataStore';
 
 let shutdownInProgress = false;
 
@@ -97,7 +98,9 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18n.t('INIT_GEN'));
+			const checksum = await baseChecksum(false)
 			await generateDB();
+			await saveSetting('baseChecksum', checksum);
 			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Generation failed : ${err}`);
@@ -171,11 +174,11 @@ export async function exit(rc: any) {
 	if (getTwitchClient()) await stopTwitch();
 	await closeDB();
 	const c = getConfig();
-	if (getTwitchClient() || (c && c.Karaoke && c.Karaoke.StreamerMode.Twitch.Enabled)) await stopTwitch();
+	if (getTwitchClient() || (c?.Karaoke?.StreamerMode.Twitch.Enabled)) await stopTwitch();
 	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
 	try {
 		// Let's try to kill PGSQL anyway, not a problem if it fails.
-		if (c && c.Database && c.Database.prod.bundledPostgresBinary && await checkPG()) {
+		if (c?.Database?.prod.bundledPostgresBinary && await checkPG()) {
 			try {
 				await killPG();
 				logger.info('[Engine] PostgreSQL has shutdown');
