@@ -51,7 +51,7 @@ process.on('unhandledRejection', error => {
 		dialog.showMessageBox({
 		type: 'none',
 		title: 'Karaoke Mugen Error : Unhandled Rejection',
-		message: error.toString()
+		message: JSON.stringify(error)
 	});
 	}
 });
