@@ -484,6 +484,12 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		dataIndex: 'repository',
 		key: 'repository',
 	}, {
+		title: i18next.t('KARA.DETAILS'),
+		key: 'details',
+		render: (text, record) => {
+			return <Button type="default" href={`https://${record.repository}/base/kara/${record.kid}`}><Icon type="info-circle" theme="twoTone" /></Button>;
+		}
+	}, {
 		title: <span><Button title={i18next.t('KARA.DOWNLOAD_ALL_TOOLTIP')} type="default"
 			onClick={this.downloadAll.bind(this)}><Icon type='download'/></Button>{i18next.t('KARA.DOWNLOAD')}
 			</span>,

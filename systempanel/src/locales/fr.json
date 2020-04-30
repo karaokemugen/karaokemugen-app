@@ -76,7 +76,8 @@
 		"FILTER_UPDATED": "Mis à jour",
 		"FILTER_NOT_DOWNLOADED": "Non téléchargés",
 		"REPOSITORY": "Dépôt",
-		"MOVE_SONG": "Déplacer la chanson vers un autre dépôt"
+		"MOVE_SONG": "Déplacer la chanson vers un autre dépôt",
+		"DETAILS": "Détails"
 	},
 	"MENU": {
 		"HOME": "Home",
