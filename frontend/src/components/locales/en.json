@@ -446,7 +446,7 @@
 			"NAME": "Name of the song",
 			"LINK": "Link to a video"
 		},
-		"PLAY_CURRENT_MODAL": "Please note that the current playlist '{{playlist}}' is not displayed on the screen. This playlist will be played. Are you sure you want to start playing?"
+		"PLAY_CURRENT_MODAL": "Warning : the current playlist '{{playlist}}' isn't displayed on screen. That's the playlist going to be played. Are you sure you want to start playing?"
 	},
 	"DATASTORE_UPDATE": "Updating local data store...",
 	"GENERATING": "Generating database...",
