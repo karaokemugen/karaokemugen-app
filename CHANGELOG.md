@@ -1,5 +1,40 @@
 # Versions
 
+## v3.2.1 "Nadia Nostalgique" - 05/01/2020
+
+This is a bugfix release with a few plot twists.
+
+### New features
+
+- A confirmation modal will pop up if you try to start playback even though the current playlist is not on screen. This is made to avoid mistakes (and because it was seriously misleading)
+
+### Improvements
+
+- Song download page now has a link for each song so you can check them out individually (3c7b7665)
+- In case of database errors, the resulting error and SQL query that triggered it is correctly displayed (2242ddba)
+- Ultrastar2ass now works for real. Updated to 1.0.12
+- kfn-to-ass is updated to 1.0.9 (Karafun imports)
+- In case of a database launch error, display error in logs (bef1448c)
+- Singers are now sorted in song filenames (847a5c29, 808e38b2)
+- Text is properly centered on init page now (d8ea6185)
+- When encountering an unknown error during init, a proper message will be displayed (4bf802d4)
+- Generation now works without any series or tags in base (fb6428bc)
+- .kara.json files won't be modified anymore during generation, only during validation (`--validate` option) (df79073f and a few others)
+
+### Fixes
+
+- When changing a song year, remove all group years and re-add them properly (77b2b2cf)
+- Fix avatar not being displayed on screen during audio only songs if visualization effects were disabled (77514ed5)
+- `--generate` now properly sets/compares base checksum (c14ed607)
+- SD Nanamin is now showing the proper surprised face when an error is shown on the init screen (29511ffa)
+- Fixed editing a song without a video (again) (d881e05d)
+- The AppImage for Linux now works. Thanks @amoethyst and @zeograd for the help (8d28cbd6, a4c8bec4)
+- Disabled electron's auto download because it conflicted with our code (eee54248)
+- Subchecksum errors are properly reported when in strict mode (4c05cf76)
+- Uncaught Exception / Unhandled Rejection Errors are now displayed correctly (06d46c77)
+- mpv should really restart now if you killed it. YOU MONSTER (1903710c)
+- Connection to KM Server now has a 5 second timeout (3c1ec94e)
+
 ## v3.2.0 "Nadia Naturiste" - 04/04/2020
 
 This is a major release with almost only UX features and improvements, so you should be safe to upgrade.
