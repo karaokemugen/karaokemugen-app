@@ -6,11 +6,11 @@ This is a bugfix release with a few plot twists.
 
 ### New features
 
-- A confirmation modal will pop up if you try to start playback even though the current playlist is not on screen. This is made to avoid mistakes (and because it was seriously misleading)
+- A confirmation modal will pop up if you try to start playback even though the current playlist is not on screen. This is made to avoid mistakes (and because it was seriously misleading). (#634)
 
 ### Improvements
 
-- Song download page now has a link for each song so you can check them out individually (3c7b7665)
+- Song download page now has a link for each song so you can check them out individually (#632)
 - In case of database errors, the resulting error and SQL query that triggered it is correctly displayed (2242ddba)
 - Ultrastar2ass now works for real. Updated to 1.0.12
 - kfn-to-ass is updated to 1.0.9 (Karafun imports)
@@ -20,6 +20,8 @@ This is a bugfix release with a few plot twists.
 - When encountering an unknown error during init, a proper message will be displayed (4bf802d4)
 - Generation now works without any series or tags in base (fb6428bc)
 - .kara.json files won't be modified anymore during generation, only during validation (`--validate` option) (df79073f and a few others)
+- Tags are now sorted in a karaoke line (353192a0)
+- Throw an error when the created serie name already exist (67cc8c41)
 
 ### Fixes
 
@@ -34,6 +36,7 @@ This is a bugfix release with a few plot twists.
 - Uncaught Exception / Unhandled Rejection Errors are now displayed correctly (06d46c77)
 - mpv should really restart now if you killed it. YOU MONSTER (1903710c)
 - Connection to KM Server now has a 5 second timeout (3c1ec94e)
+- Fix set volume to not trigger mute/unmute button (b013fcc9)
 
 ## v3.2.0 "Nadia Naturiste" - 04/04/2020
 
