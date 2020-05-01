@@ -16,7 +16,8 @@ export async function publishURL() {
 				localIP: localHost,
 				localPort: conf.Frontend.Port,
 				IID: await getInstanceID(),
-			}
+			},
+			timeout: 5000
 		});
 		logger.debug('[ShortURL] Server accepted our publish');
 		configureHost();
