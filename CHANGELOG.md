@@ -1,6 +1,6 @@
 # Versions
 
-## v3.2.1 "Nadia Nostalgique" - 05/01/2020
+## v3.2.1 "Nadia Nostalgique" - 01/05/2020
 
 This is a bugfix release with a few plot twists.
 
