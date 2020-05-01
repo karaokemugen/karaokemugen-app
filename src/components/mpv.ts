@@ -57,10 +57,10 @@ function emitPlayerState() {
 
 async function ensureRunning() {
 	try {
-		const starts = [];
-		if (!player.isRunning()) starts.push(player.start());
-		if (monitorEnabled && !playerMonitor.isRunning()) starts.push(playerMonitor.start());
-		await Promise.all(starts);
+		if (!player.isRunning()) {
+			if (monitorEnabled && !playerMonitor.isRunning()) await playerMonitor.quit();
+			await startmpv();
+		}
 	} catch(err) {
 		throw Error(`Unable to ensure mpv is running : ${err}`);
 	}
