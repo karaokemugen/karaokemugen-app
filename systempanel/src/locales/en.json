@@ -76,7 +76,8 @@
 		"FILTER_UPDATED": "Updated",
 		"FILTER_NOT_DOWNLOADED": "Not downloaded",
 		"REPOSITORY": "Repository",
-		"MOVE_SONG": "Move song to another repository"
+		"MOVE_SONG": "Move song to another repository",
+		"DETAILS": "Details"
 	},
 	"MENU": {
 		"HOME": "Home",

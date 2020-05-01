@@ -36,6 +36,7 @@ interface IState {
 	mobileMenu: boolean;
 	statusPlayer?: PublicState;
 	currentSide: number;
+	playlistList: Array<PlaylistElem>;
 }
 
 class AdminPage extends Component<IProps, IState> {
@@ -47,7 +48,8 @@ class AdminPage extends Component<IProps, IState> {
 			searchMenuOpen1: false,
 			searchMenuOpen2: false,
 			mobileMenu: false,
-			currentSide: 1
+			currentSide: 1,
+			playlistList: []
 		};
 		if (!store.getLogInfos() || !(store.getLogInfos() as Token).token || (store.getLogInfos() as Token).role !== 'admin') {
 			if (store.getLogInfos() && (store.getLogInfos() as Token).token && (store.getLogInfos() as Token).role !== 'admin') {
@@ -58,7 +60,7 @@ class AdminPage extends Component<IProps, IState> {
 		}
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		if (is_touch_device()) {
 			getSocket().on('playerStatus', (data: PublicState) => {
 				var val = data.volume;
@@ -69,6 +71,8 @@ class AdminPage extends Component<IProps, IState> {
 				this.setState({ statusPlayer: data });
 			});
 		}
+		await this.getPlaylistList();
+		getSocket().on('playlistsUpdated', this.getPlaylistList);
 		store.addChangeListener('loginOut', this.openLoginOrProfileModal);
 	}
   
@@ -144,65 +148,101 @@ class AdminPage extends Component<IProps, IState> {
 		}
 	};
 
+	getPlaylistList = async () => {
+		const response = await axios.get('/api/playlists/');
+		const kmStats = await axios.get('/api/stats');
+		var playlistList = response.data;
+		playlistList.push({
+			playlist_id: -2,
+			name: i18next.t('PLAYLIST_BLACKLIST')
+		});
+
+		playlistList.push({
+			playlist_id: -4,
+			name: i18next.t('PLAYLIST_BLACKLIST_CRITERIAS')
+		});
+
+		playlistList.push({
+			playlist_id: -3,
+			name: i18next.t('PLAYLIST_WHITELIST')
+		});
+		playlistList.push({
+			playlist_id: -5,
+			name: i18next.t('PLAYLIST_FAVORITES')
+		});
+		playlistList.push({
+			playlist_id: -1,
+			name: i18next.t('PLAYLIST_KARAS'),
+			karacount: kmStats.data.karas
+		});
+		this.setState({ playlistList: playlistList });
+	};
+
   render() {
   	return (
   		<div id="adminPage">      
   			<KmAppWrapperDecorator>
 
-  				<AdminHeader 
-  					config={this.props.config}
-  					toggleProfileModal={this.openLoginOrProfileModal}
-  					setOptionMode={() => {
+				<AdminHeader
+					config={this.props.config}
+					toggleProfileModal={this.openLoginOrProfileModal}
+					setOptionMode={() => {
 						if (!this.state.options) this.props.getSettings();
-  						this.setState({ options: !this.state.options });
-  						store.getTuto() && store.getTuto().move(1);
-  					}}
-  					powerOff={this.props.powerOff}
-					  options={this.state.options}
-					  adminMessage={this.adminMessage}
-					  putPlayerCommando={this.putPlayerCommando}
-					  changeCurrentSide={this.changeCurrentSide}
-					  currentSide={this.state.currentSide}
-  				></AdminHeader>
+						this.setState({ options: !this.state.options });
+						store.getTuto() && store.getTuto().move(1);
+					}}
+					powerOff={this.props.powerOff}
+					options={this.state.options}
+					adminMessage={this.adminMessage}
+					putPlayerCommando={this.putPlayerCommando}
+					changeCurrentSide={this.changeCurrentSide}
+					currentSide={this.state.currentSide}
+					idsPlaylist={this.state.idsPlaylist}
+					currentPlaylist={this.state.playlistList.filter(playlistElem => playlistElem.flag_current)[0]}
+				></AdminHeader>
 
   				<ProgressBar scope='admin' webappMode={this.props.config.Frontend.Mode}></ProgressBar>
-
-  				<KmAppBodyDecorator mode="admin" extraClass="">
-  					{
-  						this.state.options ?   
-  							<div className="row " id="manage">
-  								<Options config={this.props.config} />
-  							</div>
-  							: null
-  					}
-  					<PlaylistMainDecorator currentSide={this.state.currentSide}>
-  						<Playlist 
-							scope='admin'
-							side={1}
-  							navigatorLanguage={this.props.navigatorLanguage}
-  							config={this.props.config}
-  							idPlaylistTo={this.state.idsPlaylist.right}
-  							majIdsPlaylist={this.majIdsPlaylist}
-  							tags={this.props.tags}
-  							toggleSearchMenu={this.toggleSearchMenu1}
-  							searchMenuOpen={this.state.searchMenuOpen1}
-							showVideo={this.props.showVideo}
-  						/>
-  						<Playlist
-							scope='admin'
-							side={2}
-  							navigatorLanguage={this.props.navigatorLanguage}
-  							config={this.props.config}
-  							idPlaylistTo={this.state.idsPlaylist.left}
-  							majIdsPlaylist={this.majIdsPlaylist}
-  							tags={this.props.tags}
-  							toggleSearchMenu={this.toggleSearchMenu2}
-  							searchMenuOpen={this.state.searchMenuOpen2}
-							showVideo={this.props.showVideo}
-  						/>
-  					</PlaylistMainDecorator>
-            }
-  				</KmAppBodyDecorator>
+				<KmAppBodyDecorator mode="admin" extraClass="">
+					{this.state.playlistList.length > 0 ?
+						<React.Fragment>
+							{
+								this.state.options ?   
+									<div className="row " id="manage">
+										<Options config={this.props.config} />
+									</div>
+									: null
+							}
+							<PlaylistMainDecorator currentSide={this.state.currentSide}>
+								<Playlist 
+									scope='admin'
+									side={1}
+									navigatorLanguage={this.props.navigatorLanguage}
+									config={this.props.config}
+									idPlaylistTo={this.state.idsPlaylist.right}
+									majIdsPlaylist={this.majIdsPlaylist}
+									tags={this.props.tags}
+									toggleSearchMenu={this.toggleSearchMenu1}
+									searchMenuOpen={this.state.searchMenuOpen1}
+									showVideo={this.props.showVideo}
+									playlistList={this.state.playlistList}
+								/>
+								<Playlist
+									scope='admin'
+									side={2}
+									navigatorLanguage={this.props.navigatorLanguage}
+									config={this.props.config}
+									idPlaylistTo={this.state.idsPlaylist.left}
+									majIdsPlaylist={this.majIdsPlaylist}
+									tags={this.props.tags}
+									toggleSearchMenu={this.toggleSearchMenu2}
+									searchMenuOpen={this.state.searchMenuOpen2}
+									showVideo={this.props.showVideo}
+									playlistList={this.state.playlistList}
+								/>
+							</PlaylistMainDecorator>
+						</React.Fragment> : null
+					}
+				</KmAppBodyDecorator>
 
   			</KmAppWrapperDecorator>
 			<div className="fixed-action-btn right mobileActions">

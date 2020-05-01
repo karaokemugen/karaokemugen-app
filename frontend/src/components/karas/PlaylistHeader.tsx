@@ -40,7 +40,7 @@ interface IProps {
 	playlistCommands: boolean;
 	tags: Array<Tag> | undefined;
 	config: Config;
-	playlistList: Array<PlaylistList>;
+	playlistList: Array<PlaylistElem>;
 	searchMenuOpen?: boolean;
 	getPlaylistUrl: (idPlaylistParam?:number) => string;
 	changeIdPlaylist: (idPlaylist:number) => void;

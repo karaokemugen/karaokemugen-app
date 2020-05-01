@@ -177,23 +177,27 @@ class KaraLine extends Component<IProps,IState> {
 			{ flag_visible: true });
 };
 
-  karaFamilies = this.props.kara.families ? this.props.kara.families.map(tag => {
+	compareTag = (a:DBKaraTag, b:DBKaraTag) => {
+		  return a.name.localeCompare(b.name);
+	}
+
+  karaFamilies = this.props.kara.families ? this.props.kara.families.sort(this.compareTag).map(tag => {
   	return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>;
   }) : [] ;
 
-  karaPlatforms = this.props.kara.platforms ? this.props.kara.platforms.map(tag => {
+  karaPlatforms = this.props.kara.platforms ? this.props.kara.platforms.sort(this.compareTag).map(tag => {
   	return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>;
   }) : [];
 
-  karaGenres = this.props.kara.genres ? this.props.kara.genres.map(tag => {
+  karaGenres = this.props.kara.genres ? this.props.kara.genres.sort(this.compareTag).map(tag => {
   	return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>;
   }) : [];
 
-  karaOrigins = this.props.kara.origins ? this.props.kara.origins.map(tag => {
+  karaOrigins = this.props.kara.origins ? this.props.kara.origins.sort(this.compareTag).map(tag => {
   	return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>;
   }) : [];
 
-  karaMisc = this.props.kara.misc ? this.props.kara.misc.map(tag => {
+  karaMisc = this.props.kara.misc ? this.props.kara.misc.sort(this.compareTag).map(tag => {
   	return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>;
   }) : [];
 

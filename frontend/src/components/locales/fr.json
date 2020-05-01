@@ -465,7 +465,8 @@
 			"SONGTYPE": "Type",
 			"NAME": "Nom de la chanson",
 			"LINK": "Lien vers une vidéo"
-		}
+		},
+		"PLAY_CURRENT_MODAL": "Attention, la liste de lecture courante '{{playlist}}' n'est pas affichée à l'écran. C'est cette dernière qui sera jouée. Êtes-vous sûr de vouloir lancer la lecture ?"
 	},
 	"DATASTORE_UPDATE": "Mise à jour des données locales...",
 	"GENERATING": "Génération de la base de données...",
