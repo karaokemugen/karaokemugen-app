@@ -33,6 +33,7 @@ interface IProps {
 	kidPlaying?: string | undefined;
 	tags?: Array<Tag> | undefined;
 	searchMenuOpen?: boolean;
+	playlistList: Array<PlaylistElem>;
 	toggleSearchMenu?: () => void;
 	showVideo: (file:string) => void;
 	updateKidPlaying?: (kid:string) => void;
@@ -52,7 +53,6 @@ interface IState {
 	idPlaylist: number;
 	data: KaraList | Array<DBBLC> | undefined;
 	quotaString?: any;
-	playlistList: Array<PlaylistList>;
 	scrollToIndex?: number;
 	playlistInfo?: DBPL;
 }
@@ -78,8 +78,7 @@ class Playlist extends Component<IProps, IState> {
 			forceUpdate: false,
 			forceUpdateFirst: false,
 			idPlaylist: 0,
-			data: undefined,
-			playlistList: []
+			data: undefined
 		};
 	}
 
@@ -94,7 +93,6 @@ class Playlist extends Component<IProps, IState> {
 			await this.initCall();
 		}
 		getSocket().on('playingUpdated', this.playingUpdate);
-		getSocket().on('playlistsUpdated', this.getPlaylistList);
 		getSocket().on('whitelistUpdated', () => {
 			if (this.state.idPlaylist === -3) this.getPlaylist();
 		});
@@ -129,9 +127,8 @@ class Playlist extends Component<IProps, IState> {
 	}
 
   initCall = async () => {
-  		await this.getPlaylistList();
 	  	await this.getIdPlaylist();
-		  if (this.state.idPlaylist === -1 || this.state.playlistList
+		  if (this.state.idPlaylist === -1 || this.props.playlistList
 			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
 			await this.getPlaylist();
 	  }
@@ -261,51 +258,6 @@ noRowsRenderer = () => {
   		}
   		this.setState({ quotaString: quotaString });
   	}
-  };
-
-  getPlaylistList = async () => {
-  	const response = await axios.get('/api/playlists/');
-  	const kmStats = await axios.get('/api/stats');
-	var playlistList = response.data;
-	if (this.props.scope !== 'admin') {
-		playlistList = playlistList.filter((playlist:PlaylistList) => playlist.flag_visible);
-	}
-  	if (
-  		this.props.scope === 'admin' ||
-      this.props.config.Frontend.Permissions!.AllowViewBlacklist
-  	)
-  		playlistList.push({
-  			playlist_id: -2,
-  			name: i18next.t('PLAYLIST_BLACKLIST')
-  		});
-  	if (
-  		this.props.scope === 'admin' ||
-      this.props.config.Frontend.Permissions!.AllowViewBlacklistCriterias
-  	)
-  		playlistList.push({
-  			playlist_id: -4,
-  			name: i18next.t('PLAYLIST_BLACKLIST_CRITERIAS')
-  		});
-  	if (
-  		this.props.scope === 'admin' ||
-      this.props.config.Frontend.Permissions!.AllowViewWhitelist
-  	)
-  		playlistList.push({
-  			playlist_id: -3,
-  			name: i18next.t('PLAYLIST_WHITELIST')
-  		});
-  	if (this.props.scope === 'admin')
-  		playlistList.push({
-  			playlist_id: -5,
-  			name: i18next.t('PLAYLIST_FAVORITES')
-  		});
-  	if (this.props.scope === 'admin')
-  		playlistList.push({
-  			playlist_id: -1,
-  			name: i18next.t('PLAYLIST_KARAS'),
-  			karacount: kmStats.data.karas
-		});
-  	this.setState({ playlistList: playlistList});
   };
 
   getIdPlaylist = () => {
@@ -732,7 +684,7 @@ noRowsRenderer = () => {
   					side={this.props.side}
 					scope={this.props.scope}
 					config={this.props.config}
-  					playlistList={this.state.playlistList.filter(
+  					playlistList={this.props.playlistList.filter(
 						  (playlist:PlaylistList) => playlist.playlist_id !== this.props.idPlaylistTo)}
   					idPlaylist={this.state.idPlaylist}
   					changeIdPlaylist={this.changeIdPlaylist}

@@ -42,6 +42,7 @@ interface IState {
 	classicModeModal: boolean;
 	kidPlaying?: string;
 	currentSide: number;
+	playlistList: Array<PlaylistElem>;
 }
 
 let timer:any;
@@ -59,7 +60,8 @@ class PublicPage extends Component<IProps,IState> {
 			dropDownMenu: false,
 			searchMenuOpen: false,
 			classicModeModal: false,
-			currentSide: 1
+			currentSide: 1,
+			playlistList: []
 		};
 		if (!store.getLogInfos() || !(store.getLogInfos() as Token).token) {
 			this.openLoginOrProfileModal();
@@ -126,6 +128,8 @@ class PublicPage extends Component<IProps,IState> {
 					</div>)}, 500);
 		}
 	});
+	await this.getPlaylistList();
+	getSocket().on('playlistsUpdated', this.getPlaylistList);
 	store.addChangeListener('loginOut', this.openLoginOrProfileModal);
   }
 
@@ -205,6 +209,29 @@ class PublicPage extends Component<IProps,IState> {
 	closeMobileMenu = () => {
 		this.setState({ mobileMenu: false, dropDownMenu: false })
 	}
+
+	
+	getPlaylistList = async () => {
+		const response = await axios.get('/api/playlists/');
+		var playlistList = response.data.filter((playlist: PlaylistElem) => playlist.flag_visible)
+		if (this.props.config.Frontend.Permissions!.AllowViewBlacklist)
+			playlistList.push({
+				playlist_id: -2,
+				name: i18next.t('PLAYLIST_BLACKLIST')
+			});
+		if (this.props.config.Frontend.Permissions!.AllowViewBlacklistCriterias)
+			playlistList.push({
+				playlist_id: -4,
+				name: i18next.t('PLAYLIST_BLACKLIST_CRITERIAS')
+			});
+		if (this.props.config.Frontend.Permissions!.AllowViewWhitelist)
+			playlistList.push({
+				playlist_id: -3,
+				name: i18next.t('PLAYLIST_WHITELIST')
+			});
+		this.setState({ playlistList: playlistList });
+	};
+  
 
   render() {
   	var logInfos = store.getLogInfos();
@@ -388,33 +415,37 @@ class PublicPage extends Component<IProps,IState> {
   									: ''
   							}
   						>
-  							<PlaylistMainDecorator currentSide={this.state.currentSide}>
-  								<Playlist
-									scope="public"
-									side={1}
-  									navigatorLanguage={this.props.navigatorLanguage}
-  									config={this.props.config}
-  									idPlaylistTo={this.state.idsPlaylist.right}
-  									majIdsPlaylist={this.majIdsPlaylist}
-  									tags={this.props.tags}
-  									toggleSearchMenu={this.toggleSearchMenu}
-  									searchMenuOpen={this.state.searchMenuOpen}
-  									showVideo={this.props.showVideo}
-									kidPlaying={this.state.kidPlaying}
-									updateKidPlaying={this.updateKidPlaying}
-  								/>
-  								<Playlist
-									scope="public"
-									side={2}
-  									navigatorLanguage={this.props.navigatorLanguage}
-  									config={this.props.config}
-  									idPlaylistTo={this.state.idsPlaylist.left}
-  									majIdsPlaylist={this.majIdsPlaylist}
-									showVideo={this.props.showVideo}
-									kidPlaying={this.state.kidPlaying}
-									updateKidPlaying={this.updateKidPlaying}
-  								/>
-  							</PlaylistMainDecorator>
+							{this.state.playlistList.length > 0 ?
+								<PlaylistMainDecorator currentSide={this.state.currentSide}>
+									<Playlist
+										scope="public"
+										side={1}
+										navigatorLanguage={this.props.navigatorLanguage}
+										config={this.props.config}
+										idPlaylistTo={this.state.idsPlaylist.right}
+										majIdsPlaylist={this.majIdsPlaylist}
+										tags={this.props.tags}
+										toggleSearchMenu={this.toggleSearchMenu}
+										searchMenuOpen={this.state.searchMenuOpen}
+										showVideo={this.props.showVideo}
+										kidPlaying={this.state.kidPlaying}
+										updateKidPlaying={this.updateKidPlaying}
+										playlistList={this.state.playlistList}
+									/>
+									<Playlist
+										scope="public"
+										side={2}
+										navigatorLanguage={this.props.navigatorLanguage}
+										config={this.props.config}
+										idPlaylistTo={this.state.idsPlaylist.left}
+										majIdsPlaylist={this.majIdsPlaylist}
+										showVideo={this.props.showVideo}
+										kidPlaying={this.state.kidPlaying}
+										updateKidPlaying={this.updateKidPlaying}
+										playlistList={this.state.playlistList}
+									/>
+								</PlaylistMainDecorator> : null
+  							}
   						</KmAppBodyDecorator>
   					</KmAppWrapperDecorator>
 

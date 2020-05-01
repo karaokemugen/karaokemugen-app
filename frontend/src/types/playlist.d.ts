@@ -1,5 +1,5 @@
 
-interface PlaylistList {
+interface PlaylistElem {
 	playlist_id: number;
 	name: string;
 	karacount?: number;

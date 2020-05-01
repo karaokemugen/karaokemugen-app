@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
-import { expand, getSocket } from './tools';
+import { expand, getSocket, callModal } from './tools';
 import axios from 'axios';
 import RadioButton from './generic/RadioButton';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
@@ -12,6 +12,8 @@ interface IProps {
 	config: Config;
 	options: boolean;
 	currentSide: number;
+	idsPlaylist: {left: number, right: number};
+	currentPlaylist: PlaylistElem;
 	toggleProfileModal: () => void;
 	powerOff: (() => void) | undefined;
 	adminMessage: () => void;
@@ -67,6 +69,18 @@ class AdminHeader extends Component<IProps, IState> {
   	this.setState({ songVisibilityOperator: songVisibility });
   	axios.put('/api/settings', { setting: JSON.stringify(data) });
   };
+
+  play = (event:any) => {
+	if ((!this.state.statusPlayer || this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'pause')
+		&& this.props.idsPlaylist.left !== this.props.currentPlaylist.playlist_id
+		&& this.props.idsPlaylist.right !== this.props.currentPlaylist.playlist_id
+		&& (this.props.idsPlaylist.left > 0 || this.props.idsPlaylist.right > 0 )) {
+		callModal('confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', {playlist: this.props.currentPlaylist.name}), '',
+			() => axios.put('/api/player', {command: 'play'}));
+	} else {
+		this.props.putPlayerCommando(event);
+	}
+  }
 
   render() {
   	let volume:number = (this.state.statusPlayer && !isNaN(this.state.statusPlayer.volume)) ? this.state.statusPlayer.volume : 100;
@@ -279,7 +293,7 @@ class AdminHeader extends Component<IProps, IState> {
   					id="status"
   					data-namecommand={this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? 'pause' : 'play'}
   					className="btn btn-primary"
-  					onClick={this.props.putPlayerCommando}
+  					onClick={this.play}
   				>
   					{this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? (
   						<i className="fas fa-pause"></i>
