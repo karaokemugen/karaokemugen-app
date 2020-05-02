@@ -133,8 +133,16 @@ class App extends Component<{}, IState> {
     };
 
     showVideo = (file:string) => {
-    	this.setState({mediaFile: file});
-    };
+		this.setState({mediaFile: file});
+		document.addEventListener('keyup', this.closeVideo);
+	};
+	
+	closeVideo = (e:KeyboardEvent) => {
+		if(e.key == 'Escape') {
+			this.setState({mediaFile: undefined});
+			document.removeEventListener('keyup', this.closeVideo);
+		}
+	};
 
     render() {
     	return (
@@ -166,10 +174,13 @@ class App extends Component<{}, IState> {
 								config={this.state.config as Config} />} />
     						<Route component={NotFoundPage} />
     					</Switch>
-    					<a id="downloadAnchorElem" />
+						<a id="downloadAnchorElem" />
     					{this.state.mediaFile ?
-    						<div className="overlay" onClick={() => this.setState({mediaFile: undefined})}>
-    							<video id="video" autoPlay src={`/medias/${this.state.mediaFile}`} />
+    						<div className="overlay" onClick={() => {
+								this.setState({mediaFile: undefined});
+								document.removeEventListener('keyup', this.closeVideo);
+							}}>
+    							<video id="video" autoPlay src={`/medias/${encodeURIComponent(this.state.mediaFile)}`} />
     						</div> : null
     					}
     					<ToastContainer />

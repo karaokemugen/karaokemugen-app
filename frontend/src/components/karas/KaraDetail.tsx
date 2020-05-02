@@ -53,9 +53,8 @@ class KaraDetail extends Component<IProps,IState> {
 		}
 	}
 
-  keyObserverHandler = (e:any) => {
-  	var keyCode = e.keyCode || e.which;
-  	if (keyCode == '27') {
+  keyObserverHandler = (e:KeyboardEvent) => {
+  	if (e.key == 'Escape' && !document.getElementById('video')) {
   		this.closeModal();
   	}
   }
