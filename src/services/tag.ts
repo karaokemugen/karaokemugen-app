@@ -198,7 +198,8 @@ export async function integrateTagFile(file: string): Promise<string> {
 	try {
 		const tagDBData = await getTag(tagFileData.tid);
 		if (tagDBData) {
-			await editTag(tagFileData.tid, tagFileData, { refresh: false });return tagFileData.name;
+			await editTag(tagFileData.tid, tagFileData, { refresh: false });
+			return tagFileData.name;
 		} else {
 			await addTag(tagFileData, { refresh: false });
 			return tagFileData.name;
