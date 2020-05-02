@@ -10,6 +10,8 @@ import { DBPLC } from '../../../src/types/database/playlist';
 
 const socket = io();
 
+var is_touch = window.outerWidth <= 1023;
+
 export function getSocket() {
 	return socket;
 }
@@ -21,7 +23,12 @@ export function parseJwt(token:string) {
 };
 
 export function is_touch_device() {
-	return window.outerWidth <= 1023;
+	if (!document.hidden) {
+		is_touch = window.outerWidth <= 1023;
+		return is_touch;
+	} else {
+		return is_touch;
+	}
 };
 
 export function expand(str:string, val:any) {
