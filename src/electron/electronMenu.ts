@@ -9,6 +9,7 @@ import { getState } from '../utils/state';
 import openAboutWindow from 'about-window';
 import { resolve } from 'path';
 import { setManualUpdate } from './electronAutoUpdate';
+import logger from '../lib/utils/logger';
 
 const isMac = process.platform === 'darwin';
 
@@ -46,11 +47,12 @@ export async function initMenu() {
 		{
 			label: isMac ? 'Karaoke Mugen' : i18next.t('MENU_FILE'),
 			submenu: [
-				!isMac ? {
+				!isMac || !getState().forceDisableAppUpdate ? {
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),
 					click: async () => {
 						setManualUpdate(true);
+						logger.info(`[AppUpdate] Checking for updates manually`);
 						await autoUpdater.checkForUpdates();
 						setManualUpdate(false);
 					}

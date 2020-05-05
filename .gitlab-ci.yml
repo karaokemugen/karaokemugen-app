@@ -128,7 +128,8 @@ pkg_win:
     - mv packages/*.yml release/
     - mv packages/*.blockmap release/
     - touch portable
-    - zip -rv packages/*.zip portable
+    - touch disableAppUpdate
+    - zip -rv packages/*.zip portable disableAppUpdate
     - mv packages/*.zip release/
     - ls -la release/*
   only:

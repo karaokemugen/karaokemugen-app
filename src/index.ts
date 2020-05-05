@@ -132,6 +132,8 @@ const dataPath = existsSync(resolve(originalAppPath, 'portable'))
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
+if (existsSync(resolve(originalAppPath, 'disableAppUpdate'))) setState({forceDisableAppUpdate: true});
+
 setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
 
 process.env['NODE_ENV'] = 'production'; // Default
