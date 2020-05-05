@@ -9,3 +9,11 @@ LangString message 1036 "Les fichiers Visual C++ Redistribuable 2013 ne sont pas
 			Exec '"${BUILD_RESOURCES_DIR}\vc.exe"'
 	${endIf}
 !macroend
+
+!macro customRemoveFiles
+	Delete $INSTDIR\*.*
+    RMDir /r $INSTDIR\app\bin
+	RMDir /r $INSTDIR\locales
+	RMDir /r $INSTDIR\resources
+	RMDir /r $INSTDIR\swiftshader
+!macroend
