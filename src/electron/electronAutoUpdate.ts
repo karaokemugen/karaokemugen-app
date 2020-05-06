@@ -64,7 +64,7 @@ export async function initAutoUpdate() {
 	if (getConfig().Online.Updates.App && process.platform !== 'darwin') {
 		try {
 			logger.info(`[AppUpdate] Checking for updates and notify`);
-			autoUpdater.checkForUpdates();
+			autoUpdater.checkForUpdatesAndNotify();
 		} catch(err) {
 			//Non fatal, just report it
 			logger.warn('[Updater] Unable to check for app updates: ' + err)
