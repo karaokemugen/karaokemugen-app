@@ -15,18 +15,21 @@ export async function initAutoUpdate() {
 	autoUpdater.logger = logger;
 	autoUpdater.autoDownload = false;
 	autoUpdater.on('error', (error) => {
+		logger.error(`[AppUpdate] ${error}`);
 		dialog.showErrorBox(`${i18next.t('ERROR')}: `, error === null ? 'unknown' : (error.stack || error).toString());
 	});
 	autoUpdater.on('update-available', async () => {
+		logger.info(`[AppUpdate] Update detected`);
 		const buttonIndex = await dialog.showMessageBox(win, {
 			type: 'info',
 			title: i18next.t('UPDATE_FOUND'),
 			message: i18next.t('UPDATE_PROMPT'),
-			buttons: [i18next.t('YES'), i18next.t('NO')]
+			buttons: [i18next.t('YES'), i18next.t('NO')],
+			cancelId: 1
 		});
 		if (buttonIndex.response === 0) {
 			try {
-				autoUpdater.downloadUpdate();
+				await autoUpdater.downloadUpdate();
 			} catch(err) {
 				await dialog.showMessageBox(win, {
 					type: 'info',
@@ -38,6 +41,7 @@ export async function initAutoUpdate() {
 	});
 
 	autoUpdater.on('update-not-available', () => {
+		logger.info(`[AppUpdate] Update not available`);
 		if (manualUpdate) dialog.showMessageBox({
 			title: i18next.t('UPDATE_NOT_AVAILABLE'),
 			message: i18next.t('CURRENT_VERSION_OK')
@@ -45,15 +49,21 @@ export async function initAutoUpdate() {
 	});
 
 	autoUpdater.on('update-downloaded', async () => {
+		logger.info(`[AppUpdate] Update downloaded`);
 		await dialog.showMessageBox(win, {
 			title: i18next.t('UPDATE_DOWNLOADED'),
 			message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING')
 		});
-		autoUpdater.quitAndInstall();
+		try {
+			autoUpdater.quitAndInstall();
+		} catch(err) {
+			logger.error(`[AppUpdate] Failed to quit and install : ${err}`);
+		}
 	});
 
 	if (getConfig().Online.Updates.App && process.platform !== 'darwin') {
 		try {
+			logger.info(`[AppUpdate] Checking for updates and notify`);
 			autoUpdater.checkForUpdatesAndNotify();
 		} catch(err) {
 			//Non fatal, just report it

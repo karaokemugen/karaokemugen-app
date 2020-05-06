@@ -28,6 +28,7 @@ let state: State = {
 	songPoll: false,
 	frontendPort: null,
 	ready: false,
+	forceDisableAppUpdate: false,
 	currentSessionID: null,
 	isDemo: false,
 	isTest: false,

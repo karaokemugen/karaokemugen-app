@@ -38,6 +38,7 @@ export interface State {
 	player?: PlayerState,
 	securityCode: number,
 	wsLogNamespace: string,
+	forceDisableAppUpdate?: boolean,
 	version?: {
 		number?: string,
 		name?: string,

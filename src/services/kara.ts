@@ -306,18 +306,29 @@ export async function integrateKaraFile(file: string) {
 	const karaDB = await getKaraDB(karaData.kid, 'admin', null, 'admin');
 	if (karaDB) {
 		await editKaraInDB(karaData, { refresh: false });
-		const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karas', karaDB.repository)))[0];
-		if (karaDB.karafile !== karaData.karafile) {
-			await asyncUnlink(oldKaraFile);
-			removeKaraInStore(oldKaraFile);
-			addKaraToStore(file);
-		} else {
-			editKaraInStore(oldKaraFile);
+		try {
+			const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karas', karaDB.repository)))[0];
+			if (karaDB.karafile !== karaData.karafile) {
+				await asyncUnlink(oldKaraFile);
+				removeKaraInStore(oldKaraFile);
+				addKaraToStore(file);
+			} else {
+				editKaraInStore(oldKaraFile);
+			}
+		} catch(err) {
+			logger.warn(`[Kara] Failed to remove ${karaDB.karafile}, does it still exist?`);
 		}
-		if (karaDB.mediafile !== karaData.mediafile) await asyncUnlink((await resolveFileInDirs(karaDB.mediafile, resolvedPathRepos('Medias', karaDB.repository)))[0]);
-		if (karaDB.subfile && karaDB.subfile !== karaData.subfile) await asyncUnlink((await resolveFileInDirs(karaDB.subfile, resolvedPathRepos('Lyrics', karaDB.repository)))[0]);
+		if (karaDB.mediafile !== karaData.mediafile) try {
+			await asyncUnlink((await resolveFileInDirs(karaDB.mediafile, resolvedPathRepos('Medias', karaDB.repository)))[0]);
+		} catch(err) {
+			logger.warn(`[Kara] Failed to remove ${karaDB.mediafile}, does it still exist?`);
+		}
+		if (karaDB.subfile && karaDB.subfile !== karaData.subfile) try {
+			await asyncUnlink((await resolveFileInDirs(karaDB.subfile, resolvedPathRepos('Lyrics', karaDB.repository)))[0]);
+		} catch(err) {
+			logger.warn(`[Kara] Failed to remove ${karaDB.subfile}, does it still exist?`);
+		}
 		sortKaraStore();
-
 	} else {
 		await createKaraInDB(karaData, { refresh: false });
 	}

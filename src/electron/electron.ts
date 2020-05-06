@@ -28,7 +28,7 @@ export async function startElectron() {
 		await initElectronWindow();
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());
-			initAutoUpdate();
+			if (!getState().forceDisableAppUpdate) initAutoUpdate();
 			initDone = true;
 		});
 		ipcMain.once('initPageReady', async () => {
