@@ -115,7 +115,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		this.api_read_kara_queue();
 	}
 
-	downloadAll() {
+	async downloadAll() {
 		this.props.loading(true);
 		this.stopObserver();
 		putToDownloadQueuePause()
@@ -124,24 +124,30 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
 
-		axios.get(`/api/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}${this.state.compare}`)
-			.then(res => {
-				let karas = res.data.content;
-				karas.forEach((kara) => {
-					if(this.blacklist_check(kara))
-					{
-						kara.name = kara.karafile.replace('.kara.json', '');
-						this.downloadKara(kara);
-					}
-				});
-				this.props.loading(false);
-				this.startObserver();
-				putToDownloadQueueStart();
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.status}: ${err.statusText}. ${err.data}`);
+		try {
+			var response = await axios.get(`/api/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}${this.state.compare}`)
+			let karas = response.data.content;
+			let karasToDownload:KaraDownloadRequest[] = [];
+			karas.forEach((kara) => {
+				if(this.blacklist_check(kara))
+				{
+					karasToDownload.push({
+						kid: kara.kid,
+						mediafile: kara.mediafile,
+						size: kara.mediasize,
+						name: kara.karafile.replace('.kara.json', ''),
+						repository: kara.repository
+					});
+				}
 			});
+			await postToDownloadQueue(karasToDownload);
+			this.props.loading(false);
+			this.startObserver();
+			putToDownloadQueueStart();
+		} catch(err) {
+			this.props.loading(false);
+			this.props.errorMessage(`${err.status}: ${err.statusText}. ${err.data}`);
+		}
 	}
 
 	async api_get_local_karas() {
