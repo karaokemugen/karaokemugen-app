@@ -120,7 +120,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		await insertTag(tagObj);
 		await writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0]);
 		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);
-		addTagToStore(newTagFiles[0]);
+		await addTagToStore(newTagFiles);
 		sortTagsStore();
 		await Promise.all([
 			updateKaraTagsTID(tid1, tagObj.tid),
