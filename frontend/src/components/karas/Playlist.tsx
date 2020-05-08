@@ -685,7 +685,7 @@ noRowsRenderer = () => {
 					scope={this.props.scope}
 					config={this.props.config}
   					playlistList={this.props.playlistList.filter(
-						  (playlist:PlaylistList) => playlist.playlist_id !== this.props.idPlaylistTo)}
+						  (playlist:PlaylistElem) => playlist.playlist_id !== this.props.idPlaylistTo)}
   					idPlaylist={this.state.idPlaylist}
   					changeIdPlaylist={this.changeIdPlaylist}
   					playlistInfo={this.state.playlistInfo}
