@@ -66,13 +66,20 @@ class KaraDetail extends Component<IProps,IState> {
 
   componentDidMount() {
   	if(this.props.mode === 'list' && !is_touch_device())
-		  document.addEventListener('keyup', this.keyObserverHandler);
+		document.addEventListener('keyup', this.keyObserverHandler);
   }
 
   componentWillUnmount() {
   	if(this.props.mode === 'list' && !is_touch_device())
   		document.removeEventListener('keyup', this.keyObserverHandler);
   }
+
+	onClickOutsideModal = (e: MouseEvent) => {
+		var myElementToCheckIfClicksAreInsideOf = document.getElementsByClassName("modal-dialog")[0];
+		if (!myElementToCheckIfClicksAreInsideOf.contains((e.target as Node))) {
+			this.closeModal();
+		}
+	}
 
   getKaraDetail = async (kid?:string) => {
   	var urlInfoKara = this.props.idPlaylist && this.props.idPlaylist > 0 ?
@@ -332,7 +339,7 @@ class KaraDetail extends Component<IProps,IState> {
   		var infoKaraTemp;
   		if (this.props.mode == 'list') {
   			infoKaraTemp = (
-  				<div className="modal modalPage">
+  				<div className="modal modalPage" onClick={this.onClickOutsideModal}>
   					<div className="modal-dialog modal-md">
   						<div className="detailsKara">
   							<div className="topRightButtons">
