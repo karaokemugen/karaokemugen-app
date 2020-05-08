@@ -116,6 +116,7 @@
     "node-mpv-km": "^2.0.2",
     "open": "^7.0.3",
     "os-locale": "^5.0.0",
+    "p-cancelable": "^2.0.0",
     "p-retry": "^4.2.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
@@ -234,8 +235,8 @@
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",
       "category": "AudioVideo",
-	  "synopsis": "Karaoke manager and player",
-	  "publish": {
+      "synopsis": "Karaoke manager and player",
+      "publish": {
         "provider": "generic",
         "url": "https://mugen.karaokes.moe/downloads/"
       }
