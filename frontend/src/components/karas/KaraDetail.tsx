@@ -118,19 +118,13 @@ class KaraDetail extends Component<IProps,IState> {
   };
 
   moreInfo = async () => {
-  	var externalUrl = '';
-  	var serie = (this.state.kara as DBPLCInfo).serie;
-  	var extraSearchInfo = '';
-  	var searchLanguage = navigator.languages[0];
-  	searchLanguage = searchLanguage.substring(0, 2);
-  	var searchUrl =
-      'https://' +
-      searchLanguage +
-      '.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=' +
-      extraSearchInfo +
-      serie;
+	var externalUrl = '';
+	var serie = (this.state.kara as DBPLCInfo).serie;
+	var singer = (this.state.kara as DBPLCInfo).singers.length > 0 ? (this.state.kara as DBPLCInfo).singers[0].name : '';
+	var searchLanguage = navigator.languages[0].substring(0, 2);
+	let srsearch = serie ? serie : singer;
+  	var searchUrl = `https://${searchLanguage}.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=${encodeURIComponent(srsearch)}`;
   	var detailsUrl = '';
-
   	var xhttp = new XMLHttpRequest();
   	xhttp.onreadystatechange = function () {
   		if (this.readyState == 4 && this.status == 200) {
@@ -369,13 +363,11 @@ class KaraDetail extends Component<IProps,IState> {
   									className={`showVideo btn btn-action ${is_touch_device() ? 'mobile' : ''}`}
   									onClick={() => this.props.showVideo!((this.state.kara as DBPLCInfo).mediafile)}
   								><i className="fas fa-video"></i></button>
-  								{data.serie ? (
-  									<button
-  										type="button"
-  										className={`moreInfo btn btn-action ${is_touch_device() ? 'mobile' : ''}`}
-  										onClick={this.moreInfo}
-  									><i className="fas fa-info-circle"></i></button>
-  								) : null}
+								<button
+									type="button"
+									className={`moreInfo btn btn-action ${is_touch_device() ? 'mobile' : ''}`}
+									onClick={this.moreInfo}
+								><i className="fas fa-info-circle"></i></button>
   								{this.props.scope === 'admin' && this.props.publicOuCurrent ? (
   									<button
   										type="button"
