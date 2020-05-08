@@ -7,7 +7,7 @@ import DBMigrate from 'db-migrate';
 import {isShutdownPG, initPG} from '../utils/postgresql';
 import { baseChecksum } from './dataStore';
 import { DBStats } from '../types/database/database';
-import { getSettings, saveSetting, connectDB, db, getInstanceID, setInstanceID } from '../lib/dao/database';
+import { getSettings, saveSetting, connectDB, db, getInstanceID, setInstanceID, newDBTask } from '../lib/dao/database';
 import { v4 as uuidV4 } from 'uuid';
 import { resolve } from 'path';
 import { getPlaylists, reorderPlaylist } from './playlist';
@@ -137,13 +137,29 @@ export async function getStats(): Promise<DBStats> {
 	return res.rows[0];
 }
 
-export async function generateDB(): Promise<boolean> {
+export async function generateDB(queue?: boolean): Promise<boolean> {
 	try {
-		await generateDatabase(false, true);
-		logger.info('[DB] Database generation completed successfully!');
-		const pls = await getPlaylists(false);
-		for (const pl of pls) {
-			await reorderPlaylist(pl.playlist_id);
+		const opts = {validateOnly: false, progressBar: true};
+		if (queue) {
+			newDBTask({
+				name: 'generation',
+				func: generateDatabase,
+				args: [opts]
+			});
+			const pls = await getPlaylists(false);
+			for (const pl of pls) {
+				newDBTask({
+					func: reorderPlaylist,
+					args: [pl.playlist_id],
+					name: `reorderPlaylist${pl.playlist_id}`
+				});
+			}
+		} else {
+			await generateDatabase(opts);
+			const pls = await getPlaylists(false);
+			for (const pl of pls) {
+				await reorderPlaylist(pl.playlist_id);
+			}
 		}
 	} catch(err) {
 		throw err;

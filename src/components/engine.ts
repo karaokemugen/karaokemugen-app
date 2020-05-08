@@ -46,7 +46,10 @@ export async function initEngine() {
 	if (state.opt.validate) {
 		try {
 			initStep(i18n.t('INIT_VALIDATION'));
-			await generateKaraBase(true, true);
+			await generateKaraBase({
+				validateOnly: true,
+				progressBar: true
+			});
 			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Validation error : ${err}`);
