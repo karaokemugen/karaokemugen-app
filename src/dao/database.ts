@@ -2,7 +2,7 @@ import logger from 'winston';
 import {getConfig} from '../lib/utils/config';
 import {getState} from '../utils/state';
 import {generateDatabase} from '../lib/services/generation';
-import DBMigrate from 'db-migrate';
+import Postgrator, { Migration } from 'postgrator';
 
 import {isShutdownPG, initPG} from '../utils/postgresql';
 import { baseChecksum } from './dataStore';
@@ -12,6 +12,7 @@ import { v4 as uuidV4 } from 'uuid';
 import { resolve } from 'path';
 import { getPlaylists, reorderPlaylist } from './playlist';
 import { errorStep } from '../electron/electronLogger';
+import { migrations } from '../utils/migrationsBeforePostgrator';
 import i18next from 'i18next';
 
 const sql = require('./sql/database');
@@ -68,38 +69,66 @@ export async function initDB() {
 	}
 }
 
-async function migrateDB() {
-	logger.info('[DB] Running migrations if needed');
-	const conf = getConfig();
-	let options = {
-		config: conf.Database,
-		noPlugins: true,
-		plugins: {
-			dependencies: {
-				'db-migrate': 1,
-				'db-migrate-pg': 1
-			}
-		},
-		cmdOptions: {
-			'migrations-dir': resolve(getState().resourcePath, 'migrations/'),
-			'log-level': 'warn|error'
-		}
-	};
-	if (getState().opt.debug) options.cmdOptions['log-level'] = 'warn|error|info';
-	const dbm = DBMigrate.getInstance(true, options);
+async function migrateFromDBMigrate() {
+	// Return early if migrations table does not exist
+	let lastMigration: any;
 	try {
-		await dbm.sync('all');
+		lastMigration = await db().query('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
+	} catch(err) {
+		return;
+	}
+	logger.info('[DB] Old migration system found, converting...');
+	const id = lastMigration.rows[0].name.replace('/', '').split('-')[0];
+	const migrationsDone = migrations.filter(m => m.version <= id);
+	try {
+		await db().query(`CREATE TABLE schemaversion (
+			version BIGINT PRIMARY KEY,
+			name TEXT,
+			md5 TEXT,
+			run_at TIMESTAMPTZ
+		);
+		`);
+	} catch(err) {
+		throw 'For some strange reason you already have a schemaversion table along with a migrations table. Delete one or the other.'
+	};
+	for (const migration of migrationsDone) {
+		db().query(`INSERT INTO schemaversion VALUES('${migration.version}', '${migration.name}', '${migration.md5}', '${new Date().toISOString()}')`);
+	}
+	await db().query('DROP TABLE migrations;');
+}
+
+async function migrateDB(): Promise<Migration[]> {
+	logger.info('[DB] Running migrations if needed');
+	// First check if database still has db-migrate and determine at which we're at.
+	await migrateFromDBMigrate();
+	const conf = getConfig();
+	const migrator = new Postgrator({
+		migrationDirectory: resolve(getState().resourcePath, 'migrations/'),
+		host: conf.Database.prod.host,
+		driver: conf.Database.prod.driver,
+		username: conf.Database.prod.username,
+		password: conf.Database.prod.password,
+		port: conf.Database.prod.port,
+		database: conf.Database.prod.database,
+		validateChecksums: false,
+	});
+	try {
+		const migrations = await migrator.migrate();
+		if (migrations.length > 0) logger.info(`[DB] Executed ${migrations.length} migrations`);
+		logger.debug(`[DB] Migrations executed : ${JSON.stringify(migrations)}`);
+		return migrations;
 	} catch(err) {
 		throw `Migrations failed : ${err}`;
 	}
 }
 
 
-export async function initDBSystem(): Promise<boolean> {
+export async function initDBSystem(): Promise<Migration[]> {
 	const conf = getConfig();
 	const state = getState();
 	// Only for bundled postgres binary :
 	// First login as super user to make sure user, database and extensions are created
+	let migrations: Migration[];
 	try {
 		if (conf.Database.prod.bundledPostgresBinary) {
 			await initPG();
@@ -111,7 +140,7 @@ export async function initDBSystem(): Promise<boolean> {
 			db: conf.Database.prod.database,
 			log: state.opt.sql
 		}, errorFunction);
-		await migrateDB();
+		migrations = await migrateDB();
 	} catch(err) {
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
 		throw `Database system initialization failed : ${err}`;
@@ -124,7 +153,7 @@ export async function initDBSystem(): Promise<boolean> {
 	if (state.opt.reset) await resetUserData();
 
 	logger.debug( '[DB] Database Interface is READY');
-	return true;
+	return migrations;
 }
 
 export async function resetUserData() {

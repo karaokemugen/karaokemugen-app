@@ -193,7 +193,7 @@ export interface Config {
 		'sql-file'?: boolean,
 		defaultEnv?: string,
 		prod: {
-			driver?: string,
+			driver?: any,
 			host?: string,
 			port?: number,
 			user?: string,
@@ -203,6 +203,7 @@ export interface Config {
 			schema?: string,
 			database?: string,
 			bundledPostgresBinary?: boolean
+			username?: string
 		}
 	}
 }

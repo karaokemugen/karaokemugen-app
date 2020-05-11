@@ -22,6 +22,7 @@ import {initStats} from '../services/stats';
 import {welcomeToYoukousoKaraokeMugen} from '../services/welcome';
 import {initPlaylistSystem, testPlaylists} from '../services/playlist';
 import { generateDatabase as generateKaraBase } from '../lib/services/generation';
+import { postMigrationTasks } from '../dao/migrations';
 import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from '../services/session';
 import { updatePlaylistMedias, buildAllMediasList } from '../services/medias';
@@ -111,7 +112,7 @@ export async function initEngine() {
 		}
 	} else {
 		initStep(i18n.t('INIT_DB'));
-		await initDBSystem();
+		const migrations = await initDBSystem();
 		const stats = await preFlightCheck();
 		initStep(i18n.t('INIT_USER'));
 		await initUserSystem();
@@ -144,19 +145,21 @@ export async function initEngine() {
 			// This is done later because it's not important.
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
-			if (conf.App.FirstRun && stats.karas === 0 && !state.isTest) {
-				downloadRandomSongs();
-			}
-			if (state.isTest) downloadTestSongs();
-			if (!state.isTest && !state.isDemo) {
-				await updatePlaylistMedias();
-				await buildAllMediasList();
-			}
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
 		} finally {
 			profile('Init');
 		}
+		// Post-init stuff
+		if (conf.App.FirstRun && stats.karas === 0 && !state.isTest) {
+			downloadRandomSongs();
+		}
+		if (state.isTest) downloadTestSongs();
+		if (!state.isTest && !state.isDemo) {
+			await updatePlaylistMedias();
+			await buildAllMediasList();
+		}
+		await postMigrationTasks(migrations);
 	}
 }
 
