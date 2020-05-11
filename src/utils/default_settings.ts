@@ -17,7 +17,8 @@ const dbConfig = process.platform === 'linux'
 		schema: 'public',
 		superuser: null,
 		superuserPassword: null,
-		user: 'karaokemugen_app'
+		user: 'karaokemugen_app',
+		username: 'karaokemugen_app'
 	}
 	: {
 		bundledPostgresBinary: true,
@@ -29,7 +30,8 @@ const dbConfig = process.platform === 'linux'
 		schema: 'public',
 		superuser: 'postgres',
 		superuserPassword: null,
-		user: 'karaokemugen_app'
+		user: 'karaokemugen_app',
+		username: 'karaokemugen_app'
 	}
 
 /** Default configuration */
@@ -40,8 +42,6 @@ export const defaults: Config = {
 		QuickStart: false
 	},
 	Database: {
-		'sql-file': true,
-		defaultEnv: 'prod',
 		prod: dbConfig
 	},
 	Online: {

@@ -59,5 +59,5 @@ CREATE INDEX idx_as_sid ON all_series(sid);
 CREATE INDEX idx_as_search ON all_series(search);
 CREATE INDEX idx_as_search_aliases ON all_series(search_aliases);
 
-ALTER TABLE tags DROP COLUMN modified_at;
-ALTER TABLE series DROP COLUMN modified_at;
+ALTER TABLE tag DROP COLUMN modified_at;
+ALTER TABLE serie DROP COLUMN modified_at;

@@ -1,0 +1,9 @@
+{
+    "migrationDirectory": "migrations",
+    "driver": "pg",
+    "host": "localhost",
+    "port": 5432,
+    "database": "karaokemugen_app",
+    "username": "karaokemugen_app",
+    "password": "musubi"
+}

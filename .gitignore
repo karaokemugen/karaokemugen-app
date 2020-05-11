@@ -49,3 +49,4 @@ frontend/build/
 dist2
 js
 packages
+postgrator.json

@@ -1,5 +1,3 @@
-ALTER TABLE kara DROP COLUMN subchecksum;
-
 DROP MATERIALIZED VIEW all_karas;
 CREATE MATERIALIZED VIEW all_karas AS
 SELECT
@@ -72,3 +70,6 @@ CREATE INDEX idx_ak_singer ON all_karas(singers_sortable);
 CREATE INDEX idx_ak_language ON all_karas(languages_sortable);
 CREATE INDEX idx_ak_year ON all_karas(year);
 CREATE INDEX idx_ak_kid ON all_karas(kid);
+
+ALTER TABLE kara DROP COLUMN subchecksum;
+
