@@ -248,11 +248,11 @@ async function editRemoteUser(user: User) {
 			method: 'PUT',
 			body: form,
 			headers: {
-				authorization: remoteToken.token
+				authorization: remoteToken.token || null
 			}
 		});
 	} catch(err) {
-		throw `Remote update failed : ${err.response ? err.response.body : err}`;
+		throw `Remote update failed : ${err}`;
 	}
 }
 
@@ -458,7 +458,7 @@ export async function resetRemotePassword(user: string) {
 		await got.post(`https://${instance}/api/users/${username}/resetpassword`);
 	} catch (err) {
 
-		logger.error(`[RemoteUser] Could not trigger reset password for ${user} : ${err.response ? err.response.body : err}`);
+		logger.error(`[RemoteUser] Could not trigger reset password for ${user} : ${err}`);
 		throw err;
 	}
 }
@@ -475,7 +475,7 @@ async function getAllRemoteUsers(instance: string): Promise<User[]> {
 		logger.debug(`[RemoteUser] Got error when get all remote users : ${err}`);
 		throw {
 			code: 'USER_CREATE_ERROR_ONLINE',
-			message: err.response ? err.response.body : err
+			message: err
 		};
 	}
 }
@@ -499,7 +499,7 @@ async function createRemoteUser(user: User) {
 		logger.debug(`[RemoteUser] Got error when create remote user ${login} : ${err}`);
 		throw {
 			code: 'USER_CREATE_ERROR_ONLINE',
-			message: err.response ? err.response.body : err
+			message: err
 		};
 	}
 }
@@ -517,7 +517,7 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 		return res.body;
 	} catch(err) {
 		if (err.statusCode === 401) throw 'Unauthorized';
-		throw `Unknown error : ${err.response ? err.response.body : err}`;
+		throw `[RemoteUser] Got error when get remote user ${username} : ${err}`;
 	}
 }
 
