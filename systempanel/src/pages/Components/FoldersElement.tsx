@@ -143,9 +143,10 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 										<React.Fragment>
 											<Radio style={{ width: '250px'}} checked={this.state.value[0] === element} 
 												onChange={() => {
-													this.setState({ value: 
-														(this.state.value as Array<string>).filter(val => val === element)
-														.concat((this.state.value as Array<string>).filter(val => val !== element))});
+													let value = (this.state.value as Array<string>).filter(val => val === element)
+													.concat((this.state.value as Array<string>).filter(val => val !== element));
+													this.setState({ value: value});
+													this.props.onChange && this.props.onChange(value);
 													}}>
 												{this.state.value[0] === element ? i18next.t('CONFIG.PRIMARY_DIRECTORY') : null}
 											</Radio>
