@@ -121,7 +121,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^8.0.3",
-    "pg-copy-streams": "^3.0.0",
+    "pg-copy-streams": "^4.0.0",
     "portfinder": "^1.0.26",
     "pretty-bytes": "^5.3.0",
     "randomstring": "^1.1.5",
