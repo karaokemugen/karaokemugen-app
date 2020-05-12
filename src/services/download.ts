@@ -30,6 +30,7 @@ import sampleSize from 'lodash.samplesize';
 import Task from '../lib/utils/taskManager';
 import { extractAssInfos } from '../lib/dao/karafile';
 import { SeriesList } from '../lib/types/series';
+import { headers } from '../utils/constants';
 
 const queueOptions = {
 	id: 'uuid',
@@ -141,7 +142,9 @@ async function processDownload(download: KaraDownload) {
 		const localLyricsPath = resolve(resolvedPathRepos('Lyrics', download.repository)[0]);
 
 		const conf = getConfig();
-		const res = await got.get(`https://${conf.Online.Host}/api/karas/${download.kid}/raw`);
+		const res = await got.get(`https://${conf.Online.Host}/api/karas/${download.kid}/raw`, {
+			headers: headers
+		});
 		const bundle: DownloadBundle = JSON.parse(res.body);
 
 		const tempDir = resolvedPathTemp();
@@ -439,6 +442,7 @@ export async function getRemoteKaras(repo: string, params: KaraParams, compare?:
 	}
 	try {
 		const res = await got.post(`https://${repo}/api/karas/search`, {
+			headers: headers,
 			json: {
 				filter: params.filter,
 				size: params.size,
@@ -492,12 +496,16 @@ export async function getAllRemoteTags(repository: string, params: TagParams): P
 }
 
 export async function getRemoteTags(repo: string, params: TagParams = {}): Promise<TagList> {
-	const res = await got(`https://${repo}/api/karas/tags${params.type ? '/' + params.type : '' }`);
+	const res = await got(`https://${repo}/api/karas/tags${params.type ? '/' + params.type : '' }`, {
+		headers: headers
+	});
 	return JSON.parse(res.body);
 }
 
 export async function getRemoteSeries(repo: string): Promise<SeriesList> {
-	const res = await got(`https://${repo}/api/karas/series`);
+	const res = await got(`https://${repo}/api/karas/series`, {
+		headers: headers
+	});
 	return JSON.parse(res.body);
 }
 

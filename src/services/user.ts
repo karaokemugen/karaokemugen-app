@@ -8,7 +8,7 @@ import {resolve, join} from 'path';
 import logger from 'winston';
 import { v4 as uuidV4 } from 'uuid';
 import {imageFileTypes} from '../lib/utils/constants';
-import {defaultGuestNames} from '../utils/constants';
+import {defaultGuestNames, headers} from '../utils/constants';
 import randomstring from 'randomstring';
 import {on} from '../lib/utils/pubsub';
 import {getSongCountForUser, getSongTimeSpentForUser} from '../dao/kara';
@@ -64,6 +64,7 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	await got(`https://${instance}/api/users`, {
 		method: 'DELETE',
 		headers: {
+			...headers,
 			authorization: onlineToken.token
 		}
 	});
@@ -248,6 +249,7 @@ async function editRemoteUser(user: User) {
 			method: 'PUT',
 			body: form,
 			headers: {
+				...headers,
 				authorization: remoteToken.token || null
 			}
 		});
@@ -418,6 +420,7 @@ export async function remoteCheckAuth(instance: string, token: string) {
 	try {
 		const res = await got.get(`https://${instance}/api/auth/check`, {
 			headers: {
+				...headers,
 				authorization: token
 			}
 		});
@@ -433,6 +436,7 @@ export async function remoteLogin(username: string, password: string): Promise<T
 	const [login, instance] = username.split('@');
 	try {
 		const res = await got.post(`https://${instance}/api/auth/login`, {
+			headers: headers,
 			form: {
 				username: login,
 				password: password
@@ -455,7 +459,7 @@ export async function remoteLogin(username: string, password: string): Promise<T
 export async function resetRemotePassword(user: string) {
 	const [username, instance] = user.split('@');
 	try {
-		await got.post(`https://${instance}/api/users/${username}/resetpassword`);
+		await got.post(`https://${instance}/api/users/${username}/resetpassword`, {headers: headers});
 	} catch (err) {
 
 		logger.error(`[RemoteUser] Could not trigger reset password for ${user} : ${err}`);
@@ -468,7 +472,8 @@ async function getAllRemoteUsers(instance: string): Promise<User[]> {
 	try {
 		const users = await got(`https://${instance}/api/users`,
 			{
-				responseType: 'json'
+				responseType: 'json',
+				headers: headers
 			});
 		return users.body as User[];
 	} catch(err) {
@@ -493,7 +498,8 @@ async function createRemoteUser(user: User) {
 			form: {
 				login: login,
 				password: user.password
-			}
+			},
+			headers: headers
 		});
 	} catch(err) {
 		logger.debug(`[RemoteUser] Got error when create remote user ${login} : ${err}`);
@@ -510,6 +516,7 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 	try {
 		const res = await got(`https://${instance}/api/users/${login}`, {
 			headers: {
+				...headers,
 				authorization: token
 			},
 			responseType: 'json'

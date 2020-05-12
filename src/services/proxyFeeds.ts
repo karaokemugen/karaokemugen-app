@@ -8,6 +8,7 @@ import logger from '../lib/utils/logger';
 
 // Types
 import { Feed } from '../types/feeds';
+import { headers } from '../utils/constants';
 
 const feeds = [
 	{
@@ -39,7 +40,7 @@ export async function getFeeds() {
 /** Fetch and process a RSS feed */
 async function fetchFeed(url: string, name: string): Promise<Feed> {
 	try {
-		const response = await got(url);
+		const response = await got(url, {headers: headers});
 		const feed = JSON.parse(xml2json(response.body, {compact: true}));
 		// For Mastodon, we filter out UnJourUnKaraoke toots because we don't want to be spammed.
 		if (name === 'mastodon') {
