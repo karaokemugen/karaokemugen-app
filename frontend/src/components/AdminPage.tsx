@@ -71,13 +71,17 @@ class AdminPage extends Component<IProps, IState> {
 				this.setState({ statusPlayer: data });
 			});
 		}
-		await this.getPlaylistList();
+		if (axios.defaults.headers.common['authorization']) {
+			await this.getPlaylistList();
+		}
 		getSocket().on('playlistsUpdated', this.getPlaylistList);
 		store.addChangeListener('loginOut', this.openLoginOrProfileModal);
+		store.addChangeListener('loginUpdated', this.getPlaylistList);
 	}
   
 	componentWillUnmount() {
 		store.removeChangeListener('loginOut', this.openLoginOrProfileModal);
+		store.removeChangeListener('loginUpdated', this.getPlaylistList);
 	}
 
   majIdsPlaylist = (side:number, value:number) => {
