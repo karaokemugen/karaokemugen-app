@@ -1,3 +1,5 @@
+import { version } from "../version";
+
 /** Default guest names used to fill up the database */
 export const defaultGuestNames = [
 	'Jean-Michel Normal',
@@ -235,3 +237,8 @@ export const initializationCatchphrases = [
 	'"Let\'s save the world by overloading it with karaoke!" ‒Haruhi Suzumiya',
 	'"Let us begin, Rei. Release your voice, the barrier of your mind. Make our imperfect voices whole again. Discard this unnecessary physical microphone. Merge all voice into one. And then, take me to Yui\'s side." ‒Gendo Ikari',
 ];
+
+// Default headers for HTTP client
+export const headers = {
+	'user-agent': `KaraokeMugenApp/${version.number}`
+}

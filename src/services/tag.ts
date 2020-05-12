@@ -129,8 +129,8 @@ export async function mergeTags(tid1: string, tid2: string) {
 		await Promise.all([
 			removeTag(tid1),
 			removeTag(tid2),
-			removeTagFile(tag1.tagfile),
-			removeTagFile(tag2.tagfile),
+			removeTagFile(tag1.tagfile, tag1.repository),
+			removeTagFile(tag2.tagfile, tag2.repository),
 			removeTagInStore(tid1),
 			removeTagInStore(tid2)
 		]);
@@ -163,7 +163,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 	const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
 	if (oldTag.tagfile !== tagObj.tagfile) {
 		try {
-			await removeTagFile(oldTag.tagfile);
+			await removeTagFile(oldTag.tagfile, oldTag.repository);
 			await addTagToStore(newTagFiles[0]);
 			removeTagInStore(oldTagFiles[0]);
 			sortTagsStore();
@@ -178,19 +178,26 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 }
 
 export async function deleteTag(tid: string, opt = {refresh: true}) {
-	const tag = await getTag(tid);
-	if (!tag) throw 'Tag ID unknown';
-	await removeTag(tid);
-	emitWS('statsRefresh');
-	const removes = [
-		removeTagFile(tag.tagfile),
-		removeTagInKaras(tid, await getAllKaras())
-	];
-	if (opt.refresh) removes.push(refreshTags());
-	await Promise.all(removes);
-	removeTagInStore(tid);
-	saveSetting('baseChecksum', getStoreChecksum());
-	if (opt.refresh) refreshKaraTags().then(() => refreshKaras());
+	try {
+		const tag = await getTag(tid);
+		if (!tag) throw 'Tag ID unknown';
+		await removeTag(tid);
+		emitWS('statsRefresh');
+		const removes = [
+			removeTagFile(tag.tagfile, tag.repository),
+			removeTagInKaras(tid, await getAllKaras())
+		];
+		if (opt.refresh) removes.push(refreshTags());
+		await Promise.all(removes);
+		removeTagInStore(tid);
+		saveSetting('baseChecksum', getStoreChecksum());
+		if (opt.refresh) {
+			refreshKaraTags()
+			refreshKaras()
+		}
+	} catch(err) {
+		throw err;
+	}
 }
 
 export async function integrateTagFile(file: string): Promise<string> {

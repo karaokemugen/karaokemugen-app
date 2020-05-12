@@ -11,6 +11,7 @@ import {resolve} from 'path';
 import cloneDeep from 'lodash.clonedeep';
 import { getSessions } from './session';
 import { getInstanceID } from '../lib/dao/database';
+import { headers } from '../utils/constants';
 
 let intervalID: any;
 
@@ -41,7 +42,8 @@ export async function sendPayload() {
 		asyncWriteFile(resolve(getState().dataPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
 		try {
 			await got.post(`https://${conf.Online.Host}/api/stats`,{
-				json: payload
+				json: payload,
+				headers: headers
 			});
 		} catch(err) {
 			throw err;

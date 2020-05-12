@@ -8,11 +8,11 @@ import Queue from 'better-queue';
 
 // KM Imports
 import logger from '../lib/utils/logger';
-import { getState } from './state';
 
 // Types
 import { DownloadItem, DownloadOpts } from '../types/downloader';
 import Task from '../lib/utils/taskManager';
+import { headers } from './constants';
 
 // for downloads we need keepalive or else connections can timeout and get stuck. Such is life.
 const HttpAgent = require('agentkeepalive');
@@ -73,9 +73,7 @@ export default class Downloader {
 				http: new HttpAgent(),
 				https: new HttpsAgent()
 			},
-			headers: {
-				'user-agent': `KaraokeMugen/${getState().version.number}`
-			}
+			headers: headers
 		};
 		let size: string;
 		try {

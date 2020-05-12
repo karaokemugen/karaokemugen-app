@@ -11,6 +11,7 @@ import { uuidRegexp } from '../lib/utils/constants';
 import { getRemoteToken } from '../dao/user';
 import got from 'got';
 import {getConfig} from '../lib/utils/config';
+import { headers } from '../utils/constants';
 
 export async function getFavorites(params: FavParams): Promise<KaraList> {
 	try {
@@ -29,6 +30,7 @@ export async function fetchAndAddFavorites(instance: string, token: string, user
 	try {
 		const res = await got(`https://${instance}/api/favorites`, {
 			headers: {
+				...headers,
 				authorization: token
 			},
 			responseType: 'json'
@@ -107,6 +109,7 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 		return await got(`https://${instance}/api/favorites/${kid}`, {
 			method: action,
 			headers: {
+				...headers,
 				authorization: remoteToken.token || null
 			},
 		});
