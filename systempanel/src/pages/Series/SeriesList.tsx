@@ -134,6 +134,10 @@ class SeriesList extends Component<SeriesListProps, SeriesListState> {
 			return names;
 		}
 	}, {
+		title: i18next.t('TAGS.REPOSITORY'),
+		dataIndex: 'repository',
+		key: 'repository'
+	}, {
 		width: '100px',
 		title: i18next.t('ACTION'),
 		render: (text, record) => (<span>

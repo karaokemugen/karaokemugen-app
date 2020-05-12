@@ -155,9 +155,20 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 			return getTagInLocaleList(this.state.i18nTag, songtypes) + ' ' + songorder || '';
 		}
 	}, {
+		title: i18next.t('KARA.FAMILIES'),
+		dataIndex: 'families',
+		key: 'families',
+		render: (families, record) => {
+			return getTagInLocaleList(this.state.i18nTag, families).join(', ');
+		}
+	}, {
 		title: i18next.t('KARA.TITLE'),
 		dataIndex: 'title',
 		key: 'title'
+	}, {
+		title: i18next.t('KARA.REPOSITORY'),
+		dataIndex: 'repository',
+		key: 'repository'
 	}, {
 		title: i18next.t('ACTION'),
 		key: 'action',
