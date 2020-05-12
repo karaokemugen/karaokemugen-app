@@ -71,12 +71,9 @@ export async function initDB() {
 
 async function migrateFromDBMigrate() {
 	// Return early if migrations table does not exist
-	let lastMigration: any;
-	try {
-		lastMigration = await db().query('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
-	} catch(err) {
-		return;
-	}
+	const tables = await db().query(`SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename = 'migrations'`);
+	if (tables.rows.length === 0) return;
+	const lastMigration = await db().query('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
 	logger.info('[DB] Old migration system found, converting...');
 	const id = lastMigration.rows[0].name.replace('/', '').split('-')[0];
 	const migrationsDone = migrations.filter(m => m.version <= id);
