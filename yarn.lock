@@ -1865,13 +1865,6 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-electron-better-ipc@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/electron-better-ipc/-/electron-better-ipc-1.0.1.tgz#ec5f397d44ce1225d826461ff93881912fe68490"
-  integrity sha512-4okAJoeY2+NXsPLYE+ccVn2NSDRCqMAAV1Kp5YzNRGki505p9nXuM6+d2QAlZ1OWyQxXmDm0B+eezjQL55uF/A==
-  dependencies:
-    serialize-error "^5.0.0"
-
 electron-updater@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-4.3.1.tgz#9d485b6262bc56fcf7ee62b1dc1b3b105a3e96a7"

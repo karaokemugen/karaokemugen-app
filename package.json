@@ -80,7 +80,6 @@
     "cli-progress": "^3.8.2",
     "compression": "^1.7.4",
     "csv-writer": "^1.6.0",
-    "electron-better-ipc": "^1.0.1",
     "electron-updater": "^4.3.1",
     "execa": "^4.0.1",
     "express": "^4.17.1",

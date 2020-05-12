@@ -53,7 +53,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 	async openFileSystemModal(item, index?:number, key?: string) {
 		if (this.isElectron()) {
 			await this.setState({itemModal: item, indexModal: index, keyModal: key});
-			const {ipcRenderer: ipc} = window.require('electron-better-ipc');
+			const {ipcRenderer: ipc} = window.require('electron');
 			const path = `${this.getPathForFileSystem(Array.isArray(item) ? item[index] : item, key)}${index === -1 
 				? '/' :	(this.state.os === 'win32' ? (Array.isArray(item) ? item[index] : item).replace(/\//g, '\\') : (Array.isArray(item) ? item[index] : item))}`;
 			const options = {
@@ -64,11 +64,13 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 			};
 			if (this.props.openFile) options.properties.push('openFile');
 			if (this.props.openDirectory) options.properties.push('openDirectory');
-			const filepaths = await ipc.callMain('get-file-paths', options);
-			if (filepaths.length > 0) {
-				await this.setState({newValueModal: filepaths[0]});
-				this.saveFolders();
-			}
+			ipc.send('get-file-paths', options);
+			ipc.once('get-file-paths-response', async (event, filepaths) => {
+				if (filepaths.length > 0) {
+					await this.setState({newValueModal: filepaths[0]});
+					this.saveFolders();
+				}
+			});
 		} else {
 			this.setState({itemModal: item, indexModal: index, keyModal: key, visibleModal: true})
 		}

@@ -10,7 +10,6 @@ import { resolve } from 'path';
 import open from 'open';
 import { initMenu, getMenu } from './electronMenu';
 import {initAutoUpdate} from './electronAutoUpdate';
-import {ipcMain as ipc} from 'electron-better-ipc';
 
 export let win: Electron.BrowserWindow;
 
@@ -51,8 +50,8 @@ export async function startElectron() {
 		}
 	});
 
-	ipc.answerRenderer('get-file-paths', async options => {
-		return (await dialog.showOpenDialog(options)).filePaths
+	ipcMain.on('get-file-paths', async (event, options) => {
+		event.sender.send('get-file-paths-response', (await dialog.showOpenDialog(options)).filePaths);
 	});
 
 	await configureLocale();
