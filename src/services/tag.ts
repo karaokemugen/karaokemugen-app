@@ -178,19 +178,26 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 }
 
 export async function deleteTag(tid: string, opt = {refresh: true}) {
-	const tag = await getTag(tid);
-	if (!tag) throw 'Tag ID unknown';
-	await removeTag(tid);
-	emitWS('statsRefresh');
-	const removes = [
-		removeTagFile(tag.tagfile),
-		removeTagInKaras(tid, await getAllKaras())
-	];
-	if (opt.refresh) removes.push(refreshTags());
-	await Promise.all(removes);
-	removeTagInStore(tid);
-	saveSetting('baseChecksum', getStoreChecksum());
-	if (opt.refresh) refreshKaraTags().then(() => refreshKaras());
+	try {
+		const tag = await getTag(tid);
+		if (!tag) throw 'Tag ID unknown';
+		await removeTag(tid);
+		emitWS('statsRefresh');
+		const removes = [
+			removeTagFile(tag.tagfile),
+			removeTagInKaras(tid, await getAllKaras())
+		];
+		if (opt.refresh) removes.push(refreshTags());
+		await Promise.all(removes);
+		removeTagInStore(tid);
+		saveSetting('baseChecksum', getStoreChecksum());
+		if (opt.refresh) {
+			refreshKaraTags()
+			refreshKaras()
+		}
+	} catch(err) {
+		throw err;
+	}
 }
 
 export async function integrateTagFile(file: string): Promise<string> {
