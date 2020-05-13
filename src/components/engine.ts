@@ -162,6 +162,7 @@ export async function initEngine() {
 			await dumpPG();
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
+			if (state.isTest) process.exit(1);
 		} finally {
 			profile('Init');
 		}
