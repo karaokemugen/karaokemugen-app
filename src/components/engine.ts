@@ -152,6 +152,7 @@ export async function initEngine() {
 				await updatePlaylistMedias();
 				await buildAllMediasList();
 			}
+			await dumpPG();
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
 		} finally {
