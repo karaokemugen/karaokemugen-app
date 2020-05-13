@@ -983,6 +983,7 @@ describe('Main', function() {
 	});
 });
 
+/* Since tests are called from the app this is like suicide now.
 describe('Main - Shutdown', function() {
 	it('Shutdown the entire application', function() {
 		return request
@@ -995,3 +996,4 @@ describe('Main - Shutdown', function() {
 			});
 	});
 });
+*/
