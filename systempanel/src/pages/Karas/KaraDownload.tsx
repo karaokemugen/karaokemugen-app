@@ -21,6 +21,7 @@ import getTags from '../../api/getTags';
 import i18next from 'i18next';
 import { tagTypes } from '../../utils/tagTypes';
 import { KaraDownloadRequest } from '../../../../src/types/download';
+import { getTagInLocaleList } from '../../utils/kara';
 
 var blacklist_cache = {}
 var api_get_local_karas_interval = null;
@@ -31,6 +32,7 @@ interface KaraDownloadProps extends ReduxMappedProps {}
 interface KaraDownloadState {
 	karas_local: any[],
 	karas_online: any[],
+	i18nTag: any,
 	blacklist_criterias: any[],
 	karas_online_count: number,
 	karas_queue: any[],
@@ -51,6 +53,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		this.state = {
 			karas_local: [],
 			karas_online: [],
+			i18nTag: {},
 			karas_online_count: 0,
 			blacklist_criterias: [],
 			karas_queue: [],
@@ -250,6 +253,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 				this.setState({
 					karas_online: karas,
 					karas_online_count: res.data.infos.count || 0,
+					i18nTag: res.data.i18n
 				});
 			})
 			.catch(err => {
@@ -449,31 +453,29 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => {
-			const ret = langs ? langs.map(e => {
-				return e.name;
-			}) : [];
-			return ret.join(', ').toUpperCase();
+			return getTagInLocaleList(this.state.i18nTag , langs).join(', ');
 		}
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
 		dataIndex: 'serie',
 		key: 'serie',
 		render: (serie, record) => {
-			const singers = record.singers ? record.singers.map(e => {
-				return e.name;
-			}) : [];
-			return serie || singers.join(', ');
+			return serie || getTagInLocaleList(this.state.i18nTag, record.singers).join(', ');
 		}
 	}, {
 		title: i18next.t('KARA.TYPE'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => {
-			const types = songtypes ? songtypes.map(e => {
-				return e.name;
-			}) : [];
 			const songorder = record.songorder || '';
-			return types.join(', ').replace('TYPE_','') + ' ' + songorder || '';
+			return getTagInLocaleList(this.state.i18nTag, songtypes).join(', ') + ' ' + songorder || '';
+		}
+	}, {
+		title: i18next.t('KARA.FAMILIES'),
+		dataIndex: 'families',
+		key: 'families',
+		render: (families, record) => {
+			return getTagInLocaleList(this.state.i18nTag, families).join(', ');
 		}
 	}, {
 		title: i18next.t('KARA.TITLE'),
