@@ -36,7 +36,7 @@ test:
     - export LANG=en_US
     - node --version
     - node util/extUnaccent.js
-    - yarn test --debug &disown
+    - yarn test --debug
   only:
     - master
     - next
