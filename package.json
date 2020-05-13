@@ -127,7 +127,7 @@
     "semver": "^7.3.2",
     "slugify": "^1.4.0",
     "socket.io": "^2.3.0",
-    "systeminformation": "^4.25.1",
+    "systeminformation": "^4.26.0",
     "tmi.js": "^1.5.0",
     "toyunda2ass": "^1.0.12",
     "ultrastar2ass": "^1.0.12",
@@ -171,8 +171,8 @@
     "@types/tmi.js": "^1.4.0",
     "@types/uuid": "^7.0.3",
     "@types/yesql": "^3.2.2",
-    "@typescript-eslint/eslint-plugin": "^2.31.0",
-    "@typescript-eslint/parser": "^2.31.0",
+    "@typescript-eslint/eslint-plugin": "^2.33.0",
+    "@typescript-eslint/parser": "^2.33.0",
     "apidoc": "^0.22.1",
     "chai": "^4.2.0",
     "electron": "^8.2.5",
@@ -186,7 +186,7 @@
     "rimraf": "^3.0.2",
     "supertest": "^4.0.2",
     "ts-node": "^8.10.1",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.2"
   },
   "apidoc": {
     "url": "http://localhost:1337/api"
