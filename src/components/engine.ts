@@ -161,6 +161,7 @@ export async function initEngine() {
 				await buildAllMediasList();
 			}
 			await postMigrationTasks(migrations);
+			await dumpPG();
 		} catch(err) {
 			logger.warn(`[Engine] Post-launch tasks failed : ${err}`);
 		}

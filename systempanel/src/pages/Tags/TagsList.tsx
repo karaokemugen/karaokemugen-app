@@ -124,6 +124,10 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 			return names;
 		}
 	}, {
+		title: i18next.t('TAGS.REPOSITORY'),
+		dataIndex: 'repository',
+		key: 'repository'
+	}, {
 		title: i18next.t('ACTION'),
 		render: (text, record) => (<span>
 			<Link to={`/system/km/tags/${record.tid}`}><Icon type='edit'/></Link>

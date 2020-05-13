@@ -128,13 +128,17 @@ class PublicPage extends Component<IProps,IState> {
 					</div>)}, 500);
 		}
 	});
-	await this.getPlaylistList();
+	if (axios.defaults.headers.common['authorization']) {
+		await this.getPlaylistList();
+	}
 	getSocket().on('playlistsUpdated', this.getPlaylistList);
 	store.addChangeListener('loginOut', this.openLoginOrProfileModal);
+	store.addChangeListener('loginUpdated', this.getPlaylistList);
   }
 
 	componentWillUnmount() {
 		store.removeChangeListener('loginOut', this.openLoginOrProfileModal);
+		store.removeChangeListener('loginUpdated', this.getPlaylistList);
 	}
 
   displayClassicModeModal = async (data:any) => {
