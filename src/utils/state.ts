@@ -35,6 +35,7 @@ let state: State = {
 	EngineDefaultLocale: 'fr',
 	securityCode: null,
 	wsLogNamespace: null,
+	noAutoTest: false,
 	player: {
 		ready: false
 	},

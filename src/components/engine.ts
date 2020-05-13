@@ -8,7 +8,7 @@ import readlineSync from 'readline-sync';
 import logger from 'winston';
 import {getState, setState} from '../utils/state';
 import { killPG, dumpPG, restorePG, checkPG} from '../utils/postgresql';
-import {emit} from '../lib/utils/pubsub';
+import {emit, on} from '../lib/utils/pubsub';
 
 //KM Modules
 import {initUserSystem} from '../services/user';
@@ -31,6 +31,7 @@ import { generateBlacklist } from '../dao/blacklist';
 import { duration } from '../lib/utils/date';
 import { DBStats } from '../types/database/database';
 import { baseChecksum } from '../dao/dataStore';
+import execa from 'execa';
 
 let shutdownInProgress = false;
 
@@ -147,7 +148,12 @@ export async function initEngine() {
 			if (conf.App.FirstRun && stats.karas === 0 && !state.isTest) {
 				downloadRandomSongs();
 			}
-			if (state.isTest) downloadTestSongs();
+			if (state.isTest) {
+				downloadTestSongs();
+				on('downloadQueueStatus', (status: string) => {
+					if (status.includes('stopped')) runTests();
+				});
+			}
 			if (!state.isTest && !state.isDemo) {
 				await updatePlaylistMedias();
 				await buildAllMediasList();
@@ -258,4 +264,20 @@ async function preFlightCheck(): Promise<DBStats> {
 	logger.info(`Playlists    : ${stats.playlists}`);
 	logger.info(`Songs played : ${stats.played}`);
 	return stats;
+}
+
+async function runTests() {
+	const options = ['--require', 'ts-node/register', '--timeout',  '20000', 'test/*.ts' ];
+	try {
+		const ret = await execa('mocha', options, {
+			cwd: getState().originalAppPath
+		});
+		console.log(ret.stdout);
+		process.exit(ret.exitCode);
+	} catch(err) {
+		console.log('TESTS FAILED : ');
+		console.log(err.stdout);
+		process.exit(err.errno);
+	}
+
 }

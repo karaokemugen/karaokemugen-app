@@ -31,6 +31,7 @@ import Task from '../lib/utils/taskManager';
 import { extractAssInfos } from '../lib/dao/karafile';
 import { SeriesList } from '../lib/types/series';
 import { headers } from '../utils/constants';
+import { emit } from '../lib/utils/pubsub';
 
 const queueOptions = {
 	id: 'uuid',
@@ -54,6 +55,7 @@ function initTask() {
 }
 
 function emitQueueStatus(status: QueueStatus) {
+	emit('downloadQueueStatus', status);
 	emitWS('downloadQueueStatus', status);
 }
 

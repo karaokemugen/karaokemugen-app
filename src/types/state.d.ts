@@ -39,6 +39,7 @@ export interface State {
 	securityCode: number,
 	wsLogNamespace: string,
 	forceDisableAppUpdate?: boolean,
+	noAutoTest?: boolean,
 	version?: {
 		number?: string,
 		name?: string,

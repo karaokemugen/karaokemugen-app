@@ -14,7 +14,7 @@
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
     "qstart": "electron .",
     "qstartNoElectron": "node dist/index.js",
-    "test": "mocha --require ts-node/register --timeout 20000 test/*.ts",
+    "test": "ts-node src/index.ts --test",
     "build": "npx rimraf \"dist\" && tsc --build",
     "setup": "git submodule sync --recursive && git submodule update --init --recursive && yarn install && yarn build && yarn installFrontend && yarn buildFrontend && yarn installSystemPanel && yarn buildSystemPanel",
     "gitconfig": "git config diff.submodule log && git config fetch.recursesubmodules on-demand && git config status.submodulesummary true && git config push.recursesubmodules on-demand && git config submodule.recurse true",
