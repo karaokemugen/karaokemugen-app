@@ -159,7 +159,7 @@ export async function initEngine() {
 				await updatePlaylistMedias();
 				await buildAllMediasList();
 			}
-			await dumpPG();
+			if (conf.Database.prod.bundledPostgresBinary) await dumpPG();
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
 			if (state.isTest) process.exit(1);
