@@ -12,19 +12,11 @@ import open from 'open';
 export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
 	const conf = getConfig();
 	const state = getState();
+	let url = `http://localhost:${conf.Frontend.Port}/welcome`;
 	if (conf.App.FirstRun) {
 		const adminPassword = await generateAdminPassword();
-		if (!state.opt.noBrowser && !state.isDemo && !state.isTest) {
-			if (state.electron) {
-				return `http://localhost:${conf.Frontend.Port}/welcome?admpwd=${adminPassword}`;
-			} else {
-				open(`http://localhost:${conf.Frontend.Port}/welcome?admpwd=${adminPassword}`);
-			}
-		}
-	} else {
-		if (!state.opt.noBrowser && !state.isDemo && !state.isTest) {
-			if (state.electron) return `http://localhost:${conf.Frontend.Port}/welcome`;
-			open (`http://localhost:${conf.Frontend.Port}/welcome`);
-		}
+		url = `${url}?admpwd=${adminPassword}`;
 	}
+	if (!state.opt.noBrowser && !state.isDemo && !state.isTest && !state.electron) open(url);
+	return url;
 }
