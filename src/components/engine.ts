@@ -151,15 +151,19 @@ export async function initEngine() {
 			profile('Init');
 		}
 		// Post-init stuff
-		if (conf.App.FirstRun && stats.karas === 0 && !state.isTest) {
-			downloadRandomSongs();
+		try {
+			if (conf.App.FirstRun && stats.karas === 0 && !state.isTest && !state.isDemo) {
+				await downloadRandomSongs();
+			}
+			if (state.isTest) await downloadTestSongs();
+			if (!state.isTest && !state.isDemo) {
+				await updatePlaylistMedias();
+				await buildAllMediasList();
+			}
+			await postMigrationTasks(migrations);
+		} catch(err) {
+			logger.warn(`[Engine] Post-launch tasks failed : ${err}`);
 		}
-		if (state.isTest) downloadTestSongs();
-		if (!state.isTest && !state.isDemo) {
-			await updatePlaylistMedias();
-			await buildAllMediasList();
-		}
-		await postMigrationTasks(migrations);
 	}
 }
 
