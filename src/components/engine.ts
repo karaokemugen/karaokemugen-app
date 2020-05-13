@@ -137,8 +137,9 @@ export async function initEngine() {
 			await Promise.all(inits);
 			enableWSLogging();
 			//Easter egg
-			let ready = 'READY';
-			if (Math.floor(Math.random() * Math.floor(10)) >= 9) ready = 'LADY';
+			const ready = Math.floor(Math.random() * Math.floor(10)) >= 9
+				? 'LADY'
+				: 'READY';
 			logger.info(`[Engine] Karaoke Mugen is ${ready}`);
 			if (!state.isTest && !state.electron) welcomeToYoukousoKaraokeMugen();
 			setState({ ready: true });
