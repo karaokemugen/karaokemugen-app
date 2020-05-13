@@ -116,11 +116,7 @@
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
-<<<<<<< HEAD
     "pg": "^8.1.0",
-=======
-    "pg": "^8.0.3",
->>>>>>> master
     "pg-copy-streams": "^4.0.0",
     "portfinder": "^1.0.26",
     "postgrator": "^4.0.0",
