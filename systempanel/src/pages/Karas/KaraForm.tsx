@@ -327,6 +327,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						}]
 					})(
 						<EditableTagGroup
+							tagType={1}
 							search={"tag"}
 							onChange={tags => {
 								this.props.form.setFieldsValue({ series: tags });
