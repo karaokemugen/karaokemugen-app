@@ -80,7 +80,8 @@ VALUES(
 export const getTagByNameAndType = `
 SELECT
 	name,
-	pk_tid AS tid
+	pk_tid AS tid,
+	types
 FROM tag
 WHERE name = $1
   AND types @> $2
