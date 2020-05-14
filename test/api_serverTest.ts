@@ -249,7 +249,7 @@ describe('Karas information', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.content[0].serie, 'Dragon Ball Z');
+				strictEqual(response.body.content[0].series[0].name, 'Dragon Ball Z');
 			});
 	});
 
