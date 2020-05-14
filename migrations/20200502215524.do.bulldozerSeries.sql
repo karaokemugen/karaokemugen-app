@@ -13,7 +13,7 @@ CREATE MATERIALIZED VIEW all_kara_tag AS
 SELECT
   k.pk_kid AS kid,
   jsonb_agg(DISTINCT(t.tagfile)) AS tagfiles,
-  jsonb_agg(DISTINCT(t.pk_tid)) AS tid,
+  jsonb_agg(DISTINCT(t.pk_tid || '~' || kt.type)) AS tid,
   lower(unaccent(TRIM(REGEXP_REPLACE(jsonb_agg(t.aliases)::varchar, '[\]\,\[\"]', '', 'g')))) AS aliases,
   lower(unaccent(REGEXP_REPLACE(REGEXP_REPLACE(jsonb_agg(DISTINCT (t.i18n))::text, '".+?": "(.+?)"', '\1', 'g'), '[\[\{\}\],]', '', 'g'))) as i18n,
   lower(unaccent(string_agg(DISTINCT(t.name),' '))) AS tags
