@@ -297,13 +297,13 @@ LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc
 LEFT OUTER JOIN kara AS plc_before_karas ON plc_before_karas.pk_kid = plc_before.fk_kid
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid, u.avatar_file, ak.repository
 `;
 
 export const getPLCInfoMini = `
 SELECT pc.fk_kid AS kid,
 	ak.title AS title,
-	ak.series AS series,
+	COALESCE(ak.series, '[]'::jsonb) AS series,
 	pc.nickname AS nickname,
 	pc.fk_login AS username,
 	pc.pk_id_plcontent AS playlistcontent_id,
@@ -315,7 +315,7 @@ FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 WHERE  pc.pk_id_plcontent = $1
-GROUP BY pc.fk_kid, ak.title, ak.serie, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist
+GROUP BY pc.fk_kid, ak.title, ak.series, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist
 `;
 
 
