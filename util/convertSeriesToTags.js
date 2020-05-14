@@ -5,7 +5,7 @@ const {promisify} = require('util');
 
 const spath = path.resolve(process.argv[2], 'series');
 const kpath = path.resolve(process.argv[2], 'karaokes');
-const tpath = path.resolve(process.argv[2], '../tagsSeries');
+const tpath = path.resolve(process.argv[2], 'tags');
 const asyncReadFile = (...args) => passThroughFunction(readFile, args);
 const asyncReadDir = (...args) => passThroughFunction(readdir, args);
 const asyncWriteFile = (...args) => passThroughFunction(writeFile, args);
