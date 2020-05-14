@@ -951,6 +951,7 @@ export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: bool
 		logger.info(`[Playlist] Playlist ${pl.name} shuffled`);
 		return pl.name;
 	} catch(err) {
+		logger.error(`[Playlist] Could not shuffle playlist : ${err}`);
 		throw {
 			message: err,
 			data: pl.name

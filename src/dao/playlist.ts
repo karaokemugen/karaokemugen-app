@@ -122,8 +122,7 @@ export async function trimPlaylist(id: number, pos: number) {
 }
 
 export async function getPlaylistContentsMini(id: number): Promise<DBPLC[]> {
-	const query = sql.getPlaylistContentsMini();
-	const res = await db().query(query, [id]);
+	const res = await db().query(sql.getPlaylistContentsMini, [id]);
 	return res.rows;
 }
 
