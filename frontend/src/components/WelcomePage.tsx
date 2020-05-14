@@ -21,7 +21,6 @@ import { Repository } from '../../../src/lib/types/repo';
 require ('../styles/welcome/WelcomePage.scss');
 
 interface IProps {
-	navigatorLanguage: string;
 	admpwd: string | undefined;
 	config: Config;
 }
@@ -317,7 +316,7 @@ class WelcomePage extends Component<IProps, IState> {
 						<strong>{i18next.t('WLCM_STATS_KARAS')}</strong>
 						<span>{this.state.stats?.karas}</span>
 					</li>
-                    <li onClick={() => window.open('/system/km/series')}>
+                    <li onClick={() => window.open('/system/km/tags?type=1')}>
 						<strong>{i18next.t('WLCM_STATS_SERIES')}</strong>
 						<span>{this.state.stats?.series}</span>
 					</li>

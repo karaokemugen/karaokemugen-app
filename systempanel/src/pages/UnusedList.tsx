@@ -57,19 +57,6 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 		});
 	}
 
-	getSeries() {
-		this.props.loading(true)
-		axios.get(`/api/repos/${this.state.repository}/unusedSeries`)
-		.then(res => {
-			this.props.loading(false);
-			this.setState({unused: res.data.map(value => { return {name: value.name, file: value.seriefile}})});
-		})
-		.catch(err => {
-			this.props.loading(false);
-			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-		});
-	}
-
 	getMedias() {
 		this.props.loading(true)
 		axios.get(`/api/repos/${this.state.repository}/unusedMedias`)
@@ -107,11 +94,6 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 										await this.setState({type: 'tags'});
 										this.getTags();
 								}}>{i18next.t('UNUSED_FILES.TAGS')}</Radio>
-								<Radio checked={this.state.type === 'series'} 
-									onChange={async () => {
-										await this.setState({type: 'series'});
-										this.getSeries();
-									}}>{i18next.t('UNUSED_FILES.SERIES')}</Radio>
 								<Radio checked={this.state.type === 'medias'} 
 									onChange={async () => {
 										await this.setState({type: 'medias'});

@@ -4,7 +4,7 @@ import { TagParams, Tag } from '../lib/types/tag';
 import { v4 as uuidV4 } from 'uuid';
 import { addTagToStore, sortTagsStore, getStoreChecksum, editTagInStore, removeTagInStore, editKaraInStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
-import { sanitizeFile, resolveFileInDirs } from '../lib/utils/files';
+import { sanitizeFile, resolveFileInDirs, asyncUnlink } from '../lib/utils/files';
 import { writeTagFile, formatTagFile, removeTagFile, removeTagInKaras, getDataFromTagFile } from '../lib/dao/tagfile';
 import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
 import { refreshKaras } from '../lib/dao/kara';
@@ -12,9 +12,10 @@ import { getAllKaras } from './kara';
 import { replaceTagInKaras } from '../lib/dao/karafile';
 import { IDQueryResult } from '../lib/types/kara';
 import { resolvedPathRepos } from '../lib/utils/config';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
 import { emitWS } from '../lib/utils/ws';
 import { DBTag } from '../lib/types/database/tag';
+import { writeSeriesFile } from '../lib/dao/seriesfile';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
@@ -69,6 +70,9 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 
 	if (opts.refresh) {
 		await refreshTagsAfterDBChange();
+	}
+	if (tagObj.types.includes(1)) {
+		await writeSeriesFile(tagObj, resolvedPathRepos('Series', tagObj.repository)[0]);
 	}
 	return tagObj;
 }
@@ -151,19 +155,19 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 	const oldTag = await getTag(tid);
 	if (!oldTag) throw 'Tag ID unknown';
 	tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
-	const tagfile = tagObj.tagfile;
 	tagObj.modified_at = new Date().toISOString();
+	// Try to find old tag
+	let oldTagPath: string;
+	const oldTagFiles = await resolveFileInDirs(oldTag.tagfile, resolvedPathRepos('Tags', oldTag.repository));
+	oldTagPath = dirname(oldTagFiles[0]);
 	await Promise.all([
 		updateTag(tagObj),
-		writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0])
+		writeTagFile(tagObj, oldTagPath)
 	]);
-	const tagData = formatTagFile(tagObj).tag;
-	tagData.tagfile = tagfile;
-	const oldTagFiles = await resolveFileInDirs(oldTag.tagfile, resolvedPathRepos('Tags', oldTag.repository));
 	const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
 	if (oldTag.tagfile !== tagObj.tagfile) {
 		try {
-			await removeTagFile(oldTag.tagfile, oldTag.repository);
+			await asyncUnlink(resolve(oldTagPath, oldTag.tagfile));
 			await addTagToStore(newTagFiles[0]);
 			removeTagInStore(oldTagFiles[0]);
 			sortTagsStore();
@@ -174,6 +178,9 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 		await editTagInStore(newTagFiles[0]);
 	}
 	saveSetting('baseChecksum', getStoreChecksum());
+	if (tagObj.types.includes(1)) {
+		await writeSeriesFile(tagObj, resolvedPathRepos('Series', tagObj.repository)[0]);
+	}
 	if (opts.refresh) await refreshTagsAfterDBChange();
 }
 

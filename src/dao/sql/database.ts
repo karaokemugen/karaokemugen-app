@@ -11,7 +11,7 @@ SELECT
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[5])::integer AS languages,
 (SELECT COUNT(fk_kid) FROM whitelist)::integer AS whitelist,
 (SELECT COUNT(fk_kid) FROM blacklist)::integer AS blacklist,
-(SELECT COUNT(pk_sid) FROM serie)::integer AS series,
+(SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[1])::integer AS series,
 (SELECT COUNT(*) FROM played)::integer AS played,
 (SELECT COUNT(pk_id_playlist) FROM playlist)::integer AS playlists,
 (SELECT SUM(duration) FROM kara)::integer AS duration;

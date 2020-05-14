@@ -14,7 +14,6 @@ interface IProps {
 	scope: string;
 	idPlaylist?: number;
 	playlistcontentId?: number;
-	navigatorLanguage: string;
 	publicOuCurrent?: boolean | undefined;
 	freeKara?: () => void;
 	showVideo?: (file:string) => void;
@@ -119,7 +118,7 @@ class KaraDetail extends Component<IProps,IState> {
 
   moreInfo = async () => {
 	var externalUrl = '';
-	var serie = (this.state.kara as DBPLCInfo).serie;
+	var serie = (this.state.kara as DBPLCInfo).series.length > 0 ? (this.state.kara as DBPLCInfo).series[0].name : '';
 	var singer = (this.state.kara as DBPLCInfo).singers.length > 0 ? (this.state.kara as DBPLCInfo).singers[0].name : '';
 	var searchLanguage = navigator.languages[0].substring(0, 2);
 	let srsearch = serie ? serie : singer;
@@ -197,7 +196,7 @@ class KaraDetail extends Component<IProps,IState> {
   };
 
   getTagInLocale = (e:DBKaraTag) => {
-  	return e.i18n[this.props.navigatorLanguage] ? e.i18n[this.props.navigatorLanguage] : e.i18n['eng'];
+  	return e.i18n[store.getNavigatorLanguage() as string] ? e.i18n[store.getNavigatorLanguage() as string] : e.i18n['eng'];
   };
 
   getTagNames = (data:DBPLCInfo) => {
@@ -272,8 +271,7 @@ class KaraDetail extends Component<IProps,IState> {
           (data.duration % 60),
   			DETAILS_LANGUAGE: data.langs.map(e => this.getTagInLocale(e)).join(', '),
   			BLCTYPE_7: this.getTagNames(data),
-  			DETAILS_SERIE: data.serie,
-  			DETAILS_SERIE_ORIG: data.serie_orig,
+  			BLCTYPE_1: data.series.map(e => this.getTagInLocale(e)).join(', '),
   			BLCTYPE_2: data.singers.map(e => this.getTagInLocale(e)).join(', '),
   			DETAILS_TYPE: this.getTagInLocale(data.songtypes[0])
           + (data.songorder > 0 ? ' ' + data.songorder : ''),

@@ -1,17 +1,11 @@
 // SQL for favorites management
-import {LangClause} from '../../types/database';
 
-export const getFavorites = (filterClauses: string[], lang: LangClause, limitClause: string, offsetClause: string) => `
+export const getFavorites = (filterClauses: string[], limitClause: string, offsetClause: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
-  COALESCE(
-	  (SELECT array_to_string (array_agg(name), ', ') FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.main}),
-	  (SELECT array_to_string (array_agg(name), ', ') FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.fallback}),
-	  ak.serie) AS serie,
-  ak.serie AS serie_orig,
-  ak.serie_altname AS serie_altname,
+  COALESCE(ak.series, '[]'::jsonb) AS series,
   COALESCE(ak.singers, '[]'::jsonb) AS singers,
   COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
   COALESCE(ak.creators, '[]'::jsonb) AS creators,

@@ -15,6 +15,7 @@ import { on } from '../lib/utils/pubsub';
 import { State } from '../types/state';
 import i18n from 'i18next';
 import { sayTwitch } from '../utils/twitch';
+import { getSeriesSingers } from './kara';
 const sleep = promisify(setTimeout);
 
 let poll: PollItem[] = [];
@@ -44,10 +45,7 @@ async function displayPoll(winner?: number) {
 			? percentage.toFixed(2)
 			: +percentage;
 		// If series is empty, pick singer information instead
-
-		let series = kara.serie;
-		if (!kara.serie) series = kara.singers.map(s => s.name).join(', ');
-
+		const series = getSeriesSingers(kara);
 		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 		let songorder: string = `${kara.songorder}`;
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
@@ -118,7 +116,7 @@ export async function getPollResults(): Promise<PollResults> {
 	await copyKaraToPlaylist([winner.playlistcontent_id], playlist_id);
 	emitWS('playlistInfoUpdated', playlist_id);
 	emitWS('playlistContentsUpdated', playlist_id);
-	const kara = `${winner.serie || winner.singers[0].name} - ${winner.songtypes[0].name}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
+	const kara = `${winner.series[0]?.name || winner.singers[0]?.name} - ${winner.songtypes[0]?.name}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
 	logger.info(`[Poll] Winner is "${kara}" with ${maxVotes} votes`);
 	return {
 		votes: maxVotes,
@@ -220,8 +218,7 @@ async function displayPollTwitch() {
 		logger.info('[Poll] Announcing vote on Twitch');
 		await sayTwitch('New vote : use !vote x where x is the song number :');
 		for (const kara of poll) {
-			let series = kara.serie;
-			if (!kara.serie) series = kara.singers.map(s => s.name).join(', ');
+			const series = getSeriesSingers(kara);
 
 			// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 			let songorder: string = `${kara.songorder}`;

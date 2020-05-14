@@ -6,6 +6,7 @@ import store from '../store';
 import Tutorial from './modals/Tutorial';
 import { toast, TypeOptions } from 'react-toastify';
 import { DBPLC } from '../../../src/types/database/playlist';
+import { DBKaraTag } from '../../../src/lib/types/database/kara';
 
 
 const socket = io();
@@ -92,12 +93,13 @@ export function startIntro(scope:string) {
 * @param {boolean} onlyText - if only text and no component
 * @return {String} the title
 */
-export function buildKaraTitle(data:DBPLC, onlyText?:boolean) {
+export function buildKaraTitle(data:DBPLC, onlyText?:boolean, i18nParam?:any) {
 	var isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
 	if (data.langs && isMulti) {
 		data.langs = [isMulti];
 	}
-	var serieText = data.serie ? data.serie : (data.singers ? data.singers.map(e => e.name).join(', ') : '');
+	var serieText = (data.series && data.series.length > 0) ? data.series.map(e => getSerieLanguage(e, data.langs[0].name, i18nParam)).join(', ') 
+		: (data.singers ? data.singers.map(e => e.name).join(', ') : '');
 	var langsText = data.langs.map(e => e.name).join(', ').toUpperCase();
 	var songtypeText = data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name;
 	var songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
@@ -116,6 +118,42 @@ export function buildKaraTitle(data:DBPLC, onlyText?:boolean) {
 			</React.Fragment>)
 	}
 };
+
+export function getTagInLanguage (tag:DBKaraTag, mainLanguage:string, fallbackLanguage:string, i18nParam?:any) {
+	let i18n = (i18nParam && i18nParam[tag.tid]) ? i18nParam[tag.tid] : tag.i18n;
+	if (i18n) {
+	  return i18n[mainLanguage] ? i18n[mainLanguage] : 
+		  (i18n[fallbackLanguage] ? i18n[fallbackLanguage] : tag.name);
+	} else {
+		return tag.name;
+	}
+};
+
+export function getSerieLanguage (tag:DBKaraTag, karaLanguage:string, i18nParam?:any) {
+	let user = store.getUser();
+	let mode:number | undefined = user && user.series_lang_mode;
+	if (!user || user.series_lang_mode === -1) {
+		mode = store.getConfig().Frontend.SeriesLanguageMode;
+	}
+
+	if (mode === 0) {
+		return tag.name;
+	} else if (mode === 1) {
+		return getTagInLanguage(tag, karaLanguage, 'eng', i18nParam);
+	} else if (mode === 2) {
+		return getTagInLanguage(tag, store.getDefaultLocaleApp(), 'eng', i18nParam);
+	} else if (mode === 3) {
+		return getTagInLanguage(tag, store.getNavigatorLanguage() as string, 'eng', i18nParam);
+	} else if (mode === 4) {
+		if (user && user.main_series_lang && user.fallback_series_lang) {
+			return getTagInLanguage(tag, user.main_series_lang, user.fallback_series_lang, i18nParam);
+		} else {
+			return getTagInLanguage(tag, store.getNavigatorLanguage() as string, 'eng', i18nParam);
+		}
+	}
+	return tag.name;
+};
+
 
 export function displayMessage (type:TypeOptions, message:any, time?:number) {
 	if (!document.hidden) {

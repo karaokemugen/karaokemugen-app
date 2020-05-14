@@ -1,13 +1,11 @@
-import {langSelector, buildClauses, db, transaction} from '../lib/dao/database';
+import {buildClauses, db, transaction} from '../lib/dao/database';
 import {getConfig} from '../lib/utils/config';
 import {getState} from '../utils/state';
 import {now} from '../lib/utils/date';
 import {pg as yesql} from 'yesql';
 import {Playlist, PLC, PLCParams} from '../types/playlist';
 import { QueryResult } from 'pg';
-import { DBPLC, DBPLCKID, DBPLPos, DBPLCNames, DBPLCInfo, DBPL } from '../types/database/playlist';
-import { User } from '../lib/types/user';
-import { getUser } from './user';
+import { DBPLC, DBPLCKID, DBPLPos, DBPLCInfo, DBPL } from '../types/database/playlist';
 
 const sql = require('./sql/playlist');
 
@@ -123,8 +121,8 @@ export async function trimPlaylist(id: number, pos: number) {
 	}));
 }
 
-export async function getPlaylistContentsMini(id: number, lang?: string): Promise<DBPLC[]> {
-	const query = sql.getPlaylistContentsMini(langSelector(lang));
+export async function getPlaylistContentsMini(id: number): Promise<DBPLC[]> {
+	const query = sql.getPlaylistContentsMini();
 	const res = await db().query(query, [id]);
 	return res.rows;
 }
@@ -146,15 +144,7 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 		)`;
 		orderClause = 'RANDOM()';
 	}
-	let user: User = {};
-	let userMode = -1;
-	let userLangs = {main: null, fallback: null};
-	if (params.username) user = await getUser(params.username);
-	if (user) {
-		userMode = user.series_lang_mode;
-		userLangs = {main: user.main_series_lang, fallback: user.fallback_series_lang};
-	}
-	const query = sql.getPlaylistContents(filterClauses.sql, langSelector(params.lang, userMode, userLangs), whereClause, orderClause, limitClause, offsetClause);
+	const query = sql.getPlaylistContents(filterClauses.sql, whereClause, orderClause, limitClause, offsetClause);
 	const res = await db().query(yesql(query)({
 		playlist_id: params.playlist_id,
 		username: params.username,
@@ -172,11 +162,6 @@ export async function getPlaylistKaraIDs(id: number): Promise<DBPLCKID[]> {
 
 export async function getPlaylistPos(id: number): Promise<DBPLPos[]> {
 	const res = await db().query(sql.getPlaylistPos, [id]);
-	return res.rows;
-}
-
-export async function getPlaylistKaraNames(id: number): Promise<DBPLCNames[]> {
-	const res = await db().query(sql.getPlaylistKaraNames, [id]);
 	return res.rows;
 }
 

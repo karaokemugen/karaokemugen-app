@@ -4,6 +4,7 @@ import {listUsers, updateSongsLeft} from './user';
 import {getConfig} from '../lib/utils/config';
 import logger from 'winston';
 import {getState} from '../utils/state';
+import { getSeriesSingers } from './kara';
 
 /** (Up|Down)vote a song. */
 export async function vote(plc_id: number, username: string, downvote: boolean) {
@@ -25,7 +26,7 @@ export async function addUpvote(plc_id: number, username: string) {
 		plc.upvotes++;
 		const ret = {
 			upvotes: plc.upvotes,
-			song: `${plc.serie} - ${plc.title}`,
+			song: `${getSeriesSingers(plc)} - ${plc.title}`,
 			playlist_id: plc.playlist_id,
 			code: 'UPVOTE_DONE'
 		};
@@ -52,7 +53,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 		// Karaokes are not 'un-freed' when downvoted.
 		return {
 			upvotes: plc.upvotes - 1,
-			song: `${plc.serie} - ${plc.title}`,
+			song: `${getSeriesSingers(plc)} - ${plc.title}`,
 			playlist_id: plc.playlist_id,
 			code: 'DOWNVOTE_DONE'
 		};

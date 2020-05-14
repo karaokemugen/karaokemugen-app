@@ -25,7 +25,6 @@ import { DBPLC, DBPLCInfo } from '../../../src/types/database/playlist';
 
 interface IProps {
 	config: Config;
-	navigatorLanguage: string;
 	tags: Array<Tag>;
 	showVideo: (file:string) => void;
 }
@@ -424,7 +423,6 @@ class PublicPage extends Component<IProps,IState> {
 									<Playlist
 										scope="public"
 										side={1}
-										navigatorLanguage={this.props.navigatorLanguage}
 										config={this.props.config}
 										idPlaylistTo={this.state.idsPlaylist.right}
 										majIdsPlaylist={this.majIdsPlaylist}
@@ -439,7 +437,6 @@ class PublicPage extends Component<IProps,IState> {
 									<Playlist
 										scope="public"
 										side={2}
-										navigatorLanguage={this.props.navigatorLanguage}
 										config={this.props.config}
 										idPlaylistTo={this.state.idsPlaylist.left}
 										majIdsPlaylist={this.majIdsPlaylist}

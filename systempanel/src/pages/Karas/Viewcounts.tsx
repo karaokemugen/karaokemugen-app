@@ -67,9 +67,9 @@ class Viewcounts extends Component<ViewcountsProps, ViewcountsState> {
 		render: langs => getNameTagInLocaleList(langs).join(', ')
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
-		dataIndex: 'serie',
-		key: 'serie',
-		render: (serie, record) => serie || getNameTagInLocaleList(record.singers).join(', ')
+		dataIndex: 'series',
+		key: 'series',
+		render: (series, record) => getNameTagInLocaleList(series).join(', ') || getNameTagInLocaleList(record.singers).join(', ')
 	}, {
 		title: i18next.t('KARA.TYPE'),
 		dataIndex: 'songtypes',

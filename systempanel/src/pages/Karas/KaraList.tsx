@@ -141,10 +141,10 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 		}
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
-		dataIndex: 'serie',
-		key: 'serie',
-		render: (serie, record) => {
-			return serie || getTagInLocaleList(this.state.i18nTag, record.singers).join(', ');
+		dataIndex: 'series',
+		key: 'series',
+		render: (series, record) => {
+			return getTagInLocaleList(this.state.i18nTag, series).join(', ') || getTagInLocaleList(this.state.i18nTag, record.singers).join(', ');
 		}
 	}, {
 		title: i18next.t('KARA.TYPE'),

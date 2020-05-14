@@ -32,13 +32,13 @@ interface Tag {
 }
 
 interface KaraFormState {
-	serieSingersRequired: Boolean;
+	serieSingersRequired: boolean;
 	subfile: any[];
 	mediafile: any[];
 	singers: Tag[];
 	authors: Tag[];
 	misc: Tag[];
-	serie_orig: any[];
+	series: Tag[];
 	creators: Tag[];
 	songwriters: Tag[];
 	groups: Tag[];
@@ -84,7 +84,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			singers: this.getTagArray(kara.singers),
 			authors: this.getTagArray(kara.authors),
 			misc: this.getTagArray(kara.misc),
-			serie_orig: kara.serie_orig ? [kara.serie_orig] : [],
+			series: this.getTagArray(kara.series),
 			creators: this.getTagArray(kara.creators),
 			songwriters: this.getTagArray(kara.songwriters),
 			groups: this.getTagArray(kara.groups),
@@ -154,6 +154,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		e.preventDefault();
 		this.props.form.validateFields((err, values) => {
 			var kara = values;
+			kara.series = this.getTagObject(kara.series);
 			kara.singers = this.getTagObject(kara.singers);
 			kara.authors = this.getTagObject(kara.authors);
 			kara.misc = this.getTagObject(kara.misc);
@@ -319,16 +320,16 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					wrapperCol={{ span: 14, offset: 0 }}
 				>
 					{getFieldDecorator("series", {
-						initialValue: this.state.serie_orig,
+						initialValue: this.state.series,
 						rules: [{
 							required: this.state.serieSingersRequired,
 							message: i18next.t('KARA.SERIES_SINGERS_REQUIRED')
 						}]
 					})(
 						<EditableTagGroup
-							search={"serie"}
+							search={"tag"}
 							onChange={tags => {
-								this.props.form.setFieldsValue({ serie_orig: tags });
+								this.props.form.setFieldsValue({ series: tags });
 								this.onChangeSingersSeries(tags, "singers");
 							}
 							}

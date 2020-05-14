@@ -22,7 +22,6 @@ import { Token } from '../../../src/lib/types/user';
 interface IProps {
 	config: Config;
 	powerOff: (() => void) | undefined;
-	navigatorLanguage: string;
 	tags?: Array<Tag>;
 	showVideo: (file:string) => void;
 	getSettings: () => void;
@@ -220,7 +219,6 @@ class AdminPage extends Component<IProps, IState> {
 								<Playlist 
 									scope='admin'
 									side={1}
-									navigatorLanguage={this.props.navigatorLanguage}
 									config={this.props.config}
 									idPlaylistTo={this.state.idsPlaylist.right}
 									majIdsPlaylist={this.majIdsPlaylist}
@@ -233,7 +231,6 @@ class AdminPage extends Component<IProps, IState> {
 								<Playlist
 									scope='admin'
 									side={2}
-									navigatorLanguage={this.props.navigatorLanguage}
 									config={this.props.config}
 									idPlaylistTo={this.state.idsPlaylist.left}
 									majIdsPlaylist={this.majIdsPlaylist}

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { requireNotDemo } from '../middlewares/demo';
 import { requireAuth, requireValidUser, requireAdmin } from '../middlewares/auth';
-import { getRepos, getRepo, removeRepo, addRepo, editRepo, findUnusedTags, findUnusedSeries, findUnusedMedias, consolidateRepo } from '../../services/repo';
+import { getRepos, getRepo, removeRepo, addRepo, editRepo, findUnusedTags, findUnusedMedias, consolidateRepo } from '../../services/repo';
 
 export default function repoController(router: Router) {
 	router.route('/repos')
@@ -196,33 +196,6 @@ export default function repoController(router: Router) {
 			try {
 				const files = await findUnusedMedias(req.params.name);
 				res.json(files);
-			} catch(err) {
-				res.status(500).send(`Error getting tags: ${err}`);
-			}
-		});
-	router.route('/repos/:name/unusedSeries')
-	/**
- * @api {get} /repos/:name/unusedSeries Get all unused series from a repo
- * @apiName GetRepoUnusedSeries
- * @apiVersion 3.2.0
- * @apiGroup Repositories
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {string} name Repository name to get unused series from
- * @apiSuccess {Object[]} Series objects
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * 	{
- * 		<See GET /series but without from/to and stuff>
- * 	}
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- */
-		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				const series = await findUnusedSeries(req.params.name);
-				res.json(series);
 			} catch(err) {
 				res.status(500).send(`Error getting tags: ${err}`);
 			}

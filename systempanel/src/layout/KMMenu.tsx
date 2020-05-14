@@ -50,10 +50,6 @@ class KMMenu extends Component<KMenuProps, {}> {
 						<Menu.Item key='kararanking'><Link to='/system/km/karas/ranking'>{i18next.t('MENU.RANKING')}</Link></Menu.Item>
 						<Menu.Item key='karaviewcounts'><Link to='/system/km/karas/viewcounts'>{i18next.t('MENU.VIEWCOUNTS')}</Link></Menu.Item>
 					</Menu.SubMenu>
-					<Menu.SubMenu key="serie-dropdown" title={i18next.t('MENU.SERIES')}>
-						<Menu.Item key='seriesmanage'><Link to='/system/km/series'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
-						<Menu.Item key='seriesnew'><Link to='/system/km/series/new'>{i18next.t('MENU.NEW')}</Link></Menu.Item>
-					</Menu.SubMenu>
 					<Menu.SubMenu key="tags-dropdown" title={i18next.t('MENU.TAGS')}>
 						<Menu.Item key='tagsmanage'><Link to='/system/km/tags'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
 						<Menu.Item key='tagsnew'><Link to='/system/km/tags/new'>{i18next.t('MENU.NEW')}</Link></Menu.Item>

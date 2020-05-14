@@ -7,6 +7,7 @@
     "build": "npx rimraf ./build/ && npx parcel build ./src/index.html --out-dir ./build/"
   },
   "dependencies": {
+    "@cospired/i18n-iso-languages": "^2.1.1",
     "autoprefixer": "^9.7.6",
     "axios": "^0.19.2",
     "fingerprintjs2": "^2.1.0",
@@ -14,8 +15,6 @@
     "i18next": "^19.4.3",
     "i18next-browser-languagedetector": "^4.1.1",
     "i18next-xhr-backend": "^3.2.2",
-    "iso-639": "^0.2.2",
-    "langs": "^2.0.0",
     "postcss-modules": "^2.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

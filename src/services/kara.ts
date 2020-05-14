@@ -1,13 +1,11 @@
 import {tagTypes} from '../lib/utils/constants';
 import {ASSToLyrics} from '../lib/utils/ass';
 import {refreshTags, refreshKaraTags, refreshAllKaraTags} from '../lib/dao/tag';
-import {refreshKaraSeriesLang, refreshSeries, refreshKaraSeries} from '../lib/dao/series';
 import { saveSetting } from '../lib/dao/database';
 import { refreshYears, refreshKaras } from '../lib/dao/kara';
 import { getASS } from '../lib/dao/karafile';
 import {selectAllKaras,
 	getYears as getYearsDB,
-	getKara as getKaraDB,
 	getKaraMini as getKaraMiniDB,
 	deleteKara as deleteKaraDB,
 	addKara,
@@ -16,7 +14,6 @@ import {selectAllKaras,
 	getKaraHistory as getKaraHistoryDB,
 	selectAllKIDs
 } from '../dao/kara';
-import {updateKaraSeries} from '../dao/series';
 import {updateKaraTags} from '../dao/tag';
 import {basename} from 'path';
 import {profile} from '../lib/utils/logger';
@@ -33,8 +30,6 @@ import { getState } from '../utils/state';
 import {where} from 'langs';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { resolve } from 'path';
-import { getSerie } from './series';
-import { writeSeriesFile } from '../lib/dao/seriesfile';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { getTag } from './tag';
 import { emitWS } from '../lib/utils/ws';
@@ -47,7 +42,7 @@ export async function isAllKaras(karas: string[]): Promise<string[]> {
 
 export async function copyKaraToRepo(kid: string, repoName: string) {
 	try {
-		const kara = await getKaraDB(kid, 'admin', null, 'admin');
+		const kara = await getKara(kid, {role: 'admin', username: 'admin'});
 		const oldRepoName = kara.repository;
 		kara.repository = repoName;
 		const tasks = [];
@@ -71,16 +66,6 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.subfile),
 			{ overwrite: true }
 		));
-		// Now fetch all SIDs
-		for (const sid of kara.sid) {
-			if (sid) {
-				const series = await getSerie(sid);
-				// Modify serie file we just copied to change its repo
-				series.repository = repoName;
-				series.modified_at = new Date().toISOString();
-				tasks.push(writeSeriesFile(series, resolvedPathRepos('Series', repoName)[0]));
-			}
-		}
 		for (const tid of kara.tid) {
 			const tag = await getTag(tid.split('~')[0]);
 			// Modify tag file we just copied to change its repo
@@ -137,10 +122,17 @@ export async function deleteKara(kid: string, refresh = true) {
 
 export async function getKara(kid: string, token: Token, lang?: string): Promise<DBKara> {
 	profile('getKaraInfo');
-	let kara = await getKaraDB(kid, token.username, lang, token.role);
-	if (!kara) throw `Kara ${kid} unknown`;
+	const res = await selectAllKaras({
+		username: token.username,
+		filter: null,
+		mode: 'kid',
+		modeValue: kid,
+		lang: lang,
+		admin: token.role === 'admin'
+	});
+	if (res.length === 0) throw `Kara ${kid} unknown`;
 	profile('getKaraInfo');
-	return kara;
+	return res[0];
 }
 
 export async function getKaraMini(kid: string): Promise<DBKaraBase> {
@@ -156,11 +148,6 @@ export async function getKaraLyrics(kid: string): Promise<string[]> {
 	return ['Lyrics not available for this song'];
 }
 
-async function updateSeries(kara: Kara) {
-	if (!kara.sids) return;
-	await updateKaraSeries(kara.kid, kara.sids);
-}
-
 export async function updateTags(kara: Kara) {
 	const tagsAndTypes = [];
 	for (const type of Object.keys(tagTypes)) {
@@ -174,21 +161,17 @@ export async function updateTags(kara: Kara) {
 export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	await addKara(kara);
 	emitWS('statsRefresh');
-	await Promise.all([
-		updateSeries(kara),
-		updateTags(kara)
-	]);
-	if (opts.refresh) await refreshKarasAfterDBChange(true, true);
+	await updateTags(kara);
+	if (opts.refresh) await refreshKarasAfterDBChange(true);
 }
 
 export async function editKaraInDB(kara: Kara, opts = {
 	refresh: true
 }) {
 	const promises = [updateKara(kara)];
-	if (kara.newSeries) promises.push(updateSeries(kara));
 	if (kara.newTags) promises.push(updateTags(kara));
 	await Promise.all(promises);
-	if (opts.refresh) await refreshKarasAfterDBChange(kara.newSeries, kara.newTags);
+	if (opts.refresh) await refreshKarasAfterDBChange(kara.newTags);
 }
 
 export async function getKaraHistory(): Promise<DBKaraHistory[]> {
@@ -196,12 +179,12 @@ export async function getKaraHistory(): Promise<DBKaraHistory[]> {
 	return await getKaraHistoryDB();
 }
 
-export async function getTop50(token: Token, lang: string): Promise<DBKara[]> {
+export async function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
 	// Called by system route
 	return await selectAllKaras({
 		username: token.username,
-		filter: null,
 		lang: lang,
+		filter: null,
 		mode: 'requested'
 	});
 }
@@ -211,10 +194,10 @@ export async function getKaraPlayed(token: Token, lang: string, from: number, si
 	return await selectAllKaras({
 		username: token.username,
 		filter: null,
-		lang: lang,
 		mode: 'played',
 		from: from,
-		size: size
+		size: size,
+		lang: lang
 	});
 }
 
@@ -246,7 +229,6 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 	const pl = await selectAllKaras({
 		username: params.token.username,
 		filter: params.filter || '',
-		lang: params.lang,
 		mode: params.mode,
 		modeValue: params.modeValue,
 		from: params.from || 0,
@@ -256,18 +238,14 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 	});
 	profile('formatList');
 	const count = pl.length > 0 ? pl[0].count : 0;
-	const ret = formatKaraList(pl, params.from || 0, count, params.lang);
+	const ret = formatKaraList(pl, params.from || 0, count);
 	profile('formatList');
 	profile('getKaras');
 	return ret;
 }
 
-export function formatKaraList(karaList: any, from: number, count: number, lang: string): KaraList {
-	// Get i18n from all tags found in all elements, and remove it
-	const languages = [where('1', getState().EngineDefaultLocale)['2B']];
-	languages.push(where('1', lang || getState().EngineDefaultLocale)['2B']);
-	languages.push('eng'); // English is mandatory
-	let {i18n, avatars, data} = consolidateData(karaList, languages);
+export function formatKaraList(karaList: any, from: number, count: number): KaraList {
+	let {i18n, avatars, data} = consolidateData(karaList);
 	karaList = removeUnusedTagData(karaList);
 	return {
 		infos: {
@@ -281,14 +259,9 @@ export function formatKaraList(karaList: any, from: number, count: number, lang:
 	};
 }
 
-export async function refreshKarasAfterDBChange(newSeries: boolean, newTags: boolean) {
+export async function refreshKarasAfterDBChange(newTags: boolean) {
 	profile('RefreshAfterDBChange');
 	logger.debug('[DB] Refreshing DB after kara change');
-	if (newSeries) {
-		await refreshKaraSeries();
-		await refreshSeries();
-		await refreshKaraSeriesLang();
-	}
 	if (newTags) {
 		await refreshKaraTags();
 		await refreshTags();
@@ -303,7 +276,7 @@ export async function integrateKaraFile(file: string) {
 	const karaFileData = await parseKara(file);
 	const karaFile = basename(file);
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData);
-	const karaDB = await getKaraDB(karaData.kid, 'admin', null, 'admin');
+	const karaDB = await getKara(karaData.kid, {role: 'admin', username: 'admin'});
 	if (karaDB) {
 		await editKaraInDB(karaData, { refresh: false });
 		try {
@@ -350,4 +323,16 @@ export async function removeSerieInKaras(sid: string, karas: KaraList) {
 		await asyncWriteFile(karaPath, JSON.stringify(kara, null, 2));
 		await editKaraInStore(karaPath);
 	}
+}
+
+export function getSeriesSingers(kara: DBKara) {
+	let series = '';
+	if (kara.series[0]) {
+		const locale = getState().defaultLocale;
+		const lang = where('1', locale);
+		series = kara.series[0].i18n[lang['2B']] || kara.series[0].i18n.eng || kara.series[0].name;
+	} else {
+		series = kara.singers.map(s => s.name).join(', ');
+	}
+	return series;
 }

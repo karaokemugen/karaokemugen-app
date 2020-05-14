@@ -89,5 +89,7 @@
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karoake Mugen will restart to install the update...",
 	"ABOUT": {
 		"BUG_REPORT": "Report a bug"
-	}
+	},
+	"BASE_UPDATE_NEEDED": "Your song database needs an update",
+	"BASE_UPDATE_BULLDOZERSERIES": "We changed the way series are handled. Karaoke Mugen needs to redownload your songs' metadata (not medias). Do you want to continue?\n\nIf you click No, you'll need to redownload songs yourself for them to work, or update your song database manually.\n\nDo not click Yes if you are a karaoke base maintainer."
 }

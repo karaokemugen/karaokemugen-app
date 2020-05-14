@@ -91,7 +91,7 @@ async function buildInstanceStats() {
 		config: {...conf},
 		instance_id: await getInstanceID(),
 		version: state.version.number,
-		locale: state.EngineDefaultLocale,
+		locale: state.defaultLocale,
 		screens: gfx.displays.length,
 		cpu_manufacturer: cpu.manufacturer,
 		cpu_model: cpu.brand,

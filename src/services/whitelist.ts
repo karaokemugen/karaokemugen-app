@@ -29,7 +29,7 @@ export async function getWhitelistContents(params: KaraParams) {
 	profile('getWL');
 	const pl = await getWLContents(params);
 	const count = pl.length > 0 ? pl[0].count : 0;
-	const ret = formatKaraList(pl, params.from, count, params.lang);
+	const ret = formatKaraList(pl, params.from, count);
 	profile('getWL');
 	return ret;
 }

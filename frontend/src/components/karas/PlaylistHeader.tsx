@@ -16,7 +16,7 @@ import { Config } from '../../../../src/types/config';
 require ('./PlaylistHeader.scss');
 
 var tagsTypesList = [
-	'DETAILS_SERIE',
+	'BLCTYPE_1',
 	'BLCTYPE_3',
 	'BLCTYPE_2',
 	'BLCTYPE_4',
@@ -309,9 +309,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   					onChange={e => this.setState({ tagType: (Number(e.target.value) ? Number(e.target.value) : e.target.value) })}
   					value={this.state.tagType}>
   					{tagsTypesList.map(val => {
-  						if (val === 'DETAILS_SERIE') {
-  							return <option key={val} value='serie'>{i18next.t(val)}</option>;
-  						} else if (val === 'DETAILS_YEAR') {
+  						if (val === 'DETAILS_YEAR') {
   							return <option key={val} value='year'>{i18next.t(val)}</option>;
   						} else {
   							return <option key={val} value={val.replace('BLCTYPE_', '')}>{i18next.t(val)}</option>;

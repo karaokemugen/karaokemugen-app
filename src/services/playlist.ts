@@ -54,7 +54,7 @@ import {
 //KM Modules
 import {updateSongsLeft, findUserByName} from './user';
 import {Token, User} from '../lib/types/user';
-import { isAllKaras, formatKaraList, getKara} from './kara';
+import { isAllKaras, formatKaraList, getKara, getSeriesSingers} from './kara';
 import {playPlayer, playingUpdated} from './player';
 import {getBlacklist} from './blacklist';
 import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
@@ -389,7 +389,7 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 		}
 		profile('getPLC');
 		const count = pl.length > 0 ? pl[0].count : 0;
-		return formatKaraList(pl, from, count, lang);
+		return formatKaraList(pl, from, count);
 	} catch(err) {
 		throw {
 			message: err
@@ -515,13 +515,13 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		// If AllowDuplicateSeries is set to false, remove all songs with the same SIDs
 		if (!conf.Playlist.AllowDuplicateSeries && user.type > 0) {
 			const seriesSingersInPlaylist = plContentsBeforePlay.map(plc => {
-				if (plc.serie) return plc.serie;
+				if (plc.series.length > 0) return plc.series[0].name;
 				return plc.singer[0].name;
 			});
 			for (const i in karaList) {
 				const karaInfo = await getKara(karaList[i].kid, {username: 'admin', role: 'admin'});
-				karaInfo.serie
-					? karaList[i].uniqueSerieSinger = karaInfo.serie
+				karaInfo.series.length > 0
+					? karaList[i].uniqueSerieSinger = karaInfo.series[0].name
 					: karaList[i].uniqueSerieSinger = karaInfo.singers[0].name;
 			}
 			karaList = karaList.filter(k => {
@@ -1148,9 +1148,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		}
 		if (kara.title) kara.title = ` - ${kara.title}`;
 		// If series is empty, pick singer information instead
-
-		let series = kara.serie;
-		if (!kara.serie) series = kara.singers.map(s => s.name).join(', ');
+		const series = getSeriesSingers(kara);
 
 		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 		let songorder: string = `${kara.songorder}`;

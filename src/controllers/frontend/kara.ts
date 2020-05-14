@@ -62,7 +62,7 @@ export default function karaController(router: Router) {
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  * @apiParam {String} [searchType] Can be `search`, `kid`, `requested`, `recent` or `played`
- * @apiParam {String} [searchValue] Value to search for. For `kid` it's a UUID, for `search` it's a string comprised of criterias separated by `!`. Criterias are `s:` for series, `y:` for year et `t:` for tag + type. Example, all songs with tags UUIDs a (singer) and b (songwriter) and year 1990 is `t:a~2,b~8!y:1990`. Refer to tag types to find out which number is which type.
+ * @apiParam {String} [searchValue] Value to search for. For `kid` it's a UUID, for `search` it's a string comprised of criterias separated by `!`. Criterias are `y:` for year et `t:` for tag + type. Example, all songs with tags UUIDs a (singer) and b (songwriter) and year 1990 is `t:a~2,b~8!y:1990`. Refer to tag types to find out which number is which type.
  * @apiParam {Number} [random] If specified, will return a `number` random list of songs
  * @apiSuccess {Object[]} content/karas Array of `kara` objects
  * @apiSuccess {Number} infos/count Number of karaokes in playlist
@@ -234,10 +234,7 @@ export default function karaController(router: Router) {
  * @apiSuccess {Interval} lastplayed_ago When the song has been played last, in hours/minutes/seconds ago
  * @apiSuccess {Object[]} misc_tags Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} requested Number of times the song has been requested.
- * @apiSuccess {String} serie Name of series/show the song belongs to
- * @apiSuccess {Object[][]} serie_i18n array of array of JSON objects with series' names depending on their language.
- * @apiSuccess {String[]} serie_altname Alternative name(s) of series/show this song belongs to
- * @apiSuccess {String} serie_orig Original name for the series
+ * @apiSuccess {Object[]} series Series, if known.
  * @apiSuccess {Object[]} singers Singers' names, if known.
  * @apiSuccess {Number} songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
  * @apiSuccess {Object[]} songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
@@ -336,34 +333,22 @@ export default function karaController(router: Router) {
  *           "modified_at": "2018-11-14T21:31:36.000Z",
  *           "played": "0",
  *           "requested": "0",
- *           "serie": "Dokidoki! PreCure",
- *           "serie_altname": [
- *               [
+ *           "series": [
+ * 				{
+ * 				 "tid": "abcdef..."
+ * 				 "name": "Doki doki Precure"
+ *               "aliases": [
  *                   "Glitter Force Doki Doki",
  *                   "precure10"
- *               ]
- *           ],
- *           "serie_i18n": [
+ *               ],
+ *               "i18n": [
  *               [
- *                   {
- *                       "lang": "eng",
- *                       "name": "Dokidoki! PreCure"
- *                   },
- *                   {
- *                       "lang": "kor",
- *                       "name": "????! ????"
- *                   },
- *                   {
- *                       "lang": "jpn",
- *                       "name": "????! ?????"
- *                   }
- *               ]
- *           ],
- *           "serie_id": [
- *               43
- *           ],
- *           "seriefiles": [
- *               "Dokidoki! PreCure.series.json"
+ *                   "eng": "Dokidoki! PreCure"
+ *                   "kor": "????! ????"
+ *                   "jpn": "????! ?????"
+ *               ],
+ * 				 "types": [1]
+ *     			}
  *           ],
  *           "singers": [
  *               {
@@ -405,9 +390,9 @@ export default function karaController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
-				const kara = await getKara(req.params.kid, req.authToken, req.lang);
+				const kara = await getKara(req.params.kid, req.authToken);
 				res.json(kara);
 			} catch(err) {
 				errMessage('SONG_VIEW_ERROR',err);

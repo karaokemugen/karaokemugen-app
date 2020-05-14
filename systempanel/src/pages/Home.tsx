@@ -24,9 +24,6 @@ class Home extends Component<HomeProps, HomeState> {
 						{i18next.t('HOME.KARAS_DESCRIPTION_3')}
 					</li>
 					<li>
-						<b>{i18next.t('MENU.SERIES')} : </b> {i18next.t('HOME.SERIES_DESCRIPTION')}
-					</li>
-					<li>
 						<b>{i18next.t('MENU.TAGS')} : </b> {i18next.t('HOME.TAGS_DESCRIPTION')}
 					</li>
 					<li>

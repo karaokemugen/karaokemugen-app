@@ -1,5 +1,4 @@
 // SQL for Blacklist management
-import {LangClause} from '../../types/database';
 
 export const emptyBlacklistCriterias = 'DELETE FROM blacklist_criteria;';
 
@@ -19,14 +18,6 @@ UNION
 	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
 	WHERE blc.type = 0
 	AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
-UNION
-	SELECT k.pk_kid, now() ,'Blacklisted Series by name : ' ||  blc.value, blc.pk_id_blcriteria
-	FROM blacklist_criteria blc
-	INNER JOIN serie_lang sl ON unaccent(sl.name) LIKE ('%' || blc.value || '%')
-	INNER JOIN kara_serie ks ON sl.fk_sid = ks.fk_sid
-	INNER JOIN kara k ON ks.fk_kid = k.pk_kid
-	WHERE blc.type = 1000
-	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
 UNION
 	SELECT k.pk_kid, now() ,'Blacklisted Song manually', blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
@@ -74,17 +65,11 @@ DELETE FROM blacklist_criteria
 WHERE pk_id_blcriteria = $1
 `;
 
-export const getBlacklistContents = (filterClauses: string[], lang: LangClause, limitClause: string, offsetClause: string) => `
+export const getBlacklistContents = (filterClauses: string[], limitClause: string, offsetClause: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
-  COALESCE(
-	  (SELECT array_to_string (array_agg(name), ', ') FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.main}),
-	  (SELECT array_to_string (array_agg(name), ', ') FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.fallback}),
-	  ak.serie) AS serie,
-  ak.serie AS serie_orig,
-  ak.serie_altname AS serie_altname,
   COALESCE(ak.singers, '[]'::jsonb) AS singers,
   COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
   COALESCE(ak.creators, '[]'::jsonb) AS creators,
@@ -97,6 +82,7 @@ SELECT
   COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
   COALESCE(ak.families, '[]'::jsonb) AS families,
   COALESCE(ak.genres, '[]'::jsonb) AS genres,
+  COALESCE(ak.series, '[]'::jsonb) AS series,
   ak.duration AS duration,
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
