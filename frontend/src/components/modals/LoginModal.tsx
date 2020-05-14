@@ -162,7 +162,7 @@ class LoginModal extends Component<IProps,IState> {
 				displayMessage('success', i18next.t('FORGOT_ONLINE_PASSWORD_SUCCESS'));
 			}
 		} catch(err) {
-    		displayMessage('error', i18next.t(this.state.onlineSwitch ? 'FORGOT_ONLINE_PASSWORD_ERROR': `ERROR_CODES.${err.response.code}`));
+    		displayMessage('error', i18next.t(this.state.onlineSwitch ? 'FORGOT_ONLINE_PASSWORD_ERROR': `ERROR_CODES.${err}`));
     	};
 	}
 	
