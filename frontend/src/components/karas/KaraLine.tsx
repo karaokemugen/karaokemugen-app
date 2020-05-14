@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
-import { is_touch_device, secondsTimeSpanToHMS } from '../tools';
+import { is_touch_device, secondsTimeSpanToHMS, getTagInLanguage, getSerieLanguage } from '../tools';
 import KaraDetail from './KaraDetail';
 import axios from 'axios';
 import ActionsButtons from './ActionsButtons';
@@ -24,7 +24,6 @@ interface IProps {
 	idPlaylist: number;
 	idPlaylistTo: number;
 	playlistInfo: DBPL | undefined;
-	navigatorLanguage: string;
 	scope: string;
 	playlistCommands?: boolean;
 	i18nTag: {[key: string]: {[key: string]: string}};
@@ -52,19 +51,12 @@ class KaraLine extends Component<IProps,IState> {
 	ReactDOM.render(<KaraDetail kid={this.props.kara.kid} playlistcontentId={this.props.kara.playlistcontent_id} scope={this.props.scope} 
 		idPlaylist={this.props.idPlaylist} mode='list'
 		publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
-		showVideo={this.props.showVideo} navigatorLanguage={this.props.navigatorLanguage} freeKara={this.freeKara}>
+		showVideo={this.props.showVideo} freeKara={this.freeKara}>
 			</KaraDetail>, document.getElementById('modal'));
   };
 
-
-
   getTagInLocale = (tag:DBKaraTag) => {
-  	if (this.props.i18nTag && this.props.i18nTag[tag.tid]) {
-  		let i18nTag:{[key: string]: string} = this.props.i18nTag[tag.tid];
-  		return i18nTag[this.props.navigatorLanguage] ? i18nTag[this.props.navigatorLanguage] : i18nTag['eng'];
-  	} else {
-  		return tag.name;
-  	}
+	  return getTagInLanguage(tag, store.getNavigatorLanguage() as string, 'eng', this.props.i18nTag);
   };
 
   likeKara = () => {
@@ -201,7 +193,7 @@ class KaraLine extends Component<IProps,IState> {
   	return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>;
   }) : [];
 
-  karaTitle = buildKaraTitle(this.props.kara);
+  karaTitle = buildKaraTitle(this.props.kara, undefined, this.props.i18nTag);
 
   getLangs(data:KaraElement) {
   	var isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
@@ -212,7 +204,8 @@ class KaraLine extends Component<IProps,IState> {
   }
 
   getSerieOrSingers(data:KaraElement) {
-  	return data.serie ? data.serie : data.singers.map(e => e.name).join(', ');
+	return (data.series && data.series.length > 0)  ? data.series.map(e => getSerieLanguage(e, data.langs[0].name, this.props.i18nTag)).join(', ') 
+	  : data.singers.map(e => this.getTagInLocale(e)).join(', ');
   }
 
   getSongtype(data:KaraElement) {

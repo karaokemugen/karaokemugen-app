@@ -94,7 +94,6 @@
 		"HISTORY": "Historique",
 		"RANKING": "Plus demandés",
 		"VIEWCOUNTS": "Plus joués",
-		"SERIES": "Séries",
 		"TAGS": "Tags",
 		"DATABASE": "Base de données",
 		"USERS": "Utilisateurs",
@@ -106,7 +105,6 @@
 		"FILE": "Fichier",
 		"MEDIAS": "Médias",
 		"TAGS": "Tags",
-		"SERIES": "Séries",
 		"REPOSITORY": "Dépôt",
 		"TYPE": "Type"
 	},
@@ -195,7 +193,8 @@
 		"FAMILIES": "Famille",
 		"ORIGINS": "Origine",
 		"GENRES": "Genre",
-		"PLATFORMS": "Plateforme"
+		"PLATFORMS": "Plateforme",
+		"SERIES": "Série"
 	},
 	"CONFIG": {
 		"PROPERTY": "Propriété",
@@ -213,18 +212,6 @@
 		"ADD_DIRECTORY": "Ajouter un dossier",
 		"ADD_FILE": "Ajouter un fichier",
 		"REPOSITORIES_PAGES": "Page des dépôts"
-	},
-	"SERIES": {
-		"SERIE_DELETED": "Série supprimée avec succès",
-		"SERIE_CREATED": "Série créé avec succès",
-		"SERIE_EDITED": "Série éditée avec succès",
-		"SERIE_DELETED_CONFIRM": "Confirmez la suppresion de la série",
-		"DELETED_SERIE_CONFIRM": "Supprimer la série",
-		"DELETE_SERIE_MESSAGE": "Cela va supprimer le fichier series.json ainsi que la référence de la série dans les fichiers .kara.json de votre base de données !",
-		"ALIASES_TOOLTIP": "Noms courts ou alternatifs d'une série qui peut être recherché. Exemple : DB pour Dragon Ball, FMA pour Full Metal Alchemist ou AnoHana pour cette série qui vous fait pleurer à chaque fois que vous la regardez.",
-		"NAME_TOOLTIP": "Ceci est le nom interne utilisé pour référencer les séries dans la base de données de Karaoke Mugen",
-		"SHORT_NAME_TOOLTIP": "Ceci est le nom court utilisé pour référencer les séries dans la base de données de Karaoke Mugen",
-		"LANG_ERROR": "Une série doit avoir au moins un nom par langue."
 	},
 	"SESSIONS": {
 		"SESSION_CREATED": "Session créée avec succès",
@@ -276,8 +263,8 @@
 		"BLCTYPE_1002": "Plus long que (s)",
 		"BLCTYPE_1003": "Plus court que (s)",
 		"BLCTYPE_1004": "Titre contenant",
-		"BLCTYPE_1000": "Série contenant",
 		"BLCTYPE_0": "Métadonnées",
+		"BLCTYPE_1": "Série",
 		"BLCTYPE_2": "Chanteur",
 		"BLCTYPE_3": "Type",
 		"BLCTYPE_4": "Créateur",
@@ -298,7 +285,6 @@
 		"KARAS_DESCRIPTION_1": "Voir, modifier, ",
 		"KARAS_DESCRIPTION_2": "télécharger",
 		"KARAS_DESCRIPTION_3": ", et créer des fichiers de karaokés. Vous pouvez aussi éditer la blacklist de téléchargement, voir les karaokés les plus demandés, joués et l'historique",
-		"SERIES_DESCRIPTION": "Gérer les séries",
 		"TAGS_DESCRIPTION": "Gérer les tags (chanteurs, compositeurs, créateurs, types de chanson, etc.)",
 		"USERS_DESCRIPTION_1": "Créer/",
 		"USERS_DESCRIPTION_2": "éditer/voir les utilisateurs",

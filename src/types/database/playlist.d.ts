@@ -7,7 +7,7 @@ export interface DBPLCKID {
 	flag_playing: boolean
 	pos: number,
 	playlist_id: number,
-	serie: string,
+	series: DBKaraTag[],
 	singer: DBKaraTag[]
 }
 
@@ -46,11 +46,6 @@ export interface DBPL {
 	flag_public: boolean,
 	username: string
 }
-
-export interface DBPLCNames extends DBPLPos {
-	karaname: string
-}
-
 export interface DBPLC extends DBPLCBase {
 	flag_whitelisted: boolean,
 	flag_blacklisted: boolean,

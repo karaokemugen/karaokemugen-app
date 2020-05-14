@@ -279,20 +279,7 @@ describe('Karas information', function() {
 
 });
 
-describe('Series and year', function() {
-
-	it('Get series list', function() {
-		return request
-			.get('/api/series	')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.content.length>=1, true);
-				strictEqual(response.body.infos.count, 6);
-			});
-	});
+describe('year', function() {
 
 	it('Get year list', function() {
 		return request

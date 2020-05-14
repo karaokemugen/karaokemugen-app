@@ -28,7 +28,7 @@ export interface Config {
 	Frontend: {
 		Port?: number,
 		Mode?: number,
-		SeriesLanguageMode?: number,
+		SeriesLanguageMode: number,
 		AuthExpireTime?: number,
 		Permissions?: {
 			AllowNicknameChange?: boolean,

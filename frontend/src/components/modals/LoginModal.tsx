@@ -93,6 +93,7 @@ class LoginModal extends Component<IProps,IState> {
 			}
 			store.getTuto() && store.getTuto().move(1);
 		}
+		await store.setUser();
     };
 
     loginGuest = () => {

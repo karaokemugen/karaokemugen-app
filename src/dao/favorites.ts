@@ -1,8 +1,6 @@
-import {db, transaction, langSelector, buildClauses} from '../lib/dao/database';
+import {db, transaction, buildClauses} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import { FavParams } from '../types/favorites';
-import { User } from '../lib/types/user';
-import { getUser } from './user';
 import { DBKara } from '../lib/types/database/kara';
 const sql = require('./sql/favorites');
 
@@ -20,15 +18,7 @@ export async function selectFavorites(params: FavParams): Promise<DBKara[]> {
 	let offsetClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
-	let user: User = {};
-	let userMode = -1;
-	let userLangs = {main: null, fallback: null};
-	if (params.username) user = await getUser(params.username);
-	if (user) {
-		userMode = user.series_lang_mode;
-		userLangs = {main: user.main_series_lang, fallback: user.fallback_series_lang};
-	}
-	const query = sql.getFavorites(filterClauses.sql, langSelector(params.lang, userMode, userLangs), limitClause, offsetClause);
+	const query = sql.getFavorites(filterClauses.sql, limitClause, offsetClause);
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }

@@ -9,7 +9,6 @@ import logger, { profile } from '../lib/utils/logger';
 import {asyncMove, resolveFileInDirs, asyncStat, asyncUnlink, asyncReadDir, asyncWriteFile} from '../lib/utils/files';
 import {uuidRegexp, getTagTypeName} from '../lib/utils/constants';
 import {integrateKaraFile, getAllKaras, getKaras} from './kara';
-import {integrateSeriesFile, getSeries} from './series';
 import { compareKarasChecksum } from '../dao/database';
 import { vacuum } from '../lib/dao/database';
 import { emitWS } from '../lib/utils/ws';
@@ -31,6 +30,8 @@ import Task from '../lib/utils/taskManager';
 import { extractAssInfos } from '../lib/dao/karafile';
 import { SeriesList } from '../lib/types/series';
 import { headers } from '../utils/constants';
+
+let downloaderReady = false;
 
 const queueOptions = {
 	id: 'uuid',
@@ -65,9 +66,12 @@ function queueDownload(input: KaraDownload, done: any) {
 }
 
 export async function initDownloader() {
-	initQueue();
-	await initDownloads();
-	await startDownloads();
+	if (!downloaderReady) {
+		downloaderReady = true;
+		initQueue();
+		await initDownloads();
+		await startDownloads();
+	}
 	return;
 }
 
@@ -137,7 +141,6 @@ async function processDownload(download: KaraDownload) {
 		let list = [];
 		const localMedia = resolve(resolvedPathRepos('Medias', download.repository)[0], download.urls.media.local);
 		const localKaraPath = resolve(resolvedPathRepos('Karas', download.repository)[0]);
-		const localSeriesPath = resolve(resolvedPathRepos('Series', download.repository)[0]);
 		const localTagsPath = resolve(resolvedPathRepos('Tags', download.repository)[0]);
 		const localLyricsPath = resolve(resolvedPathRepos('Lyrics', download.repository)[0]);
 
@@ -202,13 +205,6 @@ async function processDownload(download: KaraDownload) {
 		} catch(err) {
 			logger.error(`[Debug] Unable to move ${tempKara} to ${localKaraPath}`);
 		}
-		for (const serie of bundle.series) {
-			try {
-				await asyncMove(resolve(tempDir, serie.file), resolve(localSeriesPath, serie.file), {overwrite: true});
-			} catch(err) {
-				logger.error(`[Debug] Unable to move ${resolve(tempDir, serie.file)} to ${resolve(localSeriesPath, serie.file)}`);
-			}
-		}
 		for (const tag of bundle.tags) {
 			try {
 				await asyncMove(resolve(tempDir, tag.file), resolve(localTagsPath, tag.file), {overwrite: true});
@@ -218,7 +214,7 @@ async function processDownload(download: KaraDownload) {
 		}
 		logger.info(`[Download] Finished downloading "${download.name}"`);
 		// Now adding our newly downloaded kara
-		await integrateDownload(bundle, localSeriesPath, localKaraPath, localTagsPath, download);
+		await integrateDownload(bundle, localKaraPath, localTagsPath, download);
 	} catch(err) {
 		setDownloadStatus(download.uuid, 'DL_FAILED');
 		throw err;
@@ -231,17 +227,8 @@ async function processDownload(download: KaraDownload) {
 	}
 }
 
-async function integrateDownload(bundle: DownloadBundle, localSeriesPath: string, localKaraPath: string, localTagsPath: string, download: KaraDownload ) {
+async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, localTagsPath: string, download: KaraDownload ) {
 	try {
-		for (const serie of bundle.series) {
-			try {
-				const serieName = await integrateSeriesFile(resolve(localSeriesPath, serie.file));
-				logger.debug(`[Download] Series "${serieName}" in database`);
-			} catch(err) {
-				logger.error(`[Download] Series "${serie.file}" not properly added to database`);
-				throw err;
-			}
-		}
 		for (const tag of bundle.tags) {
 			try {
 				const tagName = await integrateTagFile(resolve(localTagsPath, tag.file));
@@ -540,15 +527,9 @@ export async function updateBase(repo: string) {
 		if (updatedSongs > 0 || newSongs > 0) await waitForUpdateQueueToFinish();
 		// Now checking tags and series if we're missing any
 		logger.info('[Update] Getting local and remote series/tags inventory');
-		const [tags, series] = await Promise.all([
-			getTagsInventory(repo),
-			getSeriesInventory(repo)
-		]);
-		const [updatedSeries, updatedTags] = await Promise.all([
-			updateSeries(repo, series.local, series.remote),
-			updateTags(repo, tags.local, tags.remote)
-		]);
-		if (updatedSeries > 0 || updatedTags > 0) await refreshAll();
+		const tags = await getTagsInventory(repo);
+		const updatedTags = await updateTags(repo, tags.local, tags.remote);
+		if (updatedTags > 0) await refreshAll();
 		return true;
 	} catch(err) {
 		logger.error(`[Update] Base update failed : ${err}`);
@@ -579,18 +560,6 @@ async function getTagsInventory(repo: string) {
 		getRemoteTags(repo)
 	]);
 	local.content = local.content.filter(t => t.repository === repo);
-	return {
-		local,
-		remote
-	};
-}
-
-async function getSeriesInventory(repo: string) {
-	const [local, remote] = await Promise.all([
-		getSeries({}),
-		getRemoteSeries(repo)
-	]);
-	local.content = local.content.filter(s => s.repository === repo);
 	return {
 		local,
 		remote
@@ -641,8 +610,7 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 	for (const blc of blcs) {
 		let filterFunction: Function;
 		if (blc.type === 0) filterFunction = filterTagName;
-		if (blc.type >= 2 && blc.type < 1000) filterFunction = filterTagID;
-		if (blc.type === 1000) filterFunction = filterSeriesName;
+		if (blc.type >= 1 && blc.type < 1000) filterFunction = filterTagID;
 		if (blc.type === 1001) filterFunction = filterKID;
 		if (blc.type === 1002) filterFunction = filterDurationLonger;
 		if (blc.type === 1003) filterFunction = filterDurationShorter;
@@ -676,10 +644,6 @@ function filterTagName(k: DBKara, value: string): boolean {
 
 function filterKID(k: DBKara, value: string): boolean {
 	return k.kid !== value;
-}
-
-function filterSeriesName(k: DBKara, value: string): boolean {
-	return !k.serie.includes(value);
 }
 
 function filterTagID(k: DBKara, value: string, type: number, tags: Tag[]): boolean {
@@ -769,67 +733,13 @@ export async function updateAllKaras() {
 				await updateKaras(repo.Name);
 				await waitForUpdateQueueToFinish();
 				// Now checking tags and series if we're missing any
-				const [tags, series] = await Promise.all([
-					getTagsInventory(repo.Name),
-					getSeriesInventory(repo.Name)
-				]);
-				const [updatedSeries, updatedTags] = await Promise.all([
-					updateSeries(repo.Name, series.local, series.remote),
-					updateTags(repo.Name, tags.local, tags.remote)
-				]);
-				if (updatedSeries > 0 || updatedTags > 0) await refreshAll();
+				const tags = await getTagsInventory(repo.Name);
+				const updatedTags = await updateTags(repo.Name, tags.local, tags.remote);
+				if (updatedTags > 0) await refreshAll();
 			}
 		} catch(err) {
 			logger.warn(`[Update] Repository ${repo.Name} failed to update songs properly: ${err}`);
 		}
-	}
-}
-
-async function updateSeries(repo: string, local: SeriesList, remote: SeriesList) {
-	logger.info('[Update] Starting series update process...');
-	const task = new Task({
-		text: 'UPDATING_REPO',
-		subtext: repo
-	});
-	try {
-		profile('seriesUpdate');
-		const seriesToUpdate = [];
-		for (const s of local.content) {
-			const rs = remote.content.find(rs => rs.sid === s.sid);
-			if (!rs) continue;
-			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
-			if (rs?.modified_at as unknown > s.modified_at.toISOString())
-			{
-				seriesToUpdate.push({serie: rs, oldFile: s.seriefile});
-				continue;
-			}
-		}
-		profile('seriesUpdate');
-		logger.info(`[Update] Updating ${seriesToUpdate.length} series`);
-		if (seriesToUpdate.length > 0) {
-			const list = [];
-			let newSerieFiles = [];
-			for (const s of seriesToUpdate) {
-				const oldFiles = await resolveFileInDirs(s.oldFile, resolvedPathRepos('Series', repo))
-				const oldPath = dirname(oldFiles[0]);
-				const newSerieFile = resolve(oldPath, s.serie.seriefile)
-				newSerieFiles.push(newSerieFile);
-				list.push({
-					filename: newSerieFile,
-					url: `https://${repo}/downloads/series/${encodeURIComponent(s.serie.seriefile)}`
-				});
-			}
-			await downloadFiles(null, list, task);
-			for (const f of newSerieFiles) {
-				await integrateSeriesFile(f);
-			}
-		}
-		return seriesToUpdate.length;
-	} catch(err) {
-		throw err;
-	} finally {
-		profile('seriesUpdate');
-		task.end();
 	}
 }
 
@@ -1197,4 +1107,19 @@ function filterSamples(k: DBKara, lang: string): boolean {
 		k.duration < maxDuration &&
 		k.mediasize > minSize &&
 		k.mediasize < maxSize
+}
+
+export async function redownloadSongs() {
+	const karas = await getAllKaras();
+	const downloads = karas.content.map(k => {
+		return {
+			kid: k.kid,
+			mediafile: k.mediafile,
+			size: k.mediasize,
+			repository: k.repository,
+			name: k.karafile.replace('.kara.json', '')
+		}
+	})
+	await addDownloads(downloads);
+
 }

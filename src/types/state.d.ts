@@ -34,7 +34,7 @@ export interface State {
 	os?: string,
 	osHost?: string,
 	electron?: boolean,
-	EngineDefaultLocale?: string,
+	defaultLocale?: string,
 	player?: PlayerState,
 	securityCode: number,
 	wsLogNamespace: string,
@@ -87,5 +87,6 @@ export interface PublicState {
 	currentSessionID: string,
 	subText: string,
 	showSubs: boolean,
-	volume: number
+	volume: number,
+	defaultLocale: string
 }

@@ -1256,6 +1256,11 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@cospired/i18n-iso-languages@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@cospired/i18n-iso-languages/-/i18n-iso-languages-2.1.1.tgz#f6b671cbb6ab40cf8778fefe00a7d8921cae8f2e"
+  integrity sha512-dmlPmVw51tQzCJkYvtWWXxuvsAkNvCmUnvjMWyo7Qd318YeEZalCUInUgdhKU985gk2wkITtdakPYqk5GrJ99A==
+
 "@fortawesome/fontawesome-free@^5.13.0":
   version "5.13.0"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-5.13.0.tgz#fcb113d1aca4b471b709e8c9c168674fbd6e06d9"
@@ -3899,11 +3904,6 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-iso-639@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/iso-639/-/iso-639-0.2.2.tgz#8ad382e5f77e8aead9fa2697d1e279e417af9156"
-  integrity sha1-itOC5fd+iurZ+iaX0eJ55BevkVY=
-
 isobject@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-2.1.0.tgz#f065561096a3f1da2ef46272f815c840d87e0c89"
@@ -4060,11 +4060,6 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
-
-langs@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/langs/-/langs-2.0.0.tgz#00c32ce48152a49a614450b9ba2632ab58a0a364"
-  integrity sha1-AMMs5IFSpJphRFC5uiYyq1igo2Q=
 
 lcid@^1.0.0:
   version "1.0.0"

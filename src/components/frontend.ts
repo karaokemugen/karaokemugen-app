@@ -26,7 +26,6 @@ import playerController from '../controllers/frontend/player';
 import sessionController from '../controllers/frontend/session';
 import karaController from '../controllers/frontend/kara';
 import tagsController from '../controllers/frontend/tags';
-import seriesController from '../controllers/frontend/series';
 import playlistsController from '../controllers/frontend/playlists';
 import repoController from '../controllers/frontend/repo';
 
@@ -47,7 +46,6 @@ function apiRouter() {
 	sessionController(apiRouter);
 	karaController(apiRouter);
 	tagsController(apiRouter);
-	seriesController(apiRouter);
 	pollController(apiRouter);
 	repoController(apiRouter);
 

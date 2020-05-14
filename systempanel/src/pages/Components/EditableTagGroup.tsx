@@ -5,7 +5,7 @@ import { getTagInLocale } from "../../utils/kara";
 
 import i18next from 'i18next';
 interface EditableTagGroupProps {
-	search: 'tag' | 'serie' | 'aliases',
+	search: 'tag' | 'aliases',
 	onChange: any,
 	checkboxes?: boolean,
 	tagType?: number,
@@ -18,8 +18,7 @@ interface EditableTagGroupState {
 	inputVisible: boolean,
 }
 
-let timer:any;
-let timerTag:any[] = [];
+let timer:any[] = [];
 export default class EditableTagGroup extends React.Component<EditableTagGroupProps, EditableTagGroupState> {
 
 	input: any;
@@ -41,7 +40,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	};
 
 
-	handleInputConfirmSerie = (val) => {
+	handleInputConfirmAlias = (val) => {
 		let tags = this.state.value;
 		if (val && tags.indexOf(val) === -1) {
 			tags = [...tags, val];
@@ -53,7 +52,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		this.props.onChange && this.props.onChange(tags);
 	};
 
-	handleCloseSerie = (removedTag) => {
+	handleCloseAlias = (removedTag) => {
 		const tags = this.state.value.filter(tag => tag !== removedTag);
 		this.setState({ value: tags });
 		this.props.onChange && this.props.onChange(tags);
@@ -94,40 +93,20 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		});
 	};
 
-	getSeries = async (filter) => {
-		if (filter === '') {
-			return ({data: []});
-		}
-		return axios.get('/api/series', {
-			params: {
-				filter: filter
-			}
-		});
-	};
-
 	search = (val?: any) => {
 		if (this.props.search === 'tag') this.searchTags(val);
-		if (this.props.search === 'serie') this.searchSeries(val);
-	};
-
-	searchSeries = (val) => {	
-		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => {
-		this.getSeries(val).then(series => {
-			this.setState({ DS: (series.data.content && series.data.content.map(serie => serie.name)) || [] });
-		})}, 500);
 	};
 
 	searchTags = (val?: any) => {
-		if (timerTag[this.props.tagType]) clearTimeout(timerTag[this.props.tagType]);
-		timerTag[this.props.tagType] = setTimeout(() => {
+		if (timer[this.props.tagType]) clearTimeout(timer[this.props.tagType]);
+		timer[this.props.tagType] = setTimeout(() => {
 		this.getTags(val, this.props.tagType).then(tags => {
 			let result = (tags.data.content && tags.data.content.map(tag => {
 				return { value: tag.tid, text: getTagInLocale(tag), name:tag.name };
 			})) || [];
 			result = this.sortByProp(result, 'text');
 			this.setState({ DS: result });
-		})}, 500);
+		})}, 1000);
 	};
 
 	onCheck = (val) => {
@@ -169,15 +148,15 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 					</Checkbox.Group>
 				</div>
 			);
-		} else if (this.props.search === 'serie' || this.props.search === 'aliases') {
+		} else if (this.props.search === 'aliases') {
 			return (
-				<div>
+                <div>
 					{
 						value.map((tag) => {
 							if (!tag) tag = '';
 							const isLongTag = tag.length > 20;
 							const tagElem = (
-								<Tag key={tag} closable={true} onClose={() => this.handleCloseSerie(tag)}>
+								<Tag key={tag} closable={true} onClose={() => this.handleCloseAlias(tag)}>
 									{isLongTag ? `${tag.slice(0, 20)}...` : tag}
 								</Tag>
 							);
@@ -194,7 +173,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 								onChange={ val => this.currentVal = val }
 							>
 							</AutoComplete>
-							<Button type='primary' onClick={() => this.handleInputConfirmSerie(this.currentVal)}
+							<Button style={{marginTop: '10px'}} type='primary' onClick={() => this.handleInputConfirmAlias(this.currentVal)}
 								className='login-form-button'>
 								{i18next.t('ADD')}
 							</Button>

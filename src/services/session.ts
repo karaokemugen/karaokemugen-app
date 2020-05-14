@@ -2,7 +2,7 @@ import {selectSessions, insertSession, updateSession, deleteSession, cleanSessio
 import { v4 as uuidV4 } from 'uuid';
 import { getState, setState } from '../utils/state';
 import { Session } from '../types/session';
-import { getKaras } from './kara';
+import { getKaras, getSeriesSingers } from './kara';
 import { createObjectCsvWriter as csvWriter } from 'csv-writer';
 import { resolve } from 'path';
 import { sanitizeFile } from '../lib/utils/files';
@@ -157,7 +157,7 @@ export async function exportSession(seid: string) {
 		const recordsPlayed = played.content.map(k => {
 			return {
 				played_at: k.lastplayed_at.toLocaleString(),
-				seriesinger: k.serie ? k.serie : k.singers.map(s => s.name).join(', '),
+				seriesinger: getSeriesSingers(k),
 				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
 				title: k.title,
@@ -167,7 +167,7 @@ export async function exportSession(seid: string) {
 		const recordsRequested = requested.content.map(k => {
 			return {
 				requested_at: k.lastrequested_at.toLocaleString(),
-				seriesinger: k.serie ? k.serie : k.singers.map(s => s.name).join(', '),
+				seriesinger: getSeriesSingers(k),
 				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
 				title: k.title,

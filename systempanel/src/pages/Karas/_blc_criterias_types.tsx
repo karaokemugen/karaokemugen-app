@@ -29,14 +29,12 @@ export const criteras_types = [
 		test: 'contain',
 	},
 	{
-		value:1000,
-		mode:'text',
-		fields: ['serie','serie_i18n','serie_altname'],
-		test: 'contain',
-	},
-	{
 		value:0,
 		mode:'text',
+	},
+	{
+		value:1,
+		mode:'tag',
 	},
 	{
 		value:2,

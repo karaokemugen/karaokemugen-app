@@ -14,8 +14,6 @@ import KaraList from '../pages/Karas/KaraList';
 import KaraRanking from '../pages/Karas/Ranking';
 import KaraViewcounts from '../pages/Karas/Viewcounts';
 import Log from '../pages/Log';
-import SeriesEdit from '../pages/Series/SeriesEdit';
-import SeriesList from '../pages/Series/SeriesList';
 import TagsList from '../pages/Tags/TagsList';
 import TagsEdit from '../pages/Tags/TagsEdit';
 import UserEdit from '../pages/Users/UserEdit';
@@ -60,10 +58,6 @@ class KMPage extends Component<{}, {}> {
           <Route path='/system/km/karas/viewcounts' component={KaraViewcounts}/>
           <Route path='/system/km/karas/:kid' component={KaraEdit}/>
           <Route path='/system/km/karas' component={KaraList}/>
-
-          <Route path='/system/km/series/new' component={SeriesEdit}/>
-          <Route path='/system/km/series/:sid' component={SeriesEdit}/>
-          <Route path='/system/km/series' component={SeriesList}/>
 
           <Route path='/system/km/tags/new' component={TagsEdit}/>
           <Route path='/system/km/tags/:tid' component={TagsEdit}/>

@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
-import iso639 from 'iso-639';
 import axios from 'axios';
 import Autocomplete from '../generic/Autocomplete';
 import blankAvatar from '../../../../assets/blank.png';
 import { displayMessage, callModal } from '../tools';
 import ReactDOM from 'react-dom';
 import OnlineProfileModal from './OnlineProfileModal';
-require('babel-polyfill');
 import store from '../../store';
 import { Config } from '../../../../src/types/config';
 import { User, Token } from '../../../../src/lib/types/user';
+import languages from "@cospired/i18n-iso-languages";
+languages.registerLocale(require("@cospired/i18n-iso-languages/langs/en.json"));
+languages.registerLocale(require("@cospired/i18n-iso-languages/langs/fr.json"));
+require('babel-polyfill');
 require('./ProfilModal.scss');
 
 interface IProps {
@@ -77,26 +79,27 @@ class ProfilModal extends Component<IProps, IState> {
     	}
 	};
 
-	onClickSelect = (event:any) => {
+	onClickSelect = async (event:any) => {
     	const user = this.state.user;
 		(user[event.target.name as typesAttrUser] as number) = parseInt(event.target.value);
 		this.setState({ user: user });
 		this.updateUser();
     };
 
-    changeLanguageFallback(name:'main_series_lang'|'fallback_series_lang', value:string) {
+    async changeLanguageFallback(name:'main_series_lang'|'fallback_series_lang', value:string) {
     	const user = this.state.user;
     	user[name] = value;
 		this.setState({ user: user });
 		this.updateUser();
 	}
 
-	updateUser = () => {
+	updateUser = async () => {
 		if (this.state.user.nickname && (this.state.user.password
 			&& this.state.user.password === this.state.user.passwordConfirmation
 			|| !this.state.user.password)) {
 			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
-			axios.put('/api/myaccount/', this.state.user);
+			await axios.put('/api/myaccount/', this.state.user);
+			store.setUser();
 		} else if (!this.state.user.nickname) {
 			this.setState({ nicknameMandatory: 'form-control redBorders' });
 		} else {
@@ -171,10 +174,11 @@ class ProfilModal extends Component<IProps, IState> {
     };
 
     render() {
-    	var logInfos = store.getLogInfos();
-    	var listLangs = Object.keys(iso639.iso_639_2).map(k => {
-    		return { 'label': iso639.iso_639_2[k][i18next.languages[0]][0], 'value': k };
-    	});
+		var logInfos = store.getLogInfos();
+		var listLangs = [];
+		for (let [key, value] of Object.entries(languages.getNames(i18next.languages[0]))) {
+			listLangs.push({ 'label': value, 'value': languages.alpha2ToAlpha3B(key)});
+		}
     	if (!this.props.config.Online.Users && logInfos && logInfos.username.includes('@')) {
     		setTimeout(function () {
     			displayMessage('warning', <div><label>{i18next.t('LOG_OFFLINE.TITLE')}</label> <br/> {i18next.t('LOG_OFFLINE.MESSAGE')}</div>, 8000);

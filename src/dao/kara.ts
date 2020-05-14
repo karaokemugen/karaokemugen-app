@@ -1,13 +1,11 @@
-import {buildTypeClauses, langSelector, buildClauses, db, transaction} from '../lib/dao/database';
+import {buildTypeClauses, buildClauses, db, transaction} from '../lib/dao/database';
 import {getConfig} from '../lib/utils/config';
 import { getState } from '../utils/state';
 import {pg as yesql} from 'yesql';
 import {now} from '../lib/utils/date';
 import { Kara, KaraParams } from '../lib/types/kara';
-import { Role, User } from '../lib/types/user';
 import {PLC} from '../types/playlist';
 import { DBYear, DBKaraHistory } from '../types/database/kara';
-import { getUser } from './user';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 
 const sql = require('./sql/kara');
@@ -67,19 +65,6 @@ export async function getSongTimeSpentForUser(playlist_id: number, username: str
 	return res.rows[0].time_spent;
 }
 
-export async function getKara(kid: string, username: string, lang: string, role: Role): Promise<DBKara> {
-	const res = await selectAllKaras({
-		username: username,
-		filter: null,
-		lang: lang,
-		mode: 'kid',
-		modeValue: kid,
-		admin: role === 'admin'
-	 });
-	return res[0];
-}
-
-
 export async function deleteKara(kid: string) {
 	await db().query(sql.deleteKara, [kid]);
 }
@@ -124,15 +109,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			WHERE pc.fk_id_playlist = ${getState().modePlaylistID}
 		)`;
 	}
-	let user: User = {};
-	let userMode = -1;
-	let userLangs = {main: null, fallback: null};
-	if (params.username) user = await getUser(params.username);
-	if (user) {
-		userMode = user.series_lang_mode;
-		userLangs = {main: user.main_series_lang, fallback: user.fallback_series_lang};
-	}
-	const query = sql.getAllKaras(filterClauses.sql, langSelector(params.lang, userMode, userLangs), typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause);
+	const query = sql.getAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause);
 	const queryParams = {
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 		username: params.username,

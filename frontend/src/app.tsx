@@ -5,7 +5,6 @@ import PublicPage from './components/PublicPage';
 import React, { Component } from 'react';
 import i18n from './components/i18n';
 import NotFoundPage from './components/NotfoundPage';
-import langs from 'langs';
 import axios from 'axios';
 import { startIntro, getSocket, is_touch_device } from './components/tools';
 import { ToastContainer } from 'react-toastify';
@@ -13,13 +12,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import store from './store';
 import { Config } from '../../src/types/config';
 import { KaraTag } from '../../src/lib/types/kara'; 
-import { DBSeries } from '../../src/lib/types/database/series';
 import { DBYear } from '../../src/lib/types/database/kara';
 import { Tag }  from '../../src/lib/types/tag'; 
 import { Tag as FrontendTag }  from './types/tag';
 
 interface IState {
-	navigatorLanguage: string;
 	admpwd: string | undefined;
 	shutdownPopup: boolean;
 	config?: Config;
@@ -32,8 +29,7 @@ class App extends Component<{}, IState> {
 	constructor(props:{}) {
 		super(props);
 		this.state = {
-			navigatorLanguage: this.getNavigatorLanguage(),
-			admpwd: window.location.search.indexOf('admpwd') ? window.location.search.split('=')[1] : undefined,
+			admpwd: window.location.search.indexOf('admpwd') !== -1 ? window.location.search.split('=')[1] : undefined,
 			shutdownPopup: false,
 			electron: false
 		};
@@ -54,18 +50,8 @@ class App extends Component<{}, IState> {
 		const response = await axios.get('/api/tags');
 		return response.data.content.filter((val:Tag) => val.karacount !== null)
 			.map((val:{i18n:{[key: string]: string}, tid:string, name:string, types:Array<number|string>, karacount:string}) => {
-			var trad = val.i18n![this.state.navigatorLanguage];
+			var trad = val.i18n![store.getNavigatorLanguage() as string];
 			return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
-		});
-	}
-
-	async parseSeries() {
-		const response = await axios.get('/api/series');
-		return response.data.content.map((val:DBSeries) => {
-			return {
-				value: val.sid, label: val.i18n_name, type: ['serie'],
-				aliases: val.aliases, karacount: val.karacount
-			};
 		});
 	}
 
@@ -79,6 +65,7 @@ class App extends Component<{}, IState> {
 	async componentDidMount() {
 		if (axios.defaults.headers.common['authorization']) {
 			this.checkAuth();
+			await store.setUser();
 		}
 		await this.getSettings();
 		getSocket().on('settingsUpdated', this.getSettings);
@@ -97,8 +84,8 @@ class App extends Component<{}, IState> {
 
     addTags = async () => {
     	if (this.state.config && this.state.config.Frontend.Mode !== 0 && axios.defaults.headers.common['authorization']) {
-    		const [tags, series, years] = await Promise.all([this.parseTags(), this.parseSeries(), this.parseYears()]);
-    		this.setState({ tags: tags.concat(series, years) });
+    		const [tags, years] = await Promise.all([this.parseTags(), this.parseYears()]);
+    		this.setState({ tags: tags.concat(years) });
     	}
     }
 
@@ -111,21 +98,9 @@ class App extends Component<{}, IState> {
 		store.setConfig(res.data.config);
 		store.setVersion(res.data.version);
 		store.setModePlaylistID(res.data.state.modePlaylistID);
+		store.setDefaultLocaleApp(res.data.state.defaultLocale);
     	this.setState({ config: res.data.config, electron: res.data.state.electron });
     };
-
-    getNavigatorLanguage() {
-    	var navigatorLanguage;
-    	var languages = langs.all();
-    	var index = 0;
-    	while (!navigatorLanguage && index < languages.length) {
-    		if (navigator.languages[0].substring(0, 2) === languages[index]['1']) {
-    			navigatorLanguage = languages[index]['2B'];
-    		}
-    		index++;
-    	}
-    	return navigatorLanguage;
-    }
 
     powerOff = () => {
     	axios.post('/api/shutdown');
@@ -161,15 +136,12 @@ class App extends Component<{}, IState> {
     				<div className={is_touch_device() ? 'touch' : ''}>
     					<Switch>
     						<Route path="/welcome" render={(props) => <WelcomePage {...props}
-    							navigatorLanguage={this.state.navigatorLanguage}
     							admpwd={this.state.admpwd} config={this.state.config as Config} />} />
     						<Route path="/admin" render={(props) => <AdminPage {...props}
-    							navigatorLanguage={this.state.navigatorLanguage}
     							powerOff={this.state.electron ? undefined : this.powerOff} tags={this.state.tags as FrontendTag[]}
     							showVideo={this.showVideo} config={this.state.config as Config} 
 								getSettings={this.getSettings} />} />
     						<Route exact path="/" render={(props) => <PublicPage {...props}
-    							navigatorLanguage={this.state.navigatorLanguage}
 								tags={this.state.tags as FrontendTag[]} showVideo={this.showVideo}
 								config={this.state.config as Config} />} />
     						<Route component={NotFoundPage} />

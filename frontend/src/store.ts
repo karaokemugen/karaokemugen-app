@@ -1,9 +1,10 @@
-import EventEmmiter from 'events';
+import { EventEmitter } from 'events'; 
 import axios from 'axios';
 import { parseJwt} from './components/tools';
-import { Token } from '../../src/lib/types/user';
+import { Token, User } from '../../src/lib/types/user';
 import { Config } from '../../src/types/config';
 import { Version } from './types/version';
+import languages from "@cospired/i18n-iso-languages";
 
 let filterValue1:string = '';
 let filterValue2:string = '';
@@ -14,6 +15,9 @@ let config:Config;
 let logInfos:Token|undefined;
 let version:Version;
 let modePlaylistID:number;
+let defaultLocaleApp:string;
+let user:User|undefined;
+let navigatorLanguage:string = languages.alpha2ToAlpha3B(navigator.languages[0].substring(0, 2));
 
 if (!logInfos) {
 	var token = localStorage.getItem('kmToken');
@@ -29,7 +33,7 @@ if (!logInfos) {
 	}
 }
 
-class Store extends EventEmmiter {
+class Store extends EventEmitter {
 
 	emitChange(event:any, data?:any) {
 		this.emit(event, data);
@@ -103,6 +107,30 @@ class Store extends EventEmmiter {
 		modePlaylistID = modePlaylist;;
 	}
 
+	getDefaultLocaleApp() {
+		return defaultLocaleApp;
+	}
+
+	setDefaultLocaleApp(defaultLocale:string) {
+		defaultLocaleApp = defaultLocale;;
+	}
+
+	getUser() {
+		return user;
+	}
+
+	getNavigatorLanguage() {
+		return navigatorLanguage;
+	}
+
+	async setUser() {
+		if (logInfos) {
+			user = (await axios.get(`/api/myaccount`)).data;
+		} else {
+			user = undefined;
+		}
+	}
+
 	getLogInfos() {
 		return logInfos;
 	}
@@ -130,6 +158,7 @@ class Store extends EventEmmiter {
 		axios.defaults.headers.common['authorization'] = null;
 		axios.defaults.headers.common['onlineAuthorization'] = null;
 		store.emitChange('loginOut');
+		this.setUser();
 		if (window.location.search.length > 0) window.location.search = '';
 	}
 }

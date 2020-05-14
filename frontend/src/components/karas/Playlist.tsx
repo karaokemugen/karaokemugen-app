@@ -29,7 +29,6 @@ interface IProps {
 	side: number;
 	config: Config;
 	idPlaylistTo: number;
-	navigatorLanguage: string;
 	kidPlaying?: string | undefined;
 	tags?: Array<Tag> | undefined;
 	searchMenuOpen?: boolean;
@@ -135,7 +134,7 @@ class Playlist extends Component<IProps, IState> {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.refreshUiOnResize, true);
+	window.removeEventListener('resize', this.refreshUiOnResize, true);
   	store.removeChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
   	store.removeChangeListener('loginUpdated', this.initCall);
   }
@@ -159,7 +158,6 @@ class Playlist extends Component<IProps, IState> {
   				idPlaylist={this.state.idPlaylist}
   				playlistInfo={this.state.playlistInfo}
   				i18nTag={(this.state.data as KaraList).i18n}
-  				navigatorLanguage={this.props.navigatorLanguage}
   				side={this.props.side}
   				config={this.props.config}
   				playlistCommands={this.state.playlistCommands}
@@ -341,7 +339,6 @@ noRowsRenderer = () => {
   getPlaylist = async (searchType?:string) => {
 	var criterias:any = {
 		'year' : 'y',
-		'serie' : 's',
 		'tag' : 't'
 	};
 	var stateData = this.state.data as KaraList;
@@ -592,7 +589,7 @@ noRowsRenderer = () => {
   }
 
   onChangeTags = (type:number|string, value:string) => {
-  	var searchCriteria = (type === 'serie' || type === 'year') ? type : 'tag';
+  	var searchCriteria = type === 'year' ? type : 'tag';
   	var stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
   	this.setState({searchCriteria: searchCriteria, searchValue: stringValue}, () => this.getPlaylist('search'));
   };
@@ -674,8 +671,7 @@ noRowsRenderer = () => {
       this.props.side === 1 && this.props.config.Frontend.Mode === 1 ? (
   			<div className="playlist--wrapper">
 				<li className="list-group-item">
-					<KaraDetail kid={this.props.kidPlaying} mode="karaCard" scope={this.props.scope} 
-						navigatorLanguage={this.props.navigatorLanguage} />
+					<KaraDetail kid={this.props.kidPlaying} mode="karaCard" scope={this.props.scope} />
 				</li>
   			</div>
   		) : (

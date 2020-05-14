@@ -1,5 +1,3 @@
-import { LangClause } from "../../types/database";
-
 // SQL for whitelist management
 
 export const emptyWhitelist = 'DELETE FROM whitelist;';
@@ -17,18 +15,12 @@ VALUES (
 ) ON CONFLICT DO NOTHING;
 `;
 
-export const getWhitelistContents = (filterClauses: string[], lang: LangClause, limitClause: string, offsetClause: string) => `
+export const getWhitelistContents = (filterClauses: string[], limitClause: string, offsetClause: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
-  COALESCE(
-	  (SELECT array_to_string (array_agg(name), ', ') FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.main}),
-	  (SELECT array_to_string (array_agg(name), ', ') FROM all_kara_serie_langs WHERE kid = ak.kid AND lang = ${lang.fallback}),
-	  ak.serie) AS serie,
-  ak.serie AS serie_orig,
-  ak.serie_altname AS serie_altname,
-  ak.sid AS sid,
+  COALESCE(ak.series, '[]'::jsonb) AS series,
   COALESCE(ak.singers, '[]'::jsonb) AS singers,
   COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
   COALESCE(ak.creators, '[]'::jsonb) AS creators,

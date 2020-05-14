@@ -274,7 +274,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
 		if (!user.nickname) user.nickname = currentUser.nickname;
-		if (!user.series_lang_mode) user.series_lang_mode = -1;
+		if (!user.series_lang_mode && user.series_lang_mode !== 0) user.series_lang_mode = -1;
 		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw 'Invalid series_lang_mode';
 		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw `main_series_lang is not a valid ISO639-2B code (received ${user.main_series_lang})`;
 		if (user.fallback_series_lang && !hasLang('2B', user.fallback_series_lang)) throw `fallback_series_lang is not a valid ISO639-2B code (received ${user.fallback_series_lang})`;

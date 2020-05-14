@@ -32,7 +32,7 @@ let state: State = {
 	currentSessionID: null,
 	isDemo: false,
 	isTest: false,
-	EngineDefaultLocale: 'fr',
+	defaultLocale: 'en',
 	securityCode: null,
 	wsLogNamespace: null,
 	player: {
@@ -60,7 +60,8 @@ export function getPlayerState(): PublicState {
 		subText: state.player.subtext,
 		timePosition: state.player.timeposition,
 		volume: state.player.volume,
-		currentRequester: state.currentRequester
+		currentRequester: state.currentRequester,
+		defaultLocale: state.defaultLocale
 	};
 }
 

@@ -94,7 +94,6 @@
 		"HISTORY": "History",
 		"RANKING": "Most requested",
 		"VIEWCOUNTS": "Most played",
-		"SERIES": "Series",
 		"TAGS": "Tags",
 		"DATABASE": "Database",
 		"USERS": "Users",
@@ -106,7 +105,6 @@
 		"FILE": "File",
 		"MEDIAS": "Medias",
 		"TAGS": "Tags",
-		"SERIES": "Series",
 		"REPOSITORY": "Repository",
 		"TYPE": "Type"
 	},
@@ -187,7 +185,7 @@
 		"SINGERS": "Singer",
 		"SONGTYPES": "Song type",
 		"CREATORS": "Creator",
-		"LANGS": "Languages",
+		"LANGS": "Language",
 		"AUTHORS": "Kara Author",
 		"MISC": "Misc",
 		"SONGWRITERS": "Songwriter",
@@ -195,7 +193,8 @@
 		"FAMILIES": "Familie",
 		"ORIGINS": "Origin",
 		"GENRES": "Genre",
-		"PLATFORMS": "Platform"
+		"PLATFORMS": "Platform",
+		"SERIES": "Series"
 	},
 	"CONFIG": {
 		"PROPERTY": "Property",
@@ -213,18 +212,6 @@
 		"ADD_DIRECTORY": "Add a directory",
 		"ADD_FILE": "Add a file",
 		"REPOSITORIES_PAGES": "Repositories page"
-	},
-	"SERIES": {
-		"SERIE_DELETED": "Series successfully deleted",
-		"SERIE_CREATED": "Series successfully created",
-		"SERIE_EDITED": "Series successfully edited",
-		"SERIE_DELETED_CONFIRM": "Confirm series deletion",
-		"DELETED_SERIE_CONFIRM": "Delete series",
-		"DELETE_SERIE_MESSAGE": "This will remove its series.json file as well as in any .kara in your database!",
-		"ALIASES_TOOLTIP": "Short names or alternative names of a series could be searched. Example : DB for Dragon Ball, or FMA for Full Metal Alchemist, or AnoHana for that series which makes you cry everytime you watch it.",
-		"NAME_TOOLTIP": "This is the internal name used to reference the series in Karaoke Mugen's database",
-		"SHORT_NAME_TOOLTIP": "This is the short name used to reference the series in Karaoke Mugen's database",
-		"LANG_ERROR": "A serie must have at least one name by language"
 	},
 	"SESSIONS": {
 		"SESSION_CREATED": "Session successfully created",
@@ -275,9 +262,9 @@
 		"SHORTER_THAN_ONE_SECOND": "Duration cannot be sorter than 1s",
 		"BLCTYPE_1002": "Longer than (sec)",
 		"BLCTYPE_1003": "Shorter than (sec)",
-		"BLCTYPE_1000": "Series contains",
 		"BLCTYPE_1004": "Title contains",
 		"BLCTYPE_0": "Metadatas",
+		"BLCTYPE_1": "Series",
 		"BLCTYPE_2": "Singer",
 		"BLCTYPE_3": "Type",
 		"BLCTYPE_4": "Creator",
@@ -298,7 +285,6 @@
 		"KARAS_DESCRIPTION_1": "View, edit, ",
 		"KARAS_DESCRIPTION_2": "download",
 		"KARAS_DESCRIPTION_3": ", and create karaoke data files. You can also edit the download blacklist and view most requested, most played, and karaoke history",
-		"SERIES_DESCRIPTION": "Manage series from here",
 		"TAGS_DESCRIPTION": "Manage tags (singers, songwriters, creators, song types, etc.)",
 		"USERS_DESCRIPTION_1": "Create/",
 		"USERS_DESCRIPTION_2": "edit/view users",

@@ -6,12 +6,10 @@ import { Repository } from '../lib/types/repo';
 import { getConfig, setConfig, deleteOldPaths } from '../lib/utils/config';
 import cloneDeep = require('lodash.clonedeep');
 import { Tag } from '../lib/types/tag';
-import { readAllSeries, readAllTags, readAllKaras } from '../lib/services/generation';
+import { readAllTags, readAllKaras } from '../lib/services/generation';
 import { tagTypes } from '../lib/utils/constants';
 import { KaraTag } from '../lib/types/kara';
 import { getTag } from './tag';
-import { Series } from '../lib/types/series';
-import { getSerie } from './series';
 import logger from '../lib/utils/logger';
 import { compareKarasChecksum, generateDB } from '../dao/database';
 import { getRemoteKaras } from './download';
@@ -106,27 +104,6 @@ export async function findUnusedTags(repo: string): Promise<Tag[]> {
 		tagsToDelete.push(await getTag(tid));
 	}
 	return tagsToDelete;
-}
-
-/** Find any unused series in a repository */
-export async function findUnusedSeries(repo: string): Promise<Series[]> {
-	const [karaFiles, seriesFiles] = await Promise.all([
-		extractAllFiles('Karas', repo),
-		extractAllFiles('Series', repo)
-	]);
-	const karas = await readAllKaras(karaFiles, false);
-	const series = await readAllSeries(seriesFiles);
-	const sids: UUIDSet = new Set();
-	series.forEach(s => sids.add(s.sid));
-	for (const kara of karas) {
-		kara.sids.forEach(sid => sids.delete(sid));
-	}
-	// Now sids only has series IDs which aren't used anywhere
-	const seriesToDelete: Series[] = [];
-	for (const sid of sids) {
-		seriesToDelete.push(await getSerie(sid));
-	}
-	return seriesToDelete;
 }
 
 /** Migrate old data architecture to the new one */

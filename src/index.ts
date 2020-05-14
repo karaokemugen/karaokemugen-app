@@ -183,7 +183,7 @@ export async function preInit() {
 	logger.debug(`[Launcher] PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`);
 	logger.debug(`[Launcher] app.getAppPath : ${app ? app.getAppPath() : undefined}`);
 	logger.debug(`[Launcher] argv: ${JSON.stringify(process.argv)}`);
-	logger.debug(`[Launcher] Locale : ${state.EngineDefaultLocale}`);
+	logger.debug(`[Launcher] Locale : ${state.defaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
 	await initConfig(argv);
 }

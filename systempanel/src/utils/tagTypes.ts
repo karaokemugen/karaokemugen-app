@@ -1,5 +1,6 @@
 
 export const tagTypes = Object.freeze({
+	SERIES: 1,
 	SINGERS: 2,
 	SONGTYPES: 3,
 	CREATORS: 4,

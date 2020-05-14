@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Input, Divider, Modal, Tooltip, Tag, Icon, Button, Layout, Table} from 'antd';
+import {Input, Divider, Modal, Tooltip, Tag, Icon, Button, Layout, Table, Select} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {ReduxMappedProps} from '../../react-app-env';
 import i18next from 'i18next';
-import { getTagTypeName } from '../../utils/tagTypes';
+import { getTagTypeName, tagTypes } from '../../utils/tagTypes';
 
 
 interface TagsListProps extends ReduxMappedProps {}
@@ -15,6 +15,7 @@ interface TagsListState {
 	tags: any[],
 	tag: any,
 	deleteModal: boolean,
+	type: number | undefined
 }
 
 class TagsList extends Component<TagsListProps, TagsListState> {
@@ -27,7 +28,8 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 		this.state = {
 			tags: [],
 			tag: {},
-			deleteModal: false
+			deleteModal: false,
+			type: window.location.search.indexOf('type=') !== -1 ? parseInt(window.location.search.split('=')[1]) : undefined
 		};
 	}
 
@@ -37,7 +39,7 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/tags',  { params: { filter: this.filter }})
+		axios.get('/api/tags',  { params: { filter: this.filter, type: this.state.type }})
 			.then(res => {
 				this.props.loading(false);
 				this.setState({tags: res.data.content});
@@ -61,18 +63,30 @@ class TagsList extends Component<TagsListProps, TagsListState> {
 			});
 	};
 
+	changeType = async (value) => {
+		await this.setState({type: value});
+		this.refresh();
+	}
+
 
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Layout>
-					<Layout.Header>
+					<Layout.Header style={{display: 'flex'}}>
 						<Input.Search
 							placeholder={i18next.t('SEARCH_FILTER')}
 							onChange={event => this.filter = event.target.value}
 							enterButton={i18next.t('SEARCH')}
 							onSearch={this.refresh.bind(this)}
 						/>
+						<label style={{marginLeft : '40px', paddingRight : '15px'}}>{i18next.t('TAGS.TYPES')} :</label>
+						<Select allowClear={true} style={{ width: 300 }} onChange={this.changeType} defaultValue={this.state.type}>
+							{Object.entries(tagTypes).map(([key, value]) => {
+								return <Select.Option key={value} value={value}>{i18next.t(`TAG_TYPES.${key}`)}</Select.Option>
+							})
+							}
+						</Select>
 					</Layout.Header>
 					<Layout.Content><Table
 						dataSource={this.state.tags}
