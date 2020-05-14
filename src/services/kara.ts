@@ -130,7 +130,6 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 		lang: lang,
 		admin: token.role === 'admin'
 	});
-	if (res.length === 0) throw `Kara ${kid} unknown`;
 	profile('getKaraInfo');
 	return res[0];
 }
