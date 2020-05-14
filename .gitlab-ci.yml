@@ -36,8 +36,7 @@ test:
     - export LANG=en_US
     - node --version
     - node util/extUnaccent.js
-    - yarn startNoElectron --debug --test &disown
-    - bash test/run.sh
+    - yarn test --debug
   only:
     - master
     - next
