@@ -625,47 +625,57 @@ export async function downloadAllKaras() {
 };
 
 export async function downloadKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
-	if (!local || !remote) {
-		const karas = await getKaraInventory(repo);
-		local = karas.local;
-		remote = karas.remote;
-	}
-	const localKIDs = local.content.map(k => k.kid);
-	let karasToAdd = remote.content.filter(k => !localKIDs.includes(k.kid));
-	const initialKarasToAddCount = karasToAdd.length;
-	// Among those karaokes, we need to establish which ones we'll filter out via the download blacklist criteria
-	logger.info('[Update] Applying blacklist (if present)');
-
-	const [blcs, tags] = await Promise.all([
-		getDownloadBLC(),
-		getTags({})
-	]);
-	for (const blc of blcs) {
-		let filterFunction: Function;
-		if (blc.type === 0) filterFunction = filterTagName;
-		if (blc.type >= 2 && blc.type < 1000) filterFunction = filterTagID;
-		if (blc.type === 1000) filterFunction = filterSeriesName;
-		if (blc.type === 1001) filterFunction = filterKID;
-		if (blc.type === 1002) filterFunction = filterDurationLonger;
-		if (blc.type === 1003) filterFunction = filterDurationShorter;
-		if (blc.type === 1004) filterFunction = filterTitle;
-		if (blc.type === 1005) filterFunction = filterYearOlder;
-		if (blc.type === 1006) filterFunction = filterYearYounger;
-		karasToAdd = karasToAdd.filter(k => filterFunction(k, blc.value, blc.type, tags.content));
-	}
-	const downloads = karasToAdd.map(k => {
-		return {
-			size: k.mediasize,
-			mediafile: k.mediafile,
-			kid: k.kid,
-			name: k.karafile.replace('.kara.json',''),
-			repository: repo
-		};
+	const task = new Task({
+		text: 'DOWNLOADING_REPO',
+		subtext: repo
 	});
-	logger.info(`[Update] Adding ${karasToAdd.length} new songs.`);
-	if (initialKarasToAddCount !== karasToAdd.length) logger.info(`[Update] ${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`);
-	if (karasToAdd.length > 0) await addDownloads(downloads);
-	return karasToAdd.length;
+	try {
+		if (!local || !remote) {
+			const karas = await getKaraInventory(repo);
+			local = karas.local;
+			remote = karas.remote;
+		}
+		const localKIDs = local.content.map(k => k.kid);
+		let karasToAdd = remote.content.filter(k => !localKIDs.includes(k.kid));
+		const initialKarasToAddCount = karasToAdd.length;
+		// Among those karaokes, we need to establish which ones we'll filter out via the download blacklist criteria
+		logger.info('[Update] Applying blacklist (if present)');
+
+		const [blcs, tags] = await Promise.all([
+			getDownloadBLC(),
+			getTags({})
+		]);
+		for (const blc of blcs) {
+			let filterFunction: Function;
+			if (blc.type === 0) filterFunction = filterTagName;
+			if (blc.type >= 2 && blc.type < 1000) filterFunction = filterTagID;
+			if (blc.type === 1000) filterFunction = filterSeriesName;
+			if (blc.type === 1001) filterFunction = filterKID;
+			if (blc.type === 1002) filterFunction = filterDurationLonger;
+			if (blc.type === 1003) filterFunction = filterDurationShorter;
+			if (blc.type === 1004) filterFunction = filterTitle;
+			if (blc.type === 1005) filterFunction = filterYearOlder;
+			if (blc.type === 1006) filterFunction = filterYearYounger;
+			karasToAdd = karasToAdd.filter(k => filterFunction(k, blc.value, blc.type, tags.content));
+		}
+		const downloads = karasToAdd.map(k => {
+			return {
+				size: k.mediasize,
+				mediafile: k.mediafile,
+				kid: k.kid,
+				name: k.karafile.replace('.kara.json',''),
+				repository: repo
+			};
+		});
+		logger.info(`[Update] Adding ${karasToAdd.length} new songs.`);
+		if (initialKarasToAddCount !== karasToAdd.length) logger.info(`[Update] ${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`);
+		if (karasToAdd.length > 0) await addDownloads(downloads);
+		return karasToAdd.length;
+	} catch(err) {
+		throw err;
+	} finally {
+		task.end();
+	}
 }
 
 function filterTitle(k: DBKara, value: string): boolean {
