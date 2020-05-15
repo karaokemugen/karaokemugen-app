@@ -4,7 +4,7 @@ import { addKaraToStore, editKaraInStore, sortKaraStore, getStoreChecksum, remov
 import { saveSetting } from '../lib/dao/database';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPathRepos, resolvedPathTemp } from '../lib/utils/config';
-import { asyncUnlink, asyncExists, asyncCopy, resolveFileInDirs, asyncRename } from '../lib/utils/files';
+import { asyncUnlink, asyncExists, asyncCopy, resolveFileInDirs, asyncMove } from '../lib/utils/files';
 import {generateKara} from '../lib/services/kara_creation';
 import logger from '../lib/utils/logger';
 
@@ -78,7 +78,7 @@ export async function editKara(kara: Kara) {
 				if (kara.noNewVideo) {
 					const newMediaFile = resolve(resolvedPathRepos('Medias', kara.repository)[0], newKara.data.mediafile);
 					logger.info(`[KaraGen] Renaming ${oldMediaFiles[0]} to ${newMediaFile}`);
-					await asyncRename(oldMediaFiles[0], newMediaFile);
+					await asyncMove(oldMediaFiles[0], newMediaFile);
 				} else {
 					logger.info(`[KaraGen] Removing ${oldMediaFiles[0]}`);
 					await asyncUnlink(oldMediaFiles[0]);
