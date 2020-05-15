@@ -1126,9 +1126,11 @@ export async function downloadRandomSongs() {
 		logger.warn('[Samples] Internet not available : no sample songs are going to be downloaded');
 		return;
 	}
+	const conf = getConfig();
+	const onlineRepos = conf.System.Repositories.filter(r => r.Online);
 	try {
 		logger.info('[Samples] Downloading samples...')
-		const karas = await getRemoteKaras(getConfig().Online.Host, {});
+		const karas = await getRemoteKaras(onlineRepos[0].Name, {});
 		// Downloading samples here, 3 japanese, 1 french, 1 english, 1 italian.
 		const samples = [
 			sampleSize(karas.content.filter(k => filterSamples(k, 'jpn')), 3),
