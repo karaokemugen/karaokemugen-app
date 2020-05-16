@@ -27,12 +27,14 @@ import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from '../services/session';
 import { updatePlaylistMedias, buildAllMediasList } from '../services/medias';
 import { initStep, errorStep } from '../electron/electronLogger';
-import { app } from 'electron';
+import { app, dialog } from 'electron';
 import { generateBlacklist } from '../dao/blacklist';
 import { duration } from '../lib/utils/date';
 import { DBStats } from '../types/database/database';
 import { baseChecksum } from '../dao/dataStore';
 import execa from 'execa';
+import { win } from '../electron/electron';
+import i18next from 'i18next';
 
 let shutdownInProgress = false;
 
@@ -155,7 +157,18 @@ export async function initEngine() {
 		// Post-init stuff
 		try {
 			if (conf.App.FirstRun && stats.karas === 0 && !state.isTest && !state.isDemo) {
-				await downloadRandomSongs();
+				if (app) {
+					const buttonIndex = await dialog.showMessageBox(win, {
+						type: 'info',
+						title: i18next.t('NO_SONGS'),
+						message: i18next.t('DOWNLOAD_RANDOM_SONGS_PROMPT'),
+						buttons: [i18next.t('YES'), i18next.t('NO')],
+						cancelId: 1
+					});
+					if (buttonIndex.response === 0) downloadRandomSongs();
+				} else {
+					downloadRandomSongs();
+				}
 			}
 			if (state.isTest) {
 				downloadTestSongs();

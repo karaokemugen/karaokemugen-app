@@ -87,6 +87,8 @@
 	"CURRENT_VERSION_OK": "Vous avez déjà la dernière version de Karaoke Mugen !",
 	"UPDATE_DOWNLOADED": "Mise à jour téléchargée",
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "L'installation de la mise à jour va démarrer...",
+	"NO_SONGS": "Bibliothèque de chansons vide",
+	"DOWNLOAD_RANDOM_SONGS_PROMPT": "Votre bibliothèque de chansons est vide. Voulez-vous que Karaoke Mugen télécharge aléatoirement pour vous 6 chansons depuis le dépôt par défaut ? Vous pouvez toujours vous rendre dans l'écran Téléchargement pour en récupérer d'autres plus tard.",
 	"ABOUT": {
 		"BUG_REPORT": "Rapporter un bug"
 	},

@@ -87,6 +87,8 @@
 	"CURRENT_VERSION_OK": "You already are using the latest version of Karaoke Mugen !",
 	"UPDATE_DOWNLOADED": "Updated downloaded",
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karoake Mugen will restart to install the update...",
+	"NO_SONGS": "Song library empty",
+	"DOWNLOAD_RANDOM_SONGS_PROMPT": "Your song library is empty. Do you want Karaoke Mugen to randomly download 6 songs from the default repository? You can always go to the Download page to get more later.",
 	"ABOUT": {
 		"BUG_REPORT": "Report a bug"
 	},
