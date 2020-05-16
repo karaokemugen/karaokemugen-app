@@ -326,7 +326,7 @@ export async function removeSerieInKaras(sid: string, karas: KaraList) {
 
 export function getSeriesSingers(kara: DBKara) {
 	let series = '';
-	if (kara.series[0]) {
+	if (kara.series?.length >= 0) {
 		const locale = getState().defaultLocale;
 		const lang = where('1', locale);
 		series = kara.series[0].i18n[lang['2B']] || kara.series[0].i18n.eng || kara.series[0].name;
