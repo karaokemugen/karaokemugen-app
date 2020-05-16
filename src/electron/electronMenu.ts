@@ -47,7 +47,7 @@ export async function initMenu() {
 		{
 			label: isMac ? 'Karaoke Mugen' : i18next.t('MENU_FILE'),
 			submenu: [
-				!isMac || !getState().forceDisableAppUpdate ? {
+				!isMac && !getState().forceDisableAppUpdate ? {
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),
 					click: async () => {
