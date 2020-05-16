@@ -15,10 +15,11 @@ export const updateUserLoginTime = (req: any, _res: any, next: any) => {
 	next();
 };
 
-export async function checkValidUser(token: { username: string; }, onlineToken: Token): Promise<User> {
+export async function checkValidUser(token: { username: string, role: string }, onlineToken: Token): Promise<User> {
 	// If user is remote, see if we have a remote token ready.
 	const user = await findUserByName(token.username);
 	if (user) {
+		if (token.role === 'admin' && user.type > 0) throw 'Role mismatch. User is not admin and tries to login as such!';
 		if (token.username.includes('@') && +getConfig().Online.Users) {
 			const remoteToken = getRemoteToken(token.username);
 			if (remoteToken?.token === onlineToken.token) {
@@ -45,13 +46,13 @@ export async function checkValidUser(token: { username: string; }, onlineToken: 
 				} catch(err) {
 					upsertRemoteToken(token.username, null);
 					logger.warn(`[RemoteUser] Failed to check remote auth (user logged in as local only) : ${err}`);
-					throw false;
+					throw err;
 				}
 			}
 		}
 		return user;
 	} else {
-		throw false;
+		throw 'User unknown';
 	}
 }
 
@@ -79,7 +80,7 @@ export function optionalAuth(req: any, res: any, next: any) {
 				logger.error(`[API] Error checking user : ${JSON.stringify(token)} : ${err}`);
 				res.status(403).send('User logged in unknown');
 			});
-	} catch(_err) {
+	} catch(err) {
 		// request has no authToken, continuing
 		next();
 	}
