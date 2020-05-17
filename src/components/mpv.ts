@@ -417,7 +417,17 @@ export async function play(mediadata: MediaData) {
 				options = fillVisualizationOptions(options, mediadata, (mediadata.avatar && conf.Karaoke.Display.Avatar));
 			}
 			else if (mediadata.avatar && conf.Karaoke.Display.Avatar) {
-				options.push(`lavfi-complex=nullsrc=size=1920x1080:duration=${mediadata.duration}[nl];[nl]setsar=1,format=rgba[emp];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[logo][emp]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[vpoc][base]blend=shortest=0:all_mode=overlay:all_opacity=0[ovrl];[ovrl][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 7},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
+				let subOptions = [
+					'lavfi-complex=',
+					`nullsrc=size=1x1:duration=${mediadata.duration}[emp];`,
+					'[vid1]scale=-2:1080[vidInp];',
+					'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];',
+					`movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];`,
+					'[logo][vpoc]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];',
+					'[base][emp]overlay[ovrl];',
+					`[ovrl][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 7},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
+				];
+				options.push(subOptions.join(''));
 			}
 
 			const id3tags = await getID3(mediaFile);
