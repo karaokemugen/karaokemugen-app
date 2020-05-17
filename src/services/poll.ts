@@ -52,7 +52,7 @@ async function displayPoll(winner?: number) {
 		let songorder: string = `${kara.songorder}`;
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
 
-		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes[0].name}${songorder} - ${kara.title}${boldWinnerClose}`;
+		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes.map(s => s.name).join(' ')}${songorder} - ${kara.title}${boldWinnerClose}`;
 	});
 	const voteMessage = winner
 		? i18n.t('VOTE_MESSAGE_SCREEN_WINNER')
@@ -118,7 +118,7 @@ export async function getPollResults(): Promise<PollResults> {
 	await copyKaraToPlaylist([winner.playlistcontent_id], playlist_id);
 	emitWS('playlistInfoUpdated', playlist_id);
 	emitWS('playlistContentsUpdated', playlist_id);
-	const kara = `${winner.serie || winner.singers[0].name} - ${winner.songtypes[0].name}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
+	const kara = `${winner.serie || winner.singers[0].name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
 	logger.info(`[Poll] Winner is "${kara}" with ${maxVotes} votes`);
 	return {
 		votes: maxVotes,

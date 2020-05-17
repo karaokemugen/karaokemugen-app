@@ -138,7 +138,7 @@ export async function exportFavorites(username: string) {
 				title: k.title,
 				songorder: k.songorder,
 				serie: k.serie,
-				songtype: k.songtypes[0].name,
+				songtype: k.songtypes.map(s => s.name).join(' '),
 				language: k.langs[0].name
 			};
 		})
