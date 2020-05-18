@@ -3,7 +3,7 @@ import { getNavigatorLanguageIn2B } from '../isoLanguages';
 const navigatorLanguage:string = getNavigatorLanguageIn2B();
 
 export function getTagInLocale(champ) {
-	return champ.i18n[navigatorLanguage] ? champ.i18n[navigatorLanguage] : champ.i18n['eng'];
+	return champ.i18n[navigatorLanguage] ? champ.i18n[navigatorLanguage] : (champ.i18n['eng'] ? champ.i18n['eng'] : champ.name);
 }
 
 export function getTagInLocaleList(i18n, list) {
@@ -12,7 +12,7 @@ export function getTagInLocaleList(i18n, list) {
 			if (i18n[champ.tid] !== undefined) {
 				return i18n[champ.tid][navigatorLanguage]
 					? i18n[champ.tid][navigatorLanguage]
-					: i18n[champ.tid]['eng'];
+					: (i18n[champ.tid]['eng'] ? i18n[champ.tid]['eng'] : champ.name);
 			} else {
 				return champ.name;
 			}
