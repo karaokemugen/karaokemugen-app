@@ -247,7 +247,8 @@
       "frontend/build/**",
       "systempanel/build/**",
       "initpage/**",
-      "build/icon.png"
+	  "build/icon.png",
+	  "build/electronAboutWindow.css"
     ],
     "extraFiles": [
       "app/bin/**"

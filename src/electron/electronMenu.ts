@@ -73,6 +73,7 @@ export async function initMenu() {
 							description: versionSHA,
 							license: 'MIT',
 							use_version_info: true,
+							css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
 						})
 
 					}
