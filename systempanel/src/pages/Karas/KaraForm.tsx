@@ -42,7 +42,7 @@ interface KaraFormState {
 	creators: Tag[];
 	songwriters: Tag[];
 	groups: Tag[];
-	songtypes: Tag;
+	songtypes: Tag[];
 	langs: Tag[];
 	families?: Tag[];
 	genres?: Tag[];
@@ -50,7 +50,6 @@ interface KaraFormState {
 	origins?: Tag[];
 	created_at?: Date;
 	modified_at?: Date;
-	songtypesValue: Tag[];
 	repositoriesValue: string[];
 	repoToCopySong: string;
 }
@@ -59,7 +58,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	constructor(props) {
 		super(props);
 		const kara = this.props.kara;
-		this.getSongtypes();
 		this.getRepositories();
 		this.state = {
 			serieSingersRequired: false,
@@ -88,7 +86,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			creators: this.getTagArray(kara.creators),
 			songwriters: this.getTagArray(kara.songwriters),
 			groups: this.getTagArray(kara.groups),
-			songtypes: kara.songtypes ? kara.songtypes[0] : [],
+			songtypes: this.getTagArray(kara.songtypes),
 			langs: this.getTagArray(kara.langs),
 			families: this.getTagArray(kara.families),
 			platforms: this.getTagArray(kara.platforms),
@@ -96,7 +94,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			origins: this.getTagArray(kara.origins),
 			created_at: kara.created_at ? kara.created_at : new Date(),
 			modified_at: kara.modified_at ? kara.modified_at : new Date(),
-			songtypesValue: null,
 			repositoriesValue: null,
 			repoToCopySong: null
 		};
@@ -129,15 +126,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		}
 	}
 
-	getSongtypes = async () => {
-		const res = await axios.get("/api/tags", {
-			params: {
-				type: 3
-			}
-		});
-		this.setState({ songtypesValue: this.getTagArray(res.data.content) });
-	};
-
 	getRepositories = async () => {
 		const res = await axios.get("/api/repos");
 		this.setState({ repositoriesValue: res.data.map(repo => repo.Name)});
@@ -165,7 +153,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			kara.platforms = this.getTagObject(kara.platforms);
 			kara.genres = this.getTagObject(kara.genres);
 			kara.origins = this.getTagObject(kara.origins);
-			kara.songtypes = this.getTagObject(this.state.songtypesValue).filter(value => values.songtypes === value.tid);
+			kara.songtypes = this.getTagObject(kara.songtypes);
 			if (!err) this.props.save(kara);
 		});
 	};
@@ -335,30 +323,26 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						/>
 					)}
 				</Form.Item>
-				{this.state.songtypesValue ?
-					<Form.Item
-						label={i18next.t('TAG_TYPES.SONGTYPES')}
-						labelCol={{ span: 3 }}
-						wrapperCol={{ span: 3, offset: 0 }}
-					>
-
-						{getFieldDecorator("songtypes", {
-							rules: [{
-								required: true,
-								message: i18next.t('KARA.TYPE_REQUIRED')
-							}],
-							initialValue: this.state.songtypes.tid
-						})(
-
-							<Select placeholder={i18next.t('TAG_TYPES.SONGTYPES')}>
-								{this.state.songtypesValue.map(type => {
-									return <Select.Option key={type[0]} value={type[0]}>{type[1]}</Select.Option>
-								})
-								}
-							</Select>
-						)}
-					</Form.Item> : null
-				}
+				<Form.Item
+					label={i18next.t('TAG_TYPES.SONGTYPES')}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 10, offset: 0 }}
+				>
+					{getFieldDecorator("songtypes", {
+						rules: [{
+							required: true,
+							message: i18next.t('KARA.TYPE_REQUIRED')
+						}],
+						initialValue: this.state.songtypes
+					})(
+						<EditableTagGroup
+							tagType={3}
+							checkboxes={true}
+							search={'tag'}
+							onChange={(tags) => this.props.form.setFieldsValue({ songtypes: tags })}
+						/>
+					)}
+				</Form.Item>
 
 				<Form.Item hasFeedback
 					label={(

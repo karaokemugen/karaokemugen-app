@@ -70,7 +70,7 @@ class Ranking extends Component<RankingProps, RankingState> {
 		title: i18next.t('KARA.TYPE'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
-		render: (songtypes, record) => getNameTagInLocaleList(songtypes)[0] + ' ' + (record.songorder || '')
+		render: (songtypes, record) => getNameTagInLocaleList(songtypes).join(', ') + ' ' + (record.songorder || '')
 	}, {
 		title: i18next.t('KARA.TITLE'),
 		dataIndex: 'title',
