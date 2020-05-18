@@ -16,6 +16,7 @@ import { readLog } from '../../lib/utils/logger';
 import { generateDB } from '../../dao/database';
 import { dumpPG, restorePG } from '../../utils/postgresql';
 import { browseFs } from '../../lib/utils/files';
+import { generateDatabase } from '../../lib/services/generation';
 
 export default function miscController(router: Router) {
 	/**
@@ -306,7 +307,30 @@ export default function miscController(router: Router) {
 				res.status(500).send(`Error while regenerating DB: ${err}`);
 			}
 		});
-
+	router.route('/db/validate')
+		/**
+		 * @api {post} /db/validate Trigger manual file validation process
+		 * @apiName PostGenerate
+		 * @apiVersion 3.3.0
+		 * @apiGroup Misc
+		 * @apiPermission admin
+		 * @apiHeader authorization Auth token received from logging in
+		 * @apiSuccessExample Success-Response:
+		 * HTTP/1.1 200 OK
+		 * @apiErrorExample Error-Response:
+		 * HTTP/1.1 500 Internal Server Error
+		 */
+			.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+				try {
+					await generateDatabase({
+						validateOnly: true,
+						progressBar: true
+					});
+					res.status(200).send('Files validated');
+				} catch(err) {
+					res.status(500).send(`Error while validating files: ${err}`);
+				}
+			});
 	router.route('/db')
 	/**
 	 * @api {get} /db Dump database to a file

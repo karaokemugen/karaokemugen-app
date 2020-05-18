@@ -34,6 +34,16 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 			});
 	};
 
+	dbvalidateFiles = () => {
+		axios.post('/api/db/validate')
+			.then(res => {
+				this.props.infoMessage(res.data);
+			})
+			.catch(err => {
+				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			});
+	};
+
 	dbupdate() {
 		axios.post('/api/downloads/updateMedias')
 			.then(res => {
@@ -86,7 +96,20 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.REGENERATE_DB_DESCRIPTION')}}>
 					</Col>
 				</Row>
-				<Row type="flex" justify="space-between" style={{ marginTop: '10px' }}>
+				<Row type="flex" justify="space-between" style={{ marginTop: '20px' }}>
+					<Col span={4}>
+						<Button
+							type='primary'
+							onClick={this.dbvalidateFiles}
+							disabled={this.props.loadingActive}
+						>
+							{i18next.t('DATABASE.VALIDATE_FILES')}
+						</Button>
+					</Col>
+					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.VALIDATE_FILES_DESCRIPTION')}}>
+					</Col>
+				</Row>
+				<Row type="flex" justify="space-between" style={{ marginTop: '20px' }}>
 					<Col span={4}>
 						<Button
 							type='primary'
