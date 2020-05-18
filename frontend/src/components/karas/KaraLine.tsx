@@ -208,13 +208,13 @@ class KaraLine extends Component<IProps,IState> {
 	  : data.singers.map(e => this.getTagInLocale(e)).join(', ');
   }
 
-  getSongtype(data:KaraElement) {
-	  return data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name + (data.songorder > 0 ? ' ' + data.songorder : '');
+  getSongtypes(data:KaraElement) {
+	  return data.songtypes.map(e => e.short ? + e.short : e.name).join(', ') + (data.songorder > 0 ? ' ' + data.songorder : '');
   }
 
   karaLangs = this.getLangs(this.props.kara);
   karaSerieOrSingers = this.getSerieOrSingers(this.props.kara);
-  karaSongType = this.getSongtype(this.props.kara);
+  karaSongTypes = this.getSongtypes(this.props.kara);
 
   render() {
   	var logInfos = store.getLogInfos();
@@ -280,7 +280,7 @@ class KaraLine extends Component<IProps,IState> {
   							<div className="disable-select contentDivMobileTop">
 							  	<div className="contentDivMobileFirstColumn">
   									<div>{this.karaLangs}</div>
-  									<div>{this.karaSongType}</div>
+  									<div>{this.karaSongTypes}</div>
   								</div>
   								<div>
   									<div className="contentDivMobileSerie">{this.karaSerieOrSingers}</div>

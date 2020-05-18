@@ -101,7 +101,7 @@ export function buildKaraTitle(data:DBPLC, onlyText?:boolean, i18nParam?:any) {
 	var serieText = (data.series && data.series.length > 0) ? data.series.map(e => getSerieLanguage(e, data.langs[0].name, i18nParam)).join(', ') 
 		: (data.singers ? data.singers.map(e => e.name).join(', ') : '');
 	var langsText = data.langs.map(e => e.name).join(', ').toUpperCase();
-	var songtypeText = data.songtypes[0].short ? + data.songtypes[0].short : data.songtypes[0].name;
+	var songtypeText = data.songtypes.map(e => e.short ? + e.short : e.name).join(', ');
 	var songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
 	
 	if (onlyText) {

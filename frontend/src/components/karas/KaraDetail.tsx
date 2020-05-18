@@ -273,7 +273,7 @@ class KaraDetail extends Component<IProps,IState> {
   			BLCTYPE_7: this.getTagNames(data),
   			BLCTYPE_1: data.series.map(e => this.getTagInLocale(e)).join(', '),
   			BLCTYPE_2: data.singers.map(e => this.getTagInLocale(e)).join(', '),
-  			DETAILS_TYPE: this.getTagInLocale(data.songtypes[0])
+  			DETAILS_TYPE: data.songtypes.map(e => this.getTagInLocale(e)).join(', ')
           + (data.songorder > 0 ? ' ' + data.songorder : ''),
   			DETAILS_YEAR: data.year,
   			BLCTYPE_8: data.songwriters.map(e => this.getTagInLocale(e)).join(', ')
