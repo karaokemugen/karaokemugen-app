@@ -27,12 +27,13 @@ import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
 import { Token } from '../lib/types/user';
 import { consolidateData, removeUnusedTagData } from '../lib/services/kara';
 import { getState } from '../utils/state';
-import {where} from 'langs';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { resolve } from 'path';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { getTag } from './tag';
 import { emitWS } from '../lib/utils/ws';
+import { convert1LangTo2B } from '../lib/utils/langs';
+
 
 /* Returns an array of unknown karaokes. If array is empty, all songs in "karas" are present in database */
 export async function isAllKaras(karas: string[]): Promise<string[]> {
@@ -325,13 +326,8 @@ export async function removeSerieInKaras(sid: string, karas: KaraList) {
 }
 
 export function getSeriesSingers(kara: DBKara) {
-	let series = '';
-	if (kara.series?.length >= 0) {
-		const locale = getState().defaultLocale;
-		const lang = where('1', locale);
-		series = kara.series[0].i18n[lang['2B']] || kara.series[0].i18n.eng || kara.series[0].name;
-	} else {
-		series = kara.singers.map(s => s.name).join(', ');
-	}
-	return series;
+	const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
+	return kara.series?.length >= 0
+		? kara.series[0].i18n[lang['2B']] || kara.series[0].i18n[lang] || kara.series[0].name
+		: kara.singers.map(s => s.name).join(', ');
 }
