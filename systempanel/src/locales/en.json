@@ -300,5 +300,7 @@
 	"UPDATING_REPO": "Updating songs from repository",
 	"DOWNLOADING_REPO": "Adding songs from repository",
 	"UPDATING_PLMEDIAS": "Updating playlist medias...",
-	"LOADING": "Loading..."
+	"LOADING": "Loading...",
+	"ADMIN_PLEASE": "Please use an operator account",
+	"LOG_ERROR": "Identifiants invalides"
 }

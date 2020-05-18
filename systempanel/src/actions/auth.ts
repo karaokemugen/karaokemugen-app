@@ -2,8 +2,9 @@ import axios from 'axios';
 import { Dispatch } from 'react';
 import { AuthentifactionApi } from '../api/authentication.api';
 import { AuthAction, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
+import i18next from 'i18next';
 
-const adminMessage = 'Please use an admin account';
+const adminMessage = i18next.t('ADMIN_PLEASE');
 
 export async function login(username: string, password: string, dispatch: Dispatch<LoginSuccess | LoginFailure>): Promise<void>  {
     try {
@@ -27,7 +28,7 @@ export async function login(username: string, password: string, dispatch: Dispat
       dispatch({
         type: AuthAction.LOGIN_FAILURE,
         payload: {
-          error: error === adminMessage ? error : 'Bad login info: ' + error
+          error: error === adminMessage ? error : i18next.t('LOG_ERROR')
         }
       });
 
