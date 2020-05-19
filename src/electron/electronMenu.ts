@@ -66,12 +66,12 @@ export async function initMenu() {
 							: '';
 						openAboutWindow({
 							icon_path: resolve(getState().resourcePath, 'build/icon.png'),
-							product_name: `Karaoke Mugen (${version.name})`,
+							product_name: `Karaoke Mugen "${version.name}"`,
 							bug_link_text: i18next.t('ABOUT.BUG_REPORT'),
 							bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
 							homepage: 'https://mugen.karaokes.moe',
 							description: versionSHA,
-							license: 'MIT',
+							copyright: 'by Karaoke Mugen Dev Team, under MIT license',
 							use_version_info: true,
 							css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
 						})

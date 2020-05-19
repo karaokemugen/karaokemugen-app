@@ -193,7 +193,18 @@ export async function main() {
 	// Set version number
 	let sha: string;
 	const SHAFile = resolve(resourcePath, 'assets/sha.txt');
-	if (await asyncExists(SHAFile)) sha = await asyncReadFile(SHAFile, 'utf-8');	setState({version: {sha: sha}});
+	if (await asyncExists(SHAFile)) {
+		sha = await asyncReadFile(SHAFile, 'utf-8');
+		setState({version: {sha: sha.substr(0, 8)}});
+	} else {
+		const branch = getState().version.number.split('-')[1];
+		try {
+			sha = await asyncReadFile(resolve(originalAppPath, '.git/refs/heads/', branch), 'utf-8');
+			setState({version: {sha: sha.substr(0, 8)}});
+		} catch(err) {
+			// Ignore
+		}
+	}
 	const state = getState();
 	console.log(chalk.white(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
