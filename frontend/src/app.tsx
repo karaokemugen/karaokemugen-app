@@ -17,6 +17,7 @@ import { DBSeries } from '../../src/lib/types/database/series';
 import { DBYear } from '../../src/lib/types/database/kara';
 import { Tag }  from '../../src/lib/types/tag'; 
 import { Tag as FrontendTag }  from './types/tag';
+import SetupPage from './components/SetupPage';
 
 interface IState {
 	navigatorLanguage: string;
@@ -26,6 +27,9 @@ interface IState {
 	tags?: Array<KaraTag>;
 	mediaFile?: string;
 	electron: boolean;
+	displaySetupPage: boolean;
+	os?: string;
+	dataPath?: string
   }
 
 class App extends Component<{}, IState> {
@@ -35,7 +39,8 @@ class App extends Component<{}, IState> {
 			navigatorLanguage: this.getNavigatorLanguage(),
 			admpwd: window.location.search.indexOf('admpwd') ? window.location.search.split('=')[1] : undefined,
 			shutdownPopup: false,
-			electron: false
+			electron: false,
+			displaySetupPage: false
 		};
 		axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
 		axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
@@ -80,6 +85,10 @@ class App extends Component<{}, IState> {
 		if (axios.defaults.headers.common['authorization']) {
 			this.checkAuth();
 		}
+		if (this.state.admpwd) {
+			var result = await axios.post('/api/auth/login', { username: 'admin', password: this.state.admpwd });
+			store.setLogInfos(result.data);
+		}
 		await this.getSettings();
 		getSocket().on('settingsUpdated', this.getSettings);
 		getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
@@ -89,7 +98,7 @@ class App extends Component<{}, IState> {
 			}
 		});
 		this.addTags();
-		if (this.state.admpwd && this.state.config && this.state.config.App.FirstRun && window.location.pathname === '/admin') {
+		if (this.state.config && this.state.config.App.FirstRun && window.location.pathname === '/admin') {
 			startIntro('admin');
 		}
 		store.addChangeListener('loginUpdated', this.addTags);
@@ -111,7 +120,9 @@ class App extends Component<{}, IState> {
 		store.setConfig(res.data.config);
 		store.setVersion(res.data.version);
 		store.setModePlaylistID(res.data.state.modePlaylistID);
-    	this.setState({ config: res.data.config, electron: res.data.state.electron });
+		this.setState({ config: res.data.config, electron: res.data.state.electron, os: res.data.state.os,
+			dataPath: res.data.state.dataPath,
+			displaySetupPage:  res.data.config.App.FirstRun && store.getLogInfos()?.username === 'admin' });
     };
 
     getNavigatorLanguage() {
@@ -160,9 +171,14 @@ class App extends Component<{}, IState> {
     			this.state.config ?
     				<div className={is_touch_device() ? 'touch' : ''}>
     					<Switch>
-    						<Route path="/welcome" render={(props) => <WelcomePage {...props}
-    							navigatorLanguage={this.state.navigatorLanguage}
-    							admpwd={this.state.admpwd} config={this.state.config as Config} />} />
+							<Route path="/welcome" render={(props) => 
+							(this.state.displaySetupPage ? 
+								<SetupPage {...props} instance={(this.state.config as Config).Online.Host as string} os={this.state.os as string}
+									electron={this.state.electron} repository={(this.state.config as Config).System.Repositories[0]}
+									dataPath={this.state.dataPath as string} endSetup={() => this.setState({displaySetupPage: false})}/> :
+								<WelcomePage {...props}
+									navigatorLanguage={this.state.navigatorLanguage}
+									config={this.state.config as Config} />)} />
     						<Route path="/admin" render={(props) => <AdminPage {...props}
     							navigatorLanguage={this.state.navigatorLanguage}
     							powerOff={this.state.electron ? undefined : this.powerOff} tags={this.state.tags as FrontendTag[]}
