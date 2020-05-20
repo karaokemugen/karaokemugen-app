@@ -2,7 +2,7 @@
 import {requireAuth, requireValidUser, requireAdmin, updateUserLoginTime} from '../middlewares/auth';
 import {requireNotDemo} from '../middlewares/demo';
 
-import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateAllMedias, getAllRemoteKaras, getAllRemoteTags, updateAllBases} from '../../services/download';
+import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateAllMedias, getAllRemoteKaras, getAllRemoteTags, updateAllBases, downloadRandomSongs} from '../../services/download';
 import { Router } from 'express';
 import { getLang } from '../middlewares/lang';
 import { errMessage } from '../common';
@@ -175,6 +175,28 @@ export default function downloadController(router: Router) {
 				res.status(500).send(`Error pausing downloads: ${err}`);
 			}
 		});
+	router.route('/downloads/random')
+		/**
+	 * @api {post} /downloads/random Download random songs
+	 * @apiName PostDownloadsRandom
+	 * @apiVersion 3.2.2
+	 * @apiGroup Downloader
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiDescription This is used for first runs of the app to seed it with some songs.
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+			.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+				try {
+					await downloadRandomSongs();
+					res.status(200).send('Downloads started');
+				} catch(err) {
+					res.status(500).send(`Error adding downloads: ${err}`);
+				}
+			});
 	router.route('/downloads/start')
 	/**
  * @api {put} /downloads/start Start queue

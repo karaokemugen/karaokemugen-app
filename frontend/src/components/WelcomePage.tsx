@@ -22,7 +22,6 @@ require ('../styles/welcome/WelcomePage.scss');
 
 interface IProps {
 	navigatorLanguage: string;
-	admpwd: string | undefined;
 	config: Config;
 }
 
@@ -197,7 +196,6 @@ class WelcomePage extends Component<IProps, IState> {
   	if (!store.getLogInfos() || !(store.getLogInfos() as Token).token) {
   		ReactDOM.render(<LoginModal
   			scope='admin'
-  			admpwd={this.props.admpwd}
   		/>, document.getElementById('modal'));
   	} else {
   		ReactDOM.render(<ProfilModal
@@ -270,7 +268,7 @@ class WelcomePage extends Component<IProps, IState> {
 
             <section className="tiles-panel">
               {
-                this.props.admpwd && this.props.config.App.FirstRun
+                this.props.config.App.FirstRun
                 ? <article className="tile-tutorial">
                     <button type="button" onClick={() => window.open('/admin' + window.location.search)}>
                       <i className="fas fa-hand-point-right" /><span>{i18next.t('WLCM_GETSTARTED')}</span>
