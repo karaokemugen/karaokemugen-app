@@ -83,7 +83,7 @@ class App extends Component<{}, IState> {
 
 	async componentDidMount() {
 		if (axios.defaults.headers.common['authorization']) {
-			this.checkAuth();
+			await this.checkAuth();
 		}
 		if (this.state.admpwd) {
 			var result = await axios.post('/api/auth/login', { username: 'admin', password: this.state.admpwd });
