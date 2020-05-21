@@ -159,7 +159,7 @@ class SetupPage extends Component<IProps, IState> {
 	downloadRandomSongs = async () => {
 		if (this.state.downloadRandomSongs) {
 			try {
-				await axios.post(`/api/downloads/random`);
+				axios.post(`/api/downloads/random`);
 				this.props.endSetup();
 			} catch (err) {
 				let error = err.response.data.message ? err.response.data.message : err;
