@@ -178,7 +178,6 @@ export async function preInit() {
 	logger.debug(`[Launcher] ResourcePath : ${resourcePath}`);
 	logger.debug(`[Launcher] Electron ResourcePath : ${process.resourcesPath}`);
 	logger.debug(`[Launcher] OriginalAppPath : ${originalAppPath}`);
-	logger.debug(`[Launcher] env : ${JSON.stringify(process.env)}`);
 	logger.debug(`[Launcher] INIT_CWD : ${process.env.INIT_CWD}`);
 	logger.debug(`[Launcher] PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`);
 	logger.debug(`[Launcher] app.getAppPath : ${app ? app.getAppPath() : undefined}`);
