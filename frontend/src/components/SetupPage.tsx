@@ -94,6 +94,7 @@ class SetupPage extends Component<IProps, IState> {
 			result = await axios.post("/api/auth/login", {
 				username: username,
 				password: password,
+				securityCode: this.state.securityCode,
 			});
 			var response = result.data;
 			store.setLogInfos(response);
