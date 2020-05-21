@@ -500,7 +500,7 @@
 		"SECURITY_CODE_USE": "Ce code permet d'être certain que c'est bien vous qui effectuez ces actions. Le code change à chaque utilisation.",
 		"CONNECTED_MESSAGE": "Félicitations, vous voilà connecté sur Karaoke Mugen, {{user}} !",
 		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen propose un dépôt de karaokés par défaut, ",
-		"DEFAULT_REPOSITORY_DESC_2": "où vous pourrez télécharger des chansons.",
+		"DEFAULT_REPOSITORY_DESC_2": ", où vous pourrez télécharger des chansons.",
 		"DEFAULT_REPOSITORY_QUESTION": "Où voulez-vous stocker ces téléchargements ? Par défaut ils seront dans :",
 		"REPOSITORY_NEED_SPACE": "Pour télécharger tout le contenu d'un dépôt, vous pourrez avoir besoin de beaucoup de place (jusqu'à plusieurs centaines de giga-octets). Vous pourrez changer ce dossier plus tard.",
 		"DOWNLOAD_RANDOM_SONGS": "Voulez-vous que Karaoke Mugen télécharge 6 chansons aléatoirement depuis le dépôt par défaut ({{instance}}) ? Ceci vous permettra de tester l'application avant de télécharger d'autres chansons.",
