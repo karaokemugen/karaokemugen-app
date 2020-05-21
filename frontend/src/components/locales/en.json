@@ -484,6 +484,7 @@
 		"DEFAULT_REPOSITORY_QUESTION": "Where do you want to store these downloads? By default they'll be in:",
 		"REPOSITORY_NEED_SPACE": "To download all the content from that repository, you'll need a lot of disk space (up to several hundred gigabytes). You can change this folder at any time.",
 		"DOWNLOAD_RANDOM_SONGS": "Do you want Karaoke Mugen to download 6 songs at random from the default repository ({{instance}}) ? This will allow you to test the app with a few songs before downloading new ones..",
+		"MODIFY_DIRECTORY": "Modify the folder",
 		"CHOOSE_DIRECTORY": "Select a folder",
 		"ADD_DIRECTORY": "Add a folder",
 		"SAVE_PARAMETER": "Save this setting"

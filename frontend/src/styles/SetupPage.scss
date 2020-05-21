@@ -356,6 +356,18 @@
 				.input-control {
 					width: 100%;
 				}
+
+				button {
+					border: 2px solid rgba(#fff,0.5);
+					border-radius: .5em;
+					margin: .5em 0;
+					padding: .5em 1em;
+					text-transform: uppercase;
+					background: none;
+					&.in {
+						background:rgba(#fff,0.2);
+					}
+				}
 			}
 			.actions {
 				padding: 0;

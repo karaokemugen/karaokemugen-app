@@ -504,6 +504,7 @@
 		"DEFAULT_REPOSITORY_QUESTION": "Où voulez-vous stocker ces téléchargements ? Par défaut ils seront dans :",
 		"REPOSITORY_NEED_SPACE": "Pour télécharger tout le contenu d'un dépôt, vous pourrez avoir besoin de beaucoup de place (jusqu'à plusieurs centaines de giga-octets). Vous pourrez changer ce dossier plus tard.",
 		"DOWNLOAD_RANDOM_SONGS": "Voulez-vous que Karaoke Mugen télécharge 6 chansons aléatoirement depuis le dépôt par défaut ({{instance}}) ? Ceci vous permettra de tester l'application avant de télécharger d'autres chansons.",
+		"MODIFY_DIRECTORY": "Modifier le dossier",
 		"CHOOSE_DIRECTORY": "Choisissez un dossier",
 		"ADD_DIRECTORY": "Ajouter un dossier",
 		"SAVE_PARAMETER": "Enregistrer ce paramètre"

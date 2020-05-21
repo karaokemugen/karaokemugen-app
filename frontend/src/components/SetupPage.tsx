@@ -36,11 +36,15 @@ interface IState {
 class SetupPage extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
+		var repository = this.props.repository.Path.Karas[0].slice(0, -9);
+		const path = `${this.getPathForFileSystem(repository)}${
+			this.props.os === "win32" ? repository.replace(/\//g, "\\") : repository
+			}`;
 		this.state = {
 			accountType: null,
 			onlineAction: null,
 			instance: this.props.instance,
-			repositoryFolder: this.props.repository.Path.Karas[0].slice(0, -9),
+			repositoryFolder: path,
 			activeView: "user",
 			activeHelp: null,
 			downloadRandomSongs: true,
@@ -116,28 +120,22 @@ class SetupPage extends Component<IProps, IState> {
 	}
 
 	onClickRepository = () => {
-		if (this.props.electron) {
-			const { ipcRenderer: ipc } = window.require("electron");
-			var repository = this.props.repository.Path.Karas[0].slice(0, -9);
-			const path = `${this.getPathForFileSystem(repository)}${
-				this.props.os === "win32" ? repository.replace(/\//g, "\\") : repository
-				}`;
-			const options = {
-				defaultPath: path,
-				title: i18next.t("SETUP_PAGE.CHOOSE_DIRECTORY"),
-				buttonLabel: i18next.t("SETUP_PAGE.ADD_DIRECTORY"),
-				properties: ["createDirectory", "openDirectory"],
-			};
-			ipc.send("get-file-paths", options);
-			ipc.once(
-				"get-file-paths-response",
-				async (event: any, filepaths: Array<string>) => {
-					if (filepaths.length > 0) {
-						await this.setState({ repositoryFolder: filepaths[0] });
-					}
+		const { ipcRenderer: ipc } = window.require("electron");
+		const options = {
+			defaultPath: this.state.repositoryFolder,
+			title: i18next.t("SETUP_PAGE.CHOOSE_DIRECTORY"),
+			buttonLabel: i18next.t("SETUP_PAGE.ADD_DIRECTORY"),
+			properties: ["createDirectory", "openDirectory"],
+		};
+		ipc.send("get-file-paths", options);
+		ipc.once(
+			"get-file-paths-response",
+			async (event: any, filepaths: Array<string>) => {
+				if (filepaths.length > 0) {
+					await this.setState({ repositoryFolder: filepaths[0] });
 				}
-			);
-		}
+			}
+		);
 	}
 
 	consolidate = async () => {
@@ -494,11 +492,14 @@ class SetupPage extends Component<IProps, IState> {
 										<input
 											className="input-field"
 											value={this.state.repositoryFolder}
-											onClick={this.onClickRepository}
+											
 											onChange={(event) =>
 												this.setState({ repositoryFolder: event.target.value })
 											}
 										/>
+										{this.props.electron ?
+											<button type="button" onClick={this.onClickRepository}>{i18next.t('SETUP_PAGE.MODIFY_DIRECTORY')}</button> : null
+										}
 									</div>
 								</div>
 								<p>{i18next.t("SETUP_PAGE.REPOSITORY_NEED_SPACE")}</p>
