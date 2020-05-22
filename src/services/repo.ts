@@ -229,4 +229,3 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 		throw err;
 	}
 }
-}
