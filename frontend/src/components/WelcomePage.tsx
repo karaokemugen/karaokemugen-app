@@ -21,11 +21,6 @@ import { Repository } from '../../../src/lib/types/repo';
 require ('../styles/welcome/WelcomePage.scss');
 
 interface IProps {
-<<<<<<< HEAD
-	admpwd: string | undefined;
-=======
-	navigatorLanguage: string;
->>>>>>> master
 	config: Config;
 }
 

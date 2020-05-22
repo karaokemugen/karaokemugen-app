@@ -69,16 +69,12 @@ class App extends Component<{}, IState> {
 
 	async componentDidMount() {
 		if (axios.defaults.headers.common['authorization']) {
-<<<<<<< HEAD
-			this.checkAuth();
-			await store.setUser();
-=======
 			await this.checkAuth();
+			await store.setUser();
 		}
 		if (this.state.admpwd) {
 			var result = await axios.post('/api/auth/login', { username: 'admin', password: this.state.admpwd });
 			store.setLogInfos(result.data);
->>>>>>> master
 		}
 		await this.getSettings();
 		getSocket().on('settingsUpdated', this.getSettings);
@@ -111,14 +107,10 @@ class App extends Component<{}, IState> {
 		store.setConfig(res.data.config);
 		store.setVersion(res.data.version);
 		store.setModePlaylistID(res.data.state.modePlaylistID);
-<<<<<<< HEAD
 		store.setDefaultLocaleApp(res.data.state.defaultLocale);
-    	this.setState({ config: res.data.config, electron: res.data.state.electron });
-=======
 		this.setState({ config: res.data.config, electron: res.data.state.electron, os: res.data.state.os,
 			dataPath: res.data.state.dataPath,
 			displaySetupPage:  res.data.config.App.FirstRun && store.getLogInfos()?.username === 'admin' });
->>>>>>> master
     };
 
     powerOff = () => {
@@ -154,19 +146,14 @@ class App extends Component<{}, IState> {
     			this.state.config ?
     				<div className={is_touch_device() ? 'touch' : ''}>
     					<Switch>
-<<<<<<< HEAD
-    						<Route path="/welcome" render={(props) => <WelcomePage {...props}
-    							admpwd={this.state.admpwd} config={this.state.config as Config} />} />
-=======
 							<Route path="/welcome" render={(props) => 
-							(this.state.displaySetupPage ? 
+							this.state.displaySetupPage ? 
 								<SetupPage {...props} instance={(this.state.config as Config).Online.Host as string} os={this.state.os as string}
 									electron={this.state.electron} repository={(this.state.config as Config).System.Repositories[0]}
 									dataPath={this.state.dataPath as string} endSetup={() => this.setState({displaySetupPage: false})}/> :
 								<WelcomePage {...props}
-									navigatorLanguage={this.state.navigatorLanguage}
-									config={this.state.config as Config} />)} />
->>>>>>> master
+									config={this.state.config as Config} />
+							} />
     						<Route path="/admin" render={(props) => <AdminPage {...props}
     							powerOff={this.state.electron ? undefined : this.powerOff} tags={this.state.tags as FrontendTag[]}
     							showVideo={this.showVideo} config={this.state.config as Config} 
