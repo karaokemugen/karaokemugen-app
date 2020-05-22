@@ -8,14 +8,13 @@ import {resolve, join} from 'path';
 import logger from 'winston';
 import { v4 as uuidV4 } from 'uuid';
 import {imageFileTypes} from '../lib/utils/constants';
-import {defaultGuestNames, headers} from '../utils/constants';
+import {defaultGuestNames} from '../utils/constants';
 import randomstring from 'randomstring';
 import {on} from '../lib/utils/pubsub';
 import {getSongCountForUser, getSongTimeSpentForUser} from '../dao/kara';
 import {emitWS} from '../lib/utils/ws';
 import {profile} from '../lib/utils/logger';
 import {getState, setState} from '../utils/state';
-import got from 'got';
 import { getRemoteToken, upsertRemoteToken } from '../dao/user';
 import formData from 'form-data';
 import { createReadStream } from 'fs';
@@ -44,6 +43,7 @@ import {updateExpiredUsers as DBUpdateExpiredUsers,
 import {has as hasLang} from 'langs';
 import slugify from 'slugify';
 import { createCircleAvatar } from '../utils/imageProcessing';
+import HTTP from '../lib/utils/http';
 
 let userLoginTimes = new Map();
 let usersFetched = new Set();
@@ -61,10 +61,9 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	if (await findUserByName(username)) throw 'User already exists locally, delete it first.';
 	// Verify that password matches with online before proceeding
 	const onlineToken = await remoteLogin(token.username, password);
-	await got(`https://${instance}/api/users`, {
+	await HTTP(`https://${instance}/api/users`, {
 		method: 'DELETE',
 		headers: {
-			...headers,
 			authorization: onlineToken.token
 		}
 	});
@@ -96,7 +95,7 @@ async function updateExpiredUsers() {
 /** Get remote avatar from KM Server */
 export async function fetchRemoteAvatar(instance: string, avatarFile: string): Promise<string> {
 	// If this stops working, use got() and a stream: true property again
-	const res = await got.stream(`https://${instance}/avatars/${avatarFile}`);
+	const res = HTTP.stream(`https://${instance}/avatars/${avatarFile}`);
 	const avatarPath = resolve(resolvedPathTemp(), avatarFile);
 	try {
 		await writeStreamToFile(res, avatarPath);
@@ -245,11 +244,9 @@ async function editRemoteUser(user: User) {
 	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
 	if (user.fallback_series_lang) form.append('fallback_series_lang', user.fallback_series_lang);
 	try {
-		await got(`https://${instance}/api/users/${login}`, {
-			method: 'PUT',
+		await HTTP.put(`https://${instance}/api/users/${login}`, {
 			body: form,
 			headers: {
-				...headers,
 				authorization: remoteToken.token || null
 			}
 		});
@@ -418,9 +415,8 @@ export async function updateUserFingerprint(username: string, fingerprint: strin
 /** Check if the online token we have is still valid on KM Server */
 export async function remoteCheckAuth(instance: string, token: string) {
 	try {
-		const res = await got.get(`https://${instance}/api/auth/check`, {
+		const res = await HTTP.get(`https://${instance}/api/auth/check`, {
 			headers: {
-				...headers,
 				authorization: token
 			}
 		});
@@ -435,8 +431,7 @@ export async function remoteCheckAuth(instance: string, token: string) {
 export async function remoteLogin(username: string, password: string): Promise<Token> {
 	const [login, instance] = username.split('@');
 	try {
-		const res = await got.post(`https://${instance}/api/auth/login`, {
-			headers: headers,
+		const res = await HTTP.post(`https://${instance}/api/auth/login`, {
 			form: {
 				username: login,
 				password: password
@@ -459,7 +454,7 @@ export async function remoteLogin(username: string, password: string): Promise<T
 export async function resetRemotePassword(user: string) {
 	const [username, instance] = user.split('@');
 	try {
-		await got.post(`https://${instance}/api/users/${username}/resetpassword`, {headers: headers});
+		await HTTP.post(`https://${instance}/api/users/${username}/resetpassword`);
 	} catch (err) {
 
 		logger.error(`[RemoteUser] Could not trigger reset password for ${user} : ${err}`);
@@ -470,10 +465,9 @@ export async function resetRemotePassword(user: string) {
 /** Get all users from KM Server */
 async function getAllRemoteUsers(instance: string): Promise<User[]> {
 	try {
-		const users = await got(`https://${instance}/api/users`,
+		const users = await HTTP(`https://${instance}/api/users`,
 			{
-				responseType: 'json',
-				headers: headers
+				responseType: 'json'
 			});
 		return users.body as User[];
 	} catch(err) {
@@ -494,12 +488,11 @@ async function createRemoteUser(user: User) {
 		message: `User already exists on ${instance} or incorrect password`
 	};
 	try {
-		await got.post(`https://${instance}/api/users`, {
+		await HTTP.post(`https://${instance}/api/users`, {
 			form: {
 				login: login,
 				password: user.password
-			},
-			headers: headers
+			}
 		});
 	} catch(err) {
 		logger.debug(`[RemoteUser] Got error when create remote user ${login} : ${err}`);
@@ -514,9 +507,8 @@ async function createRemoteUser(user: User) {
 export async function getRemoteUser(username: string, token: string): Promise<User> {
 	const [login, instance] = username.split('@');
 	try {
-		const res = await got(`https://${instance}/api/users/${login}`, {
+		const res = await HTTP(`https://${instance}/api/users/${login}`, {
 			headers: {
-				...headers,
 				authorization: token
 			},
 			responseType: 'json'

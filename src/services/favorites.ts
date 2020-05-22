@@ -9,9 +9,8 @@ import {KaraList} from '../lib/types/kara';
 import {FavParams, FavExport, AutoMixParams, AutoMixPlaylistInfo, FavExportContent} from '../types/favorites';
 import { uuidRegexp } from '../lib/utils/constants';
 import { getRemoteToken } from '../dao/user';
-import got from 'got';
 import {getConfig} from '../lib/utils/config';
-import { headers } from '../utils/constants';
+import HTTP from '../lib/utils/http';
 
 export async function getFavorites(params: FavParams): Promise<KaraList> {
 	try {
@@ -28,9 +27,8 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 
 export async function fetchAndAddFavorites(instance: string, token: string, username: string) {
 	try {
-		const res = await got(`https://${instance}/api/favorites`, {
+		const res = await HTTP(`https://${instance}/api/favorites`, {
 			headers: {
-				...headers,
 				authorization: token
 			},
 			responseType: 'json'
@@ -106,10 +104,9 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 	const instance = username.split('@')[1];
 	const remoteToken = getRemoteToken(username);
 	try {
-		return await got(`https://${instance}/api/favorites/${kid}`, {
+		return await HTTP(`https://${instance}/api/favorites/${kid}`, {
 			method: action,
 			headers: {
-				...headers,
 				authorization: remoteToken.token || null
 			},
 		});

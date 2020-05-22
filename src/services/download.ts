@@ -12,7 +12,7 @@ import {integrateKaraFile, getAllKaras, getKaras} from './kara';
 import { compareKarasChecksum } from '../dao/database';
 import { vacuum } from '../lib/dao/database';
 import { emitWS } from '../lib/utils/ws';
-import got from 'got';
+import HTTP from '../lib/utils/http';
 import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC, File } from '../types/download';
 import { DownloadItem } from '../types/downloader';
 import { KaraList, KaraParams, CompareParam } from '../lib/types/kara';
@@ -29,7 +29,6 @@ import sampleSize from 'lodash.samplesize';
 import Task from '../lib/utils/taskManager';
 import { extractAssInfos } from '../lib/dao/karafile';
 import { SeriesList } from '../lib/types/series';
-import { headers } from '../utils/constants';
 import { emit } from '../lib/utils/pubsub';
 
 let downloaderReady = false;
@@ -147,9 +146,7 @@ async function processDownload(download: KaraDownload) {
 		const localLyricsPath = resolve(resolvedPathRepos('Lyrics', download.repository)[0]);
 
 		const conf = getConfig();
-		const res = await got.get(`https://${conf.Online.Host}/api/karas/${download.kid}/raw`, {
-			headers: headers
-		});
+		const res = await HTTP.get(`https://${conf.Online.Host}/api/karas/${download.kid}/raw`);
 		const bundle: DownloadBundle = JSON.parse(res.body);
 
 		const tempDir = resolvedPathTemp();
@@ -430,8 +427,7 @@ export async function getRemoteKaras(repo: string, params: KaraParams, compare?:
 		karas.content.forEach(k => localKIDs[k.kid] = k.modified_at);
 	}
 	try {
-		const res = await got.post(`https://${repo}/api/karas/search`, {
-			headers: headers,
+		const res = await HTTP.post(`https://${repo}/api/karas/search`, {
 			json: {
 				filter: params.filter,
 				size: params.size,
@@ -485,16 +481,12 @@ export async function getAllRemoteTags(repository: string, params: TagParams): P
 }
 
 export async function getRemoteTags(repo: string, params: TagParams = {}): Promise<TagList> {
-	const res = await got(`https://${repo}/api/karas/tags${params.type ? '/' + params.type : '' }`, {
-		headers: headers
-	});
+	const res = await HTTP(`https://${repo}/api/karas/tags${params.type ? '/' + params.type : '' }`);
 	return JSON.parse(res.body);
 }
 
 export async function getRemoteSeries(repo: string): Promise<SeriesList> {
-	const res = await got(`https://${repo}/api/karas/series`, {
-		headers: headers
-	});
+	const res = await HTTP(`https://${repo}/api/karas/series`);
 	return JSON.parse(res.body);
 }
 

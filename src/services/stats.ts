@@ -3,7 +3,6 @@ import { getState } from '../utils/state';
 import si from 'systeminformation';
 import { exportPlayed, exportRequests, exportFavorites } from '../dao/stats';
 import internet from 'internet-available';
-import got from 'got';
 import logger from '../lib/utils/logger';
 import prettyBytes from 'pretty-bytes';
 import { asyncWriteFile } from '../lib/utils/files';
@@ -11,7 +10,7 @@ import {resolve} from 'path';
 import cloneDeep from 'lodash.clonedeep';
 import { getSessions } from './session';
 import { getInstanceID } from '../lib/dao/database';
-import { headers } from '../utils/constants';
+import HTTP from '../lib/utils/http';
 
 let intervalID: any;
 
@@ -41,9 +40,8 @@ export async function sendPayload() {
 		const conf = getConfig();
 		asyncWriteFile(resolve(getState().dataPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
 		try {
-			await got.post(`https://${conf.Online.Host}/api/stats`,{
-				json: payload,
-				headers: headers
+			await HTTP.post(`https://${conf.Online.Host}/api/stats`, {
+				json: payload
 			});
 		} catch(err) {
 			throw err;

@@ -1,10 +1,9 @@
 import {getConfig} from '../lib/utils/config';
 import {configureHost} from '../utils/config';
-import got from 'got';
 import logger from '../lib/utils/logger';
 import { getState } from '../utils/state';
 import { getInstanceID } from '../lib/dao/database';
-import { headers } from '../utils/constants';
+import HTTP from '../lib/utils/http';
 
 /** Send IP to KM Server's URL shortener */
 export async function publishURL() {
@@ -12,8 +11,7 @@ export async function publishURL() {
 	const conf = getConfig();
 	const localHost = conf.Karaoke.Display.ConnectionInfo.Host || getState().osHost;
 	try {
-		await got.post(`https://${conf.Online.Host}/api/shortener`, {
-			headers: headers,
+		await HTTP.post(`https://${conf.Online.Host}/api/shortener`, {
 			form: {
 				localIP: localHost,
 				localPort: conf.Frontend.Port,

@@ -1,7 +1,6 @@
 // Node modules
 import _cliProgress from 'cli-progress';
 import {basename} from 'path';
-import got from 'got';
 import prettyBytes from 'pretty-bytes';
 import {createWriteStream} from 'fs';
 import Queue from 'better-queue';
@@ -12,7 +11,7 @@ import logger from '../lib/utils/logger';
 // Types
 import { DownloadItem, DownloadOpts } from '../types/downloader';
 import Task from '../lib/utils/taskManager';
-import { headers } from './constants';
+import HTTP from '../lib/utils/http';
 
 // for downloads we need keepalive or else connections can timeout and get stuck. Such is life.
 const HttpAgent = require('agentkeepalive');
@@ -72,12 +71,11 @@ export default class Downloader {
 			agent: {
 				http: new HttpAgent(),
 				https: new HttpsAgent()
-			},
-			headers: headers
+			}
 		};
 		let size: string;
 		try {
-			const response = await got.head(dl.url, options)
+			const response = await HTTP.head(dl.url, options)
 			size = response.headers['content-length'];
 		} catch(err) {
 			logger.error(`[Download] Error during download of ${basename(dl.filename)} (HEAD) : ${err}`);
@@ -110,7 +108,7 @@ export default class Downloader {
 	_fetchFile = async (dl: DownloadItem, options: any) => {
 		return new Promise((resolve, reject) => {
 			let size: number = 0;
-			got.stream.get(dl.url, options)
+			HTTP.stream.get(dl.url, options)
 				.on('response', (res: Response) => {
 					size = +res.headers['content-length'];
 					if (this.opts.bar) {
