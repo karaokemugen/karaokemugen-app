@@ -174,30 +174,35 @@ export async function migrateOldFoldersToRepo() {
 }
 
 export async function consolidateRepo(repoName: string, newPath: string) {
-	const repo = getRepo(repoName);
-	const state = getState();
-	if (!repo) throw 'Unknown repository';
-	if (!await asyncExists(newPath)) throw 'Directory not found';
-	logger.info(`[Repo] Moving ${repoName} repository to ${newPath}...`);
-	for (const dir of repo.Path.Karas) {
-		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'karaokes/'));
+	try {
+		const repo = getRepo(repoName);
+		const state = getState();
+		if (!repo) throw 'Unknown repository';
+		if (!await asyncExists(newPath)) throw 'Directory not found';
+		logger.info(`[Repo] Moving ${repoName} repository to ${newPath}...`);
+		for (const dir of repo.Path.Karas) {
+			await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'karaokes/'));
+		}
+		for (const dir of repo.Path.Lyrics) {
+			await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'lyrics/'));
+		}
+		for (const dir of repo.Path.Series) {
+			await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'series/'));
+		}
+		for (const dir of repo.Path.Tags) {
+			await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'tags/'));
+		}
+		for (const dir of repo.Path.Medias) {
+			await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'medias/'));
+		}
+		repo.Path.Karas = [relativePath(state.dataPath, resolve(newPath, 'karaokes/'))];
+		repo.Path.Lyrics = [relativePath(state.dataPath, resolve(newPath, 'lyrics/'))];
+		repo.Path.Medias = [relativePath(state.dataPath, resolve(newPath, 'medias/'))];
+		repo.Path.Series = [relativePath(state.dataPath, resolve(newPath, 'series/'))];
+		repo.Path.Tags = [relativePath(state.dataPath, resolve(newPath, 'tags/'))];
+		await editRepo(repoName, repo);
+	} catch(err) {
+		logger.error(`[Repo] Failed to move repo ${name} : ${err}`);
+		throw err;
 	}
-	for (const dir of repo.Path.Lyrics) {
-		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'lyrics/'));
-	}
-	for (const dir of repo.Path.Series) {
-		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'series/'));
-	}
-	for (const dir of repo.Path.Tags) {
-		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'tags/'));
-	}
-	for (const dir of repo.Path.Medias) {
-		await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'medias/'));
-	}
-	repo.Path.Karas = [relativePath(state.dataPath, resolve(newPath, 'karaokes/'))];
-	repo.Path.Lyrics = [relativePath(state.dataPath, resolve(newPath, 'lyrics/'))];
-	repo.Path.Medias = [relativePath(state.dataPath, resolve(newPath, 'medias/'))];
-	repo.Path.Series = [relativePath(state.dataPath, resolve(newPath, 'series/'))];
-	repo.Path.Tags = [relativePath(state.dataPath, resolve(newPath, 'tags/'))];
-	await editRepo(repoName, repo);
 }

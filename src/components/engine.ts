@@ -1,11 +1,13 @@
 //Node modules
 import i18n from 'i18next';
+import execa from 'execa';
+import { app } from 'electron';
+import readlineSync from 'readline-sync';
+import logger from 'winston';
 
 //Utils
 import {getConfig, setConfig} from '../lib/utils/config';
 import {profile, enableWSLogging} from '../lib/utils/logger';
-import readlineSync from 'readline-sync';
-import logger from 'winston';
 import {getState, setState} from '../utils/state';
 import { killPG, dumpPG, restorePG, checkPG} from '../utils/postgresql';
 import {emit, on} from '../lib/utils/pubsub';
@@ -17,7 +19,7 @@ import {closeDB, getSettings, vacuum, saveSetting} from '../lib/dao/database';
 import {initFrontend} from './frontend';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
-import {initDownloader, updateAllBases, updateAllMedias, downloadTestSongs, downloadRandomSongs} from '../services/download';
+import {initDownloader, updateAllBases, updateAllMedias, downloadTestSongs} from '../services/download';
 import {initStats} from '../services/stats';
 import {welcomeToYoukousoKaraokeMugen} from '../services/welcome';
 import {initPlaylistSystem, testPlaylists} from '../services/playlist';
@@ -27,14 +29,9 @@ import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from '../services/session';
 import { updatePlaylistMedias, buildAllMediasList } from '../services/medias';
 import { initStep, errorStep } from '../electron/electronLogger';
-import { app, dialog } from 'electron';
 import { generateBlacklist } from '../dao/blacklist';
 import { duration } from '../lib/utils/date';
-import { DBStats } from '../types/database/database';
 import { baseChecksum } from '../dao/dataStore';
-import execa from 'execa';
-import { win } from '../electron/electron';
-import i18next from 'i18next';
 
 let shutdownInProgress = false;
 
@@ -116,7 +113,7 @@ export async function initEngine() {
 	} else {
 		initStep(i18n.t('INIT_DB'));
 		const migrations = await initDBSystem();
-		const stats = await preFlightCheck();
+		await preFlightCheck();
 		initStep(i18n.t('INIT_USER'));
 		await initUserSystem();
 		if (conf.Online.URL) try {
@@ -149,27 +146,6 @@ export async function initEngine() {
 			// This is done later because it's not important.
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
-		} catch(err) {
-			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
-		} finally {
-			profile('Init');
-		}
-		// Post-init stuff
-		try {
-			if (conf.App.FirstRun && stats.karas === 0 && !state.isTest && !state.isDemo) {
-				if (app) {
-					const buttonIndex = await dialog.showMessageBox(win, {
-						type: 'info',
-						title: i18next.t('NO_SONGS'),
-						message: i18next.t('DOWNLOAD_RANDOM_SONGS_PROMPT'),
-						buttons: [i18next.t('YES'), i18next.t('NO')],
-						cancelId: 1
-					});
-					if (buttonIndex.response === 0) downloadRandomSongs();
-				} else {
-					downloadRandomSongs();
-				}
-			}
 			if (state.isTest) {
 				downloadTestSongs();
 				on('downloadQueueStatus', (status: string) => {
@@ -253,7 +229,7 @@ export async function getKMStats() {
 	return await getStats();
 }
 
-async function preFlightCheck(): Promise<DBStats> {
+async function preFlightCheck() {
 	const state = getState();
 	const conf = getConfig();
 	let doGenerate = false;
@@ -287,7 +263,6 @@ async function preFlightCheck(): Promise<DBStats> {
 	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
 	logger.info(`Playlists    : ${stats.playlists}`);
 	logger.info(`Songs played : ${stats.played}`);
-	return stats;
 }
 
 async function runTests() {

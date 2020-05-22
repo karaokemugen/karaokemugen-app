@@ -47,12 +47,6 @@ class LoginModal extends Component<IProps,IState> {
 		};
 	}
 
-	async componentDidMount() {
-		if (this.props.admpwd) {
-			this.login('admin', this.props.admpwd);
-		}
-	}
-
     login = async (username:string|undefined, password:string) => {
     	var url = '/api/auth/login';
     	var data:{username:string|undefined, password:string} | {fingerprint?:string} = { username: username, password: password };

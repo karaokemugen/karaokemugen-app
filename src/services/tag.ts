@@ -209,6 +209,7 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 
 export async function integrateTagFile(file: string): Promise<string> {
 	const tagFileData = await getDataFromTagFile(file);
+	if (!tagFileData) return null;
 	try {
 		const tagDBData = await getTag(tagFileData.tid);
 		if (tagDBData) {

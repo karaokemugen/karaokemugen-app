@@ -148,7 +148,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							labelCol={{ span: 3 }}
 							wrapperCol={{ span: 8, offset: 0 }}
 							>
-							<FoldersElement onChange={(value) => this.setState({consolidatePath: value[0]})} />
+							<FoldersElement openDirectory={true} onChange={(value) => this.setState({consolidatePath: value[0]})} />
 						</Form.Item>
 
 						<Form.Item
@@ -158,7 +158,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							<Button type="danger" onClick={() => this.props.consolidate(this.state.consolidatePath)}>
 								{i18next.t('REPOSITORIES.CONSOLIDATE_BUTTON')}
 							</Button>
-							<Alert style={{textAlign:"left"}}
+							<Alert style={{textAlign:"left", marginTop: '10px'}}
 								message={i18next.t('REPOSITORIES.CONSOLIDATE_ABOUT')}
 								description={i18next.t('REPOSITORIES.CONSOLIDATE_ABOUT_MESSAGE')}
 								type="warning"

@@ -158,8 +158,11 @@ class Store extends EventEmitter {
 		axios.defaults.headers.common['authorization'] = null;
 		axios.defaults.headers.common['onlineAuthorization'] = null;
 		store.emitChange('loginOut');
+<<<<<<< HEAD
 		this.setUser();
 		if (window.location.search.length > 0) window.location.search = '';
+=======
+>>>>>>> master
 	}
 }
 const store = new Store();

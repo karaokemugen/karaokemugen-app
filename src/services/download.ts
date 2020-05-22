@@ -231,7 +231,7 @@ async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, 
 		for (const tag of bundle.tags) {
 			try {
 				const tagName = await integrateTagFile(resolve(localTagsPath, tag.file));
-				logger.debug(`[Download] Tag "${tagName}" in database`);
+				if (tagName) logger.debug(`[Download] Tag "${tagName}" in database`);
 			} catch(err) {
 				logger.error(`[Download] Tag "${tag.file}" not properly added to database`);
 				throw err;
