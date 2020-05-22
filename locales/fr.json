@@ -93,5 +93,7 @@
 		"BUG_REPORT": "Rapporter un bug"
 	},
 	"BASE_UPDATE_NEEDED": "Mise à jour de votre base de karaokés nécessaire",
-	"BASE_UPDATE_BULLDOZERSERIES": "Nous avons changé la façon dont les séries sont gérées. Karaoke Mugen doit retélécharger les métadonnées (pas les médias) de vos karaokés. Voulez-vous continuer ?\n\nSi vous cliquez sur Non, vous devrez retélécharger vous-même vos chansons, ou mettre à jour votre base par un moyen externe.\n\nNe cliquez pas sur Oui si vous êtes mainteneur d'une base de karaoké."
+	"BASE_UPDATE_BULLDOZERSERIES": "Nous avons changé la façon dont les séries sont gérées. Karaoke Mugen doit retélécharger les métadonnées (pas les médias) de vos karaokés. Voulez-vous continuer ?\n\nSi vous cliquez sur Non, vous devrez retélécharger vous-même vos chansons, ou mettre à jour votre base par un moyen externe.\n\nNe cliquez pas sur Oui si vous êtes mainteneur d'une base de karaoké.",
+	"COPY_TO_CLIPBOARD": "Copier dans le presse-papiers",
+	"IT_IS_IN_MY_HEAD": "Pas besoin de presse-papiers, je l'ai retenu!"
 }

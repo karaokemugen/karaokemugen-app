@@ -93,5 +93,7 @@
 		"BUG_REPORT": "Report a bug"
 	},
 	"BASE_UPDATE_NEEDED": "Your song database needs an update",
-	"BASE_UPDATE_BULLDOZERSERIES": "We changed the way series are handled. Karaoke Mugen needs to redownload your songs' metadata (not medias). Do you want to continue?\n\nIf you click No, you'll need to redownload songs yourself for them to work, or update your song database manually.\n\nDo not click Yes if you are a karaoke base maintainer."
+	"BASE_UPDATE_BULLDOZERSERIES": "We changed the way series are handled. Karaoke Mugen needs to redownload your songs' metadata (not medias). Do you want to continue?\n\nIf you click No, you'll need to redownload songs yourself for them to work, or update your song database manually.\n\nDo not click Yes if you are a karaoke base maintainer.",
+	"COPY_TO_CLIPBOARD": "Copy to clipboard",
+	"IT_IS_IN_MY_HEAD": "No need for clipboards, it's in my head!"
 }
