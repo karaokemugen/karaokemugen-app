@@ -125,6 +125,7 @@
 	"STREAM_TWITCH_OAUTH_TOKEN": "OAuth Token Twitch",
 	"STREAM_TWITCH_CHANNEL": "Twitch channel name",
 	"CLASSIC_MODE": "Classic Karaoke Mode",
+	"CLASSIC_MODE_TOOLTIP": "A pause will take place between each song and the name of the next song as well as its requester will be displayed on the screen. The song requester or operator will be able to start playing the song",
 	"CLASSIC_MODE_TITLE_MODAL": "It's your turn to sing !",
 	"CLASSIC_MODE_TEXT_MODAL": "Click on the Play button to start your song.",
 	"MESSAGE": "Message",
