@@ -487,6 +487,7 @@
 		"MODIFY_DIRECTORY": "Modify the folder",
 		"CHOOSE_DIRECTORY": "Select a folder",
 		"ADD_DIRECTORY": "Add a folder",
-		"SAVE_PARAMETER": "Save this setting"
+		"SAVE_PARAMETER": "Save this setting",
+		"DONE": "Done"
 	}
 }

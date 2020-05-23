@@ -529,7 +529,7 @@ class SetupPage extends Component<IProps, IState> {
 								</div>
 								<div className="actions">
 									<label className="error">{this.state.error}</label>
-									<button type="button" onClick={this.downloadRandomSongs}>{i18next.t("SETUP_PAGE.SAVE_PARAMETER")}</button>
+									<button type="button" onClick={this.downloadRandomSongs}>{i18next.t("SETUP_PAGE.DONE")}</button>
 								</div>
 							</section>
 						)}
