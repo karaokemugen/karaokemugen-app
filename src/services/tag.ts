@@ -72,7 +72,8 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 		await refreshTagsAfterDBChange();
 	}
 	if (tagObj.types.includes(1)) {
-		await writeSeriesFile(tagObj, resolvedPathRepos('Series', tagObj.repository)[0]);
+		// Spreading object to keep writeSeriesFile from modifying it
+		await writeSeriesFile({...tagObj}, resolvedPathRepos('Series', tagObj.repository)[0]);
 	}
 	return tagObj;
 }
@@ -92,6 +93,8 @@ export async function getTag(tid: string) {
 export async function getOrAddTagID(tagObj: Tag): Promise<IDQueryResult> {
 	let tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
 	if (tag) return {id: tag.tid, new: false};
+	// This modifies tagObj.
+	// I hate mutating objects.
 	await addTag(tagObj, {refresh: false});
 	return {id: tagObj.tid, new: true};
 }
