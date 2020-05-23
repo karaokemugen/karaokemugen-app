@@ -85,7 +85,7 @@ class App extends Component<{}, IState> {
 		if (axios.defaults.headers.common['authorization']) {
 			await this.checkAuth();
 		}
-		if (this.state.admpwd) {
+		if (this.state.admpwd && !localStorage.getItem('kmToken')) {
 			var result = await axios.post('/api/auth/login', { username: 'admin', password: this.state.admpwd });
 			store.setLogInfos(result.data);
 		}
