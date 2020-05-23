@@ -72,7 +72,7 @@ class App extends Component<{}, IState> {
 			await this.checkAuth();
 			await store.setUser();
 		}
-		if (this.state.admpwd) {
+		if (this.state.admpwd && !localStorage.getItem('kmToken')) {
 			var result = await axios.post('/api/auth/login', { username: 'admin', password: this.state.admpwd });
 			store.setLogInfos(result.data);
 		}

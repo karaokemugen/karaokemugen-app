@@ -140,7 +140,11 @@ class SetupPage extends Component<IProps, IState> {
 
 	consolidate = async () => {
 		if (this.state.repositoryFolder) {
-			if (this.state.repositoryFolder !== this.props.repository.Path.Karas[0].slice(0, -9)) {
+			var repository = this.props.repository.Path.Karas[0].slice(0, -9);
+			const path = `${this.getPathForFileSystem(repository)}${
+				this.props.os === "win32" ? repository.replace(/\//g, "\\") : repository
+			}`;
+			if (this.state.repositoryFolder !== path) {
 				try {
 					await axios.post(`/api/repos/${this.props.repository.Name}/consolidate`, { path: this.state.repositoryFolder });
 					this.setState({ activeView: "random", error: undefined });
@@ -525,7 +529,7 @@ class SetupPage extends Component<IProps, IState> {
 								</div>
 								<div className="actions">
 									<label className="error">{this.state.error}</label>
-									<button type="button" onClick={this.downloadRandomSongs}>{i18next.t("SETUP_PAGE.SAVE_PARAMETER")}</button>
+									<button type="button" onClick={this.downloadRandomSongs}>{i18next.t("SETUP_PAGE.DONE")}</button>
 								</div>
 							</section>
 						)}

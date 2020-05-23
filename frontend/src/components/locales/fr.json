@@ -505,6 +505,7 @@
 		"MODIFY_DIRECTORY": "Modifier le dossier",
 		"CHOOSE_DIRECTORY": "Choisissez un dossier",
 		"ADD_DIRECTORY": "Ajouter un dossier",
-		"SAVE_PARAMETER": "Enregistrer ce paramètre"
+		"SAVE_PARAMETER": "Enregistrer ce paramètre",
+		"DONE": "Terminer"
 	}
 }

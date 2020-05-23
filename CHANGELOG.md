@@ -1,44 +1,43 @@
 # Versions
 
-## v3.2.2 "Nadia Navigatrice" - 22/05/2020
+## v3.2.2 "Nadia Navigatrice" - 23/05/2020
 
 This is a bugfix release with a few features added
 
 ### New features
 
-- A setup page has been added for those using Karaoke Mugen for the first time. It works as a setup wizard asing you questions about accounts and where to download your songs (#661)
+- A setup page has been added for those using Karaoke Mugen for the first time. It works as a setup wizard asking you questions about accounts and where to download your songs (#661)
 - An automatic dump of the database in SQL format is made at startup (only if you use the bundled postgresql) (#648)
 - You can quit a video preview by hitting the esc key on your keyboard now (#637)
 
 ### Improvements
 
 - Songtypes are now always displayed, if there are several ones for a song (24632e19, d4ad66ce)
-- Made seeking in mp3 files a bit faster. Not totally faster though, we're working on that (bfc0d66e)
+- Made seeking in mp3 files a bit faster. (#628)
 - Help menu is now "Help" not "?" (#665)
 - Downloads now show a "Preparing downloads" task popup to keep you updated on what's going on (#660)
-- Song family is now displayed on the downloads, songs, tags and series list page to better identify songs (3d7a6f8b)
+- Song family is now displayed on the songs list and repository on songs, tags and series list page to better identify songs (#643)
 - All requests now display user-agent so we have a clearer view of which KM versions are used (#644)
-- Kara edit/creation form now accepts MKVs (741ccfae)
-- Added a queue for database intensive tasks like refreshes and generation to avoid multiple triggers (ad2ec39a)
+- Added a queue for database intensive tasks like refreshes and generation to avoid multiple triggers (#639)
 
 ### Fixes
 
 - Fix downloading lots of songs at once by sending only one request (f2de124d)
 - Fix removing old kara file when downloading songs (f04e8c5a)
 - Fix KM folder being wiped during reinstalls/updates (77f5e849)
-
-- Fix search in some rare cases (with #, or singer/serie not present) (ee7641cf)
+- Fix kara edit/creation form to accepts MKVs (741ccfae)
+- Fix more info on Wikipedia in some rare cases (with #, or serie not present) (#649)
 - (possible) Fix for login/auth errors with KM Server (5ad9654b)
 - Fix change primary direction in a repository (2626a9bf)
+- Fix consolidate repository (86f41292)
 - Tags with no types are now ignored instead of added to the "Misc." category. This is useful when we add new tag types but they're not fully understood by the app (f22f7fe3)
 - Fixed display kara in session list (e2153723)
-- Fixed for if autoUpdate menu should be displayed or not
+- Fixed for if autoUpdate menu should be displayed or not (06f13869)
 - Using move instead of rename when editing a song's filename to avoid cross filesystem issues (#659)
 - Fixed display error for the reset password page (e990f78a)
 - Fixed refresh playlistList after login (29ec1ae6)
-- Fixed adding multiple folders via Electron window (efabd034)
+- Fixed adding multiple folders via Electron window (#653)
 - Fixed tag file removal when editing/replacing/removing tags (25bd121e)
--
 
 ## v3.2.1 "Nadia Nostalgique" - 01/05/2020
 
