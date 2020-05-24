@@ -1,5 +1,5 @@
 import { selectRepos, deleteRepo, updateRepo, insertRepo } from '../dao/repo';
-import { relativePath, asyncCheckOrMkdir, asyncExists, extractAllFiles, asyncMoveAll } from '../lib/utils/files';
+import { relativePath, asyncCheckOrMkdir, asyncExists, extractAllFiles, asyncMoveAll, asyncReadDir } from '../lib/utils/files';
 import { resolve, basename } from 'path';
 import { getState } from '../utils/state';
 import { Repository } from '../lib/types/repo';
@@ -13,6 +13,7 @@ import { getTag } from './tag';
 import logger from '../lib/utils/logger';
 import { compareKarasChecksum, generateDB } from '../dao/database';
 import { getRemoteKaras } from './download';
+import Task from '../lib/utils/taskManager';
 
 type UUIDSet = Set<string>
 
@@ -174,27 +175,42 @@ export async function migrateOldFoldersToRepo() {
 }
 
 export async function consolidateRepo(repoName: string, newPath: string) {
+	const task = new Task({
+		text: `CONSOLIDATING_REPO ${repoName}`
+	});
 	try {
 		const repo = getRepo(repoName);
 		const state = getState();
 		if (!repo) throw 'Unknown repository';
 		if (!await asyncExists(newPath)) throw 'Directory not found';
 		logger.info(`[Repo] Moving ${repoName} repository to ${newPath}...`);
+		const moveTasks = [];
+		let files = 0;
+		for (const type of Object.keys(repo.Path)) {
+			for (const dir of repo.Path[type]) {
+				const dirFiles = await asyncReadDir(resolve(state.dataPath, dir));
+				files = files + dirFiles.length;
+			}
+		}
+		task.update({
+			total: files
+		});
 		for (const dir of repo.Path.Karas) {
-			await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'karaokes/'));
+			moveTasks.push(resolve(state.dataPath, dir), resolve(newPath, 'karaokes/'));
 		}
 		for (const dir of repo.Path.Lyrics) {
-			await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'lyrics/'));
+			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'lyrics/')));
 		}
 		for (const dir of repo.Path.Series) {
-			await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'series/'));
+			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'series/')));
 		}
 		for (const dir of repo.Path.Tags) {
-			await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'tags/'));
+			moveTasks.push(await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'tags/')));
 		}
 		for (const dir of repo.Path.Medias) {
-			await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'medias/'));
+			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'medias/')));
 		}
+		await Promise.all(moveTasks);
 		repo.Path.Karas = [relativePath(state.dataPath, resolve(newPath, 'karaokes/'))];
 		repo.Path.Lyrics = [relativePath(state.dataPath, resolve(newPath, 'lyrics/'))];
 		repo.Path.Medias = [relativePath(state.dataPath, resolve(newPath, 'medias/'))];
