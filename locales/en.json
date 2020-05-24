@@ -93,5 +93,9 @@
 	"BASE_UPDATE_NEEDED": "Your song database needs an update",
 	"BASE_UPDATE_BULLDOZERSERIES": "We changed the way series are handled. Karaoke Mugen needs to redownload your songs' metadata (not medias). Do you want to continue?\n\nIf you click No, you'll need to redownload songs yourself for them to work, or update your song database manually.\n\nDo not click Yes if you are a karaoke base maintainer.",
 	"COPY_TO_CLIPBOARD": "Copy to clipboard",
-	"IT_IS_IN_MY_HEAD": "No need, it's in my head!"
+	"IT_IS_IN_MY_HEAD": "No need, it's in my head!",
+	"CREATING_TAG_IN_PROGRESS": "Creating tag...",
+	"EDITING_TAG_IN_PROGRESS": "Editing tag...",
+	"DELETING_TAG_IN_PROGRESS": "Deleting tag...",
+	"MERGING_TAGS_IN_PROGRESS": "Merging tags..."
 }
