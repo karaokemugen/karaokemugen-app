@@ -78,7 +78,7 @@ export async function editKara(kara: Kara) {
 				if (kara.noNewVideo) {
 					const newMediaFile = resolve(resolvedPathRepos('Medias', kara.repository)[0], newKara.data.mediafile);
 					logger.info(`[KaraGen] Renaming ${oldMediaFiles[0]} to ${newMediaFile}`);
-					await asyncMove(oldMediaFiles[0], newMediaFile);
+					await asyncMove(oldMediaFiles[0], newMediaFile, {overwrite: true});
 				} else {
 					logger.info(`[KaraGen] Removing ${oldMediaFiles[0]}`);
 					await asyncUnlink(oldMediaFiles[0]);
