@@ -2,30 +2,36 @@ import React, { Component } from 'react';
 import i18next from 'i18next';
 import axios from 'axios';
 import ReactDOM from 'react-dom';
-import { displayMessage } from '../tools';
+import { displayMessage, getTagInLanguage } from '../tools';
+import store from '../../store';
+import { DBKaraTag } from '../../../../src/lib/types/database/kara';
 require('./SuggestionModal.scss');
-
-interface IProps {
-	songtypes: Array<string>
-}
 
 interface IState {
 	name: string;
 	serie: string;
 	link: string;
 	songtype: string;
+	songtypes: Array<string>
 }
 
-class SuggestionModal extends Component<IProps, IState> {
+class SuggestionModal extends Component<{}, IState> {
 
-	constructor(props:IProps) {
+	constructor(props: {}) {
 		super(props);
 		this.state = {
 			name: "",
 			serie: "",
 			link: "",
-			songtype: this.props.songtypes[0]
+			songtype: "",
+			songtypes: []
 		};
+	}
+
+	async componentDidMount() {
+		const response = await axios.get('/api/tags', { params: {type: 3}});
+		let songtypes = response.data.content.map((tag:DBKaraTag) => getTagInLanguage(tag, store.getNavigatorLanguage() as string, 'eng'));
+		this.setState({songtypes: songtypes, songtype: songtypes[0]});
 	}
 
 	confirmModal = async () => {
@@ -71,7 +77,7 @@ class SuggestionModal extends Component<IProps, IState> {
 							<div className="lignForm">
 								<div>{i18next.t('MODAL.SUGGESTION_MODAL.SONGTYPE')}</div>
 								<select onChange={(event) => this.setState({ songtype: event.target.value })}>
-									{this.props.songtypes.map(type => {
+									{this.state.songtypes.map(type => {
 										return <option key={type} value={type}>{type}</option>
 									})}
 								</select>

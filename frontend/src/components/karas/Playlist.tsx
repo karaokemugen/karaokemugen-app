@@ -584,8 +584,7 @@ noRowsRenderer = () => {
   };
 
   karaSuggestion = () => {
-	ReactDOM.render(<SuggestionModal
-		songtypes={(this.props.tags as Tag[]).filter(tag => tag.type.includes(3)).map((tag: any) => tag.label)}/>, document.getElementById('modal'));
+	ReactDOM.render(<SuggestionModal />, document.getElementById('modal'));
   }
 
   onChangeTags = (type:number|string, value:string) => {
