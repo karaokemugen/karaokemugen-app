@@ -303,5 +303,9 @@
 	"DOWNLOADING_REPO": "Ajout de chansons du dépôt",
 	"UPDATING_PLMEDIAS": "Mise à jour des médias de playlist...",
 	"LOADING": "Chargement...",
-	"LOG_ERROR": "Identifiants invalides"
+	"LOG_ERROR": "Identifiants invalides",
+	"CREATING_TAG_IN_PROGRESS": "Création de tag en cours...",
+	"EDITING_TAG_IN_PROGRESS": "Edition de tag en cours...",
+	"DELETING_TAG_IN_PROGRESS": "Suppression de tag en cours...",
+	"MERGING_TAGS_IN_PROGRESS": "Fusion de tags en cours..."
 }

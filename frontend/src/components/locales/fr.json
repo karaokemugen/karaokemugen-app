@@ -507,5 +507,9 @@
 		"ADD_DIRECTORY": "Ajouter un dossier",
 		"SAVE_PARAMETER": "Enregistrer ce paramètre",
 		"DONE": "Terminer"
-	}
+	},
+	"CREATING_TAG_IN_PROGRESS": "Création de tag en cours...",
+	"EDITING_TAG_IN_PROGRESS": "Edition de tag en cours...",
+	"DELETING_TAG_IN_PROGRESS": "Suppression de tag en cours...",
+	"MERGING_TAGS_IN_PROGRESS": "Fusion de tags en cours..."
 }

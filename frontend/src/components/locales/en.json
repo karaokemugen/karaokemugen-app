@@ -488,5 +488,9 @@
 		"ADD_DIRECTORY": "Add a folder",
 		"SAVE_PARAMETER": "Save this setting",
 		"DONE": "Done"
-	}
+	},
+	"CREATING_TAG_IN_PROGRESS": "Creating tag...",
+	"EDITING_TAG_IN_PROGRESS": "Editing tag...",
+	"DELETING_TAG_IN_PROGRESS": "Deleting tag...",
+	"MERGING_TAGS_IN_PROGRESS": "Merging tags..."
 }
