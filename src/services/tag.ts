@@ -75,7 +75,7 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 		saveSetting('baseChecksum', getStoreChecksum());
 
 		if (opts.refresh) {
-			await refreshTagsAfterDBChange();
+			await refreshTags();
 		}
 		if (tagObj.types.includes(1)) {
 			// Spreading object to keep writeSeriesFile from modifying it
@@ -92,8 +92,8 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 export async function refreshTagsAfterDBChange() {
 	logger.debug('[DB] Refreshing DB after tag change');
 	await refreshTags();
-	await refreshKaraTags();
-	await refreshKaras();
+	refreshKaraTags();
+	refreshKaras();
 	logger.debug('[DB] Done refreshing DB after tag change');
 }
 
@@ -208,7 +208,9 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 		if (tagObj.types.includes(1)) {
 			await writeSeriesFile(tagObj, resolvedPathRepos('Series', tagObj.repository)[0]);
 		}
-		if (opts.refresh) await refreshTagsAfterDBChange();
+		if (opts.refresh) {
+			await refreshTagsAfterDBChange();
+		}
 	} catch(err) {
 		throw err;
 	} finally {
@@ -232,13 +234,11 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 			removeTagFile(tag.tagfile, tag.repository),
 			removeTagInKaras(tid, await getAllKaras())
 		];
-		if (opt.refresh) removes.push(refreshTags());
 		await Promise.all(removes);
 		removeTagInStore(tid);
 		saveSetting('baseChecksum', getStoreChecksum());
 		if (opt.refresh) {
-			refreshKaraTags()
-			refreshKaras()
+			await refreshTagsAfterDBChange();
 		}
 	} catch(err) {
 		throw err;
