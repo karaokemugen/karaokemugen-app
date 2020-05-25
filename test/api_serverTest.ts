@@ -442,7 +442,7 @@ describe('Playlists', function() {
 
 	it('Copy karaokes to another playlist', function() {
 		var data = {
-			plc_id: plc_id.toString()
+			plc_id: [plc_id]
 		};
 		return request
 			.patch('/api/playlists/'+new_playlist_id+'/karas')
@@ -492,7 +492,7 @@ describe('Playlists', function() {
 
 	it('Delete karaokes from playlist', function() {
 		var data = {
-			'plc_id': plc_id
+			'plc_id': [plc_id]
 		};
 		return request
 			.delete('/api/playlists/2/karas/')
@@ -858,7 +858,7 @@ describe('Users', function() {
 describe('Whitelist', function() {
 	it('Add song to whitelist', function() {
 		var data = {
-			'kid': '495e2635-38a9-42db-bdd0-df4d27329c87',
+			'kid': ['495e2635-38a9-42db-bdd0-df4d27329c87'],
 			'reason': 'Because reasons'
 		};
 		return request

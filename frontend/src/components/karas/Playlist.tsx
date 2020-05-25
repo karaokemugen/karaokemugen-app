@@ -551,13 +551,12 @@ noRowsRenderer = () => {
 		return ;
 	}
   	if (this.state.idPlaylist > 0) {
-  		var idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id));
+  		var idKaraPlaylist = listKara.map(a => a.playlistcontent_id);
   		url = '/playlists/' + this.state.idPlaylist + '/karas/';
   		data = { plc_id: idKaraPlaylist };
   	} else if (this.state.idPlaylist == -3) {
-  		var idKara = listKara.map(a => a.kid);
-  		url = '/ ' + this.props.scope + '/whitelist';
-  		data = { kid: idKara };
+  		url = '/whitelist';
+  		data = { kid: listKara.map(a => a.kid) };
   	} else if (this.state.idPlaylist == -5) {
   		url = '/favorites';
   		data = { kid: listKara.map(a => a.kid) };

@@ -66,14 +66,14 @@ class KaraLine extends Component<IProps,IState> {
   };
 
   deleteKara = async () => {
-  	var response;
 	if (this.props.idPlaylist == -5) {
-		response = await axios.delete('/favorites', { data: { kid: [this.props.kara.kid] }});
+		await axios.delete('/favorites', { data: { kid: [this.props.kara.kid] }});
 	} else if (this.props.idPlaylist == -2) {
 		this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
-		return;
+	} else if (this.props.idPlaylist == -3) {
+		await axios.delete('/whitelist', { data: { kid: [this.props.kara.kid] }});
 	} else {
-		response = await axios.delete('/playlists/' + this.props.idPlaylist + '/karas/', { data: { plc_id: String(this.props.kara.playlistcontent_id) } });
+		await axios.delete('/playlists/' + this.props.idPlaylist + '/karas/', { data: { plc_id: [this.props.kara.playlistcontent_id] } });
 	}
   };
 
@@ -93,7 +93,7 @@ class KaraLine extends Component<IProps,IState> {
   		if (this.props.idPlaylistTo > 0) {
   			url = '/playlists/' + this.props.idPlaylistTo + '/karas';
   			if (this.props.idPlaylist > 0 && !pos) {
-  				data = { plc_id: String(this.props.kara.playlistcontent_id) };
+  				data = { plc_id: [this.props.kara.playlistcontent_id] };
   				type = 'PATCH';
   			} else {
   				if (pos) {
@@ -107,7 +107,7 @@ class KaraLine extends Component<IProps,IState> {
   			data = { blcriteria_type: 1001, blcriteria_value: this.props.kara.kid };
   		} else if (this.props.idPlaylistTo == -3) {
   			url = '/whitelist';
-  			data = { kid: this.props.kara.kid };
+  			data = { kid: [this.props.kara.kid] };
   		}
   	} else {
   		url = `/karas/${this.props.kara.kid}`;
