@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { emitWS } from '../../lib/utils/ws';
-import { errMessage } from '../common';
+import { errMessage, APIMessage } from '../common';
 import { deleteUser, findUserByName, createUser, editUser, convertToRemoteUser, removeRemoteUser, listUsers, createAdminUser, resetRemotePassword, updateSongsLeft, resetSecurityCode } from '../../services/user';
 import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser, optionalAuth } from '../middlewares/auth';
 import { getLang } from '../middlewares/lang';
@@ -49,8 +49,9 @@ export default function userController(router: Router) {
 				const users = await	listUsers();
 				res.json(users);
 			} catch(err) {
-				errMessage('USER_LIST_ERROR',err);
-				res.series(500).send('USER_LIST_ERROR');
+				const code = 'USER_LIST_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 
@@ -76,7 +77,7 @@ export default function userController(router: Router) {
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "USER_ALREADY_EXISTS"
+ * {code: "USER_ALREADY_EXISTS"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
@@ -99,10 +100,10 @@ export default function userController(router: Router) {
 					} else {
 						await createUser(req.body, {createRemote: req.body.login.includes('@')});
 					}
-					res.status(200).send('USER_CREATED');
+					res.status(200).json(APIMessage('USER_CREATED'));
 				} catch(err) {
-					errMessage(err.code, err.message);
-					res.status(500).send(err.code);
+					errMessage(err.code, err.message)
+					res.status(500).json(APIMessage(err.code));
 				}
 			} else {
 				// Errors detected
@@ -166,8 +167,9 @@ export default function userController(router: Router) {
 				delete userdata.password;
 				res.json(userdata);
 			} catch(err) {
-				errMessage('USER_VIEW_ERROR', err);
-				res.status(500).send('USER_VIEW_ERROR');
+				const code = 'USER_VIEW_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -181,7 +183,7 @@ export default function userController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "USER_DELETED"
+ * {code: "USER_DELETED"}
  * @apiError USER_DELETE_ERROR Unable to delete a user
  *
  * @apiErrorExample Error-Response:
@@ -191,18 +193,21 @@ export default function userController(router: Router) {
 			try {
 				await deleteUser(req.params.username);
 				emitWS('usersUpdated');
-				res.status(200).send('USER_DELETED');
+				res.status(200).json(APIMessage('USER_DELETED'));
 			} catch(err) {
-				errMessage('USER_DELETE_ERROR',err.message);
-				res.status(500).send('USER_DELETE_ERROR');
+				const code = 'USER_DELETE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 		.put(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await editUser(req.body.login, req.body, req.body.avatar, req.authToken.role);
-				res.status(200).send('User edited');
+				res.status(200).json(APIMessage('USER_EDITED'));
 			} catch(err) {
-				res.status(500).send(`Error editing user: ${err}`);
+				const code = 'USER_EDIT_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/users/:username/resetpassword')
@@ -236,23 +241,31 @@ export default function userController(router: Router) {
 	 * }
 	  */
 		.post(async (req: any, res: any) => {
-			try {
-				if (!req.params.username.includes('@')) {
-					if (req.body.securityCode === getState().securityCode) {
+			if (!req.params.username.includes('@')) {
+				if (req.body.securityCode === getState().securityCode) {
+					try {
 						await editUser(req.params.username, {
 							password: req.body.password
 						}, null, 'admin');
 						resetSecurityCode();
-						res.status(200).json(null);
-					} else {
-						res.status(500).send('USER_RESETPASSWORD_WRONGSECURITYCODE');
+						res.status(200).json(APIMessage('USER_RESETPASSWORD_ONLINE'));
+					} catch (err) {
+						const code = 'USER_RESETPASSWORD_ONLINE_ERROR';
+						errMessage(code, err)
+						res.status(500).json(APIMessage(code));
 					}
 				} else {
-					await resetRemotePassword(req.params.username);
-					res.status(200).json(null);
+					res.status(500).json(APIMessage('USER_RESETPASSWORD_WRONGSECURITYCODE'));
 				}
-			} catch(err) {
-				res.status(500).send('USER_RESETPASSWORD_ERROR');
+			} else {
+				try {
+					await resetRemotePassword(req.params.username);
+					res.status(200).json();
+				} catch (err) {
+					const code = 'USER_RESETPASSWORD_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
+				}
 			}
 		});
 	router.route('/myaccount')
@@ -305,7 +318,6 @@ export default function userController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {
  *   "code": "USER_VIEW_ERROR",
- *   "message": null
  * }
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
@@ -316,7 +328,9 @@ export default function userController(router: Router) {
 				updateSongsLeft(userData.login);
 				res.json(userData);
 			} catch(err) {
-				res.status(500).send('USER_VIEW_ERROR');
+				const code = 'USER_VIEW_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -333,7 +347,7 @@ export default function userController(router: Router) {
 	 * {
 	 *   "code": "USER_DELETED"
 	 * }
-	 * @apiError USER_DELETED_ERROR Unable to delete your user
+	 * @apiError USER_DELETE_ERROR Unable to delete your user
 	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
@@ -343,9 +357,11 @@ export default function userController(router: Router) {
 		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				await deleteUser(req.authToken.username);
-				res.status(200).send('USER_DELETED');
+				res.status(200).json(APIMessage('USER_DELETED'));
 			} catch(err) {
-				res.status(500).send('USER_DELETED_ERROR');
+				const code = 'USER_DELETE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 
@@ -367,7 +383,7 @@ export default function userController(router: Router) {
  * @apiParam {String} [fallback_series_lang] ISO639-2B code for language to use as fallback language for series names (in case of mode 4).
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "USER_UPDATED"
+ * {code: "USER_UPDATED"}
  * @apiError USER_UPDATE_ERROR Unable to edit user
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
@@ -391,10 +407,11 @@ export default function userController(router: Router) {
 				try {
 					await editUser(req.authToken.username, req.body, avatar ,req.authToken.role);
 					emitWS('userUpdated',req.authToken.username);
-					res.status(200).send('USER_UPDATED');
+					res.status(200).json(APIMessage('USER_EDITED'));
 				} catch(err) {
-					errMessage('USER_UPDATE_ERROR',err.message);
-					res.status(500).send('USER_UPDATE_ERROR');
+					const code = 'USER_EDIT_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -425,6 +442,9 @@ export default function userController(router: Router) {
 	 * 	 }
 	 * }
 	 * @apiError USER_CONVERT_ERROR Unable to convert user to remote
+	 * @apiError ADMIN_CONVERT_ERROR Admin user cannot be converted to an online account
+	 * @apiError UNKNOW_CONVERT_ERROR User unknown
+	 * @apiError PASSWORD_CONVERT_ERROR Wrong password
 	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
@@ -442,13 +462,11 @@ export default function userController(router: Router) {
 				try {
 					const tokens = await convertToRemoteUser(req.authToken, req.body.password, req.body.instance);
 					emitWS('userUpdated',req.authToken.username);
-					res.json({
-						code: 'USER_CONVERTED',
-						data: tokens
-					});
+					res.json(APIMessage('USER_CONVERTED', tokens));
 				} catch(err) {
-					errMessage(err.code || 'USER_CONVERT_ERROR',err);
-					res.status(500).send(err.code || 'USER_CONVERT_ERROR');
+					const code = err.code || 'USER_CONVERT_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 				}
 			} else {
 			// Errors detected
@@ -489,13 +507,11 @@ export default function userController(router: Router) {
 				try {
 					const newToken = await removeRemoteUser(req.authToken, req.body.password);
 					emitWS('userUpdated', req.authToken.username);
-					res.json({
-						code: 'USER_DELETED_ONLINE',
-						data: newToken
-					});
+					res.json(APIMessage('USER_DELETED_ONLINE', newToken));
 				} catch(err) {
-					errMessage('USER_DELETE_ERROR_ONLINE',err);
-					res.status(500).send('USER_DELETE_ERROR_ONLINE');
+					const code = 'USER_DELETE_ERROR_ONLINE';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 			// Errors detected

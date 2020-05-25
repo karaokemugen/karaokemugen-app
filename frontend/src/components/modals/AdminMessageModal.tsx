@@ -29,7 +29,7 @@ class AdminMessageModal extends Component<{},IState> {
             	? defaultDuration
             	: this.state.duration
     	};
-    	axios.post('/api/player/message', msgData);
+    	axios.post('/player/message', msgData);
 		var element = document.getElementById('modal');
 		if (element) ReactDOM.unmountComponentAtNode(element);
     };

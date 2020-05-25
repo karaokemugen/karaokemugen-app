@@ -1,4 +1,4 @@
-import {selectDownloadBLC, truncateDownloadBLC, insertDownloadBLC,  deleteDownloadBLC, emptyDownload, selectDownload, selectDownloads, updateDownload, deleteDownload, insertDownloads, selectPendingDownloads, initDownloads} from '../dao/download';
+import {selectDownloadBLC, insertDownloadBLC,  deleteDownloadBLC, emptyDownload, selectDownload, selectDownloads, updateDownload, insertDownloads, selectPendingDownloads, initDownloads} from '../dao/download';
 import Downloader from '../utils/downloader';
 import Queue from 'better-queue';
 import { v4 as uuidV4 } from 'uuid';
@@ -30,6 +30,7 @@ import Task from '../lib/utils/taskManager';
 import { extractAssInfos } from '../lib/dao/karafile';
 import { SeriesList } from '../lib/types/series';
 import { emit } from '../lib/utils/pubsub';
+import { APIMessage } from '../controllers/common';
 
 let downloaderReady = false;
 
@@ -288,7 +289,7 @@ export function resumeQueue() {
 	return q.resume();
 }
 
-export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<string> {
+export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<number> {
 	const currentDls = await getDownloads();
 	downloads = downloads.filter(dl => {
 		if (currentDls.find(cdl => dl.name === cdl.name &&
@@ -318,7 +319,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<st
 	});
 	await insertDownloads(dls);
 	dls.forEach(dl => q.push(dl));
-	return `${dls.length} download(s) queued`;
+	return dls.length;
 }
 
 export async function getDownloads() {
@@ -331,25 +332,6 @@ export async function getDownload(uuid: string) {
 
 export async function setDownloadStatus(uuid: string, status: string) {
 	return await updateDownload(uuid, status);
-}
-
-export async function retryDownload(uuid: string) {
-	const dl = await selectDownload(uuid);
-	if (!dl) throw 'Download ID unknown';
-	if (dl.status === 'DL_RUNNING') throw 'Download is already running!';
-	if (dl.status === 'DL_PLANNED') throw 'Download is already planned!';
-	await setDownloadStatus(uuid, 'DL_PLANNED');
-	q.push(dl);
-	emitQueueStatus('started');
-}
-
-export async function removeDownload(uuid: string) {
-	const dl = await selectDownload(uuid);
-	if (!dl) throw 'Download ID unknown';
-	if (dl.status === 'DL_RUNNING' ) throw 'Running downloads cannot be cancelled';
-	await deleteDownload(uuid);
-	q.cancel(uuid);
-	emitQueueStatus('updated');
 }
 
 export async function wipeDownloads() {
@@ -374,10 +356,6 @@ export async function removeDownloadBLC(id: number) {
 	const dlBLC = await selectDownloadBLC();
 	if (!dlBLC.some(e => e.dlblc_id === id )) throw 'DL BLC ID does not exist';
 	return await deleteDownloadBLC(id);
-}
-
-export async function emptyDownloadBLC() {
-	return await truncateDownloadBLC();
 }
 
 export async function getAllRemoteKaras(repository: string, params: KaraParams, compare?: CompareParam): Promise<KaraList> {
@@ -499,6 +477,7 @@ export async function updateAllBases() {
 			}
 		} catch(err) {
 			logger.warn(`[Update] Repository ${repo.Name} failed to update properly: ${err}`);
+			emitWS('error', APIMessage('BASES_SYNC_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
 }
@@ -580,7 +559,8 @@ export async function downloadAllKaras() {
 				await downloadKaras(repo.Name);
 			}
 		} catch(err) {
-			logger.warn(`[Update] Repository ${repo.Name} failed to download all songs properly`);
+			logger.warn(`[Update] Repository ${repo.Name} failed to download all songs properly: ${err}`);
+			emitWS('error', APIMessage('DOWNLOAD_SONGS_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
 };
@@ -689,7 +669,8 @@ export async function cleanAllKaras() {
 				await cleanKaras(repo.Name);
 			}
 		} catch(err) {
-			logger.warn(`[Update] Repository ${repo.Name} failed to clean songs properly`);
+			logger.warn(`[Update] Repository ${repo.Name} failed to clean songs properly: ${err}`);
+			emitWS('error', APIMessage('CLEAN_SONGS_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
 }
@@ -743,6 +724,7 @@ export async function updateAllKaras() {
 			}
 		} catch(err) {
 			logger.warn(`[Update] Repository ${repo.Name} failed to update songs properly: ${err}`);
+			emitWS('error', APIMessage('SONGS_UPDATE_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
 }
@@ -991,6 +973,7 @@ export async function updateAllMedias() {
 			}
 		} catch(err) {
 			logger.warn(`[Update] Repository ${repo.Name} failed to update medias properly: ${err}`);
+			emitWS('error', APIMessage('UPDATING_MEDIAS_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
 }

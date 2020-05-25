@@ -48,19 +48,19 @@ class LoginModal extends Component<IProps,IState> {
 	}
 
     login = async (username:string|undefined, password:string) => {
-    	var url = '/api/auth/login';
+    	var url = '/auth/login';
     	var data:{username:string|undefined, password:string} | {fingerprint?:string} = { username: username, password: password };
 
     	if (!username) {
-    		url = '/api/auth/login/guest';
+    		url = '/auth/login/guest';
     		data = { fingerprint: password };
     	} else if (this.state.forgotPassword) {
 			await this.callForgetPasswordApi();
     	}
 
-    	var result = await axios.post(url, data);
+		var result = await axios.post(url, data);
 		var response = result.data;
-    	if (this.props.scope === 'admin' && response.role !== 'admin') {
+		if (this.props.scope === 'admin' && response.role !== 'admin') {
 			if (!username) {
 				displayMessage('warning', i18next.t('ADMIN_PLEASE'));
 				store.logOut();
@@ -105,7 +105,7 @@ class LoginModal extends Component<IProps,IState> {
     	this.login(username, this.state.password);
     };
 
-    signup = () => {
+    signup = async () => {
     	if (this.state.login.includes('@')) {
     		this.setState({ errorBackground: 'errorBackground' });
     		displayMessage('warning', i18next.t('CHAR_NOT_ALLOWED', {char:'@'}));
@@ -127,16 +127,9 @@ class LoginModal extends Component<IProps,IState> {
 				}
     			data.securityCode = this.state.securityCode;
     		}
-    		axios.post('/api/users', data)
-    			.then(response => {
-    				displayMessage('info', i18next.t('CL_NEW_USER', {username: username}));
-    				this.setState({ redBorders: '' });
-    				this.login(username, password);
-    			})
-    			.catch(err => {
-					err.response.data.message ? displayMessage('error', err.response.data.message) : displayMessage('error', err);
-					this.setState({ redBorders: 'redBorders' });
-    			});
+    		await axios.post('/users', data)
+			this.setState({ redBorders: '' });
+			this.login(username, password);
     	}
     };
 
@@ -147,18 +140,12 @@ class LoginModal extends Component<IProps,IState> {
     };
 
     callForgetPasswordApi = async () => {
-		if (this.state.login)
-		try {
-    		await axios.post(`/api/users/${this.state.login}/resetpassword`, this.state.onlineSwitch ? {} : {
+		if (this.state.login) {
+    		await axios.post(`/users/${this.state.login}/resetpassword`, this.state.onlineSwitch ? {} : {
 				securityCode: this.state.securityCode,
 				password: this.state.password
-			})
-			if (this.state.onlineSwitch) {
-				displayMessage('success', i18next.t('FORGOT_ONLINE_PASSWORD_SUCCESS'));
-			}
-		} catch(err) {
-    		displayMessage('error', i18next.t(this.state.onlineSwitch ? 'FORGOT_ONLINE_PASSWORD_ERROR': `ERROR_CODES.${err}`));
-    	};
+			});
+		}
 	}
 	
 	forgetPasswordClick = () => {

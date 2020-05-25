@@ -4,5 +4,6 @@ import App from './App';
 
 import './i18n';
 import './isoLanguages';
+import GlobalStateProvider from './store/GlobalStateProvider';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<GlobalStateProvider><App /></GlobalStateProvider>, document.getElementById('root'));

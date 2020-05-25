@@ -65,7 +65,7 @@ class ProgressBar extends Component<IProps,IState> {
 			var futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
 			if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
 				this.setState({width: e.pageX});
-				axios.put('/api/player', { command: 'goTo', options: futurTimeSec });
+				axios.put('/player', { command: 'goTo', options: futurTimeSec });
 			}
 		}
     }
@@ -117,7 +117,7 @@ class ProgressBar extends Component<IProps,IState> {
     		} else if (data.currentlyPlaying === 'Sponsors') {
     			this.setState({karaInfoText: i18next.t('SPONSOR_TIME'), length: -1});
     		} else {
-    			var response = await axios.get('/api/karas/' + data.currentlyPlaying);
+    			var response = await axios.get('/karas/' + data.currentlyPlaying);
     			var kara = response.data;
     			var karaInfoText;
     			if (this.props.lyrics || (this.props.scope === 'public' && this.props.webappMode == 1)) {

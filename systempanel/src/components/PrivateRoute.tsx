@@ -1,26 +1,20 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { RouteProps } from 'react-router';
 import { Redirect, Route } from 'react-router-dom';
+import GlobalContext from '../store/context';
 
-interface PrivateRouteProps extends RouteProps {
-  isAuthenticated: boolean;
+class PrivateRoute extends Component<RouteProps, {}> {
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
+
+	render() {
+		const LoggedRoute = <Route {...this.props}/>
+		const NotLoggedRoute = <Redirect to='/system/login'/>
+		const NextRoute = this.context.globalState.auth.isAuthenticated ? LoggedRoute : NotLoggedRoute;
+		return (
+			NextRoute
+		);
+	}
 }
 
-class PrivateRoute extends Component<PrivateRouteProps, {}> {
-
-  render() {
-    const LoggedRoute = <Route {...this.props}/>
-    const NotLoggedRoute = <Redirect to='/system/login'/>
-    const NextRoute = this.props.isAuthenticated ? LoggedRoute : NotLoggedRoute;
-    return (
-        NextRoute
-    );
-  }
-}
-
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.auth.isAuthenticated
-});
-
-export default connect(mapStateToProps)(PrivateRoute);
+export default PrivateRoute;

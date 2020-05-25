@@ -84,8 +84,8 @@ class PlaylistHeader extends Component<IProps,IState> {
   				callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
   					var karaList = randomKaras.data.content.map((a:KaraElement) => {
   						return a.kid;
-  					}).join();
-  					var urlPost = '/api/playlists/' + this.props.idPlaylistTo + '/karas';
+  					});
+  					var urlPost = '/playlists/' + this.props.idPlaylistTo + '/karas';
   					axios.post(urlPost, { kid: karaList });
   				}, '');
   			}
@@ -95,8 +95,8 @@ class PlaylistHeader extends Component<IProps,IState> {
 
   addPlaylist = () => {
   	callModal('prompt', i18next.t('CL_CREATE_PLAYLIST'), '', (playlistName:string) => {
-  		axios.post('/api/playlists', { name: playlistName, flag_visible: false, flag_current: false, flag_public: false }).then(response => {
-			this.props.changeIdPlaylist(response.data.data);
+  		axios.post('/playlists', { name: playlistName, flag_visible: false, flag_current: false, flag_public: false }).then(response => {
+			this.props.changeIdPlaylist(response.data);
   		});
   	}
   	);
@@ -105,20 +105,20 @@ class PlaylistHeader extends Component<IProps,IState> {
   deletePlaylist = () => {
   	callModal('confirm', i18next.t('CL_DELETE_PLAYLIST', { playlist: (this.props.playlistInfo as DBPL).name }), '', (confirm:boolean) => {
   		if (confirm) {
-			  axios.delete('/api/playlists/' + this.props.idPlaylist);
+			  axios.delete('/playlists/' + this.props.idPlaylist);
 			  this.props.changeIdPlaylist(store.getModePlaylistID());
   		}
   	});
   };
 
   startFavMix = async () => {
-  	var response = await axios.get('/api/users/');
+  	var response = await axios.get('/users/');
   	var userList = response.data.filter((u:User) => (u.type as number) < 2);
   	ReactDOM.render(<FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList} />, document.getElementById('modal'));
   };
 
   exportPlaylist = async () => {
-	var url = this.props.idPlaylist === -5 ? '/api/favorites' : '/api/playlists/' + this.props.idPlaylist + '/export';
+	var url = this.props.idPlaylist === -5 ? '/favorites' : '/playlists/' + this.props.idPlaylist + '/export';
 	var response = await axios.get(url);
   	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
@@ -146,15 +146,14 @@ class PlaylistHeader extends Component<IProps,IState> {
   			var name:string;
 			if (file.name.includes('KaraMugen_fav')) {
 				data['favorites'] = fr['result'];
-				url = '/api/favorites/import';
+				url = '/favorites/import';
 				name = 'Favs';
 			} else {
-				url = '/api/playlists/import';
+				url = '/playlists/import';
 				data['playlist'] = fr['result'];
 				name = JSON.parse(fr.result as string).PlaylistInformation.name;
 			}
 			var response:{data:{unknownKaras:Array<any>, playlist_id:number}} = await axios.post(url, data);
-			displayMessage('success', i18next.t('PLAYLIST_ADDED', { name: name }));
 			if (response.data.unknownKaras && response.data.unknownKaras.length > 0) {
 				displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.data.unknownKaras.length }));
 			}
@@ -166,45 +165,41 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
   deleteAllKaras = () => {
-	try {
-	  if (this.props.idPlaylist === -2 || this.props.idPlaylist as number === -4) {
-		axios.put('/api/blacklist/criterias/empty');
-	  } else if (this.props.idPlaylist as number === -3) {
-		axios.put('/api/whitelist/empty');
-	  } else {
+	if (this.props.idPlaylist === -2 || this.props.idPlaylist as number === -4) {
+		axios.put('/blacklist/criterias/empty');
+	} else if (this.props.idPlaylist as number === -3) {
+		axios.put('/whitelist/empty');
+	} else {
 		axios.put(this.props.getPlaylistUrl().replace('/karas', '') + '/empty');
-	  }
-	} catch (error) {
-		displayMessage('error', i18next.t(`ERROR_CODES.${error.response.code}`));
 	}
   };
 
   setFlagCurrent = () => {
   	if (!(this.props.playlistInfo as DBPL).flag_current) {
-  		axios.put('/api/playlists/' + this.props.idPlaylist + '/setCurrent');
+  		axios.put('/playlists/' + this.props.idPlaylist + '/setCurrent');
   	}
   };
 
   setFlagPublic = () => {
   	if (!(this.props.playlistInfo as DBPL).flag_public) {
-  		axios.put('/api/playlists/' + this.props.idPlaylist + '/setPublic');
+  		axios.put('/playlists/' + this.props.idPlaylist + '/setPublic');
   	}
   };
 
   setFlagVisible = () => {
-  	axios.put('/api/playlists/' + this.props.idPlaylist,
+  	axios.put('/playlists/' + this.props.idPlaylist,
   		{ name: (this.props.playlistInfo as DBPL).name, flag_visible: !(this.props.playlistInfo as DBPL).flag_visible });
   };
 
   shuffle = async () => {
   	this.props.playlistWillUpdate();
-  	await axios.put('/api/playlists/' + this.props.idPlaylist + '/shuffle');
+  	await axios.put('/playlists/' + this.props.idPlaylist + '/shuffle');
   	this.props.playlistDidUpdate();
   };
 
   smartShuffle = () => {
   	this.props.playlistWillUpdate();
-  	axios.put('/api/playlists/' + this.props.idPlaylist + '/shuffle', { smartShuffle: 1 });
+  	axios.put('/playlists/' + this.props.idPlaylist + '/shuffle', { smartShuffle: 1 });
   	this.props.playlistDidUpdate();
   };
 

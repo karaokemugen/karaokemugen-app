@@ -1,17 +1,15 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Menu, Icon, Button} from 'antd';
+import { Menu, Button } from 'antd';
 import styles from '../App.module.css';
-import {logout} from '../actions/auth';
+import {logout} from '../store/actions/auth';
 import i18next from 'i18next';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import GlobalContext from '../store/context';
 
-interface KMenuProps {
-	username: string,
-	logout: () => any,
-}
-
-class KMMenu extends Component<KMenuProps, {}> {
+class KMMenu extends Component<{}, {}> {
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
 
 	state = {
 		current: '',
@@ -26,7 +24,7 @@ class KMMenu extends Component<KMenuProps, {}> {
 
 	render() {
 		return (
-			<div style={{display: 'flex', justifyContent: 'space-between'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
 				<Menu
 					mode='horizontal'
 					theme='dark'
@@ -68,23 +66,15 @@ class KMMenu extends Component<KMenuProps, {}> {
 						openKeys={this.state.connectOpenKeys}
 					>
 						<Menu.Item className={styles.menuItemInactive} key='user'>
-							<span><Icon type='user' /> {this.props.username}</span>
+							<span><UserOutlined /> {this.context.globalState.auth.data.username}</span>
 						</Menu.Item>
 						<Menu.Item key='logout'>
-							<Button icon='logout' onClick={this.props.logout}>{i18next.t('MENU.LOG_OUT')}</Button>
+							<Button icon={<LogoutOutlined />} onClick={() => logout(this.context.globalDispatch)}>{i18next.t('MENU.LOG_OUT')}</Button>
 						</Menu.Item>
 				</Menu>
 			</div>
-		);
+        );
 	}
 }
 
-const mapStateToProps = (state) => ({
-	username: state.auth.data.username,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	logout: () => logout(dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(KMMenu);
+export default KMMenu;

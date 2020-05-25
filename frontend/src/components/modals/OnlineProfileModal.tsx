@@ -3,7 +3,6 @@ import i18next from 'i18next';
 import axios from 'axios';
 import ReactDOM from 'react-dom';
 import store from '../../store';
-import { displayMessage } from '../tools';
 
 interface IProps {
 	loginServ?: string;
@@ -27,11 +26,9 @@ class OnlineProfileModal extends Component<IProps,IState> {
     onClick = async () => {
     	var response:{ token: string; onlineToken: string; };
     	if (this.props.type === 'convert') {
-    		response = await axios.post('/api/myaccount/online', { instance: this.state.modalLoginServ, password: this.state.password });
-    		displayMessage('success', i18next.t('PROFILE_CONVERTED'));
+    		response = await axios.post('/myaccount/online', { instance: this.state.modalLoginServ, password: this.state.password });
     	} else {
-    		response = await axios.delete('/api/myaccount/online', {data:{ password: this.state.password }});
-    		displayMessage('success', i18next.t('PROFILE_ONLINE_DELETED'));
+    		response = await axios.delete('/myaccount/online', {data:{ password: this.state.password }});
     	}
 		store.setLogInfos(response);
 		var element = document.getElementById('modal');

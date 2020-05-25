@@ -1,125 +1,66 @@
 import React, {Component} from 'react';
 import {Layout} from 'antd';
 import TagsForm from './TagsForm';
-import axios from 'axios/index';
-import {connect} from 'react-redux';
-import {push} from 'connected-react-router';
-import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
-
-import {ReduxMappedProps} from '../../react-app-env';
-import i18next from 'i18next';
-
-interface TagEditProps extends ReduxMappedProps {
-	push: (url: string) => void;
-	match?: any,
-}
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import Axios from 'axios';
+import { DBTag } from '../../../../src/lib/types/database/tag';
+import { getAxiosInstance } from '../../axiosInterceptor';
 
 interface TagEditState {
-	tag: any,
-	tags: any,
-	save: any,
+	tag: DBTag,
+	tags: Array<DBTag>,
+	save?: (tag:DBTag) => void,
+	loadTag: boolean
 }
 
-const newTag = {
-	name: null,
-	i18n: {}
-};
-
-class TagEdit extends Component<TagEditProps, TagEditState> {
+class TagEdit extends Component<RouteComponentProps<{tid:string}>, TagEditState> {
 
 	state = {
-		tag: null,
+		tag: undefined,
 		tags: [],
 		aliases: [],
-		save: () => {}
+		save: () => {},
+		loadTag: false
 	};
 
 	componentDidMount() {
 		this.loadTag();
 	}
 
-	saveNew = (tag) => {
-		axios.post('/api/tags', tag)
-			.then(() => {
-				this.props.infoMessage(i18next.t('TAGS.TAG_CREATED'));
-				this.props.push('/system/km/tags');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	saveNew = async (tag:DBTag) => {
+		await getAxiosInstance().post('/tags', tag);
+		this.props.history.push('/system/km/tags');
 	};
 
-	saveUpdate = (tag) => {
-		axios.put(`/api/tags/${tag.tid}`, tag)
-			.then(() => {
-				this.props.infoMessage(i18next.t('TAGS.TAG_EDITED'));
-				this.props.push('/system/km/tags');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	saveUpdate = async (tag:DBTag) => {
+		await getAxiosInstance().put(`/tags/${tag.tid}`, tag)
+		this.props.history.push('/system/km/tags');
 	};
 
-	handleTagMerge = (tid1,tid2) => {
-		axios.post('/api/tags/merge/'+tid1+'/'+tid2)
-			.then((data) => {
-				this.props.infoMessage(i18next.t('TAGS.TAGS_MERGED'));
-				this.props.push('/system/km/tags/');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	handleTagMerge = async (tid1:string, tid2:string) => {
+		await getAxiosInstance().post(`/tags/merge/${tid1}/${tid2}`);
+		this.props.history.push('/system/km/tags/');
 	}
 
-	loadTag = () => {
-		this.props.loading(true);
-		if (this.props.match && this.props.match.params.tid) {
-			axios.get(`/api/tags/${this.props.match.params.tid}`)
-				.then(res => {
-					const tagData = {...res.data};
-					tagData.tid = this.props.match.params.tid;
-					this.setState({tag: tagData, save: this.saveUpdate});
-
-					axios.get('/api/tags')
-						.then(res => {
-							this.props.loading(false);
-							this.setState({tags: res.data.content});
-						})
-						.catch(err => {
-							this.props.loading(false);
-							this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-						});
-				})
-				.catch(err => {
-					this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-					this.props.loading(false);
-				});
+	loadTag = async () => {
+		if (this.props.match.params.tid) {
+				let res = await Axios.get(`/tags/${this.props.match.params.tid}`);
+				const tagData = {...res.data};
+				tagData.tid = this.props.match.params.tid;
+				res = await Axios.get('/tags');
+				this.setState({tags: res.data.content, tag: tagData, save: this.saveUpdate, loadTag: true});
 		} else {
-			this.setState({tag: {...newTag}, save: this.saveNew});
-			this.props.loading(false);
+			this.setState({save: this.saveNew, loadTag: true});
 		}
 	};
-
 
 	render() {
 		return (
 			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.tag && (<TagsForm tag={this.state.tag} tags={this.state.tags} save={this.state.save} mergeAction={this.handleTagMerge} />)}
+				{this.state.loadTag && <TagsForm tag={this.state.tag} tags={this.state.tags} save={this.state.save} mergeAction={this.handleTagMerge} />}
 			</Layout.Content>
 		);
 	}
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message)),
-	push: (url) => dispatch(push(url))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(TagEdit);
+export default withRouter(TagEdit);

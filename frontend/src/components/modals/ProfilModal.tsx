@@ -98,7 +98,7 @@ class ProfilModal extends Component<IProps, IState> {
 			&& this.state.user.password === this.state.user.passwordConfirmation
 			|| !this.state.user.password)) {
 			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
-			await axios.put('/api/myaccount/', this.state.user);
+			await axios.put('/myaccount/', this.state.user);
 			store.setUser();
 		} else if (!this.state.user.nickname) {
 			this.setState({ nicknameMandatory: 'form-control redBorders' });
@@ -108,14 +108,14 @@ class ProfilModal extends Component<IProps, IState> {
 	}
 
     async getUser() {
-    	var response = await axios.get('/api/myaccount/');
+    	var response = await axios.get('/myaccount/');
     	var user = response.data;
     	user.password = undefined;
     	this.setState({ user: user });
     }
 
     async getUserList() {
-    	var response = await axios.get('/api/users/');
+    	var response = await axios.get('/users/');
     	this.setState({ users: response.data.filter((a:User) => a.flag_online) });
     }
 
@@ -137,7 +137,7 @@ class ProfilModal extends Component<IProps, IState> {
     			callModal('confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', (confirm:boolean) => {
     				if (confirm) {
     					var data = {favorites: fr['result']};
-    					axios.post('/api/favorites/import', data);
+    					axios.post('/favorites/import', data);
     				}
     			});
     		};
@@ -146,7 +146,7 @@ class ProfilModal extends Component<IProps, IState> {
     };
 
     async favExport() {
-    	const exportFile = await axios.get('/api/favorites/export');
+    	const exportFile = await axios.get('/favorites/export');
     	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
 		var dlAnchorElem = document.getElementById('downloadAnchorElem');
 		if (dlAnchorElem) {
@@ -157,7 +157,7 @@ class ProfilModal extends Component<IProps, IState> {
     }
 
     getUserDetails = async (event:any) => {
-    	const response = await axios.get('/api/users/' + event.currentTarget.id);
+    	const response = await axios.get('/users/' + event.currentTarget.id);
     	const responseUserDetails = response.data;
     	this.setState({ userDetails: { email: responseUserDetails.email, url: responseUserDetails.url, bio: responseUserDetails.bio, } });
     };
@@ -169,7 +169,7 @@ class ProfilModal extends Component<IProps, IState> {
     	}
     	dataFile.append('nickname', (store.getLogInfos() as Token).username);
 
-    	await axios.put('/api/myaccount', dataFile);
+    	await axios.put('/myaccount', dataFile);
 		this.getUser();
     };
 

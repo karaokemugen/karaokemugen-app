@@ -1,20 +1,15 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import { connect } from 'react-redux';
 import { Modal, Button, Layout, Row, Col } from 'antd';
-
-import { loading, infoMessage, errorMessage, warnMessage } from '../actions/navigation';
-import { ReduxMappedProps } from '../react-app-env';
 import i18next from 'i18next';
-
-interface DatabaseProps extends ReduxMappedProps { }
+import Axios from 'axios';
+import { getAxiosInstance } from '../axiosInterceptor';
 
 interface DatabaseState {
 	updateModal: boolean,
 	renameModal: boolean
 }
 
-class Database extends Component<DatabaseProps, DatabaseState> {
+class Database extends Component<{}, DatabaseState> {
 
 	constructor(props) {
 		super(props);
@@ -24,132 +19,91 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 		};
 	}
 
-	dbregen = () => {
-		axios.post('/api/db/generate')
-			.then(res => {
-				this.props.infoMessage(res.data);
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
-	};
-
-	dbvalidateFiles = () => {
-		axios.post('/api/db/validate')
-			.then(res => {
-				this.props.infoMessage(res.data);
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
-	};
-
-	dbupdate() {
-		axios.post('/api/downloads/updateMedias')
-			.then(res => {
-				this.props.infoMessage(res.data);
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	dbregen = async () => {
+		getAxiosInstance().post('/db/generate');
 	}
 
-	dbdump() {
-		this.props.loading(true);
-		axios.get('/api/db')
-			.then(res => {
-				this.props.loading(false);
-				this.props.infoMessage(res.data);
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	dbvalidateFiles = async () => {
+		getAxiosInstance().post('/db/validate');
 	}
 
-	dbrestore() {
-		this.props.loading(true);
-		axios.post('/api/db')
-			.then(res => {
-				this.props.loading(false);
-				this.props.infoMessage(res.data);
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	dbupdate =  async () => {
+		Axios.post('/downloads/updateMedias');
+	}
+
+	dbdump = async () => {
+		getAxiosInstance().get('/db');
+	}
+
+	dbrestore = async () => {
+		getAxiosInstance().post('/db');
 	}
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px' }}>
-				<Row type="flex" justify="space-between">
-					<Col span={4}>
+			<Layout.Content style={{ padding: '25px'}}>
+				<Row justify="space-between" style={{ flexWrap: 'nowrap' }}>
+					<Col flex="300px">
 						<Button
 							type='primary'
 							onClick={this.dbregen}
-							disabled={this.props.loadingActive}
 						>
 							{i18next.t('DATABASE.REGENERATE_DB')}
 						</Button>
 					</Col>
-					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.REGENERATE_DB_DESCRIPTION')}}>
+					<Col flex="auto"dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.REGENERATE_DB_DESCRIPTION')}}>
 					</Col>
 				</Row>
-				<Row type="flex" justify="space-between" style={{ marginTop: '20px' }}>
-					<Col span={4}>
+				<Row justify="space-between" style={{ marginTop: '20px', flexWrap: 'nowrap' }}>
+					<Col flex="300px">
 						<Button
 							type='primary'
 							onClick={this.dbvalidateFiles}
-							disabled={this.props.loadingActive}
 						>
 							{i18next.t('DATABASE.VALIDATE_FILES')}
 						</Button>
 					</Col>
-					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.VALIDATE_FILES_DESCRIPTION')}}>
+					<Col flex="auto" dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.VALIDATE_FILES_DESCRIPTION')}}>
 					</Col>
 				</Row>
-				<Row type="flex" justify="space-between" style={{ marginTop: '20px' }}>
-					<Col span={4}>
+				<Row justify="space-between" style={{ marginTop: '20px', flexWrap: 'nowrap' }}>
+					<Col flex="300px">
 						<Button
 							type='primary'
 							onClick={
 								() => this.setState({ updateModal: true })
 							}
-							disabled={this.props.loadingActive}
 						>
 							{i18next.t('DATABASE.UPDATE_MEDIA')}
 						</Button>
 					</Col>
-					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.UPDATE_MEDIA_DESCRIPTION')}}>
+					<Col flex="auto" dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.UPDATE_MEDIA_DESCRIPTION')}}>
 					</Col>
 				</Row>
-				<Row type="flex" justify="space-between" style={{ marginTop: '10px' }}>
-					<Col span={4}>
+				<Row justify="space-between" style={{ marginTop: '10px', flexWrap: 'nowrap' }}>
+					<Col flex="300px">
 						<Button
 							type='primary'
-							onClick={this.dbdump.bind(this)}
-							disabled={this.props.loadingActive}
+							onClick={this.dbdump}
 						>
 							{i18next.t('DATABASE.DUMP_DATABASE')}
 						</Button>
 					</Col>
-					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.DUMP_DATABASE_DESCRIPTION')}}>
+					<Col flex="auto" dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.DUMP_DATABASE_DESCRIPTION')}}>
 					</Col>
 				</Row>
 
-				<Row type="flex" justify="space-between" style={{ marginTop: '20px' }}>
-					<Col span={4}>
+				<Row justify="space-between" style={{ marginTop: '20px', flexWrap: 'nowrap' }}>
+					<Col flex="300px">
 
 						<Button
 							type='primary'
-							onClick={this.dbrestore.bind(this)}
-							disabled={this.props.loadingActive}
+							onClick={this.dbrestore}
 						>
 							{i18next.t('DATABASE.RESTORE_DATABASE')}
 						</Button>
 					</Col>
-					<Col span={18} dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.RESTORE_DATABASE_DESCRIPTION')}}>
+					<Col flex="auto" dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.RESTORE_DATABASE_DESCRIPTION')}}>
 					</Col>
 				</Row>
 				<Modal
@@ -172,15 +126,4 @@ class Database extends Component<DatabaseProps, DatabaseState> {
 	}
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Database);
+export default Database;

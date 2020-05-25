@@ -1,5 +1,11 @@
 import logger from "../lib/utils/logger";
 
+export function APIMessage(code: string, data?: any): object {
+	return {
+		code: code,
+		data: data
+	}
+}
 export function errMessage(code: string, message?: string) {
 	logger.error(`[API] ${code} : ${JSON.stringify(message)}`);
 }

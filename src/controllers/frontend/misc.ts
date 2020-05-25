@@ -5,7 +5,7 @@ import { shutdown, getKMStats } from '../../components/engine';
 import { getConfig } from '../../lib/utils/config';
 import { editSetting, getPublicConfig, backupConfig } from '../../utils/config';
 import { getDisplays } from '../../utils/displays';
-import { errMessage } from '../common';
+import { errMessage, APIMessage } from '../common';
 import { getState, getPlayerState, getPublicState } from '../../utils/state';
 import { findUserByName, updateSongsLeft } from '../../services/user';
 import { requireWebappLimited } from '../middlewares/webapp_mode';
@@ -33,7 +33,7 @@ export default function miscController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "Shutdown in progress."
+ * {code: "SHUTDOWN_IN_PROGRESS"}
  *
  */
 	router.route('/shutdown')
@@ -41,9 +41,11 @@ export default function miscController(router: Router) {
 		// Sends command to shutdown the app.
 			try {
 				shutdown();
-				res.status(200).send('Shutdown in progress');
+				res.status(200).json(APIMessage('SHUTDOWN_IN_PROGRESS'));
 			} catch(err) {
-				res.status(500).json(err);
+				const code = 'SHUTDOWN_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 
@@ -105,8 +107,9 @@ export default function miscController(router: Router) {
 				const publicSettings = await editSetting(setting);
 				res.json(publicSettings);
 			} catch(err) {
-				errMessage('SETTINGS_UPDATE_ERROR',err);
-				res.status(500).send('SETTINGS_UPDATE_ERROR');
+				const code = 'SETTINGS_UPDATE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/displays')
@@ -160,8 +163,9 @@ export default function miscController(router: Router) {
 				updateSongsLeft(userData.login);
 				res.json(stats);
 			} catch(err) {
-				errMessage('STATS_ERROR',err);
-				res.status(500).send('STATS_ERROR');
+				const code = 'STATS_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 
@@ -205,9 +209,6 @@ export default function miscController(router: Router) {
 	 * }
 	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
-	 * "PLAYER_STATUS_ERROR"
-	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
@@ -230,7 +231,9 @@ export default function miscController(router: Router) {
 			try {
 				res.json(await getFeeds());
 			} catch(err) {
-				res.status(500).send(err);
+				const code = 'WEBFEED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 
@@ -256,13 +259,15 @@ export default function miscController(router: Router) {
 	 * @apiGroup Misc
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiPermission admin
-	 * @apiSuccess {string} The current day's log file. Have fun parsing it :)
+	 * @apiSuccess {object[]} The current day's log file.
 	 */
 		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
-				res.status(200).send(await readLog());
+				res.status(200).json(await readLog());
 			} catch(err) {
-				res.status(500).send(`Unable to read log file : ${err}`);
+				const code = 'LOGFILE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 
@@ -276,13 +281,16 @@ export default function miscController(router: Router) {
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
+	 * {code: 'CONFIG_BACKUPED_ERROR'}
 	 */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await backupConfig();
-				res.status(200).send('Configuration file backuped to config.yml.backup');
+				res.status(200).json(APIMessage('CONFIG_BACKUPED'));
 			} catch(err) {
-				res.status(500).send(`Error backuping config file: ${err}`);
+				const code = 'CONFIG_BACKUPED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 
@@ -296,15 +304,19 @@ export default function miscController(router: Router) {
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
+	 * {code: 'DATABASE_GENERATED'}
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
+	 * {code: 'DATABASE_GENERATED_ERROR'}
 	 */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await generateDB();
-				res.status(200).send('DB successfully regenerated');
+				res.status(200).json(APIMessage('DATABASE_GENERATED'));
 			} catch(err) {
-				res.status(500).send(`Error while regenerating DB: ${err}`);
+				const code = 'DATABASE_GENERATED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/db/validate')
@@ -317,8 +329,10 @@ export default function miscController(router: Router) {
 		 * @apiHeader authorization Auth token received from logging in
 		 * @apiSuccessExample Success-Response:
 		 * HTTP/1.1 200 OK
+		 * {code: 'FILES_VALIDATED'}
 		 * @apiErrorExample Error-Response:
 		 * HTTP/1.1 500 Internal Server Error
+		 * {code: 'FILES_VALIDATED_ERROR'}
 		 */
 			.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 				try {
@@ -326,9 +340,11 @@ export default function miscController(router: Router) {
 						validateOnly: true,
 						progressBar: true
 					});
-					res.status(200).send('Files validated');
+					res.status(200).json(APIMessage('FILES_VALIDATED'));
 				} catch(err) {
-					res.status(500).send(`Error while validating files: ${err}`);
+					const code = 'FILES_VALIDATED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 				}
 			});
 	router.route('/db')
@@ -341,15 +357,19 @@ export default function miscController(router: Router) {
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
+	 * {code: 'DATABASE_DUMPED'}
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
+	 * {code: 'DATABASE_DUMPED_ERROR'}
 	 */
 		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await dumpPG();
-				res.status(200).send('Database dumped to karaokemugen.sql');
+				res.status(200).json(APIMessage('DATABASE_DUMPED'));
 			} catch(err) {
-				res.status(500).send(`Error dumping database : ${err}`);
+				const code = 'DATABASE_DUMPED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -361,15 +381,19 @@ export default function miscController(router: Router) {
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
+	 * {code: 'DATABASE_RESTORED'}
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
+	 * {code: 'DATABASE_RESTORED_ERROR'}
 	 */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await restorePG();
-				res.status(200).send('Database restored from karaokemugen.sql');
+				res.status(200).json(APIMessage('DATABASE_RESTORED'));
 			} catch(err) {
-				res.status(500).send(`Error restoring database : ${err}`);
+				const code = 'DATABASE_RESTORED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/fs')
@@ -385,17 +409,20 @@ export default function miscController(router: Router) {
 	 * @apiSuccess {Object[]} contents Directory contents
 	 * @apiSuccess {string} contents/name File/directory name
 	 * @apiSuccess {boolean} contents/isDirectory is it a directory?
-	 * @apiSuccess {Object[]} drivers `null` if not under Windows. on Windows contains an object array with drive data. use `name` of each object to get drive letters present in system.
+	 * @apiSuccess {Object[]} drives `null` if not under Windows. on Windows contains an object array with drive data. use `name` of each object to get drive letters present in system.
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
+	 * {code: 'FS_ERROR'}
 	 */
 		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				res.status(200).json(await browseFs(req.body.path, req.body.onlyMedias));
 			} catch(err) {
-				res.status(500).send(`Error browsing filesystem : ${err}`);
+				const code = 'FS_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 }

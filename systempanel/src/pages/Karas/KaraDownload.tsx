@@ -1,33 +1,16 @@
 import React, {Component} from 'react';
-import axios from 'axios';
-import {connect} from 'react-redux';
-import {Row, Col, Icon, Layout, Table, Input, Button, Cascader, Radio} from 'antd';
-import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
-import {
-  getLocalKaras,
-  deleteDownloadQueue,
-  deleteKAraFromDownloadQueue,
-  postToDownloadQueue,
-  putToDownloadQueueStart,
-  putToDownloadQueuePause,
-  postAllToDownloadQueue,
-  postUpdateToDownloadQueue,
-  postCleanToDownloadQueue,
-  postSyncToDownloadQueue
-} from "../../api/local";
-import {ReduxMappedProps} from '../../react-app-env';
+import { Row, Col, Layout, Table, Input, Button, Cascader, Radio } from 'antd';
 import {getCriterasByValue} from './_blc_criterias_types';
-import getTags from '../../api/getTags';
 import i18next from 'i18next';
 import { tagTypes } from '../../utils/tagTypes';
 import { KaraDownloadRequest } from '../../../../src/types/download';
 import { getTagInLocaleList } from '../../utils/kara';
+import { DownloadOutlined, CheckCircleTwoTone, ClockCircleTwoTone, SyncOutlined, InfoCircleTwoTone } from '@ant-design/icons';
+import Axios from 'axios';
 
 var blacklist_cache = {}
 var api_get_local_karas_interval = null;
 var api_read_kara_queue_interval = null;
-
-interface KaraDownloadProps extends ReduxMappedProps {}
 
 interface KaraDownloadState {
 	karas_local: any[],
@@ -46,7 +29,7 @@ interface KaraDownloadState {
 	compare: string
 }
 
-class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
+class KaraDownload extends Component<{}, KaraDownloadState> {
 
 	constructor(props) {
 		super(props);
@@ -66,11 +49,9 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			tags: [],
 			compare: ''
 		};
-
 	}
 
 	componentDidMount() {
-
 		this.api_get_online_karas();
 		this.api_get_blacklist_criterias();
 		this.blacklist_check_emptyCache();
@@ -79,34 +60,32 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	}
 
 	async getTags() {
-		let tags = await getTags();
-		this.setState({tags:tags});
+		let res = await Axios.get(`/tags/remote`);
+		this.setState({tags: res.data.content});
 	}
 
 	componentWillUnmount() {
 		this.stopObserver();
 	}
 
-	startObserver()
-	{
+	startObserver() {
 		this.api_get_local_karas();
 		this.api_read_kara_queue();
-		api_get_local_karas_interval = setInterval(this.api_get_local_karas.bind(this), 5000);
-		api_read_kara_queue_interval = setInterval(this.api_read_kara_queue.bind(this), 5000);
+		api_get_local_karas_interval = setInterval(this.api_get_local_karas, 5000);
+		api_read_kara_queue_interval = setInterval(this.api_read_kara_queue, 5000);
 	}
-	stopObserver()
-	{
+	stopObserver() {
 		clearInterval(api_get_local_karas_interval);
 		clearInterval(api_read_kara_queue_interval);
 	}
 
-	changeFilter(event) {
+	changeFilter = (event) => {
 		this.setState({filter: event.target.value, currentPage: 0}, () => {
 			localStorage.setItem('karaDownloadFilter', this.state.filter);
 		});
 	}
 
-	downloadKara(kara) {
+	downloadKara = (kara) => {
 		let downloadObject:KaraDownloadRequest = {
 			kid: kara.kid,
 			mediafile: kara.mediafile,
@@ -114,69 +93,56 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			name: kara.name,
 			repository: kara.repository
 		};
-		postToDownloadQueue([downloadObject]);
+		this.postToDownloadQueue([downloadObject]);
 		this.api_read_kara_queue();
 	}
 
-	async downloadAll() {
-		this.props.loading(true);
+	downloadAll = async () => {
 		this.stopObserver();
-		putToDownloadQueuePause()
+		this.putToDownloadQueuePause()
 
 		var p = Math.max(0,this.state.currentPage - 1);
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
-
-		try {
-			var response = await axios.get(`/api/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}${this.state.compare}`)
-			let karas = response.data.content;
-			let karasToDownload:KaraDownloadRequest[] = [];
-			karas.forEach((kara) => {
-				if(this.blacklist_check(kara))
-				{
-					karasToDownload.push({
-						kid: kara.kid,
-						mediafile: kara.mediafile,
-						size: kara.mediasize,
-						name: kara.karafile.replace('.kara.json', ''),
-						repository: kara.repository
-					});
-				}
-			});
-			await postToDownloadQueue(karasToDownload);
-			this.props.loading(false);
-			this.startObserver();
-			putToDownloadQueueStart();
-		} catch(err) {
-			this.props.loading(false);
-			this.props.errorMessage(`${err.status}: ${err.statusText}. ${err.data}`);
-		}
+		var response = await Axios.get(`/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}${this.state.compare}`)
+		let karas = response.data.content;
+		let karasToDownload:KaraDownloadRequest[] = [];
+		karas.forEach((kara) => {
+			if(this.blacklist_check(kara))
+			{
+				karasToDownload.push({
+					kid: kara.kid,
+					mediafile: kara.mediafile,
+					size: kara.mediasize,
+					name: kara.karafile.replace('.kara.json', ''),
+					repository: kara.repository
+				});
+			}
+		});
+		await this.postToDownloadQueue(karasToDownload);
+		this.startObserver();
+		this.putToDownloadQueueStart();
 	}
 
-	async api_get_local_karas() {
-		this.setState({karas_local: await getLocalKaras()});
+	api_get_local_karas = async () => {
+		const res = await Axios.get('/karas');
+		this.setState({karas_local: res.data.content});
 	}
 
 	async api_get_blacklist_criterias() {
-		try {
-			const res = await axios.get('/api/downloads/blacklist/criterias');
-			if(res.data.length)
-			{
-				let criterias = res.data.map(function(criteria){
-					var c = getCriterasByValue(criteria.type);
-					if(c && c.fields && c.fields.length > 0)
-					{
-						criteria.filter = c;
-						criteria.value = criteria.value.toLowerCase();
-						return criteria;
-					}
-					return null;
-				})
-				this.setState({blacklist_criterias:criterias});
-			}
-		} catch (e) {
-			console.log('Error KaraDownload.js in api_get_blacklist_criterias');
-			throw e;
+		const res = await Axios.get('/downloads/blacklist/criterias');
+		if(res.data.length) {
+			let criterias = res.data.map(function(criteria){
+				var c = getCriterasByValue(criteria.type);
+				if(c && c.fields && c.fields.length > 0)
+				{
+					criteria.filter = c;
+					criteria.value = criteria.value.toLowerCase();
+					return criteria;
+				}
+				return null;
+			})
+			this.setState({blacklist_criterias:criterias});
 		}
 	}
 
@@ -235,41 +201,26 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		return blacklist_cache[kara.kid];
 	}
 
-	api_get_online_karas() {
-		this.props.loading(true);
+	api_get_online_karas = async () => {
 		var p = Math.max(0,this.state.currentPage - 1);
 		var psz = this.state.currentPageSize;
 		var pfrom = p*psz;
-
-				axios.get(`/api/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}`
-					+ this.state.compare)
-			.then(res => {
-				let karas = res.data.content;
-				karas = karas.map((kara) => {
-					kara.name = kara.karafile.replace('.kara.json', '');
-					return kara;
-				});
-				this.props.loading(false);
-				this.setState({
-					karas_online: karas,
-					karas_online_count: res.data.infos.count || 0,
-					i18nTag: res.data.i18n
-				});
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.status}: ${err.statusText}. ${err.data}`);
-			});
+		let res = await Axios.get(`/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}${this.state.compare}`);
+		let karas = res.data.content;
+		karas = karas.map((kara) => {
+			kara.name = kara.karafile.replace('.kara.json', '');
+			return kara;
+		});
+		this.setState({
+			karas_online: karas,
+			karas_online_count: res.data.infos.count || 0,
+			i18nTag: res.data.i18n
+		});
 	}
 
-	async api_read_kara_queue() {
-		try {
-			const res = await axios.get('/api/downloads');
-			this.setState({karas_queue: res.data});
-		} catch (e) {
-			console.log('Error KaraDownload.js in api_read_kara_queue');
-			throw e;
-		}
+	api_read_kara_queue = async () => {
+		const res = await Axios.get('/downloads');
+		this.setState({karas_queue: res.data});
 	}
 
 	handleTableChange = (pagination, filters, sorter) => {
@@ -279,7 +230,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		});
 		localStorage.setItem('karaDownloadPage',pagination.current);
 		localStorage.setItem('karaDownloadPageSize',pagination.pageSize);
-		setTimeout(this.api_get_online_karas.bind(this),10);
+		setTimeout(this.api_get_online_karas,10);
 	};
 
 	handleFilterTagSelection = (value) => {
@@ -289,7 +240,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 
 		this.setState({tagFilter:t, currentPage: 0}, () => {
 			localStorage.setItem('karaDownloadtagFilter', this.state.tagFilter);
-			setTimeout(this.api_get_online_karas.bind(this),10);
+			setTimeout(this.api_get_online_karas,10);
 		});
 	}
 
@@ -318,31 +269,48 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	  return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	}
 
+	// START karas download queue
+	putToDownloadQueueStart() {
+		Axios.put('/downloads/start');
+	}
+
+	// PAUSE karas download queue
+	putToDownloadQueuePause() {
+		Axios.put('/downloads/pause');
+	}
+
+	// POST (add) items to download queue
+	postToDownloadQueue(downloads:KaraDownloadRequest[]) {
+		Axios.post('/downloads', {
+			downloads
+		});
+	}
+
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px' }}>
 				<Layout>
 					<Layout.Header>
-						<Row type="flex" justify="space-between">
+						<Row justify="space-between">
 							<Col span={14}>
 								<Input.Search
 									placeholder={i18next.t('SEARCH_FILTER')}
 									value={this.state.filter}
 									onChange={event => this.changeFilter(event)}
 									enterButton={i18next.t('SEARCH')}
-									onSearch={this.api_get_online_karas.bind(this)}
+									onSearch={this.api_get_online_karas}
 								/>
 							</Col>
 							<Col span={5}>
 								<Cascader style={{ width: '90%' }} options={this.FilterTagCascaderOption()}
 									showSearch={{filter:this.FilterTagCascaderFilter,matchInputWidth:false}}
-									onChange={this.handleFilterTagSelection.bind(this)} placeholder={i18next.t('KARA.TAG_FILTER')} />
+									onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
 							</Col>
 						</Row>
-						<Row style={{ paddingTop: '20px'}} type="flex">
+						<Row style={{ paddingTop: '20px'}}>
 							<Col span={11}>
 								<Button style={{width: '230px'}} type="primary" key="synchronize"
-									onClick={() => postSyncToDownloadQueue()}>{i18next.t('KARA.SYNCHRONIZE')}</Button>
+									onClick={() => Axios.post('/downloads/sync')}>{i18next.t('KARA.SYNCHRONIZE')}</Button>
 								&nbsp;
 								{i18next.t('KARA.SYNCHRONIZE_DESC')}
 							</Col>
@@ -353,10 +321,10 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 								<label>{i18next.t('KARA.QUEUE_LABEL')}</label>
 							</Col>
 						</Row>
-						<Row style={{ paddingTop: '5px'}} type="flex">
+						<Row style={{ paddingTop: '5px'}}>
 							<Col span={11}>
 								<Button style={{width: '230px'}} type="primary" key="queueDownloadAll"
-									onClick={() => postAllToDownloadQueue()}>{i18next.t('KARA.DOWNLOAD_ALL')}</Button>
+									onClick={() => Axios.post('/downloads/all')}>{i18next.t('KARA.DOWNLOAD_ALL')}</Button>
 								&nbsp;
 								{i18next.t('KARA.DOWNLOAD_ALL_DESC')}
 							</Col>
@@ -369,13 +337,13 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 							</Col>
 							<Col span={4}>
 								<Button style={{width: '100px'}} type="primary" key="queueStart"
-									onClick={putToDownloadQueueStart}>{i18next.t('KARA.START_DOWNLOAD_QUEUE')}</Button>
+									onClick={this.putToDownloadQueueStart}>{i18next.t('KARA.START_DOWNLOAD_QUEUE')}</Button>
 							</Col>
 						</Row>
-						<Row style={{ paddingTop: '5px'}} type="flex">
+						<Row style={{ paddingTop: '5px'}}>
 							<Col span={11}>
 								<Button style={{width: '230px'}} type="primary" key="queueUpdateAll"
-									onClick={() => postUpdateToDownloadQueue()}>{i18next.t('KARA.UPDATE_ALL')}</Button>
+									onClick={() => Axios.post('/downloads/update')}>{i18next.t('KARA.UPDATE_ALL')}</Button>
 								&nbsp;
 								{i18next.t('KARA.UPDATE_ALL_DESC')}
 							</Col>
@@ -388,13 +356,13 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 							</Col>
 							<Col span={4}>
 								<Button style={{width: '100px'}} type="primary" key="queuePause"
-									onClick={putToDownloadQueuePause}>{i18next.t('KARA.PAUSE_DOWNLOAD_QUEUE')}</Button>
+									onClick={this.putToDownloadQueuePause}>{i18next.t('KARA.PAUSE_DOWNLOAD_QUEUE')}</Button>
 							</Col>
 						</Row>
-						<Row style={{ paddingTop: '5px'}} type="flex">
+						<Row style={{ paddingTop: '5px'}}>
 							<Col span={11}>
 								<Button style={{width: '230px'}} type="primary" key="queueCleanAll"
-									onClick={() => postCleanToDownloadQueue()}>{i18next.t('KARA.CLEAN_ALL')}</Button>
+									onClick={() => Axios.post('/downloads/clean')}>{i18next.t('KARA.CLEAN_ALL')}</Button>
 								&nbsp;
 								{i18next.t('KARA.CLEAN_ALL_DESC')}
 							</Col>
@@ -407,7 +375,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 							</Col>
 							<Col span={4}>
 								<Button style={{width: '100px'}} type="primary" key="queueDelete"
-									onClick={deleteDownloadQueue}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
+									onClick={()=> Axios.delete('/downloads')}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
 							</Col>
 						</Row>
 					</Layout.Header>
@@ -419,7 +387,6 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 							columns={this.columns}
 							rowKey='kid'
 							pagination={{
-								position:'both',
 								current: this.state.currentPage || 0,
 								defaultPageSize: this.state.currentPageSize,
 								pageSize: this.state.currentPageSize,
@@ -463,7 +430,7 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 			return serie || getTagInLocaleList(this.state.i18nTag, record.singers).join(', ');
 		}
 	}, {
-		title: i18next.t('KARA.TYPE'),
+		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => {
@@ -495,32 +462,34 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 		title: i18next.t('KARA.DETAILS'),
 		key: 'details',
 		render: (text, record) => {
-			return <Button type="default" href={`https://${record.repository}/base/kara/${record.kid}`}><Icon type="info-circle" theme="twoTone" /></Button>;
+			return <Button type="default" href={`https://${record.repository}/base/kara/${record.kid}`}><InfoCircleTwoTone /></Button>;
 		}
 	}, {
 		title: <span><Button title={i18next.t('KARA.DOWNLOAD_ALL_TOOLTIP')} type="default"
-			onClick={this.downloadAll.bind(this)}><Icon type='download'/></Button>{i18next.t('KARA.DOWNLOAD')}
+			onClick={this.downloadAll}><DownloadOutlined /></Button>{i18next.t('KARA.DOWNLOAD')}
 			</span>,
 		key: 'download',
 		render: (text, record) => {
 			var button = null;
 			var blacklisted = !this.blacklist_check(record);
 			if(this.is_local_kara(record))
-				button = <Button disabled type="default"><Icon type='check-circle' theme="twoTone" twoToneColor="#52c41a"/></Button>;
+				button = <Button disabled type="default"><CheckCircleTwoTone twoToneColor="#52c41a"/></Button>;
 			else {
 				let queue = this.is_queued_kara(record);
 				if(queue) {
 					if(queue.status==='DL_RUNNING')
-						button = <span><Button disabled type="default"><Icon type="sync" spin /></Button></span>;
+						button = <span><Button disabled type="default"><SyncOutlined spin /></Button></span>;
 					else if(queue.status==='DL_PLANNED')
-						button = <Button onClick={deleteKAraFromDownloadQueue.bind(null,queue.pk_uuid)} type="default"><Icon type='clock-circle' theme="twoTone" twoToneColor="#dc4e41"/></Button>;
+						button = <Button onClick={() => Axios.delete(`/downloads/${queue.pk_uuid}`)} type="default">
+							<ClockCircleTwoTone twoToneColor="#dc4e41"/>
+						</Button>;
 					else if(queue.status==='DL_DONE') // done but not in local -> try again dude
-						button = <span><Button disabled type="default"><Icon type='check-circle' theme="twoTone" twoToneColor="#4989f3"/></Button></span>;
+						button = <span><Button disabled type="default"><CheckCircleTwoTone twoToneColor="#4989f3"/></Button></span>;
 				} else {
 					if(blacklisted)
-						button = <Button type="danger" onClick={this.downloadKara.bind(this,record)} ><Icon type='download'/></Button>;
+						button = <Button type="primary" danger onClick={() => this.downloadKara(record)} ><DownloadOutlined /></Button>;
 					else
-						button = <Button type="default" onClick={this.downloadKara.bind(this,record)}><Icon type='download'/></Button>;
+						button = <Button type="default" onClick={() => this.downloadKara(record)}><DownloadOutlined /></Button>;
 				}
 			}
 			return <span>{button} {Math.round(record.mediasize/(1024*1024))}Mb {blacklisted ? <small style={{color:'#f5232e'}}>{i18next.t('KARA.IN_BLACKLIST')}</small>:null}</span>;
@@ -528,15 +497,4 @@ class KaraDownload extends Component<KaraDownloadProps, KaraDownloadState> {
 	}];
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(KaraDownload);
+export default KaraDownload;

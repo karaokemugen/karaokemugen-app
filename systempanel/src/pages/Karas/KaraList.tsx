@@ -1,96 +1,68 @@
 import React, {Component} from 'react';
-import axios from 'axios';
-import {connect} from 'react-redux';
-import {Icon, Button, Layout, Table, Input, Divider} from 'antd';
+import { Button, Layout, Table, Input, Divider } from 'antd';
 import {Link} from 'react-router-dom';
-import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
-import { deleteKaraByLocalId } from '../../api/local';
-import {ReduxMappedProps} from '../../react-app-env';
 import {getTagInLocaleList} from "../../utils/kara";
 import i18next from 'i18next';
-
-interface KaraListProps extends ReduxMappedProps {
-}
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import Axios from 'axios';
+import { DBKara } from '../../../../src/lib/types/database/kara';
+import { getAxiosInstance } from '../../axiosInterceptor';
 
 interface KaraListState {
-	karas: any[],
-	kara: any,
-	karas_removing_lastcall: number,
+	karas: DBKara[]
 	karas_removing: string[],
 	currentPage: number,
 	filter: string,
-	i18nTag: any[]
+	i18nTag: any[],
+	total_count: number
 }
 
-class KaraList extends Component<KaraListProps, KaraListState> {
+class KaraList extends Component<{}, KaraListState> {
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			karas: [],
-			kara: {},
-			karas_removing_lastcall: 0,
 			karas_removing: [],
 			currentPage: +localStorage.getItem('karaPage') || 1,
 			filter: localStorage.getItem('karaFilter') || '',
-			i18nTag: []
+			i18nTag: [],
+			total_count: 0
 		};
-
 	}
 
 	componentDidMount() {
-		this.props.loading(true);
 		this.refresh();
-		setInterval(this.deletionQueueCron.bind(this),1000);
 	}
 
-	refresh() {
-		axios.get('/api/karas', { params: { filter: this.state.filter,  }})
-			.then(res => {
-				this.props.loading(false);
-				this.setState({karas: res.data.content, i18nTag: res.data.i18n});
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	refresh = async () => {
+		let res = await Axios.get('/karas', { params: { filter: this.state.filter, from: (this.state.currentPage-1)*100, size: 100}});
+		this.setState({karas: res.data.content, i18nTag: res.data.i18n, total_count: res.data.infos.count});
 	}
 
-	changePage(page) {
-		this.setState({currentPage: page});
+	async changePage(page) {
+		await this.setState({currentPage: page});
 		localStorage.setItem('karaPage',page);
+		this.refresh();
 	}
 
 	changeFilter(event) {
-		this.setState({filter: event.target.value}, () => {
-			localStorage.setItem('karaFilter', this.state.filter);
-		});
+		this.setState({filter: event.target.value});
+		localStorage.setItem('karaFilter', this.state.filter);
 	}
 
-	deleteKara(kara) {
-		this.deletionQueuePush(kara.kid);
-		deleteKaraByLocalId(kara.kid);
-	}
-
-	deletionQueuePush(kid) {
+	 deleteKara = async (kara) => {
 		let karas_removing = this.state.karas_removing;
-		karas_removing.push(kid);
+		karas_removing.push(kara.kid);
 		this.setState({
-			karas_removing:karas_removing,
-			karas_removing_lastcall:new Date().getTime()
+			karas_removing:karas_removing
+		});
+		await getAxiosInstance().delete(`/karas/${kara.kid}`);
+		this.setState({
+			karas_removing: this.state.karas_removing.filter(value => value !== kara.kid),
+			karas: this.state.karas.filter(value => value.kid !== kara.kid)
 		});
 	}
-
-	deletionQueueCron() {
-		if(this.state.karas_removing_lastcall > 0 && this.state.karas_removing_lastcall < new Date().getTime() - 3000) {
-			this.setState({
-				karas_removing:[],
-				karas_removing_lastcall:0
-			});
-			this.refresh();
-		}
-	}
-
 
 	render() {
 		return (
@@ -102,7 +74,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 							value={this.state.filter}
 							onChange={event => this.changeFilter(event)}
 							enterButton={i18next.t('SEARCH')}
-							onSearch={this.refresh.bind(this)}
+							onSearch={this.refresh}
 						/>
 					</Layout.Header>
 					<Layout.Content>
@@ -111,6 +83,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 							columns={this.columns}
 							rowKey='kid'
 							pagination={{
+								position: ['topRight', 'bottomRight'],
 								current: this.state.currentPage,
 								defaultPageSize: 100,
 								pageSize: 100,
@@ -120,7 +93,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 									const from = range[0];
 									return i18next.t('KARA.SHOWING', {from:from,to:to,total:total});
 								},
-								total: this.state.karas.length,
+								total: this.state.total_count,
 								showSizeChanger: true,
 								showQuickJumper: true,
 								onChange: page => this.changePage(page)
@@ -147,7 +120,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 			return getTagInLocaleList(this.state.i18nTag, series).join(', ') || getTagInLocaleList(this.state.i18nTag, record.singers).join(', ');
 		}
 	}, {
-		title: i18next.t('KARA.TYPE'),
+		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => {
@@ -173,26 +146,12 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/km/karas/${record.kid}`}><Icon type='edit'/></Link>
+			<Link to={`/system/km/karas/${record.kid}`}><EditOutlined /></Link>
 			<Divider type="vertical"/>
-			{this.state.karas_removing.indexOf(record.kid)>=0 ?
-				<button type="button"><Icon type="sync" spin /></button> :
-				<Button type="danger" icon='delete' onClick={this.deleteKara.bind(this,record)}></Button>
-			}
+			<Button type="primary" danger loading={this.state.karas_removing.indexOf(record.kid)>=0} 
+				icon={<DeleteOutlined />} onClick={() => this.deleteKara(record)}></Button>
 		</span>)
 	}];
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message))
-});
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(KaraList);
+export default KaraList;

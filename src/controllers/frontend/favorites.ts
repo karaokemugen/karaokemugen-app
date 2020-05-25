@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { errMessage } from "../common";
+import { errMessage, APIMessage } from "../common";
 import { emitWS } from "../../lib/utils/ws";
 import { createAutoMix, getFavorites, addToFavorites, deleteFavorites, exportFavorites, importFavorites } from "../../services/favorites";
 import { check } from "../../lib/utils/validators";
@@ -18,7 +18,7 @@ export default function favoritesController(router: Router) {
  * @apiPermission admin
  *
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {String} users Comma-separated list of usernames to pick favorites from
+ * @apiParam {String} users list of usernames to pick favorites from
  * @apiParam {Number} duration Duration wished for the generatedplaylist in minutes
  * @apiSuccess {String} message Message to display
  *
@@ -42,13 +42,14 @@ export default function favoritesController(router: Router) {
 				try {
 					await createAutoMix({
 						duration: +req.body.duration,
-						users: req.body.users.split(',')
+						users: req.body.users
 					}, req.authToken.username);
 					emitWS('playlistsUpdated');
-					res.status(201).send('AUTOMIX_CREATED');
+					res.status(201).json();
 				} catch(err) {
-					errMessage('AUTOMIX_ERROR', err);
-					res.status(500).send('AUTOMIX_ERROR');
+					const code = 'AUTOMIX_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -113,8 +114,9 @@ export default function favoritesController(router: Router) {
 				});
 				res.json(karas);
 			} catch(err) {
-				errMessage('FAVORITES_VIEW_ERROR',err);
-				res.status(500).send('FAVORITES_VIEW_ERROR');
+				const code = 'FAVORITES_VIEW_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -130,11 +132,11 @@ export default function favoritesController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * "FAVORITES_ADDED"
- * @apiError FAVORITES_ADD_SONG_ERROR Unable to add songs to the playlist
+ * @apiError FAVORITES_ADDED_ERROR Unable to add songs to the playlist
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "FAVORITES_ADD_SONG_ERROR"
+ * "FAVORITES_ADDED_ERROR"
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
@@ -146,10 +148,11 @@ export default function favoritesController(router: Router) {
 				try {
 					await addToFavorites(req.authToken.username, req.body.kid);
 					emitWS('favoritesUpdated', req.authToken.username);
-					res.status(200).send('FAVORITES_ADDED');
+					res.status(200).json(APIMessage('FAVORITES_ADDED'));
 				} catch(err) {
-					errMessage('FAVORITES_ADD_SONG_ERROR', err);
-					res.status(500).send('FAVORITES_ADD_SONG_ERROR');
+					const code = 'FAVORITES_ADDED_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -170,11 +173,11 @@ export default function favoritesController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * "FAVORITES_DELETED"
- * @apiError FAVORITES_DELETE_ERROR Unable to delete the favorited song
+ * @apiError FAVORITES_DELETED_ERROR Unable to delete the favorited song
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "FAVORITES_DELETE_ERROR"
+ * "FAVORITES_DELETED_ERROR"
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
@@ -188,10 +191,11 @@ export default function favoritesController(router: Router) {
 				try {
 					await deleteFavorites(req.authToken.username, req.body.kid );
 					emitWS('favoritesUpdated', req.authToken.username);
-					res.status(200).send('FAVORITES_DELETED');
+					res.status(200).json(APIMessage('FAVORITES_DELETED'));
 				} catch(err) {
-					errMessage('FAVORITES_DELETE_ERROR', err);
-					res.status(500).send('FAVORITES_DELETE_ERROR');
+					const code = 'FAVORITES_DELETED_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			}
 		});
@@ -212,12 +216,12 @@ export default function favoritesController(router: Router) {
  * 		<See admin/playlists/[id]/export object>
  *   }
  * }
- * @apiError FAVORITES_EXPORT_ERROR Unable to export favorites
+ * @apiError FAVORITES_EXPORTED_ERROR Unable to export favorites
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
- *   "code": "FAVORITES_EXPORT_ERROR"
+ *   "code": "FAVORITES_EXPORTED_ERROR"
  * }
  */
 		.get(getLang, requireAuth, requireValidUser, requireRegularUser, updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
@@ -226,8 +230,9 @@ export default function favoritesController(router: Router) {
 				const favorites = await exportFavorites(req.authToken.username);
 				res.json(favorites);
 			} catch(err) {
-				errMessage('FAVORITES_EXPORT_ERROR', err);
-				res.status(500).send('FAVORITES_EXPORT_ERROR');
+				const code = 'FAVORITES_EXPORTED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/favorites/import')
@@ -243,11 +248,11 @@ export default function favoritesController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * "FAVORITES_IMPORTED"
- * @apiError FAVORITES_IMPORT_ERROR Unable to import playlist
+ * @apiError FAVORITES_IMPORTED_ERROR Unable to import playlist
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "FAVORITES_IMPORT_ERROR"
+ * "FAVORITES_IMPORTED_ERROR"
  */
 		.post(getLang, requireAuth, requireValidUser, requireRegularUser,updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
@@ -257,16 +262,16 @@ export default function favoritesController(router: Router) {
 				try {
 					await importFavorites(JSON.parse(req.body.favorites), req.authToken.username);
 					emitWS('favoritesUpdated', req.authToken.username);
-					res.status(200).send('FAVORITES_IMPORTED');
+					res.status(200).json(APIMessage('FAVORITES_IMPORTED'));
 				} catch(err) {
-					errMessage('FAVORITES_IMPORT_ERROR',err);
-					res.status(500).send('FAVORITES_IMPORT_ERROR');
+					const code = 'FAVORITES_IMPORTED_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.status(400).json(validationErrors);
 			}
-
 		});
 }

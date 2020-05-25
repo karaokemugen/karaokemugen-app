@@ -2,7 +2,7 @@ import { Router } from "express";
 import { requireAuth, requireValidUser, updateUserLoginTime, requireAdmin } from "../middlewares/auth";
 import { requireWebappLimited } from "../middlewares/webapp_mode";
 import { getTags, getDuplicateTags, mergeTags, deleteTag, getTag, editTag, addTag } from "../../services/tag";
-import { errMessage } from "../common";
+import { errMessage, APIMessage } from "../common";
 import { getLang } from "../middlewares/lang";
 import { getYears } from "../../services/kara";
 
@@ -65,8 +65,9 @@ export default function tagsController(router: Router) {
 				});
 				res.json(tags);
 			} catch(err) {
-				errMessage('TAGS_LIST_ERROR', err);
-				res.status(500).send('TAGS_LIST_ERROR');
+				const code = 'TAGS_LIST_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -82,15 +83,19 @@ export default function tagsController(router: Router) {
 	* @apiParam {Object} i18n i18n object, where properties are ISO639-2B codes and values the name of tag in that language
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
+	* {code: "TAG_CREATED"}
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
+	* {code: "TAG_ADD_ERROR"}
 	*/
 		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await addTag(req.body);
-				res.status(200).send('Tag added');
+				res.status(200).json(APIMessage('TAG_CREATED'));
 			} catch(err) {
-				res.status(500).send(`Error adding tag: ${err}`);
+				const code = 'TAG_CREATE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/years')
@@ -124,8 +129,9 @@ export default function tagsController(router: Router) {
 					const years = await getYears();
 					res.json(years);
 				} catch(err) {
-					errMessage('YEARS_LIST_ERROR', err);
-					res.status(500).send('YEARS_LIST_ERROR');
+					const code = 'YEARS_LIST_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 				}
 			});
 	router.route('/tags/dupes')
@@ -146,13 +152,16 @@ export default function tagsController(router: Router) {
 	* }
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
+	* {code: "TAG_DUPES_LIST_ERROR"}
 	*/
 		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				const tags = await getDuplicateTags();
 				res.json(tags);
 			} catch(err) {
-				res.status(500).send(`Error while fetching tags: ${err}`);
+				const code = 'TAG_DUPES_LIST_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/tags/merge/:tid1/:tid2')
@@ -169,17 +178,21 @@ export default function tagsController(router: Router) {
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
 	* {
-	*    <See Tag object>
+		code: "TAGS_MERGED"
+	*   data: <See Tag object>
 	* }
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
+	* {code: "TAGS_MERGE_ERROR"}
 	*/
 		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				const tag = await mergeTags(req.params.tid1, req.params.tid2);
-				res.json(tag);
+				res.json(APIMessage('TAGS_MERGED', tag));
 			} catch(err) {
-				res.status(500).send(`Error while merging tags: ${err}`);
+				const code = 'TAGS_MERGED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/tags/:tid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
@@ -193,15 +206,19 @@ export default function tagsController(router: Router) {
 	* @apiParam {uuid} tid Tag to delete
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
+	* {code: 'TAG_DELETED'}
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
+	* {code: 'TAG_DELETE_ERROR}
 	*/
 		.delete(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await deleteTag(req.params.tid);
-				res.status(200).send('Tag deleted');
+				res.status(200).json(APIMessage('TAG_DELETED'));
 			} catch(err) {
-				res.status(500).send(`Error deleting tag: ${err}`);
+				const code = 'TAG_DELETE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -220,13 +237,16 @@ export default function tagsController(router: Router) {
 	* }
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
+	* {code: "TAG_GET_ERROR"}
 	*/
 		.get(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				const tag = await getTag(req.params.tid);
 				res.json(tag);
 			} catch(err) {
-				res.status(500).send(`Error getting tag: ${err}`)
+				const code = 'TAG_GET_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 		/**
@@ -243,15 +263,19 @@ export default function tagsController(router: Router) {
 	* @apiParam {Object} i18n i18n object, where properties are ISO639-2B codes and values the name of tag in that language
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
+	* {code: "TAG_EDITED"}
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
+	* {code: "TAG_EDIT_ERROR"}
 	*/
 		.put(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
-				const tag = editTag(req.params.tid, req.body);
-				res.json(tag);
+				await editTag(req.params.tid, req.body);
+				res.json(APIMessage('TAG_EDITED'));
 			} catch(err) {
-				res.status(500).send(`Error editing tag: ${err}`);
+				const code = 'TAG_EDIT_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 }

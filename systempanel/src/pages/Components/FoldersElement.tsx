@@ -1,8 +1,9 @@
 import React from 'react';
-import {Icon, Radio, Input, Modal, Button} from 'antd';
-import axios from 'axios/index';
+import { Radio, Input, Modal, Button } from 'antd';
 import i18next from 'i18next';
 import FileSystem from './FileSystem';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import Axios from 'axios';
 
 interface FoldersElementProps {
 	onChange: any,
@@ -33,7 +34,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 		super(props);
 		this.state = {
 			value: this.props.value || [],
-			keyModal: this.props.keyModal || undefined,
+			keyModal: this.props.keyModal,
 			dataPath: '',
 			appPath: '',
 			os: '',
@@ -46,8 +47,8 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 	}
 
 	async refresh() {
-		await axios.get('/api/settings')
-			.then(res => this.setState({dataPath: res.data.state.dataPath, os: res.data.state.os, appPath: res.data.state.appPath}))
+		let res = await Axios.get('/settings');
+		this.setState({dataPath: res.data.state.dataPath, os: res.data.state.os, appPath: res.data.state.appPath});
 	}
 
 	async openFileSystemModal(item, index?:number, key?: string) {
@@ -153,7 +154,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 												{this.state.value[0] === element ? i18next.t('CONFIG.PRIMARY_DIRECTORY') : null}
 											</Radio>
 											<div style={{ width: '100px'}}> 
-												<Button type='danger' icon='delete'
+												<Button type="primary" danger icon={<DeleteOutlined />}
 													onClick={() => {
 														let value = (this.state.value as any[]);
 														value.splice(index, 1);
@@ -166,7 +167,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 								</div>
 							)}
 							<Button type='primary' onClick={() => this.openFileSystemModal(this.state.value, -1, this.props.keyModal)}>
-								<Icon type="plus" />{this.getButtonLabel()}
+								<PlusOutlined />{this.getButtonLabel()}
 							</Button>
 						</React.Fragment> : 
 						<Input onClick={() => this.openFileSystemModal(this.state.value, undefined, this.props.keyModal)} defaultValue={this.state.value} />
@@ -191,7 +192,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 							} /> : null}
 					</Modal>
 				</div>
-			);
+            );
 
 	}
 }

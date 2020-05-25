@@ -38,10 +38,6 @@ export async function selectDownload(id: string): Promise<DBDownload> {
 	return dl.rows[0];
 }
 
-export async function deleteDownload(id: string) {
-	return await db().query(sql.deleteDownload, [id]);
-}
-
 export async function updateDownload(uuid: string, status: string) {
 	return await db().query(sql.updateDownloadStatus, [
 		status,
@@ -56,10 +52,6 @@ export async function emptyDownload() {
 export async function selectDownloadBLC(): Promise<DBDownloadBLC[]> {
 	const res = await db().query(sql.selectDownloadBLC);
 	return res.rows;
-}
-
-export async function truncateDownloadBLC() {
-	return await db().query(sql.truncateDownloadBLC);
 }
 
 export async function deleteDownloadBLC(id: number) {

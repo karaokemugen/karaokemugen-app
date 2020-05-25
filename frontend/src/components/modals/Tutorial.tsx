@@ -374,7 +374,7 @@ class Tutorial extends Component<IProps,IState> {
     	}
     	if (([STATUS.FINISHED, STATUS.SKIPPED] as Array<string>).includes(status)) {
     		if (this.state.scope  === 'admin') {
-    			axios.put('/api/settings', { 'setting': JSON.stringify({ 'App': { 'FirstRun': false } } )});
+    			axios.put('/settings', { 'setting': JSON.stringify({ 'App': { 'FirstRun': false } } )});
     		} else {
     			localStorage.setItem('publicTuto', 'true');
     		}

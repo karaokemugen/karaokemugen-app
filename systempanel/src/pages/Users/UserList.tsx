@@ -1,23 +1,20 @@
 import React, {Component} from 'react';
-import axios from 'axios';
-import {connect} from 'react-redux';
-import {Avatar, Button, Checkbox, Divider, Icon, Layout, Modal, Table} from 'antd';
+import { Avatar, Button, Checkbox, Divider, Layout, Modal, Table } from 'antd';
 
-import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
 import {Link} from 'react-router-dom';
-import {ReduxMappedProps} from '../../react-app-env';
 import i18next from 'i18next';
-
-interface UserListProps extends ReduxMappedProps {
-}
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import Axios from 'axios';
+import { User } from '../../../../src/lib/types/user';
+import { getAxiosInstance } from '../../axiosInterceptor';
 
 interface UserListState {
-	users: any[],
+	users: Array<User>,
 	deleteModal: boolean,
-	user: any,
+	user: User,
 }
 
-class UserList extends Component<UserListProps, UserListState> {
+class UserList extends Component<{}, UserListState> {
 
 	constructor(props) {
 		super(props);
@@ -32,30 +29,15 @@ class UserList extends Component<UserListProps, UserListState> {
 		this.refresh();
 	}
 
-	refresh() {
-		this.props.loading(true);
-		axios.get('/api/users')
-			.then(res => {
-				this.props.loading(false);
-				this.setState({users: res.data});
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	refresh = async () => {
+		let res = await Axios.get('/users');
+		this.setState({users: res.data});
 	}
 
-	delete = (userLogin) => {
-		axios.delete(`/api/users/${userLogin}`)
-			.then(() => {
-				this.props.warnMessage(i18next.t('USERS.USER_DELETED'));
-				this.setState({deleteModal: false, user: {}});
-				this.refresh();
-			})
-			.catch(err => {
-				this.props.errorMessage(`${i18next.t('ERROR')} ${err.response.status} : ${err.response.statusText}. ${err.response.data}`);
-				this.setState({deleteModal: false, user: {}});
-			});
+	delete = async (userLogin) => {
+		await getAxiosInstance().delete(`/users/${userLogin}`);
+		this.refresh();
+		this.setState({deleteModal: false, user: {}});
 	};
 
 	render() {
@@ -136,24 +118,13 @@ class UserList extends Component<UserListProps, UserListState> {
 		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/km/users/${record.login}`}><Icon type='edit'/></Link>
+			<Link to={`/system/km/users/${record.login}`}><EditOutlined /></Link>
 			<Divider type="vertical"/>
-			<Button type='danger' icon='delete' onClick={
+			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
 				() => this.setState({deleteModal: true, user: record})
 			}/>
 		</span>)
 	}];
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserList);
+export default UserList;

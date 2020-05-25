@@ -125,7 +125,7 @@ class Store extends EventEmitter {
 
 	async setUser() {
 		if (logInfos) {
-			user = (await axios.get(`/api/myaccount`)).data;
+			user = (await axios.get(`/myaccount`)).data;
 		} else {
 			user = undefined;
 		}

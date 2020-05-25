@@ -74,11 +74,6 @@ SET status = $1
 WHERE pk_uuid = $2
 `;
 
-export const deleteDownload = `
-DELETE FROM download
-WHERE pk_uuid = $1
-`;
-
 export const emptyDownload = 'TRUNCATE download CASCADE';
 
 export const selectDownloadBLC = `
@@ -92,10 +87,6 @@ FROM download_blacklist_criteria
 export const deleteDownloadBLC = `
 DELETE FROM download_blacklist_criteria
 WHERE pk_id_dl_blcriteria = $1;
-`;
-
-export const truncateDownloadBLC = `
-TRUNCATE download_blacklist_criteria RESTART IDENTITY;
 `;
 
 export const insertDownloadBLC = `

@@ -1,79 +1,56 @@
 import React, {Component} from 'react';
-import axios from 'axios';
-import {connect} from 'react-redux';
-import {Icon, Button, Layout, Table, Divider, Checkbox} from 'antd';
+import { Button, Layout, Table, Divider, Checkbox } from 'antd';
 import {Link} from 'react-router-dom';
-import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
-import {ReduxMappedProps} from '../../react-app-env';
 import i18next from 'i18next';
 import { Session } from '../../../../src/types/session';
+import { PlusOutlined, DeleteOutlined, FileExcelOutlined, EditOutlined } from '@ant-design/icons';
+import Axios from 'axios';
 
 interface SessionListState {
 	sessions: Array<Session>,
 	session?: Session
 }
 
-class SessionList extends Component<ReduxMappedProps, SessionListState> {
+class SessionList extends Component<{}, SessionListState> {
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			sessions: []
 		};
-
 	}
 
 	componentDidMount() {
-		this.props.loading(true);
 		this.refresh();
 	}
 
-	refresh() {
-		axios.get('/api/sessions')
-			.then(res => {
-				this.props.loading(false);
-				this.setState({sessions: res.data});
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	refresh = async () => {
+		let res = await Axios.get('/sessions');
+		this.setState({sessions: res.data});
 	}
 
-	async deleteSession(session) {
-		await axios.delete('/api/sessions/' + session.seid);
+	deleteSession = async (session) => {
+		await Axios.delete(`/sessions/${session.seid}`);
 		this.refresh();
 	}
 
-	exportSession(session) {
-		axios.get(`/api/sessions/${session.seid}/export`)
-		.then(res => {
-			this.props.infoMessage(i18next.t('SESSIONS.SESSION_EXPORTED'));
-		})
-		.catch(err => {
-			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-		});
+	exportSession = async (session) => {
+		await Axios.get(`/sessions/${session.seid}/export`)
 	}
 
-	majPrivate = (sessionParam:Session) => {
+	majPrivate = async (sessionParam:Session) => {
 		let session = sessionParam;
 		session.private = !sessionParam.private;
-		axios.put(`/api/sessions/${session.seid}`, session)
-			.then(() => {
-				this.props.infoMessage(i18next.t('SESSIONS.SESSION_EDITED'));
-				this.refresh();
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+		await Axios.put(`/sessions/${session.seid}`, session)
+		this.refresh();
 	};
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
+            <Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Layout>
 					<Layout.Header>
-					<span><Link to={`/system/km/sessions/new`}>{i18next.t('SESSIONS.NEW_SESSION')}<Icon type="plus" /></Link></span>
+					<span><Link to={`/system/km/sessions/new`}>{i18next.t('SESSIONS.NEW_SESSION')}<PlusOutlined /></Link></span>
 					</Layout.Header>
 					<Layout.Content>
 						<Table
@@ -84,7 +61,7 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 					</Layout.Content>
 				</Layout>
 			</Layout.Content>
-		);
+        );
 	}
 
 	columns = [{
@@ -121,18 +98,19 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 		title: i18next.t('SESSIONS.SESSION_EXPORTED_BUTTON'),
 		key: 'export',
 		render: (text, record) => {
-			return <Button type="default" icon='file-excel' onClick={this.exportSession.bind(this,record)}></Button>;
+			return <Button type="default" icon={<FileExcelOutlined />} onClick={() => this.exportSession(record)}></Button>;
 		}
 	}, {
 		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (
 			<span>
-				<Link to={`/system/km/sessions/${record.seid}`}><Icon type='edit'/></Link>
+				<Link to={`/system/km/sessions/${record.seid}`}><EditOutlined /></Link>
 				{record.active ? "" :
 					<React.Fragment>
 						<Divider type="vertical"/>
-						<Button type="danger" icon='delete' onClick={this.deleteSession.bind(this,record)}></Button>
+						<Button type="primary" danger icon={<DeleteOutlined />} 
+							onClick={() => this.deleteSession(record)}></Button>
 					</React.Fragment>
 				}
 			</span>
@@ -140,16 +118,4 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 	}];
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message))
-});
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(SessionList);
+export default SessionList;

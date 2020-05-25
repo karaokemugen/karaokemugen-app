@@ -64,7 +64,7 @@ class WelcomePage extends Component<IProps, IState> {
 
   getSessions = async () => {
   	if (store.getLogInfos() && (store.getLogInfos() as Token).role === 'admin') {
-		  const res = await axios.get('/api/sessions');
+		  const res = await axios.get('/sessions');
   		this.setState({
   			sessions: res.data,
   			activeSession: res.data.filter((valueSession:Session) => valueSession.active)[0]
@@ -73,14 +73,14 @@ class WelcomePage extends Component<IProps, IState> {
   };
 
   getRepositories = async () => {
-	const res = await axios.get('/api/repos');
+	const res = await axios.get('/repos');
 	this.setState({
 		repositories: res.data
 	});
   };
 
   getStats = async () => {
-	const res = await axios.get('/api/stats');
+	const res = await axios.get('/stats');
 	this.setState({
 		stats: res.data
 	});
@@ -92,9 +92,9 @@ class WelcomePage extends Component<IProps, IState> {
   	);
   	var sessionId;
   	if (sessions.length === 0) {
-  		const res = await axios.post('/api/sessions', { name: value });
+  		const res = await axios.post('/sessions', { name: value });
   		sessionId = res.data;
-  		const sessionsList = await axios.get('/api/sessions');
+  		const sessionsList = await axios.get('/sessions');
   		this.setState({
   			sessions: sessionsList.data,
   			activeSession: sessionsList.data.filter((valueSession:Session) => valueSession.active)[0]
@@ -102,24 +102,24 @@ class WelcomePage extends Component<IProps, IState> {
   	} else {
   		this.setState({ activeSession: sessions[0] });
   		sessionId = sessions[0].seid;
-  		axios.post('/api/sessions/' + sessionId);
+  		axios.post('/sessions/' + sessionId);
   	}
   };
 
 	majPrivate = async () => {
 		let session = this.state.activeSession as Session;
 		session.private = !(this.state.activeSession as Session).private;
-		await axios.put(`/api/sessions/${session.seid}`, session);
+		await axios.put(`/sessions/${session.seid}`, session);
 		this.getSessions();
 	};
 
   getCatchphrase = async () => {
-  	const res = await axios.get('/api/catchphrase');
+  	const res = await axios.get('/catchphrase');
   	this.setState({ catchphrase: res.data });
   };
 
   getNewsFeed = async () => {
-  	const res = await axios.get('/api/newsfeed');
+  	const res = await axios.get('/newsfeed');
   	const data = res.data;
   	var base = data[0];
   	var appli = data[1];

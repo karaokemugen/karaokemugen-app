@@ -1,23 +1,15 @@
 import React, {Component} from 'react';
 import {Layout} from 'antd';
 import RepositoryForm from './RepositoriesForm';
-import axios from 'axios';
-import {connect} from 'react-redux';
-import {push} from 'connected-react-router';
-import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
 import { Repository } from '../../../../src/lib/types/repo';
 
-import {ReduxMappedProps} from '../../react-app-env';
-import i18next from 'i18next';
-
-interface RepositoriesEditProps extends ReduxMappedProps {
-	push: (string) => any,
-	match?: any
-}
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import Axios from 'axios';
+import { getAxiosInstance } from '../../axiosInterceptor';
 
 interface RepositoriesEditState {
 	repository: Repository,
-	save: any
+	save: (repository:Repository) => void
 }
 
 const newrepository:Repository = {
@@ -33,7 +25,7 @@ const newrepository:Repository = {
 	}
 };
 
-class RepositoriesEdit extends Component<RepositoriesEditProps, RepositoriesEditState> {
+class RepositoriesEdit extends Component<RouteComponentProps<{name:string}>, RepositoriesEditState> {
 
 	state = {
 		repository: null,
@@ -44,57 +36,30 @@ class RepositoriesEdit extends Component<RepositoriesEditProps, RepositoriesEdit
 		this.loadrepository();
 	}
 
-	saveNew = (repository) => {
-		axios.post('/api/repos', repository)
-			.then(() => {
-				this.props.infoMessage(i18next.t('REPOSITORIES.REPOSITORY_CREATED'));
-				this.props.push('/system/km/repositories');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	saveNew = async (repository) => {
+		await getAxiosInstance().post('/repos', repository);
+		this.props.history.push('/system/km/repositories');
 	};
 
-	saveUpdate = (repository) => {
-		axios.put(`/api/repos/${this.state.repository.Name}`, repository)
-			.then(() => {
-				this.props.infoMessage(i18next.t('REPOSITORIES.REPOSITORY_EDITED'));
-				this.props.push('/system/km/repositories');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	saveUpdate = async (repository) => {
+		await getAxiosInstance().put(`/repos/${this.state.repository.Name}`, repository)
+		this.props.history.push('/system/km/repositories');
 	};
 
-	loadrepository = () => {
-		this.props.loading(true);
-		if (this.props.match && this.props.match.params.name) {
-			axios.get(`/api/repos/${this.props.match.params.name}`)
-				.then(res => {
-					this.setState({repository: res.data, save: this.saveUpdate});
-					this.props.loading(false);
-				})
-				.catch(err => {
-					this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-					this.props.loading(false);
-				});
+	loadrepository = async () => {
+		if (this.props.match.params.name) {
+			let res = await Axios.get(`/repos/${this.props.match.params.name}`);
+			this.setState({repository: res.data, save: this.saveUpdate});
 		} else {
 			this.setState({repository: {...newrepository}, save: this.saveNew});
-			this.props.loading(false);
 		}
 	};
 
 	
-	consolidate = (consolidatePath: string) => {
+	consolidate = async (consolidatePath: string) => {
 		if (consolidatePath) {
-			axios.post(`/api/repos/${this.props.match.params.name}/consolidate`, {path: consolidatePath})
-			.then(() => {
-				this.props.infoMessage(i18next.t('REPOSITORIES.REPOSITORY_CONSOLIDATED'));
-				this.props.push('/system/km/repositories');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+			await getAxiosInstance().post(`/repos/${this.props.match.params.name}/consolidate`, {path: consolidatePath})
+			this.props.history.push('/system/km/repositories');
 		}
 	}
 
@@ -108,16 +73,4 @@ class RepositoriesEdit extends Component<RepositoriesEditProps, RepositoriesEdit
 	}
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message)),
-	push: (url) => dispatch(push(url))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(RepositoriesEdit);
+export default withRouter(RepositoriesEdit);

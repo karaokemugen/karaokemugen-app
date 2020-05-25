@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { errMessage } from '../common';
+import { errMessage, APIMessage } from '../common';
 import { playerMessage } from '../../services/player';
 import { emitWS } from '../../lib/utils/ws';
 import { check } from '../../lib/utils/validators';
@@ -24,7 +24,7 @@ export default function playerController(router: Router) {
 	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
-	 * "USER_NOT_ALLOWED_TO_SING"
+	 * {code: "USER_NOT_ALLOWED_TO_SING"}
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
@@ -33,7 +33,7 @@ export default function playerController(router: Router) {
 				await playPlayer(true);
 				res.status(200).json();
 			} else {
-				res.status(500).send('USER_NOT_ALLOWED_TO_SING');
+				res.status(500).json(APIMessage('USER_NOT_ALLOWED_TO_SING'));
 			}
 		});
 
@@ -53,12 +53,12 @@ export default function playerController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "MESSAGE_SENT"
+ * {code: "MESSAGE_SENT"}
  * @apiError MESSAGE_SEND_ERROR Message couldn't be sent
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "MESSAGE_SEND_ERROR"
+ * {code: "MESSAGE_SEND_ERROR"}
  */
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
@@ -72,11 +72,13 @@ export default function playerController(router: Router) {
 					try {
 						await playerMessage(req.body.message, +req.body.duration);
 					} catch(err) {
-						errMessage('MESSAGE_SEND_ERROR', err);
-						res.status(500).send('MESSAGE_SEND_ERROR');
+						const code = 'MESSAGE_SEND_ERROR';
+						errMessage(code, err)
+						res.messageFailed = true;
+						res.status(500).json(APIMessage(code));
 					}
 				}
-				res.status(200).send('MESSAGE_SENT');
+				if (!res.messageFailed) res.status(200).json(APIMessage('MESSAGE_SENT'));
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
@@ -99,7 +101,9 @@ export default function playerController(router: Router) {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * "COMMAND_SENT"
+	 * @apiErrorExample Error-Response:
+ 	 * HTTP/1.1 500 Internal Server Error
+ 	 * {code: "COMMAND_SEND_ERROR"}
 	 */
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
@@ -124,10 +128,11 @@ export default function playerController(router: Router) {
 			if (!validationErrors) {
 				try {
 					await sendCommand(req.body.command, req.body.options);
-					res.status(200).send('COMMAND_SENT');
+					res.status(200).json();
 				} catch(err) {
-					errMessage('COMMAND_SEND_ERROR',err);
-					res.status(500).send('COMMAND_SEND_ERROR');
+					const code = 'COMMAND_SEND_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected

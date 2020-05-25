@@ -1,24 +1,16 @@
 import React, {Component} from 'react';
 import {Layout} from 'antd';
 import SessionForm from './SessionsForm';
-import axios from 'axios/index';
-import {connect} from 'react-redux';
-import {push} from 'connected-react-router';
-import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
 import { Session } from '../../../../src/types/session';
-
-import {ReduxMappedProps} from '../../react-app-env';
-import i18next from 'i18next';
-
-interface SessionEditProps extends ReduxMappedProps {
-	push: (string) => any,
-	match?: any
-}
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import Axios from 'axios';
+import { getAxiosInstance } from '../../axiosInterceptor';
 
 interface SessionEditState {
 	session: Session,
 	sessions: Array<Session>,
-	save: any
+	save: (session:Session) => void,
+	loadSession: boolean
 }
 
 const newsession:Session = {
@@ -27,67 +19,41 @@ const newsession:Session = {
 	started_at: new Date()
 };
 
-class SessionEdit extends Component<SessionEditProps, SessionEditState> {
+class SessionEdit extends Component<RouteComponentProps<{seid: string}>, SessionEditState> {
 
 	state = {
 		session: null,
 		sessions: [],
-		save: () => {}
+		save: () => {},
+		loadSession: false
 	};
 
 	componentDidMount() {
 		this.loadsession();
 	}
 
-	saveNew = (session) => {
-		axios.post('/api/sessions', session)
-			.then(() => {
-				this.props.infoMessage(i18next.t('SESSIONS.SESSION_CREATED'));
-				this.props.push('/system/km/sessions');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	saveNew = async (session:Session) => {
+		await getAxiosInstance().post('/sessions', session)
+		this.props.history.push('/system/km/sessions');
 	};
 
-	saveUpdate = (session) => {
-		axios.put(`/api/sessions/${session.seid}`, session)
-			.then(() => {
-				this.props.infoMessage(i18next.t('SESSIONS.SESSION_EDITED'));
-				this.props.push('/system/km/sessions');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	saveUpdate = async (session:Session) => {
+		await getAxiosInstance().put(`/sessions/${session.seid}`, session)
+		this.props.history.push('/system/km/sessions');
 	};
 
-	handleSessionMerge = (seid1,seid2) => {
-		axios.post('/api/sessions/merge/', {seid1: seid1, seid2:seid2})
-			.then((data) => {
-				this.props.infoMessage(i18next.t('SESSIONS.SESSIONS_MERGED'));
-				this.props.push('/system/km/sessions/');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	handleSessionMerge = async (seid1:string, seid2:string) => {
+		await getAxiosInstance().post('/sessions/merge/', {seid1: seid1, seid2:seid2})
+		this.props.history.push('/system/km/sessions/');
 	}
 
-	loadsession = () => {
-		this.props.loading(true);
-		if (this.props.match && this.props.match.params.seid) {
-			axios.get(`/api/sessions/`)
-				.then(res => {
-					var sessions = res.data.filter(session => session.seid === this.props.match.params.seid);
-					this.setState({sessions:res.data, session: sessions[0], save: this.saveUpdate});
-					this.props.loading(false);
-				})
-				.catch(err => {
-					this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-					this.props.loading(false);
-				});
+	loadsession = async () => {
+		if (this.props.match.params.seid) {
+			let res = await Axios.get('/sessions/');
+			var sessions = res.data.filter(session => session.seid === this.props.match.params.seid);
+			this.setState({sessions:res.data, session: sessions[0], save: this.saveUpdate, loadSession: true});
 		} else {
-			this.setState({session: {...newsession}, save: this.saveNew});
-			this.props.loading(false);
+			this.setState({session: {...newsession}, save: this.saveNew, loadSession: true});
 		}
 	};
 
@@ -95,23 +61,11 @@ class SessionEdit extends Component<SessionEditProps, SessionEditState> {
 	render() {
 		return (
 			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.session && (<SessionForm session={this.state.session} sessions={this.state.sessions} 
-					save={this.state.save} mergeAction={this.handleSessionMerge.bind(this)} />)}
+				{this.state.loadSession && (<SessionForm session={this.state.session} sessions={this.state.sessions} 
+					save={this.state.save} mergeAction={this.handleSessionMerge} />)}
 			</Layout.Content>
 		);
 	}
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message)),
-	push: (url) => dispatch(push(url))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(SessionEdit);
+export default withRouter(SessionEdit);

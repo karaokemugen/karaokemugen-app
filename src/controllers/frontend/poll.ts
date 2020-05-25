@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { errMessage } from "../common";
+import { errMessage, APIMessage } from "../common";
 import { emitWS } from "../../lib/utils/ws";
 import { addPollVote, getPoll } from "../../services/poll";
 import { check } from "../../lib/utils/validators";
@@ -49,8 +49,7 @@ export default function pollController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
- *   "code": "POLL_LIST_ERROR",
- *   "message": null
+ *   "code": "POLL_LIST_ERROR"
  * }
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
@@ -58,8 +57,8 @@ export default function pollController(router: Router) {
 				const pollResult = await getPoll(req.authToken, +req.query.from || 0, +req.query.size || 9999999);
 				res.json(pollResult);
 			} catch(err) {
-				errMessage(err.code, err);
-				res.status(500).send(err.code);
+				errMessage(err.code, err)
+				res.status(500).json(APIMessage(err.code));
 			};
 		})
 	/**
@@ -117,8 +116,8 @@ export default function pollController(router: Router) {
 					emitWS('songPollUpdated', ret.data);
 					res.json(ret.data);
 				} catch(err) {
-					errMessage(err.code,err.message);
-					res.status(500).send(err.code);
+					errMessage(err.code, err)
+					res.status(500).json(APIMessage(err.code));
 				}
 
 			} else {

@@ -2,10 +2,10 @@
 import {requireAuth, requireValidUser, requireAdmin, updateUserLoginTime} from '../middlewares/auth';
 import {requireNotDemo} from '../middlewares/demo';
 
-import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, emptyDownloadBLC, getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateAllMedias, getAllRemoteKaras, getAllRemoteTags, updateAllBases, downloadRandomSongs} from '../../services/download';
+import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, getDownloads, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateAllMedias, getAllRemoteKaras, getAllRemoteTags, updateAllBases, downloadRandomSongs} from '../../services/download';
 import { Router } from 'express';
 import { getLang } from '../middlewares/lang';
-import { errMessage } from '../common';
+import { errMessage, APIMessage } from '../common';
 
 export default function downloadController(router: Router) {
 
@@ -35,10 +35,12 @@ export default function downloadController(router: Router) {
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
-				const msg = await addDownloads(req.body.downloads);
-				res.status(200).send(msg);
+				const numberOfDLs = await addDownloads(req.body.downloads);
+				res.status(200).json(APIMessage('DOWNLOADS_QUEUED', numberOfDLs));
 			} catch(err) {
-				res.status(500).send(`Error while adding download: ${err}`);
+				const code = 'DOWNLOADS_QUEUED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -83,7 +85,9 @@ export default function downloadController(router: Router) {
 				const downloads = await getDownloads();
 				res.json(downloads);
 			} catch(err) {
-				res.status(500).send(`Error getting downloads: ${err}`);
+				const code = 'DOWNLOADS_GET_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 		/**
@@ -102,55 +106,11 @@ export default function downloadController(router: Router) {
 		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await wipeDownloads();
-				res.status(200).send('Download queue emptied completely');
+				res.status(200).json();
 			} catch(err) {
-				res.status(500).send(`Error wiping downloads: ${err}`);
-			}
-		});
-	router.route('/downloads/:uuid')
-	/**
- * @api {delete} /downloads/:uuid Remove download from queue
- * @apiName DeleteDownload
- * @apiVersion 3.1.0
- * @apiGroup Downloader
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid} uuid Download to remove from queue
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * "Error removing download: ..."
- */
-		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await removeDownload(req.params.uuid);
-				res.status(200).send('Download removed');
-			} catch(err) {
-				res.status(500).send(`Error removing download: ${err}`);
-			}
-		});
-	router.route('/downloads/:uuid/retry')
-	/**
- * @api {put} /downloads/:uuid/retry Retry a failed download
- * @apiName RetryDownload
- * @apiVersion 3.1.0
- * @apiGroup Downloader
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid} uuid Download to remove from queue
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * "Error retrying download: ..."
- */
-		.put(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await retryDownload(req.params.uuid);
-				res.status(200).send('Download back into queue');
-			} catch(err) {
-				res.status(500).send(`Error retrying download: ${err}`);
+				const code = 'DOWNLOADS_WIPE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/downloads/pause')
@@ -170,9 +130,11 @@ export default function downloadController(router: Router) {
 		.put(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await pauseQueue();
-				res.status(200).send('Downloads paused');
+				res.status(200).json();
 			} catch(err) {
-				res.status(500).send(`Error pausing downloads: ${err}`);
+				const code = 'DOWNLOADS_PAUSE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/downloads/random')
@@ -214,9 +176,11 @@ export default function downloadController(router: Router) {
 		.put(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await startDownloads();
-				res.status(200).send('Downloads starting');
+				res.status(200).json(APIMessage('DOWNLOADS_STARTED'));
 			} catch(err) {
-				res.status(500).send(`Error starting downloads: ${err}`);
+				const code = 'DOWNLOADS_START_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/downloads/blacklist/criterias')
@@ -241,7 +205,9 @@ export default function downloadController(router: Router) {
 				const blc = await getDownloadBLC();
 				res.status(200).json(blc);
 			} catch(err) {
-				res.status(500).send(`Error getting download BLCs : ${err}`);
+				const code = 'DOWNLOADS_BLC_GET_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -262,32 +228,13 @@ export default function downloadController(router: Router) {
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await addDownloadBLC({ type: req.body.type, value: req.body.value});
-				res.status(200).send('Download blacklist criteria added');
+				res.status(200).json();
 			} catch(err) {
-				res.status(500).send(`Error adding download BLC : ${err}`);
+				const code = 'DOWNLOADS_BLC_ADDED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
-	/**
- * @api {delete} /downloads/blacklist/criterias Empty download blacklist criterias
- * @apiName DeleteDownloadBLCs
- * @apiVersion 3.1.0
- * @apiGroup Downloader
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * "Error emptying download BLC : ..."
- */
-		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-			try {
-				await emptyDownloadBLC();
-				res.status(200).send('Download blacklist criterias emptied');
-			} catch(err) {
-				res.status(500).send(`Error emptying download BLC : ${err}`);
-			}
-		});
 	router.route('/downloads/blacklist/criterias/:id')
 	/**
  * @api {delete} /downloads/blacklist/criterias/:id Remove download criteria
@@ -306,9 +253,11 @@ export default function downloadController(router: Router) {
 		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await removeDownloadBLC(parseInt(req.params.id));
-				res.status(200).send('Download blacklist criteria removed');
+				res.status(200).json();
 			} catch(err) {
-				res.status(500).send(`Error removing download BLC : ${err}`);
+				const code = 'DOWNLOADS_BLC_REMOVE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/remote')
@@ -322,7 +271,7 @@ export default function downloadController(router: Router) {
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * @apiParam {String} [q] Query. It's a string comprised of criterias separated by `!`. Criterias are `s:` for series, `y:` for year et `t:` for tag + type. Example, all songs with tags UUIDs a (singer) and b (songwriter) and year 1990 is `t:a~2,b~8!y:1990`. Refer to tag types to find out which number is which type.
+ * @apiParam {String} [q] Query. It's a string comprised of criterias separated by `!`. Criterias are `y:` for year and `t:` for tag + type. Example, all songs with tags UUIDs a (singer) and b (songwriter) and year 1990 is `t:a~2,b~8!y:1990`. Refer to tag types to find out which number is which type.
  * @apiParam {String} [repository] If specified, will check karas at the indicated online repository. If not, will check all repositories
  * @apiParam {String} [compare] Either null, `missing` or `updated` to further filter the repository's songs compared to the local ones
  * @apiSuccess {Object[]} content/karas Array of `kara` objects
@@ -369,8 +318,9 @@ export default function downloadController(router: Router) {
 				}, req.query.compare);
 				res.json(karas);
 			} catch(err) {
-				errMessage('SONG_LIST_ERROR', err);
-				res.status(500).send('SONG_LIST_ERROR');
+				const code = 'REMOTE_SONG_LIST_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 
@@ -391,9 +341,9 @@ export default function downloadController(router: Router) {
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 			try {
 				updateAllKaras();
-				res.status(200).send('Update in progress. Check tasks popups or logs.');
+				res.status(200).json(APIMessage('SONGS_UPDATES_IN_PROGRESS'));
 			} catch(err) {
-				res.status(500).send(`Error computing update: ${err}`);
+				// This is async above, so response has already been sent
 			}
 		});
 	router.route('/downloads/sync')
@@ -413,9 +363,9 @@ export default function downloadController(router: Router) {
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 			try {
 				updateAllBases();
-				res.status(200).send('Sync in progress. Check tasks popups or logs.');
+				res.status(200).json(APIMessage('BASES_SYNC_IN_PROGRESS'));
 			} catch(err) {
-				res.status(500).send(`Error computing update: ${err}`);
+				// This is async above, so response has already been sent
 			}
 		});
 	router.route('/downloads/all')
@@ -435,9 +385,9 @@ export default function downloadController(router: Router) {
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 			try {
 				downloadAllKaras();
-				res.status(200).send('Download in progress. Check tasks popups or logs.');
+				res.status(200).json(APIMessage('DOWNLOAD_SONGS_IN_PROGRESS'));
 			} catch(err) {
-				res.status(500).send(`Error computing update: ${err}`);
+				// This is async above, so response has already been sent
 			}
 		});
 	router.route('/downloads/clean')
@@ -457,9 +407,9 @@ export default function downloadController(router: Router) {
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
 			try {
 				cleanAllKaras();
-				res.status(200).send('Cleanup in progress. Check tasks popups or logs.');
+				res.status(200).json(APIMessage('CLEAN_SONGS_IN_PROGRESS'));
 			} catch(err) {
-				res.status(500).send(`Error computing update: ${err}`);
+				// This is async above, so response has already been sent
 			}
 		});
 	router.route('/downloads/updateMedias')
@@ -475,8 +425,12 @@ export default function downloadController(router: Router) {
  * HTTP/1.1 200 OK
  */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-			updateAllMedias();
-			res.status(200).send('Medias are being updated. Check tasks popups or logs.');
+			try {
+				updateAllMedias();
+				res.status(200).json(APIMessage('UPDATING_MEDIAS_IN_PROGRESS'));
+			} catch(err) {
+				// This is async, blabla.
+			}
 		});
 	router.route('/tags/remote')
 	/**
@@ -504,7 +458,9 @@ export default function downloadController(router: Router) {
 				});
 				res.json(tags);
 			} catch(err) {
-				res.status(500).send(`Unable to get all remote tags : ${err}`);
+				const code = 'REMOTE_TAGS_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 }

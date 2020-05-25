@@ -70,7 +70,7 @@ class SetupPage extends Component<IProps, IState> {
 
 		try {
 			await axios
-				.post("/api/users", {
+				.post("/users", {
 					login: username,
 					password: this.state.password as string,
 					role: "admin",
@@ -95,7 +95,7 @@ class SetupPage extends Component<IProps, IState> {
 	login = async (username: string, password: string) => {
 		let result
 		try {
-			result = await axios.post("/api/auth/login", {
+			result = await axios.post("/auth/login", {
 				username: username,
 				password: password,
 				securityCode: this.state.securityCode,
@@ -146,7 +146,7 @@ class SetupPage extends Component<IProps, IState> {
 			}`;
 			if (this.state.repositoryFolder !== path) {
 				try {
-					await axios.post(`/api/repos/${this.props.repository.Name}/consolidate`, { path: this.state.repositoryFolder });
+					await axios.post(`/repos/${this.props.repository.Name}/consolidate`, { path: this.state.repositoryFolder });
 					this.setState({ activeView: "random", error: undefined });
 				} catch (err) {
 					let error = err.response.data.message ? err.response.data.message : err;
@@ -162,7 +162,7 @@ class SetupPage extends Component<IProps, IState> {
 	downloadRandomSongs = async () => {
 		if (this.state.downloadRandomSongs) {
 			try {
-				axios.post(`/api/downloads/random`);
+				axios.post(`/downloads/random`);
 				this.props.endSetup();
 			} catch (err) {
 				let error = err.response.data.message ? err.response.data.message : err;

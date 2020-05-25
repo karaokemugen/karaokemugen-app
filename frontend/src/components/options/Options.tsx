@@ -32,7 +32,7 @@ class Options extends Component<IProps, IState> {
 			value = false;
 		}
 		var data = expand(e.target.id, value);
-		axios.put('/api/settings', {setting: JSON.stringify(data)});
+		axios.put('/settings', {setting: JSON.stringify(data)});
 	}
 
 	render() {

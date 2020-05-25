@@ -1,11 +1,8 @@
 import React, {Component} from 'react';
-import axios from 'axios';
-import {connect} from 'react-redux';
 import {Layout, Table, Row, Col, Radio, Select} from 'antd';
-import {loading, errorMessage, warnMessage, infoMessage} from '../actions/navigation';
-import {ReduxMappedProps} from '../react-app-env';
 import i18next from 'i18next';
 import { getTagTypeName } from '../utils/tagTypes';
+import Axios from 'axios';
 
 interface SessionListState {
 	unused: Array<any>
@@ -14,7 +11,7 @@ interface SessionListState {
 	type: string;
 }
 
-class SessionList extends Component<ReduxMappedProps, SessionListState> {
+class SessionList extends Component<{}, SessionListState> {
 
 	constructor(props) {
 		super(props);
@@ -24,50 +21,25 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 			repository: null,
 			type: ''
 		};
-
 	}
 
 	componentDidMount() {
-		this.props.loading(true);
 		this.refresh();
 	}
 
-	async refresh() {
-		await axios.get('/api/repos')
-		.then(res => {
-			this.props.loading(false);
-			this.setState({repository:res.data[0].Name, repositories: res.data.map(value => value.Name)});
-		})
-		.catch(err => {
-			this.props.loading(false);
-			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-		});
+	refresh = async () => {
+		let res = await Axios.get('/repos');
+		this.setState({repository:res.data[0].Name, repositories: res.data.map(value => value.Name)});
 	}
 
-	getTags() {
-		this.props.loading(true)
-		axios.get(`/api/repos/${this.state.repository}/unusedTags`)
-		.then(res => {
-			this.props.loading(false);
-			this.setState({unused: res.data.map(value => { return {name: value.name, types: value.types, file: value.tagfile}})});
-		})
-		.catch(err => {
-			this.props.loading(false);
-			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-		});
+	getTags = async () => {
+		let res = await Axios.get(`/repos/${this.state.repository}/unusedTags`);
+		this.setState({unused: res.data.map(value => { return {name: value.name, types: value.types, file: value.tagfile}})});
 	}
 
-	getMedias() {
-		this.props.loading(true)
-		axios.get(`/api/repos/${this.state.repository}/unusedMedias`)
-		.then(res => {
-			this.props.loading(false);
-			this.setState({unused: res.data.map(value => { return {file: value}})});
-		})
-		.catch(err => {
-			this.props.loading(false);
-			this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-		});
+	getMedias = async () => {
+		let res = await Axios.get(`/repos/${this.state.repository}/unusedMedias`);
+		this.setState({unused: res.data.map(value => { return {file: value}})});
 	}
 
 	render() {
@@ -75,7 +47,7 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Layout>
 					<Layout.Header>
-						<Row type="flex">
+						<Row>
 							{this.state.repositories && this.state.repository ?
 								<Col style={{ paddingRight: '100px'}}>
 									<label style={{ paddingRight: '15px'}}>{i18next.t('UNUSED_FILES.REPOSITORY')}</label>
@@ -130,16 +102,4 @@ class SessionList extends Component<ReduxMappedProps, SessionListState> {
 	}];
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message))
-});
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(SessionList);
+export default SessionList;

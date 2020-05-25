@@ -1,66 +1,40 @@
 import React, {Component} from 'react';
-
 import {Alert} from 'antd';
-import {connect} from 'react-redux';
-
-import {infoMessage, warnMessage, errorMessage} from '../actions/navigation';
+import {infoMessage, errorMessage} from '../store/actions/navigation';
 import Loading from '../components/Loading';
+import GlobalContext from '../store/context';
+import i18next from 'i18next';
 
-interface NotificationsProps {
-	loading: boolean,
-
-	dismissInfo: any,
-	infomsg: string,
-
-	dismissWarn: any,
-	warnmsg: string,
-
-	dismissError: any,
-	errormsg: string,
-}
-
-interface NotificationsState {}
-
-class Notifications extends Component<NotificationsProps, NotificationsState> {
+class Notifications extends Component<{}, {}> {
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
 
 	info() {
-		return this.props.infomsg ? (
+		return this.context.globalState.navigation.infomsg ? (
 			<Alert
 				type="info"
 				showIcon
-				closable onClose={this.props.dismissInfo}
-				message="Information"
-				description={this.props.infomsg}
-			/>
-		) : null;
-	}
-
-	warn() {
-		return this.props.warnmsg ? (
-			<Alert
-				type="warning"
-				showIcon
-				closable onClose={this.props.dismissWarn}
-				message="Warning"
-				description={this.props.warnmsg}
+				closable onClose={() => this.context.globalDispatch(infoMessage(null))}
+				message={i18next.t('INFORMATION')}
+				description={this.context.globalState.navigation.infomsg}
 			/>
 		) : null;
 	}
 
 	error() {
-		return this.props.errormsg ? (
+		return this.context.globalState.navigation.errormsg ? (
 			<Alert
 				type="error"
 				showIcon
-				closable onClose={this.props.dismissError}
-				message="Error"
-				description={this.props.errormsg}
+				closable onClose={() => this.context.globalDispatch(errorMessage(null))}
+				message={i18next.t('ERROR')}
+				description={this.context.globalState.navigation.errormsg}
 			/>
 		) : null;
 	}
 
 	loading() {
-		return this.props.loading ? (<Loading/>) : null;
+		return this.context.globalState.navigation.loading ? (<Loading/>) : null;
 	}
 
 	render() {
@@ -68,7 +42,6 @@ class Notifications extends Component<NotificationsProps, NotificationsState> {
 			<div className="UI-notification">
 				<div className="UI-notification-message">
 					{this.info()}
-					{this.warn()}
 					{this.error()}
 				</div>
 				<div className="UI-notification-loading">
@@ -79,17 +52,4 @@ class Notifications extends Component<NotificationsProps, NotificationsState> {
 	}
 }
 
-const mapStateToProps = (state) => ({
-	infomsg: state.navigation.infomsg,
-	warnmsg: state.navigation.warnmsg,
-	errormsg: state.navigation.errormsg,
-	loading: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	dismissInfo: () => dispatch(infoMessage(null)),
-	dismissWarn: () => dispatch(warnMessage(null)),
-	dismissError: () => dispatch(errorMessage(null))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Notifications);
+export default Notifications;
