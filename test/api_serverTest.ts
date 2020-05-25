@@ -178,7 +178,7 @@ describe('Favorites', function() {
 
 	it('Generate a automix playlist', function() {
 		var data = {
-			users: 'adminTest',
+			users: ['adminTest'],
 			duration: 5
 		};
 		return request
@@ -886,7 +886,7 @@ describe('Whitelist', function() {
 
 	it('Delete whitelist item', function() {
 		var data = {
-			kid: '495e2635-38a9-42db-bdd0-df4d27329c87'
+			kid: ['495e2635-38a9-42db-bdd0-df4d27329c87']
 		};
 		return request
 			.delete('/api/whitelist/')
