@@ -1,7 +1,8 @@
 {
     "configurations": [
         {
-            "name": "Launch KM",
+			"name": "Launch KM",
+			"outputCapture": "std",
             "type": "node",
             "request": "launch",
             "runtimeArgs": [
