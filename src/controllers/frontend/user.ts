@@ -383,7 +383,7 @@ export default function userController(router: Router) {
  * @apiParam {String} [fallback_series_lang] ISO639-2B code for language to use as fallback language for series names (in case of mode 4).
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {code: "USER_UPDATED"}
+ * {code: "USER_EDITED"}
  * @apiError USER_UPDATE_ERROR Unable to edit user
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:

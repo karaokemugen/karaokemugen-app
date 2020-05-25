@@ -36,7 +36,6 @@ describe('Auth', function() {
 			.expect(500)
 			.then(response => {
 				strictEqual(response.body.code, 'NO_MORE_GUESTS_AVAILABLE');
-				strictEqual(response.body.message, undefined);
 			});
 	});
 
@@ -399,7 +398,7 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(response => {
-				new_playlist_id = response.body.data.toString();
+				new_playlist_id = response.text.toString();
 			});
 	});
 
@@ -418,7 +417,7 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(response => {
-				new_playlist_current_id = response.body.data;
+				new_playlist_current_id = response.text.toString();
 			});
 	});
 
@@ -437,7 +436,7 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(response => {
-				new_playlist_public_id = response.body.data.toString();
+				new_playlist_public_id = response.text.toString();
 			});
 	});
 
@@ -543,7 +542,6 @@ describe('Playlists', function() {
 			.expect(200)
 			.then(response => {
 				strictEqual(response.body.code,'PL_IMPORTED');
-				strictEqual(response.body.data.message,'Playlist imported');
 				strictEqual(response.body.data.unknownKaras.length, 0);
 			});
 	});
@@ -804,7 +802,7 @@ describe('Users', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.code,'USER_UPDATED');
+				strictEqual(response.body.code,'USER_EDITED');
 			});
 	});
 

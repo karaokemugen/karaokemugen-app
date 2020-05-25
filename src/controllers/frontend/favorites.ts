@@ -40,12 +40,12 @@ export default function favoritesController(router: Router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					await createAutoMix({
+					const data = await createAutoMix({
 						duration: +req.body.duration,
 						users: req.body.users
 					}, req.authToken.username);
 					emitWS('playlistsUpdated');
-					res.status(201).json();
+					res.status(201).json(data);
 				} catch(err) {
 					const code = 'AUTOMIX_ERROR';
 					errMessage(code, err)
