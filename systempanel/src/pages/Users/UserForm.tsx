@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Button, Input, Select, Form } from 'antd';
 import i18next from 'i18next';
-import { FormProps } from 'antd/lib/form';
+import { FormProps, FormInstance } from 'antd/lib/form';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { User as UserType } from '../../../../src/lib/types/user';
 
@@ -16,6 +16,7 @@ interface UserFormState {
 }
 
 class UserForm extends Component<UserFormProps, UserFormState> {
+	formRef = React.createRef<FormInstance>();
 
 	constructor(props) {
 		super(props);
@@ -26,7 +27,7 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 	}
 
 	passwordValidator = (rule, value, callback) => {
-		if (+this.props.form.getFieldValue('type') < 2 && !this.state.initialLogin && !value) {
+		if (+this.formRef.current.getFieldValue('type') < 2 && !this.state.initialLogin && !value) {
 			callback(i18next.t('USERS.PASSWORD_VALIDATOR_MESSAGE'));
 		} else {
 			callback();
@@ -34,9 +35,8 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 	};
 
 	render() {
-		this.props.form && console.log(this.props.form)
 		return (
-            <Form onFinish={this.props.save} className='login-form'
+            <Form ref={this.formRef} onFinish={this.props.save} className='login-form'
 				initialValues={{type: `${this.props.user.type}`, login: this.props.user.login, 
 				nickname: this.props.user.nickname, bio: this.props.user.bio, email: this.props.user.email,
 				url: this.props.user.url}}>

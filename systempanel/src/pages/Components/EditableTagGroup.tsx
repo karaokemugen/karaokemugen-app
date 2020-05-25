@@ -1,5 +1,5 @@
 import React from 'react';
-import { AutoComplete, Button, Checkbox, Col, Row, Tag, Tooltip, Form } from 'antd';
+import { AutoComplete, Button, Checkbox, Col, Row, Tag, Tooltip, Form, Input } from 'antd';
 import { getTagInLocale } from "../../utils/kara";
 
 import i18next from 'i18next';
@@ -167,13 +167,10 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 						<Form.Item
 							wrapperCol={{ span: 10 }}
 						>
-							<AutoComplete
+							<Input
 								ref={input => this.input = input}
-								dataSource={this.state.DS}
-								onSearch={ this.search }
 								onChange={ val => this.currentVal = val }
-							>
-							</AutoComplete>
+							/>
 							<Button style={{marginTop: '10px'}} type='primary' onClick={() => this.handleInputConfirmAlias(this.currentVal)}
 								className='login-form-button'>
 								{i18next.t('ADD')}
@@ -210,10 +207,14 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 						>
 							<AutoComplete
 								ref={input => this.input = input}
-								dataSource={this.state.DS}
 								onSearch={ this.search }
 								onChange={ val => this.currentVal = val }
 							>
+								{this.state.DS.map((tag) => (
+									<AutoComplete.Option value={tag.value} key={tag.value}>
+										{tag.text}
+									</AutoComplete.Option>
+								))}
 							</AutoComplete>
 							<Button type='primary' onClick={() => this.handleInputConfirm(this.currentVal)}
 								className='login-form-button'>

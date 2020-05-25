@@ -4,7 +4,7 @@ import EditableTagGroup from '../Components/EditableTagGroup';
 import {getListLanguagesInLocale, getLanguagesInLocaleFromCode } from '../../isoLanguages';
 import i18next from 'i18next';
 import { tagTypes } from '../../utils/tagTypes';
-import { FormProps } from 'antd/lib/form';
+import { FormProps, FormInstance } from 'antd/lib/form';
 import { QuestionCircleOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import Axios from 'axios';
 import { DBTag } from '../../../../src/lib/types/database/tag';
@@ -25,7 +25,7 @@ interface TagsFormState {
 }
 
 class TagForm extends Component<TagsFormProps, TagsFormState> {
-
+	formRef = React.createRef<FormInstance>();
 	select: any;
 
 	constructor(props) {
@@ -133,6 +133,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		});
 		return (
             <Form
+				ref={this.formRef} 
 				onFinish={this.handleSubmit}
 				className='tag-form'
 				initialValues={initialValues}
@@ -212,7 +213,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					</Form.Item> : null
 				}
 				
-				{this.props.tag?.repository !== this.props.form?.getFieldValue('repository') ?
+				{this.props.tag?.repository !== this.formRef.current?.getFieldValue('repository') ?
 					<Form.Item
 						wrapperCol={{ span: 8, offset: 3 }}
 						style={{textAlign:"right"}}
@@ -237,7 +238,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				>
 					<EditableTagGroup
 						search={'aliases'}
-						onChange={(tags) => this.props.form.setFieldsValue({ aliases: tags.join(',') })}
+						onChange={(tags) => this.formRef.current.setFieldsValue({ aliases: tags.join(',') })}
 					/>
 				</Form.Item>
 
