@@ -1,28 +1,21 @@
 import React, {Component} from 'react';
-import axios from 'axios';
-import {connect} from 'react-redux';
 import {Button, Layout, Table} from 'antd';
-
-import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
-import {ReduxMappedProps} from '../../react-app-env';
 import {ColumnProps} from 'antd/lib/table';
 import {getNameTagInLocaleList} from "../../utils/kara";
 import i18next from 'i18next';
-
-interface KaraListProps extends ReduxMappedProps {}
+import Axios from 'axios';
+import { DBKara } from '../../../../src/lib/types/database/kara';
 
 interface KaraListState {
-	karas: any[],
-	kara: any
+	karas: DBKara[]
 }
 
-class KaraList extends Component<KaraListProps, KaraListState> {
+class KaraList extends Component<{}, KaraListState> {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			karas: [],
-			kara: {}
+			karas: []
 		};
 	}
 
@@ -30,17 +23,9 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 		this.refresh();
 	}
 
-	refresh() {
-		this.props.loading(true);
-		axios.get('/api/karas/history')
-			.then(res => {
-				this.props.loading(false);
-				this.setState({karas: res.data});
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	refresh = async () => {
+		let res = await Axios.get('/karas/history');
+		this.setState({karas: res.data});
 	}
 
 	render() {
@@ -51,7 +36,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 					columns={this.columns}
 					rowKey='played_at'
 				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>{i18next.t('REFRESH')}</Button>
+				<Button type='primary' onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
 			</Layout.Content>
 		);
 	}
@@ -67,7 +52,7 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 		key: 'series',
 		render: (series, record) => getNameTagInLocaleList(series).join(', ') || getNameTagInLocaleList(record.singers).join(', ')
 	}, {
-		title: i18next.t('KARA.TYPE'),
+		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => getNameTagInLocaleList(songtypes).join(', ') + ' ' + (record.songorder || '')
@@ -90,15 +75,4 @@ class KaraList extends Component<KaraListProps, KaraListState> {
 	}];
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(KaraList);
+export default KaraList;

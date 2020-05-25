@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireNotDemo } from '../middlewares/demo';
 import { requireAuth, requireValidUser, requireAdmin } from '../middlewares/auth';
 import { getRepos, getRepo, removeRepo, addRepo, editRepo, findUnusedTags, findUnusedMedias, consolidateRepo } from '../../services/repo';
+import { errMessage, APIMessage } from '../common';
 
 export default function repoController(router: Router) {
 	router.route('/repos')
@@ -28,13 +29,16 @@ export default function repoController(router: Router) {
  * ]
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: "REPO_LIST_ERROR"}
  */
 		.get(requireNotDemo, async (_req: any, res: any) => {
 			try {
 				const repos = getRepos();
 				res.json(repos);
 			} catch(err) {
-				res.status(500).send(`Error getting repositories: ${err}`);
+				const code = 'REPO_LIST_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -54,15 +58,19 @@ export default function repoController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * {code: "REPO_CREATED"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: "REPO_CREATE_ERROR"}
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await addRepo(req.body);
-				res.status(200).json();
+				res.status(200).json(APIMessage('REPO_CREATED'));
 			} catch(err) {
-				res.status(500).send(`Error adding repository: ${err}`);
+				const code = 'REPO_CREATE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/repos/:name')
@@ -83,13 +91,16 @@ export default function repoController(router: Router) {
  * 	}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: "REPO_GET_ERROR"}
  */
 		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				const repo = getRepo(req.params.name);
 				res.json(repo);
 			} catch(err) {
-				res.status(500).send(`Error getting repository: ${err}`);
+				const code = 'REPO_GET_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -104,15 +115,19 @@ export default function repoController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * {code: "REPO_DELETED"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: "REPO_DELETE_ERROR"}
  */
 		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				removeRepo(req.params.name);
-				res.json();
+				res.json(APIMessage('REPO_DELETED'));
 			} catch(err) {
-				res.status(500).send(`Error deleting repository: ${err}`);
+				const code = 'REPO_DELETE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -133,15 +148,19 @@ export default function repoController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * {code: "REPO_EDITED"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: "REPO_EDIT_ERROR"}
  */
 		.put(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await editRepo(req.params.name, req.body);
-				res.json();
+				res.json(APIMessage('REPO_EDITED'));
 			} catch(err) {
-				res.status(500).send(`Error editing repository: ${err}`);
+				const code = 'REPO_EDIT_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	router.route('/repos/:name/unusedTags')
@@ -162,13 +181,16 @@ export default function repoController(router: Router) {
  * 	}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: 'REPO_GET_UNUSEDTAGS_ERROR}
  */
 		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				const tags = await findUnusedTags(req.params.name);
 				res.json(tags);
 			} catch(err) {
-				res.status(500).send(`Error getting tags: ${err}`);
+				const code = 'REPO_GET_UNUSEDTAGS_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/repos/:name/unusedMedias')
@@ -191,13 +213,16 @@ export default function repoController(router: Router) {
  *  ]
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: 'REPO_GET_UNUSEDMEDIA_ERROR'}
  */
 		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				const files = await findUnusedMedias(req.params.name);
 				res.json(files);
 			} catch(err) {
-				res.status(500).send(`Error getting tags: ${err}`);
+				const code = 'REPO_GET_UNUSEDMEDIA_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/repos/:name/consolidate')
@@ -212,15 +237,14 @@ export default function repoController(router: Router) {
 	 * @apiParam {string} path New path to move all files to
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
+	 * {code: "REPO_CONSOLIDATING_IN_PROGRESS"}
 	 */
 			.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 				try {
 					consolidateRepo(req.params.name, req.body.path);
-					res.status(200).send('Consolidation in progress. See logs or terminal for details');
+					res.status(200).json(APIMessage('REPO_CONSOLIDATING_IN_PROGRESS'));
 				} catch(err) {
-					res.status(500).send(`Error consolidate repository: ${err}`);
+					// This is async, check function to know which WS event you get
 				}
 			});
 }

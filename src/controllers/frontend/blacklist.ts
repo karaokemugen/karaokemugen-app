@@ -1,7 +1,7 @@
 import { getLang } from "../middlewares/lang";
 import { requireAuth, requireValidUser, updateUserLoginTime, requireAdmin } from "../middlewares/auth";
 import { emitWS } from "../../lib/utils/ws";
-import { errMessage } from "../common";
+import { errMessage, APIMessage } from "../common";
 import { getBlacklistCriterias, deleteBlacklistCriteria, emptyBlacklistCriterias, getBlacklist, addBlacklistCriteria } from "../../services/blacklist";
 import { Router } from "express";
 import { check } from "../../lib/utils/validators";
@@ -22,7 +22,6 @@ export default function blacklistController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "BLC_EMPTIED"
  * @apiError BLC_EMPTY_ERROR Unable to empty list of blacklist criterias
  *
  * @apiErrorExample Error-Response:
@@ -33,10 +32,10 @@ export default function blacklistController(router: Router) {
 			try {
 				await emptyBlacklistCriterias();
 				emitWS('blacklistUpdated');
-				res.status(200).send('BLC_EMPTIED');
+				res.status(200).json();
 			} catch(err) {
 				errMessage('BLC_EMPTY_ERROR',err);
-				res.status(500).send('BLC_EMPTY_ERROR');
+				res.status(500).json(APIMessage('BLC_EMPTY_ERROR'));
 			}
 		});
 	router.route('/blacklist')
@@ -104,10 +103,10 @@ export default function blacklistController(router: Router) {
 					res.json(karas);
 				} catch(err) {
 					errMessage('BL_VIEW_ERROR', err);
-					res.status(500).send('BL_VIEW_ERROR');
+					res.status(500).json(APIMessage('BL_VIEW_ERROR'));
 				}
 			} else {
-				res.status(403).send('BL_VIEW_FORBIDDEN');
+				res.status(403).json(APIMessage('BL_VIEW_FORBIDDEN'));
 			}
 		});
 	router.route('/blacklist/criterias')
@@ -151,10 +150,10 @@ export default function blacklistController(router: Router) {
 						res.json(blc);
 					} catch(err) {
 						errMessage('BLC_VIEW_ERROR', err);
-						res.status(500).send('BLC_VIEW_ERROR');
+						res.status(500).json(APIMessage('BLC_VIEW_ERROR'));
 					}
 				} else {
-					res.status(403).send('BLC_VIEW_FORBIDDEN');
+					res.status(403).json(APIMessage('BLC_VIEW_FORBIDDEN'));
 				}
 			})
 	/**
@@ -187,10 +186,10 @@ export default function blacklistController(router: Router) {
 					try {
 						await addBlacklistCriteria(req.body.blcriteria_type, req.body.blcriteria_value);
 						emitWS('blacklistUpdated');
-						res.status(201).send('BLC_ADDED');
+						res.status(201).json(APIMessage('BLC_ADDED'));
 					} catch(err) {
 						errMessage('BLC_ADD_ERROR',err);
-						res.status(500).send('BLC_ADD_ERROR');
+						res.status(500).json(APIMessage('BLC_ADD_ERROR'));
 					}
 				} else {
 					// Errors detected
@@ -226,11 +225,10 @@ export default function blacklistController(router: Router) {
 				try {
 					await deleteBlacklistCriteria(req.params.blc_id);
 					emitWS('blacklistUpdated');
-					res.status(200).send('BLC_DELETED');
+					res.status(200).json(APIMessage('BLC_DELETED'));
 				} catch(err) {
 					errMessage('BLC_DELETE_ERROR',err)
-					res.status(500).send('BLC_DELETE_ERROR');
+					res.status(500).json(APIMessage('BLC_DELETE_ERROR'));
 				}
 			});
-
 }

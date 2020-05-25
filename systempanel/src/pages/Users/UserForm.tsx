@@ -1,15 +1,18 @@
 import React, {Component} from 'react';
-import {Button, Form, Icon, Input, Select} from 'antd';
+import { Button, Input, Select, Form } from 'antd';
 import i18next from 'i18next';
+import { FormProps } from 'antd/lib/form';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { User as UserType } from '../../../../src/lib/types/user';
 
-interface UserFormProps {
-	user: any,
-	form: any,
-	save: any,
+interface UserFormProps extends FormProps {
+	user: UserType,
+	save: (User) => void,
 }
 
 interface UserFormState {
 	initialLogin: string,
+	type?: number
 }
 
 class UserForm extends Component<UserFormProps, UserFormState> {
@@ -17,7 +20,8 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			initialLogin: this.props.user.login
+			initialLogin: this.props.user.login,
+			type: this.props.user?.type
 		};
 	}
 
@@ -29,94 +33,56 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 		}
 	};
 
-	handleSubmit = (e) => {
-		e.preventDefault();
-		this.props.form.validateFields((err, values) => {
-			if (!err) {
-				this.props.save(values);
-			}
-		});
-	};
-
 	render() {
-		const {getFieldDecorator} = this.props.form;
-
+		this.props.form && console.log(this.props.form)
 		return (
-			<Form onSubmit={this.handleSubmit} className='login-form'>
-				<Form.Item hasFeedback>
-					{getFieldDecorator('type', {
-						rules: [{required: true}],
-						initialValue: `${this.props.user.type}`
-					})(<Select>
+            <Form onFinish={this.props.save} className='login-form'
+				initialValues={{type: `${this.props.user.type}`, login: this.props.user.login, 
+				nickname: this.props.user.nickname, bio: this.props.user.bio, email: this.props.user.email,
+				url: this.props.user.url}}>
+				<Form.Item hasFeedback name="type" required={true}>
+					<Select onChange={(value) => this.setState({type: parseInt(value.toString())})}>
 						<Select.Option value='0'>{i18next.t('USERS.ADMIN')}</Select.Option>
 						<Select.Option value='1'>{i18next.t('USERS.USER')}</Select.Option>
 						<Select.Option value='2'>{i18next.t('USERS.GUEST')}</Select.Option>
-					</Select>)}
+					</Select>
 				</Form.Item>
-				<Form.Item hasFeedback>
-					{getFieldDecorator('login', {
-						rules: [{required: true}],
-						initialValue: this.props.user.login
-					})(<Input
-						prefix={<Icon type='user'/>}
-						onPressEnter={this.handleSubmit}
+				<Form.Item hasFeedback name="login" required={true}>
+					<Input
+						prefix={<UserOutlined />}
 						placeholder={i18next.t('USERS.LOGIN')}
-					/>)}
+					/>
 				</Form.Item>
-				{+this.props.form.getFieldValue('type') === 2 ? null :
-					<Form.Item hasFeedback>
-						{getFieldDecorator('password', {
-							rules: [{validator: this.passwordValidator}]
-						})(<Input
-							prefix={<Icon type='lock'/>}
+				{this.state.type === 2 ? null :
+					<Form.Item hasFeedback name="password" rules={[{validator: this.passwordValidator}]}>
+						<Input
+							prefix={<LockOutlined />}
 							type='password'
-							onPressEnter={this.handleSubmit}
 							placeholder={i18next.t('USERS.PASSWORD')}
-						/>)}
+						/>
 					</Form.Item>
 				}
-				<Form.Item hasFeedback>
-					{getFieldDecorator('nickname', {
-						rules: [{required: true}],
-						initialValue: this.props.user.nickname
-					})(<Input
-						onPressEnter={this.handleSubmit}
-						placeholder={i18next.t('USERS.NICKNAME')}
-					/>)}
+				<Form.Item hasFeedback name="nickname" required={true}>
+					<Input placeholder={i18next.t('USERS.NICKNAME')} />
 				</Form.Item>
-				<Form.Item hasFeedback>
-					{getFieldDecorator('bio', {
-						initialValue: this.props.user.bio
-					})(<Input.TextArea
+				<Form.Item hasFeedback required={true}>
+					<Input.TextArea
 						rows={3}
 						placeholder={i18next.t('USERS.BIO')}
-					/>)}
+					/>
 				</Form.Item>
-				<Form.Item hasFeedback>
-					{getFieldDecorator('email', {
-						rules: [{type: 'email'}],
-						initialValue: this.props.user.email
-					})(<Input
-						onPressEnter={this.handleSubmit}
-						placeholder={i18next.t('USERS.EMAIL')}
-					/>)}
+				<Form.Item hasFeedback rules={[{type: 'email'}]}>
+					<Input placeholder={i18next.t('USERS.EMAIL')} />
 				</Form.Item>
-				<Form.Item hasFeedback>
-					{getFieldDecorator('url', {
-						rules: [{type: 'url'}],
-						initialValue: this.props.user.url
-					})(<Input
-						onPressEnter={this.handleSubmit}
-						placeholder={i18next.t('USERS.URL')}
-					/>)}
+				<Form.Item hasFeedback rules={[{type: 'url'}]}>
+					<Input placeholder={i18next.t('USERS.URL')}	/>
 				</Form.Item>
 				<Form.Item>
 					<Button type='primary' htmlType='submit' className='login-form-button'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 			</Form>
-		);
+        );
 	}
 }
 
-const cmp: any = Form.create()(UserForm);
-export default cmp;
+export default UserForm;

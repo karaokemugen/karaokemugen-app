@@ -17,6 +17,8 @@ import { Tag }  from '../../src/lib/types/tag';
 import { Tag as FrontendTag }  from './types/tag';
 import SetupPage from './components/SetupPage';
 
+require('./axiosInterceptor');
+
 interface IState {
 	admpwd: string | undefined;
 	shutdownPopup: boolean;
@@ -44,7 +46,7 @@ class App extends Component<{}, IState> {
 
 	async checkAuth() {
 		try {
-			await axios.get('/api/auth/checkauth')
+			await axios.get('/auth/checkauth')
 		} catch (error) {
 			// if error the authorization must be broken so we delete it
 			store.logOut();
@@ -52,7 +54,7 @@ class App extends Component<{}, IState> {
 	}
 
 	async parseTags() {
-		const response = await axios.get('/api/tags');
+		const response = await axios.get('/tags');
 		return response.data.content.filter((val:Tag) => val.karacount !== null)
 			.map((val:{i18n:{[key: string]: string}, tid:string, name:string, types:Array<number|string>, karacount:string}) => {
 			var trad = val.i18n![store.getNavigatorLanguage() as string];
@@ -61,7 +63,7 @@ class App extends Component<{}, IState> {
 	}
 
 	async parseYears() {
-		const response = await axios.get('/api/years');
+		const response = await axios.get('/years');
 		return response.data.content.map((val:DBYear) => {
 			return { value: val.year, label: val.year, type: ['year'], karacount: val.karacount };
 		});
@@ -73,7 +75,7 @@ class App extends Component<{}, IState> {
 			await store.setUser();
 		}
 		if (this.state.admpwd && !localStorage.getItem('kmToken')) {
-			var result = await axios.post('/api/auth/login', { username: 'admin', password: this.state.admpwd });
+			var result = await axios.post('/auth/login', { username: 'admin', password: this.state.admpwd });
 			store.setLogInfos(result.data);
 		}
 		await this.getSettings();
@@ -103,7 +105,7 @@ class App extends Component<{}, IState> {
     }
 
     getSettings = async () => {
-    	const res = await axios.get('/api/settings');
+    	const res = await axios.get('/settings');
 		store.setConfig(res.data.config);
 		store.setVersion(res.data.version);
 		store.setModePlaylistID(res.data.state.modePlaylistID);
@@ -114,7 +116,7 @@ class App extends Component<{}, IState> {
     };
 
     powerOff = () => {
-    	axios.post('/api/shutdown');
+    	axios.post('/shutdown');
     	this.setState({ shutdownPopup: true });
     };
 

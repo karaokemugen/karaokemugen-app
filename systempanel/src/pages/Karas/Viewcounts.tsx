@@ -1,29 +1,21 @@
 import React, {Component} from 'react';
-import axios from 'axios';
-import {connect} from 'react-redux';
 import {Button, Layout, Table} from 'antd';
-
-import {loading, errorMessage, warnMessage, infoMessage} from '../../actions/navigation';
-import {ReduxMappedProps} from '../../react-app-env';
 import {ColumnProps} from 'antd/lib/table';
 import {getNameTagInLocaleList} from "../../utils/kara";
 import i18next from 'i18next';
-
-interface ViewcountsProps extends ReduxMappedProps {
-}
+import Axios from 'axios';
+import {DBKara} from '../../../../src/lib/types/database/kara';
 
 interface ViewcountsState {
-	karas: any[],
-	kara: any,
+	karas: DBKara[]
 }
 
-class Viewcounts extends Component<ViewcountsProps, ViewcountsState> {
+class Viewcounts extends Component<{}, ViewcountsState> {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			karas: [],
-			kara: {}
+			karas: []
 		};
 	}
 
@@ -31,17 +23,9 @@ class Viewcounts extends Component<ViewcountsProps, ViewcountsState> {
 		this.refresh();
 	}
 
-	refresh() {
-		this.props.loading(true);
-		axios.get('/api/karas/viewcounts')
-			.then(res => {
-				this.props.loading(false);
-				this.setState({karas: res.data});
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	refresh = async () => {
+		let res = await Axios.get('/karas/viewcounts');
+		this.setState({karas: res.data});
 	}
 
 	render() {
@@ -52,7 +36,7 @@ class Viewcounts extends Component<ViewcountsProps, ViewcountsState> {
 					columns={this.columns}
 					rowKey='kid'
 				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>{i18next.t('REFRESH')}</Button>
+				<Button type='primary' onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
 			</Layout.Content>
 		);
 	}
@@ -71,7 +55,7 @@ class Viewcounts extends Component<ViewcountsProps, ViewcountsState> {
 		key: 'series',
 		render: (series, record) => getNameTagInLocaleList(series).join(', ') || getNameTagInLocaleList(record.singers).join(', ')
 	}, {
-		title: i18next.t('KARA.TYPE'),
+		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => getNameTagInLocaleList(songtypes).join(', ') + ' ' + (record.songorder || '')
@@ -89,15 +73,4 @@ class Viewcounts extends Component<ViewcountsProps, ViewcountsState> {
 	}];
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Viewcounts);
+export default Viewcounts;

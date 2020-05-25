@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
-import { Alert, Button, Form, Icon, Input, message, Select, Tag, Tooltip, Cascader } from 'antd';
+import { Alert, Button, Input, message, Select, Tag, Tooltip, Cascader, Form, Row, Col } from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
 import {getListLanguagesInLocale, getLanguagesInLocaleFromCode } from '../../isoLanguages';
 import i18next from 'i18next';
 import { tagTypes } from '../../utils/tagTypes';
-import axios from 'axios/index';
+import { FormProps } from 'antd/lib/form';
+import { QuestionCircleOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import Axios from 'axios';
+import { DBTag } from '../../../../src/lib/types/database/tag';
 
-interface TagsFormProps {
-	tags: any,
-	tag: any,
-	form: any
-	save: any,
-	mergeAction: any,
+interface TagsFormProps extends FormProps {
+	tags: Array<DBTag>,
+	tag: DBTag,
+	save: (tag:DBTag) => void,
+	mergeAction: (tid1:string, tid2:string) => void,
 }
 
 interface TagsFormState {
@@ -29,33 +31,18 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	constructor(props) {
 		super(props);
 		this.getRepositories();
+		
 		this.state = {
-			i18n: [],
+			i18n: this.props.tag?.i18n ? Object.keys(this.props.tag.i18n) : [],
 			languages: getListLanguagesInLocale(),
 			selectVisible: false,
 			mergeSelection: '',
 			repositoriesValue: null
 		};
-		
-		Object.keys(this.props.tag.i18n).forEach(lang => {
-			var name = this.props.tag.i18n[lang];
-			this.state.i18n.push(lang);
-			this.state[`lang_${lang}`] = name;
-		});
-	}
-
-	componentDidMount() {
-		// For some stupid reason the list of languages won't be filled up, even with initialValue.
-		// So we're filling the form here.
-		for (const lang of this.state.i18n) {
-			const obj = {};
-			obj[`lang_${lang}`] = this.props.tag.i18n[lang];
-			this.props.form.setFieldsValue(obj);
-		}
 	}
 
 	getRepositories = async () => {
-		const res = await axios.get("/api/repos");
+		const res = await Axios.get("/repos");
 		this.setState({ repositoriesValue: res.data.map(repo => repo.Name)});
 	};
 
@@ -63,20 +50,16 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		this.setState({ selectVisible: true }, () => this.select.focus());
 	};
 
-	handleSubmit = (e) => {
-		e.preventDefault();
+	handleSubmit = (values) => {
 		if (this.state.i18n.length > 0) {
-			this.props.form.validateFields((err, values) => {
-				if (!err) {
-					const i18nField = {};
-					this.state.i18n.forEach((lang) => {
-						i18nField[lang] = values[`lang_${lang}`];
-						delete values[`lang_${lang}`];
-					});
-					values.i18n = i18nField;
-					this.props.save(values);
-				}
+			const i18nField = {};
+			this.state.i18n.forEach((lang) => {
+				i18nField[lang] = values[`lang_${lang}`];
+				delete values[`lang_${lang}`];
 			});
+			values.i18n = i18nField;
+			values.tid = this.props.tag.tid;
+			this.props.save(values);
 		} else {
 			message.error(i18next.t('TAGS.LANG_ERROR'));
 		}
@@ -85,6 +68,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	handleTagMergeSelection = (value) => {
 		this.setState({mergeSelection:value[1]})
 	}
+
 	handleTagMerge = (e) => {
 		this.props.mergeAction(this.props.tag.tid,this.state.mergeSelection)
 	}
@@ -136,98 +120,99 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	}
 
 	render() {
-		const { getFieldDecorator } = this.props.form;
-		const { selectVisible } = this.state;
+		let initialValues={
+			name: this.props.tag?.name,
+			short: this.props.tag?.short,
+			types: this.props.tag?.types ? this.props.tag.types : [],
+			repository: this.props.tag?.repository ? this.props.tag.repository : 
+				(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
+			aliases: this.props.tag?.aliases
+		};
+		this.state.i18n.forEach(lang => {
+			initialValues['lang_' + lang] = this.props.tag?.i18n[lang];
+		});
 		return (
-			<Form
-				onSubmit={this.handleSubmit}
+            <Form
+				onFinish={this.handleSubmit}
 				className='tag-form'
+				initialValues={initialValues}
 			>
 				<Form.Item hasFeedback
 					label={(
 						<span>{i18next.t('TAGS.NAME')}&nbsp;
 							<Tooltip title={i18next.t('TAGS.NAME_TOOLTIP')}>
-								<Icon type="question-circle-o" />
+								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 8, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ flex: "auto" }}
+					name="name"
+					rules={[{
+						required: true,
+						message: i18next.t('TAGS.NAME_REQUIRED')
+					}]}
 				>
-					{getFieldDecorator('name', {
-						initialValue: this.props.tag.name,
-						rules: [{
-							required: true,
-							message: i18next.t('TAGS.NAME_REQUIRED')
-						}],
-					})(<Input
+					<Input style={{maxWidth: '40%', minWidth: '150px'}}
 						placeholder={i18next.t('TAGS.NAME')}
-					/>)}
+					/>
 				</Form.Item>
 				<Form.Item hasFeedback
 					label={(
 						<span>{i18next.t('TAGS.SHORT_NAME')}&nbsp;
 							<Tooltip title={i18next.t('TAGS.SHORT_NAME_TOOLTIP')}>
-								<Icon type="question-circle-o" />
+								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 8, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ flex: "auto" }}
+					name="short"
 				>
-					{getFieldDecorator('short', {
-						initialValue: this.props.tag.short,
-					})(<Input
+					<Input style={{maxWidth: '40%', minWidth: '150px'}}
 						placeholder={i18next.t('TAGS.SHORT_NAME')}
-					/>)}
+					/>
 				</Form.Item>
 				<Form.Item hasFeedback
 					label={(
 						<span>{i18next.t('TAGS.TYPES')}&nbsp;
 								<Tooltip title={i18next.t('TAGS.TYPES_TOOLTIP')}>
-								<Icon type="question-circle-o" />
+								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 8, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ flex: "auto" }}
+					name="types"
+					required={true}
 				>
-
-					{getFieldDecorator("types", {
-						rules: [{ required: true }],
-						initialValue: this.props.tag.types ? this.props.tag.types : []
-					})(
-						<Select mode="multiple" placeholder={i18next.t('TAGS.TYPES')}>
-							{Object.keys(tagTypes).map(type => {
-								const value = tagTypes[type];
-								return <Select.Option key={value} value={value}>
-										{i18next.t(`TAG_TYPES.${type}`)}
-									</Select.Option>
-							})
-							}
-						</Select>
-					)}
+					<Select style={{maxWidth: '40%', minWidth: '150px'}} mode="multiple" placeholder={i18next.t('TAGS.TYPES')}>
+						{Object.keys(tagTypes).map(type => {
+							const value = tagTypes[type];
+							return <Select.Option key={value} value={value}>
+									{i18next.t(`TAG_TYPES.${type}`)}
+								</Select.Option>
+						})
+						}
+					</Select>
 				</Form.Item>
 				{this.state.repositoriesValue ?
 					<Form.Item
 						label={i18next.t('TAGS.REPOSITORY')}
-						labelCol={{ span: 3 }}
-						wrapperCol={{ span: 3, offset: 0 }}
+						labelCol={{ flex: '0 1 200px' }}
+						wrapperCol={{ flex: "auto" }}
+						name="repository"
 					>
-						{getFieldDecorator("repository", {
-							initialValue: this.props.tag.repository ? this.props.tag.repository : this.state.repositoriesValue[0]
-						})(
-							<Select placeholder={i18next.t('TAGS.REPOSITORY')}>
-								{this.state.repositoriesValue.map(repo => {
-									return <Select.Option key={repo} value={repo}>{repo}</Select.Option>
-								})
-								}
-							</Select>
-						)}
+						<Select style={{maxWidth: '20%', minWidth: '150px'}}  placeholder={i18next.t('TAGS.REPOSITORY')}>
+							{this.state.repositoriesValue.map(repo => {
+								return <Select.Option key={repo} value={repo}>{repo}</Select.Option>
+							})
+							}
+						</Select>
 					</Form.Item> : null
 				}
 				
-				{this.props.tag.repository && this.props.tag.repository !== this.props.form.getFieldValue('repository') ?
+				{this.props.tag?.repository !== this.props.form?.getFieldValue('repository') ?
 					<Form.Item
 						wrapperCol={{ span: 8, offset: 3 }}
 						style={{textAlign:"right"}}
@@ -242,72 +227,65 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					label={(
 						<span>{i18next.t('TAGS.ALIASES')}&nbsp;
 							<Tooltip title={i18next.t('TAGS.ALIASES_TOOLTIP')}>
-								<Icon type="question-circle-o" />
+								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 8, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ flex: "auto" }}
+					name="aliases"
 				>
-					{getFieldDecorator('aliases', {
-						initialValue: this.props.tag.aliases,
-					})(<EditableTagGroup
+					<EditableTagGroup
 						search={'aliases'}
 						onChange={(tags) => this.props.form.setFieldsValue({ aliases: tags.join(',') })}
-					/>)}
+					/>
 				</Form.Item>
 
 				<Form.Item 
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 8, offset: 0 }}
+					labelCol={{ flex: '150px' }}
 					label={(<span>{i18next.t('TAGS.I18N')}&nbsp;
 						<Tooltip title={i18next.t('TAGS.I18N_TOOLTIP')}>
-							<Icon type="question-circle-o" />
+							<QuestionCircleOutlined />
 						</Tooltip>
 					</span>)}
 					>
 				</Form.Item>
 
 				{this.state.i18n.map(langKey => (
-					<Form.Item
-						key={langKey}
-						hasFeedback
-						label={getLanguagesInLocaleFromCode(langKey)}
-						labelCol={{ span: 3 }}
-						wrapperCol={{ span: 8, offset: 0 }}
-					>
-							{getFieldDecorator('lang_' + langKey, {
-								initialValue: this.state[`lang_${langKey}`],
-								rules: [{
+					<Row key={langKey} style={{maxWidth: '50%', minWidth: '150px'}}>
+						<Col style={{width: '80%'}}>
+							<Form.Item
+								label={getLanguagesInLocaleFromCode(langKey)}
+								labelCol={{ flex: '0 1 200px' }}
+								wrapperCol={{ flex: 'auto' }}
+								name={`lang_${langKey}`}
+								rules={[{
 									required: true,
 									message: i18next.t('TAGS.I18N_ERROR')
-								}],
-							})(
-								<Input
-									placeholder={i18next.t('TAGS.I18N_NAME')}
-								/>
-							)}
-
+								}]}
+							>
+								<Input placeholder={i18next.t('TAGS.I18N_NAME')} />
+							</Form.Item>
+						</Col>
+						<Col style={{marginLeft: '10px'}}>
 							{Object.keys(this.state.i18n).length > 1 ? (
-								<span style={{position:'absolute'}}>
-									<Tooltip title={i18next.t('TAGS.I18N_DELETE')}>
-									<Icon
+								<Tooltip title={i18next.t('TAGS.I18N_DELETE')}>
+									<MinusCircleOutlined
 										className="dynamic-delete-button"
-										type="minus-circle-o"
 										onClick={() => this.removeLang(langKey)}
 									/>
-								</Tooltip></span>
+								</Tooltip>
 							) : null}
-
-					</Form.Item>
+						</Col>
+					</Row>
 				))}
-				{selectVisible && (
-					<Form.Item
-						label={i18next.t('TAGS.I18N_SELECT')}
-						labelCol={{ span: 3 }}
-						wrapperCol={{ span: 8, offset: 0 }}
-					>
-						<Select
+				<Form.Item
+					label={i18next.t('TAGS.I18N_SELECT')}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ flex: 'auto' }}
+				>
+					{this.state.selectVisible ?
+						<Select style={{maxWidth: '40%', minWidth: '150px'}}
 							showSearch
 							optionFilterProp="children"
 							ref={select => this.select = select}
@@ -316,24 +294,16 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 								<Select.Option key={lang.value} value={lang.value}>
 									{lang.text} ({lang.value.toUpperCase()})
 								</Select.Option>))}
-						</Select>
-					</Form.Item>
-				)}
-				{!selectVisible && (
-					<Form.Item
-						label={i18next.t('TAGS.I18N_SELECT')}
-						labelCol={{ span: 3 }}
-						wrapperCol={{ span: 8, offset: 0 }}
-					>
+						</Select> :
 						<Tag
 							onClick={this.showSelect}
 							style={{ borderStyle: 'dashed' }}
 							>
-							<Icon type="plus" />{i18next.t('ADD')}
+							<PlusOutlined />{i18next.t('ADD')}
 						</Tag>
-					</Form.Item>
-				)}
-				<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{textAlign:"right"}}>
+					}
+				</Form.Item>
+				<Form.Item wrapperCol={{ flex: '45%' }} style={{textAlign:"right"}}>
 					<Button type='primary' htmlType='submit' 
 						className='tags-form-button'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
@@ -342,16 +312,17 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					label={(
 						<span>{i18next.t('TAGS.MERGE_WITH')}&nbsp;
 							<Tooltip title={i18next.t('TAGS.MERGE_WITH_TOOLTIP')}>
-								<Icon type="question-circle-o" />
+								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 8, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ flex: "auto" }}
 					>
-					<Cascader options={this.mergeCascaderOption()} 
+					<Cascader style={{maxWidth: '40%', minWidth: '150px'}}
+						options={this.mergeCascaderOption()} 
 						showSearch={{filter:this.mergeCascaderFilter}} 
-						onChange={this.handleTagMergeSelection.bind(this)} 
+						onChange={this.handleTagMergeSelection} 
 						placeholder={i18next.t('TAGS.MERGE_WITH_SELECT')} />
 				</Form.Item>
 
@@ -359,32 +330,19 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					wrapperCol={{ span: 8, offset: 3 }}
 					style={{textAlign:"right"}}
 					>
-					<Button type="danger" onClick={this.handleTagMerge.bind(this)}>
+					<Button type="primary" danger onClick={this.handleTagMerge}>
 						{i18next.t('TAGS.MERGE_WITH_BUTTON')}
 					</Button>
-                    <Alert style={{textAlign:"left"}}
+                    <Alert style={{textAlign:"left", marginTop: '20px'}}
                         message={i18next.t('TAGS.MERGE_ABOUT')}
                         description={i18next.t('TAGS.MERGE_ABOUT_MESSAGE')}
                         type="warning"
                     />
 				
 				</Form.Item>
-
-				<Form.Item>
-					{getFieldDecorator('i18n', {
-						initialValue: this.props.tag.i18n
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('tid', {
-						initialValue: this.props.tag.tid
-					})(<Input type="hidden" />)}
-				</Form.Item>
-
 			</Form>
-		);
+        );
 	}
 }
 
-const cmp: any = Form.create()(TagForm);
-export default cmp;
+export default TagForm;

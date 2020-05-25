@@ -82,8 +82,8 @@ class KaraDetail extends Component<IProps,IState> {
 
   getKaraDetail = async (kid?:string) => {
   	var urlInfoKara = this.props.idPlaylist && this.props.idPlaylist > 0 ?
-  		'/api/playlists/' + this.props.idPlaylist + '/karas/' + this.props.playlistcontentId :
-  		'/api/karas/' + (kid ? kid : this.props.kid);
+  		'/playlists/' + this.props.idPlaylist + '/karas/' + this.props.playlistcontentId :
+  		'/karas/' + (kid ? kid : this.props.kid);
   	var response = await axios.get(urlInfoKara);
   	const kara = response.data;
 	  this.setState({
@@ -180,7 +180,7 @@ class KaraDetail extends Component<IProps,IState> {
    */
 
   showFullLyrics = async () => {
-  	var response = await axios.get('/api/karas/' + (this.state.kara as DBPLCInfo).kid + '/lyrics');
+  	var response = await axios.get('/karas/' + (this.state.kara as DBPLCInfo).kid + '/lyrics');
   	if (is_touch_device() && this.props.mode !== 'karaCard') {
 			callModal('alert', i18next.t('LYRICS'),
 				<div style={{ textAlign: 'center' }}>
@@ -211,7 +211,7 @@ class KaraDetail extends Component<IProps,IState> {
 
   changeVisibilityKara = () => {
   	if(this.props.scope === 'admin') {
-  		axios.put('/api/playlists/' + this.props.idPlaylist + '/karas/' + (this.state.kara as DBPLCInfo).playlistcontent_id, 
+  		axios.put('/playlists/' + this.props.idPlaylist + '/karas/' + (this.state.kara as DBPLCInfo).playlistcontent_id, 
   			{ flag_visible: !this.state.isVisible });
 		this.setState({isVisible: !this.state.isVisible});
   	}
@@ -224,8 +224,8 @@ class KaraDetail extends Component<IProps,IState> {
 
   makeFavorite = () => {
   	this.state.isFavorite ?
-  		axios.delete('/api/favorites', { data: { 'kid': [this.props.kid] } }) :
-  		axios.post('/api/favorites', { 'kid': [this.props.kid] });
+  		axios.delete('/favorites', { data: { 'kid': [this.props.kid] } }) :
+  		axios.post('/favorites', { 'kid': [this.props.kid] });
   	this.setState({ isFavorite: !this.state.isFavorite });
   };
 

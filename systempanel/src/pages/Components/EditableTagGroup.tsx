@@ -1,9 +1,10 @@
 import React from 'react';
-import {AutoComplete, Button, Checkbox, Col, Form, Icon, Row, Tag, Tooltip} from 'antd';
-import axios from 'axios/index';
+import { AutoComplete, Button, Checkbox, Col, Row, Tag, Tooltip, Form } from 'antd';
 import { getTagInLocale } from "../../utils/kara";
 
 import i18next from 'i18next';
+import { PlusOutlined } from '@ant-design/icons';
+import Axios from 'axios';
 interface EditableTagGroupProps {
 	search: 'tag' | 'aliases',
 	onChange: any,
@@ -85,7 +86,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		if (filter === '') {
 			return ({data: []});
 		}
-		return axios.get('/api/tags', {
+		return Axios.get('/tags', {
 			params: {
 				type: type,
 				filter: filter
@@ -164,7 +165,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 						})}
 					{inputVisible && (
 						<Form.Item
-							wrapperCol={{ span: 10, offset: 0 }}
+							wrapperCol={{ span: 10 }}
 						>
 							<AutoComplete
 								ref={input => this.input = input}
@@ -184,14 +185,14 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 							onClick={this.showInput}
 							style={{ borderStyle: 'dashed' }}
 						>
-							<Icon type="plus" />{i18next.t('ADD')}
+							<PlusOutlined /> {i18next.t('ADD')}
 						</Tag>
 					)}
 				</div>
-			);
+            );
 		} else {
 			return (
-				<div>
+                <div>
 					{
 						value.map((tag) => {
 							if (!tag) tag = '';
@@ -205,7 +206,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 						})}
 					{inputVisible && (
 						<Form.Item
-							wrapperCol={{ span: 10, offset: 0 }}
+							wrapperCol={{ span: 10 }}
 						>
 							<AutoComplete
 								ref={input => this.input = input}
@@ -225,11 +226,11 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 							onClick={this.showInput}
 							style={{ borderStyle: 'dashed' }}
 						>
-							<Icon type="plus" /> {i18next.t('ADD')}
+							<PlusOutlined /> {i18next.t('ADD')}
 						</Tag>
 					)}
 				</div>
-			);
+            );
 		}
 
 	}

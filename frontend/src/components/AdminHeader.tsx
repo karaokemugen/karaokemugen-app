@@ -61,13 +61,13 @@ class AdminHeader extends Component<IProps, IState> {
   saveMode = (mode:boolean) => {
   	var data = expand('Karaoke.Private', mode);
   	this.setState({ privateMode: mode });
-  	axios.put('/api/settings', { setting: JSON.stringify(data) });
+  	axios.put('/settings', { setting: JSON.stringify(data) });
   };
 
   saveOperatorAdd = (songVisibility: boolean) => {
   	var data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
   	this.setState({ songVisibilityOperator: songVisibility });
-  	axios.put('/api/settings', { setting: JSON.stringify(data) });
+  	axios.put('/settings', { setting: JSON.stringify(data) });
   };
 
   play = (event:any) => {
@@ -76,7 +76,7 @@ class AdminHeader extends Component<IProps, IState> {
 		&& this.props.idsPlaylist.right !== this.props.currentPlaylist.playlist_id
 		&& (this.props.idsPlaylist.left > 0 || this.props.idsPlaylist.right > 0 )) {
 		callModal('confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', {playlist: this.props.currentPlaylist.name}), '',
-			() => axios.put('/api/player', {command: 'play'}));
+			() => axios.put('/player', {command: 'play'}));
 	} else {
 		this.props.putPlayerCommando(event);
 	}

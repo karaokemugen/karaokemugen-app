@@ -36,10 +36,10 @@ class SuggestionModal extends Component<{}, IState> {
 
 	confirmModal = async () => {
 		if (this.state.name && this.state.serie && this.state.songtype) {
-			let response = await axios.post('/api/karas/suggest', 
+			let response = await axios.post('/karas/suggest', 
 				{ title: this.state.name, serie: this.state.serie, type: this.state.songtype, link: this.state.link });
 			displayMessage('info', <div><label>{i18next.t('KARA_SUGGESTION_INFO')}</label> <br/> 
-				{i18next.t('KARA_SUGGESTION_LINK')} <a href={response.data}>{i18next.t('KARA_SUGGESTION_LINK_LIST')}</a>
+				{i18next.t('KARA_SUGGESTION_LINK')} <a href={response.data.url}>{i18next.t('KARA_SUGGESTION_LINK_LIST')}</a>
 			</div>, 30000);
 			var element = document.getElementById('modal');
 			if (element) ReactDOM.unmountComponentAtNode(element);

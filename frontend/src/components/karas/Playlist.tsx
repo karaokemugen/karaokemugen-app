@@ -291,7 +291,7 @@ noRowsRenderer = () => {
 
   editNamePlaylist = () => {
   	callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: (this.state.playlistInfo as DBPL).name }), '', (newName:string) => {
-		  axios.put('/api/playlists/' + this.state.idPlaylist, 
+		  axios.put('/playlists/' + this.state.idPlaylist, 
 		  { name: newName, flag_visible: (this.state.playlistInfo as DBPL).flag_public });
   		var playlistInfo = this.state.playlistInfo as DBPL;
   		playlistInfo.name = newName;
@@ -301,7 +301,7 @@ noRowsRenderer = () => {
 
   getPlaylistInfo = async () => {
   	if (!this.state.getPlaylistInProgress) {
-  		var response = await axios.get(`/api/playlists/${this.state.idPlaylist}`);
+  		var response = await axios.get(`/playlists/${this.state.idPlaylist}`);
   		this.setState({ playlistInfo: response.data });
   	}
   };
@@ -311,19 +311,19 @@ noRowsRenderer = () => {
 	  var url:string = '';
   	if (idPlaylist >= 0) {
   		url =
-        '/api/playlists/' +
+        '/playlists/' +
         idPlaylist +
         '/karas';
   	} else if (idPlaylist === -1) {
-  		url = '/api/karas';
+  		url = '/karas';
   	} else if (idPlaylist === -2) {
-  		url = '/api/blacklist';
+  		url = '/blacklist';
   	} else if (idPlaylist === -3) {
-  		url = '/api/whitelist';
+  		url = '/whitelist';
   	} else if (idPlaylist === -4) {
-  		url = '/api/blacklist/criterias';
+  		url = '/blacklist/criterias';
   	} else if (idPlaylist === -5) {
-  		url = '/api/favorites';
+  		url = '/favorites';
   	}
   	return url;
   };
@@ -370,45 +370,41 @@ noRowsRenderer = () => {
   		url += '&searchType=' + this.state.searchType
           + ((searchCriteria && this.state.searchValue) ? ('&searchValue=' + searchCriteria + ':' + this.state.searchValue) : '');
 	}
-	try {
-	  	var response = await axios.get(url);
-		var karas:KaraList = response.data;
-		if (this.state.idPlaylist > 0) {
-			karas.content.forEach((kara) => {
-				if (kara.flag_playing) {
-					store.setPosPlaying(kara.pos);
-					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
-						this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
-					}
+	var response = await axios.get(url);
+	var karas:KaraList = response.data;
+	if (this.state.idPlaylist > 0) {
+		karas.content.forEach((kara) => {
+			if (kara.flag_playing) {
+				store.setPosPlaying(kara.pos);
+				if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
+					this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
 				}
-			});
-		}
-		var data;
-		if (karas.infos && karas.infos.from > 0) {
-			data = this.state.data;
-			if (karas.infos.from < data.content.length) {
-				for (let index = 0; index < karas.content.length; index++) {
-					data.content[karas.infos.from + index] = karas.content[index];
-				}
-			} else {
-				if (karas.infos.from > data.content.length) {
-					var nbCellToFill = data.infos.from - data.content.length;
-					for (let index = 0; index < nbCellToFill; index++) {
-						data.content.push(undefined);
-					}
-				}
-				data.content.push(...karas.content);
 			}
-			data.infos = karas.infos;
-			data.i18n = Object.assign(data.i18n, karas.i18n);
-		} else {
-			data = karas;
-		}
-		this.setState({ data: data, getPlaylistInProgress: false });
-		this.playlistForceRefresh(true);
-	} catch (error) {
-		displayMessage('error', i18next.t(`ERROR_CODES.${error.response.code}`));
+		});
 	}
+	var data;
+	if (karas.infos && karas.infos.from > 0) {
+		data = this.state.data;
+		if (karas.infos.from < data.content.length) {
+			for (let index = 0; index < karas.content.length; index++) {
+				data.content[karas.infos.from + index] = karas.content[index];
+			}
+		} else {
+			if (karas.infos.from > data.content.length) {
+				var nbCellToFill = data.infos.from - data.content.length;
+				for (let index = 0; index < nbCellToFill; index++) {
+					data.content.push(undefined);
+				}
+			}
+			data.content.push(...karas.content);
+		}
+		data.infos = karas.infos;
+		data.i18n = Object.assign(data.i18n, karas.i18n);
+	} else {
+		data = karas;
+	}
+	this.setState({ data: data, getPlaylistInProgress: false });
+	this.playlistForceRefresh(true);
   };
 
   playingUpdate = (data: {playlist_id:number,plc_id:number}) => {
@@ -492,7 +488,7 @@ noRowsRenderer = () => {
 
   addAllKaras = async () => {
   	var response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
-  	var karaList = response.data.content.map((a:KaraElement) => a.kid).join();
+  	var karaList = response.data.content.map((a:KaraElement) => a.kid);
   	displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', {count: response.data.content.length}));
   	axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: (store.getLogInfos() as Token).username });
   };
@@ -504,14 +500,14 @@ noRowsRenderer = () => {
 		displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 		return ;
 	}
-  	var idKara = listKara.map(a => a.kid).join();
-  	var idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id)).join();
+  	var idKara = listKara.map(a => a.kid);
+  	var idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id));
   	var url:string = '';
   	var data;
   	var type;
 
   	if (this.props.idPlaylistTo > 0) {
-  		url = '/api/playlists/' + this.props.idPlaylistTo + '/karas';
+  		url = '/playlists/' + this.props.idPlaylistTo + '/karas';
   		if (this.state.idPlaylist > 0  && !pos) {
   			data = { plc_id: idKaraPlaylist };
   			type = 'PATCH';
@@ -523,28 +519,21 @@ noRowsRenderer = () => {
 			}
   		}
   	} else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
-  		url = '/api/blacklist/criterias';
+  		url = '/blacklist/criterias';
   		data = { blcriteria_type: 1001, blcriteria_value: idKara };
   	} else if (this.props.idPlaylistTo == -3) {
-  		url = '/api/whitelist';
+  		url = '/whitelist';
   		data = { kid: idKara };
   	} else if (this.props.idPlaylistTo == -5) {
-  		url = '/api/favorites';
+  		url = '/favorites';
   		data = { kid: stateData.content.filter(a => a.checked).map(a => a.kid) };
   	}
-  	try {
   		var response;
   		if (type === 'PATCH') {
   			response = await axios.patch(url, data);
   		} else {
   			response = await axios.post(url, data);
   		}
-  		displayMessage('success', i18next.t(response.data.code));
-  	} catch (error) {
-		(error.response.data && error.response.data.plc_id && error.response.data.plc_id.length > 0) ?
-			displayMessage('warning', error.response.data.plc_id[0]) :
-			displayMessage('warning', i18next.t(`ERROR_CODES.${error.response.data}`));
-  	}
   };
 
   transferCheckedKaras = () => {
@@ -562,24 +551,19 @@ noRowsRenderer = () => {
 		return ;
 	}
   	if (this.state.idPlaylist > 0) {
-  		var idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id)).join();
-  		url = '/api/playlists/' + this.state.idPlaylist + '/karas/';
+  		var idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id));
+  		url = '/playlists/' + this.state.idPlaylist + '/karas/';
   		data = { plc_id: idKaraPlaylist };
   	} else if (this.state.idPlaylist == -3) {
-  		var idKara = listKara.map(a => a.kid).join();
-  		url = '/api/ ' + this.props.scope + '/whitelist';
+  		var idKara = listKara.map(a => a.kid);
+  		url = '/ ' + this.props.scope + '/whitelist';
   		data = { kid: idKara };
   	} else if (this.state.idPlaylist == -5) {
-  		url = '/api/favorites';
+  		url = '/favorites';
   		data = { kid: listKara.map(a => a.kid) };
   	}
   	if (url) {
-  		try {
-  			var response = await axios.delete(url, {data:data});
-  			displayMessage('success', i18next.t(response.data));
-  		} catch (error) {
-			displayMessage('warning', i18next.t(`ERROR_CODES.${error.response.data}`));
-  		}
+  		await axios.delete(url, {data:data});
   	}
   };
 
@@ -602,12 +586,7 @@ noRowsRenderer = () => {
 		})}
 		</div>, async (confirm:boolean) => {
 			if (confirm) {
-				try {
-					let response = await axios.delete(`/api/blacklist/criterias/${kara.blc_id}`);
-					displayMessage('success', i18next.t(response.data));
-				} catch (error) {
-					displayMessage('warning', i18next.t(error.response.data));
-				}
+				await axios.delete(`/blacklist/criterias/${kara.blc_id}`);
 			}
 		});
   };
@@ -623,7 +602,7 @@ noRowsRenderer = () => {
   		if(newIndex > oldIndex)
   			apiIndex = apiIndex+1;
 
-  		axios.put('/api/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: apiIndex });
+  		axios.put('/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: apiIndex });
 
   		let karas:Array<KaraElement> = [];
   		if(oldIndex<newIndex) {

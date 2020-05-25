@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { errMessage } from "../common";
+import { errMessage, APIMessage } from "../common";
 import { emitWS } from "../../lib/utils/ws";
 import { getWhitelistContents, emptyWhitelist, addKaraToWhitelist, deleteKaraFromWhitelist } from "../../services/whitelist";
 import { requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from "../middlewares/auth";
@@ -21,11 +21,11 @@ export default function whitelistController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "WL_EMPTIED"
  * @apiError WL_EMPTY_ERROR Unable to empty the whitelist
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: "WL_EMPTY_ERROR"}
  */
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req: any, res: any) => {
 		// Empty whitelist
@@ -33,11 +33,12 @@ export default function whitelistController(router: Router) {
 				await emptyWhitelist();
 				emitWS('blacklistUpdated');
 				emitWS('whitelistUpdated');
-				res.status(200).send('WL_EMPTIED');
+				res.status(200).json();
 
 			} catch(err) {
-				errMessage('WL_EMPTY_ERROR',err);
-				res.status(500).send('WL_EMPTY_ERROR');
+				const code = 'WL_EMPTY_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 
@@ -86,7 +87,7 @@ export default function whitelistController(router: Router) {
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "WL_VIEW_ERROR"
+ * {code: "WL_VIEW_ERROR"}
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
 			if (getConfig().Frontend.Permissions.AllowViewWhitelist || req.authToken.role === 'admin') {
@@ -99,8 +100,9 @@ export default function whitelistController(router: Router) {
 					});
 					res.json(karas);
 				} catch(err) {
-					errMessage('WL_VIEW_ERROR',err)
-					res.status(500).send('WL_VIEW_ERROR');
+					const code = 'WL_VIEW_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			}
 		})
@@ -111,17 +113,17 @@ export default function whitelistController(router: Router) {
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid[]} kid Karaoke song IDs, separated by commas
+ * @apiParam {uuid[]} kid Karaoke song IDs
  * @apiParam {String} [reason] Reason the song was added
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 201 Created
- * "WL_SONG_ADDED"
+ * {code: "WL_SONG_ADDED"}
  * @apiError WL_ADD_SONG_ERROR Karaoke couldn't be added to whitelist
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "WL_ADD_SONG_ERROR"
+ * {code: "WL_ADD_SONG_ERROR"}
  */
 		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
@@ -129,13 +131,14 @@ export default function whitelistController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					await addKaraToWhitelist(req.body.kid.split(','), req.body.reason);
+					await addKaraToWhitelist(req.body.kid, req.body.reason);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
-					res.status(201).send('WL_SONG_ADDED');
+					res.status(201).json(APIMessage('WL_SONG_ADDED'));
 				} catch(err) {
-					errMessage('WL_ADD_SONG_ERROR', err.message);
-					res.status(500).send('WL_ADD_SONG_ERROR');
+					const code = 'WL_ADD_SONG_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -151,11 +154,11 @@ export default function whitelistController(router: Router) {
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid[]} kid Kara IDs to delete from whitelist, separated by commas
+ * @apiParam {uuid[]} kid Kara IDs to delete from whitelist in an array
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "WL_SONG_DELETED"
+ * {code: "WL_SONG_DELETED"}
  * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
  *
  */
@@ -167,13 +170,14 @@ export default function whitelistController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					await deleteKaraFromWhitelist(req.body.kid.split(','));
+					await deleteKaraFromWhitelist(req.body.kid);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
-					res.status(200).send('WL_SONG_DELETED');
+					res.status(200).json(APIMessage('WL_SONG_DELETED'));
 				} catch(err) {
-					errMessage('WL_DELETE_SONG_ERROR', err);
-					res.status(500).send('WL_DELETE_SONG_ERROR');
+					const code = 'WL_DELETE_SONG_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected

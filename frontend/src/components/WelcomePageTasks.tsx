@@ -5,8 +5,6 @@ import { TaskItem } from '../../../src/lib/types/taskItem';
 
 require ('../styles/welcome/WelcomePageTasks.scss');
 
-
-
 interface IProps {
   limit: number;
 }
@@ -58,8 +56,8 @@ class WelcomePageTasks extends Component<IProps, IState> {
 
             return (<blockquote key={index}>
               <p className="text">
-                {i18next.t(item.text as string)}
-                <span className="subtext">{i18next.t(item.subtext as string)}</span>
+			  	{i18next.t(`TASKS.${item.text as string}`)}
+                <span className="subtext">{i18next.t(`TASKS.${item.subtext as string}`)}</span>
               </p>
               <div className="progress"><div className={"progress-bar " + (item.percentage===null ? 'unknown' : '')} style={{width:(item.percentage!==null ? item.percentage+'%' : '100%')}}></div></div>
             </blockquote>);

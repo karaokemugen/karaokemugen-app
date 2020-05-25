@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { errMessage } from "../common";
+import { errMessage, APIMessage } from "../common";
 import { getKaraLyrics, getKara, getKaras, deleteKara, getKaraHistory, getTop50, getKaraPlayed, copyKaraToRepo } from "../../services/kara";
 import { updateUserLoginTime, requireAuth, requireValidUser, requireAdmin } from "../middlewares/auth";
 import { requireWebappLimited, requireWebappOpen } from "../middlewares/webapp_mode";
@@ -10,7 +10,6 @@ import { getConfig, resolvedPathTemp } from "../../lib/utils/config";
 import { postSuggestionToKaraBase } from '../../lib/services/gitlab';
 import multer = require("multer");
 import { createKara, editKara } from "../../services/kara_creation";
-import logger from "../../lib/utils/logger";
 
 export default function karaController(router: Router) {
 	let upload = multer({ dest: resolvedPathTemp()});
@@ -30,23 +29,26 @@ export default function karaController(router: Router) {
 	 * @apiSuccess {String} issueURL New issue's URL
 	 * @apiSuccessExample Success-Response:
  	 * HTTP/1.1 200 OK
- 	 * "https://lab.shelter.moe/xxx/issues/1234"
+ 	 * {url: "https://lab.shelter.moe/xxx/issues/1234"}
 	 * @apiErrorExample Error-Response:
  	 * HTTP/1.1 500 Internal Server Error
+	 * {code: "KARA_SUGGESTION_ERROR" }
 	 * @apiErrorExample Error-Response:
  	 * HTTP/1.1 403 Forbidden
+	 * {code: "GITLAB_DISABLED" }
 	 */
 		.post(requireAuth, requireValidUser, requireWebappOpen, updateUserLoginTime, async(req: any, res: any) => {
 			try {
 				if (getConfig().Gitlab.Enabled) {
 					const url = await postSuggestionToKaraBase(req.body.title, req.body.serie, req.body.type, req.body.link, req.authToken.username);
-					res.status(200).send(url);
+					res.status(200).json({url: url});
 				} else {
-					res.status(403).json();
+					res.status(403).json(APIMessage('GITLAB_DISABLED'));
 				}
 			} catch(err) {
-				errMessage('KARA_SUGGESTION_ERROR', err);
-				res.status(500).json();
+				const code = 'KARA_SUGGESTION_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 
@@ -112,16 +114,19 @@ export default function karaController(router: Router) {
 					});
 				res.json(karas);
 			} catch(err) {
-				errMessage('SONG_LIST_ERROR', err);
-				res.status(500).send('SONG_LIST_ERROR');
+				const code = 'SONG_LIST_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await createKara(req.body);
-				res.status(200).send('Kara successfully generated');
+				res.status(200).json(APIMessage('KARA_CREATED'));
 			} catch(err) {
-				res.status(500).send(`Error while generating kara : ${err}`);
+				const code = 'KARA_CREATED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/history')
@@ -142,14 +147,16 @@ export default function karaController(router: Router) {
  * ]
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "Error while fetching karas history: ..."
+ * {code: "KARA_HISTORY_ERROR"}
  */
 		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) =>{
 			try {
 				const karas = await getKaraHistory();
 				res.json(karas);
 			} catch(err) {
-				res.status(500).send(`Error while fetching karas history: ${err}`);
+				const code = 'KARA_HISTORY_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 
@@ -171,14 +178,16 @@ export default function karaController(router: Router) {
  * ]
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "Error while fetching karas msot requested: ..."
+ * {code: "KARA_RANKING_ERROR"}
  */
 		.get(getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) =>{
 			try {
 				const karas = await getTop50(req.authToken, req.lang);
 				res.json(karas);
 			} catch(err) {
-				res.status(500).send(`Error while fetching karas most requested: ${err}`);
+				const code = 'KARA_RANKING_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 
@@ -202,14 +211,16 @@ export default function karaController(router: Router) {
  * ]
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "Error while fetching karas most played: ..."
+ * {code: "KARA_PLAYED_ERROR"}
  */
 		.get(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				const karas = await getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999);
 				res.json(karas);
 			} catch(err) {
-				res.status(500).send(`Error while fetching karas most played: ${err}`);
+				const code = 'KARA_PLAYED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
@@ -382,11 +393,11 @@ export default function karaController(router: Router) {
  *           "title": "Glitter Force Doki Doki Theme Song",
  *           "year": 2017
  * }
- * @apiError SONG_VIEW_ERROR Unable to list songs
+ * @apiError SONG_VIEW_ERROR Unable to view a song
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "SONG_VIEW_ERROR"
+ * {code: "SONG_VIEW_ERROR"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
@@ -395,8 +406,9 @@ export default function karaController(router: Router) {
 				const kara = await getKara(req.params.kid, req.authToken);
 				res.json(kara);
 			} catch(err) {
-				errMessage('SONG_VIEW_ERROR',err);
-				res.status(500).send('SONG_VIEW_ERROR');
+				const code = 'SONG_VIEW_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -409,16 +421,19 @@ export default function karaController(router: Router) {
  * @apiParam {uuid} kid Karaoke ID to delete
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * {code: "KARA_DELETED"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "Error deleting kara: ..."
+ * {code: "KARA_DELETED_ERROR"}
  */
 		.delete(getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await deleteKara(req.params.kid);
-				res.status(200).send('Kara deleted');
+				res.status(200).json(APIMessage('KARA_DELETED'));
 			} catch(err) {
-				res.status(500).send('Error while deleting kara: ' + err);
+				const code = 'KARA_DELETED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -478,8 +493,8 @@ export default function karaController(router: Router) {
 					code: 'PLAYLIST_MODE_SONG_ADDED'
 				});
 			} catch(err) {
-				errMessage(err.code, `${err.message} ${err.data}`);
-				res.status(500).send(err.code);
+				errMessage(err.code, err)
+				res.status(500).json(APIMessage(err.code, {message: err.message, data: err.data}));
 			}
 		})
 	/**
@@ -497,7 +512,7 @@ export default function karaController(router: Router) {
  * @apiParam {string} title Song title
  * @apiParam {number} [year] Song year
  * @apiParam {number} [order] Song order (which ED, OP, etc.)
- * @apiParam {Object[]} [series] Object : sid (optional), name. Series is mandatory if there's no singer
+ * @apiParam {Object[]} [series] Object : tid (optional), name. Series is mandatory if there's no singer
  * @apiParam {Object[]} [singers] Object : tid (optional), name. Singers is mandatory if there's no series
  * @apiParam {Object[]} [misc] Object : tid (optional), name.
  * @apiParam {Object[]} [groups] Object : tid (optional), name.
@@ -513,16 +528,19 @@ export default function karaController(router: Router) {
  * @apiParam {Object[]} [origins] Object : tid (optional), name.
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * {code: 'KARA_EDITED'}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "Error while editing kara: ..."
+ * {code: 'KARA_EDITED_ERROR'}
  */
 		.put(getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await editKara(req.body);
-				res.status(200).send('Kara successfully edited');
+				res.status(200).json(APIMessage('KARA_EDITED'));
 			} catch(err) {
-				res.status(500).send(`Error while editing kara: ${err}`);
+				const code = 'KARA_EDITED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/importfile')
@@ -540,7 +558,7 @@ export default function karaController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-		.post(upload.single('file'), (req, res: any) => {
+		.post(requireAuth, requireValidUser, requireAdmin, upload.single('file'), (req, res: any) => {
 			res.status(200).send(JSON.stringify(req.file));
 		});
 	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/lyrics')
@@ -566,15 +584,16 @@ export default function karaController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
- * "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
+ * {code:"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"}
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const kara = await getKaraLyrics(req.params.kid);
 				res.json(kara);
 			} catch(err) {
-				errMessage('LYRICS_VIEW_ERROR',err.message);
-				res.status(500).send('LYRICS_VIEW_ERROR');
+				const code = 'LYRICS_VIEW_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/copyToRepo')
@@ -589,16 +608,19 @@ export default function karaController(router: Router) {
  * @apiParam {string} repo Repo to copy song to
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * {code: "SONG_COPIED"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: "SONG_COPIED_ERROR"}
  */
 		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, requireAdmin, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				await copyKaraToRepo(req.params.kid, req.body.repo);
-				res.send('Song successfully moved');
+				res.json(APIMessage('SONG_COPIED'));
 			} catch(err) {
-				logger.error('[API] CopyKaraToRepo: ' + JSON.stringify(err));
-				res.status(500).send(JSON.stringify(err));
+				const code = 'SONG_COPIED_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 }

@@ -140,7 +140,7 @@ class AdminPage extends Component<IProps, IState> {
   			command: namecommand
   		};
   	}
-  	axios.put('/api/player', data);
+  	axios.put('/player', data);
   }
 
   changeCurrentSide = () => {
@@ -152,8 +152,8 @@ class AdminPage extends Component<IProps, IState> {
 	};
 
 	getPlaylistList = async () => {
-		const response = await axios.get('/api/playlists/');
-		const kmStats = await axios.get('/api/stats');
+		const response = await axios.get('/playlists/');
+		const kmStats = await axios.get('/stats');
 		var playlistList = response.data;
 		playlistList.push({
 			playlist_id: -2,

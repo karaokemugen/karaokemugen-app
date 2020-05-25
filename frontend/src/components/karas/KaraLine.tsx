@@ -61,29 +61,24 @@ class KaraLine extends Component<IProps,IState> {
 
   likeKara = () => {
   	var data = this.props.kara.flag_upvoted ? { 'downvote': 'true' } : {};
-  	axios.post(`/api/playlists/${this.props.idPlaylist}/karas/${this.props.kara.playlistcontent_id}/vote`, data);
+  	axios.post(`/playlists/${this.props.idPlaylist}/karas/${this.props.kara.playlistcontent_id}/vote`, data);
   	this.setState({ isLike: !this.state.isLike });
   };
 
   deleteKara = async () => {
   	var response;
-  	try {
-  		if (this.props.idPlaylist == -5) {
-			response = await axios.delete('/api/favorites', { data: { kid: [this.props.kara.kid] }});
-		} else if (this.props.idPlaylist == -2) {
-			this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
-			return;
-  		} else {
-  			response = await axios.delete('/api/playlists/' + this.props.idPlaylist + '/karas/', { data: { plc_id: String(this.props.kara.playlistcontent_id) } });
-  		}
-  		displayMessage('success', i18next.t(response.data));
-  	} catch (error) {
-  		displayMessage('error', i18next.t(`ERROR_CODES.${error.response.data}`));
-  	}
+	if (this.props.idPlaylist == -5) {
+		response = await axios.delete('/favorites', { data: { kid: [this.props.kara.kid] }});
+	} else if (this.props.idPlaylist == -2) {
+		this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
+		return;
+	} else {
+		response = await axios.delete('/playlists/' + this.props.idPlaylist + '/karas/', { data: { plc_id: String(this.props.kara.playlistcontent_id) } });
+	}
   };
 
   playKara = () => {
-  	axios.put('/api/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_playing: true });
+  	axios.put('/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_playing: true });
   };
 
   addKara = async (event?:any, pos?:number) => {
@@ -92,11 +87,11 @@ class KaraLine extends Component<IProps,IState> {
   	var data;
   	var type;
   	if (this.props.idPlaylistTo == -5) {
-  		url = '/api/favorites';
+  		url = '/favorites';
   		data = { kid: [this.props.kara.kid] };
   	} else if (this.props.scope === 'admin') {
   		if (this.props.idPlaylistTo > 0) {
-  			url = '/api/playlists/' + this.props.idPlaylistTo + '/karas';
+  			url = '/playlists/' + this.props.idPlaylistTo + '/karas';
   			if (this.props.idPlaylist > 0 && !pos) {
   				data = { plc_id: String(this.props.kara.playlistcontent_id) };
   				type = 'PATCH';
@@ -108,41 +103,35 @@ class KaraLine extends Component<IProps,IState> {
   				}
   			}
   		} else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
-  			url = '/api/blacklist/criterias';
+  			url = '/blacklist/criterias';
   			data = { blcriteria_type: 1001, blcriteria_value: this.props.kara.kid };
   		} else if (this.props.idPlaylistTo == -3) {
-  			url = '/api/whitelist';
+  			url = '/whitelist';
   			data = { kid: this.props.kara.kid };
   		}
   	} else {
-  		url = `/api/karas/${this.props.kara.kid}`;
+  		url = `/karas/${this.props.kara.kid}`;
   		data = { requestedby: (logInfos as Token).username, kid: this.props.kara.kid };
   	}
-  	try {
-  		var response;
-  		if (type === 'PATCH') {
-  			response = await axios.patch(url, data);
-  		} else {
-  			response = await axios.post(url, data);
-		  }
-		  if (response.data && response.data.data && response.data.data.plc && response.data.data.plc.time_before_play) {
-			var playTime = new Date(Date.now() + response.data.data.plc.time_before_play * 1000);
-			var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-			var beforePlayTime = secondsTimeSpanToHMS(response.data.data.plc.time_before_play, 'hm');
-			displayMessage('success', <div>
-					{i18next.t(response.data.code)}
-					<br/>
-					{i18next.t('TIME_BEFORE_PLAY', {
-  					time: beforePlayTime,
-  					date: playTimeDate
-  					})}
-				</div>);
-		  } else {
-			displayMessage('success', i18next.t(response.data.code ? response.data.code : response.data));
-		  }
-  	} catch (error) {
-  		displayMessage('warning', i18next.t(`ERROR_CODES.${error.response.data}`));
-  	}
+	var response;
+	if (type === 'PATCH') {
+		response = await axios.patch(url, data);
+	} else {
+		response = await axios.post(url, data);
+		}
+		if (response.data && response.data.data && response.data.data.plc && response.data.data.plc.time_before_play) {
+		var playTime = new Date(Date.now() + response.data.data.plc.time_before_play * 1000);
+		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+		var beforePlayTime = secondsTimeSpanToHMS(response.data.data.plc.time_before_play, 'hm');
+		displayMessage('success', <div>
+				{i18next.t(response.data.code)}
+				<br/>
+				{i18next.t('TIME_BEFORE_PLAY', {
+				time: beforePlayTime,
+				date: playTimeDate
+				})}
+			</div>);
+		}
   };
 
   transferKara = async (event:any, pos?:number) => {
@@ -152,7 +141,7 @@ class KaraLine extends Component<IProps,IState> {
 
   freeKara = () => {
   	if (this.props.scope === 'admin') {
-  		axios.put('/api/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_free: true });
+  		axios.put('/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_free: true });
   	}
   };
 
@@ -165,7 +154,7 @@ class KaraLine extends Component<IProps,IState> {
   };
 
   changeVisibilityKara = () => {
-		axios.put('/api/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, 
+		axios.put('/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, 
 			{ flag_visible: true });
 };
 

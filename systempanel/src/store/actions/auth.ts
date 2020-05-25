@@ -1,24 +1,24 @@
-import axios from 'axios';
+import Axios from 'axios';
 import { Dispatch } from 'react';
-import { AuthentifactionApi } from '../api/authentication.api';
-import { AuthAction, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
+import { AuthAction, LoginFailure, LoginSuccess, LogoutUser, IAuthentifactionInformation, IAuthenticationVerification } from '../../types/auth';
 import i18next from 'i18next';
-
-const adminMessage = i18next.t('ADMIN_PLEASE');
 
 export async function login(username: string, password: string, dispatch: Dispatch<LoginSuccess | LoginFailure>): Promise<void>  {
     try {
-      const info = await AuthentifactionApi.login(username, password)
+	const info:IAuthentifactionInformation = await Axios.post('/auth/login', {
+			username,
+			password
+		  });
 
 	  if (info.role !== 'admin') {
-		  throw adminMessage;
+		  throw i18next.t('USERS.ADMIN_PLEASE');
 	  }
 
       // Store data, should be managed in a service and item should be enum and not string
       localStorage.setItem('kmToken', info.token);
       localStorage.setItem('kmOnlineToken', info.onlineToken);
-      axios.defaults.headers.common['authorization'] = info.token;
-      axios.defaults.headers.common['onlineAuthorization'] = info.onlineToken;
+      Axios.defaults.headers.common['authorization'] = info.token;
+	  Axios.defaults.headers.common['onlineAuthorization'] = info.onlineToken;
 
       dispatch({
         type: AuthAction.LOGIN_SUCCESS,
@@ -28,10 +28,9 @@ export async function login(username: string, password: string, dispatch: Dispat
       dispatch({
         type: AuthAction.LOGIN_FAILURE,
         payload: {
-          error: error === adminMessage ? error : i18next.t('LOG_ERROR')
+          error: error
         }
       });
-
       throw error;
     }
 }
@@ -39,8 +38,8 @@ export async function login(username: string, password: string, dispatch: Dispat
 export function logout(dispatch: Dispatch<LogoutUser>): void{
   localStorage.removeItem('kmToken');
   localStorage.removeItem('kmOnlineToken');
-  delete axios.defaults.headers.common['authorization'];
-  delete axios.defaults.headers.common['onlineAuthorization'];
+  delete Axios.defaults.headers.common['authorization'];
+  delete Axios.defaults.headers.common['onlineAuthorization'];
 
   dispatch({
     type: AuthAction.LOGOUT_USER
@@ -51,11 +50,11 @@ export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFai
   const kmToken = localStorage.getItem('kmToken');
   const kmOnlineToken = localStorage.getItem('kmOnlineToken');
 
-  axios.defaults.headers.common['authorization'] = kmToken;
-  axios.defaults.headers.common['onlineAuthorization'] = kmOnlineToken;
+  Axios.defaults.headers.common['authorization'] = kmToken;
+  Axios.defaults.headers.common['onlineAuthorization'] = kmOnlineToken;
 
   try {
-    const verification = await AuthentifactionApi.isAuthenticated();
+    const verification:IAuthenticationVerification = (await Axios.get('/auth/checkauth')).data;
     dispatch({
       type: AuthAction.LOGIN_SUCCESS,
       payload: {

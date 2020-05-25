@@ -1,6 +1,5 @@
 import { Layout } from 'antd';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import styles from '../App.module.css';
 import Config from '../pages/Config';
@@ -74,4 +73,4 @@ class KMPage extends Component<{}, {}> {
 	}
 }
 
-export default connect(null, null)(KMPage);
+export default KMPage;

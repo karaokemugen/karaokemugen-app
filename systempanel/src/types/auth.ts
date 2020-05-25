@@ -1,10 +1,8 @@
-import { IAuthentifactionInformation } from '../api/authentication.api';
-
 // Action name
 export enum AuthAction {
-  LOGIN_SUCCESS = 'login_success',
-  LOGIN_FAILURE = 'login_failure',
-  LOGOUT_USER = 'logout_user'
+  LOGIN_SUCCESS='login_success',
+  LOGIN_FAILURE='login_failure',
+  LOGOUT_USER='logout_user'
 }
 
 // Dispatch action
@@ -31,3 +29,18 @@ export interface AuthStore {
   isAuthenticated: boolean;
   error: string;
 }
+
+export interface IAuthentifactionInformation {
+	token: string;
+	onlineToken?: string;
+	username: string;
+	role: string;
+  }
+
+  export interface IAuthenticationVerification {
+	iat: number;
+	username: string;
+	role: string;
+  }
+  
+  

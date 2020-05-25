@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import i18next from 'i18next';
 import axios from 'axios';
 import Autocomplete from '../generic/Autocomplete';
-import { buildKaraTitle, displayMessage } from '../tools';
+import { buildKaraTitle } from '../tools';
 import { BLC } from '../../../../src/types/blacklist';
 import { Tag } from '../../types/tag';
 require('./BlacklistCriterias.scss');
@@ -48,20 +48,12 @@ class BlacklistCriterias extends Component<IProps, IState> {
 	}
 
     addBlacklistCriteria = () => {
-		try {
-			axios.post('/api/blacklist/criterias',
-				{ blcriteria_type: this.state.bcType, blcriteria_value: this.state.bcVal });
-		} catch (error) {
-			displayMessage('error', i18next.t(`ERROR_CODES.${error.response.code}`));
-		}
+		axios.post('/blacklist/criterias',
+			{ blcriteria_type: this.state.bcType, blcriteria_value: this.state.bcVal });
     };
 
     deleteCriteria = (bcId:number) => {
-		try {
-			axios.delete('/api/blacklist/criterias/' + bcId);
-		} catch (error) {
-			displayMessage('error', i18next.t(`ERROR_CODES.${error.response.code}`));
-		}
+		axios.delete(`/blacklist/criterias/${bcId}`);
     };
 
     render() {

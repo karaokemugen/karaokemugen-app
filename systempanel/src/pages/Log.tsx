@@ -1,20 +1,14 @@
 import React, {Component} from 'react';
 import {Layout, Timeline} from 'antd';
-import {connect} from 'react-redux';
-import axios from 'axios';
-import {loading, infoMessage, errorMessage, warnMessage} from '../actions/navigation';
-import {ReduxMappedProps} from '../react-app-env';
-import i18next from 'i18next';
 import openSocket from 'socket.io-client';
-
-interface LogProps extends ReduxMappedProps {}
+import Axios from 'axios';
 
 interface LogState {
 	log: {level:string, message:string, timestamp:string}[],
 	error: string,
 }
 
-class Log extends Component<LogProps, LogState> {
+class Log extends Component<{}, LogState> {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -23,41 +17,21 @@ class Log extends Component<LogProps, LogState> {
 		};
 	}
 
-	refresh() {
-		this.props.loading(true);
-		axios.get('/api/log')
-			.then(res => {
-				this.props.loading(false);
-				this.parseLogs(res.data);
-			})
-			.catch(err => this.props.errorMessage(i18next.t('CONFIG.LOG_FAILED') + ' ' + err));
-
-		axios.get('/api/settings')
-			.then(res => {
-				let url = window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:1337` : window.location.origin;
-				const socket = openSocket(`${url}/${res.data.state.wsLogNamespace}`);
-				socket.on('log', (log) => {
-					let logs = this.state.log;
-					logs.push(log);
-					this.setState({log: logs});
-				});
-			})
-			.catch(err => this.props.errorMessage(i18next.t('CONFIG.FETCH_ERROR')+ ' ' + err));
-	}
-
-	parseLogs(data: string) {
-		const logs = [];
-		const lines = data.split("\n")
-		lines.forEach(line => {
-			if (line) {
-				logs.push(JSON.parse(line));
-			}
-		})
-		this.setState({log: logs});
-	}
-
 	componentDidMount() {
 		this.refresh();
+	}
+
+	refresh = async () => {
+		let res = await Axios.get('/log')
+		this.setState({log: res.data});
+		res = await Axios.get('/settings');
+		let url = window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:1337` : window.location.origin;
+		const socket = openSocket(`${url}/${res.data.state.wsLogNamespace}`);
+		socket.on('log', (log) => {
+			let logs = this.state.log;
+			logs.push(log);
+			this.setState({log: logs});
+		});
 	}
 
 	render() {
@@ -83,15 +57,4 @@ class Log extends Component<LogProps, LogState> {
 	}
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Log);
+export default Log;

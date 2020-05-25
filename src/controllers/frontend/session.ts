@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { errMessage } from "../common";
+import { errMessage, APIMessage } from "../common";
 import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from "../middlewares/auth";
 import { check } from "../../lib/utils/validators";
 import { getSessions, addSession, setActiveSession, mergeSessions, editSession, removeSession, exportSession } from "../../services/session";
@@ -33,14 +33,16 @@ export default function sessionController(router: Router) {
  * }
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: "SESSION_LIST_ERROR"}
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req, res) => {
 			try {
 				const sessions = await getSessions();
 				res.json(sessions);
 			} catch(err) {
-				errMessage('SESSION_LIST_ERROR',err);
-				res.status(500).send('SESSION_LIST_ERROR');
+				const code = 'SESSION_LIST_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -56,11 +58,11 @@ export default function sessionController(router: Router) {
  * @apiParam {Boolean} [private] Optional. Is the session private or public ? Default to false.
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "SESSION_CREATED"
+ * {code: "SESSION_CREATED"}
  * @apiError SESSION_CREATION_ERROR Error creating session
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "SESSION_CREATION_ERROR"
+ * {code: "SESSION_CREATION_ERROR"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 400 Validation error
  */
@@ -73,10 +75,11 @@ export default function sessionController(router: Router) {
 				// No errors detected
 				try {
 					await addSession(req.body.name, req.body.date, req.body.activate, req.body.private);
-					res.status(200).send('SESSION_CREATED');
+					res.status(200).json(APIMessage('SESSION_CREATED'));
 				} catch(err) {
-					errMessage('SESSION_CREATION_ERROR',err);
-					res.status(500).send('SESSION_CREATION_ERROR');
+					const code = 'SESSION_CREATION_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -93,9 +96,11 @@ export default function sessionController(router: Router) {
 		if (!validationErrors) {
 			try {
 				await mergeSessions(req.body.seid1, req.body.seid2);
-				res.status(200).send('Sessions merged');
+				res.status(200).json(APIMessage('SESSION_MERGED'));
 			} catch(err) {
-				res.status(500).send(`Error merging sessions : ${err}`);
+				const code = 'SESSION_MERGE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		} else {
 			// Errors detected
@@ -119,9 +124,10 @@ export default function sessionController(router: Router) {
  * @apiParam {Date} started_at Session start time
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * {code: "SESSION_EDITED"};
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "Error updating session : ..."
+ * {code: "SESSION_EDIT_ERROR"}
  */
 		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			//Validate form data
@@ -132,9 +138,11 @@ export default function sessionController(router: Router) {
 				// No errors detected
 				try {
 					await editSession(req.params.seid, req.body.name, req.body.started_at, req.body.private);
-					res.status(200).send('Session updated');
+					res.status(200).json(APIMessage('SESSION_EDITED'));
 				} catch(err) {
-					res.status(500).send(`Error updating session : ${err}`);
+					const code = 'SESSION_EDIT_ERROR';
+					errMessage(code, err)
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -153,10 +161,11 @@ export default function sessionController(router: Router) {
  * @apiParam {String} seid Session ID
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * {code: "SESSION_ACTIVATED"}
  */
 		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			setActiveSession(req.params.seid);
-			res.status(200).send('Session activated');
+			res.status(200).json(APIMessage('SESSION_ACTIVATED'));
 		})
 /**
  * @api {delete} /sessions/:seid Delete session
@@ -169,13 +178,16 @@ export default function sessionController(router: Router) {
  * @apiParam {String} seid Session ID
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * {code: "SESSION_DELETED"}
  */
 		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 				await removeSession(req.params.seid);
-				res.status(200).send('Session deleted');
+				res.status(200).json(APIMessage('SESSION_DELETED'));
 			} catch(err) {
-				res.status(500).send(`Error deleting session : ${err}`);
+				const code = 'SESSION_DELETE_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/sessions/:seid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/export')
@@ -189,15 +201,19 @@ export default function sessionController(router: Router) {
  * @apiParam {String} seid Session ID
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * {code: "SESSION_EXPORTED"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * {code: "SESSION_EXPORT_ERROR"}
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			try {
 				await exportSession(req.params.seid);
-				res.status(200).send('Session exported');
+				res.status(200).json(APIMessage('SESSION_EXPORTED'));
 			} catch(err) {
-				res.status(500).send(err);
+				const code = 'SESSION_EXPORT_ERROR';
+				errMessage(code, err)
+				res.status(500).json(APIMessage(code));
 			}
 		});
 }

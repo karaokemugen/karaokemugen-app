@@ -1,21 +1,14 @@
 import React, {Component} from 'react';
 import {Layout} from 'antd';
 import UserForm from './UserForm';
-import axios from 'axios/index';
-import {connect} from 'react-redux';
-import {push} from 'connected-react-router';
-import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
-import {ReduxMappedProps} from '../../react-app-env';
-import i18next from 'i18next';
-
-interface UserEditProps extends ReduxMappedProps {
-	push: (string) => any,
-	match?: any,
-}
+import { withRouter, RouteComponentProps } from 'react-router';
+import Axios from 'axios';
+import { User } from '../../../../src/lib/types/user';
+import { getAxiosInstance } from '../../axiosInterceptor';
 
 interface UserEditState {
-	user: any,
-	save: any,
+	user: User,
+	save: (user:User) => void,
 }
 
 const newUser = {
@@ -25,7 +18,7 @@ const newUser = {
 	nickname: null
 };
 
-class UserEdit extends Component<UserEditProps, UserEditState> {
+class UserEdit extends Component<RouteComponentProps<{userLogin:string}>, UserEditState> {
 
 	state = {
 		user: null,
@@ -36,43 +29,22 @@ class UserEdit extends Component<UserEditProps, UserEditState> {
 		this.loadUser();
 	}
 
-	saveNew = (user) => {
-		axios.post('/api/users', user)
-			.then(() => {
-				this.props.infoMessage(i18next.t('USERS.USER_CREATED'));
-				this.props.push('/system/km/users');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	saveNew = async (user) => {
+		await getAxiosInstance().post('/users', user);
+		this.props.history.push('/system/km/users');
 	};
 
-	saveUpdate = (user) => {
-		axios.put(`/api/users/${user.login}`, user)
-			.then(() => {
-				this.props.infoMessage(i18next.t('USERS.USER_EDITED'));
-				this.props.push('/system/km/users');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	saveUpdate = async (user) => {
+		await getAxiosInstance().put(`/users/${user.login}`, user)
+		this.props.history.push('/system/km/users');
 	};
 
-	loadUser = () => {
-		this.props.loading(true);
-		if (this.props.match && this.props.match.params.userLogin) {
-			axios.get(`/api/users/${this.props.match.params.userLogin}`)
-				.then(res => {
-					this.setState({user: res.data, save: this.saveUpdate});
-					this.props.loading(false);
-				})
-				.catch(err => {
-					this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-					this.props.loading(false);
-				});
+	loadUser = async () => {
+		if (this.props.match.params.userLogin) {
+			let res = await Axios.get(`/users/${this.props.match.params.userLogin}`)
+			this.setState({user: res.data, save: this.saveUpdate});
 		} else {
 			this.setState({user: {...newUser}, save: this.saveNew});
-			this.props.loading(false);
 		}
 	};
 
@@ -86,16 +58,4 @@ class UserEdit extends Component<UserEditProps, UserEditState> {
 	}
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message)),
-	push: (url: string) => dispatch(push(url))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserEdit);
+export default withRouter(UserEdit);

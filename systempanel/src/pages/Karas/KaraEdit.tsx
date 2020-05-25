@@ -1,105 +1,59 @@
 import React, {Component} from 'react';
 import {Layout} from 'antd';
 import KaraForm from './KaraForm';
-import axios from 'axios/index';
-import {connect} from 'react-redux';
-import {push} from 'connected-react-router';
-import {errorMessage, infoMessage, loading, warnMessage} from '../../actions/navigation';
-import {ReduxMappedProps} from '../../react-app-env';
-import i18next from 'i18next';
-
-interface KaraEditProps extends ReduxMappedProps {
-	push: (string) => any,
-	match?: any,
-}
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import Axios from 'axios';
+import { DBKara } from '../../../../src/lib/types/database/kara';
+import { getAxiosInstance } from '../../axiosInterceptor';
 
 interface KaraEditState {
-	kara: any,
+	kara: DBKara,
 	save: any,
+	loadKara: boolean
 }
-
-class KaraEdit extends Component<KaraEditProps, KaraEditState> {
+class KaraEdit extends Component<RouteComponentProps<{kid:string}>, KaraEditState> {
 
 	state = {
-		kara: null,
-		save: () => {}
+		kara: undefined,
+		save: () => {},
+		loadKara: false
 	};
 
 	componentDidMount() {
 		this.loadKara();
 	}
 
-	saveNew = (kara) => {
-		axios.post('/api/karas', kara)
-			.then(() => {
-				this.props.infoMessage(i18next.t('KARA.KARA_CREATED'));
-				this.props.push('/system/km/karas');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	saveNew = async (kara) => {
+		await getAxiosInstance().post('/karas', kara)
+		this.props.history.push('/system/km/karas');
 	};
 
-	saveUpdate = (kara) => {
-		axios.put(`/api/karas/${kara.kid}`, kara)
-			.then(() => {
-				this.props.infoMessage(i18next.t('KARA.KARA_EDITED'));
-				this.props.push('/system/km/karas');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	saveUpdate = async (kara) => {
+			await getAxiosInstance().put(`/karas/${kara.kid}`, kara)
+			this.props.history.push('/system/km/karas');
 	};
 
-	loadKara = () => {
-		this.props.loading(true);
-		if (this.props.match && this.props.match.params.kid) {
-			axios.get(`/api/karas/${this.props.match.params.kid}`)
-				.then(res => {
-					var kara = res.data;
-					this.setState({kara: kara, save: this.saveUpdate});
-					this.props.loading(false);
-				})
-				.catch(err => {
-					this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-					this.props.loading(false);
-				});
+	loadKara = async () => {
+		if (this.props.match.params.kid) {
+			let res = await Axios.get(`/karas/${this.props.match.params.kid}`)
+			this.setState({kara: res.data, save: this.saveUpdate, loadKara: true});
 		} else {
-			this.setState({kara: {}, save: this.saveNew});
-			this.props.loading(false);
+			this.setState({save: this.saveNew, loadKara: true});
 		}
 	};
 
-	handleCopy = (kid,repo) => {
-		axios.post(`/api/karas/${kid}/copyToRepo`, {repo:repo})
-			.then((data) => {
-				this.props.infoMessage(i18next.t('KARA.KARA_EDITED'));
-				this.props.push('/system/km/karas');
-			})
-			.catch(err => {
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	handleCopy = async (kid,repo) => {
+		await getAxiosInstance().post(`/karas/${kid}/copyToRepo`, {repo:repo})
+		this.props.history.push('/system/km/karas');
 	}
 
 	render() {
 		return (
 			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.kara && (<KaraForm kara={this.state.kara} save={this.state.save} handleCopy={this.handleCopy}/>)}
+				{this.state.loadKara && <KaraForm kara={this.state.kara} save={this.state.save} handleCopy={this.handleCopy}/>}
 			</Layout.Content>
 		);
 	}
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message)),
-	push: (url) => dispatch(push(url))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(KaraEdit);
+export default withRouter(KaraEdit);

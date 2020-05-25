@@ -1,13 +1,7 @@
 import {requireAuth, requireValidUser} from './middlewares/auth';
 import { updateLastLoginName, decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint, editUser, resetSecurityCode } from '../services/user';
 import { getState } from '../utils/state';
-
-const loginErr = {
-	code: 'LOG_ERROR',
-	message: 'Incorrect credentials',
-	data: {
-	}
-};
+import { APIMessage } from './common';
 
 export default function authController(router) {
 
@@ -60,7 +54,7 @@ export default function authController(router) {
 			}
 			res.status(200).send(token);
 		} catch(err) {
-			res.status(401).send(loginErr);
+			res.status(401).send(APIMessage('LOG_ERROR'));
 		}
 	});
 
@@ -97,7 +91,7 @@ export default function authController(router) {
  * }
  */
 		if (!req.body.fingerprint || req.body.fingerprint === '') {
-			res.status(401).send(loginErr);
+			res.status(401).send(APIMessage('LOG_ERROR'));
 		} else {
 			try {
 				const guest = await findFingerprint(req.body.fingerprint);
@@ -107,20 +101,15 @@ export default function authController(router) {
 					updateLastLoginName(guest);
 					res.status(200).send(token);
 				} else {
-					res.status(500).send({
-						code: 'NO_MORE_GUESTS_AVAILABLE',
-						message: null,
-						data: {
-						}
-					});
+					res.status(500).send(APIMessage('NO_MORE_GUESTS_AVAILABLE'));
 				}
 			} catch (err) {
-				res.status(401).send(loginErr);
+				res.status(401).send(APIMessage('LOG_ERROR'));
 			}
 		}
 	});
 
-	router.get('/auth/checkauth', requireAuth, requireValidUser, (req, res) => {
+	router.get('/auth/checkauth', requireAuth, requireValidUser, (req: any, res: any) => {
 		res.status(200).send(decodeJwtToken(req.get('authorization')));
 	});
 

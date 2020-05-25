@@ -1,14 +1,9 @@
 import React, {Component} from 'react';
 import {Layout} from 'antd';
-import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
 import i18next from 'i18next';
 
-interface HomeProps {}
-
-interface HomeState {}
-
-class Home extends Component<HomeProps, HomeState> {
+class Home extends Component<{}, {}> {
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'left' }}>
@@ -37,4 +32,4 @@ class Home extends Component<HomeProps, HomeState> {
 	}
 }
 
-export default connect()(Home);
+export default Home;

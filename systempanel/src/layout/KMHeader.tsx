@@ -1,8 +1,5 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-
 import {Layout} from 'antd';
-
 import KMMenu from './KMMenu';
 import Notifications from './Notifications';
 
@@ -19,4 +16,4 @@ class KMHeader extends Component<{}, {}> {
 	}
 }
 
-export default connect(null, null)(KMHeader);
+export default KMHeader;

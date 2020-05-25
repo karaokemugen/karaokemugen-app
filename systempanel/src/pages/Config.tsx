@@ -1,15 +1,9 @@
-import axios from 'axios';
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {Input, Layout, Button, Table, Switch, Select} from 'antd';
-
-import {loading, infoMessage, errorMessage, warnMessage} from '../actions/navigation';
-import {ReduxMappedProps} from '../react-app-env';
+import { Input, Layout, Button, Table, Switch, Select } from 'antd';
 import i18next from 'i18next';
 import { Link } from 'react-router-dom';
 import FoldersElement from './Components/FoldersElement';
-
-interface ConfigProps extends ReduxMappedProps {}
+import Axios from 'axios';
 
 interface ConfigState {
 	config: any[],
@@ -40,7 +34,7 @@ const configWithSelectFileInFolder = [
 	'Playlist.Medias.Outros.File'
 ];
 
-class Config extends Component<ConfigProps, ConfigState> {
+class Config extends Component<{}, ConfigState> {
 
 	constructor(props) {
 		super(props);
@@ -64,12 +58,11 @@ class Config extends Component<ConfigProps, ConfigState> {
 		this.setState({files: files});
 	}
 
-	async refresh() {
-		await axios.get('/api/settings')
-			.then(res => this.setState({config: this.configKeyValue(res.data.config), error: '',
-				appPath: res.data.state.appPath, dataPath: res.data.state.dataPath, 
-				os: res.data.state.os}))
-			.catch(err => this.props.errorMessage(i18next.t('CONFIG.FETCH_ERROR')+ ' ' + err));
+	refresh = async () => {
+		let res = await Axios.get('/settings');
+		this.setState({config: this.configKeyValue(res.data.config), error: '',
+			appPath: res.data.state.appPath, dataPath: res.data.state.dataPath, 
+			os: res.data.state.os})
 	}
 
 	dotify(obj:any) {
@@ -96,16 +89,10 @@ class Config extends Component<ConfigProps, ConfigState> {
 		}, val);
 	};
 
-	saveSetting(key:string, value:any) {
-		axios.put('/api/settings', {
-			setting: this.expand(key, value)
-		})
-			.then(() => this.settingSaved(key, value))
-			.catch((err) => this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`));
-	}
-
-	settingSaved(key, value) {
-		this.props.infoMessage(i18next.t('CONFIG.SETTING_SAVED', {key: key, value:value}));
+	saveSetting = async (key:string, value:any) => {
+		await Axios.put('/settings', {
+				setting: this.expand(key, value)
+			});
 		this.refresh();
 	}
 
@@ -142,9 +129,9 @@ class Config extends Component<ConfigProps, ConfigState> {
 		var files = [];
 		for (const element of record.value) {
 			try {
-				var response = await axios.post('/api/fs', 
-					{ path: `${this.getPathForFileSystem(record)}${element}`, onlyMedias:true});
-					files = files.concat(response.data.contents.filter(elem => !elem.isDirectory).map(elem => elem.name));
+				var response = await Axios.post('/fs', 
+					{ path: `${this.getPathForFileSystem(record.value)}${element}`, onlyMedias:true});
+				files = files.concat(response.data.contents.filter(elem => !elem.isDirectory).map(elem => elem.name));
 			} catch (error) {
 				// Folder don't exist so skip
 			}
@@ -204,25 +191,14 @@ class Config extends Component<ConfigProps, ConfigState> {
 		return Object.entries(this.dotify(data)).map(([k,v]) => ({key: k, value: v, primary : Array.isArray(v) ? v[0] : undefined}));
 	};
 
-	configBackup() {
-		this.props.loading(true);
-		axios.post('/api/settings/backup')
-			.then(res => {
-				this.props.loading(false);
-				this.props.infoMessage(res.data);
-			})
-			.catch(err => {
-				this.props.loading(false);
-				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
-			});
+	configBackup = async () => {
+		await Axios.post('/settings/backup');
 	}
 
-	getPathForFileSystem(record:Record) {
+	getPathForFileSystem(value:string) {
 		var regexp = this.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
-		if ((Array.isArray(record.value) && record.value[0].match(regexp) === null) 
-			|| (!Array.isArray(record.value) && record.value.match(regexp) === null)) {
-			var path = record.key.includes('System.Binaries') ? this.state.appPath : this.state.dataPath
-			return `${path}${this.state.os === 'win32' ? '\\' : '/'}`
+		if (value.match(regexp) === null) {
+			return `${this.state.dataPath}${this.state.os === 'win32' ? '\\' : '/'}`
 		} else {
 			return ''
 		}
@@ -232,9 +208,9 @@ class Config extends Component<ConfigProps, ConfigState> {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Button style={{ margin: '10px'}} type='primary' 
-					onClick={this.refresh.bind(this)}>{i18next.t('REFRESH')}</Button>
+					onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
 				<Button style={{ margin: '10px'}} type='primary' 
-					onClick={this.configBackup.bind(this)}>{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}</Button>
+					onClick={this.configBackup}>{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}</Button>
 				<p>{i18next.t('CONFIG.MESSAGE')}</p>
 				<Table
 					columns={this.columns}
@@ -246,15 +222,4 @@ class Config extends Component<ConfigProps, ConfigState> {
 	}
 }
 
-const mapStateToProps = (state) => ({
-	loadingActive: state.navigation.loading
-});
-
-const mapDispatchToProps = (dispatch) => ({
-	loading: (active) => dispatch(loading(active)),
-	infoMessage: (message) => dispatch(infoMessage(message)),
-	errorMessage: (message) => dispatch(errorMessage(message)),
-	warnMessage: (message) => dispatch(warnMessage(message))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Config);
+export default Config;

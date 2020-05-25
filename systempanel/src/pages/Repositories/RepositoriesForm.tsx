@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import { Button, Form, Input, Checkbox, Alert } from 'antd';
+import { Button, Input, Checkbox, Alert, Form } from 'antd';
 import i18next from 'i18next';
 import { Repository } from '../../../../src/lib/types/repo';
 import FoldersElement from '../Components/FoldersElement';
+import { FormProps } from 'antd/lib/form';
 
-interface RepositoriesFormProps {
+interface RepositoriesFormProps extends FormProps {
 	repository: Repository;
-	form: any;
 	save: any;
 	consolidate : (consolidatePath:string) => void;
 }
@@ -21,121 +21,96 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 		consolidatePath: undefined
 	};
 
-	handleSubmit = (e) => {
-		e.preventDefault();
-		this.props.form.validateFields((err, values) => {
-			if (!err) {
-				this.props.save(values);
-			}
-		});
-	};
-
 	render() {
-		const {getFieldDecorator} = this.props.form;
 		return (
 			<Form
-				onSubmit={this.handleSubmit}
+				onFinish={this.props.save}
 				className='repository-form'
+				initialValues={this.props.repository}
 			>
 				<Form.Item hasFeedback
 					label={i18next.t('REPOSITORIES.NAME')}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 8, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 8 }}
+					rules={[{
+						required: true,
+						message: i18next.t('TAGS.NAME_REQUIRED')
+					}]}
 				>
-					{getFieldDecorator('Name', {
-						initialValue: this.props.repository.Name,
-						rules: [{
-							required: true,
-							message: i18next.t('TAGS.NAME_REQUIRED')
-						}],
-					})(<Input
+					<Input
 						placeholder={i18next.t('REPOSITORIES.NAME')}
-					/>)}
+					/>
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.ONLINE')}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 10, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 10 }}
+					valuePropName="checked"
 				>
-					{getFieldDecorator('Online', {
-						valuePropName: "checked",
-						initialValue: this.props.repository.Online,
-					})(<Checkbox />)}
+					<Checkbox />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.ENABLED')}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 10, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 10 }}
+					valuePropName="checked"
 				>
-					{getFieldDecorator('Enabled', {
-						valuePropName: "checked",
-						initialValue: this.props.repository.Enabled,
-					})(<Checkbox />)}
+					<Checkbox />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_KARAS')}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 10, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 10 }}
+					rules={[{
+						required: true,
+						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_KARAS')})
+					}]}
 				>
-					{getFieldDecorator('Path.Karas', {
-						rules: [{
-							required: true,
-							message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_KARAS')})
-						}],
-						initialValue: this.props.repository.Path.Karas,
-					})(<FoldersElement openDirectory={true} onChange={(value) => this.props.form.setFieldsValue({ 'Path.Karas': value })} />)}
+					<FoldersElement onChange={(value) => this.props.form.setFieldsValue({ 'Path.Karas': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_LYRICS')}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 10, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 10 }}
+					rules={[{
+						required: true,
+						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_LYRICS')})
+					}]}
 				>
-					{getFieldDecorator('Path.Lyrics', {
-						rules: [{
-							required: true,
-							message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_LYRICS')})
-						}],
-						initialValue: this.props.repository.Path.Lyrics,
-					})(<FoldersElement openDirectory={true} onChange={(value) => this.props.form.setFieldsValue({ 'Path.Lyrics': value })} />)}
+					<FoldersElement onChange={(value) => this.props.form.setFieldsValue({ 'Path.Lyrics': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_MEDIAS')}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 10, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 10 }}
+					rules={[{
+						required: true,
+						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_MEDIAS')})
+					}]}
 				>
-					{getFieldDecorator('Path.Medias', {
-						rules: [{
-							required: true,
-							message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_MEDIAS')})
-						}],
-						initialValue: this.props.repository.Path.Medias,
-					})(<FoldersElement openDirectory={true} onChange={(value) => this.props.form.setFieldsValue({ 'Path.Medias': value })} />)}
+					<FoldersElement onChange={(value) => this.props.form.setFieldsValue({ 'Path.Medias': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_SERIES')}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 10, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 10 }}
+					rules={[{
+						required: true,
+						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_SERIES')})
+					}]}
 				>
-					{getFieldDecorator('Path.Series', {
-						rules: [{
-							required: true,
-							message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_SERIES')})
-						}],
-						initialValue: this.props.repository.Path.Series,
-					})(<FoldersElement openDirectory={true} onChange={(value) => this.props.form.setFieldsValue({ 'Path.Series': value })} />)}
+					<FoldersElement onChange={(value) => this.props.form.setFieldsValue({ 'Path.Series': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_TAGS')}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 10, offset: 0 }}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 10 }}
+					rules={[{
+						required: true,
+						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_TAGS')})
+					}]}
 				>
-					{getFieldDecorator('Path.Tags', {
-						rules: [{
-							required: true,
-							message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_TAGS')})
-						}],
-						initialValue: this.props.repository.Path.Tags,
-					})(<FoldersElement openDirectory={true} onChange={(value) => this.props.form.setFieldsValue({ 'Path.Tags': value })} />)}
+					<FoldersElement onChange={(value) => this.props.form.setFieldsValue({ 'Path.Tags': value })} />
 				</Form.Item>
 				<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{textAlign:"right"}}>
 					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
@@ -145,8 +120,8 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					<React.Fragment>
 						<Form.Item hasFeedback
 							label={i18next.t('REPOSITORIES.CONSOLIDATE')}
-							labelCol={{ span: 3 }}
-							wrapperCol={{ span: 8, offset: 0 }}
+							labelCol={{ flex: '0 1 200px' }}
+							wrapperCol={{ span: 8 }}
 							>
 							<FoldersElement openDirectory={true} onChange={(value) => this.setState({consolidatePath: value[0]})} />
 						</Form.Item>
@@ -155,7 +130,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							wrapperCol={{ span: 8, offset: 3 }}
 							style={{textAlign:"right"}}
 							>
-							<Button type="danger" onClick={() => this.props.consolidate(this.state.consolidatePath)}>
+							<Button type="primary" danger onClick={() => this.props.consolidate(this.state.consolidatePath)}>
 								{i18next.t('REPOSITORIES.CONSOLIDATE_BUTTON')}
 							</Button>
 							<Alert style={{textAlign:"left", marginTop: '10px'}}
@@ -172,5 +147,4 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 	}
 }
 
-const cmp: any = Form.create()(RepositoryForm);
-export default cmp;
+export default RepositoryForm;

@@ -191,10 +191,10 @@ export function decodeJwtToken(token: string, config?: Config) {
 
 /** Converting a local account to a online one.	*/
 export async function convertToRemoteUser(token: Token, password: string , instance: string): Promise<Tokens> {
-	if (token.username === 'admin') throw 'Admin user cannot be converted to an online account';
+	if (token.username === 'admin') throw {code: 'ADMIN_CONVERT_ERROR'};
 	const user = await findUserByName(token.username);
-	if (!user) throw 'User unknown';
-	if (!await checkPassword(user, password)) throw 'Wrong password';
+	if (!user) throw {code: 'UNKNOW_CONVERT_ERROR'};
+	if (!await checkPassword(user, password)) throw {code: 'PASSWORD_CONVERT_ERROR'};
 	user.login = `${token.username}@${instance}`;
 	user.password = password;
 	try {
@@ -211,7 +211,7 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 			token: createJwtToken(user.login, token.role)
 		};
 	} catch(err) {
-		throw `Unable to convert user to remote (remote has been created) : ${err}`;
+		throw {code: 'USER_CONVERT_ERROR'};
 	}
 }
 
