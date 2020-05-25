@@ -1,4 +1,4 @@
-import {getAllTags, selectTagByNameAndType, insertTag, selectTag, updateTag, removeTag, updateKaraTagsTID, selectDuplicateTags} from '../dao/tag';
+import {getAllTags, selectTagByNameAndType, insertTag, selectTag, updateTag, removeTag, updateKaraTagsTID, selectDuplicateTags, selectTagMini} from '../dao/tag';
 import logger, {profile} from '../lib/utils/logger';
 import { TagParams, Tag } from '../lib/types/tag';
 import { v4 as uuidV4 } from 'uuid';
@@ -101,6 +101,10 @@ export async function getTag(tid: string) {
 	return await selectTag(tid);
 }
 
+export async function getTagMini(tid: string) {
+	return await selectTagMini(tid);
+}
+
 export async function getOrAddTagID(tagObj: Tag): Promise<IDQueryResult> {
 	let tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
 	if (tag) return {id: tag.tid, new: false};
@@ -117,8 +121,8 @@ export async function mergeTags(tid1: string, tid2: string) {
 	});
 	try {
 		const [tag1, tag2] = await Promise.all([
-			getTag(tid1),
-			getTag(tid2)
+			getTagMini(tid1),
+			getTagMini(tid2)
 		]);
 		task.update({
 			subtext: `${tag1.name} + ${tag2.name}`
@@ -179,7 +183,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 		subtext: tagObj.name
 	});
 	try {
-		const oldTag = await getTag(tid);
+		const oldTag = await getTagMini(tid);
 		if (!oldTag) throw 'Tag ID unknown';
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
 		tagObj.modified_at = new Date().toISOString();
@@ -223,7 +227,7 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 		text: 'DELETING_TAG_IN_PROGRESS'
 	});
 	try {
-		const tag = await getTag(tid);
+		const tag = await getTagMini(tid);
 		if (!tag) throw 'Tag ID unknown';
 		task.update({
 			subtext: tag.name
@@ -251,7 +255,7 @@ export async function integrateTagFile(file: string): Promise<string> {
 	const tagFileData = await getDataFromTagFile(file);
 	if (!tagFileData) return null;
 	try {
-		const tagDBData = await getTag(tagFileData.tid);
+		const tagDBData = await getTagMini(tagFileData.tid);
 		if (tagDBData) {
 			await editTag(tagFileData.tid, tagFileData, { refresh: false });
 			return tagFileData.name;

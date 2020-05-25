@@ -2,11 +2,16 @@ import {db, paramWords} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
 import { TagParams, Tag, TagAndType } from '../lib/types/tag';
 import { WhereClause } from '../types/database';
-import { DBTag } from '../lib/types/database/tag';
+import { DBTag, DBTagMini } from '../lib/types/database/tag';
 const sql = require('./sql/tag');
 
 export async function selectTag(id: string): Promise<Tag> {
 	const res = await db().query(sql.getTag, [id]);
+	return res.rows[0];
+}
+
+export async function selectTagMini(id: string): Promise<DBTagMini> {
+	const res = await db().query(sql.getTagMini, [id]);
 	return res.rows[0];
 }
 

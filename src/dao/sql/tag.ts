@@ -1,5 +1,19 @@
 // SQL for tags
 
+export const getTagMini = `
+SELECT pk_tid AS tid,
+	name,
+	i18n,
+	types,
+	tagfile,
+	repository,
+	short,
+	aliases,
+	modified_at
+FROM tag
+WHERE pk_tid = $1
+`;
+
 export const getTag = `
 SELECT tid, name, types, short, aliases, i18n, modified_at, karacount, tagfile, repository
 FROM all_tags
