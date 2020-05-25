@@ -36,7 +36,7 @@ describe('Auth', function() {
 			.expect(500)
 			.then(response => {
 				strictEqual(response.body.code, 'NO_MORE_GUESTS_AVAILABLE');
-				strictEqual(response.body.message, null);
+				strictEqual(response.body.message, undefined);
 			});
 	});
 
@@ -85,7 +85,7 @@ describe('Blacklist', function() {
 			.send(data)
 			.expect(201)
 			.then(response => {
-				strictEqual(response.text,'BLC_ADDED');
+				strictEqual(response.body.code,'BLC_ADDED');
 			});
 	});
 
@@ -122,7 +122,7 @@ describe('Blacklist', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'BLC_DELETED');
+				strictEqual(response.body.code,'BLC_DELETED');
 			});
 	});
 
@@ -147,7 +147,7 @@ describe('Favorites', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'FAVORITES_ADDED');
+				strictEqual(response.body.code,'FAVORITES_ADDED');
 			});
 	});
 
@@ -201,7 +201,7 @@ describe('Favorites', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'FAVORITES_DELETED');
+				strictEqual(response.body.code,'FAVORITES_DELETED');
 			});
 	});
 
@@ -217,7 +217,7 @@ describe('Favorites', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'FAVORITES_IMPORTED');
+				strictEqual(response.body.code,'FAVORITES_IMPORTED');
 			});
 	});
 });
@@ -335,7 +335,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.text,'PL_ADD_SONG_ERROR');
+				strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
 			});
 	});
 
@@ -351,7 +351,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.text,'PL_ADD_SONG_ERROR');
+				strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
 			});
 	});
 
@@ -367,7 +367,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.text,'PL_ADD_SONG_ERROR');
+				strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
 			});
 	});
 
@@ -452,7 +452,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect(201)
 			.then(response => {
-				strictEqual(response.text, 'PL_SONG_COPIED');
+				strictEqual(response.body.code, 'PL_SONG_COPIED');
 			});
 	});
 
@@ -476,7 +476,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.text,'PL_DELETE_ERROR');
+				strictEqual(response.body.code,'PL_DELETE_ERROR');
 			});
 	});
 
@@ -487,7 +487,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.text,'PL_DELETE_ERROR');
+				strictEqual(response.body.code,'PL_DELETE_ERROR');
 			});
 	});
 
@@ -502,7 +502,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'PL_SONG_DELETED');
+				strictEqual(response.body.code,'PL_SONG_DELETED');
 			});
 	});
 
@@ -513,7 +513,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'PL_SHUFFLED');
+				strictEqual(response.body.code, 'PL_SHUFFLED');
 			});
 	});
 
@@ -559,7 +559,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.text,'PL_IMPORT_ERROR');
+				strictEqual(response.body.code,'PL_IMPORT_ERROR');
 			});
 	});
 
@@ -576,7 +576,7 @@ describe('Playlists', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'PL_UPDATED');
+				strictEqual(response.body.code,'PL_UPDATED');
 			});
 	});
 
@@ -672,7 +672,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text, 'PL_SET_CURRENT');
+				strictEqual(response.body.code, 'PL_SET_CURRENT');
 			});
 	});
 
@@ -683,7 +683,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text, 'PL_SET_PUBLIC');
+				strictEqual(response.body.code, 'PL_SET_PUBLIC');
 			});
 	});
 
@@ -694,7 +694,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.text, 'UPVOTE_FAILED');
+				strictEqual(response.body.code, 'UPVOTE_FAILED');
 			});
 	});
 
@@ -724,7 +724,7 @@ describe('Song Poll', function() {
 			.set('Authorization', token)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.text, 'POLL_NOT_ACTIVE');
+				strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
 			});
 	});
 
@@ -739,7 +739,7 @@ describe('Song Poll', function() {
 			.send(data)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.text, 'POLL_NOT_ACTIVE');
+				strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
 			});
 	});
 
@@ -772,7 +772,7 @@ describe('Users', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'USER_CREATED');
+				strictEqual(response.body.code,'USER_CREATED');
 			});
 	});
 
@@ -789,7 +789,7 @@ describe('Users', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'USER_CREATED');
+				strictEqual(response.body.code,'USER_CREATED');
 			});
 	});
 
@@ -804,7 +804,7 @@ describe('Users', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'USER_UPDATED');
+				strictEqual(response.body.code,'USER_UPDATED');
 			});
 	});
 
@@ -852,7 +852,7 @@ describe('Users', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text, 'USER_DELETED');
+				strictEqual(response.body.code, 'USER_DELETED');
 			});
 	});
 });
@@ -870,7 +870,7 @@ describe('Whitelist', function() {
 			.send(data)
 			.expect(201)
 			.then(response => {
-				strictEqual(response.text,'WL_SONG_ADDED');
+				strictEqual(response.body.code,'WL_SONG_ADDED');
 			});
 	});
 
@@ -897,7 +897,7 @@ describe('Whitelist', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.text,'WL_SONG_DELETED');
+				strictEqual(response.body.code,'WL_SONG_DELETED');
 			});
 	});
 
@@ -945,18 +945,3 @@ describe('Main', function() {
 			.expect(200);
 	});
 });
-
-/* Since tests are called from the app this is like suicide now.
-describe('Main - Shutdown', function() {
-	it('Shutdown the entire application', function() {
-		return request
-			.post('/api/shutdown')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200)
-			.then(response =>{
-				strictEqual(response.text,'Shutdown in progress');
-			});
-	});
-});
-*/
