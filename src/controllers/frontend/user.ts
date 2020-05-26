@@ -248,9 +248,9 @@ export default function userController(router: Router) {
 							password: req.body.password
 						}, null, 'admin');
 						resetSecurityCode();
-						res.status(200).json(APIMessage('USER_RESETPASSWORD_ONLINE'));
+						res.status(200).json();
 					} catch (err) {
-						const code = 'USER_RESETPASSWORD_ONLINE_ERROR';
+						const code = 'USER_RESETPASSWORD_ERROR';
 						errMessage(code, err)
 						res.status(500).json(APIMessage(code));
 					}
@@ -260,9 +260,9 @@ export default function userController(router: Router) {
 			} else {
 				try {
 					await resetRemotePassword(req.params.username);
-					res.status(200).json();
+					res.status(200).json(APIMessage('USER_RESETPASSWORD_ONLINE'));
 				} catch (err) {
-					const code = 'USER_RESETPASSWORD_ERROR';
+					const code = 'USER_RESETPASSWORD_ONLINE_ERROR';
 					errMessage(code, err)
 					res.status(500).json(APIMessage(code));
 				}
