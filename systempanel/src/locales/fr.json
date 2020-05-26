@@ -77,7 +77,8 @@
 		"FILTER_NOT_DOWNLOADED": "Non téléchargés",
 		"REPOSITORY": "Dépôt",
 		"MOVE_SONG": "Déplacer la chanson vers un autre dépôt",
-		"DETAILS": "Détails"
+		"DETAILS": "Détails",
+		"TOTAL_MEDIA_SIZE": "Taille totale des médias :"
 	},
 	"MENU": {
 		"HOME": "Home",

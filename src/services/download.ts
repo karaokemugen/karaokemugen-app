@@ -30,6 +30,7 @@ import Task from '../lib/utils/taskManager';
 import { extractAssInfos } from '../lib/dao/karafile';
 import { SeriesList } from '../lib/types/series';
 import { emit } from '../lib/utils/pubsub';
+import { repoStats } from '../lib/types/repo';
 import { APIMessage } from '../controllers/common';
 
 let downloaderReady = false;
@@ -364,8 +365,11 @@ export async function getAllRemoteKaras(repository: string, params: KaraParams, 
 	} else {
 		const repos = getConfig().System.Repositories.filter(r => r.Online && r.Enabled);
 		const tasks = [];
+		let totalMediaSize = 0;
 		for (const repo of repos) {
 			tasks.push(getRemoteKaras(repo.Name, params, compare));
+			const {mediasize} = await getRemoteStats(repo.Name);
+			totalMediaSize = totalMediaSize + +mediasize;
 		}
 		const allKaras: KaraList[] = await Promise.all(tasks);
 		// Let's concatenate our stuff here
@@ -385,8 +389,16 @@ export async function getAllRemoteKaras(repository: string, params: KaraParams, 
 		const everythingUnique = everything.content.filter((k: any, i, self) => self.findIndex((k2:any) => k2.repo === k.repo) === i);
 		everythingUnique.forEach(k => everything.infos.count = +everything.infos.count + +k.count);
 		everything.infos.to = +params.from + +params.size;
+		everything.infos.totalMediaSize = totalMediaSize;
 		return everything;
 	}
+}
+
+async function getRemoteStats(repo: string): Promise<repoStats> {
+	const res = await HTTP(`https://${repo}/api/karas/stats`, {
+		responseType: 'json'
+	})
+	return res.body as repoStats;
 }
 
 export async function getRemoteKaras(repo: string, params: KaraParams, compare?: CompareParam): Promise<KaraList> {
