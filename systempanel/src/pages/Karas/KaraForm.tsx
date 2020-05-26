@@ -6,11 +6,11 @@ import i18next from 'i18next';
 import { QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { FormProps, FormInstance } from "antd/lib/form";
 import Axios from 'axios';
-import { DBKara } from "../../../../src/lib/types/database/kara";
+import { Kara } from "../../../../src/lib/types/kara";
 import { DBTag } from "../../../../src/lib/types/database/tag";
 
 interface KaraFormProps extends FormProps {
-	kara: DBKara;
+	kara: Kara;
 	save: any;
 	handleCopy: (kid, repo) => void
 }
@@ -124,6 +124,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	handleSubmit = (values) => {
+		console.log(this.formRef.current)
 		var kara = values;
 		kara.series = this.getTagObject(kara.series);
 		kara.singers = this.getTagObject(kara.singers);
@@ -138,7 +139,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		kara.genres = this.getTagObject(kara.genres);
 		kara.origins = this.getTagObject(kara.origins);
 		kara.songtypes = this.getTagObject(kara.songtypes);
-		this.props.save(kara);
+		//this.props.save(kara);
 	};
 
 	isMediaFile = filename => {
