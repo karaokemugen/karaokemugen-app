@@ -119,6 +119,42 @@ export default function karaController(router: Router) {
 				res.status(500).json(APIMessage(code));
 			}
 		})
+	/**
+ * @api {post} /karas/:kid Create karaoke data
+ * @apiName PostKaras
+ * @apiVersion 3.1.0
+ * @apiGroup Karaokes
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {uuid} kid Karaoke ID to edit
+ * @apiParam {string} mediafile Current media file name
+ * @apiParam {string} [mediafile_orig] Name of new media file. If `mediafile_orig` exists, `mediafile` is the internal name returned from the importfile route.
+ * @apiParam {string} [subfile] Current lyrics file name. Can be empty if hardsub or no lyrics file needed
+ * @apiParam {string} [subfile_orig] Name of new lyrics file. If `subfile_orig` exists, `subfile` is the internal name returned from the importfile route.
+ * @apiParam {string} title Song title
+ * @apiParam {number} [year] Song year
+ * @apiParam {number} [order] Song order (which ED, OP, etc.)
+ * @apiParam {Object[]} [series] Object : tid (optional), name. Series is mandatory if there's no singer
+ * @apiParam {Object[]} [singers] Object : tid (optional), name. Singers is mandatory if there's no series
+ * @apiParam {Object[]} [misc] Object : tid (optional), name.
+ * @apiParam {Object[]} [groups] Object : tid (optional), name.
+ * @apiParam {Object[]} [songwriters] Object : tid (optional), name.
+ * @apiParam {Object[]} [misc] Object : tid (optional), name.
+ * @apiParam {Object[]} [creators] Object : tid (optional), name.
+ * @apiParam {Object[]} [authors] Object : tid (optional), name.
+ * @apiParam {Object[]} [langs] Object : tid (optional), name.
+ * @apiParam {Object[]} [songtypes] Object : tid (optional), name.
+ * @apiParam {Object[]} [families] Object : tid (optional), name.
+ * @apiParam {Object[]} [genres] Object : tid (optional), name.
+ * @apiParam {Object[]} [platforms] Object : tid (optional), name.
+ * @apiParam {Object[]} [origins] Object : tid (optional), name.
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {code: 'KARA_CREATED'}
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {code: 'KARA_CREATED_ERROR'}
+ */
 		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				await createKara(req.body);
