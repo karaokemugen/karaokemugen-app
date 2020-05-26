@@ -26,7 +26,8 @@ interface KaraDownloadState {
 	filter: string,
 	tagFilter: string,
 	tags: any[],
-	compare: string
+	compare: string,
+	totalMediaSize: string
 }
 
 class KaraDownload extends Component<{}, KaraDownloadState> {
@@ -47,7 +48,8 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 			filter: localStorage.getItem('karaDownloadFilter') || '',
 			tagFilter: '',
 			tags: [],
-			compare: ''
+			compare: '',
+			totalMediaSize: ''
 		};
 	}
 
@@ -57,6 +59,14 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 		this.blacklist_check_emptyCache();
 		this.startObserver();
 		this.getTags();
+	}
+
+	fileConvertSize(aSize: any) {
+		aSize = Math.abs(parseInt(aSize, 10));
+		var def = [[1, 'octets'], [1024, 'ko'], [1024*1024, 'Mo'], [1024*1024*1024, 'Go'], [1024*1024*1024*1024, 'To']];
+		for(var i=0; i<def.length; i++){
+			if(aSize<def[i][0]) return (aSize/(def[i-1][0] as number)).toFixed(2)+' '+def[i-1][1];
+		}
 	}
 
 	async getTags() {
@@ -214,7 +224,8 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 		this.setState({
 			karas_online: karas,
 			karas_online_count: res.data.infos.count || 0,
-			i18nTag: res.data.i18n
+			i18nTag: res.data.i18n,
+			totalMediaSize: this.fileConvertSize(res.data.infos.totalMediaSize)
 		});
 	}
 
@@ -307,7 +318,12 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 									onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
 							</Col>
 						</Row>
-						<Row style={{ paddingTop: '20px'}}>
+						<Row style={{ margin: '10px'}}>
+							<Col span={11}>
+								<label>{i18next.t('KARA.TOTAL_MEDIA_SIZE')} {this.state.totalMediaSize}</label>
+							</Col>
+						</Row>
+						<Row>
 							<Col span={11}>
 								<Button style={{width: '230px'}} type="primary" key="synchronize"
 									onClick={() => Axios.post('/downloads/sync')}>{i18next.t('KARA.SYNCHRONIZE')}</Button>

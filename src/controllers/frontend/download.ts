@@ -299,6 +299,7 @@ export default function downloadController(router: Router) {
  *           "count": 3,
  * 			 "from": 0,
  * 			 "to": 120
+ * 			 "totalMediaSize": 3189209892389
  *       }
  * }
  * @apiError SONG_LIST_ERROR Unable to fetch list of karaokes

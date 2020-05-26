@@ -77,7 +77,8 @@
 		"FILTER_NOT_DOWNLOADED": "Not downloaded",
 		"REPOSITORY": "Repository",
 		"MOVE_SONG": "Move song to another repository",
-		"DETAILS": "Details"
+		"DETAILS": "Details",
+		"TOTAL_MEDIA_SIZE": "Total media size:"
 	},
 	"MENU": {
 		"HOME": "Home",
