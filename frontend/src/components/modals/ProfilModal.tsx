@@ -171,7 +171,14 @@ class ProfilModal extends Component<IProps, IState> {
 
     	await axios.put('/myaccount', dataFile);
 		this.getUser();
-    };
+	};
+	
+	deleteAccount = () => {
+		callModal('confirm', i18next.t('DELETE_ACCOUNT'), '', async () => {
+			await axios.delete('/myaccount');
+			store.logOut();
+		});
+	}
 
     render() {
 		var logInfos = store.getLogInfos();
@@ -284,7 +291,13 @@ class ProfilModal extends Component<IProps, IState> {
     													}
     												</div> : null
     											}
-												<div className="profileLine saveButton">
+												<div className="profileLine profileButtonLine" >
+													<button type="button" className="btn btn-action"
+														onClick={() => {
+																this.deleteAccount();
+															}}>
+														{i18next.t('DELETE')}
+    												</button>
 													<button type="button" className="btn btn-action"
 														onClick={() => {
 																this.updateUser();

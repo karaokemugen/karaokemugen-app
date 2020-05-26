@@ -335,7 +335,7 @@ export default function userController(router: Router) {
 		})
 	/**
 	 * @api {delete} /myaccount Delete your local account
-	 * @apiName ConvertToLocal
+	 * @apiName deleteLocal
 	 * @apiVersion 3.1.0
 	 * @apiGroup Users
 	 * @apiPermission own

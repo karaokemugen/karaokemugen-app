@@ -194,6 +194,8 @@
 	"PROFILE_PASSWORD": "Password",
 	"PROFILE_PASSWORD_AGAIN": "Type your password",
 	"PROFILE_PASSWORDCONF": "Confirm",
+	"DELETE": "Delete",
+	"DELETE_ACCOUNT": "Are you sure you want to delete your account?",
 	"UPVOTE_NUMBER": "Upvotes",
 	"TOOLTIP_ADDKARA": "Add this song to the playlist",
 	"TOOLTIP_ADDKARA_ADMIN": "Right click to append it after the currently playing song",

@@ -205,6 +205,8 @@
 	"PROFILE_BIO": "Biographie",
 	"PROFILE_PASSWORD": "Mot de passe",
 	"PROFILE_PASSWORD_AGAIN": "Retapez votre mot de passe",
+	"DELETE": "Supprimer",
+	"DELETE_ACCOUNT": "Êtes-vous sûr de vouloir supprimer votre compte ?",
 	"TOOLTIP_ADDKARA": "Ajouter cette chanson à la liste",
 	"TOOLTIP_ADDKARA_ADMIN": "Clic droit l'ajoute après le morceau en cours",
 	"TOOLTIP_DELETEKARA": "Supprimer cette chanson",
