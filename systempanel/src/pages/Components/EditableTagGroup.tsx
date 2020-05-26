@@ -169,7 +169,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 						>
 							<Input
 								ref={input => this.input = input}
-								onChange={ val => this.currentVal = val }
+								onChange={ e => this.currentVal = e.target.value }
 							/>
 							<Button style={{marginTop: '10px'}} type='primary' onClick={() => this.handleInputConfirmAlias(this.currentVal)}
 								className='login-form-button'>
