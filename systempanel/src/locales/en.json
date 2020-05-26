@@ -130,8 +130,7 @@
 		"LOG_IN": "Log in",
 		"LOGIN_ERROR": "Please input your username!",
 		"PASSWORD_ERROR": "Please input your password!",
-		"LOGIN_MESSAGE": "The account has to be admin. If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field",
-		"ADMIN_PLEASE": "Please use an operator account"
+		"LOGIN_MESSAGE": "The account has to be admin. If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field"
 	},
 	"DATABASE": {
 		"REGENERATE_DB": "Regenerate your database",
@@ -423,7 +422,10 @@
 		"DOWNLOAD_SONGS_ERROR": "Repository {{repo}} failed to download all songs properly: {{err}}",
 		"CLEAN_SONGS_ERROR": "Repository {{repo}} failed to clean songs properly: {{err}}",
 		"SONGS_UPDATE_ERROR": "Repository {{repo}} failed to update songs properly: {{err}}",
-		"UPDATING_MEDIAS_ERROR": "Repository {{repo}} failed to update medias properly: {{err}}"
+		"UPDATING_MEDIAS_ERROR": "Repository {{repo}} failed to update medias properly: {{err}}",
+		"USER_UNKNOW": "User logged in unknown",
+		"ADMIN_PLEASE": "Please use an operator account",
+		"NOT_GUEST": "Guests cannot use this function"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data} downloads to the queue",

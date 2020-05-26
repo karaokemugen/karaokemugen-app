@@ -11,7 +11,7 @@ export async function login(username: string, password: string, dispatch: Dispat
 		  });
 
 	  if (info.role !== 'admin') {
-		  throw i18next.t('USERS.ADMIN_PLEASE');
+		  throw i18next.t('ERROR_CODES.ADMIN_PLEASE');
 	  }
 
       // Store data, should be managed in a service and item should be enum and not string

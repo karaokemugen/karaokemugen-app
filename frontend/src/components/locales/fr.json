@@ -61,7 +61,6 @@
 	"FULLSCREEN": "Plein écran",
 	"FULLSCREEN_TOOLTIP": "PROTIP: Appuyez sur F une fois le lecteur en plein écran pour le remettre en fenêtré",
 	"ADMIN_PASSWORD_CHANGE": "Changer le mot de passe opérateur",
-    "ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
 	"PASSWORD": "Mot de passe",
 	"PASSWORDCONF": "Confirmer mdp",
 	"NEW_PASSWORD": "Nouveau mdp",
@@ -603,7 +602,10 @@
 		"DOWNLOAD_SONGS_ERROR": "Le dépôt {{repo}} n'a pas réussi à télécharger toutes les chansons correctement : {{err}}",
 		"CLEAN_SONGS_ERROR": "Le dépôt {{repo}} n'a pas réussi à nettoyer les chansons obsolètes correctement : {{err}}",
 		"SONGS_UPDATE_ERROR": "Le dépôt {{repo}} ne s'est pas mise à jour correctement : {{err}}",
-		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}"
+		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
+		"USER_UNKNOW": "Utilisateur connecté inconnu",
+		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
+		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data} téléchargements à la file d'attente",

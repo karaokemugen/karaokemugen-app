@@ -6,6 +6,7 @@ import { getRemoteToken, upsertRemoteToken } from '../../dao/user';
 import { fetchAndAddFavorites } from '../../services/favorites';
 import logger from '../../lib/utils/logger';
 import {User, Token} from '../../lib/types/user';
+import { APIMessage } from '../common';
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
 
@@ -19,7 +20,7 @@ export async function checkValidUser(token: { username: string, role: string }, 
 	// If user is remote, see if we have a remote token ready.
 	const user = await findUserByName(token.username);
 	if (user) {
-		if (token.role === 'admin' && user.type > 0) throw 'Role mismatch. User is not admin and tries to login as such!';
+		if (token.role === 'admin' && user.type > 0) throw APIMessage('ADMIN_PLEASE');
 		if (token.username.includes('@') && +getConfig().Online.Users) {
 			const remoteToken = getRemoteToken(token.username);
 			if (remoteToken?.token === onlineToken.token) {
@@ -58,7 +59,7 @@ export async function checkValidUser(token: { username: string, role: string }, 
 
 export const requireRegularUser = (req: any, res: any, next: any) => {
 	req.user.type === 2
-		? res.status(401).send('Guests cannot use this function')
+		? res.status(401).send(APIMessage('NOT_GUEST'))
 		: next();
 };
 
@@ -78,7 +79,7 @@ export function optionalAuth(req: any, res: any, next: any) {
 			})
 			.catch(err => {
 				logger.error(`[API] Error checking user : ${JSON.stringify(token)} : ${err}`);
-				res.status(403).send('User logged in unknown');
+				res.status(403).send(APIMessage('USER_UNKNOW'));
 			});
 	} catch(err) {
 		// request has no authToken, continuing
@@ -101,7 +102,7 @@ export const requireValidUser = (req: any, res: any, next: any) => {
 		})
 		.catch(err => {
 			logger.error(`[API] Error checking user : ${JSON.stringify(token)} : ${err}`);
-			res.status(403).send('User logged in unknown');
+			res.status(403).send(APIMessage('USER_UNKNOW'));
 		});
 };
 
@@ -109,7 +110,7 @@ export const requireAdmin = (req: any, res: any, next: any) => {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	token.role === 'admin'
 		? next()
-		: res.status(403).send('Only admin can use this function');
+		: res.status(403).send(APIMessage('ERROR_CODES'));
 };
 
 

@@ -62,7 +62,7 @@ class LoginModal extends Component<IProps,IState> {
 		var response = result.data;
 		if (this.props.scope === 'admin' && response.role !== 'admin') {
 			if (!username) {
-				displayMessage('warning', i18next.t('ADMIN_PLEASE'));
+				displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
 				store.logOut();
 			} else {
 				callModal('prompt', i18next.t('MAKE_ACCOUNT_ADMIN'), i18next.t('MAKE_ACCOUNT_ADMIN_MESSAGE'), async (securityCode:string) => {

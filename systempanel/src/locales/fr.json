@@ -130,8 +130,7 @@
 		"LOG_IN": "Connexion",
 		"LOGIN_ERROR": "Entrez votre nom d'utilisateur svp",
 		"PASSWORD_ERROR": "Entrez votre mot de passe svp",
-		"LOGIN_MESSAGE": "Le compte doit être de type administrateur. Si vous avez un compte en ligne, entrez votre nom d'utilisateur complet (exemple: user@kara.moe) dans le champ 'Nom d'utilisateur'.",
-		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur"
+		"LOGIN_MESSAGE": "Le compte doit être de type administrateur. Si vous avez un compte en ligne, entrez votre nom d'utilisateur complet (exemple: user@kara.moe) dans le champ 'Nom d'utilisateur'."
 	},
 	"DATABASE": {
 		"REGENERATE_DB": "Regénérer la base de données",
@@ -423,7 +422,10 @@
 		"DOWNLOAD_SONGS_ERROR": "Le dépôt {{repo}} n'a pas réussi à télécharger toutes les chansons correctement : {{err}}",
 		"CLEAN_SONGS_ERROR": "Le dépôt {{repo}} n'a pas réussi à nettoyer les chansons obsolètes correctement : {{err}}",
 		"SONGS_UPDATE_ERROR": "Le dépôt {{repo}} ne s'est pas mise à jour correctement : {{err}}",
-		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}"
+		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
+		"USER_UNKNOW": "Utilisateur connecté inconnu",
+		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
+		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data} téléchargements à la file d'attente",

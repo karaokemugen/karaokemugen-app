@@ -52,7 +52,7 @@ class AdminPage extends Component<IProps, IState> {
 		};
 		if (!store.getLogInfos() || !(store.getLogInfos() as Token).token || (store.getLogInfos() as Token).role !== 'admin') {
 			if (store.getLogInfos() && (store.getLogInfos() as Token).token && (store.getLogInfos() as Token).role !== 'admin') {
-				displayMessage('warning', i18next.t('ADMIN_PLEASE'));
+				displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
 			}
 			store.logOut();
 			this.openLoginOrProfileModal();

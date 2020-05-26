@@ -59,7 +59,6 @@
 	"ALWAYS_ON_TOP": "Always on top",
 	"FULLSCREEN": "Fullscreen",
 	"ADMIN_PASSWORD_CHANGE": "Change operator password",
-	"ADMIN_PLEASE": "Please use an operator account",
 	"PASSWORD": "Password",
 	"PASSWORDCONF": "Confirm password",
 	"NEW_PASSWORD": "New Password",
@@ -584,7 +583,10 @@
 		"DOWNLOAD_SONGS_ERROR": "Repository {{repo}} failed to download all songs properly: {{err}}",
 		"CLEAN_SONGS_ERROR": "Repository {{repo}} failed to clean songs properly: {{err}}",
 		"SONGS_UPDATE_ERROR": "Repository {{repo}} failed to update songs properly: {{err}}",
-		"UPDATING_MEDIAS_ERROR": "Repository {{repo}} failed to update medias properly: {{err}}"
+		"UPDATING_MEDIAS_ERROR": "Repository {{repo}} failed to update medias properly: {{err}}",
+		"USER_UNKNOW": "User logged in unknown",
+		"ADMIN_PLEASE": "Please use an operator account",
+		"NOT_GUEST": "Guests cannot use this function"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data} downloads to the queue",
