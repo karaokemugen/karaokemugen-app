@@ -226,6 +226,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					}
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 6 }}
+					name="mediafile"
 				>
 					<Upload
 						headers={{
@@ -253,6 +254,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					}
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 6 }}
+					name="subfile"
 				>
 					<Upload
 						headers={{
