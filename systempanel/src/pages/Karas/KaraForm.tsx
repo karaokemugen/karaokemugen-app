@@ -85,6 +85,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		};
 	}
 
+	componentDidMount() {
+		this.formRef.current.validateFields();
+		this.onChangeSingersSeries(this.state.series, "singers");
+		this.onChangeSingersSeries(this.state.singers, "series");
+	}
+
 	getTagArray(value) {
 		if (value) {
 			return value.map(element => {
