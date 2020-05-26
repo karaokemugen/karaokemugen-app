@@ -36,6 +36,8 @@ interface KaraFormState {
 	modified_at?: Date;
 	repositoriesValue: string[];
 	repoToCopySong: string;
+	mediafile_orig: string;
+	subfile_orig: string;
 }
 
 class KaraForm extends Component<KaraFormProps, KaraFormState> {
@@ -81,7 +83,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			created_at: kara?.created_at ? kara.created_at : new Date(),
 			modified_at: kara?.modified_at ? kara.modified_at : new Date(),
 			repositoriesValue: null,
-			repoToCopySong: null
+			repoToCopySong: null,
+			mediafile_orig: null,
+			subfile_orig: null
 		};
 	}
 
@@ -120,12 +124,17 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	getRepositories = async () => {
 		const res = await Axios.get("/repos");
-		this.setState({ repositoriesValue: res.data.map(repo => repo.Name)});
+		await this.setState({ repositoriesValue: res.data.map(repo => repo.Name)});
+		this.formRef.current.setFieldsValue({repository: this.props.kara?.repository ? this.props.kara.repository : 
+			(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null)});
 	};
 
 	handleSubmit = (values) => {
-		console.log(this.formRef.current)
-		var kara = values;
+		var kara: Kara = values;
+		kara.karafile = this.props.kara?.karafile;
+		kara.kid = this.props.kara?.kid;
+		kara.mediafile_orig = this.state.mediafile_orig;
+		kara.subfile_orig = this.state.subfile_orig;
 		kara.series = this.getTagObject(kara.series);
 		kara.singers = this.getTagObject(kara.singers);
 		kara.authors = this.getTagObject(kara.authors);
@@ -139,7 +148,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		kara.genres = this.getTagObject(kara.genres);
 		kara.origins = this.getTagObject(kara.origins);
 		kara.songtypes = this.getTagObject(kara.songtypes);
-		//this.props.save(kara);
+		
+		this.props.save(kara);
 	};
 
 	isMediaFile = filename => {
@@ -153,23 +163,22 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		fileList = fileList.slice(-1);
 		this.setState({ mediafile: fileList });
 		if (info.file.status === "uploading") {
-			this.formRef.current.setFieldsValue({ mediafile: null, mediafile_orig: null });
+			this.formRef.current.setFieldsValue({ mediafile: null });
+			this.setState({mediafile_orig: null});
 		} else if (info.file.status === "done") {
 			if (this.isMediaFile(info.file.name)) {
-				this.formRef.current.setFieldsValue({
-					mediafile: info.file.response.filename,
-					mediafile_orig: info.file.response.originalname
-				});
+				this.formRef.current.setFieldsValue({mediafile: info.file.response.filename});
+				this.setState({mediafile_orig: info.file.response.originalname});
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
 			} else {
 				this.formRef.current.setFieldsValue({ mediafile: null });
 				message.error(i18next.t('KARA.ADD_FILE_MEDIA_ERROR', { name: info.file.name }));
 				info.file.status = "error";
-				this.setState({ mediafile: [] });
+				this.setState({ mediafile: [], mediafile_orig: null });
 			}
 		} else if (info.file.status === "error") {
-			this.formRef.current.setFieldsValue({ mediafile: null, mediafile_orig: null });
-			this.setState({ mediafile: [] });
+			this.formRef.current.setFieldsValue({ mediafile: null });
+			this.setState({ mediafile: [], mediafile_orig: null });
 		}
 	};
 
@@ -178,23 +187,22 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		fileList = fileList.slice(-1);
 		this.setState({ subfile: fileList });
 		if (info.file.status === "uploading") {
-			this.formRef.current.setFieldsValue({ subfile: null, subfile_orig: null });
+			this.formRef.current.setFieldsValue({ subfile: null });
+			this.setState({subfile_orig: null});
 		} else if (info.file.status === "done") {
 			if (info.file.name.endsWith(".ass") || info.file.name.endsWith(".txt") || info.file.name.endsWith(".kfn") || info.file.name.endsWith(".kar")) {
-				this.formRef.current.setFieldsValue({
-					subfile: info.file.response.filename,
-					subfile_orig: info.file.response.originalname
-				});
+				this.formRef.current.setFieldsValue({subfile: info.file.response.filename});
+				this.setState({subfile_orig: info.file.response.originalname});
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
 			} else {
-				this.formRef.current.setFieldsValue({ subfile: null, subfile_orig: null });
+				this.formRef.current.setFieldsValue({ subfile: null });
 				message.error(i18next.t('KARA.ADD_FILE_LYRICS_ERROR', { name: info.file.name }));
 				info.file.status = "error";
-				this.setState({ subfile: [] });
+				this.setState({ subfile: [], subfile_orig: null });
 			}
 		} else if (info.file.status === "error") {
 			this.formRef.current.setFieldsValue({ subfile: null });
-			this.setState({ subfile: [] });
+			this.setState({ subfile: [], subfile_orig: null });
 		}
 	};
 
@@ -216,12 +224,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				families: this.state.families, platforms: this.state.platforms,
 				genres: this.state.genres, origins: this.state.origins,
 				misc: this.state.misc, groups: this.state.groups,
-				repository: this.props.kara?.repository ? this.props.kara.repository : 
-					(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
+				repository: this.props.kara?.repository ? this.props.kara.repository : null,
 				created_at: this.state.created_at, modified_at: this.state.modified_at,
-				kid: this.props.kara?.kid, karafile: this.props.kara?.karafile,
-				mediafile: this.props.kara?.mediafile, subfile: this.props.kara?.subfile,
-				mediafile_orig: null, subfile_orig: null}}>
+				mediafile: this.props.kara?.mediafile, subfile: this.props.kara?.subfile}}>
 				<Form.Item
 					hasFeedback
 					label={
@@ -611,24 +616,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 								onClick={() => this.props.handleCopy(this.props.kara.kid, this.state.repoToCopySong)}>
 								{i18next.t('KARA.MOVE_SONG')}
 							</Button>
-						</Form.Item>
-						<Form.Item name="kid">
-							<Input type="hidden" />
-						</Form.Item>
-						<Form.Item name="karafile">
-							<Input type="hidden" />
-						</Form.Item>
-						<Form.Item name="mediafile">
-							<Input type="hidden" />
-						</Form.Item>
-						<Form.Item name="subfile">
-							<Input type="hidden" />
-						</Form.Item>
-						<Form.Item name="mediafile_orig">
-							<Input type="hidden" />
-						</Form.Item>
-						<Form.Item name="subfile_orig">
-							<Input type="hidden" />
 						</Form.Item>
 					</React.Fragment> : null
 				}
