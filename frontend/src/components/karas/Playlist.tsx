@@ -528,11 +528,10 @@ noRowsRenderer = () => {
   		url = '/favorites';
   		data = { kid: stateData.content.filter(a => a.checked).map(a => a.kid) };
   	}
-  		var response;
   		if (type === 'PATCH') {
-  			response = await axios.patch(url, data);
+  			await axios.patch(url, data);
   		} else {
-  			response = await axios.post(url, data);
+  			await axios.post(url, data);
   		}
   };
 
