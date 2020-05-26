@@ -80,10 +80,12 @@ class WelcomePage extends Component<IProps, IState> {
   };
 
   getStats = async () => {
-	const res = await axios.get('/stats');
-	this.setState({
-		stats: res.data
-	});
+	if (store.getLogInfos()) {
+		const res = await axios.get('/stats');
+		this.setState({
+			stats: res.data
+		});
+	}
   };
 
   setActiveSession = async (value:string) => {
