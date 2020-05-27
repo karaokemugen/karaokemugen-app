@@ -7,10 +7,10 @@ import { SettingsSuccess, SettingsFailure } from '../types/settings';
 
 export async function login(username: string, password: string, dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure>): Promise<void>  {
     try {
-	const info:IAuthentifactionInformation = await Axios.post('/auth/login', {
+	const info:IAuthentifactionInformation = (await Axios.post('/auth/login', {
 			username,
 			password
-		  });
+		  })).data;
 
 	  if (info.role !== 'admin') {
 		  throw i18next.t('ERROR_CODES.ADMIN_PLEASE');
@@ -72,10 +72,8 @@ export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFai
     dispatch({
       type: AuthAction.LOGIN_FAILURE,
       payload: {
-        error: ''
+        error: error
       }
     });
-
-    throw error;
   }
 }
