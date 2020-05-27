@@ -1,9 +1,11 @@
 import Axios from 'axios';
 import { Dispatch } from 'react';
-import { AuthAction, LoginFailure, LoginSuccess, LogoutUser, IAuthentifactionInformation, IAuthenticationVerification } from '../../types/auth';
+import { AuthAction, LoginFailure, LoginSuccess, LogoutUser, IAuthentifactionInformation, IAuthenticationVerification } from '../types/auth';
 import i18next from 'i18next';
+import { setSettings } from './settings';
+import { SettingsSuccess, SettingsFailure } from '../types/settings';
 
-export async function login(username: string, password: string, dispatch: Dispatch<LoginSuccess | LoginFailure>): Promise<void>  {
+export async function login(username: string, password: string, dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure>): Promise<void>  {
     try {
 	const info:IAuthentifactionInformation = await Axios.post('/auth/login', {
 			username,
@@ -23,7 +25,8 @@ export async function login(username: string, password: string, dispatch: Dispat
       dispatch({
         type: AuthAction.LOGIN_SUCCESS,
         payload: info
-      });
+	  });
+	  setSettings(dispatch);
     } catch (error) {
       dispatch({
         type: AuthAction.LOGIN_FAILURE,
@@ -46,7 +49,7 @@ export function logout(dispatch: Dispatch<LogoutUser>): void{
   });
 }
 
-export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFailure>) {
+export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure>) {
   const kmToken = localStorage.getItem('kmToken');
   const kmOnlineToken = localStorage.getItem('kmOnlineToken');
 
@@ -63,7 +66,8 @@ export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFai
         token: kmToken,
         onlineToken: kmOnlineToken
       }
-    })
+	});
+	setSettings(dispatch);
   } catch (error) {
     dispatch({
       type: AuthAction.LOGIN_FAILURE,

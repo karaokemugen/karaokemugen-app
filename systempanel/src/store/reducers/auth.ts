@@ -1,4 +1,4 @@
-import { AuthAction, AuthStore, LoginFailure, LoginSuccess, LogoutUser } from '../../types/auth';
+import { AuthAction, AuthStore, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
 
 export const initialStateAuth: AuthStore = {
 	data: {

@@ -1,6 +1,7 @@
-import { useReducer } from "react";
+import { useReducer } from 'react';
 import AuthReducer, { initialStateAuth } from './reducers/auth';
 import NavigationReducer from './reducers/navigation';
+import SettingsReducer, { initialStateConfig } from './reducers/settings';
 
 // combine reducers ala Redux: each can handle its own slice
 const combineReducers = slices => (prevState, action) =>
@@ -17,9 +18,11 @@ const useGlobalState = () => {
 	const [globalState, globalDispatch] = useReducer(combineReducers({
 		auth: AuthReducer,
 		navigation: NavigationReducer,
+		settings: SettingsReducer
 	}), {
 		auth: initialStateAuth,
-		navigation: {}
+		navigation: {},
+		settings: initialStateConfig
 	})
 	return { globalState, globalDispatch };
 }

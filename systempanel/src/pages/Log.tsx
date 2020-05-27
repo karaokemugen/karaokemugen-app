@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Layout, Timeline} from 'antd';
 import openSocket from 'socket.io-client';
 import Axios from 'axios';
+import GlobalContext from '../store/context';
 
 interface LogState {
 	log: {level:string, message:string, timestamp:string}[],
@@ -9,6 +10,9 @@ interface LogState {
 }
 
 class Log extends Component<{}, LogState> {
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
+	
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -24,9 +28,8 @@ class Log extends Component<{}, LogState> {
 	refresh = async () => {
 		let res = await Axios.get('/log')
 		this.setState({log: res.data});
-		res = await Axios.get('/settings');
 		let url = window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:1337` : window.location.origin;
-		const socket = openSocket(`${url}/${res.data.state.wsLogNamespace}`);
+		const socket = openSocket(`${url}/${this.context.globalState.settings.data.state.wsLogNamespace}`);
 		socket.on('log', (log) => {
 			let logs = this.state.log;
 			logs.push(log);

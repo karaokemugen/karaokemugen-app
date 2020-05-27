@@ -3,7 +3,7 @@ import { Radio, Input, Modal, Button } from 'antd';
 import i18next from 'i18next';
 import FileSystem from './FileSystem';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import Axios from 'axios';
+import GlobalContext from '../../store/context';
 
 interface FoldersElementProps {
 	onChange: any,
@@ -15,9 +15,6 @@ interface FoldersElementProps {
 
 interface FoldersElementState {
 	value: any[] | string,
-	dataPath: string,
-	appPath: string,
-	os: string;
 	visibleModal: boolean;
 	indexModal?: number;
 	keyModal?: string;
@@ -26,7 +23,9 @@ interface FoldersElementState {
 }
 
 export default class FoldersElement extends React.Component<FoldersElementProps, FoldersElementState> {
-
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
+	
 	input: any;
 	currentVal: any;
 
@@ -35,20 +34,8 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 		this.state = {
 			value: this.props.value || [],
 			keyModal: this.props.keyModal,
-			dataPath: '',
-			appPath: '',
-			os: '',
 			visibleModal: false
 		};
-	}
-
-	async componentDidMount() {
-		await this.refresh();
-	}
-
-	async refresh() {
-		let res = await Axios.get('/settings');
-		this.setState({dataPath: res.data.state.dataPath, os: res.data.state.os, appPath: res.data.state.appPath});
 	}
 
 	async openFileSystemModal(item, index?:number, key?: string) {
@@ -56,7 +43,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 			await this.setState({itemModal: item, indexModal: index, keyModal: key});
 			const {ipcRenderer: ipc} = window.require('electron');
 			const path = `${this.getPathForFileSystem(Array.isArray(item) ? item[index] : item, key)}${index === -1 
-				? '/' :	(this.state.os === 'win32' ? (Array.isArray(item) ? item[index] : item).replace(/\//g, '\\') : (Array.isArray(item) ? item[index] : item))}`;
+				? '/' :	(this.context.globalState.settings.data.state.os === 'win32' ? (Array.isArray(item) ? item[index] : item).replace(/\//g, '\\') : (Array.isArray(item) ? item[index] : item))}`;
 			const options = {
 				defaultPath: path,
 				title: this.getTitleModal(),
@@ -91,11 +78,11 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 	}
 
 	getPathForFileSystem(value:string, key?: string) {
-		var regexp = this.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
+		var regexp = this.context.globalState.settings.data.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
 		if ((Array.isArray(value) && value[0].match(regexp) === null)
 		|| (value && !Array.isArray(value) && value.match(regexp) === null)) {
-			var path = key?.includes('System.Binaries') ? this.state.appPath : this.state.dataPath
-			return `${path}${this.state.os === 'win32' ? '\\' : '/'}`
+			var path = key?.includes('System.Binaries') ? this.context.globalState.settings.data.state.appPath : this.context.globalState.settings.data.state.dataPath
+			return `${path}${this.context.globalState.settings.data.state.os === 'win32' ? '\\' : '/'}`
 		} else {
 			return ''
 		}
@@ -186,7 +173,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 						> 
 						{this.state.visibleModal ? <FileSystem saveValueModal={(value) => this.setState({newValueModal: value})} 
 							fileRequired={this.state.keyModal?.includes('System.Binaries.ffmpeg') 
-							|| this.state.keyModal?.includes('System.Binaries.Player')} os={this.state.os}
+							|| this.state.keyModal?.includes('System.Binaries.Player')} os={this.context.globalState.settings.data.state.os}
 							path={`${this.getPathForFileSystem(this.state.itemModal[this.state.indexModal], this.state.keyModal)}${this.state.indexModal === -1 
 								? '/' :	(Array.isArray(this.state.itemModal) ? this.state.itemModal[this.state.indexModal] : this.state.itemModal)}`
 							} /> : null}

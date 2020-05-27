@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
-import io from 'socket.io-client';
 import { TaskItem } from '../../../../src/lib/types/taskItem';
-
-let socket = io();
+import { socket } from '../../App';
 
 interface IProps {
   limit: number;

@@ -7,6 +7,10 @@ import Login from './pages/Login';
 import { isAlreadyLogged } from './store/actions/auth';
 import GlobalContext from './store/context';
 import StartAxios from './axiosInterceptor';
+import { setSettings } from './store/actions/settings';
+import io from 'socket.io-client';
+
+export let socket = io();
 interface AppState {
 	isInitialized: boolean;
 }
@@ -25,6 +29,7 @@ class App extends Component<{}, AppState> {
 	async componentDidMount () {
 		await isAlreadyLogged(this.context.globalDispatch);
 		this.setState({isInitialized: true});
+		socket.on('settingsUpdated', () => setSettings(this.context.globalDispatch));
 	}
 
 	render() {

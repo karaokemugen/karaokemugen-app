@@ -3,11 +3,10 @@ import { loading, errorMessage, infoMessage } from './store/actions/navigation';
 import i18next from 'i18next';
 import { useContext } from 'react';
 import GlobalContext from './store/context';
-import io from 'socket.io-client';
+import { socket } from './App';
 
 Axios.defaults.baseURL = '/api';
 
-const socket = io();
 
 let instance;
 
