@@ -7,6 +7,7 @@ import { FormProps } from 'antd/lib/form';
 import { QuestionCircleOutlined, FileExcelOutlined } from '@ant-design/icons';
 import Axios from 'axios';
 import { DBKara } from '../../../../src/lib/types/database/kara';
+import GlobalContext from '../../store/context';
 
 interface SessionsFormProps extends FormProps {
 	sessions: Array<Session>;
@@ -22,6 +23,8 @@ interface SessionsFormState {
 }
 
 class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
 
 	constructor(props) {
 		super(props);
@@ -177,7 +180,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	}, {
 		title: i18next.t('SESSIONS.TITLE'),
 		dataIndex: 'title',
-		render: (text, kara) => buildKaraTitle(kara)
+		render: (text, kara) => buildKaraTitle(this.context.globalState.settings.data, kara)
 	}];
 
 }

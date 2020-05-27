@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import { Button, Layout, Table, Input, Divider } from 'antd';
 import {Link} from 'react-router-dom';
-import {getTagInLocaleList} from "../../utils/kara";
+import {getTagInLocaleList, getSerieLanguage} from "../../utils/kara";
 import i18next from 'i18next';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import Axios from 'axios';
 import { DBKara } from '../../../../src/lib/types/database/kara';
 import { getAxiosInstance } from '../../axiosInterceptor';
+import GlobalContext from '../../store/context';
 
 interface KaraListState {
 	karas: DBKara[]
@@ -18,7 +19,9 @@ interface KaraListState {
 }
 
 class KaraList extends Component<{}, KaraListState> {
-
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
+	
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -110,14 +113,15 @@ class KaraList extends Component<{}, KaraListState> {
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => {
-			return getTagInLocaleList(this.state.i18nTag, langs).join(', ')
+			return getTagInLocaleList(langs, this.state.i18nTag).join(', ')
 		}
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
 		dataIndex: 'series',
 		key: 'series',
-		render: (series, record) => {
-			return getTagInLocaleList(this.state.i18nTag, series).join(', ') || getTagInLocaleList(this.state.i18nTag, record.singers).join(', ');
+		render: (series, record:DBKara) => {
+			return series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ') 
+				|| getTagInLocaleList(record.singers, this.state.i18nTag).join(', ');
 		}
 	}, {
 		title: i18next.t('KARA.SONGTYPES'),
@@ -125,14 +129,14 @@ class KaraList extends Component<{}, KaraListState> {
 		key: 'songtypes',
 		render: (songtypes, record) => {
 			const songorder = record.songorder || '';
-			return getTagInLocaleList(this.state.i18nTag, songtypes).join(', ') + ' ' + songorder || '';
+			return getTagInLocaleList(songtypes, this.state.i18nTag).join(', ') + ' ' + songorder || '';
 		}
 	}, {
 		title: i18next.t('KARA.FAMILIES'),
 		dataIndex: 'families',
 		key: 'families',
 		render: (families, record) => {
-			return getTagInLocaleList(this.state.i18nTag, families).join(', ');
+			return getTagInLocaleList(families, this.state.i18nTag).join(', ');
 		}
 	}, {
 		title: i18next.t('KARA.TITLE'),

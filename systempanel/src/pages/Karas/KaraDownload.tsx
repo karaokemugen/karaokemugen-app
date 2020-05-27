@@ -436,14 +436,14 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => {
-			return getTagInLocaleList(this.state.i18nTag , langs).join(', ');
+			return getTagInLocaleList(langs, this.state.i18nTag).join(', ');
 		}
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
 		dataIndex: 'serie',
 		key: 'serie',
 		render: (serie, record) => {
-			return serie || getTagInLocaleList(this.state.i18nTag, record.singers).join(', ');
+			return serie || getTagInLocaleList(record.singers, this.state.i18nTag).join(', ');
 		}
 	}, {
 		title: i18next.t('KARA.SONGTYPES'),
@@ -451,14 +451,14 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 		key: 'songtypes',
 		render: (songtypes, record) => {
 			const songorder = record.songorder || '';
-			return getTagInLocaleList(this.state.i18nTag, songtypes).join(', ') + ' ' + songorder || '';
+			return getTagInLocaleList(songtypes, this.state.i18nTag).join(', ') + ' ' + songorder || '';
 		}
 	}, {
 		title: i18next.t('KARA.FAMILIES'),
 		dataIndex: 'families',
 		key: 'families',
 		render: (families, record) => {
-			return getTagInLocaleList(this.state.i18nTag, families).join(', ');
+			return getTagInLocaleList(families, this.state.i18nTag).join(', ');
 		}
 	}, {
 		title: i18next.t('KARA.TITLE'),

@@ -1,17 +1,20 @@
 import React, {Component} from 'react';
 import {Button, Layout, Table} from 'antd';
 import {ColumnProps} from 'antd/lib/table';
-import {getNameTagInLocaleList} from "../../utils/kara";
+import {getTagInLocaleList, getSerieLanguage} from "../../utils/kara";
 import i18next from 'i18next';
 import Axios from 'axios';
 import { DBKara } from '../../../../src/lib/types/database/kara';
+import GlobalContext from '../../store/context';
 
 interface KaraListState {
 	karas: DBKara[]
 }
 
 class KaraList extends Component<{}, KaraListState> {
-
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
+	
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -45,17 +48,18 @@ class KaraList extends Component<{}, KaraListState> {
 		title: i18next.t('KARA.LANGUAGES'),
 		dataIndex: 'langs',
 		key: 'langs',
-		render: langs => getNameTagInLocaleList(langs).join(', ')
+		render: langs => getTagInLocaleList(langs).join(', ')
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
 		dataIndex: 'series',
 		key: 'series',
-		render: (series, record) => getNameTagInLocaleList(series).join(', ') || getNameTagInLocaleList(record.singers).join(', ')
+		render: (series, record) => series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name)).join(', ')
+			|| getTagInLocaleList(record.singers).join(', ')
 	}, {
 		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
-		render: (songtypes, record) => getNameTagInLocaleList(songtypes).join(', ') + ' ' + (record.songorder || '')
+		render: (songtypes, record) => getTagInLocaleList(songtypes).join(', ') + ' ' + (record.songorder || '')
 	}, {
 		title: i18next.t('KARA.TITLE'),
 		dataIndex: 'title',

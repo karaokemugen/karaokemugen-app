@@ -1,3 +1,7 @@
+import { Config } from "../../../../src/types/config";
+import {State} from "../../../../src/types/state";
+import { User } from "../../../../src/lib/types/user";
+
 // Action name
 export enum Settings {
 	SETTINGS_SUCCESS = 'settings_success',
@@ -25,6 +29,7 @@ export interface SettingsStore {
 }
 
 export interface SettingsStoreData {
-	state: any,
-	config: any
+	state: State,
+	config: Config,
+	user: User
 }

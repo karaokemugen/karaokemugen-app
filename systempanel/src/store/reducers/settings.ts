@@ -2,8 +2,9 @@ import { SettingsStore, SettingsSuccess, SettingsFailure, Settings } from '../ty
 
 export const initialStateConfig: SettingsStore = {
 	data: {
-		state: {},
-		config: {}
+		state: undefined,
+		config: undefined,
+		user: undefined
 	},
 	error: ''
 }
@@ -23,7 +24,8 @@ export default function (state, action: SettingsSuccess | SettingsFailure) {
 				...state,
 				data: {
 					state: {},
-					config: {}
+					config: {},
+					user: {}
 				},
 				error: action.payload.error
 			};
