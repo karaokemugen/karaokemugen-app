@@ -99,7 +99,8 @@
 		"DATABASE": "Base de données",
 		"USERS": "Utilisateurs",
 		"LOG_OUT": "Déconnexion",
-		"UNUSED_FILES": "Fichiers inutilisés"
+		"UNUSED_FILES": "Fichiers inutilisés",
+		"DUPLICATE": "Dupliqués"
 	},
 	"UNUSED_FILES": {
 		"NAME": "Nom",
@@ -394,7 +395,7 @@
 		"TAGS_LIST_ERROR": "Erreur lors de la récupération de la liste des tags",
 		"TAG_CREATE_ERROR": "Erreur lors de la création du tag",
 		"YEARS_LIST_ERROR": "Erreur lors de la récupération de la liste des années",
-		"TAG_DUPES_LIST_ERROR": "Erreur lors de la récupération de la liste des tags en doublon",
+		"TAG_DUPLICATE_LIST_ERROR": "Erreur lors de la récupération de la liste des tags en doublon",
 		"TAGS_MERGED_ERROR": "Erreur lors de la fusion des tags",
 		"TAG_DELETE_ERROR": "Erreur lors de la suppression du tag",
 		"TAG_GET_ERROR": "Erreur lors de la récupération du tag",

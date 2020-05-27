@@ -99,7 +99,8 @@
 		"DATABASE": "Database",
 		"USERS": "Users",
 		"LOG_OUT": "Log Out",
-		"UNUSED_FILES": "Unused files"
+		"UNUSED_FILES": "Unused files",
+		"DUPLICATE": "Duplicated"
 	},
 	"UNUSED_FILES": {
 		"NAME": "Name",
@@ -394,7 +395,7 @@
 		"TAGS_LIST_ERROR": "Error fetching tags list",
 		"TAG_CREATE_ERROR": "Error creating tag",
 		"YEARS_LIST_ERROR": "Error fetching list of years",
-		"TAG_DUPES_LIST_ERROR": "Error fetching tags dupes list",
+		"TAG_DUPLICATE_LIST_ERROR": "Error fetching tags dupes list",
 		"TAGS_MERGED_ERROR": "Error merging tags",
 		"TAG_DELETE_ERROR": "Error deleting tag",
 		"TAG_GET_ERROR": "Error fetching tag",

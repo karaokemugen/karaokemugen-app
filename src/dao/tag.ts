@@ -66,7 +66,8 @@ export async function updateKaraTagsTID(oldTID: string, newTID: string) {
 }
 
 export async function selectDuplicateTags(): Promise<DBTag[]> {
-	return await db().query(sql.selectDuplicateTags);
+	const res = await db().query(sql.selectDuplicateTags);
+	return res.rows;
 }
 
 export async function updateKaraTags(kid: string, tags: TagAndType[]) {

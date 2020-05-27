@@ -51,6 +51,7 @@ class KMMenu extends Component<{}, {}> {
 					<Menu.SubMenu key="tags-dropdown" title={i18next.t('MENU.TAGS')}>
 						<Menu.Item key='tagsmanage'><Link to='/system/km/tags'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
 						<Menu.Item key='tagsnew'><Link to='/system/km/tags/new'>{i18next.t('MENU.NEW')}</Link></Menu.Item>
+						<Menu.Item key='tagsduplicate'><Link to='/system/km/tags/duplicate'>{i18next.t('MENU.DUPLICATE')}</Link></Menu.Item>
 					</Menu.SubMenu>
 					<Menu.SubMenu key="user-dropdown" title={i18next.t('MENU.USERS')}>
 						<Menu.Item key='userlist'><Link to='/system/km/users'>{i18next.t('MENU.LIST')}</Link></Menu.Item>

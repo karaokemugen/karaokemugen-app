@@ -134,9 +134,9 @@ export default function tagsController(router: Router) {
 				res.status(500).json(APIMessage(code));
 				}
 			});
-	router.route('/tags/dupes')
+	router.route('/tags/duplicate')
 	/**
-	* @api {get} /tags/dupes List tags with same names
+	* @api {get} /tags/duplicate List tags with same names
 	* @apiName GetDupeTags
 	* @apiVersion 3.1.0
 	* @apiGroup Tags
@@ -152,14 +152,14 @@ export default function tagsController(router: Router) {
 	* }
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
-	* {code: "TAG_DUPES_LIST_ERROR"}
+	* {code: "TAG_DUPLICATE_LIST_ERROR"}
 	*/
 		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				const tags = await getDuplicateTags();
 				res.json(tags);
 			} catch(err) {
-				const code = 'TAG_DUPES_LIST_ERROR';
+				const code = 'TAG_DUPLICATE_LIST_ERROR';
 				errMessage(code, err)
 				res.status(500).json(APIMessage(code));
 			}
