@@ -53,7 +53,7 @@ function apiRouter() {
 }
 
 /** Initialize frontend express server */
-export async function initFrontend() {
+export async function initFrontend(): Promise<number> {
 	try {
 		const conf = getConfig();
 		const state = getState();
@@ -99,9 +99,25 @@ export async function initFrontend() {
 		const server = createServer(app);
 		// Init websockets
 		initWS(server);
-		server.listen(conf.Frontend.Port, () => {
-			logger.debug(`[Webapp] Webapp is READY and listens on port ${conf.Frontend.Port}`);
-		});
+		let port = conf.Frontend.Port;
+		try {
+			server.listen(port, () => {
+				logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);
+			});
+		} catch(err) {
+			// Likely port is busy for some reason, so we're going to change that number to something else.
+			try {
+				port = port + 1;
+				server.listen(port, () => {
+					logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);
+				});
+			} catch(err) {
+				// Utter failure
+				throw err;
+			}
+		} finally {
+			return port;
+		}
 	} catch(err) {
 		throw err;
 	}

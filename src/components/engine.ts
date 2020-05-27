@@ -32,6 +32,7 @@ import { initStep, errorStep } from '../electron/electronLogger';
 import { generateBlacklist } from '../dao/blacklist';
 import { duration } from '../lib/utils/date';
 import { baseChecksum } from '../dao/dataStore';
+import { applyMenu } from '../electron/electron';
 
 let shutdownInProgress = false;
 
@@ -116,6 +117,12 @@ export async function initEngine() {
 		await preFlightCheck();
 		initStep(i18n.t('INIT_USER'));
 		await initUserSystem();
+		const port = await initFrontend();
+		if (port !== conf.Frontend.Port) {
+			setConfig({Frontend: {Port: port}});
+			// Reinit menu since we switched ports.
+			if (app) await applyMenu();
+		}
 		if (conf.Online.URL) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
 			await initOnlineURLSystem();
@@ -127,7 +134,6 @@ export async function initEngine() {
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 		inits.push(initPlaylistSystem());
 		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) inits.push(initPlayer());
-		inits.push(initFrontend());
 		inits.push(initSession());
 		testPlaylists();
 		initDownloader();

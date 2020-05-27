@@ -244,7 +244,7 @@ export async function main() {
 		/**
 		 * Test if network ports are available
 		 */
-		verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
+		await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
 
 		/**
 		 * Gentlemen, start your engines.

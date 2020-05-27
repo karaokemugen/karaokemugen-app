@@ -57,11 +57,15 @@ export async function startElectron() {
 	await configureLocale();
 }
 
-async function initElectronWindow() {
-	await createWindow();
+export async function applyMenu() {
 	await initMenu();
 	const menu = Menu.buildFromTemplate(getMenu());
 	Menu.setApplicationMenu(menu);
+}
+
+async function initElectronWindow() {
+	await createWindow();
+	await applyMenu();
 }
 
 async function createWindow() {

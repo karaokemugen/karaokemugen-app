@@ -48,14 +48,6 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 		subtext: tagObj.name
 	});
 	try {
-		const tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
-		if (tag) {
-			// Doing this because DBTag has a Date object for modified_at while Tag has a string.
-			// Kill me please.
-			const tagObj: any = tag
-			logger.debug(`[Tag] Tag original name already exists "${tagObj.name} and ${tagObj.types}"`);
-			return tagObj;
-		}
 		if (!tagObj.tid) tagObj.tid = uuidV4();
 		if (!tagObj.tagfile) tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
 		const tagfile = tagObj.tagfile;

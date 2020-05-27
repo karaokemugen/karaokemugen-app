@@ -69,7 +69,14 @@ VALUES(
 	$9
 )
 ON CONFLICT (pk_tid) DO UPDATE SET
-	types = $3
+	types = $3,
+	name = $2,
+	short = $4,
+	i18n = $5,
+	aliases = $6,
+	tagfile = $7,
+	repository = $8,
+	modified_at = $9
 `;
 
 export const updateKaraTagsTID = `
