@@ -55,6 +55,7 @@
 		"PLAYED_AT": "Seen on",
 		"REQUESTED": "Requested",
 		"TAG_FILTER": "Tag filter",
+		"TAG_GROUP_FILTER": "Group filter",
 		"SYNCHRONIZE": "Synchronize",
 		"SYNCHRONIZE_DESC": "Performs all of the actions below.",
 		"DOWNLOAD_ALL": "Download all",

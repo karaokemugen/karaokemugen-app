@@ -55,6 +55,7 @@
 		"PLAYED_AT": "Joué à",
 		"REQUESTED": "Nombre de fois demandé",
 		"TAG_FILTER": "Filtre sur les tags",
+		"TAG_GROUP_FILTER": "Filtre sur les groupes",
 		"SYNCHRONIZE": "Synchroniser",
 		"SYNCHRONIZE_DESC": "Effectue toutes les actions ci-dessous.",
 		"DOWNLOAD_ALL": "Tout télécharger",

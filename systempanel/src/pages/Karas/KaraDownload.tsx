@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Row, Col, Layout, Table, Input, Button, Cascader, Radio } from 'antd';
+import { Row, Col, Layout, Table, Input, Button, Cascader, Radio, Select } from 'antd';
 import {getCriterasByValue} from './_blc_criterias_types';
 import i18next from 'i18next';
 import { tagTypes } from '../../utils/tagTypes';
@@ -7,6 +7,7 @@ import { KaraDownloadRequest } from '../../../../src/types/download';
 import { getTagInLocaleList } from '../../utils/kara';
 import { DownloadOutlined, CheckCircleTwoTone, ClockCircleTwoTone, SyncOutlined, InfoCircleTwoTone } from '@ant-design/icons';
 import Axios from 'axios';
+import { DBTag } from '../../../../src/lib/types/database/tag';
 
 var blacklist_cache = {}
 var api_get_local_karas_interval = null;
@@ -25,7 +26,7 @@ interface KaraDownloadState {
 	currentPageSize: number,
 	filter: string,
 	tagFilter: string,
-	tags: any[],
+	tags: DBTag[],
 	compare: string,
 	totalMediaSize: string
 }
@@ -276,6 +277,19 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 		return options;
 	}
 
+	getGroupsTags = () => {
+		return this.state.tags.filter((tag, index, self) =>
+			tag.types.includes(tagTypes.GROUPS) && index === self.findIndex((t) => (
+				t.tid === tag.tid
+			))
+		).map(tag => {
+			return {
+				value: tag.tid,
+				label: tag.name,
+			}
+		})
+	}
+
 	FilterTagCascaderFilter = function(inputValue, path) {
 	  return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	}
@@ -303,7 +317,7 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 				<Layout>
 					<Layout.Header>
 						<Row justify="space-between">
-							<Col span={14}>
+							<Col span={12} style={{marginLeft: '10px'}}>
 								<Input.Search
 									placeholder={i18next.t('SEARCH_FILTER')}
 									value={this.state.filter}
@@ -311,6 +325,10 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 									enterButton={i18next.t('SEARCH')}
 									onSearch={this.api_get_online_karas}
 								/>
+							</Col>
+							<Col span={5}>
+								<Select allowClear style={{ width: '90%'}}  onChange={(value) => this.handleFilterTagSelection([tagTypes.GROUPS, value])} 
+									placeholder={i18next.t('KARA.TAG_GROUP_FILTER')} key={'tid'} options={this.getGroupsTags()} />
 							</Col>
 							<Col span={5}>
 								<Cascader style={{ width: '90%' }} options={this.FilterTagCascaderOption()}
@@ -403,7 +421,8 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 							columns={this.columns}
 							rowKey='kid'
 							pagination={{
-								current: this.state.currentPage || 0,
+								position: ['topRight', 'bottomRight'],
+								current: this.state.currentPage || 1,
 								defaultPageSize: this.state.currentPageSize,
 								pageSize: this.state.currentPageSize,
 								pageSizeOptions: ['10','25','50','100','500'],
