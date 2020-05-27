@@ -2,7 +2,7 @@ import {setState, getState} from '../utils/state';
 import {getConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import {profile} from '../lib/utils/logger';
-import {playMedia, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo, message} from '../components/mpv';
+import {playMedia, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo, message, displayInfo} from '../components/mpv';
 import {addPlayedKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
@@ -332,9 +332,15 @@ async function stopPlayer(now = true) {
 }
 
 export async function prepareClassicPauseScreen() {
-	const kara = await getCurrentSong();
-	setState({currentRequester: kara.username});
-	displaySongInfo(kara.infos, 10000000, true);
+	try {
+		const kara = await getCurrentSong();
+		setState({currentRequester: kara.username});
+		displaySongInfo(kara.infos, 10000000, true);
+	} catch(err) {
+		// Failed to get current song, this can happen if the current playlist gets emptied or changed to an empty one inbetween songs. In this case, just display KM infos
+		displayInfo();
+		logger.warn(`[Player] Could not prepare classic pause screen : ${err}`);
+	}
 }
 
 async function pausePlayer() {
