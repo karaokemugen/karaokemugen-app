@@ -178,14 +178,12 @@ export async function exit(rc: any) {
 	logger.info('[Engine] Shutdown in progress');
 	shutdownInProgress = true;
 	emit('exiting-app');
-	if (getState().player.ready) {
-		try {
-			await quitmpv();
-		} catch(err) {
-			logger.warn(`[Engine] mpv error : ${err}`);
-		} finally {
-			logger.info('[Engine] Player has shutdown');
-		}
+	try {
+		await quitmpv();
+	} catch(err) {
+		logger.warn(`[Engine] mpv error : ${err}`);
+	} finally {
+		logger.info('[Engine] Player has shutdown');
 	}
 	if (getTwitchClient()) await stopTwitch();
 	await closeDB();

@@ -36,9 +36,6 @@ let state: State = {
 	securityCode: null,
 	wsLogNamespace: null,
 	noAutoTest: false,
-	player: {
-		ready: false
-	},
 	opt: {}
 };
 
@@ -68,7 +65,7 @@ export function getPlayerState(): PublicState {
 
 /** Emit via websockets the public state */
 function emitPlayerState() {
-	if (state.player.ready) emitWS('playerStatus', getPlayerState());
+	emitWS('playerStatus', getPlayerState());
 };
 
 /** Get current app state object */

@@ -304,7 +304,6 @@ async function toggleOnTopPlayer() {
 export async function playPlayer(now?: boolean) {
 	profile('Play');
 	const state = getState();
-	if (!state.player.ready) throw '[Player] Player is not ready yet!';
 	if (state.status === 'stop' || now) {
 		// Switch to playing mode and ask which karaoke to play next
 		try {
@@ -405,7 +404,6 @@ async function restartPlayer() {
 
 export async function sendCommand(command: string, options: any) {
 	const state = getState();
-	if (!state.player.ready) throw 'Player is not ready yet!';
 	if (commandInProgress) throw 'A command is already in progress';
 	if (state.isDemo || state.isTest) throw 'Player management is disabled in demo or test modes';
 	commandInProgress = true;

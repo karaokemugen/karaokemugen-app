@@ -12,7 +12,6 @@ export interface PlayerState {
 	showsubs?: boolean,
 	stayontop?: boolean,
 	fullscreen?: boolean,
-	ready: boolean,
 	url?: string,
 	status?: string
 }

@@ -47,7 +47,6 @@ let playerState: PlayerState = {
 	showsubs: true,
 	stayontop: false,
 	fullscreen: false,
-	ready: false,
 	url: null
 };
 
@@ -369,7 +368,6 @@ async function startmpv() {
 		}
 	});
 	logger.debug('[Player] mpv initialized successfully');
-	playerState.ready = true;
 	return true;
 }
 
@@ -659,7 +657,6 @@ export async function showSubs(): Promise<PlayerState> {
 }
 
 export async function message(message: string, duration: number = 10000, alignCode = 5) {
-	if (!getState().player.ready) throw 'Player is not ready yet!';
 	try {
 		await ensureRunning();
 	} catch(err) {
@@ -766,7 +763,6 @@ export async function quitmpv() {
 	try {
 		await player.quit();
 		if (playerMonitor) await playerMonitor.quit();
-		playerState.ready = false;
 	} catch(err) {
 		//Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
 		logger.warn(`[Player] Failed to quit mpv : ${err}`);
