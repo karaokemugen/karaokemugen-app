@@ -133,7 +133,7 @@ export async function initEngine() {
 		let inits = [];
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 		inits.push(initPlaylistSystem());
-		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) inits.push(initPlayer());
+		if (!state.isDemo && !state.isTest && !state.opt.noPlayer) inits.push(initPlayer());
 		inits.push(initSession());
 		testPlaylists();
 		initDownloader();
