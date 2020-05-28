@@ -36,6 +36,7 @@ let state: State = {
 	securityCode: null,
 	wsLogNamespace: null,
 	noAutoTest: false,
+	player: {},
 	opt: {}
 };
 
