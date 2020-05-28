@@ -56,8 +56,8 @@ function emitPlayerState() {
 
 async function ensureRunning() {
 	try {
-		if (!player.isRunning()) {
-			if (monitorEnabled && !playerMonitor.isRunning()) await playerMonitor.quit();
+		if (!player?.isRunning()) {
+			if (monitorEnabled && !playerMonitor?.isRunning()) await playerMonitor.quit();
 			await startmpv();
 		}
 	} catch(err) {
