@@ -333,7 +333,8 @@ async function stopPlayer(now = true) {
 export async function prepareClassicPauseScreen() {
 	try {
 		const kara = await getCurrentSong();
-		setState({currentRequester: kara.username});
+		if (!kara) throw 'No song selected, current playlist must be empty';
+		setState({currentRequester: kara?.username || null});
 		displaySongInfo(kara.infos, 10000000, true);
 	} catch(err) {
 		// Failed to get current song, this can happen if the current playlist gets emptied or changed to an empty one inbetween songs. In this case, just display KM infos
