@@ -1,35 +1,32 @@
 // KM Imports
-import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncCopy, asyncReadFile} from './lib/utils/files';
-import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars, configureLocale} from './lib/utils/config';
+import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
+import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
 import {initConfig} from './utils/config';
 import {parseCommandLineArgs} from './utils/args';
-import logger, { configureLogger } from './lib/utils/logger';
+import logger, {configureLogger} from './lib/utils/logger';
 import {exit, initEngine} from './components/engine';
 import {logo} from './logo';
-import { setState, getState } from './utils/state';
-import { version } from './version';
-import { migrateOldFoldersToRepo } from './services/repo';
-import { initStep, errorStep } from './electron/electronLogger';
-import { startElectron } from './electron/electron';
-import { help } from './help';
-
+import {getState, setState} from './utils/state';
+import {version} from './version';
+import {migrateOldFoldersToRepo} from './services/repo';
+import {errorStep, initStep} from './electron/electronLogger';
+import {startElectron} from './electron/electron';
+import {help} from './help';
 // Types
 import {Config} from './types/config';
-
 // Node modules
 import i18n from 'i18next';
 import {mkdirpSync} from 'fs-extra';
-import {dirname} from 'path';
+import {dirname, join, resolve} from 'path';
 import {existsSync} from 'fs';
-import {join, resolve} from 'path';
 import minimist from 'minimist';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
-import { getPortPromise } from 'portfinder';
-import { app, dialog } from 'electron';
+import {getPortPromise} from 'portfinder';
+import {app, dialog} from 'electron';
 import cloneDeep from 'lodash.clonedeep';
-import { createCircleAvatar } from './utils/imageProcessing';
-import i18next from 'i18next';
+import {createCircleAvatar} from './utils/imageProcessing';
+import {startTipLoop, stopTipLoop} from "./utils/tips";
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
@@ -189,6 +186,7 @@ export async function preInit() {
 
 export async function main() {
 	initStep(i18n.t('INIT_INIT'));
+	startTipLoop('normal');
 	// Set version number
 	let sha: string;
 	const SHAFile = resolve(resourcePath, 'assets/sha.txt');
@@ -251,10 +249,12 @@ export async function main() {
 		 */
 		try {
 			await initEngine();
+			stopTipLoop();
 		} catch(err) {
 			logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
 			console.log(err);
-			errorStep(i18next.t('ERROR_UNKNOWN'));
+			errorStep(i18n.t('ERROR_UNKNOWN'));
+			startTipLoop('errors');
 			if (!app || argv.cli) exit(1);
 		}
 	}

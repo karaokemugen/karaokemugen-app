@@ -93,5 +93,16 @@
 	"BASE_UPDATE_NEEDED": "Mise à jour de votre base de karaokés nécessaire",
 	"BASE_UPDATE_BULLDOZERSERIES": "Nous avons changé la façon dont les séries sont gérées. Karaoke Mugen doit retélécharger les métadonnées (pas les médias) de vos karaokés. Voulez-vous continuer ?\n\nSi vous cliquez sur Non, vous devrez retélécharger vous-même vos chansons, ou mettre à jour votre base par un moyen externe.\n\nNe cliquez pas sur Oui si vous êtes mainteneur d'une base de karaoké.",
 	"COPY_TO_CLIPBOARD": "Copier dans le presse-papiers",
-	"IT_IS_IN_MY_HEAD": "Pas besoin, je l'ai retenu !"
+	"IT_IS_IN_MY_HEAD": "Pas besoin, je l'ai retenu !",
+	"TIPS": {
+		"NORMAL": [
+			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
+			"Karaoke Mugen possède deux modes d'ajout de karaokés : public et privé. Choisissez le mode le plus approprié selon ce qui vous arrange."
+		],
+		"ERRORS": [
+			"N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
+			"Vérifiez que vous n'avez pas une autre instance de Karaoke Mugen en tâche de fond.",
+			"Consultez les logs, la raison de l'erreur peut s'y trouver !"
+		]
+	}
 }

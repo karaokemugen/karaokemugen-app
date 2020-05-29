@@ -65,9 +65,26 @@ body {
 
 .ip--nanami {
 	margin: 2em 1em 1em;
+	width: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
-.ip--nanami img {
+.ip--nanami > img {
 	height: 100px;
+	float: left;
+}
+.ip--nanami > .ip--protip {
+	float: right;
+	background-color: #1474b4;
+	padding: 1em;
+	margin-left: 0.5em;
+	font-weight: bold;
+	border-radius: 0.25em;
+}
+
+.ip--nanami > .ip--protip.ip--error {
+	background-color: #b43414;
 }
 
 .ip--button-logs {
@@ -130,17 +147,11 @@ body {
 	top: initial;
 	bottom: 1em;
 }
-.ip--logs li:first-child::last-child::after {
+.ip--logs li:first-child:last-child::after {
 	display: none;
 }
 
 /*-----------------------------------------------------------------------------------*/
-
-@-webkit-keyframes pulse {
-    0% { -webkit-transform: scale(0.95); opacity: 0.5; }
-    50% { -webkit-transform: scale(1); opacity: 1; }
-    100% { -webkit-transform: scale(0.95); opacity: 0.5; }
-}
 
 @keyframes pulse {
     0% { transform: scale(0.95); opacity: 0.5; }
@@ -149,10 +160,6 @@ body {
 }
 
 .initpage--wrapper[data-loading="true"] .ip--logo {
-    -webkit-animation: pulse 3s infinite ease-in-out;
-    -o-animation: pulse 3s infinite ease-in-out;
-    -ms-animation: pulse 3s infinite ease-in-out;
-    -moz-animation: pulse 3s infinite ease-in-out;
     animation: pulse 3s infinite ease-in-out;
 }
 

@@ -17,6 +17,11 @@ export function errorStep(step: string) {
 	}
 }
 
+// Display the tip in the space near Nanami
+export function techTip(tip: string) {
+	if (win) win.webContents.send('tip', {message: tip});
+}
+
 export class IPCTransport extends Transport {
 	constructor(opts: any) {
 		super(opts);
