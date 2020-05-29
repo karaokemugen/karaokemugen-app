@@ -83,6 +83,10 @@ body {
 	border-radius: 0.25em;
 }
 
+.ip--protip a {
+	color: inherit;
+}
+
 .ip--nanami > .ip--protip.ip--error {
 	background-color: #b43414;
 }
