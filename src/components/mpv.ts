@@ -761,8 +761,10 @@ export async function restartmpv() {
 export async function quitmpv() {
 	logger.debug('[Player] Quitting mpv');
 	try {
-		await player.quit();
-		if (playerMonitor) await playerMonitor.quit();
+		if (player?.isRunning()) {
+			await player.quit();
+			if (playerMonitor) await playerMonitor.quit();
+		}
 	} catch(err) {
 		//Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
 		logger.warn(`[Player] Failed to quit mpv : ${err}`);
