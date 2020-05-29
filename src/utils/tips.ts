@@ -8,8 +8,6 @@ let tips: TipsAndTricks;
 let index = 0;
 
 function tipLoop(type: TipType) {
-    let test = i18n.getDataByLanguage(i18n.language);
-    console.log(test);
     let tip = tips[type][index];
     let words = tip.split(" ").length;
     techTip(tip);
