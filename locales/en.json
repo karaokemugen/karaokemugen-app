@@ -93,5 +93,16 @@
 	"BASE_UPDATE_NEEDED": "Your song database needs an update",
 	"BASE_UPDATE_BULLDOZERSERIES": "We changed the way series are handled. Karaoke Mugen needs to redownload your songs' metadata (not medias). Do you want to continue?\n\nIf you click No, you'll need to redownload songs yourself for them to work, or update your song database manually.\n\nDo not click Yes if you are a karaoke base maintainer.",
 	"COPY_TO_CLIPBOARD": "Copy to clipboard",
-	"IT_IS_IN_MY_HEAD": "No need, it's in my head!"
+	"IT_IS_IN_MY_HEAD": "No need, it's in my head!",
+	"TIPS": {
+		"NORMAL": [
+			"Don't forget to sync the base sometimes: you may discover some new karaokes!",
+			"Karaoke Mugen has 2 karaokes adding modes: public and private. Choose the mode that suit your needs."
+		],
+		"ERRORS": [
+			"Come see us on Discord if you need help: https://karaokes.moe/discord",
+			"Please check if a running Karaoke Mugen instance is in background.",
+			"Take a look at logs, the reason behind the error might be inside!"
+		]
+	}
 }
