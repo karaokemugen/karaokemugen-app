@@ -27,6 +27,10 @@ import {app, dialog} from 'electron';
 import cloneDeep from 'lodash.clonedeep';
 import {createCircleAvatar} from './utils/imageProcessing';
 import {startTipLoop, stopTipLoop} from "./utils/tips";
+import * as Sentry from '@sentry/electron';
+
+if (app)
+	Sentry.init({dsn: 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806'});
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);

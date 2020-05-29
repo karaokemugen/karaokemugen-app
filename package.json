@@ -70,6 +70,7 @@
   "dependencies": {
     "@jimp/custom": "^0.12.1",
     "@jimp/plugin-circle": "^0.12.1",
+    "@sentry/electron": "1.3.0",
     "about-window": "^1.13.2",
     "agentkeepalive": "^4.1.2",
     "ass-compiler": "^0.1.0",
@@ -247,8 +248,8 @@
       "frontend/build/**",
       "systempanel/build/**",
       "initpage/**",
-	  "build/icon.png",
-	  "build/electronAboutWindow.css"
+      "build/icon.png",
+      "build/electronAboutWindow.css"
     ],
     "extraFiles": [
       "app/bin/**"
