@@ -608,7 +608,7 @@
 		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction"
 	},
 	"SUCCESS_CODES": {
-		"DOWNLOADS_QUEUED": "Ajout de {{data} téléchargements à la file d'attente",
+		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
 		"DOWNLOADS_STARTED": "Démarrage des téléchargements",
 		"SONGS_UPDATES_IN_PROGRESS": "Mise à jour des chansons en cours",
 		"BASES_SYNC_IN_PROGRESS": "Synchronisation des bibliothèques locales et distantes en cours",

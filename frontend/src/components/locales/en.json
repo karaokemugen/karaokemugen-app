@@ -589,7 +589,7 @@
 		"NOT_GUEST": "Guests cannot use this function"
 	},
 	"SUCCESS_CODES": {
-		"DOWNLOADS_QUEUED": "Added {{data} downloads to the queue",
+		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
 		"DOWNLOADS_STARTED": "Downloads starting",
 		"SONGS_UPDATES_IN_PROGRESS": "Songs update in progress",
 		"BASES_SYNC_IN_PROGRESS": "Local and remote library sync in progress",
