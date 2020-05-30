@@ -304,7 +304,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 
 				<Form.Item
-					hasFeedback
 					label={
 						<span>{i18next.t('KARA.SERIES')}&nbsp;
 							<Tooltip title={i18next.t('KARA.SERIES_TOOLTIP')}>
@@ -361,7 +360,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						style={{ width: '100%' }}
 					/>
 				</Form.Item>
-				<Form.Item hasFeedback
+				<Form.Item
 					label={i18next.t('KARA.LANGUAGES')}
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 6 }}
@@ -395,7 +394,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						style={{ width: '100%' }}
 					/>
 				</Form.Item>
-				<Form.Item hasFeedback
+				<Form.Item
 					label={i18next.t('KARA.SINGERS')}
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 6 }}
@@ -451,7 +450,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						onChange={(tags) => this.formRef.current.setFieldsValue({ creators: tags })}
 					/>
 				</Form.Item>
-				<Form.Item hasFeedback
+				<Form.Item
 					label={(
 						<span>{i18next.t('KARA.KARA_AUTHORS')}&nbsp;
 							<Tooltip title={i18next.t('KARA.KARA_AUTHORS_TOOLTIP')}>
