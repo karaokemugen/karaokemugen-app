@@ -17,13 +17,13 @@ interface EditableTagGroupState {
 	DS: any,
 	value: any[],
 	inputVisible: boolean,
+	currentVal: any
 }
 
 let timer:any[] = [];
 export default class EditableTagGroup extends React.Component<EditableTagGroupProps, EditableTagGroupState> {
 
 	input: any;
-	currentVal: any;
 
 	constructor(props) {
 		super(props);
@@ -33,7 +33,8 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	state = {
 		value: this.props.value || [],
 		inputVisible: false,
-		DS: []
+		DS: [],
+		currentVal: undefined
 	};
 
 	showInput = () => {
@@ -169,9 +170,9 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 						>
 							<Input
 								ref={input => this.input = input}
-								onChange={ e => this.currentVal = e.target.value }
+								onChange={ e => this.setState({currentVal: e.target.value})}
 							/>
-							<Button style={{marginTop: '10px'}} type='primary' onClick={() => this.handleInputConfirmAlias(this.currentVal)}
+							<Button style={{marginTop: '10px'}} type='primary' onClick={() => this.handleInputConfirmAlias(this.state.currentVal)}
 								className='login-form-button'>
 								{i18next.t('ADD')}
 							</Button>
@@ -208,15 +209,13 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 							<AutoComplete
 								ref={input => this.input = input}
 								onSearch={ this.search }
-								onChange={ val => this.currentVal = val }
-							>
-								{this.state.DS.map((tag) => (
-									<AutoComplete.Option value={tag.value} key={tag.value}>
-										{tag.text}
-									</AutoComplete.Option>
-								))}
-							</AutoComplete>
-							<Button type='primary' onClick={() => this.handleInputConfirm(this.currentVal)}
+								onChange={ val => this.setState({currentVal: val}) }
+								options={this.state.DS.map(tag => {return {value:tag.value, label:tag.text}})}
+								value={this.state.DS.filter(tag => tag.value === this.state.currentVal).length > 0 &&
+									this.state.DS.filter(tag => tag.value === this.state.currentVal)[0].value ? this.state.DS.filter(tag => tag.value === this.state.currentVal)[0].text
+								: this.state.currentVal}
+							/>
+							<Button type='primary' onClick={() => this.handleInputConfirm(this.state.currentVal)}
 								className='login-form-button'>
 						{i18next.t('ADD')}
 							</Button>
