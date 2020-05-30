@@ -4,12 +4,12 @@ import EditableTagGroup from '../Components/EditableTagGroup';
 import {getListLanguagesInLocale, getLanguagesInLocaleFromCode } from '../../isoLanguages';
 import i18next from 'i18next';
 import { tagTypes } from '../../utils/tagTypes';
-import { FormProps, FormInstance } from 'antd/lib/form';
+import { FormInstance } from 'antd/lib/form';
 import { QuestionCircleOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import Axios from 'axios';
 import { DBTag } from '../../../../src/lib/types/database/tag';
 
-interface TagsFormProps extends FormProps {
+interface TagsFormProps {
 	tags: Array<DBTag>,
 	tag: DBTag,
 	save: (tag:DBTag) => void,

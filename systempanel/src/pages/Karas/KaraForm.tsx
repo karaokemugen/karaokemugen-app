@@ -4,12 +4,12 @@ import EditableTagGroup from "../Components/EditableTagGroup";
 import { getTagInLocale } from "../../utils/kara";
 import i18next from 'i18next';
 import { QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
-import { FormProps, FormInstance } from "antd/lib/form";
+import { FormInstance } from "antd/lib/form";
 import Axios from 'axios';
 import { Kara } from "../../../../src/lib/types/kara";
 import { DBTag } from "../../../../src/lib/types/database/tag";
 
-interface KaraFormProps extends FormProps {
+interface KaraFormProps {
 	kara: Kara;
 	save: any;
 	handleCopy: (kid, repo) => void

@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import { Button, Input, Select, Form } from 'antd';
 import i18next from 'i18next';
-import { FormProps, FormInstance } from 'antd/lib/form';
+import { FormInstance } from 'antd/lib/form';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { User as UserType } from '../../../../src/lib/types/user';
 
-interface UserFormProps extends FormProps {
+interface UserFormProps {
 	user: UserType,
 	save: (User) => void,
 }

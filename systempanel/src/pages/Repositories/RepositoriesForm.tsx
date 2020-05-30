@@ -3,9 +3,9 @@ import { Button, Input, Checkbox, Alert, Form } from 'antd';
 import i18next from 'i18next';
 import { Repository } from '../../../../src/lib/types/repo';
 import FoldersElement from '../Components/FoldersElement';
-import { FormProps, FormInstance } from 'antd/lib/form';
+import { FormInstance } from 'antd/lib/form';
 
-interface RepositoriesFormProps extends FormProps {
+interface RepositoriesFormProps {
 	repository: Repository;
 	save: any;
 	consolidate : (consolidatePath:string) => void;
