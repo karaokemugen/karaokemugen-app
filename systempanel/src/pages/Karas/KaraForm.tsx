@@ -334,6 +334,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 10, offset: 0 }}
 					name="songtypes"
+					rules={[{
+						required: true,
+						message: i18next.t('KARA.TYPE_REQUIRED')
+					}]}
 				>
 					<EditableTagGroup
 						tagType={3}
