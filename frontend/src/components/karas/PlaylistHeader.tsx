@@ -9,10 +9,11 @@ import store from '../../store';
 import ReactDOM from 'react-dom';
 import FavMixModal from '../modals/FavMixModal';
 import { KaraElement } from '../../types/kara';
-import { DBPL } from '../../../../src/types/database/playlist';
+import { DBPL, DBPLC } from '../../../../src/types/database/playlist';
 import { User, Token } from '../../../../src/lib/types/user';
 import { Tag } from '../../types/tag';
 import { Config } from '../../../../src/types/config';
+import prettyBytes from 'pretty-bytes';
 require ('./PlaylistHeader.scss');
 
 var tagsTypesList = [
@@ -153,11 +154,33 @@ class PlaylistHeader extends Component<IProps,IState> {
 				data['playlist'] = fr['result'];
 				name = JSON.parse(fr.result as string).PlaylistInformation.name;
 			}
-			var response:{data:{unknownKaras:Array<any>, playlist_id:number}} = await axios.post(url, data);
-			if (response.data.unknownKaras && response.data.unknownKaras.length > 0) {
-				displayMessage('warning', i18next.t('UNKNOWN_KARAS', { count: response.data.unknownKaras.length }));
+			var response:{data:{code: string, data:{unknownKaras:Array<any>, playlist_id:number}}} = await axios.post(url, data);
+			if (response.data.data.unknownKaras && response.data.data.unknownKaras.length > 0) {
+				let mediasize = response.data.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
+				callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
+					<p>
+						{i18next.t('MODAL.UNKNOW_KARAS.DESCRIPTION')}
+					</p>
+					<div>
+						{i18next.t('MODAL.UNKNOW_KARAS.DOWNLOAD_THEM')}
+						<label>&nbsp;{i18next.t('MODAL.UNKNOW_KARAS.DOWNLOAD_THEM_SIZE', {mediasize: prettyBytes(mediasize)})}</label>
+					</div>
+					<br/>
+					{response.data.data.unknownKaras.map((kara:DBPLC) => 
+						<label key={kara.kid}>{buildKaraTitle(kara, true)}</label>)}
+				</React.Fragment>), () => axios.post('/downloads', {downloads: response.data.data.unknownKaras.map((kara:DBPLC) => {
+					return {
+						kid: kara.kid,
+						mediafile: kara.mediafile,
+						size: kara.mediasize,
+						name: kara.karafile.replace('.kara.json', ''),
+						repository: kara.repository
+					}
+				})}));
+			} else {
+				displayMessage('success', i18next.t(i18next.t(`SUCCESS_CODES.${response.data.code}`, { data: name })));
 			}
-			var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.data.playlist_id;
+			var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.data.data.playlist_id;
 			this.props.changeIdPlaylist(playlist_id);
 		};
 		fr.readAsText(file);

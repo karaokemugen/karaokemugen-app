@@ -366,7 +366,6 @@
 	"PRIVATE_SESSION" : "Privée ? ",
 	"SELECT_KARAS_REQUIRED": "Vous devez sélectionner au moins une chanson",
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
-	"UNKNOWN_KARAS": "Chansons inconnues : {{count}}",
 	"ESSENTIAL_MESSAGE": "Message indispensable",
 	"ONLINE_ACCOUNT": "Compte en ligne ?",
 	"SECURITY_CODE": "Code de sécurité",
@@ -422,6 +421,12 @@
 			"SONGTYPE": "Type",
 			"NAME": "Nom de la chanson",
 			"LINK": "Lien vers une vidéo"
+		},
+		"UNKNOW_KARAS": {
+			"TITLE": "Chansons inconnues détectées",
+			"DESCRIPTION": "Cette playlist contient des karaokés que vous n'avez pas encore. Nous les avons trouvés sur les dépôts en ligne que vous avez configurés. Ces chansons n'apparaîtront pas dans la playlist tant qu'elles ne seront pas téléchargées.",
+			"DOWNLOAD_THEM": "Voulez-vous les télécharger ?",
+			"DOWNLOAD_THEM_SIZE": "(Taille du téléchargement : {{mediasize}})"
 		},
 		"PLAY_CURRENT_MODAL": "Attention, la liste de lecture courante '{{playlist}}' n'est pas affichée à l'écran. C'est cette dernière qui sera jouée. Êtes-vous sûr de vouloir lancer la lecture ?"
 	},

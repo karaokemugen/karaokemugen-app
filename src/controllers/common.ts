@@ -7,7 +7,7 @@ export function APIMessage(code: string, data?: any): object {
 	}
 }
 export function errMessage(code: string, message?: string) {
-	logger.error(`[API] ${code} : ${JSON.stringify(message)}`);
+	logger.error(`[API] ${code} : ${message}`);
 }
 
 /**

@@ -9,6 +9,7 @@
     "axios": "0.19.2",
     "i18next": "^19.4.5",
     "i18next-browser-languagedetector": "^4.1.1",
+    "pretty-bytes": "^5.3.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-router": "5.2.0",
