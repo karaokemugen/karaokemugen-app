@@ -56,8 +56,9 @@ class Viewcounts extends Component<{}, ViewcountsState> {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
 		dataIndex: 'series',
 		key: 'series',
-		render: (series, record) => series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name)).join(', ') 
-			|| getTagInLocaleList(record.singers).join(', ')
+		render: (series, record) => (series && series.length > 0) ?
+			series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name)).join(', ') 
+			: getTagInLocaleList(record.singers).join(', ')
 	}, {
 		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',

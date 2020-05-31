@@ -112,32 +112,24 @@ class KaraList extends Component<{}, KaraListState> {
 		title: i18next.t('KARA.LANGUAGES'),
 		dataIndex: 'langs',
 		key: 'langs',
-		render: langs => {
-			return getTagInLocaleList(langs, this.state.i18nTag).join(', ')
-		}
+		render: langs => getTagInLocaleList(langs, this.state.i18nTag).join(', ')
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
 		dataIndex: 'series',
 		key: 'series',
-		render: (series, record:DBKara) => {
-			return series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ') 
-				|| getTagInLocaleList(record.singers, this.state.i18nTag).join(', ');
-		}
+		render: (series, record:DBKara) => (series && series.length > 0) ?
+				series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ') 
+				: getTagInLocaleList(record.singers, this.state.i18nTag).join(', ')
 	}, {
 		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
-		render: (songtypes, record) => {
-			const songorder = record.songorder || '';
-			return getTagInLocaleList(songtypes, this.state.i18nTag).join(', ') + ' ' + songorder || '';
-		}
+		render: (songtypes, record) => getTagInLocaleList(songtypes).join(', ') + ' ' + (record.songorder || '')
 	}, {
 		title: i18next.t('KARA.FAMILIES'),
 		dataIndex: 'families',
 		key: 'families',
-		render: (families, record) => {
-			return getTagInLocaleList(families, this.state.i18nTag).join(', ');
-		}
+		render: (families, record) => getTagInLocaleList(families, this.state.i18nTag).join(', ')
 	}, {
 		title: i18next.t('KARA.TITLE'),
 		dataIndex: 'title',
