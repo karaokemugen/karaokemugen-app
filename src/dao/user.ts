@@ -52,7 +52,7 @@ export async function editUser(user: User) {
 	if (!user.old_login) user.old_login = user.login;
 	return await db().query(yesql(sql.editUser)({
 		nickname: user.nickname,
-		avatar_file: user.avatar_file,
+		avatar_file: user.avatar_file || 'blank.png',
 		login: user.login,
 		bio: user.bio,
 		url: user.url,
