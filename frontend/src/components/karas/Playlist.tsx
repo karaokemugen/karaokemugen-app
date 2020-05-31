@@ -284,7 +284,7 @@ noRowsRenderer = () => {
   };
 
   changeIdPlaylist = (idPlaylist:number) => {
-	localStorage.setItem(`mugenPlVal ${this.props.side}`, idPlaylist.toString());
+	localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
   	this.setState({ idPlaylist: Number(idPlaylist),data: undefined }, this.getPlaylist);
   	this.props.majIdsPlaylist(this.props.side, idPlaylist);
   };
