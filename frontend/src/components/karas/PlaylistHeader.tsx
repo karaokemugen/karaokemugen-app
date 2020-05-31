@@ -220,6 +220,25 @@ class PlaylistHeader extends Component<IProps,IState> {
   	this.props.onChangeTags(this.state.tagType, value);
   };
 
+	getPlaylistIcon(playlist: PlaylistElem) {
+		// public playlist : globe icon
+		if (playlist.flag_public) return '\uf0ac';
+		// current playlist : play-circle icon
+		if (playlist.flag_current) return '\uf144';
+		// library : book icon
+		if (playlist.playlist_id === -1) return '\uf02d';
+		// blacklist : ban icon
+		if (playlist.playlist_id === -2) return '\uf05e';
+		// whitelist : check-circle icon
+		if (playlist.playlist_id === -3) return '\uf058';
+		// blacklist criterias : not-equal icon
+		if (playlist.playlist_id === -4) return '\uf53e';
+		// favorites : star icon
+		if (playlist.playlist_id === -5) return '\uf005';
+		// others playlist : list-ol icon
+		return '\uf0cb';
+	}
+
   render() {
   	const commandsControls = (
   		<div className="btn-group plCommands controls">
@@ -348,7 +367,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 				  	{!this.props.playlistInfo.flag_public ?
 						<button title={i18next.t('PLAYLIST_CURRENT')} name="flag_current" onClick={this.setFlagCurrent}
 							className={'btn ' + (this.props.playlistInfo.flag_current ? 'btn-primary' : 'btn-default')} >
-							<i className="fas fa-video"></i>
+							<i className="fas fa-play-circle"></i>
 						</button> : null
   					}
 					{!this.props.playlistInfo.flag_current ?
@@ -392,7 +411,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 										</React.Fragment>) :
 										(<React.Fragment>
 											{this.props.playlistList && this.props.playlistList.map(playlist => {
-												return <option key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}</option>;
+												return <option className="selectPlaylist" key={playlist.playlist_id} value={playlist.playlist_id}>{this.getPlaylistIcon(playlist)} {playlist.name}</option>;
 											})}
 											{this.props.playlistList && this.props.idPlaylist !== 0 
 												&& this.props.playlistList.filter(playlist => playlist.playlist_id === this.props.idPlaylist).length === 0 ?
