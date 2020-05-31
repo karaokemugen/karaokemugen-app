@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {Layout} from 'antd';
 import KaraForm from './KaraForm';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import Axios from 'axios';
 import { DBKara } from '../../../../src/lib/types/database/kara';
 import { getAxiosInstance } from '../../axiosInterceptor';
 
