@@ -70,6 +70,8 @@ import { DBPLC } from '../types/database/playlist';
 import { bools } from '../lib/utils/constants';
 import { check } from '../lib/utils/validators';
 import { replaceExt, asyncExists } from '../lib/utils/files';
+import Task from '../lib/utils/taskManager';
+import { getAllRemoteKaras } from './download';
 
 let databaseBusy = false;
 
@@ -797,11 +799,6 @@ export async function exportPlaylist(playlist_id: number) {
 				created_at: plc.created_at,
 				pos: plc.pos,
 				username: plc.username,
-				serie: plc.serie,
-				title: plc.title,
-				songtype: plc.songtypes.map(s => s.name).join(', '),
-				songorder: plc.songorder,
-				language: plc.langs[0].name,
 				flag_playing: plc.flag_playing || undefined
 			};
 		});
@@ -857,10 +854,16 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	//
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
+	const task = new Task({
+		text: 'IMPORTING_PLAYLIST',
+	});
 	try {
 		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist)}`);
 		const validationErrors = check(playlist, PLImportConstraints);
 		if (validationErrors) throw `Playlist file is invalid : ${JSON.stringify(validationErrors)}`;
+		task.update({
+			subtext: playlist.PlaylistInformation.name
+		});
 		let playingKara: PLC = {
 			playlist_id: null
 		};
@@ -890,15 +893,19 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 			} else {
 				await emptyPlaylist(playlist_id);
 			}
-			const unknownKaras = await isAllKaras(playlist.PlaylistContents.map((plc: PLC) => plc.kid));
-			const karasToImport = playlist.PlaylistContents.filter((plc: PLC) => !unknownKaras.includes(plc.kid));
-			for (const i in karasToImport) {
-				karasToImport[i].playlist_id = playlist_id;
+			const unknownKIDs = await isAllKaras(playlist.PlaylistContents.map((plc: PLC) => plc.kid));
+			for (const i in playlist.PlaylistContents) {
+				playlist.PlaylistContents[i].playlist_id = playlist_id;
 			}
-			await addKaraToPL(karasToImport);
+			await addKaraToPL(playlist.PlaylistContents);
 			if (playingKara?.kid) {
 				const plcPlaying = await getPLCByKIDUser(playingKara.kid, playingKara.username, playlist_id);
 				await setPlaying(plcPlaying.playlistcontent_id, playlist_id);
+			}
+			let unknownKaras = [];
+			if (unknownKIDs.length > 0) {
+				const karas = await getAllRemoteKaras(null, {});
+				unknownKaras = karas.content.filter(k => unknownKIDs.includes(k.kid));
 			}
 			return {
 				playlist_id: playlist_id,
@@ -910,6 +917,8 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	} catch(err) {
 		logger.error(`[Playlist] Import failed : ${err}`);
 		throw err;
+	} finally {
+		task.end();
 	}
 }
 

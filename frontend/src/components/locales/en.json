@@ -347,7 +347,6 @@
 	"PRIVATE_SESSION" : "Private ? ",
 	"SELECT_KARAS_REQUIRED": "You have to select at least one song",
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
-	"UNKNOWN_KARAS": "Unknow songs : {{count}}",
 	"ESSENTIAL_MESSAGE": "Essential message",
 	"ONLINE_ACCOUNT": "Online account",
 	"SECURITY_CODE": "Security code",
@@ -403,6 +402,12 @@
 			"SONGTYPE": "Songtype",
 			"NAME": "Name of the song",
 			"LINK": "Link to a video"
+		},
+		"UNKNOW_KARAS": {
+			"TITLE": "Unknown songs detected",
+			"DESCRIPTION": "This playlist contains songs you do not have yet locally. We found them on your configured online repositories. These songs won't appear in the playlist until they've been downloaded.",
+			"DOWNLOAD_THEM": "Do you want to download them?",
+			"DOWNLOAD_THEM_SIZE": "(Download size : {{mediasize}})"
 		},
 		"PLAY_CURRENT_MODAL": "Warning : the current playlist '{{playlist}}' isn't displayed on screen. That's the playlist going to be played. Are you sure you want to start playing?"
 	},

@@ -1,5 +1,5 @@
 import {KaraParams} from '../lib/types/kara';
-import { DBPLCBase, DBPLC } from './database/playlist';
+import { DBPLCBase } from './database/playlist';
 
 export interface PLCEditParams {
 	flag_playing: boolean,

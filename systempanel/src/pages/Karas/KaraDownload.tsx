@@ -8,6 +8,8 @@ import { getTagInLocaleList } from '../../utils/kara';
 import { DownloadOutlined, CheckCircleTwoTone, ClockCircleTwoTone, SyncOutlined, InfoCircleTwoTone } from '@ant-design/icons';
 import Axios from 'axios';
 import { DBTag } from '../../../../src/lib/types/database/tag';
+import prettyBytes from 'pretty-bytes';
+import { DBPLC } from '../../../../src/types/database/playlist';
 
 var blacklist_cache = {}
 var api_get_local_karas_interval = null;
@@ -60,14 +62,6 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 		this.blacklist_check_emptyCache();
 		this.startObserver();
 		this.getTags();
-	}
-
-	fileConvertSize(aSize: any) {
-		aSize = Math.abs(parseInt(aSize, 10));
-		var def = [[1, 'octets'], [1024, 'ko'], [1024*1024, 'Mo'], [1024*1024*1024, 'Go'], [1024*1024*1024*1024, 'To']];
-		for(var i=0; i<def.length; i++){
-			if(aSize<def[i][0]) return (aSize/(def[i-1][0] as number)).toFixed(2)+' '+def[i-1][1];
-		}
 	}
 
 	async getTags() {
@@ -226,7 +220,7 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 			karas_online: karas,
 			karas_online_count: res.data.infos.count || 0,
 			i18nTag: res.data.i18n,
-			totalMediaSize: this.fileConvertSize(res.data.infos.totalMediaSize)
+			totalMediaSize: prettyBytes(res.data.infos.totalMediaSize)
 		});
 	}
 
@@ -311,13 +305,39 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 		});
 	}
 
+	importPlaylist = (event:any) => {
+    	if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
+    	var input = event.target;
+    	if (input.files && input.files[0]) {
+    		var file = input.files[0];
+    		var fr = new FileReader();
+    		fr.onload = async () => {
+				let response = await Axios.post('/playlists/import', {playlist: fr['result']})
+    			if (response.data.data.unknownKaras && response.data.data.unknownKaras.length > 0) {
+					Axios.post('/downloads', {downloads: response.data.data.unknownKaras.map((kara:DBPLC) => {
+						return {
+							kid: kara.kid,
+							mediafile: kara.mediafile,
+							size: kara.mediasize,
+							name: kara.karafile.replace('.kara.json', ''),
+							repository: kara.repository
+						}
+					})});
+				}
+				Axios.delete(`/playlists/${response.data.data.playlist_id}`)
+    		};
+    		fr.readAsText(file);
+    	}
+    };
+
+
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px' }}>
 				<Layout>
 					<Layout.Header>
 						<Row justify="space-between">
-							<Col span={12} style={{marginLeft: '10px'}}>
+							<Col flex={3} style={{marginRight: '10px'}}>
 								<Input.Search
 									placeholder={i18next.t('SEARCH_FILTER')}
 									value={this.state.filter}
@@ -326,11 +346,15 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 									onSearch={this.api_get_online_karas}
 								/>
 							</Col>
-							<Col span={5}>
+							<Col flex={1} style={{textAlign:'center'}}>
+								<label htmlFor="playlistImport" className="ant-btn ant-btn-primary">{i18next.t('KARA.IMPORT_PLAYLIST')}</label>
+								<Input id="playlistImport" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.importPlaylist} />
+							</Col>
+							<Col flex={2}>
 								<Select allowClear style={{ width: '90%'}}  onChange={(value) => this.handleFilterTagSelection([tagTypes.GROUPS, value])} 
 									placeholder={i18next.t('KARA.TAG_GROUP_FILTER')} key={'tid'} options={this.getGroupsTags()} />
 							</Col>
-							<Col span={5}>
+							<Col flex={2}>
 								<Cascader style={{ width: '90%' }} options={this.FilterTagCascaderOption()}
 									showSearch={{filter:this.FilterTagCascaderFilter,matchInputWidth:false}}
 									onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
