@@ -1,5 +1,5 @@
 import React from 'react';
-import { AutoComplete, Button, Checkbox, Col, Row, Tag, Tooltip, Form, Input } from 'antd';
+import { AutoComplete, Button, Checkbox, Col, Row, Tag, Form, Input } from 'antd';
 import { getTagInLocale } from "../../utils/kara";
 
 import i18next from 'i18next';
