@@ -154,17 +154,8 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		} else if (this.props.search === 'aliases') {
 			return (
                 <div>
-					{
-						value.map((tag) => {
-							if (!tag) tag = '';
-							const isLongTag = tag.length > 20;
-							const tagElem = (
-								<Tag key={tag} closable={true} onClose={() => this.handleCloseAlias(tag)}>
-									{isLongTag ? `${tag.slice(0, 20)}...` : tag}
-								</Tag>
-							);
-							return isLongTag ? <Tooltip title={tag} key={tag}>{tagElem}</Tooltip> : tagElem;
-						})}
+					{value.map((tag) => <Tag style={{marginBottom: '8px'}} key={tag} closable={true} 
+						onClose={() => this.handleCloseAlias(tag)}>{tag}</Tag>)}
 					{inputVisible && (
 						<Form.Item
 							wrapperCol={{ span: 10 }}
@@ -192,17 +183,8 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		} else {
 			return (
                 <div>
-					{
-						value.map((tag) => {
-							if (!tag) tag = '';
-							const isLongTag = tag[1] && tag[1].length > 20;
-							const tagElem = (
-								<Tag key={tag} closable={true} onClose={() => this.handleClose(tag)}>
-									{isLongTag ? `${tag[1].slice(0, 20)}...` : tag[1]}
-								</Tag>
-							);
-							return isLongTag ? <Tooltip title={tag[1]} key={tag}>{tagElem}</Tooltip> : tagElem;
-						})}
+					{value.map((tag) => <Tag style={{marginBottom: '8px'}} key={tag} closable={true} 
+						onClose={() => this.handleClose(tag)}>{tag[1]}</Tag>)}
 					{inputVisible && (
 						<Form.Item
 							wrapperCol={{ span: 10 }}
