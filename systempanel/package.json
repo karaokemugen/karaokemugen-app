@@ -5,10 +5,8 @@
   "homepage": "/system",
   "dependencies": {
     "@cospired/i18n-iso-languages": "^2.1.1",
-    "@craco/craco": "^5.6.4",
     "antd": "4.3.0",
     "axios": "0.19.2",
-    "craco-antd": "^1.14.1",
     "i18next": "^19.4.5",
     "i18next-browser-languagedetector": "^4.1.1",
     "react": "16.13.1",
@@ -26,10 +24,10 @@
     "typescript": "3.9.3"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test --env=jsdom",
-    "eject": "craco eject"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:1337",
   "browserslist": [
