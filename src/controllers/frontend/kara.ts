@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { errMessage, APIMessage } from "../common";
-import { getKaraLyrics, getKara, getKaras, deleteKara, getKaraHistory, getTop50, getKaraPlayed, copyKaraToRepo } from "../../services/kara";
+import { batchEditKaras, getKaraLyrics, getKara, getKaras, deleteKara, getKaraHistory, getTop50, getKaraPlayed, copyKaraToRepo } from "../../services/kara";
 import { updateUserLoginTime, requireAuth, requireValidUser, requireAdmin } from "../middlewares/auth";
 import { requireWebappLimited, requireWebappOpen } from "../middlewares/webapp_mode";
 import { getLang } from "../middlewares/lang";
@@ -659,4 +659,30 @@ export default function karaController(router: Router) {
 				res.status(500).json(APIMessage(code));
 			}
 		});
+	router.route('/karas/batch')
+		/**
+	 * @api {put} /karas/batch Edit a batch of songs
+	 * @apiName putKarasBatch
+	 * @apiVersion 3.3.0
+	 * @apiGroup Karas
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {number} playlist_id Playlist ID to fetch songs from
+	 * @apiParam {string} action `add` or `remove`
+	 * @apiParam {string} tid Tag to add or remove
+	 * @apiParam {number} type Tag type in kara to change
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+			.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+				try {
+					batchEditKaras(req.body.playlist_id, req.body.action, req.body.tid, req.body.type);
+					res.status(200).json();
+				} catch {
+					res.status(500).json();
+				}
+			});
 }

@@ -47,6 +47,7 @@ class KMMenu extends Component<{}, {}> {
 						<Menu.Item key='karahistory'><Link to='/system/km/karas/history'>{i18next.t('MENU.HISTORY')}</Link></Menu.Item>
 						<Menu.Item key='kararanking'><Link to='/system/km/karas/ranking'>{i18next.t('MENU.RANKING')}</Link></Menu.Item>
 						<Menu.Item key='karaviewcounts'><Link to='/system/km/karas/viewcounts'>{i18next.t('MENU.VIEWCOUNTS')}</Link></Menu.Item>
+						<Menu.Item key='karabatchedit'><Link to='/system/km/karas/batch'>{i18next.t('MENU.BATCH_EDIT')}</Link></Menu.Item>
 					</Menu.SubMenu>
 					<Menu.SubMenu key="tags-dropdown" title={i18next.t('MENU.TAGS')}>
 						<Menu.Item key='tagsmanage'><Link to='/system/km/tags'>{i18next.t('MENU.LIST')}</Link></Menu.Item>

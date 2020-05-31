@@ -25,6 +25,7 @@ import RepositoriesList from '../pages/Repositories/RepositoriesList';
 import RepositoriesEdit from '../pages/Repositories/RepositoriesEdit';
 import UnusedList from '../pages/UnusedList';
 import TasksEvent from '../pages/Components/TasksEvent';
+import KaraBatchEdit from '../pages/Karas/KaraBatchEdit';
 
 class KMPage extends Component<{}, {}> {
 	render() {
@@ -56,6 +57,7 @@ class KMPage extends Component<{}, {}> {
           <Route path='/system/km/karas/history' component={KaraHistory}/>
           <Route path='/system/km/karas/ranking' component={KaraRanking}/>
           <Route path='/system/km/karas/viewcounts' component={KaraViewcounts}/>
+		  <Route path='/system/km/karas/batch' component={KaraBatchEdit}/>
           <Route path='/system/km/karas/:kid' component={KaraEdit}/>
           <Route path='/system/km/karas' component={KaraList}/>
 

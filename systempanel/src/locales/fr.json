@@ -80,7 +80,17 @@
 		"MOVE_SONG": "Déplacer la chanson vers un autre dépôt",
 		"DETAILS": "Détails",
 		"TOTAL_MEDIA_SIZE": "Taille totale des médias :",
-		"IMPORT_PLAYLIST": "Importer la liste de lecture"
+		"IMPORT_PLAYLIST": "Importer la liste de lecture",
+		"BATCH_EDIT": {
+			"ADD_TAG": "Ajout de tag",
+			"REMOVE_TAG": "Suppression de tag",
+			"CREATE_PLAYLIST": "Tout d'abord, vous devez créer dans la vue opérateur une liste de lecture.",
+			"SELECT_PLAYLIST": "Sélectionnez une liste de lecture :",
+			"SELECT_ACTION": "Sélectionnez une action :",
+			"SELECT_TAG": "Sélectionnez un tag :",
+			"EDIT": "Edition en masse",
+			"SELECT": "Sélectionnez"
+		}
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -102,7 +112,8 @@
 		"USERS": "Utilisateurs",
 		"LOG_OUT": "Déconnexion",
 		"UNUSED_FILES": "Fichiers inutilisés",
-		"DUPLICATE": "Dupliqués"
+		"DUPLICATE": "Dupliqués",
+		"BATCH_EDIT": "Edition en masse de kara/tags"
 	},
 	"UNUSED_FILES": {
 		"NAME": "Nom",
@@ -280,6 +291,9 @@
 		"USERS_DESCRIPTION_3": ", changer les mots de passe, créer de nouveaux comptes invités"
 	},
 	"TASKS": {
+		"CREATING_SONG": "Création du karaoké...",
+		"EDITING_SONG": "Modification du karaoké...",
+		"EDITING_KARAS_BATCH_TAGS": "Modification des tags...",
 		"DATASTORE_UPDATE": "Mise à jour des données locales...",
 		"GENERATING": "Génération de la base de données...",
 		"GENERATING_READING": "Lecture des données...",

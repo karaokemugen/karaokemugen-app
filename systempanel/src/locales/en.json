@@ -80,7 +80,17 @@
 		"MOVE_SONG": "Move song to another repository",
 		"DETAILS": "Details",
 		"TOTAL_MEDIA_SIZE": "Total media size:",
-		"IMPORT_PLAYLIST": "Import playlist"
+		"IMPORT_PLAYLIST": "Import playlist",
+		"BATCH_EDIT": {
+			"ADD_TAG": "Add tag",
+			"REMOVE_TAG": "Remove tag",
+			"CREATE_PLAYLIST": "First, you need to create a playlist in the operator panel.",
+			"SELECT_PLAYLIST": "Select a playlist :",
+			"SELECT_ACTION": "Select an operation :",
+			"SELECT_TAG": "Select a tag :",
+			"EDIT": "Batch edit",
+			"SELECT": "Select"
+		}
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -102,7 +112,8 @@
 		"USERS": "Users",
 		"LOG_OUT": "Log Out",
 		"UNUSED_FILES": "Unused files",
-		"DUPLICATE": "Duplicated"
+		"DUPLICATE": "Duplicated",
+		"BATCH_EDIT": "Batch edit kara tags"
 	},
 	"UNUSED_FILES": {
 		"NAME": "Name",
@@ -280,6 +291,9 @@
 		"USERS_DESCRIPTION_3": ", change passwords, make new guests account"
 	},
 	"TASKS": {
+		"CREATING_SONG": "Creating karaoke...",
+		"EDITING_SONG": "Editing karaoke...",
+		"EDITING_KARAS_BATCH_TAGS": "Editing tags in songs...",
 		"DATASTORE_UPDATE": "Updating local data store...",
 		"GENERATING": "Generating database...",
 		"GENERATING_READING": "Reading data...",

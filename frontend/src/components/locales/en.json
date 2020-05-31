@@ -443,6 +443,9 @@
 		"DONE": "Done"
 	},
 	"TASKS": {
+		"CREATING_SONG": "Creating karaoke...",
+		"EDITING_SONG": "Editing karaoke...",
+		"EDITING_KARAS_BATCH_TAGS": "Editing tags in songs...",
 		"DATASTORE_UPDATE": "Updating local data store...",
 		"GENERATING": "Generating database...",
 		"GENERATING_READING": "Reading data...",

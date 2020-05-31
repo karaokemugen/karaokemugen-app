@@ -54,8 +54,8 @@ class TasksEvent extends Component<IProps, IState> {
 
             return (<blockquote key={index}>
               <p className="text">
-                {i18next.t(`TASKS.${item.text}`)}
-                <span className="subtext">{i18next.t(`TASKS.${item.subtext}`)}</span>
+                {i18next.t(`TASKS.${item.text}`) !== `TASKS.${item.text}` ? i18next.t(`TASKS.${item.text}`) : item.text}
+                <span className="subtext">{i18next.t(`TASKS.${item.subtext}`) !== `TASKS.${item.subtext}` ? i18next.t(`TASKS.${item.subtext}`) : item.subtext}</span>
               </p>
               <div className="progress"><div className={"progress-bar " + (item.percentage===null ? 'unknown' : '')} style={{width:(item.percentage!==null ? item.percentage+'%' : '100%')}}></div></div>
             </blockquote>);

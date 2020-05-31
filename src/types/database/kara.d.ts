@@ -11,8 +11,4 @@ export interface DBKaraHistory {
 	played_at: Date
 }
 
-export interface DBYear {
-	year: number,
-	karacount: number
-}
 
