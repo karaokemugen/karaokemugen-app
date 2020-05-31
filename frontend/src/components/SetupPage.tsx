@@ -79,8 +79,7 @@ class SetupPage extends Component<IProps, IState> {
 			this.setState({ error: undefined });
 			this.login(username, this.state.password as string);
 		} catch (err) {
-			let error = err.response.data.message ? err.response.data.message : err;
-			displayMessage("error", error);
+			let error = i18next.t(`ERROR_CODES.${err.response.data.code}`)
 			this.setState({ error: error });
 		}
 	};
@@ -104,8 +103,7 @@ class SetupPage extends Component<IProps, IState> {
 			store.setLogInfos(response);
 			this.setState({ activeView: "repo", error: undefined });
 		} catch (err) {
-			let error = err.response.data.message ? err.response.data.message : err;
-			displayMessage("error", error);
+			let error = i18next.t(`ERROR_CODES.${err.response.data.code}`);
 			this.setState({ error: error });
 		}
 	};
@@ -149,8 +147,7 @@ class SetupPage extends Component<IProps, IState> {
 					await axios.post(`/repos/${this.props.repository.Name}/consolidate`, { path: this.state.repositoryFolder });
 					this.setState({ activeView: "random", error: undefined });
 				} catch (err) {
-					let error = err.response.data.message ? err.response.data.message : err;
-					displayMessage("error", error);
+					let error = i18next.t(`ERROR_CODES.${err.response.data.code}`)
 					this.setState({ error: error });
 				}
 			} else {
@@ -165,8 +162,7 @@ class SetupPage extends Component<IProps, IState> {
 				axios.post(`/downloads/random`);
 				this.props.endSetup();
 			} catch (err) {
-				let error = err.response.data.message ? err.response.data.message : err;
-				displayMessage("error", error);
+				let error = i18next.t(`ERROR_CODES.${err.response.data.code}`)
 				this.setState({ error: error });
 			}
 		} else {
