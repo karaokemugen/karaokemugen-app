@@ -78,7 +78,8 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		}
 		this.setState({
 			value: tags,
-			inputVisible: false
+			inputVisible: false,
+			currentVal: undefined
 		});
 		this.props.onChange && this.props.onChange(tags);
 	};
