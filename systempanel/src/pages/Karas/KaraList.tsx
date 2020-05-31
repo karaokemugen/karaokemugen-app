@@ -51,7 +51,7 @@ class KaraList extends Component<{}, KaraListState> {
 
 	changeFilter(event) {
 		this.setState({filter: event.target.value});
-		localStorage.setItem('karaFilter', this.state.filter);
+		localStorage.setItem('karaFilter', event.target.value);
 	}
 
 	 deleteKara = async (kara) => {
