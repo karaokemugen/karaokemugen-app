@@ -44,7 +44,7 @@ class TagEdit extends Component<RouteComponentProps<{tid:string}>, TagEditState>
 
 	loadTag = async () => {
 		if (this.props.match.params.tid) {
-				let res = await Axios.get(`/tags/${this.props.match.params.tid}`);
+				let res = await getAxiosInstance().get(`/tags/${this.props.match.params.tid}`);
 				const tagData = {...res.data};
 				tagData.tid = this.props.match.params.tid;
 				res = await Axios.get('/tags');

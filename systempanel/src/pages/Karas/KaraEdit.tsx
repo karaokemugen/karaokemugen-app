@@ -35,7 +35,7 @@ class KaraEdit extends Component<RouteComponentProps<{kid:string}>, KaraEditStat
 
 	loadKara = async () => {
 		if (this.props.match.params.kid) {
-			let res = await Axios.get(`/karas/${this.props.match.params.kid}`)
+			let res = await getAxiosInstance().get(`/karas/${this.props.match.params.kid}`)
 			this.setState({kara: res.data, save: this.saveUpdate, loadKara: true});
 		} else {
 			this.setState({save: this.saveNew, loadKara: true});
