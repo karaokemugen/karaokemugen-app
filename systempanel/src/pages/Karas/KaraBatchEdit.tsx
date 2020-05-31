@@ -69,13 +69,11 @@ class KaraBatchEdit extends Component<{}, KaraBatchEditState> {
 	}
 
 	changePlaylist = async (value: number) => {
-		console.log(value)
 		let karas = await Axios.get(`/playlists/${value}/karas`);
 		this.setState({ playlist_id: value, karas: karas.data.content, i18nTag: karas.data.i18n });
 	}
 
 	batchEdit = () => {
-		console.log(this.state)
 		if (this.state.playlist_id && this.state.action && this.state.tid) {
 			Axios.put('/karas/batch', {
 				playlist_id: this.state.playlist_id,
