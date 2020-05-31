@@ -56,8 +56,8 @@ class WelcomePageTasks extends Component<IProps, IState> {
 
             return (<blockquote key={index}>
               <p className="text">
-			  	{i18next.t(`TASKS.${item.text as string}`)}
-                <span className="subtext">{i18next.t(`TASKS.${item.subtext as string}`)}</span>
+			  	{i18next.t(`TASKS.${item.text as string}`) !== `TASKS.${item.text as string}` ? i18next.t(`TASKS.${item.text as string}`) : item.text}
+                <span className="subtext">{i18next.t(`TASKS.${item.subtext as string}`) !== `TASKS.${item.subtext as string}` ? i18next.t(`TASKS.${item.subtext as string}`) : item.subtext}</span>
               </p>
               <div className="progress"><div className={"progress-bar " + (item.percentage===null ? 'unknown' : '')} style={{width:(item.percentage!==null ? item.percentage+'%' : '100%')}}></div></div>
             </blockquote>);

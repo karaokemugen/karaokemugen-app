@@ -1,7 +1,7 @@
-import {tagTypes} from '../lib/utils/constants';
+import {tagTypes, getTagTypeName} from '../lib/utils/constants';
 import {ASSToLyrics} from '../lib/utils/ass';
 import {refreshTags, refreshKaraTags, refreshAllKaraTags} from '../lib/dao/tag';
-import { saveSetting } from '../lib/dao/database';
+import { saveSetting, databaseReady } from '../lib/dao/database';
 import { refreshYears, refreshKaras } from '../lib/dao/kara';
 import { getASS } from '../lib/dao/karafile';
 import {selectAllKaras,
@@ -17,7 +17,7 @@ import {selectAllKaras,
 import {updateKaraTags} from '../dao/tag';
 import {basename} from 'path';
 import {profile} from '../lib/utils/logger';
-import {Kara, KaraParams, KaraList, YearList, KaraFileV4} from '../lib/types/kara';
+import {Kara, KaraParams, KaraList, YearList, KaraFileV4, KaraTag} from '../lib/types/kara';
 import {asyncUnlink, resolveFileInDirs, asyncCopy, asyncReadFile, asyncWriteFile} from '../lib/utils/files';
 import logger from 'winston';
 import { editKaraInStore, removeKaraInStore, getStoreChecksum, sortKaraStore, addKaraToStore } from '../dao/dataStore';
@@ -32,6 +32,9 @@ import { resolve } from 'path';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { getTag } from './tag';
 import { emitWS } from '../lib/utils/ws';
+import { getPlaylistKaraIDs } from '../dao/playlist';
+import { editKara } from './kara_creation';
+import Task from '../lib/utils/taskManager';
 import { convert1LangTo2B } from '../lib/utils/langs';
 
 
@@ -152,7 +155,8 @@ export async function updateTags(kara: Kara) {
 	const tagsAndTypes = [];
 	for (const type of Object.keys(tagTypes)) {
 		if (kara[type]) for (const tag of kara[type]) {
-			tagsAndTypes.push({tid: tag.tid, type: tagTypes[type]});
+			// We can have either a name or a number for type
+			tagsAndTypes.push({tid: tag.tid, type: tagTypes[type] || type});
 		}
 	}
 	await updateKaraTags(kara.kid, tagsAndTypes);
@@ -330,4 +334,61 @@ export function getSeriesSingers(kara: DBKara) {
 	return kara.series?.length >= 0
 		? kara.series[0].i18n[lang] || kara.series[0].i18n.eng || kara.series[0].name
 		: kara.singers.map(s => s.name).join(', ');
+}
+
+export async function batchEditKaras(playlist_id: number, action: 'add' | 'remove', tid: string, type: number) {
+	// Checks
+	const task = new Task({
+		text: 'EDITING_KARAS_BATCH_TAGS',
+	});
+	try {
+		type = +type;
+		const tagType = getTagTypeName(type);
+		if (!tagType) throw 'Type unknown';
+		const pl = await getPlaylistKaraIDs(playlist_id);
+		if (pl.length === 0) throw 'Playlist unknown or empty';
+		task.update({
+			value: 0,
+			total: pl.length
+		});
+		if (action !== 'add' && action !== 'remove') throw 'Unkown action';
+		const tag = await getTag(tid);
+		if (!tag) throw 'Unknown tag';
+		logger.info(`[Kara] Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${playlist_id}`);
+		for (const plc of pl) {
+			const kara = await getKara(plc.kid, {username: 'admin', role: 'admin'});
+			if (!kara) {
+				logger.warn(`[Kara] Batch tag edit : kara ${plc.kid} unknown. Ignoring.`);
+				continue;
+			}
+			task.update({
+				subtext: kara.karafile
+			});
+			let modified = false;
+			if (kara[tagType].length > 0 && action === 'remove') {
+				if (kara[tagType].find((t: KaraTag) => t.tid === tid)) modified = true;
+				kara[tagType] = kara[tagType].filter((t: KaraTag) => t.tid !== tid);
+			}
+			if (action === 'add' && !kara[tagType].find((t: KaraTag) => t.tid === tid)) {
+				modified = true;
+				kara[tagType].push(tag);
+			}
+			if (modified) {
+				await editKara(kara, false);
+			} else {
+				logger.info(`[Kara] Batch edit tag : skipping ${kara.karafile} since no actions taken`);
+			}
+			task.incr();
+		}
+		refreshKaraTags();
+		refreshKaras();
+		await databaseReady();
+		logger.info('[Kara] Batch tag edit finished');
+	} catch(err) {
+		logger.info(`[Kara] Batch tag edit failed : ${err}`)
+	} finally {
+		task.end();
+	}
+
+
 }

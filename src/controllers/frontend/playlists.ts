@@ -26,7 +26,7 @@ export default function playlistsController(router: Router) {
  * {
  *   "playlists": [
  *       {
- *             <see /playlist/[id] route>
+ *             <see /playlists/[id] route>
  *       }
  *   ]
  * }

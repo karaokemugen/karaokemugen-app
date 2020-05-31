@@ -18,7 +18,7 @@ export default function pollController(router: Router) {
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
 
- * @apiSuccess {Array} data/poll Array of `playlistcontents` objects (see `/playlist/current/karas` for sample)
+ * @apiSuccess {Array} data/poll Array of `playlistcontents` objects
  * @apiSuccess {Number} data/poll/votes Number of votes this song has earned
  * @apiSuccess {Number} data/poll/index Song's index, used to cast a vote
  * @apiSuccess {Boolean} data/flag_uservoted Has the user already voted for this poll?
@@ -69,7 +69,7 @@ export default function pollController(router: Router) {
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} [index] Song's `index` property to vote for
- * @apiSuccess {Array} data/poll Array of `playlistcontents` objects (see `/playlist/current/karas` for sample)
+ * @apiSuccess {Array} data/poll Array of `playlistcontents` objects
  * @apiSuccess {Number} data/poll/votes Number of votes this song has earned
  * @apiSuccess {Boolean} data/flag_uservoted Has the user already voted for this poll?
  * @apiSuccessExample Success-Response:

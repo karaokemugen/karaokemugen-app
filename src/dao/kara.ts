@@ -5,8 +5,8 @@ import {pg as yesql} from 'yesql';
 import {now} from '../lib/utils/date';
 import { Kara, KaraParams } from '../lib/types/kara';
 import {PLC} from '../types/playlist';
-import { DBYear, DBKaraHistory } from '../types/database/kara';
-import { DBKara, DBKaraBase } from '../lib/types/database/kara';
+import { DBKaraHistory } from '../types/database/kara';
+import { DBYear, DBKara, DBKaraBase } from '../lib/types/database/kara';
 
 const sql = require('./sql/kara');
 

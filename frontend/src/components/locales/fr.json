@@ -462,6 +462,9 @@
 		"DONE": "Terminer"
 	},
 	"TASKS": {
+		"CREATING_SONG": "Création de karaoké...",
+		"EDITING_SONG": "Modification de karaoké...",
+		"EDITING_KARAS_BATCH_TAGS": "Modification des tags...",
 		"DATASTORE_UPDATE": "Mise à jour des données locales...",
 		"GENERATING": "Génération de la base de données...",
 		"GENERATING_READING": "Lecture des données...",

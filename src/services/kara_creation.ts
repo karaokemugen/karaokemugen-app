@@ -7,8 +7,13 @@ import { resolvedPathRepos, resolvedPathTemp } from '../lib/utils/config';
 import { asyncUnlink, asyncExists, asyncCopy, resolveFileInDirs, asyncMove } from '../lib/utils/files';
 import {generateKara} from '../lib/services/kara_creation';
 import logger from '../lib/utils/logger';
+import Task from '../lib/utils/taskManager';
 
-export async function editKara(kara: Kara) {
+export async function editKara(kara: Kara, refresh?: boolean) {
+	const task = new Task({
+		text: 'EDITING_SONG',
+		subtext: kara.karafile
+	});
 	let newKara: NewKara;
 	let karaFile: string;
 	try {
@@ -103,15 +108,20 @@ export async function editKara(kara: Kara) {
 	newKara.data.karafile = basename(newKara.file);
 	// Update in database
 	try {
-		await editKaraInDB(newKara.data);
+		await editKaraInDB(newKara.data, { refresh: refresh });
 	} catch(err) {
 		const errMsg = `${newKara.data.karafile} file generation is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
+	task.end();
 }
 
 export async function createKara(kara: Kara) {
+	const task = new Task({
+		text: 'CREATING_SONG',
+		subtext: kara.title
+	});
 	const newKara = await generateKara(kara, resolvedPathRepos('Karas', kara.repository)[0], resolvedPathRepos('Medias', kara.repository)[0], resolvedPathRepos('Lyrics', kara.repository)[0]);
 	await addKaraToStore(newKara.file);
 	sortKaraStore();
@@ -124,5 +134,6 @@ export async function createKara(kara: Kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
+	task.end();
 	return newKara;
 }
