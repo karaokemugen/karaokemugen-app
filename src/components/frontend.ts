@@ -28,6 +28,7 @@ import karaController from '../controllers/frontend/kara';
 import tagsController from '../controllers/frontend/tags';
 import playlistsController from '../controllers/frontend/playlists';
 import repoController from '../controllers/frontend/repo';
+import { sentryError } from '../lib/utils/sentry';
 
 /** Declare all routers for API types */
 function apiRouter() {
@@ -113,12 +114,16 @@ export async function initFrontend(): Promise<number> {
 				});
 			} catch(err) {
 				// Utter failure
+				err = new Error(err);
+				sentryError(err);
 				throw err;
 			}
 		} finally {
 			return port;
 		}
 	} catch(err) {
+		err = new Error(err);
+		sentryError(err);
 		throw err;
 	}
 }

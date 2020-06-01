@@ -1,5 +1,7 @@
 import { version } from "../version";
 
+export const sentryDSN = 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806';
+
 /** Default guest names used to fill up the database */
 export const defaultGuestNames = [
 	'Jean-Michel Normal',

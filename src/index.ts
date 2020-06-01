@@ -12,6 +12,9 @@ import {migrateOldFoldersToRepo} from './services/repo';
 import {errorStep, initStep} from './electron/electronLogger';
 import {startElectron} from './electron/electron';
 import {help} from './help';
+import {initSentry, sentryError} from "./lib/utils/sentry";
+import {createCircleAvatar} from './utils/imageProcessing';
+import {startTipLoop, stopTipLoop} from "./utils/tips";
 // Types
 import {Config} from './types/config';
 // Node modules
@@ -25,16 +28,15 @@ import {createInterface} from 'readline';
 import {getPortPromise} from 'portfinder';
 import {app, dialog} from 'electron';
 import cloneDeep from 'lodash.clonedeep';
-import {createCircleAvatar} from './utils/imageProcessing';
-import {startTipLoop, stopTipLoop} from "./utils/tips";
-import * as Sentry from '@sentry/electron';
+import dotenv from 'dotenv';
 
-if (app)
-	Sentry.init({dsn: 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806'});
+dotenv.config();
+initSentry(app);
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
 	if (logger) logger.error(`[UncaughtException]` + exception);
+	sentryError(exception);
 	if (app) dialog.showMessageBox({
 		type: 'none',
 		title: 'Karaoke Mugen Error : Uncaught Exception',
@@ -47,7 +49,14 @@ Stack: ${exception.stack}
 
 process.on('unhandledRejection', error => {
 	console.log('Unhandled Rejection at:', error);
-	if (logger) logger.error(`[UnhandledRejection]` + error.toString());
+	let errStr: string;
+	try {
+		errStr = JSON.stringify(error);
+	} catch(err) {
+		errStr = error.toString();
+	}
+	if (logger) logger.error(`[UnhandledRejection]` + errStr);
+	sentryError(new Error(errStr));
 	if (app) {
 		dialog.showMessageBox({
 		type: 'none',
@@ -164,6 +173,7 @@ if (app && !argv.cli) {
 		.catch(err => {
 			logger.error(`[Launcher] Error during launch : ${err}`);
 			console.log(err);
+			sentryError(err);
 			exit(1);
 		});
 }
@@ -256,6 +266,7 @@ export async function main() {
 			stopTipLoop();
 		} catch(err) {
 			logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
+			sentryError(err);
 			console.log(err);
 			errorStep(i18n.t('ERROR_UNKNOWN'));
 			startTipLoop('errors');
@@ -308,7 +319,7 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 			setConfig({Frontend: {Port: port}});
 		}
 	} catch(err) {
-		throw 'Failed to find a free port to use';
+		throw new Error('Failed to find a free port to use');
 	}
 }
 

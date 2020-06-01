@@ -33,6 +33,7 @@ import { generateBlacklist } from '../dao/blacklist';
 import { duration } from '../lib/utils/date';
 import { baseChecksum } from '../dao/dataStore';
 import { applyMenu } from '../electron/electron';
+import { sentryError } from "../lib/utils/sentry";
 
 let shutdownInProgress = false;
 
@@ -55,6 +56,7 @@ export async function initEngine() {
 			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Validation error : ${err}`);
+			sentryError(err);
 			await exit(1);
 		}
 	} else if (state.opt.mediaUpdate) {
@@ -64,6 +66,7 @@ export async function initEngine() {
 			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Updating medias failed : ${err}`);
+			sentryError(err);
 			await exit(1);
 		}
 	} else if (state.opt.dumpDB) {
@@ -74,6 +77,7 @@ export async function initEngine() {
 			await dumpPG();
 			await exit(0);
 		} catch(err) {
+			sentryError(err);
 			await exit(1);
 		}
 	} else if (state.opt.restoreDB) {
@@ -84,6 +88,7 @@ export async function initEngine() {
 			await restorePG();
 			await exit(0);
 		} catch(err) {
+			sentryError(err);
 			await exit(1);
 		}
 	} else if (state.opt.baseUpdate) {
@@ -96,6 +101,7 @@ export async function initEngine() {
 			await exit(0);
 		} catch (err) {
 			logger.error(`[Engine] Update failed : ${err}`);
+			sentryError(err);
 			await exit(1);
 		}
 	} else if (state.opt.generateDB) {
@@ -109,6 +115,7 @@ export async function initEngine() {
 			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Generation failed : ${err}`);
+			sentryError(err);
 			await exit(1);
 		}
 	} else {
@@ -129,6 +136,7 @@ export async function initEngine() {
 		} catch(err) {
 			//Non-blocking
 			logger.error(`[Engine] Failed to init online system : ${err}`);
+			sentryError(err);
 		}
 		let inits = [];
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
@@ -182,6 +190,7 @@ export async function exit(rc: any) {
 		await quitmpv();
 	} catch(err) {
 		logger.warn(`[Engine] mpv error : ${err}`);
+		sentryError(err);
 	} finally {
 		logger.info('[Engine] Player has shutdown');
 	}
@@ -199,6 +208,7 @@ export async function exit(rc: any) {
 				mataNe(rc);
 			} catch(err) {
 				logger.warn(`[Engine] PostgreSQL could not be stopped! : ${JSON.stringify(err)}`);
+				sentryError(err);
 				mataNe(rc);
 			}
 		} else {
@@ -206,6 +216,7 @@ export async function exit(rc: any) {
 		}
 	} catch(err) {
 		logger.error(`[Engine] Failed to shutdown PostgreSQL : ${err}`);
+		sentryError(err);
 		mataNe(1);
 	}
 }
