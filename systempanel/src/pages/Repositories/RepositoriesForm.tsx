@@ -97,7 +97,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					}]}
 					name="PathKaras"
 				>
-					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'PathKaras': value })} />
+					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathKaras': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_LYRICS')}
@@ -109,7 +109,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					}]}
 					name="PathLyrics"
 				>
-					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'PathLyrics': value })} />
+					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathLyrics': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_MEDIAS')}
@@ -121,7 +121,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					}]}
 					name="PathMedias"
 				>
-					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'PathMedias': value })} />
+					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathMedias': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_SERIES')}
@@ -133,7 +133,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					}]}
 					name="PathSeries"
 				>
-					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'PathSeries': value })} />
+					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathSeries': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_TAGS')}
@@ -145,7 +145,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					}]}
 					name="PathTags"
 				>
-					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'PathTags': value })} />
+					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathTags': value })} />
 				</Form.Item>
 				<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{textAlign:"right"}}>
 					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
