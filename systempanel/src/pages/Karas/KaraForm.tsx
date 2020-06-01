@@ -228,7 +228,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				created_at: this.state.created_at, modified_at: this.state.modified_at,
 				mediafile: this.props.kara?.mediafile, subfile: this.props.kara?.subfile}}>
 				<Form.Item
-					hasFeedback
 					label={
 						<span>{i18next.t('KARA.MEDIA_FILE')}&nbsp;
 							<Tooltip title={i18next.t('KARA.MEDIA_FILE_TOOLTIP')}>
