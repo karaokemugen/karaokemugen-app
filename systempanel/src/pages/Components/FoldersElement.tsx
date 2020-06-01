@@ -66,15 +66,17 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 	
 	saveFolders () {
 		let value = this.state.value;
-		if (this.state.indexModal === undefined) {
-			value = this.state.newValueModal.replace('\\', '/');
-		} else if (this.state.indexModal === -1) {
-			(value as any[]).push(this.state.newValueModal.replace('\\', '/'));
-		} else {
-			(value as any[])[this.state.indexModal] = this.state.newValueModal.replace(/\\/g, '/')
+		if (this.state.newValueModal) {
+			if (this.state.indexModal === undefined) {
+				value = this.state.newValueModal.replace('\\', '/');
+			} else if (this.state.indexModal === -1) {
+				(value as any[]).push(this.state.newValueModal.replace('\\', '/'));
+			} else {
+				(value as any[])[this.state.indexModal] = this.state.newValueModal.replace(/\\/g, '/')
+			}
+			this.setState({value: value});
+			this.props.onChange && this.props.onChange(value);
 		}
-		this.setState({value: value});
-		this.props.onChange && this.props.onChange(value);
 	}
 
 	getPathForFileSystem(value:string, key?: string) {
