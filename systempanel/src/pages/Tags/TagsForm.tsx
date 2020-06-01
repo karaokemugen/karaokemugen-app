@@ -43,7 +43,9 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 	getRepositories = async () => {
 		const res = await Axios.get("/repos");
-		this.setState({ repositoriesValue: res.data.map(repo => repo.Name)});
+		await this.setState({ repositoriesValue: res.data.map(repo => repo.Name)});
+		this.formRef.current.setFieldsValue({repository: this.props.tag?.repository ? this.props.tag.repository : 
+			(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null)});
 	};
 
 	showSelect = () => {
