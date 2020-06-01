@@ -58,7 +58,7 @@ class RepositoryList extends Component<{}, RepositoryListState> {
 						<Table
 							dataSource={this.state.repositories}
 							columns={this.columns}
-							rowKey='name'
+							rowKey='Name'
 						/>
 					</Layout.Content>
 				</Layout>

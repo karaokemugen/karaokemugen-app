@@ -22,13 +22,38 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 		consolidatePath: undefined
 	};
 
+	handleSubmit = (values) => {
+		let repository:Repository = {
+			Name: values.Name,
+			Online: values.Online,
+			Enabled: values.Enabled,
+			Path: {
+				Karas: values.PathKaras,
+				Lyrics: values.PathLyrics,
+				Medias: values.PathMedias,
+				Series: values.PathSeries,
+				Tags: values.PathTags
+			}
+		};
+		this.props.save(repository);
+	};
+
 	render() {
 		return (
 			<Form
 				ref={this.formRef}
-				onFinish={this.props.save}
+				onFinish={this.handleSubmit}
 				className='repository-form'
-				initialValues={this.props.repository}
+				initialValues={{
+					Name: this.props.repository?.Name,
+					Online: this.props.repository?.Online,
+					Enabled: this.props.repository?.Enabled,
+					PathKaras: this.props.repository?.Path.Karas,
+					PathLyrics: this.props.repository?.Path.Lyrics,
+					PathMedias: this.props.repository?.Path.Medias,
+					PathSeries: this.props.repository?.Path.Series,
+					PathTags: this.props.repository?.Path.Tags
+				}}
 			>
 				<Form.Item hasFeedback
 					label={i18next.t('REPOSITORIES.NAME')}
@@ -38,6 +63,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						required: true,
 						message: i18next.t('TAGS.NAME_REQUIRED')
 					}]}
+					name="Name"
 				>
 					<Input
 						placeholder={i18next.t('REPOSITORIES.NAME')}
@@ -48,6 +74,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 10 }}
 					valuePropName="checked"
+					name="Online"
 				>
 					<Checkbox />
 				</Form.Item>
@@ -56,6 +83,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 10 }}
 					valuePropName="checked"
+					name="Enabled"
 				>
 					<Checkbox />
 				</Form.Item>
@@ -67,8 +95,9 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						required: true,
 						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_KARAS')})
 					}]}
+					name="PathKaras"
 				>
-					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'Path.Karas': value })} />
+					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'PathKaras': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_LYRICS')}
@@ -78,8 +107,9 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						required: true,
 						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_LYRICS')})
 					}]}
+					name="PathLyrics"
 				>
-					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'Path.Lyrics': value })} />
+					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'PathLyrics': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_MEDIAS')}
@@ -89,8 +119,9 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						required: true,
 						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_MEDIAS')})
 					}]}
+					name="PathMedias"
 				>
-					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'Path.Medias': value })} />
+					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'PathMedias': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_SERIES')}
@@ -100,8 +131,9 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						required: true,
 						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_SERIES')})
 					}]}
+					name="PathSeries"
 				>
-					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'Path.Series': value })} />
+					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'PathSeries': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_TAGS')}
@@ -111,8 +143,9 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						required: true,
 						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_TAGS')})
 					}]}
+					name="PathTags"
 				>
-					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'Path.Tags': value })} />
+					<FoldersElement onChange={(value) => this.formRef.current.setFieldsValue({ 'PathTags': value })} />
 				</Form.Item>
 				<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{textAlign:"right"}}>
 					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
