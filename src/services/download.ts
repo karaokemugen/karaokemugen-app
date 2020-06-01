@@ -147,8 +147,7 @@ async function processDownload(download: KaraDownload) {
 		const localTagsPath = resolve(resolvedPathRepos('Tags', download.repository)[0]);
 		const localLyricsPath = resolve(resolvedPathRepos('Lyrics', download.repository)[0]);
 
-		const conf = getConfig();
-		const res = await HTTP.get(`https://${conf.Online.Host}/api/karas/${download.kid}/raw`);
+		const res = await HTTP.get(`https://${download.repository}/api/karas/${download.kid}/raw`);
 		const bundle: DownloadBundle = JSON.parse(res.body);
 
 		const tempDir = resolvedPathTemp();
