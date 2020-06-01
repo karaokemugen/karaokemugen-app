@@ -50,3 +50,6 @@ dist2
 js
 packages
 postgrator.json
+
+# Dev
+.env
