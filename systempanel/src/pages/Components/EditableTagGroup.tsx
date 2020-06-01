@@ -198,9 +198,9 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 									this.state.DS.filter(tag => tag.value === this.state.currentVal)[0].value ? this.state.DS.filter(tag => tag.value === this.state.currentVal)[0].text
 								: this.state.currentVal}
 							/>
-							<Button type='primary' onClick={() => this.handleInputConfirm(this.state.currentVal)}
+							<Button style={{marginTop: '10px'}} type='primary' onClick={() => this.handleInputConfirm(this.state.currentVal)}
 								className='login-form-button'>
-						{i18next.t('ADD')}
+								{i18next.t('ADD')}
 							</Button>
 						</Form.Item>
 					)}
