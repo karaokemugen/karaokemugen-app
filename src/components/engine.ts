@@ -174,6 +174,7 @@ export async function initEngine() {
 			if (conf.Database.prod.bundledPostgresBinary) await dumpPG();
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
+			sentryError(err);
 			if (state.isTest) process.exit(1000);
 		} finally {
 			profile('Init');
