@@ -238,7 +238,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				>
 					<EditableTagGroup
 						search={'aliases'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ aliases: tags.join(',') })}
+						onChange={(tags) => this.formRef.current.setFieldsValue({ aliases: tags })}
 					/>
 				</Form.Item>
 
