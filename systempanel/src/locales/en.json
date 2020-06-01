@@ -81,6 +81,7 @@
 		"DETAILS": "Details",
 		"TOTAL_MEDIA_SIZE": "Total media size:",
 		"IMPORT_PLAYLIST": "Import playlist",
+		"REPOSITORY_REQUIRED": "Repository is mandatory",
 		"BATCH_EDIT": {
 			"ADD_TAG": "Add tag",
 			"REMOVE_TAG": "Remove tag",
@@ -189,7 +190,8 @@
 		"DELETE_TAG_MESSAGE": "This will remove its tags.json file as well as in any .kara.json in your database!",
 		"LANG_ERROR": "A tag must have at least one name by language",
 		"REPOSITORY": "Repository",
-		"REPOSITORY_CHANGED": "You must know what you're doing by editing this, as it won't move tag files out of the repository for you, and it won't affect any karaoke linked to it."
+		"REPOSITORY_CHANGED": "You must know what you're doing by editing this, as it won't move tag files out of the repository for you, and it won't affect any karaoke linked to it.",
+		"REPOSITORY_REQUIRED": "Repository is mandatory"
 	},
 	"TAG_TYPES": {
 		"SINGERS": "Singer",

@@ -564,6 +564,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						label={i18next.t('KARA.REPOSITORY')}
 						labelCol={{ flex: '0 1 200px' }}
 						wrapperCol={{ span: 3 }}
+						rules={[{
+							required: true,
+							message: i18next.t('KARA.REPOSITORY_REQUIRED')
+						}]}
 						name="repository"
 					>
 						<Select disabled={this.props.kara?.repository !== undefined} placeholder={i18next.t('KARA.REPOSITORY')}>

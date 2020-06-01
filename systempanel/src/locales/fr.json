@@ -81,6 +81,7 @@
 		"DETAILS": "Détails",
 		"TOTAL_MEDIA_SIZE": "Taille totale des médias :",
 		"IMPORT_PLAYLIST": "Importer la liste de lecture",
+		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire",
 		"BATCH_EDIT": {
 			"ADD_TAG": "Ajout de tag",
 			"REMOVE_TAG": "Suppression de tag",
@@ -189,7 +190,8 @@
 		"DELETE_TAG_MESSAGE": "Cela va supprimer le fichier tags.json ainsi que la référence du tag dans les fichiers .kara.json de votre base de données !",
 		"LANG_ERROR": "Un tag doit avoir au moins un nom par langue.",
 		"REPOSITORY": "Dépôt",
-		"REPOSITORY_CHANGED": "Vous devez savoir ce que vous faites en le modifiant, car cela ne déplacera pas les fichiers de tags hors du dépôt pour vous, et cela n'affectera aucun karaoké qui y est lié."
+		"REPOSITORY_CHANGED": "Vous devez savoir ce que vous faites en le modifiant, car cela ne déplacera pas les fichiers de tags hors du dépôt pour vous, et cela n'affectera aucun karaoké qui y est lié.",
+		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire"
 	},
 	"TAG_TYPES": {
 		"SINGERS": "Chanteur",

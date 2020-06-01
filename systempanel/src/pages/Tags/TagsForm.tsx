@@ -58,7 +58,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				delete values[`lang_${lang}`];
 			});
 			values.i18n = i18nField;
-			values.tid = this.props.tag.tid;
+			values.tid = this.props.tag?.tid;
 			this.props.save(values);
 		} else {
 			message.error(i18next.t('TAGS.LANG_ERROR'));
@@ -138,7 +138,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				className='tag-form'
 				initialValues={initialValues}
 			>
-				<Form.Item hasFeedback
+				<Form.Item
 					label={(
 						<span>{i18next.t('TAGS.NAME')}&nbsp;
 							<Tooltip title={i18next.t('TAGS.NAME_TOOLTIP')}>
@@ -147,7 +147,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</span>
 					)}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ flex: "auto" }}
 					name="name"
 					rules={[{
 						required: true,
@@ -158,7 +157,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						placeholder={i18next.t('TAGS.NAME')}
 					/>
 				</Form.Item>
-				<Form.Item hasFeedback
+				<Form.Item
 					label={(
 						<span>{i18next.t('TAGS.SHORT_NAME')}&nbsp;
 							<Tooltip title={i18next.t('TAGS.SHORT_NAME_TOOLTIP')}>
@@ -167,14 +166,13 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</span>
 					)}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ flex: "auto" }}
 					name="short"
 				>
 					<Input style={{maxWidth: '40%', minWidth: '150px'}}
 						placeholder={i18next.t('TAGS.SHORT_NAME')}
 					/>
 				</Form.Item>
-				<Form.Item hasFeedback
+				<Form.Item
 					label={(
 						<span>{i18next.t('TAGS.TYPES')}&nbsp;
 								<Tooltip title={i18next.t('TAGS.TYPES_TOOLTIP')}>
@@ -183,11 +181,10 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</span>
 					)}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ flex: "auto" }}
 					name="types"
 					required={true}
 				>
-					<Select style={{maxWidth: '40%', minWidth: '150px'}} mode="multiple" placeholder={i18next.t('TAGS.TYPES')}>
+					<Select style={{maxWidth: '40%', minWidth: '150px'}} mode="multiple" placeholder={i18next.t('TAGS.TYPES')} showSearch={false}>
 						{Object.keys(tagTypes).map(type => {
 							const value = tagTypes[type];
 							return <Select.Option key={value} value={value}>
@@ -201,7 +198,10 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					<Form.Item
 						label={i18next.t('TAGS.REPOSITORY')}
 						labelCol={{ flex: '0 1 200px' }}
-						wrapperCol={{ flex: "auto" }}
+						rules={[{
+							required: true,
+							message: i18next.t('TAGS.REPOSITORY_REQUIRED')
+						}]}
 						name="repository"
 					>
 						<Select style={{maxWidth: '20%', minWidth: '150px'}}  placeholder={i18next.t('TAGS.REPOSITORY')}>
@@ -233,7 +233,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</span>
 					)}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ flex: "auto" }}
 					name="aliases"
 				>
 					<EditableTagGroup
@@ -305,11 +304,11 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					}
 				</Form.Item>
 				<Form.Item wrapperCol={{ flex: '45%' }} style={{textAlign:"right"}}>
-					<Button type='primary' htmlType='submit' 
+					<Button type='primary' htmlType='submit'
 						className='tags-form-button'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 				
-				<Form.Item hasFeedback
+				<Form.Item
 					label={(
 						<span>{i18next.t('TAGS.MERGE_WITH')}&nbsp;
 							<Tooltip title={i18next.t('TAGS.MERGE_WITH_TOOLTIP')}>
@@ -318,7 +317,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</span>
 					)}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ flex: "auto" }}
 					>
 					<Cascader style={{maxWidth: '40%', minWidth: '150px'}}
 						options={this.mergeCascaderOption()} 
