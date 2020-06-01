@@ -9,7 +9,7 @@ import {generateKara} from '../lib/services/kara_creation';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 
-export async function editKara(kara: Kara, refresh?: boolean) {
+export async function editKara(kara: Kara, refresh = true) {
 	const task = new Task({
 		text: 'EDITING_SONG',
 		subtext: kara.karafile
