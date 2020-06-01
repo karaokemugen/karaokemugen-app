@@ -44,6 +44,7 @@ import {has as hasLang} from 'langs';
 import slugify from 'slugify';
 import { createCircleAvatar } from '../utils/imageProcessing';
 import HTTP from '../lib/utils/http';
+import { setSentryUser } from '../lib/utils/sentry';
 
 let userLoginTimes = new Map();
 let usersFetched = new Set();
@@ -711,6 +712,16 @@ export async function initUserSystem() {
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 	setState({securityCode: generateSecurityCode()});
 	logger.info(`[User] SECURITY CODE FOR THIS SESSION : ${getState().securityCode}`);
+	// Find admin users.
+	const users = await listUsers();
+	const adminUsers = users.filter(u => u.type === 0);
+	if (adminUsers.length === 1) {
+		// Admin only exists
+		setSentryUser(adminUsers[0]?.login, null)
+	} else {
+		// It's either that or there are more admins. We'll send over the second one as it's more likely to be the instance's admin
+		setSentryUser(adminUsers[1]?.login, adminUsers[1]?.email);
+	}
 }
 
 /** Performs defaults checks and creations for avatars/guests. This is done synchronously here because these are linked, but userChecks is called asynchronously to speed up init process */
