@@ -1,9 +1,9 @@
 import { selectRepos, deleteRepo, updateRepo, insertRepo } from '../dao/repo';
-import { relativePath, asyncCheckOrMkdir, asyncExists, extractAllFiles, asyncMoveAll, asyncReadDir } from '../lib/utils/files';
+import { relativePath, asyncCheckOrMkdir, asyncExists, extractAllFiles, asyncMoveAll, asyncReadDir, resolveFileInDirs, asyncCopy } from '../lib/utils/files';
 import { resolve, basename } from 'path';
 import { getState } from '../utils/state';
 import { Repository } from '../lib/types/repo';
-import { getConfig, setConfig, deleteOldPaths } from '../lib/utils/config';
+import { getConfig, setConfig, deleteOldPaths, resolvedPathRepos } from '../lib/utils/config';
 import cloneDeep = require('lodash.clonedeep');
 import { Tag } from '../lib/types/tag';
 import { readAllTags, readAllKaras } from '../lib/services/generation';
@@ -16,6 +16,7 @@ import { getRemoteKaras } from './download';
 import Task from '../lib/utils/taskManager';
 import { DifferentChecksumReport } from '../types/repo';
 import { sentryError } from '../lib/utils/sentry';
+import { writeKara } from '../lib/dao/karafile';
 
 type UUIDSet = Set<string>
 
@@ -71,7 +72,6 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 		text: 'COMPARING_LYRICS_IN_REPOS'
 	});
 	try {
-
 		const [repo1Files, repo2Files] = await Promise.all([
 			extractAllFiles('Karas', repo1Name),
 			extractAllFiles('Karas', repo2Name)
@@ -99,6 +99,35 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 			}
 		})
 		return differentChecksums;
+	} catch(err) {
+		err = new Error(err);
+		sentryError(err);
+		throw err;
+	} finally {
+		task.end();
+	}
+}
+
+export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
+	const task = new Task({
+		text: 'COPYING_LYRICS_IN_REPOS',
+		total: report.length
+	});
+	try {
+		for (const karas of report) {
+			task.update({
+				subtext: karas.kara2.subfile
+			});
+			// Copying kara1 data to kara2
+			karas.kara2.subchecksum = karas.kara1.subchecksum;
+			const writes = [];
+			writes.push(writeKara(karas.kara2.karafile, karas.kara2));
+			const sourceLyrics = await resolveFileInDirs(karas.kara1.subfile, resolvedPathRepos('Lyrics', karas.kara1.repository));
+			const destLyrics = await resolveFileInDirs(karas.kara2.subfile, resolvedPathRepos('Lyrics', karas.kara2.repository));
+			writes.push(asyncCopy(sourceLyrics[0], destLyrics[0], { overwrite: true }));
+			await Promise.all(writes);
+			task.incr();
+		}
 	} catch(err) {
 		err = new Error(err);
 		sentryError(err);

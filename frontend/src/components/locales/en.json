@@ -443,6 +443,7 @@
 		"DONE": "Done"
 	},
 	"TASKS": {
+		"COPYING_LYRICS_IN_REPOS": "Updating lyrics...",
 		"FINDING_UNUSED_TAGS": "Searching unused tags...",
 		"FINDING_UNUSED_MEDIAS": "Searching unused medias...",
 		"COMPARING_LYRICS_IN_REPOS": "Comparing lyrics between repositories...",

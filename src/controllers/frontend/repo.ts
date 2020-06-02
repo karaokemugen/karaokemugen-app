@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { requireNotDemo } from '../middlewares/demo';
 import { requireAuth, requireValidUser, requireAdmin } from '../middlewares/auth';
-import { getRepos, getRepo, removeRepo, addRepo, editRepo, findUnusedTags, findUnusedMedias, consolidateRepo, compareLyricsChecksums } from '../../services/repo';
+import { getRepos, getRepo, removeRepo, addRepo, editRepo, findUnusedTags, findUnusedMedias, consolidateRepo, compareLyricsChecksums, copyLyricsRepo } from '../../services/repo';
 import { errMessage, APIMessage } from '../common';
 
 export default function repoController(router: Router) {
@@ -272,5 +272,31 @@ export default function repoController(router: Router) {
 				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
-		});
+		})
+			/**
+		 * @api {post} /repos/compareLyrics Compare lyrics between two repositories
+		 * @apiName PostCompareLyrics
+		 * @apiVersion 3.3.0
+		 * @apiGroup Repositories
+		 * @apiPermission admin
+		 * @apiDescription Updates lyrics from one repo to the other
+		 * @apiHeader authorization Auth token received from logging in
+		 * @apiParam {string} name Master Repository to check from
+		 * @apiParam {object} report Report object you get frop GET /api/repos/:name/compareLyrics
+		 * @apiSuccessExample Success-Response:
+		 * HTTP/1.1 200 OK
+		 * @apiErrorExample Error-Response:
+		 * HTTP/1.1 500 Internal Server Error
+ 		 * {code: 'REPO_COMPARE_LYRICS_ERROR'}
+		 */
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+			try {
+				await copyLyricsRepo(req.body.report);
+				res.status(200).json(APIMessage('REPO_LYRICS_COPIED'));
+			} catch(err) {
+				const code = 'REPO_COPY_LYRICS_ERROR';
+				errMessage(code, err);
+				res.status(500).json(APIMessage(code));
+			}
+		})
 }
