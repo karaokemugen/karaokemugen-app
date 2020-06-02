@@ -58,7 +58,7 @@ build-react:
     - yarn installFrontend
     - yarn buildSystemPanel
     - yarn buildFrontend
-    - yarn ts-node util/sentryUploadSourceMaps.ts
+    - yarn ts-node util/sentryUpdateReleases.ts
   only:
     - master
     - next
