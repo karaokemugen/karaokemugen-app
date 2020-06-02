@@ -1,19 +1,22 @@
 import { selectRepos, deleteRepo, updateRepo, insertRepo } from '../dao/repo';
-import { relativePath, asyncCheckOrMkdir, asyncExists, extractAllFiles, asyncMoveAll, asyncReadDir } from '../lib/utils/files';
+import { relativePath, asyncCheckOrMkdir, asyncExists, extractAllFiles, asyncMoveAll, asyncReadDir, resolveFileInDirs, asyncCopy } from '../lib/utils/files';
 import { resolve, basename } from 'path';
 import { getState } from '../utils/state';
 import { Repository } from '../lib/types/repo';
-import { getConfig, setConfig, deleteOldPaths } from '../lib/utils/config';
+import { getConfig, setConfig, deleteOldPaths, resolvedPathRepos } from '../lib/utils/config';
 import cloneDeep = require('lodash.clonedeep');
 import { Tag } from '../lib/types/tag';
 import { readAllTags, readAllKaras } from '../lib/services/generation';
 import { tagTypes } from '../lib/utils/constants';
-import { KaraTag } from '../lib/types/kara';
+import { KaraTag, Kara } from '../lib/types/kara';
 import { getTag } from './tag';
 import logger from '../lib/utils/logger';
 import { compareKarasChecksum, generateDB } from '../dao/database';
 import { getRemoteKaras } from './download';
 import Task from '../lib/utils/taskManager';
+import { DifferentChecksumReport } from '../types/repo';
+import { sentryError } from '../lib/utils/sentry';
+import { writeKara } from '../lib/dao/karafile';
 
 type UUIDSet = Set<string>
 
@@ -63,6 +66,77 @@ export async function editRepo(name: string, repo: Repository) {
 	logger.info(`[Repo] Updated ${name}`);
 }
 
+export async function compareLyricsChecksums(repo1Name: string, repo2Name: string): Promise<DifferentChecksumReport[]> {
+	// Get all files
+	const task = new Task({
+		text: 'COMPARING_LYRICS_IN_REPOS'
+	});
+	try {
+		const [repo1Files, repo2Files] = await Promise.all([
+			extractAllFiles('Karas', repo1Name),
+			extractAllFiles('Karas', repo2Name)
+		]);
+		const [karas1, karas2] = await Promise.all([
+			readAllKaras(repo1Files, false, task),
+			readAllKaras(repo2Files, false, task)
+		]);
+		type KaraMap = Map<string, Kara>;
+		const karas1Map: KaraMap = new Map();
+		const karas2Map: KaraMap = new Map();
+		karas1.forEach(k => karas1Map.set(k.kid, k));
+		karas2.forEach(k => karas2Map.set(k.kid, k));
+		const differentChecksums = [];
+		karas1Map.forEach(kara1 => {
+			if (kara1.kid === 'a92402e0-a8ef-405e-95d5-e9af7e8a9f04') {
+				console.log('lol')
+			}
+			const kara2 = karas2Map.get(kara1.kid);
+			if (kara2) {
+				if (kara2.subchecksum !== kara1.subchecksum) differentChecksums.push({
+					kara1: kara1,
+					kara2: kara2
+				});
+			}
+		})
+		return differentChecksums;
+	} catch(err) {
+		err = new Error(err);
+		sentryError(err);
+		throw err;
+	} finally {
+		task.end();
+	}
+}
+
+export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
+	const task = new Task({
+		text: 'COPYING_LYRICS_IN_REPOS',
+		total: report.length
+	});
+	try {
+		for (const karas of report) {
+			task.update({
+				subtext: karas.kara2.subfile
+			});
+			// Copying kara1 data to kara2
+			karas.kara2.subchecksum = karas.kara1.subchecksum;
+			const writes = [];
+			writes.push(writeKara(karas.kara2.karafile, karas.kara2));
+			const sourceLyrics = await resolveFileInDirs(karas.kara1.subfile, resolvedPathRepos('Lyrics', karas.kara1.repository));
+			const destLyrics = await resolveFileInDirs(karas.kara2.subfile, resolvedPathRepos('Lyrics', karas.kara2.repository));
+			writes.push(asyncCopy(sourceLyrics[0], destLyrics[0], { overwrite: true }));
+			await Promise.all(writes);
+			task.incr();
+		}
+	} catch(err) {
+		err = new Error(err);
+		sentryError(err);
+		throw err;
+	} finally {
+		task.end();
+	}
+}
+
 async function checkRepoPaths(repo: Repository) {
 	const checks = [];
 	for (const path of Object.keys(repo.Path)) {
@@ -73,38 +147,66 @@ async function checkRepoPaths(repo: Repository) {
 
 /** Find any unused medias in a repository */
 export async function findUnusedMedias(repo: string): Promise<string[]> {
-	let [karaFiles, mediaFiles] = await Promise.all([
-		extractAllFiles('Karas', repo),
-		extractAllFiles('Medias', repo)
-	]);
-	const karas = await readAllKaras(karaFiles, false);
-	karas.forEach(k => {
-		mediaFiles = mediaFiles.filter(file => basename(file) !== k.mediafile);
+	const task = new Task({
+		text: 'FINDING_UNUSED_MEDIAS'
 	});
-	return mediaFiles;
+	try {
+		let [karaFiles, mediaFiles] = await Promise.all([
+			extractAllFiles('Karas', repo),
+			extractAllFiles('Medias', repo)
+		]);
+		const karas = await (readAllKaras(karaFiles, false, task));
+		karas.forEach(k => {
+			mediaFiles = mediaFiles.filter(file => basename(file) !== k.mediafile);
+		});
+		return mediaFiles;
+	} catch(err) {
+		err = new Error(err);
+		sentryError(err);
+		throw err;
+	} finally {
+		task.end();
+	}
 }
 
 /** Find any unused tags in a repository */
 export async function findUnusedTags(repo: string): Promise<Tag[]> {
-	const [karaFiles, tagFiles] = await Promise.all([
-		extractAllFiles('Karas', repo),
-		extractAllFiles('Tags', repo)
-	]);
-	const karas = await readAllKaras(karaFiles, false);
-	const tags = await readAllTags(tagFiles);
-	const tids: UUIDSet = new Set();
-	tags.forEach(t => tids.add(t.tid));
-	for (const kara of karas) {
-		for (const tagType of Object.keys(tagTypes)) {
-			if (kara[tagType]) kara[tagType].forEach((t: KaraTag) => tids.delete(t.tid));
+	const task = new Task({
+		text: 'FINDING_UNUSED_TAGS'
+	});
+	try {
+		const [karaFiles, tagFiles] = await Promise.all([
+			extractAllFiles('Karas', repo),
+			extractAllFiles('Tags', repo)
+		]);
+		task.update({
+			total: karaFiles.length + tagFiles.length
+		})
+		const karas = await readAllKaras(karaFiles, false, task);
+		const tags = await readAllTags(tagFiles, task);
+		task.update({
+			total: 0
+		});
+		const tids: UUIDSet = new Set();
+		tags.forEach(t => tids.add(t.tid));
+		for (const kara of karas) {
+			for (const tagType of Object.keys(tagTypes)) {
+				if (kara[tagType]) kara[tagType].forEach((t: KaraTag) => tids.delete(t.tid));
+			}
 		}
+		// Now tids only has tag IDs which aren't used anywhere
+		const tagsToDelete: Tag[] = [];
+		for (const tid of tids) {
+			tagsToDelete.push(await getTag(tid));
+		}
+		return tagsToDelete;
+	} catch(err) {
+		err = new Error(err);
+		sentryError(err);
+		throw err;
+	} finally {
+		task.end();
 	}
-	// Now tids only has tag IDs which aren't used anywhere
-	const tagsToDelete: Tag[] = [];
-	for (const tid of tids) {
-		tagsToDelete.push(await getTag(tid));
-	}
-	return tagsToDelete;
 }
 
 /** Migrate old data architecture to the new one */
