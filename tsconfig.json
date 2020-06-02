@@ -19,6 +19,8 @@
 		// Import constants from JSON (locales).
 		"resolveJsonModule": true,
 		"sourceMap": true,
+		"noEmitHelpers": true,
+		"importHelpers": true,
 		"inlineSources": true,
 		"outDir": "dist/",
 		"pretty": true,
