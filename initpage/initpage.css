@@ -29,11 +29,13 @@ body {
 	flex-direction: column;
 	text-align: center;
 }
-.initpage--wrapper > aside.ip--logs-panel {
+.initpage--wrapper div.ip--logs-panel {
 	flex:1;
 	display: none; /* will be set to flex through ".initpage--wrapper[data-display-log="true"]" */
 	justify-content: center;
 	flex-direction: column;
+	height: 35vh;
+	width: 50vh;
 }
 
 .ip--logo {
@@ -42,6 +44,12 @@ body {
 }
 
 .ip--message {
+}
+
+.ip--top {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .ip--loading-dots {
@@ -120,6 +128,7 @@ body {
 	position: relative;
 	line-height: 1.5em;
 	color: hsl(225, 7%, 63%);
+	text-align: left;
 }
 .ip--logs li::before {
 	display: inline-block;
@@ -167,6 +176,6 @@ body {
     animation: pulse 3s infinite ease-in-out;
 }
 
-.initpage--wrapper[data-display-log="true"] aside.ip--logs-panel {
+.initpage--wrapper[data-display-log="true"] div.ip--logs-panel {
 	display: flex;
 }

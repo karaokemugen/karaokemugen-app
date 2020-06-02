@@ -11,19 +11,21 @@
   <body>
   	<div class="initpage--wrapper" data-loading="true" data-display-log="false">
   		<main class="ip--main">
-			<img class="ip--logo" src='./public/km-logo.png' />
+			<div class="ip--top">
+				<img class="ip--logo" src='./public/km-logo.png' alt="Karaoke Mugen" />
+				<div class="ip--logs-panel">
+					<ul class="ip--logs"></ul>
+				</div>
+			</div>
 			<div class="ip--message"></div>
 			<div class="ip--loading-dots"></div>
 			<div class="ip--nanami">
-				<img>
+				<img src="./public/nanami-hehe2.png" alt="Nanamin">
 				<div class="ip--protip"></div>
 			</div>
 			<div class="ip-error"></div>
 			<button class="ip--button-logs">Display logs</button>
 		</main>
-		<aside class="ip--logs-panel">
-			<ul class="ip--logs"></ul>
-		</aside>
 	</div>
   </body>
   <script src="initpage.js"></script>
