@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { requireNotDemo } from '../middlewares/demo';
 import { requireAuth, requireValidUser, requireAdmin } from '../middlewares/auth';
-import { getRepos, getRepo, removeRepo, addRepo, editRepo, findUnusedTags, findUnusedMedias, consolidateRepo } from '../../services/repo';
+import { getRepos, getRepo, removeRepo, addRepo, editRepo, findUnusedTags, findUnusedMedias, consolidateRepo, compareLyricsChecksums } from '../../services/repo';
 import { errMessage, APIMessage } from '../common';
 
 export default function repoController(router: Router) {
@@ -247,4 +247,30 @@ export default function repoController(router: Router) {
 					// This is async, check function to know which WS event you get
 				}
 			});
+	router.route('/repos/:name/compareLyrics')
+			/**
+		 * @api {get} /repos/compareLyrics Compare lyrics between two repositories
+		 * @apiName GetCompareLyrics
+		 * @apiVersion 3.3.0
+		 * @apiGroup Repositories
+		 * @apiPermission admin
+		 * @apiHeader authorization Auth token received from logging in
+		 * @apiParam {string} name Master Repository to check from
+		 * @apiParam {string} repo Slave Repository to check against
+		 * @apiSuccessExample Success-Response:
+		 * HTTP/1.1 200 OK
+		 * @apiErrorExample Error-Response:
+		 * HTTP/1.1 500 Internal Server Error
+ 		 * {code: 'REPO_COMPARE_LYRICS_ERROR'}
+		 */
+		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+			try {
+				const report = await compareLyricsChecksums(req.params.name, req.query.repo);
+				res.status(200).json(report);
+			} catch(err) {
+				const code = 'REPO_COMPARE_LYRICS_ERROR';
+				errMessage(code, err);
+				res.status(500).json(APIMessage(code));
+			}
+		});
 }

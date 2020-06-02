@@ -293,6 +293,9 @@
 		"USERS_DESCRIPTION_3": ", changer les mots de passe, créer de nouveaux comptes invités"
 	},
 	"TASKS": {
+		"FINDING_UNUSED_TAGS": "Recherche de tags inutilisés...",
+		"FINDING_UNUSED_MEDIAS": "Recherche de médias inutilisés...",
+		"COMPARING_LYRICS_IN_REPOS": "Comparaison des lyrics entre dépôts...",
 		"CREATING_SONG": "Création du karaoké...",
 		"EDITING_SONG": "Modification du karaoké...",
 		"EDITING_KARAS_BATCH_TAGS": "Modification des tags...",

@@ -462,6 +462,9 @@
 		"DONE": "Terminer"
 	},
 	"TASKS": {
+		"FINDING_UNUSED_TAGS": "Recherche de tags inutilisés...",
+		"FINDING_UNUSED_MEDIAS": "Recherche de médias inutilisés...",
+		"COMPARING_LYRICS_IN_REPOS": "Comparaison des lyrics entre dépôts...",
 		"CREATING_SONG": "Création de karaoké...",
 		"EDITING_SONG": "Modification de karaoké...",
 		"EDITING_KARAS_BATCH_TAGS": "Modification des tags...",

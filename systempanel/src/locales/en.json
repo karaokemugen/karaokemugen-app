@@ -293,6 +293,9 @@
 		"USERS_DESCRIPTION_3": ", change passwords, make new guests account"
 	},
 	"TASKS": {
+		"FINDING_UNUSED_TAGS": "Searching unused tags...",
+		"FINDING_UNUSED_MEDIAS": "Searching unused medias...",
+		"COMPARING_LYRICS_IN_REPOS": "Comparing lyrics between repositories...",
 		"CREATING_SONG": "Creating karaoke...",
 		"EDITING_SONG": "Editing karaoke...",
 		"EDITING_KARAS_BATCH_TAGS": "Editing tags in songs...",
