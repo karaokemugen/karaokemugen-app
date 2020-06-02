@@ -10,13 +10,14 @@ import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
 import { refreshKaras } from '../lib/dao/kara';
 import { getAllKaras } from './kara';
 import { replaceTagInKaras } from '../lib/dao/karafile';
-import { IDQueryResult } from '../lib/types/kara';
+import { IDQueryResult, Kara } from '../lib/types/kara';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { dirname, resolve } from 'path';
 import { emitWS } from '../lib/utils/ws';
 import { DBTag } from '../lib/types/database/tag';
 import { writeSeriesFile } from '../lib/dao/seriesfile';
 import Task from '../lib/utils/taskManager';
+import { tagTypes } from '../lib/utils/constants';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
@@ -261,4 +262,31 @@ export async function integrateTagFile(file: string): Promise<string> {
 	} catch(err) {
 		logger.error(`[Tags] Error integrating tag file "${file} : ${err}`);
 	}
+}
+
+
+export async function consolidateTagsInRepo(kara: Kara) {
+	const copies = [];
+	for (const tagType of Object.keys(tagTypes)) {
+		for (const karaTag of kara[tagType]) {
+			const tag = await getTagMini(karaTag.tid);
+			if (tag.repository !== kara.repository) {
+				// This might need to be copied
+				tag.repository = kara.repository
+				const tagObj: Tag = {
+					...tag,
+					modified_at: tag.modified_at.toISOString()
+				}
+				const destPath = resolvedPathRepos('Tags', tag.repository);
+				const tagFile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
+				try {
+					await resolveFileInDirs(tagFile, destPath);
+				} catch {
+					// File doe snot exist, let's write it.
+					copies.push(writeTagFile(tagObj, destPath[0]))
+				}
+			}
+		}
+	}
+	await Promise.all(copies);
 }
