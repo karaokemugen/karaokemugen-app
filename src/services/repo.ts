@@ -17,6 +17,9 @@ import Task from '../lib/utils/taskManager';
 import { DifferentChecksumReport } from '../types/repo';
 import { sentryError } from '../lib/utils/sentry';
 import { writeKara } from '../lib/dao/karafile';
+import { editKaraInStore } from '../dao/dataStore';
+import { editKaraInDB } from './kara';
+import { refreshKaras } from '../lib/dao/kara';
 
 type UUIDSet = Set<string>
 
@@ -123,9 +126,12 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 			const sourceLyrics = await resolveFileInDirs(karas.kara1.subfile, resolvedPathRepos('Lyrics', karas.kara1.repository));
 			const destLyrics = await resolveFileInDirs(karas.kara2.subfile, resolvedPathRepos('Lyrics', karas.kara2.repository));
 			writes.push(asyncCopy(sourceLyrics[0], destLyrics[0], { overwrite: true }));
+			writes.push(editKaraInDB(karas.kara2, { refresh: false }));
 			await Promise.all(writes);
+			editKaraInStore(karas.kara2.karafile);
 			task.incr();
 		}
+		refreshKaras();
 	} catch(err) {
 		err = new Error(err);
 		sentryError(err);
