@@ -1,22 +1,33 @@
+import * as publicIP from 'public-ip';
+
 import {getConfig} from '../lib/utils/config';
-import {configureHost} from '../utils/config';
+import {configureHost, determineV6Prefix} from '../utils/config';
 import logger from '../lib/utils/logger';
 import { getState } from '../utils/state';
 import { getInstanceID } from '../lib/dao/database';
 import HTTP from '../lib/utils/http';
+import {OnlineForm} from "../types/online";
 
 /** Send IP to KM Server's URL shortener */
 export async function publishURL() {
 	configureHost();
 	const conf = getConfig();
-	const localHost = conf.Karaoke.Display.ConnectionInfo.Host || getState().osHost;
+	const localHost = conf.Karaoke.Display.ConnectionInfo.Host || getState().osHost.v4;
+	let form: OnlineForm = {
+		localIP4: localHost,
+		localPort: conf.Frontend.Port,
+		IID: await getInstanceID()
+	}
+	try {
+		form.IP4 = await publicIP.v4({timeout: 1000, onlyHttps: true});
+		form.IP6 = await publicIP.v6({timeout: 1000, onlyHttps: true});
+		form.IP6Prefix = await determineV6Prefix(form.IP6);
+	} catch (err) {
+		logger.error(`[ShortURL] Cannot find IPv6 network information: ${err.toString()}`);
+	}
 	try {
 		await HTTP.post(`https://${conf.Online.Host}/api/shortener`, {
-			form: {
-				localIP: localHost,
-				localPort: conf.Frontend.Port,
-				IID: await getInstanceID(),
-			},
+			form,
 			timeout: 5000
 		});
 		logger.debug('[ShortURL] Server accepted our publish');

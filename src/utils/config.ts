@@ -7,6 +7,9 @@ import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
 import cloneDeep from 'lodash.clonedeep';
 import i18next from 'i18next';
+import Traceroute from 'nodejs-traceroute';
+import { createCIDR } from 'ip6addr';
+import { ip as whoisIP } from 'whoiser';
 
 // KM Imports
 import logger from '../lib/utils/logger';
@@ -28,6 +31,7 @@ import { initTwitch, stopTwitch } from './twitch';
 import { removeNulls } from '../lib/utils/object_helpers';
 import { errorStep } from '../electron/electronLogger';
 import { setProgressBar } from '../electron/electron';
+import { ASNPrefixes } from "./constants";
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editSetting(part: object) {
@@ -139,15 +143,64 @@ export function configureHost() {
 	const URLPort = +config.Online.Port === 80
 		? ''
 		: `:${config.Frontend.Port}`;
-	setState({osHost: address()});
+	setState({osHost: {v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6')}});
 	if (config.Online.URL) {
 		setState({osURL: `http://${config.Online.Host}`});
 	} else {
 		if (!config.Karaoke.Display.ConnectionInfo.Host) {
-			setState({osURL: `http://${address()}${URLPort}`});
+			setState({osURL: `http://${getState().osHost.v4}${URLPort}`}); // v6 is too long to show anyway
 		} else {
 			setState({osURL: `http://${config.Karaoke.Display.ConnectionInfo.Host}${URLPort}`});
 		}
+	}
+}
+
+function getFirstHop(target: string): Promise<string> {
+	return new Promise((resolve1, reject) => {
+		// Traceroute way
+		try {
+			const tracer = new Traceroute('ipv6');
+			tracer.on('hop', (hop) => {
+				resolve1(hop.ip);
+			});
+			tracer.trace(target);
+		} catch (e) {
+			logger.error(`[Network] Cannot traceroute`);
+			reject(e);
+		}
+	});
+}
+
+export async function determineV6Prefix(ipv6: string): Promise<string> {
+	/**
+	 * IPv6 is made to protect privacy by making complex the task of getting the information about prefixes
+	 * This code tries to determine what's the network prefix via different methods
+	 */
+	// TODO: Find more accurate ways to do this
+	// Resolve ASN using whois
+	let asn = await whoisIP(ipv6);
+	if (typeof ASNPrefixes[asn.asn] === 'number') {
+		let subnet = createCIDR(ipv6, ASNPrefixes[asn.asn]);
+		return subnet.toString();
+	}
+	// Traceroute way
+	let hop = await getFirstHop('kara.moe');
+	logger.debug(`[Network] Determined gateway: ${hop}`);
+	let local = getState().osHost.v6;
+	let found = false;
+	let prefix = 56;
+	let subnet = createCIDR(local, prefix);
+	while (subnet.contains(hop)) {
+		subnet = createCIDR(local, ++prefix)
+		found = true;
+	}
+	if (found) {
+		subnet = createCIDR(local, --prefix);
+		logger.debug(`[Network] Determined IPv6 prefix: ${subnet.toString()}`);
+		return subnet.toString();
+	} else {
+		logger.warn(`[Network] Could not determine IPv6 prefix, disabling IPv6 capability on shortener.`);
+		throw new Error('Cannot find CIDR');
 	}
 }
 
