@@ -22,7 +22,7 @@ export async function startElectron() {
 		try {
 			await preInit();
 		} catch(err) {
-			throw Error(err);
+			throw new Error(err);
 		}
 		await initElectronWindow();
 		on('KMReady', async () => {
