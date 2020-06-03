@@ -446,7 +446,7 @@
 		"CLEAN_SONGS_ERROR": "Le dépôt {{repo}} n'a pas réussi à nettoyer les chansons obsolètes correctement : {{err}}",
 		"SONGS_UPDATE_ERROR": "Le dépôt {{repo}} ne s'est pas mise à jour correctement : {{err}}",
 		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
-		"USER_UNKNOWn": "Utilisateur connecté inconnu",
+		"USER_UNKNOWN": "Utilisateur connecté inconnu",
 		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
 		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction"
 	},
