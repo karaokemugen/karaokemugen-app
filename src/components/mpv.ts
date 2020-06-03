@@ -23,6 +23,7 @@ import { notificationNextSong } from '../services/playlist';
 import randomstring from 'randomstring';
 import { errorStep } from '../electron/electronLogger';
 import { setProgressBar } from '../electron/electron';
+import { sentryError, addErrorInfo } from '../lib/utils/sentry';
 
 const sleep = promisify(setTimeout);
 
@@ -61,7 +62,10 @@ async function ensureRunning() {
 			await startmpv();
 		}
 	} catch(err) {
-		throw Error(`Unable to ensure mpv is running : ${err}`);
+		const errStr = `Unable to ensure mpv is running : ${err}`;
+		const error = new Error(errStr);
+		sentryError(error)
+		throw error
 	}
 }
 
@@ -121,7 +125,11 @@ export async function loadBackground() {
 		playerState.mediaType = 'background';
 		emitPlayerState();
 	} catch(err) {
-		logger.error(`[Player] Unable to load background : ${JSON.stringify(err)}`);
+		const errStr = `Unable to load background : ${JSON.stringify(err)}`;
+		logger.error(`[Player] ${errStr}`);
+		const error = new Error(errStr);
+		sentryError(error)
+		throw error
 	}
 }
 
@@ -135,7 +143,10 @@ export async function initPlayerSystem() {
 		logger.debug('[Player] Player is READY');
 	} catch(err) {
 		errorStep(i18n.t('ERROR_START_PLAYER'));
-		throw err;
+		const errStr = `Unable to start player : ${err}`;
+		const error = new Error(errStr);
+		sentryError(error, 'Fatal');
+		throw error
 	}
 }
 
@@ -279,8 +290,11 @@ async function startmpv() {
 		if (monitorEnabled) promises.push(playerMonitor.start());
 		await Promise.all(promises);
 	} catch(err) {
-		logger.error(`[Player] mpvAPI : ${JSON.stringify(err)}`);
-		throw err;
+		const errStr = `mpvAPI : ${JSON.stringify(err)}`;
+		logger.error(`[Player] ${errStr}`);
+		const error = new Error(errStr);
+		sentryError(error, 'Fatal');
+		throw error
 	}
 
 	await loadBackground();
@@ -471,8 +485,12 @@ export async function play(mediadata: MediaData) {
 		songNearEnd = false;
 		nextSongNotifSent = false;
 	} catch(err) {
-		logger.error(`[Player] Error loading media ${mediadata.media} : ${JSON.stringify(err)}`);
-		throw err;
+		const errStr = `Error loading media ${mediadata.media} : ${JSON.stringify(err)}`;
+		logger.error(`[Player] ${errStr}`);
+		const error = new Error(errStr);
+		addErrorInfo('mediaData', JSON.stringify(mediadata, null, 2));
+		sentryError(error);
+		throw error;
 	}
 }
 
@@ -808,8 +826,11 @@ export async function playMedia(mediaType: MediaType) {
 			playerState._playing = true;
 			emitPlayerState();
 		} catch(err) {
-			logger.error(`[Player] Unable to load ${mediaType} file ${media.file} : ${JSON.stringify(err)}`);
-			throw Error(err);
+			const errStr = `Error loading media ${mediaType} : ${media.file} : ${JSON.stringify(err)}`;
+			logger.error(`[Player] ${errStr}`);
+			const error = new Error(errStr);
+			sentryError(error);
+			throw error
 		}
 	} else {
 		logger.debug(`[Player] No ${mediaType} to play.`);
