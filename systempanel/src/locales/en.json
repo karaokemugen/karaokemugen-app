@@ -446,7 +446,7 @@
 		"CLEAN_SONGS_ERROR": "Repository {{repo}} failed to clean songs properly: {{err}}",
 		"SONGS_UPDATE_ERROR": "Repository {{repo}} failed to update songs properly: {{err}}",
 		"UPDATING_MEDIAS_ERROR": "Repository {{repo}} failed to update medias properly: {{err}}",
-		"USER_UNKNOW": "User logged in unknown",
+		"USER_UNKNOWN": "User logged in unknown",
 		"ADMIN_PLEASE": "Please use an operator account",
 		"NOT_GUEST": "Guests cannot use this function"
 	},

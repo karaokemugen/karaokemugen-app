@@ -102,7 +102,7 @@ export const requireValidUser = (req: any, res: any, next: any) => {
 		})
 		.catch(err => {
 			logger.error(`[API] Error checking user : ${JSON.stringify(token)} : ${err}`);
-			res.status(403).send(APIMessage('USER_UNKNOW'));
+			res.status(403).send(APIMessage('USER_UNKNOWN'));
 		});
 };
 
