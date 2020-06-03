@@ -15,6 +15,7 @@ import {uuidRegexp} from '../lib/utils/constants';
 import {KaraList, KaraParams} from '../lib/types/kara';
 import {BLC} from '../types/blacklist';
 import {isNumber} from '../lib/utils/validators';
+import { sentryError } from '../lib/utils/sentry';
 
 export async function getBlacklist(params: KaraParams): Promise<KaraList> {
 	profile('getBL');
@@ -31,6 +32,8 @@ export async function getBlacklistCriterias(lang?: string): Promise<BLC[]> {
 		const blcs = await getBLC();
 		return await translateBlacklistCriterias(blcs, lang);
 	} catch(err) {
+		err = new Error(err);
+		sentryError(err);
 		throw err;
 	} finally {
 		profile('getBLC');
@@ -77,6 +80,8 @@ export async function addBlacklistCriteria(type: number, value: any) {
 		return await generateBlacklist();
 	} catch(err) {
 		logger.error(`[Blacklist] Error adding criteria : ${JSON.stringify(err)}`);
+		err = new Error(err);
+		sentryError(err);
 		throw err;
 	} finally {
 		profile('addBLC');
