@@ -224,6 +224,11 @@ For code/development contributions, read the [contributing guide](CONTRIBUTING.m
 
 Everything's there, and if you have questions, you can come to [our Discord](http://karaokes.moe/discord) in the #karaoke_dev channel!
 
+## Special thanks
+
+<img src="https://sentry-brand.storage.googleapis.com/sentry-logo-black.png" alt="Sentry full logo" width="125"/>
+Thanks to [Sentry error tracking](https://sentry.io/welcome?utm_source=KaraokeMugen) solution, the app is self-reporting its errors to maintainers to help them to fix issues.
+
 ## Credits
 
 "Nanamin", Karaoke Mugen's mascott as well as Karaoke Mugen's logo are designed by [Sedeto](http://www.sedeto.fr)
