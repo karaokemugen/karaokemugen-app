@@ -597,7 +597,9 @@
 		"UPDATING_MEDIAS_ERROR": "Repository {{repo}} failed to update medias properly: {{err}}",
 		"USER_UNKNOWN": "User logged in unknown",
 		"ADMIN_PLEASE": "Please use an operator account",
-		"NOT_GUEST": "Guests cannot use this function"
+		"NOT_GUEST": "Guests cannot use this function",
+		"REPO_COMPARE_LYRICS_ERROR": "Error comparing lyrics between two repositories",
+		"REPO_COPY_LYRICS_ERROR": "Error copying lyrics between two repositories"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
@@ -653,6 +655,7 @@
 		"WL_SONG_DELETED": "Karaoke deleted from whitelist",
 		"USER_RESETPASSWORD_ONLINE": "An email has been sent with a link to reset your password.",
 		"BLC_DELETED": "Blacklist criteria successfully deleted",
-		"BLC_ADDED": "Blacklist criteria successfully added"
+		"BLC_ADDED": "Blacklist criteria successfully added",
+		"REPO_LYRICS_COPIED": "Copy lyrics between two repositories successfully finished"
 	}
 }

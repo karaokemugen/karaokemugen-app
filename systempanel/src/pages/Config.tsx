@@ -153,7 +153,7 @@ class Config extends Component<{}, ConfigState> {
 				(typeof record.value === 'boolean' ? 
 					<Switch onChange={(e) => this.saveSetting(record.key, e)} defaultChecked={record.value} /> : 
 						(typeof record.value === 'number' ? 
-							<Input type='number'
+							<Input type='number' style={{maxWidth: '700px'}}
 								onPressEnter={(e) => {
 									const target = e.target as HTMLInputElement;
 									this.saveSetting(record.key, target.value)
@@ -174,7 +174,7 @@ class Config extends Component<{}, ConfigState> {
 											return <Select.Option key={Math.random()} value={value}>{value}</Select.Option>;
 									})}
 									</Select> :
-									<Input
+									<Input style={{maxWidth: '700px'}}
 										onPressEnter={(e) => {
 											const target = e.target as HTMLInputElement;
 											this.saveSetting(record.key, target.value)

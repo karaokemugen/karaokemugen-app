@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Input, InputNumber, message, Select, Tooltip, Upload,Form } from "antd";
+import { Button, Input, InputNumber, message, Select, Tooltip, Upload,Form, Divider } from "antd";
 import EditableTagGroup from "../Components/EditableTagGroup";
 import { getTagInLocale } from "../../utils/kara";
 import i18next from 'i18next';
@@ -599,6 +599,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				>
 					<Button type='primary' htmlType='submit' className='login-form-button'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
+				<Divider/>
 				{this.state.repositoriesValue && this.props.kara?.repository ?
 					<React.Fragment>
 						<Form.Item hasFeedback

@@ -130,10 +130,10 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 					{Array.isArray(this.state.value) ? 
 						<React.Fragment>
 							{this.state.value.map((element, index) =>
-								<div key={element} style={{ display: 'flex', margin: '10px'}}>
+								<div key={element} style={{ display: 'flex', marginBottom: '10px'}}>
 									{this.state.value.length > 1 ?
 										<React.Fragment>
-											<Radio style={{ width: '250px'}} checked={this.state.value[0] === element} 
+											<Radio style={{ width: '150px'}} checked={this.state.value[0] === element} 
 												onChange={() => {
 													let value = (this.state.value as Array<string>).filter(val => val === element)
 													.concat((this.state.value as Array<string>).filter(val => val !== element));
@@ -142,7 +142,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 													}}>
 												{this.state.value[0] === element ? i18next.t('CONFIG.PRIMARY_DIRECTORY') : null}
 											</Radio>
-											<div style={{ width: '100px'}}> 
+											<div style={{ width: '50px'}}> 
 												<Button type="primary" danger icon={<DeleteOutlined />}
 													onClick={() => {
 														let value = (this.state.value as any[]);
@@ -152,7 +152,8 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 											</div>
 										</React.Fragment> : null
 									}
-									<Input onClick={() => this.openFileSystemModal(this.state.value, index, this.props.keyModal)} defaultValue={element} />
+									<Input onClick={() => this.openFileSystemModal(this.state.value, index, this.props.keyModal)} 
+										style={{maxWidth: this.state.value.length > 1 ? '500px' : '700px'}} defaultValue={element} />
 								</div>
 							)}
 							<Button type='primary' onClick={() => this.openFileSystemModal(this.state.value, -1, this.props.keyModal)}>

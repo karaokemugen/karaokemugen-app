@@ -249,7 +249,7 @@ export default function repoController(router: Router) {
 			});
 	router.route('/repos/:name/compareLyrics')
 			/**
-		 * @api {get} /repos/compareLyrics Compare lyrics between two repositories
+		 * @api {get} /repos/:name/compareLyrics Compare lyrics between two repositories
 		 * @apiName GetCompareLyrics
 		 * @apiVersion 3.3.0
 		 * @apiGroup Repositories
@@ -274,7 +274,7 @@ export default function repoController(router: Router) {
 			}
 		})
 			/**
-		 * @api {post} /repos/compareLyrics Compare lyrics between two repositories
+		 * @api {post} /repos/:name/compareLyrics Compare lyrics between two repositories
 		 * @apiName PostCompareLyrics
 		 * @apiVersion 3.3.0
 		 * @apiGroup Repositories

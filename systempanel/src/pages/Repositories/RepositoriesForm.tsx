@@ -1,29 +1,47 @@
-import React, {Component} from 'react';
-import { Button, Input, Checkbox, Alert, Form } from 'antd';
+import React, { Component } from 'react';
+import { Button, Input, Checkbox, Alert, Form, Select, Divider } from 'antd';
 import i18next from 'i18next';
 import { Repository } from '../../../../src/lib/types/repo';
 import FoldersElement from '../Components/FoldersElement';
 import { FormInstance } from 'antd/lib/form';
+import Axios from 'axios';
 
 interface RepositoriesFormProps {
 	repository: Repository;
 	save: any;
-	consolidate : (consolidatePath:string) => void;
+	consolidate: (consolidatePath: string) => void;
+	compareLyrics: (repo: string) => void;
+	copyLyrics: (report: string) => void;
 }
 
 interface RepositoriesFormState {
 	consolidatePath?: string;
+	compareRepo?: string;
+	repositoriesValue: string[];
 }
 
 class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormState> {
 	formRef = React.createRef<FormInstance>();
 
-	state = {
-		consolidatePath: undefined
+	constructor(props) {
+		super(props);
+		if (props.repository) {
+			this.getRepositories();
+		}
+
+		this.state = {
+			consolidatePath: undefined,
+			repositoriesValue: null
+		};
+	}
+
+	getRepositories = async () => {
+		const res = await Axios.get("/repos");
+		this.setState({ repositoriesValue: res.data.filter(repo => repo.Name !== this.props.repository.Name).map(repo => repo.Name) });
 	};
 
 	handleSubmit = (values) => {
-		let repository:Repository = {
+		let repository: Repository = {
 			Name: values.Name,
 			Online: values.Online,
 			Enabled: values.Enabled,
@@ -54,11 +72,11 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					PathSeries: this.props.repository?.Path.Series,
 					PathTags: this.props.repository?.Path.Tags
 				}}
+				style={{maxWidth: '900px'}}
 			>
 				<Form.Item hasFeedback
 					label={i18next.t('REPOSITORIES.NAME')}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 8 }}
 					rules={[{
 						required: true,
 						message: i18next.t('TAGS.NAME_REQUIRED')
@@ -72,7 +90,6 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				<Form.Item
 					label={i18next.t('REPOSITORIES.ONLINE')}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 10 }}
 					valuePropName="checked"
 					name="Online"
 				>
@@ -81,7 +98,6 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				<Form.Item
 					label={i18next.t('REPOSITORIES.ENABLED')}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 10 }}
 					valuePropName="checked"
 					name="Enabled"
 				>
@@ -90,10 +106,9 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_KARAS')}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 10 }}
 					rules={[{
 						required: true,
-						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_KARAS')})
+						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', { name: i18next.t('REPOSITORIES.PATH_KARAS') })
 					}]}
 					name="PathKaras"
 				>
@@ -102,10 +117,9 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_LYRICS')}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 10 }}
 					rules={[{
 						required: true,
-						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_LYRICS')})
+						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', { name: i18next.t('REPOSITORIES.PATH_LYRICS') })
 					}]}
 					name="PathLyrics"
 				>
@@ -114,10 +128,9 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_MEDIAS')}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 10 }}
 					rules={[{
 						required: true,
-						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_MEDIAS')})
+						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', { name: i18next.t('REPOSITORIES.PATH_MEDIAS') })
 					}]}
 					name="PathMedias"
 				>
@@ -126,10 +139,9 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_SERIES')}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 10 }}
 					rules={[{
 						required: true,
-						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_SERIES')})
+						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', { name: i18next.t('REPOSITORIES.PATH_SERIES') })
 					}]}
 					name="PathSeries"
 				>
@@ -138,42 +150,71 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_TAGS')}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 10 }}
 					rules={[{
 						required: true,
-						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', {name: i18next.t('REPOSITORIES.PATH_TAGS')})
+						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', { name: i18next.t('REPOSITORIES.PATH_TAGS') })
 					}]}
 					name="PathTags"
 				>
 					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathTags': value })} />
 				</Form.Item>
-				<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{textAlign:"right"}}>
+				<Form.Item style={{ textAlign: "right" }}>
 					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
-			
+				<Divider orientation="left">{i18next.t('REPOSITORIES.COMPARE_LYRICS')}</Divider>
+				<Alert style={{ textAlign: "left", marginBottom: '10px' }}
+					message={i18next.t('REPOSITORIES.COMPARE_ABOUT_MESSAGE')}
+					type="info"
+				/>
 				{this.props.repository.Name ?
 					<React.Fragment>
+						{this.state.repositoriesValue ?
+							<React.Fragment>
+								<Form.Item
+									label={i18next.t('REPOSITORIES.COMPARE_LYRICS_CHOOSE_REPOSITORY')}
+									labelCol={{ flex: '0 1 200px' }}
+								>
+
+									<Select style={{ maxWidth: '50%', minWidth: '150px' }} placeholder={i18next.t('TAGS.REPOSITORY')}
+										onChange={value => this.setState({ compareRepo: value.toString() })}>
+										{this.state.repositoriesValue.map(repo => {
+											return <Select.Option key={repo} value={repo}>{repo}</Select.Option>
+										})
+										}
+									</Select>
+								</Form.Item>
+								<Form.Item
+									labelCol={{ flex: '0 1 200px' }}
+									style={{ textAlign: "right" }}>
+									<div>
+										<Button type='primary' onClick={() => this.props.compareLyrics(this.state.compareRepo)}>
+											{i18next.t('REPOSITORIES.COMPARE_BUTTON')}
+										</Button>
+									</div>
+								</Form.Item>
+							</React.Fragment>
+							: null
+						}
+						<Divider orientation="left">{i18next.t('REPOSITORIES.CONSOLIDATE_PANEL')}</Divider>
+
 						<Form.Item hasFeedback
 							label={i18next.t('REPOSITORIES.CONSOLIDATE')}
 							labelCol={{ flex: '0 1 200px' }}
-							wrapperCol={{ span: 8 }}
-							>
-							<FoldersElement openDirectory={true} onChange={(value) => this.setState({consolidatePath: value[0]})} />
+						>
+							<FoldersElement openDirectory={true} onChange={(value) => this.setState({ consolidatePath: value[0] })} />
 						</Form.Item>
-
 						<Form.Item
-							wrapperCol={{ span: 8, offset: 3 }}
-							style={{textAlign:"right"}}
-							>
+							style={{ textAlign: "right" }}
+						>
 							<Button type="primary" danger onClick={() => this.props.consolidate(this.state.consolidatePath)}>
 								{i18next.t('REPOSITORIES.CONSOLIDATE_BUTTON')}
 							</Button>
-							<Alert style={{textAlign:"left", marginTop: '10px'}}
-								message={i18next.t('REPOSITORIES.CONSOLIDATE_ABOUT')}
+							<Alert style={{ textAlign: "left", marginTop: '10px' }}
+								message={i18next.t('REPOSITORIES.WARNING')}
 								description={i18next.t('REPOSITORIES.CONSOLIDATE_ABOUT_MESSAGE')}
 								type="warning"
 							/>
-						
+
 						</Form.Item>
 					</React.Fragment> : null
 				}
