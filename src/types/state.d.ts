@@ -32,7 +32,10 @@ export interface State {
 	originalAppPath?: string,
 	osURL?: string,
 	os?: string,
-	osHost?: string,
+	osHost?: {
+		v4: string,
+		v6: string
+	},
 	electron?: boolean,
 	defaultLocale?: string,
 	player?: PlayerState,
