@@ -715,6 +715,7 @@ export async function initUserSystem() {
 	// Find admin users.
 	const users = await listUsers();
 	const adminUsers = users.filter(u => u.type === 0);
+	logger.debug(`[Debug] Admin users : ${JSON.stringify(adminUsers)}`);
 	if (adminUsers.length === 1) {
 		// Admin only exists
 		setSentryUser(adminUsers[0]?.login, null)
