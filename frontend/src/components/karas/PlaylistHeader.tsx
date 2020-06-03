@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import axios from 'axios';
 import getLucky from '../../assets/clover.png';
 import ActionsButtons from './ActionsButtons';
-import { buildKaraTitle, displayMessage, callModal } from '../tools';
+import { buildKaraTitle, displayMessage, callModal, is_touch_device } from '../tools';
 import Autocomplete from '../generic/Autocomplete';
 import store from '../../store';
 import ReactDOM from 'react-dom';
@@ -14,6 +14,7 @@ import { User, Token } from '../../../../src/lib/types/user';
 import { Tag } from '../../types/tag';
 import { Config } from '../../../../src/types/config';
 import prettyBytes from 'pretty-bytes';
+import SelectWithIcon from '../generic/SelectWithIcon';
 require ('./PlaylistHeader.scss');
 
 var tagsTypesList = [
@@ -245,21 +246,34 @@ class PlaylistHeader extends Component<IProps,IState> {
 
 	getPlaylistIcon(playlist: PlaylistElem) {
 		// public playlist : globe icon
-		if (playlist.flag_public) return '\uf0ac';
+		if (playlist.flag_public) return 'fa-globe';
 		// current playlist : play-circle icon
-		if (playlist.flag_current) return '\uf144';
+		if (playlist.flag_current) return 'fa-play-circle';
 		// library : book icon
-		if (playlist.playlist_id === -1) return '\uf02d';
+		if (playlist.playlist_id === -1) return 'fa-book';
 		// blacklist : ban icon
-		if (playlist.playlist_id === -2) return '\uf05e';
+		if (playlist.playlist_id === -2) return 'fa-ban';
 		// whitelist : check-circle icon
-		if (playlist.playlist_id === -3) return '\uf058';
+		if (playlist.playlist_id === -3) return 'fa-check-circle';
 		// blacklist criterias : not-equal icon
-		if (playlist.playlist_id === -4) return '\uf53e';
+		if (playlist.playlist_id === -4) return 'fa-not-equal';
 		// favorites : star icon
-		if (playlist.playlist_id === -5) return '\uf005';
+		if (playlist.playlist_id === -5) return 'fa-star';
 		// others playlist : list-ol icon
-		return '\uf0cb';
+		return 'fa-list-ol';
+	}
+
+	getListToSelect() {
+		if (this.props.scope === 'public' && this.props.side === 1 && this.props.config.Frontend.Mode === 1) {
+			return [{value: store.getModePlaylistID().toString(), 
+				label: this.props.playlistList.filter(pl => pl.playlist_id === store.getModePlaylistID())[0].name}];
+		}
+		if (this.props.scope === 'public' && this.props.side === 1) {
+			return [{value: '-1', label: i18next.t('PLAYLIST_KARAS')}, {value: '-5', label: i18next.t('PLAYLIST_FAVORITES')}];
+		}
+		return this.props.playlistList.map(playlist => {
+			return {value: playlist.playlist_id.toString(), label: playlist.name, icon:this.getPlaylistIcon(playlist)}
+		});
 	}
 
   render() {
@@ -423,26 +437,26 @@ class PlaylistHeader extends Component<IProps,IState> {
   									<i className="fas fa-wrench"></i>
   								</button> : null
   							}
-  							<select className="selectPlaylist"
-  								value={this.props.idPlaylist} onChange={(e) => this.props.changeIdPlaylist(Number(e.target.value))}>
-  								{(this.props.scope === 'public' && this.props.side === 1 && this.props.config.Frontend.Mode === 1) ?
-  									<option value={store.getModePlaylistID()} ></option> :
-  									this.props.scope === 'public' && this.props.side === 1 ? (
-  										<React.Fragment>
-  											<option value={-1}></option>
-  											<option value={-5}></option>
-										</React.Fragment>) :
-										(<React.Fragment>
-											{this.props.playlistList && this.props.playlistList.map(playlist => {
-												return <option className="selectPlaylist" key={playlist.playlist_id} value={playlist.playlist_id}>{this.getPlaylistIcon(playlist)} {playlist.name}</option>;
-											})}
-											{this.props.playlistList && this.props.idPlaylist !== 0 
-												&& this.props.playlistList.filter(playlist => playlist.playlist_id === this.props.idPlaylist).length === 0 ?
-											<option key={this.props.idPlaylist} value={this.props.idPlaylist}>{i18next.t('HIDDEN_PLAYLIST')}</option> : null
-											}
-										</React.Fragment>)
-  								}
-  							</select>
+							{is_touch_device() ?
+								<select className="selectPlaylist"
+									value={this.props.idPlaylist} onChange={(e) => this.props.changeIdPlaylist(Number(e.target.value))}>
+									{(this.props.scope === 'public' && this.props.side === 1 && this.props.config.Frontend.Mode === 1) ?
+										<option value={store.getModePlaylistID()} >{this.props.playlistList.filter(pl => pl.playlist_id === store.getModePlaylistID())[0].name}</option> :
+										this.props.scope === 'public' && this.props.side === 1 ? (
+											<React.Fragment>
+												<option value={-1}>{i18next.t('PLAYLIST_KARAS')}</option>
+												<option value={-5}>{i18next.t('PLAYLIST_FAVORITES')}</option>
+											</React.Fragment>) :
+											(<React.Fragment>
+												{this.props.playlistList && this.props.playlistList.map(playlist => {
+													return <option className="selectPlaylist" key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}</option>;
+												})}
+											</React.Fragment>)
+									}
+								</select> :
+								<SelectWithIcon list={this.getListToSelect()} value={this.props.idPlaylist.toString()} 
+									onChange={(value) => this.props.changeIdPlaylist(Number(value))}/>
+  							}
   						</React.Fragment> : null
   					}
   					{this.props.scope === 'admin' ?

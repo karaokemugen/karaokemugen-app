@@ -412,7 +412,6 @@
 	"NEXT_SONG_MESSAGE": "La suite avec :",
 	"TIME_BEFORE_PLAY": "Diffusion dans {{time}} ({{date}})",
 	"USER_SONG_PLAYS_IN": "Votre chanson {{kara}} a été ajoutée et sera diffusée dans {{time}} ({{date}})",
-	"HIDDEN_PLAYLIST": "Liste de lecture cachée",
 	"SUBMIT": "Sauvegarder",
 	"MODAL": {
 		"SUGGESTION_MODAL": {

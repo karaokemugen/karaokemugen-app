@@ -393,7 +393,6 @@
 	"NEXT_SONG_MESSAGE": "Coming up next :",
 	"TIME_BEFORE_PLAY": "Airing in {{time}} ({{date}})",
 	"USER_SONG_PLAYS_IN": "Your song {{kara}} has been added and will airing in {{time}} ({{date}})",
-	"HIDDEN_PLAYLIST": "Hidden playlist",
 	"SUBMIT": "Submit",
 	"MODAL": {
 		"SUGGESTION_MODAL": {
