@@ -254,8 +254,15 @@
 		"MOVE_TOOLTIP": "Cela vous permet de définir quels dépôts ont priorité lors de la création de votre base de données : les dépôts le plus en haut seront pris en compte d'abord si jamais deux dépôts ont le même karaoké",
 		"CONSOLIDATE": "Opérations sur le dépôt",
 		"CONSOLIDATE_BUTTON": "Consolider le dépôt...",
-		"CONSOLIDATE_ABOUT": "Attention !",
-		"CONSOLIDATE_ABOUT_MESSAGE": "Tous les fichiers du dépôt (karas, médias, séries, tags...) seront déplacés avec le nouveau dossier par racine. Si votre dépôt contient des types de données avec plusieurs dossiers (plusieurs dossiers de médias par exemple), tous les fichiers de tous les dossiers seront copiés dans le même dossier destination. S'il y a des doublons, ils seront écrasés sauvagement."
+		"CONSOLIDATE_PANEL": "Déplacement du dépôt",
+		"WARNING": "Attention !",
+		"CONSOLIDATE_ABOUT_MESSAGE": "Tous les fichiers du dépôt (karas, médias, séries, tags...) seront déplacés avec le nouveau dossier par racine. Si votre dépôt contient des types de données avec plusieurs dossiers (plusieurs dossiers de médias par exemple), tous les fichiers de tous les dossiers seront copiés dans le même dossier destination. S'il y a des doublons, ils seront écrasés sauvagement.",
+		"COMPARE_LYRICS": "Mise à jour des paroles entre deux dépôts",
+		"COMPARE_LYRICS_CHOOSE_REPOSITORY": "Choix du dépôt",
+		"COMPARE_BUTTON": "Comparer",
+		"COMPARE_ABOUT_MESSAGE": "Cette action vous permettra de comparer puis éventuellement de copier les fichiers de paroles d'un dépôt à l'autre s'ils différent entre deux chansons identiques. Selectionnez un dépôt avec lequel comparer (celui-ci sera la destination de la copie des paroles)",
+		"LYRICS_ARE_DIFFERENT": "Les paroles de ces karaokés sont différentes entre le dépôt {{first}} et le dépôt {{second}} :",
+		"CONFIRM_SURE": "Voulez-vous synchroniser les paroles du dépôt {{second}} à partir de celles du dépôt {{first}} ?"
 	},
 	"BLACKLIST": {
 		"TYPE": "Type",
@@ -448,7 +455,9 @@
 		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
 		"USER_UNKNOWN": "Utilisateur connecté inconnu",
 		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
-		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction"
+		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction",
+		"REPO_COMPARE_LYRICS_ERROR": "Erreur lors de la comparaison des paroles de deux dépôts",
+		"REPO_COPY_LYRICS_ERROR": "Erreur lors de la copie des paroles entre deux dépôts"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
@@ -504,6 +513,7 @@
 		"WL_SONG_DELETED": "Chanson supprimé de la liste blanche",
 		"USER_RESETPASSWORD_ONLINE": "Un email avec un lien pour réinitialiser votre mot de passe vous a été envoyé.",
 		"BLC_DELETED": "Critère de liste noir ajouté avec succès",
-		"BLC_ADDED": "Critère de liste noir supprimé avec succès"
+		"BLC_ADDED": "Critère de liste noir supprimé avec succès",
+		"REPO_LYRICS_COPIED": "Copie des paroles entre les deux dépôts finie avec succès"
 	}
 }

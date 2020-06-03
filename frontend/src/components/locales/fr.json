@@ -616,7 +616,9 @@
 		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
 		"USER_UNKNOWN": "Utilisateur connecté inconnu",
 		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
-		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction"
+		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction",
+		"REPO_COMPARE_LYRICS_ERROR": "Erreur lors de la comparaison des paroles de deux dépôts",
+		"REPO_COPY_LYRICS_ERROR": "Erreur lors de la copie des paroles entre deux dépôts"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
@@ -672,6 +674,7 @@
 		"WL_SONG_DELETED": "Chanson supprimé de la liste blanche",
 		"USER_RESETPASSWORD_ONLINE": "Un email avec un lien pour réinitialiser votre mot de passe vous a été envoyé.",
 		"BLC_DELETED": "Critère de liste noir ajouté avec succès",
-		"BLC_ADDED": "Critère de liste noir supprimé avec succès"
+		"BLC_ADDED": "Critère de liste noir supprimé avec succès",
+		"REPO_LYRICS_COPIED": "Copie des paroles entre les deux dépôts finie avec succès"
 	}
 }

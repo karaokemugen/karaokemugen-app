@@ -254,8 +254,15 @@
 		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke",
 		"CONSOLIDATE": "Repository operations",
 		"CONSOLIDATE_BUTTON": "Consolidate repository...",
-		"CONSOLIDATE_ABOUT": "Warning !",
-		"CONSOLIDATE_ABOUT_MESSAGE": "All repository fiels (karaokes, medias, series, tags...) will be moved to the new folder as their root. If your repository has several folders for the same type of data (several media folders for example), all filles of all folders will be moved into the same target folder. If there are duplicate files, they'll be savagely overwritten."
+		"CONSOLIDATE_PANEL": "Move repository",
+		"WARNING": "Warning !",
+		"CONSOLIDATE_ABOUT_MESSAGE": "All repository fiels (karaokes, medias, series, tags...) will be moved to the new folder as their root. If your repository has several folders for the same type of data (several media folders for example), all filles of all folders will be moved into the same target folder. If there are duplicate files, they'll be savagely overwritten.",
+		"COMPARE_LYRICS": "Update lyrics between two repositories",
+		"COMPARE_LYRICS_CHOOSE_REPOSITORY": "Choose a repository",
+		"COMPARE_BUTTON": "Compare",
+		"COMPARE_ABOUT_MESSAGE": "This will allow you to compare then eventually copy lyric files from one repository to another if they differ between the two same songs. Select a repository to compare lyrics with (it will be the destination repository when comes time to copy lyrics)",
+		"LYRICS_ARE_DIFFERENT": "The lyrics of these karaokes are different between the {{first}} repository and the {{second}} repository:",
+		"CONFIRM_SURE": "Do you want to synchronize the lyrics of repository {{second}} with those of repository {{first}}?"
 	},
 	"BLACKLIST": {
 		"TYPE": "Type",
@@ -448,7 +455,9 @@
 		"UPDATING_MEDIAS_ERROR": "Repository {{repo}} failed to update medias properly: {{err}}",
 		"USER_UNKNOWN": "User logged in unknown",
 		"ADMIN_PLEASE": "Please use an operator account",
-		"NOT_GUEST": "Guests cannot use this function"
+		"NOT_GUEST": "Guests cannot use this function",
+		"REPO_COMPARE_LYRICS_ERROR": "Error comparing lyrics between two repositories",
+		"REPO_COPY_LYRICS_ERROR": "Error copying lyrics between two repositories"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
@@ -504,6 +513,7 @@
 		"WL_SONG_DELETED": "Karaoke deleted from whitelist",
 		"USER_RESETPASSWORD_ONLINE": "An email has been sent with a link to reset your password.",
 		"BLC_DELETED": "Blacklist criteria successfully deleted",
-		"BLC_ADDED": "Blacklist criteria successfully added"
+		"BLC_ADDED": "Blacklist criteria successfully added",
+		"REPO_LYRICS_COPIED": "Copy lyrics between two repositories successfully finished"
 	}
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Button, Input, message, Select, Tag, Tooltip, Cascader, Form, Row, Col } from 'antd';
+import { Alert, Button, Input, message, Select, Tag, Tooltip, Cascader, Form, Row, Col, Divider } from 'antd';
 import EditableTagGroup from '../Components/EditableTagGroup';
 import {getListLanguagesInLocale, getLanguagesInLocaleFromCode } from '../../isoLanguages';
 import i18next from 'i18next';
@@ -259,7 +259,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							<Form.Item
 								label={getLanguagesInLocaleFromCode(langKey)}
 								labelCol={{ flex: '0 1 200px' }}
-								wrapperCol={{ flex: 'auto' }}
 								name={`lang_${langKey}`}
 								rules={[{
 									required: true,
@@ -284,7 +283,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				<Form.Item
 					label={i18next.t('TAGS.I18N_SELECT')}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ flex: 'auto' }}
 				>
 					{this.state.selectVisible ?
 						<Select style={{maxWidth: '40%', minWidth: '150px'}}
@@ -309,7 +307,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					<Button type='primary' htmlType='submit'
 						className='tags-form-button'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
-				
+				<Divider/>
 				<Form.Item
 					label={(
 						<span>{i18next.t('TAGS.MERGE_WITH')}&nbsp;

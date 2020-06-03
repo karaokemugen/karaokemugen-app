@@ -87,9 +87,6 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 		karas2.forEach(k => karas2Map.set(k.kid, k));
 		const differentChecksums = [];
 		karas1Map.forEach(kara1 => {
-			if (kara1.kid === 'a92402e0-a8ef-405e-95d5-e9af7e8a9f04') {
-				console.log('lol')
-			}
 			const kara2 = karas2Map.get(kara1.kid);
 			if (kara2) {
 				if (kara2.subchecksum !== kara1.subchecksum) differentChecksums.push({
@@ -120,6 +117,7 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 			});
 			// Copying kara1 data to kara2
 			karas.kara2.subchecksum = karas.kara1.subchecksum;
+			karas.kara2.isKaraModified = true;
 			const writes = [];
 			writes.push(writeKara(karas.kara2.karafile, karas.kara2));
 			const sourceLyrics = await resolveFileInDirs(karas.kara1.subfile, resolvedPathRepos('Lyrics', karas.kara1.repository));
