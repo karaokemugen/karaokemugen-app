@@ -626,15 +626,6 @@ input[type=range]:focus::-ms-fill-upper {
     flex: 0 0 auto;
 }
 
-@font-face {
-	font-family: 'Font Awesome 5 Solid but Not Bold';
-	font-style: normal;
-	font-weight: 600;
-	font-display: block;
-	src: url("../../node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.eot");
-	src: url("../../node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.eot?#iefix") format("embedded-opentype"), url("../../node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2") format("woff2"), url("../../node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff") format("woff"), url("../../node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf") format("truetype"), url("../../node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.svg#fontawesome") format("svg"); 
-}
-
 .selectPlaylist {
 	background-color: #343434;
 	padding: 6px;
@@ -643,7 +634,6 @@ input[type=range]:focus::-ms-fill-upper {
 	color:white;
 	border-radius: 4px;
 	border-color:#fafafa70;
-	font-family:"Font Awesome 5 Solid but Not Bold","Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .plDashboard .plSearch {
