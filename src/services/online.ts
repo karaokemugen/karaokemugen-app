@@ -23,7 +23,7 @@ export async function publishURL() {
 		form.IP6 = await publicIP.v6({timeout: 1000, onlyHttps: true});
 		form.IP6Prefix = await determineV6Prefix(form.IP6);
 	} catch (err) {
-		logger.error(`[ShortURL] Cannot find IPv6 network information: ${err.toString()}`);
+		logger.debug(`[ShortURL] Cannot find IPv6 network information: ${err.toString()}, IPv4-only fallback.`);
 	}
 	try {
 		await HTTP.post(`https://${conf.Online.Host}/api/shortener`, {
