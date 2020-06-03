@@ -3,6 +3,7 @@ import logger, { profile } from '../lib/utils/logger';
 import Bar from '../lib/utils/bar';
 import parallel from 'async-await-parallel';
 import Task from '../lib/utils/taskManager';
+import { sentryError } from '../lib/utils/sentry';
 
 let dataStore = {
 	karas: new Map(),
@@ -91,7 +92,9 @@ export async function baseChecksum(silent?: boolean): Promise<string> {
 		logger.debug(`[Store] Store checksum : ${checksum}`);
 		return checksum;
 	} catch(err) {
-		logger.warn(`[Store] Unable to browse through your data files : ${err}`)
+		const errStr = `Unable to browse through your data files : ${err}`;
+		logger.warn(`[Store] ${errStr}`)
+		sentryError(new Error(errStr), 'Warning');
 	} finally {
 		profile('baseChecksum');
 	}

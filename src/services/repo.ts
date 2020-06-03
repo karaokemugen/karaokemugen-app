@@ -60,7 +60,7 @@ export async function editRepo(name: string, repo: Repository) {
 	updateRepo(repo, name);
 	await checkRepoPaths(repo);
 	if (oldRepo.Enabled !== repo.Enabled) {
-		generateDB(true);
+		generateDB();
 		compareKarasChecksum(true);
 	}
 	logger.info(`[Repo] Updated ${name}`);

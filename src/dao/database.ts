@@ -7,13 +7,14 @@ import Postgrator, { Migration } from 'postgrator';
 import {isShutdownPG, initPG} from '../utils/postgresql';
 import { baseChecksum } from './dataStore';
 import { DBStats } from '../types/database/database';
-import { getSettings, saveSetting, connectDB, db, getInstanceID, setInstanceID, newDBTask } from '../lib/dao/database';
+import { getSettings, saveSetting, connectDB, db, getInstanceID, setInstanceID, newDBTask, databaseReady } from '../lib/dao/database';
 import { v4 as uuidV4 } from 'uuid';
 import { resolve } from 'path';
 import { getPlaylists, reorderPlaylist } from './playlist';
 import { errorStep } from '../electron/electronLogger';
 import { migrations } from '../utils/migrationsBeforePostgrator';
 import i18next from 'i18next';
+import { sentryError } from '../lib/utils/sentry';
 
 const sql = require('./sql/database');
 
@@ -45,7 +46,7 @@ export async function initDB() {
 		const {rows} = await db().query(`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.Database.prod.database}'`);
 		if (rows.length > 0) return;
 	} catch(err) {
-		throw err;
+		throw new Error(err);
 	}
 	try {
 		await db().query(`CREATE DATABASE ${conf.Database.prod.database} ENCODING 'UTF8'`);
@@ -86,7 +87,9 @@ async function migrateFromDBMigrate() {
 		);
 		`);
 	} catch(err) {
-		throw 'For some strange reason you already have a schemaversion table along with a migrations table. Delete one or the other.'
+		err = new Error('Migration table already exists');
+		sentryError(err);
+		throw err;
 	};
 	for (const migration of migrationsDone) {
 		db().query(`INSERT INTO schemaversion VALUES('${migration.version}', '${migration.name}', '${migration.md5}', '${new Date().toISOString()}')`);
@@ -115,7 +118,9 @@ async function migrateDB(): Promise<Migration[]> {
 		logger.debug(`[DB] Migrations executed : ${JSON.stringify(migrations)}`);
 		return migrations;
 	} catch(err) {
-		throw `Migrations failed : ${err}`;
+		err = new Error(`Migrations failed : ${err}`);
+		sentryError(err);
+		throw err;
 	}
 }
 
@@ -140,7 +145,9 @@ export async function initDBSystem(): Promise<Migration[]> {
 		migrations = await migrateDB();
 	} catch(err) {
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
-		throw `Database system initialization failed : ${err}`;
+		err = new Error(`Database system initialization failed : ${err}`);
+		sentryError(err, 'Fatal');
+		throw err;
 	}
 	if (!await getInstanceID()) {
 		conf.App.InstanceID
@@ -163,33 +170,26 @@ export async function getStats(): Promise<DBStats> {
 	return res.rows[0];
 }
 
-export async function generateDB(queue?: boolean): Promise<boolean> {
+export async function generateDB() {
 	try {
 		const opts = {validateOnly: false, progressBar: true};
-		if (queue) {
+		newDBTask({
+			name: 'generation',
+			func: generateDatabase,
+			args: [opts]
+		});
+		await databaseReady();
+		const pls = await getPlaylists(false);
+		for (const pl of pls) {
 			newDBTask({
-				name: 'generation',
-				func: generateDatabase,
-				args: [opts]
+				func: reorderPlaylist,
+				args: [pl.playlist_id],
+				name: `reorderPlaylist${pl.playlist_id}`
 			});
-			const pls = await getPlaylists(false);
-			for (const pl of pls) {
-				newDBTask({
-					func: reorderPlaylist,
-					args: [pl.playlist_id],
-					name: `reorderPlaylist${pl.playlist_id}`
-				});
-			}
-		} else {
-			await generateDatabase(opts);
-			const pls = await getPlaylists(false);
-			for (const pl of pls) {
-				await reorderPlaylist(pl.playlist_id);
-			}
 		}
+		await databaseReady();
 	} catch(err) {
 		throw err;
 	}
-	return true;
 }
 
