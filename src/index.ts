@@ -11,7 +11,7 @@ import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
 import {exit, initEngine} from './components/engine';
-import {startElectron} from './electron/electron';
+import {focusWindow, handleFile,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {help} from './help';
 import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
@@ -108,7 +108,14 @@ const appPath = process.platform === 'darwin'
 	? app?.isPackaged
 		? resolve(dirname(process.execPath), '../')
 		: originalAppPath
-	: process.cwd();
+// In case it's launched from the explorer, cwd will give us system32
+	: process.cwd() === 'C:\\Windows\\system32'
+		? originalAppPath
+		: process.cwd();
+
+// Ugly Windows fix
+
+
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
 
@@ -149,12 +156,24 @@ setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath
 process.env['NODE_ENV'] = 'production'; // Default
 
 // Electron packaged app does not need a slice(2) but a (1) since it has no script argument
-const argArr = app?.isPackaged
+const args = app?.isPackaged
 	? process.argv.slice(1)
 	: process.argv.slice(2);
-const argv = minimist(argArr);
+
+setState({ args: args });
+
+const argv = minimist(args);
 
 if (app) {
+	// Acquiring lock to prevent two KMs to run at the same time.
+	// Also allows to get us the files we need.
+	if (!app.requestSingleInstanceLock()) process.exit();
+	app.on('second-instance', (_event, args) => {
+		focusWindow();
+		const file = args[args.length-1];
+		if (file) handleFile(file);
+	});
+	// Redefining quit function
 	app.on('will-quit', () => {
 		exit(0);
 	});

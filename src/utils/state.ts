@@ -35,8 +35,10 @@ let state: State = {
 	securityCode: null,
 	wsLogNamespace: null,
 	noAutoTest: false,
+	singlePlay: false,
 	player: {},
-	opt: {}
+	opt: {},
+	args: []
 };
 
 let previousState = {...state};

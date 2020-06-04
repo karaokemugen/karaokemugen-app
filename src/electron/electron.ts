@@ -3,11 +3,19 @@ import open from 'open';
 import { resolve } from 'path';
 
 import { exit } from '../components/engine';
+import { listUsers } from '../dao/user';
 import { main, preInit } from '../index';
 import { configureLocale, getConfig } from '../lib/utils/config';
+import { asyncReadFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { on } from '../lib/utils/pubsub';
+import { emitWS } from '../lib/utils/ws';
+import { importFavorites } from '../services/favorites';
+import { isAllKaras } from '../services/kara';
+import { playSingleSong } from '../services/player';
+import { importPlaylist, playlistImported} from '../services/playlist';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
+import { detectKMFileTypes } from '../utils/files';
 import { getState,setState } from '../utils/state';
 import {initAutoUpdate} from './electronAutoUpdate';
 import { getMenu,initMenu } from './electronMenu';
@@ -38,6 +46,11 @@ export async function startElectron() {
 				logger.error(`[Launcher] Error during launch : ${err}`);
 			}
 		});
+		ipcMain.on('droppedFiles', async (_event, eventData) => {
+			for (const path of eventData.files) {
+				await handleFile(path, eventData.username);
+			}
+		});
 	});
 
 	app.on('window-all-closed', async () => {
@@ -56,6 +69,59 @@ export async function startElectron() {
 	});
 
 	await configureLocale();
+}
+
+export async function handleFile(file: string, username?: string) {
+	try {
+		logger.info(`[FileHandler] Received file path ${file}`);
+		if (!username) {
+			const users = await listUsers();
+			const adminUsersOnline = users.filter(u => u.type === 0 && u.login !== 'admin');
+			// We have no other choice but to pick only the first one
+			username = adminUsersOnline[0]?.login;
+			if (!username) {
+				username = 'admin';
+				logger.warn('[FileHandler] Could not find a username, switching to admin by default');
+			}
+		}
+		const rawData = await asyncReadFile(resolve(file), 'utf-8');
+		const data = JSON.parse(rawData);
+		const KMFileType = detectKMFileTypes(data);
+		const url = `http://localhost:${getConfig().Frontend.Port}/admin`;
+		switch(KMFileType) {
+		case 'Karaoke Mugen Favorites List File':
+			if (!username) throw 'Unable to find a user to import the file to';
+			await importFavorites(data, username);
+			if (win && !win.webContents.getURL().includes('/admin')) {
+				win.loadURL(url);
+				win.webContents.on('did-finish-load', () => emitWS('favoritesUpdated', username));
+			} else {
+				emitWS('favoritesUpdated', username);
+			}
+			break;
+		case 'Karaoke Mugen Karaoke Data File':
+			const kara = await isAllKaras([data.data.kid]);
+			if (kara.length > 0) throw 'Song unknown in database';
+			await playSingleSong(data.data.kid);
+			if (win && !win.webContents.getURL().includes('/admin')) win.loadURL(url);
+			break;
+		case 'Karaoke Mugen Playlist File':
+			if (!username) throw 'Unable to find a user to import the file to';
+			const res = await importPlaylist(data, username);
+			if (win && !win.webContents.getURL().includes('/admin')) {
+				win.loadURL(url);
+				win.webContents.on('did-finish-load', () => playlistImported(res));
+			} else {
+				playlistImported(res);
+			}
+			break;
+		default:
+			//Unrecognized, ignoring
+			throw 'Filetype not recognized';
+		}
+	} catch(err) {
+		logger.error(`[Electron] Could not handle ${file} : ${err}`);
+	}
 }
 
 export async function applyMenu() {
@@ -114,3 +180,9 @@ export function setProgressBar(number: number) {
 	if (win) win.setProgressBar(number);
 }
 
+export function focusWindow() {
+	if (win) {
+		if (win.isMinimized()) win.restore();
+		win.focus();
+	}
+}

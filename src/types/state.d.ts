@@ -43,6 +43,7 @@ export interface State {
 	wsLogNamespace: string,
 	forceDisableAppUpdate?: boolean,
 	noAutoTest?: boolean,
+	singlePlay?: boolean,
 	version?: {
 		number?: string,
 		name?: string,
@@ -73,7 +74,8 @@ export interface State {
 		forceAdminPassword?: string,
 		dumpDB?: boolean,
 		restoreDB?: boolean
-	}
+	},
+	args: string[]
 }
 
 export interface PublicState {

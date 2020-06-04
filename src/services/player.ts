@@ -6,7 +6,7 @@ import {getConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import {getState,setState} from '../utils/state';
-import {addPlayedKara} from './kara';
+import {addPlayedKara, getKara, getSeriesSingers} from './kara';
 import {getCurrentSong, getPlaylistInfo,nextSong, previousSong} from './playlist';
 import {startPoll} from './poll';
 import {updateUserQuotas} from './user';
@@ -18,6 +18,40 @@ let introSequence = false;
 
 export function playerMessage(msg: string, duration: number) {
 	return message(msg, duration);
+}
+
+export async function playSingleSong(kid: string) {
+	if (!getState().player.playing) {
+		try {
+			const kara = await getKara(kid, {username: 'admin', role: 'admin'});
+			setState({currentSong: kara});
+			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
+			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
+			if (kara.title) kara.title = ` - ${kara.title}`;
+			// If series is empty, pick singer information instead
+			const series = getSeriesSingers(kara);
+
+			// If song order is 0, don't display it (we don't want things like OP0, ED0...)
+			let songorder = `${kara.songorder}`;
+			if (!kara.songorder || kara.songorder === 0) songorder = '';
+			// Construct mpv message to display.
+			const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+kara.title+'{\\i0}';
+			await play({
+				media: kara.mediafile,
+				subfile: kara.subfile,
+				gain: kara.gain,
+				infos: infos,
+				avatar: null,
+				duration: kara.duration,
+				repo: kara.repository,
+				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
+			});
+			setState({currentlyPlayingKara: kara.kid});
+		} catch(err) {
+			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
+			stopPlayer(true);
+		}
+	}
 }
 
 async function playCurrentSong(now: boolean) {
@@ -89,6 +123,11 @@ export async function playerEnding() {
 			logger.info('[Player] Player restarts, please wait');
 			setState({playerNeedsRestart: false});
 			await restartPlayer();
+		}
+		// Single file playback, no need for all the code below.
+		if (state.singlePlay) {
+			stopPlayer(true);
+			return;
 		}
 		// If we just played an intro, play a sponsor.
 		if (state.player.mediaType === 'Intros') {
@@ -390,6 +429,8 @@ async function restartPlayer() {
 
 
 export async function sendCommand(command: string, options: any) {
+	// Resetting singlePlay to false everytime we use a command.
+	setState({singlePlay: false});
 	const state = getState();
 	if (commandInProgress) throw 'A command is already in progress';
 	if (state.isDemo || state.isTest) throw 'Player management is disabled in demo or test modes';

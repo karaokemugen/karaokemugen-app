@@ -9,13 +9,14 @@ import { generateBlacklist } from '../dao/blacklist';
 import {compareKarasChecksum,generateDB, getStats, initDBSystem} from '../dao/database';
 import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
-import { applyMenu } from '../electron/electron';
+import { applyMenu, handleFile } from '../electron/electron';
 import { errorStep,initStep } from '../electron/electronLogger';
 import {closeDB, getSettings, saveSetting,vacuum} from '../lib/dao/database';
 import { generateDatabase as generateKaraBase } from '../lib/services/generation';
 //Utils
 import {getConfig, setConfig} from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
+import { asyncExists } from '../lib/utils/files';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import {emit, on} from '../lib/utils/pubsub';
 import { sentryError } from '../lib/utils/sentry';
@@ -25,14 +26,13 @@ import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
 import {initPlaylistSystem, testPlaylists} from '../services/playlist';
 import { initSession } from '../services/session';
-import {initStats} from '../services/stats';
-//KM Modules
-import {initUserSystem} from '../services/user';
-import {welcomeToYoukousoKaraokeMugen} from '../services/welcome';
-import { checkPG,dumpPG, killPG, restorePG} from '../utils/postgresql';
-import {getState, setState} from '../utils/state';
-import { getTwitchClient,initTwitch, stopTwitch } from '../utils/twitch';
-import {initFrontend} from './frontend';
+import { initStats } from '../services/stats';
+import { initUserSystem } from '../services/user';
+import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
+import { checkPG, dumpPG, killPG,restorePG } from '../utils/postgresql';
+import { getState, setState } from '../utils/state';
+import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
+import { initFrontend } from './frontend';
 
 let shutdownInProgress = false;
 
@@ -159,6 +159,18 @@ export async function initEngine() {
 			// This is done later because it's not important.
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
+			if (state.args.length > 0) {
+				// Let's try the last argument
+				const file = state.args[state.args.length-1];
+				if (file && !file.startsWith('--')) {
+					try {
+						await asyncExists(file);
+						await handleFile(file);
+					} catch(err) {
+						logger.warn(`[Engine] Last argument from args (${file}) does not exist`);
+					}
+				}
+			}
 			if (state.isTest) {
 				downloadTestSongs();
 				on('downloadQueueStatus', (status: string) => {
