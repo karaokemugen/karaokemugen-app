@@ -1850,11 +1850,6 @@ csv-writer@^1.6.0:
   resolved "https://registry.yarnpkg.com/csv-writer/-/csv-writer-1.6.0.tgz#d0cea44b6b4d7d3baa2ecc6f3f7209233514bcf9"
   integrity sha512-NOx7YDFWEsM/fTRAJjRpPp8t+MKRVvniAg9wQlUKx20MFrPs73WLJhFf5iteqrxNYnsy924K3Iroh3yNHeYd2g==
 
-cuid@^2.1.1:
-  version "2.1.8"
-  resolved "https://registry.yarnpkg.com/cuid/-/cuid-2.1.8.tgz#cbb88f954171e0d5747606c0139fb65c5101eac0"
-  integrity sha512-xiEMER6E7TlTPnDxrM4eRiC6TRgjNX9xzEZ5U/Se2YJKr7Mq4pJn/2XEHjl3STcSh96GmkHPcBXLES8M29wyyg==
-
 damerau-levenshtein@^1.0.4:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.6.tgz#143c1641cb3d85c60c32329e26899adea8701791"
@@ -4034,12 +4029,10 @@ node-id3@^0.1.16:
   dependencies:
     iconv-lite "^0.4.15"
 
-node-mpv-km@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/node-mpv-km/-/node-mpv-km-2.0.2.tgz#f031d8b4c24d71928cca3621edded23b7c3240b0"
-  integrity sha512-octgV2BJ/4fG/+mdE36u+8jDq5ZTFOo6SNraP6na4UZD1mkEDuuaVVp5tJ98EDmBB1Tg4x7oThOYZXF/tus9Rw==
-  dependencies:
-    cuid "^2.1.1"
+node-mpv@^2.0.0-beta.0:
+  version "2.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/node-mpv/-/node-mpv-2.0.0-beta.0.tgz#24f4b6de4eb76ac8cf355c6249da9afe39327122"
+  integrity sha512-EjPBcG1jVKLsH28Wk/fzlqG4v1RyQ4i75PRVwqJO82yYCPj8S2HWMOvztOXfV23cFrdUBUNJ+3W49xVRFRKrHw==
 
 nodejs-traceroute@^1.2.0:
   version "1.2.0"
