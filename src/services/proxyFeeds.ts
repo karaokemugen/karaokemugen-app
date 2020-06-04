@@ -1,13 +1,12 @@
 // Node modules
-import {xml2json} from 'xml-js';
 import internet from 'internet-available';
+import {xml2json} from 'xml-js';
 
+import HTTP from '../lib/utils/http';
 // KM Imports
 import logger from '../lib/utils/logger';
-
 // Types
 import { Feed } from '../types/feeds';
-import HTTP from '../lib/utils/http';
 
 const feeds = [
 	{
@@ -31,9 +30,9 @@ export async function getFeeds() {
 	} catch(err) {
 		throw 'This instance is not connected to the internets';
 	}
-	let feedPromises = [];
+	const feedPromises = [];
 	feeds.forEach(feed => feedPromises.push(fetchFeed(feed.url, feed.name)));
-	return await Promise.all(feedPromises);
+	return Promise.all(feedPromises);
 }
 
 /** Fetch and process a RSS feed */
@@ -46,7 +45,7 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 			feed.rss.channel.item = feed.rss.channel.item.filter((item: any) => !item.description._text.includes('UnJourUnKaraoke'));
 		} else {
 			feed.feed.entry.forEach((element: any) => {
-				element.content._text = element.content._text.replace(/href=\"\//g, 'href=\"https://lab.shelter.moe/');
+				element.content._text = element.content._text.replace(/href="\//g, 'href="https://lab.shelter.moe/');
 			});
 		}
 		return {

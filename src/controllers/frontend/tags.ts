@@ -1,10 +1,11 @@
-import { Router } from "express";
-import { requireAuth, requireValidUser, updateUserLoginTime, requireAdmin } from "../middlewares/auth";
-import { requireWebappLimited } from "../middlewares/webapp_mode";
-import { getTags, getDuplicateTags, mergeTags, deleteTag, getTag, editTag, addTag } from "../../services/tag";
-import { errMessage, APIMessage } from "../common";
-import { getLang } from "../middlewares/lang";
-import { getYears } from "../../services/kara";
+import { Router } from 'express';
+
+import { getYears } from '../../services/kara';
+import { addTag,deleteTag, editTag, getDuplicateTags, getTag, getTags, mergeTags } from '../../services/tag';
+import { APIMessage,errMessage } from '../common';
+import { requireAdmin,requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
+import { requireWebappLimited } from '../middlewares/webapp_mode';
 
 export default function tagsController(router: Router) {
 
@@ -66,7 +67,7 @@ export default function tagsController(router: Router) {
 				res.json(tags);
 			} catch(err) {
 				const code = 'TAGS_LIST_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -94,7 +95,7 @@ export default function tagsController(router: Router) {
 				res.status(200).json(APIMessage('TAG_CREATED'));
 			} catch(err) {
 				const code = 'TAG_CREATE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -125,15 +126,15 @@ export default function tagsController(router: Router) {
 	* HTTP/1.1 403 Forbidden
 	*/
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
-				try {
-					const years = await getYears();
-					res.json(years);
-				} catch(err) {
-					const code = 'YEARS_LIST_ERROR';
-				errMessage(code, err)
+			try {
+				const years = await getYears();
+				res.json(years);
+			} catch(err) {
+				const code = 'YEARS_LIST_ERROR';
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
-				}
-			});
+			}
+		});
 	router.route('/tags/duplicate')
 	/**
 	* @api {get} /tags/duplicate List tags with same names
@@ -160,7 +161,7 @@ export default function tagsController(router: Router) {
 				res.json(tags);
 			} catch(err) {
 				const code = 'TAG_DUPLICATE_LIST_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -191,7 +192,7 @@ export default function tagsController(router: Router) {
 				res.json(APIMessage('TAGS_MERGED', tag));
 			} catch(err) {
 				const code = 'TAGS_MERGED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -217,7 +218,7 @@ export default function tagsController(router: Router) {
 				res.status(200).json(APIMessage('TAG_DELETED'));
 			} catch(err) {
 				const code = 'TAG_DELETE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -245,7 +246,7 @@ export default function tagsController(router: Router) {
 				res.json(tag);
 			} catch(err) {
 				const code = 'TAG_GET_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -274,7 +275,7 @@ export default function tagsController(router: Router) {
 				res.json(APIMessage('TAG_EDITED'));
 			} catch(err) {
 				const code = 'TAG_EDIT_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});

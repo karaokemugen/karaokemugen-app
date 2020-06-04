@@ -1,49 +1,43 @@
-import {selectDownloadBLC, insertDownloadBLC,  deleteDownloadBLC, emptyDownload, selectDownload, selectDownloads, updateDownload, insertDownloads, selectPendingDownloads, initDownloads} from '../dao/download';
-import Downloader from '../utils/downloader';
 import Queue from 'better-queue';
-import { v4 as uuidV4 } from 'uuid';
-import {resolvedPathTemp, resolvedPathRepos, getConfig} from '../lib/utils/config';
-import {resolve, dirname} from 'path';
 import internet from 'internet-available';
-import logger, { profile } from '../lib/utils/logger';
-import {asyncMove, resolveFileInDirs, asyncStat, asyncUnlink, asyncReadDir, asyncWriteFile} from '../lib/utils/files';
-import {uuidRegexp, getTagTypeName} from '../lib/utils/constants';
-import {integrateKaraFile, getAllKaras, getKaras} from './kara';
-import { compareKarasChecksum } from '../dao/database';
-import { vacuum } from '../lib/dao/database';
-import { emitWS } from '../lib/utils/ws';
-import HTTP from '../lib/utils/http';
-import { QueueStatus, KaraDownload, KaraDownloadRequest, KaraDownloadBLC, File } from '../types/download';
-import { DownloadItem } from '../types/downloader';
-import { KaraList, KaraParams, CompareParam } from '../lib/types/kara';
-import { TagParams, Tag, TagList } from '../lib/types/tag';
-import { deleteKara } from '../services/kara';
-import { refreshAll } from '../lib/dao/database';
-import { DBKara } from '../lib/types/database/kara';
-import { getTags, integrateTagFile } from './tag';
-import prettyBytes from 'pretty-bytes';
-import { refreshKaras } from '../lib/dao/kara';
 import merge from 'lodash.merge';
-import { DownloadBundle } from '../lib/types/downloads';
 import sampleSize from 'lodash.samplesize';
-import Task from '../lib/utils/taskManager';
-import { extractAssInfos } from '../lib/dao/karafile';
-import { SeriesList } from '../lib/types/series';
-import { emit } from '../lib/utils/pubsub';
-import { repoStats } from '../lib/types/repo';
+import {dirname,resolve} from 'path';
+import prettyBytes from 'pretty-bytes';
+import { v4 as uuidV4 } from 'uuid';
+
 import { APIMessage } from '../controllers/common';
+import { compareKarasChecksum } from '../dao/database';
+import {deleteDownloadBLC, emptyDownload, initDownloads,insertDownloadBLC,  insertDownloads, selectDownload, selectDownloadBLC, selectDownloads, selectPendingDownloads, updateDownload} from '../dao/download';
+import { refreshAll, vacuum } from '../lib/dao/database';
+import { refreshKaras } from '../lib/dao/kara';
+import { extractAssInfos } from '../lib/dao/karafile';
+import { DBKara } from '../lib/types/database/kara';
+import { DownloadBundle } from '../lib/types/downloads';
+import { CompareParam,KaraList, KaraParams } from '../lib/types/kara';
+import { repoStats } from '../lib/types/repo';
+import { SeriesList } from '../lib/types/series';
+import { Tag, TagList,TagParams } from '../lib/types/tag';
+import {getConfig,resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
+import {getTagTypeName,uuidRegexp} from '../lib/utils/constants';
+import {asyncMove, asyncReadDir, asyncStat, asyncUnlink, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
+import HTTP from '../lib/utils/http';
+import logger, { profile } from '../lib/utils/logger';
+import { emit } from '../lib/utils/pubsub';
+import { sentryError } from '../lib/utils/sentry';
+import Task from '../lib/utils/taskManager';
+import { emitWS } from '../lib/utils/ws';
+import { deleteKara } from '../services/kara';
+import { File,KaraDownload, KaraDownloadBLC, KaraDownloadRequest, QueueStatus } from '../types/download';
+import { DownloadItem } from '../types/downloader';
+import Downloader from '../utils/downloader';
+import {getAllKaras, getKaras,integrateKaraFile} from './kara';
+import { getTags, integrateTagFile } from './tag';
 
 let downloaderReady = false;
 
 const queueOptions = {
 	id: 'uuid',
-	// not compatible with await
-	precondition: async (cb: any) => {
-		internet()
-            .then(cb(null, true))
-            .catch(cb(null, false));
-	},
-	preconditionRetryTimeout: 10 * 1000,
 	cancelIfRunning: true
 };
 
@@ -141,7 +135,7 @@ async function processDownload(download: KaraDownload) {
 			total: download.size
 		});
 		await setDownloadStatus(download.uuid, 'DL_RUNNING');
-		let list = [];
+		const list = [];
 		const localMedia = resolve(resolvedPathRepos('Medias', download.repository)[0], download.urls.media.local);
 		const localKaraPath = resolve(resolvedPathRepos('Karas', download.repository)[0]);
 		const localTagsPath = resolve(resolvedPathRepos('Tags', download.repository)[0]);
@@ -176,7 +170,7 @@ async function processDownload(download: KaraDownload) {
 		if (bundle.lyrics.file !== null) {
 			tempLyrics = resolve(tempDir, bundle.lyrics.file);
 			writes.push(await asyncWriteFile(tempLyrics, bundle.lyrics.data, 'utf-8'));
-		};
+		}
 		const tempKara = resolve(tempDir, bundle.kara.file);
 		writes.push(await asyncWriteFile(tempKara, JSON.stringify(bundle.kara.data, null, 2), 'utf-8'));
 
@@ -256,26 +250,13 @@ async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, 
 async function downloadFiles(download?: KaraDownload, list?: DownloadItem[], task?: Task) {
 	const downloader = new Downloader({ bar: true, task: task });
 	// Launch downloads
-	return new Promise((resolve, reject) => {
-		downloader.download(list)
-		.then(fileErrors => {
-			if (fileErrors.length > 0) {
-				if (download) {
-					setDownloadStatus(download.uuid, 'DL_FAILED')
-						.then(() => {
-							reject(`Error downloading file : ${fileErrors.toString()}`);
-						}).catch(err => {
-							reject(`Error downloading file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
-						})
-				} else {
-					reject(`Error downloading file : ${fileErrors.toString()}`);
-				}
-			} else {
-				resolve();
-			}
-		});
-});
-
+	const fileErrors = await downloader.download(list);
+	if (fileErrors.length > 0) {
+		if (download) {
+			await setDownloadStatus(download.uuid, 'DL_FAILED');
+		}
+		throw `Error downloading file : ${fileErrors.toString()}`;
+	}
 }
 
 export function pauseQueue() {
@@ -322,40 +303,40 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 	return dls.length;
 }
 
-export async function getDownloads() {
-	return await selectDownloads();
+export function getDownloads() {
+	return selectDownloads();
 }
 
-export async function getDownload(uuid: string) {
-	return await selectDownload(uuid);
+export function getDownload(uuid: string) {
+	return selectDownload(uuid);
 }
 
-export async function setDownloadStatus(uuid: string, status: string) {
-	return await updateDownload(uuid, status);
+export function setDownloadStatus(uuid: string, status: string) {
+	return updateDownload(uuid, status);
 }
 
-export async function wipeDownloads() {
+export function wipeDownloads() {
 	q.destroy();
 	initQueue();
 	emitQueueStatus('stopped');
-	return await emptyDownload();
+	return emptyDownload();
 }
 
-export async function getDownloadBLC() {
-	return await selectDownloadBLC();
+export function getDownloadBLC() {
+	return selectDownloadBLC();
 }
 
-export async function addDownloadBLC(blc: KaraDownloadBLC) {
+export function addDownloadBLC(blc: KaraDownloadBLC) {
 	if (blc.type < 0 && blc.type > 1006) throw `Incorrect BLC type (${blc.type})`;
 	if ((blc.type <= 1001) && !new RegExp(uuidRegexp).test(blc.value)) throw `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`;
 	if ((blc.type >= 1002) && isNaN(blc.value)) throw `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`;
-	return await insertDownloadBLC(blc);
+	return insertDownloadBLC(blc);
 }
 
 export async function removeDownloadBLC(id: number) {
 	const dlBLC = await selectDownloadBLC();
 	if (!dlBLC.some(e => e.dlblc_id === id )) throw 'DL BLC ID does not exist';
-	return await deleteDownloadBLC(id);
+	return deleteDownloadBLC(id);
 }
 
 export async function getAllRemoteKaras(repository: string, params: KaraParams, compare?: CompareParam): Promise<KaraList> {
@@ -396,13 +377,13 @@ export async function getAllRemoteKaras(repository: string, params: KaraParams, 
 async function getRemoteStats(repo: string): Promise<repoStats> {
 	const res = await HTTP(`https://${repo}/api/karas/stats`, {
 		responseType: 'json'
-	})
+	});
 	return res.body as repoStats;
 }
 
 export async function getRemoteKaras(repo: string, params: KaraParams, compare?: CompareParam): Promise<KaraList> {
 	//First get all karas we currently own
-	let localKIDs = {};
+	const localKIDs = {};
 	const query = params.q
 		? `r=${repo}!${params.q}`
 		: `r=${repo}`;
@@ -438,7 +419,7 @@ export async function getRemoteKaras(repo: string, params: KaraParams, compare?:
 				from: 0,
 				to: 0
 			}
-		}
+		};
 	}
 }
 
@@ -521,7 +502,7 @@ export async function updateBase(repo: string) {
 	}
 }
 
-async function waitForUpdateQueueToFinish() {
+function waitForUpdateQueueToFinish() {
 	return new Promise((resolve, reject) => {
 		// We'll redefine the drain event of the queue to resolve once the queue is drained.
 		q.on('drain', async () => {
@@ -532,7 +513,7 @@ async function waitForUpdateQueueToFinish() {
 				resolve();
 			} catch(err) {
 				logger.error(`[Download] Error while draining queue : ${err}`);
-				reject();
+				reject(err);
 			}
 		});
 	});
@@ -574,7 +555,7 @@ export async function downloadAllKaras() {
 			emitWS('error', APIMessage('DOWNLOAD_SONGS_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
-};
+}
 
 export async function downloadKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
 	const task = new Task({
@@ -598,7 +579,7 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 			getTags({})
 		]);
 		for (const blc of blcs) {
-			let filterFunction: Function;
+			let filterFunction: any;
 			if (blc.type === 0) filterFunction = filterTagName;
 			if (blc.type >= 1 && blc.type < 1000) filterFunction = filterTagID;
 			if (blc.type === 1001) filterFunction = filterKID;
@@ -623,7 +604,9 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 		if (karasToAdd.length > 0) await addDownloads(downloads);
 		return karasToAdd.length;
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}
@@ -645,7 +628,7 @@ function filterTagID(k: DBKara, value: string, type: number, tags: Tag[]): boole
 	// Find tag
 	const tag = tags.find(e => e.tid === value);
 	if (tag) {
-		let typeName = getTagTypeName(type);
+		const typeName = getTagTypeName(type);
 		return k[typeName].every((e: Tag) => !e.tid.includes(tag.tid));
 	} else {
 		// Tag isn't found in database, weird but could happen for some obscure reasons. We'll return true.
@@ -715,7 +698,9 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 			refreshKaras();
 		}
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}
@@ -753,8 +738,7 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 			const rt = remote.content.find(rt => rt.tid === t.tid);
 			if (!rt) continue;
 			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
-			if (rt?.modified_at as unknown > t.modified_at.toISOString())
-			{
+			if (rt?.modified_at as unknown > t.modified_at.toISOString()) {
 				tagsToUpdate.push({tag: rt, oldFile: t.tagfile});
 				continue;
 			}
@@ -763,11 +747,11 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 		logger.info(`[Update] Updating ${tagsToUpdate.length} tags`);
 		if (tagsToUpdate.length > 0) {
 			const list = [];
-			let newTagFiles = [];
+			const newTagFiles = [];
 			for (const t of tagsToUpdate) {
-				const oldFiles = await resolveFileInDirs(t.oldFile, resolvedPathRepos('Tags', repo))
+				const oldFiles = await resolveFileInDirs(t.oldFile, resolvedPathRepos('Tags', repo));
 				const oldPath = dirname(oldFiles[0]);
-				const newTagFile = resolve(oldPath, t.tag.tagfile)
+				const newTagFile = resolve(oldPath, t.tag.tagfile);
 				newTagFiles.push(newTagFile);
 				list.push({
 					filename: newTagFile,
@@ -781,7 +765,9 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 		}
 		return tagsToUpdate.length;
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		profile('tagUpdate');
 		task.end();
@@ -806,9 +792,8 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 			const rk = remote.content.find(rk => rk.kid === k.kid);
 			if (!rk) continue;
 			// When grabbed from the remote API we get a string, while the local API returns a date object. So, well... sorrymasen.
-			if (rk?.modified_at as unknown > k.modified_at.toISOString())
-			{
-				karasToUpdate.push(k.kid)
+			if (rk?.modified_at as unknown > k.modified_at.toISOString()) {
+				karasToUpdate.push(k.kid);
 				continue;
 			}
 			// We also check the case where there has been a mismatch between local and remote on media or lyrics.
@@ -859,7 +844,9 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 		if (karasToUpdate.length > 0) await addDownloads(downloads);
 		return karasToUpdate.length;
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}
@@ -879,9 +866,9 @@ async function listRemoteMedias(repo: string): Promise<File[]> {
 }
 
 async function compareMedias(localFiles: File[], remoteFiles: File[], repo: string): Promise<boolean> {
-	let removedFiles:string[] = [];
-	let addedFiles:File[] = [];
-	let updatedFiles:File[] = [];
+	const removedFiles:string[] = [];
+	const addedFiles:File[] = [];
+	const updatedFiles:File[] = [];
 	const mediasPath = resolvedPathRepos('Medias', repo)[0];
 	logger.info('[Update] Comparing your medias with the current ones');
 	for (const remoteFile of remoteFiles) {
@@ -924,8 +911,8 @@ async function compareMedias(localFiles: File[], remoteFiles: File[], repo: stri
 	}
 }
 
-function downloadMedias(files: File[], mediasPath: string, repo: string): Promise<void> {
-	let list = [];
+async function downloadMedias(files: File[], mediasPath: string, repo: string): Promise<void> {
+	const list = [];
 	for (const file of files) {
 		list.push({
 			filename: resolve(mediasPath, file.basename),
@@ -941,17 +928,15 @@ function downloadMedias(files: File[], mediasPath: string, repo: string): Promis
 			total: files.length
 		})
 	});
-	return new Promise(async (resolve: any, reject: any) => {
-		const fileErrors = await mediaDownloads.download(list);
-		fileErrors.length > 0
-			? reject(`Error downloading these medias : ${fileErrors.toString()}`)
-			: resolve();
-	});
+	const fileErrors = await mediaDownloads.download(list);
+	if (fileErrors.length > 0) {
+		throw (`Error downloading these medias : ${fileErrors.toString()}`);
+	}
 }
 
 async function listLocalMedias(repo: string): Promise<File[]> {
 	const mediaFiles = await asyncReadDir(resolvedPathRepos('Medias', repo)[0]);
-	let localMedias = [];
+	const localMedias = [];
 	for (const file of mediaFiles) {
 		try {
 			const mediaPath = await resolveFileInDirs(file, resolvedPathRepos('Medias', repo));
@@ -1025,7 +1010,7 @@ export async function downloadRandomSongs() {
 	const conf = getConfig();
 	const onlineRepos = conf.System.Repositories.filter(r => r.Online);
 	try {
-		logger.info('[Samples] Downloading samples...')
+		logger.info('[Samples] Downloading samples...');
 		const karas = await getRemoteKaras(onlineRepos[0].Name, {});
 		// Downloading samples here, 3 japanese, 1 french, 1 english, 1 italian.
 		const samples = [
@@ -1106,7 +1091,7 @@ function filterSamples(k: DBKara, lang: string): boolean {
 	return k.langs.some(t => t.name === lang) &&
 		k.duration < maxDuration &&
 		k.mediasize > minSize &&
-		k.mediasize < maxSize
+		k.mediasize < maxSize;
 }
 
 export async function redownloadSongs() {
@@ -1118,8 +1103,8 @@ export async function redownloadSongs() {
 			size: k.mediasize,
 			repository: k.repository,
 			name: k.karafile.replace('.kara.json', '')
-		}
-	})
+		};
+	});
 	await addDownloads(downloads);
 
 }

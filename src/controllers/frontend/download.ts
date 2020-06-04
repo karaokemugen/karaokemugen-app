@@ -1,11 +1,11 @@
 
-import {requireAuth, requireValidUser, requireAdmin, updateUserLoginTime} from '../middlewares/auth';
-import {requireNotDemo} from '../middlewares/demo';
-
-import {getDownloadBLC, addDownloadBLC, removeDownloadBLC, getDownloads, pauseQueue, startDownloads, addDownloads, wipeDownloads, updateAllKaras, downloadAllKaras, cleanAllKaras, updateAllMedias, getAllRemoteKaras, getAllRemoteTags, updateAllBases, downloadRandomSongs} from '../../services/download';
 import { Router } from 'express';
+
+import {addDownloadBLC, addDownloads, cleanAllKaras, downloadAllKaras, downloadRandomSongs,getAllRemoteKaras, getAllRemoteTags, getDownloadBLC, getDownloads, pauseQueue, removeDownloadBLC, startDownloads, updateAllBases, updateAllKaras, updateAllMedias, wipeDownloads} from '../../services/download';
+import { APIMessage,errMessage } from '../common';
+import {requireAdmin, requireAuth, requireValidUser, updateUserLoginTime} from '../middlewares/auth';
+import {requireNotDemo} from '../middlewares/demo';
 import { getLang } from '../middlewares/lang';
-import { errMessage, APIMessage } from '../common';
 
 export default function downloadController(router: Router) {
 
@@ -39,7 +39,7 @@ export default function downloadController(router: Router) {
 				res.status(200).json(APIMessage('DOWNLOADS_QUEUED', numberOfDLs));
 			} catch(err) {
 				const code = 'DOWNLOADS_QUEUED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -86,7 +86,7 @@ export default function downloadController(router: Router) {
 				res.json(downloads);
 			} catch(err) {
 				const code = 'DOWNLOADS_GET_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -109,7 +109,7 @@ export default function downloadController(router: Router) {
 				res.status(200).json();
 			} catch(err) {
 				const code = 'DOWNLOADS_WIPE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -133,7 +133,7 @@ export default function downloadController(router: Router) {
 				res.status(200).json();
 			} catch(err) {
 				const code = 'DOWNLOADS_PAUSE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -151,14 +151,14 @@ export default function downloadController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-			.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-				try {
-					await downloadRandomSongs();
-					res.status(200).send('Downloads started');
-				} catch(err) {
-					res.status(500).send(`Error adding downloads: ${err}`);
-				}
-			});
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+			try {
+				await downloadRandomSongs();
+				res.status(200).send('Downloads started');
+			} catch(err) {
+				res.status(500).send(`Error adding downloads: ${err}`);
+			}
+		});
 	router.route('/downloads/start')
 	/**
  * @api {put} /downloads/start Start queue
@@ -179,7 +179,7 @@ export default function downloadController(router: Router) {
 				res.status(200).json(APIMessage('DOWNLOADS_STARTED'));
 			} catch(err) {
 				const code = 'DOWNLOADS_START_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -206,7 +206,7 @@ export default function downloadController(router: Router) {
 				res.status(200).json(blc);
 			} catch(err) {
 				const code = 'DOWNLOADS_BLC_GET_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -231,10 +231,10 @@ export default function downloadController(router: Router) {
 				res.status(200).json();
 			} catch(err) {
 				const code = 'DOWNLOADS_BLC_ADDED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
-		})
+		});
 	router.route('/downloads/blacklist/criterias/:id')
 	/**
  * @api {delete} /downloads/blacklist/criterias/:id Remove download criteria
@@ -256,7 +256,7 @@ export default function downloadController(router: Router) {
 				res.status(200).json();
 			} catch(err) {
 				const code = 'DOWNLOADS_BLC_REMOVE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -320,7 +320,7 @@ export default function downloadController(router: Router) {
 				res.json(karas);
 			} catch(err) {
 				const code = 'REMOTE_SONG_LIST_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -339,7 +339,7 @@ export default function downloadController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * "Error computing update : ..."
  */
-		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (_req, res) => {
 			try {
 				updateAllKaras();
 				res.status(200).json(APIMessage('SONGS_UPDATES_IN_PROGRESS'));
@@ -361,7 +361,7 @@ export default function downloadController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * "Error computing update : ..."
  */
-		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (_req, res) => {
 			try {
 				updateAllBases();
 				res.status(200).json(APIMessage('BASES_SYNC_IN_PROGRESS'));
@@ -383,7 +383,7 @@ export default function downloadController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * "Error computing update: ..."
  */
-		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (_req, res) => {
 			try {
 				downloadAllKaras();
 				res.status(200).json(APIMessage('DOWNLOAD_SONGS_IN_PROGRESS'));
@@ -405,7 +405,7 @@ export default function downloadController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * "Error computing update: ..."
  */
-		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req, res) => {
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (_req, res) => {
 			try {
 				cleanAllKaras();
 				res.status(200).json(APIMessage('CLEAN_SONGS_IN_PROGRESS'));
@@ -425,7 +425,7 @@ export default function downloadController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+		.post(requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) => {
 			try {
 				updateAllMedias();
 				res.status(200).json(APIMessage('UPDATING_MEDIAS_IN_PROGRESS'));
@@ -460,7 +460,7 @@ export default function downloadController(router: Router) {
 				res.json(tags);
 			} catch(err) {
 				const code = 'REMOTE_TAGS_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});

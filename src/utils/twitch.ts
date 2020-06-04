@@ -1,10 +1,10 @@
 // Node modules
-import tmi, { Client, ChatUserstate } from 'tmi.js';
+import tmi, { ChatUserstate,Client } from 'tmi.js';
 
+import { getConfig } from '../lib/utils/config';
 // KM Imports
 import logger from '../lib/utils/logger';
 import { addPollVoteIndex } from '../services/poll';
-import { getConfig } from '../lib/utils/config';
 
 // We declare our client here se we can interact with it from different functions.
 let client: Client = null;

@@ -1,11 +1,13 @@
-import logger from "../lib/utils/logger";
+import { APIMessageType } from '../lib/types/frontend';
+import logger from '../lib/utils/logger';
 
-export function APIMessage(code: string, data?: any): object {
+export function APIMessage(code: string, data?: any): APIMessageType {
 	return {
 		code: code,
 		data: data
-	}
+	};
 }
+
 export function errMessage(code: string, message?: string) {
 	logger.error(`[API] ${code} : ${message}`);
 }

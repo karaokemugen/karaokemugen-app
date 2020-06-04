@@ -1,5 +1,6 @@
-import {transaction, buildClauses, db} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
+
+import {buildClauses, db,transaction} from '../lib/dao/database';
 import { KaraParams } from '../lib/types/kara';
 import { DBWhitelist } from '../types/database/whitelist';
 const sql = require('./sql/whitelist');
@@ -18,22 +19,22 @@ export async function getWhitelistContents(params: KaraParams): Promise<DBWhitel
 	return res.rows;
 }
 
-export async function emptyWhitelist() {
-	return await db().query(sql.emptyWhitelist);
+export function emptyWhitelist() {
+	return db().query(sql.emptyWhitelist);
 }
 
-export async function removeKaraFromWhitelist(wlcList: string[]) {
+export function removeKaraFromWhitelist(wlcList: string[]) {
 	const karas = wlcList.map(kara => ([
 		kara
 	]));
-	return await transaction([{params: karas, sql: sql.removeKaraFromWhitelist}]);
+	return transaction([{params: karas, sql: sql.removeKaraFromWhitelist}]);
 }
 
-export async function addKaraToWhitelist(karaList: string[], reason: string) {
+export function addKaraToWhitelist(karaList: string[], reason: string) {
 	const karas = karaList.map((kara) => ([
 		kara,
 		new Date(),
 		reason
 	]));
-	return await transaction([{params: karas, sql: sql.addKaraToWhitelist}]);
+	return transaction([{params: karas, sql: sql.addKaraToWhitelist}]);
 }

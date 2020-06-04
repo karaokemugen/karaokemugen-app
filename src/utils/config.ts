@@ -1,40 +1,41 @@
 /** Centralized configuration management for Karaoke Mugen. */
 
 // Node modules
-import {resolve} from 'path';
-import {address} from 'ip';
-import merge from 'lodash.merge';
-import isEqual from 'lodash.isequal';
-import cloneDeep from 'lodash.clonedeep';
 import i18next from 'i18next';
-import Traceroute from 'nodejs-traceroute';
+import {address} from 'ip';
 import { createCIDR } from 'ip6addr';
+import cloneDeep from 'lodash.clonedeep';
+import isEqual from 'lodash.isequal';
+import merge from 'lodash.merge';
+import Traceroute from 'nodejs-traceroute';
+import {resolve} from 'path';
 import { ip as whoisIP } from 'whoiser';
 
+import { listUsers } from '../dao/user';
+import { setProgressBar } from '../electron/electron';
+import { errorStep } from '../electron/electronLogger';
+import {configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraints,verifyConfig} from '../lib/utils/config';
+import {asyncCopy, asyncRequired,relativePath} from '../lib/utils/files';
 // KM Imports
 import logger from '../lib/utils/logger';
-import {relativePath, asyncCopy, asyncRequired} from '../lib/utils/files';
-import {configureIDs, loadConfigFiles, setConfig, verifyConfig, getConfig, setConfigConstraints} from '../lib/utils/config';
-import {configConstraints, defaults} from './default_settings';
+import { removeNulls } from '../lib/utils/object_helpers';
+import { emit } from '../lib/utils/pubsub';
+import { sentryError } from '../lib/utils/sentry';
+import { emitWS } from '../lib/utils/ws';
 import {publishURL} from '../services/online';
 import {playerNeedsRestart, prepareClassicPauseScreen} from '../services/player';
-import {getState, setState} from './state';
 import {setSongPoll} from '../services/poll';
 import {initStats, stopStats} from '../services/stats';
-import {Config} from '../types/config';
-import { listUsers } from '../dao/user';
 import { updateSongsLeft } from '../services/user';
-import { emitWS } from '../lib/utils/ws';
-import { emit } from '../lib/utils/pubsub';
 import { BinariesConfig } from '../types/binChecker';
+import {Config} from '../types/config';
+import { ASNPrefixes } from './constants';
+import {configConstraints, defaults} from './default_settings';
+import {getState, setState} from './state';
 import { initTwitch, stopTwitch } from './twitch';
-import { removeNulls } from '../lib/utils/object_helpers';
-import { errorStep } from '../electron/electronLogger';
-import { setProgressBar } from '../electron/electron';
-import { ASNPrefixes } from "./constants";
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
-export async function editSetting(part: object) {
+export async function editSetting(part: any) {
 	try {
 		const config = getConfig();
 		const oldConfig = cloneDeep(config);
@@ -45,7 +46,9 @@ export async function editSetting(part: object) {
 		emitWS('settingsUpdated', config);
 		return config;
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	}
 }
 
@@ -65,7 +68,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		const users = await listUsers();
 		for (const user of users) {
 			updateSongsLeft(user.login, getState().modePlaylistID);
-		};
+		}
 	}
 	const state = getState();
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
@@ -165,7 +168,7 @@ function getFirstHop(target: string): Promise<string> {
 			});
 			tracer.trace(target);
 		} catch (e) {
-			logger.error(`[Network] Cannot traceroute`);
+			logger.error('[Network] Cannot traceroute');
 			reject(e);
 		}
 	});
@@ -178,20 +181,20 @@ export async function determineV6Prefix(ipv6: string): Promise<string> {
 	 */
 	// TODO: Find more accurate ways to do this
 	// Resolve ASN using whois
-	let asn = await whoisIP(ipv6);
+	const asn = await whoisIP(ipv6);
 	if (typeof ASNPrefixes[asn.asn] === 'number') {
-		let subnet = createCIDR(ipv6, ASNPrefixes[asn.asn]);
+		const subnet = createCIDR(ipv6, ASNPrefixes[asn.asn]);
 		return subnet.toString();
 	}
 	// Traceroute way
-	let hop = await getFirstHop('kara.moe');
+	const hop = await getFirstHop('kara.moe');
 	logger.debug(`[Network] Determined gateway: ${hop}`);
-	let local = getState().osHost.v6;
+	const local = getState().osHost.v6;
 	let found = false;
 	let prefix = 56;
 	let subnet = createCIDR(local, prefix);
 	while (subnet.contains(hop)) {
-		subnet = createCIDR(local, ++prefix)
+		subnet = createCIDR(local, ++prefix);
 		found = true;
 	}
 	if (found) {
@@ -199,15 +202,15 @@ export async function determineV6Prefix(ipv6: string): Promise<string> {
 		logger.debug(`[Network] Determined IPv6 prefix: ${subnet.toString()}`);
 		return subnet.toString();
 	} else {
-		logger.warn(`[Network] Could not determine IPv6 prefix, disabling IPv6 capability on shortener.`);
+		logger.warn('[Network] Could not determine IPv6 prefix, disabling IPv6 capability on shortener.');
 		throw new Error('Cannot find CIDR');
 	}
 }
 
 /** Create a backup of our config file. Just in case. */
-export async function backupConfig() {
+export function backupConfig() {
 	logger.debug('[Config] Making a backup of config.yml');
-	return await asyncCopy(
+	return asyncCopy(
 		resolve(getState().dataPath, 'config.yml'),
 		resolve(getState().dataPath, 'config.backup.yml'),
 		{ overwrite: true }
@@ -227,7 +230,7 @@ export function getPublicConfig() {
 /** Check if binaries are available. Provide their paths for runtime */
 async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	const binariesPath = configuredBinariesForSystem(config);
-	let requiredBinariesChecks = [];
+	const requiredBinariesChecks = [];
 	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
 	if (config.Database.prod.bundledPostgresBinary) {
 		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));

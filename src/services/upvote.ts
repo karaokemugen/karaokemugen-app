@@ -1,15 +1,16 @@
-import {insertUpvote,removeUpvote, getUpvotesByPLC} from '../dao/upvote';
-import {freePLC, getPLCInfoMini} from './playlist';
-import {listUsers, updateSongsLeft} from './user';
-import {getConfig} from '../lib/utils/config';
 import logger from 'winston';
+
+import {getUpvotesByPLC,insertUpvote,removeUpvote} from '../dao/upvote';
+import {getConfig} from '../lib/utils/config';
 import {getState} from '../utils/state';
 import { getSeriesSingers } from './kara';
+import {freePLC, getPLCInfoMini} from './playlist';
+import {listUsers, updateSongsLeft} from './user';
 
 /** (Up|Down)vote a song. */
-export async function vote(plc_id: number, username: string, downvote: boolean) {
-	if (downvote) return await deleteUpvote(plc_id, username);
-	return await addUpvote(plc_id, username);
+export function vote(plc_id: number, username: string, downvote: boolean) {
+	if (downvote) return deleteUpvote(plc_id, username);
+	return addUpvote(plc_id, username);
 }
 
 /** Upvotes a song */

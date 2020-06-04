@@ -1,8 +1,9 @@
 import { Router } from 'express';
+
+import { addRepo, compareLyricsChecksums, consolidateRepo, copyLyricsRepo,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepos, removeRepo } from '../../services/repo';
+import { APIMessage,errMessage } from '../common';
+import { requireAdmin,requireAuth, requireValidUser } from '../middlewares/auth';
 import { requireNotDemo } from '../middlewares/demo';
-import { requireAuth, requireValidUser, requireAdmin } from '../middlewares/auth';
-import { getRepos, getRepo, removeRepo, addRepo, editRepo, findUnusedTags, findUnusedMedias, consolidateRepo, compareLyricsChecksums, copyLyricsRepo } from '../../services/repo';
-import { errMessage, APIMessage } from '../common';
 
 export default function repoController(router: Router) {
 	router.route('/repos')
@@ -31,13 +32,13 @@ export default function repoController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_LIST_ERROR"}
  */
-		.get(requireNotDemo, async (_req: any, res: any) => {
+		.get(requireNotDemo, (_req: any, res: any) => {
 			try {
 				const repos = getRepos();
 				res.json(repos);
 			} catch(err) {
 				const code = 'REPO_LIST_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -69,7 +70,7 @@ export default function repoController(router: Router) {
 				res.status(200).json(APIMessage('REPO_CREATED'));
 			} catch(err) {
 				const code = 'REPO_CREATE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -93,13 +94,13 @@ export default function repoController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_GET_ERROR"}
  */
-		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 			try {
 				const repo = getRepo(req.params.name);
 				res.json(repo);
 			} catch(err) {
 				const code = 'REPO_GET_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -120,13 +121,13 @@ export default function repoController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_DELETE_ERROR"}
  */
-		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
+		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 			try {
 				removeRepo(req.params.name);
 				res.json(APIMessage('REPO_DELETED'));
 			} catch(err) {
 				const code = 'REPO_DELETE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -159,10 +160,10 @@ export default function repoController(router: Router) {
 				res.json(APIMessage('REPO_EDITED'));
 			} catch(err) {
 				const code = 'REPO_EDIT_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
-		})
+		});
 	router.route('/repos/:name/unusedTags')
 	/**
  * @api {get} /repos/:name/unusedTags Get all unused tags from a repo
@@ -189,7 +190,7 @@ export default function repoController(router: Router) {
 				res.json(tags);
 			} catch(err) {
 				const code = 'REPO_GET_UNUSEDTAGS_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -221,7 +222,7 @@ export default function repoController(router: Router) {
 				res.json(files);
 			} catch(err) {
 				const code = 'REPO_GET_UNUSEDMEDIA_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -239,16 +240,16 @@ export default function repoController(router: Router) {
 	 * HTTP/1.1 200 OK
 	 * {code: "REPO_CONSOLIDATING_IN_PROGRESS"}
 	 */
-			.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-				try {
-					consolidateRepo(req.params.name, req.body.path);
-					res.status(200).json(APIMessage('REPO_CONSOLIDATING_IN_PROGRESS'));
-				} catch(err) {
-					// This is async, check function to know which WS event you get
-				}
-			});
+		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
+			try {
+				consolidateRepo(req.params.name, req.body.path);
+				res.status(200).json(APIMessage('REPO_CONSOLIDATING_IN_PROGRESS'));
+			} catch(err) {
+				// This is async, check function to know which WS event you get
+			}
+		});
 	router.route('/repos/:name/compareLyrics')
-			/**
+	/**
 		 * @api {get} /repos/:name/compareLyrics Compare lyrics between two repositories
 		 * @apiName GetCompareLyrics
 		 * @apiVersion 3.3.0
@@ -273,7 +274,7 @@ export default function repoController(router: Router) {
 				res.status(500).json(APIMessage(code));
 			}
 		})
-			/**
+	/**
 		 * @api {post} /repos/:name/compareLyrics Compare lyrics between two repositories
 		 * @apiName PostCompareLyrics
 		 * @apiVersion 3.3.0
@@ -298,5 +299,5 @@ export default function repoController(router: Router) {
 				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
-		})
+		});
 }

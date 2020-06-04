@@ -1,8 +1,9 @@
-import { Router } from "express";
-import { errMessage, APIMessage } from "../common";
-import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from "../middlewares/auth";
-import { check } from "../../lib/utils/validators";
-import { getSessions, addSession, setActiveSession, mergeSessions, editSession, removeSession, exportSession } from "../../services/session";
+import { Router } from 'express';
+
+import { check } from '../../lib/utils/validators';
+import { addSession, editSession, exportSession,getSessions, mergeSessions, removeSession, setActiveSession } from '../../services/session';
+import { APIMessage,errMessage } from '../common';
+import { requireAdmin, requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
 
 export default function sessionController(router: Router) {
 	router.route('/sessions')
@@ -41,7 +42,7 @@ export default function sessionController(router: Router) {
 				res.json(sessions);
 			} catch(err) {
 				const code = 'SESSION_LIST_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -78,7 +79,7 @@ export default function sessionController(router: Router) {
 					res.status(200).json(APIMessage('SESSION_CREATED'));
 				} catch(err) {
 					const code = 'SESSION_CREATION_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			} else {
@@ -89,25 +90,25 @@ export default function sessionController(router: Router) {
 		});
 	router.route('/sessions/merge')
 		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-		const validationErrors = check(req.body, {
-			seid1: {uuidArrayValidator: true},
-			seid2: {uuidArrayValidator: true}
-		});
-		if (!validationErrors) {
-			try {
-				await mergeSessions(req.body.seid1, req.body.seid2);
-				res.status(200).json(APIMessage('SESSION_MERGED'));
-			} catch(err) {
-				const code = 'SESSION_MERGE_ERROR';
-				errMessage(code, err)
-				res.status(500).json(APIMessage(code));
-			}
-		} else {
+			const validationErrors = check(req.body, {
+				seid1: {uuidArrayValidator: true},
+				seid2: {uuidArrayValidator: true}
+			});
+			if (!validationErrors) {
+				try {
+					await mergeSessions(req.body.seid1, req.body.seid2);
+					res.status(200).json(APIMessage('SESSION_MERGED'));
+				} catch(err) {
+					const code = 'SESSION_MERGE_ERROR';
+					errMessage(code, err);
+					res.status(500).json(APIMessage(code));
+				}
+			} else {
 			// Errors detected
 			// Sending BAD REQUEST HTTP code and error object.
-			res.status(400).json(validationErrors);
-		}
-	});
+				res.status(400).json(validationErrors);
+			}
+		});
 
 	router.route('/sessions/:seid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
 	/**
@@ -141,7 +142,7 @@ export default function sessionController(router: Router) {
 					res.status(200).json(APIMessage('SESSION_EDITED'));
 				} catch(err) {
 					const code = 'SESSION_EDIT_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			} else {
@@ -150,7 +151,7 @@ export default function sessionController(router: Router) {
 				res.status(400).json(validationErrors);
 			}
 		})
-/**
+	/**
  * @api {post} /sessions/:seid Activate session
  * @apiName SetSession
  * @apiVersion 3.1.0
@@ -163,11 +164,11 @@ export default function sessionController(router: Router) {
  * HTTP/1.1 200 OK
  * {code: "SESSION_ACTIVATED"}
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			setActiveSession(req.params.seid);
 			res.status(200).json(APIMessage('SESSION_ACTIVATED'));
 		})
-/**
+	/**
  * @api {delete} /sessions/:seid Delete session
  * @apiName DeleteSession
  * @apiVersion 3.1.0
@@ -186,12 +187,12 @@ export default function sessionController(router: Router) {
 				res.status(200).json(APIMessage('SESSION_DELETED'));
 			} catch(err) {
 				const code = 'SESSION_DELETE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/sessions/:seid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/export')
-/**
+	/**
  * @api {get} /sessions/:seid/export Export session to CSV file
  * @apiName exportSession
  * @apiVersion 3.1.0
@@ -212,7 +213,7 @@ export default function sessionController(router: Router) {
 				res.status(200).json(APIMessage('SESSION_EXPORTED'));
 			} catch(err) {
 				const code = 'SESSION_EXPORT_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});

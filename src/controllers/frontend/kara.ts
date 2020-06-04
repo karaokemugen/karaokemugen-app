@@ -1,18 +1,19 @@
-import { Router } from "express";
-import { errMessage, APIMessage } from "../common";
-import { batchEditKaras, getKaraLyrics, getKara, getKaras, deleteKara, getKaraHistory, getTop50, getKaraPlayed, copyKaraToRepo } from "../../services/kara";
-import { updateUserLoginTime, requireAuth, requireValidUser, requireAdmin } from "../middlewares/auth";
-import { requireWebappLimited, requireWebappOpen } from "../middlewares/webapp_mode";
-import { getLang } from "../middlewares/lang";
-import { emitWS } from "../../lib/utils/ws";
-import { addKaraToPlaylist } from "../../services/playlist";
-import { getConfig, resolvedPathTemp } from "../../lib/utils/config";
+import { Router } from 'express';
+
 import { postSuggestionToKaraBase } from '../../lib/services/gitlab';
-import multer = require("multer");
-import { createKara, editKara } from "../../services/kara_creation";
+import { getConfig, resolvedPathTemp } from '../../lib/utils/config';
+import { emitWS } from '../../lib/utils/ws';
+import { batchEditKaras, copyKaraToRepo,deleteKara, getKara, getKaraHistory, getKaraLyrics, getKaraPlayed, getKaras, getTop50 } from '../../services/kara';
+import { addKaraToPlaylist } from '../../services/playlist';
+import { APIMessage,errMessage } from '../common';
+import { requireAdmin,requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
+import { requireWebappLimited, requireWebappOpen } from '../middlewares/webapp_mode';
+import multer = require('multer');
+import { createKara, editKara } from '../../services/kara_creation';
 
 export default function karaController(router: Router) {
-	let upload = multer({ dest: resolvedPathTemp()});
+	const upload = multer({ dest: resolvedPathTemp()});
 
 	router.route('/karas/suggest')
 	/**
@@ -47,7 +48,7 @@ export default function karaController(router: Router) {
 				}
 			} catch(err) {
 				const code = 'KARA_SUGGESTION_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -103,19 +104,19 @@ export default function karaController(router: Router) {
 		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const karas = await getKaras({
-						filter: req.query.filter,
-						lang: req.lang,
-						from: +req.query.from || 0,
-						size: +req.query.size || 9999999,
-						mode: req.query.searchType,
-						modeValue: req.query.searchValue,
-						token: req.authToken,
-						random: req.query.random
-					});
+					filter: req.query.filter,
+					lang: req.lang,
+					from: +req.query.from || 0,
+					size: +req.query.size || 9999999,
+					mode: req.query.searchType,
+					modeValue: req.query.searchValue,
+					token: req.authToken,
+					random: req.query.random
+				});
 				res.json(karas);
 			} catch(err) {
 				const code = 'SONG_LIST_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -161,7 +162,7 @@ export default function karaController(router: Router) {
 				res.status(200).json(APIMessage('KARA_CREATED'));
 			} catch(err) {
 				const code = 'KARA_CREATED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -191,7 +192,7 @@ export default function karaController(router: Router) {
 				res.json(karas);
 			} catch(err) {
 				const code = 'KARA_HISTORY_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -222,7 +223,7 @@ export default function karaController(router: Router) {
 				res.json(karas);
 			} catch(err) {
 				const code = 'KARA_RANKING_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -255,7 +256,7 @@ export default function karaController(router: Router) {
 				res.json(karas);
 			} catch(err) {
 				const code = 'KARA_PLAYED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -443,7 +444,7 @@ export default function karaController(router: Router) {
 				res.json(kara);
 			} catch(err) {
 				const code = 'SONG_VIEW_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -468,7 +469,7 @@ export default function karaController(router: Router) {
 				res.status(200).json(APIMessage('KARA_DELETED'));
 			} catch(err) {
 				const code = 'KARA_DELETED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -529,7 +530,7 @@ export default function karaController(router: Router) {
 					code: 'PLAYLIST_MODE_SONG_ADDED'
 				});
 			} catch(err) {
-				errMessage(err.code, err)
+				errMessage(err.code, err);
 				res.status(500).json(APIMessage(err.code, {message: err.message, data: err.data}));
 			}
 		})
@@ -575,7 +576,7 @@ export default function karaController(router: Router) {
 				res.status(200).json(APIMessage('KARA_EDITED'));
 			} catch(err) {
 				const code = 'KARA_EDITED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -628,12 +629,12 @@ export default function karaController(router: Router) {
 				res.json(kara);
 			} catch(err) {
 				const code = 'LYRICS_VIEW_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/copyToRepo')
-/**
+	/**
  * @api {post} /karas/:kid/moveToRepo Move song to another repository
  * @apiName PostKaraToRepo
  * @apiVersion 3.2.0
@@ -655,7 +656,7 @@ export default function karaController(router: Router) {
 				res.json(APIMessage('SONG_COPIED'));
 			} catch(err) {
 				const code = 'SONG_COPIED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -677,12 +678,12 @@ export default function karaController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-			.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-				try {
-					batchEditKaras(req.body.playlist_id, req.body.action, req.body.tid, req.body.type);
-					res.status(200).json();
-				} catch {
-					res.status(500).json();
-				}
-			});
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req: any, res: any) => {
+			try {
+				batchEditKaras(req.body.playlist_id, req.body.action, req.body.tid, req.body.type);
+				res.status(200).json();
+			} catch {
+				res.status(500).json();
+			}
+		});
 }

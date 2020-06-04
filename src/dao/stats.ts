@@ -1,5 +1,5 @@
 import {db} from '../lib/dao/database';
-import { DBStatsPlayed, DBStatsRequested, DBStatsFavorites } from '../types/database/stats';
+import { DBStatsFavorites,DBStatsPlayed, DBStatsRequested } from '../types/database/stats';
 const sql = require('./sql/stats');
 
 export async function exportPlayed(): Promise<DBStatsPlayed[]> {

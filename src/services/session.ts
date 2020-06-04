@@ -1,11 +1,13 @@
-import {selectSessions, insertSession, updateSession, deleteSession, cleanSessions, replaceSession} from '../dao/session';
-import { v4 as uuidV4 } from 'uuid';
-import { getState, setState } from '../utils/state';
-import { Session } from '../types/session';
-import { getKaras, getSeriesSingers } from './kara';
 import { createObjectCsvWriter as csvWriter } from 'csv-writer';
 import { resolve } from 'path';
+import { v4 as uuidV4 } from 'uuid';
+
+import {cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
 import { sanitizeFile } from '../lib/utils/files';
+import { sentryError } from '../lib/utils/sentry';
+import { Session } from '../types/session';
+import { getState, setState } from '../utils/state';
+import { getKaras, getSeriesSingers } from './kara';
 
 export async function getSessions() {
 	const sessions = await selectSessions();
@@ -19,7 +21,7 @@ export async function addSession(name: string, started_at?: string, activate?: b
 	const date = started_at
 		? new Date(started_at)
 		: new Date();
-	const seid = uuidV4()
+	const seid = uuidV4();
 	await insertSession({
 		seid: seid,
 		name: name,
@@ -37,7 +39,7 @@ export function setActiveSession(seid: string) {
 export async function editSession(seid: string, name: string, started_at: string, flag_private: boolean) {
 	const session = await findSession(seid);
 	if (!session) throw 'Session does not exist';
-	return await updateSession({
+	return updateSession({
 		seid: seid,
 		name: name,
 		started_at: new Date(started_at),
@@ -49,7 +51,7 @@ export async function removeSession(seid: string) {
 	if (seid === getState().currentSessionID) throw 'Current session cannot be removed, please set another one as current first.';
 	const session = await findSession(seid);
 	if (!session) throw 'Session does not exist';
-	return await deleteSession(seid);
+	return deleteSession(seid);
 }
 
 async function findSession(seid: string): Promise<Session> {
@@ -74,7 +76,7 @@ export async function mergeSessions(seid1: string, seid2: string): Promise<Sessi
 		name: name,
 		seid: seid,
 		started_at: started_at
-	}
+	};
 	await insertSession(session);
 	if (session1.active || session2.active) setActiveSession(seid);
 	await Promise.all([
@@ -162,7 +164,7 @@ export async function exportSession(seid: string) {
 				order: k.songorder ? k.songorder : '',
 				title: k.title,
 				kid: k.kid
-			}
+			};
 		});
 		const recordsRequested = requested.content.map(k => {
 			return {
@@ -172,7 +174,7 @@ export async function exportSession(seid: string) {
 				order: k.songorder ? k.songorder : '',
 				title: k.title,
 				kid: k.kid
-			}
+			};
 		});
 		// Get counts for KIDs
 		const playedCount = {};
@@ -190,7 +192,7 @@ export async function exportSession(seid: string) {
 		const recordsPlayedCount = recordsPlayed.filter((e, pos) => {
 			return recordsPlayed.findIndex(i => i.kid === e.kid) === pos;
 		}).map((k: any) => {
-			const kara = Object.assign({}, k)
+			const kara = Object.assign({}, k);
 			kara.count = playedCount[k.kid];
 			delete kara.played_at;
 			delete kara.kid;
@@ -199,7 +201,7 @@ export async function exportSession(seid: string) {
 		const recordsRequestedCount = recordsRequested.filter((e, pos) => {
 			return recordsRequested.findIndex(i => i.kid === e.kid) === pos;
 		}).map((k: any) => {
-			const kara = Object.assign({}, k)
+			const kara = Object.assign({}, k);
 			kara.count = requestedCount[k.kid];
 			delete kara.requested_at;
 			delete kara.kid;
@@ -214,6 +216,8 @@ export async function exportSession(seid: string) {
 			csvRequestedCount.writeRecords(recordsRequestedCount)
 		]);
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	}
 }

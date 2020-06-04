@@ -7,14 +7,14 @@ export async function selectSessions(): Promise<Session[]> {
 	return sessions.rows;
 }
 
-export async function replaceSession(seid1: string, seid2: string) {
-	return await Promise.all([
+export function replaceSession(seid1: string, seid2: string) {
+	return Promise.all([
 		db().query(sql.replacePlayed, [seid1, seid2]),
 		db().query(sql.replaceRequested, [seid1, seid2])
 	]);
-};
-export async function insertSession(session: Session) {
-	return await db().query(sql.insertSession, [
+}
+export function insertSession(session: Session) {
+	return db().query(sql.insertSession, [
 		session.seid,
 		session.name,
 		session.started_at,
@@ -22,12 +22,12 @@ export async function insertSession(session: Session) {
 	]);
 }
 
-export async function deleteSession(seid: string) {
-	return await db().query(sql.deleteSession, [seid]);
+export function deleteSession(seid: string) {
+	return db().query(sql.deleteSession, [seid]);
 }
 
-export async function updateSession(session: Session) {
-	return await db().query(sql.updateSession, [
+export function updateSession(session: Session) {
+	return db().query(sql.updateSession, [
 		session.seid,
 		session.name,
 		session.started_at,
@@ -35,6 +35,6 @@ export async function updateSession(session: Session) {
 	]);
 }
 
-export async function cleanSessions() {
-	return await db().query(sql.cleanSessions);
+export function cleanSessions() {
+	return db().query(sql.cleanSessions);
 }

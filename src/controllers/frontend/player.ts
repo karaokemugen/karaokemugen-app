@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { errMessage, APIMessage } from '../common';
-import { playerMessage } from '../../services/player';
-import { emitWS } from '../../lib/utils/ws';
+
 import { check } from '../../lib/utils/validators';
-import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
-import { sendCommand, playPlayer } from '../../services/player';
-import { requireWebappLimited } from '../middlewares/webapp_mode';
+import { emitWS } from '../../lib/utils/ws';
+import { playerMessage, playPlayer, sendCommand } from '../../services/player';
 import { getState } from '../../utils/state';
+import { APIMessage,errMessage } from '../common';
+import { requireAdmin, requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
+import { requireWebappLimited } from '../middlewares/webapp_mode';
 
 export default function playerController(router: Router) {
 	router.route('/player/play')
@@ -73,7 +73,7 @@ export default function playerController(router: Router) {
 						await playerMessage(req.body.message, +req.body.duration);
 					} catch(err) {
 						const code = 'MESSAGE_SEND_ERROR';
-						errMessage(code, err)
+						errMessage(code, err);
 						res.messageFailed = true;
 						res.status(500).json(APIMessage(code));
 					}
@@ -131,7 +131,7 @@ export default function playerController(router: Router) {
 					res.status(200).json();
 				} catch(err) {
 					const code = 'COMMAND_SEND_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			} else {

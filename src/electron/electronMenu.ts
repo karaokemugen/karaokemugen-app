@@ -1,15 +1,16 @@
-import { dialog, clipboard } from 'electron';
-import i18next from 'i18next';
-import {win} from './electron';
+import openAboutWindow from 'about-window';
+import { clipboard,dialog } from 'electron';
 import {autoUpdater} from 'electron-updater';
+import i18next from 'i18next';
+import open from 'open';
+import { resolve } from 'path';
+
 import {exit} from '../components/engine';
 import { getConfig, setConfig } from '../lib/utils/config';
-import open from 'open';
-import { getState } from '../utils/state';
-import openAboutWindow from 'about-window';
-import { resolve } from 'path';
-import { setManualUpdate } from './electronAutoUpdate';
 import logger from '../lib/utils/logger';
+import { getState } from '../utils/state';
+import {win} from './electron';
+import { setManualUpdate } from './electronAutoUpdate';
 
 const isMac = process.platform === 'darwin';
 
@@ -23,7 +24,7 @@ function isOpenElectron(): boolean {
 	return getConfig().GUI.OpenInElectron;
 }
 
-export async function initMenu() {
+export function initMenu() {
 	const port = getConfig().Frontend.Port;
 	const base = 'http://localhost';
 	const urls = {
@@ -52,7 +53,7 @@ export async function initMenu() {
 					label: i18next.t('MENU_FILE_UPDATE'),
 					click: async () => {
 						setManualUpdate(true);
-						logger.info(`[AppUpdate] Checking for updates manually`);
+						logger.info('[AppUpdate] Checking for updates manually');
 						await autoUpdater.checkForUpdates();
 						setManualUpdate(false);
 					}
@@ -74,7 +75,7 @@ export async function initMenu() {
 							copyright: 'by Karaoke Mugen Dev Team, under MIT license',
 							use_version_info: true,
 							css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
-						})
+						});
 
 					}
 				},
@@ -88,11 +89,11 @@ export async function initMenu() {
 				}
 			]
 		},
-		   /**
-		    *
-		    * SECURITY CODE MENU
-		    *
-			*/
+		/**
+		*
+		* SECURITY CODE MENU
+		*
+		*/
 		{
 			label: i18next.t('MENU_SECURITYCODE'),
 			submenu: [
@@ -111,32 +112,31 @@ export async function initMenu() {
 				}
 			]
 		},
-
-		  /**
-		   *
-		   * VIEW MENU
-		   *
-		   */
-		  {
+		/**
+		*
+		* VIEW MENU
+		*
+		*/
+		{
 			label: i18next.t('MENU_VIEW'),
 			submenu: [
-			  { label: i18next.t('MENU_VIEW_RELOAD'), role: 'reload' },
-			  { label: i18next.t('MENU_VIEW_RELOADFORCE'), role: 'forcereload' },
-			  { label: i18next.t('MENU_VIEW_TOGGLEDEVTOOLS'), role: 'toggledevtools' },
-			  { type: 'separator' },
-			  { label: i18next.t('MENU_VIEW_RESETZOOM'), role: 'resetzoom' },
-			  { label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomin' },
-			  { label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomout' },
-			  { type: 'separator' },
-			  { label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
+				{ label: i18next.t('MENU_VIEW_RELOAD'), role: 'reload' },
+				{ label: i18next.t('MENU_VIEW_RELOADFORCE'), role: 'forcereload' },
+				{ label: i18next.t('MENU_VIEW_TOGGLEDEVTOOLS'), role: 'toggledevtools' },
+				{ type: 'separator' },
+				{ label: i18next.t('MENU_VIEW_RESETZOOM'), role: 'resetzoom' },
+				{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomin' },
+				{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomout' },
+				{ type: 'separator' },
+				{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
 			]
-		  },
-		  /**
-		   *
-		   * GO TO MENU
-		   *
-		   */
-		  {
+		},
+		/**
+		*
+		* GO TO MENU
+		*
+		*/
+		{
 			label: i18next.t('MENU_GOTO'),
 			submenu: [
 				{
@@ -176,13 +176,13 @@ export async function initMenu() {
 					}
 				},
 			]
-		  },
-		  /**
-		   *
-		   * TOOLS MENU
-		   *
-		   */
-		  {
+		},
+		/**
+		*
+		* TOOLS MENU
+		*
+		*/
+		{
 			label: i18next.t('MENU_TOOLS'),
 			submenu: [
 				{
@@ -222,13 +222,13 @@ export async function initMenu() {
 					}
 				},
 			]
-		  },
-		  /**
-		   *
-		   * OPTIONS
-		   *
-		   */
-		  {
+		},
+		/**
+		*
+		* OPTIONS
+		*
+		*/
+		{
 			label: i18next.t('MENU_OPTIONS'),
 			submenu: [
 				{
@@ -258,42 +258,42 @@ export async function initMenu() {
 					}
 				},
 			]
-		  },
-		  /**
-		   *
-		   * WINDOW MENU
-		   *
-		   */
-		  {
+		},
+		/**
+		*
+		* WINDOW MENU
+		*
+		*/
+		{
 			label: i18next.t('MENU_WINDOW'),
 			submenu: [
-			  { label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
-			  ...(isMac ? [
+				{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
+				...(isMac ? [
 					{ type: 'separator' },
 					{ label: i18next.t('MENU_WINDOW_TOFRONT'), role: 'front' },
 					{ type: 'separator' }
-			  ] : [
+				] : [
 					{ label: i18next.t('MENU_WINDOW_CLOSE'), role: 'close' }
-			  ])
+				])
 			]
-		  },
-		  /**
-		   *
-		   * HELP MENU
-		   *
-		   */
-		  {
+		},
+		/**
+		*
+		* HELP MENU
+		*
+		*/
+		{
 			label: i18next.t('MENU_HELP'),
 			role: 'help',
 			submenu: [
-			  {
+				{
 					label: i18next.t('MENU_HELP_WEBSITE'),
 					click: () => {
-				  open('https://karaokes.moe');
+						open('https://karaokes.moe');
 					}
-			  }
+				}
 			]
-		  }
+		}
 	];
 	if (isMac) {
 		menuItems.splice(2, 0,
@@ -302,28 +302,27 @@ export async function initMenu() {
 			* EDIT MENU
 			*
 			*/
-		   {
-			   label: i18next.t('MENU_EDIT'),
-			   submenu: [
-				 { label: i18next.t('MENU_EDIT_UNDO'), role: 'undo' },
-				 { label: i18next.t('MENU_EDIT_REDO'), role: 'redo' },
-				 { type: 'separator' },
-				 { label: i18next.t('MENU_EDIT_CUT'), role: 'cut' },
-				 { label: i18next.t('MENU_EDIT_COPY'), role: 'copy' },
-				 { label: i18next.t('MENU_EDIT_PASTE'), role: 'paste' },
-				 { label: i18next.t('MENU_EDIT_PASTEWITHSTYLE'), role: 'pasteAndMatchStyle' },
-				 { label: i18next.t('MENU_EDIT_DELETE'), role: 'delete' },
-				 { label: i18next.t('MENU_EDIT_SELECT_ALL'), role: 'selectAll' },
-				 { type: 'separator' },
-				 {
-					 label: i18next.t('MENU_EDIT_SPEECH'),
-					 submenu: [
-					   { label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startspeaking' },
-					   { label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopspeaking' }
-					 ]
-				   }
-				 ]
-
-			 });
+			{
+				label: i18next.t('MENU_EDIT'),
+				submenu: [
+					{ label: i18next.t('MENU_EDIT_UNDO'), role: 'undo' },
+					{ label: i18next.t('MENU_EDIT_REDO'), role: 'redo' },
+					{ type: 'separator' },
+					{ label: i18next.t('MENU_EDIT_CUT'), role: 'cut' },
+					{ label: i18next.t('MENU_EDIT_COPY'), role: 'copy' },
+					{ label: i18next.t('MENU_EDIT_PASTE'), role: 'paste' },
+					{ label: i18next.t('MENU_EDIT_PASTEWITHSTYLE'), role: 'pasteAndMatchStyle' },
+					{ label: i18next.t('MENU_EDIT_DELETE'), role: 'delete' },
+					{ label: i18next.t('MENU_EDIT_SELECT_ALL'), role: 'selectAll' },
+					{ type: 'separator' },
+					{
+						label: i18next.t('MENU_EDIT_SPEECH'),
+						submenu: [
+							{ label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startspeaking' },
+							{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopspeaking' }
+						]
+					}
+				]
+			});
 	}
 }

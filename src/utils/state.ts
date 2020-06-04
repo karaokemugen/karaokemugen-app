@@ -1,13 +1,12 @@
 // KM Imports
-import {emitWS} from '../lib/utils/ws';
-import {emit} from '../lib/utils/pubsub';
-import logger from '../lib/utils/logger';
-
 // Node modules
 import merge from 'lodash.merge';
 
+import logger from '../lib/utils/logger';
+import {emit} from '../lib/utils/pubsub';
+import {emitWS} from '../lib/utils/ws';
 // Types
-import {State, PublicState} from '../types/state';
+import {PublicState,State} from '../types/state';
 
 // Internal settings
 let state: State = {
@@ -67,7 +66,7 @@ export function getPlayerState(): PublicState {
 /** Emit via websockets the public state */
 function emitPlayerState() {
 	emitWS('playerStatus', getPlayerState());
-};
+}
 
 /** Get current app state object */
 export function getState() {
@@ -87,7 +86,7 @@ export function getPublicState(admin: boolean) {
 }
 
 /** Set one or more settings in app state */
-export function setState(part: object) {
+export function setState(part: any) {
 	state = merge(state, part);
 	manageMode();
 	emit('stateUpdated', state);

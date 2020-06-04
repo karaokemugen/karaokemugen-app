@@ -1,41 +1,40 @@
-import {tagTypes, getTagTypeName} from '../lib/utils/constants';
-import {ASSToLyrics} from '../lib/utils/ass';
-import {refreshTags, refreshKaraTags, refreshAllKaraTags} from '../lib/dao/tag';
-import { saveSetting, databaseReady } from '../lib/dao/database';
-import { refreshYears, refreshKaras } from '../lib/dao/kara';
-import { getASS } from '../lib/dao/karafile';
-import {selectAllKaras,
-	getYears as getYearsDB,
-	getKaraMini as getKaraMiniDB,
-	deleteKara as deleteKaraDB,
-	addKara,
-	updateKara,
-	addPlayed,
-	getKaraHistory as getKaraHistoryDB,
-	selectAllKIDs
-} from '../dao/kara';
-import {updateKaraTags} from '../dao/tag';
-import {basename} from 'path';
-import {profile} from '../lib/utils/logger';
-import {Kara, KaraParams, KaraList, YearList, KaraFileV4, KaraTag} from '../lib/types/kara';
-import {asyncUnlink, resolveFileInDirs, asyncCopy, asyncReadFile, asyncWriteFile} from '../lib/utils/files';
+import {basename, resolve} from 'path';
 import logger from 'winston';
-import { editKaraInStore, removeKaraInStore, getStoreChecksum, sortKaraStore, addKaraToStore } from '../dao/dataStore';
-import { DBKaraHistory } from '../types/database/kara';
-import { DBKara, DBKaraBase } from '../lib/types/database/kara';
-import {parseKara, getDataFromKaraFile} from '../lib/dao/karafile';
-import { Token } from '../lib/types/user';
-import { consolidateData, removeUnusedTagData } from '../lib/services/kara';
-import { getState } from '../utils/state';
-import { resolvedPathRepos } from '../lib/utils/config';
-import { resolve } from 'path';
-import { writeTagFile } from '../lib/dao/tagfile';
-import { getTag } from './tag';
-import { emitWS } from '../lib/utils/ws';
+
+import { addKaraToStore,editKaraInStore, getStoreChecksum, removeKaraInStore, sortKaraStore } from '../dao/dataStore';
+import {	addKara,
+	addPlayed,
+	deleteKara as deleteKaraDB,
+	getKaraHistory as getKaraHistoryDB,
+	getKaraMini as getKaraMiniDB,
+	getYears as getYearsDB,
+	selectAllKaras,
+	selectAllKIDs,
+	updateKara} from '../dao/kara';
 import { getPlaylistKaraIDs } from '../dao/playlist';
-import { editKara } from './kara_creation';
-import Task from '../lib/utils/taskManager';
+import {updateKaraTags} from '../dao/tag';
+import { databaseReady,saveSetting } from '../lib/dao/database';
+import { refreshKaras,refreshYears } from '../lib/dao/kara';
+import {getASS, getDataFromKaraFile, parseKara} from '../lib/dao/karafile';
+import {refreshAllKaraTags,refreshKaraTags, refreshTags} from '../lib/dao/tag';
+import { writeTagFile } from '../lib/dao/tagfile';
+import { consolidateData, removeUnusedTagData } from '../lib/services/kara';
+import { DBKara, DBKaraBase } from '../lib/types/database/kara';
+import {Kara, KaraFileV4, KaraList, KaraParams, KaraTag,YearList} from '../lib/types/kara';
+import { Token } from '../lib/types/user';
+import {ASSToLyrics} from '../lib/utils/ass';
+import { resolvedPathRepos } from '../lib/utils/config';
+import {getTagTypeName,tagTypes} from '../lib/utils/constants';
+import {asyncCopy, asyncReadFile, asyncUnlink, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
 import { convert1LangTo2B } from '../lib/utils/langs';
+import {profile} from '../lib/utils/logger';
+import { sentryError } from '../lib/utils/sentry';
+import Task from '../lib/utils/taskManager';
+import { emitWS } from '../lib/utils/ws';
+import { DBKaraHistory } from '../types/database/kara';
+import { getState } from '../utils/state';
+import { editKara } from './kara_creation';
+import { getTag } from './tag';
 
 
 /* Returns an array of unknown karaokes. If array is empty, all songs in "karas" are present in database */
@@ -85,7 +84,9 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		karaFileData.data.repository = repoName;
 		await asyncWriteFile(karaFile, JSON.stringify(karaFileData, null, 2), 'utf-8');
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	}
 }
 
@@ -138,8 +139,8 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 	return res[0];
 }
 
-export async function getKaraMini(kid: string): Promise<DBKaraBase> {
-	return await getKaraMiniDB(kid);
+export function getKaraMini(kid: string): Promise<DBKaraBase> {
+	return getKaraMiniDB(kid);
 }
 
 export async function getKaraLyrics(kid: string): Promise<string[]> {
@@ -178,14 +179,14 @@ export async function editKaraInDB(kara: Kara, opts = {
 	if (opts.refresh) await refreshKarasAfterDBChange(kara.newTags);
 }
 
-export async function getKaraHistory(): Promise<DBKaraHistory[]> {
+export function getKaraHistory(): Promise<DBKaraHistory[]> {
 	// Called by system route
-	return await getKaraHistoryDB();
+	return getKaraHistoryDB();
 }
 
-export async function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
+export function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
 	// Called by system route
-	return await selectAllKaras({
+	return selectAllKaras({
 		username: token.username,
 		lang: lang,
 		filter: null,
@@ -193,9 +194,9 @@ export async function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
 	});
 }
 
-export async function getKaraPlayed(token: Token, lang: string, from: number, size: number): Promise<DBKara[]> {
+export function getKaraPlayed(token: Token, lang: string, from: number, size: number): Promise<DBKara[]> {
 	// Called by system route
-	return await selectAllKaras({
+	return selectAllKaras({
 		username: token.username,
 		filter: null,
 		mode: 'played',
@@ -223,9 +224,9 @@ export async function getYears(): Promise<YearList> {
 	};
 }
 
-export async function getAllKaras(): Promise<KaraList> {
+export function getAllKaras(): Promise<KaraList> {
 	// Simple function to return all karaokes, compatibility with KM Server
-	return await getKaras({from: 0, size: 99999999, token: {username: 'admin', role: 'admin'}});
+	return getKaras({from: 0, size: 99999999, token: {username: 'admin', role: 'admin'}});
 }
 
 export async function getKaras(params: KaraParams): Promise<KaraList> {
@@ -249,7 +250,7 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 }
 
 export function formatKaraList(karaList: any, from: number, count: number): KaraList {
-	let {i18n, avatars, data} = consolidateData(karaList);
+	const {i18n, avatars, data} = consolidateData(karaList);
 	karaList = removeUnusedTagData(karaList);
 	return {
 		infos: {
@@ -385,7 +386,7 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 		await databaseReady();
 		logger.info('[Kara] Batch tag edit finished');
 	} catch(err) {
-		logger.info(`[Kara] Batch tag edit failed : ${err}`)
+		logger.info(`[Kara] Batch tag edit failed : ${err}`);
 	} finally {
 		task.end();
 	}

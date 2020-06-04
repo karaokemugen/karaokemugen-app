@@ -1,11 +1,12 @@
-import passport from 'passport';
 import {decode} from 'jwt-simple';
-import {getConfig} from '../../lib/utils/config';
-import {findUserByName, updateLastLoginName, remoteCheckAuth, fetchAndUpdateRemoteUser} from '../../services/user';
+import passport from 'passport';
+
 import { getRemoteToken, upsertRemoteToken } from '../../dao/user';
-import { fetchAndAddFavorites } from '../../services/favorites';
+import {Token,User} from '../../lib/types/user';
+import {getConfig} from '../../lib/utils/config';
 import logger from '../../lib/utils/logger';
-import {User, Token} from '../../lib/types/user';
+import { fetchAndAddFavorites } from '../../services/favorites';
+import {fetchAndUpdateRemoteUser,findUserByName, remoteCheckAuth, updateLastLoginName} from '../../services/user';
 import { APIMessage } from '../common';
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
@@ -37,9 +38,8 @@ export async function checkValidUser(token: { username: string, role: string }, 
 							await fetchAndAddFavorites(token.username.split('@')[1], onlineToken.token, token.username);
 						} catch(err) {
 							logger.error(`[RemoteUser] Failed to fetch and update user/favorite from remote : ${err}`);
-						} finally {
-							return user;
 						}
+						return user;
 					} else {
 						// Cancelling remote token.
 						upsertRemoteToken(token.username, null);

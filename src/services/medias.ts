@@ -1,14 +1,15 @@
-import {extractMediaFiles, asyncReadDir, asyncStat, asyncCheckOrMkdir, asyncRemove} from '../lib/utils/files';
-import {resolve} from 'path';
-import {getConfig, resolvedPathIntros, resolvedPathOutros, resolvedPathEncores, resolvedPathJingles, resolvedPathSponsors} from '../lib/utils/config';
-import logger from '../lib/utils/logger';
+import cloneDeep from 'lodash.clonedeep';
 import sample from 'lodash.sample';
+import {resolve} from 'path';
+import prettyBytes from 'pretty-bytes';
+import {createClient} from 'webdav';
+
+import {getConfig, resolvedPathEncores, resolvedPathIntros, resolvedPathJingles, resolvedPathOutros, resolvedPathSponsors} from '../lib/utils/config';
+import {asyncCheckOrMkdir, asyncReadDir, asyncRemove,asyncStat, extractMediaFiles} from '../lib/utils/files';
+import logger from '../lib/utils/logger';
+import Task from '../lib/utils/taskManager';
 import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
-import cloneDeep from 'lodash.clonedeep';
-import Task from '../lib/utils/taskManager';
-import {createClient} from 'webdav';
-import prettyBytes from 'pretty-bytes';
 import Downloader from '../utils/downloader';
 
 const medias = {
@@ -30,7 +31,7 @@ const KMSite = {
 	url: 'http://mugen.karaokes.moe/medias/',
 	username: 'km',
 	password: 'musubi'
-}
+};
 
 export async function buildAllMediasList() {
 	const medias = getConfig().Playlist.Medias;
@@ -110,20 +111,20 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 		// Setting additional path if it doesn't exist in config (but it should if you used the defaults)
 		const conf = getConfig();
 		const slash = process.platform === 'win32'
-			 ? '\\'
-			 : '/';
+			? '\\'
+			: '/';
 		if (!conf.System.Path[type].includes(conf.System.Path[type][0] + slash + 'KaraokeMugen')) {
 			conf.System.Path[type].push(conf.System.Path[type][0] + slash + 'KaraokeMugen');
 			editSetting({ System:
 				{ Path:
 					conf.System.Path[type]
 				}
-			})
+			});
 		}
 		const localFiles = await listLocalFiles(localDir);
-		let removedFiles: File[] = [];
-		let addedFiles: File[] = [];
-		let updatedFiles: File[] = [];
+		const removedFiles: File[] = [];
+		const addedFiles: File[] = [];
+		const updatedFiles: File[] = [];
 		for (const remoteFile of remoteFiles) {
 			const filePresent = localFiles.some(localFile => {
 				if (localFile.basename === remoteFile.basename) {
@@ -164,7 +165,7 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 }
 
 async function downloadMedias(files: File[], dir: string, type: MediaType, task: Task) {
-	let list = [];
+	const list = [];
 	for (const file of files) {
 		list.push({
 			filename: resolve(dir, file.basename),

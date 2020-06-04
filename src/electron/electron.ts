@@ -1,15 +1,16 @@
-import { setState, getState } from '../utils/state';
-import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
-import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
-import { on } from '../lib/utils/pubsub';
-import { configureLocale, getConfig } from '../lib/utils/config';
-import { main, preInit } from '../index';
-import logger from '../lib/utils/logger';
-import { exit } from '../components/engine';
-import { resolve } from 'path';
+import { app, BrowserWindow, dialog,ipcMain, Menu } from 'electron';
 import open from 'open';
-import { initMenu, getMenu } from './electronMenu';
+import { resolve } from 'path';
+
+import { exit } from '../components/engine';
+import { main, preInit } from '../index';
+import { configureLocale, getConfig } from '../lib/utils/config';
+import logger from '../lib/utils/logger';
+import { on } from '../lib/utils/pubsub';
+import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
+import { getState,setState } from '../utils/state';
 import {initAutoUpdate} from './electronAutoUpdate';
+import { getMenu,initMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
 
@@ -99,14 +100,14 @@ async function createWindow() {
 
 	// What to do when the window is closed.
 	win.on('closed', () => {
-	  win = null;
+		win = null;
 	});
 }
 
 function openLink(url: string) {
-	getConfig().GUI.OpenInElectron && url.indexOf('//localhost') != -1
-	? win.loadURL(url)
-	: open(url);
+	getConfig().GUI.OpenInElectron && url.indexOf('//localhost') !== -1
+		? win.loadURL(url)
+		: open(url);
 }
 
 export function setProgressBar(number: number) {

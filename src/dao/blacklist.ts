@@ -1,16 +1,17 @@
-import {buildClauses, db, transaction} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
-import {BLC} from '../types/blacklist';
+
+import {buildClauses, db, transaction} from '../lib/dao/database';
 import {KaraParams} from '../lib/types/kara';
-import { DBBLC, DBBlacklist } from '../types/database/blacklist';
+import {BLC} from '../types/blacklist';
+import { DBBlacklist,DBBLC } from '../types/database/blacklist';
 const sql = require('./sql/blacklist');
 
-export async function emptyBlacklistCriterias() {
-	return await db().query(sql.emptyBlacklistCriterias);
+export function emptyBlacklistCriterias() {
+	return db().query(sql.emptyBlacklistCriterias);
 }
 
-export async function generateBlacklist() {
-	return await db().query(sql.generateBlacklist);
+export function generateBlacklist() {
+	return db().query(sql.generateBlacklist);
 }
 
 export async function getBlacklistCriterias(): Promise<DBBLC[]> {
@@ -18,8 +19,8 @@ export async function getBlacklistCriterias(): Promise<DBBLC[]> {
 	return res.rows;
 }
 
-export async function deleteBlacklistCriteria(blc_id: number) {
-	return await db().query(sql.deleteBlacklistCriteria, [blc_id]);
+export function deleteBlacklistCriteria(blc_id: number) {
+	return db().query(sql.deleteBlacklistCriteria, [blc_id]);
 }
 
 export async function getBlacklistContents(params: KaraParams): Promise<DBBlacklist[]> {
@@ -33,10 +34,10 @@ export async function getBlacklistContents(params: KaraParams): Promise<DBBlackl
 	return res.rows;
 }
 
-export async function addBlacklistCriteria(blcList: BLC[]) {
+export function addBlacklistCriteria(blcList: BLC[]) {
 	const blc = blcList.map((blcItem) => ([
 		blcItem.value,
 		blcItem.type
 	]));
-	return await transaction([{params: blc, sql: sql.addBlacklistCriteria}]);
+	return transaction([{params: blc, sql: sql.addBlacklistCriteria}]);
 }

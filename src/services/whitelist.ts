@@ -1,8 +1,9 @@
-import {formatKaraList, isAllKaras} from './kara';
-import {removeKaraFromWhitelist, getWhitelistContents as getWLContents, emptyWhitelist as emptyWL, addKaraToWhitelist as addToWL} from '../dao/whitelist';
-import {generateBlacklist} from './blacklist';
-import logger, {profile} from '../lib/utils/logger';
+import {addKaraToWhitelist as addToWL,emptyWhitelist as emptyWL, getWhitelistContents as getWLContents, removeKaraFromWhitelist} from '../dao/whitelist';
 import { KaraParams } from '../lib/types/kara';
+import logger, {profile} from '../lib/utils/logger';
+import { sentryError } from '../lib/utils/sentry';
+import {generateBlacklist} from './blacklist';
+import {formatKaraList, isAllKaras} from './kara';
 
 /** Add a KID or KID array to the whitelist */
 export async function addKaraToWhitelist(kids: string[], reason: string): Promise<string[]> {
@@ -42,7 +43,9 @@ export async function deleteKaraFromWhitelist(karas: string[]) {
 		await removeKaraFromWhitelist(karas);
 		return await generateBlacklist();
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		profile('deleteWLC');
 	}

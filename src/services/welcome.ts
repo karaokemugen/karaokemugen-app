@@ -1,7 +1,8 @@
+import open from 'open';
+
 import {getConfig} from '../lib/utils/config';
 import {getState} from '../utils/state';
 import {generateAdminPassword} from './user';
-import open from 'open';
 
 /** Set admin password on first run, and open browser on welcome page.
  * One, two, three /

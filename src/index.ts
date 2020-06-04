@@ -1,34 +1,33 @@
-// KM Imports
-import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
-import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
-import {initConfig} from './utils/config';
-import {parseCommandLineArgs} from './utils/args';
-import logger, {configureLogger} from './lib/utils/logger';
+import chalk from 'chalk';
+import dotenv from 'dotenv';
+import {app, dialog} from 'electron';
+import {existsSync} from 'fs';
+import {mkdirpSync} from 'fs-extra';
+import i18n from 'i18next';
+import cloneDeep from 'lodash.clonedeep';
+import minimist from 'minimist';
+import {dirname, join, resolve} from 'path';
+import {getPortPromise} from 'portfinder';
+import {createInterface} from 'readline';
+
 import {exit, initEngine} from './components/engine';
-import {logo} from './logo';
-import {getState, setState} from './utils/state';
-import {version} from './version';
-import {migrateOldFoldersToRepo} from './services/repo';
-import {errorStep, initStep} from './electron/electronLogger';
 import {startElectron} from './electron/electron';
+import {errorStep, initStep} from './electron/electronLogger';
 import {help} from './help';
-import {initSentry, sentryError} from "./lib/utils/sentry";
-import {createCircleAvatar} from './utils/imageProcessing';
-import {startTipLoop, stopTipLoop} from "./utils/tips";
+import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
+import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
+import logger, {configureLogger} from './lib/utils/logger';
+import {initSentry, sentryError} from './lib/utils/sentry';
+import {logo} from './logo';
+import {migrateOldFoldersToRepo} from './services/repo';
 // Types
 import {Config} from './types/config';
-// Node modules
-import i18n from 'i18next';
-import {mkdirpSync} from 'fs-extra';
-import {dirname, join, resolve} from 'path';
-import {existsSync} from 'fs';
-import minimist from 'minimist';
-import chalk from 'chalk';
-import {createInterface} from 'readline';
-import {getPortPromise} from 'portfinder';
-import {app, dialog} from 'electron';
-import cloneDeep from 'lodash.clonedeep';
-import dotenv from 'dotenv';
+import {parseCommandLineArgs} from './utils/args';
+import {initConfig} from './utils/config';
+import {createCircleAvatar} from './utils/imageProcessing';
+import {getState, setState} from './utils/state';
+import {startTipLoop, stopTipLoop} from './utils/tips';
+import {version} from './version';
 
 dotenv.config();
 
@@ -36,7 +35,7 @@ initSentry(app);
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
-	if (logger) logger.error(`[UncaughtException]` + exception);
+	if (logger) logger.error('[UncaughtException]' + exception);
 	sentryError(exception);
 	if (app) dialog.showMessageBox({
 		type: 'none',
@@ -56,14 +55,14 @@ process.on('unhandledRejection', error => {
 	} catch(err) {
 		errStr = error.toString();
 	}
-	if (logger) logger.error(`[UnhandledRejection]` + errStr);
+	if (logger) logger.error('[UnhandledRejection]' + errStr);
 	sentryError(new Error(errStr));
 	if (app) {
 		dialog.showMessageBox({
-		type: 'none',
-		title: 'Karaoke Mugen Error : Unhandled Rejection',
-		message: JSON.stringify(error)
-	});
+			type: 'none',
+			title: 'Karaoke Mugen Error : Unhandled Rejection',
+			message: JSON.stringify(error)
+		});
 	}
 });
 
@@ -79,12 +78,12 @@ process.on('SIGTERM', () => {
 
 if (process.platform === 'win32' ) {
 	const rl = createInterface({
-	  input: process.stdin,
-	  output: process.stdout
+		input: process.stdin,
+		output: process.stdout
 	});
 
 	rl.on('SIGINT', () => {
-	  exit('SIGINT');
+		exit('SIGINT');
 	});
 }
 
@@ -119,7 +118,7 @@ if (process.versions.electron && (existsSync(resolve(appPath, 'resources/')) || 
 	// It also works from unpackaged electron, if all things are well.
 	// If it doesn't exist, we'll assume the resourcePath is originalAppPath.
 	if (process.platform === 'darwin') {
-		resourcePath = process.resourcesPath
+		resourcePath = process.resourcesPath;
 	} else if (existsSync(resolve(appPath, 'resources/'))) {
 		resourcePath = resolve(appPath, 'resources/');
 	} else if (existsSync(resolve(originalAppPath, 'resources/'))) {
@@ -286,7 +285,7 @@ async function checkPaths(config: Config) {
 	// Emptying temp directory
 	if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());
 	// Checking paths
-	let checks = [];
+	const checks = [];
 	const paths = config.System.Path;
 	for (const item of Object.keys(paths)) {
 		Array.isArray(paths[item]) && paths[item]

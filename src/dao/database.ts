@@ -1,20 +1,20 @@
-import logger from 'winston';
-import {getConfig} from '../lib/utils/config';
-import {getState} from '../utils/state';
-import {generateDatabase} from '../lib/services/generation';
-import Postgrator, { Migration } from 'postgrator';
-
-import {isShutdownPG, initPG} from '../utils/postgresql';
-import { baseChecksum } from './dataStore';
-import { DBStats } from '../types/database/database';
-import { getSettings, saveSetting, connectDB, db, getInstanceID, setInstanceID, newDBTask, databaseReady } from '../lib/dao/database';
-import { v4 as uuidV4 } from 'uuid';
-import { resolve } from 'path';
-import { getPlaylists, reorderPlaylist } from './playlist';
-import { errorStep } from '../electron/electronLogger';
-import { migrations } from '../utils/migrationsBeforePostgrator';
 import i18next from 'i18next';
+import { resolve } from 'path';
+import Postgrator, { Migration } from 'postgrator';
+import { v4 as uuidV4 } from 'uuid';
+import logger from 'winston';
+
+import { errorStep } from '../electron/electronLogger';
+import { connectDB, databaseReady,db, getInstanceID, getSettings, newDBTask, saveSetting, setInstanceID } from '../lib/dao/database';
+import {generateDatabase} from '../lib/services/generation';
+import {getConfig} from '../lib/utils/config';
 import { sentryError } from '../lib/utils/sentry';
+import { DBStats } from '../types/database/database';
+import { migrations } from '../utils/migrationsBeforePostgrator';
+import {initPG,isShutdownPG} from '../utils/postgresql';
+import {getState} from '../utils/state';
+import { baseChecksum } from './dataStore';
+import { getPlaylists, reorderPlaylist } from './playlist';
 
 const sql = require('./sql/database');
 
@@ -40,7 +40,7 @@ function errorFunction(err: any) {
 /** Initialize a new database with the bundled PostgreSQL server */
 export async function initDB() {
 	const conf = getConfig();
-	await connectDB({superuser: true, db: 'postgres', log: getState().opt.sql}, errorFunction);
+	await connectDB(errorFunction, {superuser: true, db: 'postgres', log: getState().opt.sql});
 	try {
 		// Testing if database exists. If it does, no need to do the other stuff
 		const {rows} = await db().query(`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.Database.prod.database}'`);
@@ -62,7 +62,7 @@ export async function initDB() {
 	}
 	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.Database.prod.database} TO ${conf.Database.prod.user};`);
 	// We need to reconnect to create the extension on our newly created database
-	await connectDB({superuser: true, db: conf.Database.prod.database, log: getState().opt.sql}, errorFunction);
+	await connectDB(errorFunction, {superuser: true, db: conf.Database.prod.database, log: getState().opt.sql});
 	try {
 		await db().query('CREATE EXTENSION unaccent;');
 	} catch(err) {
@@ -72,7 +72,7 @@ export async function initDB() {
 
 async function migrateFromDBMigrate() {
 	// Return early if migrations table does not exist
-	const tables = await db().query(`SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename = 'migrations'`);
+	const tables = await db().query('SELECT tablename FROM pg_tables WHERE schemaname = \'public\' AND tablename = \'migrations\'');
 	if (tables.rows.length === 0) return;
 	const lastMigration = await db().query('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
 	logger.info('[DB] Old migration system found, converting...');
@@ -87,10 +87,10 @@ async function migrateFromDBMigrate() {
 		);
 		`);
 	} catch(err) {
-		err = new Error('Migration table already exists');
-		sentryError(err);
-		throw err;
-	};
+		const error = new Error('Migration table already exists');
+		sentryError(error);
+		throw error;
+	}
 	for (const migration of migrationsDone) {
 		db().query(`INSERT INTO schemaversion VALUES('${migration.version}', '${migration.name}', '${migration.md5}', '${new Date().toISOString()}')`);
 	}
@@ -118,9 +118,9 @@ async function migrateDB(): Promise<Migration[]> {
 		logger.debug(`[DB] Migrations executed : ${JSON.stringify(migrations)}`);
 		return migrations;
 	} catch(err) {
-		err = new Error(`Migrations failed : ${err}`);
-		sentryError(err);
-		throw err;
+		const error = new Error(`Migrations failed : ${err}`);
+		sentryError(error);
+		throw error;
 	}
 }
 
@@ -137,17 +137,17 @@ export async function initDBSystem(): Promise<Migration[]> {
 			await initDB();
 		}
 		logger.info('[DB] Initializing database connection');
-		await connectDB({
+		await connectDB(errorFunction, {
 			superuser: false,
 			db: conf.Database.prod.database,
 			log: state.opt.sql
-		}, errorFunction);
+		});
 		migrations = await migrateDB();
 	} catch(err) {
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
-		err = new Error(`Database system initialization failed : ${err}`);
-		sentryError(err, 'Fatal');
-		throw err;
+		const error = new Error(`Database system initialization failed : ${err}`);
+		sentryError(error, 'Fatal');
+		throw error;
 	}
 	if (!await getInstanceID()) {
 		conf.App.InstanceID
@@ -171,25 +171,21 @@ export async function getStats(): Promise<DBStats> {
 }
 
 export async function generateDB() {
-	try {
-		const opts = {validateOnly: false, progressBar: true};
+	const opts = {validateOnly: false, progressBar: true};
+	newDBTask({
+		name: 'generation',
+		func: generateDatabase,
+		args: [opts]
+	});
+	await databaseReady();
+	const pls = await getPlaylists(false);
+	for (const pl of pls) {
 		newDBTask({
-			name: 'generation',
-			func: generateDatabase,
-			args: [opts]
+			func: reorderPlaylist,
+			args: [pl.playlist_id],
+			name: `reorderPlaylist${pl.playlist_id}`
 		});
-		await databaseReady();
-		const pls = await getPlaylists(false);
-		for (const pl of pls) {
-			newDBTask({
-				func: reorderPlaylist,
-				args: [pl.playlist_id],
-				name: `reorderPlaylist${pl.playlist_id}`
-			});
-		}
-		await databaseReady();
-	} catch(err) {
-		throw err;
 	}
+	await databaseReady();
 }
 

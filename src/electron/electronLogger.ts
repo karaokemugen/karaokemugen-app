@@ -1,6 +1,7 @@
-import Transport from 'winston-transport';
-import {win} from './electron';
 import i18next from 'i18next';
+import Transport from 'winston-transport';
+
+import {win} from './electron';
 
 let errorHappened = false;
 

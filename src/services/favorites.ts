@@ -1,16 +1,18 @@
-import {selectFavorites, removeFavorites, insertFavorites} from '../dao/favorites';
-import {trimPlaylist, shufflePlaylist, createPlaylist, addKaraToPlaylist} from './playlist';
-import {findUserByName} from './user';
 import logger from 'winston';
-import {date} from '../lib/utils/date';
-import {profile} from '../lib/utils/logger';
-import {formatKaraList, isAllKaras} from './kara';
-import {KaraList} from '../lib/types/kara';
-import {FavParams, FavExport, AutoMixParams, AutoMixPlaylistInfo, FavExportContent} from '../types/favorites';
-import { uuidRegexp } from '../lib/utils/constants';
+
+import {insertFavorites,removeFavorites, selectFavorites} from '../dao/favorites';
 import { getRemoteToken } from '../dao/user';
+import {KaraList} from '../lib/types/kara';
 import {getConfig} from '../lib/utils/config';
+import { uuidRegexp } from '../lib/utils/constants';
+import {date} from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
+import {profile} from '../lib/utils/logger';
+import { sentryError } from '../lib/utils/sentry';
+import {AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent,FavParams} from '../types/favorites';
+import {formatKaraList, isAllKaras} from './kara';
+import {addKaraToPlaylist,createPlaylist, shufflePlaylist, trimPlaylist} from './playlist';
+import {findUserByName} from './user';
 
 export async function getFavorites(params: FavParams): Promise<KaraList> {
 	try {
@@ -19,7 +21,9 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 		const count = favs.length > 0 ? favs[0].count : 0;
 		return formatKaraList(favs, params.from, count);
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		profile('getFavorites');
 	}
@@ -50,7 +54,7 @@ export async function manageFavoriteInInstanceBatch(action: 'POST' | 'DELETE', u
 	for (const kid of kids) {
 		await manageFavoriteInInstance(action, username, kid);
 	}
-};
+}
 
 export async function addToFavorites(username: string, kids: string[], sendOnline = true) {
 	try {
@@ -60,7 +64,9 @@ export async function addToFavorites(username: string, kids: string[], sendOnlin
 			manageFavoriteInInstanceBatch('POST', username, kids);
 		}
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		profile('addToFavorites');
 	}

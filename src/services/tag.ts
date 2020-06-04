@@ -1,23 +1,25 @@
-import {getAllTags, selectTagByNameAndType, insertTag, selectTag, updateTag, removeTag, updateKaraTagsTID, selectDuplicateTags, selectTagMini} from '../dao/tag';
-import logger, {profile} from '../lib/utils/logger';
-import { TagParams, Tag } from '../lib/types/tag';
-import { v4 as uuidV4 } from 'uuid';
-import { addTagToStore, sortTagsStore, getStoreChecksum, editTagInStore, removeTagInStore, editKaraInStore } from '../dao/dataStore';
-import { saveSetting } from '../lib/dao/database';
-import { sanitizeFile, resolveFileInDirs, asyncUnlink } from '../lib/utils/files';
-import { writeTagFile, formatTagFile, removeTagFile, removeTagInKaras, getDataFromTagFile } from '../lib/dao/tagfile';
-import { refreshTags, refreshKaraTags } from '../lib/dao/tag';
-import { refreshKaras } from '../lib/dao/kara';
-import { getAllKaras } from './kara';
-import { replaceTagInKaras } from '../lib/dao/karafile';
-import { IDQueryResult, Kara } from '../lib/types/kara';
-import { resolvedPathRepos } from '../lib/utils/config';
 import { dirname, resolve } from 'path';
-import { emitWS } from '../lib/utils/ws';
-import { DBTag } from '../lib/types/database/tag';
+import { v4 as uuidV4 } from 'uuid';
+
+import { addTagToStore, editKaraInStore,editTagInStore, getStoreChecksum, removeTagInStore, sortTagsStore } from '../dao/dataStore';
+import {getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini,updateKaraTagsTID, updateTag} from '../dao/tag';
+import { saveSetting } from '../lib/dao/database';
+import { refreshKaras } from '../lib/dao/kara';
+import { replaceTagInKaras } from '../lib/dao/karafile';
 import { writeSeriesFile } from '../lib/dao/seriesfile';
-import Task from '../lib/utils/taskManager';
+import { refreshKaraTags,refreshTags } from '../lib/dao/tag';
+import { formatTagFile, getDataFromTagFile,removeTagFile, removeTagInKaras, writeTagFile } from '../lib/dao/tagfile';
+import { DBTag } from '../lib/types/database/tag';
+import { IDQueryResult, Kara } from '../lib/types/kara';
+import { Tag,TagParams } from '../lib/types/tag';
+import { resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
+import { asyncUnlink,resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
+import logger, {profile} from '../lib/utils/logger';
+import { sentryError } from '../lib/utils/sentry';
+import Task from '../lib/utils/taskManager';
+import { emitWS } from '../lib/utils/ws';
+import { getAllKaras } from './kara';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
@@ -76,7 +78,9 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 		}
 		return tagObj;
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}
@@ -90,16 +94,16 @@ export async function refreshTagsAfterDBChange() {
 	logger.debug('[DB] Done refreshing DB after tag change');
 }
 
-export async function getTag(tid: string) {
-	return await selectTag(tid);
+export function getTag(tid: string) {
+	return selectTag(tid);
 }
 
-export async function getTagMini(tid: string) {
-	return await selectTagMini(tid);
+export function getTagMini(tid: string) {
+	return selectTagMini(tid);
 }
 
 export async function getOrAddTagID(tagObj: Tag): Promise<IDQueryResult> {
-	let tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
+	const tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
 	if (tag) return {id: tag.tid, new: false};
 	// This modifies tagObj.
 	// I hate mutating objects.
@@ -181,9 +185,8 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
 		tagObj.modified_at = new Date().toISOString();
 		// Try to find old tag
-		let oldTagPath: string;
 		const oldTagFiles = await resolveFileInDirs(oldTag.tagfile, resolvedPathRepos('Tags', oldTag.repository));
-		oldTagPath = dirname(oldTagFiles[0]);
+		const oldTagPath = dirname(oldTagFiles[0]);
 		await Promise.all([
 			updateTag(tagObj),
 			writeTagFile(tagObj, oldTagPath)
@@ -209,7 +212,9 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 			await refreshTagsAfterDBChange();
 		}
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}
@@ -238,7 +243,9 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 			await refreshTagsAfterDBChange();
 		}
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}
@@ -272,18 +279,18 @@ export async function consolidateTagsInRepo(kara: Kara) {
 			const tag = await getTagMini(karaTag.tid);
 			if (tag.repository !== kara.repository) {
 				// This might need to be copied
-				tag.repository = kara.repository
+				tag.repository = kara.repository;
 				const tagObj: Tag = {
 					...tag,
 					modified_at: tag.modified_at.toISOString()
-				}
+				};
 				const destPath = resolvedPathRepos('Tags', tag.repository);
 				const tagFile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
 				try {
 					await resolveFileInDirs(tagFile, destPath);
 				} catch {
 					// File doe snot exist, let's write it.
-					copies.push(writeTagFile(tagObj, destPath[0]))
+					copies.push(writeTagFile(tagObj, destPath[0]));
 				}
 			}
 		}

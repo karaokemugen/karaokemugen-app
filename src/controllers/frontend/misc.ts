@@ -1,22 +1,23 @@
 import { Router } from 'express';
-import { getLang } from '../middlewares/lang';
-import { requireAuth, requireValidUser, requireAdmin, updateUserLoginTime, optionalAuth } from '../middlewares/auth';
-import { shutdown, getKMStats } from '../../components/engine';
-import { getConfig } from '../../lib/utils/config';
-import { editSetting, getPublicConfig, backupConfig } from '../../utils/config';
-import { getDisplays } from '../../utils/displays';
-import { errMessage, APIMessage } from '../common';
-import { getState, getPlayerState, getPublicState } from '../../utils/state';
-import { findUserByName, updateSongsLeft } from '../../services/user';
-import { requireWebappLimited } from '../middlewares/webapp_mode';
-import { getFeeds } from '../../services/proxyFeeds';
-import { initializationCatchphrases } from '../../utils/constants';
 import sample from 'lodash.sample';
-import { readLog } from '../../lib/utils/logger';
+
+import { getKMStats,shutdown } from '../../components/engine';
 import { generateDB } from '../../dao/database';
-import { dumpPG, restorePG } from '../../utils/postgresql';
-import { browseFs } from '../../lib/utils/files';
 import { generateDatabase } from '../../lib/services/generation';
+import { getConfig } from '../../lib/utils/config';
+import { browseFs } from '../../lib/utils/files';
+import { readLog } from '../../lib/utils/logger';
+import { getFeeds } from '../../services/proxyFeeds';
+import { findUserByName, updateSongsLeft } from '../../services/user';
+import { backupConfig,editSetting, getPublicConfig } from '../../utils/config';
+import { initializationCatchphrases } from '../../utils/constants';
+import { getDisplays } from '../../utils/displays';
+import { dumpPG, restorePG } from '../../utils/postgresql';
+import { getPlayerState, getPublicState,getState } from '../../utils/state';
+import { APIMessage,errMessage } from '../common';
+import { optionalAuth,requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
+import { requireWebappLimited } from '../middlewares/webapp_mode';
 
 export default function miscController(router: Router) {
 	/**
@@ -37,14 +38,14 @@ export default function miscController(router: Router) {
  *
  */
 	router.route('/shutdown')
-		.post(getLang, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+		.post(getLang, requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) => {
 		// Sends command to shutdown the app.
 			try {
 				shutdown();
 				res.status(200).json(APIMessage('SHUTDOWN_IN_PROGRESS'));
 			} catch(err) {
 				const code = 'SHUTDOWN_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -79,7 +80,7 @@ export default function miscController(router: Router) {
 				config: null,
 				state: getPublicState(req.user?.type === 0)
 			};
-			response.config = (req.user?.type === 0) 
+			response.config = (req.user?.type === 0)
 				? getConfig()
 				: getPublicConfig();
 			res.json(response);
@@ -108,7 +109,7 @@ export default function miscController(router: Router) {
 				res.json(publicSettings);
 			} catch(err) {
 				const code = 'SETTINGS_UPDATE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -164,7 +165,7 @@ export default function miscController(router: Router) {
 				res.json(stats);
 			} catch(err) {
 				const code = 'STATS_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -211,7 +212,7 @@ export default function miscController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (_req: any, res: any) => {
 			// Get player status
 			// What's playing, time in seconds, duration of song
 			res.json(getPlayerState());
@@ -232,7 +233,7 @@ export default function miscController(router: Router) {
 				res.json(await getFeeds());
 			} catch(err) {
 				const code = 'WEBFEED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -247,7 +248,7 @@ export default function miscController(router: Router) {
 	 * @apiPermission NoAuth
 	 * @apiSuccess a random catchphrase
 	 */
-		.get(getLang, async (_req: any, res: any) => {
+		.get(getLang, (_req: any, res: any) => {
 			res.json(sample(initializationCatchphrases));
 		});
 
@@ -266,7 +267,7 @@ export default function miscController(router: Router) {
 				res.status(200).json(await readLog());
 			} catch(err) {
 				const code = 'LOGFILE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -289,7 +290,7 @@ export default function miscController(router: Router) {
 				res.status(200).json(APIMessage('CONFIG_BACKUPED'));
 			} catch(err) {
 				const code = 'CONFIG_BACKUPED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -315,7 +316,7 @@ export default function miscController(router: Router) {
 				res.status(200).json(APIMessage('DATABASE_GENERATED'));
 			} catch(err) {
 				const code = 'DATABASE_GENERATED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -334,19 +335,19 @@ export default function miscController(router: Router) {
 		 * HTTP/1.1 500 Internal Server Error
 		 * {code: 'FILES_VALIDATED_ERROR'}
 		 */
-			.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-				try {
-					await generateDatabase({
-						validateOnly: true,
-						progressBar: true
-					});
-					res.status(200).json(APIMessage('FILES_VALIDATED'));
-				} catch(err) {
-					const code = 'FILES_VALIDATED_ERROR';
-				errMessage(code, err)
+		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+			try {
+				await generateDatabase({
+					validateOnly: true,
+					progressBar: true
+				});
+				res.status(200).json(APIMessage('FILES_VALIDATED'));
+			} catch(err) {
+				const code = 'FILES_VALIDATED_ERROR';
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
-				}
-			});
+			}
+		});
 	router.route('/db')
 	/**
 	 * @api {get} /db Dump database to a file
@@ -368,7 +369,7 @@ export default function miscController(router: Router) {
 				res.status(200).json(APIMessage('DATABASE_DUMPED'));
 			} catch(err) {
 				const code = 'DATABASE_DUMPED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -392,7 +393,7 @@ export default function miscController(router: Router) {
 				res.status(200).json(APIMessage('DATABASE_RESTORED'));
 			} catch(err) {
 				const code = 'DATABASE_RESTORED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -421,7 +422,7 @@ export default function miscController(router: Router) {
 				res.status(200).json(await browseFs(req.body.path, req.body.onlyMedias));
 			} catch(err) {
 				const code = 'FS_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});

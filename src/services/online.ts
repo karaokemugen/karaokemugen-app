@@ -1,23 +1,23 @@
 import * as publicIP from 'public-ip';
 
-import {getConfig} from '../lib/utils/config';
-import {configureHost, determineV6Prefix} from '../utils/config';
-import logger from '../lib/utils/logger';
-import { getState } from '../utils/state';
 import { getInstanceID } from '../lib/dao/database';
+import {getConfig} from '../lib/utils/config';
 import HTTP from '../lib/utils/http';
-import {OnlineForm} from "../types/online";
+import logger from '../lib/utils/logger';
+import {OnlineForm} from '../types/online';
+import {configureHost, determineV6Prefix} from '../utils/config';
+import { getState } from '../utils/state';
 
 /** Send IP to KM Server's URL shortener */
 export async function publishURL() {
 	configureHost();
 	const conf = getConfig();
 	const localHost = conf.Karaoke.Display.ConnectionInfo.Host || getState().osHost.v4;
-	let form: OnlineForm = {
+	const form: OnlineForm = {
 		localIP4: localHost,
 		localPort: conf.Frontend.Port,
 		IID: await getInstanceID()
-	}
+	};
 	try {
 		form.IP4 = await publicIP.v4({timeout: 1000, onlyHttps: true});
 		form.IP6 = await publicIP.v6({timeout: 1000, onlyHttps: true});
@@ -38,8 +38,8 @@ export async function publishURL() {
 }
 
 /** Initialize online shortener system */
-export async function initOnlineURLSystem() {
+export function initOnlineURLSystem() {
 	// This is the only thing it does for now. Will be extended later.
 	logger.debug('[ShortURL] Publishing...');
-	return await publishURL();
+	return publishURL();
 }

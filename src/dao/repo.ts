@@ -1,5 +1,5 @@
-import { getConfig, setConfig } from '../lib/utils/config';
 import { Repository } from '../lib/types/repo';
+import { getConfig, setConfig } from '../lib/utils/config';
 import { removeNulls } from '../lib/utils/object_helpers';
 
 export function selectRepos() {
@@ -19,10 +19,10 @@ export function updateRepo(repo: Repository, name: string) {
 	const conf = getConfig();
 	const repos = conf.System.Repositories;
 	if (repo.Name !== name) {
-		let i = repos.findIndex(r => r.Name === repo.Name);
+		const i = repos.findIndex(r => r.Name === repo.Name);
 		if (i > 0) throw 'Repository with this new name already exists';
 	}
-	let i = repos.findIndex(r => r.Name === name);
+	const i = repos.findIndex(r => r.Name === name);
 	if (i < 0) throw 'Repository not found';
 	repos[i] = repo;
 	setConfig({ System: { Repositories: repos}});

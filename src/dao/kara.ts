@@ -1,12 +1,13 @@
-import {buildTypeClauses, buildClauses, db, transaction} from '../lib/dao/database';
-import {getConfig} from '../lib/utils/config';
-import { getState } from '../utils/state';
 import {pg as yesql} from 'yesql';
-import {now} from '../lib/utils/date';
+
+import {buildClauses, buildTypeClauses, db, transaction} from '../lib/dao/database';
+import { DBKara, DBKaraBase,DBYear } from '../lib/types/database/kara';
 import { Kara, KaraParams } from '../lib/types/kara';
-import {PLC} from '../types/playlist';
+import {getConfig} from '../lib/utils/config';
+import {now} from '../lib/utils/date';
 import { DBKaraHistory } from '../types/database/kara';
-import { DBYear, DBKara, DBKaraBase } from '../lib/types/database/kara';
+import {PLC} from '../types/playlist';
+import { getState } from '../utils/state';
 
 const sql = require('./sql/kara');
 
@@ -70,7 +71,7 @@ export async function deleteKara(kid: string) {
 }
 
 export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
-	let filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
+	const filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
 	let typeClauses = params.mode ? buildTypeClauses(params.mode, params.modeValue) : '';
 	// Hide blacklisted songs if not admin
 	if (!params.admin) typeClauses = `${typeClauses} AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)`;
@@ -124,8 +125,8 @@ export async function getKaraHistory(): Promise<DBKaraHistory[]> {
 	return res.rows;
 }
 
-export async function updateFreeOrphanedSongs(expireTime: number) {
-	return await db().query(sql.updateFreeOrphanedSongs, [new Date(expireTime * 1000)]);
+export function updateFreeOrphanedSongs(expireTime: number) {
+	return db().query(sql.updateFreeOrphanedSongs, [new Date(expireTime * 1000)]);
 }
 
 export async function getKaraMini(kid: string): Promise<DBKaraBase> {
@@ -133,22 +134,22 @@ export async function getKaraMini(kid: string): Promise<DBKaraBase> {
 	return res.rows[0];
 }
 
-export async function addPlayed(kid: string) {
-	return await db().query(yesql(sql.addViewcount)({
+export function addPlayed(kid: string) {
+	return db().query(yesql(sql.addViewcount)({
 		kid: kid,
 		played_at: new Date(),
 		seid: getState().currentSessionID
 	}));
 }
 
-export async function addKaraToRequests(username: string, karaList: string[]) {
+export function addKaraToRequests(username: string, karaList: string[]) {
 	const karas = karaList.map(kara => ([
 		username,
 		kara,
 		new Date(),
 		getState().currentSessionID
 	]));
-	return await transaction([{params: karas, sql: sql.addRequested}]);
+	return transaction([{params: karas, sql: sql.addRequested}]);
 }
 
 export async function selectAllKIDs(): Promise<string[]> {
@@ -157,40 +158,36 @@ export async function selectAllKIDs(): Promise<string[]> {
 }
 
 export async function addKaraToPlaylist(karaList: PLC[]): Promise<number> {
-	try {
-		if (karaList.length > 1) {
-			const karas: any[] = karaList.map(kara => ([
-				kara.playlist_id,
-				kara.username,
-				kara.nickname,
-				kara.kid,
-				kara.created_at,
-				kara.pos,
-				false,
-				false,
-				kara.flag_visible
-			]));
-			await transaction([{params: karas, sql: sql.addKaraToPlaylist}]);
-		} else {
-			const kara = karaList[0];
-			const res = await db().query(sql.addKaraToPlaylist, [
-				kara.playlist_id,
-				kara.username,
-				kara.nickname,
-				kara.kid,
-				kara.created_at,
-				kara.pos,
-				false,
-				false,
-				kara.flag_visible
-			]);
-			return res.rows[0].pk_id_plcontent;
-		}
-	} catch(err) {
-		throw err;
+	if (karaList.length > 1) {
+		const karas: any[] = karaList.map(kara => ([
+			kara.playlist_id,
+			kara.username,
+			kara.nickname,
+			kara.kid,
+			kara.created_at,
+			kara.pos,
+			false,
+			false,
+			kara.flag_visible
+		]));
+		await transaction([{params: karas, sql: sql.addKaraToPlaylist}]);
+	} else {
+		const kara = karaList[0];
+		const res = await db().query(sql.addKaraToPlaylist, [
+			kara.playlist_id,
+			kara.username,
+			kara.nickname,
+			kara.kid,
+			kara.created_at,
+			kara.pos,
+			false,
+			false,
+			kara.flag_visible
+		]);
+		return res.rows[0].pk_id_plcontent;
 	}
 }
 
-export async function removeKaraFromPlaylist(karas: number[], playlist_id: number) {
-	return await db().query(sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')), [playlist_id]);
+export function removeKaraFromPlaylist(karas: number[], playlist_id: number) {
+	return db().query(sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')), [playlist_id]);
 }

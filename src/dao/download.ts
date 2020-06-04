@@ -1,10 +1,10 @@
 import {db, transaction} from '../lib/dao/database';
-import { KaraDownload, KaraDownloadBLC } from '../types/download';
-import { DBDownload, DBDownloadBLC } from '../types/database/download';
 import logger from '../lib/utils/logger';
+import { DBDownload, DBDownloadBLC } from '../types/database/download';
+import { KaraDownload, KaraDownloadBLC } from '../types/download';
 const sql = require('./sql/download');
 
-export async function insertDownloads(downloads: KaraDownload[] ) {
+export function insertDownloads(downloads: KaraDownload[] ) {
 	const dls = downloads.map(dl => [
 		dl.name,
 		dl.urls,
@@ -15,7 +15,7 @@ export async function insertDownloads(downloads: KaraDownload[] ) {
 		dl.kid
 	]);
 	logger.debug('[Download DAO] Running transaction');
-	return await transaction([{sql: sql.insertDownload, params: dls}]);
+	return transaction([{sql: sql.insertDownload, params: dls}]);
 }
 
 export async function selectDownloads(): Promise<DBDownload[]> {
@@ -38,15 +38,15 @@ export async function selectDownload(id: string): Promise<DBDownload> {
 	return dl.rows[0];
 }
 
-export async function updateDownload(uuid: string, status: string) {
-	return await db().query(sql.updateDownloadStatus, [
+export function updateDownload(uuid: string, status: string) {
+	return db().query(sql.updateDownloadStatus, [
 		status,
 		uuid
 	]);
 }
 
-export async function emptyDownload() {
-	return await db().query(sql.emptyDownload);
+export function emptyDownload() {
+	return db().query(sql.emptyDownload);
 }
 
 export async function selectDownloadBLC(): Promise<DBDownloadBLC[]> {
@@ -54,10 +54,10 @@ export async function selectDownloadBLC(): Promise<DBDownloadBLC[]> {
 	return res.rows;
 }
 
-export async function deleteDownloadBLC(id: number) {
-	return await db().query(sql.deleteDownloadBLC, [id]);
+export function deleteDownloadBLC(id: number) {
+	return db().query(sql.deleteDownloadBLC, [id]);
 }
 
-export async function insertDownloadBLC(blc: KaraDownloadBLC) {
-	return await db().query(sql.insertDownloadBLC, [blc.type, blc.value]);
+export function insertDownloadBLC(blc: KaraDownloadBLC) {
+	return db().query(sql.insertDownloadBLC, [blc.type, blc.value]);
 }

@@ -1,15 +1,15 @@
 //Utils
-import {getConfig, resolvedPathAvatars} from '../lib/utils/config';
-import {now} from '../lib/utils/date';
-import logger from '../lib/utils/logger';
-import shuffle from 'lodash.shuffle';
-import {emitWS} from '../lib/utils/ws';
-import {on} from '../lib/utils/pubsub';
-import {setState, getState} from '../utils/state';
-import {profile} from '../lib/utils/logger';
-import {resolve} from 'path';
 import i18n from 'i18next';
+import shuffle from 'lodash.shuffle';
+import {resolve} from 'path';
 
+import {	addKaraToPlaylist as addKaraToPL,
+	addKaraToRequests,
+	getKaraMini,
+	getSongCountForUser,
+	getSongTimeSpentForUser,
+	removeKaraFromPlaylist,
+	updateFreeOrphanedSongs as updateFreeOrphanedSongsDB} from '../dao/kara';
 //DAO
 import {
 	countPlaylistUsers,
@@ -18,7 +18,6 @@ import {
 	editPlaylist as editPL,
 	emptyPlaylist as emptyPL,
 	getCurrentPlaylist,
-	getPublicPlaylist,
 	getMaxPosInPlaylist,
 	getMaxPosInPlaylistForUser,
 	getPlaylistContents as getPLContents,
@@ -28,50 +27,49 @@ import {
 	getPlaylists as getPLs,
 	getPLCByDate,
 	getPLCByKIDAndUser,
-	getPLCInfoMini as getPLCInfoMiniDB,
 	getPLCInfo as getPLCInfoDB,
-	replacePlaylist,
+	getPLCInfoMini as getPLCInfoMiniDB,
+	getPublicPlaylist,
 	reorderPlaylist as reorderPL,
+	replacePlaylist,
 	setCurrentPlaylist as setCurrentPL,
 	setPlaying as setPlayingFlag,
-	setPLCFreeBeforePos,
 	setPLCFree,
-	setPLCVisible,
+	setPLCFreeBeforePos,
 	setPLCInvisible,
+	setPLCVisible,
 	setPos,
 	setPublicPlaylist as setPublicPL,
 	setVisiblePlaylist as setVisiblePL,
 	shiftPosInPlaylist,
 	trimPlaylist as trimPL,
+	unsetCurrentPlaylist,
+	unsetPublicPlaylist,
 	unsetVisiblePlaylist as unsetVisiblePL,
 	updatePlaylistDuration,
 	updatePlaylistKaraCount,
 	updatePlaylistLastEditTime,
-	unsetCurrentPlaylist,
-	unsetPublicPlaylist,
 } from '../dao/playlist';
-
-//KM Modules
-import {updateSongsLeft, findUserByName} from './user';
 import {Token, User} from '../lib/types/user';
-import { isAllKaras, formatKaraList, getKara, getSeriesSingers} from './kara';
-import {playPlayer, playingUpdated} from './player';
-import {getBlacklist} from './blacklist';
-import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
-	getKaraMini,
-	removeKaraFromPlaylist,
-	addKaraToPlaylist as addKaraToPL,
-	getSongTimeSpentForUser,
-	getSongCountForUser,
-	addKaraToRequests
-} from '../dao/kara';
-import { Playlist, PLC, Pos, PlaylistOpts, PlaylistExport, PLCEditParams, CurrentSong } from '../types/playlist';
-import { DBPLC } from '../types/database/playlist';
+import {getConfig, resolvedPathAvatars} from '../lib/utils/config';
 import { bools } from '../lib/utils/constants';
-import { check } from '../lib/utils/validators';
-import { replaceExt, asyncExists } from '../lib/utils/files';
+import {now} from '../lib/utils/date';
+import { asyncExists,replaceExt } from '../lib/utils/files';
+import logger, {profile} from '../lib/utils/logger';
+import {on} from '../lib/utils/pubsub';
+import { sentryError } from '../lib/utils/sentry';
 import Task from '../lib/utils/taskManager';
+import { check } from '../lib/utils/validators';
+import {emitWS} from '../lib/utils/ws';
+import { DBPLC } from '../types/database/playlist';
+import { CurrentSong,Playlist, PlaylistExport, PlaylistOpts, PLC, PLCEditParams, Pos } from '../types/playlist';
+import {getState,setState} from '../utils/state';
+import {getBlacklist} from './blacklist';
 import { getAllRemoteKaras } from './download';
+import { formatKaraList, getKara, getSeriesSingers,isAllKaras} from './kara';
+import {playingUpdated,playPlayer} from './player';
+//KM Modules
+import {findUserByName,updateSongsLeft} from './user';
 
 let databaseBusy = false;
 
@@ -96,37 +94,33 @@ function getPlayingPos(playlist: PLC[]): Pos {
 }
 
 /** Set PLC's flag_free to enabled */
-export async function freePLC(plc_id: number) {
-	return await setPLCFree(plc_id);
+export function freePLC(plc_id: number) {
+	return setPLCFree(plc_id);
 }
 
 /** Free all PLCs before a certain position in a playlist */
-export async function freePLCBeforePos(pos: number, playlist_id: number) {
-	return await setPLCFreeBeforePos(pos, playlist_id);
+export function freePLCBeforePos(pos: number, playlist_id: number) {
+	return setPLCFreeBeforePos(pos, playlist_id);
 }
 
 /** Checks if user is allowed to add a song (quota) */
 export async function isUserAllowedToAddKara(playlist_id: number, user: User, duration: number): Promise<boolean> {
-	const conf = getConfig();
-	if (+conf.Karaoke.Quota.Type === 0) return true;
-	let limit: number;
-	switch(+conf.Karaoke.Quota.Type) {
-	default:
-	case 1:
-		limit = conf.Karaoke.Quota.Songs;
-		try {
+	try {
+		const conf = getConfig();
+		if (+conf.Karaoke.Quota.Type === 0) return true;
+		let limit: number;
+		switch(+conf.Karaoke.Quota.Type) {
+		default:
+		case 1:
+			limit = conf.Karaoke.Quota.Songs;
 			const count = await getSongCountForUser(playlist_id,user.login);
 			if (count >= limit) {
 				logger.debug(`[PLC] User ${user.login} tried to add more songs than he/she was allowed (${limit})`);
 				return false;
 			}
 			return true;
-		} catch (err) {
-			throw err;
-		}
-	case 2:
-		limit = conf.Karaoke.Quota.Time;
-		try {
+		case 2:
+			limit = conf.Karaoke.Quota.Time;
 			let time = await getSongTimeSpentForUser(playlist_id,user.login);
 			if (!time) time = 0;
 			if ((limit - time - duration) < 0) {
@@ -134,9 +128,11 @@ export async function isUserAllowedToAddKara(playlist_id: number, user: User, du
 				return false;
 			}
 			return true;
-		} catch(err) {
-			throw err;
 		}
+	} catch(err) {
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	}
 }
 
@@ -165,8 +161,8 @@ async function setPlaying(plc_id: number, playlist_id: number) {
 }
 
 /** Get PLC IDs by a particular date added */
-async function getPLCIDByDate(playlist_id: number, date_added: Date) {
-	return await getPLCByDate(playlist_id, date_added);
+function getPLCIDByDate(playlist_id: number, date_added: Date) {
+	return getPLCByDate(playlist_id, date_added);
 }
 
 /** Trim playlist after a certain duration */
@@ -319,7 +315,7 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 	if (+opts.current && +opts.public) throw 'A playlist cannot be current and public at the same time!';
 	if (+opts.public) await unsetPublicAllPlaylists();
 	if (+opts.current) await unsetCurrentAllPlaylists();
-	let playlist_id = await createPL({
+	const playlist_id = await createPL({
 		name: name,
 		created_at: new Date(),
 		modified_at: new Date(),
@@ -354,18 +350,18 @@ export async function getPlaylists(token: Token) {
 }
 
 /** Remove public property from all playlists */
-async function unsetPublicAllPlaylists() {
-	return await unsetPublicPlaylist();
+function unsetPublicAllPlaylists() {
+	return unsetPublicPlaylist();
 }
 
 /** Remove current property from all playlists */
-async function unsetCurrentAllPlaylists() {
-	return await unsetCurrentPlaylist();
+function unsetCurrentAllPlaylists() {
+	return unsetCurrentPlaylist();
 }
 
 /** Get playlist contents in a smaller format to speed up fetching data for internal use */
-export async function getPlaylistContentsMini(playlist_id: number) {
-	return await getPLContentsMini(playlist_id);
+export function getPlaylistContentsMini(playlist_id: number) {
+	return getPLContentsMini(playlist_id);
 }
 
 /** Get playlist contents */
@@ -409,8 +405,8 @@ export async function getKaraFromPlaylist(plc_id: number, token: Token) {
 }
 
 /** Get PLC by KID and Username */
-async function getPLCByKIDUser(kid: string, username: string, playlist_id: number) {
-	return await getPLCByKIDAndUser(kid, username, playlist_id);
+function getPLCByKIDUser(kid: string, username: string, playlist_id: number) {
+	return getPLCByKIDAndUser(kid, username, playlist_id);
 }
 
 /** Return all songs not present in specified playlist */
@@ -424,8 +420,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 	const conf = getConfig();
 	const state = getState();
 	if (!playlist_id) playlist_id = state.modePlaylistID;
-	let karas: string[] = (typeof kids === 'string') ? kids.split(',') : kids;
-	let [pl, kara] = await Promise.all([
+	const karas: string[] = (typeof kids === 'string') ? kids.split(',') : kids;
+	const [pl, kara] = await Promise.all([
 		getPlaylistInfo(playlist_id),
 		getKaraMini(karas[0])
 	]);
@@ -623,13 +619,13 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 }
 
 /** Get PLC information from database */
-export async function getPLCInfo(plc_id: number, forUser: boolean, username: string) {
-	return await getPLCInfoDB(plc_id, forUser, username);
+function getPLCInfo(plc_id: number, forUser: boolean, username: string) {
+	return getPLCInfoDB(plc_id, forUser, username);
 }
 
 /** Get a small amount of data from a PLC */
-export async function getPLCInfoMini(plc_id: number) {
-	return await getPLCInfoMiniDB(plc_id);
+export function getPLCInfoMini(plc_id: number) {
+	return getPLCInfoMiniDB(plc_id);
 }
 
 /** Notify user of song play time */
@@ -678,10 +674,10 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 			await shiftPosInPlaylist(playlist_id, pos, plcList.length);
 		} else {
 			const maxpos = await getMaxPosInPlaylist(playlist_id);
-			let startpos = maxpos + 1;
+			const startpos = maxpos + 1;
 			for (const i in plcList) {
 				plcList[i].pos = startpos + +i;
-			};
+			}
 		}
 		await addKaraToPL(plcList);
 		await Promise.all([
@@ -774,8 +770,8 @@ export async function editPLC(plc_id: number, params: PLCEditParams) {
 }
 
 /** Reorders playlist with positions */
-export async function reorderPlaylist(playlist_id: number) {
-	return await reorderPL(playlist_id);
+export function reorderPlaylist(playlist_id: number) {
+	return reorderPL(playlist_id);
 }
 
 /** Export playlist as JSON */
@@ -785,7 +781,7 @@ export async function exportPlaylist(playlist_id: number) {
 	try {
 		logger.debug( `[Playlist] Exporting playlist ${playlist_id}`);
 		const plContents = await getPlaylistContentsMini(playlist_id);
-		let playlist: PlaylistExport = {};
+		const playlist: PlaylistExport = {};
 		const plExport = {
 			name: pl.name,
 			created_at: pl.created_at,
@@ -864,7 +860,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 		task.update({
 			subtext: playlist.PlaylistInformation.name
 		});
-		let playingKara: PLC = {
+		const playingKara: PLC = {
 			playlist_id: null
 		};
 		let flag_playingDetected = false;
@@ -883,40 +879,38 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 				const admin: User = await findUserByName('admin');
 				playlist.PlaylistContents[index].nickname = admin.nickname;
 			}
-		};
-		// Validations done. First creating playlist.
-		try {
-			if (!playlist_id) {
-				playlist_id = await createPlaylist(playlist.PlaylistInformation.name, {
-					visible: playlist.PlaylistInformation.flag_visible
-				}, username);
-			} else {
-				await emptyPlaylist(playlist_id);
-			}
-			const unknownKIDs = await isAllKaras(playlist.PlaylistContents.map((plc: PLC) => plc.kid));
-			for (const i in playlist.PlaylistContents) {
-				playlist.PlaylistContents[i].playlist_id = playlist_id;
-			}
-			await addKaraToPL(playlist.PlaylistContents);
-			if (playingKara?.kid) {
-				const plcPlaying = await getPLCByKIDUser(playingKara.kid, playingKara.username, playlist_id);
-				await setPlaying(plcPlaying.playlistcontent_id, playlist_id);
-			}
-			let unknownKaras = [];
-			if (unknownKIDs.length > 0) {
-				const karas = await getAllRemoteKaras(null, {});
-				unknownKaras = karas.content.filter(k => unknownKIDs.includes(k.kid));
-			}
-			return {
-				playlist_id: playlist_id,
-				karasUnknown: unknownKaras
-			};
-		} catch(err) {
-			throw err;
 		}
+		// Validations done. First creating playlist.
+		if (!playlist_id) {
+			playlist_id = await createPlaylist(playlist.PlaylistInformation.name, {
+				visible: playlist.PlaylistInformation.flag_visible
+			}, username);
+		} else {
+			await emptyPlaylist(playlist_id);
+		}
+		const unknownKIDs = await isAllKaras(playlist.PlaylistContents.map((plc: PLC) => plc.kid));
+		for (const i in playlist.PlaylistContents) {
+			playlist.PlaylistContents[i].playlist_id = playlist_id;
+		}
+		await addKaraToPL(playlist.PlaylistContents);
+		if (playingKara?.kid) {
+			const plcPlaying = await getPLCByKIDUser(playingKara.kid, playingKara.username, playlist_id);
+			await setPlaying(plcPlaying.playlistcontent_id, playlist_id);
+		}
+		let unknownKaras = [];
+		if (unknownKIDs.length > 0) {
+			const karas = await getAllRemoteKaras(null, {});
+			unknownKaras = karas.content.filter(k => unknownKIDs.includes(k.kid));
+		}
+		return {
+			playlist_id: playlist_id,
+			karasUnknown: unknownKaras
+		};
 	} catch(err) {
 		logger.error(`[Playlist] Import failed : ${err}`);
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}
@@ -977,7 +971,7 @@ function smartShuffle(playlist: DBPLC[]) {
 	let verificator = 0;
 	if (playlist.length - 6 > 0) {      // We do nothing if the playlist length is too low
 		let userTest = 1;
-		let userTestArray = [playlist[0].nickname];
+		const userTestArray = [playlist[0].nickname];
 		for (const playlistItem of playlist) {
 			if (!userTestArray.includes(playlistItem.nickname)) {
 				userTestArray.push(playlistItem.nickname);
@@ -989,15 +983,15 @@ function smartShuffle(playlist: DBPLC[]) {
 		if (userShuffleBoolean) {
 			while (playlist.length - user_iterator > 0) {
 				if ((playlist.length - user_iterator) > 6) {
-					let playlist_temp = playlist.slice(user_iterator, user_iterator + 6);
+					const playlist_temp = playlist.slice(user_iterator, user_iterator + 6);
 					for (let i = 0; i < 5; i++) {
 						if (playlist_temp[i].nickname === playlist_temp[i + 1].nickname) {
 							if (playlist[i + 4 + user_iterator]) {
-								let a = playlist_temp[i + 1];
+								const a = playlist_temp[i + 1];
 								playlist[i + 1 + user_iterator] = playlist[i + 4 + user_iterator];
 								playlist[i + 4 + user_iterator] = a;
 							} else {
-								let a = playlist_temp[i + 1];
+								const a = playlist_temp[i + 1];
 								playlist[i + 1 + user_iterator] = playlist[i - 5 + user_iterator];
 								playlist[i - 5 + user_iterator] = a;
 							}
@@ -1006,14 +1000,14 @@ function smartShuffle(playlist: DBPLC[]) {
 				}
 				user_iterator += 5;
 			}
-			let playlist_temp = playlist.slice(user_iterator - 1, playlist.length);
+			const playlist_temp = playlist.slice(user_iterator - 1, playlist.length);
 
 			for (let i = user_iterator; i < playlist_temp.length - 1; i++) {
 				if (playlist_temp[i].nickname === playlist_temp[i + 1].nickname) verificator = i;
 			}
 
 			if (verificator !== 0) {
-				let a = playlist_temp[verificator + 1];
+				const a = playlist_temp[verificator + 1];
 				playlist[verificator + 1 + user_iterator] = playlist[2];
 				playlist[2] = a;
 			}
@@ -1023,15 +1017,15 @@ function smartShuffle(playlist: DBPLC[]) {
 		while (playlist.length - duration_iterator > 0) {
 
 			if (playlist.length - duration_iterator > 6) {
-				let playlist_temp = playlist.slice(duration_iterator, duration_iterator + 6);
+				const playlist_temp = playlist.slice(duration_iterator, duration_iterator + 6);
 				for (let i = 0; i < 4; i++) {
 					if (playlist_temp[i].duration > 150 && playlist_temp[i + 1].duration > 150) {
 						if (playlist[i + 4 + duration_iterator]) {
-							let a = playlist_temp[i + 1];
+							const a = playlist_temp[i + 1];
 							playlist[i + 1 + duration_iterator] = playlist[i + 4 + duration_iterator];
 							playlist[i + 4 + duration_iterator] = a;
 						} else {
-							let a = playlist_temp[i + 1];
+							const a = playlist_temp[i + 1];
 							playlist[i + 1 + duration_iterator] = playlist[i - 5 + duration_iterator];
 							playlist[i - 5 + duration_iterator] = a;
 						}
@@ -1070,7 +1064,9 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 	try {
 		playlist = await getCurrentPlaylistContents();
 	} catch(err) {
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	}
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (playlist.content.length === 0) throw 'Playlist is empty!';
@@ -1143,7 +1139,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		if (conf.Karaoke.Display.Nickname) {
 			// When a kara has been added by admin/import, do not display it on screen.
 			// Escaping {} because it'll be interpreted as ASS tags below.
-			kara.nickname = kara.nickname.replace(/[\{\}]/g,'');
+			kara.nickname = kara.nickname.replace(/[{}]/g,'');
 			requester = `${i18n.t('REQUESTED_BY')} ${kara.nickname}`;
 			// Get user avatar
 			let user = await findUserByName(kara.username);
@@ -1161,7 +1157,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		const series = getSeriesSingers(kara);
 
 		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-		let songorder: string = `${kara.songorder}`;
+		let songorder = `${kara.songorder}`;
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
 		//If karaoke is present in the public playlist, we're deleting it.
 		if (conf.Playlist.RemovePublicOnPlay) {

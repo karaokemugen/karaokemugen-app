@@ -1,4 +1,4 @@
-import { version } from "../version";
+import { version } from '../version';
 
 export const sentryDSN = 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806';
 
@@ -243,15 +243,15 @@ export const initializationCatchphrases = [
 // Default headers for HTTP client
 export const headers = {
 	'user-agent': `KaraokeMugenApp/${version.number}`
-}
+};
 
 // Prefixes for known ASNs
 // See
 export const ASNPrefixes = {
-	"AS5511": 56, // Orange as seen by @leonekmi
-	"AS24904": 64, // K-Net as seen by @Rinchama
-	"AS35540": 56, // OVH Telecom as seen by @skid9000
-	"AS5410": 60, // Bouygues Telecom as seen by https://lafibre.info/bbox-les-news/deploiement-ipv6-bouygues-adsl/
-	"AS6939": 48, // HE TunnelBroker - https://tunnelbroker.net/
-	"AS12322": 60 // Free as seen by @luclu7
-}
+	'AS5511': 56, // Orange as seen by @leonekmi
+	'AS24904': 64, // K-Net as seen by @Rinchama
+	'AS35540': 56, // OVH Telecom as seen by @skid9000
+	'AS5410': 60, // Bouygues Telecom as seen by https://lafibre.info/bbox-les-news/deploiement-ipv6-bouygues-adsl/
+	'AS6939': 48, // HE TunnelBroker - https://tunnelbroker.net/
+	'AS12322': 60 // Free as seen by @luclu7
+};

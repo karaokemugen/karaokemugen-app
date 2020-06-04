@@ -3,8 +3,8 @@
 
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.yml to bypass the default values.
-import {Config} from '../types/config';
 import { bools } from '../lib/utils/constants';
+import {Config} from '../types/config';
 
 const dbConfig = process.platform === 'linux'
 	? {
@@ -32,7 +32,7 @@ const dbConfig = process.platform === 'linux'
 		superuserPassword: null,
 		user: 'karaokemugen_app',
 		username: 'karaokemugen_app'
-	}
+	};
 
 /** Default configuration */
 export const defaults: Config = {
@@ -223,40 +223,40 @@ export const defaults: Config = {
 				Online: true,
 				Enabled: true,
 				Path: process.platform === 'win32'
-				? {
-					Karas: ['repos\\kara.moe\\karaokes'],
-					Lyrics: ['repos\\kara.moe\\lyrics'],
-					Medias: ['repos\\kara.moe\\medias'],
-					Series: ['repos\\kara.moe\\series'],
-					Tags: ['repos\\kara.moe\\tags']
-				}
-				: {
-					Karas: ['repos/kara.moe/karaokes'],
-					Lyrics: ['repos/kara.moe/lyrics'],
-					Medias: ['repos/kara.moe/medias'],
-					Series: ['repos/kara.moe/series'],
-					Tags: ['repos/kara.moe/tags']
-				}
+					? {
+						Karas: ['repos\\kara.moe\\karaokes'],
+						Lyrics: ['repos\\kara.moe\\lyrics'],
+						Medias: ['repos\\kara.moe\\medias'],
+						Series: ['repos\\kara.moe\\series'],
+						Tags: ['repos\\kara.moe\\tags']
+					}
+					: {
+						Karas: ['repos/kara.moe/karaokes'],
+						Lyrics: ['repos/kara.moe/lyrics'],
+						Medias: ['repos/kara.moe/medias'],
+						Series: ['repos/kara.moe/series'],
+						Tags: ['repos/kara.moe/tags']
+					}
 			},
 			{
 				Name: 'Local',
 				Online: false,
 				Enabled: true,
 				Path: process.platform === 'win32'
-				? {
-					Karas: ['repos\\Local\\karaokes'],
-					Lyrics: ['repos\\Local\\lyrics'],
-					Medias: ['repos\\Local\\medias'],
-					Series: ['repos\\Local\\series'],
-					Tags: ['repos\\Local\\tags']
-				}
-				: {
-					Karas: ['repos/Local/karaokes'],
-					Lyrics: ['repos/Local/lyrics'],
-					Medias: ['repos/Local/medias'],
-					Series: ['repos/Local/series'],
-					Tags: ['repos/Local/tags']
-				}
+					? {
+						Karas: ['repos\\Local\\karaokes'],
+						Lyrics: ['repos\\Local\\lyrics'],
+						Medias: ['repos\\Local\\medias'],
+						Series: ['repos\\Local\\series'],
+						Tags: ['repos\\Local\\tags']
+					}
+					: {
+						Karas: ['repos/Local/karaokes'],
+						Lyrics: ['repos/Local/lyrics'],
+						Medias: ['repos/Local/medias'],
+						Series: ['repos/Local/series'],
+						Tags: ['repos/Local/tags']
+					}
 			}
 		],
 		Path: {

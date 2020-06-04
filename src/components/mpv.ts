@@ -1,29 +1,30 @@
-import i18n from 'i18next';
-import logger from 'winston';
-import {resolvedPathBackgrounds, getConfig, resolvedPathTemp, resolvedPathRepos} from '../lib/utils/config';
-import {resolve, extname} from 'path';
-import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists, replaceExt} from '../lib/utils/files';
-import sample from 'lodash.sample';
-import {exit} from './engine';
-import {playerEnding} from '../services/player';
-import {getID3} from '../utils/id3tag';
-import mpv from 'node-mpv';
-import {promisify} from 'util';
-import {endPoll} from '../services/poll';
-import {getState, setState} from '../utils/state';
 import execa from 'execa';
-import semver from 'semver';
-import { imageFileTypes } from '../lib/utils/constants';
-import {PlayerState, MediaData, mpvStatus} from '../types/player';
+import i18n from 'i18next';
+import sample from 'lodash.sample';
+import mpv from 'node-mpv';
 import retry from 'p-retry';
-import { initializationCatchphrases } from '../utils/constants';
-import { getSingleMedia } from '../services/medias';
-import { MediaType } from '../types/medias';
-import { notificationNextSong } from '../services/playlist';
+import {extname,resolve} from 'path';
 import randomstring from 'randomstring';
-import { errorStep } from '../electron/electronLogger';
+import semver from 'semver';
+import {promisify} from 'util';
+import logger from 'winston';
+
 import { setProgressBar } from '../electron/electron';
-import { sentryError, addErrorInfo } from '../lib/utils/sentry';
+import { errorStep } from '../electron/electronLogger';
+import {getConfig, resolvedPathBackgrounds, resolvedPathRepos,resolvedPathTemp} from '../lib/utils/config';
+import { imageFileTypes } from '../lib/utils/constants';
+import {asyncExists, asyncReadDir, isImageFile, replaceExt,resolveFileInDirs} from '../lib/utils/files';
+import { addErrorInfo,sentryError } from '../lib/utils/sentry';
+import { getSingleMedia } from '../services/medias';
+import {playerEnding} from '../services/player';
+import { notificationNextSong } from '../services/playlist';
+import {endPoll} from '../services/poll';
+import { MediaType } from '../types/medias';
+import {MediaData, mpvStatus,PlayerState} from '../types/player';
+import { initializationCatchphrases } from '../utils/constants';
+import {getID3} from '../utils/id3tag';
+import {getState, setState} from '../utils/state';
+import {exit} from './engine';
 
 const sleep = promisify(setTimeout);
 
@@ -34,7 +35,7 @@ let monitorEnabled = false;
 let songNearEnd = false;
 let nextSongNotifSent = false;
 
-let playerState: PlayerState = {
+const playerState: PlayerState = {
 	volume: 100,
 	playing: false,
 	playerstatus: 'stop',
@@ -64,8 +65,8 @@ async function ensureRunning() {
 	} catch(err) {
 		const errStr = `Unable to ensure mpv is running : ${err}`;
 		const error = new Error(errStr);
-		sentryError(error)
-		throw error
+		sentryError(error);
+		throw error;
 	}
 }
 
@@ -88,11 +89,9 @@ async function extractBackgroundFiles(backgroundDir: string): Promise<string[]> 
 }
 
 export async function loadBackground() {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	const conf = getConfig();
 	// Default background
 	let backgroundFiles = [];
@@ -128,8 +127,8 @@ export async function loadBackground() {
 		const errStr = `Unable to load background : ${JSON.stringify(err)}`;
 		logger.error(`[Player] ${errStr}`);
 		const error = new Error(errStr);
-		sentryError(error)
-		throw error
+		sentryError(error);
+		throw error;
 	}
 }
 
@@ -146,7 +145,7 @@ export async function initPlayerSystem() {
 		const errStr = `Unable to start player : ${err}`;
 		const error = new Error(errStr);
 		sentryError(error, 'Fatal');
-		throw error
+		throw error;
 	}
 }
 
@@ -294,7 +293,7 @@ async function startmpv() {
 		logger.error(`[Player] ${errStr}`);
 		const error = new Error(errStr);
 		sentryError(error, 'Fatal');
-		throw error
+		throw error;
 	}
 
 	await loadBackground();
@@ -386,11 +385,9 @@ async function startmpv() {
 }
 
 export async function play(mediadata: MediaData) {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	const conf = getConfig();
 	logger.debug('[Player] Play event triggered');
 	playerState.playing = true;
@@ -427,9 +424,8 @@ export async function play(mediadata: MediaData) {
 			// Courtesy of @nah :)
 			if (conf.Player.VisualizationEffects) {
 				options = fillVisualizationOptions(options, mediadata, (mediadata.avatar && conf.Karaoke.Display.Avatar));
-			}
-			else if (mediadata.avatar && conf.Karaoke.Display.Avatar) {
-				let subOptions = [
+			} else if (mediadata.avatar && conf.Karaoke.Display.Avatar) {
+				const subOptions = [
 					'lavfi-complex=',
 					`nullsrc=size=1x1:duration=${mediadata.duration}[emp];`,
 					'[vid1]scale=-2:1080[vidInp];',
@@ -455,7 +451,7 @@ export async function play(mediadata: MediaData) {
 			// Again, lavfi-complex expert @nah comes to the rescue!
 			if (mediadata.avatar && conf.Karaoke.Display.Avatar) options.push(`lavfi-complex=movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediadata.duration - 7},${mediadata.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
 		}
-		await retry(async () => load(mediaFile, 'replace', options), {
+		await retry(() => load(mediaFile, 'replace', options), {
 			retries: 3,
 			onFailedAttempt: error => {
 				logger.warn(`[Player] Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
@@ -470,7 +466,7 @@ export async function play(mediadata: MediaData) {
 		}
 		playerState.playerstatus = 'play';
 		if (subFile) try {
-			let subs = [player.addSubtitles(subFile)];
+			const subs = [player.addSubtitles(subFile)];
 			if (monitorEnabled) subs.push(playerMonitor.addSubtitles(subFile));
 			await Promise.all(subs);
 		} catch(err) {
@@ -525,11 +521,9 @@ function fillVisualizationOptions(options: string[], mediadata: MediaData, withA
 
 export async function setFullscreen(fsState: boolean): Promise<boolean> {
 	playerState.fullscreen = fsState;
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	fsState
 		? player.fullscreen()
 		: player.leaveFullscreen();
@@ -537,11 +531,9 @@ export async function setFullscreen(fsState: boolean): Promise<boolean> {
 }
 
 export async function toggleOnTop(): Promise<boolean> {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	playerState.stayontop = !playerState.stayontop;
 	player.command('keypress',['T']);
 	return playerState.stayontop;
@@ -555,11 +547,9 @@ export async function stop(): Promise<PlayerState> {
 	playerState.timeposition = 0;
 	playerState._playing = false;
 	playerState.playerstatus = 'stop';
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	await loadBackground();
 	logger.debug('[Player] Stop DI');
 	if (!getState().songPoll) displayInfo();
@@ -570,11 +560,9 @@ export async function stop(): Promise<PlayerState> {
 
 export async function pause(): Promise<PlayerState> {
 	logger.debug('[Player] Pause event triggered');
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	player.pause();
 	if (monitorEnabled) playerMonitor.pause();
 	playerState.status = 'pause';
@@ -584,11 +572,9 @@ export async function pause(): Promise<PlayerState> {
 
 export async function resume(): Promise<PlayerState> {
 	logger.debug('[Player] Resume event triggered');
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	player.play();
 	if (monitorEnabled) playerMonitor.play();
 	playerState.playing = true;
@@ -599,49 +585,39 @@ export async function resume(): Promise<PlayerState> {
 }
 
 export async function seek(delta: number) {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	if (monitorEnabled) playerMonitor.seek(delta);
 	player.seek(delta);
 }
 
 export async function goTo(pos: number) {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	if (monitorEnabled) playerMonitor.goToPosition(pos);
 	player.goToPosition(pos);
 }
 
 export async function mute() {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	return player.mute(true);
 }
 
 export async function unmute() {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	return player.mute(false);
 }
 
 export async function setVolume(volume: number): Promise<PlayerState> {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	playerState.volume = volume;
 	player.volume(volume);
 	setState({player: playerState});
@@ -649,11 +625,9 @@ export async function setVolume(volume: number): Promise<PlayerState> {
 }
 
 export async function hideSubs(): Promise<PlayerState> {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	player.hideSubtitles();
 	if (monitorEnabled) playerMonitor.hideSubtitles();
 	playerState.showsubs = false;
@@ -662,11 +636,9 @@ export async function hideSubs(): Promise<PlayerState> {
 }
 
 export async function showSubs(): Promise<PlayerState> {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	player.showSubtitles();
 	if (monitorEnabled) playerMonitor.showSubtitles();
 	playerState.showsubs = true;
@@ -674,12 +646,10 @@ export async function showSubs(): Promise<PlayerState> {
 	return playerState;
 }
 
-export async function message(message: string, duration: number = 10000, alignCode = 5) {
-	try {
-		await ensureRunning();
-	} catch(err) {
+export async function message(message: string, duration = 10000, alignCode = 5) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	const alignCommand = `{\\an${alignCode}}`;
 	const command = {
 		command: [
@@ -699,11 +669,9 @@ export async function message(message: string, duration: number = 10000, alignCo
 }
 
 export async function displaySongInfo(infos: string, duration = 8000, nextSong = false, spoilerAlert = false) {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	displayingInfo = true;
 	const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
 	const nextSongString = nextSong ? `{\\u1}${i18n.t('NEXT_SONG')}{\\u0}\\N` : '';
@@ -722,12 +690,10 @@ export async function displaySongInfo(infos: string, duration = 8000, nextSong =
 	displayingInfo = false;
 }
 
-export async function displayInfo(duration: number = 10000000) {
-	try {
-		await ensureRunning();
-	} catch(err) {
+export async function displayInfo(duration = 10000000) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	const conf = getConfig();
 	const ci = conf.Karaoke.Display.ConnectionInfo;
 	let text = '';
@@ -750,11 +716,9 @@ export async function displayInfo(duration: number = 10000000) {
 }
 
 export async function clearText() {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	const command = {
 		command: [
 			'expand-properties',
@@ -790,11 +754,9 @@ export async function quitmpv() {
 }
 
 export async function playMedia(mediaType: MediaType) {
-	try {
-		await ensureRunning();
-	} catch(err) {
+	await ensureRunning().catch(err => {
 		throw err;
-	}
+	});
 	playerState.playing = true;
 	playerState.mediaType = mediaType;
 	const media = getSingleMedia(mediaType);
@@ -804,7 +766,7 @@ export async function playMedia(mediaType: MediaType) {
 			const conf = getConfig();
 			logger.debug(`[Player] Playing ${mediaType} : ${media.file}`);
 			const options = [`replaygain-fallback=${media.gain}`];
-			await retry(async () => load(media.file, 'replace', options), {
+			await retry(() => load(media.file, 'replace', options), {
 				retries: 3,
 				onFailedAttempt: error => {
 					logger.warn(`[Player] Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
@@ -830,13 +792,13 @@ export async function playMedia(mediaType: MediaType) {
 			logger.error(`[Player] ${errStr}`);
 			const error = new Error(errStr);
 			sentryError(error);
-			throw error
+			throw error;
 		}
 	} else {
 		logger.debug(`[Player] No ${mediaType} to play.`);
 		playerState.playerstatus = 'play';
 		loadBackground();
-		logger.debug('[Player] No jingle DI')
+		logger.debug('[Player] No jingle DI');
 		displayInfo();
 		playerState._playing = true;
 		emitPlayerState();

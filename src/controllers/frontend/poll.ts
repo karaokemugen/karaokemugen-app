@@ -1,10 +1,11 @@
-import { Router } from "express";
-import { errMessage, APIMessage } from "../common";
-import { emitWS } from "../../lib/utils/ws";
-import { addPollVote, getPoll } from "../../services/poll";
-import { check } from "../../lib/utils/validators";
-import { updateUserLoginTime, requireAuth, requireValidUser } from "../middlewares/auth";
-import { getLang } from "../middlewares/lang";
+import { Router } from 'express';
+
+import { check } from '../../lib/utils/validators';
+import { emitWS } from '../../lib/utils/ws';
+import { addPollVote, getPoll } from '../../services/poll';
+import { APIMessage,errMessage } from '../common';
+import { requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
 
 export default function pollController(router: Router) {
 	router.route('/songpoll')
@@ -57,9 +58,9 @@ export default function pollController(router: Router) {
 				const pollResult = await getPoll(req.authToken, +req.query.from || 0, +req.query.size || 9999999);
 				res.json(pollResult);
 			} catch(err) {
-				errMessage(err.code, err)
+				errMessage(err.code, err);
 				res.status(500).json(APIMessage(err.code));
-			};
+			}
 		})
 	/**
  * @api {post} /songpoll Vote in a poll
@@ -116,7 +117,7 @@ export default function pollController(router: Router) {
 					emitWS('songPollUpdated', ret.data);
 					res.json(ret.data);
 				} catch(err) {
-					errMessage(err.code, err)
+					errMessage(err.code, err);
 					res.status(500).json(APIMessage(err.code));
 				}
 

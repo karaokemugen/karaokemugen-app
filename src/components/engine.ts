@@ -1,39 +1,38 @@
 //Node modules
-import i18n from 'i18next';
-import execa from 'execa';
 import { app } from 'electron';
+import execa from 'execa';
+import i18n from 'i18next';
 import readlineSync from 'readline-sync';
 import logger from 'winston';
 
+import { generateBlacklist } from '../dao/blacklist';
+import {compareKarasChecksum,generateDB, getStats, initDBSystem} from '../dao/database';
+import { baseChecksum } from '../dao/dataStore';
+import { postMigrationTasks } from '../dao/migrations';
+import { applyMenu } from '../electron/electron';
+import { errorStep,initStep } from '../electron/electronLogger';
+import {closeDB, getSettings, saveSetting,vacuum} from '../lib/dao/database';
+import { generateDatabase as generateKaraBase } from '../lib/services/generation';
 //Utils
 import {getConfig, setConfig} from '../lib/utils/config';
-import {profile, enableWSLogging} from '../lib/utils/logger';
-import {getState, setState} from '../utils/state';
-import { killPG, dumpPG, restorePG, checkPG} from '../utils/postgresql';
+import { duration } from '../lib/utils/date';
+import {enableWSLogging,profile} from '../lib/utils/logger';
 import {emit, on} from '../lib/utils/pubsub';
-
-//KM Modules
-import {initUserSystem} from '../services/user';
-import {initDBSystem, getStats, generateDB, compareKarasChecksum} from '../dao/database';
-import {closeDB, getSettings, vacuum, saveSetting} from '../lib/dao/database';
-import {initFrontend} from './frontend';
+import { sentryError } from '../lib/utils/sentry';
+import {downloadTestSongs,initDownloader, updateAllBases, updateAllMedias} from '../services/download';
+import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
-import {initDownloader, updateAllBases, updateAllMedias, downloadTestSongs} from '../services/download';
-import {initStats} from '../services/stats';
-import {welcomeToYoukousoKaraokeMugen} from '../services/welcome';
 import {initPlaylistSystem, testPlaylists} from '../services/playlist';
-import { generateDatabase as generateKaraBase } from '../lib/services/generation';
-import { postMigrationTasks } from '../dao/migrations';
-import { initTwitch, stopTwitch, getTwitchClient } from '../utils/twitch';
 import { initSession } from '../services/session';
-import { updatePlaylistMedias, buildAllMediasList } from '../services/medias';
-import { initStep, errorStep } from '../electron/electronLogger';
-import { generateBlacklist } from '../dao/blacklist';
-import { duration } from '../lib/utils/date';
-import { baseChecksum } from '../dao/dataStore';
-import { applyMenu } from '../electron/electron';
-import { sentryError } from "../lib/utils/sentry";
+import {initStats} from '../services/stats';
+//KM Modules
+import {initUserSystem} from '../services/user';
+import {welcomeToYoukousoKaraokeMugen} from '../services/welcome';
+import { checkPG,dumpPG, killPG, restorePG} from '../utils/postgresql';
+import {getState, setState} from '../utils/state';
+import { getTwitchClient,initTwitch, stopTwitch } from '../utils/twitch';
+import {initFrontend} from './frontend';
 
 let shutdownInProgress = false;
 
@@ -109,7 +108,7 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18n.t('INIT_GEN'));
-			const checksum = await baseChecksum(false)
+			const checksum = await baseChecksum(false);
 			await generateDB();
 			await saveSetting('baseChecksum', checksum);
 			await exit(0);
@@ -138,7 +137,7 @@ export async function initEngine() {
 			logger.error(`[Engine] Failed to init online system : ${err}`);
 			sentryError(err);
 		}
-		let inits = [];
+		const inits = [];
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 		inits.push(initPlaylistSystem());
 		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) inits.push(initPlayer());
@@ -182,7 +181,7 @@ export async function initEngine() {
 	}
 }
 
-export async function exit(rc: any) {
+export async function exit(rc: string | number) {
 	if (shutdownInProgress) return;
 	logger.info('[Engine] Shutdown in progress');
 	shutdownInProgress = true;
@@ -222,15 +221,15 @@ export async function exit(rc: any) {
 	}
 }
 
-function mataNe(rc: any) {
+function mataNe(rc: string | number) {
 	console.log('\nMata ne !\n');
 	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
 	//On other systems or if terminal is not a TTY we exit immediately.
 	// non-TTY terminals have no stdin support.
-	if ((process.platform !== 'win32' || !process.stdout.isTTY) && !app) process.exit(rc);
+	if ((process.platform !== 'win32' || !process.stdout.isTTY) && !app) process.exit(+rc);
 	if (rc !== 0 && !app) readlineSync.question('Press enter to exit', {hideEchoBack: true});
 	if (!app) {
-		process.exit(rc);
+		process.exit(+rc);
 	} else {
 		app.exit();
 	}
@@ -241,8 +240,8 @@ export function shutdown() {
 	exit(0);
 }
 
-export async function getKMStats() {
-	return await getStats();
+export function getKMStats() {
+	return getStats();
 }
 
 async function preFlightCheck() {

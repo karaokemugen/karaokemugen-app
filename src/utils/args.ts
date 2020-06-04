@@ -1,8 +1,9 @@
-import {setState} from './state';
-import logger, { enableProfiling } from '../lib/utils/logger';
 import { CommandLine } from 'electron';
 
-export async function parseCommandLineArgs(argv: any, cmdline: CommandLine) {
+import logger, { enableProfiling } from '../lib/utils/logger';
+import {setState} from './state';
+
+export function parseCommandLineArgs(argv: any, cmdline: CommandLine) {
 	if (cmdline?.hasSwitch('sql') || argv.sql) {
 		logger.info('[Launcher] SQL queries will be logged');
 		setState({opt: {sql: true}});

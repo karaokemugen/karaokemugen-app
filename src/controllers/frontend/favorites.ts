@@ -1,11 +1,12 @@
-import { Router } from "express";
-import { errMessage, APIMessage } from "../common";
-import { emitWS } from "../../lib/utils/ws";
-import { createAutoMix, getFavorites, addToFavorites, deleteFavorites, exportFavorites, importFavorites } from "../../services/favorites";
-import { check } from "../../lib/utils/validators";
-import { updateUserLoginTime, requireAdmin, requireValidUser, requireAuth, requireRegularUser } from "../middlewares/auth";
-import { getLang } from "../middlewares/lang";
-import { requireWebappLimited } from "../middlewares/webapp_mode";
+import { Router } from 'express';
+
+import { check } from '../../lib/utils/validators';
+import { emitWS } from '../../lib/utils/ws';
+import { addToFavorites, createAutoMix, deleteFavorites, exportFavorites, getFavorites, importFavorites } from '../../services/favorites';
+import { APIMessage,errMessage } from '../common';
+import { requireAdmin, requireAuth, requireRegularUser,requireValidUser, updateUserLoginTime } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
+import { requireWebappLimited } from '../middlewares/webapp_mode';
 
 export default function favoritesController(router: Router) {
 
@@ -48,7 +49,7 @@ export default function favoritesController(router: Router) {
 					res.status(201).json(data);
 				} catch(err) {
 					const code = 'AUTOMIX_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			} else {
@@ -115,7 +116,7 @@ export default function favoritesController(router: Router) {
 				res.json(karas);
 			} catch(err) {
 				const code = 'FAVORITES_VIEW_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -151,7 +152,7 @@ export default function favoritesController(router: Router) {
 					res.status(200).json(APIMessage('FAVORITES_ADDED'));
 				} catch(err) {
 					const code = 'FAVORITES_ADDED_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			} else {
@@ -194,7 +195,7 @@ export default function favoritesController(router: Router) {
 					res.status(200).json(APIMessage('FAVORITES_DELETED'));
 				} catch(err) {
 					const code = 'FAVORITES_DELETED_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			}
@@ -231,7 +232,7 @@ export default function favoritesController(router: Router) {
 				res.json(favorites);
 			} catch(err) {
 				const code = 'FAVORITES_EXPORTED_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -265,7 +266,7 @@ export default function favoritesController(router: Router) {
 					res.status(200).json(APIMessage('FAVORITES_IMPORTED'));
 				} catch(err) {
 					const code = 'FAVORITES_IMPORTED_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			} else {

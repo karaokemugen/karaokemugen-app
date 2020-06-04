@@ -1,27 +1,28 @@
-import { getConfig } from '../lib/utils/config';
-import { getState } from '../utils/state';
-import si from 'systeminformation';
-import { exportPlayed, exportRequests, exportFavorites } from '../dao/stats';
 import internet from 'internet-available';
-import logger from '../lib/utils/logger';
-import prettyBytes from 'pretty-bytes';
-import { asyncWriteFile } from '../lib/utils/files';
-import {resolve} from 'path';
 import cloneDeep from 'lodash.clonedeep';
-import { getSessions } from './session';
+import {resolve} from 'path';
+import prettyBytes from 'pretty-bytes';
+import si from 'systeminformation';
+
+import { exportFavorites,exportPlayed, exportRequests } from '../dao/stats';
 import { getInstanceID } from '../lib/dao/database';
+import { getConfig } from '../lib/utils/config';
+import { asyncWriteFile } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
+import logger from '../lib/utils/logger';
+import { getState } from '../utils/state';
+import { getSessions } from './session';
 
 let intervalID: any;
 
 /** Initialize stats upload */
-export async function initStats(sendLater: boolean) {
+export function initStats(sendLater: boolean) {
 	if (!intervalID) intervalID = setInterval(sendPayload, 3600000);
 	if (!sendLater) sendPayload();
 }
 
 /** Stop stats upload */
-export async function stopStats() {
+export function stopStats() {
 	if (intervalID) clearInterval(intervalID);
 	intervalID = undefined;
 }
@@ -39,13 +40,9 @@ export async function sendPayload() {
 		logger.info('[Stats] Payload data saved locally to logs/statsPayload.json');
 		const conf = getConfig();
 		asyncWriteFile(resolve(getState().dataPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
-		try {
-			await HTTP.post(`https://${conf.Online.Host}/api/stats`, {
-				json: payload
-			});
-		} catch(err) {
-			throw err;
-		}
+		await HTTP.post(`https://${conf.Online.Host}/api/stats`, {
+			json: payload
+		});
 		logger.info('[Stats] Payload sent successfully');
 	} catch(err) {
 		logger.error(`[Stats] Uploading stats payload failed : ${err}`);

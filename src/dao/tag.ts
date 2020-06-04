@@ -1,8 +1,9 @@
-import {db, paramWords} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
-import { TagParams, Tag, TagAndType } from '../lib/types/tag';
-import { WhereClause } from '../types/database';
+
+import {db, paramWords} from '../lib/dao/database';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
+import { Tag, TagAndType,TagParams } from '../lib/types/tag';
+import { WhereClause } from '../types/database';
 const sql = require('./sql/tag');
 
 export async function selectTag(id: string): Promise<Tag> {
@@ -16,10 +17,10 @@ export async function selectTagMini(id: string): Promise<DBTagMini> {
 }
 
 export async function getAllTags(params: TagParams): Promise<DBTag[]> {
-	let filterClauses = params.filter
+	const filterClauses = params.filter
 		? buildTagClauses(params.filter)
 		: {sql: [], params: {}};
-	let typeClauses = params.type ? ` AND types @> ARRAY[${params.type}]` : '';
+	const typeClauses = params.type ? ` AND types @> ARRAY[${params.type}]` : '';
 	let limitClause = '';
 	let offsetClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
@@ -31,7 +32,7 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 
 function buildTagClauses(words: string): WhereClause {
 	const params = paramWords(words);
-	let sql = [];
+	const sql = [];
 	for (const word of Object.keys(params)) {
 		sql.push(`lower(unaccent(name)) LIKE :${word} OR
 		lower(unaccent(i18n::varchar)) LIKE :${word} OR
@@ -44,8 +45,8 @@ function buildTagClauses(words: string): WhereClause {
 	};
 }
 
-export async function insertTag(tag: Tag) {
-	return await db().query(sql.insertTag, [
+export function insertTag(tag: Tag) {
+	return db().query(sql.insertTag, [
 		tag.tid,
 		tag.name,
 		tag.types,
@@ -58,8 +59,8 @@ export async function insertTag(tag: Tag) {
 	]);
 }
 
-export async function updateKaraTagsTID(oldTID: string, newTID: string) {
-	return await db().query(sql.updateKaraTagsTID, [
+export function updateKaraTagsTID(oldTID: string, newTID: string) {
+	return db().query(sql.updateKaraTagsTID, [
 		oldTID,
 		newTID
 	]);
@@ -89,8 +90,8 @@ export async function selectTagByNameAndType(name: string, type: number): Promis
 	return res.rows[0];
 }
 
-export async function updateTag(tag: Tag) {
-	return await db().query(sql.updateTag, [
+export function updateTag(tag: Tag) {
+	return db().query(sql.updateTag, [
 		tag.name,
 		JSON.stringify(tag.aliases) || null,
 		tag.tagfile,

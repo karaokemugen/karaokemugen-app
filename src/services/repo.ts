@@ -1,25 +1,26 @@
-import { selectRepos, deleteRepo, updateRepo, insertRepo } from '../dao/repo';
-import { relativePath, asyncCheckOrMkdir, asyncExists, extractAllFiles, asyncMoveAll, asyncReadDir, resolveFileInDirs, asyncCopy } from '../lib/utils/files';
-import { resolve, basename } from 'path';
-import { getState } from '../utils/state';
+import { basename,resolve } from 'path';
+
+import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
 import { Repository } from '../lib/types/repo';
-import { getConfig, setConfig, deleteOldPaths, resolvedPathRepos } from '../lib/utils/config';
+import { deleteOldPaths, getConfig, resolvedPathRepos,setConfig } from '../lib/utils/config';
+import { asyncCheckOrMkdir, asyncCopy,asyncExists, asyncMoveAll, asyncReadDir, extractAllFiles, relativePath, resolveFileInDirs } from '../lib/utils/files';
+import { getState } from '../utils/state';
 import cloneDeep = require('lodash.clonedeep');
-import { Tag } from '../lib/types/tag';
-import { readAllTags, readAllKaras } from '../lib/services/generation';
-import { tagTypes } from '../lib/utils/constants';
-import { KaraTag, Kara } from '../lib/types/kara';
-import { getTag } from './tag';
-import logger from '../lib/utils/logger';
 import { compareKarasChecksum, generateDB } from '../dao/database';
-import { getRemoteKaras } from './download';
+import { editKaraInStore } from '../dao/dataStore';
+import { refreshKaras } from '../lib/dao/kara';
+import { writeKara } from '../lib/dao/karafile';
+import { readAllKaras,readAllTags } from '../lib/services/generation';
+import { Kara,KaraTag } from '../lib/types/kara';
+import { Tag } from '../lib/types/tag';
+import { tagTypes } from '../lib/utils/constants';
+import logger from '../lib/utils/logger';
+import { sentryError } from '../lib/utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { DifferentChecksumReport } from '../types/repo';
-import { sentryError } from '../lib/utils/sentry';
-import { writeKara } from '../lib/dao/karafile';
-import { editKaraInStore } from '../dao/dataStore';
+import { getRemoteKaras } from './download';
 import { editKaraInDB } from './kara';
-import { refreshKaras } from '../lib/dao/kara';
+import { getTag } from './tag';
 
 type UUIDSet = Set<string>
 
@@ -97,12 +98,12 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 					kara2: kara2
 				});
 			}
-		})
+		});
 		return differentChecksums;
 	} catch(err) {
-		err = new Error(err);
-		sentryError(err);
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}
@@ -133,15 +134,15 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 		}
 		refreshKaras();
 	} catch(err) {
-		err = new Error(err);
-		sentryError(err);
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}
 }
 
-async function checkRepoPaths(repo: Repository) {
+function checkRepoPaths(repo: Repository) {
 	const checks = [];
 	for (const path of Object.keys(repo.Path)) {
 		repo.Path[path].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, dir))));
@@ -155,19 +156,20 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 		text: 'FINDING_UNUSED_MEDIAS'
 	});
 	try {
-		let [karaFiles, mediaFiles] = await Promise.all([
+		const [karaFiles, mediaFiles] = await Promise.all([
 			extractAllFiles('Karas', repo),
 			extractAllFiles('Medias', repo)
 		]);
+		let mediaFilesFiltered;
 		const karas = await (readAllKaras(karaFiles, false, task));
 		karas.forEach(k => {
-			mediaFiles = mediaFiles.filter(file => basename(file) !== k.mediafile);
+			mediaFilesFiltered = mediaFiles.filter(file => basename(file) !== k.mediafile);
 		});
-		return mediaFiles;
+		return mediaFilesFiltered;
 	} catch(err) {
-		err = new Error(err);
-		sentryError(err);
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}
@@ -185,7 +187,7 @@ export async function findUnusedTags(repo: string): Promise<Tag[]> {
 		]);
 		task.update({
 			total: karaFiles.length + tagFiles.length
-		})
+		});
 		const karas = await readAllKaras(karaFiles, false, task);
 		const tags = await readAllTags(tagFiles, task);
 		task.update({
@@ -205,9 +207,9 @@ export async function findUnusedTags(repo: string): Promise<Tag[]> {
 		}
 		return tagsToDelete;
 	} catch(err) {
-		err = new Error(err);
-		sentryError(err);
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		task.end();
 	}

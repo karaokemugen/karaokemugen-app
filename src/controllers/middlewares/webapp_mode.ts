@@ -1,5 +1,6 @@
-import {getConfig} from '../../lib/utils/config';
 import {decode} from 'jwt-simple';
+
+import {getConfig} from '../../lib/utils/config';
 import { APIMessage } from '../common';
 
 export const requireWebappLimitedNoAuth = (_req: any, res: any, next: any) => {

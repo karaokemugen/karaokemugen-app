@@ -1,7 +1,8 @@
-import {db, transaction, buildClauses} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
-import { FavParams } from '../types/favorites';
+
+import {buildClauses,db, transaction} from '../lib/dao/database';
 import { DBKara } from '../lib/types/database/kara';
+import { FavParams } from '../types/favorites';
 const sql = require('./sql/favorites');
 
 interface Filter {
@@ -23,19 +24,19 @@ export async function selectFavorites(params: FavParams): Promise<DBKara[]> {
 	return res.rows;
 }
 
-export async function removeFavorites(fList: string[], username: string) {
+export function removeFavorites(fList: string[], username: string) {
 	const karas = fList.map(kara => ([
 		kara,
 		username
 	]));
-	return await transaction([{params: karas, sql: sql.removeFavorites}]);
+	return transaction([{params: karas, sql: sql.removeFavorites}]);
 }
 
-export async function insertFavorites(karaList: string[], username: string) {
+export function insertFavorites(karaList: string[], username: string) {
 	const karas = karaList.map(kara => ([
 		kara,
 		username
 	]));
-	return await transaction([{params: karas, sql: sql.insertFavorites}]);
+	return transaction([{params: karas, sql: sql.insertFavorites}]);
 }
 

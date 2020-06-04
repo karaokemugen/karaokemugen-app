@@ -1,21 +1,21 @@
-import {emptyBlacklistCriterias as emptyBLC,
+import langs from 'langs';
+
+import {	addBlacklistCriteria as addBLC,
 	deleteBlacklistCriteria as deleteBLC,
+	emptyBlacklistCriterias as emptyBLC,
 	generateBlacklist as generateBL,
-	addBlacklistCriteria as addBLC,
 	getBlacklistContents as getBLContents,
 	getBlacklistCriterias as getBLC,
 } from '../dao/blacklist';
-import {getTag} from './tag';
-import langs from 'langs';
-import {getState} from '../utils/state';
-import logger from '../lib/utils/logger';
-import {profile} from '../lib/utils/logger';
-import {formatKaraList, getKara} from './kara';
-import {uuidRegexp} from '../lib/utils/constants';
 import {KaraList, KaraParams} from '../lib/types/kara';
-import {BLC} from '../types/blacklist';
-import {isNumber} from '../lib/utils/validators';
+import {uuidRegexp} from '../lib/utils/constants';
+import logger, { profile } from '../lib/utils/logger';
 import { sentryError } from '../lib/utils/sentry';
+import {isNumber} from '../lib/utils/validators';
+import {BLC} from '../types/blacklist';
+import {getState} from '../utils/state';
+import {formatKaraList, getKara} from './kara';
+import {getTag} from './tag';
 
 export async function getBlacklist(params: KaraParams): Promise<KaraList> {
 	profile('getBL');
@@ -32,22 +32,22 @@ export async function getBlacklistCriterias(lang?: string): Promise<BLC[]> {
 		const blcs = await getBLC();
 		return await translateBlacklistCriterias(blcs, lang);
 	} catch(err) {
-		err = new Error(err);
-		sentryError(err);
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	} finally {
 		profile('getBLC');
 	}
 }
 
-export async function generateBlacklist() {
-	return await generateBL();
+export function generateBlacklist() {
+	return generateBL();
 }
 
 export async function emptyBlacklistCriterias() {
 	logger.debug('[Blacklist] Wiping criterias');
 	await emptyBLC();
-	return await generateBlacklist();
+	return generateBlacklist();
 }
 
 export async function deleteBlacklistCriteria(blc_id: number) {
@@ -64,7 +64,7 @@ export async function addBlacklistCriteria(type: number, value: any) {
 		? value.split(',')
 		: [value];
 	logger.info(`[Blacklist] Adding criteria ${type} = ${blcvalues.toString()}`);
-	let blcList = blcvalues.map((e: string) => {
+	const blcList = blcvalues.map((e: string) => {
 		return {
 			value: e,
 			type: type
@@ -80,8 +80,8 @@ export async function addBlacklistCriteria(type: number, value: any) {
 		return await generateBlacklist();
 	} catch(err) {
 		logger.error(`[Blacklist] Error adding criteria : ${JSON.stringify(err)}`);
-		err = new Error(err);
-		sentryError(err);
+		const error = new Error(err);
+		sentryError(error);
 		throw err;
 	} finally {
 		profile('addBLC');

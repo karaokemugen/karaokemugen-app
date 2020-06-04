@@ -1,34 +1,31 @@
 // Node Modules
-import {resolve} from 'path';
-import express from 'express';
+import {json,urlencoded} from 'body-parser';
 import compression from 'compression';
-import {urlencoded, json} from 'body-parser';
-import passport from 'passport';
+import express from 'express';
 import {createServer} from 'http';
+import passport from 'passport';
+import {resolve} from 'path';
 
-// KM Imports
-import logger from '../lib/utils/logger';
-import {getConfig, resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/config';
-import {configurePassport} from '../lib/utils/passport_manager';
-import { initWS } from '../lib/utils/ws';
-import { getState } from '../utils/state';
-
-// Api routes
 import authController from '../controllers/auth';
-import pollController from '../controllers/frontend/poll';
-import downloadController from '../controllers/frontend/download';
-import userController from '../controllers/frontend/user';
-import whitelistController from '../controllers/frontend/whitelist';
 import blacklistController from '../controllers/frontend/blacklist';
+import downloadController from '../controllers/frontend/download';
 import favoritesController from '../controllers/frontend/favorites';
+import karaController from '../controllers/frontend/kara';
 import miscController from '../controllers/frontend/misc';
 import playerController from '../controllers/frontend/player';
-import sessionController from '../controllers/frontend/session';
-import karaController from '../controllers/frontend/kara';
-import tagsController from '../controllers/frontend/tags';
 import playlistsController from '../controllers/frontend/playlists';
+import pollController from '../controllers/frontend/poll';
 import repoController from '../controllers/frontend/repo';
+import sessionController from '../controllers/frontend/session';
+import tagsController from '../controllers/frontend/tags';
+import userController from '../controllers/frontend/user';
+import whitelistController from '../controllers/frontend/whitelist';
+import {getConfig, resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/config';
+import logger from '../lib/utils/logger';
+import {configurePassport} from '../lib/utils/passport_manager';
 import { sentryError } from '../lib/utils/sentry';
+import { initWS } from '../lib/utils/ws';
+import { getState } from '../utils/state';
 
 /** Declare all routers for API types */
 function apiRouter() {
@@ -54,7 +51,7 @@ function apiRouter() {
 }
 
 /** Initialize frontend express server */
-export async function initFrontend(): Promise<number> {
+export function initFrontend(): number {
 	try {
 		const conf = getConfig();
 		const state = getState();
@@ -114,17 +111,16 @@ export async function initFrontend(): Promise<number> {
 				});
 			} catch(err) {
 				// Utter failure
-				err = new Error(err);
-				sentryError(err);
-				throw err;
+				const error = new Error(err);
+				sentryError(error);
+				throw error;
 			}
-		} finally {
-			return port;
 		}
+		return port;
 	} catch(err) {
-		err = new Error(err);
-		sentryError(err);
-		throw err;
+		const error = new Error(err);
+		sentryError(error);
+		throw error;
 	}
 }
 

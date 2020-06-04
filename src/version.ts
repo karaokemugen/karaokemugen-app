@@ -3,4 +3,4 @@ export const version = {
 	name: 'Ôgi Obscure',
 	image: 'OgiObscure.jpg',
 	sha: null
-}
+};

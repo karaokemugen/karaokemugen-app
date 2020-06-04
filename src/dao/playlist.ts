@@ -1,16 +1,17 @@
+import { QueryResult } from 'pg';
+import {pg as yesql} from 'yesql';
+
 import {buildClauses, db, transaction} from '../lib/dao/database';
 import {getConfig} from '../lib/utils/config';
-import {getState} from '../utils/state';
 import {now} from '../lib/utils/date';
-import {pg as yesql} from 'yesql';
+import { DBPL,DBPLC, DBPLCInfo, DBPLCKID, DBPLPos } from '../types/database/playlist';
 import {Playlist, PLC, PLCParams} from '../types/playlist';
-import { QueryResult } from 'pg';
-import { DBPLC, DBPLCKID, DBPLPos, DBPLCInfo, DBPL } from '../types/database/playlist';
+import {getState} from '../utils/state';
 
 const sql = require('./sql/playlist');
 
-export async function editPlaylist(pl: Playlist) {
-	return await db().query(yesql(sql.editPlaylist)({
+export function editPlaylist(pl: Playlist) {
+	return db().query(yesql(sql.editPlaylist)({
 		playlist_id: pl.id,
 		name: pl.name,
 		modified_at: pl.modified_at,
@@ -31,39 +32,39 @@ export async function createPlaylist(pl: Playlist): Promise<number> {
 	return res.rows[0].pk_id_playlist;
 }
 
-export async function emptyPlaylist(id: number) {
-	return await db().query(sql.emptyPlaylist, [id]);
+export function emptyPlaylist(id: number) {
+	return db().query(sql.emptyPlaylist, [id]);
 }
 
-export async function deletePlaylist(id: number) {
-	return await db().query(sql.deletePlaylist, [id]);
+export function deletePlaylist(id: number) {
+	return db().query(sql.deletePlaylist, [id]);
 }
 
-export async function setPLCVisible(plc_id: number) {
-	return await db().query(sql.setPLCVisible, [plc_id]);
+export function setPLCVisible(plc_id: number) {
+	return db().query(sql.setPLCVisible, [plc_id]);
 }
 
-export async function setPLCInvisible(plc_id: number) {
-	return await db().query(sql.setPLCInvisible, [plc_id]);
+export function setPLCInvisible(plc_id: number) {
+	return db().query(sql.setPLCInvisible, [plc_id]);
 }
 
-export async function setPLCFree(plc_id: number) {
-	return await db().query(sql.setPLCFree, [plc_id]);
+export function setPLCFree(plc_id: number) {
+	return db().query(sql.setPLCFree, [plc_id]);
 }
 
-export async function setPLCFreeBeforePos(pos: number, playlist_id: number) {
-	return await db().query(yesql(sql.setPLCFreeBeforePos)({
+export function setPLCFreeBeforePos(pos: number, playlist_id: number) {
+	return db().query(yesql(sql.setPLCFreeBeforePos)({
 		pos: pos,
 		playlist_id: playlist_id
 	}));
 }
 
-export async function updatePlaylistKaraCount(id: number) {
-	return await db().query(sql.updatePlaylistKaraCount, [id]);
+export function updatePlaylistKaraCount(id: number) {
+	return db().query(sql.updatePlaylistKaraCount, [id]);
 }
 
-export async function updatePlaylistLastEditTime(id: number) {
-	return await db().query(yesql(sql.updatePlaylistLastEditTime)({
+export function updatePlaylistLastEditTime(id: number) {
+	return db().query(yesql(sql.updatePlaylistLastEditTime)({
 		playlist_id: id,
 		modified_at: new Date()
 	}));
@@ -77,8 +78,8 @@ export async function getPLCByDate(playlist_id: number, date: Date): Promise<num
 	return res.rows[0].playlistcontent_id;
 }
 
-export async function shiftPosInPlaylist(id: number, pos: number, shift: number) {
-	return await db().query(yesql(sql.shiftPosInPlaylist)({
+export function shiftPosInPlaylist(id: number, pos: number, shift: number) {
+	return db().query(yesql(sql.shiftPosInPlaylist)({
 		shift: shift,
 		playlist_id: id,
 		pos: pos
@@ -90,32 +91,32 @@ export async function getMaxPosInPlaylist(id: number): Promise<number> {
 	return res.rows[0].maxpos;
 }
 
-export async function replacePlaylist(playlist: PLC[]) {
+export function replacePlaylist(playlist: PLC[]) {
 	let newpos = 0;
 	const karaList = playlist.map(kara => ([
 		++newpos,
 		kara.playlistcontent_id
 	]));
-	return await transaction([{sql: sql.updatePLCSetPos, params: karaList}]);
+	return transaction([{sql: sql.updatePLCSetPos, params: karaList}]);
 }
 
-export async function reorderPlaylist(id: number) {
-	return await db().query(sql.reorderPlaylist, [id]);
+export function reorderPlaylist(id: number) {
+	return db().query(sql.reorderPlaylist, [id]);
 }
 
-export async function setPos(plc_id: number, pos: number) {
-	return await db().query(sql.updatePLCSetPos,[
+export  function setPos(plc_id: number, pos: number) {
+	return db().query(sql.updatePLCSetPos,[
 		pos,
 		plc_id
 	]);
 }
 
-export async function updatePlaylistDuration(id: number) {
-	return await db().query(sql.updatePlaylistDuration, [id]);
+export  function updatePlaylistDuration(id: number) {
+	return db().query(sql.updatePlaylistDuration, [id]);
 }
 
-export async function trimPlaylist(id: number, pos: number) {
-	return await db().query(yesql(sql.trimPlaylist)({
+export  function trimPlaylist(id: number, pos: number) {
+	return db().query(yesql(sql.trimPlaylist)({
 		playlist_id: id,
 		pos: pos
 	}));
@@ -196,7 +197,7 @@ export async function getPlaylistInfo(id: number): Promise<DBPL> {
 }
 
 export async function getPlaylists(forUser: boolean): Promise<DBPL[]> {
-	let query = sql.getPlaylists;
+	const query = sql.getPlaylists;
 	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';
 	let res: QueryResult;
 	if (forUser) {
@@ -217,32 +218,32 @@ export async function getPublicPlaylist(): Promise<DBPL> {
 	return res.rows[0];
 }
 
-export async function setCurrentPlaylist(id: number) {
-	return await db().query(sql.setCurrentPlaylist, [id]);
+export function setCurrentPlaylist(id: number) {
+	return db().query(sql.setCurrentPlaylist, [id]);
 }
 
-export async function setPublicPlaylist(id: number) {
-	return await db().query(sql.setPublicPlaylist, [id]);
+export function setPublicPlaylist(id: number) {
+	return db().query(sql.setPublicPlaylist, [id]);
 }
 
-export async function setVisiblePlaylist(id: number) {
-	return await db().query(sql.setVisiblePlaylist, [id]);
+export function setVisiblePlaylist(id: number) {
+	return db().query(sql.setVisiblePlaylist, [id]);
 }
 
-export async function unsetVisiblePlaylist(id: number) {
-	return await db().query(sql.unsetVisiblePlaylist, [id]);
+export  function unsetVisiblePlaylist(id: number) {
+	return db().query(sql.unsetVisiblePlaylist, [id]);
 }
 
-export async function unsetCurrentPlaylist() {
-	return await db().query(sql.unsetCurrentPlaylist);
+export  function unsetCurrentPlaylist() {
+	return db().query(sql.unsetCurrentPlaylist);
 }
 
-export async function unsetPublicPlaylist() {
-	return await db().query(sql.unsetPublicPlaylist);
+export  function unsetPublicPlaylist() {
+	return db().query(sql.unsetPublicPlaylist);
 }
 
-export async function setPlaying(plc_id: number, playlist_id: number) {
-	return await Promise.all([
+export  function setPlaying(plc_id: number, playlist_id: number) {
+	return Promise.all([
 		db().query(sql.setPlaying, [plc_id]),
 		db().query(sql.unsetPlaying, [plc_id, playlist_id])
 	]);

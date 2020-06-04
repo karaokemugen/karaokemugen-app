@@ -6,27 +6,27 @@
         "es2020": true,
 		"node": true,
 		"mocha": true
-	},
-	"plugins": [
+    },
+    "plugins": [
 		"@typescript-eslint",
-		"security"
+		"security",
+		"simple-import-sort"
 	],
 	"extends": [
 		"plugin:you-dont-need-lodash-underscore/compatible",
 		"eslint:recommended",
-		"plugin:node/recommended",
+		"plugin:@typescript-eslint/recommended",
 		"plugin:security/recommended"
   	],
     "rules": {
-		"jsx-a11y/href-no-hash": [0],
-        "brace-style": [
+		"brace-style": [
             "error",
             "1tbs"
         ],
         "no-console": 0,
         "indent": [
             "error",
-            "space"
+            "tab"
         ],
         "quotes": [
             "error",
@@ -38,19 +38,26 @@
         ],
 		"no-throw-literal": "off",
 		"default-case": 1,
-		"default-case-last": "on",
-		"default-param-last": "on",
+		"default-param-last": 1,
 		"eqeqeq": 2,
+		"no-control-regex": 0,
 		"no-return-await": 1,
 		"prefer-promise-reject-errors": 1,
 		"require-await": 1,
-		"no-tabs": 1,
-		"sort-keys": 1,
 		"no-duplicate-imports": 1,
 		"no-var": 2,
 		"prefer-const": 1,
-		"prefer-destructuring": 1,
-		"sort-imports": 1
+		"import/order": 0,
+		"no-case-declarations": 0,
+		"simple-import-sort/sort": 1,
+		"@typescript-eslint/explicit-module-boundary-types": 0,
+		"@typescript-eslint/no-explicit-any": 0,
+		"@typescript-eslint/no-var-requires": 0,
+		"@typescript-eslint/no-empty-function": 0,
+		"security/detect-object-injection": 0,
+		"security/detect-non-literal-fs-filename": 0,
+		"security/detect-non-literal-regexp": 0,
+		"security/detect-possible-timing-attacks": 0
     },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {

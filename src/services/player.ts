@@ -1,23 +1,23 @@
-import {setState, getState} from '../utils/state';
-import {getConfig} from '../lib/utils/config';
-import logger from '../lib/utils/logger';
-import {profile} from '../lib/utils/logger';
-import {playMedia, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem, displaySongInfo, message, displayInfo} from '../components/mpv';
-import {addPlayedKara} from './kara';
-import {updateUserQuotas} from './user';
-import {startPoll} from './poll';
-import {previousSong, nextSong, getCurrentSong, getPlaylistInfo} from './playlist';
 import {promisify} from 'util';
+
+import {displayInfo,displaySongInfo, goTo, hideSubs, initPlayerSystem, message, mute, pause, play, playMedia, quitmpv as quit, restartmpv, resume, seek, setFullscreen, setVolume, showSubs, stop, toggleOnTop, unmute} from '../components/mpv';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
+import {getConfig} from '../lib/utils/config';
+import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
+import {getState,setState} from '../utils/state';
+import {addPlayedKara} from './kara';
+import {getCurrentSong, getPlaylistInfo,nextSong, previousSong} from './playlist';
+import {startPoll} from './poll';
+import {updateUserQuotas} from './user';
 
 const sleep = promisify(setTimeout);
 
 let commandInProgress = false;
 let introSequence = false;
 
-export async function playerMessage(msg: string, duration: number) {
-	return await message(msg, duration);
+export function playerMessage(msg: string, duration: number) {
+	return message(msg, duration);
 }
 
 async function playCurrentSong(now: boolean) {
@@ -29,14 +29,10 @@ async function playCurrentSong(now: boolean) {
 			setState({currentSong: kara});
 			// Testing if we're on first position, if intro hasn't been played already and if we have at least one intro available
 			if (conf.Playlist.Medias.Intros.Enabled && kara.pos === 1 && !getState().introPlayed) {
-				try {
-					setState({currentlyPlayingKara: 'Intros', introPlayed: true});
-					await playMedia('Intros');
-					introSequence = true;
-					return;
-				} catch(err) {
-					throw err;
-				}
+				setState({currentlyPlayingKara: 'Intros', introPlayed: true});
+				await playMedia('Intros');
+				introSequence = true;
+				return;
 			}
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
 			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
@@ -78,7 +74,7 @@ async function playCurrentSong(now: boolean) {
 }
 
 /* Current playing song has been changed, stopping playing now and hitting play again to get the new song. */
-export async function playingUpdated() {
+export function playingUpdated() {
 	const state = getState();
 	if (state.status === 'play' && state.player.playing) playPlayer(true);
 }
@@ -128,9 +124,8 @@ export async function playerEnding() {
 					logger.error(`[Player] Failed going to next song : ${err}`);
 					throw err;
 				}
-			} finally {
-				return;
 			}
+			return;
 		}
 		if (state.player.mediaType === 'Encores') {
 			try {
@@ -155,7 +150,6 @@ export async function playerEnding() {
 					logger.error(`[Player] Failed going to next song : ${err}`);
 					throw err;
 				}
-			} finally {
 				return;
 			}
 		} else {
@@ -175,9 +169,8 @@ export async function playerEnding() {
 					logger.error(`[Player] Failed going to next song : ${err}`);
 					throw err;
 				}
-			} finally {
-				return;
 			}
+			return;
 		}
 		// Jingles and sponsors are played inbetween songs so we need to load the next song
 		logger.info(`[Player] Songs before next jingle: ${conf.Playlist.Medias.Jingles.Interval - state.counterToJingle} / before next sponsor: ${conf.Playlist.Medias.Sponsors.Interval - state.counterToSponsor}`);
@@ -194,9 +187,8 @@ export async function playerEnding() {
 					logger.error(`[Player] Failed going to next song : ${err}`);
 					throw err;
 				}
-			} finally {
-				return;
 			}
+			return;
 		} else if (state.counterToSponsor >= conf.Playlist.Medias.Sponsors.Interval && conf.Playlist.Medias.Sponsors.Enabled) {
 			try {
 				setState({counterToSponsor: 0});
@@ -210,9 +202,8 @@ export async function playerEnding() {
 					logger.error(`[Player] Failed going to next song : ${err}`);
 					throw err;
 				}
-			} finally {
-				return;
 			}
+			return;
 		} else {
 			state.counterToJingle++;
 			state.counterToSponsor++;
@@ -305,12 +296,7 @@ export async function playPlayer(now?: boolean) {
 	profile('Play');
 	const state = getState();
 	if (state.status === 'stop' || now) {
-		// Switch to playing mode and ask which karaoke to play next
-		try {
-			await playCurrentSong(now);
-		} catch(err) {
-			throw err;
-		}
+		await playCurrentSong(now);
 		setState({status: 'play'});
 	} else {
 		await resume();
@@ -393,7 +379,7 @@ export async function playerNeedsRestart() {
 	} else {
 		setState({ playerNeedsRestart: true });
 	}
-};
+}
 
 async function restartPlayer() {
 	profile('restartmpv');
@@ -466,10 +452,10 @@ export async function sendCommand(command: string, options: any) {
 	}
 }
 
-export async function initPlayer() {
-	return await initPlayerSystem();
+export function initPlayer() {
+	return initPlayerSystem();
 }
 
-export async function quitmpv() {
-	return await quit();
+export function quitmpv() {
+	return quit();
 }

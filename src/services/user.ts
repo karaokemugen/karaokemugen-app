@@ -1,53 +1,50 @@
-import {getConfig, setConfig, resolvedPathTemp, resolvedPathAvatars} from '../lib/utils/config';
-import {Config} from '../types/config';
-import {freePLCBeforePos, getPlaylistContentsMini, freePLC} from './playlist';
-import {convertToRemoteFavorites} from './favorites';
-import {detectFileType, asyncExists, asyncUnlink, asyncReadDir, asyncCopy, asyncStat, asyncCopyAlt, replaceExt} from '../lib/utils/files';
 import {createHash} from 'crypto';
-import {resolve, join} from 'path';
-import logger from 'winston';
-import { v4 as uuidV4 } from 'uuid';
-import {imageFileTypes} from '../lib/utils/constants';
-import {defaultGuestNames} from '../utils/constants';
-import randomstring from 'randomstring';
-import {on} from '../lib/utils/pubsub';
-import {getSongCountForUser, getSongTimeSpentForUser} from '../dao/kara';
-import {emitWS} from '../lib/utils/ws';
-import {profile} from '../lib/utils/logger';
-import {getState, setState} from '../utils/state';
-import { getRemoteToken, upsertRemoteToken } from '../dao/user';
 import formData from 'form-data';
 import { createReadStream } from 'fs';
-import { writeStreamToFile } from '../lib/utils/files';
-import { fetchAndAddFavorites } from './favorites';
-import {encode, decode} from 'jwt-simple';
-import {UserOpts, Tokens, SingleToken} from '../types/user';
-import {Token, Role, User} from '../lib/types/user';
-import { PLC } from '../types/playlist';
-import {updateExpiredUsers as DBUpdateExpiredUsers,
-	resetGuestsPassword as DBResetGuestsPassword,
-	updateUserLastLogin as DBUpdateUserLastLogin,
+import {decode,encode} from 'jwt-simple';
+import {has as hasLang} from 'langs';
+import {join,resolve} from 'path';
+import randomstring from 'randomstring';
+import slugify from 'slugify';
+import { v4 as uuidV4 } from 'uuid';
+import logger from 'winston';
+
+import {getSongCountForUser, getSongTimeSpentForUser} from '../dao/kara';
+import { addUser as DBAddUser,
 	checkNicknameExists as DBCheckNicknameExists,
+	deleteUser as DBDeleteUser,
 	editUser as DBEditUser,
-	updateUserPassword as DBUpdateUserPassword,
-	listGuests as DBListGuests,
-	listUsers as DBListUsers,
-	getUser as DBGetUser,
 	findFingerprint as DBFindFingerprint,
 	getRandomGuest as DBGetRandomGuest,
-	updateUserFingerprint as DBUpdateUserFingerprint,
-	addUser as DBAddUser,
+	getRemoteToken, 	getUser as DBGetUser,
+	listGuests as DBListGuests,
+	listUsers as DBListUsers,
 	reassignToUser as DBReassignToUser,
-	deleteUser as DBDeleteUser
-} from '../dao/user';
-import {has as hasLang} from 'langs';
-import slugify from 'slugify';
-import { createCircleAvatar } from '../utils/imageProcessing';
+	resetGuestsPassword as DBResetGuestsPassword,
+	updateExpiredUsers as DBUpdateExpiredUsers,
+	updateUserFingerprint as DBUpdateUserFingerprint,
+	updateUserLastLogin as DBUpdateUserLastLogin,
+	updateUserPassword as DBUpdateUserPassword,upsertRemoteToken} from '../dao/user';
+import {Role, Token, User} from '../lib/types/user';
+import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
+import {imageFileTypes} from '../lib/utils/constants';
+import {asyncCopy, asyncCopyAlt, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType, replaceExt,writeStreamToFile} from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
-import { setSentryUser } from '../lib/utils/sentry';
+import {profile} from '../lib/utils/logger';
+import {on} from '../lib/utils/pubsub';
+import { sentryError,setSentryUser } from '../lib/utils/sentry';
+import {emitWS} from '../lib/utils/ws';
+import {Config} from '../types/config';
+import { PLC } from '../types/playlist';
+import {SingleToken,Tokens, UserOpts} from '../types/user';
+import {defaultGuestNames} from '../utils/constants';
+import { createCircleAvatar } from '../utils/imageProcessing';
+import {getState, setState} from '../utils/state';
+import { convertToRemoteFavorites, fetchAndAddFavorites } from './favorites';
+import {freePLC,freePLCBeforePos, getPlaylistContentsMini} from './playlist';
 
-let userLoginTimes = new Map();
-let usersFetched = new Set();
+const userLoginTimes = new Map();
+const usersFetched = new Set();
 let databaseBusy = false;
 
 on('databaseBusy', (status: boolean) => {
@@ -118,7 +115,9 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		try {
 			remoteUser = await getRemoteUser(username, onlineToken.token);
 		} catch(err) {
-			throw err;
+			const error = new Error(err);
+			sentryError(error);
+			throw error;
 		}
 		// Check if user exists. If it does not, create it.
 		let user = await findUserByName(username);
@@ -137,7 +136,9 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 			try {
 				avatarPath = await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file);
 			} catch(err) {
-				throw err;
+				const error = new Error(err);
+				sentryError(error);
+				throw error;
 			}
 			avatar_file = {
 				path: avatarPath
@@ -168,7 +169,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 	} else {
 		//Onlinetoken was not provided : KM Server might be offline
 		//We'll try to find user in local database. If failure return an error
-		let user = await findUserByName(username);
+		const user = await findUserByName(username);
 		if (!user) throw {code: 'USER_LOGIN_ERROR'};
 		return user;
 	}
@@ -217,14 +218,14 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 }
 
 /** To avoid flooding database UPDATEs, only update login time every minute for a user */
-export async function updateLastLoginName(login: string) {
+export function updateLastLoginName(login: string) {
 	if (!userLoginTimes.has(login)) {
 		userLoginTimes.set(login, new Date());
-		return await DBUpdateUserLastLogin(login);
+		return DBUpdateUserLastLogin(login);
 	}
 	if (userLoginTimes.get(login) < new Date(new Date().getTime() - (60 * 1000))) {
 		userLoginTimes.set(login, new Date());
-		return await DBUpdateUserLastLogin(login);
+		return DBUpdateUserLastLogin(login);
 	}
 }
 
@@ -262,7 +263,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 	renameUser: false,
 }) {
 	try {
-		let currentUser = await findUserByName(username);
+		const currentUser = await findUserByName(username);
 		if (!currentUser) throw 'User unknown';
 		if (currentUser.type === 2 && role !== 'admin') throw 'Guests are not allowed to edit their profiles';
 		// If we're renaming a user, user.login is going to be set to something different than username
@@ -314,13 +315,13 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 }
 
 /** Get all guest users */
-export async function listGuests(): Promise<User[]> {
-	return await DBListGuests();
+export function listGuests(): Promise<User[]> {
+	return DBListGuests();
 }
 
 /** Get all users (including guests) */
-export async function listUsers(): Promise<User[]> {
-	return await DBListUsers();
+export function listUsers(): Promise<User[]> {
+	return DBListUsers();
 }
 
 /** Replace old avatar image by new one sent from editUser or createUser */
@@ -409,8 +410,8 @@ export async function findFingerprint(fingerprint: string): Promise<string> {
 }
 
 /** Update a guest user's fingerprint */
-export async function updateUserFingerprint(username: string, fingerprint: string) {
-	return await DBUpdateUserFingerprint(username, fingerprint);
+export function updateUserFingerprint(username: string, fingerprint: string) {
+	return DBUpdateUserFingerprint(username, fingerprint);
 }
 
 /** Check if the online token we have is still valid on KM Server */
@@ -522,9 +523,9 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 }
 
 /** Create ADMIN user only if security code matches */
-export async function createAdminUser(user: User, remote: boolean, requester: User) {
+export function createAdminUser(user: User, remote: boolean, requester: User) {
 	if (requester.type === 0 || user.securityCode === getState().securityCode) {
-		return await createUser(user, { createRemote: remote, admin: true });
+		return createUser(user, { createRemote: remote, admin: true });
 	} else {
 		throw 'Wrong security code';
 	}
@@ -611,7 +612,7 @@ export async function deleteUser(username: string) {
 async function updateGuestAvatar(user: User) {
 	const bundledAvatarFile = `${slugify(user.login, {
 		lower: true,
-		remove: /['"!,\?()]/g
+		remove: /['"!,?()]/g
 	})}.jpg`;
 	const bundledAvatarPath = join(__dirname, '../../assets/guestAvatars/', bundledAvatarFile);
 	if (!await asyncExists(bundledAvatarPath)) {
@@ -662,7 +663,7 @@ async function checkGuestAvatars() {
 async function createDefaultGuests() {
 	const guests = await listGuests();
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
-	let guestsToCreate = [];
+	const guestsToCreate = [];
 	for (const guest of defaultGuestNames) {
 		if (!guests.find(g => g.login === guest)) guestsToCreate.push(guest);
 	}
@@ -718,7 +719,7 @@ export async function initUserSystem() {
 	logger.debug(`[Debug] Admin users : ${JSON.stringify(adminUsers)}`);
 	if (adminUsers.length === 1) {
 		// Admin only exists
-		setSentryUser(adminUsers[0]?.login, null)
+		setSentryUser(adminUsers[0]?.login, null);
 	} else {
 		// It's either that or there are more admins. We'll send over the second one as it's more likely to be the instance's admin
 		setSentryUser(adminUsers[1]?.login, adminUsers[1]?.email);
@@ -842,8 +843,8 @@ export async function updateUserQuotas(kara: PLC) {
 		getPlaylistContentsMini(state.publicPlaylistID),
 		getPlaylistContentsMini(state.currentPlaylistID)
 	]);
-	let freeTasks = [];
-	let usersNeedingUpdate = [];
+	const freeTasks = [];
+	const usersNeedingUpdate = [];
 	for (const currentSong of currentPlaylist) {
 		publicPlaylist.some((publicSong: PLC) => {
 			if (publicSong.kid === currentSong.kid && currentSong.flag_free) {

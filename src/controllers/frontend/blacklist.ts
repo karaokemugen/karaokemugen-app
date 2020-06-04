@@ -1,12 +1,13 @@
-import { getLang } from "../middlewares/lang";
-import { requireAuth, requireValidUser, updateUserLoginTime, requireAdmin } from "../middlewares/auth";
-import { emitWS } from "../../lib/utils/ws";
-import { errMessage, APIMessage } from "../common";
-import { getBlacklistCriterias, deleteBlacklistCriteria, emptyBlacklistCriterias, getBlacklist, addBlacklistCriteria } from "../../services/blacklist";
-import { Router } from "express";
-import { check } from "../../lib/utils/validators";
-import { requireWebappLimited } from "../middlewares/webapp_mode";
-import { getConfig } from "../../lib/utils/config";
+import { Router } from 'express';
+
+import { getConfig } from '../../lib/utils/config';
+import { check } from '../../lib/utils/validators';
+import { emitWS } from '../../lib/utils/ws';
+import { addBlacklistCriteria,deleteBlacklistCriteria, emptyBlacklistCriterias, getBlacklist, getBlacklistCriterias } from '../../services/blacklist';
+import { APIMessage,errMessage } from '../common';
+import { requireAdmin,requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
+import { requireWebappLimited } from '../middlewares/webapp_mode';
 
 export default function blacklistController(router: Router) {
 	router.route('/blacklist/criterias/empty')
@@ -91,7 +92,7 @@ export default function blacklistController(router: Router) {
  	 * HTTP/1.1 403 Forbidden
  	 */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-				//Get list of blacklisted karas IF the settings allow public to see it
+			//Get list of blacklisted karas IF the settings allow public to see it
 			if (getConfig().Frontend.Permissions.AllowViewBlacklist || req.authToken.role === 'admin') {
 				try {
 					const karas = await getBlacklist({
@@ -143,19 +144,19 @@ export default function blacklistController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * "BLC_VIEW_ERROR"
 	 */
-			.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
-				if (getConfig().Frontend.Permissions.AllowViewBlacklistCriterias) {
-					try {
-						const blc = await getBlacklistCriterias();
-						res.json(blc);
-					} catch(err) {
-						errMessage('BLC_VIEW_ERROR', err);
-						res.status(500).json(APIMessage('BLC_VIEW_ERROR'));
-					}
-				} else {
-					res.status(403).json(APIMessage('BLC_VIEW_FORBIDDEN'));
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
+			if (getConfig().Frontend.Permissions.AllowViewBlacklistCriterias) {
+				try {
+					const blc = await getBlacklistCriterias();
+					res.json(blc);
+				} catch(err) {
+					errMessage('BLC_VIEW_ERROR', err);
+					res.status(500).json(APIMessage('BLC_VIEW_ERROR'));
 				}
-			})
+			} else {
+				res.status(403).json(APIMessage('BLC_VIEW_FORBIDDEN'));
+			}
+		})
 	/**
 	 * @api {post} /blacklist/criterias Add a blacklist criteria
 	 * @apiName PostBlacklistCriterias
@@ -176,30 +177,30 @@ export default function blacklistController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * "BLC_ADD_ERROR"
 	 */
-			.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-				//Add blacklist criteria
-				const validationErrors = check(req.body, {
-					blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
-					blcriteria_value: {presence: {allowEmpty: false}}
-				});
-				if (!validationErrors) {
-					try {
-						await addBlacklistCriteria(req.body.blcriteria_type, req.body.blcriteria_value);
-						emitWS('blacklistUpdated');
-						res.status(201).json(APIMessage('BLC_ADDED'));
-					} catch(err) {
-						errMessage('BLC_ADD_ERROR',err);
-						res.status(500).json(APIMessage('BLC_ADD_ERROR'));
-					}
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.status(400).json(validationErrors);
-				}
-
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			//Add blacklist criteria
+			const validationErrors = check(req.body, {
+				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
+				blcriteria_value: {presence: {allowEmpty: false}}
 			});
+			if (!validationErrors) {
+				try {
+					await addBlacklistCriteria(req.body.blcriteria_type, req.body.blcriteria_value);
+					emitWS('blacklistUpdated');
+					res.status(201).json(APIMessage('BLC_ADDED'));
+				} catch(err) {
+					errMessage('BLC_ADD_ERROR',err);
+					res.status(500).json(APIMessage('BLC_ADD_ERROR'));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.status(400).json(validationErrors);
+			}
 
-		router.route('/blacklist/criterias/:blc_id([0-9]+)')
+		});
+
+	router.route('/blacklist/criterias/:blc_id([0-9]+)')
 	/**
 	 * @api {delete} blacklist/criterias/:blc_id Delete a blacklist criteria
 	 * @apiName DeleteBlacklistCriterias
@@ -221,14 +222,14 @@ export default function blacklistController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * "BLC_DELETE_ERROR"
 	 */
-			.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-				try {
-					await deleteBlacklistCriteria(req.params.blc_id);
-					emitWS('blacklistUpdated');
-					res.status(200).json(APIMessage('BLC_DELETED'));
-				} catch(err) {
-					errMessage('BLC_DELETE_ERROR',err)
-					res.status(500).json(APIMessage('BLC_DELETE_ERROR'));
-				}
-			});
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			try {
+				await deleteBlacklistCriteria(req.params.blc_id);
+				emitWS('blacklistUpdated');
+				res.status(200).json(APIMessage('BLC_DELETED'));
+			} catch(err) {
+				errMessage('BLC_DELETE_ERROR',err);
+				res.status(500).json(APIMessage('BLC_DELETE_ERROR'));
+			}
+		});
 }

@@ -1,11 +1,12 @@
-import { checksum, extractAllFiles, asyncStat } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import Bar from '../lib/utils/bar';
 import parallel from 'async-await-parallel';
-import Task from '../lib/utils/taskManager';
-import { sentryError } from '../lib/utils/sentry';
 
-let dataStore = {
+import Bar from '../lib/utils/bar';
+import { asyncStat,checksum, extractAllFiles } from '../lib/utils/files';
+import logger, { profile } from '../lib/utils/logger';
+import { sentryError } from '../lib/utils/sentry';
+import Task from '../lib/utils/taskManager';
+
+const dataStore = {
 	karas: new Map(),
 	tags: new Map()
 };
@@ -69,9 +70,9 @@ export async function baseChecksum(silent?: boolean): Promise<string> {
 			extractAllFiles('Karas'),
 			extractAllFiles('Tags')
 		]);
-		const fileCount = karaFiles.length + tagFiles.length
+		const fileCount = karaFiles.length + tagFiles.length;
 		if (karaFiles.length === 0) return null;
-		logger.info(`[Store] Found ${karaFiles.length} karas and ${tagFiles.length} tags`)
+		logger.info(`[Store] Found ${karaFiles.length} karas and ${tagFiles.length} tags`);
 		if (!silent) bar = new Bar({
 			message: 'Checking files...    '
 		}, fileCount);
@@ -93,7 +94,7 @@ export async function baseChecksum(silent?: boolean): Promise<string> {
 		return checksum;
 	} catch(err) {
 		const errStr = `Unable to browse through your data files : ${err}`;
-		logger.warn(`[Store] ${errStr}`)
+		logger.warn(`[Store] ${errStr}`);
 		sentryError(new Error(errStr), 'Warning');
 	} finally {
 		profile('baseChecksum');

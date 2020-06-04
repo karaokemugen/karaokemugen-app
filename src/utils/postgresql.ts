@@ -2,17 +2,17 @@
 
 // Node modules
 import execa from 'execa';
-import {resolve} from 'path';
+import i18next from 'i18next';
 import deburr from 'lodash.deburr';
+import {resolve} from 'path';
 import {StringDecoder} from 'string_decoder';
 
-// KM Imports
-import {asyncExists, asyncWriteFile, asyncReadFile} from '../lib/utils/files';
-import {getConfig} from '../lib/utils/config';
-import {getState} from './state';
-import logger from '../lib/utils/logger';
-import i18next from 'i18next';
 import { errorStep } from '../electron/electronLogger';
+import {getConfig} from '../lib/utils/config';
+// KM Imports
+import {asyncExists, asyncReadFile,asyncWriteFile} from '../lib/utils/files';
+import logger from '../lib/utils/logger';
+import {getState} from './state';
 
 let shutdownInProgress = false;
 
@@ -22,14 +22,14 @@ export function isShutdownPG(): boolean {
 }
 
 /** Kill bundled postgreSQL server */
-export async function killPG() {
+export function killPG() {
 	shutdownInProgress = true;
 	const state = getState();
 	const conf = getConfig();
 	const pgDataDir = resolve(getState().dataPath, conf.System.Path.DB, 'postgres');
 	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 	if (state.os === 'win32') binPath = `"${binPath}"`;
-	return await execa(binPath, ['-D', pgDataDir, '-w', 'stop'], {
+	return execa(binPath, ['-D', pgDataDir, '-w', 'stop'], {
 		cwd: state.binPath.postgres
 	});
 }
@@ -45,7 +45,7 @@ function setConfig(config: string, setting: string, value: any): string {
 	} else {
 		for (const i in pgConfArr) {
 			if (pgConfArr[i].startsWith(`${setting}=`)) pgConfArr[i] = `${setting}=${value}`;
-		};
+		}
 	}
 	return pgConfArr.join('\n');
 }
@@ -175,7 +175,7 @@ export async function initPG() {
 		// We're going to try launching it directoy to get THE error.
 		const pgBinExe = state.os === 'win32'
 			? 'postgres.exe'
-			: 'postgres'
+			: 'postgres';
 		const pgBinPath = `"${resolve(pgBinDir, pgBinExe)}"`;
 		const pgBinOptions = ['-D',`${pgDataDir}`];
 		try {

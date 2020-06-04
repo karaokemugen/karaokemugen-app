@@ -1,12 +1,13 @@
-import { Router } from "express";
-import { errMessage, APIMessage } from "../common";
-import { emitWS } from "../../lib/utils/ws";
-import { getWhitelistContents, emptyWhitelist, addKaraToWhitelist, deleteKaraFromWhitelist } from "../../services/whitelist";
-import { requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from "../middlewares/auth";
-import { getLang } from "../middlewares/lang";
-import { check } from "../../lib/utils/validators";
-import { requireWebappLimited } from "../middlewares/webapp_mode";
-import { getConfig } from "../../lib/utils/config";
+import { Router } from 'express';
+
+import { getConfig } from '../../lib/utils/config';
+import { check } from '../../lib/utils/validators';
+import { emitWS } from '../../lib/utils/ws';
+import { addKaraToWhitelist, deleteKaraFromWhitelist,emptyWhitelist, getWhitelistContents } from '../../services/whitelist';
+import { APIMessage,errMessage } from '../common';
+import { requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
+import { requireWebappLimited } from '../middlewares/webapp_mode';
 
 export default function whitelistController(router: Router) {
 	router.route('/whitelist/empty')
@@ -37,7 +38,7 @@ export default function whitelistController(router: Router) {
 
 			} catch(err) {
 				const code = 'WL_EMPTY_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -101,7 +102,7 @@ export default function whitelistController(router: Router) {
 					res.json(karas);
 				} catch(err) {
 					const code = 'WL_VIEW_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			}
@@ -137,7 +138,7 @@ export default function whitelistController(router: Router) {
 					res.status(201).json(APIMessage('WL_SONG_ADDED'));
 				} catch(err) {
 					const code = 'WL_ADD_SONG_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			} else {
@@ -176,7 +177,7 @@ export default function whitelistController(router: Router) {
 					res.status(200).json(APIMessage('WL_SONG_DELETED'));
 				} catch(err) {
 					const code = 'WL_DELETE_SONG_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			} else {

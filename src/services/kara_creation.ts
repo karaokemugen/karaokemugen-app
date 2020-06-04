@@ -1,13 +1,14 @@
-import {dirname, basename, resolve} from 'path';
-import {createKaraInDB, editKaraInDB, getKara} from './kara';
-import { addKaraToStore, editKaraInStore, sortKaraStore, getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
+import {basename, dirname, resolve} from 'path';
+
+import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore,sortKaraStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
+import {generateKara} from '../lib/services/kara_creation';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPathRepos, resolvedPathTemp } from '../lib/utils/config';
-import { asyncUnlink, asyncExists, asyncCopy, resolveFileInDirs, asyncMove } from '../lib/utils/files';
-import {generateKara} from '../lib/services/kara_creation';
+import { asyncCopy, asyncExists, asyncMove,asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
+import {createKaraInDB, editKaraInDB, getKara} from './kara';
 import { consolidateTagsInRepo } from './tag';
 
 export async function editKara(kara: Kara, refresh = true) {
@@ -47,7 +48,7 @@ export async function editKara(kara: Kara, refresh = true) {
 				subFile = (await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0];
 				subDir = dirname(subFile);
 			}
-		};
+		}
 		karaFile = (await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0];
 		const karaDir = dirname(karaFile);
 

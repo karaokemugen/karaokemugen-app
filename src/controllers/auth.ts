@@ -1,7 +1,7 @@
-import {requireAuth, requireValidUser} from './middlewares/auth';
-import { updateLastLoginName, decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint, editUser, resetSecurityCode } from '../services/user';
+import { checkLogin, decodeJwtToken, editUser, findFingerprint, resetSecurityCode,updateLastLoginName, updateUserFingerprint } from '../services/user';
 import { getState } from '../utils/state';
 import { APIMessage } from './common';
+import {requireAuth, requireValidUser} from './middlewares/auth';
 
 export default function authController(router) {
 

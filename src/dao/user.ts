@@ -1,8 +1,9 @@
-import {db} from '../lib/dao/database';
 import {pg as yesql} from 'yesql';
+
+import {db} from '../lib/dao/database';
+import { DBUser } from '../lib/types/database/user';
 import { User } from '../lib/types/user';
 import { DBGuest, RemoteToken } from '../types/database/user';
-import { DBUser } from '../lib/types/database/user';
 const sql = require('./sql/user');
 
 export async function getUser(username: string): Promise<DBUser> {
@@ -23,8 +24,8 @@ export async function checkNicknameExists(nickname: string): Promise<string> {
 	return null;
 }
 
-export async function deleteUser(username: string) {
-	return await db().query(sql.deleteUser, [username]);
+export function deleteUser(username: string) {
+	return db().query(sql.deleteUser, [username]);
 }
 
 export async function listUsers(): Promise<DBUser[]> {
@@ -37,8 +38,8 @@ export async function listGuests(): Promise<DBGuest[]> {
 	return res.rows;
 }
 
-export async function addUser(user: User) {
-	return await db().query(yesql(sql.createUser)({
+export function addUser(user: User) {
+	return db().query(yesql(sql.createUser)({
 		type: user.type,
 		login: user.login,
 		password: user.password,
@@ -48,9 +49,9 @@ export async function addUser(user: User) {
 	}));
 }
 
-export async function editUser(user: User) {
+export function editUser(user: User) {
 	if (!user.old_login) user.old_login = user.login;
-	return await db().query(yesql(sql.editUser)({
+	return db().query(yesql(sql.editUser)({
 		nickname: user.nickname,
 		avatar_file: user.avatar_file || 'blank.png',
 		login: user.login,
@@ -65,7 +66,7 @@ export async function editUser(user: User) {
 	}));
 }
 
-export async function reassignToUser(oldUsername: string, username: string) {
+export function reassignToUser(oldUsername: string, username: string) {
 	return Promise.all([
 		db().query(yesql(sql.reassignPlaylistToUser)({
 			username: username,
@@ -78,12 +79,12 @@ export async function reassignToUser(oldUsername: string, username: string) {
 	]);
 }
 
-export async function updateExpiredUsers(expireTime: Date) {
-	return await db().query(sql.updateExpiredUsers, [expireTime]);
+export function updateExpiredUsers(expireTime: Date) {
+	return db().query(sql.updateExpiredUsers, [expireTime]);
 }
 
-export async function updateUserFingerprint(username: string, fingerprint: string) {
-	return await db().query(yesql(sql.updateUserFingerprint)({
+export function updateUserFingerprint(username: string, fingerprint: string) {
+	return db().query(yesql(sql.updateUserFingerprint)({
 		username: username,
 		fingerprint: fingerprint
 	}));
@@ -100,19 +101,19 @@ export async function findFingerprint(fingerprint: string): Promise<string> {
 	if (res.rows[0]) return res.rows[0].login;
 }
 
-export async function resetGuestsPassword() {
-	return await db().query(sql.resetGuestsPassword);
+export function resetGuestsPassword() {
+	return db().query(sql.resetGuestsPassword);
 }
 
-export async function updateUserLastLogin(username: string) {
-	return await db().query(yesql(sql.updateLastLogin)({
+export function updateUserLastLogin(username: string) {
+	return db().query(yesql(sql.updateLastLogin)({
 		username: username,
 		now: new Date()
 	}));
 }
 
-export async function updateUserPassword(username: string, password: string) {
-	return await db().query(yesql(sql.editUserPassword)({
+export function updateUserPassword(username: string, password: string) {
+	return db().query(yesql(sql.editUserPassword)({
 		username: username,
 		password: password
 	}));

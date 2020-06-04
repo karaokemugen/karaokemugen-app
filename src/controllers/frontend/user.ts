@@ -1,14 +1,15 @@
 import { Router } from 'express';
-import { emitWS } from '../../lib/utils/ws';
-import { errMessage, APIMessage } from '../common';
-import { deleteUser, findUserByName, createUser, editUser, convertToRemoteUser, removeRemoteUser, listUsers, createAdminUser, resetRemotePassword, updateSongsLeft, resetSecurityCode } from '../../services/user';
-import { requireAdmin, updateUserLoginTime, requireAuth, requireValidUser, optionalAuth } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
+
 import { check } from '../../lib/utils/validators';
+import { emitWS } from '../../lib/utils/ws';
+import { convertToRemoteUser, createAdminUser, createUser, deleteUser, editUser, findUserByName, listUsers, removeRemoteUser, resetRemotePassword, resetSecurityCode,updateSongsLeft } from '../../services/user';
+import { APIMessage,errMessage } from '../common';
+import { optionalAuth,requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
+import { getLang } from '../middlewares/lang';
 import multer = require('multer');
 import { resolvedPathTemp } from '../../lib/utils/config';
-import { requireWebappLimited, requireWebappLimitedNoAuth } from '../middlewares/webapp_mode';
 import { getState } from '../../utils/state';
+import { requireWebappLimited, requireWebappLimitedNoAuth } from '../middlewares/webapp_mode';
 
 export default function userController(router: Router) {
 	// Middleware for playlist and files import
@@ -50,7 +51,7 @@ export default function userController(router: Router) {
 				res.json(users);
 			} catch(err) {
 				const code = 'USER_LIST_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -102,7 +103,7 @@ export default function userController(router: Router) {
 					}
 					res.status(200).json(APIMessage('USER_CREATED'));
 				} catch(err) {
-					errMessage(err.code, err.message)
+					errMessage(err.code, err.message);
 					res.status(500).json(APIMessage(err.code));
 				}
 			} else {
@@ -168,7 +169,7 @@ export default function userController(router: Router) {
 				res.json(userdata);
 			} catch(err) {
 				const code = 'USER_VIEW_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -196,7 +197,7 @@ export default function userController(router: Router) {
 				res.status(200).json(APIMessage('USER_DELETED'));
 			} catch(err) {
 				const code = 'USER_DELETE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -206,7 +207,7 @@ export default function userController(router: Router) {
 				res.status(200).json(APIMessage('USER_EDITED'));
 			} catch(err) {
 				const code = 'USER_EDIT_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		});
@@ -251,7 +252,7 @@ export default function userController(router: Router) {
 						res.status(200).json();
 					} catch (err) {
 						const code = 'USER_RESETPASSWORD_ERROR';
-						errMessage(code, err)
+						errMessage(code, err);
 						res.status(500).json(APIMessage(code));
 					}
 				} else {
@@ -263,7 +264,7 @@ export default function userController(router: Router) {
 					res.status(200).json(APIMessage('USER_RESETPASSWORD_ONLINE'));
 				} catch (err) {
 					const code = 'USER_RESETPASSWORD_ONLINE_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			}
@@ -329,7 +330,7 @@ export default function userController(router: Router) {
 				res.json(userData);
 			} catch(err) {
 				const code = 'USER_VIEW_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -360,7 +361,7 @@ export default function userController(router: Router) {
 				res.status(200).json(APIMessage('USER_DELETED'));
 			} catch(err) {
 				const code = 'USER_DELETE_ERROR';
-				errMessage(code, err)
+				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
 		})
@@ -410,7 +411,7 @@ export default function userController(router: Router) {
 					res.status(200).json(APIMessage('USER_EDITED'));
 				} catch(err) {
 					const code = 'USER_EDIT_ERROR';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			} else {
@@ -465,8 +466,8 @@ export default function userController(router: Router) {
 					res.json(APIMessage('USER_CONVERTED', tokens));
 				} catch(err) {
 					const code = err.code || 'USER_CONVERT_ERROR';
-				errMessage(code, err)
-				res.status(500).json(APIMessage(code));
+					errMessage(code, err);
+					res.status(500).json(APIMessage(code));
 				}
 			} else {
 			// Errors detected
@@ -510,7 +511,7 @@ export default function userController(router: Router) {
 					res.json(APIMessage('USER_DELETED_ONLINE', newToken));
 				} catch(err) {
 					const code = 'USER_DELETE_ERROR_ONLINE';
-					errMessage(code, err)
+					errMessage(code, err);
 					res.status(500).json(APIMessage(code));
 				}
 			} else {

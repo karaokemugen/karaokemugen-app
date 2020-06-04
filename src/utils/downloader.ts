@@ -1,17 +1,16 @@
 // Node modules
+import Queue from 'better-queue';
 import _cliProgress from 'cli-progress';
+import {createWriteStream} from 'fs';
 import {basename} from 'path';
 import prettyBytes from 'pretty-bytes';
-import {createWriteStream} from 'fs';
-import Queue from 'better-queue';
 
+import HTTP from '../lib/utils/http';
 // KM Imports
 import logger from '../lib/utils/logger';
-
+import Task from '../lib/utils/taskManager';
 // Types
 import { DownloadItem, DownloadOpts } from '../types/downloader';
-import Task from '../lib/utils/taskManager';
-import HTTP from '../lib/utils/http';
 
 // for downloads we need keepalive or else connections can timeout and get stuck. Such is life.
 const HttpAgent = require('agentkeepalive');
@@ -22,7 +21,7 @@ const {HttpsAgent} = HttpAgent;
 export default class Downloader {
 
 	list: DownloadItem[];
-	pos: number = 0;
+	pos = 0;
 	opts: DownloadOpts;
 	fileErrors: string[] = [];
 	bar: _cliProgress.Bar;
@@ -40,8 +39,8 @@ export default class Downloader {
 		this.task = this.opts.task;
 		this.q = new Queue(this._queueDownload, this.queueOptions);
 		if (opts.bar) this.bar = new _cliProgress.Bar({
-				format:  'Downloading {bar} {percentage}% {value}/{total} Mb',
-				stopOnComplete: true
+			format:  'Downloading {bar} {percentage}% {value}/{total} Mb',
+			stopOnComplete: true
 		}, _cliProgress.Presets.shades_classic);
 	}
 
@@ -51,7 +50,7 @@ export default class Downloader {
 			.catch((err: Error) => done(err));
 	}
 
-	download = async (list: DownloadItem[]): Promise<string[]> => {
+	download = (list: DownloadItem[]): Promise<string[]> => {
 		// Launches download queue
 		this.list = list;
 		list.forEach(item => {
@@ -67,7 +66,7 @@ export default class Downloader {
 	/** Do the download dance now */
 	_download = async (dl: DownloadItem) => {
 		this.pos++;
-		let options = {
+		const options = {
 			agent: {
 				http: new HttpAgent(),
 				https: new HttpsAgent()
@@ -75,7 +74,7 @@ export default class Downloader {
 		};
 		let size: string;
 		try {
-			const response = await HTTP.head(dl.url, options)
+			const response = await HTTP.head(dl.url, options);
 			size = response.headers['content-length'];
 		} catch(err) {
 			logger.error(`[Download] Error during download of ${basename(dl.filename)} (HEAD) : ${err}`);
@@ -89,7 +88,7 @@ export default class Downloader {
 			subtext: `${basename(dl.filename)} (${prettySize})`,
 			value: 0,
 			total: +size
-		})
+		});
 		if (this.opts.bar && size) this.bar.start(Math.floor(+size / 1000) / 1000, 0);
 		// Insert auth in the url string
 		if (this.opts.auth) {
@@ -105,9 +104,9 @@ export default class Downloader {
 		}
 	}
 
-	_fetchFile = async (dl: DownloadItem, options: any) => {
+	_fetchFile = (dl: DownloadItem, options: any) => {
 		return new Promise((resolve, reject) => {
-			let size: number = 0;
+			let size = 0;
 			HTTP.stream.get(dl.url, options)
 				.on('response', (res: Response) => {
 					size = +res.headers['content-length'];
