@@ -7,7 +7,7 @@ import sample from 'lodash.sample';
 import {exit} from './engine';
 import {playerEnding} from '../services/player';
 import {getID3} from '../utils/id3tag';
-import mpv from 'node-mpv-km';
+import mpv from 'node-mpv';
 import {promisify} from 'util';
 import {endPoll} from '../services/poll';
 import {getState, setState} from '../utils/state';
