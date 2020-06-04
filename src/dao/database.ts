@@ -5,7 +5,7 @@ import { v4 as uuidV4 } from 'uuid';
 import logger from 'winston';
 
 import { errorStep } from '../electron/electronLogger';
-import { connectDB, databaseReady,db, getInstanceID, getSettings, newDBTask, saveSetting, setInstanceID } from '../lib/dao/database';
+import { connectDB, db, getInstanceID, getSettings, newDBTask, saveSetting, setInstanceID } from '../lib/dao/database';
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
 import { sentryError } from '../lib/utils/sentry';
@@ -170,22 +170,36 @@ export async function getStats(): Promise<DBStats> {
 	return res.rows[0];
 }
 
-export async function generateDB() {
-	const opts = {validateOnly: false, progressBar: true};
-	newDBTask({
-		name: 'generation',
-		func: generateDatabase,
-		args: [opts]
-	});
-	await databaseReady();
-	const pls = await getPlaylists(false);
-	for (const pl of pls) {
-		newDBTask({
-			func: reorderPlaylist,
-			args: [pl.playlist_id],
-			name: `reorderPlaylist${pl.playlist_id}`
-		});
+export async function generateDB(queue?: boolean): Promise<boolean> {
+	try {
+		const opts = {validateOnly: false, progressBar: true};
+		if (queue) {
+			newDBTask({
+				name: 'generation',
+				func: generateDatabase,
+				args: [opts]
+			});
+			const pls = await getPlaylists(false);
+			for (const pl of pls) {
+				newDBTask({
+					func: reorderPlaylist,
+					args: [pl.playlist_id],
+					name: `reorderPlaylist${pl.playlist_id}`
+				});
+			}
+		} else {
+			await generateDatabase(opts);
+			const pls = await getPlaylists(false);
+			for (const pl of pls) {
+				await reorderPlaylist(pl.playlist_id);
+			}
+		}
+	} catch(err) {
+		const error = new Error(err);
+		sentryError(error);
+		throw err;
 	}
-	await databaseReady();
+	return true;
 }
+
 
