@@ -4,6 +4,7 @@ import i18next from 'i18next';
 import FileSystem from './FileSystem';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import GlobalContext from '../../store/context';
+import { isElectron } from '../../utils/electron';
 
 interface FoldersElementProps {
 	onChange: any,
@@ -39,7 +40,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 	}
 
 	async openFileSystemModal(item, index?:number, key?: string) {
-		if (this.isElectron()) {
+		if (isElectron()) {
 			await this.setState({itemModal: item, indexModal: index, keyModal: key});
 			const {ipcRenderer: ipc} = window.require('electron');
 			const path = `${this.getPathForFileSystem(Array.isArray(item) ? item[index] : item, key)}${index === -1 
@@ -90,26 +91,6 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 		}
 	}
 
-	isElectron() {
-		// Renderer process
-		if (typeof window !== 'undefined' && typeof window.process === 'object' && (window.process as any).type === 'renderer') {
-			return true;
-		}
-	
-		// Main process
-		if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!(process.versions as any).electron) {
-			return true;
-		}
-	
-		// Detect the user agent when the `nodeIntegration` option is set to true
-		if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
-			return true;
-		}
-	
-		return false;
-	}
-
-	
 	getTitleModal() {
 		if (this.state.itemModal 
 			&& (this.state.keyModal?.includes('System.Binaries.ffmpeg') 

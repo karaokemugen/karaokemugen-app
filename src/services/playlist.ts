@@ -1220,3 +1220,8 @@ export async function testPublicPlaylist() {
 		logger.debug('[Playlist] Initial public playlist created');
 	}
 }
+
+export function playlistImported(res: any) {
+	emitWS('playlistsUpdated');
+	emitWS('playlistImported', res);
+}
