@@ -300,10 +300,10 @@ async function startmpv() {
 	await loadBackground();
 	logger.debug('[Player] Initial DI');
 	displayInfo();
-	player.observeProperty('sub-text', 13);
-	player.observeProperty('playtime-remaining', 14);
-	player.observeProperty('eof-reached', 15);
-	player.on('statuschange', (status: mpvStatus) => {
+	player.observeProperty('sub-text');
+	player.observeProperty('playtime-remaining');
+	player.observeProperty('eof-reached');
+	player.on('status', (status: mpvStatus) => {
 		// If we're displaying an image, it means it's the pause inbetween songs
 		if (playerState._playing &&
 			status &&
@@ -624,7 +624,7 @@ export async function mute() {
 	} catch(err) {
 		throw err;
 	}
-	return player.mute();
+	return player.mute(true);
 }
 
 export async function unmute() {
@@ -633,7 +633,7 @@ export async function unmute() {
 	} catch(err) {
 		throw err;
 	}
-	return player.unmute();
+	return player.mute(false);
 }
 
 export async function setVolume(volume: number): Promise<PlayerState> {
