@@ -17,6 +17,10 @@ export interface PlayerState {
 }
 
 export interface mpvStatus {
+	property: string,
+	value: any
+}
+export interface playerStatus {
 	'sub-text': string,
 	volume: number,
 	duration: number,

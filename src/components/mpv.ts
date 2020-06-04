@@ -307,13 +307,12 @@ async function startmpv() {
 		if (playerState._playing &&
 			status &&
 			(
-				(status['playtime-remaining'] !== null &&
-					status['playtime-remaining'] >= 0 &&
-					status['playtime-remaining'] <= 1 &&
-					status.pause
-				) ||
-				status['eof-reached']
-			)) {
+				((status.property === 'playtime-remaining' &&
+					status.value !== null &&
+					status.value >= 0 &&
+					status.value <= 1) ||
+				(status.property === 'eof-reached' && status.value === true)
+				))) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			playerState.playing = false;
 			playerState._playing = false;
@@ -322,12 +321,7 @@ async function startmpv() {
 			if (monitorEnabled) playerMonitor.pause();
 			playerEnding();
 		}
-
-		playerState.mutestatus = status.mute;
-		playerState.duration = status.duration;
-		playerState.subtext = status['sub-text'];
-		playerState.volume = status.volume;
-		playerState.fullscreen = status.fullscreen;
+		playerState[status.property] = status.value;
 		emitPlayerState();
 	});
 	player.on('paused',() => {
