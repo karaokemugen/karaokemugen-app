@@ -474,10 +474,9 @@ export async function play(mediadata: MediaData) {
 	} catch(err) {
 		const errStr = `Error loading media ${mediadata.media} : ${JSON.stringify(err)}`;
 		logger.error(`[Player] ${errStr}`);
-		const error = new Error(errStr);
 		addErrorInfo('mediaData', JSON.stringify(mediadata, null, 2));
-		sentryError(error);
-		throw error;
+		sentryError(err);
+		throw err;
 	}
 }
 
