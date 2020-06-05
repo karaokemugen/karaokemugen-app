@@ -127,9 +127,8 @@ export async function loadBackground() {
 	} catch(err) {
 		const errStr = `Unable to load background : ${JSON.stringify(err)}`;
 		logger.error(`[Player] ${errStr}`);
-		const error = new Error(errStr);
-		sentryError(error);
-		throw error;
+		sentryError(err);
+		throw err;
 	}
 }
 
@@ -143,10 +142,9 @@ export async function initPlayerSystem() {
 		logger.debug('[Player] Player is READY');
 	} catch(err) {
 		errorStep(i18n.t('ERROR_START_PLAYER'));
-		const errStr = `Unable to start player : ${err}`;
-		const error = new Error(errStr);
-		sentryError(error, 'Fatal');
-		throw error;
+		logger.error(`[Player] Unable to start player : ${err}`);
+		sentryError(err, 'Fatal');
+		throw err;
 	}
 }
 
@@ -291,11 +289,9 @@ async function startmpv() {
 		await Promise.all(promises);
 		logger.info('[Player] Player started up successfully');
 	} catch(err) {
-		const errStr = `mpvAPI : ${JSON.stringify(err)}`;
-		logger.error(`[Player] ${errStr}`);
-		const error = new Error(errStr);
-		sentryError(error, 'Fatal');
-		throw error;
+		logger.error(`[Player] mpvAPI : ${JSON.stringify(err)}`);
+		sentryError(err, 'Fatal');
+		throw err;
 	}
 
 	await loadBackground();
@@ -481,8 +477,7 @@ export async function play(mediadata: MediaData) {
 			singer: mediadata.currentSong.singers.map(s => s.name).join(', ')
 		});
 	} catch(err) {
-		const errStr = `Error loading media ${mediadata.media} : ${JSON.stringify(err)}`;
-		logger.error(`[Player] ${errStr}`);
+		logger.error(`[Player] Error loading media ${mediadata.media} : ${JSON.stringify(err)}`);
 		addErrorInfo('mediaData', JSON.stringify(mediadata, null, 2));
 		sentryError(err);
 		throw err;
@@ -506,7 +501,7 @@ function fillVisualizationOptions(options: string[], mediadata: MediaData, withA
 		'[vid1]scale=-2:1080[vidInp]',
 		'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
 	];
-	if(withAvatar) {
+	if (withAvatar) {
 		subOptions.push('[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl]');
 		subOptions.push(`movie=\\'${mediadata.avatar.replace(/\\/g,'/')}\\'[logo]`);
 		subOptions.push('[logo][ovrl]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]');
@@ -523,9 +518,17 @@ export async function setFullscreen(fsState: boolean): Promise<boolean> {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	fsState
-		? player.fullscreen()
-		: player.leaveFullscreen();
+	try {
+		if (fsState) {
+			await player.fullscreen();
+		} else {
+			await player.leaveFullscreen();
+		}
+	} catch(err) {
+		logger.error(`[Player] Unable to toggle fullscreen : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 	return fsState;
 }
 
@@ -534,8 +537,14 @@ export async function toggleOnTop(): Promise<boolean> {
 		throw err;
 	});
 	playerState.stayontop = !playerState.stayontop;
-	player.command('keypress',['T']);
-	return playerState.stayontop;
+	try {
+		await player.command('keypress',['T']);
+		return playerState.stayontop;
+	} catch(err) {
+		logger.error(`[Player] Unable to toggle ontop : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function stop(): Promise<PlayerState> {
@@ -563,11 +572,17 @@ export async function pause(): Promise<PlayerState> {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	player.pause();
-	if (monitorEnabled) playerMonitor.pause();
-	playerState.status = 'pause';
-	setState({player: playerState});
-	return playerState;
+	try {
+		player.pause();
+		if (monitorEnabled) playerMonitor.pause();
+		playerState.status = 'pause';
+		setState({player: playerState});
+		return playerState;
+	} catch(err) {
+		logger.error(`[Player] Unable to pause : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function resume(): Promise<PlayerState> {
@@ -575,96 +590,150 @@ export async function resume(): Promise<PlayerState> {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	player.play();
-	if (monitorEnabled) playerMonitor.play();
-	playerState.playing = true;
-	playerState._playing = true;
-	playerState.playerstatus = 'play';
-	setState({player: playerState});
-	return playerState;
+	try {
+		await player.play();
+		if (monitorEnabled) playerMonitor.play();
+		playerState.playing = true;
+		playerState._playing = true;
+		playerState.playerstatus = 'play';
+		setState({player: playerState});
+		return playerState;
+	} catch(err) {
+		logger.error(`[Player] Unable to resume : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function seek(delta: number) {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	if (monitorEnabled) playerMonitor.seek(delta);
-	player.seek(delta);
+	try {
+		if (monitorEnabled) playerMonitor.seek(delta);
+		player.seek(delta);
+	} catch(err) {
+		logger.error(`[Player] Unable to seek : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function goTo(pos: number) {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	if (monitorEnabled) playerMonitor.goToPosition(pos);
-	player.goToPosition(pos);
+	try {
+		if (monitorEnabled) await playerMonitor.goToPosition(pos);
+		await player.goToPosition(pos);
+	} catch(err) {
+		logger.error(`[Player] Unable to go to position : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function mute() {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	return player.mute(true);
+	try {
+		return await player.mute(true);
+	} catch(err) {
+		logger.error(`[Player] Unable to toggle mute : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function unmute() {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	return player.mute(false);
+	try {
+		return await player.mute(false);
+	} catch(err) {
+		logger.error(`[Player] Unable to toggle mute : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function setVolume(volume: number): Promise<PlayerState> {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	playerState.volume = volume;
-	player.volume(volume);
-	setState({player: playerState});
-	return playerState;
+	try {
+		playerState.volume = volume;
+		await player.volume(volume);
+		setState({player: playerState});
+		return playerState;
+	} catch(err) {
+		logger.error(`[Player] Unable to set volume : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function hideSubs(): Promise<PlayerState> {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	player.hideSubtitles();
-	if (monitorEnabled) playerMonitor.hideSubtitles();
-	playerState.showsubs = false;
-	setState({player: playerState});
-	return playerState;
+	try {
+		await player.hideSubtitles();
+		if (monitorEnabled) await playerMonitor.hideSubtitles();
+		playerState.showsubs = false;
+		setState({player: playerState});
+		return playerState;
+	} catch(err) {
+		logger.error(`[Player] Unable to hide subs : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function showSubs(): Promise<PlayerState> {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	player.showSubtitles();
-	if (monitorEnabled) playerMonitor.showSubtitles();
-	playerState.showsubs = true;
-	setState({player: playerState});
-	return playerState;
+	try {
+		await player.showSubtitles();
+		if (monitorEnabled) await playerMonitor.showSubtitles();
+		playerState.showsubs = true;
+		setState({player: playerState});
+		return playerState;
+	} catch(err) {
+		logger.error(`[Player] Unable to show subs : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function message(message: string, duration = 10000, alignCode = 5) {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	const alignCommand = `{\\an${alignCode}}`;
-	const command = {
-		command: [
-			'expand-properties',
-			'show-text',
-			'${osd-ass-cc/0}' + alignCommand + message,
-			duration,
-		]
-	};
-	player.freeCommand(JSON.stringify(command));
-	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
-	if (playerState.playing === false && !getState().songPoll) {
-		await sleep(duration);
-		logger.debug('[Player] AfterMessage DI');
-		displayInfo();
+	try {
+		const alignCommand = `{\\an${alignCode}}`;
+		const command = {
+			command: [
+				'expand-properties',
+				'show-text',
+				'${osd-ass-cc/0}' + alignCommand + message,
+				duration,
+			]
+		};
+		await player.freeCommand(JSON.stringify(command));
+		if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
+		if (playerState.playing === false && !getState().songPoll) {
+			await sleep(duration);
+			logger.debug('[Player] AfterMessage DI');
+			displayInfo();
+		}
+	} catch(err) {
+		logger.error(`[Player] Unable to display message : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
 	}
 }
 
@@ -672,63 +741,81 @@ export async function displaySongInfo(infos: string, duration = 8000, nextSong =
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	displayingInfo = true;
-	const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
-	const nextSongString = nextSong ? `{\\u1}${i18n.t('NEXT_SONG')}{\\u0}\\N` : '';
-	const position = nextSong ? '{\\an5}' : '{\\an1}';
-	const command = {
-		command: [
-			'expand-properties',
-			'show-text',
-			'${osd-ass-cc/0}'+position+spoilerString+nextSongString+infos,
-			duration,
-		]
-	};
-	player.freeCommand(JSON.stringify(command));
-	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
-	await sleep(duration);
-	displayingInfo = false;
+	try {
+		displayingInfo = true;
+		const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
+		const nextSongString = nextSong ? `{\\u1}${i18n.t('NEXT_SONG')}{\\u0}\\N` : '';
+		const position = nextSong ? '{\\an5}' : '{\\an1}';
+		const command = {
+			command: [
+				'expand-properties',
+				'show-text',
+				'${osd-ass-cc/0}'+position+spoilerString+nextSongString+infos,
+				duration,
+			]
+		};
+		await player.freeCommand(JSON.stringify(command));
+		if (monitorEnabled) await playerMonitor.freeCommand(JSON.stringify(command));
+		await sleep(duration);
+		displayingInfo = false;
+	} catch(err) {
+		logger.error(`[Player] Unable to display song info : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function displayInfo(duration = 10000000) {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	const conf = getConfig();
-	const ci = conf.Karaoke.Display.ConnectionInfo;
-	let text = '';
-	const catchphrase = playerState.mediaType !== 'song'
-		? sample(initializationCatchphrases)
-		: '';
-	if (ci.Enabled) text = `${ci.Message} ${i18n.t('GO_TO')} ${getState().osURL} !`;
-	const version = `Karaoke Mugen ${getState().version.number} (${getState().version.name}) - http://karaokes.moe`;
-	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+catchphrase;
-	const command = {
-		command: [
-			'expand-properties',
-			'show-text',
-			'${osd-ass-cc/0}{\\an1}'+message,
-			duration,
-		]
-	};
-	player.freeCommand(JSON.stringify(command));
-	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
+	try {
+		const conf = getConfig();
+		const ci = conf.Karaoke.Display.ConnectionInfo;
+		let text = '';
+		const catchphrase = playerState.mediaType !== 'song'
+			? sample(initializationCatchphrases)
+			: '';
+		if (ci.Enabled) text = `${ci.Message} ${i18n.t('GO_TO')} ${getState().osURL} !`;
+		const version = `Karaoke Mugen ${getState().version.number} (${getState().version.name}) - http://karaokes.moe`;
+		const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+catchphrase;
+		const command = {
+			command: [
+				'expand-properties',
+				'show-text',
+				'${osd-ass-cc/0}{\\an1}'+message,
+				duration,
+			]
+		};
+		await player.freeCommand(JSON.stringify(command));
+		if (monitorEnabled) await playerMonitor.freeCommand(JSON.stringify(command));
+	} catch(err) {
+		logger.error(`[Player] Unable to display infos : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function clearText() {
 	await ensureRunning().catch(err => {
 		throw err;
 	});
-	const command = {
-		command: [
-			'expand-properties',
-			'show-text',
-			'',
-			10,
-		]
-	};
-	player.freeCommand(JSON.stringify(command));
-	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
+	try {
+		const command = {
+			command: [
+				'expand-properties',
+				'show-text',
+				'',
+				10,
+			]
+		};
+		await player.freeCommand(JSON.stringify(command));
+		if (monitorEnabled) await playerMonitor.freeCommand(JSON.stringify(command));
+	} catch(err) {
+		logger.error(`[Player] Unable to clear text : ${JSON.stringify(err, null, 2)}`);
+		sentryError(err);
+		throw err;
+	}
 }
 
 export async function restartmpv() {
@@ -788,11 +875,9 @@ export async function playMedia(mediaType: MediaType) {
 			playerState._playing = true;
 			emitPlayerState();
 		} catch(err) {
-			const errStr = `Error loading media ${mediaType} : ${media.file} : ${JSON.stringify(err)}`;
-			logger.error(`[Player] ${errStr}`);
-			const error = new Error(errStr);
-			sentryError(error);
-			throw error;
+			logger.error(`[Player] Error loading media ${mediaType} : ${media.file} : ${JSON.stringify(err)}`);
+			sentryError(err);
+			throw err;
 		}
 	} else {
 		logger.debug(`[Player] No ${mediaType} to play.`);
