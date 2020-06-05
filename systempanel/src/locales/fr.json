@@ -149,7 +149,7 @@
 	},
 	"DATABASE": {
 		"REGENERATE_DB": "Regénérer la base de données",
-		"REGENERATE_DB_DESCRIPTION": "<p>Regénère la base de données. La génération permet de prendre en compte tous les fichiers présents et les intégrer à la base de données du logiciel. Cette opération est normalement effectuée au démarrage de l'application, mais vous pouvez la déclencher manuellement en cours de route.</p> Utilisez ce bouton si : <li>Vous avez ajouter un dépôt et déjà mis des fichiers dedans (dépôt local par exemple)</li><li>Vous voulez prendre en compte des modifications manuelles en dehors du logiciel</li>",
+		"REGENERATE_DB_DESCRIPTION": "<p>Regénère la base de données. La génération permet de prendre en compte tous les fichiers présents et les intégrer à la base de données du logiciel. Cette opération est normalement effectuée au démarrage de l'application, mais vous pouvez la déclencher manuellement en cours de route.</p> Utilisez ce bouton si : <li>Vous avez ajouté un dépôt et déjà mis des fichiers dedans (dépôt local par exemple)</li><li>Vous voulez prendre en compte des modifications manuelles en dehors du logiciel</li>",
 		"VALIDATE_FILES": "Valider les fichiers",
 		"VALIDATE_FILES_DESCRIPTION": "Valide tous les fichiers de vos dépôts actifs afin de les corriger si nécessaires. Utilisation pour mainteneurs uniquement.",
 		"UPDATE_MEDIA": "Mise à jour des médias uniquement",
@@ -320,7 +320,8 @@
 		"CREATING_TAG_IN_PROGRESS": "Création de tag en cours...",
 		"EDITING_TAG_IN_PROGRESS": "Edition de tag en cours...",
 		"DELETING_TAG_IN_PROGRESS": "Suppression de tag en cours...",
-		"MERGING_TAGS_IN_PROGRESS": "Fusion de tags en cours..."
+		"MERGING_TAGS_IN_PROGRESS": "Fusion de tags en cours...",
+		"UPDATING_MEDIAS": "Mise à jour des médias..."
 	},
 	"ERROR_CODES": {
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "L'API est désactivé pour le moment",

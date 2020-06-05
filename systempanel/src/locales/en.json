@@ -320,7 +320,8 @@
 		"CREATING_TAG_IN_PROGRESS": "Creating tag...",
 		"EDITING_TAG_IN_PROGRESS": "Editing tag...",
 		"DELETING_TAG_IN_PROGRESS": "Deleting tag...",
-		"MERGING_TAGS_IN_PROGRESS": "Merging tags..."
+		"MERGING_TAGS_IN_PROGRESS": "Merging tags...",
+		"UPDATING_MEDIAS": "Updating medias..."
 	},
 	"ERROR_CODES": {
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
