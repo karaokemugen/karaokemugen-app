@@ -1152,7 +1152,6 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		} else {
 			requester = '';
 		}
-		if (kara.title) kara.title = ` - ${kara.title}`;
 		// If series is empty, pick singer information instead
 		const series = getSeriesSingers(kara);
 
@@ -1167,7 +1166,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		}
 		const currentSong: CurrentSong = {...kara};
 		// Construct mpv message to display.
-		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
+		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 		currentSong.avatar = avatarfile;
 		return currentSong;
 	} catch(err) {

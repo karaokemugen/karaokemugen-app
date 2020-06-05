@@ -35,13 +35,13 @@ export async function playSingleSong(kid: string) {
 			let songorder = `${kara.songorder}`;
 			if (!kara.songorder || kara.songorder === 0) songorder = '';
 			// Construct mpv message to display.
-			const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+kara.title+'{\\i0}';
+			const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}';
 			await play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
 				gain: kara.gain,
 				infos: infos,
-				currentSong: kara.title,
+				currentSong: kara,
 				avatar: null,
 				duration: kara.duration,
 				repo: kara.repository,
@@ -78,7 +78,7 @@ async function playCurrentSong(now: boolean) {
 				gain: kara.gain,
 				infos: kara.infos,
 				avatar: kara.avatar,
-				currentSong: kara.title.substring(2),
+				currentSong: kara,
 				duration: kara.duration,
 				repo: kara.repo,
 				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')

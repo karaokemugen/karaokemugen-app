@@ -11,17 +11,25 @@ let rpc: any;
 
 discordRPC.register(clientId);
 
-export function setDiscordActivity(activity: 'SINGING' | 'IDLING', activityDetail = 'Zzz...') {
+export function setDiscordActivity(activityType: 'song' | 'idle', activityData?: any) {
 	if (!getConfig().Online.Discord.DisplayActivity || !rpc) return;
 	const startTimestamp = new Date();
-	activity = sample(i18next.t(`DISCORD.${activity}`, {returnObjects: true}));
+	let activity: string;
+	let activityDetail = 'Zzz...';
+	if (activityType === 'idle') {
+		activity = sample(i18next.t('DISCORD.IDLING', {returnObjects: true}));
+	}
+	if (activityType === 'song') {
+		activity = activityData.title,
+		activityDetail = activityData.singer;
+	}
 	rpc.setActivity({
 		details: activity,
 		state: activityDetail,
 		startTimestamp,
-		largeImageKey: 'logo-fond-transp',
+		largeImageKey: 'nanami-smile',
 		largeImageText: 'Karaoke Mugen',
-		smallImageKey: activity === 'SINGING' ? 'nanami-xd' : 'nanami-hehe2',
+		smallImageKey: activityType === 'song' ? 'nanami-xd' : 'nanami-hehe2',
 		smallImageText: `Version ${version.number} - ${version.name}`,
 		instance: false,
 	});
@@ -41,7 +49,7 @@ export function initDiscordRPC() {
 	rpc = new discordRPC.Client({ transport: 'ipc' });
 
 	rpc.on('ready', () => {
-		setDiscordActivity('IDLING');
+		setDiscordActivity('idle');
 		// activity can only be set every 15 seconds
 	});
 	rpc.login({ clientId }).catch(console.error);

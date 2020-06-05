@@ -471,7 +471,10 @@ export async function play(mediadata: MediaData) {
 		emitPlayerState();
 		songNearEnd = false;
 		nextSongNotifSent = false;
-		setDiscordActivity('SINGING', mediadata.currentSong);
+		setDiscordActivity('song', {
+			title: mediadata.currentSong.title,
+			singer: mediadata.currentSong.singers.map(s => s.name).join(', ')
+		});
 	} catch(err) {
 		const errStr = `Error loading media ${mediadata.media} : ${JSON.stringify(err)}`;
 		logger.error(`[Player] ${errStr}`);
@@ -546,7 +549,7 @@ export async function stop(): Promise<PlayerState> {
 	if (!getState().songPoll) displayInfo();
 	setState({player: playerState});
 	setProgressBar(-1);
-	setDiscordActivity('IDLING');
+	setDiscordActivity('idle');
 	return playerState;
 }
 

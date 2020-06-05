@@ -1,3 +1,5 @@
+import { DBKara } from "../lib/types/database/kara";
+
 export interface PlayerState {
 	volume?: number,
 	playing?: boolean,
@@ -41,7 +43,7 @@ export interface MediaData {
 	media: string,
 	subfile: string,
 	gain: number,
-	currentSong: string,
+	currentSong: DBKara,
 	infos: string,
 	avatar: string,
 	duration: number,
