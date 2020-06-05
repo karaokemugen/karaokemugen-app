@@ -124,7 +124,7 @@ export async function initEngine() {
 		await preFlightCheck();
 		initStep(i18n.t('INIT_USER'));
 		await initUserSystem();
-		const port = await initFrontend();
+		const port = initFrontend();
 		if (port !== conf.Frontend.Port) {
 			setConfig({Frontend: {Port: port}});
 			// Reinit menu since we switched ports.
@@ -140,12 +140,12 @@ export async function initEngine() {
 		}
 		const inits = [];
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
-		inits.push(initPlaylistSystem());
+		initPlaylistSystem();
 		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) inits.push(initPlayer());
 		inits.push(initSession());
 		testPlaylists();
 		initDownloader();
-		if (conf.Online.Stats === true) inits.push(initStats(false));
+		if (conf.Online.Stats === true) initStats(false);
 		try {
 			initStep(i18n.t('INIT_LAST'), true);
 			await Promise.all(inits);
