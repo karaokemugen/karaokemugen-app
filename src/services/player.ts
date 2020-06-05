@@ -4,13 +4,13 @@ import {displayInfo,displaySongInfo, goTo, hideSubs, initPlayerSystem, message, 
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import {getConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
+import { sentryError } from '../lib/utils/sentry';
 import { emitWS } from '../lib/utils/ws';
 import {getState,setState} from '../utils/state';
 import {addPlayedKara, getKara, getSeriesSingers} from './kara';
 import {getCurrentSong, getPlaylistInfo,nextSong, previousSong} from './playlist';
 import {startPoll} from './poll';
 import {updateUserQuotas} from './user';
-import { sentryError } from '../lib/utils/sentry';
 
 const sleep = promisify(setTimeout);
 
@@ -64,7 +64,7 @@ async function playCurrentSong(now: boolean) {
 			const kara = await getCurrentSong();
 			setState({currentSong: kara});
 			// Testing if we're on first position, if intro hasn't been played already and if we have at least one intro available
-			if (conf.Playlist.Medias.Intros.Enabled && kara.pos === 1 && !getState().introPlayed) {
+			if (conf.Playlist.Medias.Intros.Enabled && kara?.pos === 1 && !getState().introPlayed) {
 				setState({currentlyPlayingKara: 'Intros', introPlayed: true});
 				await playMedia('Intros');
 				introSequence = true;
@@ -180,7 +180,7 @@ export async function playerEnding() {
 		}
 		// Testing for position before last to play an encore
 		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
-		logger.debug(`[Player] CurrentSong Pos : ${state.currentSong.pos} - Playlist Kara Count : ${pl.karacount} - Playlist name: ${pl.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl.playlist_id}`);if (conf.Playlist.Medias.Encores.Enabled && state.currentSong.pos === pl.karacount - 1 && !getState().encorePlayed) {
+		logger.debug(`[Player] CurrentSong Pos : ${state.currentSong?.pos} - Playlist Kara Count : ${pl.karacount} - Playlist name: ${pl.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl.playlist_id}`);if (conf.Playlist.Medias.Encores.Enabled && state.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed) {
 			try {
 				await playMedia('Encores');
 				setState({currentlyPlayingKara: 'Encores', encorePlayed: true});
@@ -199,7 +199,7 @@ export async function playerEnding() {
 		}
 		// Outros code, we're at the end of a playlist.
 		// Outros are played before the very last song.
-		if (conf.Playlist.Medias.Outros.Enabled && state.currentSong.pos === pl.karacount) {
+		if (conf.Playlist.Medias.Outros.Enabled && state.currentSong?.pos === pl.karacount) {
 			try {
 				await playMedia('Outros');
 				setState({currentlyPlayingKara: 'Outros'});
