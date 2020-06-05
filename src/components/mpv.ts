@@ -469,7 +469,7 @@ export async function play(mediadata: MediaData) {
 		nextSongNotifSent = false;
 		setDiscordActivity('song', {
 			title: mediadata.currentSong.title,
-			singer: mediadata.currentSong.singers.map(s => s.name).join(', ')
+			singer: mediadata.currentSong.singers?.map(s => s.name).join(', ') || i18n.t('UNKNOWN_ARTIST')
 		});
 	} catch(err) {
 		logger.error(`[Player] Error loading media ${mediadata.media} : ${JSON.stringify(err)}`);
