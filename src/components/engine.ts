@@ -29,6 +29,7 @@ import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
+import { initDiscordRPC } from '../utils/discordRPC';
 import { checkPG, dumpPG, killPG,restorePG } from '../utils/postgresql';
 import { getState, setState } from '../utils/state';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
@@ -183,6 +184,7 @@ export async function initEngine() {
 			}
 			await postMigrationTasks(migrations);
 			if (conf.Database.prod.bundledPostgresBinary) await dumpPG();
+			initDiscordRPC();
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
 			sentryError(err);

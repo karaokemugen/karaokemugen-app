@@ -243,6 +243,9 @@
 	"FOLLOW_TOUR": "SUIVRE LA VISITE GUIDÉE",
 	"LOGOUT": "Déconnexion",
 	"SETTINGS": {
+		"DISCORD": {
+			"DISPLAY_ACTIVITY": "Afficher votre activité de Karaoke Mugen sur votre profil Discord"
+		},
 		"PLAYER": {
 			"LABEL": "Lecteur",
 			"PROGRESS_BAR_DOCK": "Barre de progression de la lecture dans le Dock/Barre des tâches"

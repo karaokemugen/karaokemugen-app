@@ -231,6 +231,9 @@
 	"FOLLOW_TOUR": "SEE GUIDED TOUR",
 	"LOGOUT": "Logout",
 	"SETTINGS": {
+		"DISCORD": {
+			"DISPLAY_ACTIVITY": "Show Karaoke Mugen activity on your Discord profile"
+		},
 		"PLAYER": {
 			"LABEL": "Player",
 			"PROGRESS_BAR_DOCK": "Play progress bar in Dock / Taskbar"

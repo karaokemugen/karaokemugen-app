@@ -51,6 +51,9 @@ export const defaults: Config = {
 		Stats: undefined,
 		URL: true,
 		Users: true,
+		Discord: {
+			DisplayActivity: true
+		},
 		Updates: {
 			Medias: {
 				Jingles: true,

@@ -604,6 +604,11 @@
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.5.tgz#b14efa8852b7768d898906613c23f688713e02cd"
   integrity sha512-Q1y515GcOdTHgagaVFhHnIFQ38ygs/kmxdNpvpou+raI9UO3YZcHDngBSYKQklcKlvA7iuQlmIKbzvmxcOE9CQ==
 
+"@types/discord-rpc@^3.0.4":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@types/discord-rpc/-/discord-rpc-3.0.4.tgz#2b8c380ff17797b1408fd231b3a9944da515c331"
+  integrity sha512-Ee0vt82qcg05OeJrQZ/YN+NQwaBCnAul1rVLYaMLPkwR5f44WC3BpBQNvn5Z3Axu9szaVOHqXEDBI+uAXAiyrg==
+
 "@types/engine.io@*":
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/@types/engine.io/-/engine.io-3.1.3.tgz#06a0d4f3674653032ea47a6f3a543b84624c24ca"
@@ -1188,7 +1193,7 @@ async-await-parallel@^1.0.0:
   resolved "https://registry.yarnpkg.com/async-await-parallel/-/async-await-parallel-1.0.0.tgz#4913b0e0abfbec934a579331f8d8d75e31b0d349"
   integrity sha1-SROw4Kv77JNKV5Mx+NjXXjGw00k=
 
-async-limiter@~1.0.0:
+async-limiter@^1.0.0, async-limiter@~1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.1.tgz#dd379e94f0db8310b08291f9d64c3209766617fd"
   integrity sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
@@ -1957,6 +1962,14 @@ diff@^4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
+
+discord-rpc@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/discord-rpc/-/discord-rpc-3.1.1.tgz#23942a6e3ec1e523d1fcd69b5823e64b719cdffe"
+  integrity sha512-2nTB+82q4OnCtataJkWMQ2YBWs2UEjs490uC7/xSTvXAOb7I+ZDsweHWFL692sSpDzg7pRlmy1+XVyjWqleulg==
+  dependencies:
+    node-fetch "2.6.0"
+    ws "7.1.2"
 
 dns-packet@^1.1.0:
   version "1.3.1"
@@ -3980,7 +3993,7 @@ node-eta@^0.9.0:
   resolved "https://registry.yarnpkg.com/node-eta/-/node-eta-0.9.0.tgz#9fb0b099bcd2a021940e603c64254dc003d9a7a8"
   integrity sha1-n7CwmbzSoCGUDmA8ZCVNwAPZp6g=
 
-node-fetch@^2.6.0:
+node-fetch@2.6.0, node-fetch@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
   integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
@@ -5883,6 +5896,13 @@ ws@6.1.3:
   integrity sha512-tbSxiT+qJI223AP4iLfQbkbxkwdFcneYinM2+x46Gx2wgvbaOMO36czfdfVUBRTHvzAMRhDd98sA5d/BuWbQdg==
   dependencies:
     async-limiter "~1.0.0"
+
+ws@7.1.2:
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.1.2.tgz#c672d1629de8bb27a9699eb599be47aeeedd8f73"
+  integrity sha512-gftXq3XI81cJCgkUiAVixA0raD9IVmXqsylCrjRygw4+UOOGzPoxnQ6r/CnVL9i+mDncJo94tSkyrtuuQVBmrg==
+  dependencies:
+    async-limiter "^1.0.0"
 
 ws@^7.1.2:
   version "7.2.2"

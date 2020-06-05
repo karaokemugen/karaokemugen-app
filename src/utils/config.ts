@@ -31,6 +31,7 @@ import { BinariesConfig } from '../types/binChecker';
 import {Config} from '../types/config';
 import { ASNPrefixes } from './constants';
 import {configConstraints, defaults} from './default_settings';
+import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import {getState, setState} from './state';
 import { initTwitch, stopTwitch } from './twitch';
 
@@ -117,6 +118,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	} catch(err) {
 		logger.warn(`[Config] Could not start/stop Twitch chat bot : ${err}`);
 	}
+	// Toggling Discord RPC
+	config.Online.Discord.DisplayActivity
+		? initDiscordRPC()
+		: stopDiscordRPC();
 	// Toggling stats
 	config.Online.Stats
 		? initStats(newConfig.Online.Stats === oldConfig.Online.Stats)

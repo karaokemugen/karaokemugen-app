@@ -41,6 +41,7 @@ export interface MediaData {
 	media: string,
 	subfile: string,
 	gain: number,
+	currentSong: string,
 	infos: string,
 	avatar: string,
 	duration: number,
