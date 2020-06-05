@@ -10,6 +10,7 @@ import {addPlayedKara, getKara, getSeriesSingers} from './kara';
 import {getCurrentSong, getPlaylistInfo,nextSong, previousSong} from './playlist';
 import {startPoll} from './poll';
 import {updateUserQuotas} from './user';
+import { sentryError } from '../lib/utils/sentry';
 
 const sleep = promisify(setTimeout);
 
@@ -191,8 +192,8 @@ export async function playerEnding() {
 					logger.error(`[Player] Failed going to next song : ${err}`);
 					throw err;
 				}
-				return;
 			}
+			return;
 		} else {
 			setState({encorePlayed: false});
 		}
@@ -263,7 +264,8 @@ export async function playerEnding() {
 			}
 		}
 	} catch(err) {
-		logger.error('[Player] Unable to end play properly, stopping.');
+		logger.error(`[Player] Unable to end play properly, stopping. : ${err}`);
+		sentryError(err);
 		stopPlayer(true);
 	}
 }
