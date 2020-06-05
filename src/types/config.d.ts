@@ -13,6 +13,7 @@ export interface Config {
 		Users?: boolean,
 		URL?: boolean,
 		Stats?: boolean,
+		ErrorTracking?: boolean,
 		Discord?: {
 			DisplayActivity?: boolean
 		}

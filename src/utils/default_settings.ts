@@ -49,6 +49,7 @@ export const defaults: Config = {
 		MediasHost: undefined,
 		Port: undefined,
 		Stats: undefined,
+		ErrorTracking: undefined,
 		URL: true,
 		Users: true,
 		Discord: {
