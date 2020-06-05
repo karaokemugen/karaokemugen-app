@@ -31,8 +31,6 @@ import {version} from './version';
 
 dotenv.config();
 
-initSentry(app);
-
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
 	if (logger) logger.error('[UncaughtException]' + exception);
@@ -215,6 +213,7 @@ export async function preInit() {
 	logger.debug(`[Launcher] Locale : ${state.defaultLocale}`);
 	logger.debug(`[Launcher] OS : ${state.os}`);
 	await initConfig(argv);
+	initSentry(app);
 }
 
 export async function main() {
