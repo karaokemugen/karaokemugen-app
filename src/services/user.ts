@@ -715,15 +715,9 @@ export async function initUserSystem() {
 	logger.info(`[User] SECURITY CODE FOR THIS SESSION : ${getState().securityCode}`);
 	// Find admin users.
 	const users = await listUsers();
-	const adminUsers = users.filter(u => u.type === 0);
+	const adminUsers = users.filter(u => u.type === 0 && u.login !== 'admin');
 	logger.debug(`[Debug] Admin users : ${JSON.stringify(adminUsers)}`);
-	if (adminUsers.length === 1) {
-		// Admin only exists
-		setSentryUser(adminUsers[0]?.login, null);
-	} else {
-		// It's either that or there are more admins. We'll send over the second one as it's more likely to be the instance's admin
-		setSentryUser(adminUsers[1]?.login, adminUsers[1]?.email);
-	}
+	setSentryUser(adminUsers[0]?.login || 'admin', adminUsers[1]?.email || null);
 }
 
 /** Performs defaults checks and creations for avatars/guests. This is done synchronously here because these are linked, but userChecks is called asynchronously to speed up init process */
