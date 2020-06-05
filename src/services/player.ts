@@ -41,6 +41,7 @@ export async function playSingleSong(kid: string) {
 				subfile: kara.subfile,
 				gain: kara.gain,
 				infos: infos,
+				currentSong: kara.title,
 				avatar: null,
 				duration: kara.duration,
 				repo: kara.repository,
@@ -77,6 +78,7 @@ async function playCurrentSong(now: boolean) {
 				gain: kara.gain,
 				infos: kara.infos,
 				avatar: kara.avatar,
+				currentSong: kara.title.substring(2),
 				duration: kara.duration,
 				repo: kara.repo,
 				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')

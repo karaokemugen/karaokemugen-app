@@ -13,6 +13,9 @@ export interface Config {
 		Users?: boolean,
 		URL?: boolean,
 		Stats?: boolean,
+		Discord?: {
+			DisplayActivity?: boolean
+		}
 		Updates?: {
 			Medias?: {
 				Jingles?: boolean,

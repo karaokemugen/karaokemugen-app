@@ -36,7 +36,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   deleteMysterySongLabel = (value:string) => {
 	  var config = this.state.config;
   	config['Playlist.MysterySongs.Labels'].splice(
-		config['Playlist.MysterySongs.Labels'].indexOf(value), 1, null);	
+		config['Playlist.MysterySongs.Labels'].indexOf(value), 1, null);
 	this.saveMysterySongsLabels(config['Playlist.MysterySongs.Labels']);
 	config['Playlist.MysterySongs.Labels'].splice(
 		config['Playlist.MysterySongs.Labels'].indexOf(null), 1);
@@ -50,7 +50,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 
   onChange = (e:any) => {
   	var config = this.state.config;
-  	var value = e.target.type === 'checkbox' ? e.target.checked : 
+  	var value = e.target.type === 'checkbox' ? e.target.checked :
   		(Number(e.target.value) ? Number(e.target.value) : e.target.value);
   	if (value === 'true') {
   		value = true;
@@ -647,6 +647,15 @@ class KaraokeOptions extends Component<IProps, IState> {
   					<div className="col-xs-6">
   						<Switch idInput="Online.Updates.Medias.Encores" handleChange={this.onChange}
   							isChecked={this.state.config['Online.Updates.Medias.Encores']} />
+  					</div>
+  				</div>
+				<div className="form-group">
+  					<label className="col-xs-4 control-label">
+  						{i18next.t('SETTINGS.DISCORD.DISPLAY_ACTIVITY')}
+  					</label>
+  					<div className="col-xs-6">
+  						<Switch idInput="Online.Discord.DisplayActivity" handleChange={this.onChange}
+  							isChecked={this.state.config['Online.Discord.DisplayActivity']} />
   					</div>
   				</div>
   			</div>

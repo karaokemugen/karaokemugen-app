@@ -22,6 +22,7 @@ import {endPoll} from '../services/poll';
 import { MediaType } from '../types/medias';
 import {MediaData, mpvStatus,PlayerState} from '../types/player';
 import { initializationCatchphrases } from '../utils/constants';
+import { setDiscordActivity } from '../utils/discordRPC';
 import {getID3} from '../utils/id3tag';
 import {getState, setState} from '../utils/state';
 import {exit} from './engine';
@@ -474,6 +475,7 @@ export async function play(mediadata: MediaData) {
 		emitPlayerState();
 		songNearEnd = false;
 		nextSongNotifSent = false;
+		setDiscordActivity('SINGING', mediadata.currentSong);
 	} catch(err) {
 		const errStr = `Error loading media ${mediadata.media} : ${JSON.stringify(err)}`;
 		logger.error(`[Player] ${errStr}`);
@@ -549,6 +551,7 @@ export async function stop(): Promise<PlayerState> {
 	if (!getState().songPoll) displayInfo();
 	setState({player: playerState});
 	setProgressBar(-1);
+	setDiscordActivity('IDLING');
 	return playerState;
 }
 
