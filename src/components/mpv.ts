@@ -302,9 +302,10 @@ async function startmpv() {
 	player.observeProperty('eof-reached');
 	player.on('status', (status: mpvStatus) => {
 		// If we're displaying an image, it means it's the pause inbetween songs
-		if (playerState._playing &&
+		playerState[status.property] = status.value;
+		if (playerState._playing && playerState.mediaType !== 'background' &&
 			(status.property === 'playtime-remaining' && status.value === 0) ||
-			(status.property === 'eof-reached' && status.value === true)
+			(status.property === 'eof-reached' && status.value === true && playerState['playtime-remaining'])
 		) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			playerState.playing = false;
@@ -314,7 +315,6 @@ async function startmpv() {
 			if (monitorEnabled) playerMonitor.pause();
 			playerEnding();
 		}
-		playerState[status.property] = status.value;
 		emitPlayerState();
 	});
 	player.on('paused',() => {
