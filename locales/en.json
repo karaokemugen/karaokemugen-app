@@ -110,5 +110,6 @@
 		"IDLING": [
 			"prepares playlists"
 		]
-	}
+	},
+	"UNKNOWN_ARTIST": "Unknown artist"
 }
