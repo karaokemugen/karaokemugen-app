@@ -301,19 +301,14 @@ async function startmpv() {
 	logger.debug('[Player] Initial DI');
 	displayInfo();
 	player.observeProperty('sub-text');
-	player.observeProperty('playtime-remaining');
 	player.observeProperty('eof-reached');
 	player.on('status', (status: mpvStatus) => {
 		// If we're displaying an image, it means it's the pause inbetween songs
 		if (playerState._playing &&
 			status &&
 			(
-				((status.property === 'playtime-remaining' &&
-					status.value !== null &&
-					status.value >= 0 &&
-					status.value <= 1) ||
 				(status.property === 'eof-reached' && status.value === true)
-				))) {
+			)) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			playerState.playing = false;
 			playerState._playing = false;
