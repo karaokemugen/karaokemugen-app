@@ -12,14 +12,14 @@ let rpc: any;
 discordRPC.register(clientId);
 
 export function setDiscordActivity(activity: 'SINGING' | 'IDLING', activityDetail = 'Zzz...') {
-	if (!getConfig().Online.Discord.DisplayActivity) return;
+	if (!getConfig().Online.Discord.DisplayActivity || !rpc) return;
 	const startTimestamp = new Date();
 	activity = sample(i18next.t(`DISCORD.${activity}`, {returnObjects: true}));
 	rpc.setActivity({
 		details: activity,
 		state: activityDetail,
 		startTimestamp,
-		largeImageKey: activity === 'SINGING' ? 'nanami-xd' : 'nanami-hehe2',
+		largeImageKey: 'logo-fond-transp',
 		largeImageText: 'Karaoke Mugen',
 		smallImageKey: activity === 'SINGING' ? 'nanami-xd' : 'nanami-hehe2',
 		smallImageText: `Version ${version.number} - ${version.name}`,
