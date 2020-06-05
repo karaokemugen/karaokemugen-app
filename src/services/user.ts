@@ -716,8 +716,8 @@ export async function initUserSystem() {
 	// Find admin users.
 	const users = await listUsers();
 	const adminUsers = users.filter(u => u.type === 0 && u.login !== 'admin');
-	logger.debug(`[Debug] Admin users : ${JSON.stringify(adminUsers)}`);
-	setSentryUser(adminUsers[0]?.login || 'admin', adminUsers[1]?.email || null);
+	logger.debug(`[User] Admin users : ${JSON.stringify(adminUsers)}`);
+	setSentryUser(adminUsers[0]?.login || 'admin', adminUsers[0]?.email || undefined);
 }
 
 /** Performs defaults checks and creations for avatars/guests. This is done synchronously here because these are linked, but userChecks is called asynchronously to speed up init process */
