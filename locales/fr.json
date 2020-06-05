@@ -105,5 +105,25 @@
 			"Vérifiez que vous n'avez pas une autre instance de Karaoke Mugen en tâche de fond.",
 			"Consultez les logs, la raison de l'erreur peut s'y trouver !"
 		]
+	},
+	"DISCORD": {
+		"SINGING": [
+			"s'époumonne sur",
+			"chante sur",
+			"massacre la chanson",
+			"se croit au Stade de France",
+			"chante comme une casserolle sur",
+			"pourrait mieux chanter sur",
+			"s'égosille sur",
+			"apprend à chanter",
+			"fait venir la pluie"
+		],
+		"IDLING": [
+			"prépare ses playlists",
+			"prépare ses favoris",
+			"configure le tout",
+			"lit la doc (non)",
+			"écoute ses cheveux pousser"
+		]
 	}
 }

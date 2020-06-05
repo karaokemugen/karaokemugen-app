@@ -105,5 +105,13 @@
 			"Please check if a running Karaoke Mugen instance is in background.",
 			"Take a look at logs, the reason behind the error might be inside!"
 		]
+	},
+	"DISCORD": {
+		"SINGING": [
+			"sings on"
+		],
+		"IDLING": [
+			"prepares playlists"
+		]
 	}
 }
