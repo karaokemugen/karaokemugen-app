@@ -4,15 +4,15 @@ import {db, paramWords} from '../lib/dao/database';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
 import { Tag, TagAndType,TagParams } from '../lib/types/tag';
 import { WhereClause } from '../types/database';
-const sql = require('./sql/tag');
+import { sqldeleteTag,sqldeleteTagsByKara, sqlgetAllTags, sqlgetTag, sqlgetTagByNameAndType, sqlgetTagMini, sqlinsertKaraTags, sqlinsertTag, sqlselectDuplicateTags, sqlupdateKaraTagsTID, sqlupdateTag } from './sql/tag';
 
 export async function selectTag(id: string): Promise<Tag> {
-	const res = await db().query(sql.getTag, [id]);
+	const res = await db().query(sqlgetTag, [id]);
 	return res.rows[0];
 }
 
 export async function selectTagMini(id: string): Promise<DBTagMini> {
-	const res = await db().query(sql.getTagMini, [id]);
+	const res = await db().query(sqlgetTagMini, [id]);
 	return res.rows[0];
 }
 
@@ -25,7 +25,7 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 	let offsetClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
-	const query = sql.getAllTags(filterClauses.sql, typeClauses, limitClause, offsetClause);
+	const query = sqlgetAllTags(filterClauses.sql, typeClauses, limitClause, offsetClause);
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }
@@ -46,7 +46,7 @@ function buildTagClauses(words: string): WhereClause {
 }
 
 export function insertTag(tag: Tag) {
-	return db().query(sql.insertTag, [
+	return db().query(sqlinsertTag, [
 		tag.tid,
 		tag.name,
 		tag.types,
@@ -60,21 +60,21 @@ export function insertTag(tag: Tag) {
 }
 
 export function updateKaraTagsTID(oldTID: string, newTID: string) {
-	return db().query(sql.updateKaraTagsTID, [
+	return db().query(sqlupdateKaraTagsTID, [
 		oldTID,
 		newTID
 	]);
 }
 
 export async function selectDuplicateTags(): Promise<DBTag[]> {
-	const res = await db().query(sql.selectDuplicateTags);
+	const res = await db().query(sqlselectDuplicateTags);
 	return res.rows;
 }
 
 export async function updateKaraTags(kid: string, tags: TagAndType[]) {
-	await db().query(sql.deleteTagsByKara, [kid]);
+	await db().query(sqldeleteTagsByKara, [kid]);
 	for (const tag of tags) {
-		await db().query(yesql(sql.insertKaraTags)({
+		await db().query(yesql(sqlinsertKaraTags)({
 			kid: kid,
 			tid: tag.tid,
 			type: tag.type
@@ -83,7 +83,7 @@ export async function updateKaraTags(kid: string, tags: TagAndType[]) {
 }
 
 export async function selectTagByNameAndType(name: string, type: number): Promise<DBTag> {
-	const res = await db().query(sql.getTagByNameAndType, [
+	const res = await db().query(sqlgetTagByNameAndType, [
 		name,
 		[type]
 	]);
@@ -91,7 +91,7 @@ export async function selectTagByNameAndType(name: string, type: number): Promis
 }
 
 export function updateTag(tag: Tag) {
-	return db().query(sql.updateTag, [
+	return db().query(sqlupdateTag, [
 		tag.name,
 		JSON.stringify(tag.aliases) || null,
 		tag.tagfile,
@@ -105,5 +105,5 @@ export function updateTag(tag: Tag) {
 }
 
 export async function removeTag(tid: string) {
-	await db().query(sql.deleteTag, [tid]);
+	await db().query(sqldeleteTag, [tid]);
 }

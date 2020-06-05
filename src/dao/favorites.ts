@@ -3,7 +3,7 @@ import {pg as yesql} from 'yesql';
 import {buildClauses,db, transaction} from '../lib/dao/database';
 import { DBKara } from '../lib/types/database/kara';
 import { FavParams } from '../types/favorites';
-const sql = require('./sql/favorites');
+import { sqlgetFavorites, sqlinsertFavorites,sqlremoveFavorites } from './sql/favorites';
 
 interface Filter {
 	sql: any[],
@@ -19,7 +19,7 @@ export async function selectFavorites(params: FavParams): Promise<DBKara[]> {
 	let offsetClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
-	const query = sql.getFavorites(filterClauses.sql, limitClause, offsetClause);
+	const query = sqlgetFavorites(filterClauses.sql, limitClause, offsetClause);
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }
@@ -29,7 +29,7 @@ export function removeFavorites(fList: string[], username: string) {
 		kara,
 		username
 	]));
-	return transaction([{params: karas, sql: sql.removeFavorites}]);
+	return transaction([{params: karas, sql: sqlremoveFavorites}]);
 }
 
 export function insertFavorites(karaList: string[], username: string) {
@@ -37,6 +37,6 @@ export function insertFavorites(karaList: string[], username: string) {
 		kara,
 		username
 	]));
-	return transaction([{params: karas, sql: sql.insertFavorites}]);
+	return transaction([{params: karas, sql: sqlinsertFavorites}]);
 }
 

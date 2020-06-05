@@ -1,6 +1,6 @@
 // SQL for main database operations
 
-export const getStats = `
+export const sqlGetStats = `
 SELECT
 (SELECT COUNT(pk_tid) FROM tag)::integer AS tags,
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[2])::integer AS singers,
@@ -17,7 +17,7 @@ SELECT
 (SELECT SUM(duration) FROM kara)::integer AS duration;
 `;
 
-export const resetUserData = `
+export const sqlResetUserData = `
 TRUNCATE blacklist RESTART IDENTITY CASCADE;
 TRUNCATE blacklist_criteria RESTART IDENTITY CASCADE;
 TRUNCATE upvote RESTART IDENTITY CASCADE;

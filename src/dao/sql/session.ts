@@ -1,4 +1,4 @@
-export const selectSessions = `
+export const sqlselectSessions = `
 SELECT pk_seid AS seid,
 	name,
 	started_at,
@@ -12,7 +12,7 @@ GROUP BY pk_seid
 ORDER BY started_at DESC
 `;
 
-export const insertSession = `
+export const sqlinsertSession = `
 INSERT INTO session(pk_seid, name, started_at, private) VALUES(
 	$1,
 	$2,
@@ -21,19 +21,19 @@ INSERT INTO session(pk_seid, name, started_at, private) VALUES(
 )
 `;
 
-export const replacePlayed = `
+export const sqlreplacePlayed = `
 UPDATE played SET
 	fk_seid = $2
 WHERE fk_seid = $1;
 `;
 
-export const replaceRequested = `
+export const sqlreplaceRequested = `
 UPDATE requested SET
 	fk_seid = $2
 WHERE fk_seid = $1;
 `;
 
-export const updateSession = `
+export const sqlupdateSession = `
 UPDATE session SET
 	name = $2,
 	started_at = $3,
@@ -41,13 +41,13 @@ UPDATE session SET
 WHERE pk_seid = $1
 `;
 
-export const deleteSession = `
+export const sqldeleteSession = `
 DELETE FROM session
 WHERE pk_seid = $1
 `;
 
-export const cleanSessions = `
+export const sqlcleanSessions = `
 DELETE FROM session
 WHERE (SELECT COUNT(fk_kid)::integer FROM played WHERE fk_seid = pk_seid) = 0
   AND (SELECT COUNT(fk_kid)::integer FROM requested WHERE fk_seid = pk_seid) = 0
-`
+`;

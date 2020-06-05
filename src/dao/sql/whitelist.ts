@@ -1,8 +1,8 @@
 // SQL for whitelist management
 
-export const emptyWhitelist = 'DELETE FROM whitelist;';
+export const sqlemptyWhitelist = 'DELETE FROM whitelist;';
 
-export const addKaraToWhitelist = `
+export const sqladdKaraToWhitelist = `
 INSERT INTO whitelist(
 	fk_kid,
 	created_at,
@@ -15,7 +15,7 @@ VALUES (
 ) ON CONFLICT DO NOTHING;
 `;
 
-export const getWhitelistContents = (filterClauses: string[], limitClause: string, offsetClause: string) => `
+export const sqlgetWhitelistContents = (filterClauses: string[], limitClause: string, offsetClause: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
@@ -47,7 +47,7 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const removeKaraFromWhitelist = `
+export const sqlremoveKaraFromWhitelist = `
 DELETE FROM whitelist
 WHERE fk_kid = $1;
 `;

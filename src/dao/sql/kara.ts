@@ -1,6 +1,6 @@
 // SQL for kara management
 
-export const addKaraToPlaylist = `
+export const sqladdKaraToPlaylist = `
 INSERT INTO playlist_content(
 	fk_id_playlist,
 	fk_login,
@@ -24,7 +24,7 @@ INSERT INTO playlist_content(
 ) RETURNING pk_id_plcontent
 `;
 
-export const addViewcount = `
+export const sqladdViewcount = `
 INSERT INTO played(
 	fk_kid,
 	played_at,
@@ -37,7 +37,7 @@ VALUES(
 )
 `;
 
-export const addRequested = `
+export const sqladdRequested = `
 INSERT INTO requested(
 	fk_login,
 	fk_kid,
@@ -52,7 +52,7 @@ VALUES(
 )
 `;
 
-export const getAllKaras = (filterClauses: string[], typeClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string) => `SELECT
+export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string) => `SELECT
   ak.kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
@@ -109,7 +109,7 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const getKaraMini = `
+export const sqlgetKaraMini = `
 SELECT
 	ak.kid AS kid,
 	ak.title AS title,
@@ -122,7 +122,7 @@ FROM all_karas AS ak
 WHERE ak.kid = $1
 `;
 
-export const getKaraHistory = `
+export const sqlgetKaraHistory = `
 SELECT ak.title AS title,
 	ak.songorder AS songorder,
 	ak.series AS series,
@@ -136,17 +136,17 @@ INNER JOIN played p ON p.fk_kid = ak.kid
 ORDER BY p.played_at DESC
 `;
 
-export const deleteKara = `
+export const sqldeleteKara = `
 DELETE FROM kara WHERE pk_kid = $1;
 `;
 
-export const removeKaraFromPlaylist = `
+export const sqlremoveKaraFromPlaylist = `
 DELETE FROM playlist_content
 WHERE pk_id_plcontent IN ($playlistcontent_id)
 	AND fk_id_playlist = $1;
 `;
 
-export const getSongCountPerUser = `
+export const sqlgetSongCountPerUser = `
 SELECT COUNT(1)::integer AS count
 FROM playlist_content AS pc
 WHERE pc.fk_login = $2
@@ -154,7 +154,7 @@ WHERE pc.fk_login = $2
 	AND pc.flag_free = FALSE
 `;
 
-export const getTimeSpentPerUser = `
+export const sqlgetTimeSpentPerUser = `
 SELECT COALESCE(SUM(k.duration),0)::integer AS time_spent
 FROM kara AS k
 INNER JOIN playlist_content AS pc ON pc.fk_kid = k.pk_kid
@@ -163,13 +163,13 @@ WHERE pc.fk_login = $2
 	AND pc.flag_free = FALSE
 `;
 
-export const updateFreeOrphanedSongs = `
+export const sqlupdateFreeOrphanedSongs = `
 UPDATE playlist_content SET
 	flag_free = TRUE
 WHERE created_at <= $1;
 `;
 
-export const updateKara = `
+export const sqlupdateKara = `
 UPDATE kara SET
 	title = :title,
 	year = :year,
@@ -185,7 +185,7 @@ UPDATE kara SET
 WHERE pk_kid = :kid
 `;
 
-export const insertKara = `
+export const sqlinsertKara = `
 INSERT INTO kara(
 	title,
 	year,
@@ -220,9 +220,9 @@ VALUES(
 );
 `;
 
-export const getYears = 'SELECT year, karacount FROM all_years ORDER BY year';
+export const sqlgetYears = 'SELECT year, karacount FROM all_years ORDER BY year';
 
-export const selectAllKIDs = `
+export const sqlselectAllKIDs = `
 SELECT ak.kid
 FROM all_karas ak;
 `;

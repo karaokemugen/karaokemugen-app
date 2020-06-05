@@ -15,8 +15,7 @@ import {initPG,isShutdownPG} from '../utils/postgresql';
 import {getState} from '../utils/state';
 import { baseChecksum } from './dataStore';
 import { getPlaylists, reorderPlaylist } from './playlist';
-
-const sql = require('./sql/database');
+import { sqlGetStats,sqlResetUserData } from './sql/database';
 
 export async function compareKarasChecksum(silent?: boolean): Promise<boolean> {
 	logger.info('[Store] Comparing files and database data');
@@ -161,12 +160,12 @@ export async function initDBSystem(): Promise<Migration[]> {
 }
 
 export async function resetUserData() {
-	await db().query(sql.resetUserData);
+	await db().query(sqlResetUserData);
 	logger.warn('[DB] User data has been reset!');
 }
 
 export async function getStats(): Promise<DBStats> {
-	const res = await db().query(sql.getStats);
+	const res = await db().query(sqlGetStats);
 	return res.rows[0];
 }
 

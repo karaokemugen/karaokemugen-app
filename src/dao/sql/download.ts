@@ -1,4 +1,4 @@
-export const selectDownloads = `
+export const sqlselectDownloads = `
 SELECT name,
 	urls,
 	size,
@@ -11,7 +11,7 @@ FROM download
 ORDER BY started_at DESC
 `;
 
-export const selectPendingDownloads = `
+export const sqlselectPendingDownloads = `
 SELECT name,
 	urls,
 	size,
@@ -25,7 +25,7 @@ WHERE status = 'DL_PLANNED'
 ORDER BY started_at DESC
 `;
 
-export const selectDownload = `
+export const sqlselectDownload = `
 SELECT name,
 	urls,
 	size,
@@ -38,18 +38,18 @@ FROM download
 WHERE pk_uuid = $1
 `;
 
-export const updateRunningDownloads = `
+export const sqlupdateRunningDownloads = `
 UPDATE download
 SET status = 'DL_PLANNED'
 WHERE status = 'DL_RUNNING'
 `;
 
-export const deleteDoneFailedDownloads = `
+export const sqldeleteDoneFailedDownloads = `
 DELETE FROM download
 WHERE status = 'DL_DONE' OR status = 'DL_FAILED'
 `;
 
-export const insertDownload = `
+export const sqlinsertDownload = `
 INSERT INTO download(
 	name,
 	urls,
@@ -68,15 +68,15 @@ INSERT INTO download(
 	$7)
 `;
 
-export const updateDownloadStatus = `
+export const sqlupdateDownloadStatus = `
 UPDATE download
 SET status = $1
 WHERE pk_uuid = $2
 `;
 
-export const emptyDownload = 'TRUNCATE download CASCADE';
+export const sqlemptyDownload = 'TRUNCATE download CASCADE';
 
-export const selectDownloadBLC = `
+export const sqlselectDownloadBLC = `
 SELECT
 	pk_id_dl_blcriteria AS dlBLC_id,
 	type,
@@ -84,12 +84,12 @@ SELECT
 FROM download_blacklist_criteria
 `;
 
-export const deleteDownloadBLC = `
+export const sqldeleteDownloadBLC = `
 DELETE FROM download_blacklist_criteria
 WHERE pk_id_dl_blcriteria = $1;
 `;
 
-export const insertDownloadBLC = `
+export const sqlinsertDownloadBLC = `
 INSERT INTO download_blacklist_criteria(
 	type,
 	value

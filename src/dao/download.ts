@@ -2,7 +2,7 @@ import {db, transaction} from '../lib/dao/database';
 import logger from '../lib/utils/logger';
 import { DBDownload, DBDownloadBLC } from '../types/database/download';
 import { KaraDownload, KaraDownloadBLC } from '../types/download';
-const sql = require('./sql/download');
+import { sqldeleteDoneFailedDownloads, sqldeleteDownloadBLC, sqlemptyDownload, sqlinsertDownload, sqlinsertDownloadBLC,sqlselectDownload, sqlselectDownloadBLC, sqlselectDownloads, sqlselectPendingDownloads, sqlupdateDownloadStatus, sqlupdateRunningDownloads } from './sql/download';
 
 export function insertDownloads(downloads: KaraDownload[] ) {
 	const dls = downloads.map(dl => [
@@ -15,49 +15,49 @@ export function insertDownloads(downloads: KaraDownload[] ) {
 		dl.kid
 	]);
 	logger.debug('[Download DAO] Running transaction');
-	return transaction([{sql: sql.insertDownload, params: dls}]);
+	return transaction([{sql: sqlinsertDownload, params: dls}]);
 }
 
 export async function selectDownloads(): Promise<DBDownload[]> {
-	const dls = await db().query(sql.selectDownloads);
+	const dls = await db().query(sqlselectDownloads);
 	return dls.rows;
 }
 
 export async function selectPendingDownloads(): Promise<DBDownload[]> {
-	const dls = await db().query(sql.selectPendingDownloads);
+	const dls = await db().query(sqlselectPendingDownloads);
 	return dls.rows;
 }
 
 export async function initDownloads() {
-	await db().query(sql.updateRunningDownloads);
-	await db().query(sql.deleteDoneFailedDownloads);
+	await db().query(sqlupdateRunningDownloads);
+	await db().query(sqldeleteDoneFailedDownloads);
 }
 
 export async function selectDownload(id: string): Promise<DBDownload> {
-	const dl = await db().query(sql.selectDownload, [id]);
+	const dl = await db().query(sqlselectDownload, [id]);
 	return dl.rows[0];
 }
 
 export function updateDownload(uuid: string, status: string) {
-	return db().query(sql.updateDownloadStatus, [
+	return db().query(sqlupdateDownloadStatus, [
 		status,
 		uuid
 	]);
 }
 
 export function emptyDownload() {
-	return db().query(sql.emptyDownload);
+	return db().query(sqlemptyDownload);
 }
 
 export async function selectDownloadBLC(): Promise<DBDownloadBLC[]> {
-	const res = await db().query(sql.selectDownloadBLC);
+	const res = await db().query(sqlselectDownloadBLC);
 	return res.rows;
 }
 
 export function deleteDownloadBLC(id: number) {
-	return db().query(sql.deleteDownloadBLC, [id]);
+	return db().query(sqldeleteDownloadBLC, [id]);
 }
 
 export function insertDownloadBLC(blc: KaraDownloadBLC) {
-	return db().query(sql.insertDownloadBLC, [blc.type, blc.value]);
+	return db().query(sqlinsertDownloadBLC, [blc.type, blc.value]);
 }

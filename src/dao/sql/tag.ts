@@ -1,6 +1,6 @@
 // SQL for tags
 
-export const getTagMini = `
+export const sqlgetTagMini = `
 SELECT pk_tid AS tid,
 	name,
 	i18n,
@@ -14,18 +14,18 @@ FROM tag
 WHERE pk_tid = $1
 `;
 
-export const getTag = `
+export const sqlgetTag = `
 SELECT tid, name, types, short, aliases, i18n, modified_at, karacount, tagfile, repository
 FROM all_tags
 WHERE tid = $1
 `;
 
-export const selectDuplicateTags = `
+export const sqlselectDuplicateTags = `
 SELECT * FROM all_tags ou
 WHERE (SELECT COUNT(*) FROM all_tags inr WHERE inr.name = ou.name) > 1
 `;
 
-export const getAllTags = (filterClauses: string[], typeClauses: string, limitClause: string, offsetClause: string) => `
+export const sqlgetAllTags = (filterClauses: string[], typeClauses: string, limitClause: string, offsetClause: string) => `
 SELECT tid,
 	types,
 	name,
@@ -45,7 +45,7 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const insertTag = `
+export const sqlinsertTag = `
 INSERT INTO tag(
 	pk_tid,
 	name,
@@ -79,13 +79,13 @@ ON CONFLICT (pk_tid) DO UPDATE SET
 	modified_at = $9
 `;
 
-export const updateKaraTagsTID = `
+export const sqlupdateKaraTagsTID = `
 UPDATE kara_tag SET fk_tid = $2 WHERE fk_tid = $1;
 `;
 
-export const deleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_kid = $1';
+export const sqldeleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_kid = $1';
 
-export const insertKaraTags = `
+export const sqlinsertKaraTags = `
 INSERT INTO kara_tag(
 	fk_kid,
 	fk_tid,
@@ -98,7 +98,7 @@ VALUES(
 );
 `;
 
-export const getTagByNameAndType = `
+export const sqlgetTagByNameAndType = `
 SELECT
 	name,
 	pk_tid AS tid,
@@ -108,7 +108,7 @@ WHERE name = $1
   AND types @> $2
 ;`;
 
-export const updateTag = `
+export const sqlupdateTag = `
 UPDATE tag
 SET
 	name = $1,
@@ -122,4 +122,4 @@ SET
 WHERE pk_tid = $7;
 `;
 
-export const deleteTag = 'DELETE FROM tag WHERE pk_tid = $1';
+export const sqldeleteTag = 'DELETE FROM tag WHERE pk_tid = $1';

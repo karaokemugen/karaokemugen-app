@@ -1,16 +1,16 @@
 // SQL queries for user manipulation
 
-export const testNickname = `
+export const sqltestNickname = `
 SELECT pk_login AS login
 FROM users
 WHERE nickname = :nickname
 `;
 
-export const reassignPlaylistToUser = 'UPDATE playlist SET fk_login = :username WHERE fk_login = :old_username;';
+export const sqlreassignPlaylistToUser = 'UPDATE playlist SET fk_login = :username WHERE fk_login = :old_username;';
 
-export const reassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_login = :username WHERE fk_login = :old_username;';
+export const sqlreassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_login = :username WHERE fk_login = :old_username;';
 
-export const selectUserByName = `
+export const sqlselectUserByName = `
 SELECT
 	u.type AS type,
 	u.pk_login AS login,
@@ -30,7 +30,7 @@ FROM users AS u
 WHERE u.pk_login = :username
 `;
 
-export const selectRandomGuestName = `
+export const sqlselectRandomGuestName = `
 SELECT pk_login AS login
 FROM users
 WHERE type = 2
@@ -38,7 +38,7 @@ WHERE type = 2
 ORDER BY RANDOM() LIMIT 1;
 `;
 
-export const selectGuests = `
+export const sqlselectGuests = `
 SELECT
 	u.nickname AS nickname,
 	u.pk_login AS login,
@@ -48,7 +48,7 @@ FROM users AS u
 WHERE u.type = 2;
 `;
 
-export const selectUsers = `
+export const sqlselectUsers = `
 SELECT
 	u.type AS type,
 	u.avatar_file AS avatar_file,
@@ -60,12 +60,12 @@ FROM users AS u
 ORDER BY u.flag_online DESC, u.nickname
 `;
 
-export const deleteUser = `
+export const sqldeleteUser = `
 DELETE FROM users
 WHERE pk_login = $1;
 `;
 
-export const createUser = `
+export const sqlcreateUser = `
 INSERT INTO users(
 	type,
 	pk_login,
@@ -84,41 +84,41 @@ VALUES (
 );
 `;
 
-export const updateExpiredUsers = `
+export const sqlupdateExpiredUsers = `
 UPDATE users SET
 	fingerprint = NULL,
 	flag_online = FALSE
 WHERE last_login_at <= $1;
 `;
 
-export const updateLastLogin = `
+export const sqlupdateLastLogin = `
 UPDATE users SET
 	last_login_at = :now,
 	flag_online = TRUE
 WHERE pk_login = :username;
 `;
 
-export const updateUserFingerprint = `
+export const sqlupdateUserFingerprint = `
 UPDATE users SET
 	fingerprint = :fingerprint,
 	flag_online = TRUE
 WHERE pk_login = :username;
 `;
 
-export const findFingerprint = `
+export const sqlfindFingerprint = `
 SELECT pk_login
 FROM users
 WHERE fingerprint = $1;
 `;
 
-export const resetGuestsPassword = `
+export const sqlresetGuestsPassword = `
 UPDATE users SET
 	password = null
 WHERE flag_online = FALSE
 AND type = 2
 `;
 
-export const editUser = `
+export const sqleditUser = `
 UPDATE users SET
 	pk_login = :login,
 	nickname = :nickname,
@@ -133,7 +133,7 @@ UPDATE users SET
 WHERE pk_login = :old_login
 `;
 
-export const editUserPassword = `
+export const sqleditUserPassword = `
 UPDATE users SET
 	password = :password
 WHERE pk_login = :username

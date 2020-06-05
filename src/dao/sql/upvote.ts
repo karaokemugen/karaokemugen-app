@@ -1,6 +1,6 @@
 // SQL for favorites management
 
-export const insertUpvote = `
+export const sqlinsertUpvote = `
 INSERT INTO upvote(
 	fk_id_plcontent,
 	fk_login
@@ -11,13 +11,13 @@ VALUES(
 );
 `;
 
-export const deleteUpvote = `
+export const sqldeleteUpvote = `
 DELETE FROM upvote
 WHERE fk_id_plcontent = :plc_id
 	AND fk_login = :username
 `;
 
-export const selectUpvoteByPLC = `
+export const sqlselectUpvoteByPLC = `
 SELECT fk_login AS username
 FROM upvote
 WHERE fk_id_plcontent = $1;

@@ -1,22 +1,22 @@
 // SQL for playlist management
 
-export const updatePlaylistLastEditTime = `
+export const sqlupdatePlaylistLastEditTime = `
 UPDATE playlist SET
 	modified_at = :modified_at
 WHERE pk_id_playlist = :playlist_id;
 `;
 
-export const emptyPlaylist = `
+export const sqlemptyPlaylist = `
 DELETE FROM playlist_content
 WHERE fk_id_playlist = $1;
 `;
 
-export const deletePlaylist = `
+export const sqldeletePlaylist = `
 DELETE FROM playlist
 WHERE pk_id_playlist = $1;
 `;
 
-export const editPlaylist = `
+export const sqleditPlaylist = `
 UPDATE playlist SET
 	name = :name,
 	modified_at = :modified_at,
@@ -24,7 +24,7 @@ UPDATE playlist SET
 WHERE pk_id_playlist = :playlist_id;
 `;
 
-export const createPlaylist = `
+export const sqlcreatePlaylist = `
 INSERT INTO playlist(
 	name,
 	karacount,
@@ -51,7 +51,7 @@ VALUES(
 ) RETURNING pk_id_playlist
 `;
 
-export const updatePlaylistKaraCount = `
+export const sqlupdatePlaylistKaraCount = `
 UPDATE playlist SET
 	karacount = (
 		SELECT COUNT(fk_kid)
@@ -62,7 +62,7 @@ UPDATE playlist SET
 WHERE pk_id_playlist = $1
 `;
 
-export const getPLCByDate = `
+export const sqlgetPLCByDate = `
 SELECT pc.pk_id_plcontent AS playlistcontent_id
 FROM playlist_content AS pc
 WHERE pc.created_at = :date_added
@@ -70,7 +70,7 @@ WHERE pc.created_at = :date_added
 ORDER BY pc.pos
 `;
 
-export const reorderPlaylist = `
+export const sqlreorderPlaylist = `
 UPDATE playlist_content
 SET pos = A.new_pos
 FROM  (SELECT ROW_NUMBER() OVER (ORDER BY pos) AS new_pos, pk_id_plcontent
@@ -80,13 +80,13 @@ FROM  (SELECT ROW_NUMBER() OVER (ORDER BY pos) AS new_pos, pk_id_plcontent
 WHERE A.pk_id_plcontent = playlist_content.pk_id_plcontent
 `;
 
-export const updatePLCSetPos = `
+export const sqlupdatePLCSetPos = `
 UPDATE playlist_content
 SET pos = $1
 WHERE pk_id_plcontent = $2;
 `;
 
-export const updatePlaylistDuration = `
+export const sqlupdatePlaylistDuration = `
 UPDATE playlist SET time_left = (
 	SELECT COALESCE(SUM(kara.duration),0) AS duration
 		FROM kara, playlist_content
@@ -107,7 +107,7 @@ UPDATE playlist SET time_left = (
 WHERE pk_id_playlist = $1;
 `;
 
-export const getPlaylistContentsKaraIDs = `
+export const sqlgetPlaylistContentsKaraIDs = `
 SELECT pc.fk_kid AS kid,
 	pc.fk_login AS login,
 	pc.pk_id_plcontent AS playlistcontent_id,
@@ -122,7 +122,7 @@ WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos, pc.created_at DESC
 `;
 
-export const getPlaylistContents = (filterClauses: string[], whereClause: string, orderClause: string, limitClause: string, offsetClause: string) => `
+export const sqlgetPlaylistContents = (filterClauses: string[], whereClause: string, orderClause: string, limitClause: string, offsetClause: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
@@ -194,7 +194,7 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const getPlaylistContentsMini = `
+export const sqlgetPlaylistContentsMini = `
 SELECT ak.kid AS kid,
     ak.languages AS langs,
 	ak.title AS title,
@@ -222,7 +222,7 @@ WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos;
 `;
 
-export const getPlaylistPos = `
+export const sqlgetPlaylistPos = `
 SELECT pc.pos AS pos,
 	pc.pk_id_plcontent AS playlistcontent_id
 FROM playlist_content AS pc
@@ -230,7 +230,7 @@ WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos,pc.created_at DESC;
 `;
 
-export const getPLCInfo = (forUser: string) => `
+export const sqlgetPLCInfo = (forUser: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
@@ -300,7 +300,7 @@ ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
 GROUP BY ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid, u.avatar_file, ak.repository
 `;
 
-export const getPLCInfoMini = `
+export const sqlgetPLCInfoMini = `
 SELECT pc.fk_kid AS kid,
 	ak.title AS title,
 	COALESCE(ak.series, '[]'::jsonb) AS series,
@@ -319,7 +319,7 @@ GROUP BY pc.fk_kid, ak.title, ak.series, pc.nickname, pc.fk_login, pc.pk_id_plco
 `;
 
 
-export const getPLCByKIDUser = `
+export const sqlgetPLCByKIDUser = `
 SELECT
 	pc.pos AS pos,
 	pc.flag_playing AS flag_playing,
@@ -330,7 +330,7 @@ WHERE pc.fk_id_playlist = :playlist_id
 	AND pc.fk_login = :username;
 `;
 
-export const getPlaylistInfo = `
+export const sqlgetPlaylistInfo = `
 SELECT p.pk_id_playlist AS playlist_id,
 	p.name AS name,
 	p.karacount AS karacount,
@@ -346,7 +346,7 @@ FROM playlist AS p
 WHERE pk_id_playlist = $1
 `;
 
-export const getPlaylists = `
+export const sqlgetPlaylists = `
 SELECT p.pk_id_playlist AS playlist_id,
 	p.name AS name,
 	p.karacount AS karacount,
@@ -361,117 +361,117 @@ SELECT p.pk_id_playlist AS playlist_id,
 FROM playlist AS p
 `;
 
-export const testCurrentPlaylist = `
+export const sqltestCurrentPlaylist = `
 SELECT pk_id_playlist AS playlist_id
 FROM playlist
 WHERE flag_current = TRUE;
 `;
 
-export const setPLCFree = `
+export const sqlsetPLCFree = `
 UPDATE playlist_content
 SET flag_free = TRUE
 WHERE pk_id_plcontent = $1;
 `;
 
-export const setPLCVisible = `
+export const sqlsetPLCVisible = `
 UPDATE playlist_content
 SET flag_visible = TRUE
 WHERE pk_id_plcontent = $1;
 `;
 
-export const setPLCInvisible = `
+export const sqlsetPLCInvisible = `
 UPDATE playlist_content
 SET flag_visible = FALSE
 WHERE pk_id_plcontent = $1;
 `;
 
 
-export const setPLCFreeBeforePos = `
+export const sqlsetPLCFreeBeforePos = `
 UPDATE playlist_content
 SET flag_free = TRUE
 WHERE fk_id_playlist = :playlist_id
 	AND pos <= :pos;
 `;
 
-export const testPublicPlaylist = `
+export const sqltestPublicPlaylist = `
 SELECT pk_id_playlist AS playlist_id
 FROM playlist
 WHERE flag_public = TRUE;
 `;
 
-export const shiftPosInPlaylist = `
+export const sqlshiftPosInPlaylist = `
 UPDATE playlist_content
 SET pos = pos + :shift
 WHERE fk_id_playlist = :playlist_id
 	AND pos >= :pos
 `;
 
-export const getMaxPosInPlaylist = `
+export const sqlgetMaxPosInPlaylist = `
 SELECT MAX(pos) AS maxpos
 FROM playlist_content
 WHERE fk_id_playlist = $1;
 `;
 
-export const setCurrentPlaylist = `
+export const sqlsetCurrentPlaylist = `
 UPDATE playlist
 SET flag_current = TRUE
 WHERE pk_id_playlist = $1;
 `;
 
-export const unsetCurrentPlaylist = `
+export const sqlunsetCurrentPlaylist = `
 UPDATE playlist SET flag_current = FALSE
 `;
 
-export const setVisiblePlaylist = `
+export const sqlsetVisiblePlaylist = `
 UPDATE playlist
 SET flag_visible = TRUE
 WHERE pk_id_playlist = $1;
 `;
 
-export const unsetVisiblePlaylist = `
+export const sqlunsetVisiblePlaylist = `
 UPDATE playlist
 SET flag_visible = TRUE
 WHERE pk_id_playlist = $1;
 `;
 
-export const unsetPublicPlaylist = `
+export const sqlunsetPublicPlaylist = `
 UPDATE playlist
 SET flag_public = FALSE;
 `;
 
 
-export const setPublicPlaylist = `
+export const sqlsetPublicPlaylist = `
 UPDATE playlist
 SET flag_public = TRUE
 WHERE pk_id_playlist = $1;
 `;
 
-export const setPlaying = `
+export const sqlsetPlaying = `
 UPDATE playlist_content
 SET flag_playing = TRUE
 WHERE pk_id_plcontent = $1;
 `;
 
-export const unsetPlaying = `
+export const sqlunsetPlaying = `
 UPDATE playlist_content
 SET flag_playing = FALSE
 WHERE pk_id_plcontent != $1 AND fk_id_playlist = $2;
 `;
 
-export const countPlaylistUsers = `
+export const sqlcountPlaylistUsers = `
 SELECT COUNT(DISTINCT fk_login)::integer AS NumberOfUsers
 FROM playlist_content
 WHERE fk_id_playlist = $1;
 `;
 
-export const getMaxPosInPlaylistForUser = `
+export const sqlgetMaxPosInPlaylistForUser = `
 SELECT MAX(pos) AS maxpos
 FROM playlist_content
 WHERE fk_id_playlist = :playlist_id
 	AND fk_login = :username;
 `;
 
-export const trimPlaylist = `
+export const sqltrimPlaylist = `
 DELETE FROM playlist_content
 WHERE fk_id_playlist = :playlist_id
 	AND pos > :pos;
