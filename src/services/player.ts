@@ -199,7 +199,7 @@ export async function playerEnding() {
 		}
 		// Outros code, we're at the end of a playlist.
 		// Outros are played before the very last song.
-		if (conf.Playlist.Medias.Outros.Enabled && state.currentSong?.pos === pl.karacount) {
+		if (conf.Playlist.Medias.Outros.Enabled && state.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background') {
 			try {
 				await playMedia('Outros');
 				setState({currentlyPlayingKara: 'Outros'});
