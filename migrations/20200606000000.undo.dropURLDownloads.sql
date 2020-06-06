@@ -1,0 +1,1 @@
+ALTER TABLE download ADD COLUMN urls JSONB;
