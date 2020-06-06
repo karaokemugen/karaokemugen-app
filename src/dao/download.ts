@@ -7,7 +7,6 @@ import { sqldeleteDoneFailedDownloads, sqldeleteDownloadBLC, sqlemptyDownload, s
 export function insertDownloads(downloads: KaraDownload[] ) {
 	const dls = downloads.map(dl => [
 		dl.name,
-		dl.urls,
 		dl.size,
 		'DL_PLANNED',
 		dl.uuid,

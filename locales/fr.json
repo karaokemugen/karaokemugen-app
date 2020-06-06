@@ -28,6 +28,7 @@
 	"ERROR_START_PLAYER": "Erreur de démarrage du lecteur vidéo",
 	"ERROR_INIT_PATHS": "Error de création des dossiers par défaut",
 	"MENU_FILE": "Fichier",
+	"MENU_FILE_IMPORT": "Importer un fichier",
 	"MENU_FILE_QUIT": "Quitter",
 	"MENU_FILE_ABOUT": "A propos de Karaoke Mugen",
 	"MENU_FILE_UPDATE": "Rechercher une mise à jour...",
@@ -117,5 +118,13 @@
 			"en convention (dans sa tête)"
 		]
 	},
-	"UNKNOWN_ARTIST": "Artiste inconnu"
+	"UNKNOWN_ARTIST": "Artiste inconnu",
+	"UNKNOWN_REPOSITORY_DOWNLOAD": {
+		"TITLE": "Dépôt inconnu",
+		"MESSAGE": "Le dépôt de ce karaoké n'est pas connu de votre liste de dépôts. Voulez-vous l'ajouter ? Il sera pris en compte dnas les futures mises à jour de votre base de karaokés.\n\nSi vous répondez non, le karaoké sera importé dnas le dépôt \"Local\""
+	},
+	"UNKNOWN_REPOSITORY_NO_LOCAL": {
+		"TITLE": "Dépôt local introuvable",
+		"MESSAGE": "Aucun dépôt local n'existe dans votre configuration. Veuillez en créer un avant de réimporter ce karaoké"
+	}
 }

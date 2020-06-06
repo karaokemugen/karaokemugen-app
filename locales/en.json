@@ -28,6 +28,7 @@
 	"ERROR_START_PLAYER": "Error starting up media player",
 	"ERROR_INIT_PATHS": "Error creating default directories",
 	"MENU_FILE": "File",
+	"MENU_FILE_IMPORT": "Import file",
 	"MENU_FILE_QUIT": "Quit",
 	"MENU_FILE_ABOUT": "About Karaoke Mugen",
 	"MENU_FILE_UPDATE": "Search for update...",
@@ -111,5 +112,13 @@
 			"prepares playlists"
 		]
 	},
-	"UNKNOWN_ARTIST": "Unknown artist"
+	"UNKNOWN_ARTIST": "Unknown artist",
+	"UNKNOWN_REPOSITORY_DOWNLOAD": {
+		"TITLE": "Unknown repository",
+		"MESSAGE": "This song's repository is unknown in y our repository list. Do you want to add it? It'll be used for online updates/sync of your song library.\n\nIf you say no, the song will be imported in your \"Local\" repository"
+	},
+	"UNKNOWN_REPOSITORY_NO_LOCAL": {
+		"TITLE": "Local repository unavailable",
+		"MESSAGE": "No local repository exists in your configuration. Please create one before importing this song again."
+	}
 }
