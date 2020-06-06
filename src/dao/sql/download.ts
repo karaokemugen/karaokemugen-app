@@ -1,6 +1,5 @@
 export const sqlselectDownloads = `
 SELECT name,
-	urls,
 	size,
 	status,
 	pk_uuid as uuid,
@@ -13,7 +12,6 @@ ORDER BY started_at DESC
 
 export const sqlselectPendingDownloads = `
 SELECT name,
-	urls,
 	size,
 	status,
 	pk_uuid as uuid,
@@ -27,7 +25,6 @@ ORDER BY started_at DESC
 
 export const sqlselectDownload = `
 SELECT name,
-	urls,
 	size,
 	status,
 	pk_uuid as uuid,
@@ -52,7 +49,6 @@ WHERE status = 'DL_DONE' OR status = 'DL_FAILED'
 export const sqlinsertDownload = `
 INSERT INTO download(
 	name,
-	urls,
 	size,
 	status,
 	pk_uuid,
@@ -64,8 +60,7 @@ INSERT INTO download(
 	$3,
 	$4,
 	$5,
-	$6,
-	$7)
+	$6)
 `;
 
 export const sqlupdateDownloadStatus = `

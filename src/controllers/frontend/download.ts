@@ -18,11 +18,7 @@ export default function downloadController(router: Router) {
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Object[]} downloads Download object
- * @apiParam {string[]} downloads/seriefiles List of serie files to download
- * @apiParam {string[]} downloads/tagfiles List of tag files to download
- * @apiParam {string} downloads/mediafile Media file to download
- * @apiParam {string} downloads/karafile Karaoke metadata file to download
- * @apiParam {string} downloads/subfile Lyrics file to download
+ * @apiParam {string} downloads/kid Song KID
  * @apiParam {string} downloads/name Song name (purely cosmetic)
  * @apiParam {number} downloads/size Size in bytes of downloads (usually mediasize)
  * @apiParam {string} downloads/repository Name (domain) of the repository to download from

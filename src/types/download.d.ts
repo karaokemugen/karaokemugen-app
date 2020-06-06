@@ -3,9 +3,6 @@ export type QueueStatus = 'started' | 'stopped' | 'paused' | 'updated'
 export interface KaraDownload {
 	name: string,
 	kid: string
-	urls: {
-		media: DownloadFile,
-	}
 	size: number,
 	uuid: string,
 	status?: 'DL_RUNNING' | 'DL_PLANNED' | 'DL_DONE' | 'DL_FAILED',

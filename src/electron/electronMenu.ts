@@ -9,7 +9,7 @@ import {exit} from '../components/engine';
 import { getConfig, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { getState } from '../utils/state';
-import {win} from './electron';
+import {handleFile,win} from './electron';
 import { setManualUpdate } from './electronAutoUpdate';
 
 const isMac = process.platform === 'darwin';
@@ -58,6 +58,20 @@ export function initMenu() {
 						setManualUpdate(false);
 					}
 				} : { role: 'services' },
+				{
+					label: i18next.t('MENU_FILE_IMPORT'),
+					async click() {
+						const files = await dialog.showOpenDialog({
+							properties: ['openFile', 'multiSelections']
+						});
+						if (!files.canceled) {
+							for (const file of files.filePaths) {
+								await handleFile(file);
+							}
+						}
+					}
+				},
+				{ type: 'separator'},
 				{
 					label: i18next.t('MENU_FILE_ABOUT'),
 					click() {

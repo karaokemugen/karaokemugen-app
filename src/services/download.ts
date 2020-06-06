@@ -126,94 +126,105 @@ export async function startDownloads() {
 	}
 }
 
+export async function integrateDownloadBundle(bundle: DownloadBundle, download_id: string, destRepo?: string) {
+	if (!downloadTask) initTask();
+	downloadTask.update({
+		subtext: bundle.kara.file,
+		value: 0,
+		total: bundle.kara.data.medias[0].filesize
+	});
+	const kara = bundle.kara;
+	const lyrics = bundle.lyrics;
+	const tags = bundle.tags;
+	const list = [];
+	const repository = kara.data.data.repository;
+	if (!destRepo) {
+		destRepo = repository;
+	} else {
+		// Redefine repo in files
+		kara.data.data.repository = destRepo;
+		for (const i in tags) {
+			tags[i].data.tag.repository = destRepo;
+		}
+	}
+	const mediaFile = kara.data.medias[0].filename;
+	const localMedia = resolve(resolvedPathRepos('Medias', destRepo)[0], mediaFile);
+	const localKaraPath = resolve(resolvedPathRepos('Karas', destRepo)[0]);
+	const localTagsPath = resolve(resolvedPathRepos('Tags', destRepo)[0]);
+	const localLyricsPath = resolve(resolvedPathRepos('Lyrics', destRepo)[0]);
+	const tempDir = resolvedPathTemp();
+	const tempMedia = resolve(tempDir, mediaFile);
+
+	// Check if media already exists in any media dir. If it does, do not try to redownload it.
+	let mediaAlreadyExists = false;
+	try {
+		const existingMediaFiles = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias', destRepo));
+		// Check if file size are different
+		const localMediaStat = await asyncStat(existingMediaFiles[0]);
+		if (localMediaStat.size !== kara.data.medias[0].filesize) throw null;
+		mediaAlreadyExists = true;
+	} catch(err) {
+		// File does not exist or sizes are different, we download it.
+		list.push({
+			filename: tempMedia,
+			url: `https://${repository}/downloads/medias/${encodeURIComponent(mediaFile)}`,
+			id: kara.file.replace('.kara.json','')
+		});
+	}
+	if (list.length > 0) await downloadFiles(download_id, list, downloadTask);
+
+	const writes = [];
+	let tempLyrics: string;
+	if (lyrics.file !== null) {
+		tempLyrics = resolve(tempDir, lyrics.file);
+		writes.push(await asyncWriteFile(tempLyrics, lyrics.data, 'utf-8'));
+	}
+	const tempKara = resolve(tempDir, kara.file);
+	writes.push(await asyncWriteFile(tempKara, JSON.stringify(kara.data, null, 2), 'utf-8'));
+
+	for (const tag of tags) {
+		const tempTag = resolve(tempDir, tag.file);
+		writes.push(await asyncWriteFile(tempTag, JSON.stringify(tag.data, null, 2), 'utf-8'));
+	}
+
+	// Delete files if they're already present
+	try {
+		if (!mediaAlreadyExists) await asyncMove(tempMedia, localMedia, {overwrite: true});
+	} catch(err) {
+		logger.error(`[Debug] Unable to move ${tempMedia} to ${localMedia} : ${err}`);
+	}
+	try {
+		if (lyrics.file !== null) await asyncMove(tempLyrics, resolve(localLyricsPath, lyrics.file), {overwrite: true});
+	} catch(err) {
+		logger.error(`[Debug] Unable to move ${tempLyrics} to ${localLyricsPath}`);
+	}
+	try {
+		await asyncMove(tempKara, resolve(localKaraPath, kara.file), {overwrite: true});
+	} catch(err) {
+		logger.error(`[Debug] Unable to move ${tempKara} to ${localKaraPath}`);
+	}
+	for (const tag of tags) {
+		try {
+			await asyncMove(resolve(tempDir, tag.file), resolve(localTagsPath, tag.file), {overwrite: true});
+		} catch(err) {
+			logger.error(`[Debug] Unable to move ${resolve(tempDir, tag.file)} to ${resolve(localTagsPath, tag.file)}`);
+		}
+	}
+	logger.info(`[Download] Finished downloading "${kara.file}"`);
+	// Now adding our newly downloaded kara
+	await integrateDownload(bundle, localKaraPath, localTagsPath, download_id);
+}
 async function processDownload(download: KaraDownload) {
 	try {
-		if (!downloadTask) initTask();
-		downloadTask.update({
-			subtext: download.name,
-			value: 0,
-			total: download.size
-		});
 		await setDownloadStatus(download.uuid, 'DL_RUNNING');
-		const list = [];
-		const localMedia = resolve(resolvedPathRepos('Medias', download.repository)[0], download.urls.media.local);
-		const localKaraPath = resolve(resolvedPathRepos('Karas', download.repository)[0]);
-		const localTagsPath = resolve(resolvedPathRepos('Tags', download.repository)[0]);
-		const localLyricsPath = resolve(resolvedPathRepos('Lyrics', download.repository)[0]);
-
 		const res = await HTTP.get(`https://${download.repository}/api/karas/${download.kid}/raw`);
 		const bundle: DownloadBundle = JSON.parse(res.body);
-
-		const tempDir = resolvedPathTemp();
-		const tempMedia = resolve(tempDir, download.urls.media.local);
-
-		// Check if media already exists in any media dir. If it does, do not try to redownload it.
-		let mediaAlreadyExists = false;
-		try {
-			const existingMediaFiles = await resolveFileInDirs(download.urls.media.local, resolvedPathRepos('Medias', download.repository));
-			// Check if file size are different
-			const localMediaStat = await asyncStat(existingMediaFiles[0]);
-			if (localMediaStat.size !== download.size) throw null;
-			mediaAlreadyExists = true;
-		} catch(err) {
-			// File does not exist or sizes are different, we download it.
-			list.push({
-				filename: tempMedia,
-				url: download.urls.media.remote,
-				id: download.name
-			});
-		}
-		if (list.length > 0) await downloadFiles(download, list, downloadTask);
-
-		const writes = [];
-		let tempLyrics: string;
-		if (bundle.lyrics.file !== null) {
-			tempLyrics = resolve(tempDir, bundle.lyrics.file);
-			writes.push(await asyncWriteFile(tempLyrics, bundle.lyrics.data, 'utf-8'));
-		}
-		const tempKara = resolve(tempDir, bundle.kara.file);
-		writes.push(await asyncWriteFile(tempKara, JSON.stringify(bundle.kara.data, null, 2), 'utf-8'));
-
-		for (const serie of bundle.series) {
-			const tempSeries = resolve(tempDir, serie.file);
-			writes.push(await asyncWriteFile(tempSeries, JSON.stringify(serie.data, null, 2), 'utf-8'));
-		}
-		for (const tag of bundle.tags) {
-			const tempTag = resolve(tempDir, tag.file);
-			writes.push(await asyncWriteFile(tempTag, JSON.stringify(tag.data, null, 2), 'utf-8'));
-		}
-
-		// Delete files if they're already present
-		try {
-			if (!mediaAlreadyExists) await asyncMove(tempMedia, localMedia, {overwrite: true});
-		} catch(err) {
-			logger.error(`[Debug] Unable to move ${tempMedia} to ${localMedia} : ${err}`);
-		}
-		try {
-			if (bundle.lyrics.file !== null) await asyncMove(tempLyrics, resolve(localLyricsPath, bundle.lyrics.file), {overwrite: true});
-		} catch(err) {
-			logger.error(`[Debug] Unable to move ${tempLyrics} to ${localLyricsPath}`);
-		}
-		try {
-			await asyncMove(tempKara, resolve(localKaraPath, bundle.kara.file), {overwrite: true});
-		} catch(err) {
-			logger.error(`[Debug] Unable to move ${tempKara} to ${localKaraPath}`);
-		}
-		for (const tag of bundle.tags) {
-			try {
-				await asyncMove(resolve(tempDir, tag.file), resolve(localTagsPath, tag.file), {overwrite: true});
-			} catch(err) {
-				logger.error(`[Debug] Unable to move ${resolve(tempDir, tag.file)} to ${resolve(localTagsPath, tag.file)}`);
-			}
-		}
-		logger.info(`[Download] Finished downloading "${download.name}"`);
-		// Now adding our newly downloaded kara
-		await integrateDownload(bundle, localKaraPath, localTagsPath, download);
+		await integrateDownloadBundle(bundle, download.uuid);
 	} catch(err) {
 		setDownloadStatus(download.uuid, 'DL_FAILED');
 		throw err;
 	} finally {
-		downloadTask.update({
+		if (downloadTask) downloadTask.update({
 			subtext: download.name,
 			value: download.size,
 			total: download.size
@@ -221,7 +232,7 @@ async function processDownload(download: KaraDownload) {
 	}
 }
 
-async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, localTagsPath: string, download: KaraDownload ) {
+async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, localTagsPath: string, download_id: string ) {
 	try {
 		for (const tag of bundle.tags) {
 			try {
@@ -234,26 +245,26 @@ async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, 
 		}
 		try {
 			await integrateKaraFile(resolve(localKaraPath, bundle.kara.file));
-			logger.info(`[Download] Song "${download.name}" added to database`);
-			await setDownloadStatus(download.uuid, 'DL_DONE');
+			logger.info(`[Download] Song "${bundle.kara.file}" added to database`);
+			await setDownloadStatus(download_id, 'DL_DONE');
 		} catch(err) {
-			logger.error(`[Download] Song "${download.name}" not properly added to database`);
+			logger.error(`[Download] Song "${bundle.kara.file}" not properly added to database`);
 			throw err;
 		}
 	} catch(err) {
-		logger.error(`[Download] Song "${download.name}" downloaded but not properly added to database. Regenerate your database manually after fixing errors`);
-		setDownloadStatus(download.uuid, 'DL_FAILED');
+		logger.error(`[Download] Song "${bundle.kara.file}" downloaded but not properly added to database. Regenerate your database manually after fixing errors`);
+		setDownloadStatus(download_id, 'DL_FAILED');
 		throw err;
 	}
 }
 
-async function downloadFiles(download?: KaraDownload, list?: DownloadItem[], task?: Task) {
+async function downloadFiles(download_id?: string, list?: DownloadItem[], task?: Task) {
 	const downloader = new Downloader({ bar: true, task: task });
 	// Launch downloads
 	const fileErrors = await downloader.download(list);
 	if (fileErrors.length > 0) {
-		if (download) {
-			await setDownloadStatus(download.uuid, 'DL_FAILED');
+		if (download_id) {
+			await setDownloadStatus(download_id, 'DL_FAILED');
 		}
 		throw `Error downloading file : ${fileErrors.toString()}`;
 	}
@@ -285,12 +296,6 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 		logger.debug(`[Download] Adding download ${dl.name}`);
 		return {
 			uuid: uuidV4(),
-			urls: {
-				media: {
-					remote: `https://${dl.repository}/downloads/medias/${encodeURIComponent(dl.mediafile)}`,
-					local: dl.mediafile
-				},
-			},
 			name: dl.name,
 			size: dl.size,
 			kid: dl.kid,

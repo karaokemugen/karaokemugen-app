@@ -1,6 +1,8 @@
 import { app, BrowserWindow, dialog,ipcMain, Menu } from 'electron';
+import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
+import { v4 as uuidV4 } from 'uuid';
 
 import { exit } from '../components/engine';
 import { listUsers } from '../dao/user';
@@ -10,10 +12,12 @@ import { asyncReadFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
+import { integrateDownloadBundle } from '../services/download';
 import { importFavorites } from '../services/favorites';
 import { isAllKaras } from '../services/kara';
 import { playSingleSong } from '../services/player';
 import { importPlaylist, playlistImported} from '../services/playlist';
+import { addRepo,getRepo, getRepos } from '../services/repo';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { detectKMFileTypes } from '../utils/files';
 import { getState,setState } from '../utils/state';
@@ -89,6 +93,48 @@ export async function handleFile(file: string, username?: string) {
 		const KMFileType = detectKMFileTypes(data);
 		const url = `http://localhost:${getConfig().Frontend.Port}/admin`;
 		switch(KMFileType) {
+		case 'Karaoke Mugen Karaoke Bundle File':
+			const repoName = data.kara.data.data.repository;
+			const repo = getRepo(repoName);
+			let destRepo = repoName;
+			if (!repo) {
+				const buttons = await dialog.showMessageBox({
+					type: 'none',
+					title: i18next.t('UNKNOWN_REPOSITORY_DOWNLOAD.TITLE'),
+					message: `${i18next.t('UNKNOWN_REPOSITORY_DOWNLOAD.MESSAGE')}`,
+					buttons: [i18next.t('YES'), i18next.t('NO')],
+				});
+				if (buttons.response === 0) {
+					await addRepo({
+						Name: repoName,
+						Online: true,
+						Enabled: true,
+						Path: {
+							Karas: [`repos/${repoName}/karaokes`],
+							Lyrics: [`repos/${repoName}/lyrics`],
+							Medias: [`repos/${repoName}/medias`],
+							Series: [`repos/${repoName}/series`],
+							Tags: [`repos/${repoName}/tags`],
+						}
+					});
+				} else {
+					// If user says no, we'll use the first local Repo we find
+					const repos = getRepos();
+					const localRepos = repos.filter(r => r.Enabled && !r.Online);
+					if (localRepos.length === 0) {
+						await dialog.showMessageBox({
+							type: 'none',
+							title: i18next.t('UNKNOWN_REPOSITORY_NO_LOCAL.TITLE'),
+							message: `${i18next.t('UNKNOWN_REPOSITORY_NO_LOCAL.MESSAGE')}`
+						});
+						break;
+					} else {
+						destRepo = localRepos[0].Name;
+					}
+				}
+			}
+			await integrateDownloadBundle(data, uuidV4(), destRepo);
+			break;
 		case 'Karaoke Mugen Favorites List File':
 			if (!username) throw 'Unable to find a user to import the file to';
 			await importFavorites(data, username);
