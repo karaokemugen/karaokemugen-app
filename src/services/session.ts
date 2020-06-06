@@ -4,6 +4,7 @@ import { v4 as uuidV4 } from 'uuid';
 
 import {cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
 import { sanitizeFile } from '../lib/utils/files';
+import logger from '../lib/utils/logger';
 import { sentryError } from '../lib/utils/sentry';
 import { Session } from '../types/session';
 import { getState, setState } from '../utils/state';
@@ -102,6 +103,7 @@ export async function initSession() {
 		// If no session is found or session is on another day, create a new one
 		setActiveSession(await addSession(new Date().toISOString(), new Date().toString()));
 	}
+	logger.debug('[Sessions] Sessions initialized');
 }
 
 export async function exportSession(seid: string) {

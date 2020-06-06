@@ -90,6 +90,7 @@ function getPlayingPos(playlist: PLC[]): Pos {
 		plc_id_pos: playlist[index].pos,
 		index: index
 	};
+	logger.debug('[Playlist] Playlists tested');
 	return undefined;
 }
 
@@ -1188,6 +1189,7 @@ export async function initPlaylistSystem() {
 	setInterval(updateFreeOrphanedSongs, 60 * 1000);
 	const pls = await getPLs(false);
 	pls.forEach(pl => reorderPlaylist(pl.playlist_id));
+	logger.debug('[Playlist] Playlists initialized');
 }
 
 /** Create current playlist if it doesn't exist */

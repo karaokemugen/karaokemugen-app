@@ -138,17 +138,15 @@ export async function initEngine() {
 			logger.error(`[Engine] Failed to init online system : ${err}`);
 			sentryError(err);
 		}
-		const inits = [];
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 		initPlaylistSystem();
-		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) inits.push(initPlayer());
-		inits.push(initSession());
+		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) initPlayer();
 		testPlaylists();
 		initDownloader();
+		await initSession();
 		if (conf.Online.Stats === true) initStats(false);
 		try {
 			initStep(i18n.t('INIT_LAST'), true);
-			await Promise.all(inits);
 			enableWSLogging();
 			//Easter egg
 			const ready = Math.floor(Math.random() * Math.floor(10)) >= 9

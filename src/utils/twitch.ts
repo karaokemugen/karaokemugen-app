@@ -29,6 +29,7 @@ export async function initTwitch() {
 		client = tmi.client(opts);
 		await client.connect();
 		listenVoteEvents(client);
+		logger.debug('[Twitch] Twitch initialized');
 	} catch(err) {
 		logger.error(`[Twitch] Unable to login to chat : ${err}`);
 	}
