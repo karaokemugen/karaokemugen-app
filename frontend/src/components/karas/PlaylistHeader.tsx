@@ -15,6 +15,8 @@ import { Tag } from '../../types/tag';
 import { Config } from '../../../../src/types/config';
 import prettyBytes from 'pretty-bytes';
 import SelectWithIcon from '../generic/SelectWithIcon';
+import { BLCSet } from '../../../../src/types/blacklist';
+import BlcSetCopyModal from '../modals/BlcSetCopyModal';
 require ('./PlaylistHeader.scss');
 
 var tagsTypesList = [
@@ -35,6 +37,7 @@ var tagsTypesList = [
 
 interface IProps {
 	idPlaylist: number;
+	bLSet?: BLCSet;
 	idPlaylistTo: number;
 	scope: string;
 	side: number;
@@ -44,8 +47,9 @@ interface IProps {
 	config: Config;
 	playlistList: Array<PlaylistElem>;
 	searchMenuOpen?: boolean;
+	bLSetList: BLCSet[];
 	getPlaylistUrl: (idPlaylistParam?:number) => string;
-	changeIdPlaylist: (idPlaylist:number) => void;
+	changeIdPlaylist: (idPlaylist:number, idBLSet?:number) => void;
 	playlistWillUpdate: () => void;
 	playlistDidUpdate: () => void;
 	getPlaylist: (searchType?:string) => void;
@@ -95,20 +99,37 @@ class PlaylistHeader extends Component<IProps,IState> {
   	}, '1');
   };
 
-  addPlaylist = () => {
-  	callModal('prompt', i18next.t('CL_CREATE_PLAYLIST'), '', (playlistName:string) => {
-  		axios.post('/playlists', { name: playlistName, flag_visible: false, flag_current: false, flag_public: false }).then(response => {
-			this.props.changeIdPlaylist(response.data);
-  		});
-  	}
-  	);
-  };
+	addPlaylist = () => {
+		if (this.props.idPlaylist === -4) {
+			callModal('prompt', i18next.t('BLC.ADD'), '', (playlistName: string) => {
+				axios.post('/blacklist/set', { name: playlistName, flag_current: false }).then(response => {
+					this.props.changeIdPlaylist(-4, response.data.id);
+				});
+			});
+		} else {
+			callModal('prompt', i18next.t('CL_CREATE_PLAYLIST'), '', (playlistName: string) => {
+				axios.post('/playlists', { name: playlistName, flag_visible: false, flag_current: false, flag_public: false }).then(response => {
+					this.props.changeIdPlaylist(response.data);
+				});
+			});
+		}
+	};
 
   deletePlaylist = () => {
-  	callModal('confirm', i18next.t('CL_DELETE_PLAYLIST', { playlist: (this.props.playlistInfo as DBPL).name }), '', (confirm:boolean) => {
+	  callModal('confirm', i18next.t('CL_DELETE_PLAYLIST', 
+		  { playlist: this.props.idPlaylist === -4 ?
+			this.props.bLSet?.name :
+			(this.props.playlistInfo as DBPL).name }), '', (confirm:boolean) => {
   		if (confirm) {
-			  axios.delete('/playlists/' + this.props.idPlaylist);
-			  this.props.changeIdPlaylist(store.getModePlaylistID());
+			  let url = this.props.idPlaylist === -4 ? 
+				  `/blacklist/set/${this.props.bLSet?.blc_set_id}` : 
+				  `/playlists/${this.props.idPlaylist}`
+			  axios.delete(url);
+			  if (this.props.idPlaylist === -4) {
+				this.props.changeIdPlaylist(-4);
+			  } else {
+				this.props.changeIdPlaylist(store.getModePlaylistID());
+			  }
   		}
   	});
   };
@@ -120,14 +141,23 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
   exportPlaylist = async () => {
-	var url = this.props.idPlaylist === -5 ? '/favorites' : '/playlists/' + this.props.idPlaylist + '/export';
+	var url;
+	if (this.props.idPlaylist === -4) {
+		url = `/blacklist/set/${this.props.bLSet?.blc_set_id}/export`
+	} else if (this.props.idPlaylist === -5) {
+		url = `/favorites/export`
+	} else {
+		url = `/playlists/${this.props.idPlaylist}/export`
+	}
 	var response = await axios.get(url);
   	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
 	var dlAnchorElem = document.getElementById('downloadAnchorElem');
 	if (dlAnchorElem) {
 		dlAnchorElem.setAttribute('href', dataStr);
-		if (this.props.idPlaylist === -5) {
-			dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', (store.getLogInfos() as Token).username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+		if (this.props.idPlaylist === -4) {
+			dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.bLSet?.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmblc');
+		} else if (this.props.idPlaylist === -5) {
+			dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', (store.getLogInfos() as Token).username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
 		} else {
 			dlAnchorElem.setAttribute('download', ['KaraMugen', (this.props.playlistInfo as DBPL).name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
 		}
@@ -144,19 +174,29 @@ class PlaylistHeader extends Component<IProps,IState> {
 		file = e.target.files[0];
 		fr = new FileReader();
 		fr.onload = async () => {
-			var data:{playlist?:string | ArrayBuffer | null,favorites?:string | ArrayBuffer | null} = {};
-  			var name:string;
-			if (file.name.includes('KaraMugen_fav')) {
-				data['favorites'] = fr['result'];
+			var data:{
+				playlist?:string | ArrayBuffer | null,
+				favorites?:string | ArrayBuffer | null,
+				blcSet?: string | ArrayBuffer | null
+			} = {};
+			var name:string;
+			console.log(file.type)
+			console.log(file.name)
+			if (file.name.includes('.kmblc')) {
+				data.blcSet = fr.result;
+				url = '/blacklist/set/import';
+				name = JSON.parse(fr.result as string).blcSetInfo.name;
+			} else if (file.name.includes('.kmfavorites')) {
+				data.favorites = fr.result;
 				url = '/favorites/import';
 				name = 'Favs';
 			} else {
 				url = '/playlists/import';
-				data['playlist'] = fr['result'];
+				data.playlist = fr.result;
 				name = JSON.parse(fr.result as string).PlaylistInformation.name;
 			}
 			var response:{data:{code: string, data:{unknownKaras:Array<any>, playlist_id:number}}} = await axios.post(url, data);
-			if (response.data.data.unknownKaras && response.data.data.unknownKaras.length > 0) {
+			if (response.data.data?.unknownKaras && response.data.data.unknownKaras.length > 0) {
 				let mediasize = response.data.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 				callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
 					<p>
@@ -179,9 +219,10 @@ class PlaylistHeader extends Component<IProps,IState> {
 					}
 				})}));
 			} else {
+				!file.name.includes('.kmfavorites') && 
 				displayMessage('success', i18next.t(i18next.t(`SUCCESS_CODES.${response.data.code}`, { data: name })));
 			}
-			var playlist_id = file.name.includes('KaraMugen_fav') ? -5 : response.data.data.playlist_id;
+			let playlist_id = file.name.includes('.kmfavorites') ? -5 : response.data.data.playlist_id;
 			this.props.changeIdPlaylist(playlist_id);
 		};
 		fr.readAsText(file);
@@ -189,18 +230,20 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
   deleteAllKaras = () => {
-	if (this.props.idPlaylist === -2 || this.props.idPlaylist as number === -4) {
-		axios.put('/blacklist/criterias/empty');
-	} else if (this.props.idPlaylist as number === -3) {
+	if (this.props.idPlaylist === -2 || this.props.idPlaylist === -4) {
+		axios.put(`/blacklist/set/${this.props.bLSet?.blc_set_id}/criterias/empty`);
+	} else if (this.props.idPlaylist === -3) {
 		axios.put('/whitelist/empty');
 	} else {
-		axios.put(this.props.getPlaylistUrl().replace('/karas', '') + '/empty');
+		axios.put(`${this.props.getPlaylistUrl().replace('/karas', '')}/empty`);
 	}
   };
 
   setFlagCurrent = () => {
-  	if (!(this.props.playlistInfo as DBPL).flag_current) {
-  		axios.put('/playlists/' + this.props.idPlaylist + '/setCurrent');
+	if (this.props.idPlaylist === -4 && !this.props.bLSet?.flag_current) {
+		axios.put(`/blacklist/set/${this.props.bLSet?.blc_set_id}/setCurrent`);
+  	} else if (!(this.props.playlistInfo as DBPL).flag_current) {
+  		axios.put(`/playlists/${this.props.idPlaylist}/setCurrent`);
   	}
   };
 
@@ -211,19 +254,19 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
   setFlagVisible = () => {
-  	axios.put('/playlists/' + this.props.idPlaylist,
+  	axios.put(`/playlists/${this.props.idPlaylist}`,
   		{ name: (this.props.playlistInfo as DBPL).name, flag_visible: !(this.props.playlistInfo as DBPL).flag_visible });
   };
 
   shuffle = async () => {
   	this.props.playlistWillUpdate();
-  	await axios.put('/playlists/' + this.props.idPlaylist + '/shuffle');
+  	await axios.put(`/playlists/${this.props.idPlaylist}/shuffle`);
   	this.props.playlistDidUpdate();
   };
 
   smartShuffle = () => {
   	this.props.playlistWillUpdate();
-  	axios.put('/playlists/' + this.props.idPlaylist + '/shuffle', { smartShuffle: 1 });
+  	axios.put(`/playlists/${this.props.idPlaylist}/shuffle`, { smartShuffle: 1 });
   	this.props.playlistDidUpdate();
   };
 
@@ -263,7 +306,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 		return 'fa-list-ol';
 	}
 
-	getListToSelect() {
+	getListToSelect = () => {
 		if (this.props.scope === 'public' && this.props.side === 1 && this.props.config.Frontend.Mode === 1) {
 			return [{value: store.getModePlaylistID().toString(), 
 				label: this.props.playlistList.filter(pl => pl.playlist_id === store.getModePlaylistID())[0].name}];
@@ -276,76 +319,98 @@ class PlaylistHeader extends Component<IProps,IState> {
 		});
 	}
 
+	copyBlcSet = () => {
+		ReactDOM.render(<BlcSetCopyModal 
+			bLSetFrom={this.props.bLSet?.blc_set_id as number} 
+			bLSetList={this.props.bLSetList.filter(blcset => blcset.blc_set_id !== this.props.bLSet?.blc_set_id)} 
+			/>, document.getElementById('modal'));
+	}
+
   render() {
   	const commandsControls = (
   		<div className="btn-group plCommands controls">
-  			{this.props.idPlaylist >= 0 ?
-  				<button title={i18next.t('PLAYLIST_EDIT')} className="btn btn-default" name="editName" onClick={this.props.editNamePlaylist}>
+  			{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
+  				<button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.EDIT' : 'PLAYLIST_EDIT')} className="btn btn-default" name="editName" onClick={this.props.editNamePlaylist}>
   					<i className="fas fa-pencil-alt"></i>
   				</button> : null
   			}
-  			<button title={i18next.t('START_FAV_MIX')} className="btn btn-default" name="startFavMix" onClick={this.startFavMix}>
-  				<i className="fas fa-bolt"></i>
-  			</button>
-  			<button title={i18next.t('PLAYLIST_ADD')} className="btn btn-default" name="add" onClick={this.addPlaylist}>
+			{this.props.idPlaylist !== -4 ?
+				<button title={i18next.t('START_FAV_MIX')} className="btn btn-default" name="startFavMix" onClick={this.startFavMix}>
+					<i className="fas fa-bolt"></i>
+				</button> : null
+  			}
+  			<button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.ADD' : 'PLAYLIST_ADD')} className="btn btn-default" name="add" onClick={this.addPlaylist}>
   				<i className="fas fa-plus"></i>
   			</button>
-  			{this.props.idPlaylist >= 0 && this.props.playlistInfo && !this.props.playlistInfo.flag_current && !this.props.playlistInfo.flag_public ?
-  				<button title={i18next.t('PLAYLIST_DELETE')} className="btn btn-danger" name="delete" onClick={this.deletePlaylist}>
+			  {(this.props.idPlaylist >= 0 && this.props.playlistInfo && !this.props.playlistInfo.flag_current && !this.props.playlistInfo.flag_public)
+			  	|| (this.props.idPlaylist === -4 && !this.props.bLSet?.flag_current) ?
+				  <button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.DELETE' : 'PLAYLIST_DELETE')}
+					className="btn btn-danger" name="delete" onClick={this.deletePlaylist}>
   					<i className="fas fa-times"></i>
   				</button> : null
   			}
-  			<label htmlFor={'import-file' + this.props.side} title={i18next.t('PLAYLIST_IMPORT')} className="btn btn-default">
+			  <label title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.IMPORT' : (this.props.idPlaylist === -5 ? 'FAVORITES_IMPORT' : 'PLAYLIST_IMPORT'))} 
+			  className="btn btn-default" htmlFor={'import-file' + this.props.side}>
   				<i className="fas fa-download"></i>
-  				<input id={'import-file' + this.props.side} className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }}
+  				<input id={'import-file' + this.props.side} className="import-file" type="file" accept=".kmplaylist, .kmfavorites, .kmblc" style={{ display: 'none' }}
   					onChange={this.importPlaylist} />
   			</label>
-  			<button title={i18next.t('PLAYLIST_EXPORT')} className="btn btn-default" name="export" onClick={this.exportPlaylist} >
+			  <button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.EXPORT' : (this.props.idPlaylist === -5 ? 'FAVORITES_EXPORT' : 'PLAYLIST_EXPORT'))} 
+			  	className="btn btn-default" name="export" onClick={this.exportPlaylist} >
   				<i className="fas fa-upload"></i>
   			</button>
   		</div>);
 
   	const actionDivContainer = (
   		<div className="btn-group plCommands actionDiv">
-  			{this.props.idPlaylistTo >= 0 ?
+  			{this.props.idPlaylistTo >= 0 && this.props.idPlaylist !== -4 ?
   				<React.Fragment>
   					<button title={i18next.t('ADD_RANDOM_KARAS')} name="addRandomKaras" className="btn btn-default" onClick={this.addRandomKaras}>
   						<img src={getLucky} />
   					</button>
-  					<button title={i18next.t('ADD_ALL_KARAS')} name="addAllKaras" className="btn btn-danger" onClick={this.props.addAllKaras}>
+  					<button title={i18next.t('ADD_ALL_KARAS')} className="btn btn-danger" onClick={this.props.addAllKaras}>
   						<i className="fas fa-share"></i>
   					</button>
   				</React.Fragment>
   				: null
   			}
-  			{this.props.idPlaylist >= 0 ?
-  				<button title={i18next.t('EMPTY_LIST')} name="deleteAllKaras" className="btn btn-danger" onClick={this.deleteAllKaras}>
+			{this.props.idPlaylist === -4 && this.props.bLSetList.length > 1 ?
+				<button title={i18next.t('BLC.COPY')} className="btn btn-default" onClick={this.copyBlcSet}>
+					<i className="fas fa-copy"></i>
+				</button> : null
+			}
+  			{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
+  				<button title={i18next.t('EMPTY_LIST')} className="btn btn-danger" onClick={this.deleteAllKaras}>
   					<i className="fas fa-eraser"></i>
   				</button> : null
   			}
-  			<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
-  				scope={this.props.scope} isHeader={true}
-  				addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
-  			<button
-  				title={i18next.t('SELECT_ALL')}
-  				name="selectAllKaras"
-  				onClick={() => {
-  					this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
-  					this.props.selectAllKaras();
-  				}}
-  				className="btn btn-default"
-  			>
-  				{
-  					this.state.selectAllKarasChecked
-  						? <i className="far fa-check-square"></i>
-  						: <i className="far fa-square"></i>
-  				}
-  			</button>
+			{this.props.idPlaylist !== -4 ?
+				<React.Fragment>
+					<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
+						scope={this.props.scope} isHeader={true}
+						addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
+					<button
+						title={i18next.t('SELECT_ALL')}
+						name="selectAllKaras"
+						onClick={() => {
+							this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
+							this.props.selectAllKaras();
+						}}
+						className="btn btn-default"
+					>
+						{
+							this.state.selectAllKarasChecked
+								? <i className="far fa-check-square"></i>
+								: <i className="far fa-square"></i>
+						}
+					</button>
+				</React.Fragment> : null
+			}
   		</div>);
 
       
   	const plCommandsContainer =(
-  		this.props.scope === 'admin' && this.props.playlistCommands && this.props.idPlaylist !== -4 ?
+  		this.props.scope === 'admin' && this.props.playlistCommands ?
   			<div className="plCommandsContainer actionDivContainer">
   				<React.Fragment>{commandsControls} {actionDivContainer}</React.Fragment>
   			</div> : null);
@@ -398,24 +463,27 @@ class PlaylistHeader extends Component<IProps,IState> {
   	</div>);
 
   	const flagsContainer = (
-  		this.props.idPlaylist >= 0 && this.props.scope !== 'public' && this.props.playlistInfo ?
+  		(this.props.idPlaylist >= 0 && this.props.playlistInfo) || this.props.idPlaylist === -4 && this.props.scope !== 'public' ?
   			<div className="flagsContainer " >
   				<div className="btn-group plCommands flags" id={'flag' + this.props.side}>
-				  	{!this.props.playlistInfo.flag_public ?
-						<button title={i18next.t('PLAYLIST_CURRENT')} name="flag_current" onClick={this.setFlagCurrent}
-							className={'btn ' + (this.props.playlistInfo.flag_current ? 'btn-primary' : 'btn-default')} >
+					  {!this.props.playlistInfo?.flag_public || this.props.idPlaylist === -4  ?
+						<button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.CURRENT' : 'PLAYLIST_CURRENT')} 
+							name="flag_current" onClick={this.setFlagCurrent}
+							className={`btn ${(this.props.idPlaylist === -4 && this.props.bLSet?.flag_current) 
+								|| this.props.playlistInfo?.flag_current 
+								? 'btn-primary' : 'btn-default'}`} >
 							<i className="fas fa-play-circle"></i>
 						</button> : null
   					}
-					{!this.props.playlistInfo.flag_current ?
+					{(this.props.idPlaylist !== -4 && !this.props.playlistInfo?.flag_current ?
 						<button title={i18next.t('PLAYLIST_PUBLIC')} name="flag_public" onClick={this.setFlagPublic}
-							className={'btn ' + (this.props.playlistInfo.flag_public ? 'btn-primary' : 'btn-default')} >
+							className={'btn ' + (this.props.playlistInfo?.flag_public ? 'btn-primary' : 'btn-default')} >
 							<i className="fas fa-globe"></i>
 						</button> : null
   					}
   					{this.props.idPlaylist >= 0 ?
   						<button title={i18next.t('PLAYLIST_VISIBLE')} className="btn btn-default" name="flag_visible" onClick={this.setFlagVisible}>
-  							{this.props.playlistInfo.flag_visible ?
+  							{this.props.playlistInfo?.flag_visible ?
   								<i className="fas fa-eye-slash"></i> :
   								<i className="fas fa-eye"></i>
   							}
@@ -431,7 +499,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   				<div className={'panel-heading plDashboard' + (this.props.playlistCommands ? ' advanced' : '')}>
   					{this.props.scope === 'admin' || this.props.config.Frontend.Mode !== 1 ?
   						<React.Fragment>
-  							{this.props.scope === 'admin' && this.props.idPlaylist !== -4 ?
+  							{this.props.scope === 'admin' ?
   								<button title={i18next.t('PLAYLIST_COMMANDS')} onClick={this.props.togglePlaylistCommands}
   									className={'btn btn-default pull-left showPlaylistCommands' + (this.props.playlistCommands ? ' btn-primary' : '')}>
   									<i className="fas fa-wrench"></i>
@@ -456,6 +524,14 @@ class PlaylistHeader extends Component<IProps,IState> {
 								</select> :
 								<SelectWithIcon list={this.getListToSelect()} value={this.props.idPlaylist.toString()} 
 									onChange={(value) => this.props.changeIdPlaylist(Number(value))}/>
+  							}
+							{this.props.scope === 'admin' && this.props.idPlaylist === -4 ?
+							  	<select className="selectPlaylist"
+									value={this.props.bLSet?.blc_set_id} onChange={(e) => this.props.changeIdPlaylist(this.props.idPlaylist, Number(e.target.value))}>
+									{this.props.bLSetList.map(set => {
+										return <option className="selectPlaylist" key={set.blc_set_id} value={set.blc_set_id}>{set.name}</option>;
+									})}
+								</select> : null
   							}
   						</React.Fragment> : null
   					}

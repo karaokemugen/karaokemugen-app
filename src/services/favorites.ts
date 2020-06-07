@@ -140,9 +140,9 @@ export async function exportFavorites(username: string) {
 				kid: k.kid,
 				title: k.title,
 				songorder: k.songorder,
-				serie: k.series[0].name,
+				serie: k.series.map(s => s.name).join(' '),
 				songtype: k.songtypes.map(s => s.name).join(' '),
-				language: k.langs[0].name
+				language: k.langs.map(s => s.name).join(' '),
 			};
 		})
 	};

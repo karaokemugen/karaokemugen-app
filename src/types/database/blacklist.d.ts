@@ -3,9 +3,9 @@ import { DBKara } from "../../lib/types/database/kara";
 export interface DBBLC {
 	blcriteria_id: number,
 	type: number,
-	value: string
+	value: string,
+	blc_set_id: number
 }
-
 export interface DBBlacklist extends DBKara {
 	blacklisted_at: Date,
 	reason: string,

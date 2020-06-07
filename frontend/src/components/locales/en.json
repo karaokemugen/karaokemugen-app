@@ -77,9 +77,9 @@
 	"SWITCH_PRIVATE": "Public/Private mode",
 	"SWITCH_OPTIONS": "Playlists/Options",
 	"PLAYLIST_EXPORT": "Export playlist",
-	"PLAYLIST_CURRENT": "Current playlist",
-	"PLAYLIST_PUBLIC": "Public playlist",
-	"PLAYLIST_VISIBLE": "Visible playlist",
+	"PLAYLIST_CURRENT": "Switch playlist to current",
+	"PLAYLIST_PUBLIC": "Switch playlist to public",
+	"PLAYLIST_VISIBLE": "Switch playlist to visible",
 	"PLAYLIST_BLACKLIST": "Blacklist",
 	"PLAYLIST_BLACKLIST_CRITERIAS": "Blacklist criterias",
 	"PLAYLIST_WHITELIST": "Whitelist",
@@ -135,6 +135,16 @@
 	"PLAYLIST_ADD": "Add playlist",
 	"PLAYLIST_DELETE": "Delete playlist",
 	"PLAYLIST_IMPORT": "Import playlist",
+	"BLC": {
+		"ADD": "Create criterias list",
+		"EDIT": "Rename criterias list",
+		"DELETE": "Delete criterias list",
+		"IMPORT": "Import criterias list",
+		"EXPORT": "Export criterias list",
+		"CURRENT": "Switch criterias list to current",
+		"COPY": "Copy this criteria list",
+		"COPY_TO": "Copy criterias to the following list : "
+	},
 	"ADD_ALL_KARAS": "Add all songs",
 	"EMPTY_LIST": "Empty playlist",
 	"ADD_KARA": "Add song",
@@ -602,7 +612,15 @@
 		"ADMIN_PLEASE": "Please use an operator account",
 		"NOT_GUEST": "Guests cannot use this function",
 		"REPO_COMPARE_LYRICS_ERROR": "Error comparing lyrics between two repositories",
-		"REPO_COPY_LYRICS_ERROR": "Error copying lyrics between two repositories"
+		"REPO_COPY_LYRICS_ERROR": "Error copying lyrics between two repositories",
+		"BLC_SET_GET_ERROR": "Error fetching blacklist criterias sets",
+		"BLC_SET_DELETE_ERROR": "Error deleting blacklist criterias set",
+		"BLC_SET_UPDATE_ERROR": "Error updating blacklist criterias set",
+		"BLC_SET_CREATE_ERROR": "Error creating blacklist criterias set",
+		"BLC_SET_CURRENT_ERROR": "Error setting a blacklist criterias set to current",
+		"BLC_COPY_ERROR": "Error copying blacklist criterias to another set",
+		"BLC_SET_EXPORT_ERROR": "Error exporting blacklist criterias set",
+		"BLC_SET_IMPORT_ERROR": "Error importing blacklist criterias set"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
@@ -659,6 +677,9 @@
 		"USER_RESETPASSWORD_ONLINE": "An email has been sent with a link to reset your password.",
 		"BLC_DELETED": "Blacklist criteria successfully deleted",
 		"BLC_ADDED": "Blacklist criteria successfully added",
-		"REPO_LYRICS_COPIED": "Copy lyrics between two repositories successfully finished"
+		"REPO_LYRICS_COPIED": "Copy lyrics between two repositories successfully finished",
+		"FAVORITES_IMPORTED": "Favorites imported",
+		"BLC_SET_IMPORTED": "Blacklist criterias set imported",
+		"BLC_COPIED": "Blacklist criterias copied"
 	}
 }

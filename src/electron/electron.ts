@@ -13,6 +13,7 @@ import logger from '../lib/utils/logger';
 import { on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
 import { integrateDownloadBundle } from '../services/download';
+import { importSet } from '../services/blacklist';
 import { importFavorites } from '../services/favorites';
 import { isAllKaras } from '../services/kara';
 import { playSingleSong } from '../services/player';
@@ -134,6 +135,15 @@ export async function handleFile(file: string, username?: string) {
 				}
 			}
 			await integrateDownloadBundle(data, uuidV4(), destRepo);
+			break;
+		case 'Karaoke Mugen BLC Set File':
+			await importSet(data);
+			if (win && !win.webContents.getURL().includes('/admin')) {
+				win.loadURL(url);
+				win.webContents.on('did-finish-load', () => emitWS('BLCSetsUpdated'));
+			} else {
+				emitWS('BLCSetsUpdated');
+			}
 			break;
 		case 'Karaoke Mugen Favorites List File':
 			if (!username) throw 'Unable to find a user to import the file to';
