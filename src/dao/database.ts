@@ -13,6 +13,7 @@ import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
 import {initPG,isShutdownPG} from '../utils/postgresql';
 import {getState} from '../utils/state';
+import { generateBlacklist } from './blacklist';
 import { baseChecksum } from './dataStore';
 import { getPlaylists, reorderPlaylist } from './playlist';
 import { sqlGetStats,sqlResetUserData } from './sql/database';
@@ -186,12 +187,17 @@ export async function generateDB(queue?: boolean): Promise<boolean> {
 					name: `reorderPlaylist${pl.playlist_id}`
 				});
 			}
+			newDBTask({
+				func: generateBlacklist,
+				name: 'generateBlacklist'
+			});
 		} else {
 			await generateDatabase(opts);
 			const pls = await getPlaylists(false);
 			for (const pl of pls) {
 				await reorderPlaylist(pl.playlist_id);
 			}
+			await generateBlacklist();
 		}
 	} catch(err) {
 		const error = new Error(err);
@@ -200,5 +206,6 @@ export async function generateDB(queue?: boolean): Promise<boolean> {
 	}
 	return true;
 }
+
 
 

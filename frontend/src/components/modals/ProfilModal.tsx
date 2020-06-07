@@ -151,7 +151,7 @@ class ProfilModal extends Component<IProps, IState> {
 		var dlAnchorElem = document.getElementById('downloadAnchorElem');
 		if (dlAnchorElem) {
 			dlAnchorElem.setAttribute('href', dataStr);
-			dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', (store.getLogInfos() as Token).username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+			dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', (store.getLogInfos() as Token).username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
 			dlAnchorElem.click();
 		}
     }
@@ -273,7 +273,7 @@ class ProfilModal extends Component<IProps, IState> {
     												<label htmlFor="favImport" title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
     													<i className="fas fa-download"></i> {i18next.t('IMPORT')}
     												</label>
-													<input id="favImport" className="import-file" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.favImport} />
+													<input id="favImport" className="import-file" type="file" accept=".kmfavorites" style={{ display: 'none' }} onChange={this.favImport} />
     												<button type="button" title={i18next.t('FAVORITES_EXPORT')} className="btn btn-action btn-default favExport" onClick={this.favExport}>
     													<i className="fas fa-upload"></i> {i18next.t('EXPORT')}
     												</button>

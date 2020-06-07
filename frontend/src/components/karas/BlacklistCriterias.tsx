@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import axios from 'axios';
 import Autocomplete from '../generic/Autocomplete';
 import { buildKaraTitle } from '../tools';
-import { BLC } from '../../../../src/types/blacklist';
+import { BLC, BLCSet } from '../../../../src/types/blacklist';
 import { Tag } from '../../types/tag';
 require('./BlacklistCriterias.scss');
 
@@ -30,6 +30,7 @@ interface IProps {
 	scope: string;
 	data: Array<BLC>;
 	tags: Array<Tag> | undefined;
+	blSet: BLCSet;
 }
 
 
@@ -48,17 +49,17 @@ class BlacklistCriterias extends Component<IProps, IState> {
 	}
 
     addBlacklistCriteria = () => {
-		axios.post('/blacklist/criterias',
+		axios.post(`/blacklist/set/${this.props.blSet.blc_set_id}/criterias`,
 			{ blcriteria_type: this.state.bcType, blcriteria_value: this.state.bcVal });
     };
 
     deleteCriteria = (bcId:number) => {
-		axios.delete(`/blacklist/criterias/${bcId}`);
+		axios.delete(`/blacklist/set/${this.props.blSet.blc_set_id}/criterias/${bcId}`);
     };
 
     render() {
-    	var types:Array<number> = [];
-    	this.props.data.forEach(element => {
+		var types:Array<number> = [];
+    	this.props.data && this.props.data.forEach(element => {
     		if (!types.includes(element.type)) types.push(element.type);
     	});
     	var tagsFiltered = this.props.tags ? this.props.tags.filter(obj => obj.type.includes(this.state.bcType)) : [];

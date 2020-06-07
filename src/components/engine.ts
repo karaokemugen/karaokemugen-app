@@ -20,6 +20,7 @@ import { asyncExists } from '../lib/utils/files';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import {emit, on} from '../lib/utils/pubsub';
 import { sentryError } from '../lib/utils/sentry';
+import {initBlacklistSystem} from '../services/blacklist';
 import {downloadTestSongs,initDownloader, updateAllBases, updateAllMedias} from '../services/download';
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initOnlineURLSystem} from '../services/online';
@@ -139,6 +140,7 @@ export async function initEngine() {
 			sentryError(err);
 		}
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
+		initBlacklistSystem();
 		initPlaylistSystem();
 		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) initPlayer();
 		testPlaylists();

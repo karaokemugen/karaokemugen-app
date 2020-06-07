@@ -458,7 +458,15 @@
 		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
 		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction",
 		"REPO_COMPARE_LYRICS_ERROR": "Erreur lors de la comparaison des paroles de deux dépôts",
-		"REPO_COPY_LYRICS_ERROR": "Erreur lors de la copie des paroles entre deux dépôts"
+		"REPO_COPY_LYRICS_ERROR": "Erreur lors de la copie des paroles entre deux dépôts",
+		"BLC_SET_GET_ERROR": "Erreur lors de la récupération des listes de critères de liste noire",
+		"BLC_SET_DELETE_ERROR": "Erreur lors de la suppression d'une liste de critères de liste noire",
+		"BLC_SET_UPDATE_ERROR": "Erreur lors de la mise à jour d'une liste de critères de liste noire",
+		"BLC_SET_CREATE_ERROR": "Erreur lors de la création d'une liste de critères de liste noire",
+		"BLC_SET_CURRENT_ERROR": "Erreur lors du passage à courant d'une liste de critères de liste noire",
+		"BLC_COPY_ERROR": "Erreur lors de la copie de critères de liste noir vers une autre liste",
+		"BLC_SET_EXPORT_ERROR": "Erreur lors de l'export d'une liste de critères de liste noire",
+		"BLC_SET_IMPORT_ERROR": "Erreur lors de l'import d'une liste de critères de liste noire"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
@@ -513,8 +521,11 @@
 		"WL_SONG_ADDED": "Chanson ajoutée dans la liste blanche",
 		"WL_SONG_DELETED": "Chanson supprimé de la liste blanche",
 		"USER_RESETPASSWORD_ONLINE": "Un email avec un lien pour réinitialiser votre mot de passe vous a été envoyé.",
-		"BLC_DELETED": "Critère de liste noir ajouté avec succès",
-		"BLC_ADDED": "Critère de liste noir supprimé avec succès",
-		"REPO_LYRICS_COPIED": "Copie des paroles entre les deux dépôts finie avec succès"
+		"BLC_ADDED": "Critère de liste noir ajouté avec succès",
+		"BLC_DELETED": "Critère de liste noir supprimé avec succès",
+		"REPO_LYRICS_COPIED": "Copie des paroles entre les deux dépôts finie avec succès",
+		"FAVORITES_IMPORTED": "Favoris importés",
+		"BLC_SET_IMPORTED": "Liste de critères de liste noire importé",
+		"BLC_COPIED": "Copie avec succès des critères de liste noire"
 	}
 }

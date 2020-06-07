@@ -18,6 +18,7 @@ import { DBBLC,DBBlacklist } from '../../../../src/types/database/blacklist';
 import { Token } from '../../../../src/lib/types/user';
 import SuggestionModal from '../modals/SuggestionModal';
 import ReactDOM from 'react-dom';
+import { BLCSet } from '../../../../src/types/blacklist';
 require('./Playlist.scss');
 
 const chunksize = 400;
@@ -50,10 +51,12 @@ interface IState {
 	forceUpdateFirst: boolean;
 	scope?: string;
 	idPlaylist: number;
+	bLSet?: BLCSet
 	data: KaraList | Array<DBBLC> | undefined;
 	quotaString?: any;
 	scrollToIndex?: number;
 	playlistInfo?: DBPL;
+	bLSetList: BLCSet[];
 }
 
 interface KaraList {
@@ -77,7 +80,9 @@ class Playlist extends Component<IProps, IState> {
 			forceUpdate: false,
 			forceUpdateFirst: false,
 			idPlaylist: 0,
-			data: undefined
+			bLSet: undefined,
+			data: undefined,
+			bLSetList: []
 		};
 	}
 
@@ -129,6 +134,7 @@ class Playlist extends Component<IProps, IState> {
 	  	await this.getIdPlaylist();
 		  if (this.state.idPlaylist === -1 || this.props.playlistList
 			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
+			this.state.idPlaylist === -4 && await this.loadBLSet();
 			await this.getPlaylist();
 	  }
   }
@@ -197,7 +203,6 @@ loadMoreRows = async ({startIndex, stopIndex}:IndexRange) => {
 		timer = setTimeout(this.getPlaylist, 1000);
 	}
 }
-
 
 rowRenderer = ({ index, isScrolling, key, parent, style }:ListRowProps) => {
 	let content;
@@ -283,21 +288,39 @@ noRowsRenderer = () => {
   	this.props.majIdsPlaylist(this.props.side, value);
   };
 
-  changeIdPlaylist = (idPlaylist:number) => {
-	localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
-  	this.setState({ idPlaylist: Number(idPlaylist),data: undefined }, this.getPlaylist);
-  	this.props.majIdsPlaylist(this.props.side, idPlaylist);
-  };
+	loadBLSet = async (idBLSet?: number) => {
+		let bLSetList = (await axios.get('/blacklist/set')).data;
+		let bLSet = bLSetList.filter((set: BLCSet) => idBLSet ?  set.blc_set_id === idBLSet : set.flag_current)[0];
+		await this.setState({ bLSetList: bLSetList, bLSet: bLSet });
+	}
 
-  editNamePlaylist = () => {
-  	callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: (this.state.playlistInfo as DBPL).name }), '', (newName:string) => {
-		  axios.put('/playlists/' + this.state.idPlaylist, 
-		  { name: newName, flag_visible: (this.state.playlistInfo as DBPL).flag_public });
-  		var playlistInfo = this.state.playlistInfo as DBPL;
-  		playlistInfo.name = newName;
-  		this.setState({ playlistInfo: playlistInfo });
-  	});
-  };
+	changeIdPlaylist = async (idPlaylist: number, idBLSet?: number) => {
+		if (idPlaylist === -4) {
+			await this.loadBLSet(idBLSet);
+		}
+		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
+		this.setState({ idPlaylist: Number(idPlaylist), data: undefined }, this.getPlaylist);
+		this.props.majIdsPlaylist(this.props.side, idPlaylist);
+	};
+
+	editNamePlaylist = () => {
+		if (this.state.idPlaylist === -4) {
+			callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: this.state.bLSet?.name }), '', (newName: string) => {
+				axios.put(`/blacklist/set/${this.state.bLSet?.blc_set_id}`, { name: newName });
+				var bLSet = this.state.bLSet as BLCSet;
+				bLSet.name = newName;
+				this.setState({ bLSet: bLSet });
+			});
+		} else {
+			callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: (this.state.playlistInfo as DBPL).name }), '', (newName: string) => {
+				axios.put(`/playlists/${this.state.idPlaylist}`,
+					{ name: newName, flag_visible: (this.state.playlistInfo as DBPL).flag_public });
+				var playlistInfo = this.state.playlistInfo as DBPL;
+				playlistInfo.name = newName;
+				this.setState({ playlistInfo: playlistInfo });
+			});
+		}
+	};
 
   getPlaylistInfo = async () => {
   	if (!this.state.getPlaylistInProgress) {
@@ -321,7 +344,7 @@ noRowsRenderer = () => {
   	} else if (idPlaylist === -3) {
   		url = '/whitelist';
   	} else if (idPlaylist === -4) {
-  		url = '/blacklist/criterias';
+  		url = `/blacklist/set/${this.state.bLSet?.blc_set_id}/criterias`;
   	} else if (idPlaylist === -5) {
   		url = '/favorites';
   	}
@@ -652,83 +675,89 @@ noRowsRenderer = () => {
   			</div>
   		) : (
   			<div className="playlist--wrapper">
-  				<PlaylistHeader
-  					side={this.props.side}
+				<PlaylistHeader
+					side={this.props.side}
 					scope={this.props.scope}
 					config={this.props.config}
-  					playlistList={this.props.playlistList.filter(
-						  (playlist:PlaylistElem) => playlist.playlist_id !== this.props.idPlaylistTo)}
-  					idPlaylist={this.state.idPlaylist}
-  					changeIdPlaylist={this.changeIdPlaylist}
-  					playlistInfo={this.state.playlistInfo}
-  					getPlaylistUrl={this.getPlaylistUrl}
-  					togglePlaylistCommands={this.togglePlaylistCommands}
-  					playlistCommands={this.state.playlistCommands}
-  					editNamePlaylist={this.editNamePlaylist}
-  					idPlaylistTo={this.props.idPlaylistTo}
-  					selectAllKaras={this.selectAllKaras}
-  					addAllKaras={this.addAllKaras}
-  					addCheckedKaras={this.addCheckedKaras}
-  					transferCheckedKaras={this.transferCheckedKaras}
-  					deleteCheckedKaras={this.deleteCheckedKaras}
-  					tags={this.props.tags}
-  					onChangeTags={this.onChangeTags}
-  					getPlaylist={this.getPlaylist}
-  					toggleSearchMenu={this.props.toggleSearchMenu}
-  					searchMenuOpen={this.props.searchMenuOpen}
-  					playlistWillUpdate={this.playlistWillUpdate}
-  					playlistDidUpdate={this.playlistDidUpdate}
-  				/>
+					playlistList={this.props.playlistList.filter(
+						(playlist: PlaylistElem) => playlist.playlist_id !== this.props.idPlaylistTo)}
+					idPlaylist={this.state.idPlaylist}
+					bLSet={this.state.bLSet}
+					bLSetList={this.state.bLSetList}
+					changeIdPlaylist={this.changeIdPlaylist}
+					playlistInfo={this.state.playlistInfo}
+					getPlaylistUrl={this.getPlaylistUrl}
+					togglePlaylistCommands={this.togglePlaylistCommands}
+					playlistCommands={this.state.playlistCommands}
+					editNamePlaylist={this.editNamePlaylist}
+					idPlaylistTo={this.props.idPlaylistTo}
+					selectAllKaras={this.selectAllKaras}
+					addAllKaras={this.addAllKaras}
+					addCheckedKaras={this.addCheckedKaras}
+					transferCheckedKaras={this.transferCheckedKaras}
+					deleteCheckedKaras={this.deleteCheckedKaras}
+					tags={this.props.tags}
+					onChangeTags={this.onChangeTags}
+					getPlaylist={this.getPlaylist}
+					toggleSearchMenu={this.props.toggleSearchMenu}
+					searchMenuOpen={this.props.searchMenuOpen}
+					playlistWillUpdate={this.playlistWillUpdate}
+					playlistDidUpdate={this.playlistDidUpdate}
+				/>
   				<div
   					id={'playlistContainer' + this.props.side}
   					className="playlistContainer"
   				>
-  					<ul id={'playlist' + this.props.side} className="list-group" style={{height: '100%'}}>
-  						{
-							  (!this.state.data || this.state.data && (this.state.data as KaraList).infos 
-							  && ((this.state.data as KaraList).infos.count === 0 || !(this.state.data as KaraList).infos.count)) 
-							  && this.state.getPlaylistInProgress
-  								? <li className="getPlaylistInProgressIndicator"><span className="fas fa-sync"></span></li>
-  								: (
-  									this.state.idPlaylist !== -4 && this.state.data
-  										? <InfiniteLoader
-  											isRowLoaded={this.isRowLoaded}
-  											loadMoreRows={this.loadMoreRows}
-  											rowCount={(this.state.data as KaraList).infos.count || 0}>
-  											{({ onRowsRendered, registerChild }) => (
-  												<AutoSizer>
-  													{({ height, width }) => (
-  														<this.SortableList
-														  {...[this.state.playlistCommands, this.state.forceUpdate]}
-  															pressDelay={0}
-  															helperClass="playlist-dragged-item"
-  															useDragHandle={true}
-  															deferredMeasurementCache={_cache}
-  															ref={registerChild}
-  															onRowsRendered={onRowsRendered}
-  															rowCount={((this.state.data as KaraList).infos.count) || 0}
-  															rowHeight={_cache.rowHeight}
-  															rowRenderer={this.rowRenderer}
-  															noRowsRenderer={this.noRowsRenderer}
-  															height={height}
-  															width={width}
-  															onSortStart={this.stopUpdate}
-  															onSortEnd={this.sortRow}
-  															onScroll={this.clearScrollToIndex}
-  															scrollToIndex={this.state.scrollToIndex}
+					<ul id={'playlist' + this.props.side} className="list-group" style={{ height: '100%' }}>
+						{
+							(!this.state.data || this.state.data && (this.state.data as KaraList).infos
+								&& ((this.state.data as KaraList).infos.count === 0 || !(this.state.data as KaraList).infos.count))
+								&& this.state.getPlaylistInProgress
+								? <li className="getPlaylistInProgressIndicator"><span className="fas fa-sync"></span></li>
+								: (
+									this.state.idPlaylist !== -4 && this.state.data
+										? <InfiniteLoader
+											isRowLoaded={this.isRowLoaded}
+											loadMoreRows={this.loadMoreRows}
+											rowCount={(this.state.data as KaraList).infos.count || 0}>
+											{({ onRowsRendered, registerChild }) => (
+												<AutoSizer>
+													{({ height, width }) => (
+														<this.SortableList
+															{...[this.state.playlistCommands, this.state.forceUpdate]}
+															pressDelay={0}
+															helperClass="playlist-dragged-item"
+															useDragHandle={true}
+															deferredMeasurementCache={_cache}
+															ref={registerChild}
+															onRowsRendered={onRowsRendered}
+															rowCount={((this.state.data as KaraList).infos.count) || 0}
+															rowHeight={_cache.rowHeight}
+															rowRenderer={this.rowRenderer}
+															noRowsRenderer={this.noRowsRenderer}
+															height={height}
+															width={width}
+															onSortStart={this.stopUpdate}
+															onSortEnd={this.sortRow}
+															onScroll={this.clearScrollToIndex}
+															scrollToIndex={this.state.scrollToIndex}
 															scrollToAlignment="start"
-  														/>)}
-  												</AutoSizer>
-  											)}
-  										</InfiniteLoader>
-  										: (
-  											this.state.data
-  												? <BlacklistCriterias data={this.state.data as DBBLC[]} scope={this.props.scope} tags={this.props.tags} />
-  												: null
-  										)
-  								)
-  						}
-  					</ul>
+														/>)}
+												</AutoSizer>
+											)}
+										</InfiniteLoader>
+										: (
+											this.state.data &&
+											<BlacklistCriterias
+												data={this.state.data as DBBLC[]}
+												scope={this.props.scope}
+												tags={this.props.tags}
+												blSet={this.state.bLSet as BLCSet}
+											/>
+										)
+								)
+						}
+					</ul>
   				</div>
   				<div
   					className="plFooter">

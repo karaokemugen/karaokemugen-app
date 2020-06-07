@@ -1,21 +1,111 @@
 import langs from 'langs';
 
 import {	addBlacklistCriteria as addBLC,
+	copyBLCSet,
+	createBLCSet,
 	deleteBlacklistCriteria as deleteBLC,
+	deleteSet,
+	editBLCSet,
 	emptyBlacklistCriterias as emptyBLC,
 	generateBlacklist as generateBL,
 	getBlacklistContents as getBLContents,
 	getBlacklistCriterias as getBLC,
+	getCurrentBLCSet,
+	selectSet,
+	selectSets,
+	setCurrentSet,
+	unsetCurrentSet,
 } from '../dao/blacklist';
 import {KaraList, KaraParams} from '../lib/types/kara';
 import {uuidRegexp} from '../lib/utils/constants';
 import logger, { profile } from '../lib/utils/logger';
 import { sentryError } from '../lib/utils/sentry';
 import {isNumber} from '../lib/utils/validators';
-import {BLC} from '../types/blacklist';
-import {getState} from '../utils/state';
+import {BLC, BLCSet, BLCSetFile} from '../types/blacklist';
+import {getState, setState} from '../utils/state';
 import {formatKaraList, getKara} from './kara';
 import {getTag} from './tag';
+
+export async function editSet(params: BLCSet) {
+	const blcSet = await selectSet(params.blc_set_id);
+	if (!blcSet) throw 'BLC set unknown';
+	await editBLCSet(params);
+	updatedSetModifiedAt(blcSet.blc_set_id);
+}
+
+async function updatedSetModifiedAt(id: number) {
+	const blcSet = await selectSet(id);
+	await editBLCSet({
+		name: blcSet.name,
+		created_at: blcSet.created_at,
+		modified_at: new Date()
+	});
+}
+
+export async function addSet(params: BLCSet) {
+	const id = await createBLCSet({
+		name: params.name,
+		created_at: new Date(),
+		modified_at: new Date()
+	});
+	if (params.flag_current) setSetCurrent(id);
+	return id;
+}
+
+export async function importSet(file: BLCSetFile) {
+	const id = await addSet(file.blcSetInfo);
+	for (const blc of file.blcSet) {
+		await addBlacklistCriteria(blc.type, blc.value, id);
+	}
+	return id;
+}
+
+export async function exportSet(id: number): Promise<BLCSetFile> {
+	const blcSet = await selectSet(id);
+	if (!blcSet) throw 'BLC set unknown';
+	delete blcSet.flag_current;
+	delete blcSet.blc_set_id;
+	const blcs = await getBlacklistCriterias(id);
+	const header = {
+		description: 'Karaoke Mugen BLC Set File',
+		version: 1
+	};
+	const file = {
+		header: header,
+		blcSetInfo: blcSet,
+		blcSet: blcs
+	};
+	return file;
+}
+
+export async function setSetCurrent(id: number) {
+	await unsetCurrentSet();
+	await setCurrentSet(id);
+	updatedSetModifiedAt(id);
+	await generateBlacklist();
+}
+
+export async function removeSet(id: number) {
+	const blcSet = await selectSet(id);
+	if (!blcSet) throw 'BLC set unknown';
+	await deleteSet(id);
+}
+
+export async function copySet(from: number, to: number) {
+	const blcSet1 = await selectSet(from);
+	const blcSet2 = await selectSet(to);
+	if (!blcSet1) throw 'Origin BLC set unknown';
+	if (!blcSet2) throw 'Destination BLC set unknown';
+	await copyBLCSet(from, to);
+}
+
+export function getAllSets() {
+	return selectSets();
+}
+
+export function getSet(id: number) {
+	return selectSet(id);
+}
 
 export async function getBlacklist(params: KaraParams): Promise<KaraList> {
 	profile('getBL');
@@ -26,10 +116,10 @@ export async function getBlacklist(params: KaraParams): Promise<KaraList> {
 	return ret;
 }
 
-export async function getBlacklistCriterias(lang?: string): Promise<BLC[]> {
+export async function getBlacklistCriterias(id: number, lang?: string): Promise<BLC[]> {
 	try {
 		profile('getBLC');
-		const blcs = await getBLC();
+		const blcs = await getBLC(id);
 		return await translateBlacklistCriterias(blcs, lang);
 	} catch(err) {
 		const error = new Error(err);
@@ -44,21 +134,48 @@ export function generateBlacklist() {
 	return generateBL();
 }
 
-export async function emptyBlacklistCriterias() {
-	logger.debug('[Blacklist] Wiping criterias');
-	await emptyBLC();
-	return generateBlacklist();
+export async function initBlacklistSystem() {
+	await testCurrentBLCSet();
 }
 
-export async function deleteBlacklistCriteria(blc_id: number) {
+/** Create current blacklist set if it doesn't exist */
+async function testCurrentBLCSet() {
+	const current_id = await getCurrentBLCSet();
+	if (current_id) {
+		setState({currentBLCSetID: current_id});
+	} else {
+		setState({currentBLCSetID: await createBLCSet({
+			name: 'Blacklist 1',
+			created_at: new Date(),
+			modified_at: new Date(),
+			flag_current: true
+		})
+		});
+		logger.debug('[Blacklist] Initial current BLC Set created');
+	}
+}
+
+export async function emptyBlacklistCriterias(id: number) {
+	logger.debug('[Blacklist] Wiping criterias');
+	const blcSet = await selectSet(id);
+	if (!blcSet) throw 'BLC set unknown';
+	await emptyBLC(id);
+	if (blcSet.flag_current) await generateBlacklist();
+	updatedSetModifiedAt(id);
+}
+
+export async function deleteBlacklistCriteria(blc_id: number, set_id: number) {
 	profile('delBLC');
 	logger.debug(`[Blacklist] Deleting criteria ${blc_id}`);
+	const blcSet = await selectSet(set_id);
+	if (!blcSet) throw 'BLC set unknown';
 	await deleteBLC(blc_id);
-	await generateBlacklist();
+	if (blcSet.flag_current) await generateBlacklist();
 	profile('delBLC');
+	updatedSetModifiedAt(set_id);
 }
 
-export async function addBlacklistCriteria(type: number, value: any) {
+export async function addBlacklistCriteria(type: number, value: any, set_id: number) {
 	profile('addBLC');
 	const blcvalues = typeof value === 'string'
 		? value.split(',')
@@ -67,17 +184,21 @@ export async function addBlacklistCriteria(type: number, value: any) {
 	const blcList = blcvalues.map((e: string) => {
 		return {
 			value: e,
-			type: type
+			type: type,
+			blc_set_id: set_id
 		};
 	});
 	try {
+		const blcset = await selectSet(set_id);
+		if (!blcset) throw 'BLC set unknown';
 		if (type < 0 && type > 1006 && type !== 1000) throw `Incorrect BLC type (${type})`;
 		if (type === 1001 || type < 1000) {
 			if (blcList.some((blc: BLC) => !new RegExp(uuidRegexp).test(blc.value))) throw `Blacklist criteria value mismatch : type ${type} must have UUID values`;
 		}
 		if ((type === 1002 || type === 1003 || type === 1005 || type === 1006) && !blcvalues.some(e => isNumber(e))) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
 		await addBLC(blcList);
-		return await generateBlacklist();
+		if (blcset.flag_current) await generateBlacklist();
+		updatedSetModifiedAt(set_id);
 	} catch(err) {
 		logger.error(`[Blacklist] Error adding criteria : ${JSON.stringify(err)}`);
 		const error = new Error(err);

@@ -19,7 +19,7 @@ import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} f
 import logger, {configureLogger} from './lib/utils/logger';
 import {initSentry, sentryError} from './lib/utils/sentry';
 import {logo} from './logo';
-import {migrateOldFoldersToRepo} from './services/repo';
+import { migrateOldFoldersToRepo } from './services/repo';
 // Types
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './utils/args';
