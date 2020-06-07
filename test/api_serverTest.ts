@@ -78,7 +78,7 @@ describe('Blacklist', function() {
 			'blcriteria_value': '5737c5b2-7ea4-414f-8c92-143838a402f6'
 		};
 		return request
-			.post('/api/blacklist/criterias')
+			.post('/api/blacklist/set/1/criterias')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -91,7 +91,7 @@ describe('Blacklist', function() {
 	var blc_id;
 	it('Get list of blacklist criterias', function() {
 		return request
-			.get('/api/blacklist/criterias')
+			.get('/api/blacklist/set/1/criterias')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -110,13 +110,13 @@ describe('Blacklist', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response => {
-				strictEqual(response.body.content.length >= 1,true);
+				strictEqual(response.body.content.length === 1,true);
 			});
 	});
 
 	it('Delete a blacklist criteria', function() {
 		return request
-			.delete('/api/blacklist/criterias/'+blc_id)
+			.delete('/api/blacklist/set/1/criterias/'+blc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(200)
@@ -127,7 +127,7 @@ describe('Blacklist', function() {
 
 	it('Empty list of blacklist criterias', function() {
 		return request
-			.put('/api/blacklist/criterias/empty')
+			.put('/api/blacklist/set/1/criterias/empty')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(200);
