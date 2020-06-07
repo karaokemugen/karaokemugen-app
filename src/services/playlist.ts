@@ -56,7 +56,6 @@ import { bools } from '../lib/utils/constants';
 import {now} from '../lib/utils/date';
 import { asyncExists,replaceExt } from '../lib/utils/files';
 import logger, {profile} from '../lib/utils/logger';
-import {on} from '../lib/utils/pubsub';
 import { sentryError } from '../lib/utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
@@ -70,12 +69,6 @@ import { formatKaraList, getKara, getSeriesSingers,isAllKaras} from './kara';
 import {playingUpdated,playPlayer} from './player';
 //KM Modules
 import {findUserByName,updateSongsLeft} from './user';
-
-let databaseBusy = false;
-
-on('databaseBusy', (status: boolean) => {
-	databaseBusy = status;
-});
 
 /** Test if basic playlists exist */
 export async function testPlaylists() {
@@ -1178,7 +1171,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 /** Flag songs as free if they are older than X minutes */
 async function updateFreeOrphanedSongs() {
 	try {
-		if (!databaseBusy) await updateFreeOrphanedSongsDB(now(true) - (getConfig().Karaoke.Quota.FreeAutoTime * 60));
+		await updateFreeOrphanedSongsDB(now(true) - (getConfig().Karaoke.Quota.FreeAutoTime * 60));
 	} catch(err) {
 		logger.error(`[Playlist] Failed to free orphaned songs (will try again) : ${err}`);
 	}

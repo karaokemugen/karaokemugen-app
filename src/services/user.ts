@@ -31,7 +31,6 @@ import {imageFileTypes} from '../lib/utils/constants';
 import {asyncCopy, asyncCopyAlt, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType, replaceExt,writeStreamToFile} from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import {profile} from '../lib/utils/logger';
-import {on} from '../lib/utils/pubsub';
 import { sentryError,setSentryUser } from '../lib/utils/sentry';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
@@ -45,11 +44,6 @@ import {freePLC,freePLCBeforePos, getPlaylistContentsMini} from './playlist';
 
 const userLoginTimes = new Map();
 const usersFetched = new Set();
-let databaseBusy = false;
-
-on('databaseBusy', (status: boolean) => {
-	databaseBusy = status;
-});
 
 /** Converts a online user to a local one by removing its online account from KM Server */
 export async function removeRemoteUser(token: Token, password: string): Promise<SingleToken> {
@@ -80,11 +74,9 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 /** Unflag connected accounts from database if they expired	 */
 async function updateExpiredUsers() {
 	try {
-		if (!databaseBusy) {
-			const time = new Date().getTime() - (getConfig().Frontend.AuthExpireTime * 60 * 1000);
-			await DBUpdateExpiredUsers(new Date(time));
-			await DBResetGuestsPassword();
-		}
+		const time = new Date().getTime() - (getConfig().Frontend.AuthExpireTime * 60 * 1000);
+		await DBUpdateExpiredUsers(new Date(time));
+		await DBResetGuestsPassword();
 	} catch(err) {
 		logger.error(`[User] Expiring users failed (will try again in one minute) : ${err}`);
 	}
