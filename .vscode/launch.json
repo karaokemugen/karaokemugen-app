@@ -7,10 +7,11 @@
             "request": "launch",
             "runtimeArgs": [
                 "-r",
-                "ts-node/register"
+				"ts-node/register"
             ],
             "args": [
-                "${workspaceFolder}/src/index.ts"
+				"${workspaceFolder}/src/index.ts",
+				"--debug"
             ]
         }
     ]
