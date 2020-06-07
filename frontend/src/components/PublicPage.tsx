@@ -210,9 +210,10 @@ class PublicPage extends Component<IProps,IState> {
 	};
 
 	closeMobileMenu = () => {
-		this.setState({ mobileMenu: false, dropDownMenu: false })
+		if (this.state.mobileMenu || this.state.dropDownMenu) {
+			this.setState({ mobileMenu: false, dropDownMenu: false });
+		}
 	}
-
 	
 	getPlaylistList = async () => {
 		const response = await axios.get('/playlists/');

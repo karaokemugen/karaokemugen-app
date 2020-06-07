@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import axios from 'axios';
 import { buildKaraTitle, getSocket } from '../tools';
 import { PublicState } from '../../../../src/types/state';
+import store from '../../store';
 
 require('./ProgressBar.scss');
 
@@ -116,7 +117,7 @@ class ProgressBar extends Component<IProps,IState> {
     			this.setState({karaInfoText: i18next.t('ENCORES_TIME'), length: -1});
     		} else if (data.currentlyPlaying === 'Sponsors') {
     			this.setState({karaInfoText: i18next.t('SPONSOR_TIME'), length: -1});
-    		} else {
+    		} else if (store.getLogInfos()) {
     			var response = await axios.get('/karas/' + data.currentlyPlaying);
     			var kara = response.data;
     			var karaInfoText;
