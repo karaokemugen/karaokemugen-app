@@ -367,7 +367,7 @@
 		"CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
 		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?",
 		"CONFIRM": "Confirmer",
-		"ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de disfonctionnements de l'application.",
+		"ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de disfonctionnements de l'application. Cela nous aide à régler les soucis que vous pourriez rencontrer. Acceptez-vous d'envoyer ces rapports d'erreur ?",
 		"ERROR_TRACKING": "Suivi des erreurs"
 	},
 	"PROFILE_CONVERT": "Passer mon profil en ligne",
