@@ -182,7 +182,7 @@ export default function miscController(router: Router) {
 	 * @apiSuccess {String} data/currentlyPlaying Karaoke ID of song being played
 	 * @apiSuccess {Number} data/duration Current's song duration in seconds
 	 * @apiSuccess {Boolean} data/fullscreen Player's fullscreen status
-	 * @apiSuccess {Boolean} data/muteStatus Player's volume mute status
+	 * @apiSuccess {Boolean} data/mute Player's volume mute status
 	 * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
 	 * @apiSuccess {String=pause,stop,play} data/playerStatus Player's status (not to mistake with engine's status, see below). Player status is `pause` if displaying a background.
 	 * @apiSuccess {Boolean} data/private Engine's public/private status

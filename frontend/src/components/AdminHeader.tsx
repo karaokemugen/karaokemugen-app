@@ -162,7 +162,7 @@ class AdminHeader extends Component<IProps, IState> {
   				title={i18next.t('MUTE_UNMUTE')}
 				className="btn btn-dark volumeButton"
   			>
-				<div id="mutestatus"
+				<div id="mute"
 					data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.mute))  ? "unmute" : "mute"}
 				 	onClick={this.props.putPlayerCommando}
 				>
