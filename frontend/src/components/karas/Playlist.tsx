@@ -355,8 +355,9 @@ noRowsRenderer = () => {
   	this.setState({data: undefined, getPlaylistInProgress:true});
   }
 
-  playlistDidUpdate = () => {
-  	this.getPlaylist();
+  playlistDidUpdate = async () => {
+	  await this.getPlaylist();
+	  this.scrollToPlaying();
   }
 
   getPlaylist = async (searchType?:string) => {
