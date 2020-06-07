@@ -99,7 +99,8 @@
 		"NORMAL": [
 			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
 			"Karaoke Mugen possède deux modes d'ajout de karaokés : public et privé. Choisissez le mode le plus approprié selon ce qui vous arrange.",
-			"Vous ne trouvez pas une chanson dans la base ? N'hésitez pas à regarder sur https://suggest.karaokes.moe/, elle s'y trouve peut-être !"
+			"Vous ne trouvez pas une chanson dans la base ? N'hésitez pas à regarder sur https://suggest.karaokes.moe, elle s'y trouve peut-être !",
+			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !"
 		],
 		"ERRORS": [
 			"N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
@@ -115,7 +116,8 @@
 			"lit la doc (non)",
 			"écoute ses cheveux pousser",
 			"se tourne les pouces",
-			"en convention (dans sa tête)"
+			"en convention (dans sa tête)",
+			"regarde les trains passer"
 		]
 	},
 	"UNKNOWN_ARTIST": "Artiste inconnu",
