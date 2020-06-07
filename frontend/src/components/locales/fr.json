@@ -365,7 +365,10 @@
 			"OUTRO": "Cet envoi a lieu à chaque démarrage puis à chaque heure d'utilisation. Vous pouvez consulter les informations envoyées dans le dossier log de Karaoke Mugen."
 		},
 		"CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
-		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?"
+		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?",
+		"CONFIRM": "Confirmer",
+		"ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de disfonctionnements de l'application.",
+		"ERROR_TRACKING": "Suivi des erreurs"
 	},
 	"PROFILE_CONVERT": "Passer mon profil en ligne",
 	"PROFILE_ONLINE_DELETE": "Supprimer mon profil en ligne",

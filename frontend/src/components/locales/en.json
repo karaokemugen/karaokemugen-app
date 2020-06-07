@@ -346,7 +346,10 @@
 			"OUTRO": "Stats are sent at each startup, then at each hour of use. You can consult the information sent in the Karaoke Mugen log directory."
 		},
 		"CHANGE": "You can change your choice at any time from the options.",
-		"QUESTION": "Do you agree to send these statistics to Karaoke Mugen Server?"
+		"QUESTION": "Do you agree to send these statistics to Karaoke Mugen Server?",
+		"CONFIRM": "Confirm",
+		"ERROR": "Karaoke Mugen may send information about your instance to Sentry.io during malfunctions.",
+		"ERROR_TRACKING": "Error tracking"
 	},
 	"PROFILE_CONVERT": "Convert to online profile",
 	"PROFILE_ONLINE_DELETE": "Delete my online profile",

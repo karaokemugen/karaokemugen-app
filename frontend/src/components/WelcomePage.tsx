@@ -42,7 +42,7 @@ class WelcomePage extends Component<IProps, IState> {
 		};
 		if (!store.getLogInfos() || !(store.getLogInfos() as Token).token) {
 			this.openLoginOrProfileModal();
-		} else if (this.props.config.Online.Stats === undefined) {
+		} else if (this.props.config.Online.Stats === undefined || this.props.config.Online.ErrorTracking === undefined) {
 			ReactDOM.render(<OnlineStatsModal />, document.getElementById('modal'));
 		}
 	}

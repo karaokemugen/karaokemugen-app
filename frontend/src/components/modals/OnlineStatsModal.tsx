@@ -1,87 +1,118 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
 import axios from 'axios';
-import {expand} from '../tools';
 import ReactDOM from 'react-dom';
+import RadioButton from '../generic/RadioButton';
 
 interface IState {
 	openDetails: boolean;
+	stats: boolean;
+	errorTracking: boolean
 }
 
-class OnlineStatsModal extends Component<{},IState> {
-	constructor(props:{}) {
+class OnlineStatsModal extends Component<{}, IState> {
+	constructor(props: {}) {
 		super(props);
 		this.state = {
-			openDetails: false
+			openDetails: false,
+			stats: true,
+			errorTracking: true
 		};
 	}
 
-    onClick = (value:boolean) => {
-    	var data = expand('Online.Stats', value);
-    	axios.put('/settings', {
-    		setting: JSON.stringify(data)
+	onClick = () => {
+		axios.put('/settings', {
+			setting: {
+				Online: {
+					Stats: this.state.stats,
+					ErrorTracking: this.state.errorTracking
+				}
+			}
 		});
-		var element = document.getElementById('modal');
-    	if(element) ReactDOM.unmountComponentAtNode(element);
-    };
+		let element = document.getElementById('modal');
+		if (element) ReactDOM.unmountComponentAtNode(element);
+	};
 
-    render() {
-    	return (
-    		<div className="modal modalPage" id="onlineStatsModal">
-    			<div className="modal-dialog modal-md">
-    				<div className="modal-content">
-    					<ul className="nav nav-tabs nav-justified modal-header">
-    						<li className="modal-title stats">
-    							<a>{i18next.t('ONLINE_STATS.TITLE')}</a>
-    						</li>
-    					</ul>
-    					<div className="tab-content" id="nav-stats-tab">
-    						<div id="nav-stats" className="modal-body">
-    							<div className="modal-message text">
-    								<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
-    							</div>
-    							<div className="accordion text" id="accordionDetails">
-    								<div className="card">
-    									<div className="card-header" id="headingOne">
-    										<h5 className="mb-0">
-    											<a className="btn-link" type="button" onClick={() => this.setState({openDetails: !this.state.openDetails})}>
-    												{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
-    											</a>
-    										</h5>
-    									</div>
-    									{this.state.openDetails ?
-    										<div className="card-body">
-    											{'- ' + i18next.t('ONLINE_STATS.DETAILS.1')}<br />
-    											{'- ' + i18next.t('ONLINE_STATS.DETAILS.2')}<br />
-    											{'- ' + i18next.t('ONLINE_STATS.DETAILS.3')}<br />
-    											{'- ' + i18next.t('ONLINE_STATS.DETAILS.4')}<br />
-    											{'- ' + i18next.t('ONLINE_STATS.DETAILS.5')}<br />
-    											<p>{i18next.t('ONLINE_STATS.DETAILS.OUTRO')}</p>
-    											<br />
-    										</div> : null
-    									}
-    								</div >
-    								<div className="modal-message text">
-    									<p>{i18next.t('ONLINE_STATS.CHANGE')}</p>
-    									<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
-    								</div>
-    								<div></div>
-    								<div>
-    									<button type="button" className="onlineStatsBtn btn btn-default btn-primary col-xs-6" onClick={() => this.onClick(true)}>
-    										{i18next.t('YES')}
-    									</button>
-    									<button type="button" className="onlineStatsBtn btn btn-default col-xs-6" onClick={() => this.onClick(false)}>
-    										{i18next.t('NO')}
-    									</button>
-    								</div>
-    							</div >
-    						</div >
-    					</div >
-    				</div >
-    			</div >
-    		</div >
-    	);
-    }
+	render() {
+		return (
+			<div className="modal modalPage">
+				<div className="modal-dialog modal-md">
+					<div className="modal-content">
+						<div className="modal-header">
+							<h4 className="modal-title">{i18next.t('ONLINE_STATS.TITLE')}</h4>
+						</div>
+						<div className="modal-body">
+							<div className="modal-message text">
+								<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
+							</div>
+							<div className="text">
+								<a className="btn-link" type="button" onClick={() => this.setState({ openDetails: !this.state.openDetails })}>
+									{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
+								</a>
+								{this.state.openDetails ?
+									<React.Fragment>
+										<ul>
+											<li>{i18next.t('ONLINE_STATS.DETAILS.1')}</li>
+											<li>{i18next.t('ONLINE_STATS.DETAILS.2')}</li>
+											<li>{i18next.t('ONLINE_STATS.DETAILS.3')}</li>
+											<li>{i18next.t('ONLINE_STATS.DETAILS.4')}</li>
+											<li>{i18next.t('ONLINE_STATS.DETAILS.5')}</li>
+										</ul>
+										<p>{i18next.t('ONLINE_STATS.DETAILS.OUTRO')}</p>
+										<br />
+									</React.Fragment> : null
+								}
+								<div className="text">
+									<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
+								</div>
+								<RadioButton
+									title={i18next.t('ONLINE_STATS.STATS')}
+									buttons={[
+										{
+											label: i18next.t('YES'),
+											active: this.state.stats,
+											onClick: () => this.setState({ stats: !this.state.stats }),
+										},
+										{
+											label: i18next.t('NO'),
+											active: !this.state.stats,
+											onClick: () => this.setState({ stats: !this.state.stats }),
+										}
+									]}
+								></RadioButton>
+								<br />
+								<div className="text">
+									<p>{i18next.t('ONLINE_STATS.ERROR')}</p>
+								</div>
+								<RadioButton
+									title={i18next.t('ONLINE_STATS.ERROR_TRACKING')}
+									buttons={[
+										{
+											label: i18next.t('YES'),
+											active: this.state.errorTracking,
+											onClick: () => this.setState({ errorTracking: !this.state.errorTracking }),
+										},
+										{
+											label: i18next.t('NO'),
+											active: !this.state.errorTracking,
+											onClick: () => this.setState({ errorTracking: !this.state.errorTracking }),
+										}
+									]}
+								></RadioButton>
+								<br />
+								{i18next.t('ONLINE_STATS.CHANGE')}
+							</div >
+						</div >
+						<div className="modal-footer">
+							<button type="button" className="btn btn-action btn-default ok" onClick={() => this.onClick()}>
+								{i18next.t('ONLINE_STATS.CONFIRM')}
+							</button>
+						</div>
+					</div >
+				</div >
+			</div >
+		);
+	}
 }
 
 export default OnlineStatsModal;
