@@ -6,7 +6,7 @@ import {win} from './electron';
 let errorHappened = false;
 
 export function initStep(step: string, lastEvent?: boolean) {
-	if (win) win.webContents.send('initStep', {message: step, lastEvent: lastEvent});
+	emitIPC('initStep', {message: step, lastEvent: lastEvent});
 }
 
 export function errorStep(step: string) {
@@ -14,13 +14,17 @@ export function errorStep(step: string) {
 	if (win && !errorHappened) {
 		errorHappened = true;
 		initStep(i18next.t('INIT_ERROR'));
-		win.webContents.send('error', {message: step});
+		emitIPC('error', {message: step});
 	}
 }
 
 // Display the tip in the space near Nanami
 export function techTip(tip: string) {
-	if (win) win.webContents.send('tip', {message: tip});
+	emitIPC('tip', {message: tip});
+}
+
+export function emitIPC(type: string, data: any) {
+	if (win) win.webContents.send(type, data);
 }
 
 export class IPCTransport extends Transport {
@@ -29,7 +33,7 @@ export class IPCTransport extends Transport {
 	}
 
 	log(info: any, callback: any) {
-		if (win) win.webContents.send('log', info);
+		emitIPC('log', info);
 		callback();
 	}
 }

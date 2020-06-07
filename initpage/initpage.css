@@ -71,8 +71,31 @@ body {
 	border-radius: 0.1em;
 }
 
+.ip--progress-bar-container {
+	display: none;
+	width: 75%;
+	height: 25px;
+	background-color: #505050;
+	margin-top: 1em;
+	border: forestgreen solid;
+	border-radius: 1em;
+}
+
+.ip--progress-bar-container[data-show-bar="true"] {
+	display: initial;
+}
+
+.ip--progress-bar-container > div.ip--progress-bar {
+	height: 100%;
+	width: 0;
+	background-color: forestgreen;
+	transition: width 50ms linear;
+	color: white;
+	border-radius: 1em;
+}
+
 .ip--nanami {
-	margin: 2em 1em 1em;
+	margin: 1em;
 	width: 50%;
 	display: flex;
 	align-items: center;
