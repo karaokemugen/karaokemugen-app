@@ -12,6 +12,7 @@ interface RepositoryListState {
 	repository?: Repository
 }
 
+let timer:any;
 class RepositoryList extends Component<{}, RepositoryListState> {
 
 	constructor(props) {
@@ -45,6 +46,10 @@ class RepositoryList extends Component<{}, RepositoryListState> {
 			setting: {System:{Repositories: repositories}}
 		});
 		this.refresh();
+		if (timer) clearTimeout(timer);
+		timer = setTimeout(() => {
+			getAxiosInstance().post('/db/generate');
+		}, 5000);
 	}
 
 	render() {
