@@ -31,7 +31,7 @@ export function setDiscordActivity(activityType: 'song' | 'idle', activityData?:
 			startTimestamp,
 			largeImageKey: 'nanami-smile',
 			largeImageText: 'Karaoke Mugen',
-			smallImageKey: activityType === 'song' ? 'nanami-xd' : 'nanami-hehe2',
+			smallImageKey: activityType === 'song' ? 'play' : 'pause',
 			smallImageText: `Version ${version.number} - ${version.name}`,
 			instance: false,
 		});
