@@ -128,5 +128,7 @@
 	"UNKNOWN_REPOSITORY_NO_LOCAL": {
 		"TITLE": "Dépôt local introuvable",
 		"MESSAGE": "Aucun dépôt local n'existe dans votre configuration. Veuillez en créer un avant de réimporter ce karaoké"
-	}
+	},
+	"GENERATING_READING": "Lecture des données...",
+	"GENERATING_DATABASE": "Création de la base de données..."
 }

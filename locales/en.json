@@ -120,5 +120,7 @@
 	"UNKNOWN_REPOSITORY_NO_LOCAL": {
 		"TITLE": "Local repository unavailable",
 		"MESSAGE": "No local repository exists in your configuration. Please create one before importing this song again."
-	}
+	},
+	"GENERATING_READING": "Reading data...",
+	"GENERATING_DATABASE": "Creating dtabase..."
 }
