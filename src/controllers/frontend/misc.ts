@@ -198,7 +198,7 @@ export default function miscController(router: Router) {
 	 *       "currentlyPlaying": "<Karaoke UUID>",
 	 *       "duration": 0,
 	 *       "fullscreen": false,
-	 *       "muteStatus": false,
+	 *       "mute": false,
 	 *       "onTop": true,
 	 *       "playerStatus": "pause",
 	 *       "private": true,

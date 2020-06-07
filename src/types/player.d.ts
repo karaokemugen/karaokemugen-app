@@ -1,4 +1,4 @@
-import { DBKara } from "../lib/types/database/kara";
+import { DBKara } from '../lib/types/database/kara';
 
 export interface PlayerState {
 	volume?: number,
@@ -7,7 +7,7 @@ export interface PlayerState {
 	_playing?: boolean, // internal delay flag
 	timeposition?: number,
 	duration?: number,
-	mutestatus?: boolean,
+	mute?: boolean,
 	subtext?: string,
 	currentSongInfos?: string,
 	mediaType?: 'song' | 'background' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros',
@@ -33,8 +33,6 @@ export interface playerStatus {
 	filename: string,
 	path: string,
 	'media-title': string,
-	'playlist-pos': number,
-	'playlist-count': number,
 	loop: string,
 	fullscreen: boolean
 }

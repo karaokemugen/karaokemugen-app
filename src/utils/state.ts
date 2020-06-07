@@ -50,7 +50,7 @@ export function getPlayerState(): PublicState {
 		currentSessionID: state.currentSessionID,
 		duration: state.player.duration,
 		fullscreen: state.player.fullscreen,
-		muteStatus: state.player.mutestatus,
+		mute: state.player.mute,
 		onTop: state.ontop,
 		playerStatus: state.player.playerstatus,
 		playing: state.player.playing,

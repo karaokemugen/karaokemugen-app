@@ -43,7 +43,7 @@ const playerState: PlayerState = {
 	_playing: false, // internal delay flag
 	timeposition: 0,
 	duration: 0,
-	mutestatus: false,
+	mute: false,
 	subtext: null,
 	currentSongInfos: null,
 	mediaType: 'background',
@@ -64,10 +64,8 @@ async function ensureRunning() {
 			await startmpv();
 		}
 	} catch(err) {
-		const errStr = `Unable to ensure mpv is running : ${err}`;
-		const error = new Error(errStr);
-		sentryError(error);
-		throw error;
+		sentryError(err);
+		throw err;
 	}
 }
 

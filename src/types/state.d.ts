@@ -86,7 +86,7 @@ export interface PublicState {
 	fullscreen: boolean,
 	timePosition: number,
 	duration: number,
-	muteStatus: boolean,
+	mute: boolean,
 	playerStatus: string,
 	currentlyPlaying: string,
 	currentRequester: string,

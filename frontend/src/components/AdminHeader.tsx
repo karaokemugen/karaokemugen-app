@@ -52,7 +52,7 @@ class AdminHeader extends Component<IProps, IState> {
 	}
 
 	componentDidUpdate(prevProps:IProps) {
-		if (this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin 
+		if (this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin
       !== prevProps.config.Playlist.MysterySongs.AddedSongVisibilityAdmin) {
 			this.setState({ songVisibilityOperator: Boolean(this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin)});
 		}
@@ -157,17 +157,17 @@ class AdminHeader extends Component<IProps, IState> {
 					</span>
 				)}
 			</button>
-  			<button 
+  			<button
   				type="button"
   				title={i18next.t('MUTE_UNMUTE')}
 				className="btn btn-dark volumeButton"
   			>
 				<div id="mutestatus"
-					data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.muteStatus))  ? "unmute" : "mute"} 
+					data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.mute))  ? "unmute" : "mute"}
 				 	onClick={this.props.putPlayerCommando}
 				>
 					{
-						volume === 0 || this.state.statusPlayer && this.state.statusPlayer.muteStatus 
+						volume === 0 || this.state.statusPlayer && this.state.statusPlayer.mute
 							? <i className="fas fa-volume-mute"></i>
 							: (
 								volume > 66
@@ -189,7 +189,7 @@ class AdminHeader extends Component<IProps, IState> {
   					onMouseUp={this.props.putPlayerCommando}
   				/>
   			</button>
-          
+
   			<div className="header-group switchs" id="optionsButton">
   				<RadioButton
   					title={i18next.t('SWITCH_OPTIONS')}
@@ -238,14 +238,14 @@ class AdminHeader extends Component<IProps, IState> {
 							active:this.state.songVisibilityOperator,
 							activeColor:'#57bb00',
 							onClick:() => this.saveOperatorAdd(true),
-					
+
 						},
 						{
 							label:i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY'),
 							active:!this.state.songVisibilityOperator,
 							activeColor:'#994240',
 							onClick:() => this.saveOperatorAdd(false),
-					
+
 						}
 					]}
 				></RadioButton>
