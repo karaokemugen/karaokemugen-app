@@ -113,7 +113,7 @@ const appPath = process.platform === 'darwin'
 		: process.cwd();
 
 // Ugly Windows fix
-setState({opt: {generateDB: true}});
+
 
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
