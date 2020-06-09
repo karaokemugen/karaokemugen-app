@@ -595,6 +595,16 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
 
+				<div className="form-group">
+					<label className="col-xs-4 control-label">
+						{i18next.t('ONLINEERRORTRACKING')}
+					</label>
+					<div className="col-xs-6">
+						<Switch idInput="Online.ErrorTracking" handleChange={this.onChange}
+								isChecked={this.state.config['Online.ErrorTracking']} />
+					</div>
+				</div>
+
   				<div className="form-group">
   					<label className="col-xs-4 control-label">
   						{i18next.t('CHECK_APP_UPDATES')}

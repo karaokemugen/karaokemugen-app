@@ -334,6 +334,7 @@
 	"ONLINEURL": "URL d'accès courte (kara.moe)",
 	"ONLINEUSERS": "Autoriser l'inscription et connexion des utilisateurs en ligne",
 	"ONLINESTATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Server",
+	"ONLINEERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
 	"CHECK_APP_UPDATES": "Vérifier les mises à jour de l'application",
 	"NO_EXT_INFO": "La recherche d'informations en ligne n'a pas abouti",
 	"FILTER": "Filtrer",
