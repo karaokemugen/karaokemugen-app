@@ -90,7 +90,7 @@ pkg_linux:
   artifacts:
     name: km-app-pkglinux-${CI_COMMIT_REF_SLUG}
     paths:
-      - release
+      - release_linux
   dependencies:
     - build-react
   script:
@@ -165,7 +165,7 @@ pkg_mac:
   artifacts:
     name: km-app-pkgmac-${CI_COMMIT_REF_SLUG}
     paths:
-      - release
+      - release_mac
   dependencies:
     - build-react
   variables:
