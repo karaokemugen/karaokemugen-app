@@ -68,10 +68,11 @@ ipcRenderer.on('tip', (event, data) => {
 	tipbox.innerHTML = data.message.autoLink({target: '_blank'});
 });
 ipcRenderer.on('tasksUpdated', (event, data) => {
+	console.log(data);
 	if (Object.keys(data).length > 0) {
 		const task = data[Object.keys(data)[0]];
-		if (task?.subtext === 'GENERATING_READING' || task?.subtext === 'GENERATING_DATABASE') {
-			setProgressBar(task.percentage);
+		if (task?.text === 'GENERATING') {
+			setProgressBar(task.percentage, task.subtext);
 		}
 	}
 });
@@ -86,16 +87,17 @@ function clickButton () {
 	wrapper.dataset.displayLog = displayLog ? 'false':'true';
 }
 
-function setProgressBar(pct) {
+function setProgressBar(pct, text) {
 	const container = document.querySelector('.ip--progress-bar-container');
 	const bar = document.querySelector('.ip--progress-bar');
-	console.log(pct);
+	const textEl = document.querySelector('.ip--progress-text');
 	if (pct < 100) {
 		container.dataset.showBar = 'true';
 	} else {
 		container.dataset.showBar = 'false';
 	}
 	bar.style.width = `${pct}%`;
+	textEl.innerHTML = text;
 }
 
 ipcRenderer.send('initPageReady');

@@ -94,6 +94,11 @@ body {
 	border-radius: 1em;
 }
 
+.ip--progress-bar-container > div.ip--progress-text {
+	position: relative;
+	bottom: 85%;
+}
+
 .ip--nanami {
 	margin: 1em;
 	width: 50%;
