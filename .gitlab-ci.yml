@@ -97,8 +97,7 @@ pkg_linux:
     - rm -Rf release_linux
     - yarn add --dev electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - bash util/electronBuilderGetVersion.sh
-    - ./node_modules/.bin/electron-builder -l --publish always -c.extraMetadata.version=$BUILDVERSION
+    - bash util/electronBuilder.sh -l
     - ls -la packages/
     - mkdir release_linux
     - mv packages/*.AppImage release_linux/
@@ -133,8 +132,7 @@ pkg_win:
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-3.2.tar.gz | tar xz
     - wget http://mugen.karaokes.moe/downloads/vcredist_x64.exe -O build/vc.exe
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - bash util/electronBuilderGetVersion.sh
-    - ./node_modules/.bin/electron-builder -w --publish always -c.extraMetadata.version=$BUILDVERSION
+    - bash util/electronBuilder.sh -w
     - ls -la packages/
     - mkdir release_win
     - mv packages/*.exe release_win/
@@ -179,8 +177,7 @@ pkg_mac:
     - yarn add --dev electron-builder
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-3.2.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - bash util/electronBuilderGetVersion.sh
-    - ./node_modules/.bin/electron-builder -m --publish always -c.extraMetadata.version=$BUILDVERSION
+    - bash util/electronBuilder.sh -m
     - ls -la packages/
     - mkdir release_mac
     - mv packages/*.dmg release_mac/
