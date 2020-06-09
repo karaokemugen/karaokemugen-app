@@ -46,7 +46,9 @@ test:
     - node util/extUnaccent.js
     - yarn test --debug
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$SCHEDULED_RELEASES == "true"'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - if: '$CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_BRANCH == "next"'
@@ -70,7 +72,7 @@ build-react:
     - yarn buildFrontend
     - yarn ts-node util/sentryUpdateReleases.ts
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -103,7 +105,7 @@ pkg_linux:
     - mv packages/*.yml release_linux/
     - ls -la release_linux/*
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -144,7 +146,7 @@ pkg_win:
     - mv packages/*.zip release_win/
     - ls -la release_win/*
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -204,7 +206,7 @@ deploy_mac:
     - ls -la release_mac/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_mac/*"
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -223,7 +225,7 @@ deploy_win:
     - ls -la release_win/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_win/*"
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -242,7 +244,7 @@ deploy_linux:
     - ls -la release_linux/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_linux/*"
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
