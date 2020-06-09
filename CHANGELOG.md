@@ -1,5 +1,76 @@
 # Versions
 
+## v4.0.0 "Ôgi Obscure" - xx/xx/2020
+
+Version numbering has changed :
+
+- Major number version (here, 4) will change whenever we release a new version with additional features and change the character in the version's name
+- Middle number version (here, first 0) will change whenever we release an official, stable version of Karaoke Mugen to the public. It'll contain bugfixes and small improvements over the previous version but won't introduce big changes. It changes the second part of the version name.
+- Minor version number is subject to change more often. People on master and next branches will get a new minor version every sunday. These are usually automated.
+
+You can find more info in issue #675
+
+### New features
+
+- Already present in 3.2.2 but this is an important change : A setup page has been added for those using Karaoke Mugen for the first time. It works as a setup wizard asking you questions about accounts and where to download your songs (#661)
+- Playlists created from Karaoke Mugen Live or another Karaoke Mugen App can be given to the download page to download all songs in it that you don't have yet (#600)
+- Sample songs are now only downloaded if the user wants them (#658)
+- Series are now tags as well. This doesn't impact the end-user, but allowed us to clean more than 1500 lines of code since series and tags were treated separately but were basically the same kind of information related to a song. This should also speed up querying songs from the database (#629)
+- When you view a different playlist than the current one and hit the play button, a warning will appear to tell you the playlist you're viewing isn't the one that's going to be played. (#634)
+- Tips and tricks are displayed during the init phase to give you something to read (#674)
+- We now use [Sentry.io](https://sentry.io) to have errors reported to us automatically when they happen. (#676) Since this has privacy issues, this can be disabled. Just like for Stats Uploads, you will be asked if you want to allow that or not when updating.
+- Generation during init phase now has a progressbar (#693)
+- Karaoke groups are now better displayed on the download page so you can more easily find them and add them to your download queue directly (#646)
+- Playlists now has icons depending on their type in the selection list (#612)
+- Karaoke Mugen can now handle different kind of files if you drag & drop them into its window or if you associate Karaoke Mugen to th em in your OS so you only need to double-click on them (#689 #600):
+  - `.kara.json` files will be played directly (if they exist in your database)
+  - `.karabundle` files will add a karaoke to your database. It's an efficient way to download individual songs from the web.
+  - `.kmplaylist` files will add a playlist to your database. **If some songs are not in your database, they will be downloaded.**
+  - `.kmfavorites` files will replace your favorites with the ones in the file
+  - `.kmblcset` will add a new set of blacklist criterias to your list (more info below)
+- Added blacklist criterias sets : you can now create different sets of blacklist criterias and switch from one to the other depending on where you're doing your karaoke. Example, between friends, at a wedding, at an anime convention, etc.
+- Discord Rich Presence has been added. You can now proudly display what you're singing on in your Discord profile status! This can be disabled. (#685)
+- Security code can now be copied to your clipboard in its dialog box (#670)
+- Song info popup can now be closed by clicking elsewhere on the screen (#641)
+- Added a tool in system panel to compare two repositories and check if lyrics are different between the two if there are identical songs, and allow to update them. This will help song base maintainers to keep multiple repositories with the same songs in sync (#681)
+- Added a tool in system panel to show tags with the same name but different types, which could be merged into the same tag. This will help song base maintainers when a singer is also a songwriter but has different identifiers in the database, for example (#672)
+- Added a tool in system panel to add/remove a specific tag from a list of songs (#655)
+- A database dump is automatically created on startup, allowing you to restore it in case of problems. This will also allow us to upgrade the database software (postgresql) later more easily. (#648)
+- A queue has been added to heavy database actions like generations and refreshes, thus avoiding weird behaviors when multiple tasks are triggered at the same time (#639 #638)
+- Added a validate button to the database page in system panel to only validate changed files without triggering a generation (#635)
+- A details button is available to display song details in the download window (#632)
+- Switched database migration tool from db-migrate to postgrator, allowing us to trigger specific tasks when a user updates Karaoke Mugen to the latest version. For example the fact that series are now tags will tell you the app needs to update your songs and ask you if you want that to happen or not (#627)
+- All system panel messages are now translated in French (and English of course) (#621)
+
+### Improvements
+
+- User role is now checked when making requests to the API, so that users who lost their admin status can't keep it forever (#588)
+- Migrated system panel from antd framework v3 to v4, resulting in better visuals and cleaner code (#610 #593)
+- Total repositories size is now displayed in the download page (#626)
+- Installer will stop deleting everything in the app folder on update (#640)
+- Groups are now displayed as checkboxes in karaoke edit/add form. (#647)
+- Anime and video game karaokes are now better differentiated in lists (#643)
+- For debug purposes, calls to the internet are better logged (#656 #644)
+- When downloading/updating all songs from a repository, a notification will appear to show you what it's doing (#660)
+- System panel's dark mode is now complete (#663)
+- Singers and series auto-complete is now a bit faster in system panel's karaoke creation tool (#662)
+- SQL code is better organized in the app's source code (#688)
+- When changing a repository's priority (moving it in the list) a timer will only validate your changes and regenerate your database after a bit (#687)
+- node-mpv (module to talk to the video player) has been updated and should be more stable and report errors better. (#684)
+- Init phase has been a bit reworked when you display logs (#683)
+- Unit tests are now started at the end of the app's launch, speeding up continuous integration cycle (#633)
+
+### Fixes
+
+- Creating a karaoke for repository A with a tag existing only in repository B now creates the tag in repository A too (#682)
+- Creating a karaoke with 3x or more the same tag (which didn't exist before) now works (#671)
+- The list of playlists is now properly refreshed on login (#654)
+- Selecting folders now works properly (#653)
+- Fixed crash when KM Server is down (#652)
+- Fixed failure to import MKV files (#651)
+- Fixed changing primary folder of a repository (#650)
+- Fixed song info popup with a # in its name, and search with singer if series is not present (#649)
+
 ## v3.2.2 "Nadia Navigatrice" - 23/05/2020
 
 This is a bugfix release with a few features added
