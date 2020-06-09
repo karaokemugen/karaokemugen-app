@@ -9,4 +9,4 @@ MINORVERSION=$((MINORVERSION+1))
 NEWVERSION="$MAJORVERSION.$MIDDLEVERSION.$MINORVERSION"
 
 sed -ri "s/number: '([0-9.]+)(-[a-z]+)?',/number: '$NEWVERSION\2',/" src/version.ts
-sed -ri "s/\"version\": \"([0-9.]+)(-[a-z]+)?\"/\"version\": \"$NEWVERSION\2\",/" package.json
+sed -ri "s/\"version\": \"([0-9.]+)(-[a-z]+)?\"/\"version\": \"$NEWVERSION\2\"/" package.json
