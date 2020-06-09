@@ -365,28 +365,28 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 								<label>{i18next.t('KARA.TOTAL_MEDIA_SIZE')} {this.state.totalMediaSize}</label>
 							</Col>
 						</Row>
-						<Row>
+						<Row  justify="space-between">
 							<Col span={11}>
 								<Button style={{width: '230px'}} type="primary" key="synchronize"
 									onClick={() => Axios.post('/downloads/sync')}>{i18next.t('KARA.SYNCHRONIZE')}</Button>
 								&nbsp;
 								{i18next.t('KARA.SYNCHRONIZE_DESC')}
 							</Col>
-							<Col span={8}>
+							<Col span={4}>
 								<label>{i18next.t('KARA.FILTER_SONGS')}</label>
 							</Col>
-							<Col span={5}>
+							<Col span={4}>
 								<label>{i18next.t('KARA.QUEUE_LABEL')}</label>
 							</Col>
 						</Row>
-						<Row style={{ paddingTop: '5px'}}>
+						<Row style={{ paddingTop: '5px'}} justify="space-between">
 							<Col span={11}>
 								<Button style={{width: '230px'}} type="primary" key="queueDownloadAll"
 									onClick={() => Axios.post('/downloads/all')}>{i18next.t('KARA.DOWNLOAD_ALL')}</Button>
 								&nbsp;
 								{i18next.t('KARA.DOWNLOAD_ALL_DESC')}
 							</Col>
-							<Col span={9}>
+							<Col span={4}>
 								<Radio checked={this.state.compare === ''}
 										onChange={async () => {
 											await this.setState({compare: '', currentPage: 0});
@@ -398,14 +398,14 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 									onClick={this.putToDownloadQueueStart}>{i18next.t('KARA.START_DOWNLOAD_QUEUE')}</Button>
 							</Col>
 						</Row>
-						<Row style={{ paddingTop: '5px'}}>
+						<Row style={{ paddingTop: '5px'}} justify="space-between">
 							<Col span={11}>
 								<Button style={{width: '230px'}} type="primary" key="queueUpdateAll"
 									onClick={() => Axios.post('/downloads/update')}>{i18next.t('KARA.UPDATE_ALL')}</Button>
 								&nbsp;
 								{i18next.t('KARA.UPDATE_ALL_DESC')}
 							</Col>
-							<Col span={9}>
+							<Col span={4}>
 								<Radio checked={this.state.compare === '&compare=updated'}
 										onChange={async () => {
 											await this.setState({compare: '&compare=updated', currentPage: 0});
@@ -417,14 +417,14 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 									onClick={this.putToDownloadQueuePause}>{i18next.t('KARA.PAUSE_DOWNLOAD_QUEUE')}</Button>
 							</Col>
 						</Row>
-						<Row style={{ paddingTop: '5px'}}>
+						<Row style={{ paddingTop: '5px'}} justify="space-between">
 							<Col span={11}>
 								<Button style={{width: '230px'}} type="primary" key="queueCleanAll"
 									onClick={() => Axios.post('/downloads/clean')}>{i18next.t('KARA.CLEAN_ALL')}</Button>
 								&nbsp;
 								{i18next.t('KARA.CLEAN_ALL_DESC')}
 							</Col>
-							<Col span={9}>
+							<Col span={4}>
 								<Radio checked={this.state.compare === '&compare=missing'}
 										onChange={async () => {
 											await this.setState({compare: '&compare=missing', currentPage: 0});
