@@ -168,9 +168,13 @@ if (app) {
 	// Also allows to get us the files we need.
 	if (!app.requestSingleInstanceLock()) process.exit();
 	app.on('second-instance', (_event, args) => {
-		focusWindow();
-		const file = args[args.length-1];
-		if (file) handleFile(file);
+		if (args[args.length-1] === '--kill') {
+			exit(0);
+		} else {
+			focusWindow();
+			const file = args[args.length-1];
+			if (file) handleFile(file);
+		}
 	});
 	// Redefining quit function
 	app.on('will-quit', () => {
@@ -178,7 +182,7 @@ if (app) {
 	});
 }
 
-if (app && !argv.cli) {
+if (app && !argv.cli && !argv.help) {
 	try {
 		startElectron();
 	} catch(err) {
@@ -201,7 +205,7 @@ export async function preInit() {
 	await configureLogger(dataPath, argv.debug || (app?.commandLine.hasSwitch('debug')), true);
 	setState({ os: process.platform, version: version});
 	const state = getState();
-	await parseCommandLineArgs(argv, app ? app.commandLine : null);
+	parseCommandLineArgs(argv, app ? app.commandLine : null);
 	logger.debug(`[Launcher] AppPath : ${appPath}`);
 	logger.debug(`[Launcher] DataPath : ${dataPath}`);
 	logger.debug(`[Launcher] ResourcePath : ${resourcePath}`);
