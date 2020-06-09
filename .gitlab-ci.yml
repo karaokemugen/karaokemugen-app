@@ -86,23 +86,22 @@ pkg_linux:
     policy: pull
   interruptible: true
   artifacts:
-    expire_in: 2 hours
     name: km-app-pkglinux-${CI_COMMIT_REF_SLUG}
     paths:
       - release
   dependencies:
     - build-react
   script:
-    - rm -Rf release
+    - rm -Rf release_linux
     - yarn add --dev electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilderGetVersion.sh
     - ./node_modules/.bin/electron-builder -l --publish always -c.extraMetadata.version=$BUILDVERSION
     - ls -la packages/
-    - mkdir release
-    - mv packages/*.AppImage release/
-    - mv packages/*.yml release/
-    - ls -la release/*
+    - mkdir release_linux
+    - mv packages/*.AppImage release_linux/
+    - mv packages/*.yml release_linux/
+    - ls -la release_linux/*
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
     - if: $CI_COMMIT_TAG
@@ -122,11 +121,11 @@ pkg_win:
   artifacts:
     name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
     paths:
-      - release
+      - release_win
   dependencies:
     - build-react
   script:
-    - rm -Rf release
+    - rm -Rf release_win
     - yarn add --dev electron-builder
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-3.2.tar.gz | tar xz
@@ -135,15 +134,15 @@ pkg_win:
     - bash util/electronBuilderGetVersion.sh
     - ./node_modules/.bin/electron-builder -w --publish always -c.extraMetadata.version=$BUILDVERSION
     - ls -la packages/
-    - mkdir release
-    - mv packages/*.exe release/
-    - mv packages/*.yml release/
-    - mv packages/*.blockmap release/
+    - mkdir release_win
+    - mv packages/*.exe release_win/
+    - mv packages/*.yml release_win/
+    - mv packages/*.blockmap release_win/
     - touch portable
     - touch disableAppUpdate
     - zip -rv packages/*.zip portable disableAppUpdate
-    - mv packages/*.zip release/
-    - ls -la release/*
+    - mv packages/*.zip release_win/
+    - ls -la release_win/*
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
     - if: $CI_COMMIT_TAG
@@ -174,17 +173,17 @@ pkg_mac:
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
     RESTORE_CACHE_ATTEMPTS: 10
   script:
-    - rm -Rf release
+    - rm -Rf release_mac
     - yarn add --dev electron-builder
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-3.2.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilderGetVersion.sh
     - ./node_modules/.bin/electron-builder -m --publish always -c.extraMetadata.version=$BUILDVERSION
     - ls -la packages/
-    - mkdir release
-    - mv packages/*.dmg release/
-    - mv packages/*.blockmap release/
-    - ls -la release/*
+    - mkdir release_mac
+    - mv packages/*.dmg release_mac/
+    - mv packages/*.blockmap release_mac/
+    - ls -la release_mac/*
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
     - if: $CI_COMMIT_TAG
@@ -202,8 +201,8 @@ deploy_mac:
   needs:
     - pkg_mac
   script:
-    - ls -la release/*
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
+    - ls -la release_mac/*
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_mac/*"
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
     - if: $CI_COMMIT_TAG
@@ -221,8 +220,8 @@ deploy_win:
   needs:
     - pkg_win
   script:
-    - ls -la release/*
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
+    - ls -la release_win/*
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_win/*"
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
     - if: $CI_COMMIT_TAG
@@ -240,8 +239,8 @@ deploy_linux:
   needs:
     - pkg_linux
   script:
-    - ls -la release/*
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release/*"
+    - ls -la release_linux/*
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_linux/*"
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
     - if: $CI_COMMIT_TAG
@@ -276,7 +275,7 @@ release_site:
     - if: $CI_COMMIT_TAG
     - when: never
 
-scheduled_releases:
+weekly_releases:
   stage: schedule
   image: axelterizaki/karaokemugen-git-ssh:latest
   interruptible: true
@@ -284,6 +283,7 @@ scheduled_releases:
   script:
     - bash util/gitPush.sh
   rules:
+# This prevents job from starting if last commit starts with a new release, which means we don't need to make a new one.
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
       when: never
     - if: '$SCHEDULED_RELEASES == "true"'
