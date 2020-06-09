@@ -99,12 +99,31 @@
 		"NORMAL": [
 			"Don't forget to sync the base sometimes: you may discover some new karaokes!",
 			"Karaoke Mugen has 2 karaokes adding modes: public and private. Choose the mode that suit your needs.",
-			"Can't find a song in the database? Don't hesitate to look on https://suggest.karaokes.moe/, it may be there!"
+			"Can't find a song in the database? Don't hesitate to look on https://suggest.karaokes.moe/, it may be there!",
+			"Karaoke Mugen is a 100% open source and collaborative project, everyone can participate!",
+			"You can import files via the File Menu -> Import, drag & drop them or associate the Karaoke Mugen executable to it to allow KM to open them and use them : karaokes, playlists, favorites, blacklist criterias sets...",
+			"Add the world.karaokes.moe repository to your repository list for even more world songs !",
+			"I'm Nanamin, Karaoke Mugen's mascott, and I was created by the wonderful Sedeto! (@Sedeto on Twitter)",
+			"The Karaoke Management page is for you, dear operator, while the Public Interface page is for your guests!",
+			"There are a lot of options to configure your karaoke! Take some time to review them all before starting a session!",
+			"Sessions are individual karaoke events. It allows you to group requested and played songs to remind yourself of what was played during a birthday, wedding, or event !",
+			"The blacklist and blacklist criteria list allows you to ban specific songs (like adult ones!) during an event.",
+			"AutoMixes are playlists created from your guests' favorite lists. Perfect for quickstarting karaoke sessions !",
+			"You don't know what to add in your playlist? Use the random button for surprises !",
+			"Songs added with the Mystery Song option enabled will appear with a mystery label to your guests. They won't know until the last moment what it might be!",
+			"Drink water regularly !",
+			"Don't bother your neighbors!",
+			"Another tip ending with an exclamation mark!",
+			"The Monitor allows you to see the currently playing song if you can't see the screen from where you are.",
+			"Classic Karaoke mode emulates what you find in japanese karaoke booths or during karaoke contests at anime events : a pause is madebetween each song and the next song's title and requester are displayed on screen!",
+			"Does your karaoke session end soon? Switch the interface to restricted mode: users won't be able to add songs anymore but will be able to see what's coming next.",
+			"Need to send a message to your public? The message option will show a text on their mobile devices and/or on the karaoke screen!"
 		],
 		"ERRORS": [
 			"Come see us on Discord if you need help: https://karaokes.moe/discord",
 			"Please check if a running Karaoke Mugen instance is in background.",
-			"Take a look at logs, the reason behind the error might be inside!"
+			"Take a look at logs, the reason behind the error might be inside!",
+			"Please don't panic, everything's going to be daijokay"
 		]
 	},
 	"DISCORD": {

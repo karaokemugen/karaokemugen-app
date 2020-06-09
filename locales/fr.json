@@ -100,12 +100,31 @@
 			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
 			"Karaoke Mugen possède deux modes d'ajout de karaokés : public et privé. Choisissez le mode le plus approprié selon ce qui vous arrange.",
 			"Vous ne trouvez pas une chanson dans la base ? N'hésitez pas à regarder sur https://suggest.karaokes.moe, elle s'y trouve peut-être !",
-			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !"
+			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
+			"Vous pouvez glisser-déposer des fichiers dans cette fenêtre, utiliser le menu Fichier -> Importer, ou associer le programme Karaoke Mugen à ceux-ci pour les intégrer directement (playlists, karaokés, listes de critères de blacklist, etc.)",
+			"Ajoutez le dépôt world.karaokes.moe à votre liste de dépôts pour encore plus de karaokés du monde !",
+			"Je suis Nanamin, mascotte de Karaoke Mugen crée par la talentueuse Sedeto ! (@Sedeto sur Twitter)",
+			"Les sessions sont des moments de karaoké individuels. Pensez à les nommer correctement !",
+			"Une session contient la liste des karaokés demandés et lus lors d'un évènement précis.",
+			"La page Gestion du karaoké est pour vous, cher opérateur, et la page Interface Publique pour vos invités !",
+			"Il y a plein d'options pour configurer votre karaoké ! Prenez le temps de regarder dans les options avant de vous lancer !",
+			"La liste noire et les critères de liste noire (blacklist) permettent de cacher des karaokés à vos utilisateurs selon les situations.",
+			"Les AutoMix sont des playlists crées avec uniquement les favoris de vos invités. Idéal pour faire une soirée karaoké rapidement !",
+			"Vous ne savez pas quoi ajouter dans votre playlist ? Le bouton aléatoire vous réservera quelques surprises !",
+			"Les chansons ajoutées avec Ajout Mystère d'activé apparaitront cachées dans la playlist vue de vos invités !",
+			"Hydratez-vous régulièrement !",
+			"Ne dérangez pas les voisins !",
+			"Encore une astuce qui finit en point d'exclamation !",
+			"Le Moniteur vous permet de voir la chanson en cours de diffusion si vous ne pouvez pas voir l'écran de là où vous êtes.",
+			"Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
+			"Votre karaoké se termine bientôt ? Passez l'interface en mode retreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
+			"Besoin de passer un message à votre public ? L'option message affichera un texte sur les périphériques mobiles de vos utilisateurs et/ou sur l'écran !"
 		],
 		"ERRORS": [
 			"N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
 			"Vérifiez que vous n'avez pas une autre instance de Karaoke Mugen en tâche de fond.",
-			"Consultez les logs, la raison de l'erreur peut s'y trouver !"
+			"Consultez les logs, la raison de l'erreur peut s'y trouver !",
+			"Surtout, ne paniquez pas. Tout va très bien se passer."
 		]
 	},
 	"DISCORD": {
