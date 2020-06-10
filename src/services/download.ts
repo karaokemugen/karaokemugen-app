@@ -24,7 +24,7 @@ import {asyncMove, asyncReadDir, asyncStat, asyncUnlink, asyncWriteFile,resolveF
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import { emit } from '../lib/utils/pubsub';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { deleteKara } from '../services/kara';
@@ -610,7 +610,7 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 		return karasToAdd.length;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -704,7 +704,7 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 		}
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -771,7 +771,7 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 		return tagsToUpdate.length;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		profile('tagUpdate');
@@ -850,7 +850,7 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 		return karasToUpdate.length;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();

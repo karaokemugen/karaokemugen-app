@@ -28,7 +28,7 @@ import {getTagTypeName,tagTypes} from '../lib/utils/constants';
 import {asyncCopy, asyncReadFile, asyncUnlink, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import {profile} from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { DBKaraHistory } from '../types/database/kara';
@@ -85,7 +85,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		await asyncWriteFile(karaFile, JSON.stringify(karaFileData, null, 2), 'utf-8');
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 }

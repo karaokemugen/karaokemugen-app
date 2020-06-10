@@ -17,7 +17,7 @@ import {help} from './help';
 import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
 import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
-import {initSentry, sentryError} from './lib/utils/sentry';
+import sentry from './utils/sentry';
 import {logo} from './logo';
 import { migrateOldFoldersToRepo } from './services/repo';
 // Types
@@ -30,12 +30,12 @@ import {startTipLoop, stopTipLoop} from './utils/tips';
 import {version} from './version';
 
 dotenv.config();
-initSentry(app);
+sentry.init(app);
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
 	if (logger) logger.error('[UncaughtException]' + exception);
-	sentryError(exception);
+	sentry.error(exception);
 	if (app) dialog.showMessageBox({
 		type: 'none',
 		title: 'Karaoke Mugen Error : Uncaught Exception',
@@ -55,7 +55,7 @@ process.on('unhandledRejection', error => {
 		errStr = error.toString();
 	}
 	if (logger) logger.error('[UnhandledRejection]' + errStr);
-	sentryError(new Error(errStr));
+	sentry.error(new Error(errStr));
 	if (app) {
 		dialog.showMessageBox({
 			type: 'none',
@@ -195,7 +195,7 @@ if (app && !argv.cli && !argv.help) {
 		.catch(err => {
 			logger.error(`[Launcher] Error during launch : ${err}`);
 			console.log(err);
-			sentryError(err);
+			sentry.error(err);
 			exit(1);
 		});
 }
@@ -288,7 +288,7 @@ export async function main() {
 			stopTipLoop();
 		} catch(err) {
 			logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
-			sentryError(err);
+			sentry.error(err);
 			console.log(err);
 			errorStep(i18n.t('ERROR_UNKNOWN'));
 			startTipLoop('errors');

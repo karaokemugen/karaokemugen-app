@@ -56,7 +56,7 @@ import { bools } from '../lib/utils/constants';
 import {now} from '../lib/utils/date';
 import { asyncExists,replaceExt } from '../lib/utils/files';
 import logger, {profile} from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
 import {emitWS} from '../lib/utils/ws';
@@ -125,7 +125,7 @@ export async function isUserAllowedToAddKara(playlist_id: number, user: User, du
 		}
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 }
@@ -903,7 +903,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	} catch(err) {
 		logger.error(`[Playlist] Import failed : ${err}`);
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -1059,7 +1059,7 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 		playlist = await getCurrentPlaylistContents();
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.

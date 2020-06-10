@@ -19,7 +19,7 @@ import { duration } from '../lib/utils/date';
 import { asyncExists } from '../lib/utils/files';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import {emit, on} from '../lib/utils/pubsub';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import {initBlacklistSystem} from '../services/blacklist';
 import {downloadTestSongs,initDownloader, updateAllBases, updateAllMedias} from '../services/download';
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
@@ -57,7 +57,7 @@ export async function initEngine() {
 			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Validation error : ${err}`);
-			sentryError(err);
+			sentry.error(err);
 			await exit(1);
 		}
 	} else if (state.opt.mediaUpdate) {
@@ -67,7 +67,7 @@ export async function initEngine() {
 			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Updating medias failed : ${err}`);
-			sentryError(err);
+			sentry.error(err);
 			await exit(1);
 		}
 	} else if (state.opt.dumpDB) {
@@ -78,7 +78,7 @@ export async function initEngine() {
 			await dumpPG();
 			await exit(0);
 		} catch(err) {
-			sentryError(err);
+			sentry.error(err);
 			await exit(1);
 		}
 	} else if (state.opt.restoreDB) {
@@ -89,7 +89,7 @@ export async function initEngine() {
 			await restorePG();
 			await exit(0);
 		} catch(err) {
-			sentryError(err);
+			sentry.error(err);
 			await exit(1);
 		}
 	} else if (state.opt.baseUpdate) {
@@ -102,7 +102,7 @@ export async function initEngine() {
 			await exit(0);
 		} catch (err) {
 			logger.error(`[Engine] Update failed : ${err}`);
-			sentryError(err);
+			sentry.error(err);
 			await exit(1);
 		}
 	} else if (state.opt.generateDB) {
@@ -116,7 +116,7 @@ export async function initEngine() {
 			await exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Generation failed : ${err}`);
-			sentryError(err);
+			sentry.error(err);
 			await exit(1);
 		}
 	} else {
@@ -137,7 +137,7 @@ export async function initEngine() {
 		} catch(err) {
 			//Non-blocking
 			logger.error(`[Engine] Failed to init online system : ${err}`);
-			sentryError(err);
+			sentry.error(err);
 		}
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 		initBlacklistSystem();
@@ -187,7 +187,7 @@ export async function initEngine() {
 			initDiscordRPC();
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
-			sentryError(err);
+			sentry.error(err);
 			if (state.isTest) process.exit(1000);
 		} finally {
 			profile('Init');
@@ -204,7 +204,7 @@ export async function exit(rc: string | number) {
 		await quitmpv();
 	} catch(err) {
 		logger.warn(`[Engine] mpv error : ${err}`);
-		sentryError(err);
+		sentry.error(err);
 	} finally {
 		logger.info('[Engine] Player has shutdown');
 	}
@@ -222,7 +222,7 @@ export async function exit(rc: string | number) {
 				mataNe(rc);
 			} catch(err) {
 				logger.warn(`[Engine] PostgreSQL could not be stopped! : ${JSON.stringify(err)}`);
-				sentryError(err);
+				sentry.error(err);
 				mataNe(rc);
 			}
 		} else {
@@ -230,7 +230,7 @@ export async function exit(rc: string | number) {
 		}
 	} catch(err) {
 		logger.error(`[Engine] Failed to shutdown PostgreSQL : ${err}`);
-		sentryError(err);
+		sentry.error(err);
 		mataNe(1);
 	}
 }

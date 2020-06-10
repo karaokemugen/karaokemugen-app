@@ -23,7 +23,7 @@ import whitelistController from '../controllers/frontend/whitelist';
 import {getConfig, resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import {configurePassport} from '../lib/utils/passport_manager';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import { initWS } from '../lib/utils/ws';
 import { getState } from '../utils/state';
 
@@ -112,14 +112,14 @@ export function initFrontend(): number {
 			} catch(err) {
 				// Utter failure
 				const error = new Error(err);
-				sentryError(error);
+				sentry.error(error);
 				throw error;
 			}
 		}
 		return port;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 }

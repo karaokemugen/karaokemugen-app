@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import sample from 'lodash.sample';
 
 import { getConfig } from '../lib/utils/config';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import { version } from '../version';
 
 const clientId = '718211141033263145';
@@ -36,7 +36,7 @@ export function setDiscordActivity(activityType: 'song' | 'idle', activityData?:
 			instance: false,
 		});
 	} catch(err) {
-		sentryError(err);
+		sentry.error(err);
 		throw err;
 	}
 }

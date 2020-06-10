@@ -1,7 +1,7 @@
 import {addKaraToWhitelist as addToWL,emptyWhitelist as emptyWL, getWhitelistContents as getWLContents, removeKaraFromWhitelist} from '../dao/whitelist';
 import { KaraParams } from '../lib/types/kara';
 import logger, {profile} from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import {generateBlacklist} from './blacklist';
 import {formatKaraList, isAllKaras} from './kara';
 
@@ -44,7 +44,7 @@ export async function deleteKaraFromWhitelist(karas: string[]) {
 		return await generateBlacklist();
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		profile('deleteWLC');

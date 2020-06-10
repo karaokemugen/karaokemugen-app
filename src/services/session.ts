@@ -5,7 +5,7 @@ import { v4 as uuidV4 } from 'uuid';
 import {cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
 import { sanitizeFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import { Session } from '../types/session';
 import { getState, setState } from '../utils/state';
 import { getKaras, getSeriesSingers } from './kara';
@@ -219,7 +219,7 @@ export async function exportSession(seid: string) {
 		]);
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 }

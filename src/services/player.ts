@@ -4,7 +4,7 @@ import {displayInfo,displaySongInfo, goTo, hideSubs, initPlayerSystem, message, 
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import {getConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import { emitWS } from '../lib/utils/ws';
 import {getState,setState} from '../utils/state';
 import {addPlayedKara, getKara, getSeriesSingers} from './kara';
@@ -267,7 +267,7 @@ export async function playerEnding() {
 		}
 	} catch(err) {
 		logger.error(`[Player] Unable to end play properly, stopping. : ${err}`);
-		sentryError(err);
+		sentry.error(err);
 		stopPlayer(true);
 	}
 }

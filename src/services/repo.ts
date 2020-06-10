@@ -15,7 +15,7 @@ import { Kara,KaraTag } from '../lib/types/kara';
 import { Tag } from '../lib/types/tag';
 import { tagTypes } from '../lib/utils/constants';
 import logger from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { DifferentChecksumReport } from '../types/repo';
 import { getRemoteKaras } from './download';
@@ -101,7 +101,7 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 		return differentChecksums;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -134,7 +134,7 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 		refreshKaras();
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -167,7 +167,7 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 		return mediaFilesFiltered;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -207,7 +207,7 @@ export async function findUnusedTags(repo: string): Promise<Tag[]> {
 		return tagsToDelete;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();

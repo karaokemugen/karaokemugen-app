@@ -8,7 +8,7 @@ import { uuidRegexp } from '../lib/utils/constants';
 import {date} from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import {profile} from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import {AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent,FavParams} from '../types/favorites';
 import {formatKaraList, isAllKaras} from './kara';
 import {addKaraToPlaylist,createPlaylist, shufflePlaylist, trimPlaylist} from './playlist';
@@ -22,7 +22,7 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 		return formatKaraList(favs, params.from, count);
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		profile('getFavorites');
@@ -65,7 +65,7 @@ export async function addToFavorites(username: string, kids: string[], sendOnlin
 		}
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		profile('addToFavorites');

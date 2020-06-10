@@ -3,7 +3,7 @@ import parallel from 'async-await-parallel';
 import Bar from '../lib/utils/bar';
 import { asyncStat,checksum, extractAllFiles } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import Task from '../lib/utils/taskManager';
 
 const dataStore = {
@@ -95,7 +95,7 @@ export async function baseChecksum(silent?: boolean): Promise<string> {
 	} catch(err) {
 		const errStr = `Unable to browse through your data files : ${err}`;
 		logger.warn(`[Store] ${errStr}`);
-		sentryError(new Error(errStr), 'Warning');
+		sentry.error(new Error(errStr), 'Warning');
 	} finally {
 		profile('baseChecksum');
 	}

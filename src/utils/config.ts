@@ -20,7 +20,7 @@ import {asyncCopy, asyncRequired,relativePath} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { removeNulls } from '../lib/utils/object_helpers';
 import { emit } from '../lib/utils/pubsub';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import { emitWS } from '../lib/utils/ws';
 import {publishURL} from '../services/online';
 import {playerNeedsRestart, prepareClassicPauseScreen} from '../services/player';
@@ -48,7 +48,7 @@ export async function editSetting(part: any) {
 		return config;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 }
