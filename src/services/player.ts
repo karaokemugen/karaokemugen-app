@@ -452,7 +452,11 @@ export async function sendCommand(command: string, options: any) {
 			pausePlayer();
 		} else if (command === 'stopAfter') {
 			stopPlayer(false);
-			await nextSong();
+			try {
+				await nextSong();
+			} catch(err) {
+				// Non-fatal, stopAfter can be triggered on the last song already.
+			}
 		} else if (command === 'skip') {
 			await next();
 		} else if (command === 'prev') {
