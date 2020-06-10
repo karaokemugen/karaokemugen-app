@@ -447,11 +447,11 @@ export async function sendCommand(command: string, options: any) {
 		if (command === 'play') {
 			await playPlayer();
 		} else if (command === 'stopNow') {
-			stopPlayer(true);
+			await stopPlayer(true);
 		} else if (command === 'pause') {
-			pausePlayer();
+			await pausePlayer();
 		} else if (command === 'stopAfter') {
-			stopPlayer(false);
+			await stopPlayer(false);
 			try {
 				await nextSong();
 			} catch(err) {
@@ -462,34 +462,25 @@ export async function sendCommand(command: string, options: any) {
 		} else if (command === 'prev') {
 			await prev();
 		} else if (command === 'toggleFullscreen') {
-			toggleFullScreenPlayer();
+			await toggleFullScreenPlayer();
 		} else if (command === 'toggleAlwaysOnTop') {
-			toggleOnTopPlayer();
+			await toggleOnTopPlayer();
 		} else if (command === 'mute') {
-			mutePlayer();
+			await mutePlayer();
 		} else if (command === 'unmute') {
-			unmutePlayer();
+			await unmutePlayer();
 		} else if (command === 'showSubs') {
-			showSubsPlayer();
+			await showSubsPlayer();
 		} else if (command === 'hideSubs') {
-			hideSubsPlayer();
+			await hideSubsPlayer();
 		} else if (command === 'seek') {
-			if (!options || isNaN(options)) {
-				commandInProgress = false;
-				throw 'Command seek must have a numeric option value';
-			}
+			if (!options || isNaN(options)) throw 'Command seek must have a numeric option value';
 			await seekPlayer(options);
 		} else if (command === 'goTo') {
-			if (!options || isNaN(options)) {
-				commandInProgress = false;
-				throw 'Command goTo must have a numeric option value';
-			}
+			if (!options || isNaN(options)) throw 'Command goTo must have a numeric option value';
 			await goToPlayer(options);
 		} else if (command === 'setVolume') {
-			if (isNaN(options)) {
-				commandInProgress = false;
-				throw 'Command setVolume must have a numeric option value';
-			}
+			if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
 			await setVolumePlayer(options);
 		} else {// Unknown commands are not possible, they're filtered by API's validation.
 		}
