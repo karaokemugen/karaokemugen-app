@@ -4,8 +4,8 @@ import {displayInfo,displaySongInfo, goTo, hideSubs, initPlayerSystem, message, 
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import {getConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
-import sentry from '../utils/sentry';
 import { emitWS } from '../lib/utils/ws';
+import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {addPlayedKara, getKara, getSeriesSingers} from './kara';
 import {getCurrentSong, getPlaylistInfo,nextSong, previousSong} from './playlist';

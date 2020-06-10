@@ -17,7 +17,6 @@ import {help} from './help';
 import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
 import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
-import sentry from './utils/sentry';
 import {logo} from './logo';
 import { migrateOldFoldersToRepo } from './services/repo';
 // Types
@@ -25,6 +24,7 @@ import {Config} from './types/config';
 import {parseCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
 import {createCircleAvatar} from './utils/imageProcessing';
+import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
 import {startTipLoop, stopTipLoop} from './utils/tips';
 import {version} from './version';
