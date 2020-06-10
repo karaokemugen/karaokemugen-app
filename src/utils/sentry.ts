@@ -42,7 +42,7 @@ export class SentryTransport extends Transport {
 
     log(info: any, callback: any) {
         // Testing for precise falseness. If errortracking is undefined or if getconfig doesn't return anything, errors are sent.
-        if (!getConfig()?.Online?.ErrorTracking === false || !Sentry.SentryInitialized) {
+        if (getConfig()?.Online?.ErrorTracking === false || !Sentry.SentryInitialized) {
             callback();
             return;
         }
