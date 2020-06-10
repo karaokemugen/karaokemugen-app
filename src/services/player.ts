@@ -16,6 +16,7 @@ const sleep = promisify(setTimeout);
 
 let commandInProgress = false;
 let introSequence = false;
+let stoppingPlayer = false;
 
 export function playerMessage(msg: string, duration: number) {
 	return message(msg, duration);
@@ -127,9 +128,10 @@ export async function playerEnding() {
 			setState({playerNeedsRestart: false});
 			await restartPlayer();
 		}
-		// Single file playback, no need for all the code below.
-		if (state.singlePlay) {
+		// Single file playback or stopping after current song, no need for all the code below.
+		if (state.singlePlay || stoppingPlayer) {
 			stopPlayer(true);
+			stoppingPlayer = false;
 			return;
 		}
 		// If we just played an intro, play a sponsor.
@@ -353,8 +355,10 @@ async function stopPlayer(now = true) {
 		await stop();
 		setState({status: 'stop', currentlyPlayingKara: null});
 	} else {
-		logger.info('[Player] Karaoke stopping after current song');
-		setState({status: 'stop'});
+		if (getState().status !== 'stop' && !stoppingPlayer) {
+			logger.info('[Player] Karaoke stopping after current song');
+			stoppingPlayer = true;
+		}
 	}
 	if (getConfig().Karaoke.ClassicMode) await prepareClassicPauseScreen();
 }
