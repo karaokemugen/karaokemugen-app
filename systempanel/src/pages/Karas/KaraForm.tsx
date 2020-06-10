@@ -153,7 +153,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	isMediaFile = filename => {
-		return new RegExp("^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg|ogg|m4a|mp3)$").test(
+		return new RegExp("^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg|ogg|m4a|mp3|wav|m2ts|flac)$").test(
 			filename
 		);
 	};
