@@ -70,10 +70,14 @@ body {
 	margin: 0 0.2em;
 	border-radius: 0.1em;
 }
+.ip--loading-dots[data-hide="true"] {
+	display: none;
+}
 
 .ip--progress-bar-container {
 	display: none;
 	width: 75%;
+	max-width: 50em;
 	height: 25px;
 	background-color: #505050;
 	margin-top: 1em;
@@ -102,6 +106,7 @@ body {
 .ip--nanami {
 	margin: 1em;
 	width: 50%;
+	max-width: 40em;
 	display: flex;
 	align-items: center;
 	justify-content: center;

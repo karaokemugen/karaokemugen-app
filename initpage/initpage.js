@@ -88,13 +88,16 @@ function clickButton () {
 }
 
 function setProgressBar(pct, text) {
+	const dots = document.querySelector('.ip--loading-dots');
 	const container = document.querySelector('.ip--progress-bar-container');
 	const bar = document.querySelector('.ip--progress-bar');
 	const textEl = document.querySelector('.ip--progress-text');
 	if (pct < 100) {
 		container.dataset.showBar = 'true';
+		dots.dataset.hide = 'true';
 	} else {
 		container.dataset.showBar = 'false';
+		container.dataset.hide = 'false';
 	}
 	bar.style.width = `${pct}%`;
 	textEl.innerHTML = text;
