@@ -240,7 +240,9 @@
 		"PRIVATE": "Private ?"
 	},
 	"REPOSITORIES": {
-		"NAME": "Name",
+		"NAME": "Repository name",
+		"ONLINE_NAME": "Repository domain name",
+		"NAME_TOOLTIP": "If it's an online repository, put its domaine name only here. If it's a local repository, name it as you want. For example 'My private little karaokes'",
 		"PATH_KARAS": "Karaokes",
 		"PATH_LYRICS": "Lyrics",
 		"PATH_MEDIAS": "Medias",

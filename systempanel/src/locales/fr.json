@@ -240,7 +240,9 @@
 		"PRIVATE": "Privée ?"
 	},
 	"REPOSITORIES": {
-		"NAME": "Nom",
+		"NAME": "Nom du dépôt",
+		"ONLINE_NAME": "Nom de domaine du dépôt",
+		"TOOLTIP_NAME": "Si c'est un dépôt en ligne, indiquez son nom de domaine uniquement. S'il s'agit d'un dépôt local, mettez le nom que vous voulez. Par exemple 'Mon trésor de guerre'",
 		"PATH_KARAS": "Karaokés",
 		"PATH_LYRICS": "Paroles",
 		"PATH_MEDIAS": "Medias",
