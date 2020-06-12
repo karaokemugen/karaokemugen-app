@@ -166,7 +166,6 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			}
 			return;
@@ -177,7 +176,6 @@ export async function playerEnding() {
 				return;
 			} catch(err) {
 				logger.error(`[Player] Failed going to next song : ${err}`);
-				throw err;
 			}
 		}
 		// Testing for position before last to play an encore
@@ -192,7 +190,6 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			}
 			return;
@@ -211,7 +208,6 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			}
 			return;
@@ -229,7 +225,6 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			}
 			return;
@@ -244,7 +239,6 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			}
 			return;
@@ -259,7 +253,6 @@ export async function playerEnding() {
 					return;
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			} else {
 				stopPlayer(true);
