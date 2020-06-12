@@ -104,7 +104,6 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 
 	downloadAll = async () => {
 		this.stopObserver();
-		this.putToDownloadQueuePause()
 
 		var p = Math.max(0,this.state.currentPage - 1);
 		var psz = this.state.currentPageSize;
@@ -124,9 +123,8 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 				});
 			}
 		});
-		await this.postToDownloadQueue(karasToDownload);
+		this.postToDownloadQueue(karasToDownload);
 		this.startObserver();
-		this.putToDownloadQueueStart();
 	}
 
 	api_get_local_karas = async () => {
@@ -351,7 +349,7 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 								<Input id="playlistImport" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.importPlaylist} />
 							</Col>
 							<Col flex={2}>
-								<Select allowClear style={{ width: '90%'}}  onChange={(value) => this.handleFilterTagSelection([tagTypes.GROUPS, value])} 
+								<Select allowClear style={{ width: '90%'}}  onChange={(value) => this.handleFilterTagSelection([tagTypes.GROUPS, value])}
 									placeholder={i18next.t('KARA.TAG_GROUP_FILTER')} key={'tid'} options={this.getGroupsTags()} />
 							</Col>
 							<Col flex={2}>

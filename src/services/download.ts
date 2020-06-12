@@ -24,13 +24,13 @@ import {asyncMove, asyncReadDir, asyncStat, asyncUnlink, asyncWriteFile,resolveF
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import { emit } from '../lib/utils/pubsub';
-import sentry from '../utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { deleteKara } from '../services/kara';
 import { File,KaraDownload, KaraDownloadBLC, KaraDownloadRequest, QueueStatus } from '../types/download';
 import { DownloadItem } from '../types/downloader';
 import Downloader from '../utils/downloader';
+import sentry from '../utils/sentry';
 import {getAllKaras, getKaras,integrateKaraFile} from './kara';
 import { getTags, integrateTagFile } from './tag';
 
@@ -110,9 +110,8 @@ function initQueue(drainEvent = true) {
 }
 
 export async function startDownloads() {
-	if (q?.length > 0) {
-		resumeQueue();
-	} else {
+	if (q) resumeQueue();
+	if (q?.length === 0) {
 		const downloads = await selectPendingDownloads();
 		try {
 			await internet();
