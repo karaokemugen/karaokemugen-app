@@ -230,23 +230,21 @@ export function setVisiblePlaylist(id: number) {
 	return db().query(sqlsetVisiblePlaylist, [id]);
 }
 
-export  function unsetVisiblePlaylist(id: number) {
+export function unsetVisiblePlaylist(id: number) {
 	return db().query(sqlunsetVisiblePlaylist, [id]);
 }
 
-export  function unsetCurrentPlaylist() {
+export function unsetCurrentPlaylist() {
 	return db().query(sqlunsetCurrentPlaylist);
 }
 
-export  function unsetPublicPlaylist() {
+export function unsetPublicPlaylist() {
 	return db().query(sqlunsetPublicPlaylist);
 }
 
-export  function setPlaying(plc_id: number, playlist_id: number) {
-	return Promise.all([
-		db().query(sqlsetPlaying, [plc_id]),
-		db().query(sqlunsetPlaying, [plc_id, playlist_id])
-	]);
+export async function setPlaying(plc_id: number, playlist_id: number) {
+	await db().query(sqlsetPlaying, [plc_id]);
+	await db().query(sqlunsetPlaying, [plc_id, playlist_id]);
 }
 
 export async function countPlaylistUsers(playlist_id: number): Promise<number> {
