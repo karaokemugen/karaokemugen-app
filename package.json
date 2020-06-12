@@ -202,7 +202,39 @@
     "url": "http://localhost:1337/api"
   },
   "build": {
-    "appId": "KaraokeMugen",
+	"appId": "KaraokeMugen",
+	"fileAssociations": [
+		{
+			"ext": "kmplaylist",
+			"name": "Karaoke Mugen Playlist",
+			"description": "Karaoke Mugen Playlist",
+			"role": "Editor"
+		},
+		{
+			"ext": "kmfavorites",
+			"name": "Karaoke Mugen Favorites",
+			"description": "Karaoke Mugen Favorites",
+			"role": "Editor"
+		},
+		{
+			"ext": "karabundle",
+			"name": "Karaoke Mugen Karaoke Bundle",
+			"description": "Karaoke Mugen Karaoke Bundle",
+			"role": "Viewer"
+		},
+		{
+			"ext": "kara.json",
+			"name": "Karaoke Mugen Karaoke File",
+			"description": "Karaoke Mugen Karaoke File",
+			"role": "Viewer"
+		},
+		{
+			"ext": "kmblcset",
+			"name": "Karaoke Mugen Playlist",
+			"description": "Karaoke Mugen Playlist",
+			"role": "Editor"
+		}
+	],
     "nsis": {
       "warningsAsErrors": false,
       "oneClick": false,
