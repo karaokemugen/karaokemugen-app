@@ -114,7 +114,7 @@ async function playCurrentSong(now: boolean) {
 /* Current playing song has been changed, stopping playing now and hitting play again to get the new song. */
 export function playingUpdated() {
 	const state = getState();
-	if (state.status === 'play' && state.player.playing) playPlayer(true);
+	if (state.status !== 'stop' && state.player.playerstatus !== 'stop') playPlayer(true);
 }
 
 /* This is triggered when player ends its current song */
