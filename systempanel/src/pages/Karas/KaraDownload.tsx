@@ -543,10 +543,10 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 							<ClockCircleTwoTone twoToneColor="#dc4e41"/>
 						</Button>;
 					else if(queue.status==='DL_DONE') // done but not in local -> try again dude
-						button = <span><Button disabled type="default"><CheckCircleTwoTone twoToneColor="#4989f3"/></Button></span>;
+						button = <span><Button type="default" onClick={() => this.downloadKara(record)}><CheckCircleTwoTone twoToneColor="#4989f3"/></Button></span>;
 				} else {
 					if(blacklisted)
-						button = <Button type="primary" danger onClick={() => this.downloadKara(record)} ><DownloadOutlined /></Button>;
+						button = <Button type="primary" danger onClick={() => this.downloadKara(record)}><DownloadOutlined /></Button>;
 					else
 						button = <Button type="default" onClick={() => this.downloadKara(record)}><DownloadOutlined /></Button>;
 				}
