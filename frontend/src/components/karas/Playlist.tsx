@@ -448,6 +448,7 @@ noRowsRenderer = () => {
   			}
   		});
 		  this.setState({ data: playlistData });
+		  this.playlistForceRefresh(true);
   	}
   };
 
