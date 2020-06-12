@@ -50,8 +50,7 @@ export function stopDiscordRPC() {
 }
 
 export function initDiscordRPC() {
-	if (rpc) return;
-	if (!getConfig().Online.Discord.DisplayActivity) return;
+	if (rpc || !getConfig().Online.Discord.DisplayActivity) return;
 	rpc = new discordRPC.Client({ transport: 'ipc' });
 
 	rpc.on('ready', () => {
