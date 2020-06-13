@@ -152,221 +152,226 @@ async function getmpvVersion(path: string): Promise<string> {
 }
 
 async function startmpv() {
-	const conf = getConfig();
-	const state = getState();
+	try {
+		const conf = getConfig();
+		const state = getState();
 
-	monitorEnabled = conf.Player.Monitor;
+		monitorEnabled = conf.Player.Monitor;
 
-	let mpvOptions = [
-		'--keep-open=yes',
-		'--fps=60',
-		'--no-border',
-		'--osd-level=0',
-		'--sub-codepage=UTF-8-BROKEN',
-		`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
-		`--volume=${+playerState.volume}`,
-		`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
-		'--autoload-files=no'
-	];
-
-	if (conf.Player.PIP.Enabled) {
-		mpvOptions.push(`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`);
-		// By default, center.
-		let positionX = 50;
-		let positionY = 50;
-		if (conf.Player.PIP.PositionX === 'Left') positionX = 1;
-		if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
-		if (conf.Player.PIP.PositionX === 'Right') positionX = 99;
-		if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
-		if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
-		if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
-		mpvOptions.push(`--geometry=${positionX}%:${positionY}%`);
-	}
-
-	if (conf.Player.mpvVideoOutput) mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
-
-	if (conf.Player.Screen) {
-		mpvOptions.push(`--screen=${conf.Player.Screen}`);
-		mpvOptions.push(`--fs-screen=${conf.Player.Screen}`);
-	}
-
-	if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
-		mpvOptions.push('--fullscreen');
-		playerState.fullscreen = true;
-	}
-	if (conf.Player.StayOnTop) {
-		playerState.stayontop = true;
-		mpvOptions.push('--ontop');
-	}
-	if (conf.Player.NoHud) mpvOptions.push('--no-osc');
-	if (conf.Player.NoBar) mpvOptions.push('--no-osd-bar');
-
-	//On all platforms, check if we're using mpv at least version 0.25 or abort saying the mpv provided is too old.
-	//Assume UNKNOWN is a compiled version, and thus the most recent one.
-	let mpvVersion = await getmpvVersion(state.binPath.mpv);
-	mpvVersion = mpvVersion.split('-')[0];
-	logger.debug(`[Player] mpv version : ${mpvVersion}`);
-
-	//If we're on macOS, add --no-native-fs to get a real
-	// fullscreen experience on recent macOS versions.
-	if (!semver.satisfies(mpvVersion, '>=0.25.0')) {
-		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
-		logger.error(`[Player] mpv binary : ${state.binPath.mpv}`);
-		logger.error('[Player] Exiting due to obsolete mpv version');
-		await exit(1);
-	}
-
-	if (state.os === 'darwin' && semver.gte(mpvVersion, '0.27.0')) mpvOptions.push('--no-native-fs');
-
-	logger.debug(`[Player] mpv options : ${mpvOptions}`);
-	logger.debug(`[Player] mpv binary : ${state.binPath.mpv}`);
-
-	let socket: string;
-	// Name socket file accordingly depending on OS.
-	const random = randomstring.generate({
-		length: 3,
-		charset: 'numeric'
-	});
-	state.os === 'win32'
-		? socket = '\\\\.\\pipe\\mpvsocket' + random
-		: socket = '/tmp/km-node-mpvsocket' + random;
-
-	player = new mpv(
-		{
-			ipc_command: '--input-ipc-server',
-			auto_restart: true,
-			audio_only: false,
-			binary: state.binPath.mpv,
-			socket: socket,
-			time_update: 1,
-			verbose: false,
-			debug: false,
-		},
-		mpvOptions
-	);
-	if (monitorEnabled) {
-		mpvOptions = [
+		let mpvOptions = [
 			'--keep-open=yes',
 			'--fps=60',
+			'--no-border',
 			'--osd-level=0',
 			'--sub-codepage=UTF-8-BROKEN',
-			'--ontop',
-			'--no-osc',
-			'--no-osd-bar',
-			'--geometry=1%:99%',
-			`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`,
+			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
+			`--volume=${+playerState.volume}`,
+			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 			'--autoload-files=no'
 		];
-		if (conf.Player.mpvVideoOutput) {
-			mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
-		} else {
-			//Force direct3d for Windows users
-			if (state.os === 'win32') mpvOptions.push('--vo=direct3d');
+
+		if (conf.Player.PIP.Enabled) {
+			mpvOptions.push(`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`);
+			// By default, center.
+			let positionX = 50;
+			let positionY = 50;
+			if (conf.Player.PIP.PositionX === 'Left') positionX = 1;
+			if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
+			if (conf.Player.PIP.PositionX === 'Right') positionX = 99;
+			if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
+			if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
+			if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
+			mpvOptions.push(`--geometry=${positionX}%:${positionY}%`);
 		}
-		playerMonitor = new mpv(
+
+		if (conf.Player.mpvVideoOutput) mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
+
+		if (conf.Player.Screen) {
+			mpvOptions.push(`--screen=${conf.Player.Screen}`);
+			mpvOptions.push(`--fs-screen=${conf.Player.Screen}`);
+		}
+
+		if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
+			mpvOptions.push('--fullscreen');
+			playerState.fullscreen = true;
+		}
+		if (conf.Player.StayOnTop) {
+			playerState.stayontop = true;
+			mpvOptions.push('--ontop');
+		}
+		if (conf.Player.NoHud) mpvOptions.push('--no-osc');
+		if (conf.Player.NoBar) mpvOptions.push('--no-osd-bar');
+
+		//On all platforms, check if we're using mpv at least version 0.25 or abort saying the mpv provided is too old.
+		//Assume UNKNOWN is a compiled version, and thus the most recent one.
+		let mpvVersion = await getmpvVersion(state.binPath.mpv);
+		mpvVersion = mpvVersion.split('-')[0];
+		logger.debug(`[Player] mpv version : ${mpvVersion}`);
+
+		//If we're on macOS, add --no-native-fs to get a real
+		// fullscreen experience on recent macOS versions.
+		if (!semver.satisfies(mpvVersion, '>=0.25.0')) {
+			logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
+			logger.error(`[Player] mpv binary : ${state.binPath.mpv}`);
+			logger.error('[Player] Exiting due to obsolete mpv version');
+			await exit(1);
+		}
+
+		if (state.os === 'darwin' && semver.gte(mpvVersion, '0.27.0')) mpvOptions.push('--no-native-fs');
+
+		logger.debug(`[Player] mpv options : ${mpvOptions}`);
+		logger.debug(`[Player] mpv binary : ${state.binPath.mpv}`);
+
+		let socket: string;
+		// Name socket file accordingly depending on OS.
+		const random = randomstring.generate({
+			length: 3,
+			charset: 'numeric'
+		});
+		state.os === 'win32'
+			? socket = '\\\\.\\pipe\\mpvsocket' + random
+			: socket = '/tmp/km-node-mpvsocket' + random;
+
+		player = new mpv(
 			{
 				ipc_command: '--input-ipc-server',
 				auto_restart: true,
 				audio_only: false,
 				binary: state.binPath.mpv,
-				socket: `${socket}2`,
+				socket: socket,
 				time_update: 1,
 				verbose: false,
 				debug: false,
 			},
 			mpvOptions
 		);
-	}
+		if (monitorEnabled) {
+			mpvOptions = [
+				'--keep-open=yes',
+				'--fps=60',
+				'--osd-level=0',
+				'--sub-codepage=UTF-8-BROKEN',
+				'--ontop',
+				'--no-osc',
+				'--no-osd-bar',
+				'--geometry=1%:99%',
+				`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`,
+				'--autoload-files=no'
+			];
+			if (conf.Player.mpvVideoOutput) {
+				mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
+			} else {
+				//Force direct3d for Windows users
+				if (state.os === 'win32') mpvOptions.push('--vo=direct3d');
+			}
+			playerMonitor = new mpv(
+				{
+					ipc_command: '--input-ipc-server',
+					auto_restart: true,
+					audio_only: false,
+					binary: state.binPath.mpv,
+					socket: `${socket}2`,
+					time_update: 1,
+					verbose: false,
+					debug: false,
+				},
+				mpvOptions
+			);
+		}
 
-	// Starting up mpv
-	try {
-		const promises = [
-			player.start()
-		];
-		if (monitorEnabled) promises.push(playerMonitor.start());
-		await Promise.all(promises);
-		logger.info('[Player] Player started up successfully');
-	} catch(err) {
-		logger.error(`[Player] mpvAPI : ${JSON.stringify(err)}`);
-		sentry.error(err, 'Fatal');
-		throw err;
-	}
+		// Starting up mpv
+		try {
+			const promises = [
+				player.start()
+			];
+			if (monitorEnabled) promises.push(playerMonitor.start());
+			await Promise.all(promises);
+			logger.info('[Player] Player started up successfully');
+		} catch(err) {
+			logger.error(`[Player] mpvAPI : ${JSON.stringify(err)}`);
+			throw err;
+		}
 
-	await loadBackground();
-	logger.debug('[Player] Initial DI');
-	displayInfo();
-	player.observeProperty('sub-text');
-	player.observeProperty('playtime-remaining');
-	player.observeProperty('eof-reached');
-	player.on('status', (status: mpvStatus) => {
-		// If we're displaying an image, it means it's the pause inbetween songs
-		playerState[status.property] = status.value;
-		if (playerState._playing && playerState.mediaType !== 'background' &&
-			(status.property === 'playtime-remaining' && status.value === 0) ||
-			(status.property === 'eof-reached' && status.value === true && playerState['playtime-remaining'])
-		) {
-			// immediate switch to Playing = False to avoid multiple trigger
+		await loadBackground();
+		logger.debug('[Player] Initial DI');
+		displayInfo();
+		player.observeProperty('sub-text');
+		player.observeProperty('playtime-remaining');
+		player.observeProperty('eof-reached');
+		player.on('status', (status: mpvStatus) => {
+			// If we're displaying an image, it means it's the pause inbetween songs
+			playerState[status.property] = status.value;
+			if (playerState._playing && playerState.mediaType !== 'background' &&
+				(status.property === 'playtime-remaining' && status.value === 0) ||
+				(status.property === 'eof-reached' && status.value === true && playerState['playtime-remaining'])
+			) {
+				// immediate switch to Playing = False to avoid multiple trigger
+				playerState.playing = false;
+				playerState._playing = false;
+				playerState.playerstatus = 'stop';
+				player.pause();
+				if (monitorEnabled) playerMonitor.pause();
+				playerEnding();
+			}
+			emitPlayerState();
+		});
+		player.on('paused',() => {
+			logger.debug( '[Player] Paused event triggered');
 			playerState.playing = false;
-			playerState._playing = false;
-			playerState.playerstatus = 'stop';
-			player.pause();
+			playerState.playerstatus = 'pause';
 			if (monitorEnabled) playerMonitor.pause();
-			playerEnding();
-		}
-		emitPlayerState();
-	});
-	player.on('paused',() => {
-		logger.debug( '[Player] Paused event triggered');
-		playerState.playing = false;
-		playerState.playerstatus = 'pause';
-		if (monitorEnabled) playerMonitor.pause();
-		emitPlayerState();
-	});
-	player.on('resumed',() => {
-		logger.debug( '[Player] Resumed event triggered');
-		playerState.playing = true;
-		playerState.playerstatus = 'play';
-		if (monitorEnabled) playerMonitor.play();
-		emitPlayerState();
-	});
-	player.on('timeposition', (position: number) => {
-		const conf = getConfig();
-		// Returns the position in seconds in the current song
-		playerState.timeposition = position;
-		if (conf.Player.ProgressBarDock) {
-			playerState.mediaType === 'song'
-				? setProgressBar(position / playerState.duration)
-				: setProgressBar(-1);
-		}
-		emitPlayerState();
-		// Send notification to frontend if timeposition is 15 seconds before end of song
-		if (position >= (playerState.duration - 15) && playerState.mediaType === 'song' && !nextSongNotifSent) {
-			nextSongNotifSent = true;
-			notificationNextSong();
-		}
-		// Display informations if timeposition is 8 seconds before end of song
-		if (position >= (playerState.duration - 8) &&
+			emitPlayerState();
+		});
+		player.on('resumed',() => {
+			logger.debug( '[Player] Resumed event triggered');
+			playerState.playing = true;
+			playerState.playerstatus = 'play';
+			if (monitorEnabled) playerMonitor.play();
+			emitPlayerState();
+		});
+		player.on('timeposition', (position: number) => {
+			const conf = getConfig();
+			// Returns the position in seconds in the current song
+			playerState.timeposition = position;
+			if (conf.Player.ProgressBarDock) {
+				playerState.mediaType === 'song'
+					? setProgressBar(position / playerState.duration)
+					: setProgressBar(-1);
+			}
+			emitPlayerState();
+			// Send notification to frontend if timeposition is 15 seconds before end of song
+			if (position >= (playerState.duration - 15) && playerState.mediaType === 'song' && !nextSongNotifSent) {
+				nextSongNotifSent = true;
+				notificationNextSong();
+			}
+			// Display informations if timeposition is 8 seconds before end of song
+			if (position >= (playerState.duration - 8) &&
+				!displayingInfo &&
+				playerState.mediaType === 'song')
+				displaySongInfo(playerState.currentSongInfos);
+			// Display KM's banner if position reaches halfpoint in the song
+			if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
 			!displayingInfo &&
-			playerState.mediaType === 'song')
-			displaySongInfo(playerState.currentSongInfos);
-		// Display KM's banner if position reaches halfpoint in the song
-		if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
-		!displayingInfo &&
-		playerState.mediaType === 'song' && !getState().songPoll) {
-			logger.debug('[Player] Middle of song DI');
-			displayInfo(8000);
-		}
-		// Stop poll if position reaches 10 seconds before end of song
-		if (Math.floor(position) >= Math.floor(playerState.duration - 10) &&
-		playerState.mediaType === 'song' &&
-		conf.Karaoke.Poll.Enabled &&
-		!songNearEnd) {
-			songNearEnd = true;
-			endPoll();
-		}
-	});
-	logger.debug('[Player] mpv initialized successfully');
-	return true;
+			playerState.mediaType === 'song' && !getState().songPoll) {
+				logger.debug('[Player] Middle of song DI');
+				displayInfo(8000);
+			}
+			// Stop poll if position reaches 10 seconds before end of song
+			if (Math.floor(position) >= Math.floor(playerState.duration - 10) &&
+			playerState.mediaType === 'song' &&
+			conf.Karaoke.Poll.Enabled &&
+			!songNearEnd) {
+				songNearEnd = true;
+				endPoll();
+			}
+		});
+		logger.debug('[Player] mpv initialized successfully');
+		return true;
+	} catch(err) {
+		const error = new Error(err);
+		sentry.error(error, 'Fatal');
+		throw error;
+	}
 }
 
 export async function play(mediadata: MediaData) {
