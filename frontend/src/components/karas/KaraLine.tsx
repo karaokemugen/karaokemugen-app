@@ -78,7 +78,11 @@ class KaraLine extends Component<IProps,IState> {
   };
 
   playKara = () => {
-  	axios.put('/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_playing: true });
+	  if (this.props.idPlaylist == -1) {
+		axios.post(`/karas/${this.props.kara.kid}/play`);
+	  } else {
+	  	axios.put(`/playlists/${this.props.idPlaylist}/karas/${this.props.kara.playlistcontent_id}`, { flag_playing: true });
+	  }
   };
 
   addKara = async (event?:any, pos?:number) => {
@@ -247,9 +251,11 @@ class KaraLine extends Component<IProps,IState> {
   							onClick={this.toggleKaraDetail}>
   							<i className="fas fa-info-circle"></i>
   						</button> : null}
-						{scope === 'admin' && idPlaylist > 0 ? <button title={i18next.t('TOOLTIP_PLAYKARA')} 
-						  	className="btn btn-sm btn-action playKara karaLineButton"
-  							onClick={this.playKara}><i className="fas fa-play"></i></button> : null}
+						{scope === 'admin' && (idPlaylist > 0 || idPlaylist == -1) ? 
+							<button title={i18next.t(idPlaylist == -1 ? 'TOOLTIP_PLAYKARA_LIBRARY' : 'TOOLTIP_PLAYKARA')} 
+								className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
+									<i className={`fas ${idPlaylist == -1 ? 'fa-play' : 'fa-play-circle'}`}></i>
+							</button> : null}
   						{scope === 'admin' &&  this.props.playlistInfo && idPlaylist > 0 && !kara.flag_visible
                 			&& (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ? 
   								<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>

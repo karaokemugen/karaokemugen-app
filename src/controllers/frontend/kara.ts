@@ -11,6 +11,7 @@ import { getLang } from '../middlewares/lang';
 import { requireWebappLimited, requireWebappOpen } from '../middlewares/webapp_mode';
 import multer = require('multer');
 import { createKara, editKara } from '../../services/kara_creation';
+import { playSingleSong } from '../../services/player';
 
 export default function karaController(router: Router) {
 	const upload = multer({ dest: resolvedPathTemp()});
@@ -656,6 +657,31 @@ export default function karaController(router: Router) {
 				res.json(APIMessage('SONG_COPIED'));
 			} catch(err) {
 				const code = 'SONG_COPIED_ERROR';
+				errMessage(code, err);
+				res.status(500).json(APIMessage(code));
+			}
+		});
+	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/play')
+		/**
+	 * @api {post} /karas/:kid/play Play a single song
+	 * @apiName PostKaraPlay
+	 * @apiVersion 4.0.0
+	 * @apiGroup Player
+	 * @apiPermission public
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {uuid} kid Karaoke ID to copy
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * {code: "SONG_PLAY_ERROR"}
+	 */
+		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, requireAdmin, updateUserLoginTime, async (req: any, res: any) => {
+			try {
+				await playSingleSong(req.params.kid);
+				res.json();
+			} catch(err) {
+				const code = 'SONG_PLAY_ERROR';
 				errMessage(code, err);
 				res.status(500).json(APIMessage(code));
 			}
