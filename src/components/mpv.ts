@@ -14,7 +14,6 @@ import { errorStep } from '../electron/electronLogger';
 import {getConfig, resolvedPathBackgrounds, resolvedPathRepos,resolvedPathTemp} from '../lib/utils/config';
 import { imageFileTypes } from '../lib/utils/constants';
 import {asyncExists, asyncReadDir, isImageFile, replaceExt,resolveFileInDirs} from '../lib/utils/files';
-import sentry from '../utils/sentry';
 import { getSingleMedia } from '../services/medias';
 import {playerEnding} from '../services/player';
 import { notificationNextSong } from '../services/playlist';
@@ -24,6 +23,7 @@ import {MediaData, mpvStatus,PlayerState} from '../types/player';
 import { initializationCatchphrases } from '../utils/constants';
 import { setDiscordActivity } from '../utils/discordRPC';
 import {getID3} from '../utils/id3tag';
+import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {exit} from './engine';
 
