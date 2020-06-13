@@ -23,37 +23,35 @@ export function playerMessage(msg: string, duration: number) {
 }
 
 export async function playSingleSong(kid: string) {
-	if (!getState().player.playing) {
-		try {
-			const kara = await getKara(kid, {username: 'admin', role: 'admin'});
-			setState({currentSong: kara});
-			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
-			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
-			if (kara.title) kara.title = ` - ${kara.title}`;
-			// If series is empty, pick singer information instead
-			const series = getSeriesSingers(kara);
+	try {
+		const kara = await getKara(kid, {username: 'admin', role: 'admin'});
+		setState({currentSong: kara});
+		logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
+		logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
+		if (kara.title) kara.title = ` - ${kara.title}`;
+		// If series is empty, pick singer information instead
+		const series = getSeriesSingers(kara);
 
-			// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-			let songorder = `${kara.songorder}`;
-			if (!kara.songorder || kara.songorder === 0) songorder = '';
-			// Construct mpv message to display.
-			const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}';
-			await play({
-				media: kara.mediafile,
-				subfile: kara.subfile,
-				gain: kara.gain,
-				infos: infos,
-				currentSong: kara,
-				avatar: null,
-				duration: kara.duration,
-				repo: kara.repository,
-				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
-			});
-			setState({currentlyPlayingKara: kara.kid});
-		} catch(err) {
-			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
-			stopPlayer(true);
-		}
+		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
+		let songorder = `${kara.songorder}`;
+		if (!kara.songorder || kara.songorder === 0) songorder = '';
+		// Construct mpv message to display.
+		const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}';
+		await play({
+			media: kara.mediafile,
+			subfile: kara.subfile,
+			gain: kara.gain,
+			infos: infos,
+			currentSong: kara,
+			avatar: null,
+			duration: kara.duration,
+			repo: kara.repository,
+			spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
+		});
+		setState({currentlyPlayingKara: kara.kid});
+	} catch(err) {
+		logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
+		stopPlayer(true);
 	}
 }
 
