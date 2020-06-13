@@ -9,6 +9,8 @@ import { fetchAndAddFavorites } from '../../services/favorites';
 import {fetchAndUpdateRemoteUser,findUserByName, remoteCheckAuth, updateLastLoginName} from '../../services/user';
 import { APIMessage } from '../common';
 
+const usersFavoritesChecked = new Set();
+
 export const requireAuth = passport.authenticate('jwt', { session: false });
 
 export const updateUserLoginTime = (req: any, _res: any, next: any) => {
@@ -35,7 +37,10 @@ export async function checkValidUser(token: { username: string, role: string }, 
 					if (await remoteCheckAuth(token.username.split('@')[1], onlineToken.token)){
 						try {
 							await fetchAndUpdateRemoteUser(token.username, null, onlineToken);
-							await fetchAndAddFavorites(token.username.split('@')[1], onlineToken.token, token.username);
+							if (!usersFavoritesChecked.has(token.username)) {
+								await fetchAndAddFavorites(token.username.split('@')[1], onlineToken.token, token.username);
+								usersFavoritesChecked.add(token.username);
+							}
 						} catch(err) {
 							logger.error(`[RemoteUser] Failed to fetch and update user/favorite from remote : ${err}`);
 						}
