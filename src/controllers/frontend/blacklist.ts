@@ -210,7 +210,7 @@ export default function blacklistController(router: Router) {
 
 	router.route('/blacklist/set/:set_id([0-9]+)/criterias/:blc_id([0-9]+)')
 	/**
-	 * @api {delete} blacklist/set/:set_id/criterias/:blc_id Delete a blacklist criteria
+	 * @api {delete} /blacklist/set/:set_id/criterias/:blc_id Delete a blacklist criteria
 	 * @apiName DeleteBlacklistCriterias
 	 * @apiVersion 3.1.0
 	 * @apiGroup Blacklist
@@ -244,7 +244,7 @@ export default function blacklistController(router: Router) {
 		});
 	router.route('/blacklist/set/:set_id([0-9]+)')
 	/**
-	 * @api {get} blacklist/set/:set_id Get BLC Set info
+	 * @api {get} /blacklist/set/:set_id Get BLC Set info
 	 * @apiName GetBLCSetInfo
 	 * @apiVersion 3.3.0
 	 * @apiGroup Blacklist
@@ -274,7 +274,7 @@ export default function blacklistController(router: Router) {
 			}
 		})
 	/**
-	 * @api {delete} blacklist/set/:set_id Delete BLC Set info
+	 * @api {delete} /blacklist/set/:set_id Delete BLC Set info
 	 * @apiName DeleteBLCSet
 	 * @apiVersion 3.3.0
 	 * @apiGroup Blacklist
@@ -346,7 +346,7 @@ export default function blacklistController(router: Router) {
 		});
 	router.route('/blacklist/set')
 	/**
-	 * @api {get} blacklist/set Get all BLC Sets
+	 * @api {get} /blacklist/set Get all BLC Sets
 	 * @apiName GetBLCSetsInfo
 	 * @apiVersion 3.3.0
 	 * @apiGroup Blacklist
