@@ -1,6 +1,7 @@
 // Node Modules
 import {json,urlencoded} from 'body-parser';
 import compression from 'compression';
+import cors from 'cors';
 import express from 'express';
 import {createServer} from 'http';
 import passport from 'passport';
@@ -23,8 +24,8 @@ import whitelistController from '../controllers/frontend/whitelist';
 import {getConfig, resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import {configurePassport} from '../lib/utils/passport_manager';
-import sentry from '../utils/sentry';
 import { initWS } from '../lib/utils/ws';
+import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 
 /** Declare all routers for API types */
@@ -56,6 +57,7 @@ export function initFrontend(): number {
 		const conf = getConfig();
 		const state = getState();
 		const app = express();
+		app.use(cors());
 		app.use(passport.initialize());
 		configurePassport();
 		app.use(compression());

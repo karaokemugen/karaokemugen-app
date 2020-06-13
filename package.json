@@ -81,6 +81,7 @@
     "chalk": "^4.1.0",
     "cli-progress": "^3.8.2",
     "compression": "^1.7.4",
+    "cors": "^2.8.5",
     "csv-writer": "^1.6.0",
     "discord-rpc": "^3.1.1",
     "dotenv": "^8.2.0",
@@ -153,8 +154,8 @@
     "@types/better-queue": "^3.8.2",
     "@types/chai": "^4.2.11",
     "@types/cli-progress": "^3.7.0",
-	"@types/compression": "^1.7.0",
-	"@types/discord-rpc": "^3.0.4",
+    "@types/compression": "^1.7.0",
+    "@types/discord-rpc": "^3.0.4",
     "@types/fs-extra": "^9.0.1",
     "@types/ip": "^1.1.0",
     "@types/js-yaml": "^3.12.4",
@@ -202,39 +203,39 @@
     "url": "http://localhost:1337/api"
   },
   "build": {
-	"appId": "KaraokeMugen",
-	"fileAssociations": [
-		{
-			"ext": "kmplaylist",
-			"name": "Karaoke Mugen Playlist",
-			"description": "Karaoke Mugen Playlist",
-			"role": "Editor"
-		},
-		{
-			"ext": "kmfavorites",
-			"name": "Karaoke Mugen Favorites",
-			"description": "Karaoke Mugen Favorites",
-			"role": "Editor"
-		},
-		{
-			"ext": "karabundle",
-			"name": "Karaoke Mugen Karaoke Bundle",
-			"description": "Karaoke Mugen Karaoke Bundle",
-			"role": "Viewer"
-		},
-		{
-			"ext": "kara.json",
-			"name": "Karaoke Mugen Karaoke File",
-			"description": "Karaoke Mugen Karaoke File",
-			"role": "Viewer"
-		},
-		{
-			"ext": "kmblcset",
-			"name": "Karaoke Mugen Playlist",
-			"description": "Karaoke Mugen Playlist",
-			"role": "Editor"
-		}
-	],
+    "appId": "KaraokeMugen",
+    "fileAssociations": [
+      {
+        "ext": "kmplaylist",
+        "name": "Karaoke Mugen Playlist",
+        "description": "Karaoke Mugen Playlist",
+        "role": "Editor"
+      },
+      {
+        "ext": "kmfavorites",
+        "name": "Karaoke Mugen Favorites",
+        "description": "Karaoke Mugen Favorites",
+        "role": "Editor"
+      },
+      {
+        "ext": "karabundle",
+        "name": "Karaoke Mugen Karaoke Bundle",
+        "description": "Karaoke Mugen Karaoke Bundle",
+        "role": "Viewer"
+      },
+      {
+        "ext": "kara.json",
+        "name": "Karaoke Mugen Karaoke File",
+        "description": "Karaoke Mugen Karaoke File",
+        "role": "Viewer"
+      },
+      {
+        "ext": "kmblcset",
+        "name": "Karaoke Mugen Playlist",
+        "description": "Karaoke Mugen Playlist",
+        "role": "Editor"
+      }
+    ],
     "nsis": {
       "warningsAsErrors": false,
       "oneClick": false,
