@@ -78,7 +78,7 @@ class KaraLine extends Component<IProps,IState> {
   };
 
   playKara = () => {
-	  if (this.props.idPlaylist == -1) {
+	  if (this.props.idPlaylist < 0) {
 		axios.post(`/karas/${this.props.kara.kid}/play`);
 	  } else {
 	  	axios.put(`/playlists/${this.props.idPlaylist}/karas/${this.props.kara.playlistcontent_id}`, { flag_playing: true });
@@ -233,15 +233,15 @@ class KaraLine extends Component<IProps,IState> {
 							<img className={`img-circle ${is_touch_device() ? 'mobile': ''}`}
 							 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
 							 <div className="actionButtonsDiv">
-								{this.props.idPlaylistTo !== this.props.idPlaylist ?
-									<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
+								{this.props.idPlaylistTo !== idPlaylist ?
+									<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={idPlaylist}
 										scope={this.props.scope}
 										addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} />
 								: null}
 							 </div>
 						{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
 					</div>
-  					{scope === 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ?
+  					{scope === 'admin' && idPlaylist !== -2 && idPlaylist != -4 && this.props.playlistCommands ?
   						<span className="checkboxKara" onClick={this.checkKara}>
   							{kara.checked ? <i className="far fa-check-square"></i>
   								: <i className="far fa-square"></i>}
@@ -251,10 +251,10 @@ class KaraLine extends Component<IProps,IState> {
   							onClick={this.toggleKaraDetail}>
   							<i className="fas fa-info-circle"></i>
   						</button> : null}
-						{scope === 'admin' && (idPlaylist > 0 || idPlaylist == -1) ? 
-							<button title={i18next.t(idPlaylist == -1 ? 'TOOLTIP_PLAYKARA_LIBRARY' : 'TOOLTIP_PLAYKARA')} 
+						{scope === 'admin' ? 
+							<button title={i18next.t(idPlaylist < 0 ? 'TOOLTIP_PLAYKARA_LIBRARY' : 'TOOLTIP_PLAYKARA')} 
 								className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
-									<i className={`fas ${idPlaylist == -1 ? 'fa-play' : 'fa-play-circle'}`}></i>
+									<i className={`fas ${idPlaylist < 0 ? 'fa-play' : 'fa-play-circle'}`}></i>
 							</button> : null}
   						{scope === 'admin' &&  this.props.playlistInfo && idPlaylist > 0 && !kara.flag_visible
                 			&& (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ? 
