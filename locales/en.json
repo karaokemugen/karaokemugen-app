@@ -141,6 +141,6 @@
 		"MESSAGE": "No local repository exists in your configuration. Please create one before importing this song again."
 	},
 	"GENERATING_READING": "Reading data...",
-	"GENERATING_DATABASE": "Creating dtabase...",
+	"GENERATING_DATABASE": "Creating database...",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "ADD A SONG TO THE PLAYLIST!"
 }
