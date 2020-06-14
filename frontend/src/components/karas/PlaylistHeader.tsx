@@ -180,8 +180,6 @@ class PlaylistHeader extends Component<IProps,IState> {
 				blcSet?: string | ArrayBuffer | null
 			} = {};
 			var name:string;
-			console.log(file.type)
-			console.log(file.name)
 			if (file.name.includes('.kmblc')) {
 				data.blcSet = fr.result;
 				url = '/blacklist/set/import';

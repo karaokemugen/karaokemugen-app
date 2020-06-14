@@ -68,7 +68,6 @@ ipcRenderer.on('tip', (event, data) => {
 	tipbox.innerHTML = data.message.autoLink({target: '_blank'});
 });
 ipcRenderer.on('tasksUpdated', (event, data) => {
-	console.log(data);
 	if (Object.keys(data).length > 0) {
 		const task = data[Object.keys(data)[0]];
 		if (task?.text === 'GENERATING') {
