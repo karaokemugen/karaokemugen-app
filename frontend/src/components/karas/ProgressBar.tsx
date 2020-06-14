@@ -94,7 +94,7 @@ class ProgressBar extends Component<IProps,IState> {
 				}
 			}
     		if (!this.state.oldState || (this.state.oldState.status != data.status || this.state.oldState.playerStatus != data.playerStatus)) {
-    			status = data.status === 'stop' ? 'stop' : data.playerStatus;
+    			status = data.playerStatus;
     			if( status === 'stop') {
     				this.setState({width: '0'});
     			}
