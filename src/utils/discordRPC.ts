@@ -3,7 +3,6 @@ import i18next from 'i18next';
 import sample from 'lodash.sample';
 
 import { getConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
 import sentry from '../utils/sentry';
 import { version } from '../version';
 
@@ -13,17 +12,9 @@ let rpc: any;
 
 discordRPC.register(clientId);
 
-export async function setDiscordActivity(activityType: 'song' | 'idle', activityData?: any) {
+export function setDiscordActivity(activityType: 'song' | 'idle', activityData?: any) {
 	try {
-		if (!getConfig().Online.Discord.DisplayActivity) return;
-		if (!rpc) {
-			try {
-				await initDiscordRPC(false);
-			} catch(err) {
-				// Non-fatal, we'll try next time
-				return;
-			}
-		}
+		if (!getConfig().Online.Discord.DisplayActivity || !rpc || !rpc.clientId) return;
 		const startTimestamp = new Date();
 		let activity: string;
 		let activityDetail = 'Zzz...';
@@ -52,24 +43,21 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 
 export function stopDiscordRPC() {
 	if (rpc) {
-		rpc.clearActivity();
-		rpc.destroy();
+		if (rpc.clientID) {
+			rpc.clearActivity();
+			rpc.destroy();
+		}
 		rpc = null;
 	}
 }
 
-export async function initDiscordRPC(setIdle = true) {
+export function initDiscordRPC() {
 	if (rpc || !getConfig().Online.Discord.DisplayActivity) return;
-	try {
-		rpc = new discordRPC.Client({ transport: 'ipc' });
+	rpc = new discordRPC.Client({ transport: 'ipc' });
 
-		if (setIdle) rpc.on('ready', () => {
-			setDiscordActivity('idle');
-			// activity can only be set every 15 seconds
-		});
-		await rpc.login({ clientId });
-	} catch(err) {
-		// Non-fatal, Discord is probably not running
-		logger.debug(`[Discord] Failed to connect to Discord client via IPC : ${err}`);
-	}
+	rpc.on('ready', () => {
+		setDiscordActivity('idle');
+		// activity can only be set every 15 seconds
+	});
+	rpc.login({ clientId }).catch(() => stopDiscordRPC());
 }
