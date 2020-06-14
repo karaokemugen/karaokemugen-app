@@ -23,7 +23,7 @@
 		"TITLE_TOOLTIP": "Si vous ne le connaissez pas, mettez le nom de la série. Dans le cas d'une version alternative, nommez votre titre ainsi : 'Mon titre ~ Disco vers.' par exemple",
 		"TITLE_REQUIRED": "Le titre est obligatoire",
 		"SERIES": "Série(s)",
-		"SERIES_TOOLTIP": "Si le type est Music Video ou Concert, la série n'est pas obligatoire, sauf si en lien avec une série animée (Love Live, Idolmaster, etc.)",
+		"SERIES_TOOLTIP": "Série TV, nom de film, de jeu vidéo, etc.",
 		"SONGTYPES": "Type(s) de chanson",
 		"TYPE_REQUIRED": "Un type de chanson est obligatoire",
 		"ORDER": "Numéro de chanson",

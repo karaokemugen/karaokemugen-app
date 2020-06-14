@@ -23,7 +23,7 @@
 		"TITLE_TOOLTIP": "If you don't know, put the name of the series here as well",
 		"TITLE_REQUIRED": "Please enter a song title",
 		"SERIES": "Serie(s)",
-		"SERIES_TOOLTIP": "If song type is Music Video or Concert, series is not mandatory, except if it is related to a particular anime series (Love Live, Idolmaster, etc.)",
+		"SERIES_TOOLTIP": "TV series, movie title, video game title, etc.",
 		"SERIES_SINGERS_REQUIRED": "Series or singers cannot be empty in the same time.",
 		"SONGTYPES": "Song type(s)",
 		"TYPE_REQUIRED": "Song type is mandatory",
