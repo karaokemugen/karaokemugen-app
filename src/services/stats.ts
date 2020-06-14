@@ -10,6 +10,7 @@ import { getConfig } from '../lib/utils/config';
 import { asyncWriteFile } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
+import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getSessions } from './session';
 
@@ -37,17 +38,28 @@ export async function sendPayload() {
 		}
 		const payload = await buildPayload();
 		logger.info(`[Stats] Sending payload (${prettyBytes(JSON.stringify(payload).length)})`);
-		logger.info('[Stats] Payload data saved locally to logs/statsPayload.json');
 		const conf = getConfig();
-		asyncWriteFile(resolve(getState().dataPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
 		await HTTP.post(`https://${conf.Online.Host}/api/stats`, {
 			json: payload
 		});
+		savePayload(payload);
 		logger.info('[Stats] Payload sent successfully');
 	} catch(err) {
 		logger.error(`[Stats] Uploading stats payload failed : ${err}`);
+		sentry.error(err);
 	}
 
+}
+
+async function savePayload(payload: any) {
+	try {
+		await asyncWriteFile(resolve(getState().dataPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
+		logger.info('[Stats] Payload data saved locally to logs/statsPayload.json');
+	} catch(err) {
+		// Non-fatal
+		logger.warn(`[Stats] Could not save payload : ${err}`);
+		sentry.error(err, 'Warning');
+	}
 }
 
 /** Create stats payload */
