@@ -12,7 +12,8 @@ interface IState {
 	serie: string;
 	link: string;
 	songtype: string;
-	songtypes: Array<string>
+	songtypes: Array<string>;
+	disabledButton: boolean;
 }
 
 class SuggestionModal extends Component<{}, IState> {
@@ -24,7 +25,8 @@ class SuggestionModal extends Component<{}, IState> {
 			serie: "",
 			link: "",
 			songtype: "",
-			songtypes: []
+			songtypes: [],
+			disabledButton: false
 		};
 	}
 
@@ -36,6 +38,7 @@ class SuggestionModal extends Component<{}, IState> {
 
 	confirmModal = async () => {
 		if (this.state.name && this.state.serie && this.state.songtype) {
+			this.setState({disabledButton: true});
 			let response = await axios.post('/karas/suggest', 
 				{ title: this.state.name, serie: this.state.serie, type: this.state.songtype, link: this.state.link });
 			displayMessage('info', <div><label>{i18next.t('KARA_SUGGESTION_INFO')}</label> <br/> 
@@ -97,7 +100,7 @@ class SuggestionModal extends Component<{}, IState> {
 							<button type="button" className="btn btn-action btn-primary other" onClick={this.abortModal}>
 								<i className="fas fa-times"></i>
 							</button>
-    						<button type="button" className="btn btn-action btn-default ok" onClick={this.confirmModal}>
+    						<button disabled={this.state.disabledButton} type="button" className="btn btn-action btn-default ok" onClick={this.confirmModal}>
     							<i className="fas fa-check"></i>
     						</button>
     					</div>
