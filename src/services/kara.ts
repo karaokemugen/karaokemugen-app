@@ -333,8 +333,8 @@ export async function removeSerieInKaras(sid: string, karas: KaraList) {
 
 export function getSeriesSingers(kara: DBKara) {
 	const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
-	return kara.series?.length >= 0
-		? kara.series[0].i18n[lang] || kara.series[0].i18n.eng || kara.series[0].name
+	return kara.series?.length >= 0 && kara.series[0]
+		? kara.series[0].i18n[lang] || kara.series[0].i18n?.eng || kara.series[0].name
 		: kara.singers.map(s => s.name).join(', ');
 }
 
