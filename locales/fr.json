@@ -149,5 +149,6 @@
 		"MESSAGE": "Aucun dépôt local n'existe dans votre configuration. Veuillez en créer un avant de réimporter ce karaoké"
 	},
 	"GENERATING_READING": "Lecture des données...",
-	"GENERATING_DATABASE": "Création de la base de données..."
+	"GENERATING_DATABASE": "Création de la base de données...",
+	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON A LA PLAYLIST !"
 }

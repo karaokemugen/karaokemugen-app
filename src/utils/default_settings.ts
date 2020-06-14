@@ -201,7 +201,9 @@ export const defaults: Config = {
 				'???',
 			]
 		},
-		RemovePublicOnPlay: false
+		RemovePublicOnPlay: false,
+		RandomSongsAfterEnd: false,
+		RandomSongsAfterEndMessage: true,
 	},
 	System: {
 		Binaries: {

@@ -263,6 +263,9 @@
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
+			"PLAYLIST_RANDOMSONGSAFTEREND": "Jouer des chansons aléatoirement en fin de playlist",
+			"PLAYLIST_RANDOMSONGSAFTEREND_TOOLTIP": "En fin de playlist, Karaoke Mugen jouera des chansons aléatoires de votre bibliothèque afin de meubler la fin de votre karaoké jusqu'à ce que quelqu'un rajoute une chanson (si autoplay est activé)",
+			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher un message régulier de demande d'ajout de chanson à l'écran en lecture aléatoire",
 			"AUTO_UPDATE_JINGLES": "Mise à jour automatique des vidéos jingles",
 			"AUTO_UPDATE_INTROS": "Mise à jour automatique des vidéos intros",
 			"AUTO_UPDATE_OUTROS": "Mise à jour automatique des vidéos outros",

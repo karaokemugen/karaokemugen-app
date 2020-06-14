@@ -152,7 +152,9 @@ export interface Config {
 			AddedSongVisibilityPublic?: boolean,
 			AddedSongVisibilityAdmin?: boolean,
 			Labels?: string[]
-		}
+		},
+		RandomSongsAfterEnd: boolean,
+		RandomSongsAfterEndMessage: boolean
 	},
 	System: {
 		Binaries: {

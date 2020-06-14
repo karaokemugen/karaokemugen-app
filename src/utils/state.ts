@@ -36,6 +36,7 @@ let state: State = {
 	wsLogNamespace: null,
 	noAutoTest: false,
 	singlePlay: false,
+	randomPlaying: false,
 	player: {},
 	opt: {},
 	args: []

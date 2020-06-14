@@ -725,7 +725,6 @@ export async function message(message: string, duration = 10000, alignCode = 5) 
 		if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
 		if (playerState.playing === false && !getState().songPoll) {
 			await sleep(duration);
-			logger.debug('[Player] AfterMessage DI');
 			displayInfo();
 		}
 	} catch(err) {
@@ -768,6 +767,7 @@ export async function displayInfo(duration = 10000000) {
 		throw err;
 	});
 	try {
+		displayingInfo = true;
 		const conf = getConfig();
 		const ci = conf.Karaoke.Display.ConnectionInfo;
 		let text = '';
@@ -787,6 +787,8 @@ export async function displayInfo(duration = 10000000) {
 		};
 		await player.freeCommand(JSON.stringify(command));
 		if (monitorEnabled) await playerMonitor.freeCommand(JSON.stringify(command));
+		await sleep(duration);
+		displayingInfo = false;
 	} catch(err) {
 		logger.error(`[Player] Unable to display infos : ${JSON.stringify(err, null, 2)}`);
 		sentry.error(err);
@@ -902,4 +904,21 @@ async function load(file: string, mode: string, options: string[]) {
 		logger.error(`[mpv Monitor] Error loading file ${file} : ${err}`);
 		throw Error(err);
 	}
+}
+
+let intervalIDAddASong: any;
+
+/** Initialize start displaying the "Add a song to the list" */
+export function initAddASongMessage() {
+	if (!intervalIDAddASong && getState().randomPlaying) intervalIDAddASong = setInterval(displayAddASong, 2000);
+}
+
+/** Stop displaying the Add a sogn to the list */
+export function stopAddASongMessage() {
+	if (intervalIDAddASong) clearInterval(intervalIDAddASong);
+	intervalIDAddASong = undefined;
+}
+
+function displayAddASong() {
+	if (!displayingInfo && getState().randomPlaying) message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'), 1000);
 }
