@@ -4,8 +4,8 @@
   "private": true,
   "homepage": "/system",
   "dependencies": {
-    "@cospired/i18n-iso-languages": "^2.1.1",
-    "antd": "4.3.0",
+    "@cospired/i18n-iso-languages": "^2.1.2",
+    "antd": "4.3.3",
     "axios": "0.19.2",
     "i18next": "^19.4.5",
     "i18next-browser-languagedetector": "^4.1.1",
@@ -17,12 +17,12 @@
     "socket.io-client": "2.3.0"
   },
   "devDependencies": {
-    "@types/react": "16.9.35",
+    "@types/react": "16.9.36",
     "@types/react-dom": "16.9.8",
     "@types/react-router": "5.1.7",
     "@types/react-router-dom": "5.1.5",
     "react-scripts": "3.4.1",
-    "typescript": "3.9.3"
+    "typescript": "3.9.5"
   },
   "scripts": {
     "start": "react-scripts start",
