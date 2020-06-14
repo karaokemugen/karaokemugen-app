@@ -12,9 +12,12 @@ let rpc: any;
 
 discordRPC.register(clientId);
 
-export function setDiscordActivity(activityType: 'song' | 'idle', activityData?: any) {
+export async function setDiscordActivity(activityType: 'song' | 'idle', activityData?: any) {
 	try {
-		if (!getConfig().Online.Discord.DisplayActivity || !rpc || !rpc.clientId) return;
+		if (!getConfig().Online.Discord.DisplayActivity || !rpc || !rpc?.clientId) {
+			if (!rpc || !rpc?.clientId) startCheckingDiscordRPC();
+			return;
+		}
 		const startTimestamp = new Date();
 		let activity: string;
 		let activityDetail = 'Zzz...';
@@ -25,7 +28,7 @@ export function setDiscordActivity(activityType: 'song' | 'idle', activityData?:
 			activity = activityData.title,
 			activityDetail = activityData.singer;
 		}
-		rpc.setActivity({
+		await rpc.setActivity({
 			details: activity.substring(0, 128),
 			state: activityDetail.substring(0, 128),
 			startTimestamp,
@@ -41,23 +44,51 @@ export function setDiscordActivity(activityType: 'song' | 'idle', activityData?:
 	}
 }
 
-export function stopDiscordRPC() {
+export async function stopDiscordRPC() {
 	if (rpc) {
-		if (rpc.clientID) {
-			rpc.clearActivity();
-			rpc.destroy();
+		try {
+			await rpc.destroy();
+		} catch(err) {
+			//Non fatal
 		}
 		rpc = null;
 	}
+	if (!getConfig().Online.Discord.DisplayActivity) stopCheckingDiscordRPC();
 }
 
+let intervalIDDiscordRPCSetup: any;
+
 export function initDiscordRPC() {
+	startCheckingDiscordRPC();
+	setupDiscordRPC();
+}
+
+function startCheckingDiscordRPC() {
+	if (!intervalIDDiscordRPCSetup) intervalIDDiscordRPCSetup = setInterval(setupDiscordRPC, 15000);
+}
+
+/** Stop displaying the Add a sogn to the list */
+function stopCheckingDiscordRPC() {
+	if (intervalIDDiscordRPCSetup) clearInterval(intervalIDDiscordRPCSetup);
+	intervalIDDiscordRPCSetup = undefined;
+}
+
+
+export function setupDiscordRPC() {
 	if (rpc || !getConfig().Online.Discord.DisplayActivity) return;
 	rpc = new discordRPC.Client({ transport: 'ipc' });
 
 	rpc.on('ready', () => {
 		setDiscordActivity('idle');
+		stopCheckingDiscordRPC();
 		// activity can only be set every 15 seconds
 	});
-	rpc.login({ clientId }).catch(() => stopDiscordRPC());
+	rpc.on('disconnected', () => {
+		stopDiscordRPC();
+		startCheckingDiscordRPC();
+	});
+	rpc.login({ clientId }).catch(() => {
+		stopDiscordRPC();
+		if (getConfig().Online.Discord.DisplayActivity) startCheckingDiscordRPC();
+	});
 }
