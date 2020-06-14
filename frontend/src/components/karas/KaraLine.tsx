@@ -107,7 +107,7 @@ class KaraLine extends Component<IProps,IState> {
   				}
   			}
   		} else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
-  			url = '/blacklist/criterias';
+  			url = `/blacklist/set/${store.getCurrentBlSet()}/criterias`;
   			data = { blcriteria_type: 1001, blcriteria_value: this.props.kara.kid };
   		} else if (this.props.idPlaylistTo == -3) {
   			url = '/whitelist';

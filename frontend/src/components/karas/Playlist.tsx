@@ -134,7 +134,7 @@ class Playlist extends Component<IProps, IState> {
 	  	await this.getIdPlaylist();
 		  if (this.state.idPlaylist === -1 || this.props.playlistList
 			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
-			this.state.idPlaylist === -4 && await this.loadBLSet();
+			(this.state.idPlaylist === -2 || this.state.idPlaylist === -4) && await this.loadBLSet();
 			await this.getPlaylist();
 	  }
   }
@@ -292,10 +292,11 @@ noRowsRenderer = () => {
 		let bLSetList = (await axios.get('/blacklist/set')).data;
 		let bLSet = bLSetList.filter((set: BLCSet) => idBLSet ?  set.blc_set_id === idBLSet : set.flag_current)[0];
 		await this.setState({ bLSetList: bLSetList, bLSet: bLSet });
+		store.setCurrentBlSet(bLSet.blc_set_id);
 	}
 
 	changeIdPlaylist = async (idPlaylist: number, idBLSet?: number) => {
-		if (idPlaylist === -4) {
+		if (idPlaylist === -2 || idPlaylist === -4) {
 			await this.loadBLSet(idBLSet);
 		}
 		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
@@ -544,7 +545,7 @@ noRowsRenderer = () => {
 			}
   		}
   	} else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
-  		url = '/blacklist/criterias';
+  		url = `/blacklist/set/${store.getCurrentBlSet()}/criterias`;
   		data = { blcriteria_type: 1001, blcriteria_value: idKara };
   	} else if (this.props.idPlaylistTo == -3) {
   		url = '/whitelist';
@@ -609,7 +610,7 @@ noRowsRenderer = () => {
 		})}
 		</div>, async (confirm:boolean) => {
 			if (confirm) {
-				await axios.delete(`/blacklist/criterias/${kara.blc_id}`);
+				await axios.delete(`/blacklist/set/${store.getCurrentBlSet()}/criterias/${kara.blc_id}`);
 			}
 		});
   };
