@@ -16,9 +16,9 @@ import { resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
 import { asyncUnlink,resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
 import logger, {profile} from '../lib/utils/logger';
-import sentry from '../utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
+import sentry from '../utils/sentry';
 import { getAllKaras } from './kara';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {

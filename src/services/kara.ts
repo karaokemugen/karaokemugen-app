@@ -28,10 +28,10 @@ import {getTagTypeName,tagTypes} from '../lib/utils/constants';
 import {asyncCopy, asyncReadFile, asyncUnlink, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import {profile} from '../lib/utils/logger';
-import sentry from '../utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { DBKaraHistory } from '../types/database/kara';
+import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { editKara } from './kara_creation';
 import { getTag } from './tag';
@@ -239,7 +239,8 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 		from: params.from || 0,
 		size: params.size || 9999999999,
 		admin: params.token.role === 'admin',
-		random: params.random
+		random: params.random,
+		blacklist: params.blacklist
 	});
 	profile('formatList');
 	const count = pl.length > 0 ? pl[0].count : 0;

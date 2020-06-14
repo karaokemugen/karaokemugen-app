@@ -11,6 +11,7 @@ import Traceroute from 'nodejs-traceroute';
 import {resolve} from 'path';
 import { ip as whoisIP } from 'whoiser';
 
+import { initAddASongMessage, stopAddASongMessage } from '../components/mpv';
 import { listUsers } from '../dao/user';
 import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
@@ -118,6 +119,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	} catch(err) {
 		logger.warn(`[Config] Could not start/stop Twitch chat bot : ${err}`);
 	}
+	// Toggling random song after end message
+	config.Playlist.RandomSongsAfterEndMessage
+		? initAddASongMessage()
+		: stopAddASongMessage();
 	// Toggling Discord RPC
 	config.Online.Discord.DisplayActivity
 		? initDiscordRPC()

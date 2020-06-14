@@ -162,6 +162,8 @@ Player:
   # When playing mp3s, enable/disable visualization effects.
   VisualizationEffects: false
 Playlist:
+  # Play random songs after a playlist has ended
+  RandomSongsAfterEnd: false
   # Allow duplicates in current playlist
   AllowDuplicates: false
   # Allow duplicate series or singers in current playlist

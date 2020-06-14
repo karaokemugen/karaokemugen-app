@@ -10,6 +10,7 @@ export interface State {
 	currentRequester?: string,
 	currentlyPlayingKara?: string,
 	currentSong: CurrentSong
+	randomPlaying: boolean,
 	counterToJingle?: number,
 	counterToSponsor?: number,
 	introPlayed?: boolean,

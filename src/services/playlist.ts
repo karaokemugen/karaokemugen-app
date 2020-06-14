@@ -66,7 +66,7 @@ import {getState,setState} from '../utils/state';
 import {getBlacklist} from './blacklist';
 import { getAllRemoteKaras } from './download';
 import { formatKaraList, getKara, getSeriesSingers,isAllKaras} from './kara';
-import {playingUpdated,playPlayer} from './player';
+import {playingUpdated, playPlayer} from './player';
 //KM Modules
 import {findUserByName,updateSongsLeft} from './user';
 
@@ -577,7 +577,11 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		}
 		if (conf.Karaoke.Autoplay &&
 			+playlist_id === state.currentPlaylistID &&
-			state.status === 'stop' ) playPlayer(true);
+			(state.status === 'stop' || state.randomPlaying) ) {
+			setState({ randomPlaying: false });
+			await nextSong();
+			await playPlayer(true);
+		}
 		await Promise.all([
 			updatePlaylistKaraCount(playlist_id),
 			updateSongsLeft(user.login, playlist_id)

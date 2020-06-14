@@ -251,6 +251,9 @@
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoke",
+			"PLAYLIST_RANDOMSONGSAFTEREND": "Play random songs after playlist ends",
+			"PLAYLIST_RANDOMSONGSAFTEREND_TOOLTIP": "At the end of your current playlist, Karaoke Mugen will play random songs from the library until someone adds a song (if autoplay is enabled)",
+			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing after playlist end",
 			"AUTO_UPDATE_JINGLES": "Auto-update jingles",
 			"AUTO_UPDATE_INTROS": "Auto-update intros",
 			"AUTO_UPDATE_OUTROS": "Auto-update outros",
