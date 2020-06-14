@@ -50,7 +50,8 @@ export async function playSingleSong(kid?: string) {
 		});
 		setState({currentlyPlayingKara: kara.kid});
 	} catch(err) {
-		logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
+		logger.error(`[Player] Error during song playback : ${err}`);
+		sentry.error(err, 'Warning');
 		stopPlayer(true);
 	}
 }
@@ -113,7 +114,8 @@ async function playCurrentSong(now: boolean) {
 			emitWS('playlistInfoUpdated', kara.playlist_id);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch(err) {
-			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
+			logger.error(`[Player] Error during song playback : ${err}`);
+			sentry.error(err, 'Warning');
 			if (getState().status !== 'stop') {
 				logger.warn('[Player] Skipping playback for this song');
 				try {
