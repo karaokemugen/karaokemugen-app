@@ -46,7 +46,6 @@
 		"GENRES": "Genre(s)",
 		"ORIGINS": "Origine(s)",
 		"MISC": "Divers",
-		"TAGS_TOOLTIP": "Tags à lier à ce karaoké",
 		"GROUPS": "Groupe(s)",
 		"GROUPS_TOOLTIP": "Groupes de téléchargement pour ce morceau. Le morceau sera ajouté dans ces paquets pour le téléchargement",
 		"CREATED_AT": "Date de création",

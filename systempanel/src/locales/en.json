@@ -46,7 +46,6 @@
 		"GENRES": "Genre(s)",
 		"ORIGINS": "Origin(s)",
 		"MISC": "Misc",
-		"TAGS_TOOLTIP": "Tags that define the song",
 		"GROUPS": "Group(s)",
 		"GROUPS_TOOLTIP": "Download groups for this song. The song will be included in these download packs",
 		"CREATED_AT": "Creation date",
