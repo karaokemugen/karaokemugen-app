@@ -40,7 +40,9 @@ class AdminHeader extends Component<IProps, IState> {
 	}
 
 
-	componentDidMount() {
+	async componentDidMount() {
+		let result = await axios.get('/player');
+		await this.setState({ statusPlayer: result.data });
 		getSocket().on('playerStatus', (data:PublicState) => {
 			var val = data.volume;
 			var base = 100;
@@ -184,9 +186,9 @@ class AdminHeader extends Component<IProps, IState> {
   					title={i18next.t('VOLUME_LEVEL')}
   					data-namecommand="setVolume"
   					id="volume"
-  					defaultValue={volume}
+  					value={volume}
   					type="range"
-  					onMouseUp={this.props.putPlayerCommando}
+  					onChange={this.props.putPlayerCommando}
   				/>
   			</button>
 
