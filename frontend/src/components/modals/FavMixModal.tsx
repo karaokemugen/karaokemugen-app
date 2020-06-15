@@ -43,7 +43,10 @@ class FavMixModal extends Component<IProps,IState> {
     					<ul className="modal-header">
     						<h4 className="modal-title">{i18next.t('START_FAV_MIX')}</h4>
 							<button className="closeModal btn btn-action" 
-								onClick={() => ReactDOM.unmountComponentAtNode(document.getElementById('modal'))}>
+								onClick={() => {
+									let element = document.getElementById('modal');
+									if (element) ReactDOM.unmountComponentAtNode(element);
+								}}>
 								<i className="fas fa-times"></i>
 							</button>
     					</ul>
