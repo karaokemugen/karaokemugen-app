@@ -88,6 +88,11 @@ export async function startElectron() {
 
 export async function handleProtocol(args: string[]) {
 	try {
+		logger.info(`[ProtocolHandler] Received protocol uri km://${args.join('/')}`);
+		if (!getState().ready) {
+			logger.debug(`[ProtocolHandler] Ignoring file, Karaoke Mugen isn't ready.`);
+			return;
+		}
 		switch(args[0]) {
 		case 'download':
 			const domain = args[1];
@@ -139,6 +144,10 @@ export async function handleProtocol(args: string[]) {
 export async function handleFile(file: string, username?: string) {
 	try {
 		logger.info(`[FileHandler] Received file path ${file}`);
+		if (!getState().ready) {
+			logger.debug(`[FileHandler] Ignoring file, Karaoke Mugen isn't ready.`);
+			return;
+		}
 		if (!username) {
 			const users = await listUsers();
 			const adminUsersOnline = users.filter(u => u.type === 0 && u.login !== 'admin');
