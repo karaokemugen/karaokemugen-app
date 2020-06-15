@@ -186,9 +186,9 @@ class AdminHeader extends Component<IProps, IState> {
   					title={i18next.t('VOLUME_LEVEL')}
   					data-namecommand="setVolume"
   					id="volume"
-  					value={volume}
-  					type="range"
-  					onChange={this.props.putPlayerCommando}
+  					defaultValue={volume}
+					type="range"
+  					onMouseUp={this.props.putPlayerCommando}
   				/>
   			</button>
 
