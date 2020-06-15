@@ -11,15 +11,15 @@ import { DBKaraTag } from '../../../src/lib/types/database/kara';
 
 const socket = io();
 
-var is_touch = window.outerWidth <= 1023;
+let is_touch = window.outerWidth <= 1023;
 
 export function getSocket() {
 	return socket;
 }
 
 export function parseJwt(token:string) {
-	var base64Url = token.split('.')[1];
-	var base64 = base64Url.replace('-', '+').replace('_', '/');
+	let base64Url = token.split('.')[1];
+	let base64 = base64Url.replace('-', '+').replace('_', '/');
 	return JSON.parse(window.atob(base64));
 };
 
@@ -42,7 +42,7 @@ export function dotify(obj:any) {
 	//Code from the package node-dotify
 	let res:any = {};
 	function recurse(obj:any, current?:any) {
-		for (var key in obj) {
+		for (let key in obj) {
 			let value = obj[key];
 			let newKey = (current ? current + '.' + key : key);  // joined key with dot
 			if (value && typeof value === 'object' && !Array.isArray(value)) {
@@ -58,18 +58,18 @@ export function dotify(obj:any) {
 
 /* format seconds to Hour Minute Second */
 export function secondsTimeSpanToHMS(s:number, format:string) {
-	var d = Math.floor(s / (3600 * 24));
+	let d = Math.floor(s / (3600 * 24));
 	if (format === '24h' || format === 'dhm') {
 		s -= d * 3600 * 24;
 	}
-	var h = Math.floor(s / 3600);
+	let h = Math.floor(s / 3600);
 	if (format !== 'ms') {
 		s -= h * 3600;
 	}
-	var m = Math.floor(s / 60);
+	let m = Math.floor(s / 60);
 	s -= m * 60;
 
-	var result = (h > 0 ? h + 'h' : '') + (m < 10 ? '0' + m : m) + 'm' + (s < 10 ? '0' + s : s) + 's';
+	let result = (h > 0 ? h + 'h' : '') + (m < 10 ? '0' + m : m) + 'm' + (s < 10 ? '0' + s : s) + 's';
 	if (format === 'ms') result = (m > 0 ? m + 'm' : '') + (s < 10 && m > 0 ? '0' + s : s) + 's';
 	if (format === 'hm') result = (h > 0 ? h + 'h' : '') + (m < 10 ? '0' + m : m) + 'm';
 	if (format === 'dhm') {
@@ -94,16 +94,16 @@ export function startIntro(scope:string) {
 * @return {String} the title
 */
 export function buildKaraTitle(data:DBPLC, onlyText?:boolean, i18nParam?:any) {
-	var isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
+	let isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
 	if (data.langs && isMulti) {
 		data.langs = [isMulti];
 	}
-	var serieText = (data.series && data.series.length > 0) ? data.series.slice(0,3).map(e => getSerieLanguage(e, data.langs[0].name, i18nParam)).join(', ')
+	let serieText = (data.series && data.series.length > 0) ? data.series.slice(0,3).map(e => getSerieLanguage(e, data.langs[0].name, i18nParam)).join(', ')
 	+ (data.series.length > 3 ? '...' : '')
 		: (data.singers ? data.singers.slice(0,3).map(e => e.name).join(', ') + (data.singers.length > 3 ? '...' : '') : '');
-	var langsText = data.langs.map(e => e.name).join(', ').toUpperCase();
-	var songtypeText = data.songtypes.map(e => e.short ? + e.short : e.name).join(', ');
-	var songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
+	let langsText = data.langs.map(e => e.name).join(', ').toUpperCase();
+	let songtypeText = data.songtypes.map(e => e.short ? + e.short : e.name).join(', ');
+	let songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
 	
 	if (onlyText) {
 		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${data.title}`

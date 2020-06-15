@@ -50,7 +50,7 @@ class SessionEdit extends Component<RouteComponentProps<{seid: string}>, Session
 	loadsession = async () => {
 		if (this.props.match.params.seid) {
 			let res = await Axios.get('/sessions/');
-			var sessions = res.data.filter(session => session.seid === this.props.match.params.seid);
+			let sessions = res.data.filter(session => session.seid === this.props.match.params.seid);
 			this.setState({sessions:res.data, session: sessions[0], save: this.saveUpdate, loadSession: true});
 		} else {
 			this.setState({session: {...newsession}, save: this.saveNew, loadSession: true});

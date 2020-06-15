@@ -68,7 +68,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 
 	handleInputConfirm = (val) => {
 		let tags = this.state.value;
-		var tag = this.state.DS.filter(tag => val === tag.value);
+		let tag = this.state.DS.filter(tag => val === tag.value);
 		if (tags.filter(tag => val === tag.tid).length === 0) {
 			if (tag.length > 0) {
 				tags.push([tag[0].value, tag[0].text, tag[0].name]);
@@ -113,9 +113,9 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	};
 
 	onCheck = (val) => {
-		var tags = []
+		let tags = []
 		val.forEach(element => {
-			var tag = this.state.DS.filter(tag => element === tag.value);
+			let tag = this.state.DS.filter(tag => element === tag.value);
 			tags.push([tag[0].value, tag[0].text, tag[0].name]);
 		});
 		this.setState({value: tags})
@@ -131,7 +131,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	render() {
 		const { value, inputVisible } = this.state;
 		if (this.props.checkboxes) {
-			var tids = this.state.value.map(objectTag => {return objectTag[0]});
+			let tids = this.state.value.map(objectTag => {return objectTag[0]});
 			return (
 				<div>
 

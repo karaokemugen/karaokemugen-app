@@ -36,7 +36,7 @@ interface IState {
 class SetupPage extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
-		var repository = this.props.repository.Path.Karas[0].slice(0, -9);
+		let repository = this.props.repository.Path.Karas[0].slice(0, -9);
 		const path = `${this.getPathForFileSystem(repository)}${
 			this.props.os === "win32" ? repository.replace(/\//g, "\\") : repository
 			}`;
@@ -58,7 +58,7 @@ class SetupPage extends Component<IProps, IState> {
 			this.setState({ error: error });
 			return;
 		}
-		var username =
+		let username =
 			this.state.login +
 			(this.state.accountType === "online" ? "@" + this.state.instance : "");
 		if (this.state.password !== this.state.passwordConfirmation) {
@@ -85,7 +85,7 @@ class SetupPage extends Component<IProps, IState> {
 	};
 
 	loginUser = () => {
-		var username =
+		let username =
 			this.state.login +
 			(this.state.accountType === "online" ? "@" + this.state.instance : "");
 		this.login(username, this.state.password as string);
@@ -99,7 +99,7 @@ class SetupPage extends Component<IProps, IState> {
 				password: password,
 				securityCode: this.state.securityCode,
 			});
-			var response = result.data;
+			let response = result.data;
 			store.setLogInfos(response);
 			this.setState({ activeView: "repo", error: undefined });
 		} catch (err) {
@@ -109,7 +109,7 @@ class SetupPage extends Component<IProps, IState> {
 	};
 
 	getPathForFileSystem(value: string) {
-		var regexp = this.props.os === "win32" ? "^[a-zA-Z]:" : "^/";
+		let regexp = this.props.os === "win32" ? "^[a-zA-Z]:" : "^/";
 		if (value.match(regexp) === null) {
 			return `${this.props.dataPath}${this.props.os === "win32" ? "\\" : "/"}`;
 		} else {
@@ -138,7 +138,7 @@ class SetupPage extends Component<IProps, IState> {
 
 	consolidate = async () => {
 		if (this.state.repositoryFolder) {
-			var repository = this.props.repository.Path.Karas[0].slice(0, -9);
+			let repository = this.props.repository.Path.Karas[0].slice(0, -9);
 			const path = `${this.getPathForFileSystem(repository)}${
 				this.props.os === "win32" ? repository.replace(/\//g, "\\") : repository
 			}`;

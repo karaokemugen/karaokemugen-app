@@ -44,9 +44,9 @@ class AdminHeader extends Component<IProps, IState> {
 		let result = await axios.get('/player');
 		await this.setState({ statusPlayer: result.data });
 		getSocket().on('playerStatus', (data:PublicState) => {
-			var val = data.volume;
-			var base = 100;
-			var pow = 0.76;
+			let val = data.volume;
+			let base = 100;
+			let pow = 0.76;
 			val = val / base;
 			data.volume = base * Math.pow(val, 1 / pow);
 			this.setState({ statusPlayer: data });
@@ -61,13 +61,13 @@ class AdminHeader extends Component<IProps, IState> {
 	}
 
   saveMode = (mode:boolean) => {
-  	var data = expand('Karaoke.Private', mode);
+  	let data = expand('Karaoke.Private', mode);
   	this.setState({ privateMode: mode });
   	axios.put('/settings', { setting: JSON.stringify(data) });
   };
 
   saveOperatorAdd = (songVisibility: boolean) => {
-  	var data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
+  	let data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
   	this.setState({ songVisibilityOperator: songVisibility });
   	axios.put('/settings', { setting: JSON.stringify(data) });
   };

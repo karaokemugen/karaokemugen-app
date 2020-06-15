@@ -24,14 +24,14 @@ class Options extends Component<IProps, IState> {
 	}
 
 	async saveSettings(e:any) {
-		var value = e.target.type === 'checkbox' ? e.target.checked : 
+		let value = e.target.type === 'checkbox' ? e.target.checked : 
 			((Number(e.target.value) || e.target.value === '0') ? Number(e.target.value) : e.target.value);
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
 			value = false;
 		}
-		var data = expand(e.target.id, value);
+		let data = expand(e.target.id, value);
 		axios.put('/settings', {setting: JSON.stringify(data)});
 	}
 

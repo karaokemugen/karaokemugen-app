@@ -51,7 +51,7 @@ class Config extends Component<{}, ConfigState> {
 
 	async componentDidMount() {
 		await this.refresh();
-		var files = this.state.files;
+		let files = this.state.files;
 		for (const elem of configWithSelectFileInFolder) {
 			files[elem] = await this.getListFiles(elem);
 		}
@@ -69,7 +69,7 @@ class Config extends Component<{}, ConfigState> {
 		//Code from the package node-dotify
 		let res:any = {};
 		function recurse(obj:any, current?:any) {
-			for (var key in obj) {
+			for (let key in obj) {
 				let value = obj[key];
 				let newKey = (current ? current + '.' + key : key);  // joined key with dot
 				if (value && typeof value === 'object' && !Array.isArray(value)) {
@@ -113,8 +113,8 @@ class Config extends Component<{}, ConfigState> {
 	}
 
 	getRecord(key):Record {
-		var configToSearch = this.getConfigToSearch(key);
-		var record;
+		let configToSearch = this.getConfigToSearch(key);
+		let record;
 		this.state.config.forEach(elem => {
 			if (elem.key === configToSearch) {
 				record = elem;
@@ -125,11 +125,11 @@ class Config extends Component<{}, ConfigState> {
 	}
 
 	async getListFiles(key) {
-		var record = this.getRecord(key);
-		var files = [];
+		let record = this.getRecord(key);
+		let files = [];
 		for (const element of record.value) {
 			try {
-				var response = await Axios.post('/fs', 
+				let response = await Axios.post('/fs', 
 					{ path: `${this.getPathForFileSystem(record.value)}${element}`, onlyMedias:true});
 				files = files.concat(response.data.contents.filter(elem => !elem.isDirectory).map(elem => elem.name));
 			} catch (error) {
@@ -196,7 +196,7 @@ class Config extends Component<{}, ConfigState> {
 	}
 
 	getPathForFileSystem(value:string) {
-		var regexp = this.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
+		let regexp = this.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
 		if (value.match(regexp) === null) {
 			return `${this.state.dataPath}${this.state.os === 'win32' ? '\\' : '/'}`
 		} else {

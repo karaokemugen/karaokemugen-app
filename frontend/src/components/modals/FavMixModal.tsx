@@ -26,12 +26,12 @@ class FavMixModal extends Component<IProps,IState> {
 	}
 
     onClick = () => {
-    	var userlistStr = this.state.userList.filter(value => value.flag_online).map(value => value.login);
-    	var data = {duration: this.state.duration ? this.state.duration : 200, users: userlistStr};
+    	let userlistStr = this.state.userList.filter(value => value.flag_online).map(value => value.login);
+    	let data = {duration: this.state.duration ? this.state.duration : 200, users: userlistStr};
     	axios.post('/automix', data).then(response => {
     		this.props.changeIdPlaylist(response.data.playlist_id);
     	});
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
 		if (element) ReactDOM.unmountComponentAtNode(element);
     };
 

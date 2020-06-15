@@ -114,7 +114,7 @@ class Playlist extends Component<IProps, IState> {
 		});
 		getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
 		store.addChangeListener('playlistContentsUpdated', (idPlaylist:number) => {
-			var data = this.state.data as KaraList;
+			let data = this.state.data as KaraList;
 			if (this.state.idPlaylist > 0) data.infos.from = 0;
 			this.setState({data: data});
 			this.playlistContentsUpdated(idPlaylist);
@@ -176,7 +176,7 @@ class Playlist extends Component<IProps, IState> {
   			/>
   		</li>;
   	} else {
-  		var s = JSON.parse(JSON.stringify(style));
+  		let s = JSON.parse(JSON.stringify(style));
   		s.height = 39;
   		// placeholder line while loading kara content
   		return (
@@ -197,7 +197,7 @@ isRowLoaded = ({index}:Index) => {
 
 loadMoreRows = async ({startIndex, stopIndex}:IndexRange) => {
 	if (!this.state.getPlaylistInProgress) {
-		var data = this.state.data as KaraList;
+		let data = this.state.data as KaraList;
 		data.infos.from = Math.floor(stopIndex/chunksize)*chunksize;
 		await this.setState({data: data});
 		if (timer) clearTimeout(timer);
@@ -251,7 +251,7 @@ noRowsRenderer = () => {
 
   updateQuotaAvailable = (data:{username:string, quotaType:number, quotaLeft:number}) => {
   	if (store.getLogInfos() && (store.getLogInfos() as Token).username === data.username) {
-  		var quotaString:any = '';
+  		let quotaString:any = '';
   		if (data.quotaType == 1) {
   			quotaString = data.quotaLeft;
   		} else if (data.quotaType == 2) {
@@ -265,15 +265,15 @@ noRowsRenderer = () => {
   };
 
   getIdPlaylist = () => {
-  	var value:number;
+  	let value:number;
   	if (this.props.scope === 'public') {
   		value =
         this.props.side === 1 && this.props.config.Frontend.Mode !== 1
         	? -1
         	: store.getModePlaylistID();
   	} else {
-  		var plVal1Cookie = localStorage.getItem('mugenPlVal1');
-  		var plVal2Cookie = localStorage.getItem('mugenPlVal2');
+  		let plVal1Cookie = localStorage.getItem('mugenPlVal1');
+  		let plVal2Cookie = localStorage.getItem('mugenPlVal2');
   		if (plVal1Cookie == plVal2Cookie) {
   			plVal2Cookie = null;
   			plVal1Cookie = null;
@@ -309,7 +309,7 @@ noRowsRenderer = () => {
 		if (this.state.idPlaylist === -4) {
 			callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: this.state.bLSet?.name }), '', (newName: string) => {
 				axios.put(`/blacklist/set/${this.state.bLSet?.blc_set_id}`, { name: newName });
-				var bLSet = this.state.bLSet as BLCSet;
+				let bLSet = this.state.bLSet as BLCSet;
 				bLSet.name = newName;
 				this.setState({ bLSet: bLSet });
 			});
@@ -317,7 +317,7 @@ noRowsRenderer = () => {
 			callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: (this.state.playlistInfo as DBPL).name }), '', (newName: string) => {
 				axios.put(`/playlists/${this.state.idPlaylist}`,
 					{ name: newName, flag_visible: (this.state.playlistInfo as DBPL).flag_public });
-				var playlistInfo = this.state.playlistInfo as DBPL;
+				let playlistInfo = this.state.playlistInfo as DBPL;
 				playlistInfo.name = newName;
 				this.setState({ playlistInfo: playlistInfo });
 			});
@@ -326,14 +326,14 @@ noRowsRenderer = () => {
 
   getPlaylistInfo = async () => {
   	if (!this.state.getPlaylistInProgress) {
-  		var response = await axios.get(`/playlists/${this.state.idPlaylist}`);
+  		let response = await axios.get(`/playlists/${this.state.idPlaylist}`);
   		this.setState({ playlistInfo: response.data });
   	}
   };
 
   getPlaylistUrl = (idPlaylistParam?:number) => {
-  	var idPlaylist:number = idPlaylistParam ? idPlaylistParam : this.state.idPlaylist;
-	  var url:string = '';
+  	let idPlaylist:number = idPlaylistParam ? idPlaylistParam : this.state.idPlaylist;
+	  let url:string = '';
   	if (idPlaylist >= 0) {
   		url =
         '/playlists/' +
@@ -363,12 +363,12 @@ noRowsRenderer = () => {
   }
 
   getPlaylist = async (searchType?:string) => {
-	var criterias:any = {
+	let criterias:any = {
 		'year' : 'y',
 		'tag' : 't'
 	};
-	var stateData = this.state.data as KaraList;
-  	var data:any = {getPlaylistInProgress: true};
+	let stateData = this.state.data as KaraList;
+  	let data:any = {getPlaylistInProgress: true};
   	if (searchType) {
 		data.searchType = searchType;
 		data.data = this.state.data;
@@ -378,7 +378,7 @@ noRowsRenderer = () => {
   	} else if (stateData && stateData.infos && stateData.infos.from == 0) {
   		data.searchType = undefined;
   	}
-  	var url:string = this.getPlaylistUrl();
+  	let url:string = this.getPlaylistUrl();
   	if (this.state.idPlaylist >= 0) {
   		this.getPlaylistInfo();
   	}
@@ -397,8 +397,8 @@ noRowsRenderer = () => {
   		url += '&searchType=' + this.state.searchType
           + ((searchCriteria && this.state.searchValue) ? ('&searchValue=' + searchCriteria + ':' + this.state.searchValue) : '');
 	}
-	var response = await axios.get(url);
-	var karas:KaraList = response.data;
+	let response = await axios.get(url);
+	let karas:KaraList = response.data;
 	if (this.state.idPlaylist > 0) {
 		karas.content.forEach((kara) => {
 			if (kara.flag_playing) {
@@ -409,7 +409,7 @@ noRowsRenderer = () => {
 			}
 		});
 	}
-	var data;
+	let data;
 	if (karas.infos && karas.infos.from > 0) {
 		data = this.state.data;
 		if (karas.infos.from < data.content.length) {
@@ -418,7 +418,7 @@ noRowsRenderer = () => {
 			}
 		} else {
 			if (karas.infos.from > data.content.length) {
-				var nbCellToFill = data.infos.from - data.content.length;
+				let nbCellToFill = data.infos.from - data.content.length;
 				for (let index = 0; index < nbCellToFill; index++) {
 					data.content.push(undefined);
 				}
@@ -436,7 +436,7 @@ noRowsRenderer = () => {
 
   playingUpdate = (data: {playlist_id:number,plc_id:number}) => {
   	if (this.state.idPlaylist === data.playlist_id && !this.state.stopUpdate) {
-  		var playlistData = this.state.data as KaraList;
+  		let playlistData = this.state.data as KaraList;
   		playlistData.content.forEach((kara, index) => {
   			if (kara.flag_playing) {
   				kara.flag_playing = false;
@@ -456,8 +456,8 @@ noRowsRenderer = () => {
   };
 
   getPlInfosElement = () => {
-	  var plInfos = '';
-	  var stateData = this.state.data as KaraList;
+	  let plInfos = '';
+	  let stateData = this.state.data as KaraList;
   	if (this.state.idPlaylist && stateData && stateData.infos && stateData.infos.count) {
   		plInfos =
         this.state.idPlaylist != -4 ? stateData.infos.from + '-' + stateData.infos.to : '';
@@ -491,7 +491,7 @@ noRowsRenderer = () => {
   };
 
   selectAllKaras = () => {
-  	var data = this.state.data;
+  	let data = this.state.data;
   	(this.state.data as KaraList).content.forEach(kara => {
 		  if(kara) kara.checked = !kara.checked;
   	});
@@ -500,7 +500,7 @@ noRowsRenderer = () => {
   };
 
   checkKara = (id:string|number) => {
-  	var data = this.state.data as KaraList;
+  	let data = this.state.data as KaraList;
   	data.content.forEach(kara => {
   		if (this.state.idPlaylist >= 0) {
   			if (kara.playlistcontent_id === id) {
@@ -515,24 +515,24 @@ noRowsRenderer = () => {
   };
 
   addAllKaras = async () => {
-  	var response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
-  	var karaList = response.data.content.map((a:KaraElement) => a.kid);
+  	let response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
+  	let karaList = response.data.content.map((a:KaraElement) => a.kid);
   	displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', {count: response.data.content.length}));
   	axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: (store.getLogInfos() as Token).username });
   };
 
   addCheckedKaras = async (event?:any, pos?:number) => {
-	var stateData = this.state.data as KaraList;
+	let stateData = this.state.data as KaraList;
 	let listKara = stateData.content.filter(a => a.checked);
 	if (listKara.length === 0) {
 		displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 		return ;
 	}
-  	var idKara = listKara.map(a => a.kid);
-  	var idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id));
-  	var url:string = '';
-  	var data;
-  	var type;
+  	let idKara = listKara.map(a => a.kid);
+  	let idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id));
+  	let url:string = '';
+  	let data;
+  	let type;
 
   	if (this.props.idPlaylistTo > 0) {
   		url = '/playlists/' + this.props.idPlaylistTo + '/karas';
@@ -569,16 +569,16 @@ noRowsRenderer = () => {
   };
 
   deleteCheckedKaras = async () => {
-  	var url;
-	var data;
-	var stateData = this.state.data as KaraList;
+  	let url;
+	let data;
+	let stateData = this.state.data as KaraList;
 	let listKara = stateData.content.filter(a => a.checked);
 	if (listKara.length === 0) {
 		displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 		return ;
 	}
   	if (this.state.idPlaylist > 0) {
-  		var idKaraPlaylist = listKara.map(a => a.playlistcontent_id);
+  		let idKaraPlaylist = listKara.map(a => a.playlistcontent_id);
   		url = '/playlists/' + this.state.idPlaylist + '/karas/';
   		data = { plc_id: idKaraPlaylist };
   	} else if (this.state.idPlaylist == -3) {
@@ -598,8 +598,8 @@ noRowsRenderer = () => {
   }
 
   onChangeTags = (type:number|string, value:string) => {
-  	var searchCriteria = type === 'year' ? type : 'tag';
-  	var stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
+  	let searchCriteria = type === 'year' ? type : 'tag';
+  	let stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
   	this.setState({searchCriteria: searchCriteria, searchValue: stringValue}, () => this.getPlaylist('search'));
   };
 

@@ -8,16 +8,16 @@ require('./HelpModal.scss');
 class HelpModal extends Component<{},{}> {
     mugenTouchscreenHelp = () => {
 		localStorage.setItem('mugenTouchscreenHelp', 'true');
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
     	if (element) ReactDOM.unmountComponentAtNode(element);
     };
 
     tourAgain = async () => {
-		var tutorial = document.getElementById('tuto');
+		let tutorial = document.getElementById('tuto');
 		if (tutorial) ReactDOM.unmountComponentAtNode(tutorial);
-    	var tuto = startIntro('public');
+    	let tuto = startIntro('public');
     	tuto.move(1);
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
     	if (element) ReactDOM.unmountComponentAtNode(element);
     };
 

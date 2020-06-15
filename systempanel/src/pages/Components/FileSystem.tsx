@@ -45,7 +45,7 @@ class FileSystem extends Component<IProps, IState> {
 		let pathFolders = path.split(this.getSeparator());
 		if (this.props.os === 'win32') {
 			for (const drive of response.data.drives) {
-				var element:AntTreeNodeProps = {title: drive.label ? `${drive.label} (${drive.mount})` : drive.identifier, key: `${drive.mount}\\`};	
+				let element:AntTreeNodeProps = {title: drive.label ? `${drive.label} (${drive.mount})` : drive.identifier, key: `${drive.mount}\\`};	
 				if (pathFolders[0] === drive.mount) {
 					element.children = await this.getChildrensRecursively('', pathFolders, 0);
 				}

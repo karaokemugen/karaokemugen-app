@@ -365,7 +365,7 @@ class Tutorial extends Component<IProps,IState> {
     	const { action, index, status, type } = data;
     	if(index===3 || this.state.steps[index].label === 'publicFooter') { 
 			// if for some reasons the login modal is still open by now, we have to close it
-			var element = document.getElementById('modal');
+			let element = document.getElementById('modal');
     		if(element) ReactDOM.unmountComponentAtNode(element);
     	}
     	if (type === EVENTS.TOUR_END && this.state.run) {

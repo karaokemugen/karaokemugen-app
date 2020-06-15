@@ -9,8 +9,8 @@ const navigatorLanguage:string = navigator.languages[0].substring(0, 2);
 const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'eng';
 
 export function getListLanguagesInLocale():Array<{value:string, text:string}> {
-	var result = [];
-	var langs = Object.values(languages.getNames(langSupport));
+	let result = [];
+	let langs = Object.values(languages.getNames(langSupport));
 	langs.forEach(langInLocale => {
 		result.push({value: languages.getAlpha3BCode(langInLocale, langSupport), text: langInLocale});
 	});

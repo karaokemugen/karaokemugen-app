@@ -37,8 +37,8 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 
 	async componentDidMount() {
 		if (this.props.session.seid) {
-			var played = await Axios.get(`/karas/?searchType=sessionPlayed&searchValue=${this.props.session.seid}`)
-			var requested = await Axios.get(`/karas/?searchType=sessionRequested&searchValue=${this.props.session.seid}`)
+			let played = await Axios.get(`/karas/?searchType=sessionPlayed&searchValue=${this.props.session.seid}`)
+			let requested = await Axios.get(`/karas/?searchType=sessionRequested&searchValue=${this.props.session.seid}`)
 			this.setState({sessionPlayed: played.data.content, sessionRequested: requested.data.content});
 		}
 	}

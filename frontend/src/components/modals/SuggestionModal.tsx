@@ -44,18 +44,18 @@ class SuggestionModal extends Component<{}, IState> {
 			displayMessage('info', <div><label>{i18next.t('KARA_SUGGESTION_INFO')}</label> <br/> 
 				{i18next.t('KARA_SUGGESTION_LINK')} <a href={response.data.url}>{i18next.t('KARA_SUGGESTION_LINK_LIST')}</a>
 			</div>, 30000);
-			var element = document.getElementById('modal');
+			let element = document.getElementById('modal');
 			if (element) ReactDOM.unmountComponentAtNode(element);
 		}
     };
 
     abortModal = () => {
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
     	if (element) ReactDOM.unmountComponentAtNode(element);
     };
 
 	render() {
-		var modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
+		let modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
 		return (
 			<div className="modal" id="modalBox">
 				<div className={modalDialogClass}>
@@ -64,7 +64,7 @@ class SuggestionModal extends Component<{}, IState> {
 							<h4 className="modal-title">{i18next.t('MODAL.SUGGESTION_MODAL.TITLE')}</h4>
 							<button className="closeModal btn btn-action" 
 								onClick={() => {
-										var element = document.getElementById('modal');
+										let element = document.getElementById('modal');
 										if (element) ReactDOM.unmountComponentAtNode(element);
 									}}>
 								<i className="fas fa-times"></i>

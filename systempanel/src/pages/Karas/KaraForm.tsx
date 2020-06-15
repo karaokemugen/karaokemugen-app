@@ -130,7 +130,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	handleSubmit = (values) => {
-		var kara: Kara = values;
+		let kara: Kara = values;
 		kara.karafile = this.props.kara?.karafile;
 		kara.kid = this.props.kara?.kid;
 		kara.mediafile_orig = this.state.mediafile_orig;

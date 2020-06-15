@@ -21,8 +21,8 @@ let navigatorLanguage:string = languages.alpha2ToAlpha3B(navigator.languages[0].
 let currentBlSet:number;
 
 if (!logInfos) {
-	var token = localStorage.getItem('kmToken');
-	var onlineToken = localStorage.getItem('kmOnlineToken');
+	let token = localStorage.getItem('kmToken');
+	let onlineToken = localStorage.getItem('kmOnlineToken');
 	if (token) {
 		logInfos = parseJwt(token) as Token;
 		logInfos.token = token;

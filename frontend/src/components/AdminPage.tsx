@@ -62,9 +62,9 @@ class AdminPage extends Component<IProps, IState> {
 	async componentDidMount() {
 		if (is_touch_device()) {
 			getSocket().on('playerStatus', (data: PublicState) => {
-				var val = data.volume;
-				var base = 100;
-				var pow = 0.76;
+				let val = data.volume;
+				let base = 100;
+				let pow = 0.76;
 				val = val / base;
 				data.volume = base * Math.pow(val, 1 / pow);
 				this.setState({ statusPlayer: data });
@@ -84,7 +84,7 @@ class AdminPage extends Component<IProps, IState> {
 	}
 
   majIdsPlaylist = (side:number, value:number) => {
-  	var idsPlaylist = this.state.idsPlaylist;
+  	let idsPlaylist = this.state.idsPlaylist;
   	if (side === 1) {
   		idsPlaylist.left = Number(value);
   	} else {
@@ -118,12 +118,12 @@ class AdminPage extends Component<IProps, IState> {
   };
 
   putPlayerCommando(event:any) {
-  	var namecommand = event.currentTarget.getAttribute('data-namecommand');
-  	var data;
+  	let namecommand = event.currentTarget.getAttribute('data-namecommand');
+  	let data;
   	if (namecommand === 'setVolume') {
-  		var volume = parseInt(event.currentTarget.value);
-  		var base = 100;
-  		var pow = 0.76;
+  		let volume = parseInt(event.currentTarget.value);
+  		let base = 100;
+  		let pow = 0.76;
   		volume = Math.pow(volume, pow) / Math.pow(base, pow);
   		volume = volume * base;
   		data = {
@@ -154,7 +154,7 @@ class AdminPage extends Component<IProps, IState> {
 	getPlaylistList = async () => {
 		const response = await axios.get('/playlists/');
 		const kmStats = await axios.get('/stats');
-		var playlistList = response.data;
+		let playlistList = response.data;
 		playlistList.push({
 			playlist_id: -2,
 			name: i18next.t('PLAYLIST_BLACKLIST')

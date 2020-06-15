@@ -19,7 +19,7 @@ class RadioButton extends Component<IProps,{}> {
 			<div className="radiobutton-ui" data-orientation={this.props.orientation || 'horizontal'}>
 				{
 					this.props.buttons.map((item:any,i:number) => {
-						var style:any = {};
+						let style:any = {};
 						if(item.active && item.activeColor)
 							style.backgroundColor = item.activeColor;
 						return (

@@ -48,8 +48,8 @@ class LoginModal extends Component<IProps,IState> {
 	}
 
     login = async (username:string|undefined, password:string) => {
-    	var url = '/auth/login';
-    	var data:{username:string|undefined, password:string} | {fingerprint?:string} = { username: username, password: password };
+    	let url = '/auth/login';
+    	let data:{username:string|undefined, password:string} | {fingerprint?:string} = { username: username, password: password };
 
     	if (!username) {
     		url = '/auth/login/guest';
@@ -58,8 +58,8 @@ class LoginModal extends Component<IProps,IState> {
 			await this.callForgetPasswordApi();
     	}
 
-		var result = await axios.post(url, data);
-		var response = result.data;
+		let result = await axios.post(url, data);
+		let response = result.data;
 		if (this.props.scope === 'admin' && response.role !== 'admin') {
 			if (!username) {
 				displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
@@ -69,7 +69,7 @@ class LoginModal extends Component<IProps,IState> {
 					(data as {username:string|undefined, password:string, securityCode?:string}).securityCode = securityCode;
 					result = await axios.post(url, data);
 					response = result.data;
-					var element = document.getElementById('modal');
+					let element = document.getElementById('modal');
 					if (element) ReactDOM.unmountComponentAtNode(element);
 					store.setLogInfos(response);
 					displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
@@ -77,7 +77,7 @@ class LoginModal extends Component<IProps,IState> {
 				}, undefined, true);
 			}
 		} else {
-			var element = document.getElementById('modal');
+			let element = document.getElementById('modal');
 			if (element) ReactDOM.unmountComponentAtNode(element);
 			store.setLogInfos(response);
 			displayMessage('info', i18next.t('LOG_SUCCESS', {name: response.username}));
@@ -92,16 +92,16 @@ class LoginModal extends Component<IProps,IState> {
 
     loginGuest = () => {
     	Fingerprint2.get({ excludes: { userAgent: true } }, (components:any) => {
-    		var values = components.map(function (component:any) {
+    		let values = components.map(function (component:any) {
     			return component.value;
     		});
-    		var murmur = Fingerprint2.x64hash128(values.join(''), 31);
+    		let murmur = Fingerprint2.x64hash128(values.join(''), 31);
     		this.login('', murmur);
     	});
     };
 
     loginUser = () => {
-    	var username = this.state.login + (this.state.onlineSwitch ? '@' + this.state.serv : '');
+    	let username = this.state.login + (this.state.onlineSwitch ? '@' + this.state.serv : '');
     	this.login(username, this.state.password);
     };
 
@@ -113,12 +113,12 @@ class LoginModal extends Component<IProps,IState> {
     	} else {
     		this.setState({ errorBackground: '' });
     	}
-    	var username = this.state.login + (this.state.onlineSwitch ? '@' + this.state.serv : '');
-    	var password = this.state.password;
+    	let username = this.state.login + (this.state.onlineSwitch ? '@' + this.state.serv : '');
+    	let password = this.state.password;
     	if (password !== this.state.passwordConfirmation) {
     		this.setState({ redBorders: 'redBorders' });
     	} else {
-			var data:{login:string, password:string, securityCode?:string, role:string} 
+			let data:{login:string, password:string, securityCode?:string, role:string} 
 				= { login: username, password: password, role: this.props.scope === 'admin' ? 'admin' : 'user' };
     		if (this.props.scope === 'admin') {
 				if (!this.state.securityCode) {
@@ -170,7 +170,7 @@ class LoginModal extends Component<IProps,IState> {
     						</li>
     						<button className="closeModal btn btn-action" 
     							onClick={() => {
-									var element = document.getElementById('modal');
+									let element = document.getElementById('modal');
 									if (element) ReactDOM.unmountComponentAtNode(element);
 									}}>
     							<i className="fas fa-times"></i>

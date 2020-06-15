@@ -59,11 +59,11 @@ class ProgressBar extends Component<IProps,IState> {
     }
 
     async goToPosition(e:any) {
-		var karaInfo = document.getElementById('karaInfo');
+		let karaInfo = document.getElementById('karaInfo');
 		if (karaInfo) {
-			var barInnerwidth = karaInfo.offsetWidth;
-			var futurTimeX = e.pageX - karaInfo.offsetLeft;
-			var futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
+			let barInnerwidth = karaInfo.offsetWidth;
+			let futurTimeX = e.pageX - karaInfo.offsetLeft;
+			let futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
 			if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
 				this.setState({width: e.pageX});
 				axios.put('/player', { command: 'goTo', options: futurTimeSec });
@@ -84,9 +84,9 @@ class ProgressBar extends Component<IProps,IState> {
     refreshPlayerInfos = async (data:PublicState) => {
     	if (this.state.oldState != data) {
 
-			var element = document.getElementById('karaInfo');
+			let element = document.getElementById('karaInfo');
 			if (element) {
-				var newWidth = element.offsetWidth *
+				let newWidth = element.offsetWidth *
 					10000 * (data.timePosition + this.state.refreshTime / 1000) / this.state.length / 10000 + 'px';
 
 				if (!this.state.oldState || data.timePosition != this.state.oldState.timePosition && this.state.length != 0) {
@@ -118,11 +118,11 @@ class ProgressBar extends Component<IProps,IState> {
     		} else if (data.currentlyPlaying === 'Sponsors') {
     			this.setState({karaInfoText: i18next.t('SPONSOR_TIME'), length: -1});
     		} else if (store.getLogInfos()) {
-    			var response = await axios.get('/karas/' + data.currentlyPlaying);
-    			var kara = response.data;
-    			var karaInfoText;
+    			let response = await axios.get('/karas/' + data.currentlyPlaying);
+    			let kara = response.data;
+    			let karaInfoText;
     			if (this.props.lyrics || (this.props.scope === 'public' && this.props.webappMode == 1)) {
-    				var text = data.subText;
+    				let text = data.subText;
     				if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
     				karaInfoText = text;
     			} else {

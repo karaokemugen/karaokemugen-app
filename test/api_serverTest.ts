@@ -11,7 +11,7 @@ let current_plc_id;
 
 describe('Auth', function() {
 	it('Login / Sign in (as guest)', function() {
-		var data = {
+		let data = {
 			fingerprint: '666'
 		};
 		return request
@@ -26,7 +26,7 @@ describe('Auth', function() {
 			});
 	});
 	it('Login / Sign in (as guest) Error 500', function() {
-		var data = {
+		let data = {
 			fingerprint: '999'
 		};
 		return request
@@ -40,7 +40,7 @@ describe('Auth', function() {
 	});
 
 	it('Login / Sign in', function() {
-		var data = {
+		let data = {
 			username: usernameAdmin,
 			password: passwordAdmin
 		};
@@ -57,7 +57,7 @@ describe('Auth', function() {
 	});
 
 	it('Login / Sign in Error 401', function() {
-		var data = {
+		let data = {
 			username: '',
 			password: ''
 		};
@@ -73,7 +73,7 @@ describe('Auth', function() {
 
 describe('Blacklist', function() {
 	it('Add a blacklist criteria', function() {
-		var data = {
+		let data = {
 			'blcriteria_type': '1001',
 			'blcriteria_value': '5737c5b2-7ea4-414f-8c92-143838a402f6'
 		};
@@ -88,7 +88,7 @@ describe('Blacklist', function() {
 			});
 	});
 
-	var blc_id;
+	let blc_id;
 	it('Get list of blacklist criterias', function() {
 		return request
 			.get('/api/blacklist/set/1/criterias')
@@ -136,7 +136,7 @@ describe('Blacklist', function() {
 
 describe('Favorites', function() {
 	it('Add karaoke to your favorites', function() {
-		var data = {
+		let data = {
 			kid: ['a6108863-0ae9-48ad-adb5-cb703651f6bf']
 		};
 		return request
@@ -177,7 +177,7 @@ describe('Favorites', function() {
 	});
 
 	it('Generate a automix playlist', function() {
-		var data = {
+		let data = {
 			users: ['adminTest'],
 			duration: 5
 		};
@@ -190,7 +190,7 @@ describe('Favorites', function() {
 	});
 
 	it('Delete karaoke from your favorites', function() {
-		var data = {
+		let data = {
 			kid: ['a6108863-0ae9-48ad-adb5-cb703651f6bf']
 		};
 		return request
@@ -206,7 +206,7 @@ describe('Favorites', function() {
 
 
 	it('Import favorites', function() {
-		var data = {
+		let data = {
 			favorites: JSON.stringify(favoritesExport)
 		};
 		return request
@@ -300,14 +300,14 @@ describe('Player', function() {
 });
 
 describe('Playlists', function() {
-	var playlistExport;
-	var new_playlist_id;
-	var new_playlist_current_id;
-	var new_playlist_public_id;
-	var plc_id;
-	var playlist = 1;
+	let playlistExport;
+	let new_playlist_id;
+	let new_playlist_current_id;
+	let new_playlist_public_id;
+	let plc_id;
+	let playlist = 1;
 	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf to playlist '+playlist, function() {
-		var data = {
+		let data = {
 			'kid': ['a6108863-0ae9-48ad-adb5-cb703651f6bf'],
 			'requestedby': 'Test'
 		};
@@ -323,7 +323,7 @@ describe('Playlists', function() {
 	});
 
 	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf again to playlist '+playlist+' to see if it fails', function() {
-		var data = {
+		let data = {
 			'kid': ['a6108863-0ae9-48ad-adb5-cb703651f6bf'],
 			'requestedby': 'Test'
 		};
@@ -339,7 +339,7 @@ describe('Playlists', function() {
 	});
 
 	it('Add an unknown karaoke to playlist 1 to see if it fails', function() {
-		var data = {
+		let data = {
 			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2132',
 			'requestedby': 'Test'
 		};
@@ -355,7 +355,7 @@ describe('Playlists', function() {
 	});
 
 	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf to an unknown playlist to see if it fails', function() {
-		var data = {
+		let data = {
 			'kid': ['a6108863-0ae9-48ad-adb5-cb703651f6bf'],
 			'requestedby': 'Test'
 		};
@@ -384,7 +384,7 @@ describe('Playlists', function() {
 	});
 
 	it('Create a playlist', function() {
-		var playlist = {
+		let playlist = {
 			name:'new_playlist',
 			flag_visible: true,
 			flag_public: false,
@@ -403,7 +403,7 @@ describe('Playlists', function() {
 	});
 
 	it('Create a CURRENT playlist', function() {
-		var playlist_current = {
+		let playlist_current = {
 			name:'new_playlist',
 			flag_visible: true,
 			flag_public: false,
@@ -422,7 +422,7 @@ describe('Playlists', function() {
 	});
 
 	it('Create a PUBLIC playlist', function() {
-		var playlist_public = {
+		let playlist_public = {
 			name:'new_playlist',
 			flag_visible: true,
 			flag_public: true,
@@ -441,7 +441,7 @@ describe('Playlists', function() {
 	});
 
 	it('Copy karaokes to another playlist', function() {
-		var data = {
+		let data = {
 			plc_id: [plc_id]
 		};
 		return request
@@ -491,7 +491,7 @@ describe('Playlists', function() {
 	});
 
 	it('Delete karaokes from playlist', function() {
-		var data = {
+		let data = {
 			'plc_id': [plc_id]
 		};
 		return request
@@ -531,7 +531,7 @@ describe('Playlists', function() {
 	});
 
 	it('Import a playlist', function() {
-		var data = {
+		let data = {
 			playlist: JSON.stringify(playlistExport)
 		};
 		return request
@@ -547,7 +547,7 @@ describe('Playlists', function() {
 	});
 
 	it('Import a playlist Error 500', function() {
-		var data = {
+		let data = {
 			playlist: playlistExport.PlaylistContents
 		};
 		return request
@@ -562,7 +562,7 @@ describe('Playlists', function() {
 	});
 
 	it('Update a playlist\'s information', function() {
-		var data = {
+		let data = {
 			name: 'new_playlist',
 			flag_visible: true,
 			pl_id: playlist
@@ -620,7 +620,7 @@ describe('Playlists', function() {
 
 
 	it('Edit karaoke from playlist : flag_playing', function() {
-		var data = {
+		let data = {
 			flag_playing: true
 		};
 		return request
@@ -632,7 +632,7 @@ describe('Playlists', function() {
 	});
 
 	it('Edit karaoke from playlist : position', function() {
-		var data = {
+		let data = {
 			pos: 1
 		};
 		return request
@@ -727,7 +727,7 @@ describe('Song Poll', function() {
 	});
 
 	it('Get current poll status', function() {
-		var data = {
+		let data = {
 			index: 1
 		};
 		return request
@@ -760,7 +760,7 @@ describe('Tags', function() {
 
 describe('Users', function() {
 	it('Create a new user', function() {
-		var data = {
+		let data = {
 			login: 'BakaToTest',
 			password: 'ilyenapas'
 		};
@@ -775,7 +775,7 @@ describe('Users', function() {
 	});
 
 	it('Create new user (as admin)', function() {
-		var data = {
+		let data = {
 			login: 'BakaToTest2',
 			password: 'ilyenapas2',
 			role: 'admin'
@@ -792,7 +792,7 @@ describe('Users', function() {
 	});
 
 	it('Edit your own account', function() {
-		var data = {
+		let data = {
 			nickname: 'toto'
 		};
 		return request
@@ -857,7 +857,7 @@ describe('Users', function() {
 
 describe('Whitelist', function() {
 	it('Add song to whitelist', function() {
-		var data = {
+		let data = {
 			'kid': ['495e2635-38a9-42db-bdd0-df4d27329c87'],
 			'reason': 'Because reasons'
 		};
@@ -885,7 +885,7 @@ describe('Whitelist', function() {
 	});
 
 	it('Delete whitelist item', function() {
-		var data = {
+		let data = {
 			kid: ['495e2635-38a9-42db-bdd0-df4d27329c87']
 		};
 		return request
@@ -932,7 +932,7 @@ describe('Main', function() {
 	});
 
 	it('Update settings', function() {
-		var data = SETTINGS;
+		let data = SETTINGS;
 		data.Frontend = { Permissions: {AllowViewWhitelist: false }};
 		return request
 			.put('/api/settings')

@@ -81,10 +81,10 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 	}
 
 	getPathForFileSystem(value:string, key?: string) {
-		var regexp = this.context.globalState.settings.data.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
+		let regexp = this.context.globalState.settings.data.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
 		if ((Array.isArray(value) && value[0].match(regexp) === null)
 		|| (value && !Array.isArray(value) && value.match(regexp) === null)) {
-			var path = key?.includes('System.Binaries') ? this.context.globalState.settings.data.state.appPath : this.context.globalState.settings.data.state.dataPath
+			let path = key?.includes('System.Binaries') ? this.context.globalState.settings.data.state.appPath : this.context.globalState.settings.data.state.dataPath
 			return `${path}${this.context.globalState.settings.data.state.os === 'win32' ? '\\' : '/'}`
 		} else {
 			return ''

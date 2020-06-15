@@ -21,13 +21,13 @@ class PollModal extends Component<{},IState> {
 	}
 
     getSongPoll = async () => {
-    	var response = await axios.get('/songpoll');
+    	let response = await axios.get('/songpoll');
     	this.setState({ poll: response.data.poll, timeLeft: `${response.data.timeLeft/1000}s`, width: '0%' });
     };
 
     postSong = (event:any) => {
 		axios.post('/songpoll', { index: event.target.value });
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
     	if(element) ReactDOM.unmountComponentAtNode(element);
     };
 
@@ -42,7 +42,7 @@ class PollModal extends Component<{},IState> {
     						</li>
     						<button className="closeModal btn btn-action" 
     							onClick={() => {
-									var element = document.getElementById('modal');
+									let element = document.getElementById('modal');
 									if(element) ReactDOM.unmountComponentAtNode(element)
 									}}>
     							<i className="fas fa-times"></i>

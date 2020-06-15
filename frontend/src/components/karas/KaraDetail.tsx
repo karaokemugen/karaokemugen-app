@@ -59,7 +59,7 @@ class KaraDetail extends Component<IProps,IState> {
   }
 
   closeModal() {
-	var element = document.getElementById('modal');
+	let element = document.getElementById('modal');
 	if(element) ReactDOM.unmountComponentAtNode(element);
   }
 
@@ -74,17 +74,17 @@ class KaraDetail extends Component<IProps,IState> {
   }
 
 	onClickOutsideModal = (e: MouseEvent) => {
-		var myElementToCheckIfClicksAreInsideOf = document.getElementsByClassName("modal-dialog")[0];
+		let myElementToCheckIfClicksAreInsideOf = document.getElementsByClassName("modal-dialog")[0];
 		if (!myElementToCheckIfClicksAreInsideOf.contains((e.target as Node))) {
 			this.closeModal();
 		}
 	}
 
   getKaraDetail = async (kid?:string) => {
-  	var urlInfoKara = this.props.idPlaylist && this.props.idPlaylist > 0 ?
+  	let urlInfoKara = this.props.idPlaylist && this.props.idPlaylist > 0 ?
   		'/playlists/' + this.props.idPlaylist + '/karas/' + this.props.playlistcontentId :
   		'/karas/' + (kid ? kid : this.props.kid);
-  	var response = await axios.get(urlInfoKara);
+  	let response = await axios.get(urlInfoKara);
   	const kara = response.data;
 	  this.setState({
   		kara: kara,
@@ -100,11 +100,11 @@ class KaraDetail extends Component<IProps,IState> {
       !lastPlayed.months &&
       !lastPlayed.years
   	) {
-  		var timeAgo =
+  		let timeAgo =
         (lastPlayed.seconds ? lastPlayed.seconds : 0) +
         (lastPlayed.minutes ? lastPlayed.minutes * 60 : 0) +
         (lastPlayed.hours ? lastPlayed.hours * 3600 : 0);
-  		var timeAgoStr =
+  		let timeAgoStr =
         lastPlayed.minutes || lastPlayed.hours
         	? secondsTimeSpanToHMS(timeAgo, 'hm')
         	: secondsTimeSpanToHMS(timeAgo, 'ms');
@@ -117,23 +117,23 @@ class KaraDetail extends Component<IProps,IState> {
   };
 
   moreInfo = async () => {
-	var externalUrl = '';
-	var serie = (this.state.kara as DBPLCInfo).series.length > 0 ? (this.state.kara as DBPLCInfo).series[0].name : '';
-	var singer = (this.state.kara as DBPLCInfo).singers.length > 0 ? (this.state.kara as DBPLCInfo).singers[0].name : '';
-	var searchLanguage = navigator.languages[0].substring(0, 2);
+	let externalUrl = '';
+	let serie = (this.state.kara as DBPLCInfo).series.length > 0 ? (this.state.kara as DBPLCInfo).series[0].name : '';
+	let singer = (this.state.kara as DBPLCInfo).singers.length > 0 ? (this.state.kara as DBPLCInfo).singers[0].name : '';
+	let searchLanguage = navigator.languages[0].substring(0, 2);
 	let srsearch = serie ? serie : singer;
-  	var searchUrl = `https://${searchLanguage}.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=${encodeURIComponent(srsearch)}`;
-  	var detailsUrl = '';
-  	var xhttp = new XMLHttpRequest();
+  	let searchUrl = `https://${searchLanguage}.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=${encodeURIComponent(srsearch)}`;
+  	let detailsUrl = '';
+  	let xhttp = new XMLHttpRequest();
   	xhttp.onreadystatechange = function () {
   		if (this.readyState == 4 && this.status == 200) {
-  			var json = JSON.parse(this.response);
-  			var results = json.query.search;
-  			var contentResult = json.query.pages;
-  			var searchInfo = json.query.searchinfo;
+  			let json = JSON.parse(this.response);
+  			let results = json.query.search;
+  			let contentResult = json.query.pages;
+  			let searchInfo = json.query.searchinfo;
 
   			if (results && results.length > 0 && detailsUrl === '') {
-  				var pageId = results[0].pageid;
+  				let pageId = results[0].pageid;
   				externalUrl =
             'https://' + searchLanguage + '.wikipedia.org/?curid=' + pageId;
   				detailsUrl =
@@ -147,7 +147,7 @@ class KaraDetail extends Component<IProps,IState> {
   				contentResult &&
           contentResult.length > 0 &&
           detailsUrl !== '') {
-  				var extract = contentResult[0].extract;
+  				let extract = contentResult[0].extract;
   				callModal('alert',
   					<a href={externalUrl}>{serie}&nbsp;
   						<i className="fas fa-external-link-alt"></i></a>,extract);
@@ -156,7 +156,7 @@ class KaraDetail extends Component<IProps,IState> {
           searchInfo.totalhits === 0 &&
           searchInfo.suggestion
   			) {
-  				var searchUrl =
+  				let searchUrl =
             'https://' +
             searchLanguage +
             '.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=' +
@@ -180,7 +180,7 @@ class KaraDetail extends Component<IProps,IState> {
    */
 
   showFullLyrics = async () => {
-  	var response = await axios.get('/karas/' + (this.state.kara as DBPLCInfo).kid + '/lyrics');
+  	let response = await axios.get('/karas/' + (this.state.kara as DBPLCInfo).kid + '/lyrics');
   	if (is_touch_device() && this.props.mode !== 'karaCard') {
 			callModal('alert', i18next.t('LYRICS'),
 				<div style={{ textAlign: 'center' }}>
@@ -200,7 +200,7 @@ class KaraDetail extends Component<IProps,IState> {
   };
 
   getTagNames = (data:DBPLCInfo) => {
-  	var tagNames:Array<string> = [];
+  	let tagNames:Array<string> = [];
   	if (data.families) tagNames = tagNames.concat(data.families.map(e => this.getTagInLocale(e)));
   	if (data.platforms) tagNames = tagNames.concat(data.platforms.map(e => this.getTagInLocale(e)));
   	if (data.genres) tagNames = tagNames.concat(data.genres.map(e => this.getTagInLocale(e)));
@@ -218,7 +218,7 @@ class KaraDetail extends Component<IProps,IState> {
   };
 
   onClick = () => {
-	  var element = document.getElementById('modal');
+	  let element = document.getElementById('modal');
   	if (element) ReactDOM.unmountComponentAtNode(element);
   }
 
@@ -237,13 +237,13 @@ class KaraDetail extends Component<IProps,IState> {
    */
   render() {
   	if (this.state.kara) {
-  		var data = this.state.kara;
-  		var todayDate = Date.now();
-  		var playTime = new Date(todayDate + data.time_before_play * 1000);
-  		var playTimeDate =
+  		let data = this.state.kara;
+  		let todayDate = Date.now();
+  		let playTime = new Date(todayDate + data.time_before_play * 1000);
+  		let playTimeDate =
         playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-  		var beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
-  		var details:any = {
+  		let beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
+  		let details:any = {
   			DETAILS_TITLE: data.title,
   			UPVOTE_NUMBER: data.upvotes,
   			DETAILS_ADDED:
@@ -278,9 +278,9 @@ class KaraDetail extends Component<IProps,IState> {
   			DETAILS_YEAR: data.year,
   			BLCTYPE_8: data.songwriters.map(e => this.getTagInLocale(e)).join(', ')
   		};
-  		var htmlDetails = Object.keys(details).map(function (k:string) {
+  		let htmlDetails = Object.keys(details).map(function (k:string) {
   			if (details[k]) {
-  				var detailsLine = details[k].toString().replace(/,/g, ', ');
+  				let detailsLine = details[k].toString().replace(/,/g, ', ');
   				return (
   					<tr key={k}>
   						<td> {i18next.t(k)}</td>
@@ -291,7 +291,7 @@ class KaraDetail extends Component<IProps,IState> {
   				return null;
   			}
   		});
-  		var makeFavButton = (
+  		let makeFavButton = (
   			<button
   				type="button"
   				title={i18next.t('TOOLTIP_FAV')}
@@ -300,7 +300,7 @@ class KaraDetail extends Component<IProps,IState> {
   			><i className="fas fa-star"></i></button>
   		);
 
-  		var lyricsKara =
+  		let lyricsKara =
         data.subfile && this.state.showLyrics ? (
         	<div className="lyricsKara alert alert-info" ref={this.fullLyricsRef}>
         		<button
@@ -328,7 +328,7 @@ class KaraDetail extends Component<IProps,IState> {
         	</div>
         ) : null;
 
-  		var infoKaraTemp;
+  		let infoKaraTemp;
   		if (this.props.mode == 'list') {
   			infoKaraTemp = (
   				<div className="modal modalPage" onClick={this.onClickOutsideModal}>
