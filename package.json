@@ -302,6 +302,11 @@
     },
     "files": [
       "dist/**/*"
-    ]
+	],
+	"protocols": [{
+	  "name": "km",
+	  "role": "Viewer",
+	  "schemes": ["km"]
+	}]
   }
 }

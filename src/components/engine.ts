@@ -9,7 +9,7 @@ import { generateBlacklist } from '../dao/blacklist';
 import {compareKarasChecksum,generateDB, getStats, initDBSystem} from '../dao/database';
 import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
-import { applyMenu, handleFile } from '../electron/electron';
+import { applyMenu, handleFile, handleProtocol } from '../electron/electron';
 import { errorStep,initStep } from '../electron/electronLogger';
 import {closeDB, getSettings, saveSetting,vacuum} from '../lib/dao/database';
 import { generateDatabase as generateKaraBase } from '../lib/services/generation';
@@ -185,6 +185,7 @@ export async function initEngine() {
 			await postMigrationTasks(migrations);
 			if (conf.Database.prod.bundledPostgresBinary) await dumpPG();
 			initDiscordRPC();
+			if (state.args[0].startsWith('km://')) handleProtocol(state.args[0].substr(5).split('/'));
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
 			sentry.error(err);

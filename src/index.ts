@@ -11,7 +11,7 @@ import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
 import {exit, initEngine} from './components/engine';
-import {focusWindow, handleFile,startElectron} from './electron/electron';
+import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {help} from './help';
 import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
@@ -173,7 +173,11 @@ if (app) {
 		} else {
 			focusWindow();
 			const file = args[args.length-1];
-			if (file) handleFile(file);
+			if (file) {
+				file.startsWith('km://')
+					? handleProtocol(file.substr(5).split('/'))
+					: handleFile(file);
+			}
 		}
 	});
 	// Redefining quit function

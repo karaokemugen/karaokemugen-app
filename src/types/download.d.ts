@@ -17,7 +17,6 @@ export interface KaraDownloadBLC {
 }
 
 export interface KaraDownloadRequest {
-	mediafile: string,
 	kid: string,
 	name: string,
 	size: number,
