@@ -97,7 +97,7 @@ export function replacePlaylist(playlist: PLC[]) {
 		++newpos,
 		kara.playlistcontent_id
 	]));
-	return transaction([{sql: sqlupdatePLCSetPos, params: karaList}]);
+	return transaction({sql: sqlupdatePLCSetPos, params: karaList});
 }
 
 export function reorderPlaylist(id: number) {
