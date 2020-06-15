@@ -2,7 +2,7 @@ import {promisify} from 'util';
 
 import {displayInfo,displaySongInfo, goTo, hideSubs, initAddASongMessage, initPlayerSystem, message, mute, pause, play, playMedia, quitmpv as quit, restartmpv, resume, seek, setFullscreen, setVolume, showSubs, stop, stopAddASongMessage,toggleOnTop, unmute} from '../components/mpv';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
-import {getConfig} from '../lib/utils/config';
+import {getConfig, setConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
@@ -435,6 +435,8 @@ async function goToPlayer(seconds: number) {
 
 async function setVolumePlayer(volume: number) {
 	await setVolume(volume);
+	// Save the volume in configuration
+	await setConfig({Player: {Volume: volume}});
 }
 
 async function showSubsPlayer() {

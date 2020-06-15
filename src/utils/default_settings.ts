@@ -162,7 +162,8 @@ export const defaults: Config = {
 			PositionY: 'Bottom',
 			Size: 30,
 		},
-		ProgressBarDock: true
+		ProgressBarDock: true,
+		Volume: 100
 	},
 	Playlist: {
 		AllowDuplicates: false,
