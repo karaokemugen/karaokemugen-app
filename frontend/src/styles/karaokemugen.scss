@@ -261,6 +261,9 @@ div.detailsKara, .list-group-item.karaCard div.details, .lyricsKara {
 	position: absolute;
 	right: 10px;
 }
+.lyricsKara button.closeParent:last-child {
+	bottom: 2%;
+}
 .detailsKara .topRightButtons {
 	height: calc(100% - 40px);
     display: flex;
