@@ -409,7 +409,6 @@ noRowsRenderer = () => {
 			}
 		});
 	}
-	let data;
 	if (karas.infos && karas.infos.from > 0) {
 		data = this.state.data;
 		if (karas.infos.from < data.content.length) {
