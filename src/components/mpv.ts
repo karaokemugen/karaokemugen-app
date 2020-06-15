@@ -44,7 +44,7 @@ const playerState: PlayerState = {
 	timeposition: 0,
 	duration: 0,
 	mute: false,
-	subtext: null,
+	'sub-text': null,
 	currentSongInfos: null,
 	mediaType: 'background',
 	showsubs: true,

@@ -58,7 +58,7 @@ export function getPlayerState(): PublicState {
 		private: state.private,
 		showSubs: state.player.showsubs,
 		status: state.status,
-		subText: state.player.subtext,
+		subText: state.player["sub-text"],
 		timePosition: state.player.timeposition,
 		volume: state.player.volume,
 		currentRequester: state.currentRequester,
