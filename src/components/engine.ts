@@ -185,7 +185,7 @@ export async function initEngine() {
 			await postMigrationTasks(migrations);
 			if (conf.Database.prod.bundledPostgresBinary) await dumpPG();
 			initDiscordRPC();
-			if (state.args[0].startsWith('km://')) handleProtocol(state.args[0].substr(5).split('/'));
+			if (state.args[0]?.startsWith('km://')) handleProtocol(state.args[0].substr(5).split('/'));
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
 			sentry.error(err);
