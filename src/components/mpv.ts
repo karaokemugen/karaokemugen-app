@@ -37,7 +37,7 @@ let songNearEnd = false;
 let nextSongNotifSent = false;
 
 const playerState: PlayerState = {
-	volume: getConfig().Player.Volume,
+	volume: 100,
 	playing: false,
 	playerstatus: 'stop',
 	_playing: false, // internal delay flag
@@ -134,6 +134,7 @@ export async function initPlayerSystem() {
 	const state = getState();
 	playerState.fullscreen = state.fullscreen;
 	playerState.stayontop = state.ontop;
+	playerState.volume = getConfig().Player.Volume;
 	try {
 		await startmpv();
 		emitPlayerState();
@@ -165,7 +166,7 @@ async function startmpv() {
 			'--osd-level=0',
 			'--sub-codepage=UTF-8-BROKEN',
 			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
-			`--volume=${+conf.Player.Volume}`,
+			`--volume=${+playerState.volume}`,
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 			'--autoload-files=no'
 		];
