@@ -37,7 +37,7 @@ let songNearEnd = false;
 let nextSongNotifSent = false;
 
 const playerState: PlayerState = {
-	volume: 100,
+	volume: getConfig().Player.Volume,
 	playing: false,
 	playerstatus: 'stop',
 	_playing: false, // internal delay flag
