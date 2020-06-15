@@ -82,7 +82,8 @@ class Playlist extends Component<IProps, IState> {
 			idPlaylist: 0,
 			bLSet: undefined,
 			data: undefined,
-			bLSetList: []
+			bLSetList: [],
+			searchType: 'search'
 		};
 	}
 
@@ -373,6 +374,7 @@ noRowsRenderer = () => {
 		data.data = this.state.data;
 		data.data.infos.from = 0;
 		data.scrollToIndex = 0;
+		this.setState({searchType: searchType});
   	} else if (stateData && stateData.infos && stateData.infos.from == 0) {
   		data.searchType = undefined;
   	}
