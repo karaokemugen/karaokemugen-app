@@ -30,7 +30,6 @@ if (isElectron()) {
 			: 'admin'
 		const { ipcRenderer } = window.require("electron");
 		if (event.dataTransfer) {
-			console.log();
 			ipcRenderer.send('droppedFiles', {
 				username: username,
 				files: Array.from(event.dataTransfer.files).map(file  => (file as any).path)

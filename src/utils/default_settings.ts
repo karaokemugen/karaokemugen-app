@@ -162,7 +162,8 @@ export const defaults: Config = {
 			PositionY: 'Bottom',
 			Size: 30,
 		},
-		ProgressBarDock: true
+		ProgressBarDock: true,
+		Volume: 100
 	},
 	Playlist: {
 		AllowDuplicates: false,
@@ -201,7 +202,9 @@ export const defaults: Config = {
 				'???',
 			]
 		},
-		RemovePublicOnPlay: false
+		RemovePublicOnPlay: false,
+		RandomSongsAfterEnd: false,
+		RandomSongsAfterEndMessage: true,
 	},
 	System: {
 		Binaries: {

@@ -26,7 +26,7 @@ export function removeKaraFromWhitelist(wlcList: string[]) {
 	const karas = wlcList.map(kara => ([
 		kara
 	]));
-	return transaction([{params: karas, sql: sqlremoveKaraFromWhitelist}]);
+	return transaction({params: karas, sql: sqlremoveKaraFromWhitelist});
 }
 
 export function addKaraToWhitelist(karaList: string[], reason: string) {
@@ -35,5 +35,5 @@ export function addKaraToWhitelist(karaList: string[], reason: string) {
 		new Date(),
 		reason
 	]));
-	return transaction([{params: karas, sql: sqladdKaraToWhitelist}]);
+	return transaction({params: karas, sql: sqladdKaraToWhitelist});
 }

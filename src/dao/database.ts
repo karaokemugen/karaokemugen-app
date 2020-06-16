@@ -8,7 +8,7 @@ import { errorStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
 import {initPG,isShutdownPG} from '../utils/postgresql';
@@ -88,7 +88,7 @@ async function migrateFromDBMigrate() {
 		`);
 	} catch(err) {
 		const error = new Error('Migration table already exists');
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 	for (const migration of migrationsDone) {
@@ -119,7 +119,7 @@ async function migrateDB(): Promise<Migration[]> {
 		return migrations;
 	} catch(err) {
 		const error = new Error(`Migrations failed : ${err}`);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 }
@@ -146,7 +146,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 	} catch(err) {
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
 		const error = new Error(`Database system initialization failed : ${err}`);
-		sentryError(error, 'Fatal');
+		sentry.error(error, 'Fatal');
 		throw error;
 	}
 	if (!await getInstanceID()) {
@@ -181,7 +181,7 @@ export async function generateDB(): Promise<boolean> {
 		await generateBlacklist();
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw err;
 	}
 	return true;

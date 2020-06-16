@@ -28,10 +28,10 @@ import {getTagTypeName,tagTypes} from '../lib/utils/constants';
 import {asyncCopy, asyncReadFile, asyncUnlink, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import {profile} from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { DBKaraHistory } from '../types/database/kara';
+import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { editKara } from './kara_creation';
 import { getTag } from './tag';
@@ -85,7 +85,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		await asyncWriteFile(karaFile, JSON.stringify(karaFileData, null, 2), 'utf-8');
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 }
@@ -239,7 +239,8 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 		from: params.from || 0,
 		size: params.size || 9999999999,
 		admin: params.token.role === 'admin',
-		random: params.random
+		random: params.random,
+		blacklist: params.blacklist
 	});
 	profile('formatList');
 	const count = pl.length > 0 ? pl[0].count : 0;
@@ -332,8 +333,8 @@ export async function removeSerieInKaras(sid: string, karas: KaraList) {
 
 export function getSeriesSingers(kara: DBKara) {
 	const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
-	return kara.series?.length >= 0
-		? kara.series[0].i18n[lang] || kara.series[0].i18n.eng || kara.series[0].name
+	return kara.series?.length > 0
+		? kara.series[0].i18n[lang] || kara.series[0].i18n?.eng || kara.series[0].name
 		: kara.singers.map(s => s.name).join(', ');
 }
 

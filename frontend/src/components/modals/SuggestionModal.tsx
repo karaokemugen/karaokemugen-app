@@ -12,7 +12,8 @@ interface IState {
 	serie: string;
 	link: string;
 	songtype: string;
-	songtypes: Array<string>
+	songtypes: Array<string>;
+	disabledButton: boolean;
 }
 
 class SuggestionModal extends Component<{}, IState> {
@@ -24,7 +25,8 @@ class SuggestionModal extends Component<{}, IState> {
 			serie: "",
 			link: "",
 			songtype: "",
-			songtypes: []
+			songtypes: [],
+			disabledButton: false
 		};
 	}
 
@@ -36,23 +38,24 @@ class SuggestionModal extends Component<{}, IState> {
 
 	confirmModal = async () => {
 		if (this.state.name && this.state.serie && this.state.songtype) {
+			this.setState({disabledButton: true});
 			let response = await axios.post('/karas/suggest', 
 				{ title: this.state.name, serie: this.state.serie, type: this.state.songtype, link: this.state.link });
 			displayMessage('info', <div><label>{i18next.t('KARA_SUGGESTION_INFO')}</label> <br/> 
 				{i18next.t('KARA_SUGGESTION_LINK')} <a href={response.data.url}>{i18next.t('KARA_SUGGESTION_LINK_LIST')}</a>
 			</div>, 30000);
-			var element = document.getElementById('modal');
+			let element = document.getElementById('modal');
 			if (element) ReactDOM.unmountComponentAtNode(element);
 		}
     };
 
     abortModal = () => {
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
     	if (element) ReactDOM.unmountComponentAtNode(element);
     };
 
 	render() {
-		var modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
+		let modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
 		return (
 			<div className="modal" id="modalBox">
 				<div className={modalDialogClass}>
@@ -61,7 +64,7 @@ class SuggestionModal extends Component<{}, IState> {
 							<h4 className="modal-title">{i18next.t('MODAL.SUGGESTION_MODAL.TITLE')}</h4>
 							<button className="closeModal btn btn-action" 
 								onClick={() => {
-										var element = document.getElementById('modal');
+										let element = document.getElementById('modal');
 										if (element) ReactDOM.unmountComponentAtNode(element);
 									}}>
 								<i className="fas fa-times"></i>
@@ -97,7 +100,7 @@ class SuggestionModal extends Component<{}, IState> {
 							<button type="button" className="btn btn-action btn-primary other" onClick={this.abortModal}>
 								<i className="fas fa-times"></i>
 							</button>
-    						<button type="button" className="btn btn-action btn-default ok" onClick={this.confirmModal}>
+    						<button disabled={this.state.disabledButton} type="button" className="btn btn-action btn-default ok" onClick={this.confirmModal}>
     							<i className="fas fa-check"></i>
     						</button>
     					</div>

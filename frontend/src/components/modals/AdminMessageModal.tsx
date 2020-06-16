@@ -20,8 +20,8 @@ class AdminMessageModal extends Component<{},IState> {
 	}
 
     onClick = () => {
-    	var defaultDuration = 5000;
-    	var msgData = {
+    	let defaultDuration = 5000;
+    	let msgData = {
     		message: this.state.message,
     		destination: this.state.destination,
     		duration:
@@ -30,7 +30,7 @@ class AdminMessageModal extends Component<{},IState> {
             	: this.state.duration
     	};
     	axios.post('/player/message', msgData);
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
 		if (element) ReactDOM.unmountComponentAtNode(element);
     };
 
@@ -43,7 +43,7 @@ class AdminMessageModal extends Component<{},IState> {
     						<h4 className="modal-title">{i18next.t('ESSENTIAL_MESSAGE')}</h4>
     						<button className="closeModal btn btn-action" 
 								onClick={() => {
-									var element = document.getElementById('modal');
+									let element = document.getElementById('modal');
 									if (element) ReactDOM.unmountComponentAtNode(element);
 								}}>
 								<i className="fas fa-times"></i>

@@ -11,13 +11,12 @@ import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
 import {exit, initEngine} from './components/engine';
-import {focusWindow, handleFile,startElectron} from './electron/electron';
+import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {help} from './help';
 import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
 import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
-import {initSentry, sentryError} from './lib/utils/sentry';
 import {logo} from './logo';
 import { migrateOldFoldersToRepo } from './services/repo';
 // Types
@@ -25,17 +24,18 @@ import {Config} from './types/config';
 import {parseCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
 import {createCircleAvatar} from './utils/imageProcessing';
+import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
 import {startTipLoop, stopTipLoop} from './utils/tips';
 import {version} from './version';
 
 dotenv.config();
-initSentry(app);
+sentry.init(app);
 
 process.on('uncaughtException', exception => {
 	console.log('Uncaught exception:', exception);
 	if (logger) logger.error('[UncaughtException]' + exception);
-	sentryError(exception);
+	sentry.error(exception);
 	if (app) dialog.showMessageBox({
 		type: 'none',
 		title: 'Karaoke Mugen Error : Uncaught Exception',
@@ -46,21 +46,15 @@ Stack: ${exception.stack}
 	});
 });
 
-process.on('unhandledRejection', error => {
+process.on('unhandledRejection', (error: Error) => {
 	console.log('Unhandled Rejection at:', error);
-	let errStr: string;
-	try {
-		errStr = JSON.stringify(error);
-	} catch(err) {
-		errStr = error.toString();
-	}
-	if (logger) logger.error('[UnhandledRejection]' + errStr);
-	sentryError(new Error(errStr));
+	if (logger) logger.error('[UnhandledRejection]' + error.toString());
+	sentry.error(error);
 	if (app) {
 		dialog.showMessageBox({
 			type: 'none',
 			title: 'Karaoke Mugen Error : Unhandled Rejection',
-			message: JSON.stringify(error)
+			message: error.toString()
 		});
 	}
 });
@@ -168,9 +162,17 @@ if (app) {
 	// Also allows to get us the files we need.
 	if (!app.requestSingleInstanceLock()) process.exit();
 	app.on('second-instance', (_event, args) => {
-		focusWindow();
-		const file = args[args.length-1];
-		if (file) handleFile(file);
+		if (args[args.length-1] === '--kill') {
+			exit(0);
+		} else {
+			focusWindow();
+			const file = args[args.length-1];
+			if (file) {
+				file.startsWith('km://')
+					? handleProtocol(file.substr(5).split('/'))
+					: handleFile(file);
+			}
+		}
 	});
 	// Redefining quit function
 	app.on('will-quit', () => {
@@ -178,7 +180,7 @@ if (app) {
 	});
 }
 
-if (app && !argv.cli) {
+if (app && !argv.cli && !argv.help) {
 	try {
 		startElectron();
 	} catch(err) {
@@ -191,7 +193,7 @@ if (app && !argv.cli) {
 		.catch(err => {
 			logger.error(`[Launcher] Error during launch : ${err}`);
 			console.log(err);
-			sentryError(err);
+			sentry.error(err);
 			exit(1);
 		});
 }
@@ -201,7 +203,7 @@ export async function preInit() {
 	await configureLogger(dataPath, argv.debug || (app?.commandLine.hasSwitch('debug')), true);
 	setState({ os: process.platform, version: version});
 	const state = getState();
-	await parseCommandLineArgs(argv, app ? app.commandLine : null);
+	parseCommandLineArgs(argv, app ? app.commandLine : null);
 	logger.debug(`[Launcher] AppPath : ${appPath}`);
 	logger.debug(`[Launcher] DataPath : ${dataPath}`);
 	logger.debug(`[Launcher] ResourcePath : ${resourcePath}`);
@@ -284,7 +286,7 @@ export async function main() {
 			stopTipLoop();
 		} catch(err) {
 			logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
-			sentryError(err);
+			sentry.error(err);
 			console.log(err);
 			errorStep(i18n.t('ERROR_UNKNOWN'));
 			startTipLoop('errors');

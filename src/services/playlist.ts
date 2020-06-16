@@ -56,17 +56,17 @@ import { bools } from '../lib/utils/constants';
 import {now} from '../lib/utils/date';
 import { asyncExists,replaceExt } from '../lib/utils/files';
 import logger, {profile} from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
 import {emitWS} from '../lib/utils/ws';
 import { DBPLC } from '../types/database/playlist';
 import { CurrentSong,Playlist, PlaylistExport, PlaylistOpts, PLC, PLCEditParams, Pos } from '../types/playlist';
+import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {getBlacklist} from './blacklist';
 import { getAllRemoteKaras } from './download';
 import { formatKaraList, getKara, getSeriesSingers,isAllKaras} from './kara';
-import {playingUpdated,playPlayer} from './player';
+import {playingUpdated, playPlayer} from './player';
 //KM Modules
 import {findUserByName,updateSongsLeft} from './user';
 
@@ -125,7 +125,7 @@ export async function isUserAllowedToAddKara(playlist_id: number, user: User, du
 		}
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 }
@@ -577,7 +577,11 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		}
 		if (conf.Karaoke.Autoplay &&
 			+playlist_id === state.currentPlaylistID &&
-			state.status === 'stop' ) playPlayer(true);
+			(state.status === 'stop' || state.randomPlaying) ) {
+			setState({ randomPlaying: false });
+			await nextSong();
+			await playPlayer(true);
+		}
 		await Promise.all([
 			updatePlaylistKaraCount(playlist_id),
 			updateSongsLeft(user.login, playlist_id)
@@ -903,7 +907,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	} catch(err) {
 		logger.error(`[Playlist] Import failed : ${err}`);
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -1059,7 +1063,7 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 		playlist = await getCurrentPlaylistContents();
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.

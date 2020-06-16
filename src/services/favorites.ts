@@ -8,8 +8,8 @@ import { uuidRegexp } from '../lib/utils/constants';
 import {date} from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import {profile} from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
 import {AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent,FavParams} from '../types/favorites';
+import sentry from '../utils/sentry';
 import {formatKaraList, isAllKaras} from './kara';
 import {addKaraToPlaylist,createPlaylist, shufflePlaylist, trimPlaylist} from './playlist';
 import {findUserByName} from './user';
@@ -22,7 +22,7 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 		return formatKaraList(favs, params.from, count);
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		profile('getFavorites');
@@ -65,7 +65,7 @@ export async function addToFavorites(username: string, kids: string[], sendOnlin
 		}
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		profile('addToFavorites');
@@ -157,7 +157,9 @@ export async function importFavorites(favs: FavExport, username: string) {
 	let favorites = favs.Favorites.map(f => f.kid);
 	const karasUnknown = await isAllKaras(favorites);
 	favorites = favorites.filter(f => !karasUnknown.includes(f));
-	await addToFavorites(username, favorites, false);
+	const userFavorites = await getFavorites({username: username});
+	favorites = favorites.filter(f => !userFavorites.content.map(uf => uf.kid).includes(f));
+	if (favorites.length > 0) await addToFavorites(username, favorites, false);
 	return { karasUnknown: karasUnknown };
 }
 

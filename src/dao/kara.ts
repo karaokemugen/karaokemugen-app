@@ -74,7 +74,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
 	let typeClauses = params.mode ? buildTypeClauses(params.mode, params.modeValue) : '';
 	// Hide blacklisted songs if not admin
-	if (!params.admin) typeClauses = `${typeClauses} AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)`;
+	if (!params.admin || params.blacklist) typeClauses = `${typeClauses} AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)`;
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
@@ -149,7 +149,7 @@ export function addKaraToRequests(username: string, karaList: string[]) {
 		new Date(),
 		getState().currentSessionID
 	]));
-	return transaction([{params: karas, sql: sqladdRequested}]);
+	return transaction({params: karas, sql: sqladdRequested});
 }
 
 export async function selectAllKIDs(): Promise<string[]> {
@@ -170,7 +170,7 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<number> {
 			false,
 			kara.flag_visible
 		]));
-		await transaction([{params: karas, sql: sqladdKaraToPlaylist}]);
+		await transaction({params: karas, sql: sqladdKaraToPlaylist});
 	} else {
 		const kara = karaList[0];
 		const res = await db().query(sqladdKaraToPlaylist, [

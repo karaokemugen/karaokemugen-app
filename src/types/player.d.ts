@@ -8,7 +8,7 @@ export interface PlayerState {
 	timeposition?: number,
 	duration?: number,
 	mute?: boolean,
-	subtext?: string,
+	'sub-text'?: string,
 	currentSongInfos?: string,
 	mediaType?: 'song' | 'background' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros',
 	showsubs?: boolean,

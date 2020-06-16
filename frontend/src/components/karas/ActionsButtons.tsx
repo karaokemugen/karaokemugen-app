@@ -30,7 +30,7 @@ class ActionsButtons extends Component<IProps, {}> {
     };
 
     render() {
-    	var classValue = this.props.isHeader ? 'btn btn-default' : 'btn btn-sm btn-action';
+    	let classValue = this.props.isHeader ? 'btn btn-default' : 'btn btn-sm btn-action';
     	return (
     		<React.Fragment>
     			{this.props.scope === 'admin' && this.props.idPlaylist !== -1 ?

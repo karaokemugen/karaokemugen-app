@@ -19,7 +19,7 @@ import { BLCSet } from '../../../../src/types/blacklist';
 import BlcSetCopyModal from '../modals/BlcSetCopyModal';
 require ('./PlaylistHeader.scss');
 
-var tagsTypesList = [
+let tagsTypesList = [
 	'BLCTYPE_1',
 	'BLCTYPE_3',
 	'BLCTYPE_2',
@@ -88,10 +88,10 @@ class PlaylistHeader extends Component<IProps,IState> {
   			if (randomKaras.data.content.length > 0) {
   				let textContent = randomKaras.data.content.map((e:KaraElement) => <React.Fragment key={e.kid}>{buildKaraTitle(e, true)} <br /><br /></React.Fragment>);
   				callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
-  					var karaList = randomKaras.data.content.map((a:KaraElement) => {
+  					let karaList = randomKaras.data.content.map((a:KaraElement) => {
   						return a.kid;
   					});
-  					var urlPost = '/playlists/' + this.props.idPlaylistTo + '/karas';
+  					let urlPost = '/playlists/' + this.props.idPlaylistTo + '/karas';
   					axios.post(urlPost, { kid: karaList });
   				}, '');
   			}
@@ -135,13 +135,13 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
   startFavMix = async () => {
-  	var response = await axios.get('/users/');
-  	var userList = response.data.filter((u:User) => (u.type as number) < 2);
+  	let response = await axios.get('/users/');
+  	let userList = response.data.filter((u:User) => (u.type as number) < 2);
   	ReactDOM.render(<FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList} />, document.getElementById('modal'));
   };
 
   exportPlaylist = async () => {
-	var url;
+	let url;
 	if (this.props.idPlaylist === -4) {
 		url = `/blacklist/set/${this.props.bLSet?.blc_set_id}/export`
 	} else if (this.props.idPlaylist === -5) {
@@ -149,9 +149,9 @@ class PlaylistHeader extends Component<IProps,IState> {
 	} else {
 		url = `/playlists/${this.props.idPlaylist}/export`
 	}
-	var response = await axios.get(url);
-  	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
-	var dlAnchorElem = document.getElementById('downloadAnchorElem');
+	let response = await axios.get(url);
+  	let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
+	let dlAnchorElem = document.getElementById('downloadAnchorElem');
 	if (dlAnchorElem) {
 		dlAnchorElem.setAttribute('href', dataStr);
 		if (this.props.idPlaylist === -4) {
@@ -166,22 +166,20 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
   importPlaylist = (e:any) => {
-	var url: string;
-	var fr:FileReader;
-	var file:File;
+	let url: string;
+	let fr:FileReader;
+	let file:File;
 	if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
 	if (e.target.files && e.target.files[0]) {
 		file = e.target.files[0];
 		fr = new FileReader();
 		fr.onload = async () => {
-			var data:{
+			let data:{
 				playlist?:string | ArrayBuffer | null,
 				favorites?:string | ArrayBuffer | null,
 				blcSet?: string | ArrayBuffer | null
 			} = {};
-			var name:string;
-			console.log(file.type)
-			console.log(file.name)
+			let name:string;
 			if (file.name.includes('.kmblc')) {
 				data.blcSet = fr.result;
 				url = '/blacklist/set/import';
@@ -195,7 +193,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 				data.playlist = fr.result;
 				name = JSON.parse(fr.result as string).PlaylistInformation.name;
 			}
-			var response:{data:{code: string, data:{unknownKaras:Array<any>, playlist_id:number}}} = await axios.post(url, data);
+			let response:{data:{code: string, data:{unknownKaras:Array<any>, playlist_id:number}}} = await axios.post(url, data);
 			if (response.data.data?.unknownKaras && response.data.data.unknownKaras.length > 0) {
 				let mediasize = response.data.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 				callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>

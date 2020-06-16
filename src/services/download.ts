@@ -24,13 +24,13 @@ import {asyncMove, asyncReadDir, asyncStat, asyncUnlink, asyncWriteFile,resolveF
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import { emit } from '../lib/utils/pubsub';
-import { sentryError } from '../lib/utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { deleteKara } from '../services/kara';
 import { File,KaraDownload, KaraDownloadBLC, KaraDownloadRequest, QueueStatus } from '../types/download';
 import { DownloadItem } from '../types/downloader';
 import Downloader from '../utils/downloader';
+import sentry from '../utils/sentry';
 import {getAllKaras, getKaras,integrateKaraFile} from './kara';
 import { getTags, integrateTagFile } from './tag';
 
@@ -110,9 +110,8 @@ function initQueue(drainEvent = true) {
 }
 
 export async function startDownloads() {
-	if (q?.length > 0) {
-		resumeQueue();
-	} else {
+	if (q) resumeQueue();
+	if (q?.length === 0) {
 		const downloads = await selectPendingDownloads();
 		try {
 			await internet();
@@ -610,7 +609,7 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 		return karasToAdd.length;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -704,7 +703,7 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 		}
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -771,7 +770,7 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 		return tagsToUpdate.length;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		profile('tagUpdate');
@@ -850,7 +849,7 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 		return karasToUpdate.length;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -1044,42 +1043,36 @@ export async function downloadTestSongs() {
 	const defaultRepo = 'kara.moe';
 	await addDownloads([
 		{
-			mediafile: 'ENG - Black Lagoon - OP - Red Fraction.mp4',
 			kid: '5737c5b2-7ea4-414f-8c92-143838a402f6',
 			name: 'ENG - Black Lagoon - OP - Red Fraction',
 			size: 19330496,
 			repository: defaultRepo
 		},
 		{
-			mediafile: 'FRE - Pokemon The Johto Journeys - OP - Pokemon Johto.mp4',
 			kid: 'a6108863-0ae9-48ad-adb5-cb703651f6bf',
 			name: 'FRE - Pokemon The Johto Journeys - OP - Pokemon Johto',
 			size: 33812007,
 			repository: defaultRepo
 		},
 		{
-			mediafile: 'ITA - Patapata Hikousen no Bouken - OP - Il segreto della sabbia.mp4',
 			kid: '31f60393-8bd3-4b84-843e-a92d03a1a314',
 			name: 'ITA - Patapata Hikousen no Bouken - OP - Il segreto della sabbia',
 			size: 20554135,
 			repository: defaultRepo
 		},
 		{
-			mediafile: 'JPN - Dragon Ball Z - OP1 - Cha-la Head Cha-la.mp4',
 			kid: 'f99df658-9c61-4ea2-a46c-624a1a4c4768',
 			name: 'JPN - Dragon Ball Z - OP1 - Cha-la Head Cha-la',
 			size: 73149720,
 			repository: defaultRepo
 		},
 		{
-			mediafile: 'JPN - Joshiraku - ED - Nippon Egao Hyakkei.mp4',
 			kid: '495e2635-38a9-42db-bdd0-df4d27329c87',
 			name: 'JPN - Joshiraku - ED - Nippon Egao Hyakkei',
 			size: 22198253,
 			repository: defaultRepo
 		},
 		{
-			mediafile: 'JPN - Top wo Nerae 2! Diebuster - ED - Hoshikuzu Namida.mp4',
 			kid: '2581dec1-4f92-4f5a-a3ec-71dd6874b990',
 			name: 'JPN - Top wo Nerae 2! Diebuster - ED - Hoshikuzu Namida',
 			size: 26489078,

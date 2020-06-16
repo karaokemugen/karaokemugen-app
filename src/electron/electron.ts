@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog,ipcMain, Menu } from 'electron';
+import { app, BrowserWindow, dialog,ipcMain, Menu,protocol } from 'electron';
 import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
@@ -12,8 +12,8 @@ import { asyncReadFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
-import { integrateDownloadBundle } from '../services/download';
 import { importSet } from '../services/blacklist';
+import { addDownloads,integrateDownloadBundle } from '../services/download';
 import { importFavorites } from '../services/favorites';
 import { isAllKaras } from '../services/kara';
 import { playSingleSong } from '../services/player';
@@ -35,6 +35,11 @@ export async function startElectron() {
 	app.on('ready', async () => {
 		try {
 			await preInit();
+			// Register km:// protocol for internal use only.
+			protocol.registerStringProtocol('km', req => {
+				const args = req.url.substr(5).split('/');
+				handleProtocol(args);
+			});
 		} catch(err) {
 			throw new Error(err);
 		}
@@ -58,6 +63,11 @@ export async function startElectron() {
 		});
 	});
 
+	// macOS only. Yes.
+	app.on('open-url', (_event, url: string) => {
+		handleProtocol(url.substr(5).split('/'));
+	});
+
 	app.on('window-all-closed', async () => {
 		await exit(0);
 	});
@@ -76,9 +86,68 @@ export async function startElectron() {
 	await configureLocale();
 }
 
+export async function handleProtocol(args: string[]) {
+	try {
+		logger.info(`[ProtocolHandler] Received protocol uri km://${args.join('/')}`);
+		if (!getState().ready) {
+			logger.debug(`[ProtocolHandler] Ignoring file, Karaoke Mugen isn't ready.`);
+			return;
+		}
+		switch(args[0]) {
+		case 'download':
+			const domain = args[1];
+			const kid = args[2];
+			const name = await checkRepositoryExists(domain, false);
+			if (name) await addDownloads([
+				{
+					name: 'Karaoke',
+					kid: kid,
+					repository: domain,
+					size: 0
+				}
+			]);
+			break;
+		case 'addRepo':
+			const repoName = args[1];
+			const repo = getRepo(repoName);
+			if (!repo) {
+				const buttons = await dialog.showMessageBox({
+					type: 'none',
+					title: i18next.t('UNKNOWN_REPOSITORY_ADD.TITLE'),
+					message: `${i18next.t('UNKNOWN_REPOSITORY_ADD.MESSAGE', {repoName: repoName})}`,
+					buttons: [i18next.t('YES'), i18next.t('NO')],
+				});
+				if (buttons.response === 0) {
+					await addRepo({
+						Name: repoName,
+						Online: true,
+						Enabled: true,
+						Path: {
+							Karas: [`repos/${repoName}/karaokes`],
+							Lyrics: [`repos/${repoName}/lyrics`],
+							Series: [`repos/${repoName}/series`],
+							Medias: [`repos/${repoName}/medias`],
+							Tags: [`repos/${repoName}/tags`],
+						}
+					});
+				}
+			}
+			break;
+		default:
+			throw 'Unknown protocol';
+		}
+	} catch(err) {
+		logger.error(`[ProtocolHandler] Unknown command : ${args.join('/')}`);
+	}
+}
+
 export async function handleFile(file: string, username?: string) {
 	try {
 		logger.info(`[FileHandler] Received file path ${file}`);
+		if (!getState().ready) {
+			logger.debug(`[FileHandler] Ignoring file, Karaoke Mugen isn't ready.`);
+			return;
+		}
 		if (!username) {
 			const users = await listUsers();
 			const adminUsersOnline = users.filter(u => u.type === 0 && u.login !== 'admin');
@@ -96,44 +165,7 @@ export async function handleFile(file: string, username?: string) {
 		switch(KMFileType) {
 		case 'Karaoke Mugen Karaoke Bundle File':
 			const repoName = data.kara.data.data.repository;
-			const repo = getRepo(repoName);
-			let destRepo = repoName;
-			if (!repo) {
-				const buttons = await dialog.showMessageBox({
-					type: 'none',
-					title: i18next.t('UNKNOWN_REPOSITORY_DOWNLOAD.TITLE'),
-					message: `${i18next.t('UNKNOWN_REPOSITORY_DOWNLOAD.MESSAGE')}`,
-					buttons: [i18next.t('YES'), i18next.t('NO')],
-				});
-				if (buttons.response === 0) {
-					await addRepo({
-						Name: repoName,
-						Online: true,
-						Enabled: true,
-						Path: {
-							Karas: [`repos/${repoName}/karaokes`],
-							Lyrics: [`repos/${repoName}/lyrics`],
-							Medias: [`repos/${repoName}/medias`],
-							Series: [`repos/${repoName}/series`],
-							Tags: [`repos/${repoName}/tags`],
-						}
-					});
-				} else {
-					// If user says no, we'll use the first local Repo we find
-					const repos = getRepos();
-					const localRepos = repos.filter(r => r.Enabled && !r.Online);
-					if (localRepos.length === 0) {
-						await dialog.showMessageBox({
-							type: 'none',
-							title: i18next.t('UNKNOWN_REPOSITORY_NO_LOCAL.TITLE'),
-							message: `${i18next.t('UNKNOWN_REPOSITORY_NO_LOCAL.MESSAGE')}`
-						});
-						break;
-					} else {
-						destRepo = localRepos[0].Name;
-					}
-				}
-			}
+			const destRepo = await checkRepositoryExists(repoName);
 			await integrateDownloadBundle(data, uuidV4(), destRepo);
 			break;
 		case 'Karaoke Mugen BLC Set File':
@@ -177,6 +209,50 @@ export async function handleFile(file: string, username?: string) {
 		}
 	} catch(err) {
 		logger.error(`[Electron] Could not handle ${file} : ${err}`);
+	}
+}
+
+async function checkRepositoryExists(repoName: string, useLocal = true): Promise<string> {
+	const repo = getRepo(repoName);
+	if (!repo) {
+		const buttons = await dialog.showMessageBox({
+			type: 'none',
+			title: i18next.t('UNKNOWN_REPOSITORY_DOWNLOAD.TITLE'),
+			message: `${i18next.t('UNKNOWN_REPOSITORY_DOWNLOAD.MESSAGE')}`,
+			buttons: [i18next.t('YES'), i18next.t('NO')],
+		});
+		if (buttons.response === 0) {
+			await addRepo({
+				Name: repoName,
+				Online: true,
+				Enabled: true,
+				Path: {
+					Karas: [`repos/${repoName}/karaokes`],
+					Lyrics: [`repos/${repoName}/lyrics`],
+					Medias: [`repos/${repoName}/medias`],
+					Series: [`repos/${repoName}/series`],
+					Tags: [`repos/${repoName}/tags`],
+				}
+			});
+			return repoName;
+		} else {
+			if (!useLocal) return;
+			// If user says no, we'll use the first local Repo we find
+			const repos = getRepos();
+			const localRepos = repos.filter(r => r.Enabled && !r.Online);
+			if (localRepos.length === 0) {
+				await dialog.showMessageBox({
+					type: 'none',
+					title: i18next.t('UNKNOWN_REPOSITORY_NO_LOCAL.TITLE'),
+					message: `${i18next.t('UNKNOWN_REPOSITORY_NO_LOCAL.MESSAGE')}`
+				});
+				return;
+			} else {
+				return localRepos[0].Name;
+			}
+		}
+	} else {
+		return repoName;
 	}
 }
 

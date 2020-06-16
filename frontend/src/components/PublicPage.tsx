@@ -78,7 +78,7 @@ class PublicPage extends Component<IProps,IState> {
 	}
 
   majIdsPlaylist = (side:number, value:number) => {
-  	var idsPlaylist = this.state.idsPlaylist;
+  	let idsPlaylist = this.state.idsPlaylist;
   	if(side === 1) {
   		idsPlaylist.left = Number(value);
   	} else {
@@ -95,7 +95,7 @@ class PublicPage extends Component<IProps,IState> {
   	});
   	getSocket().on('songPollEnded', () => {
 		  this.setState({ isPollActive: false });
-		  var element = document.getElementById('modal');
+		  let element = document.getElementById('modal');
   		if(element) ReactDOM.unmountComponentAtNode(element);
   	});
   	getSocket().on('songPollResult', (data:any) => {
@@ -145,7 +145,7 @@ class PublicPage extends Component<IProps,IState> {
   		ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
   		this.setState({ classicModeModal: true });
   	} else if (data.playerStatus !== 'pause' && this.state.classicModeModal) {
-		  var element = document.getElementById('modal');
+		  let element = document.getElementById('modal');
   		if (element) ReactDOM.unmountComponentAtNode(element);
   		this.setState({ classicModeModal: false });
   	}
@@ -172,10 +172,10 @@ class PublicPage extends Component<IProps,IState> {
   // pick a random kara & add it after (not) asking user's confirmation
   getLucky = async () => {
 	this.closeMobileMenu();
-  	var response = await axios.get('/karas?filter=' + store.getFilterValue(1)+'&random=1');
+  	let response = await axios.get('/karas?filter=' + store.getFilterValue(1)+'&random=1');
   	if (response.data && response.data.content && response.data.content[0]) {
-  		var chosenOne = response.data.content[0].kid;
-  		var response2 = await axios.get('/karas/' + chosenOne);
+  		let chosenOne = response.data.content[0].kid;
+  		let response2 = await axios.get('/karas/' + chosenOne);
   		callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD',{title: buildKaraTitle(response2.data, true)}), () => {
   			axios.post('/karas/' + chosenOne, { requestedby: (store.getLogInfos() as Token).username });
   		}, 'lucky');
@@ -183,7 +183,7 @@ class PublicPage extends Component<IProps,IState> {
   };
 
   changePseudo = async (e:any) => {
-  	var response = await axios.put('/myaccount', { nickname : e.target.value });
+  	let response = await axios.put('/myaccount', { nickname : e.target.value });
   	this.setState({pseudoValue: response.data.nickname});
   };
 
@@ -217,7 +217,7 @@ class PublicPage extends Component<IProps,IState> {
 	
 	getPlaylistList = async () => {
 		const response = await axios.get('/playlists/');
-		var playlistList = response.data.filter((playlist: PlaylistElem) => playlist.flag_visible)
+		let playlistList = response.data.filter((playlist: PlaylistElem) => playlist.flag_visible)
 		if (this.props.config.Frontend.Permissions!.AllowViewBlacklist)
 			playlistList.push({
 				playlist_id: -2,
@@ -238,7 +238,7 @@ class PublicPage extends Component<IProps,IState> {
   
 
   render() {
-  	var logInfos = store.getLogInfos();
+  	let logInfos = store.getLogInfos();
   	return (
   		<div id="publicPage">
   			{this.props.config.Frontend.Mode === 0 ? (

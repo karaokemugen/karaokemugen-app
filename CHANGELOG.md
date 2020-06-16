@@ -1,6 +1,6 @@
 # Versions
 
-## v4.0.0 "Ôgi Obscure" - xx/xx/2020
+## v4.0.0 "Ôgi Obscure" - xx/07/2020
 
 Version numbering has changed :
 
@@ -12,6 +12,8 @@ You can find more info in issue #675
 
 ### New features
 
+- You can now play songs directly from the song library without having to add it to a playlist first (#697)
+- After a playlist ends, Karaoke Mugen can play random songs until someone adds a new song to the playlist (kind of like an attract mode) (#698)
 - Already present in 3.2.2 but this is an important change : A setup page has been added for those using Karaoke Mugen for the first time. It works as a setup wizard asking you questions about accounts and where to download your songs (#661)
 - Playlists created from Karaoke Mugen Live or another Karaoke Mugen App can be given to the download page to download all songs in it that you don't have yet (#600)
 - Sample songs are now only downloaded if the user wants them (#658)

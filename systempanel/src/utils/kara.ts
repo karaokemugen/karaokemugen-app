@@ -59,14 +59,14 @@ export function getSerieLanguage(settings:SettingsStoreData, tag:DBKaraTag, kara
 * @return {String} the title
 */
 export function buildKaraTitle(settings:SettingsStoreData, data:DBPLC, i18nParam?:any) {
-	var isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
+	let isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
 	if (data.langs && isMulti) {
 		data.langs = [isMulti];
 	}
-	var serieText = (data.series && data.series.length > 0) ? data.series.map(e => getSerieLanguage(settings, e, data.langs[0].name, i18nParam)).join(', ') 
+	let serieText = (data.series && data.series.length > 0) ? data.series.map(e => getSerieLanguage(settings, e, data.langs[0].name, i18nParam)).join(', ') 
 		: data.singers.map(e => e.name).join(', ');
-	var langsText = data.langs.map(e => e.name).join(', ').toUpperCase();
-	var songtypeText = data.songtypes.map(e => e.short ? + e.short : e.name).join(', ');
-	var songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
+	let langsText = data.langs.map(e => e.name).join(', ').toUpperCase();
+	let songtypeText = data.songtypes.map(e => e.short ? + e.short : e.name).join(', ');
+	let songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
 	return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${data.title}`
 };

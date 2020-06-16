@@ -10,8 +10,10 @@ App:
 Online:
   # Host for your KM Server
   Host: kara.moe
-  # Should your instance sends stats? True/false. Undefined means the app will ask the user a question if it wants to send stats to KM Server
+  # Should your instance sends stats? True/false. Undefined means the app will ask the user a question if it wants to send stats to KM Server.
   Stats: undefined
+  # Should your instance sends error logs to sentry.io? True/false. Undefined means the app will ask the user a question if it wants to send errors.
+  ErrorTracking: undefined
   # Should we use KM Server's URL shortener? Turns connection URL into http://kara.moe for example
   URL: true
   # Should we allow users to register/login accounts on kara.moe ?
@@ -160,6 +162,8 @@ Player:
   # When playing mp3s, enable/disable visualization effects.
   VisualizationEffects: false
 Playlist:
+  # Play random songs after a playlist has ended
+  RandomSongsAfterEnd: false
   # Allow duplicates in current playlist
   AllowDuplicates: false
   # Allow duplicate series or singers in current playlist

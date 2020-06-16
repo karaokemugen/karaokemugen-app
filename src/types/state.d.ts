@@ -10,6 +10,7 @@ export interface State {
 	currentRequester?: string,
 	currentlyPlayingKara?: string,
 	currentSong: CurrentSong
+	randomPlaying: boolean,
 	counterToJingle?: number,
 	counterToSponsor?: number,
 	introPlayed?: boolean,
@@ -41,6 +42,8 @@ export interface State {
 	player?: PlayerState,
 	securityCode: number,
 	wsLogNamespace: string,
+	supportedLyrics?: string[],
+	supportedMedias?: string[],
 	forceDisableAppUpdate?: boolean,
 	noAutoTest?: boolean,
 	singlePlay?: boolean,

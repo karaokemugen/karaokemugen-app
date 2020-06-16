@@ -115,7 +115,8 @@ export interface Config {
 			PositionX?: PositionX,
 			PositionY?: PositionY
 		},
-		ProgressBarDock?: boolean
+		ProgressBarDock?: boolean,
+		Volume?: number
 	},
 	Playlist: {
 		AllowDuplicates?: boolean,
@@ -152,7 +153,9 @@ export interface Config {
 			AddedSongVisibilityPublic?: boolean,
 			AddedSongVisibilityAdmin?: boolean,
 			Labels?: string[]
-		}
+		},
+		RandomSongsAfterEnd: boolean,
+		RandomSongsAfterEndMessage: boolean
 	},
 	System: {
 		Binaries: {

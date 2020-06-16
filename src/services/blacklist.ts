@@ -19,7 +19,7 @@ import {	addBlacklistCriteria as addBLC,
 import {KaraList, KaraParams} from '../lib/types/kara';
 import {uuidRegexp} from '../lib/utils/constants';
 import logger, { profile } from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import {isNumber} from '../lib/utils/validators';
 import {BLC, BLCSet, BLCSetFile} from '../types/blacklist';
 import {getState, setState} from '../utils/state';
@@ -123,7 +123,7 @@ export async function getBlacklistCriterias(id: number, lang?: string): Promise<
 		return await translateBlacklistCriterias(blcs, lang);
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		profile('getBLC');
@@ -202,7 +202,7 @@ export async function addBlacklistCriteria(type: number, value: any, set_id: num
 	} catch(err) {
 		logger.error(`[Blacklist] Error adding criteria : ${JSON.stringify(err)}`);
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw err;
 	} finally {
 		profile('addBLC');

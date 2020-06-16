@@ -8,6 +8,7 @@ import { FormInstance } from "antd/lib/form";
 import Axios from 'axios';
 import { Kara } from "../../../../src/lib/types/kara";
 import { DBTag } from "../../../../src/lib/types/database/tag";
+import GlobalContext from "../../store/context";
 
 interface KaraFormProps {
 	kara: Kara;
@@ -42,7 +43,9 @@ interface KaraFormState {
 
 class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	formRef = React.createRef<FormInstance>();
-
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
+	
 	constructor(props) {
 		super(props);
 		const kara = this.props.kara;
@@ -130,7 +133,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	handleSubmit = (values) => {
-		var kara: Kara = values;
+		let kara: Kara = values;
 		kara.karafile = this.props.kara?.karafile;
 		kara.kid = this.props.kara?.kid;
 		kara.mediafile_orig = this.state.mediafile_orig;
@@ -153,7 +156,13 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	isMediaFile = filename => {
-		return new RegExp("^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg|ogg|m4a|mp3)$").test(
+		return new RegExp(`^.+\\.(${this.context.globalState.settings.data.state?.supportedMedias.join('|')})$`).test(
+			filename
+		);
+	};
+
+	isSubFile = filename => {
+		return new RegExp(`^.+\\.(${this.context.globalState.settings.data.state?.supportedLyrics.join('|')})$`).test(
 			filename
 		);
 	};
@@ -190,7 +199,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			this.formRef.current.setFieldsValue({ subfile: null });
 			this.setState({subfile_orig: null});
 		} else if (info.file.status === "done") {
-			if (info.file.name.endsWith(".ass") || info.file.name.endsWith(".txt") || info.file.name.endsWith(".kfn") || info.file.name.endsWith(".kar")) {
+			if (this.isSubFile(info.file.name)) {
 				this.formRef.current.setFieldsValue({subfile: info.file.response.filename});
 				this.setState({subfile_orig: info.file.response.originalname});
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
@@ -230,7 +239,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				<Form.Item
 					label={
 						<span>{i18next.t('KARA.MEDIA_FILE')}&nbsp;
-							<Tooltip title={i18next.t('KARA.MEDIA_FILE_TOOLTIP')}>
+							<Tooltip title={i18next.t('KARA.MEDIA_FILE_TOOLTIP', 
+								{formats: this.context.globalState.settings.data.state?.supportedMedias.join(', ')})}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
@@ -258,7 +268,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				<Form.Item
 					label={
 						<span>{i18next.t('KARA.LYRICS_FILE')}&nbsp;
-							<Tooltip title={i18next.t('KARA.LYRICS_FILE_TOOLTIP')}>
+							<Tooltip title={i18next.t('KARA.LYRICS_FILE_TOOLTIP',
+								{formats: this.context.globalState.settings.data.state?.supportedLyrics.join(', ')})}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>

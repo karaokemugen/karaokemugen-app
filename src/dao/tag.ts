@@ -45,8 +45,8 @@ function buildTagClauses(words: string): WhereClause {
 	};
 }
 
-export function insertTag(tag: Tag) {
-	return db().query(sqlinsertTag, [
+export async function insertTag(tag: Tag) {
+	await db().query(sqlinsertTag, [
 		tag.tid,
 		tag.name,
 		tag.types,

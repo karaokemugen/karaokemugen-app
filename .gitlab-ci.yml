@@ -46,7 +46,9 @@ test:
     - node util/extUnaccent.js
     - yarn test --debug
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$SCHEDULED_RELEASES == "true"'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - if: '$CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_BRANCH == "next"'
@@ -70,7 +72,7 @@ build-react:
     - yarn buildFrontend
     - yarn ts-node util/sentryUpdateReleases.ts
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -88,22 +90,21 @@ pkg_linux:
   artifacts:
     name: km-app-pkglinux-${CI_COMMIT_REF_SLUG}
     paths:
-      - release
+      - release_linux
   dependencies:
     - build-react
   script:
     - rm -Rf release_linux
     - yarn add --dev electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - bash util/electronBuilderGetVersion.sh
-    - ./node_modules/.bin/electron-builder -l --publish always -c.extraMetadata.version=$BUILDVERSION
+    - bash util/electronBuilder.sh -l
     - ls -la packages/
     - mkdir release_linux
     - mv packages/*.AppImage release_linux/
     - mv packages/*.yml release_linux/
     - ls -la release_linux/*
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -131,8 +132,7 @@ pkg_win:
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-3.2.tar.gz | tar xz
     - wget http://mugen.karaokes.moe/downloads/vcredist_x64.exe -O build/vc.exe
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - bash util/electronBuilderGetVersion.sh
-    - ./node_modules/.bin/electron-builder -w --publish always -c.extraMetadata.version=$BUILDVERSION
+    - bash util/electronBuilder.sh -w
     - ls -la packages/
     - mkdir release_win
     - mv packages/*.exe release_win/
@@ -144,7 +144,7 @@ pkg_win:
     - mv packages/*.zip release_win/
     - ls -la release_win/*
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -165,7 +165,7 @@ pkg_mac:
   artifacts:
     name: km-app-pkgmac-${CI_COMMIT_REF_SLUG}
     paths:
-      - release
+      - release_mac
   dependencies:
     - build-react
   variables:
@@ -177,15 +177,14 @@ pkg_mac:
     - yarn add --dev electron-builder
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-3.2.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - bash util/electronBuilderGetVersion.sh
-    - ./node_modules/.bin/electron-builder -m --publish always -c.extraMetadata.version=$BUILDVERSION
+    - bash util/electronBuilder.sh -m
     - ls -la packages/
     - mkdir release_mac
     - mv packages/*.dmg release_mac/
     - mv packages/*.blockmap release_mac/
     - ls -la release_mac/*
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -204,7 +203,7 @@ deploy_mac:
     - ls -la release_mac/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_mac/*"
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -223,7 +222,7 @@ deploy_win:
     - ls -la release_win/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_win/*"
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 
@@ -242,7 +241,7 @@ deploy_linux:
     - ls -la release_linux/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_linux/*"
   rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
 

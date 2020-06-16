@@ -31,7 +31,7 @@ import {imageFileTypes} from '../lib/utils/constants';
 import {asyncCopy, asyncCopyAlt, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType, replaceExt,writeStreamToFile} from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import {profile} from '../lib/utils/logger';
-import { sentryError,setSentryUser } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
 import { PLC } from '../types/playlist';
@@ -108,7 +108,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 			remoteUser = await getRemoteUser(username, onlineToken.token);
 		} catch(err) {
 			const error = new Error(err);
-			sentryError(error);
+			sentry.error(error);
 			throw error;
 		}
 		// Check if user exists. If it does not, create it.
@@ -129,7 +129,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				avatarPath = await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file);
 			} catch(err) {
 				const error = new Error(err);
-				sentryError(error);
+				sentry.error(error);
 				throw error;
 			}
 			avatar_file = {
@@ -709,7 +709,7 @@ export async function initUserSystem() {
 	const users = await listUsers();
 	const adminUsers = users.filter(u => u.type === 0 && u.login !== 'admin');
 	logger.debug(`[User] Admin users : ${JSON.stringify(adminUsers)}`);
-	setSentryUser(adminUsers[0]?.login || 'admin', adminUsers[0]?.email || undefined);
+	sentry.setUser(adminUsers[0]?.login || 'admin', adminUsers[0]?.email || undefined);
 }
 
 /** Performs defaults checks and creations for avatars/guests. This is done synchronously here because these are linked, but userChecks is called asynchronously to speed up init process */

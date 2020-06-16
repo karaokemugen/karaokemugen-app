@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Button, Input, Checkbox, Alert, Form, Select, Divider } from 'antd';
+import { Button, Input, Checkbox, Alert, Form, Select, Divider, Tooltip } from 'antd';
 import i18next from 'i18next';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Repository } from '../../../../src/lib/types/repo';
 import FoldersElement from '../Components/FoldersElement';
 import { FormInstance } from 'antd/lib/form';
@@ -75,7 +76,14 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				style={{maxWidth: '900px'}}
 			>
 				<Form.Item hasFeedback
-					label={i18next.t('REPOSITORIES.NAME')}
+					label={
+						<span>{i18next.t(this.formRef.current?.getFieldValue("Online") ?
+						 'REPOSITORIES.ONLINE_NAME' : 'REPOSITORIES.NAME')}&nbsp;
+							<Tooltip title={i18next.t('REPOSITORIES.TOOLTIP_NAME')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
 					labelCol={{ flex: '0 1 200px' }}
 					rules={[{
 						required: true,

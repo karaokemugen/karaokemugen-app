@@ -7,12 +7,12 @@ class ClassicModeModal extends Component {
 
 	playSong() {
 		axios.post('/player/play');
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
 		if (element) ReactDOM.unmountComponentAtNode(element);
 	}
 
 	render() {
-		var modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
+		let modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
 		return (
 			<div className="modal" id="modalBox">
 				<div className={modalDialogClass}>
@@ -21,7 +21,7 @@ class ClassicModeModal extends Component {
 							<h4 className="modal-title">{i18next.t('CLASSIC_MODE_TITLE_MODAL')}</h4>
 							<button className="closeModal btn btn-action" 
 								onClick={() => {
-										var element = document.getElementById('modal');
+										let element = document.getElementById('modal');
 										if (element) ReactDOM.unmountComponentAtNode(element);
 									}}>
 								<i className="fas fa-times"></i>

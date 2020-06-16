@@ -1,13 +1,13 @@
 import {promisify} from 'util';
 
-import {displayInfo,displaySongInfo, goTo, hideSubs, initPlayerSystem, message, mute, pause, play, playMedia, quitmpv as quit, restartmpv, resume, seek, setFullscreen, setVolume, showSubs, stop, toggleOnTop, unmute} from '../components/mpv';
+import {displayInfo,displaySongInfo, goTo, hideSubs, initAddASongMessage, initPlayerSystem, message, mute, pause, play, playMedia, quitmpv as quit, restartmpv, resume, seek, setFullscreen, setVolume, showSubs, stop, stopAddASongMessage,toggleOnTop, unmute} from '../components/mpv';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
-import {getConfig} from '../lib/utils/config';
+import {getConfig, setConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
 import { emitWS } from '../lib/utils/ws';
+import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
-import {addPlayedKara, getKara, getSeriesSingers} from './kara';
+import {addPlayedKara, getKara, getKaras,getSeriesSingers} from './kara';
 import {getCurrentSong, getPlaylistInfo,nextSong, previousSong} from './playlist';
 import {startPoll} from './poll';
 import {updateUserQuotas} from './user';
@@ -16,43 +16,65 @@ const sleep = promisify(setTimeout);
 
 let commandInProgress = false;
 let introSequence = false;
+let stoppingPlayer = false;
 
 export function playerMessage(msg: string, duration: number) {
 	return message(msg, duration);
 }
 
-export async function playSingleSong(kid: string) {
-	if (!getState().player.playing) {
-		try {
-			const kara = await getKara(kid, {username: 'admin', role: 'admin'});
-			setState({currentSong: kara});
-			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
-			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
-			if (kara.title) kara.title = ` - ${kara.title}`;
-			// If series is empty, pick singer information instead
-			const series = getSeriesSingers(kara);
+export async function playSingleSong(kid?: string) {
+	try {
+		const kara = await getKara(kid, {username: 'admin', role: 'admin'});
+		setState({singlePlay: true, currentSong: kara});
+		logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
+		logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
+		if (kara.title) kara.title = ` - ${kara.title}`;
+		// If series is empty, pick singer information instead
+		const series = getSeriesSingers(kara);
 
-			// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-			let songorder = `${kara.songorder}`;
-			if (!kara.songorder || kara.songorder === 0) songorder = '';
-			// Construct mpv message to display.
-			const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}';
-			await play({
-				media: kara.mediafile,
-				subfile: kara.subfile,
-				gain: kara.gain,
-				infos: infos,
-				currentSong: kara,
-				avatar: null,
-				duration: kara.duration,
-				repo: kara.repository,
-				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
-			});
-			setState({currentlyPlayingKara: kara.kid});
-		} catch(err) {
-			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
+		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
+		let songorder = `${kara.songorder}`;
+		if (!kara.songorder || kara.songorder === 0) songorder = '';
+		// Construct mpv message to display.
+		const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+kara.title+'{\\i0}';
+		await play({
+			media: kara.mediafile,
+			subfile: kara.subfile,
+			gain: kara.gain,
+			infos: infos,
+			currentSong: kara,
+			avatar: null,
+			duration: kara.duration,
+			repo: kara.repository,
+			spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
+		});
+		setState({currentlyPlayingKara: kara.kid});
+	} catch(err) {
+		logger.error(`[Player] Error during song playback : ${err}`);
+		sentry.error(err, 'Warning');
+		stopPlayer(true);
+	}
+}
+
+export async function playRandomSongAfterPlaylist() {
+	try {
+		const karas = await getKaras({
+			token: {username: 'admin', role: 'admin'},
+			random: 1,
+			blacklist: true
+		});
+		const kara = karas.content[0];
+		if (kara) {
+			setState({ randomPlaying: true });
+			await playSingleSong(kara.kid);
+			initAddASongMessage();
+		} else {
 			stopPlayer(true);
+			stopAddASongMessage();
 		}
+	} catch(err) {
+		sentry.error(err);
+		logger.error(`[Player] Unable to select random song to play at the end of playlist : ${err}`);
 	}
 }
 
@@ -92,7 +114,8 @@ async function playCurrentSong(now: boolean) {
 			emitWS('playlistInfoUpdated', kara.playlist_id);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch(err) {
-			logger.error(`[Player] Error during song playback : ${JSON.stringify(err)}`);
+			logger.error(`[Player] Error during song playback : ${err}`);
+			sentry.error(err, 'Warning');
 			if (getState().status !== 'stop') {
 				logger.warn('[Player] Skipping playback for this song');
 				try {
@@ -113,7 +136,7 @@ async function playCurrentSong(now: boolean) {
 /* Current playing song has been changed, stopping playing now and hitting play again to get the new song. */
 export function playingUpdated() {
 	const state = getState();
-	if (state.status === 'play' && state.player.playing) playPlayer(true);
+	if (state.status !== 'stop' && state.player.playerstatus !== 'stop') playPlayer(true);
 }
 
 /* This is triggered when player ends its current song */
@@ -127,9 +150,15 @@ export async function playerEnding() {
 			setState({playerNeedsRestart: false});
 			await restartPlayer();
 		}
-		// Single file playback, no need for all the code below.
-		if (state.singlePlay) {
+		// Stopping after current song, no need for all the code below.
+		if (stoppingPlayer) {
 			stopPlayer(true);
+			stoppingPlayer = false;
+			return;
+		}
+		// When random karas are being played
+		if (state.randomPlaying) {
+			await playRandomSongAfterPlaylist();
 			return;
 		}
 		// If we just played an intro, play a sponsor.
@@ -147,9 +176,14 @@ export async function playerEnding() {
 			}
 			return;
 		}
+		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
 		// If Outro, load the background.
-		if (state.player.mediaType === 'Outros') {
-			stopPlayer(true);
+		if (state.player.mediaType === 'Outros' && state.currentSong?.pos === pl.karacount) {
+			if (getConfig().Playlist.RandomSongsAfterEnd) {
+				await playRandomSongAfterPlaylist();
+			} else {
+				stopPlayer(true);
+			}
 			return;
 		}
 		// If Sponsor, just play currently selected song.
@@ -164,7 +198,6 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			}
 			return;
@@ -175,12 +208,11 @@ export async function playerEnding() {
 				return;
 			} catch(err) {
 				logger.error(`[Player] Failed going to next song : ${err}`);
-				throw err;
 			}
 		}
 		// Testing for position before last to play an encore
-		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
-		logger.debug(`[Player] CurrentSong Pos : ${state.currentSong?.pos} - Playlist Kara Count : ${pl.karacount} - Playlist name: ${pl.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl.playlist_id}`);if (conf.Playlist.Medias.Encores.Enabled && state.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed) {
+		logger.debug(`[Player] CurrentSong Pos : ${state.currentSong?.pos} - Playlist Kara Count : ${pl.karacount} - Playlist name: ${pl.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl.playlist_id}`);
+		if (conf.Playlist.Medias.Encores.Enabled && state.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed) {
 			try {
 				await playMedia('Encores');
 				setState({currentlyPlayingKara: 'Encores', encorePlayed: true});
@@ -190,7 +222,6 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			}
 			return;
@@ -199,18 +230,23 @@ export async function playerEnding() {
 		}
 		// Outros code, we're at the end of a playlist.
 		// Outros are played after the very last song.
-		if (conf.Playlist.Medias.Outros.Enabled && state.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background') {
-			try {
-				await playMedia('Outros');
-				setState({currentlyPlayingKara: 'Outros'});
-			} catch(err) {
-				logger.error(`[Player] Unable to play outro file, going to next song : ${err}`);
+		if (state.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background') {
+			if (conf.Playlist.Medias.Outros.Enabled) {
 				try {
-					await next();
+					await playMedia('Outros');
+					setState({currentlyPlayingKara: 'Outros'});
 				} catch(err) {
-					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
+					logger.error(`[Player] Unable to play outro file : ${err}`);
+					if (conf.Playlist.RandomSongsAfterEnd) {
+						await playRandomSongAfterPlaylist();
+					} else {
+						stopPlayer(true);
+					}
 				}
+			} else if (conf.Playlist.RandomSongsAfterEnd) {
+				await playRandomSongAfterPlaylist();
+			} else {
+				stopPlayer(true);
 			}
 			return;
 		}
@@ -227,7 +263,6 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			}
 			return;
@@ -242,7 +277,6 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			}
 			return;
@@ -257,7 +291,6 @@ export async function playerEnding() {
 					return;
 				} catch(err) {
 					logger.error(`[Player] Failed going to next song : ${err}`);
-					throw err;
 				}
 			} else {
 				stopPlayer(true);
@@ -265,7 +298,7 @@ export async function playerEnding() {
 		}
 	} catch(err) {
 		logger.error(`[Player] Unable to end play properly, stopping. : ${err}`);
-		sentryError(err);
+		sentry.error(err);
 		stopPlayer(true);
 	}
 }
@@ -341,6 +374,7 @@ export async function playPlayer(now?: boolean) {
 	if (state.status === 'stop' || now) {
 		await playCurrentSong(now);
 		setState({status: 'play'});
+		stopAddASongMessage();
 	} else {
 		await resume();
 	}
@@ -351,10 +385,13 @@ async function stopPlayer(now = true) {
 	if (now) {
 		logger.info('[Player] Karaoke stopping NOW');
 		await stop();
-		setState({status: 'stop', currentlyPlayingKara: null});
+		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false});
+		stopAddASongMessage();
 	} else {
-		logger.info('[Player] Karaoke stopping after current song');
-		setState({status: 'stop'});
+		if (getState().status !== 'stop' && !stoppingPlayer) {
+			logger.info('[Player] Karaoke stopping after current song');
+			stoppingPlayer = true;
+		}
 	}
 	if (getConfig().Karaoke.ClassicMode) await prepareClassicPauseScreen();
 }
@@ -398,6 +435,8 @@ async function goToPlayer(seconds: number) {
 
 async function setVolumePlayer(volume: number) {
 	await setVolume(volume);
+	// Save the volume in configuration
+	await setConfig({Player: {Volume: volume}});
 }
 
 async function showSubsPlayer() {
@@ -434,7 +473,6 @@ async function restartPlayer() {
 
 export async function sendCommand(command: string, options: any) {
 	// Resetting singlePlay to false everytime we use a command.
-	setState({singlePlay: false});
 	const state = getState();
 	if (commandInProgress) throw 'A command is already in progress';
 	if (state.isDemo || state.isTest) throw 'Player management is disabled in demo or test modes';
@@ -445,47 +483,47 @@ export async function sendCommand(command: string, options: any) {
 	}, 3000);
 	try {
 		if (command === 'play') {
+			setState({singlePlay: false, randomPlaying: false});
 			await playPlayer();
 		} else if (command === 'stopNow') {
-			stopPlayer(true);
+			setState({singlePlay: false, randomPlaying: false});
+			await stopPlayer(true);
 		} else if (command === 'pause') {
-			pausePlayer();
+			await pausePlayer();
 		} else if (command === 'stopAfter') {
-			stopPlayer(false);
-			await nextSong();
+			setState({singlePlay: false, randomPlaying: false});
+			await stopPlayer(false);
+			try {
+				await nextSong();
+			} catch(err) {
+				// Non-fatal, stopAfter can be triggered on the last song already.
+			}
 		} else if (command === 'skip') {
+			setState({singlePlay: false, randomPlaying: false});
 			await next();
 		} else if (command === 'prev') {
+			setState({singlePlay: false, randomPlaying: false});
 			await prev();
 		} else if (command === 'toggleFullscreen') {
-			toggleFullScreenPlayer();
+			await toggleFullScreenPlayer();
 		} else if (command === 'toggleAlwaysOnTop') {
-			toggleOnTopPlayer();
+			await toggleOnTopPlayer();
 		} else if (command === 'mute') {
-			mutePlayer();
+			await mutePlayer();
 		} else if (command === 'unmute') {
-			unmutePlayer();
+			await unmutePlayer();
 		} else if (command === 'showSubs') {
-			showSubsPlayer();
+			await showSubsPlayer();
 		} else if (command === 'hideSubs') {
-			hideSubsPlayer();
+			await hideSubsPlayer();
 		} else if (command === 'seek') {
-			if (!options || isNaN(options)) {
-				commandInProgress = false;
-				throw 'Command seek must have a numeric option value';
-			}
+			if (!options || isNaN(options)) throw 'Command seek must have a numeric option value';
 			await seekPlayer(options);
 		} else if (command === 'goTo') {
-			if (!options || isNaN(options)) {
-				commandInProgress = false;
-				throw 'Command goTo must have a numeric option value';
-			}
+			if (!options || isNaN(options)) throw 'Command goTo must have a numeric option value';
 			await goToPlayer(options);
 		} else if (command === 'setVolume') {
-			if (isNaN(options)) {
-				commandInProgress = false;
-				throw 'Command setVolume must have a numeric option value';
-			}
+			if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
 			await setVolumePlayer(options);
 		} else {// Unknown commands are not possible, they're filtered by API's validation.
 		}

@@ -29,7 +29,7 @@ export function removeFavorites(fList: string[], username: string) {
 		kara,
 		username
 	]));
-	return transaction([{params: karas, sql: sqlremoveFavorites}]);
+	return transaction({params: karas, sql: sqlremoveFavorites});
 }
 
 export function insertFavorites(karaList: string[], username: string) {
@@ -37,6 +37,6 @@ export function insertFavorites(karaList: string[], username: string) {
 		kara,
 		username
 	]));
-	return transaction([{params: karas, sql: sqlinsertFavorites}]);
+	return transaction({params: karas, sql: sqlinsertFavorites});
 }
 

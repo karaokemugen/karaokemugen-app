@@ -58,7 +58,7 @@ function Autocomplete(props:IProps){
 		setActiveIndex(0);
 	};
 	const handleSearchKeyUp = (e:any) => {
-		var fo = filteredOptions();
+		let fo = filteredOptions();
 		if(e.keyCode===13) {
 			//RETURN
 			setFocus(false);

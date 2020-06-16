@@ -4,7 +4,7 @@ import i18next from 'i18next';
 
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 import {win} from './electron';
 
 let manualUpdate = false;
@@ -33,7 +33,7 @@ export function initAutoUpdate() {
 			try {
 				await autoUpdater.downloadUpdate();
 			} catch(err) {
-				sentryError(new Error(err));
+				sentry.error(new Error(err));
 				await dialog.showMessageBox(win, {
 					type: 'info',
 					title: i18next.t('UPDATE_FOUND'),
@@ -60,7 +60,7 @@ export function initAutoUpdate() {
 		try {
 			autoUpdater.quitAndInstall();
 		} catch(err) {
-			sentryError(new Error(err));
+			sentry.error(new Error(err));
 			logger.error(`[AppUpdate] Failed to quit and install : ${err}`);
 		}
 	});
@@ -71,7 +71,7 @@ export function initAutoUpdate() {
 			autoUpdater.checkForUpdatesAndNotify();
 		} catch(err) {
 			//Non fatal, just report it
-			sentryError(new Error(err), 'Warning');
+			sentry.error(new Error(err), 'Warning');
 			logger.warn('[Updater] Unable to check for app updates: ' + err);
 		}
 	}

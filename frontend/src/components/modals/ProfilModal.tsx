@@ -108,14 +108,14 @@ class ProfilModal extends Component<IProps, IState> {
 	}
 
     async getUser() {
-    	var response = await axios.get('/myaccount/');
-    	var user = response.data;
+    	let response = await axios.get('/myaccount/');
+    	let user = response.data;
     	user.password = undefined;
     	this.setState({ user: user });
     }
 
     async getUserList() {
-    	var response = await axios.get('/users/');
+    	let response = await axios.get('/users/');
     	this.setState({ users: response.data.filter((a:User) => a.flag_online) });
     }
 
@@ -129,14 +129,14 @@ class ProfilModal extends Component<IProps, IState> {
 
     favImport = (event:any) => {
     	if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
-    	var input = event.target;
+    	let input = event.target;
     	if (input.files && input.files[0]) {
-    		var file = input.files[0];
-    		var fr = new FileReader();
+    		let file = input.files[0];
+    		let fr = new FileReader();
     		fr.onload = () => {
     			callModal('confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', (confirm:boolean) => {
     				if (confirm) {
-    					var data = {favorites: fr['result']};
+    					let data = {favorites: fr['result']};
     					axios.post('/favorites/import', data);
     				}
     			});
@@ -147,8 +147,8 @@ class ProfilModal extends Component<IProps, IState> {
 
     async favExport() {
     	const exportFile = await axios.get('/favorites/export');
-    	var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
-		var dlAnchorElem = document.getElementById('downloadAnchorElem');
+    	let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
+		let dlAnchorElem = document.getElementById('downloadAnchorElem');
 		if (dlAnchorElem) {
 			dlAnchorElem.setAttribute('href', dataStr);
 			dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', (store.getLogInfos() as Token).username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
@@ -163,8 +163,8 @@ class ProfilModal extends Component<IProps, IState> {
     };
 
     importAvatar = async (event:any) => {
-    	var dataFile = new FormData();
-    	for (var i = 0; i < event.target.files.length; i++) {
+    	let dataFile = new FormData();
+    	for (let i = 0; i < event.target.files.length; i++) {
     		dataFile.append('avatarfile', event.target.files[i]);
     	}
     	dataFile.append('nickname', (store.getLogInfos() as Token).username);
@@ -181,8 +181,8 @@ class ProfilModal extends Component<IProps, IState> {
 	}
 
     render() {
-		var logInfos = store.getLogInfos();
-		var listLangs = [];
+		let logInfos = store.getLogInfos();
+		let listLangs = [];
 		for (let [key, value] of Object.entries(languages.getNames(i18next.languages[0]))) {
 			listLangs.push({ 'label': value, 'value': languages.alpha2ToAlpha3B(key)});
 		}
@@ -209,7 +209,7 @@ class ProfilModal extends Component<IProps, IState> {
     						</li>
     						<button className="closeModal btn btn-action"
     							onClick={() => {
-									var element = document.getElementById('modal');
+									let element = document.getElementById('modal');
 									if (element) ReactDOM.unmountComponentAtNode(element);
 									}}>
     							<i className="fas fa-times"></i>
@@ -301,7 +301,7 @@ class ProfilModal extends Component<IProps, IState> {
 													<button type="button" className="btn btn-action"
 														onClick={() => {
 																this.updateUser();
-																var element = document.getElementById('modal');
+																let element = document.getElementById('modal');
 																if (element) ReactDOM.unmountComponentAtNode(element);
 															}}>
 														{i18next.t('SUBMIT')}

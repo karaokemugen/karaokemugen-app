@@ -14,7 +14,7 @@ export function insertDownloads(downloads: KaraDownload[] ) {
 		dl.kid
 	]);
 	logger.debug('[Download DAO] Running transaction');
-	return transaction([{sql: sqlinsertDownload, params: dls}]);
+	return transaction({sql: sqlinsertDownload, params: dls});
 }
 
 export async function selectDownloads(): Promise<DBDownload[]> {

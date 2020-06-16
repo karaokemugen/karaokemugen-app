@@ -89,10 +89,10 @@ class WelcomePage extends Component<IProps, IState> {
   };
 
   setActiveSession = async (value:string) => {
-  	var sessions:Array<Session> = this.state.sessions.filter(
+  	let sessions:Array<Session> = this.state.sessions.filter(
   		session => session.name === value
   	);
-  	var sessionId;
+  	let sessionId;
   	if (sessions.length === 0) {
   		const res = await axios.post('/sessions', { name: value });
   		sessionId = res.data;
@@ -123,10 +123,10 @@ class WelcomePage extends Component<IProps, IState> {
   getNewsFeed = async () => {
   	const res = await axios.get('/newsfeed');
   	const data = res.data;
-  	var base = data[0];
-  	var appli = data[1];
-  	var mast = data[2];
-  	var news:Array<News> = [];
+  	let base = data[0];
+  	let appli = data[1];
+  	let mast = data[2];
+  	let news:Array<News> = [];
   	if (base.body && appli.body) {
   		base.body = JSON.parse(base.body);
   		appli.body = JSON.parse(appli.body);
@@ -168,11 +168,11 @@ class WelcomePage extends Component<IProps, IState> {
 
   	if (mast.body) {
   		mast.body = JSON.parse(mast.body);
-  		var max =
+  		let max =
         mast.body.rss.channel.item.length > 3
         	? 3
         	: mast.body.rss.channel.item.length;
-  		for (var i = 0; i < max; i++) {
+  		for (let i = 0; i < max; i++) {
   			news.push({
   				html: mast.body.rss.channel.item[i].description._text,
   				date: mast.body.rss.channel.item[i].pubDate._text,
@@ -186,8 +186,8 @@ class WelcomePage extends Component<IProps, IState> {
   		}
   	}
   	news.sort((a, b) => {
-  		var dateA = new Date(a.date);
-  		var dateB = new Date(b.date);
+  		let dateA = new Date(a.date);
+  		let dateB = new Date(b.date);
   		return dateA < dateB ? 1 : dateA > dateB ? -1 : 0;
   	});
   	this.setState({ news: news });
@@ -206,8 +206,8 @@ class WelcomePage extends Component<IProps, IState> {
   };
 
   render() {
-	  var logInfos = store.getLogInfos();
-	  var sessions:[{label:string, value:string}?] = [];
+	  let logInfos = store.getLogInfos();
+	  let sessions:[{label:string, value:string}?] = [];
   	if (logInfos && logInfos.role === 'admin') {
   		this.state.sessions.forEach(session => {
   			sessions.push({ label: session.name, value: session.name });

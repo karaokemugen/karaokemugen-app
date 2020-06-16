@@ -11,6 +11,7 @@ import Traceroute from 'nodejs-traceroute';
 import {resolve} from 'path';
 import { ip as whoisIP } from 'whoiser';
 
+import { initAddASongMessage, stopAddASongMessage } from '../components/mpv';
 import { listUsers } from '../dao/user';
 import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
@@ -20,7 +21,6 @@ import {asyncCopy, asyncRequired,relativePath} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { removeNulls } from '../lib/utils/object_helpers';
 import { emit } from '../lib/utils/pubsub';
-import { sentryError } from '../lib/utils/sentry';
 import { emitWS } from '../lib/utils/ws';
 import {publishURL} from '../services/online';
 import {playerNeedsRestart, prepareClassicPauseScreen} from '../services/player';
@@ -29,6 +29,7 @@ import {initStats, stopStats} from '../services/stats';
 import { updateSongsLeft } from '../services/user';
 import { BinariesConfig } from '../types/binChecker';
 import {Config} from '../types/config';
+import sentry from '../utils/sentry';
 import { ASNPrefixes } from './constants';
 import {configConstraints, defaults} from './default_settings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
@@ -48,7 +49,7 @@ export async function editSetting(part: any) {
 		return config;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 }
@@ -118,6 +119,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	} catch(err) {
 		logger.warn(`[Config] Could not start/stop Twitch chat bot : ${err}`);
 	}
+	// Toggling random song after end message
+	config.Playlist.RandomSongsAfterEndMessage
+		? initAddASongMessage()
+		: stopAddASongMessage();
 	// Toggling Discord RPC
 	config.Online.Discord.DisplayActivity
 		? initDiscordRPC()
@@ -223,11 +228,11 @@ export function backupConfig() {
 }
 
 /** Return public configuration (without sensitive data) */
-export function getPublicConfig() {
+export function getPublicConfig(removeSystem = true) {
 	const publicSettings = cloneDeep(getConfig());
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.Database;
-	delete publicSettings.System;
+	if (removeSystem) delete publicSettings.System;
 	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = '*********';
 	return publicSettings;
 }

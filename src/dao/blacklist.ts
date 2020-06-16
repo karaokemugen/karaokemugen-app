@@ -4,7 +4,7 @@ import { buildClauses, db, transaction } from '../lib/dao/database';
 import {KaraParams} from '../lib/types/kara';
 import {BLC, BLCSet} from '../types/blacklist';
 import { DBBlacklist,DBBLC } from '../types/database/blacklist';
-import { sqlemptyBlacklist,sqlemptyBlacklistCriterias,sqlselectCurrentBLCSet,sqlcopyBLCSet,sqldeleteSet,sqleditSet,sqlcreateSet,sqlsetCurrentSet,sqlunsetCurrentSet,sqlselectSet,sqlselectSets,sqlgenerateBlacklist,sqlgetBlacklistCriterias,sqladdBlacklistCriteria,sqldeleteBlacklistCriteria,sqlgetBlacklistContents } from './sql/blacklist';
+import { sqladdBlacklistCriteria,sqlcopyBLCSet,sqlcreateSet,sqldeleteBlacklistCriteria,sqldeleteSet,sqleditSet,sqlemptyBlacklist,sqlemptyBlacklistCriterias,sqlgenerateBlacklist,sqlgetBlacklistContents,sqlgetBlacklistCriterias,sqlselectCurrentBLCSet,sqlselectSet,sqlselectSets,sqlsetCurrentSet,sqlunsetCurrentSet } from './sql/blacklist';
 
 export function editBLCSet(blcset: BLCSet) {
 	return db().query(yesql(sqleditSet)({
@@ -91,5 +91,5 @@ export function addBlacklistCriteria(blcList: BLC[]) {
 		blcItem.type,
 		blcItem.blc_set_id
 	]));
-	return transaction([{params: blc, sql: sqladdBlacklistCriteria}]);
+	return transaction({params: blc, sql: sqladdBlacklistCriteria});
 }

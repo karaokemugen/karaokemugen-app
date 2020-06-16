@@ -7,7 +7,7 @@
     "build": "npx rimraf ./build/ && npx parcel build ./src/index.html --out-dir ./build/"
   },
   "dependencies": {
-    "@cospired/i18n-iso-languages": "^2.1.1",
+    "@cospired/i18n-iso-languages": "^2.1.2",
     "autoprefixer": "^9.8.0",
     "axios": "^0.19.2",
     "fingerprintjs2": "^2.1.0",
@@ -30,23 +30,23 @@
     "trim-right": "^1.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.1",
+    "@babel/core": "^7.10.2",
     "@babel/plugin-proposal-class-properties": "^7.10.1",
-    "@babel/preset-env": "^7.10.1",
+    "@babel/preset-env": "^7.10.2",
     "@babel/preset-react": "^7.10.1",
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@types/fingerprintjs2": "^2.0.0",
-    "@types/node": "^14.0.5",
-    "@types/react": "^16.9.35",
+    "@types/node": "^14.0.13",
+    "@types/react": "^16.9.36",
+    "@types/react-aria-menubutton": "^6.2.5",
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-virtualized": "^9.21.10",
-	"@types/socket.io-client": "^1.4.33",
-	"@types/react-aria-menubutton": "^6.2.5",
+    "@types/socket.io-client": "^1.4.33",
     "babel-polyfill": "^6.26.0",
     "parcel-bundler": "^1.12.4",
-    "sass": "^1.26.7",
-    "typescript": "^3.9.3"
+    "sass": "^1.26.8",
+    "typescript": "^3.9.5"
   },
   "license": "MIT"
 }

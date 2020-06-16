@@ -18,10 +18,11 @@ let modePlaylistID:number;
 let defaultLocaleApp:string;
 let user:User|undefined;
 let navigatorLanguage:string = languages.alpha2ToAlpha3B(navigator.languages[0].substring(0, 2));
+let currentBlSet:number;
 
 if (!logInfos) {
-	var token = localStorage.getItem('kmToken');
-	var onlineToken = localStorage.getItem('kmOnlineToken');
+	let token = localStorage.getItem('kmToken');
+	let onlineToken = localStorage.getItem('kmOnlineToken');
 	if (token) {
 		logInfos = parseJwt(token) as Token;
 		logInfos.token = token;
@@ -65,6 +66,14 @@ class Store extends EventEmitter {
 		} else {
 			return filterValue2;
 		}
+	}
+
+	getCurrentBlSet() {
+		return currentBlSet;
+	}
+
+	setCurrentBlSet(blset:number) {
+		currentBlSet = blset;
 	}
 
 	getPosPlaying() {

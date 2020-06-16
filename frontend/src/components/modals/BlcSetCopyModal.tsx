@@ -22,18 +22,18 @@ class BlcSetCopyModal extends Component<IProps,IState> {
     confirmModal = () => {
 		if (this.state.blSetToCopy) {
 			axios.post('/blacklist/set/criterias/copy', {fromSet_id: this.props.bLSetFrom, toSet_id: this.state.blSetToCopy});
-			var element = document.getElementById('modal');
+			let element = document.getElementById('modal');
 			if (element) ReactDOM.unmountComponentAtNode(element);
 		}
     };
 
     abortModal = () => {
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
     	if (element) ReactDOM.unmountComponentAtNode(element);
     };
 
 	render() {
-		var modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
+		let modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
 		return (
 			<div className="modal" id="modalBox">
 				<div className={modalDialogClass}>
@@ -42,7 +42,7 @@ class BlcSetCopyModal extends Component<IProps,IState> {
 							<h4 className="modal-title">{i18next.t('BLC.COPY_TO')}</h4>
 							<button className="closeModal btn btn-action" 
 								onClick={() => {
-										var element = document.getElementById('modal');
+										let element = document.getElementById('modal');
 										if (element) ReactDOM.unmountComponentAtNode(element);
 									}}>
 								<i className="fas fa-times"></i>

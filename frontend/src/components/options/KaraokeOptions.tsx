@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
-import i18next from 'i18next';
-import Switch from '../generic/Switch';
-import { expand, dotify } from '../tools';
 import axios from 'axios';
+import i18next from 'i18next';
+import React, { Component } from 'react';
+
 import { Config } from '../../../../src/types/config';
+import Switch from '../generic/Switch';
+import { dotify,expand } from '../tools';
 
 interface IProps {
 	config: Config;
@@ -24,9 +25,9 @@ class KaraokeOptions extends Component<IProps, IState> {
 	}
 
   addMysterySongLabel = () => {
-  	var mysterySongsLabels = this.state.config['Playlist.MysterySongs.Labels'];
+  	const mysterySongsLabels = this.state.config['Playlist.MysterySongs.Labels'];
   	mysterySongsLabels.push(this.state.mysterySongLabel);
-  	var config = this.state.config;
+  	const config = this.state.config;
   	config['Playlist.MysterySongs.Labels'] = mysterySongsLabels;
   	this.setState({ config: config });
   	this.saveMysterySongsLabels(mysterySongsLabels);
@@ -34,23 +35,23 @@ class KaraokeOptions extends Component<IProps, IState> {
   };
 
   deleteMysterySongLabel = (value:string) => {
-	  var config = this.state.config;
+	  const config = this.state.config;
   	config['Playlist.MysterySongs.Labels'].splice(
-		config['Playlist.MysterySongs.Labels'].indexOf(value), 1, null);
-	this.saveMysterySongsLabels(config['Playlist.MysterySongs.Labels']);
-	config['Playlist.MysterySongs.Labels'].splice(
-		config['Playlist.MysterySongs.Labels'].indexOf(null), 1);
+  		config['Playlist.MysterySongs.Labels'].indexOf(value), 1, null);
+  	this.saveMysterySongsLabels(config['Playlist.MysterySongs.Labels']);
+  	config['Playlist.MysterySongs.Labels'].splice(
+  		config['Playlist.MysterySongs.Labels'].indexOf(null), 1);
   	this.setState({ config: config });
   };
 
   saveMysterySongsLabels = async (labels:Array<string>) => {
-  	var data = expand('Playlist.MysterySongs.Labels', labels);
+  	const data = expand('Playlist.MysterySongs.Labels', labels);
   	axios.put('/settings', { setting: JSON.stringify(data) });
   };
 
   onChange = (e:any) => {
-  	var config = this.state.config;
-  	var value = e.target.type === 'checkbox' ? e.target.checked :
+  	const config = this.state.config;
+  	let value = e.target.type === 'checkbox' ? e.target.checked :
   		(Number(e.target.value) ? Number(e.target.value) : e.target.value);
   	if (value === 'true') {
   		value = true;
@@ -138,7 +139,8 @@ class KaraokeOptions extends Component<IProps, IState> {
   								value={this.state.config['Karaoke.Quota.FreeAutoTime']}
   							/>
   						</div>
-  					</div> : null}
+  					</div> : null
+  				}
 
   				<div className="form-group">
   					<label className="col-xs-4 control-label">
@@ -175,6 +177,29 @@ class KaraokeOptions extends Component<IProps, IState> {
   				</div>
 
   				<div className="form-group">
+  					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_RANDOMSONGSAFTEREND_TOOLTIP')}>
+  						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_RANDOMSONGSAFTEREND')}
+              &nbsp;
+  						<i className="far fa-question-circle"></i>
+  					</label>
+  					<div className="col-xs-6">
+  						<Switch idInput="Playlist.RandomSongsAfterEnd" handleChange={this.onChange}
+  							isChecked={this.state.config['Playlist.RandomSongsAfterEnd']} />
+  					</div>
+  				</div>
+
+				  {this.state.config['Playlist.RandomSongsAfterEnd'] ?
+  					<div className="form-group">
+  					<label className="col-xs-4 control-label">
+  						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_RANDOMSONGSAFTERENDMESSAGE')}
+  					</label>
+  					<div className="col-xs-6">
+  						<Switch idInput="Playlist.RandomSongsAfterEndMessage" handleChange={this.onChange}
+  							isChecked={this.state.config['Playlist.RandomSongsAfterEndMessage']} />
+  					</div>
+  				</div> : null}
+
+  				<div className="form-group">
   					<label className="col-xs-4 control-label">
   						{i18next.t('ENGINEALLOWDUPLICATES')}
   					</label>
@@ -194,7 +219,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
 
-				<div className="form-group">
+  				<div className="form-group">
   					<label className="col-xs-4 control-label">
   						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS')}
   					</label>
@@ -204,32 +229,32 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
 
-				{this.state.config['Playlist.Medias.Jingles.Enabled'] ?
-					<div
-					id="jinglesSettings"
-					className="settingsGroupPanel"
-					>
-						<div className="form-group">
-							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL')}
+  				{this.state.config['Playlist.Medias.Jingles.Enabled'] ?
+  					<div
+  						id="jinglesSettings"
+  						className="settingsGroupPanel"
+  					>
+  						<div className="form-group">
+  							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP')}>
+  								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL')}
 					&nbsp;
-								<i className="far fa-question-circle"></i>
-							</label>
-							<div className="col-xs-6">
-								<input
-									type="number"
-									className="form-control"
-									id="Playlist.Medias.Jingles.Interval"
-									placeholder="20"
-									onChange={this.onChange}
-									value={this.state.config['Playlist.Medias.Jingles.Interval']}
-								/>
-							</div>
-						</div>
-					</div> : null
+  								<i className="far fa-question-circle"></i>
+  							</label>
+  							<div className="col-xs-6">
+  								<input
+  									type="number"
+  									className="form-control"
+  									id="Playlist.Medias.Jingles.Interval"
+  									placeholder="20"
+  									onChange={this.onChange}
+  									value={this.state.config['Playlist.Medias.Jingles.Interval']}
+  								/>
+  							</div>
+  						</div>
+  					</div> : null
   				}
 
-				<div className="form-group">
+  				<div className="form-group">
   					<label className="col-xs-4 control-label">
   						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS')}
   					</label>
@@ -239,30 +264,30 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
 
-				{this.state.config['Playlist.Medias.Sponsors.Enabled'] ?
-					<div
-					id="sponsorsSettings"
-					className="settingsGroupPanel"
-					>
-						<div className="form-group">
-							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL')}
+  				{this.state.config['Playlist.Medias.Sponsors.Enabled'] ?
+  					<div
+  						id="sponsorsSettings"
+  						className="settingsGroupPanel"
+  					>
+  						<div className="form-group">
+  							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP')}>
+  								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL')}
 					&nbsp;
-								<i className="far fa-question-circle"></i>
-							</label>
+  								<i className="far fa-question-circle"></i>
+  							</label>
 
-							<div className="col-xs-6">
-								<input
-									type="number"
-									className="form-control"
-									id="Playlist.Medias.Sponsors.Interval"
-									placeholder="50"
-									onChange={this.onChange}
-									value={this.state.config['Playlist.Medias.Sponsors.Interval']}
-								/>
-							</div>
-						</div>
-					</div> : null
+  							<div className="col-xs-6">
+  								<input
+  									type="number"
+  									className="form-control"
+  									id="Playlist.Medias.Sponsors.Interval"
+  									placeholder="50"
+  									onChange={this.onChange}
+  									value={this.state.config['Playlist.Medias.Sponsors.Interval']}
+  								/>
+  							</div>
+  						</div>
+  					</div> : null
   				}
 
   				<div className="form-group">
@@ -277,31 +302,31 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
 
-				{this.state.config['Playlist.Medias.Intros.Enabled'] ?
-					<div
-					id="introsSettings"
-					className="settingsGroupPanel"
-					>
-						<div className="form-group">
-							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_MESSAGE_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_MESSAGE')}
+  				{this.state.config['Playlist.Medias.Intros.Enabled'] ?
+  					<div
+  						id="introsSettings"
+  						className="settingsGroupPanel"
+  					>
+  						<div className="form-group">
+  							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_MESSAGE_TOOLTIP')}>
+  								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_MESSAGE')}
 					&nbsp;
-								<i className="far fa-question-circle"></i>
-							</label>
+  								<i className="far fa-question-circle"></i>
+  							</label>
 
-							<div className="col-xs-6">
-								<input
-									className="form-control"
-									id="Playlist.Medias.Intros.Message"
-									onChange={this.onChange}
-									value={this.state.config['Playlist.Medias.Intros.Message']}
-								/>
-							</div>
-						</div>
-					</div> : null
+  							<div className="col-xs-6">
+  								<input
+  									className="form-control"
+  									id="Playlist.Medias.Intros.Message"
+  									onChange={this.onChange}
+  									value={this.state.config['Playlist.Medias.Intros.Message']}
+  								/>
+  							</div>
+  						</div>
+  					</div> : null
   				}
 
-				<div className="form-group">
+  				<div className="form-group">
   					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_TOOLTIP')}>
   						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS')}
               &nbsp;
@@ -313,31 +338,31 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
 
-				{this.state.config['Playlist.Medias.Outros.Enabled'] ?
-					<div
-					id="outrosSettings"
-					className="settingsGroupPanel"
-					>
-						<div className="form-group">
-							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_MESSAGE_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_MESSAGE')}
+  				{this.state.config['Playlist.Medias.Outros.Enabled'] ?
+  					<div
+  						id="outrosSettings"
+  						className="settingsGroupPanel"
+  					>
+  						<div className="form-group">
+  							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_MESSAGE_TOOLTIP')}>
+  								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_MESSAGE')}
 					&nbsp;
-								<i className="far fa-question-circle"></i>
-							</label>
+  								<i className="far fa-question-circle"></i>
+  							</label>
 
-							<div className="col-xs-6">
-								<input
-									className="form-control"
-									id="Playlist.Medias.Outros.Message"
-									onChange={this.onChange}
-									value={this.state.config['Playlist.Medias.Outros.Message']}
-								/>
-							</div>
-						</div>
-					</div> : null
+  							<div className="col-xs-6">
+  								<input
+  									className="form-control"
+  									id="Playlist.Medias.Outros.Message"
+  									onChange={this.onChange}
+  									value={this.state.config['Playlist.Medias.Outros.Message']}
+  								/>
+  							</div>
+  						</div>
+  					</div> : null
   				}
 
-				<div className="form-group">
+  				<div className="form-group">
   					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_TOOLTIP')}>
   						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS')}
               &nbsp;
@@ -349,31 +374,31 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div>
   				</div>
 
-				{this.state.config['Playlist.Medias.Encores.Enabled'] ?
-					<div
-						id="encoreSettings"
-						className="settingsGroupPanel"
-					>
-						<div className="form-group">
-							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_MESSAGE_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_MESSAGE')}
+  				{this.state.config['Playlist.Medias.Encores.Enabled'] ?
+  					<div
+  						id="encoreSettings"
+  						className="settingsGroupPanel"
+  					>
+  						<div className="form-group">
+  							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_MESSAGE_TOOLTIP')}>
+  								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_MESSAGE')}
 					&nbsp;
-								<i className="far fa-question-circle"></i>
-							</label>
+  								<i className="far fa-question-circle"></i>
+  							</label>
 
-							<div className="col-xs-6">
-								<input
-									className="form-control"
-									id="Playlist.Medias.Encores.Message"
-									onChange={this.onChange}
-									value={this.state.config['Playlist.Medias.Encores.Message']}
-								/>
-							</div>
-						</div>
-					</div> : null
+  							<div className="col-xs-6">
+  								<input
+  									className="form-control"
+  									id="Playlist.Medias.Encores.Message"
+  									onChange={this.onChange}
+  									value={this.state.config['Playlist.Medias.Encores.Message']}
+  								/>
+  							</div>
+  						</div>
+  					</div> : null
   				}
 
-				<div className="form-group">
+  				<div className="form-group">
   					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.QUICKSTART_TOOLTIP')}>
   						{i18next.t('SETTINGS.KARAOKE.QUICKSTART')}
               &nbsp;
@@ -549,7 +574,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   							return (
   								<div key={value}>
   									<label style={{ margin: '10px' }}>{value}</label>
-									{this.state.config['Playlist.MysterySongs.Labels'].length > 1 ?
+  									{this.state.config['Playlist.MysterySongs.Labels'].length > 1 ?
   										<button type="button" className="btn btn-default"
 										  onClick={() => this.deleteMysterySongLabel(value)}>{i18next.t('ENGINE_LABELS_MYSTERY_SONGS_DELETE')}</button> : null
 							  		}
@@ -597,6 +622,16 @@ class KaraokeOptions extends Component<IProps, IState> {
 
   				<div className="form-group">
   					<label className="col-xs-4 control-label">
+  						{i18next.t('ONLINEERRORTRACKING')}
+  					</label>
+  					<div className="col-xs-6">
+  						<Switch idInput="Online.ErrorTracking" handleChange={this.onChange}
+  							isChecked={this.state.config['Online.ErrorTracking']} />
+  					</div>
+  				</div>
+
+  				<div className="form-group">
+  					<label className="col-xs-4 control-label">
   						{i18next.t('CHECK_APP_UPDATES')}
   					</label>
   					<div className="col-xs-6">
@@ -613,7 +648,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   							isChecked={this.state.config['Online.Updates.Medias.Jingles']} />
   					</div>
   				</div>
-				<div className="form-group">
+  				<div className="form-group">
   					<label className="col-xs-4 control-label">
   						{i18next.t('SETTINGS.KARAOKE.AUTO_UPDATE_SPONSORS')}
   					</label>
@@ -631,7 +666,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   							isChecked={this.state.config['Online.Updates.Medias.Intros']} />
   					</div>
   				</div>
-				<div className="form-group">
+  				<div className="form-group">
   					<label className="col-xs-4 control-label">
   						{i18next.t('SETTINGS.KARAOKE.AUTO_UPDATE_OUTROS')}
   					</label>
@@ -640,7 +675,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   							isChecked={this.state.config['Online.Updates.Medias.Outros']} />
   					</div>
   				</div>
-				<div className="form-group">
+  				<div className="form-group">
   					<label className="col-xs-4 control-label">
   						{i18next.t('SETTINGS.KARAOKE.AUTO_UPDATE_ENCORES')}
   					</label>
@@ -649,7 +684,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   							isChecked={this.state.config['Online.Updates.Medias.Encores']} />
   					</div>
   				</div>
-				<div className="form-group">
+  				<div className="form-group">
   					<label className="col-xs-4 control-label">
   						{i18next.t('SETTINGS.DISCORD.DISPLAY_ACTIVITY')}
   					</label>

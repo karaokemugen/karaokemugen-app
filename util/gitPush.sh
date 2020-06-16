@@ -1,6 +1,7 @@
 git config user.name "Release Bot"
 git config user.email "server@karaokes.moe"
 git checkout $CI_COMMIT_BRANCH
+git pull
 bash util/replaceVersion.sh
 git add package.json src/version.ts
 VERSION=`cat package.json | grep version\": | awk -F\" {'print $4'}`;

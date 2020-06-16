@@ -24,14 +24,14 @@ class OnlineProfileModal extends Component<IProps,IState> {
 	}
 
     onClick = async () => {
-    	var response:{ token: string; onlineToken: string; };
+    	let response:{ token: string; onlineToken: string; };
     	if (this.props.type === 'convert') {
     		response = await axios.post('/myaccount/online', { instance: this.state.modalLoginServ, password: this.state.password });
     	} else {
     		response = await axios.delete('/myaccount/online', {data:{ password: this.state.password }});
     	}
 		store.setLogInfos(response);
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
     	if (element) ReactDOM.unmountComponentAtNode(element);
     };
 
@@ -46,7 +46,7 @@ class OnlineProfileModal extends Component<IProps,IState> {
     						</label>
 							<button className="closeModal btn btn-action" 
 								onClick={() => {
-										var element = document.getElementById('modal');
+										let element = document.getElementById('modal');
 										if (element) ReactDOM.unmountComponentAtNode(element);
 									}}>
 								<i className="fas fa-times"></i>

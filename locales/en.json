@@ -136,10 +136,15 @@
 		"TITLE": "Unknown repository",
 		"MESSAGE": "This song's repository is unknown in y our repository list. Do you want to add it? It'll be used for online updates/sync of your song library.\n\nIf you say no, the song will be imported in your \"Local\" repository"
 	},
+	"UNKNOWN_REPOSITORY_ADD": {
+		"TITLE": "Unknown repository",
+		"MESSAGE": "You're about to add the {{repoName}} repository to Karaoke Mugen. Are you sure?"
+	},
 	"UNKNOWN_REPOSITORY_NO_LOCAL": {
 		"TITLE": "Local repository unavailable",
 		"MESSAGE": "No local repository exists in your configuration. Please create one before importing this song again."
 	},
 	"GENERATING_READING": "Reading data...",
-	"GENERATING_DATABASE": "Creating dtabase..."
+	"GENERATING_DATABASE": "Creating database...",
+	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "ADD A SONG TO THE PLAYLIST!"
 }

@@ -3,7 +3,7 @@ import circle from '@jimp/plugin-circle';
 import jimp from 'jimp';
 
 import { replaceExt } from '../lib/utils/files';
-import { sentryError } from '../lib/utils/sentry';
+import sentry from '../utils/sentry';
 
 const j = configure({
 	plugins: [circle ]
@@ -15,7 +15,7 @@ export async function createCircleAvatar(file: string) {
 		await image.circle().resize(256, 256).quality(20).writeAsync(replaceExt(file, '.circle.png'), );
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	}
 }

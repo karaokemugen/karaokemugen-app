@@ -7,7 +7,7 @@ import { BLC, BLCSet } from '../../../../src/types/blacklist';
 import { Tag } from '../../types/tag';
 require('./BlacklistCriterias.scss');
 
-var listTypeBlc = [
+let listTypeBlc = [
 	'BLCTYPE_1002',
 	'BLCTYPE_1003',
 	'BLCTYPE_1004',
@@ -58,11 +58,11 @@ class BlacklistCriterias extends Component<IProps, IState> {
     };
 
     render() {
-		var types:Array<number> = [];
+		let types:Array<number> = [];
     	this.props.data && this.props.data.forEach(element => {
     		if (!types.includes(element.type)) types.push(element.type);
     	});
-    	var tagsFiltered = this.props.tags ? this.props.tags.filter(obj => obj.type.includes(this.state.bcType)) : [];
+    	let tagsFiltered = this.props.tags ? this.props.tags.filter(obj => obj.type.includes(this.state.bcType)) : [];
     	return (
     		<React.Fragment>
     			{this.props.scope === 'admin' ?

@@ -144,10 +144,15 @@
 		"TITLE": "Dépôt inconnu",
 		"MESSAGE": "Le dépôt de ce karaoké n'est pas connu de votre liste de dépôts. Voulez-vous l'ajouter ? Il sera pris en compte dnas les futures mises à jour de votre base de karaokés.\n\nSi vous répondez non, le karaoké sera importé dnas le dépôt \"Local\""
 	},
+	"UNKNOWN_REPOSITORY_ADD": {
+		"TITLE": "Dépôt inconnu",
+		"MESSAGE": "Vous êtes sur le point d'ajouter le dépôt {{repoName}}, êtes-vous sûr ?"
+	},
 	"UNKNOWN_REPOSITORY_NO_LOCAL": {
 		"TITLE": "Dépôt local introuvable",
 		"MESSAGE": "Aucun dépôt local n'existe dans votre configuration. Veuillez en créer un avant de réimporter ce karaoké"
 	},
 	"GENERATING_READING": "Lecture des données...",
-	"GENERATING_DATABASE": "Création de la base de données..."
+	"GENERATING_DATABASE": "Création de la base de données...",
+	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON A LA PLAYLIST !"
 }

@@ -50,7 +50,7 @@ class KaraList extends Component<{}, KaraListState> {
 	}
 
 	changeFilter(event) {
-		this.setState({filter: event.target.value});
+		this.setState({filter: event.target.value, currentPage: 1});
 		localStorage.setItem('karaFilter', event.target.value);
 	}
 

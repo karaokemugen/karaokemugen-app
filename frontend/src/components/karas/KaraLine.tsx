@@ -60,7 +60,7 @@ class KaraLine extends Component<IProps,IState> {
   };
 
   likeKara = () => {
-  	var data = this.props.kara.flag_upvoted ? { 'downvote': 'true' } : {};
+  	let data = this.props.kara.flag_upvoted ? { 'downvote': 'true' } : {};
   	axios.post(`/playlists/${this.props.idPlaylist}/karas/${this.props.kara.playlistcontent_id}/vote`, data);
   	this.setState({ isLike: !this.state.isLike });
   };
@@ -78,14 +78,18 @@ class KaraLine extends Component<IProps,IState> {
   };
 
   playKara = () => {
-  	axios.put('/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_playing: true });
+	  if (this.props.idPlaylist < 0) {
+		axios.post(`/karas/${this.props.kara.kid}/play`);
+	  } else {
+	  	axios.put(`/playlists/${this.props.idPlaylist}/karas/${this.props.kara.playlistcontent_id}`, { flag_playing: true });
+	  }
   };
 
   addKara = async (event?:any, pos?:number) => {
-  	var logInfos = store.getLogInfos();
-  	var url:string ='';
-  	var data;
-  	var type;
+  	let logInfos = store.getLogInfos();
+  	let url:string ='';
+  	let data;
+  	let type;
   	if (this.props.idPlaylistTo == -5) {
   		url = '/favorites';
   		data = { kid: [this.props.kara.kid] };
@@ -103,7 +107,7 @@ class KaraLine extends Component<IProps,IState> {
   				}
   			}
   		} else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
-  			url = '/blacklist/criterias';
+  			url = `/blacklist/set/${store.getCurrentBlSet()}/criterias`;
   			data = { blcriteria_type: 1001, blcriteria_value: this.props.kara.kid };
   		} else if (this.props.idPlaylistTo == -3) {
   			url = '/whitelist';
@@ -113,16 +117,16 @@ class KaraLine extends Component<IProps,IState> {
   		url = `/karas/${this.props.kara.kid}`;
   		data = { requestedby: (logInfos as Token).username, kid: this.props.kara.kid };
   	}
-	var response;
+	let response;
 	if (type === 'PATCH') {
 		response = await axios.patch(url, data);
 	} else {
 		response = await axios.post(url, data);
 		}
 		if (response.data && response.data.data && response.data.data.plc && response.data.data.plc.time_before_play) {
-		var playTime = new Date(Date.now() + response.data.data.plc.time_before_play * 1000);
-		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-		var beforePlayTime = secondsTimeSpanToHMS(response.data.data.plc.time_before_play, 'hm');
+		let playTime = new Date(Date.now() + response.data.data.plc.time_before_play * 1000);
+		let playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+		let beforePlayTime = secondsTimeSpanToHMS(response.data.data.plc.time_before_play, 'hm');
 		displayMessage('success', <div>
 				{i18next.t(response.data.code)}
 				<br/>
@@ -185,7 +189,7 @@ class KaraLine extends Component<IProps,IState> {
   karaTitle = buildKaraTitle(this.props.kara, undefined, this.props.i18nTag);
 
   getLangs(data:KaraElement) {
-  	var isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
+  	let isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
   	if (data.langs && isMulti) {
   		data.langs = [isMulti];
   	}
@@ -206,10 +210,10 @@ class KaraLine extends Component<IProps,IState> {
   karaSongTypes = this.getSongtypes(this.props.kara);
 
   render() {
-  	var logInfos = store.getLogInfos();
-  	var kara = this.props.kara;
-  	var scope = this.props.scope;
-  	var idPlaylist = this.props.idPlaylist;
+  	let logInfos = store.getLogInfos();
+  	let kara = this.props.kara;
+  	let scope = this.props.scope;
+  	let idPlaylist = this.props.idPlaylist;
   	return (
 		  <div className={'list-group-item ' + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu ' : ' ')
 			+(this.props.index % 2 === 0 ? 'list-group-item-binaire': '')}>
@@ -229,15 +233,15 @@ class KaraLine extends Component<IProps,IState> {
 							<img className={`img-circle ${is_touch_device() ? 'mobile': ''}`}
 							 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
 							 <div className="actionButtonsDiv">
-								{this.props.idPlaylistTo !== this.props.idPlaylist ?
-									<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
+								{this.props.idPlaylistTo !== idPlaylist ?
+									<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={idPlaylist}
 										scope={this.props.scope}
 										addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} />
 								: null}
 							 </div>
 						{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
 					</div>
-  					{scope === 'admin' && this.props.idPlaylist !== -2 && this.props.idPlaylist != -4 && this.props.playlistCommands ?
+  					{scope === 'admin' && idPlaylist !== -2 && idPlaylist != -4 && this.props.playlistCommands ?
   						<span className="checkboxKara" onClick={this.checkKara}>
   							{kara.checked ? <i className="far fa-check-square"></i>
   								: <i className="far fa-square"></i>}
@@ -247,9 +251,11 @@ class KaraLine extends Component<IProps,IState> {
   							onClick={this.toggleKaraDetail}>
   							<i className="fas fa-info-circle"></i>
   						</button> : null}
-						{scope === 'admin' && idPlaylist > 0 ? <button title={i18next.t('TOOLTIP_PLAYKARA')} 
-						  	className="btn btn-sm btn-action playKara karaLineButton"
-  							onClick={this.playKara}><i className="fas fa-play"></i></button> : null}
+						{scope === 'admin' ? 
+							<button title={i18next.t(idPlaylist < 0 ? 'TOOLTIP_PLAYKARA_LIBRARY' : 'TOOLTIP_PLAYKARA')} 
+								className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
+									<i className={`fas ${idPlaylist < 0 ? 'fa-play' : 'fa-play-circle'}`}></i>
+							</button> : null}
   						{scope === 'admin' &&  this.props.playlistInfo && idPlaylist > 0 && !kara.flag_visible
                 			&& (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ? 
   								<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>

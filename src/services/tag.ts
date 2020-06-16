@@ -16,9 +16,9 @@ import { resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
 import { asyncUnlink,resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
 import logger, {profile} from '../lib/utils/logger';
-import { sentryError } from '../lib/utils/sentry';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
+import sentry from '../utils/sentry';
 import { getAllKaras } from './kara';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
@@ -79,7 +79,7 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 		return tagObj;
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -213,7 +213,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 		}
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();
@@ -244,7 +244,7 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 		}
 	} catch(err) {
 		const error = new Error(err);
-		sentryError(error);
+		sentry.error(error);
 		throw error;
 	} finally {
 		task.end();

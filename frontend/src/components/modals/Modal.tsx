@@ -32,18 +32,18 @@ class Modal extends Component<IProps,IState> {
     			this.props.callback();
     		}
 		}
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
     	if (element) ReactDOM.unmountComponentAtNode(element);
     };
 
     abortModal = () => {
-		var element = document.getElementById('modal');
+		let element = document.getElementById('modal');
     	if (element) ReactDOM.unmountComponentAtNode(element);
     };
 
 
     keyObserverHandler = (e:any) => {
-    	var keyCode = e.keyCode || e.which;
+    	let keyCode = e.keyCode || e.which;
     	if (keyCode == '13') {
     		this.confirmModal();
     	}
@@ -61,7 +61,7 @@ class Modal extends Component<IProps,IState> {
     }
 
     render() {
-    	var modalDialogClass = window.innerWidth <= 1023 || this.props.forceSmall ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
+    	let modalDialogClass = window.innerWidth <= 1023 || this.props.forceSmall ? 'modal-dialog modal-sm' : 'modal-dialog modal-md';
     	return (
     		<div className="modal" id="modalBox">
     			<div className={modalDialogClass}>

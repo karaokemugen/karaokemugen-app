@@ -87,7 +87,7 @@ class TagsDuplicate extends Component<{}, TagsListState> {
 		render: i18n_names => {
 			let names = [];
 			Object.keys(i18n_names).forEach((lang) => {
-				var name = i18n_names[lang];
+				let name = i18n_names[lang];
 				const isLongTag = name.length > 40;
 				const i18n_name = `[${lang.toUpperCase()}] ${name}`;
 				const tagElem = (

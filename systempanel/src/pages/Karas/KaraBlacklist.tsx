@@ -51,7 +51,7 @@ class KaraBlacklist extends Component<{}, KaraBlacklistState> {
 	}
 
 	handleCriteriasTypeChange = (value,option) => {
-		var mode = option.props['data-mode'];
+		let mode = option.props['data-mode'];
 		if(mode==='tag') {
 			this.setState({
 				filter_type:value,
@@ -171,7 +171,7 @@ class KaraBlacklist extends Component<{}, KaraBlacklistState> {
 			dataIndex: 'type',
 			key: 'type',
 			render: type => {
-				var t = criteras_types.filter((t)=>{ return t.value===type})
+				let t = criteras_types.filter((t)=>{ return t.value===type})
 				return t.length>0 ? i18next.t(`BLACKLIST.BLCTYPE_${t[0].value}`) : type;
 			}
 		}, {
@@ -179,11 +179,11 @@ class KaraBlacklist extends Component<{}, KaraBlacklistState> {
 			dataIndex: 'value',
 			key: 'value',
 			render: (value, record)  => {
-				var label = value
-				var t = criteras_types.filter((t)=>{ return t.mode==="tag" && t.value===record.type})
+				let label = value
+				let t = criteras_types.filter((t)=>{ return t.mode==="tag" && t.value===record.type})
 				if(t.length>0) // c'est un tag ^^
 				{
-					var o = this.state.filter_options_full.filter((o) => { return o.tid===value})
+					let o = this.state.filter_options_full.filter((o) => { return o.tid===value})
 					if(o.length>0)
 						label = o[0].name;
 				}

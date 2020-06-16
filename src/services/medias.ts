@@ -199,7 +199,7 @@ export async function buildMediasList(type: MediaType) {
 		}
 	}
 	currentMedias[type] = cloneDeep(medias[type]);
-	logger.debug(`[${type}] Computed : ${JSON.stringify(medias[type])}`);
+	logger.debug(`[${type}] Computed : ${JSON.stringify(medias[type], null, 2)}`);
 }
 
 export function getSingleMedia(type: MediaType): Media {

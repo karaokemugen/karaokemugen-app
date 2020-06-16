@@ -57,7 +57,7 @@ class App extends Component<{}, IState> {
 		const response = await axios.get('/tags');
 		return response.data.content.filter((val:Tag) => val.karacount !== null)
 			.map((val:{i18n:{[key: string]: string}, tid:string, name:string, types:Array<number|string>, karacount:string}) => {
-			var trad = val.i18n![store.getNavigatorLanguage() as string];
+			let trad = val.i18n![store.getNavigatorLanguage() as string];
 			return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
 		});
 	}
@@ -75,7 +75,7 @@ class App extends Component<{}, IState> {
 			await store.setUser();
 		}
 		if (this.state.admpwd && !localStorage.getItem('kmToken')) {
-			var result = await axios.post('/auth/login', { username: 'admin', password: this.state.admpwd });
+			let result = await axios.post('/auth/login', { username: 'admin', password: this.state.admpwd });
 			store.setLogInfos(result.data);
 		}
 		await this.getSettings();

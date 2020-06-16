@@ -2,6 +2,7 @@
 // Node modules
 import merge from 'lodash.merge';
 
+import { supportedFiles } from '../lib/utils/constants';
 import logger from '../lib/utils/logger';
 import {emit} from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
@@ -36,6 +37,7 @@ let state: State = {
 	wsLogNamespace: null,
 	noAutoTest: false,
 	singlePlay: false,
+	randomPlaying: false,
 	player: {},
 	opt: {},
 	args: []
@@ -57,7 +59,7 @@ export function getPlayerState(): PublicState {
 		private: state.private,
 		showSubs: state.player.showsubs,
 		status: state.status,
-		subText: state.player.subtext,
+		subText: state.player['sub-text'],
 		timePosition: state.player.timeposition,
 		volume: state.player.volume,
 		currentRequester: state.currentRequester,
@@ -83,7 +85,9 @@ export function getPublicState(admin: boolean) {
 		dataPath: admin ? state.dataPath : undefined,
 		os: admin ? state.os : undefined,
 		wsLogNamespace: admin ? state.wsLogNamespace : undefined,
-		electron: state.electron
+		electron: state.electron,
+		supportedLyrics: supportedFiles.lyrics,
+		supportedMedias: [].concat(supportedFiles.video, supportedFiles.audio)
 	};
 }
 

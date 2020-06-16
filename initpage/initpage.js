@@ -68,7 +68,6 @@ ipcRenderer.on('tip', (event, data) => {
 	tipbox.innerHTML = data.message.autoLink({target: '_blank'});
 });
 ipcRenderer.on('tasksUpdated', (event, data) => {
-	console.log(data);
 	if (Object.keys(data).length > 0) {
 		const task = data[Object.keys(data)[0]];
 		if (task?.text === 'GENERATING') {
@@ -88,13 +87,16 @@ function clickButton () {
 }
 
 function setProgressBar(pct, text) {
+	const dots = document.querySelector('.ip--loading-dots');
 	const container = document.querySelector('.ip--progress-bar-container');
 	const bar = document.querySelector('.ip--progress-bar');
 	const textEl = document.querySelector('.ip--progress-text');
 	if (pct < 100) {
 		container.dataset.showBar = 'true';
+		dots.dataset.hide = 'true';
 	} else {
 		container.dataset.showBar = 'false';
+		container.dataset.hide = 'false';
 	}
 	bar.style.width = `${pct}%`;
 	textEl.innerHTML = text;
