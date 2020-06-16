@@ -228,11 +228,11 @@ export function backupConfig() {
 }
 
 /** Return public configuration (without sensitive data) */
-export function getPublicConfig() {
+export function getPublicConfig(removeSystem = true) {
 	const publicSettings = cloneDeep(getConfig());
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.Database;
-	delete publicSettings.System;
+	if (removeSystem) delete publicSettings.System;
 	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = '*********';
 	return publicSettings;
 }
