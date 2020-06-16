@@ -304,7 +304,7 @@ function binMissing(binariesPath: any, err: string) {
 	logger.error('[BinCheck] Exiting...');
 	let error = `One or more binaries needed by Karaoke Mugen could not be found.
 
-Check the paths above and make sure these are available.
+${err}
 
 Edit your config.yml and set System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres variables correctly for your OS.
 
@@ -313,7 +313,7 @@ You can download postgreSQL for your OS from http://postgresql.org/
 You can download ffmpeg for your OS from http://ffmpeg.org
 `;
 	if (process.platform === 'win32') error = `${error}
-(Windows Only) If the missing file is msvcr120.dll or msvcp120.dll, download Microsoft Visual C++ 2013 Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784
+If the missing file is msvcr120.dll or msvcp120.dll, download Microsoft Visual C++ 2013 Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784
 `;
 	return Error(error);
 }
