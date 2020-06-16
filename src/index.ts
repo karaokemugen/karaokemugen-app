@@ -46,21 +46,15 @@ Stack: ${exception.stack}
 	});
 });
 
-process.on('unhandledRejection', error => {
+process.on('unhandledRejection', (error: Error) => {
 	console.log('Unhandled Rejection at:', error);
-	let errStr: string;
-	try {
-		errStr = JSON.stringify(error);
-	} catch(err) {
-		errStr = error.toString();
-	}
-	if (logger) logger.error('[UnhandledRejection]' + errStr);
-	sentry.error(new Error(errStr));
+	if (logger) logger.error('[UnhandledRejection]' + error.toString());
+	sentry.error(error);
 	if (app) {
 		dialog.showMessageBox({
 			type: 'none',
 			title: 'Karaoke Mugen Error : Unhandled Rejection',
-			message: JSON.stringify(error)
+			message: error.toString()
 		});
 	}
 });
