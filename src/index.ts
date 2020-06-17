@@ -35,12 +35,17 @@ sentry.init(app);
 
 let isInitError = false;
 
-process.on('uncaughtException', exception => {
+process.on('uncaughtException', (exception: any) => {
 	// Silence when an error has been triggered during init, because objects get destroyed and electron doesn't like that much, poor boy.
 	if (!isInitError) {
 		console.log('Uncaught exception:', exception);
 		if (logger) logger.error('[UncaughtException]' + exception);
 		sentry.error(exception);
+		if (typeof exception === 'string' || !exception.name) exception = {
+			name: 'Unknown error',
+			message: exception,
+			stack: 'unknown'
+		};
 		if (app) dialog.showMessageBox({
 			type: 'none',
 			title: 'Karaoke Mugen Error : Uncaught Exception',
