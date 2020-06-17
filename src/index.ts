@@ -86,15 +86,28 @@ if (process.platform === 'win32' ) {
 	});
 }
 
-on('initError', (err: Error) => {
+on('initError', async (err: Error) => {
 	isInitError = true;
-	initError(err);
+	await initError(err);
 });
 
-function initError(err: Error) {
+async function initError(err: any) {
 	logger.error(`[Launcher] Error during launch : ${err}`);
 	console.log(err);
 	sentry.error(err);
+	if (typeof err === 'string' || !err.name) err = {
+		name: 'Unknown error',
+		message: err,
+		stack: 'unknown'
+	};
+	if (app) await dialog.showMessageBox({
+		type: 'none',
+		title: 'Karaoke Mugen Error : Uncaught Exception',
+		message: `Name: ${err?.name}
+Message: ${err?.message}
+Stack: ${err?.stack}
+`
+	});
 	exit(1);
 }
 

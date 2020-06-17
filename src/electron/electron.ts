@@ -38,6 +38,7 @@ export async function startElectron() {
 		} catch(err) {
 			// This is usually very much fatal.
 			emit('initError', err);
+			return;
 		}
 		// Register km:// protocol for internal use only.
 		protocol.registerStringProtocol('km', req => {
