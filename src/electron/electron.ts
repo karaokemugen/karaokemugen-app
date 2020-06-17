@@ -90,7 +90,7 @@ export async function handleProtocol(args: string[]) {
 	try {
 		logger.info(`[ProtocolHandler] Received protocol uri km://${args.join('/')}`);
 		if (!getState().ready) {
-			logger.debug(`[ProtocolHandler] Ignoring file, Karaoke Mugen isn't ready.`);
+			logger.debug('[ProtocolHandler] Ignoring file, Karaoke Mugen isn\'t ready.');
 			return;
 		}
 		switch(args[0]) {
@@ -145,7 +145,7 @@ export async function handleFile(file: string, username?: string) {
 	try {
 		logger.info(`[FileHandler] Received file path ${file}`);
 		if (!getState().ready) {
-			logger.debug(`[FileHandler] Ignoring file, Karaoke Mugen isn't ready.`);
+			logger.debug('[FileHandler] Ignoring file, Karaoke Mugen isn\'t ready.');
 			return;
 		}
 		if (!username) {
