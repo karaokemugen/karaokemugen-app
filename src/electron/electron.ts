@@ -33,16 +33,12 @@ export async function startElectron() {
 	setState({electron: app });
 	// This is called when Electron finished initializing
 	app.on('ready', async () => {
-		try {
-			await preInit();
-			// Register km:// protocol for internal use only.
-			protocol.registerStringProtocol('km', req => {
-				const args = req.url.substr(5).split('/');
-				handleProtocol(args);
-			});
-		} catch(err) {
-			throw new Error(err);
-		}
+		await preInit();
+		// Register km:// protocol for internal use only.
+		protocol.registerStringProtocol('km', req => {
+			const args = req.url.substr(5).split('/');
+			handleProtocol(args);
+		});
 		await initElectronWindow();
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());

@@ -1,6 +1,7 @@
 /** Centralized configuration management for Karaoke Mugen. */
 
 // Node modules
+import { dialog } from 'electron';
 import i18next from 'i18next';
 import {address} from 'ip';
 import { createCIDR } from 'ip6addr';
@@ -178,7 +179,7 @@ function getFirstHop(target: string): Promise<string> {
 		// Traceroute way
 		try {
 			const tracer = new Traceroute('ipv6');
-			tracer.on('hop', (hop) => {
+			tracer.on('hop', (hop: any) => {
 				resolve1(hop.ip);
 			});
 			tracer.trace(target);
@@ -260,9 +261,9 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 		await Promise.all(requiredBinariesChecks);
 		return binariesPath;
 	} catch (err) {
-		const error = binMissing(binariesPath, err);
+		await binMissing(binariesPath, err);
 		errorStep(i18next.t('ERROR_MISSING_BINARIES'));
-		throw error;
+		throw err;
 	}
 }
 
@@ -300,25 +301,20 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 }
 
 /** Error out on missing binaries */
-function binMissing(binariesPath: any, err: string) {
+async function binMissing(binariesPath: any, err: string) {
 	logger.error('[BinCheck] One or more binaries could not be found! (' + err + ')');
 	logger.error('[BinCheck] Paths searched : ');
 	logger.error('[BinCheck] ffmpeg : ' + binariesPath.ffmpeg);
 	logger.error('[BinCheck] mpv : ' + binariesPath.mpv);
 	logger.error('[BinCheck] Postgres : ' + binariesPath.postgres);
 	logger.error('[BinCheck] Exiting...');
-	let error = `One or more binaries needed by Karaoke Mugen could not be found.
-
-${err}
-
-Edit your config.yml and set System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres variables correctly for your OS.
-
-You can download mpv for your OS from http://mpv.io/
-You can download postgreSQL for your OS from http://postgresql.org/
-You can download ffmpeg for your OS from http://ffmpeg.org
-`;
-	if (process.platform === 'win32') error = `${error}
-If the missing file is msvcr120.dll or msvcp120.dll, download Microsoft Visual C++ 2013 Redistribuable Package here : https://www.microsoft.com/en-US/download/details.aspx?id=40784
-`;
-	return Error(error);
+	const error = i18next.t('MISSING_BINARIES.MESSAGE', {err: err});
+	console.log(error);
+	if (dialog) {
+		await dialog.showMessageBox({
+			type: 'none',
+			title: i18next.t('MISSING_BINARIES.TITLE'),
+			message: error
+		});
+	}
 }

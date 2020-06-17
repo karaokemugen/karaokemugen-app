@@ -181,16 +181,15 @@ if (app) {
 }
 
 if (app && !argv.cli && !argv.help) {
-	try {
-		startElectron();
-	} catch(err) {
-		logger.error(`[Launcher] Error during launch : ${err}`);
-		console.log(err);
-		sentry.error(err);
-		exit(1);
-	}
+	startElectron()
+		.catch((err) => {
+			logger.error(`[Launcher] Error during launch : ${err}`);
+			console.log(err);
+			sentry.error(err);
+			exit(1);
+		});
 } else {
-	// This is in case we're running with yarn startNoElectron
+	// This is in case we're running with yarn startNoElectron or with --cli or --help
 	preInit()
 		.then(() => main())
 		.catch(err => {

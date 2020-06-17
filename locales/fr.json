@@ -144,6 +144,10 @@
 		"TITLE": "Dépôt inconnu",
 		"MESSAGE": "Le dépôt de ce karaoké n'est pas connu de votre liste de dépôts. Voulez-vous l'ajouter ? Il sera pris en compte dnas les futures mises à jour de votre base de karaokés.\n\nSi vous répondez non, le karaoké sera importé dnas le dépôt \"Local\""
 	},
+	"MISSING_BINARIES": {
+		"TITLE": "Binaires manquants",
+		"MESSAGE": "Un ou plusieurs binaires requis par Karaoke Mugen sont manquants : \n\n{{err}}\n\nEditez votre fichier config.yml et définissez System.Binaries correctement pour votre OS.\n\nVous pouvez télécharger mpv depuis http://mpv.io/\n\nVous pouvez télécharger postgresql depuis http://postgresql.org/\n\nVous pouvez télécharger ffmpeg depuis http://ffmpeg.org\n\n(Windows uniquement) Si le fichier manquant est msvcr120.dll ou msvcp120.dll, téléchargez Microsoft Visual C++ 2013 Redistribuable Package sur le site de Microsoft."
+	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Dépôt inconnu",
 		"MESSAGE": "Vous êtes sur le point d'ajouter le dépôt {{repoName}}, êtes-vous sûr ?"
