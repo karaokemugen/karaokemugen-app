@@ -245,6 +245,7 @@ async function editRemoteUser(user: User) {
 			}
 		});
 	} catch(err) {
+		sentry.error(err);
 		throw `Remote update failed : ${err}`;
 	}
 }
@@ -346,6 +347,7 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		}
 		return newAvatarFile;
 	} catch (err) {
+		sentry.error(err);
 		throw `Unable to replace avatar ${oldImageFile} with ${avatar.path} : ${err}`;
 	}
 }
@@ -509,6 +511,7 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 		});
 		return res.body;
 	} catch(err) {
+		sentry.error(err);
 		if (err.statusCode === 401) throw 'Unauthorized';
 		throw `[RemoteUser] Got error when get remote user ${username} : ${err}`;
 	}

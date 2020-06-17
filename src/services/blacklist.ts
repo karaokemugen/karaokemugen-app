@@ -19,9 +19,9 @@ import {	addBlacklistCriteria as addBLC,
 import {KaraList, KaraParams} from '../lib/types/kara';
 import {uuidRegexp} from '../lib/utils/constants';
 import logger, { profile } from '../lib/utils/logger';
-import sentry from '../utils/sentry';
 import {isNumber} from '../lib/utils/validators';
 import {BLC, BLCSet, BLCSetFile} from '../types/blacklist';
+import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {formatKaraList, getKara} from './kara';
 import {getTag} from './tag';

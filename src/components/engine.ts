@@ -284,7 +284,7 @@ async function preFlightCheck() {
 	} catch(err) {
 		logger.error(`[DB] Generation failed : ${err}`);
 		errorStep(i18n.t('ERROR_GENERATION'));
-		throw 'Generation failure';
+		throw err;
 	}
 	// Run this in the background
 	vacuum();

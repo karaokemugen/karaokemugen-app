@@ -12,6 +12,7 @@ import {getConfig} from '../lib/utils/config';
 // KM Imports
 import {asyncExists, asyncReadFile,asyncWriteFile} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
+import sentry from './sentry';
 import {getState} from './state';
 
 let shutdownInProgress = false;
@@ -63,6 +64,7 @@ export async function dumpPG() {
 		});
 		logger.info('[DB] Database dumped to file');
 	} catch(err) {
+		sentry.error(err);
 		throw `Dump failed : ${err}`;
 	}
 }
@@ -81,6 +83,7 @@ export async function restorePG() {
 		});
 		logger.info('[DB] Database restored from file');
 	} catch(err) {
+		sentry.error(err);
 		logger.error(`[DB] Database restoration failed : ${err}`);
 		throw `Restore failed : ${err}`;
 	}
@@ -102,6 +105,7 @@ export async function initPGData() {
 			stdio: 'inherit'
 		});
 	} catch(err) {
+		sentry.error(err);
 		logger.error(`[DB] Failed to initialize database : ${JSON.stringify(err)}`);
 		errorStep(i18next.t('ERROR_INIT_PG_DATA'));
 		throw `Init failed : ${err}`;

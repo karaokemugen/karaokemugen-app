@@ -140,14 +140,19 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 
 /** Initializing configuration */
 export async function initConfig(argv: any) {
-	setConfigConstraints(configConstraints);
-	await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().originalAppPath);
-	const binaries = await checkBinaries(getConfig());
-	setState({binPath: binaries});
-	emit('configReady');
-	configureHost();
-	configureIDs();
-	return getConfig();
+	try {
+		setConfigConstraints(configConstraints);
+		await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().originalAppPath);
+		const binaries = await checkBinaries(getConfig());
+		setState({binPath: binaries});
+		emit('configReady');
+		configureHost();
+		configureIDs();
+		return getConfig();
+	} catch(err) {
+		logger.error(`[Launcher] InitConfig failed : ${err}`);
+		throw err;
+	}
 }
 
 /** Detect and set hostname and local IP */
