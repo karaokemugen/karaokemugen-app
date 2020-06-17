@@ -50,6 +50,7 @@
 		"prefer-const": 1,
 		"import/order": 0,
 		"no-case-declarations": 0,
+		"prefer-rest-params": 0,
 		"simple-import-sort/sort": 1,
 		"@typescript-eslint/explicit-module-boundary-types": 0,
 		"@typescript-eslint/no-explicit-any": 0,
