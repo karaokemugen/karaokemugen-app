@@ -202,14 +202,14 @@ export async function exit(rc: string | number) {
 	shutdownInProgress = true;
 	emit('exiting-app');
 	try {
-		await quitmpv();
+		if (getState().player?.playerstatus) {
+			await quitmpv();
+			logger.info('[Engine] Player has shutdown');
+		}
 	} catch(err) {
 		logger.warn(`[Engine] mpv error : ${err}`);
 		sentry.error(err);
-	} finally {
-		logger.info('[Engine] Player has shutdown');
 	}
-	if (getTwitchClient()) await stopTwitch();
 	await closeDB();
 	const c = getConfig();
 	if (getTwitchClient() || (c?.Karaoke?.StreamerMode.Twitch.Enabled)) await stopTwitch();

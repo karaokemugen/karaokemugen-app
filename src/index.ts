@@ -17,6 +17,7 @@ import {help} from './help';
 import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
 import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
+import { on } from './lib/utils/pubsub';
 import {logo} from './logo';
 import { migrateOldFoldersToRepo } from './services/repo';
 // Types
@@ -32,18 +33,23 @@ import {version} from './version';
 dotenv.config();
 sentry.init(app);
 
+let isInitError = false;
+
 process.on('uncaughtException', exception => {
-	console.log('Uncaught exception:', exception);
-	if (logger) logger.error('[UncaughtException]' + exception);
-	sentry.error(exception);
-	if (app) dialog.showMessageBox({
-		type: 'none',
-		title: 'Karaoke Mugen Error : Uncaught Exception',
-		message: `Name: ${exception.name}
-Message: ${exception.message}
-Stack: ${exception.stack}
-`
-	});
+	// Silence when an error has been triggered during init, because objects get destroyed and electron doesn't like that much, poor boy.
+	if (!isInitError) {
+		console.log('Uncaught exception:', exception);
+		if (logger) logger.error('[UncaughtException]' + exception);
+		sentry.error(exception);
+		if (app) dialog.showMessageBox({
+			type: 'none',
+			title: 'Karaoke Mugen Error : Uncaught Exception',
+			message: `Name: ${exception.name}
+	Message: ${exception.message}
+	Stack: ${exception.stack}
+	`
+		});
+	}
 });
 
 process.on('unhandledRejection', (error: Error) => {
@@ -78,6 +84,18 @@ if (process.platform === 'win32' ) {
 	rl.on('SIGINT', () => {
 		exit('SIGINT');
 	});
+}
+
+on('initError', (err: Error) => {
+	isInitError = true;
+	initError(err);
+});
+
+function initError(err: Error) {
+	logger.error(`[Launcher] Error during launch : ${err}`);
+	console.log(err);
+	sentry.error(err);
+	exit(1);
 }
 
 // Main app begins here.
@@ -181,23 +199,12 @@ if (app) {
 }
 
 if (app && !argv.cli && !argv.help) {
-	startElectron()
-		.catch((err) => {
-			logger.error(`[Launcher] Error during launch : ${err}`);
-			console.log(err);
-			sentry.error(err);
-			exit(1);
-		});
+	startElectron();
 } else {
 	// This is in case we're running with yarn startNoElectron or with --cli or --help
 	preInit()
 		.then(() => main())
-		.catch(err => {
-			logger.error(`[Launcher] Error during launch : ${err}`);
-			console.log(err);
-			sentry.error(err);
-			exit(1);
-		});
+		.catch(err => initError(err));
 }
 
 export async function preInit() {

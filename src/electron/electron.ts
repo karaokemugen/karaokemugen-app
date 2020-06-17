@@ -10,7 +10,7 @@ import { main, preInit } from '../index';
 import { configureLocale, getConfig } from '../lib/utils/config';
 import { asyncReadFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
-import { on } from '../lib/utils/pubsub';
+import { emit,on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
 import { importSet } from '../services/blacklist';
 import { addDownloads,integrateDownloadBundle } from '../services/download';
@@ -33,7 +33,12 @@ export async function startElectron() {
 	setState({electron: app });
 	// This is called when Electron finished initializing
 	app.on('ready', async () => {
-		await preInit();
+		try {
+			await preInit();
+		} catch(err) {
+			// This is usually very much fatal.
+			emit('initError', err);
+		}
 		// Register km:// protocol for internal use only.
 		protocol.registerStringProtocol('km', req => {
 			const args = req.url.substr(5).split('/');
