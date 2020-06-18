@@ -237,6 +237,7 @@ export function backupConfig() {
 export function getPublicConfig(removeSystem = true) {
 	const publicSettings = cloneDeep(getConfig());
 	delete publicSettings.App.JwtSecret;
+	delete publicSettings.App.PasswordSalt;
 	delete publicSettings.Database;
 	if (removeSystem) delete publicSettings.System;
 	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = '*********';

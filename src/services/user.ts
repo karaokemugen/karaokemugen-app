@@ -1,3 +1,4 @@
+import {genSalt, hash} from 'bcryptjs';
 import {createHash} from 'crypto';
 import formData from 'form-data';
 import { createReadStream } from 'fs';
@@ -294,7 +295,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) await editRemoteUser(user);
 		// Modifying passwords is not allowed in demo mode
 		if (user.password && !getState().isDemo) {
-			user.password = hashPassword(user.password);
+			user.password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(user.login,user.password);
 		}
 		return user;
@@ -378,12 +379,28 @@ export function hashPassword(password: string): string {
 	return hash.digest('hex');
 }
 
+/** Hash passwords with bcrypt */
+export async function hashPasswordbcrypt(password: string): Promise<string> {
+	const hashedPassword = await hash(password, getConfig().App.PasswordSalt);
+	return hashedPassword;
+}
+
+
 /** Check if password matches or if user type is 2 (guest) and password in database is empty. */
 export async function checkPassword(user: User, password: string): Promise<boolean> {
-	const hashedPassword = hashPassword(password);
-	if (user.password === hashedPassword || (user.type === 2 && !user.password)) {
+	// First we test if password needs to be updated to new hash
+	const hashedPasswordSHA = hashPassword(password);
+	const hashedPasswordbcrypt = await hashPasswordbcrypt(password);
+
+	if (user.password === hashedPasswordSHA) {
+		// Needs update to bcrypt hashed password
+		await DBUpdateUserPassword(user.login, hashedPasswordbcrypt);
+		user.password = hashedPasswordbcrypt;
+	}
+
+	if (user.password === hashedPasswordbcrypt || (user.type === 2 && !user.password)) {
 		// If password was empty for a guest, we set it to the password given on login (which is its device fingerprint).
-		if (user.type === 2 && !user.password) await DBUpdateUserPassword(user.login, hashedPassword);
+		if (user.type === 2 && !user.password) await DBUpdateUserPassword(user.login, hashedPasswordbcrypt);
 		return true;
 	}
 	return false;
@@ -399,7 +416,7 @@ export async function findFingerprint(fingerprint: string): Promise<string> {
 	guest = await DBGetRandomGuest();
 	if (getState().isTest) logger.debug(JSON.stringify(guest));
 	if (!guest) return null;
-	await DBUpdateUserPassword(guest, hashPassword(fingerprint));
+	await DBUpdateUserPassword(guest, await hashPasswordbcrypt(fingerprint));
 	return guest;
 }
 
@@ -560,7 +577,7 @@ export async function createUser(user: User, opts: UserOpts = {
 		if (!+getConfig().Online.Users) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
 		if (opts.createRemote) await createRemoteUser(user);
 	}
-	if (user.password) user.password = hashPassword(user.password);
+	if (user.password) user.password = await hashPasswordbcrypt(user.password);
 	try {
 		await DBAddUser(user);
 		if (user.type < 2) logger.info(`[User] Created user ${user.login}`);
@@ -679,8 +696,11 @@ export async function initUserSystem() {
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
 	updateExpiredUsers();
 	setInterval(updateExpiredUsers, 60000);
-	// Check if a admin user exists just in case. If not create it with a random password.
 
+	// Generate password salt if it doesn't exist in config
+	if (!getConfig().App.PasswordSalt) setConfig({ App: {PasswordSalt: await genSalt(10)}});
+
+	// Check if a admin user exists just in case. If not create it with a random password.
 	if (!await findUserByName('admin')) {
 		await createUser({
 			login: 'admin',
