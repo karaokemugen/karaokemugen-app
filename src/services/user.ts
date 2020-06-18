@@ -1,4 +1,4 @@
-import {genSalt, hash} from 'bcryptjs';
+import {compare, genSalt, hash} from 'bcryptjs';
 import {createHash} from 'crypto';
 import formData from 'form-data';
 import { createReadStream } from 'fs';
@@ -380,9 +380,8 @@ export function hashPassword(password: string): string {
 }
 
 /** Hash passwords with bcrypt */
-export async function hashPasswordbcrypt(password: string): Promise<string> {
-	const hashedPassword = await hash(password, getConfig().App.PasswordSalt);
-	return hashedPassword;
+export function hashPasswordbcrypt(password: string): Promise<string> {
+	return hash(password, getConfig().App.PasswordSalt);
 }
 
 
@@ -398,7 +397,7 @@ export async function checkPassword(user: User, password: string): Promise<boole
 		user.password = hashedPasswordbcrypt;
 	}
 
-	if (user.password === hashedPasswordbcrypt || (user.type === 2 && !user.password)) {
+	if (await compare(password, user.password) || (user.type === 2 && !user.password)) {
 		// If password was empty for a guest, we set it to the password given on login (which is its device fingerprint).
 		if (user.type === 2 && !user.password) await DBUpdateUserPassword(user.login, hashedPasswordbcrypt);
 		return true;
