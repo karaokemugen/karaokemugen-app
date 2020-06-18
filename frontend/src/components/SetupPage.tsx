@@ -174,10 +174,10 @@ class SetupPage extends Component<IProps, IState> {
 		return (
 			<div id="setupPage">
 				{this.state.activeHelp === "security-code" ? (
-					<div className="help-modal">
+					<div className="help-modal" onClick={() => this.setState({ activeHelp: null })}>
 						<div className="help-modal-backdrop">
 							<div className="help-modal-wrapper">
-								<button className="help-modal-close" onClick={() => this.setState({ activeHelp: null })}>&times;</button>
+								<button className="help-modal-close">&times;</button>
 								<div className="help-modal-content">
 									<img src={guideSecurityGif} />
 								</div>
