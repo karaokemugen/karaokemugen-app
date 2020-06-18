@@ -544,6 +544,11 @@
   resolved "https://registry.yarnpkg.com/@tokenizer/token/-/token-0.1.1.tgz#f0d92c12f87079ddfd1b29f614758b9696bc29e3"
   integrity sha512-XO6INPbZCxdprl+9qa/AAbFFOMzzwqYxpjPgLICrMD6C2FCw6qfJOPcBk6JqqPLSaZ/Qx87qn4rpPmPMwaAK6w==
 
+"@types/bcryptjs@^2.4.2":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@types/bcryptjs/-/bcryptjs-2.4.2.tgz#e3530eac9dd136bfdfb0e43df2c4c5ce1f77dfae"
+  integrity sha512-LiMQ6EOPob/4yUL66SZzu6Yh77cbzJFYll+ZfaPiPPFswtIlA/Fs1MzdKYA7JApHU49zQTbJGX3PDmCpIdDBRQ==
+
 "@types/better-queue@^3.8.2":
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/@types/better-queue/-/better-queue-3.8.2.tgz#911a86863c1dd89a42308e03ee8d25ab7f6bafa7"
@@ -650,6 +655,13 @@
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/http-cache-semantics/-/http-cache-semantics-4.0.0.tgz#9140779736aa2655635ee756e2467d787cfe8a2a"
   integrity sha512-c3Xy026kOF7QOTn00hbIllV1dLR9hG9NkSrLQgCVs8NF6sBU+VGWjD3wLPhmh1TYAc7ugCFsvHYMN4VcBN1U1A==
+
+"@types/ip6addr@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@types/ip6addr/-/ip6addr-0.2.0.tgz#51d89902c98910b95455a17398a727ad6593904d"
+  integrity sha512-DXTacUIOHG+p4fRLhgNbPAjbcWkU5DGWS/HCAId/xlv1shJd+pF4gfJLbOlwejKHuu6R3nsEfmSNNUUyoEmhTw==
+  dependencies:
+    "@types/node" "*"
 
 "@types/ip@^1.1.0":
   version "1.1.0"
@@ -1279,6 +1291,11 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4=
   dependencies:
     tweetnacl "^0.14.3"
+
+bcryptjs@^2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/bcryptjs/-/bcryptjs-2.4.3.tgz#9ab5627b93e60621ff7cdac5da9733027df1d0cb"
+  integrity sha1-mrVie5PmBiH/fNrF2pczAn3x0Ms=
 
 better-assert@~1.0.0:
   version "1.0.2"
