@@ -295,6 +295,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) await editRemoteUser(user);
 		// Modifying passwords is not allowed in demo mode
 		if (user.password && !getState().isDemo) {
+			if (user.password.length < 8) throw 'PASSWORD_TOO_SHORT';
 			user.password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(user.login,user.password);
 		}
@@ -577,7 +578,10 @@ export async function createUser(user: User, opts: UserOpts = {
 		if (!+getConfig().Online.Users) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
 		if (opts.createRemote) await createRemoteUser(user);
 	}
-	if (user.password) user.password = await hashPasswordbcrypt(user.password);
+	if (user.password) {
+		if (user.password.length < 8) throw {code: 'PASSWORD_TOO_SHORT', data: user.password.length};
+		user.password = await hashPasswordbcrypt(user.password);
+	}
 	try {
 		await DBAddUser(user);
 		if (user.type < 2) logger.info(`[User] Created user ${user.login}`);
