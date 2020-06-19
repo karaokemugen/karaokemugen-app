@@ -257,7 +257,7 @@ class SetupPage extends Component<IProps, IState> {
 										<p>{i18next.t("SETUP_PAGE.LOCAL_ACCOUNT_DESC")}</p>
 										<div className="input-group">
 											<div className="input-control">
-												<label>{i18next.t("NICKNAME")}</label>
+												<label>{i18next.t("USERNAME")}</label>
 												<input
 													className="input-field"
 													type="text"
@@ -335,7 +335,7 @@ class SetupPage extends Component<IProps, IState> {
 												<div className="input-group">
 													<p className="text-danger">{i18next.t("SETUP_PAGE.CREATE_ONLINE_ACCOUNT_DESC")}</p>
 													<div className="input-control">
-														<label>{i18next.t("NICKNAME")}</label>
+														<label>{i18next.t("USERNAME")}</label>
 														<input
 															className="input-field"
 															type="text"
@@ -389,7 +389,7 @@ class SetupPage extends Component<IProps, IState> {
 											<div>
 												<div className="input-group">
 													<div className="input-control">
-														<label>{i18next.t("NICKNAME")}</label>
+														<label>{i18next.t("USERNAME")}</label>
 														<input
 															className="input-field"
 															type="text"

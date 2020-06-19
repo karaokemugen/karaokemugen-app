@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import ReactJoyride, { ACTIONS, EVENTS, STATUS, Step } from 'react-joyride';
 import LoginModal from './LoginModal';
 import store from '../../store';
+import { Token } from '../../../../src/lib/types/user';
 
 
 export function i18nAsDiv(key:string, args?:any) {
@@ -78,6 +79,11 @@ class Tutorial extends Component<IProps,IState> {
 					placement:'auto',
 					target:'#KaraokePrivate',
 					content: i18nAsDiv('INTRO_ADMIN_MODE'),
+				},
+				{
+					placement:'auto',
+					target: '.visibilitySwitch',
+					content: i18nAsDiv('INTRO_ADMIN_MYSTERY'),
 				},
 				{ 
 					placement:'auto',
@@ -330,15 +336,17 @@ class Tutorial extends Component<IProps,IState> {
     
     
 	componentDidMount() {
-		if(this.state.scope === 'admin') {
+		if(this.state.scope === 'admin' 
+		&& (!store.getLogInfos() 
+		|| !(store.getLogInfos() as Token).token 
+		|| (store.getLogInfos() as Token).role !== 'admin')
+		|| (store.getLogInfos() as Token).username === 'admin') {
 			ReactDOM.render(<LoginModal 
 				scope='admin'
 				role='admin'
 				activeView={2}
 			/>, document.getElementById('modal'));
 		}
-
-
 	}
     static propTypes = {
     	joyride: PropTypes.shape({
