@@ -238,6 +238,7 @@ export const initializationCatchphrases = [
 	'"A russian karaoke is fine too." ‒Shiki Tohno',
 	'"Let\'s save the world by overloading it with karaoke!" ‒Haruhi Suzumiya',
 	'"Let us begin, Rei. Release your voice, the barrier of your mind. Make our imperfect voices whole again. Discard this unnecessary physical microphone. Merge all voice into one. And then, take me to Yui\'s side." ‒Gendo Ikari',
+	'"It\'s time to k-k-k-k-k-k-k-k-k-k-kara!" ‒Yûgi Mutô',
 ];
 
 // Default headers for HTTP client
