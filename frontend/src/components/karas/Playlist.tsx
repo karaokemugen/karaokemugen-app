@@ -300,6 +300,9 @@ noRowsRenderer = () => {
 		if (idPlaylist === -2 || idPlaylist === -4) {
 			await this.loadBLSet(idBLSet);
 		}
+		if (this.props.scope === 'admin' && this.state.idPlaylist === -1 && this.props.searchMenuOpen) {
+			this.props.toggleSearchMenu && this.props.toggleSearchMenu();
+		}
 		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
 		this.setState({ idPlaylist: Number(idPlaylist), data: undefined }, this.getPlaylist);
 		this.props.majIdsPlaylist(this.props.side, idPlaylist);

@@ -473,7 +473,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 							<i className="fas fa-play-circle"></i>
 						</button> : null
   					}
-					{(this.props.idPlaylist !== -4 && !this.props.playlistInfo?.flag_current ?
+					{this.props.idPlaylist !== -4 && !this.props.playlistInfo?.flag_current ?
 						<button title={i18next.t('PLAYLIST_PUBLIC')} name="flag_public" onClick={this.setFlagPublic}
 							className={'btn ' + (this.props.playlistInfo?.flag_public ? 'btn-primary' : 'btn-default')} >
 							<i className="fas fa-globe"></i>
