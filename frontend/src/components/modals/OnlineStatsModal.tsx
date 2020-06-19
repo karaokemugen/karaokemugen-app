@@ -66,7 +66,7 @@ class OnlineStatsModal extends Component<{}, IState> {
 									<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
 								</div>
 								<RadioButton
-									title={i18next.t('ONLINE_STATS.STATS')}
+									title={i18next.t('ONLINE_STATS.TITLE')}
 									buttons={[
 										{
 											label: i18next.t('YES'),
