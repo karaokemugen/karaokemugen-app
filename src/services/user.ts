@@ -140,7 +140,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		// Checking if user has already been fetched during this session or not
 		if (!usersFetched.has(username)) {
 			usersFetched.add(username);
-			user = await editUser(
+			const response = await editUser(
 				username,
 				{
 					bio: remoteUser.bio,
@@ -156,6 +156,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				'admin',
 				{ editRemote: false	}
 			);
+			user = response.user;
 		}
 		user.onlineToken = onlineToken.token;
 		return user;
@@ -239,12 +240,13 @@ async function editRemoteUser(user: User) {
 	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
 	if (user.fallback_series_lang) form.append('fallback_series_lang', user.fallback_series_lang);
 	try {
-		await HTTP.put(`https://${instance}/api/users/${login}`, {
+		const res = await HTTP.put(`https://${instance}/api/users/${login}`, {
 			body: form,
 			headers: {
 				authorization: remoteToken.token || null
 			}
 		});
+		return res.body;
 	} catch(err) {
 		sentry.error(err);
 		throw `Remote update failed : ${err}`;
@@ -292,14 +294,18 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		}
 		await DBEditUser(user);
 		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);
-		if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) await editRemoteUser(user);
+		let KMServerResponse: any;
+		if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user);
 		// Modifying passwords is not allowed in demo mode
 		if (user.password && !getState().isDemo) {
 			if (user.password.length < 8) throw 'PASSWORD_TOO_SHORT';
 			user.password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(user.login,user.password);
 		}
-		return user;
+		return {
+			user,
+			onlineToken: KMServerResponse?.token
+		};
 	} catch (err) {
 		logger.error(`[User] Failed to update ${username}'s profile : ${err}`);
 		throw {
@@ -381,8 +387,8 @@ export function hashPassword(password: string): string {
 }
 
 /** Hash passwords with bcrypt */
-export function hashPasswordbcrypt(password: string): Promise<string> {
-	return hash(password, getConfig().App.PasswordSalt);
+export async function hashPasswordbcrypt(password: string): Promise<string> {
+	return hash(password, await genSalt(10));
 }
 
 
@@ -699,9 +705,6 @@ export async function initUserSystem() {
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
 	updateExpiredUsers();
 	setInterval(updateExpiredUsers, 60000);
-
-	// Generate password salt if it doesn't exist in config
-	if (!getConfig().App.PasswordSalt) setConfig({ App: {PasswordSalt: await genSalt(10)}});
 
 	// Check if a admin user exists just in case. If not create it with a random password.
 	if (!await findUserByName('admin')) {

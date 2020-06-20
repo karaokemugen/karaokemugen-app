@@ -5,8 +5,7 @@ export interface Config {
 		JwtSecret?: string,
 		InstanceID?: string,
 		FirstRun?: boolean,
-		QuickStart?: boolean,
-		PasswordSalt?: string
+		QuickStart?: boolean
 	},
 	Online: {
 		Host?: string,

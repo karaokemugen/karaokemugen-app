@@ -6,8 +6,6 @@ App:
   JwtSecret: Change me
   # Application quick start (like --noBaseCheck)
   QuickStart: false
-  # Password salt
-  PasswordSalt: Change me
   # Instace ID
   InstanceID: uuid here
 Online:

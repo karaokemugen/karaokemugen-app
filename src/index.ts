@@ -280,7 +280,6 @@ export async function main() {
 		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 		publicConfig.App.JwtSecret = 'xxxxx';
 		publicConfig.App.InstanceID = 'xxxxx';
-		publicConfig.App.PasswordSalt = 'xxxxx';
 		logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(publicConfig)}`);
 		logger.debug(`[Launcher] Initial state : ${JSON.stringify(state)}`);
 

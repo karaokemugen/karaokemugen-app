@@ -203,7 +203,14 @@ export default function userController(router: Router) {
 		})
 		.put(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
-				await editUser(req.body.login, req.body, req.body.avatar, req.authToken.role);
+				//If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
+				const user = req.params.username.includes('@')
+					? { type: req.body.type	}
+					: req.body;
+				const avatar = req.params.username.includes('@')
+					? null
+					: req.body.avatar;
+				await editUser(req.params.username, user, avatar, req.authToken.role, {editRemote: false});
 				res.status(200).json(APIMessage('USER_EDITED'));
 			} catch(err) {
 				const code = 'USER_EDIT_ERROR';
@@ -406,9 +413,9 @@ export default function userController(router: Router) {
 				const avatar: Express.Multer.File = req.file || null;
 				//Get username
 				try {
-					await editUser(req.authToken.username, req.body, avatar ,req.authToken.role);
+					const response = await editUser(req.authToken.username, req.body, avatar , req.authToken.role);
 					emitWS('userUpdated',req.authToken.username);
-					res.status(200).json(APIMessage('USER_EDITED'));
+					res.status(200).json(APIMessage('USER_EDITED', { onlineToken: response.onlineToken }));
 				} catch(err) {
 					const code = 'USER_EDIT_ERROR';
 					errMessage(code, err);
