@@ -6,7 +6,10 @@ App:
   JwtSecret: Change me
   # Application quick start (like --noBaseCheck)
   QuickStart: false
-
+  # Password salt
+  PasswordSalt: Change me
+  # Instace ID
+  InstanceID: uuid here
 Online:
   # Host for your KM Server
   Host: kara.moe
@@ -26,6 +29,9 @@ Online:
       Outros: true
       Encores: true
       Sponsors: true
+  # Use Discord's rich presence to display your activity on your profile
+  Discord:
+    DisplayActivity: true
 Frontend:
   # Minutes before users are considered signed out
   AuthExpireTime: 15
@@ -161,9 +167,13 @@ Player:
   ProgressBarDock: true
   # When playing mp3s, enable/disable visualization effects.
   VisualizationEffects: false
+  # Volume
+  Volume: 100
 Playlist:
   # Play random songs after a playlist has ended
   RandomSongsAfterEnd: false
+  # Should a message be displayed on screen inviting people to add songsd?
+  RandomSongsAfterEndMessage: true
   # Allow duplicates in current playlist
   AllowDuplicates: false
   # Allow duplicate series or singers in current playlist
