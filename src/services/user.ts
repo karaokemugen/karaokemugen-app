@@ -246,7 +246,7 @@ async function editRemoteUser(user: User) {
 				authorization: remoteToken.token || null
 			}
 		});
-		return res.body;
+		return JSON.parse(res.body);
 	} catch(err) {
 		sentry.error(err);
 		throw `Remote update failed : ${err}`;
