@@ -144,7 +144,8 @@
 		"LOG_IN": "Connexion",
 		"LOGIN_ERROR": "Entrez votre nom d'utilisateur svp",
 		"PASSWORD_ERROR": "Entrez votre mot de passe svp",
-		"LOGIN_MESSAGE": "Le compte doit être de type administrateur. Si vous avez un compte en ligne, entrez votre nom d'utilisateur complet (exemple: user@kara.moe) dans le champ 'Nom d'utilisateur'."
+		"LOGIN_MESSAGE": "Le compte doit être de type administrateur. Si vous avez un compte en ligne, entrez votre nom d'utilisateur complet (exemple: user@kara.moe) dans le champ 'Nom d'utilisateur'.",
+		"EDIT_ONLINE_ACCOUNT": "Les utilisateurs en ligne ne peuvent pas être édités depuis cette page hormis pour changer leur rôle sur cette instance de Karaoke Mugen. Pour éditer votre propre profil en ligne, faites cela depuis l'interface publique ou opérateur."
 	},
 	"DATABASE": {
 		"REGENERATE_DB": "Regénérer la base de données",

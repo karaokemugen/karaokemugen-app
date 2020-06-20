@@ -144,7 +144,8 @@
 		"LOG_IN": "Log in",
 		"LOGIN_ERROR": "Please input your username!",
 		"PASSWORD_ERROR": "Please input your password!",
-		"LOGIN_MESSAGE": "The account has to be admin. If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field"
+		"LOGIN_MESSAGE": "The account has to be admin. If you have an online account, remember to enter your full username (example: user@kara.moe) in the Username field",
+		"EDIT_ONLINE_ACCOUNT": "Online users cannot be edited from this page except to change their role on this instance of Karaoke Mugen. To edit your own profile online, do this from the public or operator interface."
 	},
 	"DATABASE": {
 		"REGENERATE_DB": "Regenerate your database",

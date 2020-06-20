@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Input, Select, Form } from 'antd';
+import { Button, Input, Select, Form, Alert } from 'antd';
 import i18next from 'i18next';
 import { FormInstance } from 'antd/lib/form';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -42,6 +42,10 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 					nickname: this.props.user.nickname, bio: this.props.user.bio, email: this.props.user.email,
 					url: this.props.user.url
 				}}>
+					{this.props.user.login && this.props.user.login.includes('@') ?
+						<Alert type="info" showIcon style={{marginBottom: '10px'}}
+						message={i18next.t('USERS.EDIT_ONLINE_ACCOUNT')}></Alert> : null
+					}
 				<Form.Item hasFeedback name="type" required={true}>
 					<Select onChange={(value) => this.setState({ type: parseInt(value.toString()) })}>
 						<Select.Option value='0'>{i18next.t('USERS.ADMIN')}</Select.Option>
