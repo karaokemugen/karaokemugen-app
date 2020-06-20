@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { Button, Input, Select, Form } from 'antd';
 import i18next from 'i18next';
 import { FormInstance } from 'antd/lib/form';
@@ -36,12 +36,14 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 
 	render() {
 		return (
-            <Form ref={this.formRef} onFinish={this.props.save} className='login-form'
-				initialValues={{type: `${this.props.user.type}`, login: this.props.user.login, 
-				nickname: this.props.user.nickname, bio: this.props.user.bio, email: this.props.user.email,
-				url: this.props.user.url}}>
+			<Form ref={this.formRef} onFinish={this.props.save} className='login-form'
+				initialValues={{
+					type: `${this.props.user.type}`, login: this.props.user.login,
+					nickname: this.props.user.nickname, bio: this.props.user.bio, email: this.props.user.email,
+					url: this.props.user.url
+				}}>
 				<Form.Item hasFeedback name="type" required={true}>
-					<Select onChange={(value) => this.setState({type: parseInt(value.toString())})}>
+					<Select onChange={(value) => this.setState({ type: parseInt(value.toString()) })}>
 						<Select.Option value='0'>{i18next.t('USERS.ADMIN')}</Select.Option>
 						<Select.Option value='1'>{i18next.t('USERS.USER')}</Select.Option>
 						<Select.Option value='2'>{i18next.t('USERS.GUEST')}</Select.Option>
@@ -49,13 +51,15 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 				</Form.Item>
 				<Form.Item hasFeedback name="login" required={true}>
 					<Input
+						disabled={this.props.user.login && this.props.user.login.includes('@')}
 						prefix={<UserOutlined />}
 						placeholder={i18next.t('USERS.LOGIN')}
 					/>
 				</Form.Item>
 				{this.state.type === 2 ? null :
-					<Form.Item hasFeedback name="password" rules={[{validator: this.passwordValidator}]}>
+					<Form.Item hasFeedback name="password" rules={[{ validator: this.passwordValidator }]}>
 						<Input
+							disabled={this.props.user.login && this.props.user.login.includes('@')}
 							prefix={<LockOutlined />}
 							type='password'
 							placeholder={i18next.t('USERS.PASSWORD')}
@@ -63,25 +67,31 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 					</Form.Item>
 				}
 				<Form.Item hasFeedback name="nickname" required={true}>
-					<Input placeholder={i18next.t('USERS.NICKNAME')} />
+					<Input
+						disabled={this.props.user.login && this.props.user.login.includes('@')}
+						placeholder={i18next.t('USERS.NICKNAME')} />
 				</Form.Item>
-				<Form.Item hasFeedback required={true}>
+				<Form.Item hasFeedback required={true} name="bio">
 					<Input.TextArea
+						disabled={this.props.user.login && this.props.user.login.includes('@')}
 						rows={3}
 						placeholder={i18next.t('USERS.BIO')}
 					/>
 				</Form.Item>
-				<Form.Item hasFeedback rules={[{type: 'email'}]}>
-					<Input placeholder={i18next.t('USERS.EMAIL')} />
+				<Form.Item hasFeedback rules={[{ type: 'email' }]} name="email">
+					<Input
+						disabled={this.props.user.login && this.props.user.login.includes('@')}
+						placeholder={i18next.t('USERS.EMAIL')} />
 				</Form.Item>
-				<Form.Item hasFeedback rules={[{type: 'url'}]}>
-					<Input placeholder={i18next.t('USERS.URL')}	/>
+				<Form.Item hasFeedback rules={[{ type: 'url' }]} name="url">
+					<Input disabled={this.props.user.login && this.props.user.login.includes('@')}
+						placeholder={i18next.t('USERS.URL')} />
 				</Form.Item>
 				<Form.Item>
 					<Button type='primary' htmlType='submit' className='login-form-button'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 			</Form>
-        );
+		);
 	}
 }
 
