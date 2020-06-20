@@ -98,7 +98,8 @@ class ProfilModal extends Component<IProps, IState> {
 			&& this.state.user.password === this.state.user.passwordConfirmation
 			|| !this.state.user.password)) {
 			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
-			await axios.put('/myaccount/', this.state.user);
+			let response = await axios.put('/myaccount/', this.state.user);
+			store.setLogInfos(response.data);
 			store.setUser();
 		} else if (!this.state.user.nickname) {
 			this.setState({ nicknameMandatory: 'form-control redBorders' });

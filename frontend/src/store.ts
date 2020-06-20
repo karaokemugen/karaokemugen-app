@@ -149,12 +149,14 @@ class Store extends EventEmitter {
 		localStorage.setItem('kmToken', data.token);
 		if (data.onlineToken) {
 			localStorage.setItem('kmOnlineToken', data.onlineToken);
+			logInfos.onlineToken = data.onlineToken;
 		} else if (!logInfos.username.includes('@')) {
+			logInfos.onlineToken = undefined;
 			localStorage.removeItem('kmOnlineToken');
 		}
 
-		logInfos.token = data.token;
-		logInfos.onlineToken = data.onlineToken;
+		if (data.token) logInfos.token = data.token;
+
 		axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
 		axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
 		store.emitChange('loginUpdated');
