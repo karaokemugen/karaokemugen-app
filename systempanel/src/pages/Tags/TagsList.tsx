@@ -40,8 +40,8 @@ class TagsList extends Component<{}, TagsListState> {
 
 	delete = async (tagsId) => {
 		try {
-			await getAxiosInstance().delete(`/tags/${tagsId}`)
 			this.setState({deleteModal: false, tag: undefined});
+			await getAxiosInstance().delete(`/tags/${tagsId}`)
 			this.refresh();
 		} catch(err) {
 			this.setState({deleteModal: false, tag: undefined});
