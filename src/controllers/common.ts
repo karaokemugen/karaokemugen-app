@@ -8,7 +8,8 @@ export function APIMessage(code: string, data?: any): APIMessageType {
 	};
 }
 
-export function errMessage(code: string, message?: string) {
+export function errMessage(code: string, message?: any) {
+	if (typeof message === 'object') message = JSON.stringify(message, null, 2);
 	logger.error(`[API] ${code} : ${message}`);
 }
 
