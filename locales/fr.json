@@ -20,7 +20,7 @@
 	"INIT_DONE": "Démarrage réussi !",
 	"INIT_ERROR": "L'initialisation a échoué !",
 	"ERROR_UNKNOWN": "Une erreur de type inconnue est survenue inopinément. Consultez le log pour plus de détails.",
-	"ERROR_MISSING_BINARIES": "Des executables nécessaires (mpv/psotgresql/ffmpeg) sont introuvables.",
+	"ERROR_MISSING_BINARIES": "Des exécutables nécessaires (mpv/postgresql/ffmpeg) sont introuvables.",
 	"ERROR_INIT_PG_DATA": "Erreur d'initialisation de la base de données",
 	"ERROR_START_PG": "Erreur de démarrage de la base de données",
 	"ERROR_CONNECT_PG": "Erreur de connexion à la base de données",

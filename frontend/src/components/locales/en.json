@@ -291,9 +291,9 @@
 		"INTERFACE": {
 			"LABEL": "Interface",
 			"WEBAPPMODE": "Public interface mode",
-			"WEBAPPMODE_CLOSED": "Closed",
-			"WEBAPPMODE_LIMITED": "Song information and playlists only",
-			"WEBAPPMODE_OPEN": "Opened (default)",
+			"WEBAPPMODE_CLOSED": "Closed: \"Sorry, we're closed\" message",
+			"WEBAPPMODE_LIMITED": "Restricted: Read-only",
+			"WEBAPPMODE_OPEN": "Opened (default): Users can add songs",
 			"ALLOW_VIEW_BLACKLIST": "Allow users to view blacklist",
 			"ALLOW_VIEW_BLACKLIST_CRITERIAS": "Allow users to view blacklist criterias",
 			"ALLOW_VIEW_WHITELIST": "Allow users to view whitelist",
