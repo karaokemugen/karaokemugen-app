@@ -1939,7 +1939,7 @@ detect-node@^2.0.4:
   resolved "https://registry.yarnpkg.com/detect-node/-/detect-node-2.0.4.tgz#014ee8f8f669c5c58023da64b8179c083a28c46c"
   integrity sha512-ZIzRpLJrOj7jjP2miAtgqIfmzbxa4ZOr5jJc601zklsfEx9oTzmmj2nVpIPRpNlRTIh8lc1kyViIY7BWSGNmKw==
 
-"diagnostics@github:DABH/diagnostics#master":
+diagnostics@DABH/diagnostics#master:
   version "2.0.2"
   resolved "https://codeload.github.com/DABH/diagnostics/tar.gz/1533851826eac88679124d41f87e45e1b196be56"
   dependencies:

@@ -4,6 +4,7 @@ import KaraForm from './KaraForm';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { DBKara } from '../../../../src/lib/types/database/kara';
 import { getAxiosInstance } from '../../axiosInterceptor';
+import { removeListener, addListener } from '../../utils/electron';
 
 interface KaraEditState {
 	kara: DBKara,
@@ -23,16 +24,19 @@ class KaraEdit extends Component<RouteComponentProps<{kid:string}>, KaraEditStat
 	}
 
 	saveNew = async (kara) => {
-		await getAxiosInstance().post('/karas', kara)
+		await getAxiosInstance().post('/karas', kara);
+		addListener();
 		this.props.history.push('/system/km/karas');
 	};
 
 	saveUpdate = async (kara) => {
-			await getAxiosInstance().put(`/karas/${kara.kid}`, kara)
+			await getAxiosInstance().put(`/karas/${kara.kid}`, kara);
+			addListener();
 			this.props.history.push('/system/km/karas');
 	};
 
 	loadKara = async () => {
+		removeListener();
 		if (this.props.match.params.kid) {
 			let res = await getAxiosInstance().get(`/karas/${this.props.match.params.kid}`)
 			this.setState({kara: res.data, save: this.saveUpdate, loadKara: true});

@@ -24,24 +24,34 @@ export function parseJwt(token:string) {
 };
 
 if (isElectron()) {
+	addListener();
+}
 
-	document.addEventListener('drop', (event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		const token = localStorage.getItem('kmToken');
-		const username = token
-			? parseJwt(token).username
-			: 'admin'
-		const { ipcRenderer } = window.require("electron");
-		ipcRenderer.send('droppedFiles', {
-			username: username,
-			files: Array.from(event.dataTransfer.files).map(file  => (file as any).path)
-		});
-	});
+export function addListener() {
+	document.addEventListener('drop', drop);
+	document.addEventListener('dragover', dragOver);
+}
 
-	// Maybe make something appear over the screen when a file is dragged, like a big "Import this" message or something
-	document.addEventListener('dragover', (e) => {
-		e.preventDefault();
-		e.stopPropagation();
+export function removeListener() {
+	document.removeEventListener('drop', drop);
+	document.removeEventListener('dragover', dragOver);
+}
+
+export function drop(event) {
+	event.preventDefault();
+	event.stopPropagation();
+	const token = localStorage.getItem('kmToken');
+	const username = token
+		? parseJwt(token).username
+		: 'admin'
+	const { ipcRenderer } = window.require("electron");
+	ipcRenderer.send('droppedFiles', {
+		username: username,
+		files: Array.from(event.dataTransfer.files).map(file  => (file as any).path)
 	});
+}
+
+export function dragOver(e) {
+	e.preventDefault();
+	e.stopPropagation();
 }
