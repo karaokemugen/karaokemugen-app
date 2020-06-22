@@ -60,7 +60,7 @@
 		grid-area: aside;
 
 		nav {
-			margin-bottom: 2em;
+			margin-bottom: 1em;
 			ul {
 				padding: 0;
 				margin: 0;
@@ -74,6 +74,7 @@
 					padding: 5px;
 					border: 1.5px solid #BBBCBC;
 					a {
+						display: flex;
 						text-decoration: none;
 						i {
 							margin-right: 0.5em;
