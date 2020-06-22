@@ -19,6 +19,7 @@ interface IState {
 	refreshTime: number;
 	status?: string;
 	karaInfoText: string | JSX.Element;
+	karaTitle?: string;
 	length: number;
 	width: string;
 }
@@ -116,16 +117,17 @@ class ProgressBar extends Component<IProps,IState> {
 			} else if (store.getLogInfos()) {
 				let response = await axios.get('/karas/' + data.currentlyPlaying);
 				let kara = response.data;
-				let karaInfoText;
-				if (this.props.lyrics || (this.props.scope === 'public' && this.props.webappMode == 1)) {
-					let text = data.subText;
-					if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
-					karaInfoText = text;
-				} else {
-					karaInfoText = buildKaraTitle(kara, true);
-				}
-				this.setState({karaInfoText: karaInfoText, length: kara.duration});
+				let karaInfoText = buildKaraTitle(kara, true);
+				this.setState({karaTitle: karaInfoText as string, length: kara.duration});
 			}
+		}
+
+		if (this.props.lyrics || (this.props.scope === 'public' && this.props.webappMode == 1)) {
+			let text = data.subText;
+			if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
+			this.setState({karaInfoText: text});
+		} else {
+			this.setState({karaInfoText: this.state.karaTitle as string});
 		}
 
 		this.setState({oldState: data});
