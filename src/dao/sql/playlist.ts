@@ -294,7 +294,13 @@ SELECT
   (CASE WHEN bl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_blacklisted,
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
   (CASE WHEN up.fk_login = :username THEN TRUE ELSE FALSE END) as flag_upvoted,
-  SUM(plc_before_karas.duration) - ak.duration AS time_before_play,
+  (SELECT
+	SUM(k.duration)
+   FROM kara k
+   LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing
+   LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND (pc.pos - 1)
+   WHERE k.pk_kid = plc_before.fk_kid
+  ) AS time_before_play,
   pc.flag_visible AS flag_visible,
   ak.repository as repository
 FROM playlist_content AS pc
@@ -307,9 +313,6 @@ LEFT OUTER JOIN requested rq ON rq.fk_kid = ak.kid
 LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
 LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
 LEFT OUTER JOIN favorites AS f on ak.kid = f.fk_kid AND f.fk_login = :username
-LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.fk_id_playlist = pc.fk_id_playlist AND plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing
-LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc.fk_id_playlist AND plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND pc.pos
-LEFT OUTER JOIN kara AS plc_before_karas ON plc_before_karas.pk_kid = plc_before.fk_kid
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
 GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid, u.avatar_file, ak.repository
