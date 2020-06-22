@@ -44,7 +44,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   	this.setState({ config: config });
   };
 
-  saveMysterySongsLabels = async (labels:Array<string>) => {
+  saveMysterySongsLabels = (labels:Array<string>) => {
   	const data = expand('Playlist.MysterySongs.Labels', labels);
   	axios.put('/settings', { setting: JSON.stringify(data) });
   };
@@ -60,7 +60,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   	}
   	config[e.target.id] = value;
   	this.setState({ config: config });
-  	if (e.target.type != 'number' || (Number(e.target.value))) this.props.onChange(e);
+  	if (e.target.type !== 'number' || (Number(e.target.value))) this.props.onChange(e);
   };
 
   render() {

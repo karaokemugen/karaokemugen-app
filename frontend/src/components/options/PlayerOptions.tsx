@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
-import i18next from 'i18next';
-import Switch from '../generic/Switch';
 import axios from 'axios';
-import { dotify } from '../tools';
+import i18next from 'i18next';
+import React, { Component } from 'react';
+
 import { Config } from '../../../../src/types/config';
+import Switch from '../generic/Switch';
+import { dotify } from '../tools';
 
 interface IProps {
 	config: Config;
@@ -29,10 +30,10 @@ class PlayerOptions extends Component<IProps, IState> {
   };
 
   putPlayerCommando = (e:any) => {
-  	let config = this.state.config;
-  	const value = e.target.type === 'checkbox' ? e.target.checked : 
+  	const config = this.state.config;
+  	const value = e.target.type === 'checkbox' ? e.target.checked :
   		(Number(e.target.value) ? Number(e.target.value) : e.target.value);
-	config[e.target.id] = value;
+  	config[e.target.id] = value;
   	this.setState({ config: config });
   	axios.put('/player', {
   		command: e.target.getAttribute('data-namecommand')
@@ -41,8 +42,8 @@ class PlayerOptions extends Component<IProps, IState> {
   };
 
   onChange = (e:any) => {
-  	let config = this.state.config;
-  	let value = e.target.type === 'checkbox' ? e.target.checked : 
+  	const config = this.state.config;
+  	let value = e.target.type === 'checkbox' ? e.target.checked :
   		((Number(e.target.value) && !e.target.value.includes('.')) ? Number(e.target.value) : e.target.value);
   	if (value === 'true') {
   		value = true;
@@ -51,7 +52,7 @@ class PlayerOptions extends Component<IProps, IState> {
   	}
   	config[e.target.id] = value;
   	this.setState({ config: config });
-  	if (e.target.type != 'number' || (Number(e.target.value))) this.props.onChange(e);
+  	if (e.target.type !== 'number' || (Number(e.target.value))) this.props.onChange(e);
   };
 
   render() {
@@ -225,60 +226,60 @@ class PlayerOptions extends Component<IProps, IState> {
   					</div>
   				</div> : null}
 
-				<div className="form-group">
-					<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYNICKNAME_TOOLTIP')}>
-						{i18next.t('ENGINEDISPLAYNICKNAME')}
+  			<div className="form-group">
+  				<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYNICKNAME_TOOLTIP')}>
+  					{i18next.t('ENGINEDISPLAYNICKNAME')}
 			&nbsp;
-						<i className="far fa-question-circle"></i>
-					</label>
-					<div className="col-xs-6">
-						<Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
-							isChecked={this.state.config['Karaoke.Display.Nickname']} />
-					</div>
-				</div>
+  					<i className="far fa-question-circle"></i>
+  				</label>
+  				<div className="col-xs-6">
+  					<Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
+  						isChecked={this.state.config['Karaoke.Display.Nickname']} />
+  				</div>
+  			</div>
 
-				<div className="form-group">
-					<label className="col-xs-4 control-label">
-						{i18next.t('ENGINEDISPLAYAVATAR')}
-					</label>
-					<div className="col-xs-6">
-						<Switch idInput="Karaoke.Display.Avatar" handleChange={this.onChange}
-							isChecked={this.state.config['Karaoke.Display.Avatar']} />
-					</div>
-				</div>
+  			<div className="form-group">
+  				<label className="col-xs-4 control-label">
+  					{i18next.t('ENGINEDISPLAYAVATAR')}
+  				</label>
+  				<div className="col-xs-6">
+  					<Switch idInput="Karaoke.Display.Avatar" handleChange={this.onChange}
+  						isChecked={this.state.config['Karaoke.Display.Avatar']} />
+  				</div>
+  			</div>
 
-				<div className="form-group">
-					<label className="col-xs-4 control-label" title={i18next.t('PLAYERMONITOR_TOOLTIP')}>
-						{i18next.t('PLAYERMONITOR')}
+  			<div className="form-group">
+  				<label className="col-xs-4 control-label" title={i18next.t('PLAYERMONITOR_TOOLTIP')}>
+  					{i18next.t('PLAYERMONITOR')}
 			&nbsp;
-						<i className="far fa-question-circle"></i>
-					</label>
-					<div className="col-xs-6">
-						<Switch idInput="Player.Monitor" handleChange={this.onChange}
-							isChecked={this.state.config['Player.Monitor']} />
-					</div>
-				</div>
+  					<i className="far fa-question-circle"></i>
+  				</label>
+  				<div className="col-xs-6">
+  					<Switch idInput="Player.Monitor" handleChange={this.onChange}
+  						isChecked={this.state.config['Player.Monitor']} />
+  				</div>
+  			</div>
 
-				<div className="form-group">
-					<label className="col-xs-4 control-label">
-						{i18next.t('SETTINGS.PLAYER.PROGRESS_BAR_DOCK')}
-					</label>
-					<div className="col-xs-6">
-						<Switch idInput="Player.ProgressBarDock" handleChange={this.onChange}
-							isChecked={this.state.config['Player.ProgressBarDock']} />
-					</div>
-				</div>
-				<div className="form-group">
-					<label className="col-xs-4 control-label" title={i18next.t('PLAYERVISUALIZATIONEFFECTS_TOOLTIP')}>
-						{i18next.t('PLAYERVISUALIZATIONEFFECTS')}
+  			<div className="form-group">
+  				<label className="col-xs-4 control-label">
+  					{i18next.t('SETTINGS.PLAYER.PROGRESS_BAR_DOCK')}
+  				</label>
+  				<div className="col-xs-6">
+  					<Switch idInput="Player.ProgressBarDock" handleChange={this.onChange}
+  						isChecked={this.state.config['Player.ProgressBarDock']} />
+  				</div>
+  			</div>
+  			<div className="form-group">
+  				<label className="col-xs-4 control-label" title={i18next.t('PLAYERVISUALIZATIONEFFECTS_TOOLTIP')}>
+  					{i18next.t('PLAYERVISUALIZATIONEFFECTS')}
 			&nbsp;
-						<i className="far fa-question-circle"></i>
-					</label>
-					<div className="col-xs-6">
-						<Switch idInput="Player.VisualizationEffects" handleChange={this.onChange}
-							isChecked={this.state.config['Player.VisualizationEffects']} />
-					</div>
-				</div>
+  					<i className="far fa-question-circle"></i>
+  				</label>
+  				<div className="col-xs-6">
+  					<Switch idInput="Player.VisualizationEffects" handleChange={this.onChange}
+  						isChecked={this.state.config['Player.VisualizationEffects']} />
+  				</div>
+  			</div>
   		</React.Fragment>
   	);
   }
