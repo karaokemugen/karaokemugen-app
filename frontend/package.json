@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@cospired/i18n-iso-languages": "^2.1.2",
+    "@sentry/browser": "^5.17.0",
     "autoprefixer": "^9.8.2",
     "axios": "^0.19.2",
     "fingerprintjs2": "^2.1.0",
