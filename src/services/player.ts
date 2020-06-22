@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import {promisify} from 'util';
 
 import {displayInfo,displaySongInfo, goTo, hideSubs, initAddASongMessage, initPlayerSystem, message, mute, pause, play, playMedia, quitmpv as quit, restartmpv, resume, seek, setFullscreen, setVolume, showSubs, stop, stopAddASongMessage,toggleOnTop, unmute} from '../components/mpv';
@@ -455,10 +456,12 @@ export async function playerNeedsRestart() {
 	if (state.status === 'stop' && !state.playerNeedsRestart && !state.isDemo && !state.isTest) {
 		setState({ playerNeedsRestart: true });
 		logger.info('[Player] Player will restart in 5 seconds');
+		message(i18next.t('RESTARTING_PLAYER'), 5000);
 		await sleep(5000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
 	} else {
+		logger.debug('[Player] Setting mpv to restart after next song');
 		setState({ playerNeedsRestart: true });
 	}
 }

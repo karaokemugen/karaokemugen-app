@@ -167,6 +167,10 @@ Player:
   VisualizationEffects: false
   # Volume
   Volume: 100
+  # Hardware decoding. See mpv manual for more info
+  HardwareDecoding: auto-safe
+  # Extra mpv commandline arguments example
+  ExtraCommandLine: --tone-mapping=reinhard
 Playlist:
   # Play random songs after a playlist has ended
   RandomSongsAfterEnd: false

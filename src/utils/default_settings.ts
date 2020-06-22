@@ -150,6 +150,7 @@ export const defaults: Config = {
 		Background: '',
 		FullScreen: false,
 		Monitor: false,
+		ExtraCommandLine: '',
 		mpvVideoOutput: '',
 		NoBar: true,
 		NoHud: true,
@@ -163,6 +164,7 @@ export const defaults: Config = {
 			Size: 30,
 		},
 		ProgressBarDock: true,
+		HardwareDecoding: 'auto-safe',
 		Volume: 100
 	},
 	Playlist: {

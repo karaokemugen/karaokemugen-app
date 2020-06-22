@@ -260,7 +260,14 @@
 		},
 		"PLAYER": {
 			"LABEL": "Lecteur",
-			"PROGRESS_BAR_DOCK": "Barre de progression de la lecture dans le Dock/Barre des tâches"
+			"PROGRESS_BAR_DOCK": "Barre de progression de la lecture dans le Dock/Barre des tâches",
+			"HARDWARE_DECODING": "Décodage matériel des vidéos",
+			"HARDWARE_DECODING_TOOLTIP": "Force ou non le décodage matériel du lecteur vidéo. Attention: sur certaines configurations, il se peut que cela pose des problèmes de lecture vidéo. En cas de soucis, passez l'option à \"Désactivé\". Le réglage \"Automatique\" est le plus sûr et \"Forcer\" pas du tout recommandé.",
+			"HARDWARE_DECODING_OPTIONS": {
+				"AUTOSAFE": "Automatique (recommandé)",
+				"NO": "Désactivé (décodage logiciel uniquement)",
+				"FORCE": "Forcer le décodage matériel (EXPERIMENTAL)"
+			}
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",

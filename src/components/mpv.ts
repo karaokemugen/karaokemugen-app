@@ -166,6 +166,7 @@ async function startmpv() {
 			'--osd-level=0',
 			'--sub-codepage=UTF-8-BROKEN',
 			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
+			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+playerState.volume}`,
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 			'--autoload-files=no'
@@ -220,6 +221,10 @@ async function startmpv() {
 
 		if (state.os === 'darwin' && semver.gte(mpvVersion, '0.27.0')) mpvOptions.push('--no-native-fs');
 
+		// Testing if string exists or is not empty
+		if (conf.Player.ExtraCommandLine?.length > 0) {
+			conf.Player.ExtraCommandLine.split(' ').forEach(e => mpvOptions.push(e));
+		}
 		logger.debug(`[Player] mpv options : ${mpvOptions}`);
 		logger.debug(`[Player] mpv binary : ${state.binPath.mpv}`);
 
@@ -254,11 +259,17 @@ async function startmpv() {
 				'--sub-codepage=UTF-8-BROKEN',
 				'--ontop',
 				'--no-osc',
+				'--hwdec=auto-safe',
 				'--no-osd-bar',
 				'--geometry=1%:99%',
+				`--hwdec=${conf.Player.HardwareDecoding}`,
 				`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`,
 				'--autoload-files=no'
 			];
+			// Testing if string exists or is not empty
+			if (conf.Player.ExtraCommandLine?.length > 0) {
+				conf.Player.ExtraCommandLine.split(' ').forEach(e => mpvOptions.push(e));
+			}
 			if (conf.Player.mpvVideoOutput) {
 				mpvOptions.push(`--vo=${conf.Player.mpvVideoOutput}`);
 			} else {

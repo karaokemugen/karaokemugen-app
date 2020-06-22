@@ -248,7 +248,14 @@
 		},
 		"PLAYER": {
 			"LABEL": "Player",
-			"PROGRESS_BAR_DOCK": "Play progress bar in Dock / Taskbar"
+			"PROGRESS_BAR_DOCK": "Play progress bar in Dock / Taskbar",
+			"HARDWARE_DECODING": "Video Hardware Decoding",
+			"HARDWARE_DECODING_TOOLTIP": "Forces or not the player's hardware acceleration. Note: on some configurations, it can cause unexpected behavior during playback. In such cases, select \"Disabled\". The \"Automatic\" option is the safest, and \"Force\" the most risky/not recommended",
+			"HARDWARE_DECODING_OPTIONS": {
+				"AUTOSAFE": "Automatic (recommended)",
+				"NO": "Disabled (software decoding only)",
+				"FORCE": "Force hardware acceleration (EXPERIMENTAL)"
+			}
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoke",

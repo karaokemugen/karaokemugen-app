@@ -112,10 +112,12 @@ export interface Config {
 		PIP: {
 			Enabled?: boolean,
 			Size?: number,
-			PositionX?: PositionX,
-			PositionY?: PositionY
+			PositionX?: 'Left' | 'Right' | 'Center',
+			PositionY?: 'Top' | 'Bottom' | 'Center'
 		},
 		ProgressBarDock?: boolean,
+		ExtraCommandLine?: string,
+		HardwareDecoding?: 'auto-safe' | 'no' | 'yes'
 		Volume?: number
 	},
 	Playlist: {
@@ -214,6 +216,3 @@ export interface Config {
 		}
 	}
 }
-
-export type PositionX = 'Left' | 'Right' | 'Center';
-export type PositionY = 'Top' | 'Bottom' | 'Center';
