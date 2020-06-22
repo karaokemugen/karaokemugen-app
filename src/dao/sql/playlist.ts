@@ -230,7 +230,7 @@ WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos,pc.created_at DESC;
 `;
 
-export const sqlgetPLCInfo = (forUser: string) => `
+export const sqlgetPLCInfo = (forUser: boolean) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,

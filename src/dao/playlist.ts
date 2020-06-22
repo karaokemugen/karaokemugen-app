@@ -166,7 +166,7 @@ export async function getPlaylistPos(id: number): Promise<DBPLPos[]> {
 }
 
 export async function getPLCInfo(id: number, forUser: boolean, username: string): Promise<DBPLCInfo> {
-	const query = sqlgetPLCInfo(`${forUser}`);
+	const query = sqlgetPLCInfo(forUser);
 	const res = await db().query(yesql(query)(
 		{
 			playlistcontent_id: id,
