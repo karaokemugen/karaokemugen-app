@@ -58,11 +58,12 @@ export async function editSetting(part: any) {
 /** Merge and act according to config changes */
 export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Determine if mpv needs to be restarted
-	if (!isEqual(oldConfig.Player, newConfig.Player)) {
+	const state = getState();
+	if (!isEqual(oldConfig.Player, newConfig.Player) && state.isDemo) {
 		//If these two settings haven't been changed, it means another one has, so we're restarting mpv
 		if (oldConfig.Player.FullScreen === newConfig.Player.FullScreen && oldConfig.Player.StayOnTop === newConfig.Player.StayOnTop) playerNeedsRestart();
 	}
-	if (newConfig.Online.URL && getState().ready) publishURL();
+	if (newConfig.Online.URL && state.ready && !state.isDemo) publishURL();
 	// Updating quotas
 	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
 		const users = await listUsers();
@@ -70,9 +71,8 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			updateSongsLeft(user.login, getState().modePlaylistID);
 		}
 	}
-	const state = getState();
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
-	if (newConfig.Karaoke.ClassicMode && getState().status === 'stop') prepareClassicPauseScreen();
+	if (newConfig.Karaoke.ClassicMode && state.status === 'stop') prepareClassicPauseScreen();
 	// Browse through paths and define if it's relative or absolute
 	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Player.Windows));
 	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Player.Linux));
@@ -111,29 +111,29 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch
 	try {
-		config.Karaoke.StreamerMode.Twitch.Enabled
+		config.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo
 			? initTwitch()
 			: stopTwitch();
 	} catch(err) {
 		logger.warn(`[Config] Could not start/stop Twitch chat bot : ${err}`);
 	}
 	// Toggling random song after end message
-	config.Playlist.RandomSongsAfterEndMessage
+	config.Playlist.RandomSongsAfterEndMessage && !state.isDemo
 		? initAddASongMessage()
 		: stopAddASongMessage();
 	// Toggling Discord RPC
-	config.Online.Discord.DisplayActivity
+	config.Online.Discord.DisplayActivity && !state.isDemo
 		? initDiscordRPC()
 		: stopDiscordRPC();
 	// Toggling stats
-	config.Online.Stats
+	config.Online.Stats && !state.isDemo
 		? initStats(newConfig.Online.Stats === oldConfig.Online.Stats)
 		: stopStats();
 	// Toggling and updating settings
 	setState({private: config.Karaoke.Private});
 	// Toggling progressbar off if needs be
-	if (config.Player.ProgressBarDock) setProgressBar(-1);
-	configureHost();
+	if (config.Player.ProgressBarDock && !state.isDemo) setProgressBar(-1);
+	if (!state.isDemo) configureHost();
 }
 
 /** Initializing configuration */
