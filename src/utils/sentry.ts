@@ -17,8 +17,8 @@ class ElectronSentryLogger extends SentryLogger {
 
     init(electron?: any) {
     	this.Sentry = electron ? SentryElectron:SentryNode;
-    	if (process.env.CI_SERVER) {
-    		console.log('CI detected - Sentry disabled');
+    	if (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') {
+    		console.log('CI detected/SENTRY_TEST enabled - Sentry disabled');
     		console.log('Have a nice day, sentries won\'t fire at you~');
     		return;
     	}
