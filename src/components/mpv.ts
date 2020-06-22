@@ -45,12 +45,13 @@ const playerState: PlayerState = {
 	duration: 0,
 	mute: false,
 	'sub-text': null,
-	currentSongInfos: null,
+	currentSong: null,
 	mediaType: 'background',
 	showsubs: true,
 	stayontop: false,
 	fullscreen: false,
-	url: null
+	url: null,
+	firstLaunch: true
 };
 
 function emitPlayerState() {
@@ -62,7 +63,8 @@ async function ensureRunning() {
 		if (!player?.isRunning()) {
 			if (monitorEnabled && !playerMonitor?.isRunning()) await playerMonitor.quit();
 			await startmpv();
-		}
+			return 1;
+		} else {return 0;}
 	} catch(err) {
 		sentry.error(err);
 		throw err;
@@ -137,6 +139,7 @@ export async function initPlayerSystem() {
 	playerState.volume = getConfig().Player.Volume;
 	try {
 		await startmpv();
+		playerState.firstLaunch = false;
 		emitPlayerState();
 		logger.debug('[Player] Player is READY');
 	} catch(err) {
@@ -247,7 +250,7 @@ async function startmpv() {
 				socket: socket,
 				time_update: 1,
 				verbose: false,
-				debug: false,
+				debug: state.opt?.debug,
 			},
 			mpvOptions
 		);
@@ -259,10 +262,9 @@ async function startmpv() {
 				'--sub-codepage=UTF-8-BROKEN',
 				'--ontop',
 				'--no-osc',
-				'--hwdec=auto-safe',
+				`--hwdec=${conf.Player.HardwareDecoding}`,
 				'--no-osd-bar',
 				'--geometry=1%:99%',
-				`--hwdec=${conf.Player.HardwareDecoding}`,
 				`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`,
 				'--autoload-files=no'
 			];
@@ -304,13 +306,15 @@ async function startmpv() {
 			throw err;
 		}
 
-		await loadBackground();
+		if (playerState.firstLaunch)
+			await loadBackground();
 		logger.debug('[Player] Initial DI');
 		displayInfo();
 		player.observeProperty('sub-text');
 		player.observeProperty('playtime-remaining');
 		player.observeProperty('eof-reached');
 		player.on('status', (status: mpvStatus) => {
+			 if (status.property !== 'playtime-remaining') logger.debug(`[Player] mpv status: ${JSON.stringify(status)}`);
 			// If we're displaying an image, it means it's the pause inbetween songs
 			playerState[status.property] = status.value;
 			if (playerState._playing && playerState.mediaType !== 'background' &&
@@ -360,7 +364,7 @@ async function startmpv() {
 			if (position >= (playerState.duration - 8) &&
 				!displayingInfo &&
 				playerState.mediaType === 'song')
-				displaySongInfo(playerState.currentSongInfos);
+				displaySongInfo(playerState.currentSong.infos);
 			// Display KM's banner if position reaches halfpoint in the song
 			if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
 			!displayingInfo &&
@@ -376,6 +380,13 @@ async function startmpv() {
 				songNearEnd = true;
 				endPoll();
 			}
+		});
+		player.on('quit', () => {
+			logger.debug('[Player] mpv closed');
+			playerState.playerstatus = 'pause';
+			playerState.playing = false;
+			playerState._playing = false;
+			emitPlayerState();
 		});
 		logger.debug('[Player] mpv initialized successfully');
 		return true;
@@ -477,7 +488,7 @@ export async function play(mediadata: MediaData) {
 		}
 		// Displaying infos about current song on screen.
 		displaySongInfo(mediadata.infos, 8000, false, mediadata.spoiler);
-		playerState.currentSongInfos = mediadata.infos;
+		playerState.currentSong = mediadata;
 		playerState._playing = true;
 		emitPlayerState();
 		songNearEnd = false;
@@ -571,7 +582,7 @@ export async function stop(): Promise<PlayerState> {
 	await loadBackground();
 	logger.debug('[Player] Stop DI');
 	if (!getState().songPoll) displayInfo();
-	setState({player: playerState});
+	emitPlayerState();
 	setProgressBar(-1);
 	setDiscordActivity('idle');
 	return playerState;
@@ -586,7 +597,7 @@ export async function pause(): Promise<PlayerState> {
 		player.pause();
 		if (monitorEnabled) playerMonitor.pause();
 		playerState.status = 'pause';
-		setState({player: playerState});
+		emitPlayerState();
 		return playerState;
 	} catch(err) {
 		logger.error(`[Player] Unable to pause : ${JSON.stringify(err, null, 2)}`);
@@ -597,16 +608,20 @@ export async function pause(): Promise<PlayerState> {
 
 export async function resume(): Promise<PlayerState> {
 	logger.debug('[Player] Resume event triggered');
-	await ensureRunning().catch(err => {
+	const restarted = await ensureRunning().catch(err => {
 		throw err;
 	});
 	try {
-		await player.play();
-		if (monitorEnabled) playerMonitor.play();
-		playerState.playing = true;
-		playerState._playing = true;
-		playerState.playerstatus = 'play';
-		setState({player: playerState});
+		if (restarted) {
+			await play(playerState.currentSong);
+		} else {
+			await player.play();
+			if (monitorEnabled) playerMonitor.play();
+			playerState.playing = true;
+			playerState._playing = true;
+			playerState.playerstatus = 'play';
+		}
+		emitPlayerState();
 		return playerState;
 	} catch(err) {
 		logger.error(`[Player] Unable to resume : ${JSON.stringify(err, null, 2)}`);
@@ -676,7 +691,7 @@ export async function setVolume(volume: number): Promise<PlayerState> {
 	try {
 		playerState.volume = volume;
 		await player.volume(volume);
-		setState({player: playerState});
+		emitPlayerState();
 		return playerState;
 	} catch(err) {
 		logger.error(`[Player] Unable to set volume : ${JSON.stringify(err, null, 2)}`);
@@ -693,7 +708,7 @@ export async function hideSubs(): Promise<PlayerState> {
 		await player.hideSubtitles();
 		if (monitorEnabled) await playerMonitor.hideSubtitles();
 		playerState.showsubs = false;
-		setState({player: playerState});
+		emitPlayerState();
 		return playerState;
 	} catch(err) {
 		logger.error(`[Player] Unable to hide subs : ${JSON.stringify(err, null, 2)}`);
@@ -710,7 +725,7 @@ export async function showSubs(): Promise<PlayerState> {
 		await player.showSubtitles();
 		if (monitorEnabled) await playerMonitor.showSubtitles();
 		playerState.showsubs = true;
-		setState({player: playerState});
+		emitPlayerState();
 		return playerState;
 	} catch(err) {
 		logger.error(`[Player] Unable to show subs : ${JSON.stringify(err, null, 2)}`);

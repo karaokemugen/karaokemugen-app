@@ -9,13 +9,14 @@ export interface PlayerState {
 	duration?: number,
 	mute?: boolean,
 	'sub-text'?: string,
-	currentSongInfos?: string,
+	currentSong?: MediaData,
 	mediaType?: 'song' | 'background' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros',
 	showsubs?: boolean,
 	stayontop?: boolean,
 	fullscreen?: boolean,
 	url?: string,
-	status?: string
+	status?: string,
+	firstLaunch?: boolean
 }
 
 export interface mpvStatus {
