@@ -11,6 +11,7 @@ import { configureLocale, getConfig } from '../lib/utils/config';
 import { asyncReadFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { emit,on } from '../lib/utils/pubsub';
+import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
 import { importSet } from '../services/blacklist';
 import { addDownloads,integrateDownloadBundle } from '../services/download';
@@ -161,6 +162,10 @@ export async function handleFile(file: string, username?: string) {
 			}
 		}
 		const rawData = await asyncReadFile(resolve(file), 'utf-8');
+		if (!testJSON(rawData)) {
+			logger.debug(`[FileHandler] File ${file} is not JSON, ignoring`);
+			return;
+		}
 		const data = JSON.parse(rawData);
 		const KMFileType = detectKMFileTypes(data);
 		const url = `http://localhost:${getConfig().Frontend.Port}/admin`;
