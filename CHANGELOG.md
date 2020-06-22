@@ -43,9 +43,13 @@ You can find more info in issue #675
 - A details button is available to display song details in the download window (#632)
 - Switched database migration tool from db-migrate to postgrator, allowing us to trigger specific tasks when a user updates Karaoke Mugen to the latest version. For example the fact that series are now tags will tell you the app needs to update your songs and ask you if you want that to happen or not (#627)
 - All system panel messages are now translated in French (and English of course) (#621)
+- Hardware acceleration is now enabled by dafault in auto-safe mode to allow hardware decoding of videos in the most standard cases. You can disable it in case it doesn't work right for you or force it enabled for all videos (not recommended) (#703)
+- A new option setting allows you to add extra arguments to mpv's command line, for advanced users only (#703)
 
 ### Improvements
 
+- Passwords are now stored in a more secure way (salted bcrypt instead of SHA256) (#701).
+  - As an improvement to account security, changing your password from KM Server or another KM App instance will automatically log you out of other instances, as KM Server now stores the last time your password has been modified.
 - User role is now checked when making requests to the API, so that users who lost their admin status can't keep it forever (#588)
 - Migrated system panel from antd framework v3 to v4, resulting in better visuals and cleaner code (#610 #593)
 - Total repositories size is now displayed in the download page (#626)
