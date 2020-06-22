@@ -266,7 +266,10 @@ async function startmpv() {
 				'--no-osd-bar',
 				'--geometry=1%:99%',
 				`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`,
-				'--autoload-files=no'
+				'--autoload-files=no',
+				'--mute=yes',
+				'--reset-on-next-file=mute',
+				'--ao=null'
 			];
 			// Testing if string exists or is not empty
 			if (conf.Player.ExtraCommandLine?.length > 0) {
@@ -314,7 +317,8 @@ async function startmpv() {
 		player.observeProperty('playtime-remaining');
 		player.observeProperty('eof-reached');
 		player.on('status', (status: mpvStatus) => {
-			 if (status.property !== 'playtime-remaining') logger.debug(`[Player] mpv status: ${JSON.stringify(status)}`);
+			 if (status.property !== 'playtime-remaining' && status.property !== 'sub-text')
+			 	logger.debug(`[Player] mpv status: ${JSON.stringify(status)}`);
 			// If we're displaying an image, it means it's the pause inbetween songs
 			playerState[status.property] = status.value;
 			if (playerState._playing && playerState.mediaType !== 'background' &&
@@ -475,7 +479,6 @@ export async function play(mediadata: MediaData) {
 		await player.play();
 		if (monitorEnabled) {
 			playerMonitor.play();
-			playerMonitor.mute();
 		}
 		playerState.playerstatus = 'play';
 		if (subFile) try {
