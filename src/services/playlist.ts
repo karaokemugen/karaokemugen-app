@@ -145,8 +145,8 @@ export async function findPublicPlaylist(): Promise<number> {
 }
 
 /** Set a PLC flag_playing to enabled */
-async function setPlaying(plc_id: number, playlist_id: number) {
-	if (plc_id) await setPlayingFlag(plc_id, playlist_id);
+export async function setPlaying(plc_id: number, playlist_id: number) {
+	await setPlayingFlag(plc_id, playlist_id);
 	emitWS('playingUpdated',{
 		playlist_id: playlist_id,
 		plc_id: plc_id,
@@ -1070,7 +1070,7 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 	if (playlist.content.length === 0) throw 'Playlist is empty!';
 	if (playlist.index + 1 >= playlist.content.length && !conf.Karaoke.Repeat) {
 		logger.debug('[PLC] End of playlist.');
-		if (setPlayingSong) await setPlaying(null, playlist.id);
+		if (setPlayingSong) await setPlaying(0, playlist.id);
 		throw 'Current position is last song!';
 	} else {
 		// If we're here, it means either we're beyond the length of the playlist

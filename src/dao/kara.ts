@@ -167,7 +167,6 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<number> {
 			kara.created_at,
 			kara.pos,
 			false,
-			false,
 			kara.flag_visible
 		]));
 		await transaction({params: karas, sql: sqladdKaraToPlaylist});

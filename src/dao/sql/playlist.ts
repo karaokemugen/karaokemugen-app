@@ -94,8 +94,8 @@ UPDATE playlist SET time_left = (
 		AND playlist_content.fk_id_playlist = $1
 		AND playlist_content.pos >= (
 			SELECT COALESCE(pos,0)
-			FROM playlist_content
-			WHERE flag_playing = TRUE AND playlist_content.fk_id_playlist = $1
+			FROM playlist_content, playlist
+			WHERE playlist_content.pk_id_plcontent = playlist.fk_id_plcontent_playing AND playlist_content.fk_id_playlist = 1
 			)
 	),
 	duration = (
@@ -111,13 +111,17 @@ export const sqlgetPlaylistContentsKaraIDs = `
 SELECT pc.fk_kid AS kid,
 	pc.fk_login AS login,
 	pc.pk_id_plcontent AS playlistcontent_id,
-	pc.flag_playing AS flag_playing,
+	(CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
+		THEN TRUE
+		ELSE FALSE
+	  END) AS flag_playing,
 	pc.pos AS pos,
 	pc.fk_id_playlist AS playlist_id,
 	ak.series AS series,
 	ak.singers AS singer
-FROM playlist_content AS pc
-INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid
+FROM playlist_content pc
+INNER JOIN all_karas ak ON pc.fk_kid = ak.kid
+LEFT OUTER JOIN playlist pl ON pl.pk_id_playlist = pc.fk_id_playlist
 WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos, pc.created_at DESC
 `;
@@ -162,7 +166,10 @@ SELECT
   u.avatar_file AS avatar_file,
   pc.pos AS pos,
   pc.pk_id_plcontent AS playlistcontent_id,
-  pc.flag_playing AS flag_playing,
+  (CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
+	THEN TRUE
+	ELSE FALSE
+  END) AS flag_playing,
   (CASE WHEN wl.fk_kid = ak.kid
 	THEN TRUE
 	ELSE FALSE
@@ -185,10 +192,11 @@ LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 LEFT OUTER JOIN favorites f ON f.fk_kid = ak.kid AND f.fk_login = :username
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
 LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
+LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 WHERE pc.fk_id_playlist = :playlist_id
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${whereClause}
-GROUP BY ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres, ak.platforms, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres, ak.platforms, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid, u.avatar_file, ak.repository
 ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}
@@ -209,7 +217,10 @@ SELECT ak.kid AS kid,
 	ak.mediafile AS mediafile,
 	ak.subfile AS subfile,
 	pc.pos AS pos,
-	pc.flag_playing AS flag_playing,
+	(CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
+		THEN TRUE
+		ELSE FALSE
+	END) AS flag_playing,
 	pc.pk_id_plcontent AS playlistcontent_id,
 	pc.fk_login AS username,
 	pc.flag_free AS flag_free,
@@ -218,6 +229,7 @@ SELECT ak.kid AS kid,
 	ak.repository as repository
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
+LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos;
 `;
@@ -272,7 +284,10 @@ SELECT
   pc.pos AS pos,
   pc.pk_id_plcontent AS playlistcontent_id,
   pc.fk_id_playlist as playlist_id,
-  pc.flag_playing AS flag_playing,
+  (CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
+	THEN TRUE
+	ELSE FALSE
+  END) AS flag_playing,
   COUNT(up.fk_id_plcontent)::integer AS upvotes,
   pc.flag_free AS flag_free,
   (CASE WHEN wl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_whitelisted,
@@ -283,7 +298,7 @@ SELECT
   pc.flag_visible AS flag_visible,
   ak.repository as repository
 FROM playlist_content AS pc
-INNER JOIN  playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
+INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
 LEFT OUTER JOIN played p ON ak.kid = p.fk_kid
@@ -292,12 +307,12 @@ LEFT OUTER JOIN requested rq ON rq.fk_kid = ak.kid
 LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
 LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
 LEFT OUTER JOIN favorites AS f on ak.kid = f.fk_kid AND f.fk_login = :username
-LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.fk_id_playlist = pc.fk_id_playlist AND plc_current_playing.flag_playing = TRUE
+LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.fk_id_playlist = pc.fk_id_playlist AND plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing
 LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc.fk_id_playlist AND plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND pc.pos
 LEFT OUTER JOIN kara AS plc_before_karas ON plc_before_karas.pk_kid = plc_before.fk_kid
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid, u.avatar_file, ak.repository
 `;
 
 export const sqlgetPLCInfoMini = `
@@ -310,21 +325,29 @@ SELECT pc.fk_kid AS kid,
 	pc.fk_id_playlist AS playlist_id,
 	COUNT(up.fk_login)::integer AS upvotes,
 	pc.flag_visible AS flag_visible,
-	pc.flag_playing AS flag_playing
+	(CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
+		THEN TRUE
+		ELSE FALSE
+	END) AS flag_playing
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
+INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 WHERE  pc.pk_id_plcontent = $1
-GROUP BY pc.fk_kid, ak.title, ak.series, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist
+GROUP BY pl.fk_id_plcontent_playing, pc.fk_kid, ak.title, ak.series, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist
 `;
 
 
 export const sqlgetPLCByKIDUser = `
 SELECT
 	pc.pos AS pos,
-	pc.flag_playing AS flag_playing,
+	(CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
+		THEN TRUE
+		ELSE FALSE
+	END) AS flag_playing,
 	pc.pk_id_plcontent AS playlistcontent_id
 FROM playlist_content pc
+INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 WHERE pc.fk_id_playlist = :playlist_id
 	AND pc.fk_kid = :kid
 	AND pc.fk_login = :username;
@@ -341,6 +364,7 @@ SELECT p.pk_id_playlist AS playlist_id,
 	p.flag_visible AS flag_visible,
 	p.flag_current AS flag_current,
 	p.flag_public AS flag_public,
+	p.fk_id_plcontent_playing AS plcontent_id_playing,
 	p.fk_login AS username
 FROM playlist AS p
 WHERE pk_id_playlist = $1
@@ -357,6 +381,7 @@ SELECT p.pk_id_playlist AS playlist_id,
 	p.flag_visible AS flag_visible,
 	p.flag_current AS flag_current,
 	p.flag_public AS flag_public,
+	p.fk_id_plcontent_playing AS plcontent_id_playing,
 	p.fk_login AS username
 FROM playlist AS p
 `;
@@ -447,15 +472,10 @@ WHERE pk_id_playlist = $1;
 `;
 
 export const sqlsetPlaying = `
-UPDATE playlist_content
-SET flag_playing = TRUE
-WHERE pk_id_plcontent = $1;
-`;
-
-export const sqlunsetPlaying = `
-UPDATE playlist_content
-SET flag_playing = FALSE
-WHERE pk_id_plcontent != $1 AND fk_id_playlist = $2;
+UPDATE playlist
+SET fk_id_plcontent_playing = $1
+FROM playlist_content
+WHERE pk_id_playlist = $2;
 `;
 
 export const sqlcountPlaylistUsers = `

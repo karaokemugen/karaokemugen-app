@@ -8,7 +8,6 @@ INSERT INTO playlist_content(
 	fk_kid,
 	created_at,
 	pos,
-	flag_playing,
 	flag_free,
 	flag_visible
 ) VALUES(
@@ -19,8 +18,7 @@ INSERT INTO playlist_content(
 	$5,
 	$6,
 	$7,
-	$8,
-	$9
+	$8
 ) RETURNING pk_id_plcontent
 `;
 

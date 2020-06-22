@@ -7,7 +7,7 @@ import {now} from '../lib/utils/date';
 import { DBPL,DBPLC, DBPLCInfo, DBPLCKID, DBPLPos } from '../types/database/playlist';
 import {Playlist, PLC, PLCParams} from '../types/playlist';
 import {getState} from '../utils/state';
-import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByDate, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetCurrentPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlsetPublicPlaylist, sqlsetVisiblePlaylist, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlunsetCurrentPlaylist, sqlunsetPlaying, sqlunsetPublicPlaylist, sqlunsetVisiblePlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
+import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByDate, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetCurrentPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlsetPublicPlaylist, sqlsetVisiblePlaylist, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlunsetCurrentPlaylist, sqlunsetPublicPlaylist, sqlunsetVisiblePlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
 
 
 export function editPlaylist(pl: Playlist) {
@@ -243,8 +243,7 @@ export function unsetPublicPlaylist() {
 }
 
 export async function setPlaying(plc_id: number, playlist_id: number) {
-	await db().query(sqlsetPlaying, [plc_id]);
-	await db().query(sqlunsetPlaying, [plc_id, playlist_id]);
+	await db().query(sqlsetPlaying, [plc_id, playlist_id]);
 }
 
 export async function countPlaylistUsers(playlist_id: number): Promise<number> {

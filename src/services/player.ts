@@ -9,7 +9,7 @@ import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {addPlayedKara, getKara, getKaras,getSeriesSingers} from './kara';
-import {getCurrentSong, getPlaylistInfo,nextSong, previousSong} from './playlist';
+import {setPlaying, getCurrentSong, getPlaylistInfo,nextSong, previousSong} from './playlist';
 import {startPoll} from './poll';
 import {updateUserQuotas} from './user';
 
@@ -232,6 +232,7 @@ export async function playerEnding() {
 		// Outros code, we're at the end of a playlist.
 		// Outros are played after the very last song.
 		if (state.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background') {
+			setPlaying(0, pl.playlist_id);
 			if (conf.Playlist.Medias.Outros.Enabled) {
 				try {
 					await playMedia('Outros');

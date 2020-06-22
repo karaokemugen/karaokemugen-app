@@ -16,7 +16,7 @@ export default function playlistsController(router: Router) {
  * @api {get} /playlists Get list of playlists
  * @apiName GetPlaylists
  * @apiGroup Playlists
- * @apiVersion 3.1.0
+ * @apiVersion 4.0.0
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  *
@@ -113,7 +113,7 @@ export default function playlistsController(router: Router) {
  * @apiName GetPlaylist
  * @apiGroup Playlists
  * @apiPermission public
- * @apiVersion 3.1.0
+ * @apiVersion 4.0.0
  *
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
@@ -125,6 +125,7 @@ export default function playlistsController(router: Router) {
  * @apiSuccess {Number} data/modified_at Playlist last edit date in `Date()` format
  * @apiSuccess {String} data/name Name of playlist
  * @apiSuccess {Number} data/karacount Number of karaoke songs in the playlist
+ * @apiSuccess {Number} data/plcontent_id_playing ID of PLC currently labelled as playing in the playlist
  * @apiSuccess {Number} data/playlist_id Database's playlist ID
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
@@ -140,6 +141,7 @@ export default function playlistsController(router: Router) {
  *       "name": "Liste de lecture courante",
  *       "karacount": 6,
  *       "playlist_id": 1,
+ *       "plcontent_id_playing": 6292
  *       "time_left": 0
  * }
  * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
@@ -559,7 +561,6 @@ export default function playlistsController(router: Router) {
 	 * @apiSuccess {Number} created_at Karaoke added to playlist, in `Date()` format
 	 * @apiSuccess {Number} kara_modified_at In `Date()` format
 	 * @apiSuccess {Boolean} flag_blacklisted Is the song in the blacklist ?
-	 * @apiSuccess {Boolean} flag_playing Is the song the one currently playing ?
 	 * @apiSuccess {Boolean} flag_whitelisted Is the song in the whitelist ?
 	 * @apiSuccess {Boolean} flag_free Wether the song has been marked as free or not
 	 * @apiSuccess {Number} playlist_id ID of playlist this song belongs to
