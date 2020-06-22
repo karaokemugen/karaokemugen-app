@@ -180,7 +180,6 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<number> {
 			kara.created_at,
 			kara.pos,
 			false,
-			false,
 			kara.flag_visible
 		]);
 		return res.rows[0].pk_id_plcontent;
