@@ -632,15 +632,6 @@ class KaraokeOptions extends Component<IProps, IState> {
 
   				<div className="form-group">
   					<label className="col-xs-4 control-label">
-  						{i18next.t('CHECK_APP_UPDATES')}
-  					</label>
-  					<div className="col-xs-6">
-  						<Switch idInput="Online.Updates.App" handleChange={this.onChange}
-  							isChecked={this.state.config['Online.Updates.App']} />
-  					</div>
-  				</div>
-  				<div className="form-group">
-  					<label className="col-xs-4 control-label">
   						{i18next.t('SETTINGS.KARAOKE.AUTO_UPDATE_JINGLES')}
   					</label>
   					<div className="col-xs-6">

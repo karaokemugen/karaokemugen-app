@@ -253,6 +253,14 @@ export function initMenu() {
 						setConfig({ GUI: {OpenInElectron: !isOpenElectron()}});
 					}
 				},
+				!isMac && !getState().forceDisableAppUpdate ? {
+					label: i18next.t('MENU_OPTIONS_CHECKFORUPDATES'),
+					type: 'checkbox',
+					checked: getConfig().Online.Updates.App,
+					click() {
+						setConfig({ Online: {Updates: { App: !getConfig().Online.Updates.App}}});
+					}
+				} : null,
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG'),
 					accelerator: 'CmdOrCtrl+F',
