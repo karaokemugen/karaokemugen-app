@@ -442,7 +442,7 @@ async function exec(cmd: string, args?: any[], mpv: boolean = false, onlyOn?: Pl
 		await Promise.all(loads);
 	} catch (err) {
 		logger.error(`[Player] mpvAPI (send): ${JSON.stringify(err)}`);
-		throw err;
+		throw new Error(JSON.stringify(err));
 	}
 }
 
@@ -561,8 +561,7 @@ export async function play(mediaData: MediaData): Promise<PlayerState> {
 			options.push(fillVisualizationOptions(mediaData, (mediaData.avatar && conf.Karaoke.Display.Avatar)));
 		} else if (mediaData.avatar && conf.Karaoke.Display.Avatar) {
 			const subOptions = [
-				'lavfi-complex=',
-				`nullsrc=size=1x1:duration=${mediaData.duration}[emp]`,
+				`lavfi-complex=nullsrc=size=1x1:duration=${mediaData.duration}[emp]`,
 				'[vid1]scale=-2:1080[vidInp]',
 				'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
 				`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo]`,
