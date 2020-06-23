@@ -54,7 +54,7 @@ export function getPlayerState(): PublicState {
 		fullscreen: state.player.fullscreen,
 		mute: state.player.mute,
 		onTop: state.ontop,
-		playerStatus: state.player.playerstatus,
+		playerStatus: state.player.playerStatus,
 		playing: state.player.playing,
 		private: state.private,
 		showSubs: state.player.showsubs,
