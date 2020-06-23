@@ -59,9 +59,12 @@ export async function editSetting(part: any) {
 export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Determine if mpv needs to be restarted
 	const state = getState();
-	if (!isEqual(oldConfig.Player, newConfig.Player) && state.isDemo) {
+	if (!isEqual(oldConfig.Player, newConfig.Player) && !state.isDemo) {
 		//If these two settings haven't been changed, it means another one has, so we're restarting mpv
-		if (oldConfig.Player.FullScreen === newConfig.Player.FullScreen && oldConfig.Player.StayOnTop === newConfig.Player.StayOnTop) playerNeedsRestart();
+		if (oldConfig.Player.FullScreen === newConfig.Player.FullScreen &&
+			oldConfig.Player.StayOnTop === newConfig.Player.StayOnTop &&
+			oldConfig.Player.Volume === newConfig.Player.Volume
+		) playerNeedsRestart();
 	}
 	if (newConfig.Online.URL && state.ready && !state.isDemo) publishURL();
 	// Updating quotas
