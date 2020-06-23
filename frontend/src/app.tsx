@@ -11,11 +11,12 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import store from './store';
 import { Config } from '../../src/types/config';
-import { KaraTag } from '../../src/lib/types/kara'; 
+import { KaraTag } from '../../src/lib/types/kara';
 import { DBYear } from '../../src/lib/types/database/kara';
-import { Tag }  from '../../src/lib/types/tag'; 
-import { Tag as FrontendTag }  from './types/tag';
+import { Tag } from '../../src/lib/types/tag';
+import { Tag as FrontendTag } from './types/tag';
 import SetupPage from './components/SetupPage';
+import * as Sentry from '@sentry/browser';
 
 require('./axiosInterceptor');
 
@@ -29,10 +30,10 @@ interface IState {
 	displaySetupPage: boolean;
 	os?: string;
 	dataPath?: string
-  }
+}
 
 class App extends Component<{}, IState> {
-	constructor(props:{}) {
+	constructor(props: {}) {
 		super(props);
 		this.state = {
 			admpwd: window.location.search.indexOf('admpwd') !== -1 ? window.location.search.split('=')[1] : undefined,
@@ -55,16 +56,16 @@ class App extends Component<{}, IState> {
 
 	async parseTags() {
 		const response = await axios.get('/tags');
-		return response.data.content.filter((val:Tag) => val.karacount !== null)
-			.map((val:{i18n:{[key: string]: string}, tid:string, name:string, types:Array<number|string>, karacount:string}) => {
-			let trad = val.i18n![store.getNavigatorLanguage() as string];
-			return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
-		});
+		return response.data.content.filter((val: Tag) => val.karacount !== null)
+			.map((val: { i18n: { [key: string]: string }, tid: string, name: string, types: Array<number | string>, karacount: string }) => {
+				let trad = val.i18n![store.getNavigatorLanguage() as string];
+				return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
+			});
 	}
 
 	async parseYears() {
 		const response = await axios.get('/years');
-		return response.data.content.map((val:DBYear) => {
+		return response.data.content.map((val: DBYear) => {
 			return { value: val.year, label: val.year, type: ['year'], karacount: val.karacount };
 		});
 	}
@@ -81,7 +82,7 @@ class App extends Component<{}, IState> {
 		await this.getSettings();
 		getSocket().on('settingsUpdated', this.getSettings);
 		getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
-		getSocket().on('disconnect', (reason:any) => {
+		getSocket().on('disconnect', (reason: any) => {
 			if (reason === 'transport error') {
 				this.setState({ shutdownPopup: true })
 			}
@@ -93,91 +94,120 @@ class App extends Component<{}, IState> {
 		store.addChangeListener('loginUpdated', this.addTags);
 	}
 
-    addTags = async () => {
-    	if (this.state.config && this.state.config.Frontend.Mode !== 0 && axios.defaults.headers.common['authorization']) {
-    		const [tags, years] = await Promise.all([this.parseTags(), this.parseYears()]);
-    		this.setState({ tags: tags.concat(years) });
-    	}
-    }
+	addTags = async () => {
+		if (this.state.config && this.state.config.Frontend.Mode !== 0 && axios.defaults.headers.common['authorization']) {
+			const [tags, years] = await Promise.all([this.parseTags(), this.parseYears()]);
+			this.setState({ tags: tags.concat(years) });
+		}
+	}
 
-    componentWillUnmount() {
-    	store.removeChangeListener('loginUpdated', this.addTags);
-    }
+	componentWillUnmount() {
+		store.removeChangeListener('loginUpdated', this.addTags);
+	}
 
-    getSettings = async () => {
-    	const res = await axios.get('/settings');
+	getSettings = async () => {
+		const res = await axios.get('/settings');
 		store.setConfig(res.data.config);
 		store.setVersion(res.data.version);
 		store.setModePlaylistID(res.data.state.modePlaylistID);
 		store.setDefaultLocaleApp(res.data.state.defaultLocale);
-		this.setState({ config: res.data.config, electron: res.data.state.electron, os: res.data.state.os,
+		this.setState({
+			config: res.data.config, electron: res.data.state.electron, os: res.data.state.os,
 			dataPath: res.data.state.dataPath,
-			displaySetupPage:  res.data.config.App.FirstRun && store.getLogInfos()?.username === 'admin' });
-    };
+			displaySetupPage: res.data.config.App.FirstRun && store.getLogInfos()?.username === 'admin'
+		});
+		this.setSentry(res.data.state.environment);
+	};
 
-    powerOff = () => {
-    	axios.post('/shutdown');
-    	this.setState({ shutdownPopup: true });
-    };
+	setSentry = (environment: string) => {
+		if (store.getConfig().Online?.ErrorTracking) {
+			Sentry.init({
+				dsn: "https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806",
+				environment: environment || 'release',
+				release: store.getVersion().number
+			});
+			Sentry.configureScope((scope) => {
+				let userConfig = store.getUser();
+				if (userConfig?.email) {
+					scope.setUser({
+						username: userConfig.login,
+						email: userConfig.email
+					});
+				} else {
+					scope.setUser({
+						username: userConfig?.login
+					});
+				}
+			});
+			if (store.getVersion().sha) Sentry.configureScope((scope) => {
+				scope.setTag('commit', store.getVersion().sha as string);
+			});
+		}
+	}
 
-    showVideo = (file:string) => {
-		this.setState({mediaFile: file});
+	powerOff = () => {
+		axios.post('/shutdown');
+		this.setState({ shutdownPopup: true });
+	};
+
+	showVideo = (file: string) => {
+		this.setState({ mediaFile: file });
 		document.addEventListener('keyup', this.closeVideo);
 	};
-	
-	closeVideo = (e:KeyboardEvent) => {
-		if(e.key == 'Escape') {
-			this.setState({mediaFile: undefined});
+
+	closeVideo = (e: KeyboardEvent) => {
+		if (e.key == 'Escape') {
+			this.setState({ mediaFile: undefined });
 			document.removeEventListener('keyup', this.closeVideo);
 		}
 	};
 
-    render() {
-    	return (
-    		this.state.shutdownPopup ?
-    			<div className="shutdown-popup">
-    				<div className="noise-wrapper" style={{ opacity: 1 }}>
-    					<div className="noise"></div>'
+	render() {
+		return (
+			this.state.shutdownPopup ?
+				<div className="shutdown-popup">
+					<div className="noise-wrapper" style={{ opacity: 1 }}>
+						<div className="noise"></div>'
 				    </div>
-    				<div className="shutdown-popup-text">{i18n.t('SHUTDOWN_POPUP')}<br />{'·´¯`(>_<)´¯`·'}</div>
-    				<button title={i18n.t('TOOLTIP_CLOSEPARENT')} className="closeParent btn btn-action"
-    					onClick={() => this.setState({ shutdownPopup: false })}>
-    					<i className="fas fa-times"></i>
-    				</button>
-    			</div> :
-    			this.state.config ?
-    				<div className={is_touch_device() ? 'touch' : ''}>
-    					<Switch>
-							<Route path="/welcome" render={(props) => 
-							this.state.displaySetupPage ? 
-								<SetupPage {...props} instance={(this.state.config as Config).Online.Host as string} os={this.state.os as string}
-									electron={this.state.electron} repository={(this.state.config as Config).System.Repositories[0]}
-									dataPath={this.state.dataPath as string} endSetup={() => this.setState({displaySetupPage: false})}/> :
-								<WelcomePage {...props}
-									config={this.state.config as Config} />
+					<div className="shutdown-popup-text">{i18n.t('SHUTDOWN_POPUP')}<br />{'·´¯`(>_<)´¯`·'}</div>
+					<button title={i18n.t('TOOLTIP_CLOSEPARENT')} className="closeParent btn btn-action"
+						onClick={() => this.setState({ shutdownPopup: false })}>
+						<i className="fas fa-times"></i>
+					</button>
+				</div> :
+				this.state.config ?
+					<div className={is_touch_device() ? 'touch' : ''}>
+						<Switch>
+							<Route path="/welcome" render={(props) =>
+								this.state.displaySetupPage ?
+									<SetupPage {...props} instance={(this.state.config as Config).Online.Host as string} os={this.state.os as string}
+										electron={this.state.electron} repository={(this.state.config as Config).System.Repositories[0]}
+										dataPath={this.state.dataPath as string} endSetup={() => this.setState({ displaySetupPage: false })} /> :
+									<WelcomePage {...props}
+										config={this.state.config as Config} />
 							} />
-    						<Route path="/admin" render={(props) => <AdminPage {...props}
-    							powerOff={this.state.electron ? undefined : this.powerOff} tags={this.state.tags as FrontendTag[]}
-    							showVideo={this.showVideo} config={this.state.config as Config} 
+							<Route path="/admin" render={(props) => <AdminPage {...props}
+								powerOff={this.state.electron ? undefined : this.powerOff} tags={this.state.tags as FrontendTag[]}
+								showVideo={this.showVideo} config={this.state.config as Config}
 								getSettings={this.getSettings} />} />
-    						<Route exact path="/" render={(props) => <PublicPage {...props}
+							<Route exact path="/" render={(props) => <PublicPage {...props}
 								tags={this.state.tags as FrontendTag[]} showVideo={this.showVideo}
 								config={this.state.config as Config} />} />
-    						<Route component={NotFoundPage} />
-    					</Switch>
+							<Route component={NotFoundPage} />
+						</Switch>
 						<a id="downloadAnchorElem" />
-    					{this.state.mediaFile ?
-    						<div className="overlay" onClick={() => {
-								this.setState({mediaFile: undefined});
+						{this.state.mediaFile ?
+							<div className="overlay" onClick={() => {
+								this.setState({ mediaFile: undefined });
 								document.removeEventListener('keyup', this.closeVideo);
 							}}>
-    							<video id="video" autoPlay src={`/medias/${encodeURIComponent(this.state.mediaFile)}`} />
-    						</div> : null
-    					}
-    					<ToastContainer />
-    				</div> : null
-    	);
-    }
+								<video id="video" autoPlay src={`/medias/${encodeURIComponent(this.state.mediaFile)}`} />
+							</div> : null
+						}
+						<ToastContainer />
+					</div> : null
+		);
+	}
 }
 
 export default App;

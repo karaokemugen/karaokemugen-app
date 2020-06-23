@@ -3,8 +3,8 @@ import axios from 'axios';
 import { parseJwt} from './components/tools';
 import { Token, User } from '../../src/lib/types/user';
 import { Config } from '../../src/types/config';
-import { Version } from './types/version';
 import languages from "@cospired/i18n-iso-languages";
+import { Version } from '../../src/types/state';
 
 let filterValue1:string = '';
 let filterValue2:string = '';

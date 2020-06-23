@@ -1,6 +1,13 @@
 import { PlayerState } from './player';
 import { CurrentSong } from './playlist';
 
+export interface Version {
+	number?: string,
+	name?: string,
+	image?: string,
+	sha?: string
+}
+
 export interface State {
 	currentPlaylistID?: number,
 	currentSessionID?: string,
@@ -47,12 +54,7 @@ export interface State {
 	forceDisableAppUpdate?: boolean,
 	noAutoTest?: boolean,
 	singlePlay?: boolean,
-	version?: {
-		number?: string,
-		name?: string,
-		image?: string,
-		sha?: string
-	},
+	version?: Version,
 	binPath?: {
 		mpv?: string,
 		ffmpeg?: string,
@@ -78,7 +80,8 @@ export interface State {
 		dumpDB?: boolean,
 		restoreDB?: boolean
 	},
-	args: string[]
+	args: string[],
+	environment: string
 }
 
 export interface PublicState {
@@ -97,5 +100,6 @@ export interface PublicState {
 	subText: string,
 	showSubs: boolean,
 	volume: number,
-	defaultLocale: string
+	defaultLocale: string,
+	environment: string
 }

@@ -40,7 +40,8 @@ let state: State = {
 	randomPlaying: false,
 	player: {},
 	opt: {},
-	args: []
+	args: [],
+	environment: process.env.SENTRY_ENVIRONMENT
 };
 
 let previousState = {...state};
@@ -63,7 +64,8 @@ export function getPlayerState(): PublicState {
 		timePosition: state.player.timeposition,
 		volume: state.player.volume,
 		currentRequester: state.currentRequester,
-		defaultLocale: state.defaultLocale
+		defaultLocale: state.defaultLocale,
+		environment: process.env.SENTRY_ENVIRONMENT
 	};
 }
 
