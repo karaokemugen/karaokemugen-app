@@ -92,6 +92,7 @@ class AdminHeader extends Component<IProps, IState> {
 					<button
 						className="btn btn-dark dropdown-toggle klogo"
 						type="button"
+						id="menuPC"
 						onClick={() => this.setState({ dropDownMenu: !this.state.dropDownMenu })}
 					/>
 					{this.state.dropDownMenu ?
