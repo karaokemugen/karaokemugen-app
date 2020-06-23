@@ -131,7 +131,7 @@ export async function initEngine() {
 			// Reinit menu since we switched ports.
 			if (app) await applyMenu();
 		}
-		if (conf.Online.URL) try {
+		if (conf.Online.URL && !state.isDemo) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
 			await initOnlineURLSystem();
 		} catch(err) {
@@ -139,7 +139,7 @@ export async function initEngine() {
 			logger.error(`[Engine] Failed to init online system : ${err}`);
 			sentry.error(err);
 		}
-		if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
+		if (conf.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo) initTwitch();
 		initBlacklistSystem();
 		initPlaylistSystem();
 		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) initPlayer();
@@ -184,7 +184,7 @@ export async function initEngine() {
 			}
 			await postMigrationTasks(migrations);
 			if (conf.Database.prod.bundledPostgresBinary) await dumpPG();
-			initDiscordRPC();
+			if (!state.isTest && !state.isDemo) initDiscordRPC();
 			if (state.args[0]?.startsWith('km://')) handleProtocol(state.args[0].substr(5).split('/'));
 		} catch(err) {
 			logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
