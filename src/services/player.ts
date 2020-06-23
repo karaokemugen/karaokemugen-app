@@ -1,7 +1,27 @@
 import i18next from 'i18next';
 import {promisify} from 'util';
 
-import {displayInfo,displaySongInfo, goTo, hideSubs, initAddASongMessage, initPlayerSystem, message, mute, pause, play, playMedia, quitmpv as quit, restartmpv, resume, seek, setFullscreen, setVolume, showSubs, stop, stopAddASongMessage,toggleOnTop, unmute} from '../components/mpv';
+import {
+	displayInfo,
+	displaySongInfo,
+	goTo,
+	initAddASongMessage,
+	initPlayerSystem,
+	message,
+	pause,
+	play,
+	playMedia,
+	quitMpv as quit,
+	restartMpv,
+	resume,
+	seek,
+	setFullscreen,
+	setMute, setSubs,
+	setVolume,
+	stop,
+	stopAddASongMessage,
+	toggleOnTop,
+} from '../components/mpv';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import {getConfig, setConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
@@ -137,7 +157,7 @@ async function playCurrentSong(now: boolean) {
 /* Current playing song has been changed, stopping playing now and hitting play again to get the new song. */
 export function playingUpdated() {
 	const state = getState();
-	if (state.status !== 'stop' && state.player.playerstatus !== 'stop') playPlayer(true);
+	if (state.status !== 'stop' && state.player.playerStatus !== 'stop') playPlayer(true);
 }
 
 /* This is triggered when player ends its current song */
@@ -418,12 +438,12 @@ async function pausePlayer() {
 }
 
 async function mutePlayer() {
-	await mute();
+	await setMute(true);
 	logger.info('[Player] Player muted');
 }
 
 async function unmutePlayer() {
-	await unmute();
+	await setMute(false);
 	logger.info('[Player] Player unmuted');
 }
 
@@ -442,12 +462,12 @@ async function setVolumePlayer(volume: number) {
 }
 
 async function showSubsPlayer() {
-	await showSubs();
+	await setSubs(true);
 	logger.info('[Player] Showing lyrics on screen');
 }
 
 async function hideSubsPlayer() {
-	await hideSubs();
+	await setSubs(false);
 	logger.info('[Player] Hiding lyrics on screen');
 }
 
@@ -469,7 +489,7 @@ export async function playerNeedsRestart() {
 
 async function restartPlayer() {
 	profile('restartmpv');
-	await restartmpv();
+	await restartMpv();
 	logger.info('[Player] Player restart complete');
 	profile('restartmpv');
 }

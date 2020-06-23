@@ -94,7 +94,7 @@ class ProgressBar extends Component<IProps,IState> {
 		}
 		if (!this.state.oldState || (this.state.oldState.status != data.status || this.state.oldState.playerStatus != data.playerStatus)) {
 			status = data.playerStatus;
-			if( status === 'stop') {
+			if (status === 'stop') {
 				this.setState({width: '0'});
 			}
 			this.setState({status: status});
@@ -103,17 +103,17 @@ class ProgressBar extends Component<IProps,IState> {
 		if (!this.state.oldState || data.currentlyPlaying !== this.state.oldState.currentlyPlaying) {
 			this.setState({width: '0'});
 			if (data.currentlyPlaying === null) {
-				this.setState({karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1});
+				this.setState({karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1, karaTitle: undefined});
 			} else if (data.currentlyPlaying === 'Jingles') {
-				this.setState({karaInfoText: i18next.t('JINGLE_TIME'), length: -1});
+				this.setState({karaInfoText: i18next.t('JINGLE_TIME'), length: -1, karaTitle: undefined});
 			} else if (data.currentlyPlaying === 'Intros') {
-				this.setState({karaInfoText: i18next.t('INTRO_TIME'), length: -1});
+				this.setState({karaInfoText: i18next.t('INTRO_TIME'), length: -1, karaTitle: undefined});
 			} else if (data.currentlyPlaying === 'Outros') {
-				this.setState({karaInfoText: i18next.t('OUTRO_TIME'), length: -1});
+				this.setState({karaInfoText: i18next.t('OUTRO_TIME'), length: -1, karaTitle: undefined});
 			} else if (data.currentlyPlaying === 'Encores') {
-				this.setState({karaInfoText: i18next.t('ENCORES_TIME'), length: -1});
+				this.setState({karaInfoText: i18next.t('ENCORES_TIME'), length: -1, karaTitle: undefined});
 			} else if (data.currentlyPlaying === 'Sponsors') {
-				this.setState({karaInfoText: i18next.t('SPONSOR_TIME'), length: -1});
+				this.setState({karaInfoText: i18next.t('SPONSOR_TIME'), length: -1, karaTitle: undefined});
 			} else if (store.getLogInfos()) {
 				let response = await axios.get('/karas/' + data.currentlyPlaying);
 				let kara = response.data;
@@ -124,10 +124,12 @@ class ProgressBar extends Component<IProps,IState> {
 
 		if (this.props.lyrics || (this.props.scope === 'public' && this.props.webappMode == 1)) {
 			let text = data.subText;
-			if (text) text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
-			this.setState({karaInfoText: text});
+			if (text) {
+				text = text.indexOf('\n') == -1 ? text : text.substring(0, text.indexOf('\n'));
+				this.setState({karaInfoText: text});
+			}
 		} else {
-			this.setState({karaInfoText: this.state.karaTitle as string});
+			this.setState({karaInfoText: this.state.karaTitle || this.state.karaInfoText});
 		}
 
 		this.setState({oldState: data});

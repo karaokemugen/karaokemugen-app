@@ -202,7 +202,7 @@ export async function exit(rc: string | number) {
 	shutdownInProgress = true;
 	emit('exiting-app');
 	try {
-		if (getState().player?.playerstatus) {
+		if (getState().player?.playerStatus) {
 			await quitmpv();
 			logger.info('[Engine] Player has shutdown');
 		}

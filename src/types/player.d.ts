@@ -3,7 +3,7 @@ import { DBKara } from '../lib/types/database/kara';
 export interface PlayerState {
 	volume?: number,
 	playing?: boolean,
-	playerstatus?: 'stop' | 'pause' | 'play',
+	playerStatus?: 'stop' | 'pause' | 'play',
 	_playing?: boolean, // internal delay flag
 	timeposition?: number,
 	duration?: number,
@@ -16,7 +16,10 @@ export interface PlayerState {
 	fullscreen?: boolean,
 	url?: string,
 	status?: string,
-	firstLaunch?: boolean
+	monitorEnabled?: boolean,
+	displayingInfo?: boolean,
+	songNearEnd?: boolean,
+	nextSongNotifSent?: boolean
 }
 
 export interface mpvStatus {
@@ -48,4 +51,9 @@ export interface MediaData {
 	duration: number,
 	repo: string
 	spoiler: boolean
+}
+
+export interface MpvOptions {
+	monitor: boolean,
+	mpvVersion: string
 }
