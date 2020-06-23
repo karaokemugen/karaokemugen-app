@@ -51,16 +51,10 @@ class HelpModal extends Component<{},{}> {
 								<hr />
 								<div className="versionMode">
 									<div>
-										<b>{i18next.t('MODE')}</b>
-										<br />
 										<b>{i18next.t('VERSION')}</b>
 										<br />
 									</div>
 									<div>
-										<span id="mode">
-											{store.getConfig().Karaoke.Private ? 'Privé' : 'Public'}
-										</span>
-										<br />
 										<span id="version">
 											{store.getVersion().name + ' ' + store.getVersion().number}
 										</span>

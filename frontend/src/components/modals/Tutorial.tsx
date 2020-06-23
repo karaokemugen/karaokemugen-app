@@ -75,11 +75,6 @@ class Tutorial extends Component<IProps,IState> {
 					target:'.KmAppHeaderDecorator',
 					content: i18nAsDiv('INTRO_ADMIN_LECTEUR'),
 				},
-				{ 
-					placement:'auto',
-					target:'#KaraokePrivate',
-					content: i18nAsDiv('INTRO_ADMIN_MODE'),
-				},
 				{
 					placement:'auto',
 					target: '.visibilitySwitch',
@@ -226,7 +221,7 @@ class Tutorial extends Component<IProps,IState> {
 					target: '#playlist',
 					label: 'playlists',
 					placement: 'auto',
-					content: store.getConfig().Karaoke.Private ? i18nAsDiv('INTRO_PUBLIC_PLAYLISTS') : i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE'), 
+					content: i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE'), 
 				},
 				{
 					target: '.side2Button',
@@ -320,7 +315,7 @@ class Tutorial extends Component<IProps,IState> {
 					target: '#panel2',
 					label: 'playlists',
 					placement: 'auto',
-					content: store.getConfig().Karaoke.Private ? i18nAsDiv('INTRO_PUBLIC_PLAYLISTS') : i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE'), 
+					content: i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE'), 
 				},
 				{
 					target: 'body',

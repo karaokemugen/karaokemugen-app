@@ -23,7 +23,6 @@ interface IProps {
 }
 
 interface IState {
-	privateMode: boolean;
 	dropDownMenu: boolean;
 	songVisibilityOperator: boolean;
 	statusPlayer?: PublicState;
@@ -33,7 +32,6 @@ class AdminHeader extends Component<IProps, IState> {
 	constructor(props:IProps) {
 		super(props);
 		this.state = {
-			privateMode: Boolean(this.props.config.Karaoke.Private),
 			dropDownMenu: false,
 			songVisibilityOperator: Boolean(this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin)
 		};
@@ -59,12 +57,6 @@ class AdminHeader extends Component<IProps, IState> {
 			this.setState({ songVisibilityOperator: Boolean(this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin)});
 		}
 	}
-
-  saveMode = (mode:boolean) => {
-  	let data = expand('Karaoke.Private', mode);
-  	this.setState({ privateMode: mode });
-  	axios.put('/settings', { setting: JSON.stringify(data) });
-  };
 
   saveOperatorAdd = (songVisibility: boolean) => {
   	let data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
@@ -206,26 +198,6 @@ class AdminHeader extends Component<IProps, IState> {
   							label:i18next.t('OPTIONS'),
   							active:this.props.options,
   							onClick:this.props.setOptionMode,
-  						}
-  					]}
-  				></RadioButton>
-  			</div>
-  			<div className="header-group switchs" id="KaraokePrivate">
-  				<RadioButton
-  					title={i18next.t('SWITCH_PRIVATE')}
-  					orientation="vertical"
-  					buttons={[
-  						{
-  							label:i18next.t('PRIVATE'),
-  							active:this.state.privateMode,
-  							activeColor:'#994240',
-  							onClick:() => this.saveMode(true),
-  						},
-  						{
-  							label:i18next.t('PUBLIC'),
-  							active:!this.state.privateMode,
-  							activeColor:'#57bb00',
-  							onClick:() => this.saveMode(false),
   						}
   					]}
   				></RadioButton>
