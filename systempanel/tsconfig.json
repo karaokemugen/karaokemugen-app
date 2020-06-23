@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-    "target": "es6",
+	"inlineSources": true,
+	"sourceRoot": "/",
+	"target": "es6",
     "jsx": "preserve",
     "module": "esnext",
     "moduleResolution": "node",
