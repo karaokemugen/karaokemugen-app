@@ -340,6 +340,8 @@ class AdminPage extends Component<IProps, IState> {
 						</li>
 						<li>
 							<a
+								className="z-depth-3 btn-floating btn-large"
+								style={{ backgroundColor: '#111' }}
 								onClick={() => {
 									if (!this.state.options) this.props.getSettings();
 									this.setState({ options: !this.state.options, mobileMenu: !this.state.mobileMenu });
