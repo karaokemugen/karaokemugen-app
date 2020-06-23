@@ -108,7 +108,6 @@
 	"ENGINEFREEUPVOTES": "Allow users to upvote songs to free them",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum votes required to free a song",
 	"ENGINEFREEUPVOTESREQUIREDPERCENT": "Percentage of upvotes / online users required to to free a song",
-	"ENGINEREPEATPLAYLIST": "Repeat playlist",
 	"ENGINEENABLESMARTINSERT": "Enable smart insert of songs to avoid user monopolies",
 	"ENGINEAUTOPLAY": "Autoplay on next song added",
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Force hostname or IP",
@@ -259,7 +258,6 @@
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoke",
-			"PLAYLIST_RANDOMSONGSAFTEREND": "Play random songs after playlist ends",
 			"PLAYLIST_RANDOMSONGSAFTEREND_TOOLTIP": "At the end of your current playlist, Karaoke Mugen will play random songs from the library until someone adds a song (if autoplay is enabled)",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing after playlist end",
 			"AUTO_UPDATE_JINGLES": "Auto-update jingles",
@@ -287,6 +285,17 @@
 			"PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP": "Number of songs before a jingle appears on the screen. 0 to deactivate jingles",
 			"QUICKSTART": "Quick start of the application",
 			"QUICKSTART_TOOLTIP": "This disables data verification. You will have to generate your database in case of modification manually from the system panel, database tab."
+		},
+		"PLAYLIST": {
+			"ENDOFPLAYLISTACTION": {
+				"NAME": "End of playlist action",
+				"TOOLTIP": "If you choose Random Songs, they'll be picked from your song library. Combined with AutoPlay, your playlist can resume as soon as someone adds a new song.",
+				"OPTIONS": {
+					"NONE": "Stop karaoke",
+					"REPEAT": "Repeat playlist",
+					"RANDOM": "Play random songs from the library"
+				}
+			}
 		},
 		"INTERFACE": {
 			"LABEL": "Interface",

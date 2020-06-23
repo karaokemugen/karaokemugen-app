@@ -146,7 +146,6 @@
 	"SELECT_ALL": "Tout sélectionner",
 	"PLAYLIST_ADD": "Créer une liste de lecture",
 	"MESSAGE": "Passer un message au public",
-	"ENGINEREPEATPLAYLIST": "Répéter la liste de lecture",
 	"ENGINEENABLESMARTINSERT": "Activer l'insertion intelligente pour éviter les monopoles",
 	"ENGINEENABLESMARTINSERT_TOOLTIP": "Au moment de l'ajout d'une chanson par le public, celle-ci sera placée de façon à permettre à ceux qui n'ont pas beaucoup demandé de chansons de passer plus tôt",
 	"ENGINEAUTOPLAY": "Lecture automatique sur premier ajout",
@@ -271,8 +270,6 @@
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
-			"PLAYLIST_RANDOMSONGSAFTEREND": "Jouer des chansons aléatoirement en fin de playlist",
-			"PLAYLIST_RANDOMSONGSAFTEREND_TOOLTIP": "En fin de playlist, Karaoke Mugen jouera des chansons aléatoires de votre bibliothèque afin de meubler la fin de votre karaoké jusqu'à ce que quelqu'un rajoute une chanson (si autoplay est activé)",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher un message régulier de demande d'ajout de chanson à l'écran en lecture aléatoire",
 			"AUTO_UPDATE_JINGLES": "Mise à jour automatique des vidéos jingles",
 			"AUTO_UPDATE_INTROS": "Mise à jour automatique des vidéos intros",
@@ -299,6 +296,17 @@
 			"PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP": "Nombre de chansons avant qu'un jingle ne s'affiche à l'écran. 0 pour désactiver les jingles",
 			"QUICKSTART": "Démarrage rapide de l'application",
 			"QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données."
+		},
+		"PLAYLIST": {
+			"ENDOFPLAYLISTACTION": {
+				"NAME": "Que faire en fin de playlist",
+				"TOOLTIP": "Plusieurs options sont disponibles. Dans le cas de l'aléatoire, des chansons de votre bibliothèque seront jouées au hasard en fin de playlist. La playlist peut reprendre si vous avez activé AutoPlay et si quelqu'un ajoute une nouvelle chanson.",
+				"OPTIONS": {
+					"NONE": "Arrêter le karaoké",
+					"REPEAT": "Relancer la playlist du début",
+					"RANDOM": "Jouer des chansons de la bibliothèque aléatoirement"
+				}
+			}
 		},
 		"INTERFACE": {
 			"LABEL": "Interface",

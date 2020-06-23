@@ -1068,7 +1068,7 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 	}
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (playlist.content.length === 0) throw 'Playlist is empty!';
-	if (playlist.index + 1 >= playlist.content.length && !conf.Karaoke.Repeat) {
+	if (playlist.index + 1 >= playlist.content.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
 		logger.debug('[PLC] End of playlist.');
 		if (setPlayingSong) await setPlaying(0, playlist.id);
 		throw 'Current position is last song!';
@@ -1076,7 +1076,7 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 		// If we're here, it means either we're beyond the length of the playlist
 		// OR that RepeatPlaylist is set to 1.
 		// We test again if we're at the end of the playlist. If so we go back to first song.
-		if (conf.Karaoke.Repeat && playlist.index + 1 >= playlist.content.length) playlist.index = -1;
+		if (conf.Playlist.EndOfPlaylistAction === 'repeat' && playlist.index + 1 >= playlist.content.length) playlist.index = -1;
 		const kara = playlist.content[playlist.index + 1];
 		if (!kara) throw 'Karaoke received is empty!';
 		if (setPlayingSong) await setPlaying(kara.playlistcontent_id, playlist.id);

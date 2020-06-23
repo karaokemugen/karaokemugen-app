@@ -113,7 +113,6 @@ export const defaults: Config = {
 		Autoplay: false,
 		ClassicMode: false,
 		Private: true,
-		Repeat: false,
 		SmartInsert: false,
 		Display: {
 			Avatar: true,
@@ -205,7 +204,7 @@ export const defaults: Config = {
 			]
 		},
 		RemovePublicOnPlay: false,
-		RandomSongsAfterEnd: false,
+		EndOfPlaylistAction: 'none',
 		RandomSongsAfterEndMessage: true,
 	},
 	System: {
@@ -323,7 +322,6 @@ export const configConstraints = {
 	'Karaoke.StreamerMode.PauseDuration': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Karaoke.StreamerMode.Twitch.Enabled': {inclusion: bools},
 	'Karaoke.Private': {inclusion : bools},
-	'Karaoke.Repeat': {inclusion : bools},
 	'Karaoke.SmartInsert': {inclusion : bools},
 	'Karaoke.Poll.Choices': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Karaoke.Poll.Timeout': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},

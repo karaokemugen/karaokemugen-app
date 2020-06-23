@@ -71,7 +71,6 @@ export interface Config {
 			}
 		}
 		Autoplay?: boolean,
-		Repeat?: boolean,
 		SmartInsert?: boolean,
 		JinglesInterval?: number, // Obsolete since 3.1.1
 		SponsorsInterval?: number, // Obsolete since 3.1.1
@@ -156,7 +155,7 @@ export interface Config {
 			AddedSongVisibilityAdmin?: boolean,
 			Labels?: string[]
 		},
-		RandomSongsAfterEnd: boolean,
+		EndOfPlaylistAction: 'random' | 'repeat' | 'none',
 		RandomSongsAfterEndMessage: boolean
 	},
 	System: {

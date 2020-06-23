@@ -172,9 +172,12 @@ Player:
   # Extra mpv commandline arguments example
   ExtraCommandLine: --tone-mapping=reinhard
 Playlist:
-  # Play random songs after a playlist has ended
-  RandomSongsAfterEnd: false
-  # Should a message be displayed on screen inviting people to add songsd?
+  # What to do at the end of playlist :
+  # - random : plays random songs, should usually be used with autoplay
+  # - repeat : cycles through the playlist
+  # - none : just end karaoke
+  EndOfPlaylistAction: none
+  # Should a message be displayed on screen inviting people to add songs?
   RandomSongsAfterEndMessage: true
   # Allow duplicates in current playlist
   AllowDuplicates: false

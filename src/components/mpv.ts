@@ -64,7 +64,9 @@ async function ensureRunning() {
 			if (monitorEnabled && !playerMonitor?.isRunning()) await playerMonitor.quit();
 			await startmpv();
 			return 1;
-		} else {return 0;}
+		} else {
+			return 0;
+		}
 	} catch(err) {
 		sentry.error(err);
 		throw err;

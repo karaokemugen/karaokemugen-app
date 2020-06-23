@@ -142,15 +142,7 @@ class KaraokeOptions extends Component<IProps, IState> {
   					</div> : null
   				}
 
-  				<div className="form-group">
-  					<label className="col-xs-4 control-label">
-  						{i18next.t('ENGINEREPEATPLAYLIST')}
-  					</label>
-  					<div className="col-xs-6">
-  						<Switch idInput="Karaoke.Repeat" handleChange={this.onChange}
-  							isChecked={this.state.config['Karaoke.Repeat']} />
-  					</div>
-  				</div>
+
 
   				<div className="form-group">
   					<label className="col-xs-4 control-label" title={i18next.t('ENGINEENABLESMARTINSERT_TOOLTIP')}>
@@ -177,18 +169,26 @@ class KaraokeOptions extends Component<IProps, IState> {
   				</div>
 
   				<div className="form-group">
-  					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_RANDOMSONGSAFTEREND_TOOLTIP')}>
-  						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_RANDOMSONGSAFTEREND')}
+  					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.TOOLTIP')}>
+  						{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.NAME')}
               &nbsp;
   						<i className="far fa-question-circle"></i>
   					</label>
   					<div className="col-xs-6">
-  						<Switch idInput="Playlist.RandomSongsAfterEnd" handleChange={this.onChange}
-  							isChecked={this.state.config['Playlist.RandomSongsAfterEnd']} />
+  						<select
+  							className="form-control"
+  							id="Playlist.EndOfPlaylistAction"
+  							onChange={this.onChange}
+  							value={this.state.config['Playlist.EndOfPlaylistAction']}
+  						>
+  							<option value="none"> {i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.OPTIONS.NONE')} </option>
+  							<option value="repeat"> {i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.OPTIONS.REPEAT')} </option>
+  							<option value="random"> {i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.OPTIONS.RANDOM')} </option>
+  						</select>
   					</div>
   				</div>
 
-				  {this.state.config['Playlist.RandomSongsAfterEnd'] ?
+				  {this.state.config['Playlist.EndOfPlaylistAction'] === 'random' ?
   					<div className="form-group">
   					<label className="col-xs-4 control-label">
   						{i18next.t('SETTINGS.KARAOKE.PLAYLIST_RANDOMSONGSAFTERENDMESSAGE')}

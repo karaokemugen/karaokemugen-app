@@ -9,7 +9,7 @@ import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {addPlayedKara, getKara, getKaras,getSeriesSingers} from './kara';
-import {setPlaying, getCurrentSong, getPlaylistInfo,nextSong, previousSong} from './playlist';
+import {getCurrentSong, getPlaylistInfo,nextSong, previousSong,setPlaying} from './playlist';
 import {startPoll} from './poll';
 import {updateUserQuotas} from './user';
 
@@ -180,7 +180,7 @@ export async function playerEnding() {
 		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
 		// If Outro, load the background.
 		if (state.player.mediaType === 'Outros' && state.currentSong?.pos === pl.karacount) {
-			if (getConfig().Playlist.RandomSongsAfterEnd) {
+			if (getConfig().Playlist.EndOfPlaylistAction === 'random') {
 				await playRandomSongAfterPlaylist();
 			} else {
 				stopPlayer(true);
@@ -239,13 +239,13 @@ export async function playerEnding() {
 					setState({currentlyPlayingKara: 'Outros'});
 				} catch(err) {
 					logger.error(`[Player] Unable to play outro file : ${err}`);
-					if (conf.Playlist.RandomSongsAfterEnd) {
+					if (conf.Playlist.EndOfPlaylistAction === 'random') {
 						await playRandomSongAfterPlaylist();
 					} else {
 						stopPlayer(true);
 					}
 				}
-			} else if (conf.Playlist.RandomSongsAfterEnd) {
+			} else if (conf.Playlist.EndOfPlaylistAction === 'random') {
 				await playRandomSongAfterPlaylist();
 			} else {
 				stopPlayer(true);
