@@ -338,6 +338,24 @@ class AdminPage extends Component<IProps, IState> {
 								<i className="fas fa-user" />
 							</a>
 						</li>
+						<li>
+							<a
+								onClick={() => {
+									if (!this.state.options) this.props.getSettings();
+									this.setState({ options: !this.state.options, mobileMenu: !this.state.mobileMenu });
+									store.getTuto() && store.getTuto().move(1);
+								}}
+							>
+								{this.state.options ? 
+									<React.Fragment>
+										<i className="fas fa-list-ul" />&nbsp;{i18next.t('CL_PLAYLISTS')}
+									</React.Fragment> :
+									<React.Fragment>
+										<i className="fas fa-cog" />&nbsp;{i18next.t('OPTIONS')}
+									</React.Fragment>
+								}
+							</a>
+						</li>
 					</ul>
 				) : null}
 			</div>

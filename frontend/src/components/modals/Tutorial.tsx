@@ -103,7 +103,7 @@ class Tutorial extends Component<IProps,IState> {
 				},
 				{ 
 					placement:'auto',
-					target:'#optionsButton',
+					target:'#menuPC',
 					content: i18nAsDiv('INTRO_ADMIN_SETTINGS'),
 					hideFooter: true,
 				},

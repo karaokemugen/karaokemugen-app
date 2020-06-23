@@ -100,6 +100,24 @@ class AdminHeader extends Component<IProps, IState> {
 							<li>
 								<a
 									href="#"
+									onClick={() => {
+										this.props.setOptionMode();
+										this.setState({ dropDownMenu: !this.state.dropDownMenu });
+									}}
+								>
+									{this.props.options ? 
+									<React.Fragment>
+										<i className="fas fa-list-ul" />&nbsp;{i18next.t('CL_PLAYLISTS')}
+									</React.Fragment> :
+									<React.Fragment>
+										<i className="fas fa-cog" />&nbsp;{i18next.t('OPTIONS')}
+									</React.Fragment>
+									}
+								</a>
+							</li>
+							<li>
+								<a
+									href="#"
 									onClick={this.props.toggleProfileModal}
 								>
 									<i className="fas fa-user" />&nbsp;{i18next.t('ACCOUNT')}
@@ -186,24 +204,6 @@ class AdminHeader extends Component<IProps, IState> {
 					/>
 				</button>
 
-				<div className="header-group switchs" id="optionsButton">
-					<RadioButton
-						title={i18next.t('SWITCH_OPTIONS')}
-						orientation="vertical"
-						buttons={[
-							{
-								label: i18next.t('CL_PLAYLISTS'),
-								active: !this.props.options,
-								onClick: this.props.setOptionMode,
-							},
-							{
-								label: i18next.t('OPTIONS'),
-								active: this.props.options,
-								onClick: this.props.setOptionMode,
-							}
-						]}
-					></RadioButton>
-				</div>
 				<div className="header-group switchs visibilitySwitch">
 					<RadioButton
 						title={i18next.t('ENGINE_ADDED_SONG_VISIBILITY_ADMIN')}

@@ -22,7 +22,7 @@ import { BLCSet } from '../../../../src/types/blacklist';
 require('./Playlist.scss');
 
 const chunksize = 400;
-const _cache = new CellMeasurerCache({ defaultHeight: 36, fixedWidth: true });
+const _cache = new CellMeasurerCache({ defaultHeight: 40, fixedWidth: true });
 let timer:any;
 
 interface IProps {
