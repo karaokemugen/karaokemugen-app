@@ -331,8 +331,7 @@ class AdminPage extends Component<IProps, IState> {
 						</li>
 						<li>
 							<a
-								className="z-depth-3 btn-floating btn-large changePseudo"
-								id="changePseudo"
+								className="z-depth-3 btn-floating btn-large"
 								style={{ backgroundColor: '#431b50' }}
 								onClick={this.openLoginOrProfileModal}
 							>

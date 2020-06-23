@@ -75,6 +75,7 @@
 	"TOP": "Haut",
 	"SWITCH_BAR_INFOS_TITLE": "Afficher le titre de la chanson",
 	"SWITCH_BAR_INFOS_LYRICS": "Afficher les paroles",
+	"SWITCH_BAR_INFOS": "Mode parole ou titre de la chanson",
 	"VOLUME_LEVEL": "Changer le volume",
 	"SWITCH_OPTIONS": "Mode listes de lecture/options",
 	"PLAYLIST_EXPORT": "Exporter la liste de lecture",
