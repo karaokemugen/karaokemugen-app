@@ -247,10 +247,6 @@ class KaraLine extends Component<IProps,IState> {
   								: <i className="far fa-square"></i>}
   						</span> : null}
   					<div className="infoDiv">
-  						{!is_touch_device() ? <button title={i18next.t('TOOLTIP_SHOWINFO')} name="infoKara" className="btn btn-sm btn-action"
-  							onClick={this.toggleKaraDetail}>
-  							<i className="fas fa-info-circle"></i>
-  						</button> : null}
 						{scope === 'admin' ? 
 							<button title={i18next.t(idPlaylist < 0 ? 'TOOLTIP_PLAYKARA_LIBRARY' : 'TOOLTIP_PLAYKARA')} 
 								className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
@@ -297,7 +293,7 @@ class KaraLine extends Component<IProps,IState> {
   								</div>
   							</div>
   						</div> :
-  						<div className="contentDiv">
+  						<div className="contentDiv" onClick={this.toggleKaraDetail}>
   							<div className="disable-select karaTitle">
   								{this.karaTitle}
   								{kara.upvotes ?

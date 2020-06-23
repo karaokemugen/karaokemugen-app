@@ -75,7 +75,7 @@ class KaraDetail extends Component<IProps,IState> {
 
 	onClickOutsideModal = (e: MouseEvent) => {
 		let myElementToCheckIfClicksAreInsideOf = document.getElementsByClassName("modal-dialog")[0];
-		if (!myElementToCheckIfClicksAreInsideOf.contains((e.target as Node))) {
+		if (!myElementToCheckIfClicksAreInsideOf?.contains((e.target as Node))) {
 			this.closeModal();
 		}
 	}
