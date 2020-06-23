@@ -1,6 +1,6 @@
 import {pg as yesql} from 'yesql';
 
-import {db} from '../lib/dao/database';
+import {db, newDBTask} from '../lib/dao/database';
 import { DBUser } from '../lib/types/database/user';
 import { User } from '../lib/types/user';
 import { DBGuest, RemoteToken } from '../types/database/user';
@@ -106,7 +106,15 @@ export function resetGuestsPassword() {
 }
 
 export function updateUserLastLogin(username: string) {
-	return db().query(yesql(sqlupdateLastLogin)({
+	newDBTask({
+		func: updateUserLastLoginTask,
+		args: [username],
+		name: `updateUserLastLogin-${username}`
+	});
+}
+
+export async function updateUserLastLoginTask(username: string) {
+	await db().query(yesql(sqlupdateLastLogin)({
 		username: username,
 		now: new Date()
 	}));

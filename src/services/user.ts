@@ -211,15 +211,15 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 	}
 }
 
-/** To avoid flooding database UPDATEs, only update login time every minute for a user */
+/** To avoid flooding database UPDATEs, only update login time every 5 minute for a user */
 export function updateLastLoginName(login: string) {
 	if (!userLoginTimes.has(login)) {
 		userLoginTimes.set(login, new Date());
-		return DBUpdateUserLastLogin(login);
+		DBUpdateUserLastLogin(login);
 	}
 	if (userLoginTimes.get(login) < new Date(new Date().getTime() - (60 * 1000))) {
 		userLoginTimes.set(login, new Date());
-		return DBUpdateUserLastLogin(login);
+		DBUpdateUserLastLogin(login);
 	}
 }
 
