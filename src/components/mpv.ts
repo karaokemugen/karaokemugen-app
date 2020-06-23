@@ -696,7 +696,7 @@ export async function pause(): Promise<PlayerState> {
 		playerState._playing = false; // This prevents the play/pause event to be triggered
 		await exec('pause', null, true);
 		playerState.playing = false;
-		playerState.status = 'pause';
+		playerState.playerStatus = 'pause';
 		emitPlayerState();
 		return playerState;
 	} catch(err) {
