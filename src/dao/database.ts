@@ -8,10 +8,10 @@ import { errorStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
-import sentry from '../utils/sentry';
 import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
 import {initPG,isShutdownPG} from '../utils/postgresql';
+import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
 import { generateBlacklist } from './blacklist';
 import { baseChecksum } from './dataStore';
@@ -106,7 +106,7 @@ async function migrateDB(): Promise<Migration[]> {
 		migrationDirectory: resolve(getState().resourcePath, 'migrations/'),
 		host: conf.Database.prod.host,
 		driver: conf.Database.prod.driver,
-		username: conf.Database.prod.username,
+		username: conf.Database.prod.user,
 		password: conf.Database.prod.password,
 		port: conf.Database.prod.port,
 		database: conf.Database.prod.database,
