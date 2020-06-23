@@ -76,6 +76,37 @@ build-react:
     - if: $CI_COMMIT_TAG
     - when: never
 
+pkg_linux:
+    stage: package
+    image: electronuserland/builder:latest
+    cache:
+        key: km-app-${CI_COMMIT_REF_SLUG}
+        paths:
+            - node_modules/
+            - systempanel/node_modules/
+            - frontend/node_modules/
+        policy: pull
+    interruptible: true
+    artifacts:
+        name: km-app-pkglinux-${CI_COMMIT_REF_SLUG}
+        paths:
+            - release_linux
+    dependencies:
+        - build-react
+    script:
+        - rm -Rf release_linux
+        - yarn add --dev electron-builder
+        - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
+        - bash util/electronBuilder.sh -l
+        - ls -la packages/
+        - mkdir release_linux
+        - mv packages/*.deb release_linux/
+        - mv packages/*.tar.gz release_linux/
+        - ls -la release_linux/*
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
+        - if: $CI_COMMIT_TAG
+
 pkg_win:
   stage: package
   image: electronuserland/builder:wine-mono
@@ -174,6 +205,24 @@ deploy_mac:
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
+
+deploy_linux:
+    stage: deploy
+    image: minidocks/lftp
+    interruptible: true
+    cache: {}
+    variables:
+        GIT_STRATEGY: none
+    dependencies:
+        - pkg_linux
+    needs:
+        - pkg_linux
+    script:
+        - ls -la release_linux/*
+        - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_linux/*"
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
+        - if: $CI_COMMIT_TAG
 
 deploy_win:
   stage: deploy

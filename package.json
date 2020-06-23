@@ -245,9 +245,19 @@
       "allowToChangeInstallationDirectory": true,
       "license": "LICENSE.md"
     },
-    "appImage": {
-      "license": "LICENSE.md",
-      "category": "AudioVideo"
+    "deb": {
+      "depends": [
+        "postgresql",
+		"mpv",
+		"ffmpeg",
+        "gconf2",
+        "gconf-service",
+        "libnotify4",
+        "libappindicator1",
+        "libxtst6",
+        "libnss3"
+      ],
+      "packageCategory": "video"
     },
     "dmg": {
       "icon": "build/DMG.icns"
@@ -273,7 +283,8 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        "deb",
+        "tar.gz"
       ],
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",
