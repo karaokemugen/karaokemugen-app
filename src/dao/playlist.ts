@@ -25,8 +25,8 @@ export async function createPlaylist(pl: Playlist): Promise<number> {
 		created_at: pl.created_at,
 		modified_at: pl.modified_at,
 		flag_visible: pl.flag_visible || false,
-		flag_current: pl.flag_current || false,
-		flag_public: pl.flag_public || false,
+		flag_current: pl.flag_current || null,
+		flag_public: pl.flag_public || null,
 		username: pl.username
 	}));
 	return res.rows[0].pk_id_playlist;

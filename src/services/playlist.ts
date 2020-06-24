@@ -305,8 +305,8 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 		created_at: new Date(),
 		modified_at: new Date(),
 		flag_visible: opts.visible,
-		flag_current: opts.current,
-		flag_public: opts.public,
+		flag_current: opts.current || null,
+		flag_public: opts.public || null,
 		username: username
 	});
 	if (+opts.current) setState({currentPlaylistID: playlist_id});
