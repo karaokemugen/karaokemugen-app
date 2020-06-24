@@ -108,7 +108,7 @@ class Playlist extends Component<IProps, IState> {
 		getSocket().on('favoritesUpdated', () => {
 			if (this.state.idPlaylist === -5) this.getPlaylist();
 		});
-		getSocket().on('playlistContentsUpdated', this.playlistContentsUpdated);
+		getSocket().on('playlistContentsUpdated', this.playlistContentsUpdatedFromServer);
 		getSocket().on('playlistInfoUpdated', (idPlaylist:string) => {
 			if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylistInfo();
 		});
@@ -248,6 +248,10 @@ noRowsRenderer = () => {
   playlistContentsUpdated = (idPlaylist:number) => {
   	if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) this.getPlaylist(this.state.searchType);
   };
+
+  playlistContentsUpdatedFromServer = (idPlaylist:number) => {
+	if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) this.getPlaylist();
+};
 
   updateQuotaAvailable = (data:{username:string, quotaType:number, quotaLeft:number}) => {
   	if (store.getLogInfos() && (store.getLogInfos() as Token).username === data.username) {
