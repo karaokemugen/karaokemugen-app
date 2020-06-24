@@ -14,6 +14,7 @@ export interface State {
 	publicPlaylistID?: number,
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,
+	stopping: boolean,
 	currentlyPlayingKara?: string,
 	currentSong: CurrentSong
 	randomPlaying: boolean,
@@ -87,6 +88,7 @@ export interface PublicState {
 	onTop: boolean,
 	fullscreen: boolean,
 	timePosition: number,
+	stopping: boolean,
 	duration: number,
 	mute: boolean,
 	playerStatus: string,

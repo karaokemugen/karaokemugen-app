@@ -12,6 +12,7 @@ import {PublicState,State} from '../types/state';
 let state: State = {
 	playerNeedsRestart: false,
 	currentRequester: null,
+	stopping: false,
 	currentlyPlayingKara: null,
 	currentSong: null,
 	counterToJingle: 0,
@@ -47,6 +48,7 @@ export function getPlayerState(): PublicState {
 	return {
 		currentlyPlaying: state.currentlyPlayingKara,
 		currentSessionID: state.currentSessionID,
+		stopping: state.stopping,
 		duration: state.player.duration,
 		fullscreen: state.player.fullscreen,
 		mute: state.player.mute,

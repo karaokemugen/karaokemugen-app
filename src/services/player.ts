@@ -37,7 +37,6 @@ const sleep = promisify(setTimeout);
 
 let commandInProgress = false;
 let introSequence = false;
-let stoppingPlayer = false;
 
 export function playerMessage(msg: string, duration: number) {
 	return message(msg, duration);
@@ -172,9 +171,9 @@ export async function playerEnding() {
 			await restartPlayer();
 		}
 		// Stopping after current song, no need for all the code below.
-		if (stoppingPlayer) {
+		if (state.stopping) {
 			stopPlayer(true);
-			stoppingPlayer = false;
+			setState({stopping: false});
 			return;
 		}
 		// When random karas are being played
@@ -410,9 +409,9 @@ async function stopPlayer(now = true) {
 		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false});
 		stopAddASongMessage();
 	} else {
-		if (getState().player.playerStatus !== 'stop' && !stoppingPlayer) {
+		if (getState().player.playerStatus !== 'stop' && !getState().stopping) {
 			logger.info('[Player] Karaoke stopping after current song');
-			stoppingPlayer = true;
+			setState({ stopping: true });
 		}
 	}
 	if (getConfig().Karaoke.ClassicMode) await prepareClassicPauseScreen();
