@@ -7,7 +7,7 @@ import {now} from '../lib/utils/date';
 import { DBPL,DBPLC, DBPLCInfo, DBPLCKID, DBPLPos } from '../types/database/playlist';
 import {Playlist, PLC, PLCParams} from '../types/playlist';
 import {getState} from '../utils/state';
-import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByDate, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetCurrentPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlsetPublicPlaylist, sqlsetVisiblePlaylist, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlunsetCurrentPlaylist, sqlunsetPublicPlaylist, sqlunsetVisiblePlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
+import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByDate, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetCurrentPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlsetPublicPlaylist, sqlsetVisiblePlaylist, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlunsetVisiblePlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
 
 
 export function editPlaylist(pl: Playlist) {
@@ -140,7 +140,7 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 		whereClause = ` AND pc.fk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
-			WHERE pc.fk_id_playlist = ${getState().modePlaylistID}
+			WHERE pc.fk_id_playlist = ${getState().publicPlaylistID}
 		)`;
 		orderClause = 'RANDOM()';
 	}
@@ -232,14 +232,6 @@ export function setVisiblePlaylist(id: number) {
 
 export function unsetVisiblePlaylist(id: number) {
 	return db().query(sqlunsetVisiblePlaylist, [id]);
-}
-
-export function unsetCurrentPlaylist() {
-	return db().query(sqlunsetCurrentPlaylist);
-}
-
-export function unsetPublicPlaylist() {
-	return db().query(sqlunsetPublicPlaylist);
 }
 
 export async function setPlaying(plc_id: number, playlist_id: number) {

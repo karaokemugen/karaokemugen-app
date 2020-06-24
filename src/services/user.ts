@@ -822,7 +822,7 @@ export async function updateSongsLeft(username: string, playlist_id?: number) {
 	const conf = getConfig();
 	const user = await findUserByName(username);
 	let quotaLeft: number;
-	if (!playlist_id) playlist_id = getState().modePlaylistID;
+	if (!playlist_id) playlist_id = getState().publicPlaylistID;
 	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 		switch(+conf.Karaoke.Quota.Type) {
 		default:
@@ -872,7 +872,7 @@ export async function updateUserQuotas(kara: PLC) {
 	}
 	await Promise.all(freeTasks);
 	usersNeedingUpdate.forEach(username => {
-		updateSongsLeft(username, state.modePlaylistID);
+		updateSongsLeft(username, state.publicPlaylistID);
 	});
 	profile('updateUserQuotas');
 }

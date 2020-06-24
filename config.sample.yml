@@ -95,8 +95,6 @@ Karaoke:
       Enabled: false
       OAuth: 'abcdefgh'
       Channel: 'AxelTerizaki'
-  # Private karaoke mode or public karaoke mode.
-  Private: true
   # Repeat playlist once reaching the end
   Repeat: false
   # In private mode try to insert songs in a smart way.

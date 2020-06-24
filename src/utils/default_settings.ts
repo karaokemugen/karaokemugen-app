@@ -112,7 +112,6 @@ export const defaults: Config = {
 	Karaoke: {
 		Autoplay: false,
 		ClassicMode: false,
-		Private: true,
 		SmartInsert: false,
 		Display: {
 			Avatar: true,

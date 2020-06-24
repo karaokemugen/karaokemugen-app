@@ -59,7 +59,6 @@ export interface Config {
 		OpenInElectron?: boolean,
 	}
 	Karaoke: {
-		Private?: boolean,
 		ClassicMode?: boolean,
 		StreamerMode: {
 			Enabled?: boolean,

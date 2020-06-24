@@ -446,10 +446,6 @@ SET flag_current = TRUE
 WHERE pk_id_playlist = $1;
 `;
 
-export const sqlunsetCurrentPlaylist = `
-UPDATE playlist SET flag_current = FALSE
-`;
-
 export const sqlsetVisiblePlaylist = `
 UPDATE playlist
 SET flag_visible = TRUE
@@ -461,12 +457,6 @@ UPDATE playlist
 SET flag_visible = TRUE
 WHERE pk_id_playlist = $1;
 `;
-
-export const sqlunsetPublicPlaylist = `
-UPDATE playlist
-SET flag_public = FALSE;
-`;
-
 
 export const sqlsetPublicPlaylist = `
 UPDATE playlist

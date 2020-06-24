@@ -34,9 +34,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 * Web interface for smartphone/tablet/PC ~~IE6 compatible~~
 * Highly customized experience to tailor the app to your specific needs (in front of a crowd, between friends, for karaoke contests, etc.)
 * Displays karaoke information or admin announcements during song playback
-* Public or private mode :
-  * In private mode (default) songs added by users are directly played one after the other in the current playlist
-  * In public mode, songs are added to a suggestion list. It's up to the admin to add songs from this list.
+* Playlists can be current (used by the video player) and/or public (where users can send songs to)
 * Export/import playlists and favorites
 * [REST API](http://mugen.karaokes.moe/apidoc) so you can create custom clients or web interfaces.
 * And many other things! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)

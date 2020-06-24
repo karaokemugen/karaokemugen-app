@@ -107,7 +107,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		typeClauses = `${typeClauses} AND ak.kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
-			WHERE pc.fk_id_playlist = ${getState().modePlaylistID}
+			WHERE pc.fk_id_playlist = ${getState().publicPlaylistID}
 		)`;
 	}
 	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause);

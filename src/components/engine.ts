@@ -44,8 +44,7 @@ export async function initEngine() {
 	const state = getState();
 	setState({
 		fullscreen: conf.Player.FullScreen,
-		ontop: conf.Player.StayOnTop,
-		private: conf.Karaoke.Private,
+		ontop: conf.Player.StayOnTop
 	});
 	if (state.opt.validate) {
 		try {

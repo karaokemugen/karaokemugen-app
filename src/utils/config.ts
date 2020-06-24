@@ -71,7 +71,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
 		const users = await listUsers();
 		for (const user of users) {
-			updateSongsLeft(user.login, getState().modePlaylistID);
+			updateSongsLeft(user.login, getState().publicPlaylistID);
 		}
 	}
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
@@ -132,8 +132,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	config.Online.Stats && !state.isDemo
 		? initStats(newConfig.Online.Stats === oldConfig.Online.Stats)
 		: stopStats();
-	// Toggling and updating settings
-	setState({private: config.Karaoke.Private});
 	// Toggling progressbar off if needs be
 	if (config.Player.ProgressBarDock && !state.isDemo) setProgressBar(-1);
 	if (!state.isDemo) configureHost();

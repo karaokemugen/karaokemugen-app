@@ -3,7 +3,6 @@
 import merge from 'lodash.merge';
 
 import { supportedFiles } from '../lib/utils/constants';
-import logger from '../lib/utils/logger';
 import {emit} from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
 // Types
@@ -19,7 +18,7 @@ let state: State = {
 	counterToSponsor: 0,
 	introPlayed: false,
 	encorePlayed: false,
-	private: true, // Karaoke Mode
+	status: 'stop', // [stop,play,pause] // general engine status
 	fullscreen: false,
 	ontop: true,
 	playlist: null,
@@ -43,20 +42,18 @@ let state: State = {
 	environment: process.env.SENTRY_ENVIRONMENT
 };
 
-let previousState = {...state};
-
 /** Get public state (to send to webapp users) */
 export function getPlayerState(): PublicState {
 	return {
 		currentlyPlaying: state.currentlyPlayingKara,
 		currentSessionID: state.currentSessionID,
+		status: state.status,
 		duration: state.player.duration,
 		fullscreen: state.player.fullscreen,
 		mute: state.player.mute,
 		onTop: state.ontop,
 		playerStatus: state.player.playerStatus,
 		playing: state.player.playing,
-		private: state.private,
 		showSubs: state.player.showsubs,
 		subText: state.player['sub-text'],
 		timePosition: state.player.timeposition,
@@ -80,7 +77,6 @@ export function getState() {
 /** Get public state */
 export function getPublicState(admin: boolean) {
 	return {
-		modePlaylistID: state.modePlaylistID,
 		appPath: admin ? state.appPath : undefined,
 		dataPath: admin ? state.dataPath : undefined,
 		os: admin ? state.os : undefined,
@@ -94,21 +90,7 @@ export function getPublicState(admin: boolean) {
 /** Set one or more settings in app state */
 export function setState(part: any) {
 	state = merge(state, part);
-	manageMode();
 	emit('stateUpdated', state);
 	emitPlayerState();
-	previousState = {...state};
 	return getState();
-}
-
-/** Change and display which karaoke mode we're on */
-function manageMode() {
-	state.private
-		? state.modePlaylistID = state.currentPlaylistID
-		: state.modePlaylistID = state.publicPlaylistID;
-	if (state.private !== previousState.private) {
-		state.private
-			? logger.info('[State] Karaoke mode switching to private')
-			: logger.info('[State] Karaoke mode switching to public');
-	}
 }

@@ -43,8 +43,6 @@ import {
 	setVisiblePlaylist as setVisiblePL,
 	shiftPosInPlaylist,
 	trimPlaylist as trimPL,
-	unsetCurrentPlaylist,
-	unsetPublicPlaylist,
 	unsetVisiblePlaylist as unsetVisiblePL,
 	updatePlaylistDuration,
 	updatePlaylistKaraCount,
@@ -184,16 +182,13 @@ export async function trimPlaylist(playlist_id: number, duration: number) {
 export async function setCurrentPlaylist(playlist_id: number) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw 'Playlist unknown';
-	if (pl.flag_public) throw 'PL_SET_CURRENT_PUBLIC_ERROR';
 	try {
 		const oldCurrentPlaylist_id = getState().currentPlaylistID;
-		await unsetCurrentAllPlaylists();
 		await setCurrentPL(playlist_id);
 		updatePlaylistLastEditTime(playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
 		setState({currentPlaylistID: playlist_id, introPlayed: false});
-		if (getState().private) emitWS('modePlaylistUpdated', playlist_id);
 		logger.info(`[Playlist] Playlist ${pl.name} is now current`);
 		return playlist_id;
 	} catch(err) {
@@ -223,13 +218,12 @@ export async function setPublicPlaylist(playlist_id: number) {
 	if (pl.flag_current) throw 'PL_SET_PUBLIC_CURRENT_ERROR';
 	try {
 		const oldPublicPlaylist_id = getState().publicPlaylistID;
-		await unsetPublicAllPlaylists();
 		await setPublicPL(playlist_id);
 		updatePlaylistLastEditTime(playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', oldPublicPlaylist_id);
 		setState({publicPlaylistID: playlist_id});
-		if (!getState().private) emitWS('modePlaylistUpdated', playlist_id);
+		emitWS('publicPlaylistUpdated', playlist_id);
 		logger.info(`[Playlist] Playlist ${pl.name} is now public`);
 		return playlist_id;
 	} catch(err) {
@@ -306,9 +300,6 @@ export async function editPlaylist(playlist_id: number, playlist: Playlist) {
 
 /** Create new playlist */
 export async function createPlaylist(name: string, opts: PlaylistOpts,username: string) {
-	if (+opts.current && +opts.public) throw 'A playlist cannot be current and public at the same time!';
-	if (+opts.public) await unsetPublicAllPlaylists();
-	if (+opts.current) await unsetCurrentAllPlaylists();
 	const playlist_id = await createPL({
 		name: name,
 		created_at: new Date(),
@@ -341,16 +332,6 @@ export async function getPlaylists(token: Token) {
 	const ret = await getPLs(seenFromUser);
 	profile('getPlaylists');
 	return ret;
-}
-
-/** Remove public property from all playlists */
-function unsetPublicAllPlaylists() {
-	return unsetPublicPlaylist();
-}
-
-/** Remove current property from all playlists */
-function unsetCurrentAllPlaylists() {
-	return unsetCurrentPlaylist();
 }
 
 /** Get playlist contents in a smaller format to speed up fetching data for internal use */
@@ -413,7 +394,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
 	const conf = getConfig();
 	const state = getState();
-	if (!playlist_id) playlist_id = state.modePlaylistID;
+	if (!playlist_id) playlist_id = state.publicPlaylistID;
 	const karas: string[] = (typeof kids === 'string') ? kids.split(',') : kids;
 	const [pl, kara] = await Promise.all([
 		getPlaylistInfo(playlist_id),
@@ -433,7 +414,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		if (user.type > 0) {
 			// If user is not admin
 			// Check if we're using correct playlist. User is only allowed to add to modePlaylist
-			if (playlist_id !== state.modePlaylistID) throw 'User is not allowed to add to this playlist';
+			if (playlist_id !== state.publicPlaylistID) throw 'User is not allowed to add to this playlist';
 			// Check user quota first
 			if (!await isUserAllowedToAddKara(playlist_id, user, kara.duration)) {
 				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
@@ -685,7 +666,7 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 		updatePlaylistLastEditTime(playlist_id);
 		const state = getState();
 		// If we're adding to the current playlist ID and KM's mode is public, we have to notify users that their song has been added and will be playing in xxx minutes
-		if (playlist_id === state.currentPlaylistID && !state.private) {
+		if (playlist_id === state.currentPlaylistID && playlist_id !== state.publicPlaylistID) {
 			plcList.forEach(plc => notifyUserOfSongPlayTime(plc.playlistcontent_id, plc.username));
 		}
 		return playlist_id;

@@ -12,7 +12,6 @@ export interface State {
 	currentPlaylistID?: number,
 	currentSessionID?: string,
 	publicPlaylistID?: number,
-	modePlaylistID?: number,
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,
 	currentlyPlayingKara?: string,
@@ -23,7 +22,6 @@ export interface State {
 	introPlayed?: boolean,
 	encorePlayed?: boolean,
 	status?: 'stop' |  'play' | 'pause',
-	private?: boolean,
 	fullscreen?: boolean,
 	ontop?: boolean,
 	playlist?: null,
@@ -86,7 +84,7 @@ export interface State {
 
 export interface PublicState {
 	playing: boolean,
-	private: boolean,
+	status: string,
 	onTop: boolean,
 	fullscreen: boolean,
 	timePosition: number,
