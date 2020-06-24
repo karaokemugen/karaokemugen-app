@@ -109,7 +109,7 @@ class App extends Component<{}, IState> {
 		const res = await axios.get('/settings');
 		store.setConfig(res.data.config);
 		store.setVersion(res.data.version);
-		store.setModePlaylistID(res.data.state.modePlaylistID);
+		store.setPublicPlaylistID(res.data.state.publicPlaylistID);
 		store.setDefaultLocaleApp(res.data.state.defaultLocale);
 		this.setState({
 			config: res.data.config, electron: res.data.state.electron, os: res.data.state.os,

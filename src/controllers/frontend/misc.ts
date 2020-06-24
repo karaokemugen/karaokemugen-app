@@ -70,7 +70,7 @@ export default function miscController(router: Router) {
  * 			image: "AxelAcrobate.jpg"
  * 		},
  *   state: {
- * 		modePlaylistID: 38291
+ * 		publicPlaylistID: 38291
  *   }
  * }
  */

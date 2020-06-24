@@ -14,7 +14,7 @@ let tuto:any;
 let config:Config;
 let logInfos:Token|undefined;
 let version:Version;
-let modePlaylistID:number;
+let publicPlaylistID:number;
 let defaultLocaleApp:string;
 let user:User|undefined;
 let navigatorLanguage:string = languages.alpha2ToAlpha3B(navigator.languages[0].substring(0, 2));
@@ -108,12 +108,12 @@ class Store extends EventEmitter {
 		version = ver;
 	}
 
-	getModePlaylistID() {
-		return modePlaylistID;
+	getPublicPlaylistID() {
+		return publicPlaylistID;
 	}
 
-	setModePlaylistID(modePlaylist:number) {
-		modePlaylistID = modePlaylist;;
+	setPublicPlaylistID(publicPlaylist:number) {
+		publicPlaylistID = publicPlaylist;;
 	}
 
 	getDefaultLocaleApp() {

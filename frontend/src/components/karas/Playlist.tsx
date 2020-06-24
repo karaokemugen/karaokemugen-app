@@ -120,10 +120,10 @@ class Playlist extends Component<IProps, IState> {
 			this.playlistContentsUpdated(idPlaylist);
 		});
 		store.addChangeListener('loginUpdated', this.initCall);
-		getSocket().on('modePlaylistUpdated', (idPlaylist:number) => {
+		getSocket().on('publicPlaylistUpdated', (idPlaylist:number) => {
 			if (this.props.scope !== 'admin' && this.props.side 
-				&& idPlaylist !== store.getModePlaylistID()) {
-				store.setModePlaylistID(idPlaylist);
+				&& idPlaylist !== store.getPublicPlaylistID()) {
+				store.setPublicPlaylistID(idPlaylist);
 				this.changeIdPlaylist(idPlaylist);
 			}
 		});
@@ -270,7 +270,7 @@ noRowsRenderer = () => {
   		value =
         this.props.side === 1 && this.props.config.Frontend.Mode !== 1
         	? -1
-        	: store.getModePlaylistID();
+        	: store.getPublicPlaylistID();
   	} else {
   		let plVal1Cookie = localStorage.getItem('mugenPlVal1');
   		let plVal2Cookie = localStorage.getItem('mugenPlVal2');
@@ -282,7 +282,7 @@ noRowsRenderer = () => {
   		if (this.props.side === 1) {
 			value = plVal1Cookie != null && Number(plVal1Cookie) !== NaN ? Number(plVal1Cookie) : -1;
   		} else {
-			value = plVal2Cookie != null && Number(plVal2Cookie) !== NaN ? Number(plVal2Cookie)  : store.getModePlaylistID();
+			value = plVal2Cookie != null && Number(plVal2Cookie) !== NaN ? Number(plVal2Cookie)  : store.getPublicPlaylistID();
   		}
 	  }
   	this.setState({ idPlaylist: value });

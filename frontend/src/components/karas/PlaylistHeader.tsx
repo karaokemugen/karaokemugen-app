@@ -128,7 +128,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 			  if (this.props.idPlaylist === -4) {
 				this.props.changeIdPlaylist(-4);
 			  } else {
-				this.props.changeIdPlaylist(store.getModePlaylistID());
+				this.props.changeIdPlaylist(store.getPublicPlaylistID());
 			  }
   		}
   	});
@@ -306,8 +306,8 @@ class PlaylistHeader extends Component<IProps,IState> {
 
 	getListToSelect = () => {
 		if (this.props.scope === 'public' && this.props.side === 1 && this.props.config.Frontend.Mode === 1) {
-			return [{value: store.getModePlaylistID().toString(), 
-				label: this.props.playlistList.filter(pl => pl.playlist_id === store.getModePlaylistID())[0].name}];
+			return [{value: store.getPublicPlaylistID().toString(), 
+				label: this.props.playlistList.filter(pl => pl.playlist_id === store.getPublicPlaylistID())[0].name}];
 		}
 		if (this.props.scope === 'public' && this.props.side === 1) {
 			return [{value: '-1', label: i18next.t('PLAYLIST_KARAS')}, {value: '-5', label: i18next.t('PLAYLIST_FAVORITES')}];
@@ -507,7 +507,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 								<select className="selectPlaylist"
 									value={this.props.idPlaylist} onChange={(e) => this.props.changeIdPlaylist(Number(e.target.value))}>
 									{(this.props.scope === 'public' && this.props.side === 1 && this.props.config.Frontend.Mode === 1) ?
-										<option value={store.getModePlaylistID()} >{this.props.playlistList.filter(pl => pl.playlist_id === store.getModePlaylistID())[0].name}</option> :
+										<option value={store.getPublicPlaylistID()} >{this.props.playlistList.filter(pl => pl.playlist_id === store.getPublicPlaylistID())[0].name}</option> :
 										this.props.scope === 'public' && this.props.side === 1 ? (
 											<React.Fragment>
 												<option value={-1}>{i18next.t('PLAYLIST_KARAS')}</option>

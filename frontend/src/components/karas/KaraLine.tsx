@@ -262,7 +262,7 @@ class KaraLine extends Component<IProps,IState> {
 						  <button className={'likeKara btn btn-sm btn-action ' + (this.state.isLike ? 'currentLike' : '')}
   							onClick={this.likeKara}><i className="fas fa-thumbs-up"></i></button> : null}
 						{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && logInfos && kara.username == logInfos.username 
-						  	&& (idPlaylist == store.getModePlaylistID()) ?
+						  	&& (idPlaylist == store.getPublicPlaylistID()) ?
   							<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
   								onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
   					</div>
