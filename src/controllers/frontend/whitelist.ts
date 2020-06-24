@@ -119,7 +119,6 @@ export default function whitelistController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 201 Created
- * {code: "WL_SONG_ADDED"}
  * @apiError WL_ADD_SONG_ERROR Karaoke couldn't be added to whitelist
  *
  * @apiErrorExample Error-Response:
@@ -135,7 +134,7 @@ export default function whitelistController(router: Router) {
 					await addKaraToWhitelist(req.body.kid, req.body.reason);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
-					res.status(201).json(APIMessage('WL_SONG_ADDED'));
+					res.status(201).json();
 				} catch(err) {
 					const code = 'WL_ADD_SONG_ERROR';
 					errMessage(code, err);
@@ -159,7 +158,6 @@ export default function whitelistController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {code: "WL_SONG_DELETED"}
  * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
  *
  */
@@ -174,7 +172,7 @@ export default function whitelistController(router: Router) {
 					await deleteKaraFromWhitelist(req.body.kid);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
-					res.status(200).json(APIMessage('WL_SONG_DELETED'));
+					res.status(200).json();
 				} catch(err) {
 					const code = 'WL_DELETE_SONG_ERROR';
 					errMessage(code, err);

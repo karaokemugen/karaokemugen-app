@@ -177,7 +177,6 @@ export default function blacklistController(router: Router) {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 201 Created
-	 * "BLC_ADDED"
 	 * @apiError BLC_ADD_ERROR Blacklist criteria could not be added
 	 *
 	 * @apiErrorExample Error-Response:
@@ -194,7 +193,7 @@ export default function blacklistController(router: Router) {
 				try {
 					await addBlacklistCriteria(req.body.blcriteria_type, req.body.blcriteria_value, req.params.set_id);
 					emitWS('blacklistUpdated');
-					res.status(201).json(APIMessage('BLC_ADDED'));
+					res.status(201).json();
 				} catch(err) {
 					const code = 'BLC_ADD_ERROR';
 					errMessage(code, err);
@@ -224,7 +223,6 @@ export default function blacklistController(router: Router) {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * "BLC_DELETED"
 	 * @apiError BLC_DELETE_ERROR Unable to delete Blacklist criteria
 	 *
 	 * @apiErrorExample Error-Response:
@@ -235,7 +233,7 @@ export default function blacklistController(router: Router) {
 			try {
 				await deleteBlacklistCriteria(req.params.blc_id, req.params.set_id);
 				emitWS('blacklistUpdated');
-				res.status(200).json(APIMessage('BLC_DELETED'));
+				res.status(200).json();
 			} catch(err) {
 				const code = 'BLC_DELETE_ERROR';
 				errMessage(code, err);

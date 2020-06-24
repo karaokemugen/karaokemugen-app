@@ -34,7 +34,6 @@ export default function miscController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {code: "SHUTDOWN_IN_PROGRESS"}
  *
  */
 	router.route('/shutdown')
@@ -42,7 +41,7 @@ export default function miscController(router: Router) {
 		// Sends command to shutdown the app.
 			try {
 				shutdown();
-				res.status(200).json(APIMessage('SHUTDOWN_IN_PROGRESS'));
+				res.status(200).json();
 			} catch(err) {
 				const code = 'SHUTDOWN_ERROR';
 				errMessage(code, err);

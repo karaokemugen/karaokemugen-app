@@ -82,10 +82,7 @@ describe('Blacklist', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(201)
-			.then(response => {
-				strictEqual(response.body.code,'BLC_ADDED');
-			});
+			.expect(201);
 	});
 
 	let blc_id;
@@ -119,10 +116,7 @@ describe('Blacklist', function() {
 			.delete('/api/blacklist/set/1/criterias/'+blc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.code,'BLC_DELETED');
-			});
+			.expect(200);
 	});
 
 	it('Empty list of blacklist criterias', function() {
@@ -144,10 +138,7 @@ describe('Favorites', function() {
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.send(data)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.code,'FAVORITES_ADDED');
-			});
+			.expect(200);
 	});
 
 	let favoritesExport;
@@ -198,10 +189,7 @@ describe('Favorites', function() {
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.send(data)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.code,'FAVORITES_DELETED');
-			});
+			.expect(200);
 	});
 
 
@@ -446,10 +434,7 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(201)
-			.then(response => {
-				strictEqual(response.body.code, 'PL_SONG_COPIED');
-			});
+			.expect(201);
 	});
 
 	it('Add karaoke to public playlist', function() {
@@ -504,10 +489,7 @@ describe('Playlists', function() {
 			.put('/api/playlists/1/shuffle')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.code, 'PL_SHUFFLED');
-			});
+			.expect(200);
 	});
 
 	it('Export a playlist', function() {
@@ -566,10 +548,7 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.code,'PL_UPDATED');
-			});
+			.expect(200);
 	});
 
 	it('Get list of playlists', function() {
@@ -662,10 +641,7 @@ describe('Playlists', function() {
 			.put('/api/playlists/'+playlist+'/setCurrent')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.code, 'PL_SET_CURRENT');
-			});
+			.expect(200);
 	});
 
 	it('Set playlist to public', function() {
@@ -673,10 +649,7 @@ describe('Playlists', function() {
 			.put('/api/playlists/'+new_playlist_public_id+'/setPublic')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.code, 'PL_SET_PUBLIC');
-			});
+			.expect(200);
 	});
 
 	it('Up/downvote a song in public playlist Error 500', function() {
@@ -860,10 +833,7 @@ describe('Whitelist', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(201)
-			.then(response => {
-				strictEqual(response.body.code,'WL_SONG_ADDED');
-			});
+			.expect(201);
 	});
 
 	it('Get whitelist', function() {
@@ -887,10 +857,7 @@ describe('Whitelist', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.code,'WL_SONG_DELETED');
-			});
+			.expect(200);
 	});
 
 	it('Empty whitelist', function() {

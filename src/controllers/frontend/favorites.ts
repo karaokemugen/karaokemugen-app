@@ -132,7 +132,6 @@ export default function favoritesController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "FAVORITES_ADDED"
  * @apiError FAVORITES_ADDED_ERROR Unable to add songs to the playlist
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
@@ -149,7 +148,7 @@ export default function favoritesController(router: Router) {
 				try {
 					await addToFavorites(req.authToken.username, req.body.kid);
 					emitWS('favoritesUpdated', req.authToken.username);
-					res.status(200).json(APIMessage('FAVORITES_ADDED'));
+					res.status(200).json();
 				} catch(err) {
 					const code = 'FAVORITES_ADDED_ERROR';
 					errMessage(code, err);
@@ -173,7 +172,6 @@ export default function favoritesController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "FAVORITES_DELETED"
  * @apiError FAVORITES_DELETED_ERROR Unable to delete the favorited song
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
@@ -192,7 +190,7 @@ export default function favoritesController(router: Router) {
 				try {
 					await deleteFavorites(req.authToken.username, req.body.kid );
 					emitWS('favoritesUpdated', req.authToken.username);
-					res.status(200).json(APIMessage('FAVORITES_DELETED'));
+					res.status(200).json();
 				} catch(err) {
 					const code = 'FAVORITES_DELETED_ERROR';
 					errMessage(code, err);

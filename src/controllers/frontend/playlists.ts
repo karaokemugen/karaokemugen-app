@@ -177,7 +177,6 @@ export default function playlistsController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {code: "PL_UPDATED"}
  * @apiError PL_UPDATE_ERROR Unable to update a playlist
  *
  * @apiErrorExample Error-Response:
@@ -198,7 +197,7 @@ export default function playlistsController(router: Router) {
 					await editPlaylist(req.params.pl_id,req.body);
 					emitWS('playlistInfoUpdated',req.params.pl_id);
 					emitWS('playlistsUpdated');
-					res.status(200).json(APIMessage('PL_UPDATED'));
+					res.status(200).json();
 				} catch(err) {
 					const code = 'PL_UPDATE_ERROR';
 					errMessage(code, err);
@@ -287,7 +286,6 @@ export default function playlistsController(router: Router) {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * {code: "PL_SET_CURRENT"}
 	 * @apiError PL_SET_CURRENT_ERROR Unable to set this playlist to current. The playlist is a public one and can't be set to current at the same time. First set another playlist as public so this playlist has no flags anymore and can be set current.
 	 *
 	 * @apiErrorExample Error-Response:
@@ -298,7 +296,7 @@ export default function playlistsController(router: Router) {
 			try {
 				await setCurrentPlaylist(req.params.pl_id);
 				emitWS('playlistInfoUpdated',req.params.pl_id);
-				res.status(200).json(APIMessage('PL_SET_CURRENT'));
+				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_SET_CURRENT_ERROR';
 				errMessage(code, err);
@@ -320,7 +318,6 @@ export default function playlistsController(router: Router) {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * {code: "PL_SET_PUBLIC"}
 	 * @apiError PL_SET_PUBLIC_ERROR Unable to set this playlist to public. The playlist is a current one and can't be set to public at the same time. First set another playlist as current so this playlist has no flags anymore and can be set public.
 	 *
 	 * @apiErrorExample Error-Response:
@@ -331,7 +328,7 @@ export default function playlistsController(router: Router) {
 			try {
 				await setPublicPlaylist(req.params.pl_id);
 				emitWS('playlistInfoUpdated',req.params.pl_id);
-				res.status(200).json(APIMessage('PL_SET_PUBLIC'));
+				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_SET_PUBLIC_ERROR';
 				errMessage(code, err);
@@ -453,7 +450,6 @@ export default function playlistsController(router: Router) {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * {code: "PL_SONG_COPIED"}
 	 * @apiError PL_COPY_SONG_ERROR Unable to copy karaoke song to the destination playlist
 	 *
 	 * @apiErrorExample Error-Response:
@@ -469,7 +465,7 @@ export default function playlistsController(router: Router) {
 				try {
 					const pl_id = await	copyKaraToPlaylist(req.body.plc_id,+req.params.pl_id,+req.body.pos);
 					emitWS('playlistContentsUpdated', pl_id);
-					res.status(201).json(APIMessage('PL_SONG_COPIED'));
+					res.status(201).json();
 				} catch(err) {
 					const code = 'PL_SONG_COPY_ERROR';
 					errMessage(code, err);
@@ -806,7 +802,6 @@ export default function playlistsController(router: Router) {
  * @apiSuccess {Number} data ID of playlist shuffled
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {code: "PL_SHUFFLED"}
  * @apiError PL_SHUFFLE_ERROR Unable to shuffle playlist
  *
  * @apiErrorExample Error-Response:
@@ -817,7 +812,7 @@ export default function playlistsController(router: Router) {
 			try {
 				await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
 				emitWS('playlistContentsUpdated', req.params.pl_id);
-				res.status(200).json(APIMessage('PL_SHUFFLED'));
+				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_SHUFFLE_ERROR';
 				errMessage(code, err);
