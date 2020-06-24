@@ -455,7 +455,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Add karaoke to current/public playlist', function() {
+	it('Add karaoke to public playlist', function() {
 		return request
 			.post('/api/karas/495e2635-38a9-42db-bdd0-df4d27329c87')
 			.set('Accept', 'application/json')
@@ -603,9 +603,9 @@ describe('Playlists', function() {
 	});
 
 
-	it('List contents from current playlist', function() {
+	it('List contents 	from public playlist', function() {
 		return request
-			.get('/api/playlists/' + current_playlist_id + '/karas')
+			.get('/api/playlists/' + new_playlist_public_id + '/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -624,7 +624,7 @@ describe('Playlists', function() {
 			flag_playing: true
 		};
 		return request
-			.put('/api/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
+			.put('/api/playlists/'+new_playlist_public_id+'/karas/'+current_plc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -636,7 +636,7 @@ describe('Playlists', function() {
 			pos: 1
 		};
 		return request
-			.put('/api/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
+			.put('/api/playlists/'+new_playlist_public_id+'/karas/'+current_plc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
