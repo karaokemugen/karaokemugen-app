@@ -66,7 +66,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			oldConfig.Player.Volume === newConfig.Player.Volume
 		) playerNeedsRestart();
 	}
-	if (newConfig.Online.URL && state.ready && !state.isDemo) publishURL();
+	if (newConfig.Online.URL !== newConfig.Online.URL && state.ready && !state.isDemo) publishURL();
 	// Updating quotas
 	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
 		const users = await listUsers();
