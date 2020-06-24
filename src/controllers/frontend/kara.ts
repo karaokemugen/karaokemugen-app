@@ -532,7 +532,7 @@ export default function karaController(router: Router) {
 				});
 			} catch(err) {
 				errMessage(err.code, err);
-				res.status(500).json(APIMessage(err.code, {message: err.message, data: err.data}));
+				res.status(500).json(APIMessage(err.code, err.message));
 			}
 		})
 	/**
