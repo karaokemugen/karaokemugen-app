@@ -131,8 +131,10 @@ class Player {
 			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
+			'--no-config',
+			'--load-scripts=no',
+			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
-			'--autoload-files=no'
 		];
 
 		if (options.monitor) {
@@ -347,7 +349,7 @@ class Player {
 		}, {
 			retries: 3,
 			onFailedAttempt: error => {
-				logger.warn(`[Player] Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
+				logger.warn(`[Player] Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...: ${error.toString()}`);
 			}
 		}).catch(err => {
 			logger.error(`[Player] Cannot start MPV: ${err.toString()}`);
