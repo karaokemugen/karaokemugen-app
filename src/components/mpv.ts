@@ -36,7 +36,7 @@ let players: {
 
 type PlayerType = 'main' | 'monitor';
 
-const playerState: PlayerState = {
+let playerState: PlayerState = {
 	volume: 100,
 	playing: false,
 	playerStatus: 'stop',
@@ -54,8 +54,30 @@ const playerState: PlayerState = {
 	monitorEnabled: false,
 	songNearEnd: false,
 	nextSongNotifSent: false,
-	displayingInfo: false
+	displayingInfo: false,
+	isOperating: false
 };
+
+async function waitForLockRelease() {
+	if (playerState.isOperating) logger.debug('[Player] Waiting for lock...');
+	while (playerState.isOperating) {
+		await sleep(100);
+	}
+	return;
+}
+
+async function acquireLock() {
+	await waitForLockRelease();
+	logger.debug('[Player] Lock acquired');
+	playerState.isOperating = true;
+	return true;
+}
+
+function releaseLock() {
+	logger.debug('[Player] Lock released');
+	playerState.isOperating = false;
+	return true;
+}
 
 function emitPlayerState() {
 	setState({player: playerState});
@@ -265,7 +287,7 @@ class Player {
 			playerState._playing = false;
 			playerState.playerStatus = 'stop';
 			exec('pause', [], true, this.options.monitor ? 'main':'monitor');
-			this.isRunning = false;
+			this.running = false;
 			this.recreate();
 			emitPlayerState();
 		});
@@ -276,7 +298,7 @@ class Player {
 			playerState._playing = false;
 			playerState.playerStatus = 'stop';
 			exec('pause', [], true, this.options.monitor ? 'main':'monitor');
-			this.isRunning = false;
+			this.running = false;
 			// In case of a crash, restart immediately
 			this.recreate(null, true);
 			emitPlayerState();
@@ -305,12 +327,21 @@ class Player {
 	async start() {
 		await retry(async () => {
 			await this.mpv.start().catch(err => {
+				if (err.errcode === 6) {
+					// It's already started!
+					this.running = true;
+					logger.warn('[Player] A start command was executed, but the player is already running. Not normal.');
+					return;
+				}
 				throw new Error(JSON.stringify(err));
 			});
-			if (!this.mpv.isRunning()) throw new Error('Sanity check failed: mpv isRunning() is false after start()');
-			else return true;
+			while (!this.mpv.isRunning()) { // MPV seems to take time before it is ready to take commands on slow platforms.
+				await sleep(100);
+			}
+			return true;
 		}, {
 			retries: 3,
+			maxTimeout: 5000,
 			onFailedAttempt: error => {
 				logger.warn(`[Player] Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
 			}
@@ -354,7 +385,7 @@ class Player {
 	}
 
 	get isRunning() {
-		if (this.running === false) return this.running;
+		if (this.running) return this.running;
 		else return this.mpv.isRunning();
 	}
 
@@ -405,8 +436,7 @@ async function extractBackgroundFiles(backgroundDir: string): Promise<string[]> 
 
 async function ensureRunning(onlyOn?: PlayerType) {
 	try {
-		// Refresh monitor setting
-		playerState.monitorEnabled = getConfig().Player.Monitor;
+		await waitForLockRelease();
 		const loads = [];
 		if (onlyOn) {
 			if (players[onlyOn]) {
@@ -506,6 +536,7 @@ export async function initPlayerSystem() {
 	playerState.monitorEnabled = conf.Player.Monitor;
 	emitPlayerState();
 	try {
+		await acquireLock();
 		const mpvVersion = await checkMpv();
 		players = {
 			main: new Player({monitor: false, mpvVersion})
@@ -513,6 +544,7 @@ export async function initPlayerSystem() {
 		if (playerState.monitorEnabled) players.monitor = new Player({monitor: true, mpvVersion});
 		logger.debug(`[Player] Players: ${JSON.stringify(Object.keys(players))}`);
 		await exec('start');
+		releaseLock();
 		await loadBackground();
 	} catch (err) {
 		errorStep(i18n.t('ERROR_START_PLAYER'));
@@ -523,14 +555,32 @@ export async function initPlayerSystem() {
 }
 
 export async function quitMpv() {
-	return await exec('destroy').catch(err => {
+	await acquireLock();
+	return await exec('destroy').then(releaseLock).catch(err => {
 		// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
 		logger.warn(`[Player] Failed to quit mpv: ${err}`);
 	});
 }
 
 export async function restartMpv() {
-	return await exec('recreate').catch(err => {
+	// We lock any future commands to prevent multiple recreations
+	await acquireLock();
+	// Check change in monitor setting
+	if (playerState.monitorEnabled !== getConfig().Player.Monitor) {
+		// Determine if we have to destroy the monitor or create it.
+		// Refresh monitor setting
+		playerState.monitorEnabled = getConfig().Player.Monitor;
+		if (playerState.monitorEnabled) {
+			// Monitor needs to be created
+			const mpvVersion = await checkMpv();
+			players.monitor = new Player({monitor: true, mpvVersion});
+		} else {
+			// Monitor needs to be destroyed
+			await exec('destroy', null, false, 'monitor');
+			delete players.monitor;
+		}
+	}
+	return await exec('recreate', [null, true]).then(releaseLock).catch(err => {
 		logger.error(`[Player] Cannot restart mpv: ${JSON.stringify(err)}`);
 	});
 }
@@ -614,6 +664,7 @@ export async function play(mediaData: MediaData): Promise<PlayerState> {
 		});
 		logger.debug(`[Player] File ${mediaFile} loaded`);
 		playerState.mediaType = 'song';
+		playerState._playing = true;
 		await exec('play', null, true);
 		playerState.playerStatus = 'play';
 		if (subFile) {
@@ -625,9 +676,9 @@ export async function play(mediaData: MediaData): Promise<PlayerState> {
 		// Loaded!
 		displaySongInfo(mediaData.infos, 8000, false, mediaData.spoiler);
 		playerState.currentSong = mediaData;
-		playerState._playing = true;
 		playerState.songNearEnd = false;
 		playerState.nextSongNotifSent = false;
+		playerState.playing = true;
 		emitPlayerState();
 		setDiscordActivity('song', {
 			title: mediaData.currentSong.title,

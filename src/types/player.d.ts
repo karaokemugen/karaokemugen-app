@@ -18,7 +18,8 @@ export interface PlayerState {
 	monitorEnabled?: boolean,
 	displayingInfo?: boolean,
 	songNearEnd?: boolean,
-	nextSongNotifSent?: boolean
+	nextSongNotifSent?: boolean,
+	isOperating?: boolean
 }
 
 export interface mpvStatus {
