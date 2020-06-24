@@ -486,6 +486,7 @@ async function loadBackground() {
 	logger.debug(`[Player] Background selected : ${backgroundImageFile}`);
 	try {
 		playerState.mediaType = 'background';
+		playerState.playerStatus = 'stop';
 		emitPlayerState();
 		await exec('load', [backgroundImageFile, 'replace'], true);
 	} catch(err) {
