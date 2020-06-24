@@ -15,7 +15,7 @@ import i18next from 'i18next';
 import AdminMessageModal from './modals/AdminMessageModal';
 import axios from 'axios';
 import { Config } from '../../../src/types/config';
-import { PublicState } from '../../../src/types/state';
+import { PublicPlayerState } from '../../../src/types/state';
 import { Tag } from '../types/tag';
 import { Token } from '../../../src/lib/types/user';
 
@@ -33,7 +33,7 @@ interface IState {
 	searchMenuOpen1: boolean;
 	searchMenuOpen2: boolean;
 	mobileMenu: boolean;
-	statusPlayer?: PublicState;
+	statusPlayer?: PublicPlayerState;
 	currentSide: number;
 	playlistList: Array<PlaylistElem>;
 }
@@ -61,7 +61,7 @@ class AdminPage extends Component<IProps, IState> {
 
 	async componentDidMount() {
 		if (is_touch_device()) {
-			getSocket().on('playerStatus', (data: PublicState) => {
+			getSocket().on('playerStatus', (data: PublicPlayerState) => {
 				let val = data.volume;
 				let base = 100;
 				let pow = 0.76;

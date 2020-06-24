@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import i18next from 'i18next';
 import axios from 'axios';
 import { buildKaraTitle, getSocket } from '../tools';
-import { PublicState } from '../../../../src/types/state';
+import { PublicPlayerState } from '../../../../src/types/state';
 import store from '../../store';
 
 require('./ProgressBar.scss');
@@ -15,7 +15,7 @@ interface IProps {
 
 interface IState {
 	mouseDown: boolean;
-	oldState?: PublicState | undefined;
+	oldState?: PublicPlayerState | undefined;
 	refreshTime: number;
 	playerStatus?: string;
 	karaInfoText: string | JSX.Element;
@@ -81,7 +81,7 @@ class ProgressBar extends Component<IProps, IState> {
     /**
     * refresh the player infos
     */
-	refreshPlayerInfos = async (data: PublicState) => {
+	refreshPlayerInfos = async (data: PublicPlayerState) => {
 		let element = document.getElementById('karaInfo');
 		if (element) {
 			let newWidth = element.offsetWidth *

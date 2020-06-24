@@ -83,7 +83,7 @@ export interface State {
 	sentrytest: boolean
 }
 
-export interface PublicState {
+export interface PublicPlayerState {
 	playing: boolean,
 	onTop: boolean,
 	fullscreen: boolean,

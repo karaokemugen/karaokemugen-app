@@ -6,7 +6,7 @@ import RadioButton from './generic/RadioButton';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import store from '../store';
 import { Config } from '../../../src/types/config';
-import { PublicState } from '../../../src/types/state';
+import { PublicPlayerState } from '../../../src/types/state';
 
 interface IProps {
 	config: Config;
@@ -25,7 +25,7 @@ interface IProps {
 interface IState {
 	dropDownMenu: boolean;
 	songVisibilityOperator: boolean;
-	statusPlayer?: PublicState;
+	statusPlayer?: PublicPlayerState;
 }
 
 class AdminHeader extends Component<IProps, IState> {
@@ -41,7 +41,7 @@ class AdminHeader extends Component<IProps, IState> {
 	async componentDidMount() {
 		let result = await axios.get('/player');
 		await this.setState({ statusPlayer: result.data });
-		getSocket().on('playerStatus', (data: PublicState) => {
+		getSocket().on('playerStatus', (data: PublicPlayerState) => {
 			let val = data.volume;
 			let base = 100;
 			let pow = 0.76;

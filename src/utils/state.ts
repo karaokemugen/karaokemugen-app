@@ -6,7 +6,7 @@ import { supportedFiles } from '../lib/utils/constants';
 import {emit} from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
 // Types
-import {PublicState,State} from '../types/state';
+import {PublicPlayerState,State} from '../types/state';
 
 // Internal settings
 let state: State = {
@@ -44,7 +44,7 @@ let state: State = {
 };
 
 /** Get public state (to send to webapp users) */
-export function getPlayerState(): PublicState {
+export function getPlayerState(): PublicPlayerState {
 	return {
 		currentlyPlaying: state.currentlyPlayingKara,
 		currentSessionID: state.currentSessionID,
@@ -79,6 +79,7 @@ export function getState() {
 /** Get public state */
 export function getPublicState(admin: boolean) {
 	return {
+		publicPlaylistID: state.publicPlaylistID,
 		appPath: admin ? state.appPath : undefined,
 		dataPath: admin ? state.dataPath : undefined,
 		os: admin ? state.os : undefined,
