@@ -386,9 +386,6 @@ class PlaylistHeader extends Component<IProps,IState> {
   			}
 			{this.props.idPlaylist !== -4 ?
 				<React.Fragment>
-					<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
-						scope={this.props.scope} isHeader={true}
-						addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
 					<button
 						title={i18next.t('SELECT_ALL')}
 						name="selectAllKaras"
@@ -404,6 +401,9 @@ class PlaylistHeader extends Component<IProps,IState> {
 								: <i className="far fa-square"></i>
 						}
 					</button>
+					<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
+						scope={this.props.scope} isHeader={true}
+						addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
 				</React.Fragment> : null
 			}
   		</div>);
