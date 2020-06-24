@@ -70,8 +70,22 @@ import {findUserByName,updateSongsLeft} from './user';
 
 /** Test if basic playlists exist */
 export async function testPlaylists() {
-	await testCurrentPlaylist();
-	await testPublicPlaylist();
+	const currentPL_id = await findCurrentPlaylist();
+	const publicPL_id = await findPublicPlaylist();
+	if (!currentPL_id && !publicPL_id) {
+		// Initial state here, we create only one playlist
+		const pl_id = await createPlaylist(i18n.t('MY_PLAYLIST'),{
+			visible: true,
+			current: true,
+			public: true
+		}, 'admin');
+		setState({currentPlaylistID: pl_id, publicPlaylistID: pl_id});
+		logger.debug('[Playlist] Initial current playlist created');
+	} else {
+		// Testing current/public playlist individually.
+		await testCurrentPlaylist();
+		await testPublicPlaylist();
+	}
 }
 
 /** Getting position of the currently playing karaoke in a playlist */
