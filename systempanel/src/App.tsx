@@ -58,7 +58,7 @@ class App extends Component<{}, AppState> {
 		await isAlreadyLogged(this.context.globalDispatch);
 		this.setState({isInitialized: true});
 		socket.on('settingsUpdated', () => setSettings(this.context.globalDispatch));
-		this.setSentry();
+		if (!this.context.globalState.settings.data.state.sentrytest) this.setSentry();
 	}
 
 	render() {

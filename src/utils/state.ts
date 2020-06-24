@@ -38,7 +38,8 @@ let state: State = {
 	player: {},
 	opt: {},
 	args: [],
-	environment: process.env.SENTRY_ENVIRONMENT
+	environment: process.env.SENTRY_ENVIRONMENT,
+	sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean
 };
 
 /** Get public state (to send to webapp users) */
@@ -58,7 +59,8 @@ export function getPlayerState(): PublicState {
 		volume: state.player.volume,
 		currentRequester: state.currentRequester,
 		defaultLocale: state.defaultLocale,
-		environment: process.env.SENTRY_ENVIRONMENT
+		environment: process.env.SENTRY_ENVIRONMENT,
+		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean
 	};
 }
 

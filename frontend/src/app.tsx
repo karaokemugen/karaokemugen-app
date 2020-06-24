@@ -116,7 +116,7 @@ class App extends Component<{}, IState> {
 			dataPath: res.data.state.dataPath,
 			displaySetupPage: res.data.config.App.FirstRun && store.getLogInfos()?.username === 'admin'
 		});
-		this.setSentry(res.data.state.environment);
+		if (!res.data.state.sentrytest) this.setSentry(res.data.state.environment);
 	};
 
 	setSentry = (environment: string) => {

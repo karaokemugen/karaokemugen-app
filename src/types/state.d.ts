@@ -78,7 +78,8 @@ export interface State {
 		restoreDB?: boolean
 	},
 	args: string[],
-	environment: string
+	environment: string,
+	sentrytest: boolean
 }
 
 export interface PublicState {
@@ -96,5 +97,6 @@ export interface PublicState {
 	showSubs: boolean,
 	volume: number,
 	defaultLocale: string,
-	environment: string
+	environment: string,
+	sentrytest: boolean
 }
