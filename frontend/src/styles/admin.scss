@@ -48,10 +48,15 @@
 		float: right;
 	}
 
+	.KmAppHeaderDecorator {
+		justify-content: space-between;
+	}
+
 	.controls {
 		display: flex;
 		flex-direction: row;
 		float: left;
+		justify-content: center;
 	}
 
 	.checkboxKara {

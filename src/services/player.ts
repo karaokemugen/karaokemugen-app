@@ -494,7 +494,7 @@ async function restartPlayer() {
 }
 
 
-export async function sendCommand(command: string, options: any) {
+export async function sendCommand(command: string, options: any): Promise<string|undefined> {
 	// Resetting singlePlay to false everytime we use a command.
 	const state = getState();
 	if (commandInProgress) throw 'A command is already in progress';
@@ -521,6 +521,7 @@ export async function sendCommand(command: string, options: any) {
 			} catch(err) {
 				// Non-fatal, stopAfter can be triggered on the last song already.
 			}
+			return 'STOP_AFTER';
 		} else if (command === 'skip') {
 			setState({singlePlay: false, randomPlaying: false});
 			await next();

@@ -127,8 +127,8 @@ export default function playerController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					await sendCommand(req.body.command, req.body.options);
-					res.status(200).json();
+					const code = await sendCommand(req.body.command, req.body.options);
+					res.status(200).json(code ? {code}:undefined);
 				} catch(err) {
 					const code = 'COMMAND_SEND_ERROR';
 					errMessage(code, err);

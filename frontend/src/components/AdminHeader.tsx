@@ -81,10 +81,155 @@ class AdminHeader extends Component<IProps, IState> {
 
 		return (
 			<KmAppHeaderDecorator mode="admin">
+				<div className="header-group switchs visibilitySwitch">
+					<RadioButton
+						title={i18next.t('ENGINE_ADDED_SONG_VISIBILITY_ADMIN')}
+						orientation="vertical"
+						buttons={[
+							{
+								label: i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL'),
+								active: this.state.songVisibilityOperator,
+								activeColor: '#57bb00',
+								onClick: () => this.saveOperatorAdd(true),
+
+							},
+							{
+								label: i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY'),
+								active: !this.state.songVisibilityOperator,
+								activeColor: '#994240',
+								onClick: () => this.saveOperatorAdd(false),
+
+							}
+						]}
+					/>
+				</div>
+				<div className="header-group controls">
+					{
+						this.state.statusPlayer?.stopping ?
+							<button
+								title={i18next.t('STOP_NOW')}
+								id="stopNow"
+								data-namecommand="stopNow"
+								className="btn btn-danger buttonsNotMobile"
+								onClick={this.props.putPlayerCommando}
+							>
+								<i className="fas fa-stop"></i>
+							</button>:
+							<button
+								title={i18next.t('STOP_AFTER')}
+								id="stopAfter"
+								data-namecommand="stopAfter"
+								className="btn btn-danger-low"
+								onClick={this.props.putPlayerCommando}
+							>
+								<i className="fas fa-stop"></i>
+							</button>
+					}
+					<button
+						title={i18next.t('PREVIOUS_SONG')}
+						id="prev"
+						data-namecommand="prev"
+						className="btn btn-default"
+						onClick={this.props.putPlayerCommando}
+					>
+						<i className="fas fa-fast-backward"></i>
+					</button>
+					<button
+						title={i18next.t('PLAY_PAUSE')}
+						id="status"
+						data-namecommand={this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? 'pause' : 'play'}
+						className="btn btn-primary"
+						onClick={this.play}
+					>
+						{this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? (
+							<i className="fas fa-pause"></i>
+						) : (
+								<i className="fas fa-play"></i>
+							)}
+					</button>
+					<button
+						title={i18next.t('NEXT_SONG')}
+						id="skip"
+						data-namecommand="skip"
+						className="btn btn-default"
+						onClick={this.props.putPlayerCommando}
+					>
+						<i className="fas fa-fast-forward"></i>
+					</button>
+					<button
+						title={i18next.t('REWIND')}
+						id="goTo"
+						data-namecommand="goTo"
+						defaultValue="0"
+						className="btn btn-dark buttonsNotMobile"
+						onClick={this.props.putPlayerCommando}
+					>
+						<i className="fas fa-undo-alt"></i>
+					</button>
+				</div>
+
+
 				<button
 					className={`btn btn-dark sideButton ${this.props.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
 					type="button" onClick={this.props.changeCurrentSide}>
 					<i className="fas fa-tasks"></i>
+				</button>
+				<button
+					title={i18next.t('MESSAGE')}
+					id="adminMessage"
+					className="btn btn-dark messageButton buttonsNotMobile"
+					onClick={this.props.adminMessage}
+				>
+					<i className="fas fa-comment"></i>
+				</button>
+
+				<button
+					title={i18next.t('SHOW_HIDE_SUBS')}
+					id="showSubs"
+					data-namecommand={this.state.statusPlayer && this.state.statusPlayer.showSubs ? 'hideSubs' : 'showSubs'}
+					className="btn btn-dark subtitleButton buttonsNotMobile"
+					onClick={this.props.putPlayerCommando}
+				>
+					{this.state.statusPlayer && this.state.statusPlayer.showSubs ? (
+						<i className="fas fa-closed-captioning"></i>
+					) : (
+						<span className="fa-stack">
+							<i className="fas fa-closed-captioning fa-stack-1x"></i>
+							<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }}></i>
+						</span>
+					)}
+				</button>
+				<button
+					type="button"
+					title={i18next.t('MUTE_UNMUTE')}
+					className="btn btn-dark volumeButton"
+				>
+					<div id="mute"
+						 data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.mute)) ? "unmute" : "mute"}
+						 onClick={this.props.putPlayerCommando}
+					>
+						{
+							volume === 0 || this.state.statusPlayer && this.state.statusPlayer.mute
+								? <i className="fas fa-volume-mute"></i>
+								: (
+									volume > 66
+										? <i className="fas fa-volume-up"></i>
+										: (
+											volume > 33
+												? <i className="fas fa-volume-down"></i>
+												: <i className="fas fa-volume-off"></i>
+										)
+								)
+						}
+					</div>
+					<input
+						title={i18next.t('VOLUME_LEVEL')}
+						data-namecommand="setVolume"
+						id="volume"
+						defaultValue={volume}
+						type="range"
+						onMouseUp={this.props.putPlayerCommando}
+					/>
 				</button>
 				<div
 					className="dropdown buttonsNotMobile"
@@ -105,13 +250,13 @@ class AdminHeader extends Component<IProps, IState> {
 										this.setState({ dropDownMenu: !this.state.dropDownMenu });
 									}}
 								>
-									{this.props.options ? 
-									<React.Fragment>
-										<i className="fas fa-list-ul" />&nbsp;{i18next.t('CL_PLAYLISTS')}
-									</React.Fragment> :
-									<React.Fragment>
-										<i className="fas fa-cog" />&nbsp;{i18next.t('OPTIONS')}
-									</React.Fragment>
+									{this.props.options ?
+										<React.Fragment>
+											<i className="fas fa-list-ul" />&nbsp;{i18next.t('CL_PLAYLISTS')}
+										</React.Fragment> :
+										<React.Fragment>
+											<i className="fas fa-cog" />&nbsp;{i18next.t('OPTIONS')}
+										</React.Fragment>
 									}
 								</a>
 							</li>
@@ -144,148 +289,6 @@ class AdminHeader extends Component<IProps, IState> {
 							}
 						</ul> : null
 					}
-				</div>
-
-				<button
-					title={i18next.t('MESSAGE')}
-					id="adminMessage"
-					className="btn btn-dark messageButton buttonsNotMobile"
-					onClick={this.props.adminMessage}
-				>
-					<i className="fas fa-comment"></i>
-				</button>
-
-				<button
-					title={i18next.t('SHOW_HIDE_SUBS')}
-					id="showSubs"
-					data-namecommand={this.state.statusPlayer && this.state.statusPlayer.showSubs ? 'hideSubs' : 'showSubs'}
-					className="btn btn-dark subtitleButton buttonsNotMobile"
-					onClick={this.props.putPlayerCommando}
-				>
-					{this.state.statusPlayer && this.state.statusPlayer.showSubs ? (
-						<i className="fas fa-closed-captioning"></i>
-					) : (
-							<span className="fa-stack">
-								<i className="fas fa-closed-captioning fa-stack-1x"></i>
-								<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }}></i>
-							</span>
-						)}
-				</button>
-				<button
-					type="button"
-					title={i18next.t('MUTE_UNMUTE')}
-					className="btn btn-dark volumeButton"
-				>
-					<div id="mute"
-						data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.mute)) ? "unmute" : "mute"}
-						onClick={this.props.putPlayerCommando}
-					>
-						{
-							volume === 0 || this.state.statusPlayer && this.state.statusPlayer.mute
-								? <i className="fas fa-volume-mute"></i>
-								: (
-									volume > 66
-										? <i className="fas fa-volume-up"></i>
-										: (
-											volume > 33
-												? <i className="fas fa-volume-down"></i>
-												: <i className="fas fa-volume-off"></i>
-										)
-								)
-						}
-					</div>
-					<input
-						title={i18next.t('VOLUME_LEVEL')}
-						data-namecommand="setVolume"
-						id="volume"
-						defaultValue={volume}
-						type="range"
-						onMouseUp={this.props.putPlayerCommando}
-					/>
-				</button>
-
-				<div className="header-group switchs visibilitySwitch">
-					<RadioButton
-						title={i18next.t('ENGINE_ADDED_SONG_VISIBILITY_ADMIN')}
-						orientation="vertical"
-						buttons={[
-							{
-								label: i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL'),
-								active: this.state.songVisibilityOperator,
-								activeColor: '#57bb00',
-								onClick: () => this.saveOperatorAdd(true),
-
-							},
-							{
-								label: i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY'),
-								active: !this.state.songVisibilityOperator,
-								activeColor: '#994240',
-								onClick: () => this.saveOperatorAdd(false),
-
-							}
-						]}
-					></RadioButton>
-				</div>
-				<button
-					title={i18next.t('STOP_AFTER')}
-					id="stopAfter"
-					data-namecommand="stopAfter"
-					className="btn btn-danger-low"
-					onClick={this.props.putPlayerCommando}
-				>
-					<i className="fas fa-clock"></i>
-				</button>
-				<button
-					title={i18next.t('STOP_NOW')}
-					id="stopNow"
-					data-namecommand="stopNow"
-					className="btn btn-danger buttonsNotMobile"
-					onClick={this.props.putPlayerCommando}
-				>
-					<i className="fas fa-stop"></i>
-				</button>
-				<button
-					title={i18next.t('REWIND')}
-					id="goTo"
-					data-namecommand="goTo"
-					defaultValue="0"
-					className="btn btn-dark buttonsNotMobile"
-					onClick={this.props.putPlayerCommando}
-				>
-					<i className="fas fa-backward"></i>
-				</button>
-				<div className="header-group controls">
-					<button
-						title={i18next.t('PREVIOUS_SONG')}
-						id="prev"
-						data-namecommand="prev"
-						className="btn btn-default"
-						onClick={this.props.putPlayerCommando}
-					>
-						<i className="fas fa-chevron-left"></i>
-					</button>
-					<button
-						title={i18next.t('PLAY_PAUSE')}
-						id="status"
-						data-namecommand={this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? 'pause' : 'play'}
-						className="btn btn-primary"
-						onClick={this.play}
-					>
-						{this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? (
-							<i className="fas fa-pause"></i>
-						) : (
-								<i className="fas fa-play"></i>
-							)}
-					</button>
-					<button
-						title={i18next.t('NEXT_SONG')}
-						id="skip"
-						data-namecommand="skip"
-						className="btn btn-default"
-						onClick={this.props.putPlayerCommando}
-					>
-						<i className="fas fa-chevron-right"></i>
-					</button>
 				</div>
 			</KmAppHeaderDecorator>
 		);
