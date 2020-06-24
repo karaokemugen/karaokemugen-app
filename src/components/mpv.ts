@@ -206,6 +206,7 @@ class Player {
 					logger.debug(`[Player] mpv status: ${JSON.stringify(status)}`);
 				// If we're displaying an image, it means it's the pause inbetween songs
 				playerState[status.property] = status.value;
+				emitPlayerState();
 				if (playerState._playing && playerState.mediaType !== 'background' &&
 					(status.property === 'playtime-remaining' && status.value === 0) ||
 					(status.property === 'eof-reached' && status.value === true && playerState['playtime-remaining'])
@@ -214,10 +215,12 @@ class Player {
 					playerState.playing = false;
 					playerState._playing = false;
 					playerState.playerStatus = 'stop';
-					exec('pause', null, true);
-					playerEnding();
+					exec('pause', null, true).then(_res => {
+						return playerEnding();
+					}).then(_res => {
+						emitPlayerState();
+					});
 				}
-				emitPlayerState();
 			});
 			this.mpv.on('timeposition', (position: number) => {
 				const conf = getConfig();
@@ -484,9 +487,9 @@ async function loadBackground() {
 	backgroundImageFile = sample(backgroundFiles);
 	logger.debug(`[Player] Background selected : ${backgroundImageFile}`);
 	try {
-		await exec('load', [backgroundImageFile, 'replace'], true);
 		playerState.mediaType = 'background';
 		emitPlayerState();
+		await exec('load', [backgroundImageFile, 'replace'], true);
 	} catch(err) {
 		const errStr = `Unable to load background: ${JSON.stringify(err)}`;
 		logger.error(`[Player] ${errStr}`);
