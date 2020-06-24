@@ -32,6 +32,15 @@ export async function postMigrationTasks(migrations: Migration[]) {
 				}
 			}
 			break;
+		case 'addPlaylistTriggers':
+			if (app) {
+				await dialog.showMessageBox(win, {
+					type: 'info',
+					title: i18next.t('NO_KARAOKE_MODE_ANYMORE.TITLE'),
+					message: i18next.t('NO_KARAOKE_MODE_ANYMORE.MESSAGE')
+				});
+			}
+			break;
 		default:
 		}
 		if (breakFromLoop) break;

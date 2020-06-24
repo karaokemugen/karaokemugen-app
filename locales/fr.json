@@ -94,7 +94,11 @@
 		"BUG_REPORT": "Rapporter un bug"
 	},
 	"BASE_UPDATE_NEEDED": "Mise à jour de votre base de karaokés nécessaire",
-	"BASE_UPDATE_BULLDOZERSERIES": "Nous avons changé la façon dont les séries sont gérées. Karaoke Mugen doit retélécharger les métadonnées (pas les médias) de vos karaokés. Voulez-vous continuer ?\n\nSi vous cliquez sur Non, vous devrez retélécharger vous-même vos chansons, ou mettre à jour votre base par un moyen externe.\n\nNe cliquez pas sur Oui si vous êtes mainteneur d'une base de karaoké.",
+	"BASE_UPDATE_BULLDOZERSERIES": "Nouveauté 4.0 :\n\nNous avons changé la façon dont les séries sont gérées. Karaoke Mugen doit retélécharger les métadonnées (pas les médias) de vos karaokés. Voulez-vous continuer ?\n\nSi vous cliquez sur Non, vous devrez retélécharger vous-même vos chansons, ou mettre à jour votre base par un moyen externe.\n\nNe cliquez pas sur Oui si vous êtes mainteneur d'une base de karaoké.",
+	"NO_KARAOKE_MODE_ANYMORE": {
+		"TITLE": "Plus de mode de karaoké !",
+		"MESSAGE": "Nouveauté 4.0 :\n\nLe mode public/privé a disparu ! Et il ne reviendra jamais ! *musique dramatique*\n\nLes playlists peuvent maintenant à la fois avoir l'état publique et courante :\n\n- L'état public fait que la playlist recevra les demandes de chansons de vos invités\n- L'état courant fait que la playlist sera celle utilisée par le lecteur.\n\nPour faire simple, combinez les deux états sur une playlist pour faire comme l'ancien mode privé. Pour avoir l'ancien mode publique, ayez deux playlists, l'une avec l'état public et l'autre avec l'état courant."
+	},
 	"COPY_TO_CLIPBOARD": "Copier dans le presse-papiers",
 	"IT_IS_IN_MY_HEAD": "Pas besoin, je l'ai retenu !",
 	"TIPS": {
