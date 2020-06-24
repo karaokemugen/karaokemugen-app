@@ -75,7 +75,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		}
 	}
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
-	if (newConfig.Karaoke.ClassicMode && state.status === 'stop') prepareClassicPauseScreen();
+	if (newConfig.Karaoke.ClassicMode && state.player.playerStatus === 'stop') prepareClassicPauseScreen();
 	// Browse through paths and define if it's relative or absolute
 	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Player.Windows));
 	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Player.Linux));

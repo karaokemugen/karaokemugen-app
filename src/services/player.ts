@@ -137,7 +137,7 @@ async function playCurrentSong(now: boolean) {
 		} catch(err) {
 			logger.error(`[Player] Error during song playback : ${err}`);
 			sentry.error(err, 'Warning');
-			if (getState().status !== 'stop') {
+			if (getState().player.playerStatus !== 'stop') {
 				logger.warn('[Player] Skipping playback for this song');
 				try {
 					await next();
@@ -157,7 +157,7 @@ async function playCurrentSong(now: boolean) {
 /* Current playing song has been changed, stopping playing now and hitting play again to get the new song. */
 export function playingUpdated() {
 	const state = getState();
-	if (state.status !== 'stop' && state.player.playerStatus !== 'stop') playPlayer(true);
+	if (state.player.playerStatus !== 'stop') playPlayer(true);
 }
 
 /* This is triggered when player ends its current song */
@@ -307,7 +307,7 @@ export async function playerEnding() {
 			state.counterToSponsor++;
 			setState({counterToSponsor: state.counterToSponsor});
 			setState({counterToJingle: state.counterToJingle});
-			if (state.status !== 'stop') {
+			if (state.player.playerStatus !== 'stop') {
 				try {
 					await next();
 					return;
@@ -347,7 +347,7 @@ async function next() {
 			if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
 				// Recheck if classic mode is still enabled after the sleep timer. If it's disabled now, do not play song.
-				if (getState().status === 'stop' && getConfig().Karaoke.ClassicMode) await playPlayer(true);
+				if (getState().player.playerStatus === 'stop' && getConfig().Karaoke.ClassicMode) await playPlayer(true);
 			}
 		} else if (conf.Karaoke.StreamerMode.Enabled) {
 			setState({currentRequester: null});
@@ -360,7 +360,7 @@ async function next() {
 			}
 			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-				if (conf.Karaoke.StreamerMode.Enabled && getState().status === 'stop') await playPlayer(true);
+				if (conf.Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
 			}
 		} else {
 			setState({currentRequester: null});
@@ -393,7 +393,7 @@ async function toggleOnTopPlayer() {
 export async function playPlayer(now?: boolean) {
 	profile('Play');
 	const state = getState();
-	if (state.status === 'stop' || now) {
+	if (state.player.playerStatus === 'stop' || now) {
 		await playCurrentSong(now);
 		setState({status: 'play'});
 		stopAddASongMessage();
@@ -410,7 +410,7 @@ async function stopPlayer(now = true) {
 		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false});
 		stopAddASongMessage();
 	} else {
-		if (getState().status !== 'stop' && !stoppingPlayer) {
+		if (getState().player.playerStatus !== 'stop' && !stoppingPlayer) {
 			logger.info('[Player] Karaoke stopping after current song');
 			stoppingPlayer = true;
 		}
@@ -474,7 +474,7 @@ async function hideSubsPlayer() {
 
 export async function playerNeedsRestart() {
 	const state = getState();
-	if (state.status === 'stop' && !state.playerNeedsRestart && !state.isDemo && !state.isTest) {
+	if (state.player.playerStatus === 'stop' && !state.playerNeedsRestart && !state.isDemo && !state.isTest) {
 		setState({ playerNeedsRestart: true });
 		logger.info('[Player] Player will restart in 5 seconds');
 		message(i18next.t('RESTARTING_PLAYER'), 5000);

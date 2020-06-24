@@ -18,7 +18,6 @@ let state: State = {
 	counterToSponsor: 0,
 	introPlayed: false,
 	encorePlayed: false,
-	status: 'stop', // [stop,play,pause] // general engine status
 	fullscreen: false,
 	ontop: true,
 	playlist: null,
@@ -47,7 +46,6 @@ export function getPlayerState(): PublicState {
 	return {
 		currentlyPlaying: state.currentlyPlayingKara,
 		currentSessionID: state.currentSessionID,
-		status: state.status,
 		duration: state.player.duration,
 		fullscreen: state.player.fullscreen,
 		mute: state.player.mute,

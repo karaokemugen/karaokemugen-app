@@ -558,7 +558,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		}
 		if (conf.Karaoke.Autoplay &&
 			+playlist_id === state.currentPlaylistID &&
-			(state.status === 'stop' || state.randomPlaying) ) {
+			(state.player.playerStatus === 'stop' || state.randomPlaying) ) {
 			setState({ randomPlaying: false });
 			await nextSong();
 			await playPlayer(true);
@@ -690,7 +690,7 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 		const plcData = await getPLCInfoMini(plcs[i]);
 		if (!plcData) throw 'At least one playlist content is unknown';
 		if (token.role !== 'admin' && plcData.username !== token.username) throw 'You cannot delete a song you did not add';
-		if (plcData.flag_playing && getState().status === 'play') throw 'You cannot delete a song being currently played. Stop playback first.';
+		if (plcData.flag_playing && getState().player.playerStatus === 'play') throw 'You cannot delete a song being currently played. Stop playback first.';
 	}
 	logger.debug(`[Playlist] Deleting karaokes from playlist ${pl.name}`);
 	try {

@@ -21,7 +21,6 @@ export interface State {
 	counterToSponsor?: number,
 	introPlayed?: boolean,
 	encorePlayed?: boolean,
-	status?: 'stop' |  'play' | 'pause',
 	fullscreen?: boolean,
 	ontop?: boolean,
 	playlist?: null,
@@ -84,7 +83,6 @@ export interface State {
 
 export interface PublicState {
 	playing: boolean,
-	status: string,
 	onTop: boolean,
 	fullscreen: boolean,
 	timePosition: number,
