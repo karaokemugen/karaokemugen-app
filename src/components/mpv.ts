@@ -504,6 +504,7 @@ export async function initPlayerSystem() {
 	playerState.stayontop = state.ontop;
 	playerState.volume = conf.Player.Volume;
 	playerState.monitorEnabled = conf.Player.Monitor;
+	emitPlayerState();
 	try {
 		const mpvVersion = await checkMpv();
 		players = {
