@@ -37,7 +37,7 @@ BEGIN
     EXECUTE format('UPDATE %I.%I SET flag_current = null WHERE flag_current = true;', TG_TABLE_SCHEMA, TG_TABLE_NAME);
 
     -- enable new row
-    NEW.flag_public := true;
+    NEW.flag_current := true;
     RETURN NEW;
 END;
 $function$
