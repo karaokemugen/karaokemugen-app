@@ -58,7 +58,6 @@ const playerState: PlayerState = {
 };
 
 function emitPlayerState() {
-	logger.debug(`[Player] State updated: ${JSON.stringify(JSON.stringify({playerStatus: playerState.playerStatus, playing: playerState.playing}))}`);
 	setState({player: playerState});
 }
 
@@ -218,8 +217,6 @@ class Player {
 					emitPlayerState();
 					exec('pause', null, true).then(_res => {
 						return playerEnding();
-					}).then(_res => {
-						emitPlayerState();
 					});
 				}
 			});
