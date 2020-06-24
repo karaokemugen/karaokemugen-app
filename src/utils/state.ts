@@ -19,7 +19,6 @@ let state: State = {
 	counterToSponsor: 0,
 	introPlayed: false,
 	encorePlayed: false,
-	status: 'stop', // [stop,play,pause] // general engine status
 	private: true, // Karaoke Mode
 	fullscreen: false,
 	ontop: true,
@@ -59,7 +58,6 @@ export function getPlayerState(): PublicState {
 		playing: state.player.playing,
 		private: state.private,
 		showSubs: state.player.showsubs,
-		status: state.status,
 		subText: state.player['sub-text'],
 		timePosition: state.player.timeposition,
 		volume: state.player.volume,

@@ -15,7 +15,6 @@ export interface PlayerState {
 	stayontop?: boolean,
 	fullscreen?: boolean,
 	url?: string,
-	status?: string,
 	monitorEnabled?: boolean,
 	displayingInfo?: boolean,
 	songNearEnd?: boolean,

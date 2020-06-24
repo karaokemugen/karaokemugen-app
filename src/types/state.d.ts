@@ -87,7 +87,6 @@ export interface State {
 export interface PublicState {
 	playing: boolean,
 	private: boolean,
-	status: string,
 	onTop: boolean,
 	fullscreen: boolean,
 	timePosition: number,
