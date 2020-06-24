@@ -406,7 +406,7 @@ async function stopPlayer(now = true) {
 	if (now) {
 		logger.info('[Player] Karaoke stopping NOW');
 		await stop();
-		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false});
+		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false, stopping: false});
 		stopAddASongMessage();
 	} else {
 		if (getState().player.playerStatus !== 'stop' && !getState().stopping) {
