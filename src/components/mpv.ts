@@ -58,6 +58,7 @@ const playerState: PlayerState = {
 };
 
 function emitPlayerState() {
+	logger.debug(`[Player] State updated: ${JSON.stringify(JSON.stringify({playerStatus: playerState.playerStatus, playing: playerState.playing}))}`);
 	setState({player: playerState});
 }
 
@@ -214,7 +215,7 @@ class Player {
 					// immediate switch to Playing = False to avoid multiple trigger
 					playerState.playing = false;
 					playerState._playing = false;
-					playerState.playerStatus = 'stop';
+					emitPlayerState();
 					exec('pause', null, true).then(_res => {
 						return playerEnding();
 					}).then(_res => {
