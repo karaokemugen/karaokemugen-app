@@ -196,7 +196,7 @@ class Player {
 	}
 
 	private afterStart() {
-		this.isRunning = true;
+		this.running = true;
 		if (!this.options.monitor) {
 			this.mpv.observeProperty('sub-text');
 			this.mpv.observeProperty('playtime-remaining');
@@ -302,23 +302,35 @@ class Player {
 	}
 
 	async start() {
-		try {
-			await this.mpv.start();
-			this.afterStart();
-			return true;
-		} catch(err) {
-			const error = new Error(err);
-			logger.error(`[Player] mpvAPI(start): ${JSON.stringify(err, null, 2)}`);
-			sentry.error(error, 'Fatal');
+		await retry(async () => {
+			await this.mpv.start().catch(err => {
+				throw new Error(JSON.stringify(err));
+			});
+			if (!this.mpv.isRunning()) throw new Error('Sanity check failed: mpv isRunning() is false after start()');
+			else return true;
+		}, {
+			retries: 3,
+			onFailedAttempt: error => {
+				logger.warn(`[Player] Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
+			}
+		}).catch(err => {
+			logger.error(`[Player] Cannot start MPV: ${err.toString()}`);
+			this.running = false;
+			sentry.error(err, 'Fatal');
 			throw err;
-		}
+		});
+		this.afterStart();
+		return true;
 	}
 
 	async recreate(options?: MpvOptions, restart: boolean = false) {
 		try {
 			if (this.mpv.isRunning()) await this.destroy();
-			// Regen config if options are passed
-			if (options) this.configuration = this.genConf(options);
+			// Set options if supplied
+			if (options) this.options = options;
+			// Regen config
+			this.configuration = this.genConf(this.options);
+			// Recreate mpv
 			this.mpv = new Mpv(...this.configuration);
 			if (restart) await this.start();
 		} catch (err) {
@@ -330,6 +342,7 @@ class Player {
 	async destroy() {
 		try {
 			await this.mpv.quit();
+			this.running = false;
 			return true;
 		} catch (err) {
 			const error = new Error(err);
@@ -340,7 +353,7 @@ class Player {
 	}
 
 	get isRunning() {
-		if (typeof this.running === 'boolean') return this.running;
+		if (this.running === false) return this.running;
 		else return this.mpv.isRunning();
 	}
 
