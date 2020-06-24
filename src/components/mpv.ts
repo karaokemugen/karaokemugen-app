@@ -335,13 +335,17 @@ class Player {
 				}
 				throw new Error(JSON.stringify(err));
 			});
+			let tries = 0;
 			while (!this.mpv.isRunning()) { // MPV seems to take time before it is ready to take commands on slow platforms.
-				await sleep(100);
+				await sleep(1000);
+				tries++;
+				if (tries >= 5) {
+					throw new Error('mpv isRunning() returns false after 5 seconds');
+				}
 			}
 			return true;
 		}, {
 			retries: 3,
-			maxTimeout: 5000,
 			onFailedAttempt: error => {
 				logger.warn(`[Player] Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
 			}
@@ -357,7 +361,7 @@ class Player {
 
 	async recreate(options?: MpvOptions, restart: boolean = false) {
 		try {
-			if (this.mpv.isRunning()) await this.destroy();
+			if (this.isRunning) await this.destroy();
 			// Set options if supplied
 			if (options) this.options = options;
 			// Regen config
@@ -517,6 +521,8 @@ async function loadBackground() {
 	try {
 		playerState.mediaType = 'background';
 		playerState.playerStatus = 'stop';
+		playerState._playing = false;
+		playerState.playing = false;
 		emitPlayerState();
 		await exec('load', [backgroundImageFile, 'replace'], true);
 	} catch(err) {
@@ -543,8 +549,7 @@ export async function initPlayerSystem() {
 		}
 		if (playerState.monitorEnabled) players.monitor = new Player({monitor: true, mpvVersion});
 		logger.debug(`[Player] Players: ${JSON.stringify(Object.keys(players))}`);
-		await exec('start');
-		releaseLock();
+		await exec('start').then(releaseLock);
 		await loadBackground();
 	} catch (err) {
 		errorStep(i18n.t('ERROR_START_PLAYER'));

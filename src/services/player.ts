@@ -35,7 +35,6 @@ import {updateUserQuotas} from './user';
 
 const sleep = promisify(setTimeout);
 
-let commandInProgress = false;
 let introSequence = false;
 
 export function playerMessage(msg: string, duration: number) {
@@ -497,13 +496,7 @@ async function restartPlayer() {
 export async function sendCommand(command: string, options: any): Promise<string|undefined> {
 	// Resetting singlePlay to false everytime we use a command.
 	const state = getState();
-	if (commandInProgress) throw 'A command is already in progress';
 	if (state.isDemo || state.isTest) throw 'Player management is disabled in demo or test modes';
-	commandInProgress = true;
-	// Automatically set it back to false after 3 seconds
-	setTimeout(() => {
-		commandInProgress = false;
-	}, 3000);
 	try {
 		if (command === 'play') {
 			setState({singlePlay: false, randomPlaying: false});
@@ -554,8 +547,6 @@ export async function sendCommand(command: string, options: any): Promise<string
 	} catch(err) {
 		logger.error(`[Player] Command ${command} failed : ${err}`);
 		throw err;
-	} finally {
-		commandInProgress = false;
 	}
 }
 
