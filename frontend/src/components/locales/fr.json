@@ -88,7 +88,7 @@
 	"PLAYLIST_FAVORITES": "Mes favoris",
 	"PLAYLIST_KARAS": "Bibliothèque",
 	"PLAYERPIP": "Mode Picture-in-Picture",
-	"PLAYERPIP_TOOLTIP": "Active le mode fenêtré et au dessus des autres fenêtres",
+	"PLAYERPIP_TOOLTIP": "Maintient la fenêtre dans un coin de l'écran",
 	"PLAYERVISUALIZATIONEFFECTS": "Activer les effets de visualisation du son",
 	"PLAYERVISUALIZATIONEFFECTS_TOOLTIP": "Uniquement valable pour les chansons audio uniquement (MP3, OGG, etc.)",
 	"ENGINEALLOWDUPLICATES": "Permettre les doublons dans les listes de lecture",
@@ -295,11 +295,11 @@
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
-				"NAME": "Que faire en fin de playlist",
-				"TOOLTIP": "Plusieurs options sont disponibles. Dans le cas de l'aléatoire, des chansons de votre bibliothèque seront jouées au hasard en fin de playlist. La playlist peut reprendre si vous avez activé AutoPlay et si quelqu'un ajoute une nouvelle chanson.",
+				"NAME": "Que faire en fin de liste de lecture",
+				"TOOLTIP": "Plusieurs options sont disponibles. Dans le cas de l'aléatoire, des chansons de votre bibliothèque seront jouées au hasard en fin de liste de lecture. La liste de lecture peut reprendre si vous avez activé l'AutoPlay et si quelqu'un ajoute une nouvelle chanson.",
 				"OPTIONS": {
 					"NONE": "Arrêter le karaoké",
-					"REPEAT": "Relancer la playlist du début",
+					"REPEAT": "Relancer la liste de lecture du début",
 					"RANDOM": "Jouer des chansons de la bibliothèque aléatoirement"
 				}
 			}

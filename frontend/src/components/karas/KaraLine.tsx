@@ -267,7 +267,7 @@ class KaraLine extends Component<IProps,IState> {
   								onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
   					</div>
   					{is_touch_device() ?
-  						<div className="contentDiv contentDivMobile" onClick={this.toggleKaraDetail}>
+  						<div className="contentDiv contentDivMobile" onClick={this.toggleKaraDetail} tabIndex={1}>
   							<div className="disable-select contentDivMobileTop">
 							  	<div className="contentDivMobileFirstColumn">
   									<div>{this.karaLangs}</div>
@@ -293,7 +293,7 @@ class KaraLine extends Component<IProps,IState> {
   								</div>
   							</div>
   						</div> :
-  						<div className="contentDiv" onClick={this.toggleKaraDetail}>
+  						<div className="contentDiv" onClick={this.toggleKaraDetail} tabIndex={1}>
   							<div className="disable-select karaTitle">
   								{this.karaTitle}
   								{kara.upvotes ?

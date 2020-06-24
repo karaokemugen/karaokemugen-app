@@ -294,6 +294,7 @@ button.closeParent.bottom  {
 	overflow: auto;
 	display: flex;
 	flex-wrap: wrap;
+	cursor: zoom-in;
 }
 
 .list-group-item > .contentDivMobile {
@@ -988,7 +989,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 
 @keyframes noise {
   0% {
-    transform: translateX(0px,0px); }
+    transform: translate(0px,0px); }
   10% {
     transform: translate(-100px, 100px);
   }
@@ -1008,7 +1009,7 @@ input[type="text"]:focus, input[type="password"]:focus {
     transform: translate(-200px, -100px);
   }
   70% {
-    transform: translateY(50px, 100px);
+    transform: translate(50px, 100px);
   }
   80% {
     transform: translate(100px, -150px);
@@ -1134,7 +1135,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 }
 .btn-large > i {
 	line-height: 60px;
-	font-weight: 30px;
+	font-weight: 300;
 	text-align: center;
 }
 .fixed-action-btn ul {
