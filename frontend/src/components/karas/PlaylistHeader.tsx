@@ -522,7 +522,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 											</React.Fragment>)
 									}
 								</select> :
-								<SelectWithIcon list={this.getListToSelect()} value={this.props.idPlaylist.toString()} 
+								<SelectWithIcon list={this.getListToSelect()} value={this.props.idPlaylist?.toString()} 
 									onChange={(value) => this.props.changeIdPlaylist(Number(value))}/>
   							}
 							{this.props.scope === 'admin' && this.props.idPlaylist === -4 ?
