@@ -316,10 +316,7 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(201)
-			.then(response => {
-				strictEqual(response.body.code,'PL_SONG_ADDED');
-			});
+			.expect(201);
 	});
 
 	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf again to playlist '+playlist+' to see if it fails', function() {
@@ -463,7 +460,7 @@ describe('Playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(response => {
-				strictEqual(response.body.code,'PLAYLIST_MODE_SONG_ADDED');
+				strictEqual(response.body.code,'PL_SONG_ADDED');
 				strictEqual(response.body.data.kid[0], '495e2635-38a9-42db-bdd0-df4d27329c87');
 			});
 	});
@@ -499,10 +496,7 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(200)
-			.then(response => {
-				strictEqual(response.body.code,'PL_SONG_DELETED');
-			});
+			.expect(200);
 	});
 
 	it('Shuffle playlist 1', function() {

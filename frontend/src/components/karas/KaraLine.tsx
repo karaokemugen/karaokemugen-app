@@ -128,7 +128,7 @@ class KaraLine extends Component<IProps,IState> {
 		let playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		let beforePlayTime = secondsTimeSpanToHMS(response.data.data.plc.time_before_play, 'hm');
 		displayMessage('success', <div>
-				{i18next.t(response.data.code)}
+				{i18next.t(`SUCCESS_CODES.${response.data.code}`)}
 				<br/>
 				{i18next.t('TIME_BEFORE_PLAY', {
 				time: beforePlayTime,

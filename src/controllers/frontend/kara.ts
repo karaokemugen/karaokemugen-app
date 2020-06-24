@@ -499,7 +499,7 @@ export default function karaController(router: Router) {
  *       "playlist_id": 1
  * 		 "plc": <See Playlist Contents in this doc>
  *   },
- *   "code": "PLAYLIST_MODE_SONG_ADDED",
+ *   "code": "PL_SONG_ADDED",
  *   "data": {
  *       "kara": "Dragon Screamer",
  *       "kid": "kid",
@@ -528,7 +528,7 @@ export default function karaController(router: Router) {
 				emitWS('playlistInfoUpdated',data.playlist_id);
 				res.status(201).json({
 					data: data,
-					code: 'PLAYLIST_MODE_SONG_ADDED'
+					code: 'PL_SONG_ADDED'
 				});
 			} catch(err) {
 				errMessage(err.code, err);

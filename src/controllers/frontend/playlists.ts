@@ -410,23 +410,6 @@ export default function playlistsController(router: Router) {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * {
-	 *   "args": {
-	 *       "kara": "Dragon Screamer",
-	 *       "kid": "kid",
-	 *       "playlist": "Courante",
-	 *       "playlist_id": 1,
-	 * 		 "plc": null or Playlist Contents object if you added only one song
-	 *   },
-	 *   "code": "PL_SONG_ADDED",
-	 *   "data": {
-	 *       "kara": "Dragon Screamer",
-	 *       "kid": "kid",
-	 *       "playlist": "Courante",
-	 *       "playlist_id": 1
-	 * 		 "plc": null or Playlist Contents object if you added only one song
-	 *   }
-	 * }
 	 * @apiError PL_ADD_SONG_ERROR Unable to add songs to the playlist
 	 *
 	 * @apiErrorExample Error-Response:
@@ -439,10 +422,10 @@ export default function playlistsController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const result = await addKaraToPlaylist(req.body.kid, req.authToken.username, req.params.pl_id, +req.body.pos);
+					await addKaraToPlaylist(req.body.kid, req.authToken.username, req.params.pl_id, +req.body.pos);
 					emitWS('playlistInfoUpdated',req.params.pl_id);
 					emitWS('playlistContentsUpdated',req.params.pl_id);
-					res.status(201).json(APIMessage('PL_SONG_ADDED', result.playlist));
+					res.status(201).json();
 				} catch(err) {
 					const code = 'PL_ADD_SONG_ERROR';
 					errMessage(code, err);
@@ -514,7 +497,6 @@ export default function playlistsController(router: Router) {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * {code: "PL_SONG_DELETED"}
 	 * @apiError PL_DELETE_SONG_ERROR Unable to delete the song from the selected playlist
 	 *
 	 * @apiErrorExample Error-Response:
@@ -533,7 +515,7 @@ export default function playlistsController(router: Router) {
 					const data = await deleteKaraFromPlaylist(req.body.plc_id,req.params.pl_id, req.authToken);
 					emitWS('playlistContentsUpdated', data.pl_id);
 					emitWS('playlistInfoUpdated', data.pl_id);
-					res.status(200).json(APIMessage('PL_SONG_DELETED'));
+					res.status(200).json();
 				} catch(err) {
 					const code = 'PL_DELETE_SONG_ERROR';
 					errMessage(code, err);
