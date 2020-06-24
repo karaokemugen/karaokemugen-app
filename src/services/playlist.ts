@@ -229,7 +229,6 @@ export async function unsetVisiblePlaylist(playlist_id: number) {
 export async function setPublicPlaylist(playlist_id: number) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw 'Playlist unknown';
-	if (pl.flag_current) throw 'PL_SET_PUBLIC_CURRENT_ERROR';
 	try {
 		const oldPublicPlaylist_id = getState().publicPlaylistID;
 		await setPublicPL(playlist_id);

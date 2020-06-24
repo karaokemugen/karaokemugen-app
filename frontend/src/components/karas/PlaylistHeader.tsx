@@ -286,22 +286,24 @@ class PlaylistHeader extends Component<IProps,IState> {
   };
 
 	getPlaylistIcon(playlist: PlaylistElem) {
+		// public & current playlist :  play-circle & globe icons
+		if (playlist.flag_public && playlist.flag_current) return ['fa-play-circle', 'fa-globe'];
 		// public playlist : globe icon
-		if (playlist.flag_public) return 'fa-globe';
+		if (playlist.flag_public) return ['fa-globe'];
 		// current playlist : play-circle icon
-		if (playlist.flag_current) return 'fa-play-circle';
+		if (playlist.flag_current) return ['fa-play-circle'];
 		// library : book icon
-		if (playlist.playlist_id === -1) return 'fa-book';
+		if (playlist.playlist_id === -1) return ['fa-book'];
 		// blacklist : ban icon
-		if (playlist.playlist_id === -2) return 'fa-ban';
+		if (playlist.playlist_id === -2) return ['fa-ban'];
 		// whitelist : check-circle icon
-		if (playlist.playlist_id === -3) return 'fa-check-circle';
+		if (playlist.playlist_id === -3) return ['fa-check-circle'];
 		// blacklist criterias : not-equal icon
-		if (playlist.playlist_id === -4) return 'fa-not-equal';
+		if (playlist.playlist_id === -4) return ['fa-not-equal'];
 		// favorites : star icon
-		if (playlist.playlist_id === -5) return 'fa-star';
+		if (playlist.playlist_id === -5) return ['fa-star'];
 		// others playlist : list-ol icon
-		return 'fa-list-ol';
+		return ['fa-list-ol'];
 	}
 
 	getListToSelect = () => {
@@ -313,7 +315,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 			return [{value: '-1', label: i18next.t('PLAYLIST_KARAS')}, {value: '-5', label: i18next.t('PLAYLIST_FAVORITES')}];
 		}
 		return this.props.playlistList.map(playlist => {
-			return {value: playlist.playlist_id.toString(), label: playlist.name, icon:this.getPlaylistIcon(playlist)}
+			return {value: playlist.playlist_id.toString(), label: playlist.name, icons:this.getPlaylistIcon(playlist)}
 		});
 	}
 
@@ -464,7 +466,7 @@ class PlaylistHeader extends Component<IProps,IState> {
   		(this.props.idPlaylist >= 0 && this.props.playlistInfo) || this.props.idPlaylist === -4 && this.props.scope !== 'public' ?
   			<div className="flagsContainer " >
   				<div className="btn-group plCommands flags" id={'flag' + this.props.side}>
-					  {!this.props.playlistInfo?.flag_public || this.props.idPlaylist === -4  ?
+					  {this.props.playlistInfo || this.props.idPlaylist === -4  ?
 						<button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.CURRENT' : 'PLAYLIST_CURRENT')} 
 							name="flag_current" onClick={this.setFlagCurrent}
 							className={`btn ${(this.props.idPlaylist === -4 && this.props.bLSet?.flag_current) 
@@ -473,7 +475,7 @@ class PlaylistHeader extends Component<IProps,IState> {
 							<i className="fas fa-play-circle"></i>
 						</button> : null
   					}
-					{this.props.idPlaylist !== -4 && !this.props.playlistInfo?.flag_current ?
+					{this.props.idPlaylist !== -4 && this.props.playlistInfo ?
 						<button title={i18next.t('PLAYLIST_PUBLIC')} name="flag_public" onClick={this.setFlagPublic}
 							className={'btn ' + (this.props.playlistInfo?.flag_public ? 'btn-primary' : 'btn-default')} >
 							<i className="fas fa-globe"></i>

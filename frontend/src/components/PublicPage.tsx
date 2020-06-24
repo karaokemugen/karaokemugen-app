@@ -131,6 +131,7 @@ class PublicPage extends Component<IProps, IState> {
 		if (axios.defaults.headers.common['authorization']) {
 			await this.getPlaylistList();
 		}
+		getSocket().on('publicPlaylistUpdated', this.getPlaylistList);
 		getSocket().on('playlistsUpdated', this.getPlaylistList);
 		store.addChangeListener('loginOut', this.openLoginOrProfileModal);
 		store.addChangeListener('loginUpdated', this.getPlaylistList);
