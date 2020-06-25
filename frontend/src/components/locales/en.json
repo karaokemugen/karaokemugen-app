@@ -250,22 +250,15 @@
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing after playlist end",
 			"PLAYLIST_INTRO_VIDEOS": "Playlist intro video",
 			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Intro videos are played only once if you start playing the first song of the current playlist. A sponsor jingle video follows, if available.",
-			"PLAYLIST_INTRO_VIDEOS_MESSAGE": "Message during intro",
-			"PLAYLIST_INTRO_VIDEOS_MESSAGE_TOOLTIP": "The message will be displayed on screen during the intro video",
 			"PLAYLIST_OUTRO_VIDEOS": "Playlist outro video",
 			"PLAYLIST_OUTRO_VIDEOS_TOOLTIP": "Outro videos are played only once after the last song of the current playlist.",
-			"PLAYLIST_OUTRO_VIDEOS_MESSAGE": "Message during outro",
-			"PLAYLIST_OUTRO_VIDEOS_MESSAGE_TOOLTIP": "The message will be displayed on screen during the outro video",
 			"PLAYLIST_ENCORES_VIDEOS": "Playlist encores video",
 			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "This video will played before the last song of the current playlist.",
-			"PLAYLIST_ENCORES_VIDEOS_MESSAGE": "Message during encores",
-			"PLAYLIST_ENCORES_VIDEOS_MESSAGE_TOOLTIP": "The message will be displayed on screen during the encores video",
 			"PLAYLIST_SPONSORS_VIDEOS": "Playlist sponsors video",
-			"PLAYLIST_SPONSORS_VIDEOS_INTERVAL": "Number of songs between sponsor video",
-			"PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP": "Number of songs before a sponsor video appears on the screen. 0 to deactivate sponsors",
 			"PLAYLIST_JINGLES_VIDEOS": "Playlist jingles video",
-			"PLAYLIST_JINGLES_VIDEOS_INTERVAL": "Number of songs between jingles",
-			"PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP": "Number of songs before a jingle appears on the screen. 0 to deactivate jingles"
+			"EVERY": "every",
+			"SONGS": "songs",
+			"WITH_MESSAGE": "with message through"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {

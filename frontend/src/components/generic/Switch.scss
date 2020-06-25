@@ -18,6 +18,9 @@
 	  box-shadow: 0 0 5px rgba(0,0,0,0.3);
 	  border:1px solid #fff;
 	  transition: all ease .5s;
+
+	  --text-on: "ON";
+	  --text-off: "OFF";
 	  
 	  span {
 		display:block;
@@ -42,11 +45,11 @@
 		vertical-align: middle;
 	  }
 	  &:before {
-		content:"ON";
+		content: var(--text-on);
 		text-align: left;
 	  }
 	  &:after {
-		content:"OFF";
+		content: var(--text-off);
 		text-align: right;
 	  }
 	}

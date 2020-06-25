@@ -226,69 +226,54 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="col-xs-6">
 							<Switch idInput="Playlist.Medias.Jingles.Enabled" handleChange={this.onChange}
 								isChecked={this.state.config['Playlist.Medias.Jingles.Enabled']} />
-						</div>
-					</div>
-
-					{this.state.config['Playlist.Medias.Jingles.Enabled'] ?
-						<div
-							id="jinglesSettings"
-							className="settingsGroupPanel"
-						>
-							<div className="form-group">
-								<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP')}>
-									{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_INTERVAL')}
-					&nbsp;
-  								<i className="far fa-question-circle"></i>
-								</label>
-								<div className="col-xs-6">
+							{this.state.config['Playlist.Medias.Jingles.Enabled'] ?
+								<React.Fragment>
+									<label className="label-input-options">
+										{i18next.t('SETTINGS.KARAOKE.EVERY')}
+									</label>
 									<input
 										type="number"
-										className="form-control"
+										className="input-number-options"
 										id="Playlist.Medias.Jingles.Interval"
 										placeholder="20"
 										onChange={this.onChange}
 										value={this.state.config['Playlist.Medias.Jingles.Interval']}
 									/>
-								</div>
-							</div>
-						</div> : null
-					}
-
+									<label className="label-input-options">
+										{i18next.t('SETTINGS.KARAOKE.SONGS')}
+									</label>
+								</React.Fragment> : null
+							}
+						</div>
+					</div>
 					<div className="form-group">
 						<label className="col-xs-4 control-label">
 							{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS')}
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Playlist.Medias.Sponsors.Enabled" handleChange={this.onChange}
-								isChecked={this.state.config['Playlist.Medias.Sponsors.Enabled']} />
-						</div>
-					</div>
-
-					{this.state.config['Playlist.Medias.Sponsors.Enabled'] ?
-						<div
-							id="sponsorsSettings"
-							className="settingsGroupPanel"
-						>
-							<div className="form-group">
-								<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP')}>
-									{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_INTERVAL')}
-					&nbsp;
-  								<i className="far fa-question-circle"></i>
-								</label>
-
-								<div className="col-xs-6">
+								isChecked={this.state.config['Playlist.Medias.Sponsors.Enabled']} 
+								/>
+							{this.state.config['Playlist.Medias.Sponsors.Enabled'] ?
+								<React.Fragment>
+									<label className="label-input-options">
+										{i18next.t('SETTINGS.KARAOKE.EVERY')}
+									</label>
 									<input
 										type="number"
-										className="form-control"
+										className="input-number-options"
 										id="Playlist.Medias.Sponsors.Interval"
 										placeholder="50"
 										onChange={this.onChange}
 										value={this.state.config['Playlist.Medias.Sponsors.Interval']}
 									/>
-								</div>
-							</div>
-						</div> : null
-					}
+									<label className="label-input-options">
+										{i18next.t('SETTINGS.KARAOKE.SONGS')}
+									</label>
+								</React.Fragment> : null
+							}
+						</div>
+					</div>
 
 					<div className="form-group">
 						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_TOOLTIP')}>
@@ -299,32 +284,21 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="col-xs-6">
 							<Switch idInput="Playlist.Medias.Intros.Enabled" handleChange={this.onChange}
 								isChecked={this.state.config['Playlist.Medias.Intros.Enabled']} />
-						</div>
-					</div>
-
-					{this.state.config['Playlist.Medias.Intros.Enabled'] ?
-						<div
-							id="introsSettings"
-							className="settingsGroupPanel"
-						>
-							<div className="form-group">
-								<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_MESSAGE_TOOLTIP')}>
-									{i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_MESSAGE')}
-					&nbsp;
-  								<i className="far fa-question-circle"></i>
-								</label>
-
-								<div className="col-xs-6">
+							{this.state.config['Playlist.Medias.Intros.Enabled'] ?
+								<React.Fragment>
+									<label className="label-input-options">
+										{i18next.t('SETTINGS.KARAOKE.WITH_MESSAGE')}
+									</label>
 									<input
-										className="form-control"
+										className="input-options"
 										id="Playlist.Medias.Intros.Message"
 										onChange={this.onChange}
 										value={this.state.config['Playlist.Medias.Intros.Message']}
 									/>
-								</div>
-							</div>
-						</div> : null
-					}
+								</React.Fragment> : null
+							}
+						</div>
+					</div>
 
 					<div className="form-group">
 						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_TOOLTIP')}>
@@ -335,33 +309,21 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="col-xs-6">
 							<Switch idInput="Playlist.Medias.Outros.Enabled" handleChange={this.onChange}
 								isChecked={this.state.config['Playlist.Medias.Outros.Enabled']} />
+							{this.state.config['Playlist.Medias.Outros.Enabled'] ?
+							<React.Fragment>
+								<label className="label-input-options">
+									{i18next.t('SETTINGS.KARAOKE.WITH_MESSAGE')}
+								</label>
+								<input
+									className="input-options"
+									id="Playlist.Medias.Outros.Message"
+									onChange={this.onChange}
+									value={this.state.config['Playlist.Medias.Outros.Message']}
+								/>
+							</React.Fragment> : null
+						}
 						</div>
 					</div>
-
-					{this.state.config['Playlist.Medias.Outros.Enabled'] ?
-						<div
-							id="outrosSettings"
-							className="settingsGroupPanel"
-						>
-							<div className="form-group">
-								<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_MESSAGE_TOOLTIP')}>
-									{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_MESSAGE')}
-					&nbsp;
-  								<i className="far fa-question-circle"></i>
-								</label>
-
-								<div className="col-xs-6">
-									<input
-										className="form-control"
-										id="Playlist.Medias.Outros.Message"
-										onChange={this.onChange}
-										value={this.state.config['Playlist.Medias.Outros.Message']}
-									/>
-								</div>
-							</div>
-						</div> : null
-					}
-
 					<div className="form-group">
 						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_TOOLTIP')}>
 							{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS')}
@@ -371,33 +333,21 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="col-xs-6">
 							<Switch idInput="Playlist.Medias.Encores.Enabled" handleChange={this.onChange}
 								isChecked={this.state.config['Playlist.Medias.Encores.Enabled']} />
+							{this.state.config['Playlist.Medias.Encores.Enabled'] ?
+							<React.Fragment>
+								<label className="label-input-options">
+									{i18next.t('SETTINGS.KARAOKE.WITH_MESSAGE')}
+								</label>
+								<input
+									className="input-options"
+									id="Playlist.Medias.Encores.Message"
+									onChange={this.onChange}
+									value={this.state.config['Playlist.Medias.Encores.Message']}
+								/>
+							</React.Fragment> : null
+						}
 						</div>
 					</div>
-
-					{this.state.config['Playlist.Medias.Encores.Enabled'] ?
-						<div
-							id="encoreSettings"
-							className="settingsGroupPanel"
-						>
-							<div className="form-group">
-								<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_MESSAGE_TOOLTIP')}>
-									{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_MESSAGE')}
-					&nbsp;
-  								<i className="far fa-question-circle"></i>
-								</label>
-
-								<div className="col-xs-6">
-									<input
-										className="form-control"
-										id="Playlist.Medias.Encores.Message"
-										onChange={this.onChange}
-										value={this.state.config['Playlist.Medias.Encores.Message']}
-									/>
-								</div>
-							</div>
-						</div> : null
-					}
-
 					<div className="form-group">
 						<label className="col-xs-4 control-label" title={i18next.t('CLASSIC_MODE_TOOLTIP')}>
 							{i18next.t('CLASSIC_MODE')}

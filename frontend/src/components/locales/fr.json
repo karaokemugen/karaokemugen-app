@@ -260,22 +260,15 @@
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher un message régulier de demande d'ajout de chanson à l'écran en lecture aléatoire",
 			"PLAYLIST_INTRO_VIDEOS": "Vidéo d'intro de liste de lecture",
 			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Les intro vidéo sont jouées uniquement une fois si vous lancez la première chanson d'une liste de lecture, sont suivies d'une vidéo sponsor si disponible dans les jingles.",
-			"PLAYLIST_INTRO_VIDEOS_MESSAGE": "Message durant l'intro",
-			"PLAYLIST_INTRO_VIDEOS_MESSAGE_TOOLTIP": "Le message sera affiché à l'écran durant la vidéo d'intro",
 			"PLAYLIST_OUTRO_VIDEOS": "Vidéo d'outro de liste de lecture",
 			"PLAYLIST_OUTRO_VIDEOS_TOOLTIP": "Les outro vidéo sont jouées après la dernière chanson d'une liste de lecture.",
-			"PLAYLIST_OUTRO_VIDEOS_MESSAGE": "Message durant l'outro",
-			"PLAYLIST_OUTRO_VIDEOS_MESSAGE_TOOLTIP": "Le message sera affiché à l'écran durant la vidéo d'outro",
 			"PLAYLIST_ENCORES_VIDEOS": "Vidéo d'encores de liste de lecture",
 			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "Cette vidéo sera jouée avant la dernière chanson de la liste de lecture courante",
-			"PLAYLIST_ENCORES_VIDEOS_MESSAGE": "Message durant l'encore",
-			"PLAYLIST_ENCORES_VIDEOS_MESSAGE_TOOLTIP": "Le message sera affiché à l'écran durant la vidéo d'encores",
 			"PLAYLIST_SPONSORS_VIDEOS": "Vidéo de sponsors de liste de lecture",
-			"PLAYLIST_SPONSORS_VIDEOS_INTERVAL": "Chansons entre deux vidéos de sponsors",
-			"PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP": "Nombre de chansons avant qu'une vidéo de sponsors ne s'affiche à l'écran. 0 pour désactiver les sponsors",
 			"PLAYLIST_JINGLES_VIDEOS": "Vidéo de jingles de liste de lecture",
-			"PLAYLIST_JINGLES_VIDEOS_INTERVAL": "Chansons entre deux jingles",
-			"PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP": "Nombre de chansons avant qu'un jingle ne s'affiche à l'écran. 0 pour désactiver les jingles"
+			"EVERY": "toutes les",
+			"SONGS": "chansons",
+			"WITH_MESSAGE": "avec comme message pendant"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
