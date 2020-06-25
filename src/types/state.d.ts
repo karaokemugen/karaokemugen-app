@@ -98,7 +98,5 @@ export interface PublicPlayerState {
 	subText: string,
 	showSubs: boolean,
 	volume: number,
-	defaultLocale: string,
-	environment: string,
-	sentrytest: boolean
+	defaultLocale: string
 }

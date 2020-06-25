@@ -60,9 +60,7 @@ export function getPlayerState(): PublicPlayerState {
 		timePosition: state.player.timeposition,
 		volume: state.player.volume,
 		currentRequester: state.currentRequester,
-		defaultLocale: state.defaultLocale,
-		environment: process.env.SENTRY_ENVIRONMENT,
-		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean
+		defaultLocale: state.defaultLocale
 	};
 }
 
@@ -86,7 +84,9 @@ export function getPublicState(admin: boolean) {
 		wsLogNamespace: admin ? state.wsLogNamespace : undefined,
 		electron: state.electron,
 		supportedLyrics: supportedFiles.lyrics,
-		supportedMedias: [].concat(supportedFiles.video, supportedFiles.audio)
+		supportedMedias: [].concat(supportedFiles.video, supportedFiles.audio),
+		environment: process.env.SENTRY_ENVIRONMENT,
+		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean
 	};
 }
 
