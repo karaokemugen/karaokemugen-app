@@ -241,7 +241,7 @@ class KaraLine extends Component<IProps,IState> {
 							 </div>
 						{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
 					</div>
-  					{scope === 'admin' && idPlaylist !== -2 && idPlaylist != -4 && this.props.playlistCommands ?
+  					{scope === 'admin' && idPlaylist !== -2 && idPlaylist != -4 ?
   						<span className="checkboxKara" onClick={this.checkKara}>
   							{kara.checked ? <i className="far fa-check-square"></i>
   								: <i className="far fa-square"></i>}

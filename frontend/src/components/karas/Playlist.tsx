@@ -57,6 +57,7 @@ interface IState {
 	scrollToIndex?: number;
 	playlistInfo?: DBPL;
 	bLSetList: BLCSet[];
+	checkedkaras: number;
 }
 
 interface KaraList {
@@ -83,7 +84,8 @@ class Playlist extends Component<IProps, IState> {
 			bLSet: undefined,
 			data: undefined,
 			bLSetList: [],
-			searchType: 'search'
+			searchType: 'search',
+			checkedkaras: 0
 		};
 	}
 
@@ -498,25 +500,40 @@ class Playlist extends Component<IProps, IState> {
 
 	selectAllKaras = () => {
 		let data = this.state.data;
+		let checkedkaras = 0;
 		(this.state.data as KaraList).content.forEach(kara => {
-			if (kara) kara.checked = !kara.checked;
+			if (kara) {
+				kara.checked = !kara.checked;
+				if (kara.checked) checkedkaras++;
+			}
 		});
-		this.setState({ data: data });
+		this.setState({ data: data, checkedkaras: checkedkaras });
 		this.playlistForceRefresh(true);
 	};
 
 	checkKara = (id: string | number) => {
 		let data = this.state.data as KaraList;
+		let checkedkaras = this.state.checkedkaras;
 		data.content.forEach(kara => {
 			if (this.state.idPlaylist >= 0) {
 				if (kara.playlistcontent_id === id) {
 					kara.checked = !kara.checked;
+					if (kara.checked) {
+						checkedkaras++;
+					} else {
+						checkedkaras--;						
+					}
 				}
 			} else if (kara.kid === id) {
 				kara.checked = !kara.checked;
+				if (kara.checked) {
+					checkedkaras++;
+				} else {
+					checkedkaras--;						
+				}
 			}
 		});
-		this.setState({ data: data });
+		this.setState({ data: data, checkedkaras: checkedkaras });
 		this.playlistForceRefresh(true);
 	};
 
@@ -803,8 +820,13 @@ class Playlist extends Component<IProps, IState> {
 						</div>
 						<div className="plInfos">{this.getPlInfosElement()}</div>
 						{this.props.side === 1 && this.state.quotaString ?
-							<div id="plQuota" className="plQuota right">
+							<div className="plQuota right">
 								{i18next.t('QUOTA')}{this.state.quotaString}
+							</div> : null
+						}
+						{this.state.checkedkaras > 0 ? 
+							<div className="plQuota right">
+								{i18next.t('CHECKED')}{this.state.checkedkaras}
 							</div> : null
 						}
 					</div>
