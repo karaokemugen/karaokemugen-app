@@ -534,10 +534,10 @@ export async function sendCommand(command: string, options: any): Promise<string
 		} else if (command === 'hideSubs') {
 			await hideSubsPlayer();
 		} else if (command === 'seek') {
-			if (!options || isNaN(options)) throw 'Command seek must have a numeric option value';
+			if (isNaN(options)) throw 'Command seek must have a numeric option value';
 			await seekPlayer(options);
 		} else if (command === 'goTo') {
-			if (!options || isNaN(options)) throw 'Command goTo must have a numeric option value';
+			if (isNaN(options)) throw 'Command goTo must have a numeric option value';
 			await goToPlayer(options);
 		} else if (command === 'setVolume') {
 			if (isNaN(options)) throw 'Command setVolume must have a numeric option value';

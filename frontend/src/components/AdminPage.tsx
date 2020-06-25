@@ -134,7 +134,7 @@ class AdminPage extends Component<IProps, IState> {
   	} else if (namecommand === 'goTo') {
   		data = {
   			command: namecommand,
-  			options: 1
+  			options: 0
   		};
   	} else {
   		data = {
