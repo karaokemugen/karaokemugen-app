@@ -252,28 +252,12 @@
 	"FOLLOW_TOUR": "SUIVRE LA VISITE GUIDÉE",
 	"LOGOUT": "Déconnexion",
 	"SETTINGS": {
-		"DISCORD": {
-			"DISPLAY_ACTIVITY": "Afficher votre activité de Karaoke Mugen sur votre profil Discord"
-		},
 		"PLAYER": {
-			"LABEL": "Lecteur",
-			"PROGRESS_BAR_DOCK": "Barre de progression de la lecture dans le Dock/Barre des tâches",
-			"HARDWARE_DECODING": "Décodage matériel des vidéos",
-			"HARDWARE_DECODING_TOOLTIP": "Force ou non le décodage matériel du lecteur vidéo. Attention : sur certaines configurations, il se peut que cela pose des problèmes de lecture vidéo. En cas de soucis, passez l'option à \"Désactivé\". Le réglage \"Automatique\" est le plus sûr et \"Forcer\" pas du tout recommandé.",
-			"HARDWARE_DECODING_OPTIONS": {
-				"AUTOSAFE": "Automatique (recommandé)",
-				"NO": "Désactivé (décodage logiciel uniquement)",
-				"FORCE": "Forcer le décodage matériel (EXPERIMENTAL)"
-			}
+			"LABEL": "Lecteur"
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher un message régulier de demande d'ajout de chanson à l'écran en lecture aléatoire",
-			"AUTO_UPDATE_JINGLES": "Mise à jour automatique des vidéos jingles",
-			"AUTO_UPDATE_INTROS": "Mise à jour automatique des vidéos intros",
-			"AUTO_UPDATE_OUTROS": "Mise à jour automatique des vidéos outros",
-			"AUTO_UPDATE_ENCORES": "Mise à jour automatique des vidéos encores",
-			"AUTO_UPDATE_SPONSORS": "Mise à jour automatique des sponsors",
 			"PLAYLIST_INTRO_VIDEOS": "Vidéo d'intro de liste de lecture",
 			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Les intro vidéo sont jouées uniquement une fois si vous lancez la première chanson d'une liste de lecture, sont suivies d'une vidéo sponsor si disponible dans les jingles.",
 			"PLAYLIST_INTRO_VIDEOS_MESSAGE": "Message durant l'intro",
@@ -291,9 +275,7 @@
 			"PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP": "Nombre de chansons avant qu'une vidéo de sponsors ne s'affiche à l'écran. 0 pour désactiver les sponsors",
 			"PLAYLIST_JINGLES_VIDEOS": "Vidéo de jingles de liste de lecture",
 			"PLAYLIST_JINGLES_VIDEOS_INTERVAL": "Chansons entre deux jingles",
-			"PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP": "Nombre de chansons avant qu'un jingle ne s'affiche à l'écran. 0 pour désactiver les jingles",
-			"QUICKSTART": "Démarrage rapide de l'application",
-			"QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données."
+			"PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP": "Nombre de chansons avant qu'un jingle ne s'affiche à l'écran. 0 pour désactiver les jingles"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -342,17 +324,12 @@
 	"SERIE_NAME_MODE_USER": "Selon la langue de l'utilisateur",
 	"SERIE_NAME_MODE_NO_PREF": "Pas de préférence",
 	"SERIE_NAME_MODE_USER_FORCE": "Forcer la langue des noms de séries",
-	"PUBLICMODESETTINGS": "Options exclusives au mode public",
 	"POLLTITLE": "À vous de voter !",
 	"POLLENDED": "{{kara}} remporte le vote avec {{votes}} voix !",
 	"PLAYERMONITOR": "Seconde fenêtre du lecteur vidéo (moniteur)",
 	"PLAYERMONITOR_TOOLTIP": "Affiche un second lecteur pour l'opérateur s'il ne peut pas voir l'écran principal directement",
-	"ONLINESETTINGS": "Options en ligne (nécessite Internet)",
 	"MYSTERY_SONG_SETTINGS": "Chanson mystère",
 	"ONLINEURL": "Permettre l'URL d'accès courte (kara.moe)",
-	"ONLINEUSERS": "Autoriser l'inscription des utilisateurs en ligne",
-	"ONLINESTATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Server",
-	"ONLINEERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
 	"NO_EXT_INFO": "La recherche d'informations en ligne n'a pas abouti",
 	"FILTER": "Filtrer",
 	"VIEW_STANDARD": "Standard",
@@ -413,7 +390,7 @@
     "INTRO_ADMIN_PLAYLISTS": "Voici vos listes de lecture. Vous pourrez les gérer depuis cet écran. Nous y reviendrons tout à l'heure en détail.",
     "INTRO_ADMIN_LECTEUR": "Ici, le tableau de commandes.<br/>Vous êtes libre de piloter le karaoké à votre guise.<br />Nous avons sélectionné 5 karaokés au hasard dans votre collection afin d'avoir une liste de lecture prête à jouer. Appuyez sur <i class='fas fa-play'></i> Play pour tester.",
 	"INTRO_ADMIN_MYSTERY": "Vous avez le choix d'ajouter des chansons de façon invisible ou non pour votre public en choisissant Ajout Normal ou Ajout Mystère. Idéal pour les surprises !",
-	"INTRO_ADMIN_PLAYLISTS_2": "Mais revenons aux listes de lecture.<br />Il en existe différents types : <br /><br />- La <b>Bibliothèque</b> correspond à la base de données de vos karaokés. C'est ici que les utilisateurs chercheront les chansons qu'ils souhaitent ajouter.<br /><br />- La liste avec l'attribut <i class='fas fa-play-circle'></i> <b>Courante</b> est celle diffusée à l'écran.<br /><br />- La liste avec l'attribut <i class='fas fa-globe'></i> <b>Publique</b> est celle où votre public mettra ses suggestions. N'a d'utilité que si vous êtes en mode public.<br /><br />- Les listes <i class='fas fa-eye-slash'></i> <b>cachées</b> seront invisibles par votre public. Décochez l'attribut pour cacher certaines listes !",
+	"INTRO_ADMIN_PLAYLISTS_2": "Mais revenons aux listes de lecture.<br />Il en existe différents types : <br /><br />- La <b>Bibliothèque</b> correspond à la base de données de vos karaokés. C'est ici que les utilisateurs chercheront les chansons qu'ils souhaitent ajouter.<br /><br />- La liste avec l'attribut <i class='fas fa-play-circle'></i> <b>Courante</b> est celle diffusée à l'écran.<br /><br />- La liste avec l'attribut <i class='fas fa-globe'></i> <b>Publique</b> est celle où votre public mettra ses suggestions.<br /><br />- Les listes <i class='fas fa-eye-slash'></i> <b>cachées</b> seront invisibles par votre public. Décochez l'attribut pour cacher certaines listes !",
     "INTRO_ADMIN_PLAYLISTS_MANAGE": "Ici, vous pouvez choisir quelle liste de lecture afficher, gérer ses propriétés, ou rechercher son contenu.",
     "INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON": "Ce bouton vous permet d'activer le mode <b>avancé</b>, donnant accès à plus de fonctionnalités.<br/> Cliquez dessus pour continuer.",
     "INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "En mode avancé, vous pouvez effectuer des actions sur plusieurs chansons en les sélectionnant.<br/> Utilisez ensuite les boutons d'action tel que <i class='fas fa-minus'></i> ou <i class='fas fa-plus'></i>.<br/><br/>D'autres opérations avancées sont possibles, survoler le bouton avec la souris vous renseignera sur sa fonction.<br/><br/>Les actions possibles changent selon les listes de lecture affichées à droite et à gauche.",

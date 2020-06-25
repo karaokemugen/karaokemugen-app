@@ -33,6 +33,7 @@ class KMMenu extends Component<{}, {}> {
 					<Menu.Item key='home'><Link to='/system/km/home'>{i18next.t('MENU.HOME')}</Link></Menu.Item>
 					<Menu.SubMenu key="system-dropdown" title={i18next.t('MENU.SYSTEM')}>
 						<Menu.Item key='log'><Link to='/system/km/log'>{i18next.t('MENU.LOGS')}</Link></Menu.Item>
+						<Menu.Item key='options'><Link to='/system/km/options'>{i18next.t('MENU.ADVANCED_OPTIONS')}</Link></Menu.Item>
 						<Menu.Item key='config'><Link to='/system/km/config'>{i18next.t('MENU.CONFIGURATION')}</Link></Menu.Item>
 						<Menu.Item key='sessions'><Link to='/system/km/sessions'>{i18next.t('MENU.SESSIONS')}</Link></Menu.Item>
 						<Menu.Item key='repositories'><Link to='/system/km/repositories'>{i18next.t('MENU.REPOSITORIES')}</Link></Menu.Item>

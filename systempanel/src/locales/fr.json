@@ -97,6 +97,7 @@
 		"SYSTEM": "Système",
 		"LOGS": "Logs",
 		"CONFIGURATION": "Configuration",
+		"ADVANCED_OPTIONS": "Options avancées",
 		"SESSIONS": "Sessions",
 		"REPOSITORIES": "Dépôts",
 		"KARAS": "Karaokés",
@@ -220,7 +221,28 @@
 		"DELETE_DIRECTORY": "Supprimer le dossier",
 		"ADD_DIRECTORY": "Ajouter un dossier",
 		"ADD_FILE": "Ajouter un fichier",
-		"REPOSITORIES_PAGES": "Page des dépôts"
+		"REPOSITORIES_PAGES": "Page des dépôts",
+		"PROPERTIES" : {
+			"APP_QUICKSTART": "Démarrage rapide de l'application",
+			"APP_QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données.",
+			"ONLINE_ERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
+			"ONLINE_STATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Server",
+			"PLAYER_HARDWAREDECODING": "Décodage matériel des vidéos",
+			"PLAYER_HARDWAREDECODING_TOOLTIP": "Force ou non le décodage matériel du lecteur vidéo. Attention : sur certaines configurations, il se peut que cela pose des problèmes de lecture vidéo. En cas de soucis, passez l'option à \"Désactivé\". Le réglage \"Automatique\" est le plus sûr et \"Forcer\" pas du tout recommandé.",
+			"PLAYER_HARDWAREDECODING_OPTIONS": {
+				"AUTOSAFE": "Automatique (recommandé)",
+				"NO": "Désactivé (décodage logiciel uniquement)",
+				"FORCE": "Forcer le décodage matériel (EXPERIMENTAL)"
+			},
+			"ONLINE_UPDATES_MEDIAS_JINGLES": "Mise à jour automatique des vidéos jingles",
+			"ONLINE_UPDATES_MEDIAS_INTROS": "Mise à jour automatique des vidéos intros",
+			"ONLINE_UPDATES_MEDIAS_OUTROS": "Mise à jour automatique des vidéos outros",
+			"ONLINE_UPDATES_MEDIAS_ENCORES": "Mise à jour automatique des vidéos encores",
+			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Mise à jour automatique des sponsors",
+			"ONLINE_USERS": "Autoriser l'inscription des utilisateurs en ligne",
+			"ONLINE_DISCORD_DISPLAYACTIVITY": "Afficher votre activité de Karaoke Mugen sur votre profil Discord",
+			"PLAYER_PROGRESSBARDOCK": "Barre de progression de la lecture dans le Dock/Barre des tâches"
+		}
 	},
 	"SESSIONS": {
 		"SESSION_EXPORTED_BUTTON": "Exporter les données en CSV",

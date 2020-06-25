@@ -97,6 +97,7 @@
 		"SYSTEM": "System",
 		"LOGS": "Logs",
 		"CONFIGURATION": "Configuration",
+		"ADVANCED_OPTIONS": "Advanced options",
 		"SESSIONS": "Sessions",
 		"REPOSITORIES": "Repositories",
 		"KARAS": "Karas",
@@ -220,7 +221,28 @@
 		"DELETE_DIRECTORY": "Delete directory",
 		"ADD_DIRECTORY": "Add a directory",
 		"ADD_FILE": "Add a file",
-		"REPOSITORIES_PAGES": "Repositories page"
+		"REPOSITORIES_PAGES": "Repositories page",
+		"PROPERTIES" : {
+			"APP_QUICKSTART": "Quick start of the application",
+			"APP_QUICKSTART_TOOLTIP": "This disables data verification. You will have to generate your database in case of modification manually from the system panel, database tab.",
+			"ONLINE_ERRORTRACKING": "Send error and crash reports (via sentry.io)",
+			"ONLINE_STATS": "Send usage telemetry to Karaoke Mugen Online",
+			"PLAYER_HARDWAREDECODING": "Video Hardware Decoding",
+			"PLAYER_HARDWAREDECODING_TOOLTIP": "Forces or not the player's hardware acceleration. Note: on some configurations, it can cause unexpected behavior during playback. In such cases, select \"Disabled\". The \"Automatic\" option is the safest, and \"Force\" the most risky/not recommended",
+			"PLAYER_HARDWAREDECODING_OPTIONS": {
+				"AUTOSAFE": "Automatic (recommended)",
+				"NO": "Disabled (software decoding only)",
+				"FORCE": "Force hardware acceleration (EXPERIMENTAL)"
+			},
+			"ONLINE_UPDATES_MEDIAS_JINGLES": "Auto-update jingles",
+			"ONLINE_UPDATES_MEDIAS_INTROS": "Auto-update intros",
+			"ONLINE_UPDATES_MEDIAS_OUTROS": "Auto-update outros",
+			"ONLINE_UPDATES_MEDIAS_ENCORES": "Auto-update encores",
+			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Auto-update sponsors",
+			"ONLINE_USERS": "Allow online user registration & login",
+			"ONLINE_DISCORD_DISPLAYACTIVITY": "Show Karaoke Mugen activity on your Discord profile",
+			"PLAYER_PROGRESSBARDOCK": "Play progress bar in Dock / Taskbar"
+		}
 	},
 	"SESSIONS": {
 		"SESSION_EXPORTED_BUTTON": "Export data as CSV",

@@ -268,15 +268,6 @@ class PlayerOptions extends Component<IProps, IState> {
   			</div>
 
   			<div className="form-group">
-  				<label className="col-xs-4 control-label">
-  					{i18next.t('SETTINGS.PLAYER.PROGRESS_BAR_DOCK')}
-  				</label>
-  				<div className="col-xs-6">
-  					<Switch idInput="Player.ProgressBarDock" handleChange={this.onChange}
-  						isChecked={this.state.config['Player.ProgressBarDock']} />
-  				</div>
-  			</div>
-  			<div className="form-group">
   				<label className="col-xs-4 control-label" title={i18next.t('PLAYERVISUALIZATIONEFFECTS_TOOLTIP')}>
   					{i18next.t('PLAYERVISUALIZATIONEFFECTS')}
 			&nbsp;
@@ -287,26 +278,6 @@ class PlayerOptions extends Component<IProps, IState> {
   						isChecked={this.state.config['Player.VisualizationEffects']} />
   				</div>
   			</div>
-  			<div className="form-group">
-  					<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.PLAYER.HARDWARE_DECODING_TOOLTIP')}>
-  						{i18next.t('SETTINGS.PLAYER.HARDWARE_DECODING')}
-              &nbsp;
-  						<i className="far fa-question-circle"></i>
-  					</label>
-  					<div className="col-xs-6">
-  						<select
-  							className="form-control"
-  							id="Player.HardwareDecoding"
-  							onChange={this.putPlayerCommando}
-							data-namecommand="setHwDec"
-  							value={this.state.config['Player.HardwareDecoding']}
-  						>
-  							<option value="auto-safe"> {i18next.t('SETTINGS.PLAYER.HARDWARE_DECODING_OPTIONS.AUTOSAFE')} </option>
-  							<option value="no"> {i18next.t('SETTINGS.PLAYER.HARDWARE_DECODING_OPTIONS.NO')} </option>
-  							<option value="yes"> {i18next.t('SETTINGS.PLAYER.HARDWARE_DECODING_OPTIONS.FORCE')} </option>
-  						</select>
-  					</div>
-  				</div>
   		</React.Fragment>
   	);
   }

@@ -26,6 +26,7 @@ import RepositoriesEdit from '../pages/Repositories/RepositoriesEdit';
 import UnusedList from '../pages/UnusedList';
 import TasksEvent from '../pages/Components/TasksEvent';
 import KaraBatchEdit from '../pages/Karas/KaraBatchEdit';
+import Options from '../pages/Options';
 
 class KMPage extends Component<{}, {}> {
 	render() {
@@ -38,9 +39,8 @@ class KMPage extends Component<{}, {}> {
           <Route path='/system/km/home' component={Home}/>
 
           <Route path='/system/km/log' component={Log}/>
-
+          <Route path='/system/km/options' component={Options}/>
           <Route path='/system/km/config' component={Config}/>
-
 		  <Route path='/system/km/unused' component={UnusedList}/>
 
           <Route path='/system/km/sessions/new' component={SessionsEdit}/>

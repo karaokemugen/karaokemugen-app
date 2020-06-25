@@ -241,29 +241,13 @@
 	"FOLLOW_TOUR": "SEE GUIDED TOUR",
 	"LOGOUT": "Logout",
 	"SETTINGS": {
-		"DISCORD": {
-			"DISPLAY_ACTIVITY": "Show Karaoke Mugen activity on your Discord profile"
-		},
 		"PLAYER": {
-			"LABEL": "Player",
-			"PROGRESS_BAR_DOCK": "Play progress bar in Dock / Taskbar",
-			"HARDWARE_DECODING": "Video Hardware Decoding",
-			"HARDWARE_DECODING_TOOLTIP": "Forces or not the player's hardware acceleration. Note: on some configurations, it can cause unexpected behavior during playback. In such cases, select \"Disabled\". The \"Automatic\" option is the safest, and \"Force\" the most risky/not recommended",
-			"HARDWARE_DECODING_OPTIONS": {
-				"AUTOSAFE": "Automatic (recommended)",
-				"NO": "Disabled (software decoding only)",
-				"FORCE": "Force hardware acceleration (EXPERIMENTAL)"
-			}
+			"LABEL": "Player"
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoke",
 			"PLAYLIST_RANDOMSONGSAFTEREND_TOOLTIP": "At the end of your current playlist, Karaoke Mugen will play random songs from the library until someone adds a song (if autoplay is enabled)",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing after playlist end",
-			"AUTO_UPDATE_JINGLES": "Auto-update jingles",
-			"AUTO_UPDATE_INTROS": "Auto-update intros",
-			"AUTO_UPDATE_OUTROS": "Auto-update outros",
-			"AUTO_UPDATE_ENCORES": "Auto-update encores",
-			"AUTO_UPDATE_SPONSORS": "Auto-update sponsors",
 			"PLAYLIST_INTRO_VIDEOS": "Playlist intro video",
 			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Intro videos are played only once if you start playing the first song of the current playlist. A sponsor jingle video follows, if available.",
 			"PLAYLIST_INTRO_VIDEOS_MESSAGE": "Message during intro",
@@ -281,9 +265,7 @@
 			"PLAYLIST_SPONSORS_VIDEOS_INTERVAL_TOOLTIP": "Number of songs before a sponsor video appears on the screen. 0 to deactivate sponsors",
 			"PLAYLIST_JINGLES_VIDEOS": "Playlist jingles video",
 			"PLAYLIST_JINGLES_VIDEOS_INTERVAL": "Number of songs between jingles",
-			"PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP": "Number of songs before a jingle appears on the screen. 0 to deactivate jingles",
-			"QUICKSTART": "Quick start of the application",
-			"QUICKSTART_TOOLTIP": "This disables data verification. You will have to generate your database in case of modification manually from the system panel, database tab."
+			"PLAYLIST_JINGLES_VIDEOS_INTERVAL_TOOLTIP": "Number of songs before a jingle appears on the screen. 0 to deactivate jingles"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -327,15 +309,10 @@
 	"SERIE_NAME_MODE_USER": "User language",
 	"SERIE_NAME_MODE_NO_PREF": "No preference",
 	"SERIE_NAME_MODE_USER_FORCE": "Force your own language",
-	"PUBLICMODESETTINGS": "Public-only settings",
 	"POLLTITLE": "Your time to vote!",
 	"POLLENDED": "{{kara}} wins with {{votes}} votes!",
-	"ONLINESETTINGS": "Online settings (requires internet access)",
 	"MYSTERY_SONG_SETTINGS": "Mystery song",
 	"ONLINEURL": "Short URL",
-	"ONLINESTATS": "Send usage telemetry to Karaoke Mugen Online",
-	"ONLINEERRORTRACKING": "Send error and crash reports (via sentry.io)",
-	"ONLINEUSERS": "Allow online user registration & login",
 	"NO_EXT_INFO": "Online search didn't succeed",
 	"FILTER": "Filter",
 	"VIEW_STANDARD": "Standard",
@@ -396,7 +373,7 @@
 	"INTRO_ADMIN_PLAYLISTS": "Here are your playlists. You can manage them from this screen. We will learn more on them later.",
 	"INTRO_ADMIN_LECTEUR": "Here is the control panel.<br/>You can manage your karaoke as you wish.<br />We have selected 5 random songs from your collection to have a playlist ready to play. Press <i class='fas fa-play'></i> Play to test it out.",
 	"INTRO_ADMIN_MYSTERY": "You can choose to add invisible or visible songs to your guests by choosing NOrmal Add or Mystery Add. Perfect for surprises !",
-	"INTRO_ADMIN_PLAYLISTS_2": "But let's go back to playlists.<br />There are several types : <br /><br />- The <b>Library</b> is your song database. This is where your users are going to search for songs they want to add. <br /><br />- The list with the <i class='fas fa-play-circle'></i> <b>Current</b> attribute is the one displayed on the screen.<br /><br />- The list with the <i class='fas fa-globe'></i> <b>Public</b> attribute is the one where your public will enter their suggestions. Useful only in public mode.<br /><br />- Lists with a <i class='fas fa-eye-slash'></i> <b>hidden</b> attribute are invisible to your public. Disable it if you want to hide some lists !",
+	"INTRO_ADMIN_PLAYLISTS_2": "But let's go back to playlists.<br />There are several types : <br /><br />- The <b>Library</b> is your song database. This is where your users are going to search for songs they want to add. <br /><br />- The list with the <i class='fas fa-play-circle'></i> <b>Current</b> attribute is the one displayed on the screen.<br /><br />- The list with the <i class='fas fa-globe'></i> <b>Public</b> attribute is the one where your public will enter their suggestions. <br /><br />- Lists with a <i class='fas fa-eye-slash'></i> <b>hidden</b> attribute are invisible to your public. Disable it if you want to hide some lists !",
 	"INTRO_ADMIN_PLAYLISTS_MANAGE": "Here, you can choose which playlist to display, change its properties or search inside.",
 	"INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON": "This button allows you to show <b>advanced actions</b>.<br/> Press it to continue.",
 	"INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "In advanced mode, you can act on several songs at once by selecting them first.<br/> Use the action buttons like <i class='fas fa-minus'></i> or <i class='fas fa-plus'></i>.<br/><br/>There are other advanced actions available, hover your mouse over a button to see what it does.<br/><br/>The possible actions are depending on playlists displayed on the left and the right",
