@@ -104,7 +104,6 @@
 	"TIPS": {
 		"NORMAL": [
 			"Don't forget to sync the base sometimes: you may discover some new karaokes!",
-			"Karaoke Mugen has 2 karaokes adding modes: public and private. Choose the mode that suit your needs.",
 			"Can't find a song in the database? Don't hesitate to look on https://suggest.karaokes.moe/, it may be there!",
 			"Karaoke Mugen is a 100% open source and collaborative project, everyone can participate!",
 			"You can import files via the File Menu -> Import, drag & drop them or associate the Karaoke Mugen executable to it to allow KM to open them and use them : karaokes, playlists, favorites, blacklist criterias sets...",
