@@ -226,12 +226,8 @@ class Player {
 		return [NodeMPVOptions, NodeMPVArgs];
 	}
 
-	private afterStart() {
-		this.running = true;
+	private bindEvents() {
 		if (!this.options.monitor) {
-			this.mpv.observeProperty('sub-text');
-			this.mpv.observeProperty('playtime-remaining');
-			this.mpv.observeProperty('eof-reached');
 			this.mpv.on('status', (status: mpvStatus) => {
 				if (status.property !== 'playtime-remaining' && status.property !== 'sub-text')
 					logger.debug(`[Player] mpv status: ${JSON.stringify(status)}`);
@@ -314,7 +310,7 @@ class Player {
 		});
 		// Handle pause/play via external ways such as right-click on player
 		this.mpv.on('paused',() => {
-			if (!playerState._playing) return;
+			if (!playerState._playing || playerState.mediaType === 'background') return;
 			logger.debug( `[Player] Paused event triggered on ${this.options.monitor ? 'monitor':'main'}`);
 			playerState._playing = false;
 			playerState.playing = false;
@@ -323,7 +319,7 @@ class Player {
 			emitPlayerState();
 		});
 		this.mpv.on('resumed',() => {
-			if (playerState._playing) return;
+			if (playerState._playing || playerState.mediaType === 'background') return;
 			logger.debug( `[Player] Resumed event triggered on ${this.options.monitor ? 'monitor':'main'}`);
 			playerState._playing = true;
 			playerState.playing = true;
@@ -334,6 +330,7 @@ class Player {
 	}
 
 	async start() {
+		this.bindEvents();
 		await retry(async () => {
 			await this.mpv.start().catch(err => {
 				if (err.errcode === 6) {
@@ -344,14 +341,19 @@ class Player {
 				}
 				throw new Error(JSON.stringify(err));
 			});
-			let tries = 0;
+			if (!this.options.monitor) {
+				this.mpv.observeProperty('sub-text');
+				this.mpv.observeProperty('playtime-remaining');
+				this.mpv.observeProperty('eof-reached');
+			}
+			/*let tries = 0;
 			while (!this.mpv.isRunning()) { // MPV seems to take time before it is ready to take commands on slow platforms.
 				await sleep(1000);
 				tries++;
 				if (tries >= 5) {
 					throw new Error('mpv isRunning() returns false after 5 seconds');
 				}
-			}
+			}*/
 			return true;
 		}, {
 			retries: 3,
@@ -364,7 +366,7 @@ class Player {
 			sentry.error(err, 'Fatal');
 			throw err;
 		});
-		this.afterStart();
+		this.running = true;
 		return true;
 	}
 
@@ -604,9 +606,12 @@ class Players {
 				delete this.players.monitor;
 			}
 		}
-		return await this.exec('recreate', [null, true]).catch(err => {
+		await this.exec('recreate', [null, true]).catch(err => {
 			logger.error(`[Player] Cannot restart mpv: ${JSON.stringify(err)}`);
 		});
+		if (playerState.playerStatus === 'stop' || playerState.mediaType === 'background') {
+			await this.loadBackground();
+		}
 	}
 
 	async play(mediaData: MediaData): Promise<PlayerState> {
