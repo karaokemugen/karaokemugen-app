@@ -558,7 +558,7 @@
 		"SONG_VIEW_ERROR": "Erreur lors de la récupération d'une chanson",
 		"KARA_DELETED_ERROR": "Erreur lors de la suppression d'une chanson",
 		"KARA_EDITED_ERROR": "Erreur lors de l'édition d'une chanson",
-		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Cette chanson a déjà été ajoutée.",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Cette chanson a déjà été ajoutée, mais a reçu votre vote !",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Ajout de chanson impossible, quota atteint",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS": "Impossible d'avoir plusieurs chansons de la même série ou du même chanteur",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED": "La chanson est en liste noire et ne peut être ajoutée",

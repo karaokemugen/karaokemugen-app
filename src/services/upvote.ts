@@ -2,6 +2,7 @@ import logger from 'winston';
 
 import {getUpvotesByPLC,insertUpvote,removeUpvote} from '../dao/upvote';
 import {getConfig} from '../lib/utils/config';
+import { emitWS } from '../lib/utils/ws';
 import {getState} from '../utils/state';
 import { getSeriesSingers } from './kara';
 import {freePLC, getPLCInfoMini} from './playlist';
@@ -33,6 +34,7 @@ export async function addUpvote(plc_id: number, username: string) {
 		};
 		if (!getConfig().Karaoke.Quota.FreeUpVotes) return ret;
 		tryToFreeKara(plc_id, plc.upvotes, plc.username, getState().publicPlaylistID);
+		emitWS('playlistContentsUpdated', plc.playlist_id);
 		return ret;
 	} catch(err) {
 		if (!err.code) err.code = 'UPVOTE_FAILED';
@@ -52,6 +54,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 		if (!users.includes(username)) throw {code: 'DOWNVOTE_ALREADY_DONE'};
 		await removeUpvote(plc_id, username);
 		// Karaokes are not 'un-freed' when downvoted.
+		emitWS('playlistContentsUpdated', plc.playlist_id);
 		return {
 			upvotes: plc.upvotes - 1,
 			song: `${getSeriesSingers(plc)} - ${plc.title}`,
@@ -75,5 +78,16 @@ async function tryToFreeKara(plc_id :number, upvotes: number, username: string, 
 		await freePLC(plc_id);
 		updateSongsLeft(username, playlist_id);
 		logger.debug(`[Upvote] PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`);
+	}
+}
+
+/** Add several upvotes at once */
+export async function addUpvotes(plc_id: number[], username: string) {
+	for (const plc of plc_id) {
+		try {
+			await addUpvote(plc, username);
+		} catch(err) {
+			//Non-fatal : already upvoted songs won't be upvoted again anyway
+		}
 	}
 }

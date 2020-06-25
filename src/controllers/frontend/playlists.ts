@@ -665,7 +665,6 @@ export default function playlistsController(router: Router) {
 			// Post an upvote
 			try {
 				const kara = await vote(req.params.plc_id,req.authToken.username, req.body.downvote);
-				emitWS('playlistContentsUpdated', kara.playlist_id);
 				res.json(APIMessage(kara.code));
 			} catch(err) {
 				errMessage(err.code, err.message);

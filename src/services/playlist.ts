@@ -65,6 +65,7 @@ import {getBlacklist} from './blacklist';
 import { getAllRemoteKaras } from './download';
 import { formatKaraList, getKara, getSeriesSingers,isAllKaras} from './kara';
 import {playingUpdated, playPlayer} from './player';
+import { addUpvotes } from './upvote';
 //KM Modules
 import {findUserByName,updateSongsLeft} from './user';
 
@@ -399,8 +400,11 @@ function getPLCByKIDUser(kid: string, username: string, playlist_id: number) {
 }
 
 /** Return all songs not present in specified playlist */
-export function isAllKarasInPlaylist(karas: PLC[], karasToRemove: PLC[]) {
-	return karas.filter(k => !karasToRemove.map(ktr => ktr.unique_id).includes(k.unique_id));
+export function isAllKarasInPlaylist(karas: PLC[], playlist: PLC[]) {
+	return {
+		notPresent: karas.filter(k => !playlist.map(plc => plc.kid).includes(k.kid)),
+		alreadyPresent: playlist.filter(p => karas.map(k => k.kid).includes(p.kid))
+	};
 }
 
 /** Add song to playlist */
@@ -427,13 +431,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 
 		if (user.type > 0) {
 			// If user is not admin
-			// Check if we're using correct playlist. User is only allowed to add to modePlaylist
+			// Check if we're using correct playlist. User is only allowed to add to public Playlist
 			if (playlist_id !== state.publicPlaylistID) throw 'User is not allowed to add to this playlist';
-			// Check user quota first
-			if (!await isUserAllowedToAddKara(playlist_id, user, kara.duration)) {
-				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
-				throw 'User quota reached';
-			}
 			// Check if karaoke is in blacklist
 			const blacklist = await getBlacklist({});
 			if (blacklist.content.some(blc => {
@@ -469,39 +468,29 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			? playingObject.plc_id_pos
 			: 0;
 		// If no song is currently playing, plContentsBeforePlay returns all songs in playlist. These are all songs not played yet.
-		const plContentsBeforePlay = plContents.filter((plc: PLC) => plc.pos >= playingPos);
-		if (conf.Playlist.AllowDuplicates) {
-			if (!pl.flag_public) {
-				plContentsBeforePlay.forEach((p: PLC) => p.unique_id = `${p.kid}_${p.username}`);
-				karaList.forEach(k => k.unique_id = `${k.kid}_${user.login}`);
-			} else {
-				plContentsBeforePlay.forEach((p: PLC) => p.unique_id = `${p.kid}`);
-				karaList.forEach(k => k.unique_id = `${k.kid}`);
-			}
-		} else {
-			plContentsBeforePlay.forEach((p: PLC) => p.unique_id = `${p.kid}`);
-			karaList.forEach(k => k.unique_id = `${k.kid}`);
-		}
-		let removeDuplicates = false;
+		const plContentsAfterPlay = plContents.filter((plc: PLC) => plc.pos >= playingPos);
 		if (user.type === 0) {
-			if (conf.Playlist.AllowDuplicates) {
-				// Adding duplicates is not allowed on public playlists
-				if (pl.flag_public) removeDuplicates = true;
-				// Don't remove duplicates if it's another playlist type. Admin can add a song multiple times in the current or any other playlist, even by the same user
-			} else {
+			// Admin can add a song multiple times in the current or any other playlist, even by the same user
+			if (!conf.Playlist.AllowDuplicates) {
 				// Option to allow is not set : removing duplicates from songs to add
-				removeDuplicates = true;
+				const songs = isAllKarasInPlaylist(karaList, plContentsAfterPlay);
+				karaList = songs.notPresent;
 			}
 		} else {
-			// Not an admin adding this. Removing duplicates
-			removeDuplicates = true;
+			// Not an admin adding this. Adding an upvote to all songs already in playlist, adding the rest
+			const songs = isAllKarasInPlaylist(karaList, plContentsAfterPlay);
+			karaList = songs.notPresent;
+			// Upvoting each song already present
+			addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
 		}
-		if (removeDuplicates) {
-			karaList = isAllKarasInPlaylist(karaList, plContentsBeforePlay);
+		// Check user quota first
+		if (user.type > 0 && !await isUserAllowedToAddKara(playlist_id, user, kara.duration)) {
+			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
+			throw 'User quota reached';
 		}
 		// If AllowDuplicateSeries is set to false, remove all songs with the same SIDs
 		if (!conf.Playlist.AllowDuplicateSeries && user.type > 0) {
-			const seriesSingersInPlaylist = plContentsBeforePlay.map(plc => {
+			const seriesSingersInPlaylist = plContentsAfterPlay.map(plc => {
 				if (plc.series.length > 0) return plc.series[0].name;
 				return plc.singer[0].name;
 			});
@@ -546,6 +535,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		}
 		// Find out position of currently playing karaoke
 		// If no flag_playing is found, we'll add songs at the end of playlist.
+		// -1 means the admin right-clicked and the song is to be added after the current playing song
 		if (pos === -1) pos = playingPos + 1;
 		if (pos) {
 			await shiftPosInPlaylist(playlist_id, pos, karas.length);

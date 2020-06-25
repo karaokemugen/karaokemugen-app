@@ -24,7 +24,6 @@ export interface PLC {
 	flag_playing?: boolean,
 	flag_visible?: boolean,
 	duration?: number,
-	unique_id?: string,
 	uniqueSerieSinger?: string,
 	title?: string,
 	type?: string

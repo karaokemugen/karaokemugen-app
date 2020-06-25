@@ -541,7 +541,7 @@
 		"SONG_VIEW_ERROR": "Error getting song information",
 		"KARA_DELETED_ERROR": "Error deleting song",
 		"KARA_EDITED_ERROR": "Error editing song",
-		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "This song has already been added",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "This song has already been added, so you upvoted it!",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Can't add any song, quota reached",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS": "No duplicate series or singers are allowed",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED": "Song is blacklisted and cannot be added",
