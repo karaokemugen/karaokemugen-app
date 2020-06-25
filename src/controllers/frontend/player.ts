@@ -116,6 +116,8 @@ export default function playerController(router: Router) {
 					'prev',
 					'toggleFullscreen',
 					'toggleAlwaysOnTop',
+					'setPiPSize',
+					'setHwDec',
 					'seek',
 					'goTo',
 					'mute',

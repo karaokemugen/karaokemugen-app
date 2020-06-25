@@ -31,12 +31,18 @@ class PlayerOptions extends Component<IProps, IState> {
 
   putPlayerCommando = (e:any) => {
   	const config = this.state.config;
-  	const value = e.target.type === 'checkbox' ? e.target.checked :
-  		(Number(e.target.value) ? Number(e.target.value) : e.target.value);
+  	let value = e.target.type === 'checkbox' ? e.target.checked :
+	  	((Number(e.target.value) && !e.target.value.includes('.')) ? Number(e.target.value) : e.target.value);
+  	if (value === 'true') {
+		value = true;
+	} else if (value === 'false') {
+		value = false;
+	}
   	config[e.target.id] = value;
   	this.setState({ config: config });
   	axios.put('/player', {
-  		command: e.target.getAttribute('data-namecommand')
+  		command: e.target.getAttribute('data-namecommand'),
+		options: value
   	});
   	this.props.onChange(e);
   };
@@ -179,7 +185,8 @@ class PlayerOptions extends Component<IProps, IState> {
   							<input
   								type="range"
   								id="Player.PIP.Size"
-  								onChange={this.onChange}
+								data-namecommand="setPiPSize"
+  								onChange={this.putPlayerCommando}
   								value={this.state.config['Player.PIP.Size']}
   							/>
   						</div>
@@ -290,7 +297,8 @@ class PlayerOptions extends Component<IProps, IState> {
   						<select
   							className="form-control"
   							id="Player.HardwareDecoding"
-  							onChange={this.onChange}
+  							onChange={this.putPlayerCommando}
+							data-namecommand="setHwDec"
   							value={this.state.config['Player.HardwareDecoding']}
   						>
   							<option value="auto-safe"> {i18next.t('SETTINGS.PLAYER.HARDWARE_DECODING_OPTIONS.AUTOSAFE')} </option>

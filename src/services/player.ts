@@ -21,6 +21,7 @@ import {
 	stop,
 	stopAddASongMessage,
 	toggleOnTop,
+	setPiPSize, setHwDec
 } from '../components/mpv';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import {getConfig, setConfig} from '../lib/utils/config';
@@ -387,6 +388,13 @@ async function toggleOnTopPlayer() {
 		: logger.info('[Player] Player NOT staying on top');
 }
 
+async function setPiPSizePlayer(nb: number) {
+	await setPiPSize(nb);
+}
+
+async function setHwDecPlayer(method: string) {
+	await setHwDec(method);
+}
 
 export async function playPlayer(now?: boolean) {
 	profile('Play');
@@ -525,6 +533,11 @@ export async function sendCommand(command: string, options: any): Promise<string
 			await toggleFullScreenPlayer();
 		} else if (command === 'toggleAlwaysOnTop') {
 			await toggleOnTopPlayer();
+		} else if (command === 'setPiPSize') {
+			if (isNaN(options)) throw 'Command setPiPSize must have a numeric option value';
+			await setPiPSizePlayer(options);
+		} else if (command === 'setHwDec') {
+			await setHwDecPlayer(options);
 		} else if (command === 'mute') {
 			await mutePlayer();
 		} else if (command === 'unmute') {

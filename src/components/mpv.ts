@@ -95,7 +95,7 @@ async function checkMpv(): Promise<string> {
 
 	if (!semver.satisfies(mpvVersion, '>=0.25.0')) {
 		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
-		logger.error(`[Player] mpv binary : ${state.binPath.mpv}`);
+		logger.error(`[Player] mpv binary: ${state.binPath.mpv}`);
 		logger.error('[Player] Exiting due to obsolete mpv version');
 		await exit(1);
 	}
@@ -887,7 +887,7 @@ export async function setFullscreen(fsState: boolean): Promise<PlayerState> {
 
 export async function toggleOnTop(): Promise<PlayerState> {
 	try {
-		await exec('command', ['keypress', ['T']], true, 'main');
+		await exec('setProperty', ['ontop', !playerState.stayontop], true, 'main');
 		playerState.stayontop = !playerState.stayontop;
 		emitPlayerState();
 		return playerState;
@@ -896,6 +896,24 @@ export async function toggleOnTop(): Promise<PlayerState> {
 		sentry.error(err);
 		throw err;
 	}
+}
+
+export async function setPiPSize(pct: number) {
+	await exec('setProperty', ['autofit', `${pct}%x${pct}%`], true).catch(err => {
+		logger.error(`[Player] Unable to set PiP size: ${JSON.stringify(err)}`);
+		sentry.error(err);
+		throw err;
+	});
+	return playerState;
+}
+
+export async function setHwDec(method: string) {
+	await exec('setProperty', ['hwdec', method], true).catch(err => {
+		logger.error(`[Player] Unable to set PiP size: ${JSON.stringify(err)}`);
+		sentry.error(err);
+		throw err;
+	});
+	return playerState;
 }
 
 export async function message(message: string, duration = 10000, alignCode = 5) {

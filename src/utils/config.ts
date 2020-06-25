@@ -63,7 +63,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		//If these two settings haven't been changed, it means another one has, so we're restarting mpv
 		if (oldConfig.Player.FullScreen === newConfig.Player.FullScreen &&
 			oldConfig.Player.StayOnTop === newConfig.Player.StayOnTop &&
-			oldConfig.Player.Volume === newConfig.Player.Volume
+			oldConfig.Player.Volume === newConfig.Player.Volume &&
+			oldConfig.Player.PIP.Size === newConfig.Player.PIP.Size &&
+			oldConfig.Player.VisualizationEffects === newConfig.Player.VisualizationEffects &&
+			oldConfig.Player.HardwareDecoding === newConfig.Player.HardwareDecoding
 		) playerNeedsRestart();
 	}
 	if (newConfig.Online.URL !== oldConfig.Online.URL && state.ready && !state.isDemo) publishURL();
