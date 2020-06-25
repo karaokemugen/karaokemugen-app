@@ -469,7 +469,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 		</div>);
 
 		const flagsContainer = (
-			(this.props.idPlaylist >= 0 && this.props.playlistInfo) || this.props.idPlaylist === -4 && this.props.scope !== 'public' ?
+			((this.props.idPlaylist >= 0 && this.props.playlistInfo) || this.props.idPlaylist === -4) && this.props.scope !== 'public' ?
 				<div className="flagsContainer " >
 					<div className="btn-group plCommands flags" id={'flag' + this.props.side}>
 						{this.props.playlistInfo || this.props.idPlaylist === -4 ?
