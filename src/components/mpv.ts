@@ -139,7 +139,6 @@ class Player {
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
 			'--no-config',
-			'--load-scripts=no',
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 		];
@@ -1017,6 +1016,7 @@ class Players {
 	}
 
 	private displayAddASong() {
+		console.log(this);
 		if (!playerState.displayingInfo && getState().randomPlaying) this.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'), 1000);
 	}
 
