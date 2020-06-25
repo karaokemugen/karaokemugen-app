@@ -81,6 +81,15 @@ class AdminHeader extends Component<IProps, IState> {
 
 		return (
 			<KmAppHeaderDecorator mode="admin">
+				{this.props.options ?
+					<button
+						title={i18next.t('BACK_PLAYLISTS')}
+						className="btn btn-default buttonsNotMobile"
+						onClick={this.props.setOptionMode}
+					>
+						<i className="fas fa-long-arrow-alt-left "></i>
+					</button> : null
+				}
 				<div className="header-group switchs visibilitySwitch">
 					<RadioButton
 						title={i18next.t('ENGINE_ADDED_SONG_VISIBILITY_ADMIN')}
