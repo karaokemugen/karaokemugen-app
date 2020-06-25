@@ -233,7 +233,7 @@ class Player {
 				emitPlayerState();
 				if (playerState._playing && playerState.mediaType !== 'background' &&
 					(status.property === 'playtime-remaining' && status.value === 0) ||
-					(status.property === 'eof-reached' && status.value === true && playerState['playtime-remaining'])
+					(status.property === 'eof-reached' && status.value === true)
 				) {
 					// immediate switch to Playing = False to avoid multiple trigger
 					playerState.playing = false;
