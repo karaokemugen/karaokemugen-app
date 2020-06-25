@@ -27,7 +27,8 @@
     "packer": "yarn build && electron-builder --dir",
     "dist": "yarn build && electron-builder",
     "migrate": "postgrator",
-    "dropDatabase": "ts-node util/dropDatabase.ts"
+    "dropDatabase": "ts-node util/dropDatabase.ts",
+    "postinstall": "patch-package"
   },
   "homepage": "https://karaokes.moe",
   "repository": {
@@ -124,10 +125,12 @@
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "patch-package": "^6.2.2",
     "pg": "^8.2.1",
     "pg-copy-streams": "^5.1.0",
     "portfinder": "^1.0.26",
     "postgrator": "^4.0.1",
+    "postinstall-postinstall": "^2.1.0",
     "pretty-bytes": "^5.3.0",
     "public-ip": "^4.0.1",
     "randomstring": "^1.1.5",
@@ -248,8 +251,8 @@
     "deb": {
       "depends": [
         "postgresql",
-		"mpv",
-		"ffmpeg",
+        "mpv",
+        "ffmpeg",
         "gconf2",
         "gconf-service",
         "libnotify4",

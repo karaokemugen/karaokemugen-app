@@ -1,0 +1,47 @@
+diff --git a/node_modules/node-mpv/lib/mpv/_startStop.js b/node_modules/node-mpv/lib/mpv/_startStop.js
+index a02a990..a470cda 100644
+--- a/node_modules/node-mpv/lib/mpv/_startStop.js
++++ b/node_modules/node-mpv/lib/mpv/_startStop.js
+@@ -109,6 +109,12 @@ const startStop = {
+ 				// are usually output via stdout are output via stderr instead. That's why it's required to listen
+ 				// for the same messages on stderr as well
+ 				this.mpvPlayer.stderr.on('data', stdCallback);
++
++				if (this.options.debug || this.options.verbose) {
++					// Pipe mpv stdout/err to provide potential clues
++					this.mpvPlayer.stdout.pipe(process.stdout);
++					this.mpvPlayer.stderr.pipe(process.stderr);
++				}
+ 			});
+ 			
+ 			// check if mpv went into idle mode and is ready to receive commands
+@@ -118,7 +124,13 @@ const startStop = {
+ 				// socket to check for the idle event to check if mpv fully loaded and
+ 				// actually running
+ 				const observeSocket = net.Socket();
+-				observeSocket.connect({path: this.options.socket}).on('data', (data) => {
++				observeSocket.connect({path: this.options.socket}, () => {
++					// send any message to see if there's a MPV instance responding
++					sock.write(JSON.stringify({
++						'command': ['get_property', 'mpv-version']
++					})+'\n');
++					if (this.options.debug || this.options.verbose) console.log('[Node-MPV] sending stimulus');
++				}).on('data', (data) => {
+ 					// parse the messages from the socket
+ 					const messages = data.toString('utf-8').split('\n');
+ 					// check every message
+@@ -133,6 +145,14 @@ const startStop = {
+ 							//     for the rare case that somebody would pass files as input via the command line
+ 							//     through the constructor. In that case mpv never goes into idle mode
+ 							if('event' in message && ['idle','file-loaded'].includes(message.event)){
++								if (this.options.debug || this.options.verbose) console.log('[Node-MPV] idling');
++								observeSocket.destroy();							
++								resolve();
++							}
++							// check our stimulus response
++							// Check for our stimulus with mpv-version
++							if('data' in message && message?.error === 'success') {
++								if (this.options.debug || this.options.verbose) console.log('[Node-MPV] stimulus received');
+ 								observeSocket.destroy();
+ 								resolve();
+ 							}
