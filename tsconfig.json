@@ -29,7 +29,8 @@
 		"listFiles": false,
 		"listEmittedFiles": false,
 		"noUnusedParameters": true,
-		"noUnusedLocals": true
+		"noUnusedLocals": true,
+		"experimentalDecorators": true
 	},
 	"include": [
 		"src"

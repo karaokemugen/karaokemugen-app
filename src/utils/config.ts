@@ -12,7 +12,7 @@ import Traceroute from 'nodejs-traceroute';
 import {resolve} from 'path';
 import { ip as whoisIP } from 'whoiser';
 
-import { initAddASongMessage, stopAddASongMessage } from '../components/mpv';
+import { initAddASongMessage, stopAddASongMessage } from '../services/player';
 import { listUsers } from '../dao/user';
 import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';

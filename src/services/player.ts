@@ -1,28 +1,7 @@
 import i18next from 'i18next';
 import {promisify} from 'util';
 
-import {
-	displayInfo,
-	displaySongInfo,
-	goTo,
-	initAddASongMessage,
-	initPlayerSystem,
-	message,
-	pause,
-	play,
-	playMedia,
-	quitMpv as quit,
-	restartMpv,
-	resume,
-	seek,
-	setFullscreen,
-	setMute, setSubs,
-	setVolume,
-	stop,
-	stopAddASongMessage,
-	toggleOnTop,
-	setPiPSize, setHwDec
-} from '../components/mpv';
+import Players from '../components/mpv';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import {getConfig, setConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
@@ -37,9 +16,10 @@ import {updateUserQuotas} from './user';
 const sleep = promisify(setTimeout);
 
 let introSequence = false;
+let mpv = new Players();
 
-export function playerMessage(msg: string, duration: number) {
-	return message(msg, duration);
+export function playerMessage(msg: string, duration: number, align: number = 4) {
+	return mpv.message(msg, duration, align);
 }
 
 export async function playSingleSong(kid?: string) {
@@ -57,7 +37,7 @@ export async function playSingleSong(kid?: string) {
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
 		// Construct mpv message to display.
 		const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+kara.title+'{\\i0}';
-		await play({
+		await mpv.play({
 			media: kara.mediafile,
 			subfile: kara.subfile,
 			gain: kara.gain,
@@ -87,10 +67,10 @@ export async function playRandomSongAfterPlaylist() {
 		if (kara) {
 			setState({ randomPlaying: true });
 			await playSingleSong(kara.kid);
-			initAddASongMessage();
+			mpv.initAddASongMessage();
 		} else {
 			stopPlayer(true);
-			stopAddASongMessage();
+			mpv.stopAddASongMessage();
 		}
 	} catch(err) {
 		sentry.error(err);
@@ -108,14 +88,14 @@ async function playCurrentSong(now: boolean) {
 			// Testing if we're on first position, if intro hasn't been played already and if we have at least one intro available
 			if (conf.Playlist.Medias.Intros.Enabled && kara?.pos === 1 && !getState().introPlayed) {
 				setState({currentlyPlayingKara: 'Intros', introPlayed: true});
-				await playMedia('Intros');
+				await mpv.playMedia('Intros');
 				introSequence = true;
 				return;
 			}
 			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
 			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
 
-			await play({
+			await mpv.play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
 				gain: kara.gain,
@@ -129,7 +109,7 @@ async function playCurrentSong(now: boolean) {
 			setState({currentlyPlayingKara: kara.kid});
 			addPlayedKara(kara.kid);
 			await setPLCVisible(kara.playlistcontent_id);
-			await updatePlaylistDuration(kara.playlist_id),
+			await updatePlaylistDuration(kara.playlist_id);
 			await updateUserQuotas(kara);
 			emitWS('playlistInfoUpdated', kara.playlist_id);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
@@ -185,7 +165,7 @@ export async function playerEnding() {
 		if (state.player.mediaType === 'Intros') {
 			if (conf.Playlist.Medias.Sponsors.Enabled) {
 				try {
-					await playMedia('Sponsors');
+					await mpv.playMedia('Sponsors');
 					setState({currentlyPlayingKara: 'Sponsors'});
 				} catch(err) {
 					logger.warn(`[Player] Skipping sponsors due to error, playing current song : ${err}`);
@@ -234,7 +214,7 @@ export async function playerEnding() {
 		logger.debug(`[Player] CurrentSong Pos : ${state.currentSong?.pos} - Playlist Kara Count : ${pl.karacount} - Playlist name: ${pl.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl.playlist_id}`);
 		if (conf.Playlist.Medias.Encores.Enabled && state.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed) {
 			try {
-				await playMedia('Encores');
+				await mpv.playMedia('Encores');
 				setState({currentlyPlayingKara: 'Encores', encorePlayed: true});
 			} catch(err) {
 				logger.error(`[Player] Unable to play encore file, going to next song : ${err}`);
@@ -254,7 +234,7 @@ export async function playerEnding() {
 			setPlaying(0, pl.playlist_id);
 			if (conf.Playlist.Medias.Outros.Enabled) {
 				try {
-					await playMedia('Outros');
+					await mpv.playMedia('Outros');
 					setState({currentlyPlayingKara: 'Outros'});
 				} catch(err) {
 					logger.error(`[Player] Unable to play outro file : ${err}`);
@@ -276,7 +256,7 @@ export async function playerEnding() {
 		if (state.counterToJingle >= conf.Playlist.Medias.Jingles.Interval && conf.Playlist.Medias.Jingles.Enabled) {
 			try {
 				setState({counterToJingle: 0});
-				await playMedia('Jingles');
+				await mpv.playMedia('Jingles');
 				setState({currentlyPlayingKara: 'Jingles'});
 			} catch(err) {
 				logger.error(`[Player] Unable to play jingle file, going to next song : ${err}`);
@@ -290,7 +270,7 @@ export async function playerEnding() {
 		} else if (state.counterToSponsor >= conf.Playlist.Medias.Sponsors.Interval && conf.Playlist.Medias.Sponsors.Enabled) {
 			try {
 				setState({counterToSponsor: 0});
-				await playMedia('Sponsors');
+				await mpv.playMedia('Sponsors');
 				setState({currentlyPlayingKara: 'Sponsors'});
 			} catch(err) {
 				logger.error(`[Player] Unable to play sponsor file, going to next song : ${err}`);
@@ -355,7 +335,7 @@ async function next() {
 			if (conf.Karaoke.Poll.Enabled) {
 				await startPoll();
 			} else {
-				displaySongInfo(kara.infos, 10000000, true);
+				mpv.displaySongInfo(kara.infos, 10000000, true);
 			}
 			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
@@ -374,7 +354,7 @@ async function next() {
 async function toggleFullScreenPlayer() {
 	let state = getState();
 	state = setState({fullscreen: !state.fullscreen});
-	await setFullscreen(state.fullscreen);
+	await mpv.setFullscreen(state.fullscreen);
 	state.fullscreen
 		? logger.info('[Player] Player going to full screen')
 		: logger.info('[Player] Player going to windowed mode');
@@ -382,18 +362,18 @@ async function toggleFullScreenPlayer() {
 
 async function toggleOnTopPlayer() {
 	let state = getState();
-	state = setState({ontop: await toggleOnTop()});
+	state = setState({ontop: await mpv.toggleOnTop()});
 	state.ontop
 		? logger.info('[Player] Player staying on top')
 		: logger.info('[Player] Player NOT staying on top');
 }
 
 async function setPiPSizePlayer(nb: number) {
-	await setPiPSize(nb);
+	await mpv.setPiPSize(nb);
 }
 
 async function setHwDecPlayer(method: string) {
-	await setHwDec(method);
+	await mpv.setHwDec(method);
 }
 
 export async function playPlayer(now?: boolean) {
@@ -402,9 +382,9 @@ export async function playPlayer(now?: boolean) {
 	if (state.player.playerStatus === 'stop' || now) {
 		await playCurrentSong(now);
 		setState({status: 'play'});
-		stopAddASongMessage();
+		mpv.stopAddASongMessage();
 	} else {
-		await resume();
+		await mpv.resume();
 	}
 	profile('Play');
 }
@@ -412,9 +392,9 @@ export async function playPlayer(now?: boolean) {
 async function stopPlayer(now = true) {
 	if (now) {
 		logger.info('[Player] Karaoke stopping NOW');
-		await stop();
+		await mpv.stop();
 		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false, stopping: false});
-		stopAddASongMessage();
+		mpv.stopAddASongMessage();
 	} else {
 		if (getState().player.playerStatus !== 'stop' && !getState().stopping) {
 			logger.info('[Player] Karaoke stopping after current song');
@@ -429,51 +409,51 @@ export async function prepareClassicPauseScreen() {
 		const kara = await getCurrentSong();
 		if (!kara) throw 'No song selected, current playlist must be empty';
 		setState({currentRequester: kara?.username || null});
-		displaySongInfo(kara.infos, 10000000, true);
+		mpv.displaySongInfo(kara.infos, 10000000, true);
 	} catch(err) {
 		// Failed to get current song, this can happen if the current playlist gets emptied or changed to an empty one inbetween songs. In this case, just display KM infos
-		displayInfo();
+		mpv.displayInfo();
 		logger.warn(`[Player] Could not prepare classic pause screen : ${err}`);
 	}
 }
 
 async function pausePlayer() {
-	await pause();
+	await mpv.pause();
 	logger.info('[Player] Karaoke paused');
 	setState({status: 'pause'});
 }
 
 async function mutePlayer() {
-	await setMute(true);
+	await mpv.setMute(true);
 	logger.info('[Player] Player muted');
 }
 
 async function unmutePlayer() {
-	await setMute(false);
+	await mpv.setMute(false);
 	logger.info('[Player] Player unmuted');
 }
 
 async function seekPlayer(delta: number) {
-	await seek(delta);
+	await mpv.seek(delta);
 }
 
 async function goToPlayer(seconds: number) {
-	await goTo(seconds);
+	await mpv.goTo(seconds);
 }
 
 async function setVolumePlayer(volume: number) {
-	await setVolume(volume);
+	await mpv.setVolume(volume);
 	// Save the volume in configuration
 	await setConfig({Player: {Volume: volume}});
 }
 
 async function showSubsPlayer() {
-	await setSubs(true);
+	await mpv.setSubs(true);
 	logger.info('[Player] Showing lyrics on screen');
 }
 
 async function hideSubsPlayer() {
-	await setSubs(false);
+	await mpv.setSubs(false);
 	logger.info('[Player] Hiding lyrics on screen');
 }
 
@@ -483,7 +463,7 @@ export async function playerNeedsRestart() {
 	if (state.player.playerStatus === 'stop' && !state.playerNeedsRestart && !state.isDemo && !state.isTest) {
 		setState({ playerNeedsRestart: true });
 		logger.info('[Player] Player will restart in 5 seconds');
-		message(i18next.t('RESTARTING_PLAYER'), 5000);
+		mpv.message(i18next.t('RESTARTING_PLAYER'), 5000);
 		await sleep(5000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
@@ -495,11 +475,22 @@ export async function playerNeedsRestart() {
 
 async function restartPlayer() {
 	profile('restartmpv');
-	await restartMpv();
+	await mpv.restart();
 	logger.info('[Player] Player restart complete');
 	profile('restartmpv');
 }
 
+export function initAddASongMessage() {
+	return mpv.initAddASongMessage();
+}
+
+export function stopAddASongMessage() {
+	return mpv.stopAddASongMessage();
+}
+
+export function displayInfo() {
+	return mpv.displayInfo();
+}
 
 export async function sendCommand(command: string, options: any): Promise<string|undefined> {
 	// Resetting singlePlay to false everytime we use a command.
@@ -564,9 +555,9 @@ export async function sendCommand(command: string, options: any): Promise<string
 }
 
 export function initPlayer() {
-	return initPlayerSystem();
+	return mpv.initPlayerSystem();
 }
 
 export function quitmpv() {
-	return quit();
+	return mpv.quit();
 }

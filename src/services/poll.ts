@@ -4,7 +4,7 @@ import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
 import {promisify} from 'util';
 
-import { displayInfo,message } from '../components/mpv';
+import { displayInfo,playerMessage } from './player';
 import { Token } from '../lib/types/user';
 import {getConfig} from '../lib/utils/config';
 import {timer} from '../lib/utils/date';
@@ -56,7 +56,7 @@ async function displayPoll(winner?: number) {
 	const voteMessage = winner
 		? i18n.t('VOTE_MESSAGE_SCREEN_WINNER')
 		: i18n.t('VOTE_MESSAGE_SCREEN');
-	await message('{\\fscx80}{\\fscy80}{\\b1}'+voteMessage+'{\\b0}\\N{\\fscx70}{\\fscy70}'+votes.join('\\N'), 10000000, 4);
+	await playerMessage('{\\fscx80}{\\fscy80}{\\b1}'+voteMessage+'{\\b0}\\N{\\fscx70}{\\fscy70}'+votes.join('\\N'), 10000000, 4);
 }
 
 /** Create poll timer so it ends after a time */
