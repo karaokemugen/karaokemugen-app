@@ -191,11 +191,11 @@ export async function addBlacklistCriteria(type: number, value: any, set_id: num
 	try {
 		const blcset = await selectSet(set_id);
 		if (!blcset) throw 'BLC set unknown';
-		if (type < 0 && type > 1006 && type !== 1000) throw `Incorrect BLC type (${type})`;
+		if (type < 0 || type > 1004 || type === 1000) throw `Incorrect BLC type (${type})`;
 		if (type === 1001 || type < 1000) {
 			if (blcList.some((blc: BLC) => !new RegExp(uuidRegexp).test(blc.value))) throw `Blacklist criteria value mismatch : type ${type} must have UUID values`;
 		}
-		if ((type === 1002 || type === 1003 || type === 1005 || type === 1006) && !blcvalues.some(e => isNumber(e))) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
+		if ((type === 1002 || type === 1003) && !blcvalues.some(e => isNumber(e))) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
 		await addBLC(blcList);
 		if (blcset.flag_current) await generateBlacklist();
 		updatedSetModifiedAt(set_id);
