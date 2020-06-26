@@ -40,7 +40,7 @@ async function killPG() {
 				await execa(binPath, options, {
 					cwd: state.binPath.postgres
 				});
-				logger.debug(`[DB] Killed PID ${PID}`);
+				logger.debug(`Killed PID ${PID}`, {service: 'DB'});
 			} catch(err) {
 				//Non fatal, proceed.
 			}
@@ -51,9 +51,9 @@ async function killPG() {
 		} catch(err) {
 			// Non fatal either. NOTHING IS FATAL, THIS FUNCTION IS LETHAL.
 		}
-		logger.debug('[DB] Processes killed');
+		logger.debug('Processes killed', {service: 'DB'});
 	} catch(err) {
-		logger.error(`[DB] Unable to send kill signal : ${err}`);
+		logger.error(`Unable to send kill signal : ${err}`, {service: 'DB'});
 		sentry.error(err);
 	}
 }
@@ -180,12 +180,12 @@ export async function checkPG(): Promise<boolean> {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres)
 		});
-		logger.debug('[DB] Postgresql is running');
+		logger.debug('Postgresql is running', {service: 'DB'});
 		return true;
 	} catch(err) {
 		// Status sends an exit code of 3 if postgresql is not running
 		// It gets thrown here so we return false (not running).
-		logger.debug('[DB] Postgresql is NOT running');
+		logger.debug('Postgresql is NOT running', {service: 'DB'});
 		return false;
 	}
 }
