@@ -285,7 +285,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	};
 
 	onChangeTags = (value: string) => {
-		this.setState({ activeFilter: 5, activeFilterUUID: value });
+		this.setState({ activeFilterUUID: value });
 		this.props.onChangeTags(this.state.tagType, value);
 	};
 
@@ -424,8 +424,11 @@ class PlaylistHeader extends Component<IProps, IState> {
 		const searchMenu = (this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).length > 0 ?
 			<div className="searchMenuContainer">
 				<div className="filterContainer">
-					<div className={'filterButton ' + (this.state.activeFilter === 5 ? 'filterElementActive' : '')} onClick={() => this.getKarasList(5, 'search')}>
-						<i className="fas fa-filter"></i> <span>{i18next.t('FILTER')}</span>
+					<div className='filterButton ' onClick={async () => {
+						await this.setState({activeFilterUUID: ''});
+						this.props.getPlaylist();
+					}}>
+						<i className="fas fa-trash-alt"></i> <span>{i18next.t('CLEAR_FILTER')}</span>
 					</div>
 					<select className="filterElement filterTags" placeholder="Search"
 						onChange={e => this.setState({ tagType: (Number(e.target.value) ? Number(e.target.value) : e.target.value) })}

@@ -9,7 +9,9 @@
 	flex-wrap: nowrap;
 
 	.filterButton {
+		cursor: pointer;
 		padding: 7px;
+		background-color: crimson;
 		@media (max-width:640px) {
 			span {
 				display: none;
@@ -22,6 +24,7 @@
 		text-align: center;
 		height: 35px;
 		padding: 5px;
+		cursor: pointer;
 	}
 
 	.filterTags {
