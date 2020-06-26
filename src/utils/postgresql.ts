@@ -6,11 +6,12 @@ import i18next from 'i18next';
 import deburr from 'lodash.deburr';
 import {resolve} from 'path';
 import {StringDecoder} from 'string_decoder';
+import tasklist from 'tasklist';
 
 import { errorStep } from '../electron/electronLogger';
 import {getConfig} from '../lib/utils/config';
 // KM Imports
-import {asyncExists, asyncReadFile,asyncWriteFile} from '../lib/utils/files';
+import {asyncExists, asyncReadFile,asyncUnlink,asyncWriteFile} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import sentry from './sentry';
 import {getState} from './state';
@@ -22,15 +23,51 @@ export function isShutdownPG(): boolean {
 	return shutdownInProgress;
 }
 
-/** Kill bundled postgreSQL server */
-export function killPG() {
+/** Kill ALL pg process - windows only - handle with care */
+async function killPG() {
+	const state = getState();
+	const conf = getConfig();
+	if (state.os !== 'win32' || !conf.Database.prod.bundledPostgresBinary) return;
+	try {
+		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
+		binPath = `"${binPath}"`;
+		// Get task list
+		const tasks = await tasklist();
+		const PIDs = tasks.filter((t: any) => t.imageName === 'postgres.exe').map((t: any) => t.pid);
+		for (const PID of PIDs) {
+			const options = ['kill', 'TERM', PID];
+			try {
+				await execa(binPath, options, {
+					cwd: state.binPath.postgres
+				});
+				logger.debug(`[DB] Killed PID ${PID}`);
+			} catch(err) {
+				//Non fatal, proceed.
+			}
+		}
+		try {
+			const pgPIDFile = resolve(getState().dataPath, conf.System.Path.DB, 'postgres/postmaster.pid');
+			await asyncUnlink(pgPIDFile);
+		} catch(err) {
+			// Non fatal either. NOTHING IS FATAL, THIS FUNCTION IS LETHAL.
+		}
+		logger.debug('[DB] Processes killed');
+	} catch(err) {
+		logger.error(`[DB] Unable to send kill signal : ${err}`);
+		sentry.error(err);
+	}
+}
+
+/** Stop bundled postgreSQL server */
+export async function stopPG() {
 	shutdownInProgress = true;
 	const state = getState();
 	const conf = getConfig();
 	const pgDataDir = resolve(getState().dataPath, conf.System.Path.DB, 'postgres');
 	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 	if (state.os === 'win32') binPath = `"${binPath}"`;
-	return execa(binPath, ['-D', pgDataDir, '-w', 'stop'], {
+	const options = ['-D', pgDataDir, '-w', 'stop'];
+	await execa(binPath, options, {
 		cwd: state.binPath.postgres
 	});
 }
@@ -62,7 +99,7 @@ export async function dumpPG() {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres)
 		});
-		logger.info('Database dumped to file', {service: 'DB'})
+		logger.info('Database dumped to file', {service: 'DB'});
 	} catch(err) {
 		sentry.error(err);
 		throw `Dump failed : ${err}`;
@@ -81,10 +118,10 @@ export async function restorePG() {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			stdio: 'inherit'
 		});
-		logger.info('Database restored from file', {service: 'DB'})
+		logger.info('Database restored from file', {service: 'DB'});
 	} catch(err) {
 		sentry.error(err);
-		logger.error('Database restoration failed', {service: 'DB', obj: err})
+		logger.error('Database restoration failed', {service: 'DB', obj: err});
 		throw `Restore failed : ${err}`;
 	}
 }
@@ -93,7 +130,7 @@ export async function restorePG() {
 export async function initPGData() {
 	const conf = getConfig();
 	const state = getState();
-	logger.info('No database present, initializing a new one...', {service: 'DB'})
+	logger.info('No database present, initializing a new one...', {service: 'DB'});
 	try {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		if (deburr(binPath) !== binPath || deburr(conf.System.Path.DB) !== conf.System.Path.DB) throw 'DB path or Postgres path contain non-ASCII characters. Please put Karaoke Mugen in a path with no accent characters or the like and try again.';
@@ -106,7 +143,7 @@ export async function initPGData() {
 		});
 	} catch(err) {
 		sentry.error(err);
-		logger.error('Failed to initialize database', {service: 'DB', obj: err})
+		logger.error('Failed to initialize database', {service: 'DB', obj: err});
 		errorStep(i18next.t('ERROR_INIT_PG_DATA'));
 		throw `Init failed : ${err}`;
 	}
@@ -143,26 +180,26 @@ export async function checkPG(): Promise<boolean> {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres)
 		});
+		logger.debug('[DB] Postgresql is running');
 		return true;
 	} catch(err) {
 		// Status sends an exit code of 3 if postgresql is not running
 		// It gets thrown here so we return false (not running).
+		logger.debug('[DB] Postgresql is NOT running');
 		return false;
 	}
 }
 
 /** Initialize bundled PostgreSQL server and data if necessary */
-export async function initPG() {
+export async function initPG(relaunch = true) {
 	const conf = getConfig();
 	const state = getState();
 	const pgDataDir = resolve(state.dataPath, conf.System.Path.DB, 'postgres');
 	// If no data dir is present, we're going to init one
 	if (!await asyncExists(pgDataDir)) await initPGData();
-	if (await checkPG()) {
-		logger.info('Bundled PostgreSQL is already running', {service: 'DB'})
-		return true;
-	}
-	logger.info('Launching bundled PostgreSQL', {service: 'DB'})
+	// Try to check if PG is running by conventionnal means.
+	if (await checkPG()) return true;
+	logger.info('Launching bundled PostgreSQL', {service: 'DB'});
 	await updatePGConf();
 	const options = ['-w','-D',`${pgDataDir}`,'start'];
 	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
@@ -174,9 +211,20 @@ export async function initPG() {
 			cwd: pgBinDir,
 			stdio: 'ignore'
 		});
+		return true;
 	} catch(err) {
-		logger.error('Failed to start PostgreSQL', {service: 'DB', obj: err})
-		// We're going to try launching it directoy to get THE error.
+		logger.error('Failed to start PostgreSQL', {service: 'DB', obj: err});
+		// First let's try to kill PG if it's already running
+		if (relaunch) {
+			try {
+				await killPG();
+			} catch(err) {
+				//It should be fatal, but even if it does abort, let's try to launch again.
+			}
+			// Let's try to relaunch. If it returns true this time, return directly. If not continue to try to pinpoint the error message
+			if (await initPG(false)) return;
+		}
+		// We're going to try launching it directly to get THE error.
 		const pgBinExe = state.os === 'win32'
 			? 'postgres.exe'
 			: 'postgres';
@@ -190,7 +238,7 @@ export async function initPG() {
 		} catch(err) {
 			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
 			const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
-			logger.error('PostgreSQL error', {service: 'DB', obj: decoder.write(err.stderr)})
+			logger.error('PostgreSQL error', {service: 'DB', obj: decoder.write(err.stderr)});
 		}
 		errorStep(i18next.t('ERROR_START_PG'));
 		throw err.message;

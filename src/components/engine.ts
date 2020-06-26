@@ -30,7 +30,7 @@ import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { initDiscordRPC } from '../utils/discordRPC';
-import { checkPG, dumpPG, killPG,restorePG } from '../utils/postgresql';
+import { checkPG, dumpPG, restorePG,stopPG } from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
@@ -55,7 +55,7 @@ export async function initEngine() {
 			});
 			await exit(0);
 		} catch(err) {
-			logger.error('Validation error', {service: 'Engine', obj: err})
+			logger.error('Validation error', {service: 'Engine', obj: err});
 			sentry.error(err);
 			await exit(1);
 		}
@@ -65,7 +65,7 @@ export async function initEngine() {
 			await updateAllMedias();
 			await exit(0);
 		} catch(err) {
-			logger.error('Updating medias failed', {service: 'Engine', obj: err})
+			logger.error('Updating medias failed', {service: 'Engine', obj: err});
 			sentry.error(err);
 			await exit(1);
 		}
@@ -97,10 +97,10 @@ export async function initEngine() {
 			await initDBSystem();
 			initStep(i18n.t('INIT_BASEUPDATE'));
 			await updateAllBases();
-			logger.info('Done updating karaoke base', {service: 'Engine'})
+			logger.info('Done updating karaoke base', {service: 'Engine'});
 			await exit(0);
 		} catch (err) {
-			logger.error('Update failed', {service: 'Engine', obj: err})
+			logger.error('Update failed', {service: 'Engine', obj: err});
 			sentry.error(err);
 			await exit(1);
 		}
@@ -114,7 +114,7 @@ export async function initEngine() {
 			await saveSetting('baseChecksum', checksum);
 			await exit(0);
 		} catch(err) {
-			logger.error('Generation failed', {service: 'Engine', obj: err})
+			logger.error('Generation failed', {service: 'Engine', obj: err});
 			sentry.error(err);
 			await exit(1);
 		}
@@ -135,7 +135,7 @@ export async function initEngine() {
 			await initOnlineURLSystem();
 		} catch(err) {
 			//Non-blocking
-			logger.error('Failed to init online system', {service: 'Engine', obj: err})
+			logger.error('Failed to init online system', {service: 'Engine', obj: err});
 			sentry.error(err);
 		}
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo) initTwitch();
@@ -186,7 +186,7 @@ export async function initEngine() {
 			if (!state.isTest && !state.isDemo) initDiscordRPC();
 			if (state.args[0]?.startsWith('km://')) handleProtocol(state.args[0].substr(5).split('/'));
 		} catch(err) {
-			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: JSON.stringify(err)})
+			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: JSON.stringify(err)});
 			sentry.error(err);
 			if (state.isTest) process.exit(1000);
 		} finally {
@@ -197,16 +197,16 @@ export async function initEngine() {
 
 export async function exit(rc: string | number) {
 	if (shutdownInProgress) return;
-	logger.info('Shutdown in progress', {service: 'Engine'})
+	logger.info('Shutdown in progress', {service: 'Engine'});
 	shutdownInProgress = true;
 	emit('exiting-app');
 	try {
 		if (getState().player?.playerStatus) {
 			await quitmpv();
-			logger.info('Player has shutdown', {service: 'Engine'})
+			logger.info('Player has shutdown', {service: 'Engine'});
 		}
 	} catch(err) {
-		logger.warn('mpv error', {service: 'Engine', obj: err})
+		logger.warn('mpv error', {service: 'Engine', obj: err});
 		sentry.error(err);
 	}
 	await closeDB();
@@ -217,11 +217,11 @@ export async function exit(rc: string | number) {
 		// Let's try to kill PGSQL anyway, not a problem if it fails.
 		if (c?.Database?.prod.bundledPostgresBinary && await checkPG()) {
 			try {
-				await killPG();
-				logger.info('PostgreSQL has shutdown', {service: 'Engine'})
+				await stopPG();
+				logger.info('PostgreSQL has shutdown', {service: 'Engine'});
 				mataNe(rc);
 			} catch(err) {
-				logger.warn('PostgreSQL could not be stopped!', {service: 'Engine', obj: JSON.stringify(err)})
+				logger.warn('PostgreSQL could not be stopped!', {service: 'Engine', obj: JSON.stringify(err)});
 				sentry.error(err);
 				mataNe(rc);
 			}
@@ -229,7 +229,7 @@ export async function exit(rc: string | number) {
 			mataNe(rc);
 		}
 	} catch(err) {
-		logger.error('Failed to shutdown PostgreSQL', {service: 'Engine', obj: err})
+		logger.error('Failed to shutdown PostgreSQL', {service: 'Engine', obj: err});
 		sentry.error(err);
 		mataNe(1);
 	}
@@ -250,7 +250,7 @@ function mataNe(rc: string | number) {
 }
 
 export function shutdown() {
-	logger.info('Dropping the mic, shutting down!', {service: 'Engine'})
+	logger.info('Dropping the mic, shutting down!', {service: 'Engine'});
 	exit(0);
 }
 
@@ -265,7 +265,7 @@ async function preFlightCheck() {
 	if (!state.opt.noBaseCheck && !conf.App.QuickStart) {
 		const filesChanged = await compareKarasChecksum();
 		if (filesChanged === true) {
-			logger.info('Data files have changed: database generation triggered', {service: 'DB'})
+			logger.info('Data files have changed: database generation triggered', {service: 'DB'});
 			doGenerate = true;
 		}
 		// If karasChecksum returns null, it means there were no files to check. We run generation anyway (it'll return an empty database) to avoid making the current startup procedure any more complex.
@@ -274,14 +274,14 @@ async function preFlightCheck() {
 	const settings = await getSettings();
 	if (!doGenerate && !settings.lastGeneration) {
 		setConfig({ App: { FirstRun: true }});
-		logger.info('Unable to tell when last generation occured: database generation triggered', {service: 'DB'})
+		logger.info('Unable to tell when last generation occured: database generation triggered', {service: 'DB'});
 		doGenerate = true;
 	}
 	if (doGenerate) try {
 		initStep(i18n.t('INIT_GEN'));
 		await generateDB();
 	} catch(err) {
-		logger.error('Generation failed', {service: 'DB', obj: err})
+		logger.error('Generation failed', {service: 'DB', obj: err});
 		errorStep(i18n.t('ERROR_GENERATION'));
 		throw err;
 	}
