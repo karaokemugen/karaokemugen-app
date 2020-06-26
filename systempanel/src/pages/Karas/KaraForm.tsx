@@ -240,7 +240,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					label={
 						<span>{i18next.t('KARA.MEDIA_FILE')}&nbsp;
 							<Tooltip title={i18next.t('KARA.MEDIA_FILE_TOOLTIP', 
-								{formats: this.context.globalState.settings.data.state?.supportedMedias.join(', ')})}>
+								{formats: this.context.globalState.settings.data.state?.supportedMedias?.join(', ')})}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
@@ -269,7 +269,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					label={
 						<span>{i18next.t('KARA.LYRICS_FILE')}&nbsp;
 							<Tooltip title={i18next.t('KARA.LYRICS_FILE_TOOLTIP',
-								{formats: this.context.globalState.settings.data.state?.supportedLyrics.join(', ')})}>
+								{formats: this.context.globalState.settings.data.state?.supportedLyrics?.join(', ')})}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
