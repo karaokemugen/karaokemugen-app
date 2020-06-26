@@ -26,6 +26,7 @@ interface IState {
 	dropDownMenu: boolean;
 	songVisibilityOperator: boolean;
 	statusPlayer?: PublicPlayerState;
+	frontendMode?: number;
 }
 
 class AdminHeader extends Component<IProps, IState> {
@@ -33,7 +34,8 @@ class AdminHeader extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			dropDownMenu: false,
-			songVisibilityOperator: Boolean(this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin)
+			songVisibilityOperator: Boolean(this.props.config.Playlist.MysterySongs.AddedSongVisibilityAdmin),
+			frontendMode: this.props.config.Frontend.Mode
 		};
 	}
 
@@ -64,6 +66,12 @@ class AdminHeader extends Component<IProps, IState> {
 		axios.put('/settings', { setting: JSON.stringify(data) });
 	};
 
+	changePublicInterfaceMode = (value: number) => {
+		let data = expand('Frontend.Mode', value);
+		this.setState({ frontendMode: value });
+		axios.put('/settings', { setting: JSON.stringify(data) });
+	};
+
 	play = (event: any) => {
 		if ((!this.state.statusPlayer || this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'pause')
 			&& this.props.idsPlaylist.left !== this.props.currentPlaylist.playlist_id
@@ -90,23 +98,60 @@ class AdminHeader extends Component<IProps, IState> {
 						<i className="fas fa-long-arrow-alt-left "></i>
 					</button> : null
 				}
-				<div className="header-group switchs visibilitySwitch">
+				<div className="header-group switchs">
+					<label className="control-label" title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
+						{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
+              &nbsp;
+  						<i className="far fa-question-circle"></i>
+					</label>
+					<label className="control-label" title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
+						{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
+            &nbsp;
+  					<i className="far fa-question-circle"></i>
+					</label>
+				</div>
+				<div className="header-group switchs">
 					<RadioButton
-						title={i18next.t('ENGINE_ADDED_SONG_VISIBILITY_ADMIN')}
-						orientation="vertical"
+						title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}
 						buttons={[
 							{
-								label: i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_NORMAL'),
+								label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
 								active: this.state.songVisibilityOperator,
 								activeColor: '#57bb00',
 								onClick: () => this.saveOperatorAdd(true),
 
 							},
 							{
-								label: i18next.t('ADMIN_PANEL_ADDED_SONG_VISIBILITY_MYSTERY'),
+								label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
 								active: !this.state.songVisibilityOperator,
 								activeColor: '#994240',
 								onClick: () => this.saveOperatorAdd(false),
+
+							}
+						]}
+					/>
+					<RadioButton
+						title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}
+						buttons={[
+							{
+								label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
+								active: this.state.frontendMode === 0,
+								activeColor: '#994240',
+								onClick: () => this.changePublicInterfaceMode(0),
+
+							},
+							{
+								label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
+								active: this.state.frontendMode === 1,
+								activeColor: '#37679a',
+								onClick: () => this.changePublicInterfaceMode(1),
+
+							},
+							{
+								label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
+								active: this.state.frontendMode === 2,
+								activeColor: '#57bb00',
+								onClick: () => this.changePublicInterfaceMode(2),
 
 							}
 						]}

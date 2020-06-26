@@ -41,15 +41,22 @@
 		.header-group.switchs {
 			display: flex;
 			flex-direction: column;
-			min-width: 8em;
 			> * {
 				flex:1;
+			}
+			label {
+				margin: 8px;
+				text-align: end;
+			}
+			div {
+				height: 50%;
+				min-width: 20em;
 			}
 		}
 
 		@media (max-width: 1023px) {  
 			.header-group.switchs {
-				min-width: 3em;
+				display: none;
 			}
 			.btn {
 				min-width: 55px;

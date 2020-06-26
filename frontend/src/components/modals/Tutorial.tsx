@@ -77,7 +77,7 @@ class Tutorial extends Component<IProps,IState> {
 				},
 				{
 					placement:'auto',
-					target: '.visibilitySwitch',
+					target: '.switchs',
 					content: i18nAsDiv('INTRO_ADMIN_MYSTERY'),
 				},
 				{ 

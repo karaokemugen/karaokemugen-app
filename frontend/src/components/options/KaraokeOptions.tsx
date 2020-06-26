@@ -560,8 +560,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 					</div>
 
 					<div className="form-group">
-						<label className="col-xs-4 control-label" title={i18next.t('ENGINE_ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
-							{i18next.t('ENGINE_ADDED_SONG_VISIBILITY_ADMIN')}
+						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
+							{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN')}
               &nbsp;
   						<i className="far fa-question-circle"></i>
 						</label>
@@ -572,15 +572,15 @@ class KaraokeOptions extends Component<IProps, IState> {
 								onChange={this.onChange}
 								value={this.state.config['Playlist.MysterySongs.AddedSongVisibilityAdmin']}
 							>
-								<option value='false'> {i18next.t('ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION')} </option>
-								<option value='true'> {i18next.t('ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION')} </option>
+								<option value='false'> {i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION')} </option>
+								<option value='true'> {i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION')} </option>
 							</select>
 						</div>
 					</div>
 
 					<div className="form-group">
-						<label className="col-xs-4 control-label" title={i18next.t('ENGINE_ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP')}>
-							{i18next.t('ENGINE_ADDED_SONG_VISIBILITY_PUBLIC')}
+						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP')}>
+							{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_PUBLIC')}
               &nbsp;
   						<i className="far fa-question-circle"></i>
 						</label>
@@ -591,21 +591,21 @@ class KaraokeOptions extends Component<IProps, IState> {
 								onChange={this.onChange}
 								value={this.state.config['Playlist.MysterySongs.AddedSongVisibilityPublic']}
 							>
-								<option value='false'> {i18next.t('ENGINE_ADDED_SONG_VISIBILITY_MYSTERY_OPTION')} </option>
-								<option value='true'> {i18next.t('ENGINE_ADDED_SONG_VISIBILITY_NORMAL_OPTION')} </option>
+								<option value='false'> {i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION')} </option>
+								<option value='true'> {i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION')} </option>
 							</select>
 						</div>
 					</div>
 
 					<div className="form-group">
 						<label className="col-xs-4 control-label">
-							{i18next.t('ENGINE_LABELS_MYSTERY_SONGS')}
+							{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS')}
 						</label>
 						<div className="col-xs-6">
 							<div>
 								<input value={this.state.mysterySongLabel} style={{ margin: '10px', color: '#555' }}
 									onChange={e => this.setState({ mysterySongLabel: e.target.value })} />
-								<button type="button" className="btn btn-default" onClick={this.addMysterySongLabel}>{i18next.t('ENGINE_LABELS_MYSTERY_SONGS_ADD')}</button>
+								<button type="button" className="btn btn-default" onClick={this.addMysterySongLabel}>{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_ADD')}</button>
 							</div>
 							{this.state.config['Playlist.MysterySongs.Labels'].map((value: string) => {
 								return (
@@ -613,7 +613,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										<label style={{ margin: '10px' }}>{value}</label>
 										{this.state.config['Playlist.MysterySongs.Labels'].length > 1 ?
 											<button type="button" className="btn btn-default"
-												onClick={() => this.deleteMysterySongLabel(value)}>{i18next.t('ENGINE_LABELS_MYSTERY_SONGS_DELETE')}</button> : null
+												onClick={() => this.deleteMysterySongLabel(value)}>{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_DELETE')}</button> : null
 										}
 									</div>
 								);
