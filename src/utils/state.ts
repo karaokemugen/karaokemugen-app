@@ -46,6 +46,7 @@ let state: State = {
 /** Get public state (to send to webapp users) */
 export function getPlayerState(): PublicPlayerState {
 	return {
+		currentSong: state.currentSong,
 		currentlyPlaying: state.currentlyPlayingKara,
 		currentSessionID: state.currentSessionID,
 		stopping: state.stopping,

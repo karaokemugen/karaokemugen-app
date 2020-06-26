@@ -10,7 +10,8 @@ export interface PLCEditParams {
 
 export interface CurrentSong extends DBPLCBase {
 	avatar?: string,
-	infos?: string
+	infos?: string,
+	playlistLength?: number
 }
 
 export interface PLC {

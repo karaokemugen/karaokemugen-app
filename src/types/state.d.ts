@@ -95,6 +95,7 @@ export interface PublicPlayerState {
 	currentlyPlaying: string,
 	currentRequester: string,
 	currentSessionID: string,
+	currentSong: CurrentSong,
 	subText: string,
 	showSubs: boolean,
 	volume: number,
