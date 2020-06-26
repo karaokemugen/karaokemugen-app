@@ -151,12 +151,12 @@ async function testCurrentBLCSet() {
 			flag_current: true
 		})
 		});
-		logger.debug('Initial current BLC Set created', {service: 'Blacklist'})
+		logger.debug('Initial current BLC Set created', {service: 'Blacklist'});
 	}
 }
 
 export async function emptyBlacklistCriterias(id: number) {
-	logger.debug('Wiping criterias', {service: 'Blacklist'})
+	logger.debug('Wiping criterias', {service: 'Blacklist'});
 	const blcSet = await selectSet(id);
 	if (!blcSet) throw 'BLC set unknown';
 	await emptyBLC(id);
@@ -200,7 +200,7 @@ export async function addBlacklistCriteria(type: number, value: any, set_id: num
 		if (blcset.flag_current) await generateBlacklist();
 		updatedSetModifiedAt(set_id);
 	} catch(err) {
-		logger.error('Error adding criteria', {service: 'Blacklist', obj: JSON.stringify(err)})
+		logger.error('Error adding criteria', {service: 'Blacklist', obj: JSON.stringify(err)});
 		const error = new Error(err);
 		sentry.error(error);
 		throw err;

@@ -79,7 +79,7 @@ async function updateExpiredUsers() {
 		await DBUpdateExpiredUsers(new Date(time));
 		await DBResetGuestsPassword();
 	} catch(err) {
-		logger.error('Expiring users failed (will try again in one minute)', {service: 'User', obj: err})
+		logger.error('Expiring users failed (will try again in one minute)', {service: 'User', obj: err});
 	}
 }
 
@@ -441,7 +441,7 @@ export async function remoteCheckAuth(instance: string, token: string) {
 		});
 		return res.body;
 	} catch(err) {
-		logger.debug('Got error when check auth', {service: 'RemoteUser', obj: err})
+		logger.debug('Got error when check auth', {service: 'RemoteUser', obj: err});
 		return false;
 	}
 }
@@ -490,7 +490,7 @@ async function getAllRemoteUsers(instance: string): Promise<User[]> {
 			});
 		return users.body as User[];
 	} catch(err) {
-		logger.debug('Got error when get all remote users', {service: 'RemoteUser', obj: err})
+		logger.debug('Got error when get all remote users', {service: 'RemoteUser', obj: err});
 		throw {
 			code: 'USER_CREATE_ERROR_ONLINE',
 			message: err
@@ -577,7 +577,7 @@ export async function createUser(user: User, opts: UserOpts = {
 				length: 3,
 				charset: 'numeric'
 			})}`;
-			logger.warn(`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${user.login} is ${user.nickname}`, {service: 'User'})
+			logger.warn(`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${user.login} is ${user.nickname}`, {service: 'User'});
 		}
 		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };
 		if (!+getConfig().Online.Users) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
@@ -591,7 +591,7 @@ export async function createUser(user: User, opts: UserOpts = {
 		await DBAddUser(user);
 		if (user.type < 2) logger.info(`Created user ${user.login}`, {service: 'User'});
 		delete user.password;
-		logger.debug('User data', {service: 'User', obj: user})
+		logger.debug('User data', {service: 'User', obj: user});
 		return true;
 	} catch (err) {
 		logger.error(`Unable to create user ${user.login}`, {service: 'User', obj: err});
@@ -675,7 +675,7 @@ async function updateGuestAvatar(user: User) {
 
 /** Check all guests to see if we need to replace their avatars with built-in ones */
 async function checkGuestAvatars() {
-	logger.debug('Updating default avatars', {service: 'User'})
+	logger.debug('Updating default avatars', {service: 'User'});
 	const guests = await listGuests();
 	guests.forEach(u => updateGuestAvatar(u));
 }
@@ -697,7 +697,7 @@ async function createDefaultGuests() {
 			type: 2
 		});
 	}
-	logger.debug('Default guest accounts created', {service: 'User'})
+	logger.debug('Default guest accounts created', {service: 'User'});
 }
 
 /** Initializing user auth module */
@@ -737,7 +737,7 @@ export async function initUserSystem() {
 	// Find admin users.
 	const users = await listUsers();
 	const adminUsers = users.filter(u => u.type === 0 && u.login !== 'admin');
-	logger.debug('Admin users', {service: 'User', obj: JSON.stringify(adminUsers)})
+	logger.debug('Admin users', {service: 'User', obj: JSON.stringify(adminUsers)});
 	sentry.setUser(adminUsers[0]?.login || 'admin', adminUsers[0]?.email || undefined);
 }
 
@@ -752,7 +752,7 @@ async function userChecks() {
 
 /** Verifies that all avatars are > 0 bytes or exist. If they don't, recopy the blank avatar over them */
 async function checkUserAvatars() {
-	logger.debug('Checking if all avatars exist', {service: 'User'})
+	logger.debug('Checking if all avatars exist', {service: 'User'});
 	const users = await listUsers();
 	const defaultAvatar = resolve(resolvedPathAvatars(), 'blank.png');
 	for (const user of users) {
@@ -776,7 +776,7 @@ async function checkUserAvatars() {
 
 /** Verifies if all avatars have a circled version available */
 async function checkCircledAvatars() {
-	logger.debug('Checking if all avatars have circled versions', {service: 'User'})
+	logger.debug('Checking if all avatars have circled versions', {service: 'User'});
 	const users = await listUsers();
 	for (const user of users) {
 		try {
@@ -792,7 +792,7 @@ async function checkCircledAvatars() {
 
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
 async function cleanupAvatars() {
-	logger.debug('Cleaning up unused avatars', {service: 'User'})
+	logger.debug('Cleaning up unused avatars', {service: 'User'});
 	const users = await listUsers();
 	const avatars = [];
 	for (const user of users) {

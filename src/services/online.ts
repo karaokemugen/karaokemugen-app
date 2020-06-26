@@ -23,14 +23,14 @@ export async function publishURL() {
 		form.IP6 = await publicIP.v6({timeout: 1000, onlyHttps: true});
 		form.IP6Prefix = await determineV6Prefix(form.IP6);
 	} catch (err) {
-		logger.debug(`Cannot find IPv6 network information, IPv4-only fallback.`, {service: 'ShortURL', obj: err});
+		logger.debug('Cannot find IPv6 network information, IPv4-only fallback.', {service: 'ShortURL', obj: err});
 	}
 	try {
 		await HTTP.post(`https://${conf.Online.Host}/api/shortener`, {
 			form,
 			timeout: 5000
 		});
-		logger.debug('Server accepted our publish', {service: 'ShortURL'})
+		logger.debug('Server accepted our publish', {service: 'ShortURL'});
 		configureHost();
 	} catch(err) {
 		logger.error(`Failed publishing our IP to ${conf.Online.Host}`, {service: 'ShortURL', obj: err});
@@ -40,6 +40,6 @@ export async function publishURL() {
 /** Initialize online shortener system */
 export function initOnlineURLSystem() {
 	// This is the only thing it does for now. Will be extended later.
-	logger.debug('Publishing...', {service: 'ShortURL'})
+	logger.debug('Publishing...', {service: 'ShortURL'});
 	return publishURL();
 }

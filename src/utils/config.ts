@@ -12,7 +12,6 @@ import Traceroute from 'nodejs-traceroute';
 import {resolve} from 'path';
 import { ip as whoisIP } from 'whoiser';
 
-import { initAddASongMessage, stopAddASongMessage } from '../services/player';
 import { listUsers } from '../dao/user';
 import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
@@ -24,7 +23,7 @@ import { removeNulls } from '../lib/utils/object_helpers';
 import { emit } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
 import {publishURL} from '../services/online';
-import {playerNeedsRestart, prepareClassicPauseScreen} from '../services/player';
+import {initAddASongMessage, playerNeedsRestart, prepareClassicPauseScreen,  stopAddASongMessage } from '../services/player';
 import {setSongPoll} from '../services/poll';
 import {initStats, stopStats} from '../services/stats';
 import { updateSongsLeft } from '../services/user';
@@ -121,7 +120,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			? initTwitch()
 			: stopTwitch();
 	} catch(err) {
-		logger.warn('Could not start/stop Twitch chat bot', {service: 'Config', obj: err})
+		logger.warn('Could not start/stop Twitch chat bot', {service: 'Config', obj: err});
 	}
 	// Toggling random song after end message
 	config.Playlist.RandomSongsAfterEndMessage && !state.isDemo
@@ -152,7 +151,7 @@ export async function initConfig(argv: any) {
 		configureIDs();
 		return getConfig();
 	} catch(err) {
-		logger.error('InitConfig failed', {service: 'Launcher', obj: err})
+		logger.error('InitConfig failed', {service: 'Launcher', obj: err});
 		throw err;
 	}
 }
@@ -185,7 +184,7 @@ function getFirstHop(target: string): Promise<string> {
 			});
 			tracer.trace(target);
 		} catch (e) {
-			logger.error('Cannot traceroute', {service: 'Network'})
+			logger.error('Cannot traceroute', {service: 'Network'});
 			reject(e);
 		}
 	});
@@ -219,14 +218,14 @@ export async function determineV6Prefix(ipv6: string): Promise<string> {
 		logger.debug(`Determined IPv6 prefix: ${subnet.toString()}`, {service: 'Network'});
 		return subnet.toString();
 	} else {
-		logger.warn('Could not determine IPv6 prefix, disabling IPv6 capability on shortener.', {service: 'Network'})
+		logger.warn('Could not determine IPv6 prefix, disabling IPv6 capability on shortener.', {service: 'Network'});
 		throw new Error('Cannot find CIDR');
 	}
 }
 
 /** Create a backup of our config file. Just in case. */
 export function backupConfig() {
-	logger.debug('Making a backup of config.yml', {service: 'Config'})
+	logger.debug('Making a backup of config.yml', {service: 'Config'});
 	return asyncCopy(
 		resolve(getState().dataPath, 'config.yml'),
 		resolve(getState().dataPath, 'config.backup.yml'),

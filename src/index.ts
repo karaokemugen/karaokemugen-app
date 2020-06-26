@@ -97,7 +97,7 @@ on('initError', async (err: Error) => {
 });
 
 async function initError(err: any) {
-	logger.error('Error during launch', {service: 'Launcher', obj: err})
+	logger.error('Error during launch', {service: 'Launcher', obj: err});
 	console.log(err);
 	sentry.error(err);
 	if (typeof err === 'string' || !err.name) err = {
@@ -280,8 +280,8 @@ export async function main() {
 		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 		publicConfig.App.JwtSecret = 'xxxxx';
 		publicConfig.App.InstanceID = 'xxxxx';
-		logger.debug('Loaded configuration', {service: 'Launcher', obj: JSON.stringify(publicConfig)})
-		logger.debug('Initial state', {service: 'Launcher', obj: JSON.stringify(state)})
+		logger.debug('Loaded configuration', {service: 'Launcher', obj: JSON.stringify(publicConfig)});
+		logger.debug('Initial state', {service: 'Launcher', obj: JSON.stringify(state)});
 
 		// Checking paths, create them if needed.
 		await checkPaths(getConfig());
@@ -312,7 +312,7 @@ export async function main() {
 			await initEngine();
 			stopTipLoop();
 		} catch(err) {
-			logger.error('Karaoke Mugen initialization failed', {service: 'Launcher', obj: err})
+			logger.error('Karaoke Mugen initialization failed', {service: 'Launcher', obj: err});
 			sentry.error(err);
 			console.log(err);
 			errorStep(i18n.t('ERROR_UNKNOWN'));
@@ -348,7 +348,7 @@ async function checkPaths(config: Config) {
 
 	try {
 		await Promise.all(checks);
-		logger.debug('Directory checks complete', {service: 'Launcher'})
+		logger.debug('Directory checks complete', {service: 'Launcher'});
 	} catch(err) {
 		errorStep(i18n.t('ERROR_INIT_PATHS'));
 		throw err;

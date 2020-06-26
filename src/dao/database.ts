@@ -19,7 +19,7 @@ import { getPlaylists, reorderPlaylist } from './playlist';
 import { sqlGetStats,sqlResetUserData } from './sql/database';
 
 export async function compareKarasChecksum(silent?: boolean): Promise<boolean> {
-	logger.info('Comparing files and database data', {service: 'Store'})
+	logger.info('Comparing files and database data', {service: 'Store'});
 	const [settings, currentChecksum] = await Promise.all([
 		getSettings(),
 		baseChecksum(silent)
@@ -34,7 +34,7 @@ export async function compareKarasChecksum(silent?: boolean): Promise<boolean> {
 
 function errorFunction(err: any) {
 	// If shutdown is in progress for PG binary, we won't catch errors. (or we'll get connection reset messages spamming console)
-	if (!isShutdownPG()) logger.error('Database error', {service: 'DB', obj: err})
+	if (!isShutdownPG()) logger.error('Database error', {service: 'DB', obj: err});
 }
 
 /** Initialize a new database with the bundled PostgreSQL server */
@@ -50,15 +50,15 @@ export async function initDB() {
 	}
 	try {
 		await db().query(`CREATE DATABASE ${conf.Database.prod.database} ENCODING 'UTF8'`);
-		logger.debug('Database created', {service: 'DB'})
+		logger.debug('Database created', {service: 'DB'});
 	} catch(err) {
-		logger.debug('Database already exists', {service: 'DB'})
+		logger.debug('Database already exists', {service: 'DB'});
 	}
 	try {
 		await db().query(`CREATE USER ${conf.Database.prod.user} WITH ENCRYPTED PASSWORD '${conf.Database.prod.password}';`);
-		logger.debug('User created', {service: 'DB'})
+		logger.debug('User created', {service: 'DB'});
 	} catch(err) {
-		logger.debug('User already exists', {service: 'DB'})
+		logger.debug('User already exists', {service: 'DB'});
 	}
 	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.Database.prod.database} TO ${conf.Database.prod.user};`);
 	// We need to reconnect to create the extension on our newly created database
@@ -66,7 +66,7 @@ export async function initDB() {
 	try {
 		await db().query('CREATE EXTENSION unaccent;');
 	} catch(err) {
-		logger.debug('Extension unaccent already registered', {service: 'DB'})
+		logger.debug('Extension unaccent already registered', {service: 'DB'});
 	}
 }
 
@@ -75,7 +75,7 @@ async function migrateFromDBMigrate() {
 	const tables = await db().query('SELECT tablename FROM pg_tables WHERE schemaname = \'public\' AND tablename = \'migrations\'');
 	if (tables.rows.length === 0) return;
 	const lastMigration = await db().query('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
-	logger.info('Old migration system found, converting...', {service: 'DB'})
+	logger.info('Old migration system found, converting...', {service: 'DB'});
 	const id = lastMigration.rows[0].name.replace('/', '').split('-')[0];
 	const migrationsDone = migrations.filter(m => m.version <= id);
 	try {
@@ -98,7 +98,7 @@ async function migrateFromDBMigrate() {
 }
 
 async function migrateDB(): Promise<Migration[]> {
-	logger.info('Running migrations if needed', {service: 'DB'})
+	logger.info('Running migrations if needed', {service: 'DB'});
 	// First check if database still has db-migrate and determine at which we're at.
 	await migrateFromDBMigrate();
 	const conf = getConfig();
@@ -115,7 +115,7 @@ async function migrateDB(): Promise<Migration[]> {
 	try {
 		const migrations = await migrator.migrate();
 		if (migrations.length > 0) logger.info(`Executed ${migrations.length} migrations`, {service: 'DB'});
-		logger.debug('Migrations executed', {service: 'DB', obj: migrations})
+		logger.debug('Migrations executed', {service: 'DB', obj: migrations});
 		return migrations;
 	} catch(err) {
 		const error = new Error(`Migrations failed : ${err}`);
@@ -136,7 +136,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 			await initPG();
 			await initDB();
 		}
-		logger.info('Initializing database connection', {service: 'DB'})
+		logger.info('Initializing database connection', {service: 'DB'});
 		await connectDB(errorFunction, {
 			superuser: false,
 			db: conf.Database.prod.database,
@@ -162,7 +162,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 
 export async function resetUserData() {
 	await db().query(sqlResetUserData);
-	logger.warn('User data has been reset!', {service: 'DB'})
+	logger.warn('User data has been reset!', {service: 'DB'});
 }
 
 export async function getStats(): Promise<DBStats> {

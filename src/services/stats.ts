@@ -43,9 +43,9 @@ export async function sendPayload() {
 			json: payload
 		});
 		savePayload(payload);
-		logger.info('Payload sent successfully', {service: 'Stats'})
+		logger.info('Payload sent successfully', {service: 'Stats'});
 	} catch(err) {
-		logger.error('Uploading stats payload failed', {service: 'Stats', obj: err})
+		logger.error('Uploading stats payload failed', {service: 'Stats', obj: err});
 		sentry.error(err);
 	}
 
@@ -54,10 +54,10 @@ export async function sendPayload() {
 async function savePayload(payload: any) {
 	try {
 		await asyncWriteFile(resolve(getState().dataPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
-		logger.info('Payload data saved locally to logs/statsPayload.json', {service: 'Stats'})
+		logger.info('Payload data saved locally to logs/statsPayload.json', {service: 'Stats'});
 	} catch(err) {
 		// Non-fatal
-		logger.warn('Could not save payload', {service: 'Stats', obj: err})
+		logger.warn('Could not save payload', {service: 'Stats', obj: err});
 		sentry.error(err, 'Warning');
 	}
 }

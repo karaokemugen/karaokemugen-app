@@ -81,7 +81,7 @@ export async function testPlaylists() {
 			public: true
 		}, 'admin');
 		setState({currentPlaylistID: pl_id, publicPlaylistID: pl_id});
-		logger.debug('Initial current playlist created', {service: 'Playlist'})
+		logger.debug('Initial current playlist created', {service: 'Playlist'});
 	} else {
 		// Testing current/public playlist individually.
 		await testCurrentPlaylist();
@@ -96,7 +96,7 @@ function getPlayingPos(playlist: PLC[]): Pos {
 		plc_id_pos: playlist[index].pos,
 		index: index
 	};
-	logger.debug('Playlists tested', {service: 'Playlist'})
+	logger.debug('Playlists tested', {service: 'Playlist'});
 	return undefined;
 }
 
@@ -581,7 +581,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		if (plc_id) ret.plc = await getPLCInfo(plc_id, true, requester);
 		return ret;
 	} catch(err) {
-		logger.error('Unable to add karaokes', {service: 'Playlist', obj: err})
+		logger.error('Unable to add karaokes', {service: 'Playlist', obj: err});
 		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 		if (err.code === 5) errorCode =
 		'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
@@ -890,7 +890,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 			karasUnknown: unknownKaras
 		};
 	} catch(err) {
-		logger.error('Import failed', {service: 'Playlist', obj: err})
+		logger.error('Import failed', {service: 'Playlist', obj: err});
 		const error = new Error(err);
 		sentry.error(error);
 		throw error;
@@ -937,7 +937,7 @@ export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: bool
 		logger.info(`Playlist ${pl.name} shuffled`, {service: 'Playlist'});
 		return pl.name;
 	} catch(err) {
-		logger.error('Could not shuffle playlist', {service: 'Playlist', obj: err})
+		logger.error('Could not shuffle playlist', {service: 'Playlist', obj: err});
 		throw {
 			message: err,
 			data: pl.name
@@ -1054,7 +1054,7 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (playlist.content.length === 0) throw 'Playlist is empty!';
 	if (playlist.index + 1 >= playlist.content.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
-		logger.debug('End of playlist.', {service: 'PLC'})
+		logger.debug('End of playlist.', {service: 'PLC'});
 		if (setPlayingSong) await setPlaying(0, playlist.id);
 		throw 'Current position is last song!';
 	} else {
@@ -1153,7 +1153,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		currentSong.avatar = avatarfile;
 		return currentSong;
 	} catch(err) {
-		logger.error('Error selecting current song to play', {service: 'Playlist', obj: err})
+		logger.error('Error selecting current song to play', {service: 'Playlist', obj: err});
 	}
 }
 
@@ -1162,7 +1162,7 @@ async function updateFreeOrphanedSongs() {
 	try {
 		await updateFreeOrphanedSongsDB(now(true) - (getConfig().Karaoke.Quota.FreeAutoTime * 60));
 	} catch(err) {
-		logger.error('Failed to free orphaned songs (will try again)', {service: 'Playlist', obj: err})
+		logger.error('Failed to free orphaned songs (will try again)', {service: 'Playlist', obj: err});
 	}
 }
 
@@ -1171,7 +1171,7 @@ export async function initPlaylistSystem() {
 	setInterval(updateFreeOrphanedSongs, 60 * 1000);
 	const pls = await getPLs(false);
 	pls.forEach(pl => reorderPlaylist(pl.playlist_id));
-	logger.debug('Playlists initialized', {service: 'Playlist'})
+	logger.debug('Playlists initialized', {service: 'Playlist'});
 }
 
 /** Create current playlist if it doesn't exist */
@@ -1185,7 +1185,7 @@ export async function testCurrentPlaylist() {
 			current: true
 		},'admin')
 		});
-		logger.debug('Initial current playlist created', {service: 'Playlist'})
+		logger.debug('Initial current playlist created', {service: 'Playlist'});
 	}
 }
 
@@ -1200,7 +1200,7 @@ export async function testPublicPlaylist() {
 			public: true
 		},'admin')
 		});
-		logger.debug('Initial public playlist created', {service: 'Playlist'})
+		logger.debug('Initial public playlist created', {service: 'Playlist'});
 	}
 }
 

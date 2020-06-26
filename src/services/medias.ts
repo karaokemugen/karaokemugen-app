@@ -157,7 +157,7 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			}
 			logger.info(`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`, {service: '${type}'});
 			await downloadMedias(filesToDownload, localDir, type, task);
-			logger.info(`Update done`, {service: '${type}'});
+			logger.info('Update done', {service: '${type}'});
 		}
 	} catch(err) {
 		console.log(err);

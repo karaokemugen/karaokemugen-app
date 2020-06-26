@@ -56,7 +56,7 @@ export async function startElectron() {
 			try {
 				await main();
 			} catch(err) {
-				logger.error('Error during launch', {service: 'Launcher', obj: err})
+				logger.error('Error during launch', {service: 'Launcher', obj: err});
 			}
 		});
 		ipcMain.on('droppedFiles', async (_event, eventData) => {
@@ -93,7 +93,7 @@ export async function handleProtocol(args: string[]) {
 	try {
 		logger.info(`Received protocol uri km://${args.join('/')}`, {service: 'ProtocolHandler'});
 		if (!getState().ready) {
-			logger.debug('Ignoring file, Karaoke Mugen isn\'t ready.', {service: 'ProtocolHandler'})
+			logger.debug('Ignoring file, Karaoke Mugen isn\'t ready.', {service: 'ProtocolHandler'});
 			return;
 		}
 		switch(args[0]) {
@@ -148,7 +148,7 @@ export async function handleFile(file: string, username?: string) {
 	try {
 		logger.info(`Received file path ${file}`, {service: 'FileHandler'});
 		if (!getState().ready) {
-			logger.debug('Ignoring file, Karaoke Mugen isn\'t ready.', {service: 'FileHandler'})
+			logger.debug('Ignoring file, Karaoke Mugen isn\'t ready.', {service: 'FileHandler'});
 			return;
 		}
 		if (!username) {
@@ -158,7 +158,7 @@ export async function handleFile(file: string, username?: string) {
 			username = adminUsersOnline[0]?.login;
 			if (!username) {
 				username = 'admin';
-				logger.warn('Could not find a username, switching to admin by default', {service: 'FileHandler'})
+				logger.warn('Could not find a username, switching to admin by default', {service: 'FileHandler'});
 			}
 		}
 		const rawData = await asyncReadFile(resolve(file), 'utf-8');
@@ -215,7 +215,7 @@ export async function handleFile(file: string, username?: string) {
 			throw 'Filetype not recognized';
 		}
 	} catch(err) {
-		logger.error('Could not handle ${file}', {service: 'Electron', obj: err})
+		logger.error('Could not handle ${file}', {service: 'Electron', obj: err});
 	}
 }
 

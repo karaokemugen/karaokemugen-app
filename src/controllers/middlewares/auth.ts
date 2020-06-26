@@ -42,7 +42,7 @@ export async function checkValidUser(token: { username: string, role: string }, 
 								usersFavoritesChecked.add(token.username);
 							}
 						} catch(err) {
-							logger.error('Failed to fetch and update user/favorite from remote', {service: 'RemoteUser', obj: err})
+							logger.error('Failed to fetch and update user/favorite from remote', {service: 'RemoteUser', obj: err});
 						}
 						return user;
 					} else {
@@ -51,7 +51,7 @@ export async function checkValidUser(token: { username: string, role: string }, 
 					}
 				} catch(err) {
 					upsertRemoteToken(token.username, null);
-					logger.warn('Failed to check remote auth (user logged in as local only)', {service: 'RemoteUser', obj: err})
+					logger.warn('Failed to check remote auth (user logged in as local only)', {service: 'RemoteUser', obj: err});
 					throw err;
 				}
 			}

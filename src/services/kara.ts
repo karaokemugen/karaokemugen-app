@@ -267,14 +267,14 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 
 export async function refreshKarasAfterDBChange(newTags: boolean) {
 	profile('RefreshAfterDBChange');
-	logger.debug('Refreshing DB after kara change', {service: 'DB'})
+	logger.debug('Refreshing DB after kara change', {service: 'DB'});
 	if (newTags) {
 		await refreshKaraTags();
 		await refreshTags();
 	}
 	await refreshKaras();
 	await refreshYears();
-	logger.debug('Done refreshing DB after kara change', {service: 'DB'})
+	logger.debug('Done refreshing DB after kara change', {service: 'DB'});
 	profile('RefreshAfterDBChange');
 }
 
@@ -385,9 +385,9 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 		refreshKaraTags();
 		refreshKaras();
 		await databaseReady();
-		logger.info('Batch tag edit finished', {service: 'Kara'})
+		logger.info('Batch tag edit finished', {service: 'Kara'});
 	} catch(err) {
-		logger.info('Batch tag edit failed', {service: 'Kara', obj: err})
+		logger.info('Batch tag edit failed', {service: 'Kara', obj: err});
 	} finally {
 		task.end();
 	}

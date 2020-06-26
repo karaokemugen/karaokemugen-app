@@ -3,8 +3,8 @@ import parallel from 'async-await-parallel';
 import Bar from '../lib/utils/bar';
 import { asyncStat,checksum, extractAllFiles } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
-import sentry from '../utils/sentry';
 import Task from '../lib/utils/taskManager';
+import sentry from '../utils/sentry';
 
 const dataStore = {
 	karas: new Map(),

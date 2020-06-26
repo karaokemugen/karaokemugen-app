@@ -4,7 +4,6 @@ import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
 import {promisify} from 'util';
 
-import { displayInfo,playerMessage } from './player';
 import { Token } from '../lib/types/user';
 import {getConfig} from '../lib/utils/config';
 import {timer} from '../lib/utils/date';
@@ -16,6 +15,7 @@ import { State } from '../types/state';
 import {getState, setState} from '../utils/state';
 import { sayTwitch } from '../utils/twitch';
 import { getSeriesSingers } from './kara';
+import { displayInfo,playerMessage } from './player';
 import {copyKaraToPlaylist, getPlaylistContentsMini} from './playlist';
 const sleep = promisify(setTimeout);
 
@@ -87,7 +87,7 @@ export async function endPoll() {
 			if (streamConfig.Twitch.Channel) displayPollWinnerTwitch(winner);
 		}
 		pollEnding = true;
-		logger.debug(`Ending poll`, {service: 'Poll', obj: winner});
+		logger.debug('Ending poll', {service: 'Poll', obj: winner});
 		emitWS('songPollResult', winner);
 		stopPoll();
 	}
@@ -95,7 +95,7 @@ export async function endPoll() {
 
 /** Stop polls completely */
 export function stopPoll() {
-	logger.debug('Stopping poll', {service: 'Poll'})
+	logger.debug('Stopping poll', {service: 'Poll'});
 	poll = [];
 	voters = new Set();
 	pollEnding = false;
@@ -104,7 +104,7 @@ export function stopPoll() {
 
 /** Get poll results once a poll has ended */
 export async function getPollResults(): Promise<PollResults> {
-	logger.debug('Getting poll results', {service: 'Poll'})
+	logger.debug('Getting poll results', {service: 'Poll'});
 	const maxVotes = Math.max(...poll.map(choice => choice.votes));
 	// We check if winner isn't the only one...
 	const winners = poll.filter(c => +c.votes === +maxVotes);
@@ -169,10 +169,10 @@ export async function startPoll() {
 	const conf = getConfig();
 	setState({songPoll: true});
 	if (poll.length > 0) {
-		logger.info('Unable to start poll, another one is already in progress', {service: 'Poll'})
+		logger.info('Unable to start poll, another one is already in progress', {service: 'Poll'});
 		return false;
 	}
-	logger.info('Starting a new poll', {service: 'Poll'})
+	logger.info('Starting a new poll', {service: 'Poll'});
 	poll = [];
 	voters = new Set();
 	pollEnding = false;
@@ -183,13 +183,13 @@ export async function startPoll() {
 		getPlaylistContentsMini(getState().currentPlaylistID)
 	]);
 	if (pubpl.length === 0) {
-		logger.info('Public playlist is empty, cannot select songs for poll', {service: 'Poll'})
+		logger.info('Public playlist is empty, cannot select songs for poll', {service: 'Poll'});
 		return false;
 	}
 	const availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
 	let pollChoices = conf.Karaoke.Poll.Choices;
 	if (availableKaras.length === 0) {
-		logger.error('Unable to start poll : public playlist has no available songs (have they all been added to current playlist already?)', {service: 'Poll'})
+		logger.error('Unable to start poll : public playlist has no available songs (have they all been added to current playlist already?)', {service: 'Poll'});
 		return false;
 	}
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
@@ -199,7 +199,7 @@ export async function startPoll() {
 		poll[index].votes = 0;
 		poll[index].index = +index + 1;
 	}
-	logger.debug(`New poll`, {service: 'Poll', obj: poll});
+	logger.debug('New poll', {service: 'Poll', obj: poll});
 	// Do not display modal for clients if twitch is enabled
 	if (conf.Karaoke.StreamerMode.Twitch.Enabled) {
 		displayPollTwitch();
@@ -212,7 +212,7 @@ export async function startPoll() {
 
 async function displayPollTwitch() {
 	try {
-		logger.info('Announcing vote on Twitch', {service: 'Poll'})
+		logger.info('Announcing vote on Twitch', {service: 'Poll'});
 		await sayTwitch('New vote : use !vote x where x is the song number :');
 		for (const kara of poll) {
 			const series = getSeriesSingers(kara);
@@ -224,7 +224,7 @@ async function displayPollTwitch() {
 			await sayTwitch(`${kara.index}. ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes[0].name}${songorder} - ${kara.title}`);
 		}
 	} catch(err) {
-		logger.error('Unable to post poll on twitch', {service: 'Poll', obj: err})
+		logger.error('Unable to post poll on twitch', {service: 'Poll', obj: err});
 	}
 }
 
@@ -253,7 +253,7 @@ export function setSongPoll(enabled: boolean) {
 	if (!oldState && enabled) startPoll();
 	if (oldState && !enabled) {
 		if (getConfig().Karaoke.StreamerMode.Enabled) {
-			logger.debug('SongPoll Toggle DI', {service: 'Player'})
+			logger.debug('SongPoll Toggle DI', {service: 'Player'});
 			displayInfo();
 		}
 		stopPoll();

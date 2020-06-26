@@ -39,7 +39,7 @@ export async function getWhitelistContents(params: KaraParams) {
 export async function deleteKaraFromWhitelist(karas: string[]) {
 	try {
 		profile('deleteWLC');
-		logger.info('Deleting karaokes from whitelist', {service: 'Whitelist', obj: karas})
+		logger.info('Deleting karaokes from whitelist', {service: 'Whitelist', obj: karas});
 		await removeKaraFromWhitelist(karas);
 		return await generateBlacklist();
 	} catch(err) {
@@ -53,7 +53,7 @@ export async function deleteKaraFromWhitelist(karas: string[]) {
 
 /** Wipe whitelist clean, so it's whiter than white. */
 export async function emptyWhitelist() {
-	logger.info('Wiping whitelist', {service: 'Whitelist'})
+	logger.info('Wiping whitelist', {service: 'Whitelist'});
 	await emptyWL();
 	generateBlacklist();
 }

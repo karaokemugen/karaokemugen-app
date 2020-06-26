@@ -53,7 +53,7 @@ export function initMenu() {
 					label: i18next.t('MENU_FILE_UPDATE'),
 					click: async () => {
 						setManualUpdate(true);
-						logger.info('Checking for updates manually', {service: 'AppUpdate'})
+						logger.info('Checking for updates manually', {service: 'AppUpdate'});
 						await autoUpdater.checkForUpdates();
 						setManualUpdate(false);
 					}

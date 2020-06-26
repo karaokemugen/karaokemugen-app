@@ -230,7 +230,7 @@ export async function migrateOldFoldersToRepo() {
 		!conf.System.Path.Lyrics &&
 		!conf.System.Path.Series &&
 		!conf.System.Path.Tags) {
-		logger.info('Initialization - Fresh start configuration', {service: 'Repo'})
+		logger.info('Initialization - Fresh start configuration', {service: 'Repo'});
 		return;
 	}
 	// Case 2
@@ -240,7 +240,7 @@ export async function migrateOldFoldersToRepo() {
 		(conf.System.Path.Series && conf.System.Path.Series.length > 0) ||
 		(conf.System.Path.Tags && conf.System.Path.Tags.length > 0)
 	) {
-		logger.info('Initialization - Customized configuration', {service: 'Repo'})
+		logger.info('Initialization - Customized configuration', {service: 'Repo'});
 		const repos = cloneDeep(conf.System.Repositories);
 		repos[0].Path.Karas = [].concat(conf.System.Path.Karas);
 		repos[0].Path.Lyrics = [].concat(conf.System.Path.Lyrics);
@@ -265,7 +265,7 @@ export async function migrateOldFoldersToRepo() {
 	// Case 3
 	if (await asyncExists(resolve(state.dataPath, 'data/')) &&
 		!await asyncExists(resolve(state.dataPath, conf.System.Repositories[0].Path.Karas[0]))) {
-		logger.info('Initialization - KM <3.2 configuration', {service: 'Repo'})
+		logger.info('Initialization - KM <3.2 configuration', {service: 'Repo'});
 		const repos = cloneDeep(conf.System.Repositories);
 		repos[0].Path.Karas = ['data/karaokes'];
 		repos[0].Path.Lyrics = ['data/lyrics'];

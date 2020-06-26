@@ -96,7 +96,7 @@ export async function editKara(kara: Kara, refresh = true) {
 			}
 		}
 	} catch(err) {
-		logger.error('Error while editing kara', {service: 'KaraGen', obj: err})
+		logger.error('Error while editing kara', {service: 'KaraGen', obj: err});
 		throw err;
 	}
 	if (karaFile === newKara.file) {
