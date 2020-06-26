@@ -37,61 +37,61 @@ export function parseCommandLineArgs(argv: any, cmdline: CommandLine) {
 		process.exit(0);
 	}
 	if (cmdline?.hasSwitch('sql') || argv.sql) {
-		logger.info('[Launcher] SQL queries will be logged');
+		logger.info('SQL queries will be logged', {service: 'Launcher'})
 		setState({opt: {sql: true}});
 	}
 	if (cmdline?.hasSwitch('debug') || argv.debug) {
-		logger.info('[Launcher] Debug messages enabled on console');
+		logger.info('Debug messages enabled on console', {service: 'Launcher'})
 		setState({opt: {debug: true}});
 		process.env['NODE_ENV'] = 'development';
 	}
 	if (cmdline?.hasSwitch('validate') || argv.validate) {
-		logger.info('[Launcher] Validation (no generation) requested');
+		logger.info('Validation (no generation) requested', {service: 'Launcher'})
 		setState({opt: {validate: true}});
 	}
 	if (cmdline?.hasSwitch('reset') || argv.reset) {
-		logger.warn('[Launcher] USER DATA IS GOING TO BE RESET');
+		logger.warn('USER DATA IS GOING TO BE RESET', {service: 'Launcher'})
 		setState({opt: {reset: true}});
 	}
 	if (cmdline?.hasSwitch('profiling') || argv.profiling) {
-		logger.info('[Launcher] Profiling enabled');
+		logger.info('Profiling enabled', {service: 'Launcher'})
 		enableProfiling();
 	}
 	if (cmdline?.hasSwitch('generate') || argv.generate) {
-		logger.info('[Launcher] Database generation requested');
+		logger.info('Database generation requested', {service: 'Launcher'})
 		setState({opt: {generateDB: true}});
 	}
 	if (cmdline?.hasSwitch('noMedia') || argv.noMedia) {
-		logger.info('[Launcher] Medias will not be read during generation');
+		logger.info('Medias will not be read during generation', {service: 'Launcher'})
 		setState({opt: {noMedia: true}});
 	}
 	if (cmdline?.hasSwitch('noBaseCheck') || argv.noBaseCheck) {
-		logger.info('[Launcher] Data files will not be checked. ENABLED AT YOUR OWN RISK');
+		logger.info('Data files will not be checked. ENABLED AT YOUR OWN RISK', {service: 'Launcher'})
 		setState({opt: {noBaseCheck: true}});
 	}
 	if (cmdline?.hasSwitch('noPlayer') || argv.noPlayer) {
-		logger.info('[Launcher] Player will not start.');
+		logger.info('Player will not start.', {service: 'Launcher'})
 		setState({opt: {noPlayer: true}});
 	}
 	if (cmdline?.hasSwitch('strict') || argv.strict) {
-		logger.info('[Launcher] Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.');
+		logger.info('Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.', {service: 'Launcher'})
 		setState({opt: {strict: true}});
 	}
 	if (cmdline?.hasSwitch('updateBase') || argv.updateBase) {
-		logger.info('[Launcher] Base update requested');
+		logger.info('Base update requested', {service: 'Launcher'})
 		setState({opt: {baseUpdate: true}});
 	}
 	if (cmdline?.hasSwitch('updateMedias') || argv.updateMedias) {
-		logger.info('[Launcher] Media update requested');
+		logger.info('Media update requested', {service: 'Launcher'})
 		setState({opt: {mediaUpdate: true}});
 	}
 	if (cmdline?.hasSwitch('test') || argv.test) {
-		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');
+		logger.info('TEST MODE ENABLED. DO NOT DO THIS AT HOME.', {service: 'Launcher'})
 		if (cmdline?.hasSwitch('noAutoTest') || argv.noAutoTest) setState({noAutoTest: true});
 		setState({isTest: true});
 	}
 	if (cmdline?.hasSwitch('demo') || argv.demo) {
-		logger.info('[Launcher] Demo mode enabled');
+		logger.info('Demo mode enabled', {service: 'Launcher'})
 		setState({isDemo: true});
 	}
 	if (cmdline?.hasSwitch('noBrowser') || argv.noBrowser) setState({opt: {noBrowser: true}});

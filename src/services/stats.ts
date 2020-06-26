@@ -37,15 +37,15 @@ export async function sendPayload() {
 			throw 'This instance is not connected to the internets';
 		}
 		const payload = await buildPayload();
-		logger.info(`[Stats] Sending payload (${prettyBytes(JSON.stringify(payload).length)})`);
+		logger.info(`Sending payload (${prettyBytes(JSON.stringify(payload).length)})`, {service: 'Stats'});
 		const conf = getConfig();
 		await HTTP.post(`https://${conf.Online.Host}/api/stats`, {
 			json: payload
 		});
 		savePayload(payload);
-		logger.info('[Stats] Payload sent successfully');
+		logger.info('Payload sent successfully', {service: 'Stats'})
 	} catch(err) {
-		logger.error(`[Stats] Uploading stats payload failed : ${err}`);
+		logger.error('Uploading stats payload failed', {service: 'Stats', obj: err})
 		sentry.error(err);
 	}
 
@@ -54,10 +54,10 @@ export async function sendPayload() {
 async function savePayload(payload: any) {
 	try {
 		await asyncWriteFile(resolve(getState().dataPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
-		logger.info('[Stats] Payload data saved locally to logs/statsPayload.json');
+		logger.info('Payload data saved locally to logs/statsPayload.json', {service: 'Stats'})
 	} catch(err) {
 		// Non-fatal
-		logger.warn(`[Stats] Could not save payload : ${err}`);
+		logger.warn('Could not save payload', {service: 'Stats', obj: err})
 		sentry.error(err, 'Warning');
 	}
 }

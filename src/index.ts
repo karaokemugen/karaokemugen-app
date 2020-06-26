@@ -39,7 +39,7 @@ process.on('uncaughtException', (exception: any) => {
 	// Silence when an error has been triggered during init, because objects get destroyed and electron doesn't like that much, poor boy.
 	if (!isInitError) {
 		console.log('Uncaught exception:', exception);
-		if (logger) logger.error('[UncaughtException]' + exception);
+		if (logger) logger.error('', {service: 'UncaughtException', obj: exception});
 		sentry.error(exception);
 		if (typeof exception === 'string' || !exception.name) exception = {
 			name: 'Unknown error',
@@ -59,7 +59,7 @@ process.on('uncaughtException', (exception: any) => {
 
 process.on('unhandledRejection', (error: Error) => {
 	console.log('Unhandled Rejection at:', error);
-	if (logger) logger.error('[UnhandledRejection]' + error.toString());
+	if (logger) logger.error('', {service: 'UnhandledRejection', obj: error});
 	sentry.error(error);
 	if (app) {
 		dialog.showMessageBox({
@@ -97,7 +97,7 @@ on('initError', async (err: Error) => {
 });
 
 async function initError(err: any) {
-	logger.error(`[Launcher] Error during launch : ${err}`);
+	logger.error('Error during launch', {service: 'Launcher', obj: err})
 	console.log(err);
 	sentry.error(err);
 	if (typeof err === 'string' || !err.name) err = {
@@ -231,17 +231,17 @@ export async function preInit() {
 	setState({ os: process.platform, version: version});
 	const state = getState();
 	parseCommandLineArgs(argv, app ? app.commandLine : null);
-	logger.debug(`[Launcher] AppPath : ${appPath}`);
-	logger.debug(`[Launcher] DataPath : ${dataPath}`);
-	logger.debug(`[Launcher] ResourcePath : ${resourcePath}`);
-	logger.debug(`[Launcher] Electron ResourcePath : ${process.resourcesPath}`);
-	logger.debug(`[Launcher] OriginalAppPath : ${originalAppPath}`);
-	logger.debug(`[Launcher] INIT_CWD : ${process.env.INIT_CWD}`);
-	logger.debug(`[Launcher] PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`);
-	logger.debug(`[Launcher] app.getAppPath : ${app ? app.getAppPath() : undefined}`);
-	logger.debug(`[Launcher] argv: ${JSON.stringify(process.argv)}`);
-	logger.debug(`[Launcher] Locale : ${state.defaultLocale}`);
-	logger.debug(`[Launcher] OS : ${state.os}`);
+	logger.debug(`AppPath : ${appPath}`, {service: 'Launcher'});
+	logger.debug(`DataPath : ${dataPath}`, {service: 'Launcher'});
+	logger.debug(`ResourcePath : ${resourcePath}`, {service: 'Launcher'});
+	logger.debug(`Electron ResourcePath : ${process.resourcesPath}`, {service: 'Launcher'});
+	logger.debug(`OriginalAppPath : ${originalAppPath}`, {service: 'Launcher'});
+	logger.debug(`INIT_CWD : ${process.env.INIT_CWD}`, {service: 'Launcher'});
+	logger.debug(`PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`, {service: 'Launcher'});
+	logger.debug(`app.getAppPath : ${app ? app.getAppPath() : undefined}`, {service: 'Launcher'});
+	logger.debug(`argv: ${JSON.stringify(process.argv)}`, {service: 'Launcher'});
+	logger.debug(`Locale : ${state.defaultLocale}`, {service: 'Launcher'});
+	logger.debug(`OS : ${state.os}`, {service: 'Launcher'});
 	await initConfig(argv);
 }
 
@@ -280,23 +280,23 @@ export async function main() {
 		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 		publicConfig.App.JwtSecret = 'xxxxx';
 		publicConfig.App.InstanceID = 'xxxxx';
-		logger.debug(`[Launcher] Loaded configuration : ${JSON.stringify(publicConfig)}`);
-		logger.debug(`[Launcher] Initial state : ${JSON.stringify(state)}`);
+		logger.debug('Loaded configuration', {service: 'Launcher', obj: JSON.stringify(publicConfig)})
+		logger.debug('Initial state', {service: 'Launcher', obj: JSON.stringify(state)})
 
 		// Checking paths, create them if needed.
 		await checkPaths(getConfig());
 
 		// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 		const tempInput = resolve(resolvedPathTemp(), 'input.conf');
-		logger.debug(`[Launcher] Copying input.conf to ${tempInput}`);
+		logger.debug(`Copying input.conf to ${tempInput}`, {service: 'Launcher'});
 		await asyncCopy(resolve(resourcePath, 'assets/input.conf'), tempInput);
 
 		const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
-		logger.debug(`[Launcher] Copying default background to ${tempBackground}`);
+		logger.debug(`Copying default background to ${tempBackground}`, {service: 'Launcher'});
 		await asyncCopy(resolve(resourcePath, `assets/${state.version.image}`), tempBackground);
 
 		// Copy avatar blank.png if it doesn't exist to the avatar path
-		logger.debug(`[Launcher] Copying blank.png to ${resolvedPathAvatars()}`);
+		logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
 		await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
 		createCircleAvatar(resolve(resolvedPathAvatars(), 'blank.png'));
 
@@ -312,7 +312,7 @@ export async function main() {
 			await initEngine();
 			stopTipLoop();
 		} catch(err) {
-			logger.error(`[Launcher] Karaoke Mugen initialization failed : ${err}`);
+			logger.error('Karaoke Mugen initialization failed', {service: 'Launcher', obj: err})
 			sentry.error(err);
 			console.log(err);
 			errorStep(i18n.t('ERROR_UNKNOWN'));
@@ -348,7 +348,7 @@ async function checkPaths(config: Config) {
 
 	try {
 		await Promise.all(checks);
-		logger.debug('[Launcher] Directory checks complete');
+		logger.debug('Directory checks complete', {service: 'Launcher'})
 	} catch(err) {
 		errorStep(i18n.t('ERROR_INIT_PATHS'));
 		throw err;
@@ -362,7 +362,7 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 			stopPort: 7331
 		});
 		if (firstRun && port !== portConfig) {
-			logger.warn(`[Launcher] Port ${portConfig} is already in use. Switching to ${port} and saving configuration`);
+			logger.warn(`Port ${portConfig} is already in use. Switching to ${port} and saving configuration`, {service: 'Launcher'});
 			setConfig({Frontend: {Port: port}});
 		}
 	} catch(err) {

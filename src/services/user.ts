@@ -79,7 +79,7 @@ async function updateExpiredUsers() {
 		await DBUpdateExpiredUsers(new Date(time));
 		await DBResetGuestsPassword();
 	} catch(err) {
-		logger.error(`[User] Expiring users failed (will try again in one minute) : ${err}`);
+		logger.error('Expiring users failed (will try again in one minute)', {service: 'User', obj: err})
 	}
 }
 
@@ -91,7 +91,7 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 	try {
 		await writeStreamToFile(res, avatarPath);
 	} catch(err) {
-		logger.warn(`[User] Could not write remote avatar to local file ${avatarFile} : ${err}`);
+		logger.warn(`Could not write remote avatar to local file ${avatarFile}`, {service: 'User', obj: err});
 	}
 	return avatarPath;
 }
@@ -287,13 +287,13 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 				createCircleAvatar(resolve(resolvedPathAvatars(), user.avatar_file));
 			} catch(err) {
 				//Non-fatal
-				logger.warn(`[User] ${err}`);
+				logger.warn('', {service: 'User', obj: err});
 			}
 		} else {
 			user.avatar_file = currentUser.avatar_file;
 		}
 		await DBEditUser(user);
-		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);
+		logger.debug(`${username} (${user.nickname}) profile updated`, {service: 'User'});
 		let KMServerResponse: any;
 		if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user);
 		// Modifying passwords is not allowed in demo mode
@@ -307,7 +307,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			onlineToken: KMServerResponse?.token
 		};
 	} catch (err) {
-		logger.error(`[User] Failed to update ${username}'s profile : ${err}`);
+		logger.error(`Failed to update ${username}'s profile`, {service: 'User', obj: err});
 		throw {
 			message: err,
 			data: user.nickname
@@ -339,19 +339,19 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 			try {
 				await asyncUnlink(oldAvatarPath);
 			} catch(err) {
-				logger.warn(`[User] Unable to unlink old avatar ${oldAvatarPath} : ${err}`);
+				logger.warn(`Unable to unlink old avatar ${oldAvatarPath}`, {service: 'User', obj: err});
 			}
 			const oldAvatarCirclePath = replaceExt(oldAvatarPath, '.circle.png');
 			try {
 				if (await asyncExists(oldAvatarCirclePath)) await asyncUnlink(oldAvatarCirclePath);
 			} catch(err) {
-				logger.warn(`[User] Unable to unlink old avatar circle path ${oldAvatarCirclePath} : ${err}`);
+				logger.warn(`Unable to unlink old avatar circle path ${oldAvatarCirclePath}`, {service: 'User', obj: err});
 			}
 		}
 		try {
 			await asyncCopy(avatar.path, newAvatarPath, {overwrite: true});
 		} catch(err) {
-			logger.error(`[User] Could not copy new avatar ${avatar.path} to ${newAvatarPath} : ${err}`);
+			logger.error(`Could not copy new avatar ${avatar.path} to ${newAvatarPath}`, {service: 'User', obj: err});
 		}
 		return newAvatarFile;
 	} catch (err) {
@@ -441,7 +441,7 @@ export async function remoteCheckAuth(instance: string, token: string) {
 		});
 		return res.body;
 	} catch(err) {
-		logger.debug(`[RemoteUser] Got error when check auth : ${err}`);
+		logger.debug('Got error when check auth', {service: 'RemoteUser', obj: err})
 		return false;
 	}
 }
@@ -461,7 +461,7 @@ export async function remoteLogin(username: string, password: string): Promise<T
 		// Remote login returned 401 so we throw an error
 		// For other errors, no error is thrown
 		if (err.statusCode === 401) throw 'Unauthorized';
-		logger.debug(`[RemoteUser] Got error when connectiong user ${username} : ${err}`);
+		logger.debug(`Got error when connectiong user ${username}`, {service: 'RemoteUser', obj: err});
 		return {
 			token: null,
 			role: null,
@@ -476,7 +476,7 @@ export async function resetRemotePassword(user: string) {
 		await HTTP.post(`https://${instance}/api/users/${username}/resetpassword`);
 	} catch (err) {
 
-		logger.error(`[RemoteUser] Could not trigger reset password for ${user} : ${err}`);
+		logger.error(`Could not trigger reset password for ${user}`, {service: 'RemoteUser', obj: err});
 		throw err;
 	}
 }
@@ -490,7 +490,7 @@ async function getAllRemoteUsers(instance: string): Promise<User[]> {
 			});
 		return users.body as User[];
 	} catch(err) {
-		logger.debug(`[RemoteUser] Got error when get all remote users : ${err}`);
+		logger.debug('Got error when get all remote users', {service: 'RemoteUser', obj: err})
 		throw {
 			code: 'USER_CREATE_ERROR_ONLINE',
 			message: err
@@ -514,7 +514,7 @@ async function createRemoteUser(user: User) {
 			}
 		});
 	} catch(err) {
-		logger.debug(`[RemoteUser] Got error when create remote user ${login} : ${err}`);
+		logger.debug(`Got error when create remote user ${login}`, {service: 'RemoteUser', obj: err});
 		throw {
 			code: 'USER_CREATE_ERROR_ONLINE',
 			message: err
@@ -577,7 +577,7 @@ export async function createUser(user: User, opts: UserOpts = {
 				length: 3,
 				charset: 'numeric'
 			})}`;
-			logger.warn(`[User] Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${user.login} is : ${user.nickname}`);
+			logger.warn(`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${user.login} is ${user.nickname}`, {service: 'User'})
 		}
 		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };
 		if (!+getConfig().Online.Users) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
@@ -589,12 +589,12 @@ export async function createUser(user: User, opts: UserOpts = {
 	}
 	try {
 		await DBAddUser(user);
-		if (user.type < 2) logger.info(`[User] Created user ${user.login}`);
+		if (user.type < 2) logger.info(`Created user ${user.login}`, {service: 'User'});
 		delete user.password;
-		logger.debug(`[User] User data : ${JSON.stringify(user)}`);
+		logger.debug('User data', {service: 'User', obj: user})
 		return true;
 	} catch (err) {
-		logger.error(`[User] Unable to create user ${user.login} : ${err}`);
+		logger.error(`Unable to create user ${user.login}`, {service: 'User', obj: err});
 		throw { code: 'USER_CREATE_ERROR', data: err};
 	}
 }
@@ -606,7 +606,7 @@ async function newUserIntegrityChecks(user: User) {
 
 	// Check if login already exists.
 	if (await DBGetUser(user.login) || await DBCheckNicknameExists(user.login)) {
-		logger.error(`[User] User/nickname ${user.login} already exists, cannot create it`);
+		logger.error(`User/nickname ${user.login} already exists, cannot create it`, {service: 'User'});
 		throw { code: 'USER_ALREADY_EXISTS', data: {username: user.login}};
 	}
 }
@@ -621,10 +621,10 @@ export async function deleteUser(username: string) {
 		await DBReassignToUser(username, 'admin');
 		await DBDeleteUser(username);
 		if (usersFetched.has(username)) usersFetched.delete(username);
-		logger.debug(`[User] Deleted user ${username}`);
+		logger.debug(`Deleted user ${username}`, {service: 'User'});
 		return true;
 	} catch (err) {
-		logger.error(`[User] Unable to delete user ${username} : ${err}`);
+		logger.error(`Unable to delete user ${username}`, {service: 'User', obj: err});
 		throw ({code: 'USER_DELETE_ERROR', data: err});
 	}
 }
@@ -668,14 +668,14 @@ async function updateGuestAvatar(user: User) {
 			renameUser: false,
 			editRemote: false
 		}).catch((err) => {
-			logger.error(`[User] Unable to change guest avatar for ${user.login} : ${JSON.stringify(err)}`);
+			logger.error(`Unable to change guest avatar for ${user.login}`, {service: 'User', obj: err});
 		});
 	}
 }
 
 /** Check all guests to see if we need to replace their avatars with built-in ones */
 async function checkGuestAvatars() {
-	logger.debug('[User] Updating default avatars');
+	logger.debug('Updating default avatars', {service: 'User'})
 	const guests = await listGuests();
 	guests.forEach(u => updateGuestAvatar(u));
 }
@@ -690,14 +690,14 @@ async function createDefaultGuests() {
 	}
 	let maxGuests = guestsToCreate.length;
 	if (getState().isTest) maxGuests = 1;
-	logger.debug(`[User] Creating ${maxGuests} new guest accounts`);
+	logger.debug(`Creating ${maxGuests} new guest accounts`, {service: 'User'});
 	for (let i = 0; i < maxGuests; i++) {
 		if (!await findUserByName(guestsToCreate[i])) await createUser({
 			login: guestsToCreate[i],
 			type: 2
 		});
 	}
-	logger.debug('[User] Default guest accounts created');
+	logger.debug('Default guest accounts created', {service: 'User'})
 }
 
 /** Initializing user auth module */
@@ -733,11 +733,11 @@ export async function initUserSystem() {
 	userChecks();
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 	setState({securityCode: generateSecurityCode()});
-	logger.info(`[User] SECURITY CODE FOR THIS SESSION : ${getState().securityCode}`);
+	logger.info(`SECURITY CODE FOR THIS SESSION : ${getState().securityCode}`, {service: 'Users'});
 	// Find admin users.
 	const users = await listUsers();
 	const adminUsers = users.filter(u => u.type === 0 && u.login !== 'admin');
-	logger.debug(`[User] Admin users : ${JSON.stringify(adminUsers)}`);
+	logger.debug('Admin users', {service: 'User', obj: JSON.stringify(adminUsers)})
 	sentry.setUser(adminUsers[0]?.login || 'admin', adminUsers[0]?.email || undefined);
 }
 
@@ -752,7 +752,7 @@ async function userChecks() {
 
 /** Verifies that all avatars are > 0 bytes or exist. If they don't, recopy the blank avatar over them */
 async function checkUserAvatars() {
-	logger.debug('[User] Checking if all avatars exist');
+	logger.debug('Checking if all avatars exist', {service: 'User'})
 	const users = await listUsers();
 	const defaultAvatar = resolve(resolvedPathAvatars(), 'blank.png');
 	for (const user of users) {
@@ -776,7 +776,7 @@ async function checkUserAvatars() {
 
 /** Verifies if all avatars have a circled version available */
 async function checkCircledAvatars() {
-	logger.debug('[User] Checking if all avatars have circled versions');
+	logger.debug('Checking if all avatars have circled versions', {service: 'User'})
 	const users = await listUsers();
 	for (const user of users) {
 		try {
@@ -785,14 +785,14 @@ async function checkCircledAvatars() {
 				await createCircleAvatar(file);
 			}
 		} catch(err) {
-			logger.error(`[Users] Unable to create circled avatar for ${user.login} with ${user.avatar_file} : ${err}`);
+			logger.error(`Unable to create circled avatar for ${user.login} with ${user.avatar_file}`, {service: 'Users', obj: err});
 		}
 	}
 }
 
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
 async function cleanupAvatars() {
-	logger.debug('[User] Cleaning up unused avatars');
+	logger.debug('Cleaning up unused avatars', {service: 'User'})
 	const users = await listUsers();
 	const avatars = [];
 	for (const user of users) {
@@ -805,7 +805,7 @@ async function cleanupAvatars() {
 			const fullFile = resolve(resolvedPathAvatars(), file);
 			const fullCircleFile = replaceExt(fullFile, '.circle.png');
 			try {
-				logger.debug(`[Users] Deleting old file ${fullFile} and ${fullCircleFile}`);
+				logger.debug(`Deleting old file ${fullFile} and ${fullCircleFile}`, {service: 'Users'});
 				await asyncUnlink(fullFile);
 				if (await asyncExists(fullCircleFile)) await asyncUnlink(fullCircleFile);
 			} catch(err) {
@@ -896,7 +896,7 @@ export async function checkLogin(username: string, password: string): Promise<To
 				fetchAndAddFavorites(instance, onlineToken, username);
 			}
 		} catch(err) {
-			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${JSON.stringify(err)}`);
+			logger.error(`Failed to authenticate ${username}`, {service: 'RemoteAuth', obj: err});
 		}
 	}
 
@@ -938,7 +938,7 @@ export async function generateAdminPassword(): Promise<string> {
 
 export function resetSecurityCode() {
 	setState({ securityCode: generateSecurityCode()});
-	logger.warn(`[Users] SECURITY CODE RESET : ${getState().securityCode}`);
+	logger.warn(`SECURITY CODE RESET : ${getState().securityCode}`, {service: 'Users'});
 }
 
 function generateSecurityCode(): string {

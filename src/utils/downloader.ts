@@ -77,13 +77,13 @@ export default class Downloader {
 			const response = await HTTP.head(dl.url, options);
 			size = response.headers['content-length'];
 		} catch(err) {
-			logger.error(`[Download] Error during download of ${basename(dl.filename)} (HEAD) : ${err}`);
+			logger.error(`Error during download of ${basename(dl.filename)} (HEAD)`, {service: 'Download', obj: err});
 			this.fileErrors.push(basename(dl.filename));
 			return;
 		}
 		let prettySize = 'size unknown';
 		prettySize = prettyBytes(+size);
-		logger.info(`[Download] (${this.pos}/${this.list.length}) Downloading ${basename(dl.filename)} (${prettySize})`);
+		logger.info(`(${this.pos}/${this.list.length}) Downloading ${basename(dl.filename)} (${prettySize})`, {service: 'Donwload'});
 		this.task.update({
 			subtext: `${basename(dl.filename)} (${prettySize})`,
 			value: 0,
@@ -98,7 +98,7 @@ export default class Downloader {
 		try {
 			await this._fetchFile(dl, options);
 		} catch(err) {
-			logger.error(`[Download] Error during download of ${basename(dl.filename)} (GET) : ${err}`);
+			logger.error(`Error during download of ${basename(dl.filename)} (GET)`, {service: 'Download', obj: err});
 			this.fileErrors.push(basename(dl.filename));
 			return;
 		}

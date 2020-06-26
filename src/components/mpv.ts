@@ -2,20 +2,21 @@ import Mpv from 'node-mpv';
 
 import retry from 'p-retry';
 import {promisify} from "util";
-import {MediaData, MpvOptions, mpvStatus, PlayerState} from "../types/player";
-import {getConfig, resolvedPathBackgrounds, resolvedPathRepos, resolvedPathTemp} from "../lib/utils/config";
 import {extname, resolve} from "path";
 import semver from "semver";
-import {getState, setState} from "../utils/state";
 import randomstring from "randomstring";
 import logger from "winston";
 import execa from "execa";
-import {exit} from "./engine";
-import sentry from "../utils/sentry";
 import i18n from "i18next";
 import sample from "lodash.sample";
+
+import {exit} from "./engine";
+import sentry from "../utils/sentry";
 import {initializationCatchphrases} from "../utils/constants";
 import {imageFileTypes} from "../lib/utils/constants";
+import {getState, setState} from "../utils/state";
+import {MediaData, MpvOptions, mpvStatus, PlayerState} from "../types/player";
+import {getConfig, resolvedPathBackgrounds, resolvedPathRepos, resolvedPathTemp} from "../lib/utils/config";
 import {asyncExists, asyncReadDir, isImageFile, replaceExt, resolveFileInDirs} from "../lib/utils/files";
 import {errorStep} from "../electron/electronLogger";
 import {setProgressBar} from "../electron/electron";
@@ -54,7 +55,7 @@ let playerState: PlayerState = {
 };
 
 async function waitForLockRelease() {
-	if (playerState.isOperating) logger.debug('[Player] Waiting for lock...');
+	if (playerState.isOperating) logger.debug('Waiting for lock...', {service: 'Player'})
 	while (playerState.isOperating) {
 		await sleep(100);
 	}
@@ -63,13 +64,13 @@ async function waitForLockRelease() {
 
 async function acquireLock() {
 	await waitForLockRelease();
-	logger.debug('[Player] Lock acquired');
+	logger.debug('Lock acquired', {service: 'Player'})
 	playerState.isOperating = true;
 	return true;
 }
 
 function releaseLock() {
-	logger.debug('[Player] Lock released');
+	logger.debug('Lock released', {service: 'Player'})
 	playerState.isOperating = false;
 	return true;
 }
@@ -96,12 +97,12 @@ async function checkMpv(): Promise<string> {
 	const output = await execa(state.binPath.mpv,['--version']);
 	let mpv = semver.valid(output.stdout.split(' ')[1]);
 	let mpvVersion = mpv.split('-')[0];
-	logger.debug(`[Player] mpv version : ${mpvVersion}`);
+	logger.debug(`mpv version: ${mpvVersion}`, {service: 'Player'});
 
 	if (!semver.satisfies(mpvVersion, '>=0.25.0')) {
-		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
-		logger.error(`[Player] mpv binary: ${state.binPath.mpv}`);
-		logger.error('[Player] Exiting due to obsolete mpv version');
+		logger.error(`mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`, {service: 'Player'});
+		logger.error(`mpv binary: ${state.binPath.mpv}`, {service: 'Player'});
+		logger.error('Exiting due to obsolete mpv version', {service: 'Player'})
 		await exit(1);
 	}
 
@@ -219,8 +220,8 @@ class Player {
 			debug: state.opt?.debug,
 		};
 
-		logger.debug(`[Player] mpv${this.options.monitor ? ' monitor':''} options : ${JSON.stringify(NodeMPVOptions)} / ${JSON.stringify(NodeMPVArgs)}`);
-		logger.debug(`[Player] mpv${this.options.monitor ? ' monitor':''} binary : ${state.binPath.mpv}`);
+		logger.debug(`mpv${this.options.monitor ? ' monitor':''} options:`, {obj: [NodeMPVOptions, NodeMPVArgs], service: 'Player'});
+		logger.debug(`mpv${this.options.monitor ? ' monitor':''} binary: ${state.binPath.mpv}`, {service: 'Player'});
 
 		return [NodeMPVOptions, NodeMPVArgs];
 	}
@@ -229,7 +230,7 @@ class Player {
 		if (!this.options.monitor) {
 			this.mpv.on('status', (status: mpvStatus) => {
 				if (status.property !== 'playtime-remaining' && status.property !== 'sub-text')
-					logger.debug(`[Player] mpv status: ${JSON.stringify(status)}`);
+					logger.debug(`mpv status: ${JSON.stringify(status)}`, {service: 'Player'});
 				// If we're displaying an image, it means it's the pause inbetween songs
 				playerState[status.property] = status.value;
 				emitPlayerState();
@@ -269,7 +270,7 @@ class Player {
 				if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
 					!playerState.displayingInfo &&
 					playerState.mediaType === 'song' && !getState().songPoll) {
-					logger.debug('[Player] Middle of song DI');
+					logger.debug('Middle of song DI', {service: 'Player'})
 					this.control.displayInfo(8000);
 				}
 				// Stop poll if position reaches 10 seconds before end of song
@@ -285,7 +286,7 @@ class Player {
 		}
 		// Handle manually exits/crashes
 		this.mpv.on('quit', () => {
-			logger.debug(`[mpv${this.options.monitor ? ' monitor':''}] mpv closed`);
+			logger.debug(`mpv closed`, {service: `mpv${this.options.monitor ? ' monitor':''}`});
 			// We set the state here to prevent the 'paused' event to trigger (because it will restart mpv in the same time)
 			playerState.playing = false;
 			playerState._playing = false;
@@ -296,7 +297,7 @@ class Player {
 			emitPlayerState();
 		});
 		this.mpv.on('crashed', () => {
-			logger.warn(`[mpv${this.options.monitor ? ' monitor':''}] mpv crashed`);
+			logger.warn(`mpv crashed`, {service: `mpv${this.options.monitor ? ' monitor':''}`});
 			// We set the state here to prevent the 'paused' event to trigger (because it will restart mpv in the same time)
 			playerState.playing = false;
 			playerState._playing = false;
@@ -310,7 +311,7 @@ class Player {
 		// Handle pause/play via external ways such as right-click on player
 		this.mpv.on('paused',() => {
 			if (!playerState._playing || playerState.mediaType === 'background') return;
-			logger.debug( `[Player] Paused event triggered on ${this.options.monitor ? 'monitor':'main'}`);
+			logger.debug(`Paused event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
 			playerState._playing = false;
 			playerState.playing = false;
 			playerState.playerStatus = 'pause';
@@ -319,7 +320,7 @@ class Player {
 		});
 		this.mpv.on('resumed',() => {
 			if (playerState._playing || playerState.mediaType === 'background') return;
-			logger.debug( `[Player] Resumed event triggered on ${this.options.monitor ? 'monitor':'main'}`);
+			logger.debug(`Resumed event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
 			playerState._playing = true;
 			playerState.playing = true;
 			playerState.playerStatus = 'play';
@@ -335,7 +336,7 @@ class Player {
 				if (err.errcode === 6) {
 					// It's already started!
 					this.running = true;
-					logger.warn('[Player] A start command was executed, but the player is already running. Not normal.');
+					logger.warn('A start command was executed, but the player is already running. Not normal.', {service: 'Player'})
 					return;
 				}
 				throw new Error(JSON.stringify(err));
@@ -357,10 +358,10 @@ class Player {
 		}, {
 			retries: 3,
 			onFailedAttempt: error => {
-				logger.warn(`[Player] Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...: ${error.toString()}`);
+				logger.warn(`Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player', obj: error});
 			}
 		}).catch(err => {
-			logger.error(`[Player] Cannot start MPV: ${err.toString()}`);
+			logger.error(`Cannot start MPV`, {service: 'Player', obj: err})
 			this.running = false;
 			sentry.error(err, 'Fatal');
 			throw err;
@@ -380,7 +381,7 @@ class Player {
 			this.mpv = new Mpv(...this.configuration);
 			if (restart) await this.start();
 		} catch (err) {
-			logger.error(`[Player] mpvAPI (recreate): ${JSON.stringify(err, null, 2)}`);
+			logger.error(`mpvAPI (recreate)`, {service: 'Player', obj: err})
 			throw err;
 		}
 	}
@@ -392,7 +393,7 @@ class Player {
 			return true;
 		} catch (err) {
 			const error = new Error(err);
-			logger.error(`[Player] mpvAPI(quit): ${JSON.stringify(err, null, 2)}`);
+			logger.error(`mpvAPI(quit)`, {service: 'Player', obj: err})
 			sentry.error(error, 'Fatal');
 			throw err;
 		}
@@ -461,7 +462,7 @@ class Players {
 			if (onlyOn) {
 				if (this.players[onlyOn]) {
 					if (!this.players[onlyOn].isRunning) {
-						logger.info(`[Player] Restarting ${onlyOn} player`);
+						logger.info(`Restarting ${onlyOn} player`, {service: 'Player'});
 						loads.push(this.players[onlyOn].recreate(null, true));
 					}
 				} else {
@@ -471,7 +472,7 @@ class Players {
 			} else {
 				for (let player in this.players) {
 					if (!this.players[player].isRunning) {
-						logger.info(`[Player] Restarting ${player} player`);
+						logger.info(`Restarting ${player} player`, {service: 'Player'});
 						loads.push(this.players[player].recreate(null, true));
 					}
 				}
@@ -490,8 +491,8 @@ class Players {
 			// ensureRunning returns -1 if the player does not exist (eg. disabled monitor)
 			// ensureRunning isn't needed on non-mpv commands
 			if (mpv && await this.ensureRunning(onlyOn, ignoreLock) === -1) return;
-			logger.debug(`[Player] ${mpv ? 'mpv ': ''}command: ${cmd}, ${JSON.stringify(args)}`);
-			logger.debug(`[Player] Running it for players ${JSON.stringify(onlyOn ? onlyOn:Object.keys(this.players))}`);
+			logger.debug(`${mpv ? 'mpv ': ''}command: ${cmd}, ${JSON.stringify(args)}`, {service: 'Player'});
+			logger.debug(`Running it for players ${JSON.stringify(onlyOn ? onlyOn:Object.keys(this.players))}`, {service: 'Player'});
 			const loads = [];
 			if (!args) args = [];
 			if (onlyOn) {
@@ -505,7 +506,7 @@ class Players {
 			}
 			await Promise.all(loads);
 		} catch (err) {
-			logger.error(`[Player] mpvAPI (send): ${JSON.stringify(err)}`);
+			logger.error(`mpvAPI (send): ${JSON.stringify(err)}`, {service: 'Player'});
 			throw new Error(JSON.stringify(err));
 		}
 	}
@@ -520,7 +521,7 @@ class Players {
 			backgroundImageFile = resolve(resolvedPathBackgrounds()[0], conf.Player.Background);
 			if (!await asyncExists(backgroundImageFile)) {
 				// Background provided in config file doesn't exist, reverting to default one provided.
-				logger.warn(`[Player] Unable to find background file ${backgroundImageFile}, reverting to default one`);
+				logger.warn(`Unable to find background file ${backgroundImageFile}, reverting to default one`, {service: 'Player'});
 				backgroundFiles.push(defaultImageFile);
 			} else {
 				backgroundFiles.push(backgroundImageFile);
@@ -533,7 +534,7 @@ class Players {
 			if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);
 		}
 		backgroundImageFile = sample(backgroundFiles);
-		logger.debug(`[Player] Background selected : ${backgroundImageFile}`);
+		logger.debug(`Background selected : ${backgroundImageFile}`, {service: 'Player'});
 		try {
 			playerState.mediaType = 'background';
 			playerState.playerStatus = 'stop';
@@ -542,8 +543,7 @@ class Players {
 			emitPlayerState();
 			await this.exec('load', [backgroundImageFile, 'replace'], true);
 		} catch(err) {
-			const errStr = `Unable to load background: ${JSON.stringify(err)}`;
-			logger.error(`[Player] ${errStr}`);
+			logger.error(`Unable to load background`, {service: 'Player', obj: err});
 			sentry.error(err);
 			throw err;
 		}
@@ -556,7 +556,7 @@ class Players {
 			main: new Player({monitor: false, mpvVersion}, this)
 		}
 		if (playerState.monitorEnabled) this.players.monitor = new Player({monitor: true, mpvVersion}, this);
-		logger.debug(`[Player] Players: ${JSON.stringify(Object.keys(this.players))}`);
+		logger.debug(`Players: ${JSON.stringify(Object.keys(this.players))}`, {service: 'Player'});
 		return await this.exec('start');
 	}
 
@@ -573,7 +573,7 @@ class Players {
 			await this.loadBackground();
 		} catch (err) {
 			errorStep(i18n.t('ERROR_START_PLAYER'));
-			logger.error(`[Player] Unable to start player: ${err}`);
+			logger.error(`Unable to start player`, {service: 'Player', obj: err})
 			sentry.error(err, 'Fatal');
 			throw err;
 		}
@@ -583,7 +583,7 @@ class Players {
 	async quit() {
 		return await this.exec('destroy').catch(err => {
 			// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
-			logger.warn(`[Player] Failed to quit mpv: ${err}`);
+			logger.warn(`Failed to quit mpv`, {service: 'Player', obj: err})
 		});
 	}
 
@@ -606,7 +606,7 @@ class Players {
 			}
 		}
 		await this.exec('recreate', [null, true]).catch(err => {
-			logger.error(`[Player] Cannot restart mpv: ${JSON.stringify(err)}`);
+			logger.error(`Cannot restart mpv`, {service: 'Player', obj: err})
 		});
 		if (playerState.playerStatus === 'stop' || playerState.mediaType === 'background') {
 			await this.loadBackground();
@@ -615,7 +615,7 @@ class Players {
 
 	async play(mediaData: MediaData): Promise<PlayerState> {
 		const conf = getConfig();
-		logger.debug('[Player] Play event triggered');
+		logger.debug('Play event triggered', {service: 'Player'})
 		playerState.playing = true;
 		//Search for media file in the different PathMedias
 		let mediaFiles: string[]|void;
@@ -624,11 +624,11 @@ class Players {
 		let subFile: string;
 		mediaFiles = await resolveFileInDirs(mediaData.media, resolvedPathRepos('Medias', mediaData.repo))
 			.catch(err => {
-				logger.debug(`[Player] Error while resolving media path : ${err}`);
-				logger.warn(`[Player] Media NOT FOUND : ${mediaData.media}`);
+				logger.debug('Error while resolving media path', {service: 'Player', obj: err})
+				logger.warn(`Media NOT FOUND : ${mediaData.media}`, {service: 'Player'});
 				if (conf.Online.MediasHost) {
 					mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(mediaData.media)}`;
-					logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`);
+					logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});
 				} else {
 					throw `No media source for ${mediaData.media} (tried in ${resolvedPathRepos('Medias', mediaData.repo).toString()} and HTTP source)`;
 				}
@@ -637,13 +637,13 @@ class Players {
 		if (mediaData.subfile) {
 			subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
 				.catch(err => {
-					logger.debug(`[Player] Error while resolving subs path : ${err}`);
-					logger.warn(`[Player] Subs NOT FOUND : ${mediaData.subfile}`);
+					logger.debug('Error while resolving subs path', {service: 'Player', obj: err})
+					logger.warn(`Subs NOT FOUND : ${mediaData.subfile}`, {service: 'Player'});
 				});
 			subFile = subFiles[0];
 		}
-		logger.debug(`[Player] Audio gain adjustment : ${mediaData.gain}`);
-		logger.debug(`[Player] Loading media: ${mediaFile}${subFile ? ` with subs ${subFile}`:''}`);
+		logger.debug(`Audio gain adjustment : ${mediaData.gain}`, {service: 'Player'});
+		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with subs ${subFile}`:''}`, {service: 'Player'});
 		let options = [
 			`replaygain-fallback=${mediaData.gain}`
 		];
@@ -684,20 +684,20 @@ class Players {
 			await retry(() => this.exec('load', [mediaFile, 'replace', options], true), {
 				retries: 3,
 				onFailedAttempt: error => {
-					logger.warn(`[Player] Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
+					logger.warn(`Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player'});
 				}
 			}).catch(err => {
-				logger.error(`[Player] Unable to load media: ${JSON.stringify(err)}`);
+				logger.error(`Unable to load media`, {service: 'Player', obj: err});
 				throw err;
 			});
-			logger.debug(`[Player] File ${mediaFile} loaded`);
+			logger.debug(`File ${mediaFile} loaded`, {service: 'Player'});
 			playerState.mediaType = 'song';
 			playerState._playing = true;
 			await this.exec('play', null, true);
 			playerState.playerStatus = 'play';
 			if (subFile) {
 				await this.exec('addSubtitles', [subFile], true).catch(err => {
-					logger.error(`[Player] Unable to load subtitles: ${JSON.stringify(err)}`);
+					logger.error(`Unable to load subtitles`, {service: 'Player', obj: err});
 					throw err;
 				});
 			}
@@ -714,7 +714,7 @@ class Players {
 			});
 			return playerState;
 		} catch(err) {
-			logger.error(`[Player] Unable to load: ${JSON.stringify(err)}`);
+			logger.error(`Unable to load`, {service: 'Player', obj: err});
 			sentry.addErrorInfo('mediaData', JSON.stringify(mediaData, null, 2));
 			sentry.error(err);
 			throw err;
@@ -726,13 +726,13 @@ class Players {
 		const media = getSingleMedia(mediaType);
 		if (media) {
 			setState({currentlyPlayingKara: mediaType});
-			logger.debug(`[Player] Playing ${mediaType} : ${media.file}`);
+			logger.debug(`Playing ${mediaType} : ${media.file}`, {service: 'Player'});
 			const options = [`replaygain-fallback=${media.gain}`];
 			try {
 				await retry(() => this.exec('load', [media.file, 'replace', options], true), {
 					retries: 3,
 					onFailedAttempt: error => {
-						logger.warn(`[Player] Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`);
+						logger.warn(`Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player'});
 					}
 				});
 				await this.exec('play', null, true);
@@ -751,15 +751,15 @@ class Players {
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
-				logger.error(`[Player] Error loading media ${mediaType}: ${media.file} : ${JSON.stringify(err)}`);
+				logger.error(`Error loading media ${mediaType}: ${media.file}`, {service: 'Player', obj: err});
 				sentry.error(err);
 				throw err;
 			}
 		} else {
-			logger.debug(`[Player] No ${mediaType} to play.`);
+			logger.debug(`No ${mediaType} to play.`, {service: 'Player'});
 			playerState.playerStatus = 'play';
 			await this.loadBackground();
-			logger.debug('[Player] No jingle DI');
+			logger.debug('No jingle DI', {service: 'Player'})
 			await this.displayInfo();
 			playerState._playing = true;
 			emitPlayerState();
@@ -771,13 +771,13 @@ class Players {
 	async stop(): Promise<PlayerState> {
 		// on stop do not trigger onEnd event
 		// => setting internal playing = false prevent this behavior
-		logger.debug('[Player] Stop event triggered');
+		logger.debug('Stop event triggered', {service: 'Player'})
 		playerState.playing = false;
 		playerState.timeposition = 0;
 		playerState._playing = false;
 		playerState.playerStatus = 'stop';
 		await this.loadBackground();
-		logger.debug('[Player] Stop DI');
+		logger.debug('Stop DI', {service: 'Player'})
 		if (!getState().songPoll) this.displayInfo();
 		emitPlayerState();
 		setProgressBar(-1);
@@ -786,7 +786,7 @@ class Players {
 	}
 
 	async pause(): Promise<PlayerState> {
-		logger.debug('[Player] Pause event triggered');
+		logger.debug('Pause event triggered', {service: 'Player'})
 		try {
 			playerState._playing = false; // This prevents the play/pause event to be triggered
 			await this.exec('pause', null, true);
@@ -795,14 +795,14 @@ class Players {
 			emitPlayerState();
 			return playerState;
 		} catch(err) {
-			logger.error(`[Player] Unable to pause: ${JSON.stringify(err)}`);
+			logger.error(`Unable to pause`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
 	}
 
 	async resume(): Promise<PlayerState> {
-		logger.debug('[Player] Resume event triggered');
+		logger.debug('Resume event triggered', {service: 'Player'})
 		try {
 			// If one of the players is down, we need to reload the media
 			let restartNeeded: boolean;
@@ -820,7 +820,7 @@ class Players {
 				return playerState;
 			}
 		} catch(err) {
-			logger.error(`[Player] Unable to resume: ${JSON.stringify(err)}`);
+			logger.error(`Unable to resume`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
@@ -830,7 +830,7 @@ class Players {
 		try {
 			await this.exec('seek', [delta], true);
 		} catch(err) {
-			logger.error(`[Player] Unable to seek: ${JSON.stringify(err)}`);
+			logger.error(`Unable to seek`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
@@ -840,7 +840,7 @@ class Players {
 		try {
 			await this.exec('goToPosition', [pos], true);
 		} catch(err) {
-			logger.error(`[Player] Unable to go to position: ${JSON.stringify(err)}`);
+			logger.error(`Unable to go to position`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
@@ -853,7 +853,7 @@ class Players {
 			emitPlayerState();
 			return playerState;
 		} catch(err) {
-			logger.error(`[Player] Unable to toggle mute: ${JSON.stringify(err)}`);
+			logger.error(`Unable to toggle mute`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
@@ -866,7 +866,7 @@ class Players {
 			emitPlayerState();
 			return playerState;
 		} catch(err) {
-			logger.error(`[Player] Unable to toggle mute: ${JSON.stringify(err)}`);
+			logger.error(`Unable to toggle mute`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
@@ -883,7 +883,7 @@ class Players {
 			emitPlayerState();
 			return playerState;
 		} catch (err) {
-			logger.error(`[Player] Unable to ${showSubs ? 'show':'hide'} subs: ${JSON.stringify(err)}`);
+			logger.error(`Unable to ${showSubs ? 'show':'hide'} subs: ${JSON.stringify(err)}`, {service: 'Player'});
 			sentry.error(err);
 			throw err;
 		}
@@ -900,7 +900,7 @@ class Players {
 			emitPlayerState();
 			return playerState;
 		} catch (err) {
-			logger.error(`[Player] Unable to toggle fullscreen: ${JSON.stringify(err)}`);
+			logger.error(`Unable to toggle fullscreen`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
@@ -913,7 +913,7 @@ class Players {
 			emitPlayerState();
 			return playerState;
 		} catch (err) {
-			logger.error(`[Player] Unable to toggle ontop: ${JSON.stringify(err)}`);
+			logger.error(`Unable to toggle ontop`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
@@ -921,7 +921,7 @@ class Players {
 
 	async setPiPSize(pct: number) {
 		await this.exec('setProperty', ['autofit', `${pct}%x${pct}%`], true).catch(err => {
-			logger.error(`[Player] Unable to set PiP size: ${JSON.stringify(err)}`);
+			logger.error(`Unable to set PiP size`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		});
@@ -930,7 +930,7 @@ class Players {
 
 	async setHwDec(method: string) {
 		await this.exec('setProperty', ['hwdec', method], true).catch(err => {
-			logger.error(`[Player] Unable to set PiP size: ${JSON.stringify(err)}`);
+			logger.error(`Unable to set PiP size`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		});
@@ -954,7 +954,7 @@ class Players {
 				this.displayInfo();
 			}
 		} catch(err) {
-			logger.error(`[Player] Unable to display message: ${JSON.stringify(err)}`);
+			logger.error(`Unable to display message`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
@@ -978,7 +978,7 @@ class Players {
 			await sleep(duration);
 			playerState.displayingInfo = false;
 		} catch(err) {
-			logger.error(`[Player] Unable to display song info: ${JSON.stringify(err)}`);
+			logger.error(`Unable to display song info`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
@@ -1009,15 +1009,14 @@ class Players {
 			await sleep(duration);
 			playerState.displayingInfo = false;
 		} catch(err) {
-			logger.error(`[Player] Unable to display infos: ${JSON.stringify(err)}`);
+			logger.error(`Unable to display infos`, {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		}
 	}
 
-	private displayAddASong() {
-		console.log(this);
-		if (!playerState.displayingInfo && getState().randomPlaying) this.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'), 1000);
+	static displayAddASong(thisArg: Players) {
+		if (!playerState.displayingInfo && getState().randomPlaying) thisArg.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'), 1000);
 	}
 
 	async clearText() {
@@ -1030,7 +1029,7 @@ class Players {
 			]
 		};
 		return await this.exec('freeCommand', [command], true).catch(err => {
-			logger.error(`[Player] Unable to clear text : ${JSON.stringify(err)}`);
+			logger.error('Unable to clear text', {service: 'Player', obj: err})
 			sentry.error(err);
 			throw err;
 		});
@@ -1040,7 +1039,8 @@ class Players {
 
 	/** Initialize start displaying the "Add a song to the list" */
 	initAddASongMessage() {
-		if (!this.intervalIDAddASong && getState().randomPlaying) this.intervalIDAddASong = setInterval(this.displayAddASong, 2000);
+		let thisArg = this;
+		if (!this.intervalIDAddASong && getState().randomPlaying) this.intervalIDAddASong = setInterval(Players.displayAddASong, 2000, thisArg);
 	}
 
 	/** Stop displaying the Add a song to the list */

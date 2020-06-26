@@ -38,7 +38,7 @@ export function getRepo(name: string) {
 /** Remove a repository */
 export function removeRepo(name: string) {
 	deleteRepo(name);
-	logger.info(`[Repo] Removed ${name}`);
+	logger.info(`Removed ${name}`, {service: 'Repo'});
 }
 
 /** Add a repository. Folders will be created if necessary */
@@ -50,7 +50,7 @@ export async function addRepo(repo: Repository) {
 	}
 	insertRepo(repo);
 	await checkRepoPaths(repo);
-	logger.info(`[Repo] Added ${repo.Name}`);
+	logger.info(`Added ${repo.Name}`, {service: 'Repo'});
 }
 
 /** Edit a repository. Folders will be created if necessary */
@@ -66,7 +66,7 @@ export async function editRepo(name: string, repo: Repository) {
 	if (oldRepo.Enabled !== repo.Enabled) {
 		if (await compareKarasChecksum(true)) generateDB();
 	}
-	logger.info(`[Repo] Updated ${name}`);
+	logger.info(`Updated ${name}`, {service: 'Repo'});
 }
 
 export async function compareLyricsChecksums(repo1Name: string, repo2Name: string): Promise<DifferentChecksumReport[]> {
@@ -230,7 +230,7 @@ export async function migrateOldFoldersToRepo() {
 		!conf.System.Path.Lyrics &&
 		!conf.System.Path.Series &&
 		!conf.System.Path.Tags) {
-		logger.info('[Repo] Initialization - Fresh start configuration');
+		logger.info('Initialization - Fresh start configuration', {service: 'Repo'})
 		return;
 	}
 	// Case 2
@@ -240,7 +240,7 @@ export async function migrateOldFoldersToRepo() {
 		(conf.System.Path.Series && conf.System.Path.Series.length > 0) ||
 		(conf.System.Path.Tags && conf.System.Path.Tags.length > 0)
 	) {
-		logger.info('[Repo] Initialization - Customized configuration');
+		logger.info('Initialization - Customized configuration', {service: 'Repo'})
 		const repos = cloneDeep(conf.System.Repositories);
 		repos[0].Path.Karas = [].concat(conf.System.Path.Karas);
 		repos[0].Path.Lyrics = [].concat(conf.System.Path.Lyrics);
@@ -265,7 +265,7 @@ export async function migrateOldFoldersToRepo() {
 	// Case 3
 	if (await asyncExists(resolve(state.dataPath, 'data/')) &&
 		!await asyncExists(resolve(state.dataPath, conf.System.Repositories[0].Path.Karas[0]))) {
-		logger.info('[Repo] Initialization - KM <3.2 configuration');
+		logger.info('Initialization - KM <3.2 configuration', {service: 'Repo'})
 		const repos = cloneDeep(conf.System.Repositories);
 		repos[0].Path.Karas = ['data/karaokes'];
 		repos[0].Path.Lyrics = ['data/lyrics'];
@@ -290,7 +290,7 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 		const state = getState();
 		if (!repo) throw 'Unknown repository';
 		if (!await asyncExists(newPath)) throw 'Directory not found';
-		logger.info(`[Repo] Moving ${repoName} repository to ${newPath}...`);
+		logger.info(`Moving ${repoName} repository to ${newPath}...`, {service: 'Repo'});
 		const moveTasks = [];
 		let files = 0;
 		for (const type of Object.keys(repo.Path)) {
@@ -325,7 +325,7 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 		repo.Path.Tags = [relativePath(state.dataPath, resolve(newPath, 'tags/'))];
 		await editRepo(repoName, repo);
 	} catch(err) {
-		logger.error(`[Repo] Failed to move repo ${name} : ${err}`);
+		logger.error(`Failed to move repo ${name}`, {service: 'Repo', obj: err});
 		throw err;
 	}
 }

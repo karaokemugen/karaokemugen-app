@@ -102,17 +102,18 @@ export function initFrontend(): number {
 		let port = conf.Frontend.Port;
 		try {
 			server.listen(port, () => {
-				logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);
+				logger.debug(`Webapp is READY and listens on port ${port}`, {service: 'Webapp'});
 			});
 		} catch(err) {
 			// Likely port is busy for some reason, so we're going to change that number to something else.
 			try {
 				port = port + 1;
 				server.listen(port, () => {
-					logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);
+					logger.debug(`Webapp is READY and listens on port ${port}`, {service: 'Webapp'});
 				});
 			} catch(err) {
 				// Utter failure
+				logger.error('Webapp is NOT READY', {service: 'Webapp', obj: err});
 				const error = new Error(err);
 				sentry.error(error);
 				throw error;

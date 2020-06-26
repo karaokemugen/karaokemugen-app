@@ -99,23 +99,23 @@ export async function deleteKara(kid: string, refresh = true) {
 	try {
 		await asyncUnlink((await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]);
 	} catch(err) {
-		logger.warn(`[Kara] Non fatal : Removing mediafile ${kara.mediafile} failed : ${err}`);
+		logger.warn(`Non fatal : Removing mediafile ${kara.mediafile} failed`, {service: 'Kara', obj: err});
 	}
 	try {
 		await asyncUnlink((await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0]);
 	} catch(err) {
-		logger.warn(`[Kara] Non fatal : Removing karafile ${kara.karafile} failed : ${err}`);
+		logger.warn(`Non fatal : Removing karafile ${kara.karafile} failed`, {service: 'Kara', obj: err});
 	}
 	if (kara.subfile) try {
 		await asyncUnlink((await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]);
 	} catch(err) {
-		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
+		logger.warn(`Non fatal : Removing subfile ${kara.subfile} failed`, {service: 'Kara', obj: err});
 	}
 
 	removeKaraInStore(kara.kid);
 	saveSetting('baseChecksum', getStoreChecksum());
 	// Remove kara from database
-	logger.info(`[Kara] Song ${kara.karafile} removed`);
+	logger.info(`Song ${kara.karafile} removed`, {service: 'Kara'});
 
 	if (refresh) {
 		await refreshKaras();
@@ -267,14 +267,14 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 
 export async function refreshKarasAfterDBChange(newTags: boolean) {
 	profile('RefreshAfterDBChange');
-	logger.debug('[DB] Refreshing DB after kara change');
+	logger.debug('Refreshing DB after kara change', {service: 'DB'})
 	if (newTags) {
 		await refreshKaraTags();
 		await refreshTags();
 	}
 	await refreshKaras();
 	await refreshYears();
-	logger.debug('[DB] Done refreshing DB after kara change');
+	logger.debug('Done refreshing DB after kara change', {service: 'DB'})
 	profile('RefreshAfterDBChange');
 }
 
@@ -295,17 +295,17 @@ export async function integrateKaraFile(file: string) {
 				editKaraInStore(oldKaraFile);
 			}
 		} catch(err) {
-			logger.warn(`[Kara] Failed to remove ${karaDB.karafile}, does it still exist?`);
+			logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, {service: 'Kara'});
 		}
 		if (karaDB.mediafile !== karaData.mediafile) try {
 			await asyncUnlink((await resolveFileInDirs(karaDB.mediafile, resolvedPathRepos('Medias', karaDB.repository)))[0]);
 		} catch(err) {
-			logger.warn(`[Kara] Failed to remove ${karaDB.mediafile}, does it still exist?`);
+			logger.warn(`Failed to remove ${karaDB.mediafile}, does it still exist?`, {service: 'Kara'});
 		}
 		if (karaDB.subfile && karaDB.subfile !== karaData.subfile) try {
 			await asyncUnlink((await resolveFileInDirs(karaDB.subfile, resolvedPathRepos('Lyrics', karaDB.repository)))[0]);
 		} catch(err) {
-			logger.warn(`[Kara] Failed to remove ${karaDB.subfile}, does it still exist?`);
+			logger.warn(`Failed to remove ${karaDB.subfile}, does it still exist?`, {service: 'Kara'});
 		}
 		sortKaraStore();
 	} else {
@@ -315,13 +315,13 @@ export async function integrateKaraFile(file: string) {
 }
 
 export async function removeSerieInKaras(sid: string, karas: KaraList) {
-	logger.info(`[Kara] Removing serie ${sid} in .kara.json files`);
+	logger.info(`Removing serie ${sid} in .kara.json files`, {service: 'Kara'});
 	const karasWithSerie = karas.content.filter((k: any) => {
 		if (k.sid && k.sid.includes(sid)) return true;
 	});
-	if (karasWithSerie.length > 0) logger.info(`[Kara] Removing in ${karasWithSerie.length} files`);
+	if (karasWithSerie.length > 0) logger.info(`Removing in ${karasWithSerie.length} files`, {service: 'Kara'});
 	for (const karaWithSerie of karasWithSerie) {
-		logger.info(`[Kara] Removing in ${karaWithSerie.karafile}...`);
+		logger.info(`Removing in ${karaWithSerie.karafile}...`, {service: 'Kara'});
 		const karaPath = (await resolveFileInDirs(karaWithSerie.karafile, resolvedPathRepos('Karas', karaWithSerie.repository)))[0];
 		const kara = await parseKara(karaPath[0]);
 		kara.data.sids = kara.data.sids.filter((s: any) => s !== sid);
@@ -356,11 +356,11 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 		if (action !== 'add' && action !== 'remove') throw 'Unkown action';
 		const tag = await getTag(tid);
 		if (!tag) throw 'Unknown tag';
-		logger.info(`[Kara] Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${playlist_id}`);
+		logger.info(`Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${playlist_id}`, {service: 'Kara'});
 		for (const plc of pl) {
 			const kara = await getKara(plc.kid, {username: 'admin', role: 'admin'});
 			if (!kara) {
-				logger.warn(`[Kara] Batch tag edit : kara ${plc.kid} unknown. Ignoring.`);
+				logger.warn(`Batch tag edit : kara ${plc.kid} unknown. Ignoring.`, {service: 'Kara'});
 				continue;
 			}
 			task.update({
@@ -378,16 +378,16 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 			if (modified) {
 				await editKara(kara, false);
 			} else {
-				logger.info(`[Kara] Batch edit tag : skipping ${kara.karafile} since no actions taken`);
+				logger.info(`Batch edit tag : skipping ${kara.karafile} since no actions taken`, {service: 'Kara'});
 			}
 			task.incr();
 		}
 		refreshKaraTags();
 		refreshKaras();
 		await databaseReady();
-		logger.info('[Kara] Batch tag edit finished');
+		logger.info('Batch tag edit finished', {service: 'Kara'})
 	} catch(err) {
-		logger.info(`[Kara] Batch tag edit failed : ${err}`);
+		logger.info('Batch tag edit failed', {service: 'Kara', obj: err})
 	} finally {
 		task.end();
 	}

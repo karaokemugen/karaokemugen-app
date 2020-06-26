@@ -72,7 +72,7 @@ export async function baseChecksum(silent?: boolean): Promise<string> {
 		]);
 		const fileCount = karaFiles.length + tagFiles.length;
 		if (karaFiles.length === 0) return null;
-		logger.info(`[Store] Found ${karaFiles.length} karas and ${tagFiles.length} tags`);
+		logger.info(`Found ${karaFiles.length} karas and ${tagFiles.length} tags`, {service: 'Store'});
 		if (!silent) bar = new Bar({
 			message: 'Checking files...    '
 		}, fileCount);
@@ -90,12 +90,11 @@ export async function baseChecksum(silent?: boolean): Promise<string> {
 		if (!silent) bar.stop();
 		task.end();
 		const checksum = getStoreChecksum();
-		logger.debug(`[Store] Store checksum : ${checksum}`);
+		logger.debug(`Store checksum : ${checksum}`, {service: 'Store'});
 		return checksum;
 	} catch(err) {
-		const errStr = `Unable to browse through your data files : ${err}`;
-		logger.warn(`[Store] ${errStr}`);
-		sentry.error(new Error(errStr), 'Warning');
+		logger.warn('Unable to browse through your data files', {service: 'Store', obj: err});
+		sentry.error(err, 'Warning');
 	} finally {
 		profile('baseChecksum');
 	}

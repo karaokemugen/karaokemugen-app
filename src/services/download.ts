@@ -56,7 +56,7 @@ function emitQueueStatus(status: QueueStatus) {
 }
 
 function queueDownload(input: KaraDownload, done: any) {
-	logger.info(`[Download] Processing song : ${input.name}`);
+	logger.info(`Processing song : ${input.name}`, {service: 'Download'});
 	processDownload(input)
 		.then(() => done())
 		.catch(err => done(err));
@@ -79,10 +79,10 @@ function initQueue(drainEvent = true) {
 	let refreshing = false;
 	q = new Queue(queueDownload, queueOptions);
 	q.on('task_finish', () => {
-		if (q.length > 0) logger.info(`[Download] ${q.length - 1} items left in queue`);
+		if (q.length > 0) logger.info(`${q.length - 1} items left in queue`, {service: 'Download'});
 		taskCounter++;
 		if (taskCounter >= 100 ) {
-			logger.debug('[Download] Triggering database refresh');
+			logger.debug('Triggering database refresh', {service: 'Download'})
 			compareKarasChecksum(true);
 			refreshing = true;
 			refreshAll().then(() => refreshing = false);
@@ -91,12 +91,12 @@ function initQueue(drainEvent = true) {
 		emitQueueStatus('updated');
 	});
 	q.on('task_failed', (taskId: string, err: any) => {
-		logger.error(`[Download] Task ${taskId} failed : ${err}`);
+		logger.error(`Task ${taskId} failed`, {service: 'Download', obj: err});
 		emitQueueStatus('updated');
 	});
 	q.on('empty', () => emitQueueStatus('updated'));
 	if (drainEvent) q.on('drain', () => {
-		logger.info('[Download] No tasks left, stopping queue');
+		logger.info('No tasks left, stopping queue', {service: 'Download'})
 		if (!refreshing) {
 			refreshAll().then(() => vacuum());
 			compareKarasChecksum();
@@ -116,10 +116,10 @@ export async function startDownloads() {
 		try {
 			await internet();
 			downloads.forEach(dl => q.push(dl));
-			logger.info('[Downloader] Download queue starting up');
+			logger.info('Download queue starting up', {service: 'Downloader'})
 			emitQueueStatus('started');
 		} catch(err) {
-			if (downloads.length > 0) logger.warn('[Download] There are planned downloads, but your computer seems offline');
+			if (downloads.length > 0) logger.warn('There are planned downloads, but your computer seems offline', {service: 'Download'})
 			emitQueueStatus('stopped');
 		}
 	}
@@ -190,26 +190,26 @@ export async function integrateDownloadBundle(bundle: DownloadBundle, download_i
 	try {
 		if (!mediaAlreadyExists) await asyncMove(tempMedia, localMedia, {overwrite: true});
 	} catch(err) {
-		logger.error(`[Debug] Unable to move ${tempMedia} to ${localMedia} : ${err}`);
+		logger.error(`Unable to move ${tempMedia} to ${localMedia}`, {service: 'Debug', obj: err});
 	}
 	try {
 		if (lyrics.file !== null) await asyncMove(tempLyrics, resolve(localLyricsPath, lyrics.file), {overwrite: true});
 	} catch(err) {
-		logger.error(`[Debug] Unable to move ${tempLyrics} to ${localLyricsPath}`);
+		logger.error(`Unable to move ${tempLyrics} to ${localLyricsPath}`, {service: 'Debug', obj: err});
 	}
 	try {
 		await asyncMove(tempKara, resolve(localKaraPath, kara.file), {overwrite: true});
 	} catch(err) {
-		logger.error(`[Debug] Unable to move ${tempKara} to ${localKaraPath}`);
+		logger.error(`Unable to move ${tempKara} to ${localKaraPath}`, {service: 'Debug', obj: err});
 	}
 	for (const tag of tags) {
 		try {
 			await asyncMove(resolve(tempDir, tag.file), resolve(localTagsPath, tag.file), {overwrite: true});
 		} catch(err) {
-			logger.error(`[Debug] Unable to move ${resolve(tempDir, tag.file)} to ${resolve(localTagsPath, tag.file)}`);
+			logger.error(`Unable to move ${resolve(tempDir, tag.file)} to ${resolve(localTagsPath, tag.file)}`, {service: 'Debug'});
 		}
 	}
-	logger.info(`[Download] Finished downloading "${kara.file}"`);
+	logger.info(`Finished downloading "${kara.file}"`, {service: 'Download'});
 	// Now adding our newly downloaded kara
 	await integrateDownload(bundle, localKaraPath, localTagsPath, download_id);
 }
@@ -236,22 +236,22 @@ async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, 
 		for (const tag of bundle.tags) {
 			try {
 				const tagName = await integrateTagFile(resolve(localTagsPath, tag.file));
-				if (tagName) logger.debug(`[Download] Tag "${tagName}" in database`);
+				if (tagName) logger.debug(`Tag "${tagName}" in database`, {service: 'Download'});
 			} catch(err) {
-				logger.error(`[Download] Tag "${tag.file}" not properly added to database`);
+				logger.error(`Tag "${tag.file}" not properly added to database`, {service: 'Download'});
 				throw err;
 			}
 		}
 		try {
 			await integrateKaraFile(resolve(localKaraPath, bundle.kara.file));
-			logger.info(`[Download] Song "${bundle.kara.file}" added to database`);
+			logger.info(`Song "${bundle.kara.file}" added to database`, {service: 'Download'});
 			await setDownloadStatus(download_id, 'DL_DONE');
 		} catch(err) {
-			logger.error(`[Download] Song "${bundle.kara.file}" not properly added to database`);
+			logger.error(`Song "${bundle.kara.file}" not properly added to database`, {service: 'Download'});
 			throw err;
 		}
 	} catch(err) {
-		logger.error(`[Download] Song "${bundle.kara.file}" downloaded but not properly added to database. Regenerate your database manually after fixing errors`);
+		logger.error(`Song "${bundle.kara.file}" downloaded but not properly added to database. Regenerate your database manually after fixing errors`, {service: 'Download'});
 		setDownloadStatus(download_id, 'DL_FAILED');
 		throw err;
 	}
@@ -292,7 +292,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 	});
 	if (downloads.length === 0) throw 'No downloads added, all are already in queue or running';
 	const dls: KaraDownload[] = downloads.map(dl => {
-		logger.debug(`[Download] Adding download ${dl.name}`);
+		logger.debug(`Adding download ${dl.name}`, {service: 'Download'});
 		return {
 			uuid: uuidV4(),
 			name: dl.name,
@@ -413,8 +413,8 @@ export async function getRemoteKaras(repo: string, params: KaraParams, compare?:
 		});
 		return JSON.parse(res.body);
 	} catch(err) {
-		logger.warn(`[Download] Unable to fetch karas from repository ${repo} : ${err}`);
-		logger.warn(`[Download] Repository ${repo} ignored`);
+		logger.warn(`Unable to fetch karas from repository ${repo}`, {service: 'Download', obj: err});
+		logger.warn(`Repository ${repo} ignored`, {service: 'Download'});
 		return {
 			content: [],
 			i18n: {},
@@ -468,11 +468,11 @@ export async function updateAllBases() {
 	for (const repo of getConfig().System.Repositories) {
 		try {
 			if (repo.Online && repo.Enabled) {
-				logger.info(`[Update] Updating base from repository ${repo.Name}`);
+				logger.info(`Updating base from repository ${repo.Name}`, {service: 'Update'});
 				await updateBase(repo.Name);
 			}
 		} catch(err) {
-			logger.warn(`[Update] Repository ${repo.Name} failed to update properly: ${err}`);
+			logger.warn(`Repository ${repo.Name} failed to update properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('BASES_SYNC_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
@@ -482,26 +482,26 @@ export async function updateBase(repo: string) {
 	// First, make sure we wipe the download queue before updating.
 	if (!q) initQueue(false);
 	await emptyDownload();
-	logger.info('[Update] Computing songs to add/remove/update...');
+	logger.info('Computing songs to add/remove/update...', {service: 'Update'})
 	try {
-		logger.info('[Update] Getting local and remote song inventory');
+		logger.info('Getting local and remote song inventory', {service: 'Update'})
 		const karas = await getKaraInventory(repo);
-		logger.info('[Update] Removing songs...');
+		logger.info('Removing songs...', {service: 'Update'})
 		await cleanKaras(repo, karas.local, karas.remote);
-		logger.info('[Update] Adding updated/new songs...');
+		logger.info('Adding updated/new songs...', {service: 'Update'})
 		const [updatedSongs, newSongs] = await Promise.all([
 			updateKaras(repo, karas.local, karas.remote),
 			downloadKaras(repo, karas.local, karas.remote)
 		]);
 		if (updatedSongs > 0 || newSongs > 0) await waitForUpdateQueueToFinish();
 		// Now checking tags and series if we're missing any
-		logger.info('[Update] Getting local and remote series/tags inventory');
+		logger.info('Getting local and remote series/tags inventory', {service: 'Update'})
 		const tags = await getTagsInventory(repo);
 		const updatedTags = await updateTags(repo, tags.local, tags.remote);
 		if (updatedTags > 0) await refreshAll();
 		return true;
 	} catch(err) {
-		logger.error(`[Update] Base update failed : ${err}`);
+		logger.error('Base update failed', {service: 'Update', obj: err})
 		throw err;
 	}
 }
@@ -516,7 +516,7 @@ function waitForUpdateQueueToFinish() {
 				await vacuum();
 				resolve();
 			} catch(err) {
-				logger.error(`[Download] Error while draining queue : ${err}`);
+				logger.error('Error while draining queue', {service: 'Download', obj: err})
 				reject(err);
 			}
 		});
@@ -551,11 +551,11 @@ export async function downloadAllKaras() {
 	for (const repo of getConfig().System.Repositories) {
 		try {
 			if (repo.Online) {
-				logger.info(`[Update] Downloading all songs from repository ${repo.Name}`);
+				logger.info(`Downloading all songs from repository ${repo.Name}`, {service: 'Update'});
 				await downloadKaras(repo.Name);
 			}
 		} catch(err) {
-			logger.warn(`[Update] Repository ${repo.Name} failed to download all songs properly: ${err}`);
+			logger.warn(`Repository ${repo.Name} failed to download all songs properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('DOWNLOAD_SONGS_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
@@ -576,7 +576,7 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 		let karasToAdd = remote.content.filter(k => !localKIDs.includes(k.kid));
 		const initialKarasToAddCount = karasToAdd.length;
 		// Among those karaokes, we need to establish which ones we'll filter out via the download blacklist criteria
-		logger.info('[Update] Applying blacklist (if present)');
+		logger.info('Applying blacklist (if present)', {service: 'Update'})
 
 		const [blcs, tags] = await Promise.all([
 			getDownloadBLC(),
@@ -603,8 +603,8 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 				repository: repo
 			};
 		});
-		logger.info(`[Update] Adding ${karasToAdd.length} new songs.`);
-		if (initialKarasToAddCount !== karasToAdd.length) logger.info(`[Update] ${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`);
+		logger.info(`Adding ${karasToAdd.length} new songs.`, {service: 'Update'});
+		if (initialKarasToAddCount !== karasToAdd.length) logger.info(`${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`, {service: 'Update'});
 		if (karasToAdd.length > 0) await addDownloads(downloads);
 		return karasToAdd.length;
 	} catch(err) {
@@ -636,7 +636,7 @@ function filterTagID(k: DBKara, value: string, type: number, tags: Tag[]): boole
 		return k[typeName].every((e: Tag) => !e.tid.includes(tag.tid));
 	} else {
 		// Tag isn't found in database, weird but could happen for some obscure reasons. We'll return true.
-		logger.warn(`[Update] Tag ${value} not found in database when trying to blacklist songs to download, will ignore it.`);
+		logger.warn(`Tag ${value} not found in database when trying to blacklist songs to download, will ignore it.`, {service: 'Update'});
 		return true;
 	}
 }
@@ -663,11 +663,11 @@ export async function cleanAllKaras() {
 	for (const repo of getConfig().System.Repositories) {
 		try {
 			if (repo.Online) {
-				logger.info(`[Update] Cleaning songs not in repository ${repo.Name} anymore`);
+				logger.info(`Cleaning songs not in repository ${repo.Name} anymore`, {service: 'Update'});
 				await cleanKaras(repo.Name);
 			}
 		} catch(err) {
-			logger.warn(`[Update] Repository ${repo.Name} failed to clean songs properly: ${err}`);
+			logger.warn(`Repository ${repo.Name} failed to clean songs properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('CLEAN_SONGS_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
@@ -686,14 +686,14 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 		}
 		//Return early if repository is not reachable / does return no songs
 		if (remote.content.length === 0) {
-			logger.warn(`[Download] Repository ${repo} likely unreachable or not returning any song. Ignoring its cleanup`);
+			logger.warn(`Repository ${repo} likely unreachable or not returning any song. Ignoring its cleanup`, {service: 'Download'});
 			return;
 		}
 		const localKIDs = local.content.map(k => k.kid);
 		const remoteKIDs = remote.content.map(k => k.kid);
 		const karasToRemove = localKIDs.filter(kid => !remoteKIDs.includes(kid));
 		// Now we have a list of KIDs to remove
-		logger.info(`[Update] Removing ${karasToRemove.length} songs`);
+		logger.info(`Removing ${karasToRemove.length} songs`, {service: 'Update'});
 		const promises = [];
 		karasToRemove.forEach(kid => promises.push(deleteKara(kid, false)));
 		await Promise.all(promises);
@@ -714,7 +714,7 @@ export async function updateAllKaras() {
 	for (const repo of getConfig().System.Repositories) {
 		try {
 			if (repo.Online) {
-				logger.info(`[Update] Updating all songs from repository ${repo.Name}`);
+				logger.info(`Updating all songs from repository ${repo.Name}`, {service: 'Update'});
 				await updateKaras(repo.Name);
 				await waitForUpdateQueueToFinish();
 				// Now checking tags and series if we're missing any
@@ -723,14 +723,14 @@ export async function updateAllKaras() {
 				if (updatedTags > 0) await refreshAll();
 			}
 		} catch(err) {
-			logger.warn(`[Update] Repository ${repo.Name} failed to update songs properly: ${err}`);
+			logger.warn(`Repository ${repo.Name} failed to update songs properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('SONGS_UPDATE_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
 }
 
 async function updateTags(repo: string, local: TagList, remote: TagList) {
-	logger.info('[Update] Starting tag update process...');
+	logger.info('Starting tag update process...', {service: 'Update'})
 	const task = new Task({
 		text: 'UPDATING_REPO',
 		subtext: repo
@@ -748,7 +748,7 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 			}
 		}
 
-		logger.info(`[Update] Updating ${tagsToUpdate.length} tags`);
+		logger.info(`Updating ${tagsToUpdate.length} tags`, {service: 'Update'});
 		if (tagsToUpdate.length > 0) {
 			const list = [];
 			const newTagFiles = [];
@@ -779,7 +779,7 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 }
 
 export async function updateKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
-	logger.info('[Update] Starting kara update process...');
+	logger.info('Starting kara update process...', {service: 'Update'})
 	const task = new Task({
 		text: 'UPDATING_REPO',
 		subtext: repo
@@ -844,7 +844,7 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 				repository: k.repository
 			};
 		});
-		logger.info(`[Update] Updating ${karasToUpdate.length} songs`);
+		logger.info(`Updating ${karasToUpdate.length} songs`, {service: 'Update'});
 		if (karasToUpdate.length > 0) await addDownloads(downloads);
 		return karasToUpdate.length;
 	} catch(err) {
@@ -859,7 +859,7 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 let updateRunning = false;
 
 async function listRemoteMedias(repo: string): Promise<File[]> {
-	logger.info('[Update] Fetching current media list');
+	logger.info('Fetching current media list', {service: 'Update'})
 	const remote = await getRemoteKaras(repo, {});
 	return remote.content.map(k => {
 		return {
@@ -874,7 +874,7 @@ async function compareMedias(localFiles: File[], remoteFiles: File[], repo: stri
 	const addedFiles:File[] = [];
 	const updatedFiles:File[] = [];
 	const mediasPath = resolvedPathRepos('Medias', repo)[0];
-	logger.info('[Update] Comparing your medias with the current ones');
+	logger.info('Comparing your medias with the current ones', {service: 'Update'})
 	for (const remoteFile of remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
 			if (localFile.basename === remoteFile.basename) {
@@ -905,12 +905,12 @@ async function compareMedias(localFiles: File[], remoteFiles: File[], repo: stri
 		for (const file of filesToDownload) {
 			bytesToDownload = bytesToDownload + file.size;
 		}
-		logger.info(`[Update] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);
+		logger.info(`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`, {service: 'Update'});
 		await downloadMedias(filesToDownload, mediasPath, repo);
-		logger.info('[Update] Done updating medias');
+		logger.info('Done updating medias', {service: 'Update'})
 		return true;
 	} else {
-		logger.info('[Update] No new medias to download');
+		logger.info('No new medias to download', {service: 'Update'})
 		return false;
 	}
 }
@@ -950,17 +950,17 @@ async function listLocalMedias(repo: string): Promise<File[]> {
 				size: mediaStats.size
 			});
 		} catch {
-			logger.info(`[Update] Local media file ${file} not found`);
+			logger.info(`Local media file ${file} not found`, {service: 'Update'});
 		}
 	}
-	logger.debug('[Update] Listed local media files');
+	logger.debug('Listed local media files', {service: 'Update'})
 	return localMedias;
 }
 
 async function removeFiles(files: string[], dir: string): Promise<void> {
 	for (const file of files) {
 		await asyncUnlink(resolve(dir, file));
-		logger.info(`[Update] Removed : ${file}`);
+		logger.info('Removed', {service: 'Update', obj: file})
 	}
 }
 
@@ -968,11 +968,11 @@ export async function updateAllMedias() {
 	for (const repo of getConfig().System.Repositories) {
 		try {
 			if (repo.Online) {
-				logger.info(`[Update] Updating medias from repository ${repo.Name}`);
+				logger.info(`Updating medias from repository ${repo.Name}`, {service: 'Update'});
 				await updateMedias(repo.Name);
 			}
 		} catch(err) {
-			logger.warn(`[Update] Repository ${repo.Name} failed to update medias properly: ${err}`);
+			logger.warn(`Repository ${repo.Name} failed to update medias properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('UPDATING_MEDIAS_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
@@ -1008,13 +1008,13 @@ export async function downloadRandomSongs() {
 	try {
 		await internet();
 	} catch(err) {
-		logger.warn('[Samples] Internet not available : no sample songs are going to be downloaded');
+		logger.warn('Internet not available : no sample songs are going to be downloaded', {service: 'Samples'})
 		return;
 	}
 	const conf = getConfig();
 	const onlineRepos = conf.System.Repositories.filter(r => r.Online);
 	try {
-		logger.info('[Samples] Downloading samples...');
+		logger.info('Downloading samples...', {service: 'Samples'})
 		const karas = await getRemoteKaras(onlineRepos[0].Name, {});
 		// Downloading samples here, 3 japanese, 1 french, 1 english, 1 italian.
 		const samples = [
@@ -1034,7 +1034,7 @@ export async function downloadRandomSongs() {
 			};
 		}));
 	} catch(err) {
-		logger.error(`[Samples] Unable to download samples : ${err}`);
+		logger.error('Unable to download samples', {service: 'Samples', obj: err})
 	}
 }
 

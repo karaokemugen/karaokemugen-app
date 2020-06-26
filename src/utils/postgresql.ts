@@ -62,7 +62,7 @@ export async function dumpPG() {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres)
 		});
-		logger.info('[DB] Database dumped to file');
+		logger.info('Database dumped to file', {service: 'DB'})
 	} catch(err) {
 		sentry.error(err);
 		throw `Dump failed : ${err}`;
@@ -81,10 +81,10 @@ export async function restorePG() {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			stdio: 'inherit'
 		});
-		logger.info('[DB] Database restored from file');
+		logger.info('Database restored from file', {service: 'DB'})
 	} catch(err) {
 		sentry.error(err);
-		logger.error(`[DB] Database restoration failed : ${err}`);
+		logger.error('Database restoration failed', {service: 'DB', obj: err})
 		throw `Restore failed : ${err}`;
 	}
 }
@@ -93,7 +93,7 @@ export async function restorePG() {
 export async function initPGData() {
 	const conf = getConfig();
 	const state = getState();
-	logger.info('[DB] No database present, initializing a new one...');
+	logger.info('No database present, initializing a new one...', {service: 'DB'})
 	try {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		if (deburr(binPath) !== binPath || deburr(conf.System.Path.DB) !== conf.System.Path.DB) throw 'DB path or Postgres path contain non-ASCII characters. Please put Karaoke Mugen in a path with no accent characters or the like and try again.';
@@ -106,7 +106,7 @@ export async function initPGData() {
 		});
 	} catch(err) {
 		sentry.error(err);
-		logger.error(`[DB] Failed to initialize database : ${JSON.stringify(err)}`);
+		logger.error('Failed to initialize database', {service: 'DB', obj: err})
 		errorStep(i18next.t('ERROR_INIT_PG_DATA'));
 		throw `Init failed : ${err}`;
 	}
@@ -159,10 +159,10 @@ export async function initPG() {
 	// If no data dir is present, we're going to init one
 	if (!await asyncExists(pgDataDir)) await initPGData();
 	if (await checkPG()) {
-		logger.info('[DB] Bundled PostgreSQL is already running');
+		logger.info('Bundled PostgreSQL is already running', {service: 'DB'})
 		return true;
 	}
-	logger.info('[DB] Launching bundled PostgreSQL');
+	logger.info('Launching bundled PostgreSQL', {service: 'DB'})
 	await updatePGConf();
 	const options = ['-w','-D',`${pgDataDir}`,'start'];
 	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
@@ -175,7 +175,7 @@ export async function initPG() {
 			stdio: 'ignore'
 		});
 	} catch(err) {
-		logger.error(`[DB] Failed to start PostgreSQL : ${JSON.stringify(err)}`);
+		logger.error('Failed to start PostgreSQL', {service: 'DB', obj: err})
 		// We're going to try launching it directoy to get THE error.
 		const pgBinExe = state.os === 'win32'
 			? 'postgres.exe'
@@ -190,7 +190,7 @@ export async function initPG() {
 		} catch(err) {
 			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
 			const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
-			logger.error(`[DB] PostgreSQL error : ${decoder.write(err.stderr)}`);
+			logger.error('PostgreSQL error', {service: 'DB', obj: decoder.write(err.stderr)})
 		}
 		errorStep(i18next.t('ERROR_START_PG'));
 		throw err.message;

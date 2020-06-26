@@ -13,7 +13,7 @@ export function insertDownloads(downloads: KaraDownload[] ) {
 		dl.repository,
 		dl.kid
 	]);
-	logger.debug('[Download DAO] Running transaction');
+	logger.debug('Running transaction', {service: 'Download DAO'});
 	return transaction({sql: sqlinsertDownload, params: dls});
 }
 

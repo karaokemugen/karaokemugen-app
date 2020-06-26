@@ -77,7 +77,7 @@ async function tryToFreeKara(plc_id :number, upvotes: number, username: string, 
 		upvotes >= +conf.Karaoke.Quota.FreeUpVotesRequiredMin) {
 		await freePLC(plc_id);
 		updateSongsLeft(username, playlist_id);
-		logger.debug(`[Upvote] PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`);
+		logger.debug(`PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`, {service: 'Upvote'});
 	}
 }
 

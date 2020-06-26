@@ -42,7 +42,7 @@ export async function checkValidUser(token: { username: string, role: string }, 
 								usersFavoritesChecked.add(token.username);
 							}
 						} catch(err) {
-							logger.error(`[RemoteUser] Failed to fetch and update user/favorite from remote : ${err}`);
+							logger.error('Failed to fetch and update user/favorite from remote', {service: 'RemoteUser', obj: err})
 						}
 						return user;
 					} else {
@@ -51,7 +51,7 @@ export async function checkValidUser(token: { username: string, role: string }, 
 					}
 				} catch(err) {
 					upsertRemoteToken(token.username, null);
-					logger.warn(`[RemoteUser] Failed to check remote auth (user logged in as local only) : ${err}`);
+					logger.warn('Failed to check remote auth (user logged in as local only)', {service: 'RemoteUser', obj: err})
 					throw err;
 				}
 			}
@@ -83,8 +83,8 @@ export function optionalAuth(req: any, res: any, next: any) {
 				next();
 			})
 			.catch(err => {
-				logger.error(`[API] Error checking user : ${JSON.stringify(token)} : ${err}`);
-				res.status(403).send(APIMessage('USER_UNKNOW'));
+				logger.error(`Error checking user : ${JSON.stringify(token)}`, {service: 'API', obj: err});
+				res.status(403).send(APIMessage('USER_UNKNOWN'));
 			});
 	} catch(err) {
 		// request has no authToken, continuing
@@ -106,7 +106,7 @@ export const requireValidUser = (req: any, res: any, next: any) => {
 			next();
 		})
 		.catch(err => {
-			logger.error(`[API] Error checking user : ${JSON.stringify(token)} : ${err}`);
+			logger.error(`Error checking user : ${JSON.stringify(token)}`, {service: 'API', obj: err});
 			res.status(403).send(APIMessage('USER_UNKNOWN'));
 		});
 };

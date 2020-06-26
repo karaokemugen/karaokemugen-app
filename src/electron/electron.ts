@@ -56,7 +56,7 @@ export async function startElectron() {
 			try {
 				await main();
 			} catch(err) {
-				logger.error(`[Launcher] Error during launch : ${err}`);
+				logger.error('Error during launch', {service: 'Launcher', obj: err})
 			}
 		});
 		ipcMain.on('droppedFiles', async (_event, eventData) => {
@@ -91,9 +91,9 @@ export async function startElectron() {
 
 export async function handleProtocol(args: string[]) {
 	try {
-		logger.info(`[ProtocolHandler] Received protocol uri km://${args.join('/')}`);
+		logger.info(`Received protocol uri km://${args.join('/')}`, {service: 'ProtocolHandler'});
 		if (!getState().ready) {
-			logger.debug('[ProtocolHandler] Ignoring file, Karaoke Mugen isn\'t ready.');
+			logger.debug('Ignoring file, Karaoke Mugen isn\'t ready.', {service: 'ProtocolHandler'})
 			return;
 		}
 		switch(args[0]) {
@@ -140,15 +140,15 @@ export async function handleProtocol(args: string[]) {
 			throw 'Unknown protocol';
 		}
 	} catch(err) {
-		logger.error(`[ProtocolHandler] Unknown command : ${args.join('/')}`);
+		logger.error(`Unknown command : ${args.join('/')}`, {service: 'ProtocolHandler'});
 	}
 }
 
 export async function handleFile(file: string, username?: string) {
 	try {
-		logger.info(`[FileHandler] Received file path ${file}`);
+		logger.info(`Received file path ${file}`, {service: 'FileHandler'});
 		if (!getState().ready) {
-			logger.debug('[FileHandler] Ignoring file, Karaoke Mugen isn\'t ready.');
+			logger.debug('Ignoring file, Karaoke Mugen isn\'t ready.', {service: 'FileHandler'})
 			return;
 		}
 		if (!username) {
@@ -158,12 +158,12 @@ export async function handleFile(file: string, username?: string) {
 			username = adminUsersOnline[0]?.login;
 			if (!username) {
 				username = 'admin';
-				logger.warn('[FileHandler] Could not find a username, switching to admin by default');
+				logger.warn('Could not find a username, switching to admin by default', {service: 'FileHandler'})
 			}
 		}
 		const rawData = await asyncReadFile(resolve(file), 'utf-8');
 		if (!testJSON(rawData)) {
-			logger.debug(`[FileHandler] File ${file} is not JSON, ignoring`);
+			logger.debug(`File ${file} is not JSON, ignoring`, {service: 'FileHandler'});
 			return;
 		}
 		const data = JSON.parse(rawData);
@@ -215,7 +215,7 @@ export async function handleFile(file: string, username?: string) {
 			throw 'Filetype not recognized';
 		}
 	} catch(err) {
-		logger.error(`[Electron] Could not handle ${file} : ${err}`);
+		logger.error('Could not handle ${file}', {service: 'Electron', obj: err})
 	}
 }
 

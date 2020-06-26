@@ -99,7 +99,7 @@ async function listLocalFiles(dir: string): Promise<File[]> {
 async function removeFiles(files: string[], dir: string) {
 	for (const file of files) {
 		await asyncRemove(resolve(dir, file));
-		logger.info(`[Medias] Removed : ${file}`);
+		logger.info(`Removed : ${file}`, {service: 'Medias'});
 	}
 }
 
@@ -155,9 +155,9 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			for (const file of filesToDownload) {
 				bytesToDownload = bytesToDownload + file.size;
 			}
-			logger.info(`[${type}] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);
+			logger.info(`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`, {service: '${type}'});
 			await downloadMedias(filesToDownload, localDir, type, task);
-			logger.info(`[${type}] Update done`);
+			logger.info(`Update done`, {service: '${type}'});
 		}
 	} catch(err) {
 		console.log(err);
@@ -199,7 +199,7 @@ export async function buildMediasList(type: MediaType) {
 		}
 	}
 	currentMedias[type] = cloneDeep(medias[type]);
-	logger.debug(`[${type}] Computed : ${JSON.stringify(medias[type], null, 2)}`);
+	logger.debug('Computed', {service: type, obj: medias[type]});
 }
 
 export function getSingleMedia(type: MediaType): Media {
@@ -224,6 +224,6 @@ export function getSingleMedia(type: MediaType): Media {
 	}
 	//Let's remove the serie of the jingle we just selected so it won't be picked again next time.
 	currentMedias[type] = currentMedias[type].filter((m: Media) => m.series !== media.series);
-	logger.info(`[Player] ${type} time !`);
+	logger.info(`${type} time !`, {service: 'Player'});
 	return media;
 }

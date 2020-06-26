@@ -81,7 +81,7 @@ export async function testPlaylists() {
 			public: true
 		}, 'admin');
 		setState({currentPlaylistID: pl_id, publicPlaylistID: pl_id});
-		logger.debug('[Playlist] Initial current playlist created');
+		logger.debug('Initial current playlist created', {service: 'Playlist'})
 	} else {
 		// Testing current/public playlist individually.
 		await testCurrentPlaylist();
@@ -96,7 +96,7 @@ function getPlayingPos(playlist: PLC[]): Pos {
 		plc_id_pos: playlist[index].pos,
 		index: index
 	};
-	logger.debug('[Playlist] Playlists tested');
+	logger.debug('Playlists tested', {service: 'Playlist'})
 	return undefined;
 }
 
@@ -122,7 +122,7 @@ export async function isUserAllowedToAddKara(playlist_id: number, user: User, du
 			limit = conf.Karaoke.Quota.Songs;
 			const count = await getSongCountForUser(playlist_id,user.login);
 			if (count >= limit) {
-				logger.debug(`[PLC] User ${user.login} tried to add more songs than he/she was allowed (${limit})`);
+				logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit})`, {service: 'PLC'});
 				return false;
 			}
 			return true;
@@ -131,7 +131,7 @@ export async function isUserAllowedToAddKara(playlist_id: number, user: User, du
 			let time = await getSongTimeSpentForUser(playlist_id,user.login);
 			if (!time) time = 0;
 			if ((limit - time - duration) < 0) {
-				logger.debug(`[PLC] User ${user.login} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`);
+				logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`, {service: 'PLC'});
 				return false;
 			}
 			return true;
@@ -206,7 +206,7 @@ export async function setCurrentPlaylist(playlist_id: number) {
 		setState({currentPlaylistID: playlist_id, introPlayed: false});
 		// Event to signal the public interface the current playlist has been updated
 		emitWS('publicPlaylistUpdated', playlist_id);
-		logger.info(`[Playlist] Playlist ${pl.name} is now current`);
+		logger.info(`Playlist ${pl.name} is now current`, {service: 'Playlist'});
 		return playlist_id;
 	} catch(err) {
 		throw {
@@ -239,7 +239,7 @@ export async function setPublicPlaylist(playlist_id: number) {
 		emitWS('playlistInfoUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', oldPublicPlaylist_id);
 		setState({publicPlaylistID: playlist_id});
-		logger.info(`[Playlist] Playlist ${pl.name} is now public`);
+		logger.info(`Playlist ${pl.name} is now public`, {service: 'Playlist'});
 		return playlist_id;
 	} catch(err) {
 		throw {
@@ -255,7 +255,7 @@ export async function deletePlaylist(playlist_id: number) {
 	if (!pl) throw {message: `Playlist ${playlist_id} unknown`};
 	try {
 		profile('deletePlaylist');
-		logger.info(`[Playlist] Deleting playlist ${pl.name}`);
+		logger.info(`Deleting playlist ${pl.name}`, {service: 'Playlist'});
 		if (pl.flag_public) throw `Playlist ${playlist_id} is public. Unable to delete it. Make another playlist public first.`;
 		if (pl.flag_current) throw `Playlist ${playlist_id} is current. Unable to delete it. Make another playlist current first.`;
 		return await deletePL(playlist_id);
@@ -275,7 +275,7 @@ export async function emptyPlaylist(playlist_id: number): Promise<number> {
 	if (!pl) throw 'Playlist unknown';
 	try {
 		profile('emptyPL');
-		logger.debug(`[Playlist] Emptying playlist ${pl.name}`);
+		logger.debug(`Emptying playlist ${pl.name}`, {service: 'Playlist'});
 		await emptyPL(playlist_id);
 		await Promise.all([
 			updatePlaylistKaraCount(playlist_id),
@@ -298,7 +298,7 @@ export async function editPlaylist(playlist_id: number, playlist: Playlist) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
 	try {
-		logger.debug(`[Playlist] Editing playlist ${playlist_id} : ${JSON.stringify(playlist)}`);
+		logger.debug(`Editing playlist ${playlist_id}`, {service: 'Playlist', obj: playlist});
 		await editPL({
 			id: playlist_id,
 			name: playlist.name,
@@ -427,7 +427,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 
 		const karasUnknown = await isAllKaras(karas);
 		if (karasUnknown.length > 0) throw {code: 3, msg: 'One of the karaokes does not exist'};
-		logger.debug(`[Playlist] Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`);
+		logger.debug(`Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`, {service: 'Playlist'});
 
 		if (user.type > 0) {
 			// If user is not admin
@@ -581,7 +581,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		if (plc_id) ret.plc = await getPLCInfo(plc_id, true, requester);
 		return ret;
 	} catch(err) {
-		logger.error(`[Playlist] Unable to add karaokes : ${JSON.stringify(err)}`);
+		logger.error('Unable to add karaokes', {service: 'Playlist', obj: err})
 		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 		if (err.code === 5) errorCode =
 		'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
@@ -624,7 +624,7 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 	]);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
 	if (!plcData) throw `PLC ${plcData[0]} unknown`;
-	logger.info(`[Playlist] Copying ${plc_id.length} karaokes to playlist ${pl.name} : ${plcData.title}...`);
+	logger.info(`Copying ${plc_id.length} karaokes to playlist ${pl.name} : ${plcData.title}...`, {service: 'Playlist'});
 	try {
 		profile('copyKaraToPL');
 		const playlist = await getPlaylistKaraIDs(playlist_id);
@@ -696,7 +696,7 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 		if (token.role !== 'admin' && plcData.username !== token.username) throw 'You cannot delete a song you did not add';
 		if (plcData.flag_playing && getState().player.playerStatus === 'play') throw 'You cannot delete a song being currently played. Stop playback first.';
 	}
-	logger.debug(`[Playlist] Deleting karaokes from playlist ${pl.name}`);
+	logger.debug(`Deleting karaokes from playlist ${pl.name}`, {service: 'Playlist'});
 	try {
 		// Removing karaoke here.
 		await removeKaraFromPlaylist(plcs, playlist_id);
@@ -837,7 +837,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 		text: 'IMPORTING_PLAYLIST',
 	});
 	try {
-		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist)}`);
+		logger.debug('Importing playlist', {service: 'Playlist', obj: playlist});
 		const validationErrors = check(playlist, PLImportConstraints);
 		if (validationErrors) throw `Playlist file is invalid : ${JSON.stringify(validationErrors)}`;
 		task.update({
@@ -890,7 +890,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 			karasUnknown: unknownKaras
 		};
 	} catch(err) {
-		logger.error(`[Playlist] Import failed : ${err}`);
+		logger.error('Import failed', {service: 'Playlist', obj: err})
 		const error = new Error(err);
 		sentry.error(error);
 		throw error;
@@ -934,10 +934,10 @@ export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: bool
 		}
 		await replacePlaylist(playlist);
 		updatePlaylistLastEditTime(playlist_id);
-		logger.info(`[Playlist] Playlist ${pl.name} shuffled`);
+		logger.info(`Playlist ${pl.name} shuffled`, {service: 'Playlist'});
 		return pl.name;
 	} catch(err) {
-		logger.error(`[Playlist] Could not shuffle playlist : ${err}`);
+		logger.error('Could not shuffle playlist', {service: 'Playlist', obj: err})
 		throw {
 			message: err,
 			data: pl.name
@@ -1054,7 +1054,7 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (playlist.content.length === 0) throw 'Playlist is empty!';
 	if (playlist.index + 1 >= playlist.content.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
-		logger.debug('[PLC] End of playlist.');
+		logger.debug('End of playlist.', {service: 'PLC'})
 		if (setPlayingSong) await setPlaying(0, playlist.id);
 		throw 'Current position is last song!';
 	} else {
@@ -1153,7 +1153,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		currentSong.avatar = avatarfile;
 		return currentSong;
 	} catch(err) {
-		logger.error(`[Playlist] Error selecting current song to play : ${err}`);
+		logger.error('Error selecting current song to play', {service: 'Playlist', obj: err})
 	}
 }
 
@@ -1162,7 +1162,7 @@ async function updateFreeOrphanedSongs() {
 	try {
 		await updateFreeOrphanedSongsDB(now(true) - (getConfig().Karaoke.Quota.FreeAutoTime * 60));
 	} catch(err) {
-		logger.error(`[Playlist] Failed to free orphaned songs (will try again) : ${err}`);
+		logger.error('Failed to free orphaned songs (will try again)', {service: 'Playlist', obj: err})
 	}
 }
 
@@ -1171,7 +1171,7 @@ export async function initPlaylistSystem() {
 	setInterval(updateFreeOrphanedSongs, 60 * 1000);
 	const pls = await getPLs(false);
 	pls.forEach(pl => reorderPlaylist(pl.playlist_id));
-	logger.debug('[Playlist] Playlists initialized');
+	logger.debug('Playlists initialized', {service: 'Playlist'})
 }
 
 /** Create current playlist if it doesn't exist */
@@ -1185,7 +1185,7 @@ export async function testCurrentPlaylist() {
 			current: true
 		},'admin')
 		});
-		logger.debug('[Playlist] Initial current playlist created');
+		logger.debug('Initial current playlist created', {service: 'Playlist'})
 	}
 }
 
@@ -1200,7 +1200,7 @@ export async function testPublicPlaylist() {
 			public: true
 		},'admin')
 		});
-		logger.debug('[Playlist] Initial public playlist created');
+		logger.debug('Initial public playlist created', {service: 'Playlist'})
 	}
 }
 

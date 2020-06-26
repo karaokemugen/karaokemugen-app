@@ -29,9 +29,9 @@ export async function initTwitch() {
 		client = tmi.client(opts);
 		await client.connect();
 		listenVoteEvents(client);
-		logger.debug('[Twitch] Twitch initialized');
+		logger.debug('Twitch initialized', {service: 'Twitch'})
 	} catch(err) {
-		logger.error(`[Twitch] Unable to login to chat : ${err}`);
+		logger.error('Unable to login to chat', {service: 'Twitch', obj: err})
 	}
 }
 
@@ -40,7 +40,7 @@ export async function sayTwitch(message: string) {
 	if (client) try {
 		await client.say(getConfig().Karaoke.StreamerMode.Twitch.Channel, message);
 	} catch(err) {
-		logger.warn(`[Twitch] Unable to say to channel : ${err}`);
+		logger.warn('Unable to say to channel', {service: 'Twitch', obj: err})
 		throw err;
 	}
 }

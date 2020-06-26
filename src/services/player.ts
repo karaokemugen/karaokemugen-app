@@ -26,8 +26,8 @@ export async function playSingleSong(kid?: string) {
 	try {
 		const kara = await getKara(kid, {username: 'admin', role: 'admin'});
 		setState({singlePlay: true, currentSong: kara});
-		logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
-		logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
+		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
+		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
 		if (kara.title) kara.title = ` - ${kara.title}`;
 		// If series is empty, pick singer information instead
 		const series = getSeriesSingers(kara);
@@ -50,7 +50,7 @@ export async function playSingleSong(kid?: string) {
 		});
 		setState({currentlyPlayingKara: kara.kid});
 	} catch(err) {
-		logger.error(`[Player] Error during song playback : ${err}`);
+		logger.error('Error during song playback', {service: 'Player', obj: err})
 		sentry.error(err, 'Warning');
 		stopPlayer(true);
 	}
@@ -74,7 +74,7 @@ export async function playRandomSongAfterPlaylist() {
 		}
 	} catch(err) {
 		sentry.error(err);
-		logger.error(`[Player] Unable to select random song to play at the end of playlist : ${err}`);
+		logger.error('Unable to select random song to play at the end of playlist', {service: 'Player', obj: err})
 	}
 }
 
@@ -92,8 +92,8 @@ async function playCurrentSong(now: boolean) {
 				introSequence = true;
 				return;
 			}
-			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, 2));
-			logger.info(`[Player] Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`);
+			logger.debug('Karaoke selected', {service: 'Player', obj: kara});
+			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
 
 			await mpv.play({
 				media: kara.mediafile,
@@ -114,17 +114,17 @@ async function playCurrentSong(now: boolean) {
 			emitWS('playlistInfoUpdated', kara.playlist_id);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch(err) {
-			logger.error(`[Player] Error during song playback : ${err}`);
+			logger.error('Error during song playback', {service: 'Player', obj: err})
 			sentry.error(err, 'Warning');
 			if (getState().player.playerStatus !== 'stop') {
-				logger.warn('[Player] Skipping playback for this song');
+				logger.warn('Skipping playback for this song', {service: 'Player'})
 				try {
 					await next();
 				} catch(err) {
-					logger.warn('[Player] Skipping failed');
+					logger.warn('Skipping failed', {service: 'Player'})
 				}
 			} else {
-				logger.warn('[Player] Stopping karaoke due to error');
+				logger.warn('Stopping karaoke due to error', {service: 'Player'})
 				stopPlayer(true);
 			}
 		} finally {
@@ -143,10 +143,10 @@ export function playingUpdated() {
 export async function playerEnding() {
 	const state = getState();
 	const conf = getConfig();
-	logger.debug('[Player] Player Ending event triggered');
+	logger.debug('Player Ending event triggered', {service: 'Player'})
 	try {
 		if (state.playerNeedsRestart) {
-			logger.info('[Player] Player restarts, please wait');
+			logger.info('Player restarts, please wait', {service: 'Player'})
 			setState({playerNeedsRestart: false});
 			await restartPlayer();
 		}
@@ -168,7 +168,7 @@ export async function playerEnding() {
 					await mpv.playMedia('Sponsors');
 					setState({currentlyPlayingKara: 'Sponsors'});
 				} catch(err) {
-					logger.warn(`[Player] Skipping sponsors due to error, playing current song : ${err}`);
+					logger.warn('Skipping sponsors due to error, playing current song', {service: 'Player', obj: err})
 					await playCurrentSong(true);
 				}
 			} else {
@@ -193,11 +193,11 @@ export async function playerEnding() {
 				await playCurrentSong(true);
 				introSequence = false;
 			} catch(err) {
-				logger.error(`[Player] Unable to play current song, skipping : ${err}`);
+				logger.error('Unable to play current song, skipping', {service: 'Player', obj: err})
 				try {
 					await next();
 				} catch(err) {
-					logger.error(`[Player] Failed going to next song : ${err}`);
+					logger.error('Failed going to next song', {service: 'Player', obj: err})
 				}
 			}
 			return;
@@ -207,21 +207,21 @@ export async function playerEnding() {
 				await next();
 				return;
 			} catch(err) {
-				logger.error(`[Player] Failed going to next song : ${err}`);
+				logger.error('Failed going to next song', {service: 'Player', obj: err})
 			}
 		}
 		// Testing for position before last to play an encore
-		logger.debug(`[Player] CurrentSong Pos : ${state.currentSong?.pos} - Playlist Kara Count : ${pl.karacount} - Playlist name: ${pl.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl.playlist_id}`);
+		logger.debug(`CurrentSong Pos : ${state.currentSong?.pos} - Playlist Kara Count : ${pl.karacount} - Playlist name: ${pl.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl.playlist_id}`, {service: 'Player'});
 		if (conf.Playlist.Medias.Encores.Enabled && state.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed) {
 			try {
 				await mpv.playMedia('Encores');
 				setState({currentlyPlayingKara: 'Encores', encorePlayed: true});
 			} catch(err) {
-				logger.error(`[Player] Unable to play encore file, going to next song : ${err}`);
+				logger.error('Unable to play encore file, going to next song', {service: 'Player', obj: err})
 				try {
 					await next();
 				} catch(err) {
-					logger.error(`[Player] Failed going to next song : ${err}`);
+					logger.error('Failed going to next song', {service: 'Player', obj: err})
 				}
 			}
 			return;
@@ -237,7 +237,7 @@ export async function playerEnding() {
 					await mpv.playMedia('Outros');
 					setState({currentlyPlayingKara: 'Outros'});
 				} catch(err) {
-					logger.error(`[Player] Unable to play outro file : ${err}`);
+					logger.error('Unable to play outro file', {service: 'Player', obj: err})
 					if (conf.Playlist.EndOfPlaylistAction === 'random') {
 						await playRandomSongAfterPlaylist();
 					} else {
@@ -252,18 +252,18 @@ export async function playerEnding() {
 			return;
 		}
 		// Jingles and sponsors are played inbetween songs so we need to load the next song
-		logger.info(`[Player] Songs before next jingle: ${conf.Playlist.Medias.Jingles.Interval - state.counterToJingle} / before next sponsor: ${conf.Playlist.Medias.Sponsors.Interval - state.counterToSponsor}`);
+		logger.info(`Songs before next jingle: ${conf.Playlist.Medias.Jingles.Interval - state.counterToJingle} / before next sponsor: ${conf.Playlist.Medias.Sponsors.Interval - state.counterToSponsor}`, {service: 'Player'});
 		if (state.counterToJingle >= conf.Playlist.Medias.Jingles.Interval && conf.Playlist.Medias.Jingles.Enabled) {
 			try {
 				setState({counterToJingle: 0});
 				await mpv.playMedia('Jingles');
 				setState({currentlyPlayingKara: 'Jingles'});
 			} catch(err) {
-				logger.error(`[Player] Unable to play jingle file, going to next song : ${err}`);
+				logger.error('Unable to play jingle file, going to next song', {service: 'Player', obj: err})
 				try {
 					await next();
 				} catch(err) {
-					logger.error(`[Player] Failed going to next song : ${err}`);
+					logger.error('Failed going to next song', {service: 'Player', obj: err})
 				}
 			}
 			return;
@@ -273,11 +273,11 @@ export async function playerEnding() {
 				await mpv.playMedia('Sponsors');
 				setState({currentlyPlayingKara: 'Sponsors'});
 			} catch(err) {
-				logger.error(`[Player] Unable to play sponsor file, going to next song : ${err}`);
+				logger.error('Unable to play sponsor file, going to next song', {service: 'Player', obj: err})
 				try {
 					await next();
 				} catch(err) {
-					logger.error(`[Player] Failed going to next song : ${err}`);
+					logger.error('Failed going to next song', {service: 'Player', obj: err})
 				}
 			}
 			return;
@@ -291,32 +291,32 @@ export async function playerEnding() {
 					await next();
 					return;
 				} catch(err) {
-					logger.error(`[Player] Failed going to next song : ${err}`);
+					logger.error('Failed going to next song', {service: 'Player', obj: err})
 				}
 			} else {
 				stopPlayer(true);
 			}
 		}
 	} catch(err) {
-		logger.error(`[Player] Unable to end play properly, stopping. : ${err}`);
+		logger.error('Unable to end play properly, stopping.', {service: 'Player', obj: err})
 		sentry.error(err);
 		stopPlayer(true);
 	}
 }
 
 async function prev() {
-	logger.debug('[Player] Going to previous song');
+	logger.debug('Going to previous song', {service: 'Player'})
 	try {
 		await previousSong();
 	} catch(err) {
-		logger.warn(`[Player] Previous song is not available : ${err}`);
+		logger.warn('Previous song is not available', {service: 'Player', obj: err})
 	} finally {
 		playPlayer(true);
 	}
 }
 
 async function next() {
-	logger.debug('[Player] Going to next song');
+	logger.debug('Going to next song', {service: 'Player'})
 	try {
 		await nextSong();
 		const conf = getConfig();
@@ -346,7 +346,7 @@ async function next() {
 			playPlayer(true);
 		}
 	} catch(err) {
-		logger.warn(`[Player] Next song is not available : ${err}`);
+		logger.warn('Next song is not available', {service: 'Player', obj: err})
 		throw err;
 	}
 }
@@ -356,16 +356,16 @@ async function toggleFullScreenPlayer() {
 	state = setState({fullscreen: !state.fullscreen});
 	await mpv.setFullscreen(state.fullscreen);
 	state.fullscreen
-		? logger.info('[Player] Player going to full screen')
-		: logger.info('[Player] Player going to windowed mode');
+		? logger.info('Player going to full screen', {service: 'Player'})
+		: logger.info('Player going to windowed mode', {service: 'Player'})
 }
 
 async function toggleOnTopPlayer() {
 	let state = getState();
 	state = setState({ontop: await mpv.toggleOnTop()});
 	state.ontop
-		? logger.info('[Player] Player staying on top')
-		: logger.info('[Player] Player NOT staying on top');
+		? logger.info('Player staying on top', {service: 'Player'})
+		: logger.info('Player NOT staying on top', {service: 'Player'})
 }
 
 async function setPiPSizePlayer(nb: number) {
@@ -391,13 +391,13 @@ export async function playPlayer(now?: boolean) {
 
 async function stopPlayer(now = true) {
 	if (now) {
-		logger.info('[Player] Karaoke stopping NOW');
+		logger.info('Karaoke stopping NOW', {service: 'Player'})
 		await mpv.stop();
 		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false, stopping: false});
 		mpv.stopAddASongMessage();
 	} else {
 		if (getState().player.playerStatus !== 'stop' && !getState().stopping) {
-			logger.info('[Player] Karaoke stopping after current song');
+			logger.info('Karaoke stopping after current song', {service: 'Player'})
 			setState({ stopping: true });
 		}
 	}
@@ -413,24 +413,24 @@ export async function prepareClassicPauseScreen() {
 	} catch(err) {
 		// Failed to get current song, this can happen if the current playlist gets emptied or changed to an empty one inbetween songs. In this case, just display KM infos
 		mpv.displayInfo();
-		logger.warn(`[Player] Could not prepare classic pause screen : ${err}`);
+		logger.warn('Could not prepare classic pause screen', {service: 'Player', obj: err})
 	}
 }
 
 async function pausePlayer() {
 	await mpv.pause();
-	logger.info('[Player] Karaoke paused');
+	logger.info('Karaoke paused', {service: 'Player'})
 	setState({status: 'pause'});
 }
 
 async function mutePlayer() {
 	await mpv.setMute(true);
-	logger.info('[Player] Player muted');
+	logger.info('Player muted', {service: 'Player'})
 }
 
 async function unmutePlayer() {
 	await mpv.setMute(false);
-	logger.info('[Player] Player unmuted');
+	logger.info('Player unmuted', {service: 'Player'})
 }
 
 async function seekPlayer(delta: number) {
@@ -449,12 +449,12 @@ async function setVolumePlayer(volume: number) {
 
 async function showSubsPlayer() {
 	await mpv.setSubs(true);
-	logger.info('[Player] Showing lyrics on screen');
+	logger.info('Showing lyrics on screen', {service: 'Player'})
 }
 
 async function hideSubsPlayer() {
 	await mpv.setSubs(false);
-	logger.info('[Player] Hiding lyrics on screen');
+	logger.info('Hiding lyrics on screen', {service: 'Player'})
 }
 
 
@@ -462,13 +462,13 @@ export async function playerNeedsRestart() {
 	const state = getState();
 	if (state.player.playerStatus === 'stop' && !state.playerNeedsRestart && !state.isDemo && !state.isTest) {
 		setState({ playerNeedsRestart: true });
-		logger.info('[Player] Player will restart in 5 seconds');
+		logger.info('Player will restart in 5 seconds', {service: 'Player'})
 		mpv.message(i18next.t('RESTARTING_PLAYER'), 5000);
 		await sleep(5000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
 	} else {
-		logger.debug('[Player] Setting mpv to restart after next song');
+		logger.debug('Setting mpv to restart after next song', {service: 'Player'})
 		setState({ playerNeedsRestart: true });
 	}
 }
@@ -476,7 +476,7 @@ export async function playerNeedsRestart() {
 async function restartPlayer() {
 	profile('restartmpv');
 	await mpv.restart();
-	logger.info('[Player] Player restart complete');
+	logger.info('Player restart complete', {service: 'Player'})
 	profile('restartmpv');
 }
 
@@ -549,7 +549,7 @@ export async function sendCommand(command: string, options: any): Promise<string
 		} else {// Unknown commands are not possible, they're filtered by API's validation.
 		}
 	} catch(err) {
-		logger.error(`[Player] Command ${command} failed : ${err}`);
+		logger.error(`Command ${command} failed`, {service: 'Player', obj: err});
 		throw err;
 	}
 }

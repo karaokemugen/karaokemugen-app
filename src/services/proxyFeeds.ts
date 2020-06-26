@@ -53,7 +53,7 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 			body: JSON.stringify(feed)
 		};
 	} catch(err) {
-		logger.error(`[Feeds] Unable to fetch feed ${name} : ${err}`);
+		logger.error(`Unable to fetch feed ${name}`, {service: 'Feeds', obj: err});
 		return {
 			name: name,
 			body: null

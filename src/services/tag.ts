@@ -87,11 +87,11 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 }
 
 export async function refreshTagsAfterDBChange() {
-	logger.debug('[DB] Refreshing DB after tag change');
+	logger.debug('Refreshing DB after tag change', {service: 'DB'})
 	await refreshTags();
 	refreshKaraTags();
 	refreshKaras();
-	logger.debug('[DB] Done refreshing DB after tag change');
+	logger.debug('Done refreshing DB after tag change', {service: 'DB'})
 }
 
 export function getTag(tid: string) {
@@ -168,7 +168,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		await refreshTagsAfterDBChange();
 		return tagObj;
 	} catch(err) {
-		logger.error(`[Tags] Error merging tag ${tid1} and ${tid2} : ${err}`);
+		logger.error(`Error merging tag ${tid1} and ${tid2}`, {service: 'Tags', obj: err});
 	} finally {
 		task.end();
 	}
@@ -267,7 +267,7 @@ export async function integrateTagFile(file: string): Promise<string> {
 			return tagFileData.name;
 		}
 	} catch(err) {
-		logger.error(`[Tags] Error integrating tag file "${file} : ${err}`);
+		logger.error(`Error integrating tag file ${file}`, {service: 'Tags', obj: err});
 	}
 }
 

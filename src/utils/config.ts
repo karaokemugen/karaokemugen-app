@@ -121,7 +121,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			? initTwitch()
 			: stopTwitch();
 	} catch(err) {
-		logger.warn(`[Config] Could not start/stop Twitch chat bot : ${err}`);
+		logger.warn('Could not start/stop Twitch chat bot', {service: 'Config', obj: err})
 	}
 	// Toggling random song after end message
 	config.Playlist.RandomSongsAfterEndMessage && !state.isDemo
@@ -152,7 +152,7 @@ export async function initConfig(argv: any) {
 		configureIDs();
 		return getConfig();
 	} catch(err) {
-		logger.error(`[Launcher] InitConfig failed : ${err}`);
+		logger.error('InitConfig failed', {service: 'Launcher', obj: err})
 		throw err;
 	}
 }
@@ -185,7 +185,7 @@ function getFirstHop(target: string): Promise<string> {
 			});
 			tracer.trace(target);
 		} catch (e) {
-			logger.error('[Network] Cannot traceroute');
+			logger.error('Cannot traceroute', {service: 'Network'})
 			reject(e);
 		}
 	});
@@ -205,7 +205,7 @@ export async function determineV6Prefix(ipv6: string): Promise<string> {
 	}
 	// Traceroute way
 	const hop = await getFirstHop('kara.moe');
-	logger.debug(`[Network] Determined gateway: ${hop}`);
+	logger.debug(`Determined gateway: ${hop}`, {service: 'Network'});
 	const local = getState().osHost.v6;
 	let found = false;
 	let prefix = 56;
@@ -216,17 +216,17 @@ export async function determineV6Prefix(ipv6: string): Promise<string> {
 	}
 	if (found) {
 		subnet = createCIDR(local, --prefix);
-		logger.debug(`[Network] Determined IPv6 prefix: ${subnet.toString()}`);
+		logger.debug(`Determined IPv6 prefix: ${subnet.toString()}`, {service: 'Network'});
 		return subnet.toString();
 	} else {
-		logger.warn('[Network] Could not determine IPv6 prefix, disabling IPv6 capability on shortener.');
+		logger.warn('Could not determine IPv6 prefix, disabling IPv6 capability on shortener.', {service: 'Network'})
 		throw new Error('Cannot find CIDR');
 	}
 }
 
 /** Create a backup of our config file. Just in case. */
 export function backupConfig() {
-	logger.debug('[Config] Making a backup of config.yml');
+	logger.debug('Making a backup of config.yml', {service: 'Config'})
 	return asyncCopy(
 		resolve(getState().dataPath, 'config.yml'),
 		resolve(getState().dataPath, 'config.backup.yml'),
@@ -303,12 +303,12 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 
 /** Error out on missing binaries */
 async function binMissing(binariesPath: any, err: string) {
-	logger.error('[BinCheck] One or more binaries could not be found! (' + err + ')');
-	logger.error('[BinCheck] Paths searched : ');
-	logger.error('[BinCheck] ffmpeg : ' + binariesPath.ffmpeg);
-	logger.error('[BinCheck] mpv : ' + binariesPath.mpv);
-	logger.error('[BinCheck] Postgres : ' + binariesPath.postgres);
-	logger.error('[BinCheck] Exiting...');
+	logger.error('One or more binaries could not be found!', {service: 'BinCheck', obj: err});
+	logger.error('Paths searched : ', {service: 'BinCheck'});
+	logger.error(`ffmpeg: ${binariesPath.ffmpeg}`, {service: 'BinCheck'});
+	logger.error(`mpv: ${binariesPath.mpv}`, {service: 'BinCheck'});
+	logger.error(`postgres: ${binariesPath.postgres}`, {service: 'BinCheck'});
+	logger.error('Exiting...', {service: 'BinCheck'});
 	const error = i18next.t('MISSING_BINARIES.MESSAGE', {err: err});
 	console.log(error);
 	if (dialog) {

@@ -151,12 +151,12 @@ async function testCurrentBLCSet() {
 			flag_current: true
 		})
 		});
-		logger.debug('[Blacklist] Initial current BLC Set created');
+		logger.debug('Initial current BLC Set created', {service: 'Blacklist'})
 	}
 }
 
 export async function emptyBlacklistCriterias(id: number) {
-	logger.debug('[Blacklist] Wiping criterias');
+	logger.debug('Wiping criterias', {service: 'Blacklist'})
 	const blcSet = await selectSet(id);
 	if (!blcSet) throw 'BLC set unknown';
 	await emptyBLC(id);
@@ -166,7 +166,7 @@ export async function emptyBlacklistCriterias(id: number) {
 
 export async function deleteBlacklistCriteria(blc_id: number, set_id: number) {
 	profile('delBLC');
-	logger.debug(`[Blacklist] Deleting criteria ${blc_id}`);
+	logger.debug(`Deleting criteria ${blc_id}`, {service: 'Blacklist'});
 	const blcSet = await selectSet(set_id);
 	if (!blcSet) throw 'BLC set unknown';
 	await deleteBLC(blc_id);
@@ -180,7 +180,7 @@ export async function addBlacklistCriteria(type: number, value: any, set_id: num
 	const blcvalues = typeof value === 'string'
 		? value.split(',')
 		: [value];
-	logger.info(`[Blacklist] Adding criteria ${type} = ${blcvalues.toString()}`);
+	logger.info(`Adding criteria ${type} = ${blcvalues.toString()}`, {service: 'Blacklist'});
 	const blcList = blcvalues.map((e: string) => {
 		return {
 			value: e,
@@ -200,7 +200,7 @@ export async function addBlacklistCriteria(type: number, value: any, set_id: num
 		if (blcset.flag_current) await generateBlacklist();
 		updatedSetModifiedAt(set_id);
 	} catch(err) {
-		logger.error(`[Blacklist] Error adding criteria : ${JSON.stringify(err)}`);
+		logger.error('Error adding criteria', {service: 'Blacklist', obj: JSON.stringify(err)})
 		const error = new Error(err);
 		sentry.error(error);
 		throw err;

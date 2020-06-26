@@ -46,7 +46,7 @@ export async function fetchAndAddFavorites(instance: string, token: string, user
 		};
 		await importFavorites(favorites, username);
 	} catch(err) {
-		logger.error(`[Favorites] Error getting remote favorites for ${username} : ${err}`);
+		logger.error(`Error getting remote favorites for ${username}`, {service: 'Favorites', obj: err});
 	}
 }
 
@@ -117,7 +117,7 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 			},
 		});
 	} catch(err) {
-		logger.error(`[RemoteFavorites] Unable to ${action} favorite ${kid} on ${username}'s online account : ${err}`);
+		logger.error(`Unable to ${action} favorite ${kid} on ${username}'s online account`, {service: 'RemotesFavorites', obj: err});
 	}
 }
 
@@ -168,7 +168,7 @@ async function getAllFavorites(userList: string[]): Promise<string[]> {
 	const kids = [];
 	for (const user of userList) {
 		if (!await findUserByName(user)) {
-			logger.warn(`[Favorites] Username ${user} does not exist`);
+			logger.warn(`Username ${user} does not exist`, {service: 'Favorites'});
 		} else {
 			const favs = await getFavorites({
 				username: user,

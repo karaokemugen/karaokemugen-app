@@ -7,7 +7,7 @@ import {formatKaraList, isAllKaras} from './kara';
 
 /** Add a KID or KID array to the whitelist */
 export async function addKaraToWhitelist(kids: string[], reason: string): Promise<string[]> {
-	logger.info(`[Whitelist] Adding ${kids.length} karaokes to whitelist...`);
+	logger.info(`Adding ${kids.length} karaokes to whitelist...`, {service: 'Whitelist'});
 	try {
 		profile('addKaraToWL');
 		const karasUnknown = await isAllKaras(kids);
@@ -39,7 +39,7 @@ export async function getWhitelistContents(params: KaraParams) {
 export async function deleteKaraFromWhitelist(karas: string[]) {
 	try {
 		profile('deleteWLC');
-		logger.info(`[Whitelist] Deleting karaokes from whitelist : ${karas.toString()}`);
+		logger.info('Deleting karaokes from whitelist', {service: 'Whitelist', obj: karas})
 		await removeKaraFromWhitelist(karas);
 		return await generateBlacklist();
 	} catch(err) {
@@ -53,7 +53,7 @@ export async function deleteKaraFromWhitelist(karas: string[]) {
 
 /** Wipe whitelist clean, so it's whiter than white. */
 export async function emptyWhitelist() {
-	logger.info('[Whitelist] Wiping whitelist');
+	logger.info('Wiping whitelist', {service: 'Whitelist'})
 	await emptyWL();
 	generateBlacklist();
 }

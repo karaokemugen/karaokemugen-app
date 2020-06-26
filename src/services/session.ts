@@ -103,7 +103,7 @@ export async function initSession() {
 		// If no session is found or session is on another day, create a new one
 		setActiveSession(await addSession(new Date().toISOString(), new Date().toString()));
 	}
-	logger.debug('[Sessions] Sessions initialized');
+	logger.debug('Sessions initialized', {service: 'Sessions'})
 }
 
 export async function exportSession(seid: string) {

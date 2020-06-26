@@ -69,13 +69,13 @@ export async function editKara(kara: Kara, refresh = true) {
 
 		//Removing previous files if they're different from the new ones (name changed, etc.)
 		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) {
-			logger.info(`[KaraGen] Removing ${karaFile}`);
+			logger.info(`Removing ${karaFile}`, {service: 'KaraGen'});
 			await asyncUnlink(karaFile);
 		}
 		if (newKara.data.subfile && oldKara.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
 			const oldSubFiles = await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository));
 			if (await asyncExists(oldSubFiles[0])) {
-				logger.info(`[KaraGen] Removing ${oldSubFiles[0]}`);
+				logger.info(`Removing ${oldSubFiles[0]}`, {service: 'KaraGen'});
 				await asyncUnlink(oldSubFiles[0]);
 			}
 		}
@@ -84,19 +84,19 @@ export async function editKara(kara: Kara, refresh = true) {
 				const oldMediaFiles = await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository));
 				if (kara.noNewVideo) {
 					const newMediaFile = resolve(resolvedPathRepos('Medias', kara.repository)[0], newKara.data.mediafile);
-					logger.info(`[KaraGen] Renaming ${oldMediaFiles[0]} to ${newMediaFile}`);
+					logger.info(`Renaming ${oldMediaFiles[0]} to ${newMediaFile}`, {service: 'KaraGen'});
 					await asyncMove(oldMediaFiles[0], newMediaFile, {overwrite: true});
 				} else {
-					logger.info(`[KaraGen] Removing ${oldMediaFiles[0]}`);
+					logger.info(`Removing ${oldMediaFiles[0]}`, {service: 'KaraGen'});
 					await asyncUnlink(oldMediaFiles[0]);
 				}
 			} catch(err) {
-				logger.warn(`[KaraGen] Unable to remove/rename old mediafile ${oldKara.mediafile}: ${err}`);
+				logger.warn(`Unable to remove/rename old mediafile ${oldKara.mediafile}`, {service: 'KaraGen', obj: err});
 				// Non-fatal
 			}
 		}
 	} catch(err) {
-		logger.error(`[KaraGen] Error while editing kara : ${err}`);
+		logger.error('Error while editing kara', {service: 'KaraGen', obj: err})
 		throw err;
 	}
 	if (karaFile === newKara.file) {
@@ -116,7 +116,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		]);
 	} catch(err) {
 		const errMsg = `${newKara.data.karafile} file generation is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
-		logger.warn(`[KaraGen] ${errMsg}`);
+		logger.warn('', {service: 'KaraGen', obj: err});
 		throw errMsg;
 	}
 	task.end();
@@ -139,7 +139,7 @@ export async function createKara(kara: Kara) {
 		]);
 	} catch(err) {
 		const errMsg = `.kara.json file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
-		logger.warn(`[KaraGen] ${errMsg}`);
+		logger.warn('', {service: 'KaraGen', obj: err});
 		throw errMsg;
 	}
 	task.end();
