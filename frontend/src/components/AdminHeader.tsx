@@ -123,7 +123,7 @@ class AdminHeader extends Component<IProps, IState> {
 								onClick={this.props.putPlayerCommando}
 							>
 								<i className="fas fa-stop"></i>
-							</button>:
+							</button> :
 							<button
 								title={i18next.t('STOP_AFTER')}
 								id="stopAfter"
@@ -140,6 +140,7 @@ class AdminHeader extends Component<IProps, IState> {
 						data-namecommand="prev"
 						className="btn btn-default"
 						onClick={this.props.putPlayerCommando}
+						disabled={this.state.statusPlayer?.currentSong?.pos === 1}
 					>
 						<i className="fas fa-fast-backward"></i>
 					</button>
@@ -162,6 +163,7 @@ class AdminHeader extends Component<IProps, IState> {
 						data-namecommand="skip"
 						className="btn btn-default"
 						onClick={this.props.putPlayerCommando}
+						disabled={this.state.statusPlayer?.currentSong?.pos === this.state.statusPlayer?.currentSong?.playlistLength}
 					>
 						<i className="fas fa-fast-forward"></i>
 					</button>
@@ -202,11 +204,11 @@ class AdminHeader extends Component<IProps, IState> {
 					{this.state.statusPlayer && this.state.statusPlayer.showSubs ? (
 						<i className="fas fa-closed-captioning"></i>
 					) : (
-						<span className="fa-stack">
-							<i className="fas fa-closed-captioning fa-stack-1x"></i>
-							<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }}></i>
-						</span>
-					)}
+							<span className="fa-stack">
+								<i className="fas fa-closed-captioning fa-stack-1x"></i>
+								<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }}></i>
+							</span>
+						)}
 				</button>
 				<button
 					type="button"
@@ -214,8 +216,8 @@ class AdminHeader extends Component<IProps, IState> {
 					className="btn btn-dark volumeButton"
 				>
 					<div id="mute"
-						 data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.mute)) ? "unmute" : "mute"}
-						 onClick={this.props.putPlayerCommando}
+						data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.mute)) ? "unmute" : "mute"}
+						onClick={this.props.putPlayerCommando}
 					>
 						{
 							volume === 0 || this.state.statusPlayer && this.state.statusPlayer.mute
