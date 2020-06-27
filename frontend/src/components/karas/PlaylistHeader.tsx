@@ -532,7 +532,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 										}
 									</select> :
 									<SelectWithIcon list={this.getListToSelect()} value={this.props.idPlaylist?.toString()}
-										onChange={(value) => this.props.changeIdPlaylist(Number(value))} />
+										onChange={(value: any) => this.props.changeIdPlaylist(Number(value))} />
 								}
 								{this.props.scope === 'admin' && this.props.idPlaylist === -4 ?
 									<select className="selectPlaylist"

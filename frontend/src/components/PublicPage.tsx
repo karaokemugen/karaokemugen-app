@@ -34,7 +34,6 @@ interface IState {
 	isPollActive: boolean;
 	helpModal: boolean;
 	lyrics: boolean;
-	pseudoValue: string;
 	mobileMenu: boolean;
 	dropDownMenu: boolean;
 	searchMenuOpen: boolean;
@@ -53,7 +52,6 @@ class PublicPage extends Component<IProps, IState> {
 			isPollActive: false,
 			helpModal: false,
 			lyrics: false,
-			pseudoValue: '',
 			mobileMenu: false,
 			idsPlaylist: { left: 0, right: 0 },
 			dropDownMenu: false,
@@ -184,11 +182,6 @@ class PublicPage extends Component<IProps, IState> {
 		}
 	};
 
-	changePseudo = async (e: any) => {
-		let response = await axios.put('/myaccount', { nickname: e.target.value });
-		this.setState({ pseudoValue: response.data.nickname });
-	};
-
 	toggleSearchMenu = () => {
 		this.setState({ searchMenuOpen: !this.state.searchMenuOpen });
 	};
@@ -262,146 +255,123 @@ class PublicPage extends Component<IProps, IState> {
 				) : (
 						<React.Fragment>
 							<KmAppWrapperDecorator>
-								<KmAppHeaderDecorator mode="public">
-									{this.props.config.Frontend.Mode === 2 ? (
-										<React.Fragment>
-											<button
-												type="button"
-												className={
-													'searchMenuButton btn btn-sm btn-default' +
-													(this.state.searchMenuOpen
-														? ' searchMenuButtonOpen'
-														: '')
+								{this.props.config.Frontend.Mode === 2 ?
+									<KmAppHeaderDecorator mode="public">
+										<button
+											type="button"
+											className={
+												'searchMenuButton btn btn-sm btn-default' +
+												(this.state.searchMenuOpen
+													? ' searchMenuButtonOpen'
+													: '')
+											}
+											onClick={this.toggleSearchMenu}
+										>
+											<i className="fas fa-filter" />
+										</button>
+
+										<div
+											className="plSearch"
+											style={{
+												width: logInfos && logInfos.role != 'guest' ? '' : '100%'
+											}}
+										>
+											<i className="fas fa-search" />
+											<input
+												type="text"
+												className="form-control"
+												defaultValue={store.getFilterValue(1)}
+												onChange={e =>
+													store.setFilterValue(
+														e.target.value,
+														1,
+														this.state.idsPlaylist.left
+													)
 												}
-												onClick={this.toggleSearchMenu}
-											>
-												<i className="fas fa-filter" />
-											</button>
+											/>
+										</div>
 
-											<div
-												className="plSearch"
-												style={{
-													width: logInfos && logInfos.role != 'guest' ? '' : '100%'
-												}}
-											>
-												<i className="fas fa-search" />
-												<input
-													type="text"
-													className="form-control"
-													defaultValue={store.getFilterValue(1)}
-													onChange={e =>
-														store.setFilterValue(
-															e.target.value,
-															1,
-															this.state.idsPlaylist.left
-														)
-													}
-												/>
-											</div>
-
+										<button
+											title={i18next.t('GET_LUCKY')}
+											className="btn btn-lg btn-action btn-default getLucky"
+											onClick={this.getLucky}
+										>
+											<img src={getLuckyImage} />
+										</button>
+										<button
+											className={`btn btn-dark sideButton ${this.state.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
+											type="button" onClick={this.changeCurrentSide}>
+											<i className="fas fa-tasks"></i>
+										</button>
+										<div className="dropdown buttonsNotMobile">
 											<button
-												title={i18next.t('GET_LUCKY')}
-												className="btn btn-lg btn-action btn-default getLucky"
-												onClick={this.getLucky}
-											>
-												<img src={getLuckyImage} />
-											</button>
-										</React.Fragment>
-									) : null}
-
-									{logInfos && logInfos.role != 'guest' &&
-										this.props.config.Frontend.Mode === 1 ? (
-											<div className="pseudoChange">
-												<input
-													list="pseudo"
-													type="text"
-													className="form-control"
-													placeholder={i18next.t('NICKNAME')}
-													onBlur={this.changePseudo}
-													onKeyPress={e => {
-														if (e.which == 13) this.changePseudo(e);
-													}}
-												/>
-											</div>
-										) : null}
-
-									{this.props.config.Frontend.Mode === 2 ? (
-										<React.Fragment>
-											<button
-												className={`btn btn-dark sideButton ${this.state.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
-												type="button" onClick={this.changeCurrentSide}>
-												<i className="fas fa-tasks"></i>
-											</button>
-											<div className="dropdown buttonsNotMobile">
-												<button
-													className="btn btn-dark dropdown-toggle klogo"
-													id="menuPC"
-													type="button"
-													onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}
-												/>
-												{this.state.dropDownMenu ? (
-													<ul className="dropdown-menu">
-														<li>
-															<a
-																href="#"
-																onClick={this.openLoginOrProfileModal}
-															>
-																<i className="fas fa-user" />&nbsp;{i18next.t('ACCOUNT')}
-															</a>
-														</li>
-														<li>
-															<a href="#" onClick={() => {
-																this.closeMobileMenu();
-																ReactDOM.render(<HelpModal />, document.getElementById('modal'))
-															}}>
-																<i className="fas fa-question-circle" />&nbsp;{i18next.t('HELP')}
-															</a>
-														</li>
-														<li>
-															<a
-																href="#"
-																className="logout"
-																onClick={() => {
-																	store.logOut();
-																	this.openLoginOrProfileModal();
-																}}
-															>
-																<i className="fas fa-sign-out-alt" />&nbsp;
+												className="btn btn-dark dropdown-toggle klogo"
+												id="menuPC"
+												type="button"
+												onClick={() => this.setState({ dropDownMenu: !this.state.dropDownMenu })}
+											/>
+											{this.state.dropDownMenu ? (
+												<ul className="dropdown-menu">
+													<li>
+														<a
+															href="#"
+															onClick={this.openLoginOrProfileModal}
+														>
+															<i className="fas fa-user" />&nbsp;{i18next.t('ACCOUNT')}
+														</a>
+													</li>
+													<li>
+														<a href="#" onClick={() => {
+															this.closeMobileMenu();
+															ReactDOM.render(<HelpModal />, document.getElementById('modal'))
+														}}>
+															<i className="fas fa-question-circle" />&nbsp;{i18next.t('HELP')}
+														</a>
+													</li>
+													<li>
+														<a
+															href="#"
+															className="logout"
+															onClick={() => {
+																store.logOut();
+																this.openLoginOrProfileModal();
+															}}
+														>
+															<i className="fas fa-sign-out-alt" />&nbsp;
 													{i18next.t('LOGOUT')}
-															</a>
-														</li>
-													</ul>
-												) : null}
-											</div>
+														</a>
+													</li>
+												</ul>
+											) : null}
+										</div>
 
-											<div className="switchParent">
-												{this.state.isPollActive ? (
-													<button
-														className="btn btn-default showPoll"
-														onClick={() => ReactDOM.render(<PollModal />, document.getElementById('modal'))}
-													>
-														<i className="fas fa-chart-line" />
-													</button>
-												) : null}
-												<RadioButton
-													title={i18next.t('SWITCH_BAR_INFOS')}
-													buttons={[
-														{
-															label: i18next.t('SWITCH_BAR_INFOS_TITLE'),
-															active: !this.state.lyrics,
-															onClick: this.setLyrics
-														},
-														{
-															label: i18next.t('SWITCH_BAR_INFOS_LYRICS'),
-															active: this.state.lyrics,
-															onClick: this.setLyrics
-														}
-													]}
-												/>
-											</div>
-										</React.Fragment>
-									) : null}
-								</KmAppHeaderDecorator>
+										<div className="switchParent">
+											{this.state.isPollActive ? (
+												<button
+													className="btn btn-default showPoll"
+													onClick={() => ReactDOM.render(<PollModal />, document.getElementById('modal'))}
+												>
+													<i className="fas fa-chart-line" />
+												</button>
+											) : null}
+											<RadioButton
+												title={i18next.t('SWITCH_BAR_INFOS')}
+												buttons={[
+													{
+														label: i18next.t('SWITCH_BAR_INFOS_TITLE'),
+														active: !this.state.lyrics,
+														onClick: this.setLyrics
+													},
+													{
+														label: i18next.t('SWITCH_BAR_INFOS_LYRICS'),
+														active: this.state.lyrics,
+														onClick: this.setLyrics
+													}
+												]}
+											/>
+										</div>
+									</KmAppHeaderDecorator> : null
+								}
 
 								<ProgressBar scope="public" lyrics={this.state.lyrics} />
 
