@@ -119,7 +119,8 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				login: username,
 				password: password
 			}, {
-				createRemote: false
+				createRemote: false,
+				noPasswordCheck: true
 			});
 		}
 		// Update user with new data
@@ -552,7 +553,8 @@ export function createAdminUser(user: User, remote: boolean, requester: User) {
 /** Create new user (either local or online. Defaults to online) */
 export async function createUser(user: User, opts: UserOpts = {
 	admin: false,
-	createRemote: true
+	createRemote: true,
+	noPasswordCheck: false
 }) {
 	user.type = user.type || 1;
 	if (opts.admin) user.type = 0;
@@ -584,7 +586,7 @@ export async function createUser(user: User, opts: UserOpts = {
 		if (opts.createRemote) await createRemoteUser(user);
 	}
 	if (user.password) {
-		if (user.password.length < 8) throw {code: 'PASSWORD_TOO_SHORT', data: user.password.length};
+		if (user.password.length < 8 && !opts.noPasswordCheck) throw {code: 'PASSWORD_TOO_SHORT', data: user.password.length};
 		user.password = await hashPasswordbcrypt(user.password);
 	}
 	try {
