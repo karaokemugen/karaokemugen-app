@@ -89,6 +89,7 @@ export interface PublicState {
 	dataPath?: string,
 	os?: string,
 	electron?: boolean,
+	defaultLocale?: string,
 	wsLogNamespace: string,
 	supportedLyrics?: string[],
 	supportedMedias?: string[],

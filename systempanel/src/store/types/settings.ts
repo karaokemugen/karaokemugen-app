@@ -1,5 +1,5 @@
 import { Config } from "../../../../src/types/config";
-import { State } from "../../../../src/types/state";
+import { PublicState } from "../../../../src/types/state";
 import { User } from "../../../../src/lib/types/user";
 
 // Action name
@@ -29,7 +29,7 @@ export interface SettingsStore {
 }
 
 export interface SettingsStoreData {
-	state: State,
+	state: PublicState,
 	config: Config,
 	user: User
 }

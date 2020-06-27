@@ -84,6 +84,7 @@ export function getPublicState(admin: boolean): PublicState {
 		os: admin ? state.os : undefined,
 		wsLogNamespace: admin ? state.wsLogNamespace : undefined,
 		electron: state.electron,
+		defaultLocale: state.defaultLocale,
 		supportedLyrics: supportedFiles.lyrics,
 		supportedMedias: [].concat(supportedFiles.video, supportedFiles.audio),
 		environment: process.env.SENTRY_ENVIRONMENT,
