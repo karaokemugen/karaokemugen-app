@@ -97,6 +97,11 @@ class Playlist extends Component<IProps, IState> {
 			&& nextProps.config.Frontend.Mode !== this.props.config.Frontend.Mode) {
 			this.getPlaylist();
 		}
+		if (nextProps.config.Frontend.Mode && nextProps.config.Frontend.Mode === 1
+			&& nextProps.config.Frontend.Mode !== this.props.config.Frontend.Mode
+			&& this.props.side === 2) {
+				this.initCall();
+		}
 	}
 
 	async componentDidMount() {
@@ -166,8 +171,8 @@ class Playlist extends Component<IProps, IState> {
 		await this.getIdPlaylist();
 		if (this.state.idPlaylist === -1 || this.props.playlistList
 			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
-			(this.state.idPlaylist === -2 || this.state.idPlaylist === -4) && await this.loadBLSet();
-			if (this.props.scope === 'admin' || this.props.config.Frontend.Mode === 2 || this.state.idPlaylist === store.getState().publicPlaylistID) {
+			if (this.state.idPlaylist === -2 || this.state.idPlaylist === -4) await this.loadBLSet();
+			if (this.props.scope === 'admin' || this.props.config.Frontend.Mode === 2 || this.state.idPlaylist === store.getState().currentPlaylistID) {
 				await this.getPlaylist();
 			}
 		}
@@ -307,7 +312,9 @@ class Playlist extends Component<IProps, IState> {
 			value =
 				this.props.side === 1
 					? -1
-					: store.getState().publicPlaylistID;
+					: (this.props.config.Frontend.Mode === 1 ?
+						store.getState().currentPlaylistID :
+						store.getState().publicPlaylistID);
 		} else {
 			let plVal1Cookie = localStorage.getItem('mugenPlVal1');
 			let plVal2Cookie = localStorage.getItem('mugenPlVal2');

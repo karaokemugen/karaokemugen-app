@@ -230,7 +230,7 @@ export default function playlistsController(router: Router) {
  */
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
-				await deletePlaylist(req.params.pl_id);
+				await deletePlaylist(+req.params.pl_id);
 				emitWS('playlistsUpdated');
 				res.status(200).json();
 			} catch(err) {
@@ -262,7 +262,7 @@ export default function playlistsController(router: Router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 		// Empty playlist
 			try {
-				await emptyPlaylist(req.params.pl_id);
+				await emptyPlaylist(+req.params.pl_id);
 				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_EMPTY_ERROR';
@@ -293,8 +293,8 @@ export default function playlistsController(router: Router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// set playlist to current
 			try {
-				await setCurrentPlaylist(req.params.pl_id);
-				emitWS('playlistInfoUpdated',req.params.pl_id);
+				await setCurrentPlaylist(+req.params.pl_id);
+				emitWS('playlistInfoUpdated',+req.params.pl_id);
 				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_SET_CURRENT_ERROR';
@@ -325,8 +325,8 @@ export default function playlistsController(router: Router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// Empty playlist
 			try {
-				await setPublicPlaylist(req.params.pl_id);
-				emitWS('playlistInfoUpdated',req.params.pl_id);
+				await setPublicPlaylist(+req.params.pl_id);
+				emitWS('playlistInfoUpdated',+req.params.pl_id);
 				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_SET_PUBLIC_ERROR';
