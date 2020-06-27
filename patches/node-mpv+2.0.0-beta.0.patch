@@ -22,10 +22,10 @@ index a02a990..32bd72f 100644
 -				observeSocket.connect({path: this.options.socket}).on('data', (data) => {
 +				observeSocket.connect({path: this.options.socket}, () => {
 +					// send any message to see if there's a MPV instance responding
-+					/*observeSocket.write(JSON.stringify({
++					observeSocket.write(JSON.stringify({
 +						'command': ['get_property', 'mpv-version']
 +					})+'\n');
-+					if (this.options.debug || this.options.verbose) console.log('[Node-MPV] sending stimulus');*/
++					if (this.options.debug || this.options.verbose) console.log('[Node-MPV] sending stimulus');
 +				}).on('data', (data) => {
  					// parse the messages from the socket
  					const messages = data.toString('utf-8').split('\n');
@@ -48,11 +48,11 @@ index a02a990..32bd72f 100644
  							}
 +							// check our stimulus response
 +							// Check for our stimulus with mpv-version
-+							/*if('data' in message && 'error' in message && message.error === 'success') {
++							if('data' in message && 'error' in message && message.error === 'success') {
 +								if (this.options.debug || this.options.verbose) console.log('[Node-MPV] stimulus received');
 +								observeSocket.destroy();
 +								resolve();
-+							}*/
++							}
  						}
  					});
  				});
