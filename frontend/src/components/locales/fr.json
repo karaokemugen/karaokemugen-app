@@ -210,11 +210,17 @@
 	"TOOLTIP_TRANSFERKARA": "Transférer cette chanson - clic droit le transfére après le morceau en cours",
 	"TOOLTIP_CLOSEPARENT": "Fermer",
 	"TOOLTIP_FAV": "Ajouter aux favoris",
+	"TOOLTIP_FAV_SHORT":"Favoris",
 	"TOOLTIP_SHOWLYRICS": "Afficher les paroles",
+	"TOOLTIP_SHOWLYRICS_SHORT": "Paroles",
 	"TOOLTIP_SHOWVIDEO": "Afficher un aperçu vidéo",
+	"TOOLTIP_SHOWVIDEO_SHORT": "Aperçu",
 	"TOOLTIP_UPVOTE": "Libérer cette chanson du quota de l'utilisateur",
+	"TOOLTIP_UPVOTE_SHORT": "Libérer",
 	"TOOLTIP_VISIBLE_ON": "Montrer dans la liste de lecture",
+	"TOOLTIP_VISIBLE_ON_SHORT": "Montrer",
 	"TOOLTIP_VISIBLE_OFF": "Cacher dans la liste de lecture",
+	"TOOLTIP_VISIBLE_OFF_SHORT": "Cacher",
 	"TOOLTIP_PLAYKARA": "Placer le curseur de lecture ici",
 	"TOOLTIP_PLAYKARA_LIBRARY": "Jouer cette chanson immédiatement (ne l'ajoute pas à la liste de lecture courante)",
 	"UPVOTE_NUMBER": "Soutiens",
@@ -399,7 +405,6 @@
     "INTRO_PUBLIC_SEARCH": "Si vous souhaitez ajouter une chanson, vous pouvez la rechercher dans cette zone.",
     "INTRO_PUBLIC_SEARCHRESULT": "Vous pouvez faire défiler la liste à votre guise.<br /><br />Pour ajouter une chanson, cliquez simplement sur <i class='fas fa-plus'></i>.",
     "INTRO_PUBLIC_KARA": "Tapotez une chanson pour afficher ses informations détaillées et différentes actions avancées.",
-    "INTRO_PUBLIC_KARA_WIDE": "Pour afficher les informations détaillées d'une chanson et différentes actions avancées, cliquez le boutton <i class='fas fa-info-circle'></i> à sa gauche",
     "INTRO_PUBLIC_KARADETAILS": "Dans cette nouvelle fenêtre, les boutons vous permettent de : <br /><i class='fas fa-quote-right'></i> consulter les paroles,<br /><i class='fas fa-star'></i> mettre la chanson en favori,<br /><i class='fas fa-video'></i> visualiser un aperçu de celle-ci.",
     "INTRO_PUBLIC_FOOTER": "Les flèches vous permettent d'atteindre le début ou la fin de la liste. Les chiffres affichés ensuite précisent quelle portion de la liste est affichée.",
     "INTRO_PUBLIC_FAVORITES": "Enfin, vous pouvez filtrer la liste de recherche, en affichant par exemple les chansons populaires ou vos favoris (compte nécessaire).",
@@ -433,7 +438,8 @@
 			"DOWNLOAD_THEM": "Voulez-vous les télécharger ?",
 			"DOWNLOAD_THEM_SIZE": "(Taille du téléchargement : {{mediasize}})"
 		},
-		"PLAY_CURRENT_MODAL": "Attention, la liste de lecture courante '{{playlist}}' n'est pas affichée à l'écran. C'est cette dernière qui sera jouée. Êtes-vous sûr de vouloir lancer la lecture ?"
+		"PLAY_CURRENT_MODAL": "Attention, la liste de lecture courante '{{playlist}}' n'est pas affichée à l'écran. C'est cette dernière qui sera jouée. Êtes-vous sûr de vouloir lancer la lecture ?",
+		"KARA_DETAILS": "Détails d'une chanson"
 	},
 	"SETUP_PAGE": {
 		"TITLE": "Assistant de démarrage",

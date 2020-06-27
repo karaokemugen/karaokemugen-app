@@ -203,11 +203,17 @@
 	"TOOLTIP_TRANSFERKARA": "Transfer this song - right click to transfer it after the currently playing song",
 	"TOOLTIP_CLOSEPARENT": "Close",
 	"TOOLTIP_FAV": "Add to favorites",
+	"TOOLTIP_FAV_SHORT": "Favorites",
 	"TOOLTIP_SHOWLYRICS": "Show lyrics",
+	"TOOLTIP_SHOWLYRICS_SHORT": "Lyrics",
 	"TOOLTIP_SHOWVIDEO": "Show video preview",
+	"TOOLTIP_SHOWVIDEO_SHORT": "Preview",
 	"TOOLTIP_UPVOTE": "Free this kara from user's quota",
+	"TOOLTIP_UPVOTE_SHORT": "Free",
 	"TOOLTIP_VISIBLE_ON": "Show in playlist",
+	"TOOLTIP_VISIBLE_ON_SHORT": "Show",
 	"TOOLTIP_VISIBLE_OFF": "Hide in playlist",
+	"TOOLTIP_VISIBLE_OFF_SHORT": "Hide",
 	"TOOLTIP_PLAYKARA": "Set as 'currently playing'",
 	"TOOLTIP_PLAYKARA_LIBRARY": "Play this song directly (doesn't add it to the current playlist)",
 	"UPVOTE_TOOLTIP": "Free this song",
@@ -388,7 +394,6 @@
 	"INTRO_PUBLIC_SEARCH": "If you want to add a song, you can search for it in this box.",
 	"INTRO_PUBLIC_SEARCHRESULT": "You can scroll the list as you wish.<br /><br />To add a song, simply click on <i class='fas fa-plus'></i>.",
 	"INTRO_PUBLIC_KARA": "Tap a karaoke song to display detailed information and advanced actions.",
-	"INTRO_PUBLIC_KARA_WIDE": "To display detailed information on a song and other advanced actions, click on the <i class='fas fa-info-circle'></i> button on the left",
 	"INTRO_PUBLIC_KARADETAILS": "In this new display, there are buttons to: <br /><i class='fas fa-quote-right'></i> show lyrics,<br /><i class='fas fa-star'></i> add the song to favorites,<br /><i class='fas fa-video'></i> watch a video preview.",
 	"INTRO_PUBLIC_FOOTER": "The arrows take you to the top or the bottom of the list. The numbers displayed next specify which portion of the list is displayed.",
 	"INTRO_PUBLIC_FAVORITES": "Also, you can filter the list here, showing for example the most recently added songs, or your favorites (an account is needed)",
@@ -418,7 +423,8 @@
 			"DOWNLOAD_THEM": "Do you want to download them?",
 			"DOWNLOAD_THEM_SIZE": "(Download size : {{mediasize}})"
 		},
-		"PLAY_CURRENT_MODAL": "Warning : the current playlist '{{playlist}}' isn't displayed on screen. That's the playlist going to be played. Are you sure you want to start playing?"
+		"PLAY_CURRENT_MODAL": "Warning : the current playlist '{{playlist}}' isn't displayed on screen. That's the playlist going to be played. Are you sure you want to start playing?",
+		"KARA_DETAILS": "Song details"
 	},
 	"SETUP_PAGE": {
 		"TITLE": "Setup Wizard",

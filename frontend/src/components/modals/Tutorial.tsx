@@ -266,7 +266,7 @@ class Tutorial extends Component<IProps,IState> {
 				{ 
 					placement: 'auto',
 					target: '.plFooter',
-					content: i18nAsDiv('INTRO_PUBLIC_KARA_WIDE'),
+					content: i18nAsDiv('INTRO_PUBLIC_KARA'),
 					disableOverlay: true,
 					label: 'karadetails'
 				},
