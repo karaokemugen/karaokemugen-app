@@ -659,7 +659,7 @@ describe('Playlists', function() {
 			.set('Authorization', token)
 			.expect(500)
 			.then(response => {
-				strictEqual(response.body.code, 'UPVOTE_FAILED');
+				strictEqual(response.body.code, 'UPVOTE_NO_SELF');
 			});
 	});
 
