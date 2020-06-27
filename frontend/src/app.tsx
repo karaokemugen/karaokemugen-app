@@ -58,8 +58,8 @@ class App extends Component<{}, IState> {
 		const response = await axios.get('/tags');
 		return response.data.content.filter((val: Tag) => val.karacount !== null)
 			.map((val: { i18n: { [key: string]: string }, tid: string, name: string, types: Array<number | string>, karacount: string }) => {
-				let trad = val.i18n![store.getNavigatorLanguage() as string];
-				return { value: val.tid, label: trad ? trad : val.name, type: val.types, karacount: val.karacount };
+				let trad = val.i18n[store.getNavigatorLanguage() as string];
+				return { value: val.tid, label: trad ? trad : (val.i18n['eng'] ? val.i18n['eng'] : val.name), type: val.types, karacount: val.karacount };
 			});
 	}
 
