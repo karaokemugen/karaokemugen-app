@@ -92,15 +92,24 @@ export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, gro
   END) as flag_favorites,
   ak.repository as repository,
   ak.tid AS tid,
+  (CASE WHEN pc.fk_kid IS NULL
+	THEN FALSE
+	ELSE TRUE
+  END) as flag_inplaylist,
+  (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
+  (CASE WHEN COUNT(pc_self.*) > 0 THEN TRUE ELSE FALSE END) as flag_added_by_me,
   count(ak.kid) OVER()::integer AS count
 FROM all_karas AS ak
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
 LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
+LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid AND pc.fk_id_playlist = :publicPlaylist_id
+LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
+LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.kid
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ${groupClauses} ak.kid, ak.title, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.series, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.subchecksum
+GROUP BY ${groupClauses} ak.kid, pc.fk_kid, ak.title, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.series, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.subchecksum
 ${havingClause}
 ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.title
 ${limitClause}

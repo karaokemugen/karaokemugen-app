@@ -318,11 +318,11 @@ class KaraDetail extends Component<IProps, IState> {
 										{this.props.scope === 'admin' && this.props.publicOuCurrent ? (
 											<button
 												type="button"
-												title={i18next.t('TOOLTIP_UPVOTE')} onClick={this.props.freeKara}
-												className={'likeFreeButton btn btn-action ' + (data.flag_free ? 'btn-primary' : '')}
+												title={i18next.t('TOOLTIP_FREE')} onClick={this.props.freeKara}
+												className={'btn btn-action ' + (data.flag_free ? 'btn-primary' : '')}
 											>
 												<i className="fas fa-gift" />
-												<span>{!is_touch_device() && i18next.t('TOOLTIP_UPVOTE_SHORT')}</span>
+												<span>{!is_touch_device() && i18next.t('TOOLTIP_FREE_SHORT')}</span>
 											</button>
 										) : null}
 										{this.props.scope === 'admin' && this.props.publicOuCurrent ? (

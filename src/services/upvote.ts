@@ -4,7 +4,6 @@ import {getUpvotesByPLC,insertUpvote,removeUpvote} from '../dao/upvote';
 import {getConfig} from '../lib/utils/config';
 import { emitWS } from '../lib/utils/ws';
 import {getState} from '../utils/state';
-import { getSeriesSingers } from './kara';
 import {freePLC, getPLCInfoMini} from './playlist';
 import {listUsers, updateSongsLeft} from './user';
 
@@ -26,17 +25,14 @@ export async function addUpvote(plc_id: number, username: string) {
 
 		await insertUpvote(plc_id, username);
 		plc.upvotes++;
-		const ret = {
-			upvotes: plc.upvotes,
-			song: `${getSeriesSingers(plc)} - ${plc.title}`,
-			playlist_id: plc.playlist_id,
-			code: 'UPVOTE_DONE'
-		};
-		if (!getConfig().Karaoke.Quota.FreeUpVotes) return ret;
+		if (!getConfig().Karaoke.Quota.FreeUpVotes) return;
 		tryToFreeKara(plc_id, plc.upvotes, plc.username, getState().publicPlaylistID);
+		if (plc.playlist_id === getState().publicPlaylistID) {
+			emitWS('KIDUpdated', {kid: plc.kid, flag_upvoted: true, username: username});
+		}
 		emitWS('playlistContentsUpdated', plc.playlist_id);
-		return ret;
 	} catch(err) {
+		console.log(err);
 		if (!err.code) err.code = 'UPVOTE_FAILED';
 		throw err;
 	}
@@ -53,14 +49,12 @@ export async function deleteUpvote(plc_id: number, username: string) {
 		const users = userList.map(u => u.username);
 		if (!users.includes(username)) throw {code: 'DOWNVOTE_ALREADY_DONE'};
 		await removeUpvote(plc_id, username);
-		// Karaokes are not 'un-freed' when downvoted.
+		// Karaokes are not 'un-freed' when downvoted.^
+		plc.upvotes--;
+		if (plc.playlist_id === getState().publicPlaylistID) {
+			emitWS('KIDUpdated', {kid: plc.kid, flag_upvoted: false, username: username});
+		}
 		emitWS('playlistContentsUpdated', plc.playlist_id);
-		return {
-			upvotes: plc.upvotes - 1,
-			song: `${getSeriesSingers(plc)} - ${plc.title}`,
-			playlist_id: plc.playlist_id,
-			code: 'DOWNVOTE_DONE'
-		};
 	} catch(err) {
 		if (!err.code) err.code = 'DOWNVOTE_FAILED';
 		throw err;

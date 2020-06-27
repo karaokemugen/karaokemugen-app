@@ -282,6 +282,7 @@ export async function emptyPlaylist(playlist_id: number): Promise<number> {
 			updatePlaylistDuration(playlist_id)
 		]);
 		updatePlaylistLastEditTime(playlist_id);
+		emitWS('playlistContentsUpdated', playlist_id);
 		return playlist_id;
 	} catch(err) {
 		throw {
@@ -481,7 +482,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			const songs = isAllKarasInPlaylist(karaList, plContentsAfterPlay);
 			karaList = songs.notPresent;
 			// Upvoting each song already present
-			addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
+			if (songs.alreadyPresent.length > 0) addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
 		}
 		// Check user quota first
 		if (user.type > 0 && !await isUserAllowedToAddKara(playlist_id, user, kara.duration)) {
@@ -579,6 +580,9 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			plc: null
 		};
 		if (plc_id) ret.plc = await getPLCInfo(plc_id, true, requester);
+		if (+playlist_id === state.publicPlaylistID) {
+			karaList.forEach(k => emitWS('KIDUpdated', { kid: k.kid, flag_inplaylist: true, requester: requester }));
+		}
 		return ret;
 	} catch(err) {
 		logger.error('Unable to add karaokes', {service: 'Playlist', obj: err});
@@ -673,6 +677,9 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 		if (playlist_id === state.currentPlaylistID && playlist_id !== state.publicPlaylistID) {
 			plcList.forEach(plc => notifyUserOfSongPlayTime(plc.playlistcontent_id, plc.username));
 		}
+		if (+playlist_id === state.publicPlaylistID) {
+			plcList.forEach(plc => emitWS('KIDUpdated', { kid: plc.kid, flag_inplaylist: true, requester: plcData.username }));
+		}
 		return playlist_id;
 	} catch(err) {
 		throw {
@@ -690,8 +697,10 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
 	// If we get a single song, it's a user deleting it (most probably)
+	const kids = [];
 	for (const i in plcs) {
 		const plcData = await getPLCInfoMini(plcs[i]);
+		kids.push(plcData.kid);
 		if (!plcData) throw 'At least one playlist content is unknown';
 		if (token.role !== 'admin' && plcData.username !== token.username) throw 'You cannot delete a song you did not add';
 		if (plcData.flag_playing && getState().player.playerStatus === 'play') throw 'You cannot delete a song being currently played. Stop playback first.';
@@ -706,6 +715,10 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 			reorderPlaylist(playlist_id)
 		]);
 		updatePlaylistLastEditTime(playlist_id);
+		const pubPLID = getState().publicPlaylistID;
+		if (+playlist_id === pubPLID) {
+			kids.forEach(kid => emitWS('KIDUpdated', {kid: kid, flag_inplaylist: false}));
+		}
 		profile('deleteKara');
 		return {
 			pl_id: playlist_id,

@@ -274,8 +274,10 @@ export default function karaController(router: Router) {
  * @apiSuccess {Number} created_at In `Date()` format
  * @apiSuccess {Object[]} creators Show's creators names
  * @apiSuccess {Number} duration Song duration in seconds
- * @apiSuccess {Number} flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
- * @apiSuccess {Number} flag_favorites `true` if the song is in the user's favorites, `false`if not.
+ * @apiSuccess {Boolean} flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
+ * @apiSuccess {Boolean} flag_favorites `true` if the song is in the user's favorites, `false`if not.
+ * @apiSuccess {Boolean} flag_added_by_me `true` If the song has been added in the public playlist by the current user
+ * @apiSuccess {Boolean} flag_inplaylist `true` If the song is present in the public playlist
  * @apiSuccess {Number} gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {uuid} kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {Object[]} languages Song's languages in ISO639-2B format
@@ -319,6 +321,9 @@ export default function karaController(router: Router) {
  *           "duration": 29,
  *           "flag_dejavu": false,
  *           "flag_favorites": false,
+ *           "flag_inplaylist": true,
+ * 			 "flag_added_by_me": true,
+ *           "flag_upvoted": false,
  *           "gain": 6.34,
  *           "karafile": "ENG - Dokidoki! PreCure - OP - Glitter Force Doki Doki Theme Song.kara",
  *           "kid": "aa252a23-c5b5-43f3-978e-f960b6bb1ef1",

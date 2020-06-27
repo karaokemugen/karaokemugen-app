@@ -178,8 +178,8 @@ SELECT
 	THEN TRUE
 	ELSE FALSE
   END) AS flag_blacklisted,
-  COUNT(up.fk_login)::integer AS upvotes,
-  (CASE WHEN up.fk_login = :username THEN TRUE ELSE FALSE END) as flag_upvoted,
+  (SELECT COUNT(up.fk_id_plcontent)::integer FROM upvote up WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
+  (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   pc.flag_visible AS flag_visible,
   COUNT(pc.pk_id_plcontent) OVER()::integer AS count,
   ak.repository AS repository
@@ -188,7 +188,7 @@ INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
 LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
 LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
-LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
+LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
 LEFT OUTER JOIN favorites f ON f.fk_kid = ak.kid AND f.fk_login = :username
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
 LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
@@ -196,7 +196,7 @@ LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 WHERE pc.fk_id_playlist = :playlist_id
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${whereClause}
-GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres, ak.platforms, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres, ak.platforms, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
 ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}
@@ -288,12 +288,12 @@ SELECT
 	THEN TRUE
 	ELSE FALSE
   END) AS flag_playing,
-  COUNT(up.fk_id_plcontent)::integer AS upvotes,
+  (SELECT COUNT(up.fk_id_plcontent)::integer FROM upvote up WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
   pc.flag_free AS flag_free,
   (CASE WHEN wl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_whitelisted,
   (CASE WHEN bl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_blacklisted,
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
-  (CASE WHEN up.fk_login = :username THEN TRUE ELSE FALSE END) as flag_upvoted,
+  (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   (SELECT
 	SUM(k.duration)
    FROM kara k
@@ -308,14 +308,14 @@ INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
 LEFT OUTER JOIN played p ON ak.kid = p.fk_kid
-LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
+LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
 LEFT OUTER JOIN requested rq ON rq.fk_kid = ak.kid
 LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
 LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
 LEFT OUTER JOIN favorites AS f on ak.kid = f.fk_kid AND f.fk_login = :username
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, up.fk_login, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
 `;
 
 export const sqlgetPLCInfoMini = `

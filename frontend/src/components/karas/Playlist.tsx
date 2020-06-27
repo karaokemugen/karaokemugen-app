@@ -129,6 +129,31 @@ class Playlist extends Component<IProps, IState> {
 				this.changeIdPlaylist(idPlaylist);
 			}
 		});
+		getSocket().on('KIDUpdated', async (event: { kid: string, flag_inplaylist: boolean, username: string, requester: string, flag_upvoted: boolean }) => {
+			if (this.state.idPlaylist === -1) {
+				let data = this.state.data as KaraList;
+				data.content.forEach((kara) => {
+					if (kara.kid === event.kid) {
+						if (event.flag_inplaylist === false || event.flag_inplaylist === true) {
+							kara.flag_inplaylist = event.flag_inplaylist;
+							if (event.flag_inplaylist === false) {
+								kara.flag_added_by_me = false;
+							}
+						}
+						if (event.username === store.getLogInfos()?.username) {
+							if (event.flag_upvoted === false || event.flag_upvoted === true) {
+								kara.flag_upvoted = event.flag_upvoted;
+							}
+						}
+						if (event.requester === store.getLogInfos()?.username) {
+							kara.flag_added_by_me = true;
+						}
+					}
+				});
+				await this.setState({ data: data });
+				this.playlistForceRefresh(true);
+			}
+		});
 
 		window.addEventListener('resize', this.refreshUiOnResize, true);
 	}
@@ -325,7 +350,7 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: (this.state.playlistInfo as DBPL).name }), '', (newName: string) => {
 				axios.put(`/playlists/${this.state.idPlaylist}`,
-					{ name: newName, flag_visible: (this.state.playlistInfo as DBPL).flag_public });
+					{ name: newName, flag_visible: (this.state.playlistInfo as DBPL).flag_visible });
 				let playlistInfo = this.state.playlistInfo as DBPL;
 				playlistInfo.name = newName;
 				this.setState({ playlistInfo: playlistInfo });
@@ -521,7 +546,7 @@ class Playlist extends Component<IProps, IState> {
 					if (kara.checked) {
 						checkedkaras++;
 					} else {
-						checkedkaras--;						
+						checkedkaras--;
 					}
 				}
 			} else if (kara.kid === id) {
@@ -529,7 +554,7 @@ class Playlist extends Component<IProps, IState> {
 				if (kara.checked) {
 					checkedkaras++;
 				} else {
-					checkedkaras--;						
+					checkedkaras--;
 				}
 			}
 		});
@@ -824,7 +849,7 @@ class Playlist extends Component<IProps, IState> {
 								{i18next.t('QUOTA')}{this.state.quotaString}
 							</div> : null
 						}
-						{this.state.checkedkaras > 0 ? 
+						{this.state.checkedkaras > 0 ?
 							<div className="plQuota right">
 								{i18next.t('CHECKED')}{this.state.checkedkaras}
 							</div> : null
