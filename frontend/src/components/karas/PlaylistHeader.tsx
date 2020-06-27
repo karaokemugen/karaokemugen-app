@@ -491,7 +491,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 							</button> : null
 						}
 						{this.props.idPlaylist >= 0 ?
-							<button title={i18next.t('PLAYLIST_VISIBLE')} className="btn btn-default" name="flag_visible" onClick={this.setFlagVisible}>
+							<button title={i18next.t(this.props.playlistInfo?.flag_visible ? 'PLAYLIST_INVISIBLE' :'PLAYLIST_VISIBLE')} 
+							className="btn btn-default" name="flag_visible" onClick={this.setFlagVisible}>
 								{this.props.playlistInfo?.flag_visible ?
 									<i className="fas fa-eye-slash"></i> :
 									<i className="fas fa-eye"></i>
