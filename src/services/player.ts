@@ -84,6 +84,8 @@ async function playCurrentSong(now: boolean) {
 		try {
 			const conf = getConfig();
 			const kara = await getCurrentSong();
+			// No song to play, silently return
+			if (!kara) return;
 			setState({currentSong: kara});
 			// Testing if we're on first position, if intro hasn't been played already and if we have at least one intro available
 			if (conf.Playlist.Medias.Intros.Enabled && kara?.pos === 1 && !getState().introPlayed) {
