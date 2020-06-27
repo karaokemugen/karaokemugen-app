@@ -93,6 +93,10 @@ class Playlist extends Component<IProps, IState> {
 		if (nextProps.idPlaylistTo && nextProps.idPlaylistTo !== this.props.idPlaylistTo) {
 			this.playlistForceRefresh(true);
 		}
+		if (nextProps.config.Frontend.Mode && nextProps.config.Frontend.Mode === 2
+			&& nextProps.config.Frontend.Mode !== this.props.config.Frontend.Mode) {
+			this.getPlaylist();
+		}
 	}
 
 	async componentDidMount() {
@@ -163,7 +167,9 @@ class Playlist extends Component<IProps, IState> {
 		if (this.state.idPlaylist === -1 || this.props.playlistList
 			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
 			(this.state.idPlaylist === -2 || this.state.idPlaylist === -4) && await this.loadBLSet();
-			await this.getPlaylist();
+			if (this.props.scope === 'admin' || this.props.config.Frontend.Mode === 2 || this.state.idPlaylist === store.getPublicPlaylistID()) {
+				await this.getPlaylist();
+			}
 		}
 	}
 
@@ -299,7 +305,7 @@ class Playlist extends Component<IProps, IState> {
 		let value: number;
 		if (this.props.scope === 'public') {
 			value =
-				this.props.side === 1 && this.props.config.Frontend.Mode !== 1
+				this.props.side === 1
 					? -1
 					: store.getPublicPlaylistID();
 		} else {
