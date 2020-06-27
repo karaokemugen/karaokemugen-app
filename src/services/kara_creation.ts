@@ -8,6 +8,7 @@ import { resolvedPathRepos, resolvedPathTemp } from '../lib/utils/config';
 import { asyncCopy, asyncExists, asyncMove,asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
+import sentry from '../utils/sentry';
 import {createKaraInDB, editKaraInDB, getKara} from './kara';
 import { consolidateTagsInRepo } from './tag';
 
@@ -97,29 +98,37 @@ export async function editKara(kara: Kara, refresh = true) {
 		}
 	} catch(err) {
 		logger.error('Error while editing kara', {service: 'KaraGen', obj: err});
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		if (newKara) sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
+		sentry.error(err);
+		task.end();
 		throw err;
 	}
-	if (karaFile === newKara.file) {
-		await editKaraInStore(newKara.file);
-	} else {
-		removeKaraInStore(karaFile);
-		await addKaraToStore(newKara.file);
-		sortKaraStore();
-	}
-	saveSetting('baseChecksum', getStoreChecksum());
-	newKara.data.karafile = basename(newKara.file);
-	// Update in database
 	try {
+		if (karaFile === newKara.file) {
+			await editKaraInStore(newKara.file);
+		} else {
+			removeKaraInStore(karaFile);
+			await addKaraToStore(newKara.file);
+			sortKaraStore();
+		}
+		saveSetting('baseChecksum', getStoreChecksum());
+		newKara.data.karafile = basename(newKara.file);
+		// Update in database
 		await Promise.all([
 			editKaraInDB(newKara.data, { refresh: refresh }),
 			consolidateTagsInRepo(newKara.data)
 		]);
 	} catch(err) {
 		const errMsg = `${newKara.data.karafile} file generation is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
-		logger.warn('', {service: 'KaraGen', obj: err});
+		logger.warn(errMsg, {service: 'KaraGen', obj: err});
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
+		sentry.error(err, 'Warning');
 		throw errMsg;
+	} finally {
+		task.end();
 	}
-	task.end();
 }
 
 export async function createKara(kara: Kara) {
@@ -127,21 +136,35 @@ export async function createKara(kara: Kara) {
 		text: 'CREATING_SONG',
 		subtext: kara.title
 	});
-	const newKara = await generateKara(kara, resolvedPathRepos('Karas', kara.repository)[0], resolvedPathRepos('Medias', kara.repository)[0], resolvedPathRepos('Lyrics', kara.repository)[0]);
-	await addKaraToStore(newKara.file);
-	sortKaraStore();
-	saveSetting('baseChecksum', getStoreChecksum());
+	let newKara: NewKara;
+	try {
+		newKara = await generateKara(kara, resolvedPathRepos('Karas', kara.repository)[0], resolvedPathRepos('Medias', kara.repository)[0], resolvedPathRepos('Lyrics', kara.repository)[0]);
+		await addKaraToStore(newKara.file);
+		sortKaraStore();
+		saveSetting('baseChecksum', getStoreChecksum());
+	} catch(err) {
+		logger.error('Error while creating kara', {service: 'KaraGen', obj: err});
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		if (newKara) sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
+		sentry.error(err);
+		task.end();
+		throw err;
+	}
 	try {
 		newKara.data.karafile = basename(newKara.file);
 		await Promise.all([
 			createKaraInDB(newKara.data),
 			consolidateTagsInRepo(newKara.data)
 		]);
+		return newKara;
 	} catch(err) {
 		const errMsg = `.kara.json file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
-		logger.warn('', {service: 'KaraGen', obj: err});
-		throw errMsg;
+		logger.warn(errMsg, {service: 'KaraGen', obj: err});
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
+		sentry.error(err, 'Warning');
+		throw err;
+	} finally {
+		task.end();
 	}
-	task.end();
-	return newKara;
 }
