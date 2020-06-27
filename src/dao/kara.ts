@@ -112,6 +112,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	}
 	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause);
 	const queryParams = {
+		publicPlaylist_id: getState().publicPlaylistID,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 		username: params.username,
 		...filterClauses.params

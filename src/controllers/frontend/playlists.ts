@@ -263,7 +263,6 @@ export default function playlistsController(router: Router) {
 		// Empty playlist
 			try {
 				await emptyPlaylist(req.params.pl_id);
-				emitWS('playlistContentsUpdated',req.params.pl_id);
 				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_EMPTY_ERROR';
@@ -575,7 +574,7 @@ export default function playlistsController(router: Router) {
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
 			try {
 				const kara = await getKaraFromPlaylist(req.params.plc_id, req.authToken);
-				res.json(kara);
+				res.status(200).json(kara);
 			} catch(err) {
 				const code = 'PL_VIEW_CONTENT_ERROR';
 				errMessage(code, err);
@@ -650,7 +649,6 @@ export default function playlistsController(router: Router) {
 		 * @apiSuccess {String} args Name of song being upvoted
 		 * @apiSuccessExample Success-Response:
 		 * HTTP/1.1 200 OK
-		 * {code: "UPVOTE_DONE"}
 		 * @apiError UPVOTE_FAILED Unable to upvote karaoke
 		 * @apiError DOWNVOTE_FAILED Unable to downvote karaoke
 		 * @apiError UPVOTE_ALREADY_DONE Karaoke has already been upvoted by this user
@@ -664,8 +662,8 @@ export default function playlistsController(router: Router) {
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Post an upvote
 			try {
-				const kara = await vote(req.params.plc_id,req.authToken.username, req.body.downvote);
-				res.json(APIMessage(kara.code));
+				await vote(req.params.plc_id,req.authToken.username, req.body.downvote);
+				res.status(200).json();
 			} catch(err) {
 				errMessage(err.code, err.message);
 				res.status(500).json(APIMessage(err.code));
@@ -724,7 +722,7 @@ export default function playlistsController(router: Router) {
 			try {
 				const playlist = await exportPlaylist(req.params.pl_id);
 				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
-				res.json(playlist);
+				res.status(200).json(playlist);
 			} catch(err) {
 				const code = 'PL_EXPORT_ERROR';
 				errMessage(code, err);
@@ -772,7 +770,7 @@ export default function playlistsController(router: Router) {
 						unknownKaras: data.karasUnknown
 					};
 					emitWS('playlistsUpdated');
-					res.json(APIMessage('PL_IMPORTED', response));
+					res.status(200).json(APIMessage('PL_IMPORTED', response));
 				} catch(err) {
 					const code = 'PL_IMPORT_ERROR';
 					errMessage(code, err);

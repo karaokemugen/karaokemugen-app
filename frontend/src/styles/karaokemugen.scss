@@ -165,22 +165,26 @@ select.form-control {
     color: firebrick;
 }
 
-.likeKara.currentLike {
-    color: firebrick;
+.upvotes {
+	margin-right: 5px;
 }
-.likeCount:hover {
-	background-color: hsl(213, 20%, 28%);
+
+.currentUpvote {
+	color: firebrick;
 }
-.likeCount:active {
-	background-color: hsl(213, 20%, 10%);
-}
-.likeCount {
-	cursor: pointer;
+
+.upvoteCount {
 	color: #aaa;
+	margin-left: 5px;
+	background-color: #212831;
+    padding: 0px 5px;
+    text-align: center;
+    font-weight: bold;
+    color: #aaa;
 }
-.likeCount > i {
-    color: firebrick;
-    font-size: 88%;
+.upvoteCount > i {
+	font-size: 88%;
+	margin-right: 5px;;
 }
 
 .disable-select {
