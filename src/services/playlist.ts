@@ -205,7 +205,7 @@ export async function setCurrentPlaylist(playlist_id: number) {
 		emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
 		setState({currentPlaylistID: playlist_id, introPlayed: false});
 		// Event to signal the public interface the current playlist has been updated
-		emitWS('publicPlaylistUpdated', playlist_id);
+		emitWS('currentPlaylistUpdated', playlist_id);
 		logger.info(`Playlist ${pl.name} is now current`, {service: 'Playlist'});
 		return playlist_id;
 	} catch(err) {
@@ -239,6 +239,7 @@ export async function setPublicPlaylist(playlist_id: number) {
 		emitWS('playlistInfoUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', oldPublicPlaylist_id);
 		setState({publicPlaylistID: playlist_id});
+		emitWS('publicPlaylistUpdated', playlist_id);
 		logger.info(`Playlist ${pl.name} is now public`, {service: 'Playlist'});
 		return playlist_id;
 	} catch(err) {
