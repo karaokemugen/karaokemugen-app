@@ -33,7 +33,8 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 		Sentry.init({
 			dsn: "https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806",
 			environment: environment || 'release',
-			release: version.number
+			release: version.number,
+			ignoreErrors: ['Network Error', 'Request failed with status code']
 		});
 		Sentry.configureScope((scope) => {
 			if (user?.email) {

@@ -124,7 +124,8 @@ class App extends Component<{}, IState> {
 			Sentry.init({
 				dsn: "https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806",
 				environment: environment || 'release',
-				release: store.getVersion().number
+				release: store.getVersion().number,
+				ignoreErrors: ['Network Error', 'Request failed with status code']
 			});
 			Sentry.configureScope((scope) => {
 				let userConfig = store.getUser();
