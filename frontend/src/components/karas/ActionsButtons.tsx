@@ -39,7 +39,7 @@ class ActionsButtons extends Component<IProps, {}> {
 					<button title={i18next.t('TOOLTIP_DELETEKARA')}
 						className={`${classValue} karaLineButton`} onClick={this.props.deleteKara}><i className="fas fa-minus"></i></button> : null}
 				{(this.props.scope === 'admin' && this.props.idPlaylistTo !== -1) ||
-					(this.props.scope === 'public' && this.props.idPlaylist !== store.getPublicPlaylistID()) ?
+					(this.props.scope === 'public' && this.props.idPlaylist !== store.getState().publicPlaylistID) ?
 					<button title={(this.props.kara?.flag_inplaylist && this.props.scope !== 'admin' ? i18next.t('TOOLTIP_UPVOTE') :
 						i18next.t('TOOLTIP_ADDKARA')) + (this.props.scope == 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : '')}
 						className={`${classValue} karaLineButton`} onContextMenu={this.onRightClickAdd} onClick={this.props.addKara}

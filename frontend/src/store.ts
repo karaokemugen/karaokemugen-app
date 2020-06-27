@@ -4,7 +4,7 @@ import { parseJwt} from './components/tools';
 import { Token, User } from '../../src/lib/types/user';
 import { Config } from '../../src/types/config';
 import languages from "@cospired/i18n-iso-languages";
-import { Version } from '../../src/types/state';
+import { Version, PublicState } from '../../src/types/state';
 
 let filterValue1:string = '';
 let filterValue2:string = '';
@@ -12,10 +12,9 @@ let posPlaying:number;
 let timer:NodeJS.Timeout;
 let tuto:any;
 let config:Config;
+let state:PublicState;
 let logInfos:Token|undefined;
 let version:Version;
-let publicPlaylistID:number;
-let defaultLocaleApp:string;
 let user:User|undefined;
 let navigatorLanguage:string = languages.alpha2ToAlpha3B(navigator.languages[0].substring(0, 2));
 let currentBlSet:number;
@@ -108,20 +107,12 @@ class Store extends EventEmitter {
 		version = ver;
 	}
 
-	getPublicPlaylistID() {
-		return publicPlaylistID;
+	getState() {
+		return state;
 	}
 
-	setPublicPlaylistID(publicPlaylist:number) {
-		publicPlaylistID = publicPlaylist;;
-	}
-
-	getDefaultLocaleApp() {
-		return defaultLocaleApp;
-	}
-
-	setDefaultLocaleApp(defaultLocale:string) {
-		defaultLocaleApp = defaultLocale;;
+	setState(publicState:PublicState) {
+		state = publicState;
 	}
 
 	getUser() {

@@ -128,8 +128,8 @@ class Playlist extends Component<IProps, IState> {
 		store.addChangeListener('loginUpdated', this.initCall);
 		getSocket().on('publicPlaylistUpdated', (idPlaylist: number) => {
 			if (this.props.scope !== 'admin' && this.props.side
-				&& idPlaylist !== store.getPublicPlaylistID()) {
-				store.setPublicPlaylistID(idPlaylist);
+				&& idPlaylist !== store.getState().publicPlaylistID) {
+				store.getState().publicPlaylistID = idPlaylist;
 				this.changeIdPlaylist(idPlaylist);
 			}
 		});
@@ -167,7 +167,7 @@ class Playlist extends Component<IProps, IState> {
 		if (this.state.idPlaylist === -1 || this.props.playlistList
 			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
 			(this.state.idPlaylist === -2 || this.state.idPlaylist === -4) && await this.loadBLSet();
-			if (this.props.scope === 'admin' || this.props.config.Frontend.Mode === 2 || this.state.idPlaylist === store.getPublicPlaylistID()) {
+			if (this.props.scope === 'admin' || this.props.config.Frontend.Mode === 2 || this.state.idPlaylist === store.getState().publicPlaylistID) {
 				await this.getPlaylist();
 			}
 		}
@@ -307,7 +307,7 @@ class Playlist extends Component<IProps, IState> {
 			value =
 				this.props.side === 1
 					? -1
-					: store.getPublicPlaylistID();
+					: store.getState().publicPlaylistID;
 		} else {
 			let plVal1Cookie = localStorage.getItem('mugenPlVal1');
 			let plVal2Cookie = localStorage.getItem('mugenPlVal2');
@@ -319,7 +319,7 @@ class Playlist extends Component<IProps, IState> {
 			if (this.props.side === 1) {
 				value = plVal1Cookie != null && Number(plVal1Cookie) !== NaN ? Number(plVal1Cookie) : -1;
 			} else {
-				value = plVal2Cookie != null && Number(plVal2Cookie) !== NaN ? Number(plVal2Cookie) : store.getPublicPlaylistID();
+				value = plVal2Cookie != null && Number(plVal2Cookie) !== NaN ? Number(plVal2Cookie) : store.getState().publicPlaylistID;
 			}
 		}
 		this.setState({ idPlaylist: value });

@@ -17,6 +17,7 @@ import { Tag } from '../../src/lib/types/tag';
 import { Tag as FrontendTag } from './types/tag';
 import SetupPage from './components/SetupPage';
 import * as Sentry from '@sentry/browser';
+import { PublicState } from '../../src/types/state';
 
 require('./axiosInterceptor');
 
@@ -26,10 +27,7 @@ interface IState {
 	config?: Config;
 	tags?: Array<KaraTag>;
 	mediaFile?: string;
-	electron: boolean;
 	displaySetupPage: boolean;
-	os?: string;
-	dataPath?: string
 }
 
 class App extends Component<{}, IState> {
@@ -38,7 +36,6 @@ class App extends Component<{}, IState> {
 		this.state = {
 			admpwd: window.location.search.indexOf('admpwd') !== -1 ? window.location.search.split('=')[1] : undefined,
 			shutdownPopup: false,
-			electron: false,
 			displaySetupPage: false
 		};
 		axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
@@ -107,16 +104,15 @@ class App extends Component<{}, IState> {
 
 	getSettings = async () => {
 		const res = await axios.get('/settings');
+		let state:PublicState = res.data.state;
 		store.setConfig(res.data.config);
 		store.setVersion(res.data.version);
-		store.setPublicPlaylistID(res.data.state.publicPlaylistID);
-		store.setDefaultLocaleApp(res.data.state.defaultLocale);
+		store.setState(res.data.state);
 		this.setState({
-			config: res.data.config, electron: res.data.state.electron, os: res.data.state.os,
-			dataPath: res.data.state.dataPath,
+			config: res.data.config,
 			displaySetupPage: res.data.config.App.FirstRun && store.getLogInfos()?.username === 'admin'
 		});
-		if (!res.data.state.sentrytest) this.setSentry(res.data.state.environment);
+		if (!state.sentrytest) this.setSentry(state.environment);
 	};
 
 	setSentry = (environment: string) => {
@@ -181,14 +177,14 @@ class App extends Component<{}, IState> {
 						<Switch>
 							<Route path="/welcome" render={(props) =>
 								this.state.displaySetupPage ?
-									<SetupPage {...props} instance={(this.state.config as Config).Online.Host as string} os={this.state.os as string}
-										electron={this.state.electron} repository={(this.state.config as Config).System.Repositories[0]}
-										dataPath={this.state.dataPath as string} endSetup={() => this.setState({ displaySetupPage: false })} /> :
+									<SetupPage {...props} instance={(this.state.config as Config).Online.Host as string}
+										repository={(this.state.config as Config).System.Repositories[0]}
+										endSetup={() => this.setState({ displaySetupPage: false })} /> :
 									<WelcomePage {...props}
 										config={this.state.config as Config} />
 							} />
 							<Route path="/admin" render={(props) => <AdminPage {...props}
-								powerOff={this.state.electron ? undefined : this.powerOff} tags={this.state.tags as FrontendTag[]}
+								powerOff={store.getState().electron ? undefined : this.powerOff} tags={this.state.tags as FrontendTag[]}
 								showVideo={this.showVideo} config={this.state.config as Config}
 								getSettings={this.getSettings} />} />
 							<Route exact path="/" render={(props) => <PublicPage {...props}

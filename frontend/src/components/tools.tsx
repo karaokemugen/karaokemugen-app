@@ -142,7 +142,7 @@ export function getSerieLanguage (tag:DBKaraTag, karaLanguage:string, i18nParam?
 	} else if (mode === 1) {
 		return getTagInLanguage(tag, karaLanguage, 'eng', i18nParam);
 	} else if (mode === 2) {
-		return getTagInLanguage(tag, store.getDefaultLocaleApp(), 'eng', i18nParam);
+		return getTagInLanguage(tag, store.getState().defaultLocale, 'eng', i18nParam);
 	} else if (mode === 3) {
 		return getTagInLanguage(tag, store.getNavigatorLanguage() as string, 'eng', i18nParam);
 	} else if (mode === 4) {

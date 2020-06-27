@@ -256,7 +256,7 @@ class KaraLine extends Component<IProps, {}> {
 									{kara.upvotes > 0 && kara.upvotes}
 								</button> : null}
 							{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username === logInfos?.username
-								&& (idPlaylist == store.getPublicPlaylistID()) ?
+								&& (idPlaylist == store.getState().publicPlaylistID) ?
 								<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
 									onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
 						</div>

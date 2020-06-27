@@ -12,10 +12,7 @@ require("../styles/SetupPage.scss");
 
 interface IProps {
 	instance: string;
-	electron: boolean;
 	repository: Repository;
-	os: string;
-	dataPath: string;
 	endSetup: () => void;
 }
 
@@ -38,7 +35,7 @@ class SetupPage extends Component<IProps, IState> {
 		super(props);
 		let repository = this.props.repository.Path.Karas[0].slice(0, -9);
 		const path = `${this.getPathForFileSystem(repository)}${
-			this.props.os === "win32" ? repository.replace(/\//g, "\\") : repository
+			store.getState().os === "win32" ? repository.replace(/\//g, "\\") : repository
 			}`;
 		this.state = {
 			accountType: null,
@@ -109,9 +106,9 @@ class SetupPage extends Component<IProps, IState> {
 	};
 
 	getPathForFileSystem(value: string) {
-		let regexp = this.props.os === "win32" ? "^[a-zA-Z]:" : "^/";
+		let regexp = store.getState().os === "win32" ? "^[a-zA-Z]:" : "^/";
 		if (value.match(regexp) === null) {
-			return `${this.props.dataPath}${this.props.os === "win32" ? "\\" : "/"}`;
+			return `${store.getState().dataPath}${store.getState().os === "win32" ? "\\" : "/"}`;
 		} else {
 			return "";
 		}
@@ -140,7 +137,7 @@ class SetupPage extends Component<IProps, IState> {
 		if (this.state.repositoryFolder) {
 			let repository = this.props.repository.Path.Karas[0].slice(0, -9);
 			const path = `${this.getPathForFileSystem(repository)}${
-				this.props.os === "win32" ? repository.replace(/\//g, "\\") : repository
+				store.getState().os === "win32" ? repository.replace(/\//g, "\\") : repository
 			}`;
 			if (this.state.repositoryFolder !== path) {
 				try {
@@ -435,7 +432,7 @@ class SetupPage extends Component<IProps, IState> {
 									<section className="step step-3">
 										<p className="intro">
 											{i18next.t(
-												this.props.electron
+												store.getState().electron
 													? "SETUP_PAGE.SECURITY_CODE_DESC_ELECTRON"
 													: "SETUP_PAGE.SECURITY_CODE_DESC_CONSOLE"
 											)}
@@ -497,7 +494,7 @@ class SetupPage extends Component<IProps, IState> {
 												this.setState({ repositoryFolder: event.target.value })
 											}
 										/>
-										{this.props.electron ?
+										{store.getState().electron ?
 											<button type="button" onClick={this.onClickRepository}>{i18next.t('SETUP_PAGE.MODIFY_DIRECTORY')}</button> : null
 										}
 									</div>

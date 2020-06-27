@@ -84,12 +84,13 @@ export interface State {
 }
 
 export interface PublicState {
-	publicPlaylistID?: number,
+	currentPlaylistID: number,
+	publicPlaylistID: number,
 	appPath?: string,
 	dataPath?: string,
 	os?: string,
-	electron?: boolean,
-	defaultLocale?: string,
+	electron: boolean,
+	defaultLocale: string,
 	wsLogNamespace: string,
 	supportedLyrics?: string[],
 	supportedMedias?: string[],
