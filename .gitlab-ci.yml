@@ -36,7 +36,7 @@ test:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi
   script:
-    - yarn install --cache-folder .yarn
+    - yarn install --check-files --cache-folder .yarn
     - touch mpv
     - mkdir app
     - cp -f config.CICD.yml app/config.yml
