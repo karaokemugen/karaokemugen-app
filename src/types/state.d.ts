@@ -83,6 +83,19 @@ export interface State {
 	sentrytest: boolean
 }
 
+export interface PublicState {
+	publicPlaylistID?: number,
+	appPath?: string,
+	dataPath?: string,
+	os?: string,
+	electron?: boolean,
+	wsLogNamespace: string,
+	supportedLyrics?: string[],
+	supportedMedias?: string[],
+	environment: string,
+	sentrytest: boolean
+}
+
 export interface PublicPlayerState {
 	playing: boolean,
 	onTop: boolean,

@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import { Dispatch } from 'react';
 import { SettingsSuccess, SettingsFailure, Settings } from '../types/settings';
-import { State } from '../../../../src/types/state';
+import { Version } from '../../../../src/types/state';
 import { Config } from '../../../../src/types/config';
 import * as Sentry from '@sentry/browser';
 import { User } from '../../../../src/lib/types/user';
@@ -11,7 +11,7 @@ export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsF
 		const res = await Axios.get('/settings');
 		const user = await Axios.get('/myaccount/');
 
-		if (!res.data.state.sentrytest) setSentry(res.data.state, res.data.config, user.data);
+		if (!res.data.state.sentrytest) setSentry(res.data.state.environment, res.data.version, res.data.config, user.data);
 
 		dispatch({
 			type: Settings.SETTINGS_SUCCESS,
@@ -28,12 +28,11 @@ export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsF
 	}
 }
 
-function setSentry(state: State, config: Config, user: User) {
+function setSentry(environment: string, version: Version, config: Config, user: User) {
 	if (config.Online?.ErrorTracking) {
-		let version = state.version;
 		Sentry.init({
 			dsn: "https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806",
-			environment: state.environment || 'release',
+			environment: environment || 'release',
 			release: version.number
 		});
 		Sentry.configureScope((scope) => {

@@ -6,7 +6,7 @@ import { supportedFiles } from '../lib/utils/constants';
 import {emit} from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
 // Types
-import {PublicPlayerState,State} from '../types/state';
+import {PublicPlayerState,State, PublicState} from '../types/state';
 
 // Internal settings
 let state: State = {
@@ -76,7 +76,7 @@ export function getState() {
 }
 
 /** Get public state */
-export function getPublicState(admin: boolean) {
+export function getPublicState(admin: boolean): PublicState {
 	return {
 		publicPlaylistID: state.publicPlaylistID,
 		appPath: admin ? state.appPath : undefined,

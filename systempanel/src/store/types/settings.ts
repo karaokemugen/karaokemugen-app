@@ -1,5 +1,5 @@
 import { Config } from "../../../../src/types/config";
-import {State} from "../../../../src/types/state";
+import { State } from "../../../../src/types/state";
 import { User } from "../../../../src/lib/types/user";
 
 // Action name
