@@ -191,7 +191,7 @@ class KaraLine extends Component<IProps, {}> {
 	}
 
 	getSongtypes(data: KaraElement) {
-		return data.songtypes.map(e => e.short ? + e.short : e.name).join(', ') + (data.songorder > 0 ? ' ' + data.songorder : '');
+		return data.songtypes.map(e => e.short ? + e.short : e.name).sort().join(' ') + (data.songorder > 0 ? ' ' + data.songorder : '');
 	}
 
 	karaLangs = this.getLangs(this.props.kara);

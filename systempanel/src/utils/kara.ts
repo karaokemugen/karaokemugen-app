@@ -66,7 +66,7 @@ export function buildKaraTitle(settings:SettingsStoreData, data:DBPLC, i18nParam
 	let serieText = (data.series && data.series.length > 0) ? data.series.map(e => getSerieLanguage(settings, e, data.langs[0].name, i18nParam)).join(', ') 
 		: data.singers.map(e => e.name).join(', ');
 	let langsText = data.langs.map(e => e.name).join(', ').toUpperCase();
-	let songtypeText = data.songtypes.map(e => e.short ? + e.short : e.name).join(', ');
+	let songtypeText = data.songtypes.map(e => e.short ? + e.short : e.name).sort().join(' ');
 	let songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
 	return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${data.title}`
 };
