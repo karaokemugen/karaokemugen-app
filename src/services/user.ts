@@ -155,7 +155,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				},
 				avatar_file,
 				'admin',
-				{ editRemote: false	}
+				{ editRemote: false, noPasswordCheck: true	}
 			);
 			user = response.user;
 		}
@@ -258,6 +258,7 @@ async function editRemoteUser(user: User) {
 export async function editUser(username: string, user: User, avatar: Express.Multer.File, role: string, opts: UserOpts = {
 	editRemote: true,
 	renameUser: false,
+	noPasswordCheck: false
 }) {
 	try {
 		const currentUser = await findUserByName(username);
@@ -298,7 +299,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		let KMServerResponse: any;
 		if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user);
 		// Modifying passwords is not allowed in demo mode
-		if (user.password && !getState().isDemo) {
+		if (user.password && !opts.noPasswordCheck && !getState().isDemo) {
 			if (user.password.length < 8) throw 'PASSWORD_TOO_SHORT';
 			user.password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(user.login,user.password);
