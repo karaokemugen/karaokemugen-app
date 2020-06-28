@@ -265,6 +265,7 @@ release_site:
   stage: release
   image: curlimages/curl
   interruptible: true
+  dependencies: []
   cache: {}
   script:
     - sh util/triggerWebsite.sh
