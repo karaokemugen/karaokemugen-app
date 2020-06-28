@@ -126,6 +126,11 @@
 		"AUTOMIX": "Créer un AutoMix",
 		"IMPORT": "Importer une liste"
 	},
+	"FLAGS": {
+		"PUBLIC": "Publique",
+		"CURRENT": "Courante",
+		"CURRENT_PUBLIC": "Courante et publique"
+	},
 	"BLC": {
 		"ADD": "Créer une liste de critères",
 		"EDIT": "Renommer la liste de critères",

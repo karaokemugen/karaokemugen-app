@@ -346,6 +346,13 @@ class PlaylistHeader extends Component<IProps, IState> {
 		});
 	}
 
+	getFlagLabel = (playlist: PlaylistElem) => {
+		if (playlist.flag_public && playlist.flag_current) return ` (${i18next.t('FLAGS.CURRENT_PUBLIC')})`;
+		if (playlist.flag_public) return ` (${i18next.t('FLAGS.PUBLIC')})`;
+		if (playlist.flag_current) return ` (${i18next.t('FLAGS.CURRENT')})`;
+		return '';
+	}
+
 	copyBlcSet = () => {
 		this.togglePlaylistCommands();
 		ReactDOM.render(<BlcSetCopyModal
@@ -615,7 +622,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 												</React.Fragment>) :
 												(<React.Fragment>
 													{this.props.playlistList && this.props.playlistList.map(playlist => {
-														return <option className="selectPlaylist" key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}</option>;
+														return <option className="selectPlaylist" key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}{this.getFlagLabel(playlist)}</option>;
 													})}
 												</React.Fragment>)
 										}

@@ -136,6 +136,11 @@
 		"AUTOMIX": "Create an automix",
 		"IMPORT": "Import playlist"
 	},
+	"FLAGS": {
+		"PUBLIC": "Public",
+		"CURRENT": "Current",
+		"CURRENT_PUBLIC": "Current and public"
+	},
 	"BLC": {
 		"ADD": "Create criterias list",
 		"EDIT": "Rename criterias list",
