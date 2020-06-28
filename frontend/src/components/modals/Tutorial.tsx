@@ -221,7 +221,7 @@ class Tutorial extends Component<IProps,IState> {
 					target: '#playlist',
 					label: 'playlists',
 					placement: 'auto',
-					content: i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE'), 
+					content: i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE_MOBILE'), 
 				},
 				{
 					target: '.side2Button',
