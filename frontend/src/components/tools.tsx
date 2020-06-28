@@ -159,7 +159,7 @@ export function getSerieLanguage (tag:DBKaraTag, karaLanguage:string, i18nParam?
 export function displayMessage (type:TypeOptions, message:any, time?:number) {
 	if (!document.hidden) {
 		if (!time) time = 3500;
-		toast(message, {type: type, autoClose: time, position: 'top-center', pauseOnFocusLoss: false});
+		toast(message, {type: type, autoClose: time, position: 'top-right', pauseOnFocusLoss: false});
 	}
 }
 
