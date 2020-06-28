@@ -482,7 +482,7 @@ class Playlist extends Component<IProps, IState> {
 	playingUpdate = (data: { playlist_id: number, plc_id: number }) => {
 		if (this.state.idPlaylist === data.playlist_id && !this.state.stopUpdate) {
 			let playlistData = this.state.data as KaraList;
-			playlistData.content.forEach((kara, index) => {
+			playlistData?.content.forEach((kara, index) => {
 				if (kara.flag_playing) {
 					kara.flag_playing = false;
 					kara.flag_dejavu = true;
