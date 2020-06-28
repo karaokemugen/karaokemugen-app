@@ -6,7 +6,6 @@ import KmAppBodyDecorator from './decorators/KmAppBodyDecorator';
 import PlaylistMainDecorator from './decorators/PlaylistMainDecorator';
 import Playlist from './karas/Playlist';
 import PollModal from './modals/PollModal';
-import getLuckyImage from '../assets/clover.png';
 import webappClose from '../assets/dame.jpg';
 import HelpModal from './modals/HelpModal';
 import LoginModal from './modals/LoginModal';
@@ -293,10 +292,10 @@ class PublicPage extends Component<IProps, IState> {
 
 										<button
 											title={i18next.t('GET_LUCKY')}
-											className="btn btn-lg btn-action btn-default getLucky"
+											className="btn btn-lg btn-action btn-default"
 											onClick={this.getLucky}
 										>
-											<img src={getLuckyImage} />
+											<i className="fas fa-dice" />
 										</button>
 										<button
 											className={`btn btn-dark sideButton ${this.state.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
@@ -462,14 +461,11 @@ class PublicPage extends Component<IProps, IState> {
 												</li>
 												<li>
 													<a
-														className="z-depth-3 btn-floating btn-large getLucky"
+														className="z-depth-3 btn-floating btn-large"
 														style={{ backgroundColor: '#111' }}
 														onClick={this.getLucky}
 													>
-														<img
-															style={{ height: '80%', marginTop: '10%' }}
-															src={getLuckyImage}
-														/>
+														<i className="fas fa-dice" />
 													</a>
 												</li>
 											</React.Fragment>

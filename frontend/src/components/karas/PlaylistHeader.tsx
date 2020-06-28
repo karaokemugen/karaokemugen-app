@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import i18next from 'i18next';
 import axios from 'axios';
-import getLucky from '../../assets/clover.png';
 import ActionsButtons from './ActionsButtons';
 import { buildKaraTitle, displayMessage, callModal, is_touch_device } from '../tools';
 import Autocomplete from '../generic/Autocomplete';
@@ -476,7 +475,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 														</li>
 														<li>
 															<a href="#" onClick={this.addRandomKaras}>
-																<img className="addRandomKaras" src={getLucky} />
+																<i className="fas fa-dice" />
 																&nbsp;
 																{i18next.t('ADVANCED.ADD_RANDOM')}
 															</a>
