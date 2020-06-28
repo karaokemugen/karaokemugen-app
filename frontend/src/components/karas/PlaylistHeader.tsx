@@ -363,9 +363,27 @@ class PlaylistHeader extends Component<IProps, IState> {
 		const plCommandsContainer = (
 			this.props.scope === 'admin' && this.props.idPlaylist !== -4 ?
 				<div className="btn-group actionDiv">
-					<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
-						scope={this.props.scope} isHeader={true}
-						addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
+					{this.props.idPlaylist !== -4 ?
+						<React.Fragment>
+							<button
+								title={i18next.t('ADVANCED.SELECT_ALL')}
+								onClick={() => {
+									this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
+									this.props.selectAllKaras();
+								}}
+								className="btn btn-default"
+							>
+								{
+									this.state.selectAllKarasChecked
+										? <i className="far fa-check-square"></i>
+										: <i className="far fa-square"></i>
+								}
+							</button>
+							<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
+								scope={this.props.scope} isHeader={true} addKara={this.props.addCheckedKaras}
+								deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
+						</React.Fragment> : null
+					}
 				</div> : null);
 
 		const searchMenu = (this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).length > 0 ?
@@ -482,22 +500,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 														</li>
 													</React.Fragment>
 													: null
-												}
-												{this.props.idPlaylist !== -4 ?
-													<li>
-														<a href="#" onClick={() => {
-															this.togglePlaylistCommands();
-															this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
-															this.props.selectAllKaras();
-														}}>
-															{this.state.selectAllKarasChecked
-																? <i className="far fa-check-square" />
-																: <i className="far fa-square" />
-															}
-																&nbsp;
-																{i18next.t('ADVANCED.SELECT_ALL')}
-														</a>
-													</li> : null
 												}
 												{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
 													<li>
