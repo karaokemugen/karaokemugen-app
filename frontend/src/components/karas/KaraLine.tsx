@@ -246,6 +246,10 @@ class KaraLine extends Component<IProps, {}> {
 									<i className="fas fa-eye-slash"></i>
 								</button> : null
 							}
+							{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username === logInfos?.username
+								&& (idPlaylist == store.getState().publicPlaylistID) ?
+								<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
+									onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
 							{scope !== 'admin' && this.props.playlistInfo && this.props.playlistInfo.flag_public ?
 								<button className='upvoteKara btn btn-sm btn-action'
 									title={i18next.t('TOOLTIP_UPVOTE')}
@@ -254,10 +258,6 @@ class KaraLine extends Component<IProps, {}> {
 									<i className={`fas fa-thumbs-up ${kara.flag_upvoted ? 'currentUpvote' : ''} ${kara.upvotes > 0 ? 'upvotes' : ''}`} />
 									{kara.upvotes > 0 && kara.upvotes}
 								</button> : null}
-							{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username === logInfos?.username
-								&& (idPlaylist == store.getState().publicPlaylistID) ?
-								<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
-									onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
 						</div>
 						{is_touch_device() ?
 							<div className="contentDiv contentDivMobile" onClick={this.toggleKaraDetail} tabIndex={1}>
