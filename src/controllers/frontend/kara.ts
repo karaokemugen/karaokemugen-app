@@ -2,7 +2,6 @@ import { Router } from 'express';
 
 import { postSuggestionToKaraBase } from '../../lib/services/gitlab';
 import { getConfig, resolvedPathTemp } from '../../lib/utils/config';
-import { emitWS } from '../../lib/utils/ws';
 import { batchEditKaras, copyKaraToRepo,deleteKara, getKara, getKaraHistory, getKaraLyrics, getKaraPlayed, getKaras, getTop50 } from '../../services/kara';
 import { addKaraToPlaylist } from '../../services/playlist';
 import { APIMessage,errMessage } from '../common';
@@ -529,8 +528,6 @@ export default function karaController(router: Router) {
 			// Add Kara to the playlist currently used depending on mode
 			try {
 				const data = await addKaraToPlaylist(req.params.kid, req.authToken.username);
-				emitWS('playlistContentsUpdated',data.playlist_id);
-				emitWS('playlistInfoUpdated',data.playlist_id);
 				res.status(201).json({
 					data: data,
 					code: 'PL_SONG_ADDED'

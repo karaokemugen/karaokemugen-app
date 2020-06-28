@@ -158,6 +158,7 @@ export function addPollVote(index: number, token: Token) {
 	};
 	voters.add(token.username);
 	if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.mediaType === 'background') displayPoll();
+	emitWS('songPollUpdated', poll);
 	return {
 		code: 'POLL_VOTED',
 		data: poll

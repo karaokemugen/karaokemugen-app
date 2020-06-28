@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import { check } from '../../lib/utils/validators';
-import { emitWS } from '../../lib/utils/ws';
 import { convertToRemoteUser, createAdminUser, createUser, deleteUser, editUser, findUserByName, listUsers, removeRemoteUser, resetRemotePassword, resetSecurityCode,updateSongsLeft } from '../../services/user';
 import { APIMessage,errMessage } from '../common';
 import { optionalAuth,requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
@@ -193,7 +192,6 @@ export default function userController(router: Router) {
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await deleteUser(req.params.username);
-				emitWS('usersUpdated');
 				res.status(200).json(APIMessage('USER_DELETED'));
 			} catch(err) {
 				const code = 'USER_DELETE_ERROR';
@@ -414,7 +412,6 @@ export default function userController(router: Router) {
 				//Get username
 				try {
 					const response = await editUser(req.authToken.username, req.body, avatar , req.authToken.role);
-					emitWS('userUpdated',req.authToken.username);
 					res.status(200).json(APIMessage('USER_EDITED', { onlineToken: response.onlineToken }));
 				} catch(err) {
 					const code = 'USER_EDIT_ERROR';
@@ -469,7 +466,6 @@ export default function userController(router: Router) {
 				req.body.instance = unescape(req.body.instance.trim());
 				try {
 					const tokens = await convertToRemoteUser(req.authToken, req.body.password, req.body.instance);
-					emitWS('userUpdated',req.authToken.username);
 					res.json(APIMessage('USER_CONVERTED', tokens));
 				} catch(err) {
 					const code = err.code || 'USER_CONVERT_ERROR';
@@ -514,7 +510,6 @@ export default function userController(router: Router) {
 			// No errors detected
 				try {
 					const newToken = await removeRemoteUser(req.authToken, req.body.password);
-					emitWS('userUpdated', req.authToken.username);
 					res.json(APIMessage('USER_DELETED_ONLINE', newToken));
 				} catch(err) {
 					const code = 'USER_DELETE_ERROR_ONLINE';

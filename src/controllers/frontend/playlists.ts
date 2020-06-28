@@ -2,7 +2,6 @@ import { Router } from 'express';
 
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
-import { emitWS } from '../../lib/utils/ws';
 import { addKaraToPlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, deletePlaylist, editPlaylist, editPLC, emptyPlaylist, exportPlaylist,getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, setCurrentPlaylist, setPublicPlaylist, shufflePlaylist } from '../../services/playlist';
 import { vote } from '../../services/upvote';
 import { APIMessage,errMessage } from '../common';
@@ -94,7 +93,6 @@ export default function playlistsController(router: Router) {
 						current: req.body.flag_current,
 						public: req.body.flag_public
 					}, req.authToken.username);
-					emitWS('playlistsUpdated');
 					res.status(201).json(new_playlist);
 				} catch(err) {
 					const code = 'PL_CREATE_ERROR';
@@ -195,8 +193,6 @@ export default function playlistsController(router: Router) {
 				//Now we add playlist
 				try {
 					await editPlaylist(req.params.pl_id,req.body);
-					emitWS('playlistInfoUpdated',req.params.pl_id);
-					emitWS('playlistsUpdated');
 					res.status(200).json();
 				} catch(err) {
 					const code = 'PL_UPDATE_ERROR';
@@ -231,7 +227,6 @@ export default function playlistsController(router: Router) {
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await deletePlaylist(+req.params.pl_id);
-				emitWS('playlistsUpdated');
 				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_DELETE_ERROR';
@@ -294,7 +289,6 @@ export default function playlistsController(router: Router) {
 			// set playlist to current
 			try {
 				await setCurrentPlaylist(+req.params.pl_id);
-				emitWS('playlistInfoUpdated',+req.params.pl_id);
 				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_SET_CURRENT_ERROR';
@@ -326,7 +320,6 @@ export default function playlistsController(router: Router) {
 			// Empty playlist
 			try {
 				await setPublicPlaylist(+req.params.pl_id);
-				emitWS('playlistInfoUpdated',+req.params.pl_id);
 				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_SET_PUBLIC_ERROR';
@@ -419,8 +412,6 @@ export default function playlistsController(router: Router) {
 			if (!validationErrors) {
 				try {
 					await addKaraToPlaylist(req.body.kid, req.authToken.username, req.params.pl_id, +req.body.pos);
-					emitWS('playlistInfoUpdated',req.params.pl_id);
-					emitWS('playlistContentsUpdated',req.params.pl_id);
 					res.status(201).json();
 				} catch(err) {
 					const code = 'PL_ADD_SONG_ERROR';
@@ -462,8 +453,7 @@ export default function playlistsController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const pl_id = await	copyKaraToPlaylist(req.body.plc_id,+req.params.pl_id,+req.body.pos);
-					emitWS('playlistContentsUpdated', pl_id);
+					await copyKaraToPlaylist(req.body.plc_id,+req.params.pl_id,+req.body.pos);
 					res.status(201).json();
 				} catch(err) {
 					const code = 'PL_SONG_COPY_ERROR';
@@ -507,9 +497,7 @@ export default function playlistsController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await deleteKaraFromPlaylist(req.body.plc_id,req.params.pl_id, req.authToken);
-					emitWS('playlistContentsUpdated', data.pl_id);
-					emitWS('playlistInfoUpdated', data.pl_id);
+					await deleteKaraFromPlaylist(req.body.plc_id,req.params.pl_id, req.authToken);
 					res.status(200).json();
 				} catch(err) {
 					const code = 'PL_DELETE_SONG_ERROR';
@@ -613,14 +601,12 @@ export default function playlistsController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await editPLC(req.params.plc_id,{
+					await editPLC(req.params.plc_id,{
 						pos: +req.body.pos,
 						flag_playing: req.body.flag_playing,
 						flag_free: req.body.flag_free,
 						flag_visible: req.body.flag_visible
 					});
-					emitWS('playlistContentsUpdated',data.pl_id);
-					emitWS('playlistInfoUpdated',data.pl_id);
 					res.status(200).json();
 				} catch(err) {
 					const code = 'PL_MODIFY_CONTENT_ERROR';
@@ -769,7 +755,6 @@ export default function playlistsController(router: Router) {
 						playlist_id: data.playlist_id,
 						unknownKaras: data.karasUnknown
 					};
-					emitWS('playlistsUpdated');
 					res.status(200).json(APIMessage('PL_IMPORTED', response));
 				} catch(err) {
 					const code = 'PL_IMPORT_ERROR';
@@ -808,7 +793,6 @@ export default function playlistsController(router: Router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
-				emitWS('playlistContentsUpdated', req.params.pl_id);
 				res.status(200).json();
 			} catch(err) {
 				const code = 'PL_SHUFFLE_ERROR';

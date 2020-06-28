@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import { check } from '../../lib/utils/validators';
-import { emitWS } from '../../lib/utils/ws';
 import { addToFavorites, createAutoMix, deleteFavorites, exportFavorites, getFavorites, importFavorites } from '../../services/favorites';
 import { APIMessage,errMessage } from '../common';
 import { requireAdmin, requireAuth, requireRegularUser,requireValidUser, updateUserLoginTime } from '../middlewares/auth';
@@ -45,7 +44,6 @@ export default function favoritesController(router: Router) {
 						duration: +req.body.duration,
 						users: req.body.users
 					}, req.authToken.username);
-					emitWS('playlistsUpdated');
 					res.status(201).json(data);
 				} catch(err) {
 					const code = 'AUTOMIX_ERROR';
@@ -147,7 +145,6 @@ export default function favoritesController(router: Router) {
 			if (!validationErrors) {
 				try {
 					await addToFavorites(req.authToken.username, req.body.kid);
-					emitWS('favoritesUpdated', req.authToken.username);
 					res.status(200).json();
 				} catch(err) {
 					const code = 'FAVORITES_ADDED_ERROR';
@@ -189,7 +186,6 @@ export default function favoritesController(router: Router) {
 			if (!validationErrors) {
 				try {
 					await deleteFavorites(req.authToken.username, req.body.kid );
-					emitWS('favoritesUpdated', req.authToken.username);
 					res.status(200).json();
 				} catch(err) {
 					const code = 'FAVORITES_DELETED_ERROR';
@@ -260,7 +256,6 @@ export default function favoritesController(router: Router) {
 			if (!validationErrors) {
 				try {
 					await importFavorites(JSON.parse(req.body.favorites), req.authToken.username);
-					emitWS('favoritesUpdated', req.authToken.username);
 					res.status(200).json(APIMessage('FAVORITES_IMPORTED'));
 				} catch(err) {
 					const code = 'FAVORITES_IMPORTED_ERROR';

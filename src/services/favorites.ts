@@ -8,6 +8,7 @@ import { uuidRegexp } from '../lib/utils/constants';
 import {date} from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import {profile} from '../lib/utils/logger';
+import { emitWS } from '../lib/utils/ws';
 import {AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent,FavParams} from '../types/favorites';
 import sentry from '../utils/sentry';
 import {formatKaraList, isAllKaras} from './kara';
@@ -63,6 +64,7 @@ export async function addToFavorites(username: string, kids: string[], sendOnlin
 		if (username.includes('@') && sendOnline && getConfig().Online.Users) {
 			manageFavoriteInInstanceBatch('POST', username, kids);
 		}
+		emitWS('favoritesUpdated', username);
 	} catch(err) {
 		const error = new Error(err);
 		sentry.error(error);
@@ -97,6 +99,7 @@ export async function deleteFavorites(username: string, kids: string[]) {
 		if (username.includes('@') && getConfig().Online.Users) {
 			manageFavoriteInInstanceBatch('DELETE', username, kids);
 		}
+		emitWS('favoritesUpdated', username);
 	} catch(err) {
 		throw {message: err};
 	} finally {
@@ -160,6 +163,7 @@ export async function importFavorites(favs: FavExport, username: string) {
 	const userFavorites = await getFavorites({username: username});
 	favorites = favorites.filter(f => !userFavorites.content.map(uf => uf.kid).includes(f));
 	if (favorites.length > 0) await addToFavorites(username, favorites, false);
+	emitWS('favoritesUpdated', username);
 	return { karasUnknown: karasUnknown };
 }
 
@@ -200,6 +204,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 	// Cut playlist after duration
 	await trimPlaylist(playlist_id, params.duration);
 	profile('AutoMix');
+	emitWS('playlistsUpdated');
 	return {
 		playlist_id: playlist_id,
 		playlist_name: autoMixPLName

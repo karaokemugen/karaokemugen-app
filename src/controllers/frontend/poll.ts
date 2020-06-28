@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import { check } from '../../lib/utils/validators';
-import { emitWS } from '../../lib/utils/ws';
 import { addPollVote, getPoll } from '../../services/poll';
 import { APIMessage,errMessage } from '../common';
 import { requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
@@ -105,7 +104,7 @@ export default function pollController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * "POLL_LIST_ERROR"
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, (req: any, res: any) => {
 			//Validate form data
 			const validationErrors = check(req.body, {
 				index: {presence: true, numbersArrayValidator: true}
@@ -113,8 +112,7 @@ export default function pollController(router: Router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					const ret = await addPollVote(+req.body.index,req.authToken);
-					emitWS('songPollUpdated', ret.data);
+					const ret = addPollVote(+req.body.index,req.authToken);
 					res.json(ret.data);
 				} catch(err) {
 					errMessage(err.code, err);

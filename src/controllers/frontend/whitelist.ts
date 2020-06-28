@@ -2,7 +2,6 @@ import { Router } from 'express';
 
 import { getConfig } from '../../lib/utils/config';
 import { check } from '../../lib/utils/validators';
-import { emitWS } from '../../lib/utils/ws';
 import { addKaraToWhitelist, deleteKaraFromWhitelist,emptyWhitelist, getWhitelistContents } from '../../services/whitelist';
 import { APIMessage,errMessage } from '../common';
 import { requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
@@ -32,10 +31,7 @@ export default function whitelistController(router: Router) {
 		// Empty whitelist
 			try {
 				await emptyWhitelist();
-				emitWS('blacklistUpdated');
-				emitWS('whitelistUpdated');
 				res.status(200).json();
-
 			} catch(err) {
 				const code = 'WL_EMPTY_ERROR';
 				errMessage(code, err);
@@ -132,8 +128,6 @@ export default function whitelistController(router: Router) {
 			if (!validationErrors) {
 				try {
 					await addKaraToWhitelist(req.body.kid, req.body.reason);
-					emitWS('whitelistUpdated');
-					emitWS('blacklistUpdated');
 					res.status(201).json();
 				} catch(err) {
 					const code = 'WL_ADD_SONG_ERROR';
@@ -170,8 +164,6 @@ export default function whitelistController(router: Router) {
 			if (!validationErrors) {
 				try {
 					await deleteKaraFromWhitelist(req.body.kid);
-					emitWS('whitelistUpdated');
-					emitWS('blacklistUpdated');
 					res.status(200).json();
 				} catch(err) {
 					const code = 'WL_DELETE_SONG_ERROR';

@@ -207,7 +207,7 @@ export async function setCurrentPlaylist(playlist_id: number) {
 		// Event to signal the public interface the current playlist has been updated
 		emitWS('currentPlaylistUpdated', playlist_id);
 		logger.info(`Playlist ${pl.name} is now current`, {service: 'Playlist'});
-		return playlist_id;
+		emitWS('playlistInfoUpdated', playlist_id);
 	} catch(err) {
 		throw {
 			message: err,
@@ -259,7 +259,8 @@ export async function deletePlaylist(playlist_id: number) {
 		logger.info(`Deleting playlist ${pl.name}`, {service: 'Playlist'});
 		if (pl.flag_public) throw `Playlist ${playlist_id} is public. Unable to delete it. Make another playlist public first.`;
 		if (pl.flag_current) throw `Playlist ${playlist_id} is current. Unable to delete it. Make another playlist current first.`;
-		return await deletePL(playlist_id);
+		await deletePL(playlist_id);
+		emitWS('playlistsUpdated');
 	} catch(err) {
 		throw {
 			message: err,
@@ -307,6 +308,9 @@ export async function editPlaylist(playlist_id: number, playlist: Playlist) {
 			modified_at: new Date(),
 			flag_visible: playlist.flag_visible
 		});
+		emitWS('playlistInfoUpdated', playlist_id);
+		emitWS('playlistsUpdated');
+
 	} catch(err) {
 		throw {
 			message: err,
@@ -328,6 +332,7 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 	});
 	if (+opts.current) setState({currentPlaylistID: playlist_id});
 	if (+opts.public) setState({publicPlaylistID: playlist_id});
+	emitWS('playlistsUpdated');
 	return playlist_id;
 }
 
@@ -584,6 +589,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		if (+playlist_id === state.publicPlaylistID) {
 			karaList.forEach(k => emitWS('KIDUpdated', { kid: k.kid, flag_inplaylist: true, requester: requester }));
 		}
+		emitWS('playlistContentsUpdated', playlist_id);
+		emitWS('playlistInfoUpdated', playlist_id);
 		return ret;
 	} catch(err) {
 		logger.error('Unable to add karaokes', {service: 'Playlist', obj: err});
@@ -681,6 +688,8 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 		if (+playlist_id === state.publicPlaylistID) {
 			plcList.forEach(plc => emitWS('KIDUpdated', { kid: plc.kid, flag_inplaylist: true, requester: plcData.username }));
 		}
+		emitWS('playlistContentsUpdated', playlist_id);
+		emitWS('playlistInfoUpdated', playlist_id);
 		return playlist_id;
 	} catch(err) {
 		throw {
@@ -720,6 +729,8 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 		if (+playlist_id === pubPLID) {
 			kids.forEach(kid => emitWS('KIDUpdated', {kid: kid, flag_inplaylist: false}));
 		}
+		emitWS('playlistContentsUpdated', playlist_id);
+		emitWS('playlistInfoUpdated', playlist_id);
 		profile('deleteKara');
 		return {
 			pl_id: playlist_id,
@@ -760,6 +771,8 @@ export async function editPLC(plc_id: number, params: PLCEditParams) {
 		await reorderPlaylist(pl.playlist_id);
 	}
 	updatePlaylistLastEditTime(pl.playlist_id);
+	emitWS('playlistContentsUpdated', pl.playlist_id);
+	emitWS('playlistInfoUpdated', pl.playlist_id);
 	profile('editPLC');
 	return {
 		pl_id: pl.playlist_id
@@ -899,6 +912,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 			const karas = await getAllRemoteKaras(null, {});
 			unknownKaras = karas.content.filter(k => unknownKIDs.includes(k.kid));
 		}
+		emitWS('playlistsUpdated');
 		return {
 			playlist_id: playlist_id,
 			karasUnknown: unknownKaras
@@ -949,7 +963,7 @@ export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: bool
 		await replacePlaylist(playlist);
 		updatePlaylistLastEditTime(playlist_id);
 		logger.info(`Playlist ${pl.name} shuffled`, {service: 'Playlist'});
-		return pl.name;
+		emitWS('playlistContentsUpdated', playlist_id);
 	} catch(err) {
 		logger.error('Could not shuffle playlist', {service: 'Playlist', obj: err});
 		throw {

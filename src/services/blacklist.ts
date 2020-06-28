@@ -20,6 +20,7 @@ import {KaraList, KaraParams} from '../lib/types/kara';
 import {uuidRegexp} from '../lib/utils/constants';
 import logger, { profile } from '../lib/utils/logger';
 import {isNumber} from '../lib/utils/validators';
+import { emitWS } from '../lib/utils/ws';
 import {BLC, BLCSet, BLCSetFile} from '../types/blacklist';
 import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
@@ -31,6 +32,8 @@ export async function editSet(params: BLCSet) {
 	if (!blcSet) throw 'BLC set unknown';
 	await editBLCSet(params);
 	updatedSetModifiedAt(blcSet.blc_set_id);
+	emitWS('BLCSetInfoUpdated', params.blc_set_id);
+	emitWS('BLCSetsUpdated');
 }
 
 async function updatedSetModifiedAt(id: number) {
@@ -57,6 +60,7 @@ export async function importSet(file: BLCSetFile) {
 	for (const blc of file.blcSet) {
 		await addBlacklistCriteria(blc.type, blc.value, id);
 	}
+	emitWS('BLCSetsUpdated');
 	return id;
 }
 
@@ -82,6 +86,7 @@ export async function setSetCurrent(id: number) {
 	await unsetCurrentSet();
 	await setCurrentSet(id);
 	updatedSetModifiedAt(id);
+	emitWS('BLCSetInfoUpdated', id);
 	await generateBlacklist();
 }
 
@@ -89,6 +94,7 @@ export async function removeSet(id: number) {
 	const blcSet = await selectSet(id);
 	if (!blcSet) throw 'BLC set unknown';
 	await deleteSet(id);
+	emitWS('BLCSetsUpdated');
 }
 
 export async function copySet(from: number, to: number) {
@@ -97,6 +103,7 @@ export async function copySet(from: number, to: number) {
 	if (!blcSet1) throw 'Origin BLC set unknown';
 	if (!blcSet2) throw 'Destination BLC set unknown';
 	await copyBLCSet(from, to);
+	emitWS('BLCSetInfoUpdated', to);
 }
 
 export function getAllSets() {
@@ -162,6 +169,7 @@ export async function emptyBlacklistCriterias(id: number) {
 	await emptyBLC(id);
 	if (blcSet.flag_current) await generateBlacklist();
 	updatedSetModifiedAt(id);
+	emitWS('blacklistUpdated');
 }
 
 export async function deleteBlacklistCriteria(blc_id: number, set_id: number) {
@@ -173,6 +181,7 @@ export async function deleteBlacklistCriteria(blc_id: number, set_id: number) {
 	if (blcSet.flag_current) await generateBlacklist();
 	profile('delBLC');
 	updatedSetModifiedAt(set_id);
+	emitWS('blacklistUpdated');
 }
 
 export async function addBlacklistCriteria(type: number, value: any, set_id: number) {
@@ -199,6 +208,7 @@ export async function addBlacklistCriteria(type: number, value: any, set_id: num
 		await addBLC(blcList);
 		if (blcset.flag_current) await generateBlacklist();
 		updatedSetModifiedAt(set_id);
+		emitWS('blacklistUpdated');
 	} catch(err) {
 		logger.error('Error adding criteria', {service: 'Blacklist', obj: JSON.stringify(err)});
 		const error = new Error(err);

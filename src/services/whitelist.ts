@@ -1,6 +1,7 @@
 import {addKaraToWhitelist as addToWL,emptyWhitelist as emptyWL, getWhitelistContents as getWLContents, removeKaraFromWhitelist} from '../dao/whitelist';
 import { KaraParams } from '../lib/types/kara';
 import logger, {profile} from '../lib/utils/logger';
+import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import {generateBlacklist} from './blacklist';
 import {formatKaraList, isAllKaras} from './kara';
@@ -13,7 +14,8 @@ export async function addKaraToWhitelist(kids: string[], reason: string): Promis
 		const karasUnknown = await isAllKaras(kids);
 		if (karasUnknown.length > 0) throw 'One of the karaokes does not exist.';
 		await addToWL(kids, reason);
-		generateBlacklist();
+		generateBlacklist().then(() => emitWS('blacklistUpdated'));
+		emitWS('whitelistUpdated');
 		return kids;
 	} catch(err) {
 		throw {
@@ -41,7 +43,8 @@ export async function deleteKaraFromWhitelist(karas: string[]) {
 		profile('deleteWLC');
 		logger.info('Deleting karaokes from whitelist', {service: 'Whitelist', obj: karas});
 		await removeKaraFromWhitelist(karas);
-		return await generateBlacklist();
+		generateBlacklist().then(() => emitWS('blacklistUpdated'));
+		emitWS('whitelistUpdated');
 	} catch(err) {
 		const error = new Error(err);
 		sentry.error(error);
@@ -55,5 +58,6 @@ export async function deleteKaraFromWhitelist(karas: string[]) {
 export async function emptyWhitelist() {
 	logger.info('Wiping whitelist', {service: 'Whitelist'});
 	await emptyWL();
-	generateBlacklist();
+	generateBlacklist().then(() => emitWS('blacklistUpdated'));
+	emitWS('whitelistUpdated');
 }

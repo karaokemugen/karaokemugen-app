@@ -3,7 +3,6 @@ import { Router } from 'express';
 import { getConfig } from '../../lib/utils/config';
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
-import { emitWS } from '../../lib/utils/ws';
 import { addBlacklistCriteria, addSet, copySet, deleteBlacklistCriteria, editSet, emptyBlacklistCriterias, exportSet, getAllSets, getBlacklist, getBlacklistCriterias, getSet, importSet,removeSet, setSetCurrent } from '../../services/blacklist';
 import { APIMessage,errMessage } from '../common';
 import { requireAdmin,requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
@@ -34,7 +33,6 @@ export default function blacklistController(router: Router) {
 		// Empty blacklist criterias
 			try {
 				await emptyBlacklistCriterias(req.params.set_id);
-				emitWS('blacklistUpdated');
 				res.status(200).json();
 			} catch(err) {
 				const code = 'BLC_EMPTY_ERROR';
@@ -192,7 +190,6 @@ export default function blacklistController(router: Router) {
 			if (!validationErrors) {
 				try {
 					await addBlacklistCriteria(req.body.blcriteria_type, req.body.blcriteria_value, req.params.set_id);
-					emitWS('blacklistUpdated');
 					res.status(201).json();
 				} catch(err) {
 					const code = 'BLC_ADD_ERROR';
@@ -232,7 +229,6 @@ export default function blacklistController(router: Router) {
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await deleteBlacklistCriteria(req.params.blc_id, req.params.set_id);
-				emitWS('blacklistUpdated');
 				res.status(200).json();
 			} catch(err) {
 				const code = 'BLC_DELETE_ERROR';
@@ -288,7 +284,6 @@ export default function blacklistController(router: Router) {
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await removeSet(req.params.set_id);
-				emitWS('BLCSetsUpdated');
 				res.status(200).json();
 			} catch(err) {
 				const code = 'BLC_SET_DELETE_ERROR';
@@ -328,8 +323,6 @@ export default function blacklistController(router: Router) {
 						blc_set_id: req.params.set_id,
 						...req.body
 					});
-					emitWS('BLCSetInfoUpdated',req.params.set_id);
-					emitWS('BLCSetsUpdated');
 					res.status(200).json();
 				} catch(err) {
 					const code = 'BLC_SET_UPDATE_ERROR';
@@ -404,7 +397,6 @@ export default function blacklistController(router: Router) {
 						created_at: null,
 						modified_at: null,
 					});
-					emitWS('BLCSetsUpdated');
 					res.status(201).json({id: id});
 				} catch(err) {
 					const code = 'BLC_SET_CREATE_ERROR';
@@ -436,7 +428,6 @@ export default function blacklistController(router: Router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await setSetCurrent(req.params.set_id);
-				emitWS('BLCSetInfoUpdated',req.params.set_id);
 				res.status(200).json();
 			} catch(err) {
 				const code = 'BLC_SET_CURRENT_ERROR';
@@ -464,7 +455,6 @@ export default function blacklistController(router: Router) {
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await copySet(req.body.fromSet_id, req.body.toSet_id);
-				emitWS('BLCSetInfoUpdated', req.body.toSet_id);
 				res.status(200).json('BLC_COPIED');
 			} catch(err) {
 				const code = 'BLC_COPY_ERROR';
@@ -561,7 +551,6 @@ export default function blacklistController(router: Router) {
 						message: 'BLC Set Imported',
 						blc_set_id: id
 					};
-					emitWS('BLCSetsUpdated');
 					res.json({
 						data: response,
 						code: 'BLC_SET_IMPORTED',

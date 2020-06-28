@@ -67,6 +67,7 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 		editRemote: false,
 		renameUser: true
 	});
+	emitWS('userUpdated', token.username);
 	return {
 		token: createJwtToken(user.login, token.role)
 	};
@@ -203,6 +204,7 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 			renameUser: true
 		});
 		await convertToRemoteFavorites(user.login);
+		emitWS('userUpdated', user.login);
 		return {
 			onlineToken: remoteUser.token,
 			token: createJwtToken(user.login, token.role)
@@ -304,6 +306,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			user.password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(user.login,user.password);
 		}
+		emitWS('userUpdated', username);
 		return {
 			user,
 			onlineToken: KMServerResponse?.token
@@ -625,6 +628,7 @@ export async function deleteUser(username: string) {
 		await DBDeleteUser(username);
 		if (usersFetched.has(username)) usersFetched.delete(username);
 		logger.debug(`Deleted user ${username}`, {service: 'User'});
+		emitWS('usersUpdated');
 		return true;
 	} catch (err) {
 		logger.error(`Unable to delete user ${username}`, {service: 'User', obj: err});
