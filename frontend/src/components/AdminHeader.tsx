@@ -195,6 +195,7 @@ class AdminHeader extends Component<IProps, IState> {
 						data-namecommand={this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? 'pause' : 'play'}
 						className="btn btn-primary"
 						onClick={this.play}
+						disabled={this.props.currentPlaylist?.karacount === 0}
 					>
 						{this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? (
 							<i className="fas fa-pause"></i>

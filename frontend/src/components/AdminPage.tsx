@@ -75,6 +75,7 @@ class AdminPage extends Component<IProps, IState> {
 		}
 		getSocket().on('publicPlaylistUpdated', this.getPlaylistList);
 		getSocket().on('playlistsUpdated', this.getPlaylistList);
+		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
 		store.addChangeListener('loginOut', this.openLoginOrProfileModal);
 		store.addChangeListener('loginUpdated', this.getPlaylistList);
 	}
