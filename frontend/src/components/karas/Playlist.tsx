@@ -311,7 +311,7 @@ class Playlist extends Component<IProps, IState> {
 			value =
 				this.props.side === 1
 					? -1
-					: (this.props.config.Frontend.Mode === 1 ?
+					: (store.getConfig().Frontend.Mode === 1 ?
 						store.getState().currentPlaylistID :
 						store.getState().publicPlaylistID);
 		} else {
