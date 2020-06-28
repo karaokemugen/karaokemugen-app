@@ -251,10 +251,15 @@ div.detailsKara, .list-group-item.karaCard div.details, .lyricsKara {
 .list-group-item.karaCard div.details {
 	background-color: hsla(166, 22%, 18%, 1)
 }
-.list-group-item .lyricsKara {
+.lyricsKara {
 	background-color: #303340;
 	text-align: center;
 	text-transform: none;
+ }
+
+ .lyricsKaraLoad {
+	 height: 95vh;
+	overflow: auto;
  }
 
 .closeModal {
@@ -272,9 +277,14 @@ div.detailsKara, .list-group-item.karaCard div.details, .lyricsKara {
 	color: hsla(0, 0%, 90%, 0.98);
 	background-color: transparent;
 }
-.detailsKara .topRightButtons, .karaCard .details .topRightButtons, .lyricsKara button.closeParent {
+.detailsKara .topRightButtons, .karaCard .details .topRightButtons {
 	position: absolute;
 	right: 10px;
+}
+
+.lyricsKara button.closeParent {
+	position: absolute;
+	right: 3em;
 }
 .lyricsKara button.closeParent:last-child {
 	bottom: 2%;
