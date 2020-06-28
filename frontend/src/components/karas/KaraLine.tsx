@@ -25,7 +25,6 @@ interface IProps {
 	idPlaylistTo: number;
 	playlistInfo: DBPL | undefined;
 	scope: string;
-	playlistCommands?: boolean;
 	i18nTag: { [key: string]: { [key: string]: string } };
 	avatar_file: string;
 	index: number;

@@ -72,3 +72,45 @@
 	}
 }
 
+.addRandomKaras {
+	width: 18px;
+}
+
+.smartShuffle {
+	font-weight: bold;
+	color: black;
+	text-shadow: -1px -1px 0 hsla(0, 0%, 100%, .85), 1px -1px 0 hsla(0, 0%, 100%, .85), -1px 1px 0 hsla(0, 0%, 100%, .85), 0.5px 0.5px 0 hsla(0, 0%, 100%, .85);
+}
+
+.importFile {
+	margin-bottom: 0px;
+	font-weight: normal;
+	i {
+		margin-right: 5px;
+	}
+}
+
+.showPlaylistCommands {
+	opacity: .7;
+	z-index: 900;
+	padding: 6px 6px 6px 10px;
+}
+
+.showPlaylistCommands:hover, .showPlaylistCommands.btn-primary {
+	opacity: 1.0;
+}
+
+.showPlaylistCommands:after {
+	content: "";
+	display: inline-block;
+	position: relative;
+	top: 10px;
+	border-color: currentColor transparent transparent;
+	border-width: 5px 5px;
+	border-style: solid;
+}
+
+.danger-hover:hover {
+	background-color: #793230 !important;
+	color: white !important;
+}

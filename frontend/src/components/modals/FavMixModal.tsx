@@ -41,7 +41,7 @@ class FavMixModal extends Component<IProps,IState> {
     			<div className="modal-dialog modal-md">
     				<div className="modal-content">
     					<ul className="modal-header">
-    						<h4 className="modal-title">{i18next.t('START_FAV_MIX')}</h4>
+    						<h4 className="modal-title">{i18next.t('ADVANCED.AUTOMIX')}</h4>
 							<button className="closeModal btn btn-action" 
 								onClick={() => {
 									let element = document.getElementById('modal');

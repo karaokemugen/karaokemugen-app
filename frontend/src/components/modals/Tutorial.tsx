@@ -92,7 +92,7 @@ class Tutorial extends Component<IProps,IState> {
 				},
 				{ 
 					placement:'auto',
-					target:'#panel2 .btn.btn-default.pull-left.showPlaylistCommands',
+					target:'#panel2 .btn.btn-default.showPlaylistCommands',
 					content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON'),
 					hideFooter: true,
 				},

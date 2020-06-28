@@ -42,7 +42,6 @@ interface IProps {
 	scope: string;
 	side: number;
 	playlistInfo: DBPL | undefined;
-	playlistCommands: boolean;
 	tags: Array<Tag> | undefined;
 	config: Config;
 	playlistList: Array<PlaylistElem>;
@@ -60,7 +59,6 @@ interface IProps {
 	transferCheckedKaras: () => void;
 	deleteCheckedKaras: () => void;
 	addCheckedKaras: () => void;
-	togglePlaylistCommands: () => void;
 	toggleSearchMenu?: () => void;
 }
 
@@ -69,12 +67,14 @@ interface IState {
 	tagType: number | string;
 	activeFilter: number;
 	activeFilterUUID: string;
+	playlistCommands: boolean;
 }
 
 class PlaylistHeader extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
+			playlistCommands: false,
 			selectAllKarasChecked: false,
 			tagType: 2,
 			activeFilter: 1,
@@ -83,6 +83,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	}
 
 	addRandomKaras = () => {
+		this.togglePlaylistCommands();
 		callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', (nbOfRandoms: number) => {
 			axios.get(`${this.props.getPlaylistUrl()}?random=${nbOfRandoms}`).then(randomKaras => {
 				if (randomKaras.data.content.length > 0) {
@@ -100,6 +101,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	};
 
 	addPlaylist = () => {
+		this.togglePlaylistCommands();
 		if (this.props.idPlaylist === -4) {
 			callModal('prompt', i18next.t('BLC.ADD'), '', (playlistName: string) => {
 				axios.post('/blacklist/set', { name: playlistName, flag_current: false }).then(response => {
@@ -116,33 +118,46 @@ class PlaylistHeader extends Component<IProps, IState> {
 	};
 
 	deletePlaylist = () => {
-		callModal('confirm', i18next.t('CL_DELETE_PLAYLIST',
-			{
-				playlist: this.props.idPlaylist === -4 ?
-					this.props.bLSet?.name :
-					(this.props.playlistInfo as DBPL).name
-			}), '', (confirm: boolean) => {
-				if (confirm) {
-					let url = this.props.idPlaylist === -4 ?
-						`/blacklist/set/${this.props.bLSet?.blc_set_id}` :
-						`/playlists/${this.props.idPlaylist}`
-					axios.delete(url);
-					if (this.props.idPlaylist === -4) {
-						this.props.changeIdPlaylist(-4);
-					} else {
-						this.props.changeIdPlaylist(store.getState().publicPlaylistID);
+		this.togglePlaylistCommands();
+		if (this.props.bLSet?.flag_current) {
+			displayMessage("warning", i18next.t('BLC.DELETE_CURRENT'));
+		} else if (this.props.playlistInfo?.flag_current && this.props.playlistInfo?.flag_public) {
+			displayMessage("warning", i18next.t('ADVANCED.DELETE_CURRENT_PUBLIC'));
+		} else if (this.props.playlistInfo?.flag_public) {
+			displayMessage("warning", i18next.t('ADVANCED.DELETE_PUBLIC'));
+		} else if (this.props.playlistInfo?.flag_current) {
+			displayMessage("warning", i18next.t('ADVANCED.DELETE_CURRENT'));
+		} else {
+			callModal('confirm', i18next.t('CL_DELETE_PLAYLIST',
+				{
+					playlist: this.props.idPlaylist === -4 ?
+						this.props.bLSet?.name :
+						(this.props.playlistInfo as DBPL).name
+				}), '', (confirm: boolean) => {
+					if (confirm) {
+						let url = this.props.idPlaylist === -4 ?
+							`/blacklist/set/${this.props.bLSet?.blc_set_id}` :
+							`/playlists/${this.props.idPlaylist}`
+						axios.delete(url);
+						if (this.props.idPlaylist === -4) {
+							this.props.changeIdPlaylist(-4);
+						} else {
+							this.props.changeIdPlaylist(store.getState().publicPlaylistID);
+						}
 					}
-				}
-			});
+				});
+		}
 	};
 
 	startFavMix = async () => {
+		this.togglePlaylistCommands();
 		let response = await axios.get('/users/');
 		let userList = response.data.filter((u: User) => (u.type as number) < 2);
 		ReactDOM.render(<FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList} />, document.getElementById('modal'));
 	};
 
 	exportPlaylist = async () => {
+		this.togglePlaylistCommands();
 		let url;
 		if (this.props.idPlaylist === -4) {
 			url = `/blacklist/set/${this.props.bLSet?.blc_set_id}/export`
@@ -168,6 +183,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	};
 
 	importPlaylist = (e: any) => {
+		this.togglePlaylistCommands();
 		let url: string;
 		let fr: FileReader;
 		let file: File;
@@ -232,6 +248,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	};
 
 	deleteAllKaras = () => {
+		this.togglePlaylistCommands();
 		if (this.props.idPlaylist === -2 || this.props.idPlaylist === -4) {
 			axios.put(`/blacklist/set/${this.props.bLSet?.blc_set_id}/criterias/empty`);
 		} else if (this.props.idPlaylist === -3) {
@@ -242,6 +259,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	};
 
 	setFlagCurrent = () => {
+		this.togglePlaylistCommands();
 		if (this.props.idPlaylist === -4 && !this.props.bLSet?.flag_current) {
 			axios.put(`/blacklist/set/${this.props.bLSet?.blc_set_id}/setCurrent`);
 		} else if (!(this.props.playlistInfo as DBPL).flag_current) {
@@ -250,23 +268,27 @@ class PlaylistHeader extends Component<IProps, IState> {
 	};
 
 	setFlagPublic = () => {
+		this.togglePlaylistCommands();
 		if (!(this.props.playlistInfo as DBPL).flag_public) {
 			axios.put('/playlists/' + this.props.idPlaylist + '/setPublic');
 		}
 	};
 
 	setFlagVisible = () => {
+		this.togglePlaylistCommands();
 		axios.put(`/playlists/${this.props.idPlaylist}`,
 			{ name: (this.props.playlistInfo as DBPL).name, flag_visible: !(this.props.playlistInfo as DBPL).flag_visible });
 	};
 
 	shuffle = async () => {
+		this.togglePlaylistCommands();
 		this.props.playlistWillUpdate();
 		await axios.put(`/playlists/${this.props.idPlaylist}/shuffle`);
 		this.props.playlistDidUpdate();
 	};
 
 	smartShuffle = async () => {
+		this.togglePlaylistCommands();
 		this.props.playlistWillUpdate();
 		await axios.put(`/playlists/${this.props.idPlaylist}/shuffle`, { smartShuffle: 1 });
 		this.props.playlistDidUpdate();
@@ -326,106 +348,32 @@ class PlaylistHeader extends Component<IProps, IState> {
 	}
 
 	copyBlcSet = () => {
+		this.togglePlaylistCommands();
 		ReactDOM.render(<BlcSetCopyModal
 			bLSetFrom={this.props.bLSet?.blc_set_id as number}
 			bLSetList={this.props.bLSetList.filter(blcset => blcset.blc_set_id !== this.props.bLSet?.blc_set_id)}
 		/>, document.getElementById('modal'));
 	}
 
+	togglePlaylistCommands = () => {
+		this.setState({ playlistCommands: !this.state.playlistCommands });
+		store.getTuto()?.move(1);
+	};
+
 	render() {
-		const commandsControls = (
-			<div className="btn-group plCommands controls">
-				{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
-					<button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.EDIT' : 'PLAYLIST_EDIT')} className="btn btn-default" name="editName" onClick={this.props.editNamePlaylist}>
-						<i className="fas fa-pencil-alt"></i>
-					</button> : null
-				}
-				{this.props.idPlaylist !== -4 ?
-					<button title={i18next.t('START_FAV_MIX')} className="btn btn-default" name="startFavMix" onClick={this.startFavMix}>
-						<i className="fas fa-bolt"></i>
-					</button> : null
-				}
-				<button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.ADD' : 'PLAYLIST_ADD')} className="btn btn-default" name="add" onClick={this.addPlaylist}>
-					<i className="fas fa-plus"></i>
-				</button>
-				{(this.props.idPlaylist >= 0 && this.props.playlistInfo && !this.props.playlistInfo.flag_current && !this.props.playlistInfo.flag_public)
-					|| (this.props.idPlaylist === -4 && !this.props.bLSet?.flag_current) ?
-					<button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.DELETE' : 'PLAYLIST_DELETE')}
-						className="btn btn-danger" name="delete" onClick={this.deletePlaylist}>
-						<i className="fas fa-times"></i>
-					</button> : null
-				}
-				<label title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.IMPORT' : (this.props.idPlaylist === -5 ? 'FAVORITES_IMPORT' : 'PLAYLIST_IMPORT'))}
-					className="btn btn-default" htmlFor={'import-file' + this.props.side}>
-					<i className="fas fa-download"></i>
-					<input id={'import-file' + this.props.side} className="import-file" type="file" accept=".kmplaylist, .kmfavorites, .kmblc" style={{ display: 'none' }}
-						onChange={this.importPlaylist} />
-				</label>
-				<button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.EXPORT' : (this.props.idPlaylist === -5 ? 'FAVORITES_EXPORT' : 'PLAYLIST_EXPORT'))}
-					className="btn btn-default" name="export" onClick={this.exportPlaylist} >
-					<i className="fas fa-upload"></i>
-				</button>
-			</div>);
-
-		const actionDivContainer = (
-			<div className="btn-group plCommands actionDiv">
-				{this.props.idPlaylistTo >= 0 && this.props.idPlaylist !== -4 ?
-					<React.Fragment>
-						<button title={i18next.t('ADD_RANDOM_KARAS')} name="addRandomKaras" className="btn btn-default" onClick={this.addRandomKaras}>
-							<img src={getLucky} />
-						</button>
-						<button title={i18next.t('ADD_ALL_KARAS')} className="btn btn-danger" onClick={this.props.addAllKaras}>
-							<i className="fas fa-share"></i>
-						</button>
-					</React.Fragment>
-					: null
-				}
-				{this.props.idPlaylist === -4 && this.props.bLSetList.length > 1 ?
-					<button title={i18next.t('BLC.COPY')} className="btn btn-default" onClick={this.copyBlcSet}>
-						<i className="fas fa-copy"></i>
-					</button> : null
-				}
-				{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
-					<button title={i18next.t('EMPTY_LIST')} className="btn btn-danger" onClick={this.deleteAllKaras}>
-						<i className="fas fa-eraser"></i>
-					</button> : null
-				}
-				{this.props.idPlaylist !== -4 ?
-					<React.Fragment>
-						<button
-							title={i18next.t('SELECT_ALL')}
-							name="selectAllKaras"
-							onClick={() => {
-								this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
-								this.props.selectAllKaras();
-							}}
-							className="btn btn-default"
-						>
-							{
-								this.state.selectAllKarasChecked
-									? <i className="far fa-check-square"></i>
-									: <i className="far fa-square"></i>
-							}
-						</button>
-						<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
-							scope={this.props.scope} isHeader={true}
-							addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
-					</React.Fragment> : null
-				}
-			</div>);
-
-
 		const plCommandsContainer = (
-			this.props.scope === 'admin' && this.props.playlistCommands ?
-				<div className="plCommandsContainer actionDivContainer">
-					<React.Fragment>{commandsControls} {actionDivContainer}</React.Fragment>
+			this.props.scope === 'admin' && this.props.idPlaylist !== -4 ?
+				<div className="btn-group actionDiv">
+					<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
+						scope={this.props.scope} isHeader={true}
+						addKara={this.props.addCheckedKaras} deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
 				</div> : null);
 
 		const searchMenu = (this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).length > 0 ?
 			<div className="searchMenuContainer">
 				<div className="filterContainer">
 					<div className='filterButton ' onClick={async () => {
-						await this.setState({activeFilterUUID: ''});
+						await this.setState({ activeFilterUUID: '' });
 						this.props.getPlaylist();
 					}}>
 						<i className="fas fa-trash-alt"></i> <span>{i18next.t('CLEAR_FILTER')}</span>
@@ -466,54 +414,193 @@ class PlaylistHeader extends Component<IProps, IState> {
 			</div> : null);
 
 
-		const plSearch = (<div className="pull-left plSearch">
+		const plSearch = (<div className="plSearch">
 			<input type="text" placeholder="&#xF002;" defaultValue={store.getFilterValue(this.props.side)}
 				onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)} />
 		</div>);
 
-		const flagsContainer = (
-			((this.props.idPlaylist >= 0 && this.props.playlistInfo) || this.props.idPlaylist === -4) && this.props.scope !== 'public' ?
-				<div className="flagsContainer " >
-					<div className="btn-group plCommands flags" id={'flag' + this.props.side}>
-						{this.props.playlistInfo || this.props.idPlaylist === -4 ?
-							<button title={i18next.t(this.props.idPlaylist === -4 ? 'BLC.CURRENT' : 'PLAYLIST_CURRENT')}
-								name="flag_current" onClick={this.setFlagCurrent}
-								className={`btn ${(this.props.idPlaylist === -4 && this.props.bLSet?.flag_current)
-									|| this.props.playlistInfo?.flag_current
-									? 'btn-primary' : 'btn-default'}`} >
-								<i className="fas fa-play-circle"></i>
-							</button> : null
-						}
-						{this.props.idPlaylist !== -4 && this.props.playlistInfo ?
-							<button title={i18next.t('PLAYLIST_PUBLIC')} name="flag_public" onClick={this.setFlagPublic}
-								className={'btn ' + (this.props.playlistInfo?.flag_public ? 'btn-primary' : 'btn-default')} >
-								<i className="fas fa-globe"></i>
-							</button> : null
-						}
-						{this.props.idPlaylist >= 0 ?
-							<button title={i18next.t(this.props.playlistInfo?.flag_visible ? 'PLAYLIST_INVISIBLE' :'PLAYLIST_VISIBLE')} 
-							className="btn btn-default" name="flag_visible" onClick={this.setFlagVisible}>
-								{this.props.playlistInfo?.flag_visible ?
-									<i className="fas fa-eye-slash"></i> :
-									<i className="fas fa-eye"></i>
-								}
-							</button> : null
-						}
-					</div>
-				</div> : null
-		);
-
 		return (
 			<React.Fragment>
 				{this.props.scope !== 'public' || this.props.side !== 1 ?
-					<div className={'panel-heading plDashboard' + (this.props.playlistCommands ? ' advanced' : '')}>
+					<div className={'panel-heading plDashboard'}>
 						{this.props.scope === 'admin' || this.props.config.Frontend.Mode !== 1 ?
 							<React.Fragment>
 								{this.props.scope === 'admin' ?
-									<button title={i18next.t('PLAYLIST_COMMANDS')} onClick={this.props.togglePlaylistCommands}
-										className={'btn btn-default pull-left showPlaylistCommands' + (this.props.playlistCommands ? ' btn-primary' : '')}>
-										<i className="fas fa-wrench"></i>
-									</button> : null
+									<div
+										className="dropdown"
+									>
+										<button title={i18next.t('ADVANCED.PLAYLIST_COMMANDS')} onClick={this.togglePlaylistCommands}
+											className={'btn btn-default showPlaylistCommands' + (this.state.playlistCommands ? ' btn-primary' : '')}>
+											<i className="fas fa-wrench"></i>
+										</button>
+										{this.state.playlistCommands ?
+											<ul className="dropdown-menu">
+												{this.props.idPlaylist === -4 && this.props.bLSetList.length > 1 ?
+													<li>
+														<a href="#" onClick={this.copyBlcSet} title={i18next.t('ADVANCED.SHUFFLE')}>
+															<i className="fas fa-copy" />
+															&nbsp;
+															{i18next.t('BLC.COPY')}
+														</a>
+													</li> : null
+												}
+												{this.props.idPlaylist > 0 ?
+													<React.Fragment>
+														<li>
+															<a href="#" onClick={this.shuffle} title={i18next.t('ADVANCED.SHUFFLE')}>
+																<i className="fas fa-random" />
+																&nbsp;
+																{i18next.t('ADVANCED.SHUFFLE_SHORT')}
+															</a>
+														</li>
+														<li>
+															<a href="#" onClick={this.smartShuffle} title={i18next.t('ADVANCED.SMART_SHUFFLE')}>
+																<i className="fas fa-random smartShuffle" />
+																&nbsp;
+																{i18next.t('ADVANCED.SMART_SHUFFLE_SHORT')}
+															</a>
+														</li>
+													</React.Fragment> : null
+												}
+												{this.props.idPlaylistTo >= 0 && this.props.idPlaylist !== -4 ?
+													<React.Fragment>
+														<li>
+															<a href="#" onClick={() => {
+																this.togglePlaylistCommands();
+																this.props.addAllKaras();
+															}} className="danger-hover">
+																<i className="fas fa-share" />
+																&nbsp;
+																{i18next.t('ADVANCED.ADD_ALL')}
+															</a>
+														</li>
+														<li>
+															<a href="#" onClick={this.addRandomKaras}>
+																<img className="addRandomKaras" src={getLucky} />
+																&nbsp;
+																{i18next.t('ADVANCED.ADD_RANDOM')}
+															</a>
+														</li>
+													</React.Fragment>
+													: null
+												}
+												{this.props.idPlaylist !== -4 ?
+													<li>
+														<a href="#" onClick={() => {
+															this.togglePlaylistCommands();
+															this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
+															this.props.selectAllKaras();
+														}}>
+															{this.state.selectAllKarasChecked
+																? <i className="far fa-check-square" />
+																: <i className="far fa-square" />
+															}
+																&nbsp;
+																{i18next.t('ADVANCED.SELECT_ALL')}
+														</a>
+													</li> : null
+												}
+												{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
+													<li>
+														<a href="#" onClick={this.deleteAllKaras} className="danger-hover">
+															<i className="fas fa-eraser" />
+																&nbsp;
+																{i18next.t('ADVANCED.EMPTY_LIST')}
+														</a>
+													</li> : null
+												}
+												{this.props.idPlaylist >= 0 ?
+													<li>
+														<a href="#" onClick={this.setFlagVisible}>
+															{this.props.playlistInfo?.flag_visible ?
+																<i className="fas fa-eye-slash"></i> :
+																<i className="fas fa-eye"></i>
+															}
+																&nbsp;
+																{i18next.t(this.props.playlistInfo?.flag_visible ?
+																'ADVANCED.INVISIBLE' : 'ADVANCED.VISIBLE')}
+														</a>
+													</li> : null
+												}
+												{this.props.idPlaylist !== -4 && !this.props.playlistInfo?.flag_public ?
+													<li>
+														<a href="#" onClick={this.setFlagPublic}>
+															<i className="fas fa-globe" />
+																&nbsp;
+																{i18next.t('ADVANCED.PUBLIC')}
+														</a>
+													</li> : null
+												}
+												{!this.props.playlistInfo?.flag_current
+													|| (this.props.idPlaylist === -4 && !this.props.bLSet?.flag_current) ?
+													<li>
+														<a href="#" onClick={this.setFlagCurrent}>
+															<i className="fas fa-play-circle" />
+																&nbsp;
+																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.CURRENT' : 'ADVANCED.CURRENT')}
+														</a>
+													</li> : null
+												}
+												{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
+													<React.Fragment>
+														<li>
+															<a href="#" onClick={this.deletePlaylist} className="danger-hover">
+																<i className="fas fa-times" />
+																&nbsp;
+																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.DELETE' : 'ADVANCED.DELETE')}
+															</a>
+														</li>
+														<li>
+															<a href="#" onClick={() => {
+																this.togglePlaylistCommands();
+																this.props.editNamePlaylist();
+															}}>
+																<i className="fas fa-pencil-alt" />
+																&nbsp;
+																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EDIT' : 'ADVANCED.RENAME')}
+															</a>
+														</li>
+													</React.Fragment> : null
+												}
+												<li>
+													<a href="#" onClick={this.exportPlaylist}>
+														<i className="fas fa-upload" />
+																&nbsp;
+																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EXPORT' :
+															(this.props.idPlaylist === -5 ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'))}
+													</a>
+												</li>
+												<br />
+												<li>
+													<a href="#" onClick={this.addPlaylist}>
+														<i className="fas fa-plus" />
+																&nbsp;
+																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.ADD' : 'ADVANCED.ADD')}
+													</a>
+												</li>
+												{this.props.idPlaylist !== -4 ?
+													<li>
+														<a href="#" onClick={this.startFavMix}>
+															<i className="fas fa-bolt" />
+															&nbsp;
+															{i18next.t('ADVANCED.AUTOMIX')}
+														</a>
+													</li> : null
+												}
+												<li>
+													<a href="#" >
+														<label className="importFile" htmlFor={'import-file' + this.props.side}>
+															<i className="fas fa-download" />
+															{i18next.t(this.props.idPlaylist === -4 ? 'BLC.IMPORT' :
+																(this.props.idPlaylist === -5 ? 'FAVORITES_IMPORT' : 'ADVANCED.IMPORT'))}
+														</label>
+													</a>
+													<input id={'import-file' + this.props.side} className="import-file" type="file" style={{ display: 'none' }}
+														accept=".kmplaylist, .kmfavorites, .kmblc" onChange={this.importPlaylist} />
+												</li>
+											</ul> : null
+										}
+									</div> : null
 								}
 								{is_touch_device() ?
 									<select className="selectPlaylist"
@@ -545,35 +632,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 								}
 							</React.Fragment> : null
 						}
-						{this.props.scope === 'admin' ?
-							<React.Fragment>
-								{this.props.idPlaylist > 0 ?
-									<div className="controlsContainer">
-										<div className="btn-group plCommands">
-											<button title={i18next.t('PLAYLIST_SHUFFLE')} className="btn btn-default" name="shuffle" onClick={this.shuffle}>
-												<i className="fas fa-random"></i>
-											</button>
-											<button title={i18next.t('PLAYLIST_SMART_SHUFFLE')} className="btn btn-default" name="smartShuffle" onClick={this.smartShuffle}>
-												<i className="fas fa-random"></i>
-											</button>
-										</div>
-									</div> : null
-								}
-								{this.props.idPlaylist === -1 ?
-									<div className="searchMenuButtonContainer btn-group plCommands">
-										<button type="button" className={'searchMenuButton collapsed btn btn-default' + (this.props.searchMenuOpen ? ' searchMenuButtonOpen' : '')}
-											onClick={this.props.toggleSearchMenu}>
-											<i className="fas fa-filter"></i>
-										</button>
-									</div> : null
-								}
-							</React.Fragment > : null
+						{this.props.scope === 'admin' && this.props.idPlaylist === -1 ?
+							<div className="searchMenuButtonContainer btn-group">
+								<button type="button" className={'searchMenuButton collapsed btn btn-default' + (this.props.searchMenuOpen ? ' searchMenuButtonOpen' : '')}
+									onClick={this.props.toggleSearchMenu}>
+									<i className="fas fa-filter"></i>
+								</button>
+							</div> : null
 						}
-						{this.props.side === 1 ?
-							<React.Fragment>{plSearch}{flagsContainer}{plCommandsContainer}</React.Fragment> :
-							<React.Fragment>{plCommandsContainer}{flagsContainer}{plSearch}</React.Fragment>
-						}
-
+						{plSearch}{plCommandsContainer}
 					</div> : null
 				}
 				{this.props.searchMenuOpen ?

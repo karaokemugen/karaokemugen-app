@@ -44,7 +44,6 @@ interface IState {
 	searchValue?: string;
 	searchCriteria?: string;
 	searchType?: string;
-	playlistCommands: boolean;
 	getPlaylistInProgress: boolean;
 	stopUpdate: boolean;
 	forceUpdate: boolean;
@@ -75,7 +74,6 @@ class Playlist extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			playlistCommands: false,
 			getPlaylistInProgress: false,
 			stopUpdate: false,
 			forceUpdate: false,
@@ -134,7 +132,9 @@ class Playlist extends Component<IProps, IState> {
 		getSocket().on('publicPlaylistUpdated', (idPlaylist: number) => {
 			if (this.props.scope !== 'admin' && this.props.side
 				&& idPlaylist !== store.getState().publicPlaylistID) {
-				store.getState().publicPlaylistID = idPlaylist;
+				let state = store.getState();
+				state.publicPlaylistID = idPlaylist;
+				store.setState(state);
 				this.changeIdPlaylist(idPlaylist);
 			}
 		});
@@ -205,7 +205,6 @@ class Playlist extends Component<IProps, IState> {
 					i18nTag={(this.state.data as KaraList).i18n}
 					side={this.props.side}
 					config={this.props.config}
-					playlistCommands={this.state.playlistCommands}
 					idPlaylistTo={this.props.idPlaylistTo}
 					checkKara={this.checkKara}
 					showVideo={this.props.showVideo}
@@ -531,11 +530,6 @@ class Playlist extends Component<IProps, IState> {
 			this.setState({ scrollToIndex: indexPlaying });
 	};
 
-	togglePlaylistCommands = () => {
-		this.setState({ playlistCommands: !this.state.playlistCommands });
-		store.getTuto() && store.getTuto().move(1);
-	};
-
 	selectAllKaras = () => {
 		let data = this.state.data;
 		let checkedkaras = 0;
@@ -753,8 +747,6 @@ class Playlist extends Component<IProps, IState> {
 						changeIdPlaylist={this.changeIdPlaylist}
 						playlistInfo={this.state.playlistInfo}
 						getPlaylistUrl={this.getPlaylistUrl}
-						togglePlaylistCommands={this.togglePlaylistCommands}
-						playlistCommands={this.state.playlistCommands}
 						editNamePlaylist={this.editNamePlaylist}
 						idPlaylistTo={this.props.idPlaylistTo}
 						selectAllKaras={this.selectAllKaras}
@@ -790,7 +782,7 @@ class Playlist extends Component<IProps, IState> {
 													<AutoSizer>
 														{({ height, width }) => (
 															<this.SortableList
-																{...[this.state.playlistCommands, this.state.forceUpdate]}
+																{...[this.state.forceUpdate]}
 																pressDelay={0}
 																helperClass="playlist-dragged-item"
 																useDragHandle={true}

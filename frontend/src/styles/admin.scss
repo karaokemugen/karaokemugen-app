@@ -52,13 +52,6 @@
 		justify-content: space-between;
 	}
 
-	.controls {
-		display: flex;
-		flex-direction: row;
-		float: left;
-		justify-content: center;
-	}
-
 	.checkboxKara {
 		padding: 4px;
 		font-size: 19px;
@@ -88,36 +81,6 @@
 		color: white;
 	}
 
-	.playlist-main .list-group-item.ui-sortable-helper {
-		background-color: #222;
-	}
-	.playlist-main li.list-group-item.deleted {
-		opacity: .2;
-	}
-
-	.playlistCommands {
-		position: absolute;
-		bottom: 0;
-		overflow: hidden;
-	}
-	.playlistCommands > span {
-		position: relative;
-		overflow: hidden;
-	}
-	#playlistCommand1 {
-		left: 0;
-	}
-	#playlistCommand2 {
-		right: 0;
-	}
-
-	.playlistCommands .showPlaylistCommands {
-		opacity: .7;
-		z-index: 900;
-	}
-	.playlistCommands .showPlaylistCommands:hover, .playlistCommands .showPlaylistCommands.btn-primary {
-		opacity: 1.0;
-	}
 	#panel2 .actionDiv {
 		float: left;
 	}
@@ -126,35 +89,10 @@
 		flex-direction: row-reverse;
 	}
 
-	#panel1 .actionDivContainer {
-		margin-left: auto;
-	}
-
-	#panel2 .actionDivContainer {
-		margin-right: auto;
-	}
 	.panel-heading > div > div:nth-child(2) {
 		padding-left: 4px;
 	}
 
-	.plDashboard .flags {
-		margin-left: auto;
-	}
-
-	button[name="addRandomKaras"] {
-		padding: 5px 9px;
-	}
-	button[name="addRandomKaras"] > img{
-		margin-top: -6px;
-		width: 18px;
-		filter: brightness(90%);
-	}
-
-	button[name="smartShuffle"] > i {
-		font-weight: bold;
-		color: black;
-		text-shadow: -1px -1px 0 hsla(0, 0%, 100%, .85), 1px -1px 0 hsla(0, 0%, 100%, .85), -1px 1px 0 hsla(0, 0%, 100%, .85), 0.5px 0.5px 0 hsla(0, 0%, 100%, .85);
-	}
 	.panel-heading ::-webkit-input-placeholder {
 		font-size: 17px;
 		line-height: 34px;
@@ -182,10 +120,7 @@
 		order: 2;
 	}
 
-	.flagsContainer {
-		order: 1;
-	}
-	.advanced .actionDivContainer {
+	.plDashboard .actionDiv {
 		order: 3
 	}
 
@@ -214,11 +149,8 @@
 		#panel2 .plSearch {
 			order: 1;
 		}
-		#panel2 .actionDivContainer {
+		#panel2 .plDashboard .actionDiv {
 			order: 2;
-		}
-		#panel2 .flagsContainer {
-			order: 3;
 		}
 	}
 }

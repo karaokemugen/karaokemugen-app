@@ -1475,9 +1475,6 @@ button.close {
 .modal-footer:after {
   clear: both;
 }
-.pull-left {
-  float: left !important;
-}
 .hide {
   display: none !important;
 }
