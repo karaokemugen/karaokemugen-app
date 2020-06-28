@@ -58,7 +58,7 @@ build-react:
   stage: build
   interruptible: true
   artifacts:
-    expire_in: 2 hours
+    expire_in: 8 hours
     name: km-app-build-${CI_COMMIT_REF_SLUG}
     paths:
     - systempanel/build/
