@@ -1,5 +1,5 @@
 diff --git a/node_modules/node-mpv/lib/mpv/_startStop.js b/node_modules/node-mpv/lib/mpv/_startStop.js
-index a02a990..32bd72f 100644
+index a02a990..19df246 100644
 --- a/node_modules/node-mpv/lib/mpv/_startStop.js
 +++ b/node_modules/node-mpv/lib/mpv/_startStop.js
 @@ -109,6 +109,12 @@ const startStop = {
@@ -23,14 +23,14 @@ index a02a990..32bd72f 100644
 +				observeSocket.connect({path: this.options.socket}, () => {
 +					// send any message to see if there's a MPV instance responding
 +					observeSocket.write(JSON.stringify({
-+						'command': ['get_property', 'mpv-version']
++						'command': ['get_property', 'idle-active']
 +					})+'\n');
 +					if (this.options.debug || this.options.verbose) console.log('[Node-MPV] sending stimulus');
 +				}).on('data', (data) => {
  					// parse the messages from the socket
  					const messages = data.toString('utf-8').split('\n');
  					// check every message
-@@ -127,15 +139,23 @@ const startStop = {
+@@ -127,12 +139,20 @@ const startStop = {
  						if(message.length > 0){
  							message = JSON.parse(message);
  							// check for the relevant events to see, if mpv has finished loading
@@ -43,19 +43,31 @@ index a02a990..32bd72f 100644
 -							if('event' in message && ['idle','file-loaded'].includes(message.event)){
 +							if('event' in message && ['idle','idle-active','file-loaded'].includes(message.event)){
 +								if (this.options.debug || this.options.verbose) console.log('[Node-MPV] idling');
- 								observeSocket.destroy();							
- 								resolve();
- 							}
-+							// check our stimulus response
-+							// Check for our stimulus with mpv-version
-+							if('data' in message && 'error' in message && message.error === 'success') {
-+								if (this.options.debug || this.options.verbose) console.log('[Node-MPV] stimulus received');
-+								observeSocket.destroy();
++								observeSocket.destroy();							
 +								resolve();
 +							}
- 						}
- 					});
- 				});
++							// check our stimulus response
++							// Check for our stimulus with idle-active
++							if('data' in message && 'error' in message && message.error === 'success') {
++								if (this.options.debug || this.options.verbose) console.log('[Node-MPV] stimulus received', message.data);
+ 								observeSocket.destroy();
+ 								resolve();
+ 							}
+@@ -160,7 +180,13 @@ const startStop = {
+ 		// sets the Interval to emit the current time position
+ 		this.observeProperty('time-pos', 0);
+ 		this.timepositionListenerId = setInterval(async () => {
+-			const paused = await this.isPaused();
++			const paused = await this.isPaused().catch(err => {
++				if (this.options.debug) console.log('[Node-MPV] timeposition listener cannot retrieve isPaused', err);
++				if (err.code === 8) {
++					clearInterval(this.timepositionListenerId);
++					return true;
++				} else throw err; // This error is not catcheable, maybe provide a function in options to catch these
++			});
+ 			// only emit the time position if there is a file playing and it's not paused
+ 			if(!paused && this.currentTimePos != null){
+ 				this.emit("timeposition", this.currentTimePos);
 diff --git a/node_modules/node-mpv/lib/util.js b/node_modules/node-mpv/lib/util.js
 index 35d007e..0d00c5c 100644
 --- a/node_modules/node-mpv/lib/util.js
