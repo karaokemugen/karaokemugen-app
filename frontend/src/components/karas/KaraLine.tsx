@@ -15,6 +15,8 @@ import { buildKaraTitle, displayMessage, getSerieLanguage, getTagInLanguage, is_
 import ActionsButtons from './ActionsButtons';
 import KaraDetail from './KaraDetail';
 
+require('./KaraLine.scss');
+
 const DragHandle = SortableHandle(() => <span className="dragHandle"><i className="fas fa-ellipsis-v"></i></span>);
 
 interface IProps {
