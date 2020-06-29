@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
-import i18next from 'i18next';
 import axios from 'axios';
-import { buildKaraTitle, getSocket } from '../tools';
+import i18next from 'i18next';
+import React, { Component } from 'react';
+
 import { PublicPlayerState } from '../../../../src/types/state';
 import store from '../../store';
+import { buildKaraTitle, getSocket } from '../tools';
 
 require('./ProgressBar.scss');
 
@@ -59,12 +60,12 @@ class ProgressBar extends Component<IProps, IState> {
 		getSocket().on('playerStatus', this.refreshPlayerInfos);
 	}
 
-	async goToPosition(e: any) {
-		let karaInfo = document.getElementById('karaInfo');
+	goToPosition(e: any) {
+		const karaInfo = document.getElementById('karaInfo');
 		if (karaInfo) {
-			let barInnerwidth = karaInfo.offsetWidth;
-			let futurTimeX = e.pageX - karaInfo.offsetLeft;
-			let futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
+			const barInnerwidth = karaInfo.offsetWidth;
+			const futurTimeX = e.pageX - karaInfo.offsetLeft;
+			const futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
 			if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
 				this.setState({ width: e.pageX });
 				axios.put('/player', { command: 'goTo', options: futurTimeSec });
@@ -78,13 +79,13 @@ class ProgressBar extends Component<IProps, IState> {
 		}
 	};
 
-    /**
+	/**
     * refresh the player infos
     */
 	refreshPlayerInfos = async (data: PublicPlayerState) => {
-		let element = document.getElementById('karaInfo');
+		const element = document.getElementById('karaInfo');
 		if (element) {
-			let newWidth = element.offsetWidth *
+			const newWidth = element.offsetWidth *
 				10000 * (data.timePosition + this.state.refreshTime / 1000) / this.state.length / 10000 + 'px';
 
 			if (!this.state.oldState || data.timePosition != this.state.oldState.timePosition && this.state.length != 0) {
@@ -113,9 +114,9 @@ class ProgressBar extends Component<IProps, IState> {
 			} else if (data.currentlyPlaying === 'Sponsors') {
 				this.setState({ karaInfoText: i18next.t('SPONSOR_TIME'), length: -1, karaTitle: undefined });
 			} else if (store.getLogInfos()) {
-				let response = await axios.get('/karas/' + data.currentlyPlaying);
-				let kara = response.data;
-				let karaInfoText = buildKaraTitle(kara, true);
+				const response = await axios.get('/karas/' + data.currentlyPlaying);
+				const kara = response.data;
+				const karaInfoText = buildKaraTitle(kara, true);
 				this.setState({ karaTitle: karaInfoText as string, length: kara.duration });
 			}
 		}
@@ -136,13 +137,18 @@ class ProgressBar extends Component<IProps, IState> {
 	render() {
 		return (
 			<div id="progressBar">
-				<div id="karaInfo" onDragStart={() => {
-					return false;
-				}} draggable={false}
+				<div
+					id="karaInfo"
+					onDragStart={() => {
+						return false;
+					}}
+					draggable={false}
 					onClick={this.karaInfoClick}
 					onMouseDown={this.mouseDown} onMouseUp={() => this.setState({ mouseDown: false })}
 					onMouseMove={this.mouseMove} onMouseOut={this.mouseOut}
-				><div className="karaTitle">{this.state.karaInfoText}</div></div>
+				>
+					<div className="karaTitle">{this.state.karaInfoText}</div>
+				</div>
 				<div id="progressBarColor" style={{ width: this.state.width }}></div>
 			</div>
 		);

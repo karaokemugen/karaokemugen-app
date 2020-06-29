@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
 import './Switch.scss';
+
+import React, { Component } from 'react';
 
 interface IProps {
 	nameCommand?: string;
@@ -8,7 +9,7 @@ interface IProps {
 	idInput?: string;
 }
 
-class Switch extends Component<IProps, {}> {
+class Switch extends Component<IProps, unknown> {
 	constructor(props:IProps) {
 		super(props);
 	}

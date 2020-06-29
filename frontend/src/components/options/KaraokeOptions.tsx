@@ -252,8 +252,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Playlist.Medias.Sponsors.Enabled" handleChange={this.onChange}
-								isChecked={this.state.config['Playlist.Medias.Sponsors.Enabled']} 
-								/>
+								isChecked={this.state.config['Playlist.Medias.Sponsors.Enabled']}
+							/>
 							{this.state.config['Playlist.Medias.Sponsors.Enabled'] ?
 								<React.Fragment>
 									<label className="label-input-options">
@@ -310,18 +310,18 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<Switch idInput="Playlist.Medias.Outros.Enabled" handleChange={this.onChange}
 								isChecked={this.state.config['Playlist.Medias.Outros.Enabled']} />
 							{this.state.config['Playlist.Medias.Outros.Enabled'] ?
-							<React.Fragment>
-								<label className="label-input-options">
-									{i18next.t('SETTINGS.KARAOKE.WITH_MESSAGE')}
-								</label>
-								<input
-									className="input-options"
-									id="Playlist.Medias.Outros.Message"
-									onChange={this.onChange}
-									value={this.state.config['Playlist.Medias.Outros.Message']}
-								/>
-							</React.Fragment> : null
-						}
+								<React.Fragment>
+									<label className="label-input-options">
+										{i18next.t('SETTINGS.KARAOKE.WITH_MESSAGE')}
+									</label>
+									<input
+										className="input-options"
+										id="Playlist.Medias.Outros.Message"
+										onChange={this.onChange}
+										value={this.state.config['Playlist.Medias.Outros.Message']}
+									/>
+								</React.Fragment> : null
+							}
 						</div>
 					</div>
 					<div className="form-group">
@@ -334,18 +334,18 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<Switch idInput="Playlist.Medias.Encores.Enabled" handleChange={this.onChange}
 								isChecked={this.state.config['Playlist.Medias.Encores.Enabled']} />
 							{this.state.config['Playlist.Medias.Encores.Enabled'] ?
-							<React.Fragment>
-								<label className="label-input-options">
-									{i18next.t('SETTINGS.KARAOKE.WITH_MESSAGE')}
-								</label>
-								<input
-									className="input-options"
-									id="Playlist.Medias.Encores.Message"
-									onChange={this.onChange}
-									value={this.state.config['Playlist.Medias.Encores.Message']}
-								/>
-							</React.Fragment> : null
-						}
+								<React.Fragment>
+									<label className="label-input-options">
+										{i18next.t('SETTINGS.KARAOKE.WITH_MESSAGE')}
+									</label>
+									<input
+										className="input-options"
+										id="Playlist.Medias.Encores.Message"
+										onChange={this.onChange}
+										value={this.state.config['Playlist.Medias.Encores.Message']}
+									/>
+								</React.Fragment> : null
+							}
 						</div>
 					</div>
 					<div className="form-group">

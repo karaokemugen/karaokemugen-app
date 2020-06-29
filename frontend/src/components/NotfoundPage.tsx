@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
+
 import image404 from '../assets/nanami_.jpg';
 
 class NotfoundPage extends Component {

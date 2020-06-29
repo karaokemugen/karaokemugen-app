@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
-import i18next from 'i18next';
-import { expand, getSocket, callModal } from './tools';
 import axios from 'axios';
-import RadioButton from './generic/RadioButton';
-import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
-import store from '../store';
+import i18next from 'i18next';
+import React, { Component } from 'react';
+
 import { Config } from '../../../src/types/config';
 import { PublicPlayerState } from '../../../src/types/state';
+import store from '../store';
+import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
+import RadioButton from './generic/RadioButton';
+import { callModal,expand, getSocket } from './tools';
 
 interface IProps {
 	config: Config;
@@ -41,12 +42,12 @@ class AdminHeader extends Component<IProps, IState> {
 
 
 	async componentDidMount() {
-		let result = await axios.get('/player');
+		const result = await axios.get('/player');
 		await this.setState({ statusPlayer: result.data });
 		getSocket().on('playerStatus', (data: PublicPlayerState) => {
 			let val = data.volume;
-			let base = 100;
-			let pow = 0.76;
+			const base = 100;
+			const pow = 0.76;
 			val = val / base;
 			data.volume = base * Math.pow(val, 1 / pow);
 			this.setState({ statusPlayer: data });
@@ -61,13 +62,13 @@ class AdminHeader extends Component<IProps, IState> {
 	}
 
 	saveOperatorAdd = (songVisibility: boolean) => {
-		let data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
+		const data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
 		this.setState({ songVisibilityOperator: songVisibility });
 		axios.put('/settings', { setting: JSON.stringify(data) });
 	};
 
 	changePublicInterfaceMode = (value: number) => {
-		let data = expand('Frontend.Mode', value);
+		const data = expand('Frontend.Mode', value);
 		this.setState({ frontendMode: value });
 		axios.put('/settings', { setting: JSON.stringify(data) });
 	};
@@ -85,7 +86,7 @@ class AdminHeader extends Component<IProps, IState> {
 	}
 
 	render() {
-		let volume: number = (this.state.statusPlayer && !isNaN(this.state.statusPlayer.volume)) ? this.state.statusPlayer.volume : 100;
+		const volume: number = (this.state.statusPlayer && !isNaN(this.state.statusPlayer.volume)) ? this.state.statusPlayer.volume : 100;
 
 		return (
 			<KmAppHeaderDecorator mode="admin">
@@ -199,7 +200,8 @@ class AdminHeader extends Component<IProps, IState> {
 					>
 						{this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? (
 							<i className="fas fa-pause"></i>
-						) : (
+						) :
+							(
 								<i className="fas fa-play"></i>
 							)}
 					</button>
@@ -249,7 +251,8 @@ class AdminHeader extends Component<IProps, IState> {
 				>
 					{this.state.statusPlayer && this.state.statusPlayer.showSubs ? (
 						<i className="fas fa-closed-captioning"></i>
-					) : (
+					) :
+						(
 							<span className="fa-stack">
 								<i className="fas fa-closed-captioning fa-stack-1x"></i>
 								<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }}></i>
@@ -262,7 +265,7 @@ class AdminHeader extends Component<IProps, IState> {
 					className="btn btn-dark volumeButton"
 				>
 					<div id="mute"
-						data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.mute)) ? "unmute" : "mute"}
+						data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.mute)) ? 'unmute' : 'mute'}
 						onClick={this.props.putPlayerCommando}
 					>
 						{

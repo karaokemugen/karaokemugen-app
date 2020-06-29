@@ -1,18 +1,19 @@
+import axios from 'axios';
+import i18next from 'i18next';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import i18next from 'i18next';
-import axios from 'axios';
-import { is_touch_device } from '../tools';
-import PropTypes from 'prop-types';
 import ReactJoyride, { ACTIONS, EVENTS, STATUS, Step } from 'react-joyride';
-import LoginModal from './LoginModal';
-import store from '../../store';
+
 import { Token } from '../../../../src/lib/types/user';
+import store from '../../store';
+import { is_touch_device } from '../tools';
+import LoginModal from './LoginModal';
 
 
-export function i18nAsDiv(key:string, args?:any) {
-	return (<div dangerouslySetInnerHTML={{__html: i18next.t(key, args)}}/>);
-};
+export function i18nAsDiv(key: string, args?: any) {
+	return (<div dangerouslySetInnerHTML={{ __html: i18next.t(key, args) }} />);
+}
 
 interface IProps {
 	scope: string;
@@ -30,86 +31,86 @@ interface CustomStep extends Step {
 	tooltipClass?: string;
 }
 
-class Tutorial extends Component<IProps,IState> {
-	constructor(props:IProps) {
+class Tutorial extends Component<IProps, IState> {
+	constructor(props: IProps) {
 		super(props);
-		const isSmall =window.innerWidth <= 1023;
+		const isSmall = window.innerWidth <= 1023;
 
 		this.state = {
-			scope : props.scope,
+			scope: props.scope,
 			run: true,
 			stepIndex: 0,
 			steps: props.scope === 'admin' ? [
 				{
 					target: 'body',
 					placement: 'center',
-					content: i18nAsDiv('INTRO_ADMIN_INTRO1'), 
-				}, 
+					content: i18nAsDiv('INTRO_ADMIN_INTRO1'),
+				},
 				{
 					target: '.modal-content',
 					placement: 'right',
 					content: i18nAsDiv('INTRO_ADMIN_INTRO2'),
 					styles: {
 						buttonNext: {
-                            display: 'none'
+							display: 'none'
 						}
 					},
 				},
 				{
 					target: 'body',
 					placement: 'center',
-					content:i18nAsDiv('INTRO_ADMIN_EMAIL_ONLINE'), 
+					content: i18nAsDiv('INTRO_ADMIN_EMAIL_ONLINE'),
 				},
 				{
 					target: 'body',
 					placement: 'center',
-					content:i18nAsDiv('INTRO_ADMIN_INTRO3'), 
+					content: i18nAsDiv('INTRO_ADMIN_INTRO3'),
 				},
-				{ 
-					placement:'bottom',
-					target:'.KmAppBodyDecorator',
+				{
+					placement: 'bottom',
+					target: '.KmAppBodyDecorator',
 					content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS'),
 				},
-				{ 
-					placement:'auto',
-					target:'.KmAppHeaderDecorator',
+				{
+					placement: 'auto',
+					target: '.KmAppHeaderDecorator',
 					content: i18nAsDiv('INTRO_ADMIN_LECTEUR'),
 				},
 				{
-					placement:'auto',
+					placement: 'auto',
 					target: '.switchs',
 					content: i18nAsDiv('INTRO_ADMIN_MYSTERY'),
 				},
-				{ 
-					placement:'auto',
-					target:'#playlist',
+				{
+					placement: 'auto',
+					target: '#playlist',
 					content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_2'),
 				},
-				{ 
-					placement:'auto',
-					target:'#panel2 .panel-heading.plDashboard',
+				{
+					placement: 'auto',
+					target: '#panel2 .panel-heading.plDashboard',
 					content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_MANAGE'),
 				},
-				{ 
-					placement:'auto',
-					target:'#panel2 .btn.btn-default.showPlaylistCommands',
+				{
+					placement: 'auto',
+					target: '#panel2 .btn.btn-default.showPlaylistCommands',
 					content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON'),
 					hideFooter: true,
 				},
-				{ 
-					placement:'left',
-					target:'#panel2',
+				{
+					placement: 'left',
+					target: '#panel2',
 					content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED'),
 				},
-				{ 
-					placement:'auto',
-					target:'#menuPC',
+				{
+					placement: 'auto',
+					target: '#menuPC',
 					content: i18nAsDiv('INTRO_ADMIN_SETTINGS'),
 					hideFooter: true,
 				},
-				{ 
-					placement:'auto',
-					target:'#settingsNav',
+				{
+					placement: 'auto',
+					target: '#settingsNav',
 					content: i18nAsDiv('INTRO_ADMIN_SETTINGS_SCREEN'),
 					styles: {
 						buttonBack: {
@@ -117,14 +118,14 @@ class Tutorial extends Component<IProps,IState> {
 						}
 					}
 				},
-				{ 
-					placement:'center',
-					target:'.panel.col-lg-8.modalPage',
+				{
+					placement: 'center',
+					target: '.panel.col-lg-8.modalPage',
 					content: i18nAsDiv('INTRO_ADMIN_INTRO_DOWNLOAD'),
 				},
-				{ 
-					placement:'center',
-					target:'.panel.col-lg-8.modalPage',
+				{
+					placement: 'center',
+					target: '.panel.col-lg-8.modalPage',
 					content: i18nAsDiv('INTRO_ADMIN_INTROFINAL'),
 				}]
 				:   // public tuto mobile
@@ -132,7 +133,7 @@ class Tutorial extends Component<IProps,IState> {
 					label: 'preLogin',
 					placement: isSmall ? 'bottom' : 'right',
 					target: '#nav-login > .modal-message:not(.tour)',
-					content: i18nAsDiv('INTRO_PUBLIC_INTRO1'), 
+					content: i18nAsDiv('INTRO_PUBLIC_INTRO1'),
 					disableOverlay: true,
 					disableBeacon: true,
 					styles: {
@@ -141,12 +142,12 @@ class Tutorial extends Component<IProps,IState> {
 						},
 					}
 				},
-				{ 
+				{
 					placement: 'auto',
 					target: '#panel1',
 					content: i18nAsDiv('INTRO_PUBLIC_SEARCHRESULT')
 				},
-				{ 
+				{
 					placement: 'auto',
 					target: '.plFooter',
 					content: i18nAsDiv('INTRO_PUBLIC_KARA'),
@@ -159,13 +160,13 @@ class Tutorial extends Component<IProps,IState> {
 					placement: 'auto',
 					content: i18nAsDiv('INTRO_PUBLIC_KARADETAILS')
 				},
-				{ 
+				{
 					placement: 'auto',
 					target: '.plFooter',
-					label: "publicFooter",
+					label: 'publicFooter',
 					content: i18nAsDiv('INTRO_PUBLIC_FOOTER')
 				},
-				{ 
+				{
 					label: 'public_menu',
 					placement: 'auto',
 					target: '.mobileActions > ul',
@@ -177,7 +178,7 @@ class Tutorial extends Component<IProps,IState> {
 					},
 					disableOverlay: true,
 				},
-				{ 
+				{
 					label: 'public_menu2',
 					placement: 'auto',
 					target: '.mobileActions > ul',
@@ -194,12 +195,12 @@ class Tutorial extends Component<IProps,IState> {
 					target: '#progressBar',
 					content: i18nAsDiv('INTRO_PUBLIC_PROGRESSBAR')
 				},
-				{ 
+				{
 					placement: 'auto',
 					target: '.plSearch',
 					content: i18nAsDiv('INTRO_PUBLIC_SEARCH')
 				},
-				{ 
+				{
 					placement: 'right',
 					target: '.searchMenuButton',
 					content: i18nAsDiv('INTRO_PUBLIC_FAVORITES')
@@ -210,7 +211,7 @@ class Tutorial extends Component<IProps,IState> {
 					placement: 'auto',
 					content: i18nAsDiv('INTRO_PUBLIC_CHANGE_SCREEN'),
 					disableOverlay: true,
-					tooltipClass : 'hideNext',
+					tooltipClass: 'hideNext',
 					styles: {
 						buttonNext: {
 							display: 'none',
@@ -221,7 +222,7 @@ class Tutorial extends Component<IProps,IState> {
 					target: '#playlist',
 					label: 'playlists',
 					placement: 'auto',
-					content: i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE_MOBILE'), 
+					content: i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE_MOBILE'),
 				},
 				{
 					target: '.side2Button',
@@ -229,7 +230,7 @@ class Tutorial extends Component<IProps,IState> {
 					placement: 'auto',
 					content: i18nAsDiv('INTRO_PUBLIC_CHANGE_SCREEN2'),
 					disableOverlay: true,
-					tooltipClass : 'hideNext',
+					tooltipClass: 'hideNext',
 					styles: {
 						buttonNext: {
 							display: 'none',
@@ -239,240 +240,240 @@ class Tutorial extends Component<IProps,IState> {
 				{
 					target: 'body',
 					label: 'last',
-					tooltipClass : 'hideNext',
+					tooltipClass: 'hideNext',
 					placement: 'center',
-					content: i18nAsDiv('INTRO_PUBLIC_LAST'), 
+					content: i18nAsDiv('INTRO_PUBLIC_LAST'),
 				}
 				] :
-				// public non mobile
-				[{
-					label: 'preLogin',
-					placement: isSmall ? 'bottom' : 'right',
-					target: '#nav-login > .modal-message:not(.tour)',
-					content: i18nAsDiv('INTRO_PUBLIC_INTRO1'), 
-					disableOverlay: true,
-					disableBeacon: true,
-					styles: {
-						buttonNext: {
-							display: 'none',
-						},
+					// public non mobile
+					[{
+						label: 'preLogin',
+						placement: isSmall ? 'bottom' : 'right',
+						target: '#nav-login > .modal-message:not(.tour)',
+						content: i18nAsDiv('INTRO_PUBLIC_INTRO1'),
+						disableOverlay: true,
+						disableBeacon: true,
+						styles: {
+							buttonNext: {
+								display: 'none',
+							},
+						}
+					},
+					{
+						placement: 'auto',
+						target: '#panel1',
+						content: i18nAsDiv('INTRO_PUBLIC_SEARCHRESULT')
+					},
+					{
+						placement: 'auto',
+						target: '.plFooter',
+						content: i18nAsDiv('INTRO_PUBLIC_KARA'),
+						disableOverlay: true,
+						label: 'karadetails'
+					},
+					{
+						target: '.plFooter',
+						disableOverlay: true,
+						placement: 'auto',
+						content: i18nAsDiv('INTRO_PUBLIC_KARADETAILS')
+					},
+					{
+						placement: 'auto',
+						target: '.plFooter',
+						label: 'publicFooter',
+						content: i18nAsDiv('INTRO_PUBLIC_FOOTER')
+					},
+					{
+						placement: 'auto',
+						target: '#progressBar',
+						content: i18nAsDiv('INTRO_PUBLIC_PROGRESSBAR')
+					},
+					{
+						label: 'public_menu_pc',
+						placement: 'auto',
+						target: '.buttonsNotMobile > ul',
+						content: i18nAsDiv('INTRO_PUBLIC_MENU_PC'),
+						disableOverlay: true,
+					},
+					{
+						label: 'public_menu2',
+						placement: 'auto',
+						target: '.switchParent',
+						content: i18nAsDiv('INTRO_PUBLIC_MENU_PC_2'),
+						disableOverlay: true,
+					},
+					{
+						placement: 'auto',
+						target: '.plSearch',
+						content: i18nAsDiv('INTRO_PUBLIC_SEARCH')
+					},
+					{
+						placement: 'right',
+						target: '.searchMenuButton',
+						content: i18nAsDiv('INTRO_PUBLIC_FAVORITES')
+					},
+					{
+						target: '#panel2',
+						label: 'playlists',
+						placement: 'auto',
+						content: i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE'),
+					},
+					{
+						target: 'body',
+						label: 'last',
+						tooltipClass: 'hideNext',
+						placement: 'center',
+						content: i18nAsDiv('INTRO_PUBLIC_LAST'),
 					}
-				},
-				{ 
-					placement: 'auto',
-					target: '#panel1',
-					content: i18nAsDiv('INTRO_PUBLIC_SEARCHRESULT')
-				},
-				{ 
-					placement: 'auto',
-					target: '.plFooter',
-					content: i18nAsDiv('INTRO_PUBLIC_KARA'),
-					disableOverlay: true,
-					label: 'karadetails'
-				},
-				{
-					target: '.plFooter',
-					disableOverlay: true,
-					placement: 'auto',
-					content: i18nAsDiv('INTRO_PUBLIC_KARADETAILS')
-				},
-				{ 
-					placement: 'auto',
-					target: '.plFooter',
-					label: "publicFooter",
-					content: i18nAsDiv('INTRO_PUBLIC_FOOTER')
-				},
-				{
-					placement: 'auto',
-					target: '#progressBar',
-					content: i18nAsDiv('INTRO_PUBLIC_PROGRESSBAR')
-				},
-				{ 
-					label: 'public_menu_pc',
-					placement: 'auto',
-					target: '.buttonsNotMobile > ul',
-					content: i18nAsDiv('INTRO_PUBLIC_MENU_PC'),
-					disableOverlay: true,
-				},
-				{ 
-					label: 'public_menu2',
-					placement: 'auto',
-					target: '.switchParent',
-					content: i18nAsDiv('INTRO_PUBLIC_MENU_PC_2'),
-					disableOverlay: true,
-				},
-				{ 
-					placement: 'auto',
-					target: '.plSearch',
-					content: i18nAsDiv('INTRO_PUBLIC_SEARCH')
-				},
-				{ 
-					placement: 'right',
-					target: '.searchMenuButton',
-					content: i18nAsDiv('INTRO_PUBLIC_FAVORITES')
-				},
-				{
-					target: '#panel2',
-					label: 'playlists',
-					placement: 'auto',
-					content: i18nAsDiv('INTRO_PUBLIC_PLAYLISTS_LIKE'), 
-				},
-				{
-					target: 'body',
-					label: 'last',
-					tooltipClass : 'hideNext',
-					placement: 'center',
-					content: i18nAsDiv('INTRO_PUBLIC_LAST'), 
-				}
-				]
+					]
 		};
 
 	}
-    
-    
+
+
 	componentDidMount() {
-		if(this.state.scope === 'admin' 
-		&& (!store.getLogInfos() 
-		|| !(store.getLogInfos() as Token).token 
-		|| (store.getLogInfos() as Token).role !== 'admin')
-		|| (store.getLogInfos() as Token).username === 'admin') {
-			ReactDOM.render(<LoginModal 
+		if (this.state.scope === 'admin'
+			&& (!store.getLogInfos()
+				|| !(store.getLogInfos() as Token).token
+				|| (store.getLogInfos() as Token).role !== 'admin')
+			|| (store.getLogInfos() as Token).username === 'admin') {
+			ReactDOM.render(<LoginModal
 				scope='admin'
 				role='admin'
 				activeView={2}
 			/>, document.getElementById('modal'));
 		}
 	}
-    static propTypes = {
-    	joyride: PropTypes.shape({
-    		callback: PropTypes.func
-    	})
-    };
-    
-    static defaultProps = {
-    	joyride: {}
-    };
+	static propTypes = {
+		joyride: PropTypes.shape({
+			callback: PropTypes.func
+		})
+	};
 
-    handleClickStart = (e:any) => {
-    	e.preventDefault();
-    
-    	this.setState({
-    		run: true
-    	});
+	static defaultProps = {
+		joyride: {}
+	};
 
-    };
+	handleClickStart = (e: any) => {
+		e.preventDefault();
+
+		this.setState({
+			run: true
+		});
+
+	};
 
 
-	handleJoyrideCallback = (data:{ action:string, index:number, status: string, type:string }) => {
-    	const { joyride }:any = this.props;
-    	const { action, index, status, type } = data;
-    	if(index===3 || this.state.steps[index].label === 'publicFooter') { 
+	handleJoyrideCallback = (data: { action: string, index: number, status: string, type: string }) => {
+		const { joyride }: any = this.props;
+		const { action, index, status, type } = data;
+		if (index === 3 || this.state.steps[index].label === 'publicFooter') {
 			// if for some reasons the login modal is still open by now, we have to close it
-			let element = document.getElementById('modal');
-    		if(element) ReactDOM.unmountComponentAtNode(element);
-    	}
-    	if (type === EVENTS.TOUR_END && this.state.run) {
-    		// Need to set our running state to false, so we can restart if we click start again.
-    		this.setState({ run: false });
-    	}
-    	if (([STATUS.FINISHED, STATUS.SKIPPED] as Array<string>).includes(status)) {
-    		if (this.state.scope  === 'admin') {
-    			axios.put('/settings', { 'setting': JSON.stringify({ 'App': { 'FirstRun': false } } )});
-    		} else {
-    			localStorage.setItem('publicTuto', 'true');
-    		}
-    	}
-    	if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as Array<string>).includes(type)) {
-    		// Update state to advance the tour
-    		if(this.state.steps[index + 1] && this.state.steps[index + 1].label === 'public_menu') {
-    			(document.getElementById('menuMobile') as HTMLButtonElement).click();
-    		} else if(this.state.steps[index + 1] && this.state.steps[index + 1].label === 'public_menu_pc') {
-    			(document.getElementById('menuPC') as HTMLButtonElement).click();
-    		}
-    		if(this.state.steps[index].label === 'public_menu2') {
-    			(document.getElementById('menuMobile') as HTMLButtonElement).click();
-    		} else if(this.state.steps[index].label === 'public_menu_pc') {
-    			(document.getElementById('menuPC') as HTMLButtonElement).click();
-    		}
-    		this.setState({ stepIndex: index + (action === ACTIONS.PREV ? -1 : 1) });
-    	}
-          
-    	if (typeof joyride.callback === 'function') {
-    		joyride.callback(data);
-    	}
-    };
-    
-    getStepLabel = () => {
-    	const {stepIndex, steps} = this.state;
-    	return steps[stepIndex].label || stepIndex;
-	} 
-	
-    move = (i:number) => {
-    	const {stepIndex} = this.state;
+			const element = document.getElementById('modal');
+			if (element) ReactDOM.unmountComponentAtNode(element);
+		}
+		if (type === EVENTS.TOUR_END && this.state.run) {
+			// Need to set our running state to false, so we can restart if we click start again.
+			this.setState({ run: false });
+		}
+		if (([STATUS.FINISHED, STATUS.SKIPPED] as Array<string>).includes(status)) {
+			if (this.state.scope === 'admin') {
+				axios.put('/settings', { 'setting': JSON.stringify({ 'App': { 'FirstRun': false } }) });
+			} else {
+				localStorage.setItem('publicTuto', 'true');
+			}
+		}
+		if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as Array<string>).includes(type)) {
+			// Update state to advance the tour
+			if (this.state.steps[index + 1] && this.state.steps[index + 1].label === 'public_menu') {
+				(document.getElementById('menuMobile') as HTMLButtonElement).click();
+			} else if (this.state.steps[index + 1] && this.state.steps[index + 1].label === 'public_menu_pc') {
+				(document.getElementById('menuPC') as HTMLButtonElement).click();
+			}
+			if (this.state.steps[index].label === 'public_menu2') {
+				(document.getElementById('menuMobile') as HTMLButtonElement).click();
+			} else if (this.state.steps[index].label === 'public_menu_pc') {
+				(document.getElementById('menuPC') as HTMLButtonElement).click();
+			}
+			this.setState({ stepIndex: index + (action === ACTIONS.PREV ? -1 : 1) });
+		}
 
-    	this.setState({
-    		stepIndex: stepIndex + i
-    	});
-    } 
+		if (typeof joyride.callback === 'function') {
+			joyride.callback(data);
+		}
+	};
 
-    render() {
-    	const { run, stepIndex, steps } = this.state;
-    	// more css details on https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js
-    	return (<div>
-    		<ReactJoyride
-    			continuous
-    			scrollToFirstStep
-    			showProgress
-    			showSkipButton
-    			spotlightClicks
-    			run={run}
-    			steps={steps}
-    			stepIndex={stepIndex}
-    			locale={{
-    				back: i18next.t('INTRO_LABEL_PREV'),
-    				close: i18next.t('INTRO_LABEL_SKIP'),
-    				last: i18next.t('INTRO_LABEL_SKIP'),
-    				next: i18next.t('INTRO_LABEL_NEXT'),
-    				skip: i18next.t('INTRO_LABEL_SKIP'),
-    			}}
-    			styles={{
-    				options: {
-    					arrowColor: '#e3ffeb',
-    					backgroundColor: 'hsla(133, 15%, 24%, .97)',
-    					overlayColor: 'rgba(0, 0, 0, 0.7)',
-    					textColor: '#eee',
-    					zIndex: 20000
-    				},
-    				tooltip : {
-    					fontSize: 16,
-    				},
-    				tooltipContainer: {
-    					textAlign: 'left',
-    				},
-    				tooltipTitle: {
-    					textAlign: 'center',
-    					fontSize: 19,
-    					margin: '0 0 10px 0',
-    				},
-    				buttonNext: {
-    					borderRadius: 0,
-    					backgroundColor: 'hsla(0, 0%, 0%, .76)'
-    				},
-    				buttonBack: {
-    					color: '#eee',
-    					backgroundColor: 'hsla(0, 0%, 0%, .3)'
-    				},
-    				buttonSkip: {
-    					backgroundColor: 'hsla(0, 0%, 0%, .3)'
-    				}
-              
-    			}
-    			}
-    			callback={this.handleJoyrideCallback}
-    		/>
-    	</div>
-    	);
-    }
+	getStepLabel = () => {
+		const { stepIndex, steps } = this.state;
+		return steps[stepIndex].label || stepIndex;
+	}
+
+	move = (i: number) => {
+		const { stepIndex } = this.state;
+
+		this.setState({
+			stepIndex: stepIndex + i
+		});
+	}
+
+	render() {
+		const { run, stepIndex, steps } = this.state;
+		// more css details on https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js
+		return (<div>
+			<ReactJoyride
+				continuous
+				scrollToFirstStep
+				showProgress
+				showSkipButton
+				spotlightClicks
+				run={run}
+				steps={steps}
+				stepIndex={stepIndex}
+				locale={{
+					back: i18next.t('INTRO_LABEL_PREV'),
+					close: i18next.t('INTRO_LABEL_SKIP'),
+					last: i18next.t('INTRO_LABEL_SKIP'),
+					next: i18next.t('INTRO_LABEL_NEXT'),
+					skip: i18next.t('INTRO_LABEL_SKIP'),
+				}}
+				styles={{
+					options: {
+						arrowColor: '#e3ffeb',
+						backgroundColor: 'hsla(133, 15%, 24%, .97)',
+						overlayColor: 'rgba(0, 0, 0, 0.7)',
+						textColor: '#eee',
+						zIndex: 20000
+					},
+					tooltip: {
+						fontSize: 16,
+					},
+					tooltipContainer: {
+						textAlign: 'left',
+					},
+					tooltipTitle: {
+						textAlign: 'center',
+						fontSize: 19,
+						margin: '0 0 10px 0',
+					},
+					buttonNext: {
+						borderRadius: 0,
+						backgroundColor: 'hsla(0, 0%, 0%, .76)'
+					},
+					buttonBack: {
+						color: '#eee',
+						backgroundColor: 'hsla(0, 0%, 0%, .3)'
+					},
+					buttonSkip: {
+						backgroundColor: 'hsla(0, 0%, 0%, .3)'
+					}
+
+				}
+				}
+				callback={this.handleJoyrideCallback}
+			/>
+		</div>
+		);
+	}
 
 }
 

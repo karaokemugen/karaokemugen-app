@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
-import i18next from 'i18next';
-import { is_touch_device, secondsTimeSpanToHMS, getTagInLanguage, getSerieLanguage } from '../tools';
-import KaraDetail from './KaraDetail';
 import axios from 'axios';
-import ActionsButtons from './ActionsButtons';
-import { buildKaraTitle, displayMessage } from '../tools';
-import store from '../../store';
-import { SortableHandle } from 'react-sortable-hoc';
+import i18next from 'i18next';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { DBPL } from '../../../../src/types/database/playlist';
-import { Config } from '../../../../src/types/config';
+import { SortableHandle } from 'react-sortable-hoc';
+
 import { DBKaraTag } from '../../../../src/lib/types/database/kara';
-import { KaraElement } from '../../types/kara';
 import { Token } from '../../../../src/lib/types/user';
+import { Config } from '../../../../src/types/config';
 import { DBBlacklist } from '../../../../src/types/database/blacklist';
+import { DBPL } from '../../../../src/types/database/playlist';
+import store from '../../store';
+import { KaraElement } from '../../types/kara';
+import { buildKaraTitle, displayMessage, getSerieLanguage, getTagInLanguage, is_touch_device, secondsTimeSpanToHMS } from '../tools';
+import ActionsButtons from './ActionsButtons';
+import KaraDetail from './KaraDetail';
 
 const DragHandle = SortableHandle(() => <span className="dragHandle"><i className="fas fa-ellipsis-v"></i></span>);
 
@@ -34,7 +34,7 @@ interface IProps {
 }
 
 const pathAvatar = '/avatars/';
-class KaraLine extends Component<IProps, {}> {
+class KaraLine extends Component<IProps, unknown> {
 
 	toggleKaraDetail = () => {
 		ReactDOM.render(<KaraDetail kid={this.props.kara.kid} playlistcontentId={this.props.kara.playlistcontent_id} scope={this.props.scope}
@@ -49,7 +49,7 @@ class KaraLine extends Component<IProps, {}> {
 	};
 
 	upvoteKara = () => {
-		let data = this.props.kara.flag_upvoted ? { 'downvote': 'true' } : {};
+		const data = this.props.kara.flag_upvoted ? { 'downvote': 'true' } : {};
 		axios.post(`/playlists/${this.props.idPlaylist}/karas/${this.props.kara.playlistcontent_id}/vote`, data);
 	};
 
@@ -74,8 +74,8 @@ class KaraLine extends Component<IProps, {}> {
 	};
 
 	addKara = async (event?: any, pos?: number) => {
-		let logInfos = store.getLogInfos();
-		let url: string = '';
+		const logInfos = store.getLogInfos();
+		let url = '';
 		let data;
 		let type;
 		if (this.props.idPlaylistTo == -5) {
@@ -112,9 +112,9 @@ class KaraLine extends Component<IProps, {}> {
 			response = await axios.post(url, data);
 		}
 		if (response.data && response.data.data && response.data.data.plc && response.data.data.plc.time_before_play) {
-			let playTime = new Date(Date.now() + response.data.data.plc.time_before_play * 1000);
-			let playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-			let beforePlayTime = secondsTimeSpanToHMS(response.data.data.plc.time_before_play, 'hm');
+			const playTime = new Date(Date.now() + response.data.data.plc.time_before_play * 1000);
+			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+			const beforePlayTime = secondsTimeSpanToHMS(response.data.data.plc.time_before_play, 'hm');
 			displayMessage('success', <div>
 				{i18next.t(`SUCCESS_CODES.${response.data.code}`)}
 				<br />
@@ -177,7 +177,7 @@ class KaraLine extends Component<IProps, {}> {
 	karaTitle = buildKaraTitle(this.props.kara, undefined, this.props.i18nTag);
 
 	getLangs(data: KaraElement) {
-		let isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
+		const isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
 		if (data.langs && isMulti) {
 			data.langs = [isMulti];
 		}
@@ -198,18 +198,18 @@ class KaraLine extends Component<IProps, {}> {
 	karaSongTypes = this.getSongtypes(this.props.kara);
 
 	render() {
-		let logInfos = store.getLogInfos();
-		let kara = this.props.kara;
-		let scope = this.props.scope;
-		let idPlaylist = this.props.idPlaylist;
+		const logInfos = store.getLogInfos();
+		const kara = this.props.kara;
+		const scope = this.props.scope;
+		const idPlaylist = this.props.idPlaylist;
 		return (
 			<div className={'list-group-item ' + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu ' : ' ')
 				+ (this.props.index % 2 === 0 ? 'list-group-item-binaire' : '')}>
 				{scope === 'public' && logInfos && kara.username !== logInfos.username && kara.flag_visible === false ?
 					<div className="contentDiv">
 						<div style={{ height: '33px' }}>
-							{(this.props.config.Playlist.MysterySongs.Labels as string[])
-							[(this.props.config.Playlist.MysterySongs.Labels as string[]).length * Math.random() | 0]
+							{
+								(this.props.config.Playlist.MysterySongs.Labels as string[])[(this.props.config.Playlist.MysterySongs.Labels as string[]).length * Math.random() | 0]
 							}
 						</div>
 					</div> :

@@ -4,8 +4,9 @@
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 
-import React, { useState, useRef, useEffect } from 'react';
 import './Autocomplete.scss';
+
+import React, { useEffect,useRef, useState } from 'react';
 
 interface IProps {
 	options?: Array<any>;
@@ -33,7 +34,7 @@ function Autocomplete(props: IProps) {
 
 	if (props.value !== selectedValue) {
 		setSelectedValue(props.value);
-		setSearchValue(props.value)
+		setSearchValue(props.value);
 	}
 
 	const searchInputRef: any = useRef();
@@ -63,11 +64,11 @@ function Autocomplete(props: IProps) {
 		setActiveIndex(0);
 	};
 	const handleSearchKeyUp = (e: any) => {
-		let fo = filteredOptions();
+		const fo = filteredOptions();
 		if (e.keyCode === 13) {
 			//RETURN
 			setFocus(false);
-			let o = fo[activeIndex];
+			const o = fo[activeIndex];
 			if (props.acceptNewValues) {
 				updateSelectedValue(e.target.value);
 			} else if (o) {
@@ -90,7 +91,7 @@ function Autocomplete(props: IProps) {
 
 	const escapeRegExp = (string: string) => {
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-	}
+	};
 
 	const filteredOptions = () => options.filter((o) => {
 		return String(o.label).toLowerCase().match(escapeRegExp(String(searchValue).toLowerCase()))

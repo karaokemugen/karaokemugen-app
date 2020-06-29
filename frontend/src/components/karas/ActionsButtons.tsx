@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
 import i18next from 'i18next';
+import React, { Component } from 'react';
+
 import store from '../../store';
 import { KaraElement } from '../../types/kara';
 
@@ -16,7 +17,7 @@ interface IProps {
 	transferKara: (event: any, pos?: number) => void;
 }
 
-class ActionsButtons extends Component<IProps, {}> {
+class ActionsButtons extends Component<IProps, unknown> {
 	onRightClickAdd = (e: any) => {
 		if (this.props.scope == 'admin') {
 			e.preventDefault();
@@ -32,7 +33,7 @@ class ActionsButtons extends Component<IProps, {}> {
 	};
 
 	render() {
-		let classValue = this.props.isHeader ? 'btn btn-default' : 'btn btn-sm btn-action';
+		const classValue = this.props.isHeader ? 'btn btn-default' : 'btn btn-sm btn-action';
 		return (
 			<React.Fragment>
 				{this.props.scope === 'admin' && this.props.idPlaylist !== -1 ?
@@ -42,8 +43,8 @@ class ActionsButtons extends Component<IProps, {}> {
 					(this.props.scope === 'public' && this.props.idPlaylist !== store.getState().publicPlaylistID) ?
 					<button title={(this.props.kara?.flag_inplaylist && this.props.scope !== 'admin' ? i18next.t('TOOLTIP_UPVOTE') :
 						i18next.t('TOOLTIP_ADDKARA')) + (this.props.scope == 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : '')}
-						className={`${classValue} karaLineButton`} onContextMenu={this.onRightClickAdd} onClick={this.props.addKara}
-						disabled={this.props.scope !== 'admin' && (this.props.kara?.flag_added_by_me || this.props.kara?.flag_upvoted)}>
+					className={`${classValue} karaLineButton`} onContextMenu={this.onRightClickAdd} onClick={this.props.addKara}
+					disabled={this.props.scope !== 'admin' && (this.props.kara?.flag_added_by_me || this.props.kara?.flag_upvoted)}>
 						{this.props.kara?.flag_inplaylist && this.props.scope !== 'admin' ?
 							<i className={`fas fa-thumbs-up ${this.props.kara?.flag_upvoted ? 'currentUpvote' : ''}`} /> :
 							<i className="fas fa-plus" />

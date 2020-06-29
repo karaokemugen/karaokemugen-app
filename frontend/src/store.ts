@@ -1,13 +1,14 @@
-import { EventEmitter } from 'events'; 
+import languages from '@cospired/i18n-iso-languages';
 import axios from 'axios';
-import { parseJwt} from './components/tools';
+import { EventEmitter } from 'events'; 
+
 import { Token, User } from '../../src/lib/types/user';
 import { Config } from '../../src/types/config';
-import languages from "@cospired/i18n-iso-languages";
-import { Version, PublicState } from '../../src/types/state';
+import { PublicState,Version } from '../../src/types/state';
+import { parseJwt} from './components/tools';
 
-let filterValue1:string = '';
-let filterValue2:string = '';
+let filterValue1 = '';
+let filterValue2 = '';
 let posPlaying:number;
 let timer:NodeJS.Timeout;
 let tuto:any;
@@ -16,12 +17,12 @@ let state:PublicState;
 let logInfos:Token|undefined;
 let version:Version;
 let user:User|undefined;
-let navigatorLanguage:string = languages.alpha2ToAlpha3B(navigator.languages[0].substring(0, 2));
+const navigatorLanguage:string = languages.alpha2ToAlpha3B(navigator.languages[0].substring(0, 2));
 let currentBlSet:number;
 
 if (!logInfos) {
-	let token = localStorage.getItem('kmToken');
-	let onlineToken = localStorage.getItem('kmOnlineToken');
+	const token = localStorage.getItem('kmToken');
+	const onlineToken = localStorage.getItem('kmOnlineToken');
 	if (token) {
 		logInfos = parseJwt(token) as Token;
 		logInfos.token = token;
@@ -125,7 +126,7 @@ class Store extends EventEmitter {
 
 	async setUser() {
 		if (logInfos) {
-			user = (await axios.get(`/myaccount`)).data;
+			user = (await axios.get('/myaccount')).data;
 		} else {
 			user = undefined;
 		}

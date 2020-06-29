@@ -7,7 +7,7 @@ interface IProps {
 	mode: number | string | undefined;
 }
 
-class KmAppBodyDecorator extends Component<IProps, {}> {
+class KmAppBodyDecorator extends Component<IProps, unknown> {
 
 	constructor(props:IProps) {
 		super(props);

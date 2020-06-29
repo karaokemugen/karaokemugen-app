@@ -1,24 +1,25 @@
-import React, { Component } from 'react';
-import i18next from 'i18next';
 import axios from 'axios';
-import ActionsButtons from './ActionsButtons';
-import { buildKaraTitle, displayMessage, callModal, is_touch_device } from '../tools';
-import Autocomplete from '../generic/Autocomplete';
-import store from '../../store';
-import ReactDOM from 'react-dom';
-import FavMixModal from '../modals/FavMixModal';
-import { KaraElement } from '../../types/kara';
-import { DBPL, DBPLC } from '../../../../src/types/database/playlist';
-import { User, Token } from '../../../../src/lib/types/user';
-import { Tag } from '../../types/tag';
-import { Config } from '../../../../src/types/config';
+import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
-import SelectWithIcon from '../generic/SelectWithIcon';
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+import { Token,User } from '../../../../src/lib/types/user';
 import { BLCSet } from '../../../../src/types/blacklist';
+import { Config } from '../../../../src/types/config';
+import { DBPL, DBPLC } from '../../../../src/types/database/playlist';
+import store from '../../store';
+import { KaraElement } from '../../types/kara';
+import { Tag } from '../../types/tag';
+import Autocomplete from '../generic/Autocomplete';
+import SelectWithIcon from '../generic/SelectWithIcon';
 import BlcSetCopyModal from '../modals/BlcSetCopyModal';
+import FavMixModal from '../modals/FavMixModal';
+import { buildKaraTitle, callModal, displayMessage, is_touch_device } from '../tools';
+import ActionsButtons from './ActionsButtons';
 require('./PlaylistHeader.scss');
 
-let tagsTypesList = [
+const tagsTypesList = [
 	'BLCTYPE_1',
 	'BLCTYPE_3',
 	'BLCTYPE_2',
@@ -86,12 +87,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 		callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', (nbOfRandoms: number) => {
 			axios.get(`${this.props.getPlaylistUrl()}?random=${nbOfRandoms}`).then(randomKaras => {
 				if (randomKaras.data.content.length > 0) {
-					let textContent = randomKaras.data.content.map((e: KaraElement) => <React.Fragment key={e.kid}>{buildKaraTitle(e, true)} <br /><br /></React.Fragment>);
+					const textContent = randomKaras.data.content.map((e: KaraElement) => <React.Fragment key={e.kid}>{buildKaraTitle(e, true)} <br /><br /></React.Fragment>);
 					callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
-						let karaList = randomKaras.data.content.map((a: KaraElement) => {
+						const karaList = randomKaras.data.content.map((a: KaraElement) => {
 							return a.kid;
 						});
-						let urlPost = '/playlists/' + this.props.idPlaylistTo + '/karas';
+						const urlPost = '/playlists/' + this.props.idPlaylistTo + '/karas';
 						axios.post(urlPost, { kid: karaList });
 					}, '');
 				}
@@ -119,13 +120,13 @@ class PlaylistHeader extends Component<IProps, IState> {
 	deletePlaylist = () => {
 		this.togglePlaylistCommands();
 		if (this.props.bLSet?.flag_current) {
-			displayMessage("warning", i18next.t('BLC.DELETE_CURRENT'));
+			displayMessage('warning', i18next.t('BLC.DELETE_CURRENT'));
 		} else if (this.props.playlistInfo?.flag_current && this.props.playlistInfo?.flag_public) {
-			displayMessage("warning", i18next.t('ADVANCED.DELETE_CURRENT_PUBLIC'));
+			displayMessage('warning', i18next.t('ADVANCED.DELETE_CURRENT_PUBLIC'));
 		} else if (this.props.playlistInfo?.flag_public) {
-			displayMessage("warning", i18next.t('ADVANCED.DELETE_PUBLIC'));
+			displayMessage('warning', i18next.t('ADVANCED.DELETE_PUBLIC'));
 		} else if (this.props.playlistInfo?.flag_current) {
-			displayMessage("warning", i18next.t('ADVANCED.DELETE_CURRENT'));
+			displayMessage('warning', i18next.t('ADVANCED.DELETE_CURRENT'));
 		} else {
 			callModal('confirm', i18next.t('CL_DELETE_PLAYLIST',
 				{
@@ -133,25 +134,25 @@ class PlaylistHeader extends Component<IProps, IState> {
 						this.props.bLSet?.name :
 						(this.props.playlistInfo as DBPL).name
 				}), '', (confirm: boolean) => {
-					if (confirm) {
-						let url = this.props.idPlaylist === -4 ?
-							`/blacklist/set/${this.props.bLSet?.blc_set_id}` :
-							`/playlists/${this.props.idPlaylist}`
-						axios.delete(url);
-						if (this.props.idPlaylist === -4) {
-							this.props.changeIdPlaylist(-4);
-						} else {
-							this.props.changeIdPlaylist(store.getState().publicPlaylistID);
-						}
+				if (confirm) {
+					const url = this.props.idPlaylist === -4 ?
+						`/blacklist/set/${this.props.bLSet?.blc_set_id}` :
+						`/playlists/${this.props.idPlaylist}`;
+					axios.delete(url);
+					if (this.props.idPlaylist === -4) {
+						this.props.changeIdPlaylist(-4);
+					} else {
+						this.props.changeIdPlaylist(store.getState().publicPlaylistID);
 					}
-				});
+				}
+			});
 		}
 	};
 
 	startFavMix = async () => {
 		this.togglePlaylistCommands();
-		let response = await axios.get('/users/');
-		let userList = response.data.filter((u: User) => (u.type as number) < 2);
+		const response = await axios.get('/users/');
+		const userList = response.data.filter((u: User) => (u.type as number) < 2);
 		ReactDOM.render(<FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList} />, document.getElementById('modal'));
 	};
 
@@ -159,15 +160,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 		this.togglePlaylistCommands();
 		let url;
 		if (this.props.idPlaylist === -4) {
-			url = `/blacklist/set/${this.props.bLSet?.blc_set_id}/export`
+			url = `/blacklist/set/${this.props.bLSet?.blc_set_id}/export`;
 		} else if (this.props.idPlaylist === -5) {
-			url = `/favorites/export`
+			url = '/favorites/export';
 		} else {
-			url = `/playlists/${this.props.idPlaylist}/export`
+			url = `/playlists/${this.props.idPlaylist}/export`;
 		}
-		let response = await axios.get(url);
-		let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
-		let dlAnchorElem = document.getElementById('downloadAnchorElem');
+		const response = await axios.get(url);
+		const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
+		const dlAnchorElem = document.getElementById('downloadAnchorElem');
 		if (dlAnchorElem) {
 			dlAnchorElem.setAttribute('href', dataStr);
 			if (this.props.idPlaylist === -4) {
@@ -191,7 +192,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			file = e.target.files[0];
 			fr = new FileReader();
 			fr.onload = async () => {
-				let data: {
+				const data: {
 					playlist?: string | ArrayBuffer | null,
 					favorites?: string | ArrayBuffer | null,
 					blcSet?: string | ArrayBuffer | null
@@ -210,9 +211,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 					data.playlist = fr.result;
 					name = JSON.parse(fr.result as string).PlaylistInformation.name;
 				}
-				let response: { data: { code: string, data: { unknownKaras: Array<any>, playlist_id: number } } } = await axios.post(url, data);
+				const response: { data: { code: string, data: { unknownKaras: Array<any>, playlist_id: number } } } = await axios.post(url, data);
 				if (response.data.data?.unknownKaras && response.data.data.unknownKaras.length > 0) {
-					let mediasize = response.data.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
+					const mediasize = response.data.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 					callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
 						<p>
 							{i18next.t('MODAL.UNKNOW_KARAS.DESCRIPTION')}
@@ -232,14 +233,14 @@ class PlaylistHeader extends Component<IProps, IState> {
 								size: kara.mediasize,
 								name: kara.karafile.replace('.kara.json', ''),
 								repository: kara.repository
-							}
+							};
 						})
 					}));
 				} else {
 					!file.name.includes('.kmfavorites') &&
 						displayMessage('success', i18next.t(i18next.t(`SUCCESS_CODES.${response.data.code}`, { data: name })));
 				}
-				let playlist_id = file.name.includes('.kmfavorites') ? -5 : response.data.data.playlist_id;
+				const playlist_id = file.name.includes('.kmfavorites') ? -5 : response.data.data.playlist_id;
 				this.props.changeIdPlaylist(playlist_id);
 			};
 			fr.readAsText(file);
@@ -342,7 +343,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			return [{ value: '-1', label: i18next.t('PLAYLIST_KARAS') }, { value: '-5', label: i18next.t('PLAYLIST_FAVORITES') }];
 		}
 		return this.props.playlistList.map(playlist => {
-			return { value: playlist.playlist_id.toString(), label: playlist.name, icons: this.getPlaylistIcon(playlist) }
+			return { value: playlist.playlist_id.toString(), label: playlist.name, icons: this.getPlaylistIcon(playlist) };
 		});
 	}
 
@@ -512,8 +513,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 													<li>
 														<a href="#" onClick={this.deleteAllKaras} className="danger-hover">
 															<i className="fas fa-eraser" />
-																&nbsp;
-																{i18next.t('ADVANCED.EMPTY_LIST')}
+															&nbsp;
+															{i18next.t('ADVANCED.EMPTY_LIST')}
 														</a>
 													</li> : null
 												}
@@ -524,8 +525,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 																<i className="fas fa-eye-slash"></i> :
 																<i className="fas fa-eye"></i>
 															}
-																&nbsp;
-																{i18next.t(this.props.playlistInfo?.flag_visible ?
+															&nbsp;
+															{i18next.t(this.props.playlistInfo?.flag_visible ?
 																'ADVANCED.INVISIBLE' : 'ADVANCED.VISIBLE')}
 														</a>
 													</li> : null
@@ -534,8 +535,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 													<li>
 														<a href="#" onClick={this.setFlagPublic}>
 															<i className="fas fa-globe" />
-																&nbsp;
-																{i18next.t('ADVANCED.PUBLIC')}
+															&nbsp;
+															{i18next.t('ADVANCED.PUBLIC')}
 														</a>
 													</li> : null
 												}
@@ -544,8 +545,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 													<li>
 														<a href="#" onClick={this.setFlagCurrent}>
 															<i className="fas fa-play-circle" />
-																&nbsp;
-																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.CURRENT' : 'ADVANCED.CURRENT')}
+															&nbsp;
+															{i18next.t(this.props.idPlaylist === -4 ? 'BLC.CURRENT' : 'ADVANCED.CURRENT')}
 														</a>
 													</li> : null
 												}
@@ -573,8 +574,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 												<li>
 													<a href="#" onClick={this.exportPlaylist}>
 														<i className="fas fa-upload" />
-																&nbsp;
-																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EXPORT' :
+														&nbsp;
+														{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EXPORT' :
 															(this.props.idPlaylist === -5 ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'))}
 													</a>
 												</li>
@@ -582,8 +583,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 												<li>
 													<a href="#" onClick={this.addPlaylist}>
 														<i className="fas fa-plus" />
-																&nbsp;
-																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.ADD' : 'ADVANCED.ADD')}
+														&nbsp;
+														{i18next.t(this.props.idPlaylist === -4 ? 'BLC.ADD' : 'ADVANCED.ADD')}
 													</a>
 												</li>
 												{this.props.idPlaylist !== -4 ?

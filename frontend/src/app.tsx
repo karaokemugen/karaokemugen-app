@@ -1,23 +1,25 @@
-import { Switch, Route } from 'react-router';
-import WelcomePage from './components/WelcomePage';
-import AdminPage from './components/AdminPage';
-import PublicPage from './components/PublicPage';
+import 'react-toastify/dist/ReactToastify.css';
+
+import * as Sentry from '@sentry/browser';
+import axios from 'axios';
 import React, { Component } from 'react';
+import { Route,Switch } from 'react-router';
+import { ToastContainer } from 'react-toastify';
+
+import { DBYear } from '../../src/lib/types/database/kara';
+import { KaraTag } from '../../src/lib/types/kara';
+import { Tag } from '../../src/lib/types/tag';
+import { Config } from '../../src/types/config';
+import { PublicState } from '../../src/types/state';
+import AdminPage from './components/AdminPage';
 import i18n from './components/i18n';
 import NotFoundPage from './components/NotfoundPage';
-import axios from 'axios';
-import { startIntro, getSocket, is_touch_device } from './components/tools';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import store from './store';
-import { Config } from '../../src/types/config';
-import { KaraTag } from '../../src/lib/types/kara';
-import { DBYear } from '../../src/lib/types/database/kara';
-import { Tag } from '../../src/lib/types/tag';
-import { Tag as FrontendTag } from './types/tag';
+import PublicPage from './components/PublicPage';
 import SetupPage from './components/SetupPage';
-import * as Sentry from '@sentry/browser';
-import { PublicState } from '../../src/types/state';
+import { getSocket, is_touch_device,startIntro } from './components/tools';
+import WelcomePage from './components/WelcomePage';
+import store from './store';
+import { Tag as FrontendTag } from './types/tag';
 
 require('./axiosInterceptor');
 
@@ -30,8 +32,8 @@ interface IState {
 	displaySetupPage: boolean;
 }
 
-class App extends Component<{}, IState> {
-	constructor(props: {}) {
+class App extends Component<unknown, IState> {
+	constructor(props: unknown) {
 		super(props);
 		this.state = {
 			admpwd: window.location.search.indexOf('admpwd') !== -1 ? window.location.search.split('=')[1] : undefined,
@@ -44,7 +46,7 @@ class App extends Component<{}, IState> {
 
 	async checkAuth() {
 		try {
-			await axios.get('/auth/checkauth')
+			await axios.get('/auth/checkauth');
 		} catch (error) {
 			// if error the authorization must be broken so we delete it
 			store.logOut();
@@ -55,7 +57,7 @@ class App extends Component<{}, IState> {
 		const response = await axios.get('/tags');
 		return response.data.content.filter((val: Tag) => val.karacount !== null)
 			.map((val: { i18n: { [key: string]: string }, tid: string, name: string, types: Array<number | string>, karacount: string }) => {
-				let trad = val.i18n[store.getNavigatorLanguage() as string];
+				const trad = val.i18n[store.getNavigatorLanguage() as string];
 				return { value: val.tid, label: trad ? trad : (val.i18n['eng'] ? val.i18n['eng'] : val.name), type: val.types, karacount: val.karacount };
 			});
 	}
@@ -73,7 +75,7 @@ class App extends Component<{}, IState> {
 			await store.setUser();
 		}
 		if (this.state.admpwd && !localStorage.getItem('kmToken')) {
-			let result = await axios.post('/auth/login', { username: 'admin', password: this.state.admpwd });
+			const result = await axios.post('/auth/login', { username: 'admin', password: this.state.admpwd });
 			store.setLogInfos(result.data);
 		}
 		await this.getSettings();
@@ -81,7 +83,7 @@ class App extends Component<{}, IState> {
 		getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
 		getSocket().on('disconnect', (reason: any) => {
 			if (reason === 'transport error') {
-				this.setState({ shutdownPopup: true })
+				this.setState({ shutdownPopup: true });
 			}
 		});
 		this.addTags();
@@ -104,7 +106,7 @@ class App extends Component<{}, IState> {
 
 	getSettings = async () => {
 		const res = await axios.get('/settings');
-		let state:PublicState = res.data.state;
+		const state: PublicState = res.data.state;
 		store.setConfig(res.data.config);
 		store.setVersion(res.data.version);
 		store.setState(res.data.state);
@@ -118,13 +120,13 @@ class App extends Component<{}, IState> {
 	setSentry = (environment: string) => {
 		if (store.getConfig().Online?.ErrorTracking) {
 			Sentry.init({
-				dsn: "https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806",
+				dsn: 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806',
 				environment: environment || 'release',
 				release: store.getVersion().number,
 				ignoreErrors: ['Network Error', 'Request failed with status code']
 			});
 			Sentry.configureScope((scope) => {
-				let userConfig = store.getUser();
+				const userConfig = store.getUser();
 				if (userConfig?.email) {
 					scope.setUser({
 						username: userConfig.login,

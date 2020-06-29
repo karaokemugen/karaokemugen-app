@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
-import i18next from 'i18next';
-import { is_touch_device, secondsTimeSpanToHMS, callModal } from '../tools';
 import axios from 'axios';
-import store from '../../store';
+import i18next from 'i18next';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { DBPLCInfo } from '../../../../src/types/database/playlist';
+
 import { DBKaraTag, lastplayed_ago } from '../../../../src/lib/types/database/kara';
 import { Token } from '../../../../src/lib/types/user';
+import { DBPLCInfo } from '../../../../src/types/database/playlist';
+import store from '../../store';
+import { callModal, is_touch_device, secondsTimeSpanToHMS } from '../tools';
 
 interface IProps {
 	kid: string | undefined;
@@ -59,7 +60,7 @@ class KaraDetail extends Component<IProps, IState> {
 	}
 
 	closeModal() {
-		let element = document.getElementById('modal');
+		const element = document.getElementById('modal');
 		if (element) ReactDOM.unmountComponentAtNode(element);
 	}
 
@@ -74,17 +75,17 @@ class KaraDetail extends Component<IProps, IState> {
 	}
 
 	onClickOutsideModal = (e: MouseEvent) => {
-		let myElementToCheckIfClicksAreInsideOf = document.getElementsByClassName("modal-dialog")[0];
+		const myElementToCheckIfClicksAreInsideOf = document.getElementsByClassName('modal-dialog')[0];
 		if (!myElementToCheckIfClicksAreInsideOf?.contains((e.target as Node))) {
 			this.closeModal();
 		}
 	}
 
 	getKaraDetail = async (kid?: string) => {
-		let urlInfoKara = this.props.idPlaylist && this.props.idPlaylist > 0 ?
+		const urlInfoKara = this.props.idPlaylist && this.props.idPlaylist > 0 ?
 			'/playlists/' + this.props.idPlaylist + '/karas/' + this.props.playlistcontentId :
 			'/karas/' + (kid ? kid : this.props.kid);
-		let response = await axios.get(urlInfoKara);
+		const response = await axios.get(urlInfoKara);
 		const kara = response.data;
 		this.setState({
 			kara: kara,
@@ -100,11 +101,11 @@ class KaraDetail extends Component<IProps, IState> {
 			!lastPlayed.months &&
 			!lastPlayed.years
 		) {
-			let timeAgo =
+			const timeAgo =
 				(lastPlayed.seconds ? lastPlayed.seconds : 0) +
 				(lastPlayed.minutes ? lastPlayed.minutes * 60 : 0) +
 				(lastPlayed.hours ? lastPlayed.hours * 3600 : 0);
-			let timeAgoStr =
+			const timeAgoStr =
 				lastPlayed.minutes || lastPlayed.hours
 					? secondsTimeSpanToHMS(timeAgo, 'hm')
 					: secondsTimeSpanToHMS(timeAgo, 'ms');
@@ -121,7 +122,7 @@ class KaraDetail extends Component<IProps, IState> {
 	 */
 
 	showFullLyrics = async () => {
-		let response = await axios.get('/karas/' + (this.state.kara as DBPLCInfo).kid + '/lyrics');
+		const response = await axios.get('/karas/' + (this.state.kara as DBPLCInfo).kid + '/lyrics');
 		if (is_touch_device() && this.props.mode !== 'karaCard') {
 			callModal('alert', i18next.t('LYRICS'),
 				<div style={{ textAlign: 'center' }}>
@@ -159,7 +160,7 @@ class KaraDetail extends Component<IProps, IState> {
 	};
 
 	onClick = () => {
-		let element = document.getElementById('modal');
+		const element = document.getElementById('modal');
 		if (element) ReactDOM.unmountComponentAtNode(element);
 	}
 
@@ -178,13 +179,13 @@ class KaraDetail extends Component<IProps, IState> {
 	 */
 	render() {
 		if (this.state.kara) {
-			let data = this.state.kara;
-			let todayDate = Date.now();
-			let playTime = new Date(todayDate + data.time_before_play * 1000);
-			let playTimeDate =
+			const data = this.state.kara;
+			const todayDate = Date.now();
+			const playTime = new Date(todayDate + data.time_before_play * 1000);
+			const playTimeDate =
 				playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-			let beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
-			let details: any = {
+			const beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
+			const details: any = {
 				DETAILS_TITLE: data.title,
 				UPVOTE_NUMBER: data.upvotes,
 				DETAILS_ADDED:
@@ -219,9 +220,9 @@ class KaraDetail extends Component<IProps, IState> {
 				DETAILS_YEAR: data.year,
 				BLCTYPE_8: data.songwriters.map(e => this.getTagInLocale(e)).join(', ')
 			};
-			let htmlDetails = Object.keys(details).map(function (k: string) {
+			const htmlDetails = Object.keys(details).map(function (k: string) {
 				if (details[k]) {
-					let detailsLine = details[k].toString().replace(/,/g, ', ');
+					const detailsLine = details[k].toString().replace(/,/g, ', ');
 					return (
 						<tr key={k}>
 							<td> {i18next.t(k)}</td>
@@ -232,7 +233,7 @@ class KaraDetail extends Component<IProps, IState> {
 					return null;
 				}
 			});
-			let makeFavButton = (
+			const makeFavButton = (
 				<button
 					type="button"
 					title={i18next.t('TOOLTIP_FAV')}
@@ -244,7 +245,7 @@ class KaraDetail extends Component<IProps, IState> {
 				</button>
 			);
 
-			let lyricsKara =
+			const lyricsKara =
 				data.subfile && this.state.showLyrics ? (
 					<div className="lyricsKara alert alert-info" ref={this.fullLyricsRef}>
 						<button
@@ -310,7 +311,7 @@ class KaraDetail extends Component<IProps, IState> {
 											type="button"
 											title={i18next.t('TOOLTIP_SHOWVIDEO')}
 											className={`showVideo btn btn-action ${is_touch_device() ? 'mobile' : ''}`}
-											onClick={() => this.props.showVideo!((this.state.kara as DBPLCInfo).mediafile)}
+											onClick={() => this.props.showVideo && this.props.showVideo((this.state.kara as DBPLCInfo).mediafile)}
 										>
 											<i className="fas fa-video" />
 											<span>{!is_touch_device() && i18next.t('TOOLTIP_SHOWVIDEO_SHORT')}</span>
@@ -331,15 +332,16 @@ class KaraDetail extends Component<IProps, IState> {
 												title={this.state.isVisible ? i18next.t('TOOLTIP_VISIBLE_OFF') : i18next.t('TOOLTIP_VISIBLE_ON')}
 												onClick={this.changeVisibilityKara}
 												className={'btn btn-action ' + (this.state.isVisible ? '' : 'btn-primary')}
-											>{this.state.isVisible ?
-												<React.Fragment>
-													<i className="fas fa-eye-slash" />
-													<span>{!is_touch_device() && i18next.t('TOOLTIP_VISIBLE_OFF_SHORT')}</span>
-												</React.Fragment> :
-												<React.Fragment>
-													<i className="fas fa-eye" />
-													<span>{!is_touch_device() && i18next.t('TOOLTIP_VISIBLE_ON_SHORT')}</span>
-												</React.Fragment>
+											>
+												{this.state.isVisible ?
+													<React.Fragment>
+														<i className="fas fa-eye-slash" />
+														<span>{!is_touch_device() && i18next.t('TOOLTIP_VISIBLE_OFF_SHORT')}</span>
+													</React.Fragment> :
+													<React.Fragment>
+														<i className="fas fa-eye" />
+														<span>{!is_touch_device() && i18next.t('TOOLTIP_VISIBLE_ON_SHORT')}</span>
+													</React.Fragment>
 												}</button>
 										) : null}
 									</div>

@@ -1,26 +1,27 @@
-import React, { Component } from 'react';
+import axios from 'axios';
 import i18next from 'i18next';
-import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
-import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
-import KmAppBodyDecorator from './decorators/KmAppBodyDecorator';
-import PlaylistMainDecorator from './decorators/PlaylistMainDecorator';
-import Playlist from './karas/Playlist';
-import PollModal from './modals/PollModal';
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+import { Token } from '../../../src/lib/types/user';
+import { Config } from '../../../src/types/config';
+import { DBPLC, DBPLCInfo } from '../../../src/types/database/playlist';
 import webappClose from '../assets/dame.jpg';
+import store from '../store';
+import { Tag } from '../types/tag';
+import KmAppBodyDecorator from './decorators/KmAppBodyDecorator';
+import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
+import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
+import PlaylistMainDecorator from './decorators/PlaylistMainDecorator';
+import RadioButton from './generic/RadioButton';
+import Playlist from './karas/Playlist';
+import ProgressBar from './karas/ProgressBar';
+import ClassicModeModal from './modals/ClassicModeModal';
 import HelpModal from './modals/HelpModal';
 import LoginModal from './modals/LoginModal';
+import PollModal from './modals/PollModal';
 import ProfilModal from './modals/ProfilModal';
-import ClassicModeModal from './modals/ClassicModeModal';
-import RadioButton from './generic/RadioButton';
-import axios from 'axios';
-import ProgressBar from './karas/ProgressBar';
-import { buildKaraTitle, getSocket, is_touch_device, displayMessage, callModal, secondsTimeSpanToHMS } from './tools';
-import store from '../store';
-import ReactDOM from 'react-dom';
-import { Config } from '../../../src/types/config';
-import { Tag } from '../types/tag';
-import { Token } from '../../../src/lib/types/user';
-import { DBPLC, DBPLCInfo } from '../../../src/types/database/playlist';
+import { buildKaraTitle, callModal, displayMessage, getSocket, is_touch_device, secondsTimeSpanToHMS } from './tools';
 
 interface IProps {
 	config: Config;
@@ -75,7 +76,7 @@ class PublicPage extends Component<IProps, IState> {
 	}
 
 	majIdsPlaylist = (side: number, value: number) => {
-		let idsPlaylist = this.state.idsPlaylist;
+		const idsPlaylist = this.state.idsPlaylist;
 		if (side === 1) {
 			idsPlaylist.left = Number(value);
 		} else {
@@ -92,7 +93,7 @@ class PublicPage extends Component<IProps, IState> {
 		});
 		getSocket().on('songPollEnded', () => {
 			this.setState({ isPollActive: false });
-			let element = document.getElementById('modal');
+			const element = document.getElementById('modal');
 			if (element) ReactDOM.unmountComponentAtNode(element);
 		});
 		getSocket().on('songPollResult', (data: any) => {
@@ -102,9 +103,9 @@ class PublicPage extends Component<IProps, IState> {
 			<div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br />{data.message}</div>, data.duration));
 		getSocket().on('userSongPlaysIn', (data: DBPLCInfo) => {
 			if (data && data.username === (store.getLogInfos() as Token).username) {
-				let playTime = new Date(Date.now() + data.time_before_play * 1000);
-				let playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-				let beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
+				const playTime = new Date(Date.now() + data.time_before_play * 1000);
+				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+				const beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
 				displayMessage('info', i18next.t('USER_SONG_PLAYS_IN', {
 					kara: buildKaraTitle(data, true),
 					time: beforePlayTime,
@@ -121,7 +122,7 @@ class PublicPage extends Component<IProps, IState> {
 							<label>{i18next.t('NEXT_SONG_MESSAGE')}</label>
 							<br />
 							{buildKaraTitle(data, true)}
-						</div>)
+						</div>);
 				}, 500);
 			}
 		});
@@ -139,12 +140,12 @@ class PublicPage extends Component<IProps, IState> {
 		store.removeChangeListener('loginUpdated', this.getPlaylistList);
 	}
 
-	displayClassicModeModal = async (data: any) => {
+	displayClassicModeModal = (data: any) => {
 		if (data.playerStatus === 'pause' && data.currentRequester === (store.getLogInfos() as Token).username && !this.state.classicModeModal) {
 			ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
 			this.setState({ classicModeModal: true });
 		} else if (data.playerStatus !== 'pause' && this.state.classicModeModal) {
-			let element = document.getElementById('modal');
+			const element = document.getElementById('modal');
 			if (element) ReactDOM.unmountComponentAtNode(element);
 			this.setState({ classicModeModal: false });
 		}
@@ -171,10 +172,10 @@ class PublicPage extends Component<IProps, IState> {
 	// pick a random kara & add it after (not) asking user's confirmation
 	getLucky = async () => {
 		this.closeMobileMenu();
-		let response = await axios.get('/karas?filter=' + store.getFilterValue(1) + '&random=1');
+		const response = await axios.get('/karas?filter=' + store.getFilterValue(1) + '&random=1');
 		if (response.data && response.data.content && response.data.content[0]) {
-			let chosenOne = response.data.content[0].kid;
-			let response2 = await axios.get('/karas/' + chosenOne);
+			const chosenOne = response.data.content[0].kid;
+			const response2 = await axios.get('/karas/' + chosenOne);
 			callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD', { title: buildKaraTitle(response2.data, true) }), () => {
 				axios.post('/karas/' + chosenOne, { requestedby: (store.getLogInfos() as Token).username });
 			}, 'lucky');
@@ -211,18 +212,18 @@ class PublicPage extends Component<IProps, IState> {
 
 	getPlaylistList = async () => {
 		const response = await axios.get('/playlists/');
-		let playlistList = response.data.filter((playlist: PlaylistElem) => playlist.flag_visible)
-		if (this.props.config.Frontend.Permissions!.AllowViewBlacklist)
+		const playlistList = response.data.filter((playlist: PlaylistElem) => playlist.flag_visible);
+		if (this.props.config.Frontend.Permissions?.AllowViewBlacklist)
 			playlistList.push({
 				playlist_id: -2,
 				name: i18next.t('PLAYLIST_BLACKLIST')
 			});
-		if (this.props.config.Frontend.Permissions!.AllowViewBlacklistCriterias)
+		if (this.props.config.Frontend.Permissions?.AllowViewBlacklistCriterias)
 			playlistList.push({
 				playlist_id: -4,
 				name: i18next.t('PLAYLIST_BLACKLIST_CRITERIAS')
 			});
-		if (this.props.config.Frontend.Permissions!.AllowViewWhitelist)
+		if (this.props.config.Frontend.Permissions?.AllowViewWhitelist)
 			playlistList.push({
 				playlist_id: -3,
 				name: i18next.t('PLAYLIST_WHITELIST')
@@ -232,7 +233,7 @@ class PublicPage extends Component<IProps, IState> {
 
 
 	render() {
-		let logInfos = store.getLogInfos();
+		const logInfos = store.getLogInfos();
 		return (
 			<div id="publicPage">
 				{this.props.config.Frontend.Mode === 0 ? (
@@ -251,7 +252,8 @@ class PublicPage extends Component<IProps, IState> {
 							{i18next.t('WEBAPPMODE_CLOSED_MESSAGE')}
 						</div>
 					</div>
-				) : (
+				) :
+					(
 						<React.Fragment>
 							<KmAppWrapperDecorator>
 								{this.props.config.Frontend.Mode === 2 ?
@@ -322,7 +324,7 @@ class PublicPage extends Component<IProps, IState> {
 													<li>
 														<a href="#" onClick={() => {
 															this.closeMobileMenu();
-															ReactDOM.render(<HelpModal />, document.getElementById('modal'))
+															ReactDOM.render(<HelpModal />, document.getElementById('modal'));
 														}}>
 															<i className="fas fa-question-circle" />&nbsp;{i18next.t('HELP')}
 														</a>
@@ -337,7 +339,7 @@ class PublicPage extends Component<IProps, IState> {
 															}}
 														>
 															<i className="fas fa-sign-out-alt" />&nbsp;
-													{i18next.t('LOGOUT')}
+															{i18next.t('LOGOUT')}
 														</a>
 													</li>
 												</ul>
@@ -423,7 +425,7 @@ class PublicPage extends Component<IProps, IState> {
 											className="btn-floating btn-large waves-effect z-depth-3 showPoll"
 											onClick={() => {
 												this.closeMobileMenu();
-												ReactDOM.render(<PollModal />, document.getElementById('modal'))
+												ReactDOM.render(<PollModal />, document.getElementById('modal'));
 											}}
 										>
 											<i className="fas fa-bar-chart" />
@@ -476,7 +478,7 @@ class PublicPage extends Component<IProps, IState> {
 												style={{ backgroundColor: '#613114' }}
 												onClick={() => {
 													this.closeMobileMenu();
-													ReactDOM.render(<HelpModal />, document.getElementById('modal'))
+													ReactDOM.render(<HelpModal />, document.getElementById('modal'));
 												}}
 											>
 												<i className="fas fa-question-circle" />
@@ -500,7 +502,8 @@ class PublicPage extends Component<IProps, IState> {
 											>
 												{this.state.lyrics ? (
 													<i className="fas fa-closed-captioning" />
-												) : (
+												) :
+													(
 														<i className="fas fa-info-circle" />
 													)}
 											</a>

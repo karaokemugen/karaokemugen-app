@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
 import './RadioButton.scss';
+
+import React, { Component } from 'react';
 
 
 interface IProps {
@@ -9,7 +10,7 @@ interface IProps {
 }
 
 
-class RadioButton extends Component<IProps,{}> {
+class RadioButton extends Component<IProps, unknown> {
 	constructor(props:IProps) {
 		super(props);
 	}
@@ -19,7 +20,7 @@ class RadioButton extends Component<IProps,{}> {
 			<div className="radiobutton-ui" data-orientation={this.props.orientation || 'horizontal'}>
 				{
 					this.props.buttons.map((item:any,i:number) => {
-						let style:any = {};
+						const style:any = {};
 						if(item.active && item.activeColor)
 							style.backgroundColor = item.activeColor;
 						return (

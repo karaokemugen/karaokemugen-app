@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
-import i18next from 'i18next';
 import axios from 'axios';
+import i18next from 'i18next';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+
 import RadioButton from '../generic/RadioButton';
 
 interface IState {
@@ -10,8 +11,8 @@ interface IState {
 	errorTracking: boolean
 }
 
-class OnlineStatsModal extends Component<{}, IState> {
-	constructor(props: {}) {
+class OnlineStatsModal extends Component<unknown, IState> {
+	constructor(props: unknown) {
 		super(props);
 		this.state = {
 			openDetails: false,
@@ -29,7 +30,7 @@ class OnlineStatsModal extends Component<{}, IState> {
 				}
 			}
 		});
-		let element = document.getElementById('modal');
+		const element = document.getElementById('modal');
 		if (element) ReactDOM.unmountComponentAtNode(element);
 	};
 

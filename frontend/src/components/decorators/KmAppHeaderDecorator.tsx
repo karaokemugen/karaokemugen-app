@@ -6,7 +6,7 @@ interface IProps {
 	mode: string;
 }
 
-class KmAppHeaderDecorator extends Component<IProps, {}> {
+class KmAppHeaderDecorator extends Component<IProps, unknown> {
 
 	constructor(props:IProps) {
 		super(props);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Wrapper, Menu, MenuItem } from 'react-aria-menubutton';
+import { Button, Menu, MenuItem,Wrapper } from 'react-aria-menubutton';
 require('./SelectWithIcon.scss');
 
 interface IProps {
@@ -8,10 +8,10 @@ interface IProps {
 	onChange: (value: string) => void
 }
 
-class SelectWithIcon extends React.Component<IProps, {}> {
+class SelectWithIcon extends React.Component<IProps, unknown> {
 
 	render() {
-		let select = (this.props.value && this.props.list?.length > 0) ?
+		const select = (this.props.value && this.props.list?.length > 0) ?
 			this.props.list.filter(element => this.props.value === element.value)[0] :
 			undefined;
 		return (

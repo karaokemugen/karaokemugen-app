@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 require('./KmAppWrapperDecorator.scss');
 
-class KmAppWrapperDecorator extends Component<{}, {}> {
+class KmAppWrapperDecorator extends Component<unknown, unknown> {
 
 	constructor(props:any) {
 		super(props);

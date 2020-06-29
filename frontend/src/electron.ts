@@ -1,4 +1,4 @@
-import { parseJwt } from "./components/tools";
+import { parseJwt } from './components/tools';
 
 export function isElectron() {
 	// Renderer process
@@ -27,8 +27,8 @@ if (isElectron()) {
 		const token = localStorage.getItem('kmToken');
 		const username = token
 			? parseJwt(token).username
-			: 'admin'
-		const { ipcRenderer } = window.require("electron");
+			: 'admin';
+		const { ipcRenderer } = window.require('electron');
 		if (event.dataTransfer) {
 			ipcRenderer.send('droppedFiles', {
 				username: username,

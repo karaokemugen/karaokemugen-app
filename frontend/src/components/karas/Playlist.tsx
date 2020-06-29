@@ -1,24 +1,26 @@
-import React, { Component } from 'react';
+import 'react-virtualized/styles.css';
+
+import axios from 'axios';
 import i18next from 'i18next';
-import PlaylistHeader from './PlaylistHeader';
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange,InfiniteLoader, List, ListRowProps } from 'react-virtualized';
+
+import { Token } from '../../../../src/lib/types/user';
+import { BLCSet } from '../../../../src/types/blacklist';
+import { Config } from '../../../../src/types/config';
+import { DBBlacklist,DBBLC } from '../../../../src/types/database/blacklist';
+import { DBPL } from '../../../../src/types/database/playlist';
+import store from '../../store';
+import { KaraElement } from '../../types/kara';
+import { Tag } from '../../types/tag';
+import SuggestionModal from '../modals/SuggestionModal';
+import { buildKaraTitle,callModal, displayMessage, getSocket, is_touch_device, secondsTimeSpanToHMS } from '../tools';
+import BlacklistCriterias from './BlacklistCriterias';
 import KaraDetail from './KaraDetail';
 import KaraLine from './KaraLine';
-import axios from 'axios';
-import { secondsTimeSpanToHMS, is_touch_device, getSocket, displayMessage, callModal, buildKaraTitle } from '../tools';
-import BlacklistCriterias from './BlacklistCriterias';
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
-import { AutoSizer, InfiniteLoader, CellMeasurer, CellMeasurerCache, List, Index, ListRowProps, IndexRange } from 'react-virtualized';
-import store from '../../store';
-import { DBPL } from '../../../../src/types/database/playlist';
-import { Config } from '../../../../src/types/config';
-import 'react-virtualized/styles.css';
-import { Tag } from '../../types/tag';
-import { KaraElement } from '../../types/kara';
-import { DBBLC, DBBlacklist } from '../../../../src/types/database/blacklist';
-import { Token } from '../../../../src/lib/types/user';
-import SuggestionModal from '../modals/SuggestionModal';
-import ReactDOM from 'react-dom';
-import { BLCSet } from '../../../../src/types/blacklist';
+import PlaylistHeader from './PlaylistHeader';
 require('./Playlist.scss');
 
 const chunksize = 400;
@@ -98,7 +100,7 @@ class Playlist extends Component<IProps, IState> {
 		if (nextProps.config.Frontend.Mode && nextProps.config.Frontend.Mode === 1
 			&& nextProps.config.Frontend.Mode !== this.props.config.Frontend.Mode
 			&& this.props.side === 2) {
-				this.initCall();
+			this.initCall();
 		}
 	}
 
@@ -123,7 +125,7 @@ class Playlist extends Component<IProps, IState> {
 		});
 		getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
 		store.addChangeListener('playlistContentsUpdated', (idPlaylist: number) => {
-			let data = this.state.data as KaraList;
+			const data = this.state.data as KaraList;
 			if (this.state.idPlaylist > 0) data.infos.from = 0;
 			this.setState({ data: data });
 			this.playlistContentsUpdated(idPlaylist);
@@ -132,7 +134,7 @@ class Playlist extends Component<IProps, IState> {
 		getSocket().on('publicPlaylistUpdated', (idPlaylist: number) => {
 			if (this.props.scope !== 'admin' && this.props.side
 				&& idPlaylist !== store.getState().publicPlaylistID) {
-				let state = store.getState();
+				const state = store.getState();
 				state.publicPlaylistID = idPlaylist;
 				store.setState(state);
 				this.changeIdPlaylist(idPlaylist);
@@ -140,7 +142,7 @@ class Playlist extends Component<IProps, IState> {
 		});
 		getSocket().on('KIDUpdated', async (event: { kid: string, flag_inplaylist: boolean, username: string, requester: string, flag_upvoted: boolean }) => {
 			if (this.state.idPlaylist === -1) {
-				let data = this.state.data as KaraList;
+				const data = this.state.data as KaraList;
 				data.content.forEach((kara) => {
 					if (kara.kid === event.kid) {
 						if (event.flag_inplaylist === false || event.flag_inplaylist === true) {
@@ -191,8 +193,8 @@ class Playlist extends Component<IProps, IState> {
 	SortableList = SortableContainer((List as any), { withRef: true })
 	SortableItem = SortableElement(({ value, style }: any) => {
 		if (value.content) {
-			let kara = value.content as KaraElement;
-			let s = JSON.parse(JSON.stringify(style));
+			const kara = value.content as KaraElement;
+			const s = JSON.parse(JSON.stringify(style));
 			s.zIndex = 999999999 - value.index;
 			return <li data-kid={kara.kid} key={value.key} style={s}>
 				<KaraLine
@@ -213,7 +215,7 @@ class Playlist extends Component<IProps, IState> {
 				/>
 			</li>;
 		} else {
-			let s = JSON.parse(JSON.stringify(style));
+			const s = JSON.parse(JSON.stringify(style));
 			s.height = 39;
 			// placeholder line while loading kara content
 			return (
@@ -234,7 +236,7 @@ class Playlist extends Component<IProps, IState> {
 
 	loadMoreRows = async ({ startIndex, stopIndex }: IndexRange) => {
 		if (!this.state.getPlaylistInProgress) {
-			let data = this.state.data as KaraList;
+			const data = this.state.data as KaraList;
 			data.infos.from = Math.floor(stopIndex / chunksize) * chunksize;
 			await this.setState({ data: data });
 			if (timer) clearTimeout(timer);
@@ -317,15 +319,15 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			let plVal1Cookie = localStorage.getItem('mugenPlVal1');
 			let plVal2Cookie = localStorage.getItem('mugenPlVal2');
-			if (plVal1Cookie == plVal2Cookie) {
+			if (plVal1Cookie === plVal2Cookie) {
 				plVal2Cookie = null;
 				plVal1Cookie = null;
 			}
 
 			if (this.props.side === 1) {
-				value = plVal1Cookie != null && Number(plVal1Cookie) !== NaN ? Number(plVal1Cookie) : -1;
+				value = plVal1Cookie !== null && !isNaN(Number(plVal1Cookie)) ? Number(plVal1Cookie) : -1;
 			} else {
-				value = plVal2Cookie != null && Number(plVal2Cookie) !== NaN ? Number(plVal2Cookie) : store.getState().publicPlaylistID;
+				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie)) ? Number(plVal2Cookie) : store.getState().publicPlaylistID;
 			}
 		}
 		this.setState({ idPlaylist: value });
@@ -333,8 +335,8 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	loadBLSet = async (idBLSet?: number) => {
-		let bLSetList = (await axios.get('/blacklist/set')).data;
-		let bLSet = bLSetList.filter((set: BLCSet) => idBLSet ? set.blc_set_id === idBLSet : set.flag_current)[0];
+		const bLSetList = (await axios.get('/blacklist/set')).data;
+		const bLSet = bLSetList.filter((set: BLCSet) => idBLSet ? set.blc_set_id === idBLSet : set.flag_current)[0];
 		await this.setState({ bLSetList: bLSetList, bLSet: bLSet });
 		store.setCurrentBlSet(bLSet.blc_set_id);
 	}
@@ -355,7 +357,7 @@ class Playlist extends Component<IProps, IState> {
 		if (this.state.idPlaylist === -4) {
 			callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: this.state.bLSet?.name }), '', (newName: string) => {
 				axios.put(`/blacklist/set/${this.state.bLSet?.blc_set_id}`, { name: newName });
-				let bLSet = this.state.bLSet as BLCSet;
+				const bLSet = this.state.bLSet as BLCSet;
 				bLSet.name = newName;
 				this.setState({ bLSet: bLSet });
 			});
@@ -363,7 +365,7 @@ class Playlist extends Component<IProps, IState> {
 			callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: (this.state.playlistInfo as DBPL).name }), '', (newName: string) => {
 				axios.put(`/playlists/${this.state.idPlaylist}`,
 					{ name: newName, flag_visible: (this.state.playlistInfo as DBPL).flag_visible });
-				let playlistInfo = this.state.playlistInfo as DBPL;
+				const playlistInfo = this.state.playlistInfo as DBPL;
 				playlistInfo.name = newName;
 				this.setState({ playlistInfo: playlistInfo });
 			});
@@ -372,14 +374,14 @@ class Playlist extends Component<IProps, IState> {
 
 	getPlaylistInfo = async () => {
 		if (!this.state.getPlaylistInProgress) {
-			let response = await axios.get(`/playlists/${this.state.idPlaylist}`);
+			const response = await axios.get(`/playlists/${this.state.idPlaylist}`);
 			this.setState({ playlistInfo: response.data });
 		}
 	};
 
 	getPlaylistUrl = (idPlaylistParam?: number) => {
-		let idPlaylist: number = idPlaylistParam ? idPlaylistParam : this.state.idPlaylist;
-		let url: string = '';
+		const idPlaylist: number = idPlaylistParam ? idPlaylistParam : this.state.idPlaylist;
+		let url = '';
 		if (idPlaylist >= 0) {
 			url =
 				'/playlists/' +
@@ -409,11 +411,11 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	getPlaylist = async (searchType?: string) => {
-		let criterias: any = {
+		const criterias: any = {
 			'year': 'y',
 			'tag': 't'
 		};
-		let stateData = this.state.data as KaraList;
+		const stateData = this.state.data as KaraList;
 		let data: any = { getPlaylistInProgress: true };
 		if (searchType) {
 			data.searchType = searchType;
@@ -437,14 +439,14 @@ class Playlist extends Component<IProps, IState> {
 			(stateData && stateData.infos && stateData.infos.from > 0 ? stateData.infos.from : 0) +
 			'&size=' + chunksize;
 		if (this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) {
-			let searchCriteria = this.state.searchCriteria ?
+			const searchCriteria = this.state.searchCriteria ?
 				criterias[this.state.searchCriteria]
 				: '';
 			url += '&searchType=' + this.state.searchType
 				+ ((searchCriteria && this.state.searchValue) ? ('&searchValue=' + searchCriteria + ':' + this.state.searchValue) : '');
 		}
-		let response = await axios.get(url);
-		let karas: KaraList = response.data;
+		const response = await axios.get(url);
+		const karas: KaraList = response.data;
 		if (this.state.idPlaylist > 0) {
 			karas.content.forEach((kara) => {
 				if (kara.flag_playing) {
@@ -463,7 +465,7 @@ class Playlist extends Component<IProps, IState> {
 				}
 			} else {
 				if (karas.infos.from > data.content.length) {
-					let nbCellToFill = data.infos.from - data.content.length;
+					const nbCellToFill = data.infos.from - data.content.length;
 					for (let index = 0; index < nbCellToFill; index++) {
 						data.content.push(undefined);
 					}
@@ -481,7 +483,7 @@ class Playlist extends Component<IProps, IState> {
 
 	playingUpdate = (data: { playlist_id: number, plc_id: number }) => {
 		if (this.state.idPlaylist === data.playlist_id && !this.state.stopUpdate) {
-			let playlistData = this.state.data as KaraList;
+			const playlistData = this.state.data as KaraList;
 			playlistData?.content.forEach((kara, index) => {
 				if (kara.flag_playing) {
 					kara.flag_playing = false;
@@ -502,7 +504,7 @@ class Playlist extends Component<IProps, IState> {
 
 	getPlInfosElement = () => {
 		let plInfos = '';
-		let stateData = this.state.data as KaraList;
+		const stateData = this.state.data as KaraList;
 		if (this.state.idPlaylist && stateData && stateData.infos && stateData.infos.count) {
 			plInfos =
 				this.state.idPlaylist != -4 ? stateData.infos.from + '-' + stateData.infos.to : '';
@@ -531,7 +533,7 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	selectAllKaras = () => {
-		let data = this.state.data;
+		const data = this.state.data;
 		let checkedkaras = 0;
 		(this.state.data as KaraList).content.forEach(kara => {
 			if (kara) {
@@ -544,7 +546,7 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	checkKara = (id: string | number) => {
-		let data = this.state.data as KaraList;
+		const data = this.state.data as KaraList;
 		let checkedkaras = this.state.checkedkaras;
 		data.content.forEach(kara => {
 			if (this.state.idPlaylist >= 0) {
@@ -570,22 +572,22 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	addAllKaras = async () => {
-		let response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
-		let karaList = response.data.content.map((a: KaraElement) => a.kid);
+		const response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
+		const karaList = response.data.content.map((a: KaraElement) => a.kid);
 		displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', { count: response.data.content.length }));
 		axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: (store.getLogInfos() as Token).username });
 	};
 
 	addCheckedKaras = async (event?: any, pos?: number) => {
-		let stateData = this.state.data as KaraList;
-		let listKara = stateData.content.filter(a => a.checked);
+		const stateData = this.state.data as KaraList;
+		const listKara = stateData.content.filter(a => a.checked);
 		if (listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		let idKara = listKara.map(a => a.kid);
-		let idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id));
-		let url: string = '';
+		const idKara = listKara.map(a => a.kid);
+		const idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id));
+		let url = '';
 		let data;
 		let type;
 
@@ -626,14 +628,14 @@ class Playlist extends Component<IProps, IState> {
 	deleteCheckedKaras = async () => {
 		let url;
 		let data;
-		let stateData = this.state.data as KaraList;
-		let listKara = stateData.content.filter(a => a.checked);
+		const stateData = this.state.data as KaraList;
+		const listKara = stateData.content.filter(a => a.checked);
 		if (listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
 		if (this.state.idPlaylist > 0) {
-			let idKaraPlaylist = listKara.map(a => a.playlistcontent_id);
+			const idKaraPlaylist = listKara.map(a => a.playlistcontent_id);
 			url = '/playlists/' + this.state.idPlaylist + '/karas/';
 			data = { plc_id: idKaraPlaylist };
 		} else if (this.state.idPlaylist == -3) {
@@ -653,8 +655,8 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	onChangeTags = (type: number | string, value: string) => {
-		let searchCriteria = type === 'year' ? type : 'tag';
-		let stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
+		const searchCriteria = type === 'year' ? type : 'tag';
+		const stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
 		this.setState({ searchCriteria: searchCriteria, searchValue: stringValue }, () => this.getPlaylist('search'));
 	};
 
@@ -663,7 +665,7 @@ class Playlist extends Component<IProps, IState> {
 			<div style={{ maxHeight: '200px' }}>
 				{((this.state.data as KaraList).content as unknown as DBBlacklist[])
 					.filter((e: DBBlacklist) => e.blc_id === kara.blc_id).map((criteria: DBBlacklist) => {
-						return <label key={kara.kid}>{buildKaraTitle(criteria as unknown as KaraElement, true)}</label>
+						return <label key={kara.kid}>{buildKaraTitle(criteria as unknown as KaraElement, true)}</label>;
 					})}
 			</div>, async (confirm: boolean) => {
 				if (confirm) {
@@ -674,9 +676,9 @@ class Playlist extends Component<IProps, IState> {
 
 	sortRow = ({ oldIndex, newIndex }: { oldIndex: number, newIndex: number }) => {
 		if (oldIndex !== newIndex) {
-			let data = this.state.data as KaraList;
+			const data = this.state.data as KaraList;
 			// extract playlistcontent_id based on sorter index
-			let playlistcontent_id = data.content[oldIndex].playlistcontent_id;
+			const playlistcontent_id = data.content[oldIndex].playlistcontent_id;
 
 			// fix index to match api behaviour
 			let apiIndex = newIndex + 1;

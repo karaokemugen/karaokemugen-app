@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import { News } from '../types/news';
 require ('../styles/welcome/WelcomePageArticle.scss');
 
@@ -28,7 +29,7 @@ class WelcomePageArticle extends Component<IProps, IState> {
 				onClick={() =>
 					this.setState({ open: !this.state.open })
 				}
-				>
+			>
 				<div className="article-header">
 					<b>{this.props.article.title}</b>
 					<a href={this.props.article.link}>
