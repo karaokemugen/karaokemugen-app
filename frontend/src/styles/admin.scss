@@ -17,10 +17,15 @@
 		padding: 0;
 	}
 	.settingsGroupPanel {
+		border-left: 5px solid rgba(#fff,0.1);
 		min-height: 20px;
-		margin-bottom: 20px;
+		margin-bottom: 10px;
 		border-radius: 3px;
 		padding: 7px 0px;
+
+		.control-label {
+			padding-left: 5em;
+		}
 	}
 	.subCategoryGroupPanel {
 		background-color: #41485e61;
