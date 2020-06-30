@@ -317,7 +317,7 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(500)
+			.expect(409)
 			.then(response => {
 				strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
 			});
@@ -333,7 +333,7 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(500)
+			.expect(404)
 			.then(response => {
 				strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
 			});
@@ -349,7 +349,7 @@ describe('Playlists', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(500)
+			.expect(404)
 			.then(response => {
 				strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
 			});
@@ -455,7 +455,7 @@ describe('Playlists', function() {
 			.delete('/api/playlists/'+new_playlist_current_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect(500)
+			.expect(409)
 			.then(response => {
 				strictEqual(response.body.code,'PL_DELETE_ERROR');
 			});
@@ -466,7 +466,7 @@ describe('Playlists', function() {
 			.delete('/api/playlists/'+new_playlist_public_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect(500)
+			.expect(409)
 			.then(response => {
 				strictEqual(response.body.code,'PL_DELETE_ERROR');
 			});
@@ -652,12 +652,12 @@ describe('Playlists', function() {
 			.expect(200);
 	});
 
-	it('Up/downvote a song in public playlist Error 500', function() {
+	it('Up/downvote a song in public playlist Error 403', function() {
 		return request
 			.post('/api/playlists/'+new_playlist_public_id+'/karas/'+current_plc_id+'/vote')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect(500)
+			.expect(403)
 			.then(response => {
 				strictEqual(response.body.code, 'UPVOTE_NO_SELF');
 			});
@@ -687,13 +687,13 @@ describe('Song Poll', function() {
 			.get('/api/songpoll')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect(500)
+			.expect(425)
 			.then(response => {
 				strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
 			});
 	});
 
-	it('Get current poll status', function() {
+	it('set poll', function() {
 		const data = {
 			index: 1
 		};
@@ -702,7 +702,7 @@ describe('Song Poll', function() {
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
-			.expect(500)
+			.expect(425)
 			.then(response => {
 				strictEqual(response.body.code, 'POLL_NOT_ACTIVE');
 			});
