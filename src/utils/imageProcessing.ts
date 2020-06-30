@@ -1,18 +1,24 @@
 import configure from '@jimp/custom';
+import plugins from '@jimp/plugins';
+import png from '@jimp/png';
+import jpeg from '@jimp/jpeg';
 import circle from '@jimp/plugin-circle';
-import jimp from 'jimp';
+import { convertAvatar } from '../lib/utils/ffmpeg';
 
 import { replaceExt } from '../lib/utils/files';
 import sentry from '../utils/sentry';
 
 const j = configure({
-	plugins: [circle ]
-}, jimp);
+	plugins: [circle, plugins],
+	types: [png, jpeg]
+});
 
 export async function createCircleAvatar(file: string) {
 	try {
-		const image = await j.read(file);
-		await image.circle().resize(256, 256).quality(20).writeAsync(replaceExt(file, '.circle.png'), );
+		const convertedFile = await convertAvatar(file);
+		// Load the png converted file
+		const image = await j.read(convertedFile);
+		await image.circle().writeAsync(replaceExt(file, '.circle.png'));
 	} catch(err) {
 		const error = new Error(err);
 		sentry.error(error);
