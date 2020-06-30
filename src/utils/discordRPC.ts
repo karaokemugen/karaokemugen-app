@@ -25,7 +25,7 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			activity = sample(i18next.t('DISCORD.IDLING', {returnObjects: true}));
 		}
 		if (activityType === 'song') {
-			activity = activityData.title,
+			activity = activityData.title + '        ',
 			activityDetail = activityData.singer;
 		}
 		await rpc.setActivity({
