@@ -158,6 +158,14 @@
 	},
 	"GENERATING_READING": "Step 1/2 : Reading data...",
 	"GENERATING_DATABASE": "Step 2/2 : Updating database...",
+	"TWITCH": {
+		"CHAT": {
+			"VOTE": "New vote : use !vote x where x is the song number :",
+			"YOU_ALREADY_VOTED": "Sorrymasen but you already voted.",
+			"NO_ACTIVE_POLL": "No poll is active at this time.",
+			"INVALID_CHOICE": "Invalid choice"
+		}
+	}
 	"RESTARTING_PLAYER": "RESTARTING PLAYER...",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "ADD A SONG TO THE PLAYLIST!"
 }

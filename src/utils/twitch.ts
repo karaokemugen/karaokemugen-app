@@ -5,6 +5,7 @@ import { getConfig } from '../lib/utils/config';
 // KM Imports
 import logger from '../lib/utils/logger';
 import { addPollVoteIndex } from '../services/poll';
+import i18next from 'i18next';
 
 // We declare our client here se we can interact with it from different functions.
 let client: Client = null;
@@ -55,9 +56,9 @@ function listenVoteEvents(chat: Client) {
 			if (!isNaN(+choice)) {
 				addPollVoteIndex(+choice, context.username)
 					.catch(err => {
-						if (err === 'POLL_VOTE_ERROR') chat.say(target, `${context.username} : Invalid choice`);
-						if (err === 'POLL_NOT_ACTIVE') chat.say(target, `${context.username} : No active poll at this moment`);
-						if (err === 'POLL_USER_ALREADY_VOTED') chat.say(target, `${context.username} : You already voted, sorrymasen.`);
+						if (err === 'POLL_VOTE_ERROR') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.INVALID_CHOICE')}`);
+						if (err === 'POLL_NOT_ACTIVE') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.NO_ACTIVE_POLL')}`);
+						if (err === 'POLL_USER_ALREADY_VOTED') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.YOU_ALREADY_VOTED')}`);
 					});
 			}
 		}

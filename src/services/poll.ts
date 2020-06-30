@@ -10,13 +10,14 @@ import {timer} from '../lib/utils/date';
 import logger from '../lib/utils/logger';
 import { on } from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
+import { DBPLC } from '../types/database/playlist';
 import { PollItem,PollResults } from '../types/poll';
 import { State } from '../types/state';
 import {getState, setState} from '../utils/state';
 import { sayTwitch } from '../utils/twitch';
 import { getSeriesSingers } from './kara';
 import { displayInfo,playerMessage } from './player';
-import {copyKaraToPlaylist, getPlaylistContentsMini} from './playlist';
+import {copyKaraToPlaylist, editPLC,getPlaylistContentsMini} from './playlist';
 const sleep = promisify(setTimeout);
 
 let poll: PollItem[] = [];
@@ -30,7 +31,7 @@ on('stateUpdated', (state: State) => {
 });
 
 async function displayPoll(winner?: number) {
-	const data = await getPoll({role: 'admin', username: 'admin'}, 0, 999999999);
+	const data = getPoll({role: 'admin', username: 'admin'}, 0, 999999999);
 	let maxVotes = 0;
 	data.poll.forEach(s => maxVotes = maxVotes + s.votes);
 	const votes = data.poll.map(kara => {
@@ -109,8 +110,16 @@ export async function getPollResults(): Promise<PollResults> {
 	// We check if winner isn't the only one...
 	const winners = poll.filter(c => +c.votes === +maxVotes);
 	const winner = sample(winners);
+	const state = getState();
 	const playlist_id = getState().currentPlaylistID;
-	await copyKaraToPlaylist([winner.playlistcontent_id], playlist_id);
+	if (state.publicPlaylistID !== state.currentPlaylistID) {
+		await copyKaraToPlaylist([winner.playlistcontent_id], playlist_id);
+	} else {
+		await editPLC(winner.playlistcontent_id, {
+			pos: -1
+		});
+	}
+
 	emitWS('playlistInfoUpdated', playlist_id);
 	emitWS('playlistContentsUpdated', playlist_id);
 	const kara = `${winner.series[0]?.name || winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
@@ -179,15 +188,25 @@ export async function startPoll() {
 	pollEnding = false;
 	// Create new poll
 	// Get a list of karaokes to add to the poll
-	const [pubpl, curpl] = await Promise.all([
-		getPlaylistContentsMini(getState().publicPlaylistID),
-		getPlaylistContentsMini(getState().currentPlaylistID)
-	]);
-	if (pubpl.length === 0) {
-		logger.info('Public playlist is empty, cannot select songs for poll', {service: 'Poll'});
-		return false;
+	const publicPlaylistID = getState().publicPlaylistID;
+	const currentPlaylistID = getState().currentPlaylistID;
+	let availableKaras: DBPLC[];
+	if (publicPlaylistID !== currentPlaylistID) {
+		const [pubpl, curpl] = await Promise.all([
+			getPlaylistContentsMini(getState().publicPlaylistID),
+			getPlaylistContentsMini(getState().currentPlaylistID)
+		]);
+		if (pubpl.length === 0) {
+			logger.info('Public playlist is empty, cannot select songs for poll', {service: 'Poll'});
+			return false;
+		}
+		availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
+	} else {
+		const pl = await getPlaylistContentsMini(getState().publicPlaylistID);
+		const currentKara = pl.find(plc => plc.flag_playing === true);
+		availableKaras = pl.filter(plc => plc.pos > currentKara.pos);
 	}
-	const availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
+
 	let pollChoices = conf.Karaoke.Poll.Choices;
 	if (availableKaras.length === 0) {
 		logger.error('Unable to start poll : public playlist has no available songs (have they all been added to current playlist already?)', {service: 'Poll'});
@@ -214,10 +233,9 @@ export async function startPoll() {
 async function displayPollTwitch() {
 	try {
 		logger.info('Announcing vote on Twitch', {service: 'Poll'});
-		await sayTwitch('New vote : use !vote x where x is the song number :');
+		await sayTwitch(i18n.t('TWITCH.CHAT.VOTE'));
 		for (const kara of poll) {
 			const series = getSeriesSingers(kara);
-
 			// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 			let songorder = `${kara.songorder}`;
 			if (!kara.songorder || kara.songorder === 0) songorder = '';

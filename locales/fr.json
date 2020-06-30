@@ -166,6 +166,14 @@
 	},
 	"GENERATING_READING": "Etape 1/2 : Lecture des données...",
 	"GENERATING_DATABASE": "Etape 2/2 : Mise à jour de la base de données...",
+	"TWITCH": {
+		"CHAT": {
+			"VOTE": "Nouveau vote : tapez !vote x où x est le numéro de la chanson.",
+			"YOU_ALREADY_VOTED": "Sorrymasen mais vous avez déjà voté.",
+			"NO_ACTIVE_POLL": "Aucun vote en cours.",
+			"INVALID_CHOICE": "Choix invalide"
+		}
+	}
 	"RESTARTING_PLAYER": "REDEMARRAGE DU LECTEUR...",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON A LA PLAYLIST !"
 }

@@ -2,10 +2,10 @@ import {KaraParams} from '../lib/types/kara';
 import { DBPLCBase } from './database/playlist';
 
 export interface PLCEditParams {
-	flag_playing: boolean,
-	flag_free: boolean,
-	flag_visible: boolean,
-	pos: number
+	flag_playing?: boolean,
+	flag_free?: boolean,
+	flag_visible?: boolean,
+	pos?: number
 }
 
 export interface CurrentSong extends DBPLCBase {

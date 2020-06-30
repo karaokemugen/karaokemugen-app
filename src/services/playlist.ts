@@ -766,9 +766,15 @@ export async function editPLC(plc_id: number, params: PLCEditParams) {
 	if (params.flag_visible === true) await setPLCVisible(plc_id);
 	if (params.flag_visible === false) await setPLCInvisible(plc_id);
 	if (params.pos) {
+		// If -1 move the song right after the one playing.
+		if (params.pos === -1) {
+			const plc = await getPLCInfoMini(pl.plcontent_id_playing);
+			params.pos = plc.pos + 1;
+		}
 		await shiftPosInPlaylist(pl.playlist_id, params.pos, 1);
 		await setPos(plc_id, params.pos);
 		await reorderPlaylist(pl.playlist_id);
+
 	}
 	updatePlaylistLastEditTime(pl.playlist_id);
 	emitWS('playlistContentsUpdated', pl.playlist_id);

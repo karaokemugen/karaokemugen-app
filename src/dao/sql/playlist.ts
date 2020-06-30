@@ -328,6 +328,7 @@ SELECT pc.fk_kid AS kid,
 	pc.fk_id_playlist AS playlist_id,
 	COUNT(up.fk_login)::integer AS upvotes,
 	pc.flag_visible AS flag_visible,
+	pc.pos AS pos,
 	(CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
 		THEN TRUE
 		ELSE FALSE
