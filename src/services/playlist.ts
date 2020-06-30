@@ -1169,12 +1169,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 		let songorder = `${kara.songorder}`;
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
-		//If karaoke is present in the public playlist, we're deleting it.
-		if (conf.Playlist.RemovePublicOnPlay) {
-			const playlist_id = getState().publicPlaylistID;
-			const plc = await getPLCByKIDUser(kara.kid, kara.username, playlist_id);
-			if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id], playlist_id, {username: 'admin', role: 'admin'});
-		}
+
 		const currentSong: CurrentSong = {...kara};
 		// Construct mpv message to display.
 		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;

@@ -202,7 +202,6 @@ export const defaults: Config = {
 				'???',
 			]
 		},
-		RemovePublicOnPlay: false,
 		EndOfPlaylistAction: 'none',
 		RandomSongsAfterEndMessage: true,
 	},
@@ -350,7 +349,6 @@ export const configConstraints = {
 	'Player.PIP.Size': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 100}},
 	'Playlist.AllowDuplicates': {inclusion : bools},
 	'Playlist.AllowDuplicateSeries': {inclusion : bools},
-	'Playlist.RemovePublicOnPlay': {inclusion : bools},
 	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Playlist.Medias.Intros.Enabled': {inclusion: bools},
 	'Playlist.Medias.Sponsors.Enabled': {inclusion: bools},

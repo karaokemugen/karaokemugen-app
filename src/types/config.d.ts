@@ -122,7 +122,6 @@ export interface Config {
 		AllowDuplicates?: boolean,
 		AllowDuplicateSeries?: boolean,
 		MaxDejaVuTime?: number,
-		RemovePublicOnPlay?: boolean,
 		Medias: {
 			Jingles: {
 				Enabled: boolean,

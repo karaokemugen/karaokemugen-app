@@ -183,8 +183,6 @@ Playlist:
   AllowDuplicateSeries: true
   # Time after which a song is not considered recently played anymore in minutes
   MaxDejaVuTime: 60
-  # Remove songs from public playlist when they're played.
-  RemovePublicOnPlay: false
   # Enable/Disable Intro Videos
   IntroVideos: true
   # Specify an intro video file. KM will search in all Intro folders for that file and will play it instead of selecting a random one.
