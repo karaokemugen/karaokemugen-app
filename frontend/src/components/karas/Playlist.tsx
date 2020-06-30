@@ -618,6 +618,14 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			await axios.post(url, data);
 		}
+		const karaList = (this.state.data as KaraList);
+		for (const kara of karaList.content) {
+			if (kara) {
+				kara.checked = false;
+			}
+		}
+		this.setState({data: karaList});
+		this.playlistForceRefresh(true);
 	};
 
 	transferCheckedKaras = () => {
