@@ -183,6 +183,8 @@ export default function tagsController(router: Router) {
 	*   data: <See Tag object>
 	* }
 	* @apiErrorExample Error-Response:
+	* HTTP/1.1 404 Not found
+	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
 	* {code: "TAGS_MERGE_ERROR"}
 	*/
@@ -193,7 +195,7 @@ export default function tagsController(router: Router) {
 			} catch(err) {
 				const code = 'TAGS_MERGED_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/tags/:tid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
@@ -219,7 +221,7 @@ export default function tagsController(router: Router) {
 			} catch(err) {
 				const code = 'TAG_DELETE_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -237,12 +239,15 @@ export default function tagsController(router: Router) {
 	*    <See Tag object>
 	* }
 	* @apiErrorExample Error-Response:
+	* HTTP/1.1 404 Not found
+	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
 	* {code: "TAG_GET_ERROR"}
 	*/
 		.get(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
 				const tag = await getTag(req.params.tid);
+				if (!tag) res.status(404);
 				res.json(tag);
 			} catch(err) {
 				const code = 'TAG_GET_ERROR';
@@ -266,6 +271,8 @@ export default function tagsController(router: Router) {
 	* HTTP/1.1 200 OK
 	* {code: "TAG_EDITED"}
 	* @apiErrorExample Error-Response:
+	* HTTP/1.1 404 Not found
+	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
 	* {code: "TAG_EDIT_ERROR"}
 	*/
@@ -276,7 +283,7 @@ export default function tagsController(router: Router) {
 			} catch(err) {
 				const code = 'TAG_EDIT_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 }

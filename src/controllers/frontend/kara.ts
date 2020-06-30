@@ -44,7 +44,7 @@ export default function karaController(router: Router) {
 					const url = await postSuggestionToKaraBase(req.body.title, req.body.serie, req.body.type, req.body.link, req.authToken.username);
 					res.status(200).json({url: url});
 				} else {
-					res.status(403).json(APIMessage('GITLAB_DISABLED'));
+					res.status(405).json(APIMessage('GITLAB_DISABLED'));
 				}
 			} catch(err) {
 				const code = 'KARA_SUGGESTION_ERROR';
@@ -442,6 +442,8 @@ export default function karaController(router: Router) {
  * {code: "SONG_VIEW_ERROR"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
  */
 		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
@@ -450,7 +452,7 @@ export default function karaController(router: Router) {
 			} catch(err) {
 				const code = 'SONG_VIEW_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -467,6 +469,8 @@ export default function karaController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: "KARA_DELETED_ERROR"}
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
  */
 		.delete(getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
@@ -475,13 +479,13 @@ export default function karaController(router: Router) {
 			} catch(err) {
 				const code = 'KARA_DELETED_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 	/**
- * @api {post} /karas/:kid Add karaoke to current/public playlist
- * @apiName PatchKaras
- * @apiVersion 3.1.0
+ * @api {post} /karas/:kid Add karaoke to public playlist
+ * @apiName PostKarasToPublicPlaylist
+ * @apiVersion 4.0.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -520,9 +524,16 @@ export default function karaController(router: Router) {
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 451 Unavailable for legal reasons
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 429 Too Many Requests
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 409 Conflict
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 406 Not Acceptable
  */
 		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			// Add Kara to the playlist currently used depending on mode
@@ -533,8 +544,8 @@ export default function karaController(router: Router) {
 					code: 'PL_SONG_ADDED'
 				});
 			} catch(err) {
-				errMessage(err.code, err);
-				res.status(500).json(APIMessage(err.code, err.message));
+				errMessage(err?.code, err?.message);
+				res.status(err?.code || 500).json(APIMessage(err.message, err.data?.detail));
 			}
 		})
 	/**
@@ -580,7 +591,7 @@ export default function karaController(router: Router) {
 			} catch(err) {
 				const code = 'KARA_EDITED_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/importfile')
@@ -629,11 +640,14 @@ export default function karaController(router: Router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const kara = await getKaraLyrics(req.params.kid);
+				kara
+					? res.status(200)
+					: res.status(204);
 				res.json(kara);
 			} catch(err) {
 				const code = 'LYRICS_VIEW_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/copyToRepo')
@@ -660,7 +674,7 @@ export default function karaController(router: Router) {
 			} catch(err) {
 				const code = 'SONG_COPIED_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/play')
@@ -685,7 +699,7 @@ export default function karaController(router: Router) {
 			} catch(err) {
 				const code = 'SONG_PLAY_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/batch')

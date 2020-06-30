@@ -34,6 +34,7 @@ import { DBKaraHistory } from '../types/database/kara';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { editKara } from './kara_creation';
+import { getRepo } from './repo';
 import { getTag } from './tag';
 
 
@@ -46,6 +47,9 @@ export async function isAllKaras(karas: string[]): Promise<string[]> {
 export async function copyKaraToRepo(kid: string, repoName: string) {
 	try {
 		const kara = await getKara(kid, {role: 'admin', username: 'admin'});
+		if (!kara) throw {code: 404};
+		const repo = getRepo(repoName);
+		if (!repo) throw {code: 404};
 		const oldRepoName = kara.repository;
 		kara.repository = repoName;
 		const tasks = [];
@@ -84,15 +88,15 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		karaFileData.data.repository = repoName;
 		await asyncWriteFile(karaFile, JSON.stringify(karaFileData, null, 2), 'utf-8');
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		if (err?.code === 404) throw err;
+		sentry.error(new Error(err));
+		throw err;
 	}
 }
 
 export async function deleteKara(kid: string, refresh = true) {
 	const kara = await getKaraMini(kid);
-	if (!kara) throw `Unknown kara ID ${kid}`;
+	if (!kara) throw {code: 404, msg: `Unknown kara ID ${kid}`};
 	// Remove files
 	await deleteKaraDB(kid);
 	emitWS('statsRefresh');
@@ -127,16 +131,26 @@ export async function deleteKara(kid: string, refresh = true) {
 
 export async function getKara(kid: string, token: Token, lang?: string): Promise<DBKara> {
 	profile('getKaraInfo');
-	const res = await selectAllKaras({
-		username: token.username,
-		filter: null,
-		mode: 'kid',
-		modeValue: kid,
-		lang: lang,
-		admin: token.role === 'admin'
-	});
-	profile('getKaraInfo');
-	return res[0];
+	try {
+		const res = await selectAllKaras({
+			username: token.username,
+			filter: null,
+			mode: 'kid',
+			modeValue: kid,
+			lang: lang,
+			admin: token.role === 'admin'
+		});
+		if (!res[0]) throw {code: 404};
+		return res[0];
+	} catch(err) {
+		if (err?.code === 404) throw err;
+		sentry.error(err);
+		throw err;
+	} finally {
+		profile('getKaraInfo');
+	}
+
+
 }
 
 export function getKaraMini(kid: string): Promise<DBKaraBase> {
@@ -145,11 +159,11 @@ export function getKaraMini(kid: string): Promise<DBKaraBase> {
 
 export async function getKaraLyrics(kid: string): Promise<string[]> {
 	const kara = await getKaraMini(kid);
-	if (!kara) throw `Kara ${kid} unknown`;
-	if (!kara.subfile) return ['Lyrics not available for this song'];
+	if (!kara) throw {code: 404, msg: `Kara ${kid} unknown`};
+	if (!kara.subfile) return;
 	const ASS = await getASS(kara.subfile, kara.repository);
 	if (ASS) return ASSToLyrics(ASS);
-	return ['Lyrics not available for this song'];
+	return;
 }
 
 export async function updateTags(kara: Kara) {
@@ -181,29 +195,47 @@ export async function editKaraInDB(kara: Kara, opts = {
 
 export function getKaraHistory(): Promise<DBKaraHistory[]> {
 	// Called by system route
-	return getKaraHistoryDB();
+	try {
+		return getKaraHistoryDB();
+	} catch(err) {
+		sentry.error(err);
+		logger.error('Unable to get kara history', {service: 'Kara', obj: err});
+		throw err;
+	}
 }
 
 export function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
 	// Called by system route
-	return selectAllKaras({
-		username: token.username,
-		lang: lang,
-		filter: null,
-		mode: 'requested'
-	});
+	try {
+		return selectAllKaras({
+			username: token.username,
+			lang: lang,
+			filter: null,
+			mode: 'requested'
+		});
+	} catch(err) {
+		sentry.error(err);
+		logger.error('Unable to get kara ranking', {service: 'Kara', obj: err});
+		throw err;
+	}
 }
 
 export function getKaraPlayed(token: Token, lang: string, from: number, size: number): Promise<DBKara[]> {
 	// Called by system route
-	return selectAllKaras({
-		username: token.username,
-		filter: null,
-		mode: 'played',
-		from: from,
-		size: size,
-		lang: lang
-	});
+	try {
+		return selectAllKaras({
+			username: token.username,
+			filter: null,
+			mode: 'played',
+			from: from,
+			size: size,
+			lang: lang
+		});
+	} catch(err) {
+		sentry.error(err);
+		logger.error('Unable to get kara history', {service: 'Kara', obj: err});
+		throw err;
+	}
 }
 
 export async function addPlayedKara(kid: string) {
@@ -231,23 +263,31 @@ export function getAllKaras(): Promise<KaraList> {
 
 export async function getKaras(params: KaraParams): Promise<KaraList> {
 	profile('getKaras');
-	const pl = await selectAllKaras({
-		username: params.token.username,
-		filter: params.filter || '',
-		mode: params.mode,
-		modeValue: params.modeValue,
-		from: params.from || 0,
-		size: params.size || 9999999999,
-		admin: params.token.role === 'admin',
-		random: params.random,
-		blacklist: params.blacklist
-	});
-	profile('formatList');
-	const count = pl.length > 0 ? pl[0].count : 0;
-	const ret = formatKaraList(pl, params.from || 0, count);
-	profile('formatList');
-	profile('getKaras');
-	return ret;
+	try {
+		const pl = await selectAllKaras({
+			username: params.token.username,
+			filter: params.filter || '',
+			mode: params.mode,
+			modeValue: params.modeValue,
+			from: params.from || 0,
+			size: params.size || 9999999999,
+			admin: params.token.role === 'admin',
+			random: params.random,
+			blacklist: params.blacklist
+		});
+		profile('formatList');
+		const count = pl.length > 0 ? pl[0].count : 0;
+		const ret = formatKaraList(pl, params.from || 0, count);
+		profile('formatList');
+		profile('getKaras');
+		return ret;
+	} catch(err) {
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		sentry.error(err);
+		throw err;
+	} finally {
+		profile('getKaras');
+	}
 }
 
 export function formatKaraList(karaList: any, from: number, count: number): KaraList {

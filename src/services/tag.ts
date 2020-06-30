@@ -121,6 +121,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 			getTagMini(tid1),
 			getTagMini(tid2)
 		]);
+		if (!tag1 || !tag2) throw {code: 404};
 		task.update({
 			subtext: `${tag1.name} + ${tag2.name}`
 		});
@@ -169,6 +170,8 @@ export async function mergeTags(tid1: string, tid2: string) {
 		return tagObj;
 	} catch(err) {
 		logger.error(`Error merging tag ${tid1} and ${tid2}`, {service: 'Tags', obj: err});
+		sentry.error(new Error(err));
+		throw err;
 	} finally {
 		task.end();
 	}
@@ -181,7 +184,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 	});
 	try {
 		const oldTag = await getTagMini(tid);
-		if (!oldTag) throw 'Tag ID unknown';
+		if (!oldTag) throw {code: 404, msg: 'Tag ID unknown'};
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
 		tagObj.modified_at = new Date().toISOString();
 		// Try to find old tag
@@ -212,9 +215,8 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 			await refreshTagsAfterDBChange();
 		}
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(new Error(err));
+		throw err;
 	} finally {
 		task.end();
 	}
@@ -226,7 +228,7 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 	});
 	try {
 		const tag = await getTagMini(tid);
-		if (!tag) throw 'Tag ID unknown';
+		if (!tag) throw {code: 404, msg: 'Tag ID unknown'};
 		task.update({
 			subtext: tag.name
 		});
@@ -243,9 +245,8 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 			await refreshTagsAfterDBChange();
 		}
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(new Error(err));
+		throw err;
 	} finally {
 		task.end();
 	}

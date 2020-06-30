@@ -132,6 +132,7 @@ export async function exportFavorites(username: string) {
 		from: 0,
 		size: 99999999
 	});
+	if (favs.content.length === 0) throw {code: 404, msg: 'No favorites'};
 	return {
 		Header: {
 			version: 1,
@@ -152,19 +153,26 @@ export async function exportFavorites(username: string) {
 }
 
 export async function importFavorites(favs: FavExport, username: string) {
-	if (favs.Header.version !== 1) throw 'Incompatible favorites version list';
-	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') throw 'Not a favorites list';
-	if (!Array.isArray(favs.Favorites)) throw 'Favorites item is not an array';
-	if (favs.Favorites.some(f => !new RegExp(uuidRegexp).test(f.kid))) throw 'One item in the favorites list is not a UUID';
+	if (favs.Header.version !== 1) throw {code: 400, msg: 'Incompatible favorites version list'};
+	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') throw {code: 400, msg: 'Not a favorites list'};
+	if (!Array.isArray(favs.Favorites)) throw {code: 400, msg: 'Favorites item is not an array'};
+	if (favs.Favorites.some(f => !new RegExp(uuidRegexp).test(f.kid))) throw {code: 400, msg: 'One item in the favorites list is not a UUID'};
 	// Stripping favorites from unknown karaokes in our database to avoid importing them
-	let favorites = favs.Favorites.map(f => f.kid);
-	const karasUnknown = await isAllKaras(favorites);
-	favorites = favorites.filter(f => !karasUnknown.includes(f));
-	const userFavorites = await getFavorites({username: username});
-	favorites = favorites.filter(f => !userFavorites.content.map(uf => uf.kid).includes(f));
-	if (favorites.length > 0) await addToFavorites(username, favorites, false);
-	emitWS('favoritesUpdated', username);
-	return { karasUnknown: karasUnknown };
+	try {
+		let favorites = favs.Favorites.map(f => f.kid);
+		const karasUnknown = await isAllKaras(favorites);
+		favorites = favorites.filter(f => !karasUnknown.includes(f));
+		const userFavorites = await getFavorites({username: username});
+		favorites = favorites.filter(f => !userFavorites.content.map(uf => uf.kid).includes(f));
+		if (favorites.length > 0) await addToFavorites(username, favorites, false);
+		emitWS('favoritesUpdated', username);
+		return { karasUnknown: karasUnknown };
+	} catch(err) {
+		logger.error('Unable to import favorites', {service: 'Favorites', obj: err});
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		sentry.error(err);
+		throw err;
+	}
 }
 
 /* Get favorites from a user list */
@@ -191,22 +199,31 @@ async function getAllFavorites(userList: string[]): Promise<string[]> {
 
 export async function createAutoMix(params: AutoMixParams, username: string): Promise<AutoMixPlaylistInfo> {
 	profile('AutoMix');
-	const favs = await getAllFavorites(params.users);
-	if (favs.length === 0) throw 'No favorites found for those users';
-	const autoMixPLName = `AutoMix ${date()}`;
-	const playlist_id = await createPlaylist(autoMixPLName, {
-		visible: true
-	}, username);
-	// Copy karas from everyone listed
-	await addKaraToPlaylist(favs, username, playlist_id);
-	// Shuffle time.
-	await shufflePlaylist(playlist_id);
-	// Cut playlist after duration
-	await trimPlaylist(playlist_id, params.duration);
-	profile('AutoMix');
-	emitWS('playlistsUpdated');
-	return {
-		playlist_id: playlist_id,
-		playlist_name: autoMixPLName
-	};
+	try {
+		const favs = await getAllFavorites(params.users);
+		if (favs.length === 0) throw {code: 404, msg: 'No favorites found for those users'};
+		const autoMixPLName = `AutoMix ${date()}`;
+		const playlist_id = await createPlaylist(autoMixPLName, {
+			visible: true
+		}, username);
+		// Copy karas from everyone listed
+		await addKaraToPlaylist(favs, username, playlist_id);
+		// Shuffle time.
+		await shufflePlaylist(playlist_id);
+		// Cut playlist after duration
+		await trimPlaylist(playlist_id, params.duration);
+		emitWS('playlistsUpdated');
+		return {
+			playlist_id: playlist_id,
+			playlist_name: autoMixPLName
+		};
+	} catch(err) {
+		logger.error('Failed to create AutoMix', {service: 'Automix', obj: err});
+		if (err?.code === 404) throw err;
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		sentry.error(err);
+		throw err;
+	} finally {
+		profile('AutoMix');
+	}
 }

@@ -335,6 +335,7 @@
 		"GENERATING": "Génération de la base de données...",
 		"GENERATING_READING": "Lecture des données...",
 		"GENERATING_DATABASE": "Création de la base de données...",
+		"GENERATION_DONE": "Génération terminée",
 		"DOWNLOADING": "Téléchargement...",
 		"DOWNLOADING_MEDIAS": "Téléchargement de médias...",
 		"CLEANING_REPO": "Nettoyage des chansons supprimées du dépôt",
@@ -396,17 +397,16 @@
 		"PLAYLIST_MODE_ADD_SONG_ERROR": "Erreur lors de l'ajout d'une chanson à une liste de lecture",
 		"LYRICS_VIEW_ERROR": "Erreur lors de la récupération des paroles",
 		"SONG_COPIED_ERROR": "Erreur lors de la copie d'une chanson dans un autre dépôt",
-		"SHUTDOWN_ERROR": "Erreur lors de l'arrêt de l'application",
 		"SETTINGS_UPDATE_ERROR": "Erreur lors de la mise à jour de la configuration",
 		"STATS_ERROR": "Erreur lors de la récupération des statistiques",
-		"WEBFEED_ERROR": "Erreur lors de la récupération des actualités",
-		"LOGFILE_ERROR": "Erreur lors de la récupération des logs",
 		"CONFIG_BACKUPED_ERROR": "Erreur lors de la sauvegarde du fichier de configuration",
 		"DATABASE_GENERATED_ERROR": "Erreur lors de la regénération de la base de données",
 		"FILES_VALIDATED_ERROR": "Erreur lors de la validation des fichiers",
 		"DATABASE_DUMPED_ERROR": "Erreur lors de l'export de la base de données",
 		"DATABASE_RESTORED_ERROR": "Erreur lors de la restauration de la base de données",
 		"FS_ERROR": "Erreur lors de la recherche dans l'explorateur de fichiers",
+		"USER_NOT_EXISTS": "Cet utilisateur n'existe pas",
+		"USER_DELETE_ADMIN_DAMEDESU": "Vous ne pouvez pas supprimer le compte admin!",
 		"USER_NOT_ALLOWED_TO_SING": "Cet utilisateur ne peut pas démarrer la chanson",
 		"MESSAGE_SEND_ERROR": "Le message n'a pas pu être envoyé",
 		"COMMAND_SEND_ERROR": "Erreur lors de l'envoi de la commande au lecteur",
@@ -491,7 +491,8 @@
 		"BLC_SET_CURRENT_ERROR": "Erreur lors du passage à courant d'une liste de critères de liste noire",
 		"BLC_COPY_ERROR": "Erreur lors de la copie de critères de liste noir vers une autre liste",
 		"BLC_SET_EXPORT_ERROR": "Erreur lors de l'export d'une liste de critères de liste noire",
-		"BLC_SET_IMPORT_ERROR": "Erreur lors de l'import d'une liste de critères de liste noire"
+		"BLC_SET_IMPORT_ERROR": "Erreur lors de l'import d'une liste de critères de liste noire",
+		"ERROR_READING_LOGS": "Impossible de lire les journaux d'évènements"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
@@ -537,6 +538,7 @@
 		"REPO_LYRICS_COPIED": "Copie des paroles entre les deux dépôts finie avec succès",
 		"FAVORITES_IMPORTED": "Favoris importés",
 		"BLC_SET_IMPORTED": "Liste de critères de liste noire importé",
-		"BLC_COPIED": "Copie avec succès des critères de liste noire"
+		"BLC_COPIED": "Copie avec succès des critères de liste noire",
+		"STOP_AFTER": "La lecture sera arrêtée à la fin de la chanson. Cliquez une seconde fois sur le bouton pour arrêter immédiatement."
 	}
 }

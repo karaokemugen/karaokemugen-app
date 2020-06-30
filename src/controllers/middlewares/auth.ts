@@ -64,7 +64,7 @@ export async function checkValidUser(token: { username: string, role: string }, 
 
 export const requireRegularUser = (req: any, res: any, next: any) => {
 	req.user.type === 2
-		? res.status(401).send(APIMessage('NOT_GUEST'))
+		? res.status(401).json(APIMessage('NOT_GUEST'))
 		: next();
 };
 
@@ -84,7 +84,7 @@ export function optionalAuth(req: any, res: any, next: any) {
 			})
 			.catch(err => {
 				logger.error(`Error checking user : ${JSON.stringify(token)}`, {service: 'API', obj: err});
-				res.status(403).send(APIMessage('USER_UNKNOWN'));
+				res.status(403).json(APIMessage('USER_UNKNOWN'));
 			});
 	} catch(err) {
 		// request has no authToken, continuing
@@ -107,7 +107,7 @@ export const requireValidUser = (req: any, res: any, next: any) => {
 		})
 		.catch(err => {
 			logger.error(`Error checking user : ${JSON.stringify(token)}`, {service: 'API', obj: err});
-			res.status(403).send(APIMessage('USER_UNKNOWN'));
+			res.status(403).json(APIMessage('USER_UNKNOWN'));
 		});
 };
 
@@ -115,7 +115,7 @@ export const requireAdmin = (req: any, res: any, next: any) => {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	token.role === 'admin'
 		? next()
-		: res.status(403).send(APIMessage('ERROR_CODES'));
+		: res.status(403).json(APIMessage('ERROR_CODES'));
 };
 
 

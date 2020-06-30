@@ -152,6 +152,7 @@ export default function playlistsController(router: Router) {
 			// This get route gets infos from a playlist
 			try {
 				const playlist = await getPlaylistInfo(req.params.pl_id, req.authToken);
+				if (!playlist) res.status(404);
 				res.json(playlist);
 			} catch (err) {
 				const code = 'PL_VIEW_ERROR';
@@ -197,7 +198,7 @@ export default function playlistsController(router: Router) {
 				} catch(err) {
 					const code = 'PL_UPDATE_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -231,7 +232,7 @@ export default function playlistsController(router: Router) {
 			} catch(err) {
 				const code = 'PL_DELETE_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)/empty')
@@ -262,7 +263,7 @@ export default function playlistsController(router: Router) {
 			} catch(err) {
 				const code = 'PL_EMPTY_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)/setCurrent')
@@ -293,7 +294,7 @@ export default function playlistsController(router: Router) {
 			} catch(err) {
 				const code = 'PL_SET_CURRENT_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)/setPublic')
@@ -324,7 +325,7 @@ export default function playlistsController(router: Router) {
 			} catch(err) {
 				const code = 'PL_SET_PUBLIC_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)/karas')
@@ -377,7 +378,7 @@ export default function playlistsController(router: Router) {
 			} catch(err) {
 				const code = 'PL_VIEW_SONGS_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 		/**
@@ -416,7 +417,7 @@ export default function playlistsController(router: Router) {
 				} catch(err) {
 					const code = 'PL_ADD_SONG_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -458,7 +459,7 @@ export default function playlistsController(router: Router) {
 				} catch(err) {
 					const code = 'PL_SONG_COPY_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -502,7 +503,7 @@ export default function playlistsController(router: Router) {
 				} catch(err) {
 					const code = 'PL_DELETE_SONG_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -566,7 +567,7 @@ export default function playlistsController(router: Router) {
 			} catch(err) {
 				const code = 'PL_VIEW_CONTENT_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 		/**
@@ -611,7 +612,7 @@ export default function playlistsController(router: Router) {
 				} catch(err) {
 					const code = 'PL_MODIFY_CONTENT_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -651,8 +652,8 @@ export default function playlistsController(router: Router) {
 				await vote(req.params.plc_id,req.authToken.username, req.body.downvote);
 				res.status(200).json();
 			} catch(err) {
-				errMessage(err.code, err.message);
-				res.status(500).json(APIMessage(err.code));
+				errMessage(err.msg);
+				res.status(err?.code || 500).json(APIMessage(err.msg));
 			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)/export')
@@ -712,7 +713,7 @@ export default function playlistsController(router: Router) {
 			} catch(err) {
 				const code = 'PL_EXPORT_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/playlists/import')
@@ -759,7 +760,7 @@ export default function playlistsController(router: Router) {
 				} catch(err) {
 					const code = 'PL_IMPORT_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -797,7 +798,7 @@ export default function playlistsController(router: Router) {
 			} catch(err) {
 				const code = 'PL_SHUFFLE_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 

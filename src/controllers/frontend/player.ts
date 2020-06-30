@@ -33,7 +33,7 @@ export default function playerController(router: Router) {
 				await playPlayer(true);
 				res.status(200).json();
 			} else {
-				res.status(500).json(APIMessage('USER_NOT_ALLOWED_TO_SING'));
+				res.status(403).json(APIMessage('USER_NOT_ALLOWED_TO_SING'));
 			}
 		});
 

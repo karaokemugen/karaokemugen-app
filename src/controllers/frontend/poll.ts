@@ -47,18 +47,18 @@ export default function pollController(router: Router) {
  * @apiError POLL_ALREADY_VOTED This user has already voted
  *
  * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
+ * HTTP/1.1 425 Too Early
  * {
  *   "code": "POLL_LIST_ERROR"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req: any, res: any) => {
 			try {
-				const pollResult = await getPoll(req.authToken, +req.query.from || 0, +req.query.size || 9999999);
+				const pollResult = getPoll(req.authToken, +req.query.from || 0, +req.query.size || 9999999);
 				res.json(pollResult);
 			} catch(err) {
-				errMessage(err.code, err);
-				res.status(500).json(APIMessage(err.code));
+				errMessage(err.msg);
+				res.status(425).json(APIMessage(err.msg));
 			}
 		})
 	/**
@@ -101,8 +101,11 @@ export default function pollController(router: Router) {
  * @apiError POLL_ALREADY_VOTED This user has already voted
  *
  * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * "POLL_LIST_ERROR"
+ * HTTP/1.1 425
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 404
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 429
  */
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, (req: any, res: any) => {
 			//Validate form data
@@ -115,8 +118,8 @@ export default function pollController(router: Router) {
 					const ret = addPollVote(+req.body.index,req.authToken);
 					res.json(ret.data);
 				} catch(err) {
-					errMessage(err.code, err);
-					res.status(500).json(APIMessage(err.code));
+					errMessage(err.msg);
+					res.status(err.code || 500).json(APIMessage(err.msg));
 				}
 
 			} else {

@@ -146,13 +146,16 @@ export async function addPollVoteIndex(index: number, nickname: string) {
 /** Add a vote to a poll option */
 export function addPollVote(index: number, token: Token) {
 	if (poll.length === 0 || pollEnding) throw {
-		code: 'POLL_NOT_ACTIVE'
+		code: 425,
+		msg: 'POLL_NOT_ACTIVE'
 	};
 	if (!poll[index - 1]) throw {
-		code: 'POLL_VOTE_ERROR'
+		code: 404,
+		msg: 'POLL_VOTE_ERROR'
 	};
 	if (voters.has(token.username)) throw {
-		code: 'POLL_USER_ALREADY_VOTED'
+		code: 429,
+		msg: 'POLL_USER_ALREADY_VOTED'
 	};
 	const choiceFound = poll.some((choice, i) => {
 		if (+choice.index === index) {
@@ -250,7 +253,8 @@ async function displayPollTwitch() {
 /** Get current poll options */
 export function getPoll(token: Token, from: number, size: number) {
 	if (poll.length === 0) throw {
-		code: 'POLL_NOT_ACTIVE'
+		code: 425,
+		msg: 'POLL_NOT_ACTIVE'
 	};
 	return {
 		infos: {

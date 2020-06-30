@@ -90,6 +90,9 @@ export function initFrontend(): number {
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 
+		//Sorry.
+		app.use('/coffee', (_req, res) => res.status(418).json());
+
 		//Frontend
 		app.use(express.static(resolve(state.resourcePath, 'frontend/build')));
 		app.get('/*', (_req, res) => {

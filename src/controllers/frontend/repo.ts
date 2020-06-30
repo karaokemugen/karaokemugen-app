@@ -61,6 +61,8 @@ export default function repoController(router: Router) {
  * HTTP/1.1 200 OK
  * {code: "REPO_CREATED"}
  * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
+ * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_CREATE_ERROR"}
  */
@@ -71,7 +73,7 @@ export default function repoController(router: Router) {
 			} catch(err) {
 				const code = 'REPO_CREATE_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/repos/:name')
@@ -91,12 +93,15 @@ export default function repoController(router: Router) {
  * 		<See GET /repos>
  * 	}
  * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
+ * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_GET_ERROR"}
  */
 		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
 			try {
 				const repo = getRepo(req.params.name);
+				if (!repo) res.status(404);
 				res.json(repo);
 			} catch(err) {
 				const code = 'REPO_GET_ERROR';
@@ -128,7 +133,7 @@ export default function repoController(router: Router) {
 			} catch(err) {
 				const code = 'REPO_DELETE_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -151,6 +156,8 @@ export default function repoController(router: Router) {
  * HTTP/1.1 200 OK
  * {code: "REPO_EDITED"}
  * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not Found
+ * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_EDIT_ERROR"}
  */
@@ -161,7 +168,7 @@ export default function repoController(router: Router) {
 			} catch(err) {
 				const code = 'REPO_EDIT_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/repos/:name/unusedTags')
@@ -181,6 +188,8 @@ export default function repoController(router: Router) {
  * 		<See GET /tags but without from/to and stuff>
  * 	}
  * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
+ * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: 'REPO_GET_UNUSEDTAGS_ERROR}
  */
@@ -191,7 +200,7 @@ export default function repoController(router: Router) {
 			} catch(err) {
 				const code = 'REPO_GET_UNUSEDTAGS_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/repos/:name/unusedMedias')
@@ -213,6 +222,8 @@ export default function repoController(router: Router) {
  * 	...
  *  ]
  * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
+ * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: 'REPO_GET_UNUSEDMEDIA_ERROR'}
  */
@@ -223,7 +234,7 @@ export default function repoController(router: Router) {
 			} catch(err) {
 				const code = 'REPO_GET_UNUSEDMEDIA_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/repos/:name/consolidate')
@@ -261,6 +272,8 @@ export default function repoController(router: Router) {
 		 * @apiSuccessExample Success-Response:
 		 * HTTP/1.1 200 OK
 		 * @apiErrorExample Error-Response:
+		 * HTTP/1.1 404 Not found
+		 * @apiErrorExample Error-Response:
 		 * HTTP/1.1 500 Internal Server Error
  		 * {code: 'REPO_COMPARE_LYRICS_ERROR'}
 		 */
@@ -271,7 +284,7 @@ export default function repoController(router: Router) {
 			} catch(err) {
 				const code = 'REPO_COMPARE_LYRICS_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 	/**

@@ -118,6 +118,8 @@ export default function whitelistController(router: Router) {
  * @apiError WL_ADD_SONG_ERROR Karaoke couldn't be added to whitelist
  *
  * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
+ * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: "WL_ADD_SONG_ERROR"}
  */
@@ -132,7 +134,7 @@ export default function whitelistController(router: Router) {
 				} catch(err) {
 					const code = 'WL_ADD_SONG_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected

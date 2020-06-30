@@ -335,6 +335,7 @@
 		"GENERATING": "Generating database...",
 		"GENERATING_READING": "Reading data...",
 		"GENERATING_DATABASE": "Creating database...",
+		"GENERATION_DONE": "Generation successful",
 		"DOWNLOADING": "Downloading...",
 		"DOWNLOADING_MEDIAS": "Downloading media files...",
 		"CLEANING_REPO": "Cleaning up songs removed from repository",
@@ -396,17 +397,16 @@
 		"PLAYLIST_MODE_ADD_SONG_ERROR": "Error adding a song to a playlist",
 		"LYRICS_VIEW_ERROR": "Error getting lyrics",
 		"SONG_COPIED_ERROR": "Error copying song to another repository",
-		"SHUTDOWN_ERROR": "Error trying to shutdown the application",
 		"SETTINGS_UPDATE_ERROR": "Error updating settings",
 		"STATS_ERROR": "Error getting statistics",
-		"WEBFEED_ERROR": "Error getting latest news",
-		"LOGFILE_ERROR": "Error getting logs",
 		"CONFIG_BACKUPED_ERROR": "Error during backup of configuration file",
 		"DATABASE_GENERATED_ERROR": "Error during database generation",
 		"FILES_VALIDATED_ERROR": "Error validating files",
 		"DATABASE_DUMPED_ERROR": "Error dumping database",
 		"DATABASE_RESTORED_ERROR": "Error restoring database",
 		"FS_ERROR": "Error browsing filesystem",
+		"USER_DELETE_ADMIN_DAMEDESU": "You can't remove the admin user!",
+		"USER_NOT_EXISTS": "User does not exist",
 		"USER_NOT_ALLOWED_TO_SING": "User not allowed to start the song",
 		"MESSAGE_SEND_ERROR": "Message couldn't be sent",
 		"COMMAND_SEND_ERROR": "Error sending command to player",
@@ -491,7 +491,8 @@
 		"BLC_SET_CURRENT_ERROR": "Error setting a blacklist criterias set to current",
 		"BLC_COPY_ERROR": "Error copying blacklist criterias to another set",
 		"BLC_SET_EXPORT_ERROR": "Error exporting blacklist criterias set",
-		"BLC_SET_IMPORT_ERROR": "Error importing blacklist criterias set"
+		"BLC_SET_IMPORT_ERROR": "Error importing blacklist criterias set",
+		"ERROR_READING_LOGS": "Unable to read event logs"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
@@ -537,6 +538,7 @@
 		"REPO_LYRICS_COPIED": "Copy lyrics between two repositories successfully finished",
 		"FAVORITES_IMPORTED": "Favorites imported",
 		"BLC_SET_IMPORTED": "Blacklist criterias set imported",
-		"BLC_COPIED": "Blacklist criterias copied"
+		"BLC_COPIED": "Blacklist criterias copied",
+		"STOP_AFTER": "The karaoke will stop at the song end. To stop now, click again on the stop button."
 	}
 }

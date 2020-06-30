@@ -29,7 +29,8 @@ export default function favoritesController(router: Router) {
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "AUTOMIX_ERROR"
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
  */
 
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
@@ -48,7 +49,7 @@ export default function favoritesController(router: Router) {
 				} catch(err) {
 					const code = 'AUTOMIX_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -218,6 +219,8 @@ export default function favoritesController(router: Router) {
  * {
  *   "code": "FAVORITES_EXPORTED_ERROR"
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
  */
 		.get(getLang, requireAuth, requireValidUser, requireRegularUser, updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
@@ -227,7 +230,7 @@ export default function favoritesController(router: Router) {
 			} catch(err) {
 				const code = 'FAVORITES_EXPORTED_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/favorites/import')
@@ -247,7 +250,8 @@ export default function favoritesController(router: Router) {
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "FAVORITES_IMPORTED_ERROR"
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 400 Bad Request
  */
 		.post(getLang, requireAuth, requireValidUser, requireRegularUser,updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
@@ -260,7 +264,7 @@ export default function favoritesController(router: Router) {
 				} catch(err) {
 					const code = 'FAVORITES_IMPORTED_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected

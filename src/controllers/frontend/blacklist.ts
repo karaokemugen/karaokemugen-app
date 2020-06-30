@@ -180,6 +180,10 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 * "BLC_ADD_ERROR"
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 400 Bad Request
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 404 Not found
 	 */
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			//Add blacklist criteria
@@ -194,7 +198,7 @@ export default function blacklistController(router: Router) {
 				} catch(err) {
 					const code = 'BLC_ADD_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -225,6 +229,8 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 * "BLC_DELETE_ERROR"
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 404 Not found
 	 */
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
@@ -233,7 +239,7 @@ export default function blacklistController(router: Router) {
 			} catch(err) {
 				const code = 'BLC_DELETE_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/blacklist/set/:set_id([0-9]+)')
@@ -256,6 +262,8 @@ export default function blacklistController(router: Router) {
 	 * @apiError BLC_SET_GET_ERROR Unable to get that BLC Set
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 404 Internal Server Error
 	 */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
@@ -264,7 +272,7 @@ export default function blacklistController(router: Router) {
 			} catch(err) {
 				const code = 'BLC_SET_GET_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -280,6 +288,8 @@ export default function blacklistController(router: Router) {
 	 * @apiError BLC_SET_DELETE_ERROR Unable to delete that BLC Set
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 404 Not found
 	 */
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
@@ -288,7 +298,7 @@ export default function blacklistController(router: Router) {
 			} catch(err) {
 				const code = 'BLC_SET_DELETE_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 		/**
@@ -307,6 +317,8 @@ export default function blacklistController(router: Router) {
 	 *
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 404 Not Found
 	 */
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 		// Update playlist info
@@ -327,7 +339,7 @@ export default function blacklistController(router: Router) {
 				} catch(err) {
 					const code = 'BLC_SET_UPDATE_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 			// Errors detected
@@ -424,6 +436,8 @@ export default function blacklistController(router: Router) {
  * @apiError BLC_SET_CURRENT_ERROR Unable to set this BLC Set to current.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
  */
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
@@ -432,7 +446,7 @@ export default function blacklistController(router: Router) {
 			} catch(err) {
 				const code = 'BLC_SET_CURRENT_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/blacklist/set/criterias/copy')
@@ -451,6 +465,8 @@ export default function blacklistController(router: Router) {
 	 * @apiError BLC_COPY_ERROR Unable to copy BLCs for some reason
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+ 	 * HTTP/1.1 404 Not Found
 	 */
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
@@ -459,7 +475,7 @@ export default function blacklistController(router: Router) {
 			} catch(err) {
 				const code = 'BLC_COPY_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/blacklist/set/:set_id([0-9]+)/export')
@@ -498,6 +514,8 @@ export default function blacklistController(router: Router) {
 		 *
 		 * @apiErrorExample Error-Response:
 		 * HTTP/1.1 500 Internal Server Error
+		 * @apiErrorExample Error-Response:
+ 		 * HTTP/1.1 404 Not Found
 		 */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			// Returns the BLC Set and its contents in an exportable format (to save on disk)
@@ -507,7 +525,7 @@ export default function blacklistController(router: Router) {
 			} catch(err) {
 				const code = 'BLC_SET_EXPORT_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/blacklist/set/import')

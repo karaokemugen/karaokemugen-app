@@ -54,7 +54,7 @@ export default function authController(router) {
 			}
 			res.status(200).send(token);
 		} catch(err) {
-			res.status(401).send(APIMessage('LOG_ERROR'));
+			res.status(401).json(APIMessage('LOG_ERROR'));
 		}
 	});
 
@@ -91,7 +91,7 @@ export default function authController(router) {
  * }
  */
 		if (!req.body.fingerprint || req.body.fingerprint === '') {
-			res.status(401).send(APIMessage('LOG_ERROR'));
+			res.status(401).json(APIMessage('LOG_ERROR'));
 		} else {
 			try {
 				const guest = await findFingerprint(req.body.fingerprint);
@@ -101,10 +101,10 @@ export default function authController(router) {
 					updateLastLoginName(guest);
 					res.status(200).send(token);
 				} else {
-					res.status(500).send(APIMessage('NO_MORE_GUESTS_AVAILABLE'));
+					res.status(500).json(APIMessage('NO_MORE_GUESTS_AVAILABLE'));
 				}
 			} catch (err) {
-				res.status(401).send(APIMessage('LOG_ERROR'));
+				res.status(401).json(APIMessage('LOG_ERROR'));
 			}
 		}
 	});

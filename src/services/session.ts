@@ -39,7 +39,7 @@ export function setActiveSession(seid: string) {
 
 export async function editSession(seid: string, name: string, started_at: string, flag_private: boolean) {
 	const session = await findSession(seid);
-	if (!session) throw 'Session does not exist';
+	if (!session) throw {code: 404, msg: 'Session does not exist'};
 	return updateSession({
 		seid: seid,
 		name: name,
@@ -49,9 +49,9 @@ export async function editSession(seid: string, name: string, started_at: string
 }
 
 export async function removeSession(seid: string) {
-	if (seid === getState().currentSessionID) throw 'Current session cannot be removed, please set another one as current first.';
+	if (seid === getState().currentSessionID) throw {code: 403, msg: 'Current session cannot be removed, please set another one as current first.'};
 	const session = await findSession(seid);
-	if (!session) throw 'Session does not exist';
+	if (!session) throw {code: 404, msg: 'Session does not exist'};
 	return deleteSession(seid);
 }
 
@@ -64,6 +64,7 @@ export async function mergeSessions(seid1: string, seid2: string): Promise<Sessi
 	// Get which session is the earliest starting date
 	const session1 = await findSession(seid1);
 	const session2 = await findSession(seid2);
+	if (!session1 || !session2) throw {code: 404};
 	session1.active = session1.seid === getState().currentSessionID;
 	session2.active = session2.seid === getState().currentSessionID;
 	const started_at = session1.started_at < session2.started_at
@@ -109,7 +110,7 @@ export async function initSession() {
 export async function exportSession(seid: string) {
 	try {
 		const session = await findSession(seid);
-		if (!session) throw 'Session does not exist';
+		if (!session) throw {code: 404, msg: 'Session does not exist'};
 		const [requested, played] = await Promise.all([
 			getKaras({mode: 'sessionRequested', modeValue: seid, token: { role: 'admin', username: 'admin'}}),
 			getKaras({mode: 'sessionPlayed', modeValue: seid, token: { role: 'admin', username: 'admin'}})

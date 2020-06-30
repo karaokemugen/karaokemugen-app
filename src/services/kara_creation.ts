@@ -61,7 +61,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		}
 		if (!kara.subfile_orig) {
 			if (kara.subfile) {
-				if (!await asyncExists(subFile)) throw `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`;
+				if (!await asyncExists(subFile)) throw {code: 404, msg: `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`};
 				await asyncCopy(subFile, resolve(resolvedPathTemp(), kara.subfile), {overwrite: true});
 			}
 		}

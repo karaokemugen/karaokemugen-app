@@ -8,7 +8,7 @@ import { getConfig } from '../../lib/utils/config';
 import { browseFs } from '../../lib/utils/files';
 import { readLog } from '../../lib/utils/logger';
 import { getFeeds } from '../../services/proxyFeeds';
-import { findUserByName, updateSongsLeft } from '../../services/user';
+import { updateSongsLeft } from '../../services/user';
 import { backupConfig,editSetting, getPublicConfig } from '../../utils/config';
 import { initializationCatchphrases } from '../../utils/constants';
 import { getDisplays } from '../../utils/displays';
@@ -34,6 +34,7 @@ export default function miscController(router: Router) {
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
+ * "Shutdown in progress."
  *
  */
 	router.route('/shutdown')
@@ -43,9 +44,7 @@ export default function miscController(router: Router) {
 				shutdown();
 				res.status(200).json();
 			} catch(err) {
-				const code = 'SHUTDOWN_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(500).json(err);
 			}
 		});
 
@@ -159,8 +158,7 @@ export default function miscController(router: Router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
 				const stats = await getKMStats();
-				const userData = await findUserByName(req.authToken.username);
-				updateSongsLeft(userData.login);
+				updateSongsLeft(req.authToken.username);
 				res.json(stats);
 			} catch(err) {
 				const code = 'STATS_ERROR';
@@ -209,6 +207,9 @@ export default function miscController(router: Router) {
 	 * }
 	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * "PLAYER_STATUS_ERROR"
+	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (_req: any, res: any) => {
@@ -231,9 +232,7 @@ export default function miscController(router: Router) {
 			try {
 				res.json(await getFeeds());
 			} catch(err) {
-				const code = 'WEBFEED_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(500).json();
 			}
 		});
 
@@ -265,9 +264,7 @@ export default function miscController(router: Router) {
 			try {
 				res.status(200).json(await readLog());
 			} catch(err) {
-				const code = 'LOGFILE_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(500).json(APIMessage('ERROR_READING_LOGS'));
 			}
 		});
 
@@ -281,16 +278,13 @@ export default function miscController(router: Router) {
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
-	 * {code: 'CONFIG_BACKUPED_ERROR'}
 	 */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await backupConfig();
 				res.status(200).json(APIMessage('CONFIG_BACKUPED'));
 			} catch(err) {
-				const code = 'CONFIG_BACKUPED_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(500).json(APIMessage('CONFIG_BACKUPED_ERROR'));
 			}
 		});
 
@@ -304,10 +298,8 @@ export default function miscController(router: Router) {
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * {code: 'DATABASE_GENERATED'}
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
-	 * {code: 'DATABASE_GENERATED_ERROR'}
 	 */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
@@ -357,19 +349,15 @@ export default function miscController(router: Router) {
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * {code: 'DATABASE_DUMPED'}
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
-	 * {code: 'DATABASE_DUMPED_ERROR'}
 	 */
 		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await dumpPG();
 				res.status(200).json(APIMessage('DATABASE_DUMPED'));
 			} catch(err) {
-				const code = 'DATABASE_DUMPED_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(500).json(APIMessage('DATABASE_DUMPED_ERROR'));
 			}
 		})
 	/**
@@ -381,19 +369,15 @@ export default function miscController(router: Router) {
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
-	 * {code: 'DATABASE_RESTORED'}
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
-	 * {code: 'DATABASE_RESTORED_ERROR'}
 	 */
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await restorePG();
 				res.status(200).json(APIMessage('DATABASE_RESTORED'));
 			} catch(err) {
-				const code = 'DATABASE_RESTORED_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(500).json(APIMessage('DATABASE_RESTORED_ERROR'));
 			}
 		});
 	router.route('/fs')
@@ -414,7 +398,6 @@ export default function miscController(router: Router) {
 	 * HTTP/1.1 200 OK
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
-	 * {code: 'FS_ERROR'}
 	 */
 		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
