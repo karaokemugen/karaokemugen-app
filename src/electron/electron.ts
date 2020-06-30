@@ -23,16 +23,16 @@ import { addRepo,getRepo, getRepos } from '../services/repo';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { detectKMFileTypes } from '../utils/files';
 import { getState,setState } from '../utils/state';
+import { tip } from '../utils/tips';
 import { initAutoUpdate } from './electronAutoUpdate';
+import { emitIPC } from './electronLogger';
 import { getMenu,initMenu } from './electronMenu';
-import { tip } from "../utils/tips";
-import { emitIPC } from "./electronLogger";
 
 export let win: Electron.BrowserWindow;
 
 let initDone = false;
 
-export async function startElectron() {
+export function startElectron() {
 	setState({electron: app });
 	// This is called when Electron finished initializing
 	app.on('ready', async () => {

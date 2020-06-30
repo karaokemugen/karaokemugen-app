@@ -16,7 +16,6 @@ import { DBKara } from '../lib/types/database/kara';
 import { DownloadBundle } from '../lib/types/downloads';
 import { CompareParam,KaraList, KaraParams } from '../lib/types/kara';
 import { repoStats } from '../lib/types/repo';
-import { SeriesList } from '../lib/types/series';
 import { Tag, TagList,TagParams } from '../lib/types/tag';
 import {getConfig,resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
 import {getTagTypeName,uuidRegexp} from '../lib/utils/constants';
@@ -459,11 +458,6 @@ export async function getRemoteTags(repo: string, params: TagParams = {}): Promi
 	return JSON.parse(res.body);
 }
 
-export async function getRemoteSeries(repo: string): Promise<SeriesList> {
-	const res = await HTTP(`https://${repo}/api/karas/series`);
-	return JSON.parse(res.body);
-}
-
 export async function updateAllBases() {
 	for (const repo of getConfig().System.Repositories) {
 		try {
@@ -495,7 +489,7 @@ export async function updateBase(repo: string) {
 		]);
 		if (updatedSongs > 0 || newSongs > 0) await waitForUpdateQueueToFinish();
 		// Now checking tags and series if we're missing any
-		logger.info('Getting local and remote series/tags inventory', {service: 'Update'});
+		logger.info('Getting local and remote tags inventory', {service: 'Update'});
 		const tags = await getTagsInventory(repo);
 		const updatedTags = await updateTags(repo, tags.local, tags.remote);
 		if (updatedTags > 0) await refreshAll();
