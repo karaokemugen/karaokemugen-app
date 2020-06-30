@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
-import { Layout, Table, Cascader, Select, Radio, Button, Col, Row } from 'antd';
-import { getTagInLocaleList, getSerieLanguage } from "../../utils/kara";
+import { Button, Cascader, Col, Layout, Radio, Row,Select, Table } from 'antd';
+import Axios from 'axios';
 import i18next from 'i18next';
+import React, { Component } from 'react';
+
 import { DBKara } from '../../../../src/lib/types/database/kara';
 import GlobalContext from '../../store/context';
-import Axios from 'axios';
+import { getSerieLanguage,getTagInLocaleList } from '../../utils/kara';
 import { tagTypes } from '../../utils/tagTypes';
 
 interface PlaylistElem {
@@ -26,7 +27,7 @@ interface KaraBatchEditState {
 	i18nTag: { [key: string]: { [key: string]: string } };
 }
 
-class KaraBatchEdit extends Component<{}, KaraBatchEditState> {
+class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 	static contextType = GlobalContext
 	context: React.ContextType<typeof GlobalContext>
 
@@ -41,25 +42,25 @@ class KaraBatchEdit extends Component<{}, KaraBatchEditState> {
 	}
 
 	async componentDidMount() {
-		let tags = await Axios.get('/tags');
-		let playlists = await Axios.get('/playlists');
-		let options = Object.keys(tagTypes).map(type => {
+		const tags = await Axios.get('/tags');
+		const playlists = await Axios.get('/playlists');
+		const options = Object.keys(tagTypes).map(type => {
 			const typeID = tagTypes[type];
 
-			let option = {
+			const option = {
 				value: typeID,
 				label: i18next.t(`TAG_TYPES.${type}`),
 				children: []
-			}
-			tags.data.content.forEach(tag => {
+			};
+			for (const tag of tags.data.content) {
 				if (tag.types.length && tag.types.indexOf(typeID) >= 0)
 					option.children.push({
 						value: tag.tid,
 						label: tag.name,
-					})
-			})
+					});
+			}
 			return option;
-		})
+		});
 		this.setState({ tags: options, playlists: playlists.data });
 	}
 
@@ -69,7 +70,7 @@ class KaraBatchEdit extends Component<{}, KaraBatchEditState> {
 	}
 
 	changePlaylist = async (value: number) => {
-		let karas = await Axios.get(`/playlists/${value}/karas`);
+		const karas = await Axios.get(`/playlists/${value}/karas`);
 		this.setState({ playlist_id: value, karas: karas.data.content, i18nTag: karas.data.i18n });
 	}
 
@@ -80,7 +81,7 @@ class KaraBatchEdit extends Component<{}, KaraBatchEditState> {
 				action: this.state.action,
 				tid: this.state.tid,
 				type: this.state.type
-			})
+			});
 		}
 	}
 
@@ -99,7 +100,7 @@ class KaraBatchEdit extends Component<{}, KaraBatchEditState> {
 								<Select style={{ maxWidth: '20%', minWidth: '150px' }} onChange={this.changePlaylist}
 									placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}>
 									{this.state.playlists.map(playlist => {
-										return <Select.Option key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}</Select.Option>
+										return <Select.Option key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}</Select.Option>;
 									})
 									}
 								</Select>
@@ -141,7 +142,7 @@ class KaraBatchEdit extends Component<{}, KaraBatchEditState> {
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => {
-			return getTagInLocaleList(langs, this.state.i18nTag).join(', ')
+			return getTagInLocaleList(langs, this.state.i18nTag).join(', ');
 		}
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,

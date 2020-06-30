@@ -60,7 +60,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 
 	render() {
 		const types: Array<number> = [];
-		this.props.data && this.props.data.forEach(element => {
+		this.props.data?.forEach(element => {
 			if (!types.includes(element.type)) types.push(element.type);
 		});
 		const tagsFiltered = this.props.tags ? this.props.tags.filter(obj => obj.type.includes(this.state.bcType)) : [];

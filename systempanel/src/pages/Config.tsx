@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
-import { Input, Layout, Button, Table, Switch, Select, Tooltip } from 'antd';
-import i18next from 'i18next';
-import { Link } from 'react-router-dom';
-import FoldersElement from './Components/FoldersElement';
-import Axios from 'axios';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Input, Layout, Select, Switch, Table, Tooltip } from 'antd';
+import Axios from 'axios';
+import i18next from 'i18next';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+
+import FoldersElement from './Components/FoldersElement';
 
 interface ConfigProps {
 	properties?: string[]
@@ -56,7 +57,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 
 	async componentDidMount() {
 		await this.refresh();
-		let files = this.state.files;
+		const files = this.state.files;
 		for (const elem of configWithSelectFileInFolder) {
 			files[elem] = await this.getListFiles(elem);
 		}
@@ -64,21 +65,21 @@ class Config extends Component<ConfigProps, ConfigState> {
 	}
 
 	refresh = async () => {
-		let res = await Axios.get('/settings');
+		const res = await Axios.get('/settings');
 		this.setState({
 			config: this.configKeyValue(res.data.config), error: '',
 			appPath: res.data.state.appPath, dataPath: res.data.state.dataPath,
 			os: res.data.state.os
-		})
+		});
 	}
 
 	dotify(obj: any) {
 		//Code from the package node-dotify
-		let res: any = {};
+		const res: any = {};
 		function recurse(obj: any, current?: any) {
-			for (let key in obj) {
-				let value = obj[key];
-				let newKey = (current ? current + '.' + key : key);  // joined key with dot
+			for (const key in obj) {
+				const value = obj[key];
+				const newKey = (current ? current + '.' + key : key);  // joined key with dot
 				if (value && typeof value === 'object' && !Array.isArray(value)) {
 					recurse(value, newKey);  // it's a nested object, so do it again
 				} else {
@@ -88,7 +89,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 		}
 		recurse(obj);
 		return res;
-	};
+	}
 
 	expand = (str, val) => {
 		return str.split('.').reduceRight((acc, currentValue) => {
@@ -103,7 +104,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 		this.refresh();
 	}
 
-	putPlayerCommando = (value: any, name: string, command:string) => {
+	putPlayerCommando = (value: any, name: string, command: string) => {
 		Axios.put('/player', {
 			command: command,
 			options: value
@@ -112,7 +113,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 	};
 
 	openFileSystemModal(record: Record, index?: number) {
-		this.setState({ recordModal: record, indexModal: index, visibleModal: true })
+		this.setState({ recordModal: record, indexModal: index, visibleModal: true });
 	}
 
 	getConfigToSearch(key) {
@@ -128,24 +129,24 @@ class Config extends Component<ConfigProps, ConfigState> {
 	}
 
 	getRecord(key): Record {
-		let configToSearch = this.getConfigToSearch(key);
+		const configToSearch = this.getConfigToSearch(key);
 		let record;
-		this.state.config.forEach(elem => {
+		for (const elem of this.state.config) {
 			if (elem.key === configToSearch) {
 				record = elem;
 				return elem;
 			}
-		});
+		}
 		return record;
 	}
 
 	async getListFiles(key) {
-		let record = this.getRecord(key);
+		const record = this.getRecord(key);
 		let files = [];
 		if (record) {
 			for (const element of record.value) {
 				try {
-					let response = await Axios.post('/fs',
+					const response = await Axios.post('/fs',
 						{ path: `${this.getPathForFileSystem(record.value)}${element}`, onlyMedias: true });
 					files = files.concat(response.data.contents.filter(elem => !elem.isDirectory).map(elem => elem.name));
 				} catch (error) {
@@ -162,13 +163,13 @@ class Config extends Component<ConfigProps, ConfigState> {
 		key: 'key',
 		render: (text) => {
 			return this.props.properties ? <span>{i18next.t(`CONFIG.PROPERTIES.${text.toUpperCase().replace(/\./g, '_')}`)}&nbsp;
-			{i18next.t(`CONFIG.PROPERTIES.${text.toUpperCase().replace('.', '_')}_TOOLTIP`)
+				{i18next.t(`CONFIG.PROPERTIES.${text.toUpperCase().replace('.', '_')}_TOOLTIP`)
 					!== `CONFIG.PROPERTIES.${text.toUpperCase().replace('.', '_')}_TOOLTIP` ?
 					<Tooltip title={i18next.t(`CONFIG.PROPERTIES.${text.toUpperCase().replace('.', '_')}_TOOLTIP`)}>
 						<QuestionCircleOutlined />
 					</Tooltip> : null
 				}
-			</span> : text
+			</span> : text;
 		}
 	}, {
 		title: i18next.t('CONFIG.VALUE'),
@@ -183,14 +184,14 @@ class Config extends Component<ConfigProps, ConfigState> {
 				<Select.Option value="yes"> {i18next.t('CONFIG.PROPERTIES.PLAYER_HARDWAREDECODING_OPTIONS.FORCE')} </Select.Option>
 			</Select> :
 				(record.key === 'System.Repositories' ?
-					<label><Link to={`/system/km/repositories`}>{i18next.t('CONFIG.REPOSITORIES_PAGES')}</Link></label> :
+					<label><Link to={'/system/km/repositories'}>{i18next.t('CONFIG.REPOSITORIES_PAGES')}</Link></label> :
 					(typeof record.value === 'boolean' ?
 						<Switch onChange={(e) => this.saveSetting(record.key, e)} defaultChecked={record.value} /> :
 						(typeof record.value === 'number' ?
 							<Input type='number' style={{ maxWidth: '700px' }}
 								onPressEnter={(e) => {
 									const target = e.target as HTMLInputElement;
-									this.saveSetting(record.key, target.value)
+									this.saveSetting(record.key, target.value);
 								}}
 								defaultValue={record.value}
 							/> :
@@ -203,7 +204,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 									<Select style={{ width: '100%' }} onChange={(value) => {
 										this.saveSetting(record.key, value ? value : null);
 									}}
-										value={record.value} allowClear={true}>
+									value={record.value} allowClear={true}>
 										{this.state.files[record.key] && this.state.files[record.key].map((value) => {
 											return <Select.Option key={Math.random()} value={value}>{value}</Select.Option>;
 										})}
@@ -211,7 +212,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 									<Input style={{ maxWidth: '700px' }}
 										onPressEnter={(e) => {
 											const target = e.target as HTMLInputElement;
-											this.saveSetting(record.key, target.value)
+											this.saveSetting(record.key, target.value);
 										}}
 										defaultValue={record.value}
 									/>
@@ -227,7 +228,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 			if (this.props.properties && !this.props.properties.includes(k)) {
 				return undefined;
 			}
-			return ({ key: k, value: v, primary: Array.isArray(v) ? v[0] : undefined })
+			return ({ key: k, value: v, primary: Array.isArray(v) ? v[0] : undefined });
 		}).filter(value => value);
 	};
 
@@ -236,11 +237,11 @@ class Config extends Component<ConfigProps, ConfigState> {
 	}
 
 	getPathForFileSystem(value: string) {
-		let regexp = this.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
+		const regexp = this.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
 		if (value.match(regexp) === null) {
-			return `${this.state.dataPath}${this.state.os === 'win32' ? '\\' : '/'}`
+			return `${this.state.dataPath}${this.state.os === 'win32' ? '\\' : '/'}`;
 		} else {
-			return ''
+			return '';
 		}
 	}
 

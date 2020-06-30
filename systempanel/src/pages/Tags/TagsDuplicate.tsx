@@ -1,12 +1,13 @@
-import React, {Component} from 'react';
-import { Divider, Modal, Tooltip, Tag, Button, Layout, Table } from 'antd';
-import {Link} from 'react-router-dom';
-import i18next from 'i18next';
-import { getTagTypeName } from '../../utils/tagTypes';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, Divider, Layout, Modal, Table,Tag, Tooltip } from 'antd';
 import Axios from 'axios';
+import i18next from 'i18next';
+import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
+
 import { DBTag } from '../../../../src/lib/types/database/tag';
 import { getAxiosInstance } from '../../axiosInterceptor';
+import { getTagTypeName } from '../../utils/tagTypes';
 
 interface TagsListState {
 	tags: DBTag[],
@@ -14,7 +15,7 @@ interface TagsListState {
 	deleteModal: boolean,
 }
 
-class TagsDuplicate extends Component<{}, TagsListState> {
+class TagsDuplicate extends Component<unknown, TagsListState> {
 
 	filter: string;
 
@@ -32,14 +33,14 @@ class TagsDuplicate extends Component<{}, TagsListState> {
 	}
 
 	refresh = async () => {
-		let res = await Axios.get('/tags/duplicate');
+		const res = await Axios.get('/tags/duplicate');
 		this.setState({tags: res.data.content});
 	}
 
 	delete = async (tagsId) => {
 		try {
 			this.setState({deleteModal: false, tag: undefined});
-			await getAxiosInstance().delete(`/tags/${tagsId}`)
+			await getAxiosInstance().delete(`/tags/${tagsId}`);
 			this.refresh();
 		} catch(err) {
 			this.setState({deleteModal: false, tag: undefined});
@@ -85,9 +86,9 @@ class TagsDuplicate extends Component<{}, TagsListState> {
 		title: i18next.t('TAGS.I18N'),
 		dataIndex: 'i18n',
 		render: i18n_names => {
-			let names = [];
-			Object.keys(i18n_names).forEach((lang) => {
-				let name = i18n_names[lang];
+			const names = [];
+			for (const lang in i18n_names) {
+				const name = i18n_names[lang];
 				const isLongTag = name.length > 40;
 				const i18n_name = `[${lang.toUpperCase()}] ${name}`;
 				const tagElem = (
@@ -96,7 +97,7 @@ class TagsDuplicate extends Component<{}, TagsListState> {
 					</Tag>
 				);
 				names.push(isLongTag ? (<Tooltip title={name} key={lang}>{tagElem}</Tooltip>) : tagElem);
-			});
+			}
 			return names;
 		}
 	}, {

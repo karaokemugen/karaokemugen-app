@@ -34,7 +34,7 @@ interface KaraDownloadState {
 	totalMediaSize: string
 }
 
-class KaraDownload extends Component<{}, KaraDownloadState> {
+class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	constructor(props) {
 		super(props);
@@ -111,7 +111,7 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 		const response = await Axios.get(`/karas/remote?filter=${this.state.filter}&q=${this.state.tagFilter}&from=${pfrom}&size=${psz}${this.state.compare}`);
 		const karas = response.data.content;
 		const karasToDownload:KaraDownloadRequest[] = [];
-		karas.forEach((kara) => {
+		for (const kara of karas) {
 			if(this.blacklist_check(kara)) {
 				karasToDownload.push({
 					kid: kara.kid,
@@ -120,7 +120,7 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 					repository: kara.repository
 				});
 			}
-		});
+		}
 		this.postToDownloadQueue(karasToDownload);
 		this.startObserver();
 	}
@@ -242,13 +242,13 @@ class KaraDownload extends Component<{}, KaraDownloadState> {
 				label:i18next.t(`TAG_TYPES.${type}`),
 				children: []
 			};
-			this.state.tags.forEach(tag => {
+			for (const tag of this.state.tags) {
 				if(tag.types.length && tag.types.indexOf(typeID)>=0)
 					option.children.push({
 						value:tag.tid,
 						label:tag.name,
 					});
-			});
+			}
 			return option;
 		});
 		return options;

@@ -209,10 +209,10 @@ class WelcomePage extends Component<IProps, IState> {
 	render() {
 		const logInfos = store.getLogInfos();
 		const sessions: [{ label: string, value: string }?] = [];
-		if (logInfos && logInfos.role === 'admin') {
-			this.state.sessions.forEach(session => {
+		if (logInfos?.role === 'admin') {
+			for (const session of this.state.sessions) {
 				sessions.push({ label: session.name, value: session.name });
-			});
+			}
 		}
 		return (
 			<div id="welcomePage">

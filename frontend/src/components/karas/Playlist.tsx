@@ -143,7 +143,7 @@ class Playlist extends Component<IProps, IState> {
 		getSocket().on('KIDUpdated', async (event: { kid: string, flag_inplaylist: boolean, username: string, requester: string, flag_upvoted: boolean }) => {
 			if (this.state.idPlaylist === -1) {
 				const data = this.state.data as KaraList;
-				data.content.forEach((kara) => {
+				for (const kara of data.content) {
 					if (kara.kid === event.kid) {
 						if (event.flag_inplaylist === false || event.flag_inplaylist === true) {
 							kara.flag_inplaylist = event.flag_inplaylist;
@@ -160,8 +160,8 @@ class Playlist extends Component<IProps, IState> {
 							kara.flag_added_by_me = true;
 						}
 					}
-				});
-				await this.setState({ data: data });
+				}
+				await this.setState({ data });
 				this.playlistForceRefresh(true);
 			}
 		});
@@ -448,14 +448,14 @@ class Playlist extends Component<IProps, IState> {
 		const response = await axios.get(url);
 		const karas: KaraList = response.data;
 		if (this.state.idPlaylist > 0) {
-			karas.content.forEach((kara) => {
+			for (const kara of karas.content) {
 				if (kara.flag_playing) {
 					store.setPosPlaying(kara.pos);
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
 						this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
 					}
 				}
-			});
+			}
 		}
 		if (karas.infos && karas.infos.from > 0) {
 			data = this.state.data;
@@ -535,20 +535,20 @@ class Playlist extends Component<IProps, IState> {
 	selectAllKaras = () => {
 		const data = this.state.data;
 		let checkedkaras = 0;
-		(this.state.data as KaraList).content.forEach(kara => {
+		for (const kara of (this.state.data as KaraList).content) {
 			if (kara) {
 				kara.checked = !kara.checked;
 				if (kara.checked) checkedkaras++;
 			}
-		});
-		this.setState({ data: data, checkedkaras: checkedkaras });
+		}
+		this.setState({ data, checkedkaras });
 		this.playlistForceRefresh(true);
 	};
 
 	checkKara = (id: string | number) => {
 		const data = this.state.data as KaraList;
 		let checkedkaras = this.state.checkedkaras;
-		data.content.forEach(kara => {
+		for (const kara of data.content) {
 			if (this.state.idPlaylist >= 0) {
 				if (kara.playlistcontent_id === id) {
 					kara.checked = !kara.checked;
@@ -566,7 +566,7 @@ class Playlist extends Component<IProps, IState> {
 					checkedkaras--;
 				}
 			}
-		});
+		}
 		this.setState({ data: data, checkedkaras: checkedkaras });
 		this.playlistForceRefresh(true);
 	};
