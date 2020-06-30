@@ -7,7 +7,7 @@ import { v4 as uuidV4 } from 'uuid';
 import { exit } from '../components/engine';
 import { listUsers } from '../dao/user';
 import { main, preInit } from '../index';
-import { configureLocale, getConfig } from '../lib/utils/config';
+import { getConfig } from '../lib/utils/config';
 import { asyncReadFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { emit,on } from '../lib/utils/pubsub';
@@ -90,8 +90,6 @@ export async function startElectron() {
 	ipcMain.on('get-file-paths', async (event, options) => {
 		event.sender.send('get-file-paths-response', (await dialog.showOpenDialog(options)).filePaths);
 	});
-
-	await configureLocale();
 }
 
 export async function handleProtocol(args: string[]) {
