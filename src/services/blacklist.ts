@@ -29,7 +29,7 @@ import {getTag} from './tag';
 
 export async function editSet(params: BLCSet) {
 	const blcSet = await selectSet(params.blc_set_id);
-	if (!blcSet) throw 'BLC set unknown';
+	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
 	await editBLCSet(params);
 	updatedSetModifiedAt(blcSet.blc_set_id);
 	emitWS('BLCSetInfoUpdated', params.blc_set_id);
@@ -66,7 +66,7 @@ export async function importSet(file: BLCSetFile) {
 
 export async function exportSet(id: number): Promise<BLCSetFile> {
 	const blcSet = await selectSet(id);
-	if (!blcSet) throw 'BLC set unknown';
+	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
 	delete blcSet.flag_current;
 	delete blcSet.blc_set_id;
 	const blcs = await getBlacklistCriterias(id);
@@ -83,6 +83,8 @@ export async function exportSet(id: number): Promise<BLCSetFile> {
 }
 
 export async function setSetCurrent(id: number) {
+	const blcSet = await selectSet(id);
+	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
 	await unsetCurrentSet();
 	await setCurrentSet(id);
 	updatedSetModifiedAt(id);
@@ -92,7 +94,7 @@ export async function setSetCurrent(id: number) {
 
 export async function removeSet(id: number) {
 	const blcSet = await selectSet(id);
-	if (!blcSet) throw 'BLC set unknown';
+	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
 	await deleteSet(id);
 	emitWS('BLCSetsUpdated');
 }
@@ -100,8 +102,8 @@ export async function removeSet(id: number) {
 export async function copySet(from: number, to: number) {
 	const blcSet1 = await selectSet(from);
 	const blcSet2 = await selectSet(to);
-	if (!blcSet1) throw 'Origin BLC set unknown';
-	if (!blcSet2) throw 'Destination BLC set unknown';
+	if (!blcSet1) throw {code: 404, msg: 'Origin BLC set unknown'};
+	if (!blcSet2) throw {code: 404, msg: 'Destination BLC set unknown'};
 	await copyBLCSet(from, to);
 	emitWS('BLCSetInfoUpdated', to);
 }
@@ -110,8 +112,10 @@ export function getAllSets() {
 	return selectSets();
 }
 
-export function getSet(id: number) {
-	return selectSet(id);
+export async function getSet(id: number) {
+	const set = await selectSet(id);
+	if (!set) throw {code: 404};
+	return set;
 }
 
 export async function getBlacklist(params: KaraParams): Promise<KaraList> {
@@ -176,7 +180,7 @@ export async function deleteBlacklistCriteria(blc_id: number, set_id: number) {
 	profile('delBLC');
 	logger.debug(`Deleting criteria ${blc_id}`, {service: 'Blacklist'});
 	const blcSet = await selectSet(set_id);
-	if (!blcSet) throw 'BLC set unknown';
+	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
 	await deleteBLC(blc_id);
 	if (blcSet.flag_current) await generateBlacklist();
 	profile('delBLC');
@@ -199,12 +203,12 @@ export async function addBlacklistCriteria(type: number, value: any, set_id: num
 	});
 	try {
 		const blcset = await selectSet(set_id);
-		if (!blcset) throw 'BLC set unknown';
-		if (type < 0 || type > 1004 || type === 1000) throw `Incorrect BLC type (${type})`;
+		if (!blcset) throw {code: 404, msg: 'BLC set unknown'};
+		if (type < 0 || type > 1004 || type === 1000) throw {code: 400, msg: `Incorrect BLC type (${type})`};
 		if (type === 1001 || type < 1000) {
-			if (blcList.some((blc: BLC) => !new RegExp(uuidRegexp).test(blc.value))) throw `Blacklist criteria value mismatch : type ${type} must have UUID values`;
+			if (blcList.some((blc: BLC) => !new RegExp(uuidRegexp).test(blc.value))) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${type} must have UUID values`};
 		}
-		if ((type === 1002 || type === 1003) && !blcvalues.some(e => isNumber(e))) throw `Blacklist criteria type mismatch : type ${type} must have a numeric value!`;
+		if ((type === 1002 || type === 1003) && !blcvalues.some(e => isNumber(e))) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${type} must have a numeric value!`};
 		await addBLC(blcList);
 		if (blcset.flag_current) await generateBlacklist();
 		updatedSetModifiedAt(set_id);

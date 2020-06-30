@@ -12,16 +12,14 @@ export async function addKaraToWhitelist(kids: string[], reason: string): Promis
 	try {
 		profile('addKaraToWL');
 		const karasUnknown = await isAllKaras(kids);
-		if (karasUnknown.length > 0) throw 'One of the karaokes does not exist.';
+		if (karasUnknown.length > 0) throw {code: 404, msg: 'One of the karaokes does not exist.'};
 		await addToWL(kids, reason);
 		generateBlacklist().then(() => emitWS('blacklistUpdated'));
 		emitWS('whitelistUpdated');
 		return kids;
 	} catch(err) {
-		throw {
-			message: err,
-			data: kids
-		};
+		sentry.error(new Error(err));
+		throw err;
 	} finally {
 		profile('addKaraToWL');
 	}

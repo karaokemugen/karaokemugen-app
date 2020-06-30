@@ -17,11 +17,11 @@ export function vote(plc_id: number, username: string, downvote: boolean) {
 export async function addUpvote(plc_id: number, username: string) {
 	try {
 		const plc = await getPLCInfoMini(plc_id);
-		if (!plc) throw {message: 'PLC ID unknown'};
-		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 'UPVOTE_FAILED'};
-		if (plc.username === username) throw {code: 'UPVOTE_NO_SELF'};
+		if (!plc) throw {code: 404, msg: 'PLC ID unknown'};
+		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 403, msg: 'UPVOTE_FAILED'};
+		if (plc.username === username) throw {code: 403, msg: 'UPVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
-		if (userList.some(u => u.username === username)) throw {code: 'UPVOTE_ALREADY_DONE'};
+		if (userList.some(u => u.username === username)) throw {code: 403, msg: 'UPVOTE_ALREADY_DONE'};
 
 		await insertUpvote(plc_id, username);
 		plc.upvotes++;
@@ -32,8 +32,7 @@ export async function addUpvote(plc_id: number, username: string) {
 		}
 		emitWS('playlistContentsUpdated', plc.playlist_id);
 	} catch(err) {
-		console.log(err);
-		if (!err.code) err.code = 'UPVOTE_FAILED';
+		if (!err.msg) err.msg = 'UPVOTE_FAILED';
 		throw err;
 	}
 }
@@ -42,12 +41,12 @@ export async function addUpvote(plc_id: number, username: string) {
 export async function deleteUpvote(plc_id: number, username: string) {
 	try {
 		const plc = await getPLCInfoMini(plc_id);
-		if (!plc) throw {message: 'PLC ID unknown'};
-		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 'DOWNVOTE_FAILED'};
-		if (plc.username === username) throw {code: 'DOWNVOTE_NO_SELF'};
+		if (!plc) throw {code: 404, msg: 'PLC ID unknown'};
+		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 403, msg: 'DOWNVOTE_FAILED'};
+		if (plc.username === username) throw {code: 403, msg: 'DOWNVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
 		const users = userList.map(u => u.username);
-		if (!users.includes(username)) throw {code: 'DOWNVOTE_ALREADY_DONE'};
+		if (!users.includes(username)) throw {code: 403, msg: 'DOWNVOTE_ALREADY_DONE'};
 		await removeUpvote(plc_id, username);
 		// Karaokes are not 'un-freed' when downvoted.^
 		plc.upvotes--;
@@ -56,7 +55,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 		}
 		emitWS('playlistContentsUpdated', plc.playlist_id);
 	} catch(err) {
-		if (!err.code) err.code = 'DOWNVOTE_FAILED';
+		if (!err.msg) err.msg = 'DOWNVOTE_FAILED';
 		throw err;
 	}
 }

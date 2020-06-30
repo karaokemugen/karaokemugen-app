@@ -24,10 +24,10 @@ export default function downloadController(router: Router) {
  * @apiParam {string} downloads/repository Name (domain) of the repository to download from
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * "5 download(s) queued"
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "Error while adding download: ..."
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 409 Conflict
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
@@ -36,7 +36,7 @@ export default function downloadController(router: Router) {
 			} catch(err) {
 				const code = 'DOWNLOADS_QUEUED_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 	/**
@@ -150,9 +150,9 @@ export default function downloadController(router: Router) {
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await downloadRandomSongs();
-				res.status(200).send('Downloads started');
+				res.status(200).json(APIMessage('DOWNLOADS_STARTED'));
 			} catch(err) {
-				res.status(500).send(`Error adding downloads: ${err}`);
+				res.status(500).json(APIMessage('DOWNLOADS_START_ERROR', err));
 			}
 		});
 	router.route('/downloads/start')
@@ -219,7 +219,8 @@ export default function downloadController(router: Router) {
  * HTTP/1.1 200 OK
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "Error adding download BLC : ..."
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 400 Bad Request
  */
 		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
@@ -228,7 +229,7 @@ export default function downloadController(router: Router) {
 			} catch(err) {
 				const code = 'DOWNLOADS_BLC_ADDED_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/downloads/blacklist/criterias/:id')
@@ -244,7 +245,8 @@ export default function downloadController(router: Router) {
  * HTTP/1.1 200 OK
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
- * "Error removing download BLC : ..."
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not Found
  */
 		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
@@ -253,7 +255,7 @@ export default function downloadController(router: Router) {
 			} catch(err) {
 				const code = 'DOWNLOADS_BLC_REMOVE_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/karas/remote')

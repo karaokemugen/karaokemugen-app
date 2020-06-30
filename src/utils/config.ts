@@ -48,9 +48,8 @@ export async function editSetting(part: any) {
 		emitWS('settingsUpdated', config);
 		return config;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	}
 }
 

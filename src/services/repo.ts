@@ -37,6 +37,7 @@ export function getRepo(name: string) {
 
 /** Remove a repository */
 export function removeRepo(name: string) {
+	if (!getRepo(name)) throw {code: 404};
 	deleteRepo(name);
 	logger.info(`Removed ${name}`, {service: 'Repo'});
 }
@@ -46,7 +47,7 @@ export async function addRepo(repo: Repository) {
 	if (repo.Online) {
 		// Testing if repository is reachable
 		const karas = await getRemoteKaras(repo.Name, {from: 1, size: 1});
-		if (karas.content.length === 0) throw 'Repository unreachable. Did you mispell its name?';
+		if (karas.content.length === 0) throw {code: 404, msg: 'Repository unreachable. Did you mispell its name?'};
 	}
 	insertRepo(repo);
 	await checkRepoPaths(repo);
@@ -56,10 +57,11 @@ export async function addRepo(repo: Repository) {
 /** Edit a repository. Folders will be created if necessary */
 export async function editRepo(name: string, repo: Repository) {
 	const oldRepo = getRepo(name);
+	if (!oldRepo) throw {code: 404};
 	if (!oldRepo.Online && repo.Online) {
 		// Testing if repository is reachable
 		const karas = await getRemoteKaras(repo.Name, {from: 1, size: 1});
-		if (karas.content.length === 0) throw 'Repository unreachable. Did you mispell its name?';
+		if (karas.content.length === 0) throw {code: 404, msg: 'Repository unreachable. Did you mispell its name?'};
 	}
 	updateRepo(repo, name);
 	await checkRepoPaths(repo);
@@ -70,6 +72,7 @@ export async function editRepo(name: string, repo: Repository) {
 }
 
 export async function compareLyricsChecksums(repo1Name: string, repo2Name: string): Promise<DifferentChecksumReport[]> {
+	if (!getRepo(repo1Name) || !getRepo(repo2Name)) throw {code: 404};
 	// Get all files
 	const task = new Task({
 		text: 'COMPARING_LYRICS_IN_REPOS'
@@ -151,6 +154,7 @@ function checkRepoPaths(repo: Repository) {
 
 /** Find any unused medias in a repository */
 export async function findUnusedMedias(repo: string): Promise<string[]> {
+	if (!getRepo(repo)) throw {code: 404};
 	const task = new Task({
 		text: 'FINDING_UNUSED_MEDIAS'
 	});
@@ -159,7 +163,7 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 			extractAllFiles('Karas', repo),
 			extractAllFiles('Medias', repo)
 		]);
-		let mediaFilesFiltered;
+		let mediaFilesFiltered: string[];
 		const karas = await (readAllKaras(karaFiles, false, task));
 		karas.forEach(k => {
 			mediaFilesFiltered = mediaFiles.filter(file => basename(file) !== k.mediafile);
@@ -176,6 +180,7 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 
 /** Find any unused tags in a repository */
 export async function findUnusedTags(repo: string): Promise<Tag[]> {
+	if (!getRepo(repo)) throw {code: 404};
 	const task = new Task({
 		text: 'FINDING_UNUSED_TAGS'
 	});

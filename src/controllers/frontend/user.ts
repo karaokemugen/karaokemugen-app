@@ -80,6 +80,8 @@ export default function userController(router: Router) {
  * {code: "USER_ALREADY_EXISTS"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 411 Length
  */
 
 		.post(getLang, optionalAuth, requireWebappLimitedNoAuth, async (req: any, res) => {
@@ -102,8 +104,8 @@ export default function userController(router: Router) {
 					}
 					res.status(200).json(APIMessage('USER_CREATED'));
 				} catch(err) {
-					errMessage(err.code, err.message);
-					res.status(500).json(APIMessage(err.code));
+					errMessage(err.msg, err.details);
+					res.status(err?.code || 500).json(APIMessage(err.msg));
 				}
 			} else {
 				// Errors detected
@@ -158,6 +160,8 @@ export default function userController(router: Router) {
  * @apiError USER_VIEW_ERROR Unable to view user details
  *
  * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
+ * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * "USER_VIEW_ERROR"
  */
@@ -165,6 +169,7 @@ export default function userController(router: Router) {
 			try {
 				const userdata = await findUserByName(req.params.username, {public: req.authToken.role !== 'admin'});
 				delete userdata.password;
+				if (!userdata) res.status(404);
 				res.json(userdata);
 			} catch(err) {
 				const code = 'USER_VIEW_ERROR';
@@ -188,15 +193,18 @@ export default function userController(router: Router) {
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 406 Not acceptable
  */
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await deleteUser(req.params.username);
 				res.status(200).json(APIMessage('USER_DELETED'));
 			} catch(err) {
-				const code = 'USER_DELETE_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				errMessage(err.msg, err.details);
+				res.status(err?.code || 500).json(APIMessage(err.msg, err.details));
 			}
 		})
 		.put(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
@@ -213,7 +221,7 @@ export default function userController(router: Router) {
 			} catch(err) {
 				const code = 'USER_EDIT_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(err.msg, err.details));
 			}
 		});
 	router.route('/users/:username/resetpassword')
@@ -258,10 +266,10 @@ export default function userController(router: Router) {
 					} catch (err) {
 						const code = 'USER_RESETPASSWORD_ERROR';
 						errMessage(code, err);
-						res.status(500).json(APIMessage(code));
+						res.status(err?.code || 500).json(APIMessage(code));
 					}
 				} else {
-					res.status(500).json(APIMessage('USER_RESETPASSWORD_WRONGSECURITYCODE'));
+					res.status(403).json(APIMessage('USER_RESETPASSWORD_WRONGSECURITYCODE'));
 				}
 			} else {
 				try {
@@ -359,6 +367,8 @@ export default function userController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 406 Not acceptable
 	 */
 		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			try {
@@ -367,7 +377,7 @@ export default function userController(router: Router) {
 			} catch(err) {
 				const code = 'USER_DELETE_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		})
 
@@ -395,6 +405,8 @@ export default function userController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * @apiErrorExample Error-Response:
+ * HTTP/1.1 400 Bad request
+ * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
 		.put(upload.single('avatarfile'), getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
@@ -414,9 +426,8 @@ export default function userController(router: Router) {
 					const response = await editUser(req.authToken.username, req.body, avatar , req.authToken.role);
 					res.status(200).json(APIMessage('USER_EDITED', { onlineToken: response.onlineToken }));
 				} catch(err) {
-					const code = 'USER_EDIT_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					errMessage(err.msg, err);
+					res.status(err.code || 500).json(APIMessage(err.msg));
 				}
 			} else {
 				// Errors detected
@@ -468,9 +479,8 @@ export default function userController(router: Router) {
 					const tokens = await convertToRemoteUser(req.authToken, req.body.password, req.body.instance);
 					res.json(APIMessage('USER_CONVERTED', tokens));
 				} catch(err) {
-					const code = err.code || 'USER_CONVERT_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					errMessage(err.msg, err);
+					res.status(err?.code || 500).json(APIMessage(err.msg));
 				}
 			} else {
 			// Errors detected
@@ -501,6 +511,8 @@ export default function userController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 409 Conflict
 	 */
 		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
 			const validationErrors = check(req.body, {
@@ -514,7 +526,7 @@ export default function userController(router: Router) {
 				} catch(err) {
 					const code = 'USER_DELETE_ERROR_ONLINE';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 			// Errors detected

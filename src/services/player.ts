@@ -25,6 +25,7 @@ export function playerMessage(msg: string, duration: number, align = 4) {
 export async function playSingleSong(kid?: string) {
 	try {
 		const kara = await getKara(kid, {username: 'admin', role: 'admin'});
+		if (!kara) throw {code: 404, msg: 'KID not found'};
 		setState({singlePlay: true, currentSong: kara});
 		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
@@ -53,6 +54,7 @@ export async function playSingleSong(kid?: string) {
 		logger.error('Error during song playback', {service: 'Player', obj: err});
 		sentry.error(err, 'Warning');
 		stopPlayer(true);
+		throw err;
 	}
 }
 

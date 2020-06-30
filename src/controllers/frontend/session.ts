@@ -101,7 +101,7 @@ export default function sessionController(router: Router) {
 				} catch(err) {
 					const code = 'SESSION_MERGE_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 			// Errors detected
@@ -127,6 +127,8 @@ export default function sessionController(router: Router) {
  * HTTP/1.1 200 OK
  * {code: "SESSION_EDITED"};
  * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
+ * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: "SESSION_EDIT_ERROR"}
  */
@@ -143,7 +145,7 @@ export default function sessionController(router: Router) {
 				} catch(err) {
 					const code = 'SESSION_EDIT_ERROR';
 					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(code));
 				}
 			} else {
 				// Errors detected
@@ -180,6 +182,12 @@ export default function sessionController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {code: "SESSION_DELETED"}
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
  */
 		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
@@ -188,7 +196,7 @@ export default function sessionController(router: Router) {
 			} catch(err) {
 				const code = 'SESSION_DELETE_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 	router.route('/sessions/:seid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/export')
@@ -206,6 +214,8 @@ export default function sessionController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: "SESSION_EXPORT_ERROR"}
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 404 Not found
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			try {
@@ -214,7 +224,7 @@ export default function sessionController(router: Router) {
 			} catch(err) {
 				const code = 'SESSION_EXPORT_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(code));
 			}
 		});
 }

@@ -51,7 +51,7 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	const instance = token.username.split('@')[1];
 	const username = token.username.split('@')[0];
 	// Verify that no local user exists with the name we're going to rename it to
-	if (await findUserByName(username)) throw 'User already exists locally, delete it first.';
+	if (await findUserByName(username)) throw {code: 409, msg: 'User already exists locally, delete it first.'};
 	// Verify that password matches with online before proceeding
 	const onlineToken = await remoteLogin(token.username, password);
 	await HTTP(`https://${instance}/api/users`, {
@@ -191,8 +191,8 @@ export function decodeJwtToken(token: string, config?: Config) {
 export async function convertToRemoteUser(token: Token, password: string , instance: string): Promise<Tokens> {
 	if (token.username === 'admin') throw {code: 'ADMIN_CONVERT_ERROR'};
 	const user = await findUserByName(token.username);
-	if (!user) throw {code: 'UNKNOW_CONVERT_ERROR'};
-	if (!await checkPassword(user, password)) throw {code: 'PASSWORD_CONVERT_ERROR'};
+	if (!user) throw {msg: 'UNKNOW_CONVERT_ERROR'};
+	if (!await checkPassword(user, password)) throw {msg: 'PASSWORD_CONVERT_ERROR'};
 	user.login = `${token.username}@${instance}`;
 	user.password = password;
 	try {
@@ -210,7 +210,8 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 			token: createJwtToken(user.login, token.role)
 		};
 	} catch(err) {
-		throw {code: 'USER_CONVERT_ERROR'};
+		sentry.error(new Error(err));
+		throw {msg: err.msg || 'USER_CONVERT_ERROR', details: err};
 	}
 }
 
@@ -264,8 +265,8 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 }) {
 	try {
 		const currentUser = await findUserByName(username);
-		if (!currentUser) throw 'User unknown';
-		if (currentUser.type === 2 && role !== 'admin') throw 'Guests are not allowed to edit their profiles';
+		if (!currentUser) throw {code: 404, msg: 'USER_NOT_EXISTS'};
+		if (currentUser.type === 2 && role !== 'admin') throw {code: 403, msg: 'Guests are not allowed to edit their profiles'};
 		// If we're renaming a user, user.login is going to be set to something different than username
 		if (!opts.renameUser) user.login = username;
 		user.old_login = username;
@@ -274,14 +275,14 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (!user.email) user.email = null;
 		if (!user.nickname) user.nickname = currentUser.nickname;
 		if (!user.series_lang_mode && user.series_lang_mode !== 0) user.series_lang_mode = -1;
-		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw 'Invalid series_lang_mode';
-		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw `main_series_lang is not a valid ISO639-2B code (received ${user.main_series_lang})`;
-		if (user.fallback_series_lang && !hasLang('2B', user.fallback_series_lang)) throw `fallback_series_lang is not a valid ISO639-2B code (received ${user.fallback_series_lang})`;
-		if (user.type === 0 && role !== 'admin') throw 'Admin flag permission denied';
+		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw {code: 400, msg: 'Invalid series_lang_mode'};
+		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw {code: 400, msg: `main_series_lang is not a valid ISO639-2B code (received ${user.main_series_lang})`};
+		if (user.fallback_series_lang && !hasLang('2B', user.fallback_series_lang)) throw {code: 400, msg: `fallback_series_lang is not a valid ISO639-2B code (received ${user.fallback_series_lang})`};
+		if (user.type === 0 && role !== 'admin') throw {code: 403, msg: 'Admin flag permission denied'};
 		if (user.type !== 0 && !user.type) user.type = currentUser.type;
-		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
+		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw {code: 403, msg: 'Only admins can change a user\'s type'};
 		// Check if login already exists.
-		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw 'Nickname already exists';
+		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw {code: 409, msg: 'Nickname already exists'};
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
@@ -302,7 +303,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user);
 		// Modifying passwords is not allowed in demo mode
 		if (user.password && !opts.noPasswordCheck && !getState().isDemo) {
-			if (user.password.length < 8) throw 'PASSWORD_TOO_SHORT';
+			if (user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
 			user.password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(user.login,user.password);
 		}
@@ -313,10 +314,8 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		};
 	} catch (err) {
 		logger.error(`Failed to update ${username}'s profile`, {service: 'User', obj: err});
-		throw {
-			message: err,
-			data: user.nickname
-		};
+		if (!err.msg) err.msg = 'USER_EDIT_ERROR';
+		throw err;
 	}
 }
 
@@ -480,7 +479,6 @@ export async function resetRemotePassword(user: string) {
 	try {
 		await HTTP.post(`https://${instance}/api/users/${username}/resetpassword`);
 	} catch (err) {
-
 		logger.error(`Could not trigger reset password for ${user}`, {service: 'RemoteUser', obj: err});
 		throw err;
 	}
@@ -550,7 +548,7 @@ export function createAdminUser(user: User, remote: boolean, requester: User) {
 	if (requester.type === 0 || user.securityCode === getState().securityCode) {
 		return createUser(user, { createRemote: remote, admin: true });
 	} else {
-		throw 'Wrong security code';
+		throw {code: 403, msg: 'Wrong security code'};
 	}
 }
 
@@ -585,12 +583,12 @@ export async function createUser(user: User, opts: UserOpts = {
 			})}`;
 			logger.warn(`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${user.login} is ${user.nickname}`, {service: 'User'});
 		}
-		if (user.login.split('@')[0] === 'admin') throw { code: 'USER_CREATE_ERROR', data: 'Admin accounts are not allowed to be created online' };
-		if (!+getConfig().Online.Users) throw { code: 'USER_CREATE_ERROR', data: 'Creating online accounts is not allowed on this instance'};
+		if (user.login.split('@')[0] === 'admin') throw { code: 403, msg: 'USER_CREATE_ERROR', details: 'Admin accounts are not allowed to be created online' };
+		if (!+getConfig().Online.Users) throw { code: 403, msg : 'USER_CREATE_ERROR', details: 'Creating online accounts is not allowed on this instance'};
 		if (opts.createRemote) await createRemoteUser(user);
 	}
 	if (user.password) {
-		if (user.password.length < 8 && !opts.noPasswordCheck) throw {code: 'PASSWORD_TOO_SHORT', data: user.password.length};
+		if (user.password.length < 8 && !opts.noPasswordCheck) throw {code: 411, msg: 'PASSWORD_TOO_SHORT', details: user.password.length};
 		user.password = await hashPasswordbcrypt(user.password);
 	}
 	try {
@@ -601,7 +599,8 @@ export async function createUser(user: User, opts: UserOpts = {
 		return true;
 	} catch (err) {
 		logger.error(`Unable to create user ${user.login}`, {service: 'User', obj: err});
-		throw { code: 'USER_CREATE_ERROR', data: err};
+		if (!err.msg) err.msg = 'USER_CREATE_ERROR';
+		throw err;
 	}
 }
 
@@ -620,9 +619,9 @@ async function newUserIntegrityChecks(user: User) {
 /** Remove a user from database */
 export async function deleteUser(username: string) {
 	try {
-		if (username === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
+		if (username === 'admin') throw {code: 406, msg:  'USER_DELETE_ADMIN_DAMEDESU', details: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
 		const user = await findUserByName(username);
-		if (!user) throw {code: 'USER_NOT_EXISTS'};
+		if (!user) throw {code: 404, msg: 'USER_NOT_EXISTS'};
 		//Reassign karas and playlists owned by the user to the admin user
 		await DBReassignToUser(username, 'admin');
 		await DBDeleteUser(username);
@@ -632,7 +631,8 @@ export async function deleteUser(username: string) {
 		return true;
 	} catch (err) {
 		logger.error(`Unable to delete user ${username}`, {service: 'User', obj: err});
-		throw ({code: 'USER_DELETE_ERROR', data: err});
+		if (!err.msg) err.msg = 'USER_DELETE_ERROR';
+		throw err;
 	}
 }
 
