@@ -97,7 +97,7 @@
 	"BASE_UPDATE_BULLDOZERSERIES": "Nouveauté 4.0 :\n\nNous avons changé la façon dont les séries sont gérées. Karaoke Mugen doit retélécharger les métadonnées (pas les médias) de vos karaokés. Voulez-vous continuer ?\n\nSi vous cliquez sur Non, vous devrez retélécharger vous-même vos chansons, ou mettre à jour votre base par un moyen externe.\n\nNe cliquez pas sur Oui si vous êtes mainteneur d'une base de karaoké.",
 	"NO_KARAOKE_MODE_ANYMORE": {
 		"TITLE": "Plus de mode de karaoké !",
-		"MESSAGE": "Nouveauté 4.0 :\n\nLe mode public/privé a disparu ! Et il ne reviendra jamais ! *musique dramatique*\n\nLes playlists peuvent maintenant à la fois avoir l'état publique et courante :\n\n- L'état public fait que la playlist recevra les demandes de chansons de vos invités\n- L'état courant fait que la playlist sera celle utilisée par le lecteur.\n\nPour faire simple, combinez les deux états sur une playlist pour faire comme l'ancien mode privé. Pour avoir l'ancien mode publique, ayez deux playlists, l'une avec l'état public et l'autre avec l'état courant."
+		"MESSAGE": "Nouveauté 4.0 :\n\nLe mode public/privé a disparu, et il ne reviendra jamais ! *musique dramatique*\n\nLes playlists ne jurent maintenant que par le système d'état. Elle peuvent dorénavant avoir à la fois l'état publique et courante :\n\n- L'état public fait que la playlist recevra les demandes de chansons de vos invités.\n- L'état courant fait que la playlist sera celle utilisée par le lecteur.\n\nPour activer l'ancien mode public, créez deux playlists, l'une avec l'état public qui recevra les demandes et l'autre avec l'état courant.\nPour activer l'ancien mode privé, créez une playlist et attribuez-lui les deux états simultanément."
 	},
 	"COPY_TO_CLIPBOARD": "Copier dans le presse-papiers",
 	"IT_IS_IN_MY_HEAD": "Pas besoin, je l'ai retenu !",
@@ -112,20 +112,20 @@
 			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
 			"Vous pouvez glisser-déposer des fichiers dans cette fenêtre, utiliser le menu Fichier -> Importer, ou associer le programme Karaoke Mugen à ceux-ci pour les intégrer directement (playlists, karaokés, listes de critères de blacklist, etc.)",
 			"Ajoutez le dépôt world.karaokes.moe à votre liste de dépôts pour encore plus de karaokés du monde !",
-			"Je suis Nanamin, mascotte de Karaoke Mugen créée par la talentueuse Sedeto ! (@Sedeto sur Twitter)",
+			"Je suis Nanamin, mascotte de Karaoke Mugen crée par la talentueuse Sedeto ! (@Sedeto sur Twitter)",
 			"Les sessions sont des moments de karaoké individuels. Pensez à les nommer correctement !",
 			"Une session contient la liste des karaokés demandés et lus lors d'un évènement précis.",
-			"Il y a plein d'options pour configurer votre karaoké ! Prenez le temps de regarder dans les options avant de vous lancer !",
+			"Il y a plein de façon de configurer un karaoké ! Prenez le temps de regarder les options avant de vous lancer.",
 			"La liste noire et les critères de liste noire (blacklist) permettent de cacher des karaokés à vos utilisateurs selon les situations.",
-			"Les AutoMix sont des playlists crées avec uniquement les favoris de vos invités. Idéal pour faire une soirée karaoké rapidement !",
+			"Les AutoMix sont des playlists crées uniquement avec les favoris de vos invités. Idéal pour se faire une soirée karaoké rapidement !",
 			"Vous ne savez pas quoi ajouter dans votre playlist ? Le bouton aléatoire vous réservera quelques surprises !",
-			"Les chansons ajoutées avec Ajout Mystère d'activé apparaîtront cachées dans la playlist vue de vos invités !",
+			"Les chansons ajoutées avec l'option \"Ajout Mystère\" apparaitront cachées dans la playlist visible par vos invités !",
 			"Hydratez-vous régulièrement !",
 			"Ne dérangez pas les voisins !",
 			"Encore une astuce qui finit en point d'exclamation !",
 			"Le Moniteur vous permet de voir la chanson en cours de diffusion si vous ne pouvez pas voir l'écran de là où vous êtes.",
 			"Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
-			"Votre karaoké se termine bientôt ? Passez l'interface en mode restreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
+			"Votre karaoké se termine bientôt ? Passez l'interface en mode retreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
 			"Besoin de passer un message à votre public ? L'option message affichera un texte sur les périphériques mobiles de vos utilisateurs et/ou sur l'écran !"
 		],
 		"ERRORS": [
