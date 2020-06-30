@@ -121,7 +121,7 @@
 			"Encore une astuce qui finit en point d'exclamation !",
 			"Le Moniteur vous permet de voir la chanson en cours de diffusion si vous ne pouvez pas voir l'écran de là où vous êtes.",
 			"Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
-			"Votre karaoké se termine bientôt ? Passez l'interface en mode retreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
+			"Votre karaoké se termine bientôt ? Passez l'interface en mode restreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
 			"Besoin de passer un message à votre public ? L'option message affichera un texte sur les périphériques mobiles de vos utilisateurs et/ou sur l'écran !"
 		],
 		"ERRORS": [
@@ -160,8 +160,8 @@
 		"TITLE": "Dépôt local introuvable",
 		"MESSAGE": "Aucun dépôt local n'existe dans votre configuration. Veuillez en créer un avant de réimporter ce karaoké"
 	},
-	"GENERATING_READING": "Lecture des données...",
-	"GENERATING_DATABASE": "Création de la base de données...",
+	"GENERATING_READING": "Etape 1/2 : Lecture des données...",
+	"GENERATING_DATABASE": "Etape 2/2 : Mise à jour de la base de données...",
 	"RESTARTING_PLAYER": "REDEMARRAGE DU LECTEUR...",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON A LA PLAYLIST !"
 }
