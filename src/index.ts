@@ -20,14 +20,13 @@ import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import {logo} from './logo';
 import { migrateOldFoldersToRepo } from './services/repo';
-// Types
-import {Config} from './types/config';
 import {parseCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
 import {createCircleAvatar} from './utils/imageProcessing';
 import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
-import {startTipLoop, stopTipLoop} from './utils/tips';
+// Types
+import {Config} from './types/config';
 import {version} from './version';
 
 dotenv.config();
@@ -247,7 +246,6 @@ export async function preInit() {
 
 export async function main() {
 	initStep(i18n.t('INIT_INIT'));
-	startTipLoop('normal');
 	// Set version number
 	let sha: string;
 	const SHAFile = resolve(resourcePath, 'assets/sha.txt');
@@ -310,13 +308,11 @@ export async function main() {
 		 */
 		try {
 			await initEngine();
-			stopTipLoop();
 		} catch(err) {
 			logger.error('Karaoke Mugen initialization failed', {service: 'Launcher', obj: err});
 			sentry.error(err);
 			console.log(err);
 			errorStep(i18n.t('ERROR_UNKNOWN'));
-			startTipLoop('errors');
 			if (!app || argv.cli) exit(1);
 		}
 	}

@@ -102,20 +102,24 @@
 	"COPY_TO_CLIPBOARD": "Copier dans le presse-papiers",
 	"IT_IS_IN_MY_HEAD": "Pas besoin, je l'ai retenu !",
 	"TIPS": {
+		"TITLES": {
+			"NORMAL": "Trucs et astues avec Nanamin !",
+			"ERRORS": "Oh non, ça marche pas !"
+		},
 		"NORMAL": [
 			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
 			"Vous ne trouvez pas une chanson dans la base ? N'hésitez pas à regarder sur https://suggest.karaokes.moe, elle s'y trouve peut-être !",
 			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
 			"Vous pouvez glisser-déposer des fichiers dans cette fenêtre, utiliser le menu Fichier -> Importer, ou associer le programme Karaoke Mugen à ceux-ci pour les intégrer directement (playlists, karaokés, listes de critères de blacklist, etc.)",
 			"Ajoutez le dépôt world.karaokes.moe à votre liste de dépôts pour encore plus de karaokés du monde !",
-			"Je suis Nanamin, mascotte de Karaoke Mugen crée par la talentueuse Sedeto ! (@Sedeto sur Twitter)",
+			"Je suis Nanamin, mascotte de Karaoke Mugen créée par la talentueuse Sedeto ! (@Sedeto sur Twitter)",
 			"Les sessions sont des moments de karaoké individuels. Pensez à les nommer correctement !",
 			"Une session contient la liste des karaokés demandés et lus lors d'un évènement précis.",
 			"Il y a plein d'options pour configurer votre karaoké ! Prenez le temps de regarder dans les options avant de vous lancer !",
 			"La liste noire et les critères de liste noire (blacklist) permettent de cacher des karaokés à vos utilisateurs selon les situations.",
 			"Les AutoMix sont des playlists crées avec uniquement les favoris de vos invités. Idéal pour faire une soirée karaoké rapidement !",
 			"Vous ne savez pas quoi ajouter dans votre playlist ? Le bouton aléatoire vous réservera quelques surprises !",
-			"Les chansons ajoutées avec Ajout Mystère d'activé apparaitront cachées dans la playlist vue de vos invités !",
+			"Les chansons ajoutées avec Ajout Mystère d'activé apparaîtront cachées dans la playlist vue de vos invités !",
 			"Hydratez-vous régulièrement !",
 			"Ne dérangez pas les voisins !",
 			"Encore une astuce qui finit en point d'exclamation !",

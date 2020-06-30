@@ -102,6 +102,10 @@
 	"COPY_TO_CLIPBOARD": "Copy to clipboard",
 	"IT_IS_IN_MY_HEAD": "No need, it's in my head!",
 	"TIPS": {
+		"TITLES": {
+			"NORMAL": "Tips and Tricks with Nanamin!",
+			"ERRORS": "Oh no, it doesn't work!"
+		},
 		"NORMAL": [
 			"Don't forget to sync the base sometimes: you may discover some new karaokes!",
 			"Can't find a song in the database? Don't hesitate to look on https://suggest.karaokes.moe/, it may be there!",

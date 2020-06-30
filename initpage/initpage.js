@@ -36,7 +36,13 @@
 }).call(this);
 
 const ipcRenderer = require('electron').ipcRenderer;
+
+let buttonLogsStatus = false;
+let KMStarting = false;
+let timeout;
+
 ipcRenderer.on('initStep', (event, data) => {
+	if (!KMStarting) KMStarting = true;
 	const message = document.querySelector('.ip--message');
 	const dots = document.querySelector('.ip--loading-dots');
 
@@ -63,9 +69,12 @@ ipcRenderer.on('error', (event, data) => {
 	const tip = document.querySelector('.ip--protip');
 	tip.className = 'ip--protip ip--error';
 });
-ipcRenderer.on('tip', (event, data) => {
-	const tipbox = document.querySelector('.ip--protip');
-	tipbox.innerHTML = data.message.autoLink({target: '_blank'});
+ipcRenderer.on('techTip', (event, data) => {
+	const tiptitle = document.querySelector('.ip--protip > .title');
+	const tipbox = document.querySelector('.ip--protip > .content');
+	tipbox.innerHTML = data.tip.autoLink({target: '_blank'});
+	tiptitle.innerText = data.title;
+	timeout = setTimeout(askTip, data.duration);
 });
 ipcRenderer.on('tasksUpdated', (event, data) => {
 	if (Object.keys(data).length > 0) {
@@ -76,14 +85,16 @@ ipcRenderer.on('tasksUpdated', (event, data) => {
 	}
 });
 
+document.querySelector('.ip--button-logs').addEventListener('click', clickButton);
 
-const buttonLogsStatus = false;
-document.querySelector('.ip--button-logs').onclick = clickButton;
+function askTip() {
+	ipcRenderer.send('tip');
+}
 
-function clickButton () {
+function clickButton() {
 	const wrapper = document.querySelector('.initpage--wrapper');
-	const displayLog = wrapper.dataset.displayLog === 'true';
-	wrapper.dataset.displayLog = displayLog ? 'false':'true';
+	buttonLogsStatus = wrapper.dataset.displayLog === 'true';
+	wrapper.dataset.displayLog = buttonLogsStatus ? 'false':'true';
 }
 
 function setProgressBar(pct, text) {
@@ -102,4 +113,25 @@ function setProgressBar(pct, text) {
 	textEl.innerHTML = text;
 }
 
+function panic() {
+	// If, after, 5 seconds, we don't receive any feedback from IPC, panic.
+	if (!KMStarting) {
+		if (timeout) clearTimeout(timeout);
+		if (!buttonLogsStatus) clickButton();
+		const message = document.querySelector('.ip--message');
+		message.innerText = 'Karaoke Mugen is not starting';
+		const nanamiSD = document.querySelector('.ip--nanami > img');
+		nanamiSD.src = './public/nanami-surpris.png';
+		const tip = document.querySelector('.ip--protip');
+		tip.className = 'ip--protip ip--error';
+		const tiptitle = document.querySelector('.ip--protip > .title');
+		const tipbox = document.querySelector('.ip--protip > .content');
+		tipbox.innerHTML = 'Karaoke Mugen is halting at start, something isn\'t right with the start process. ' +
+			'You can reach us on Discord for help: https://discord.gg/XFXCqzU'.autoLink();
+		tiptitle.innerText = 'Weird?';
+	}
+}
+
 ipcRenderer.send('initPageReady');
+setTimeout(panic, 5000);
+askTip();

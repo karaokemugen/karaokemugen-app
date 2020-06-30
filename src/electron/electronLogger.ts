@@ -1,7 +1,8 @@
 import i18next from 'i18next';
 import Transport from 'winston-transport';
 
-import {win} from './electron';
+import { win } from './electron';
+import { setTipLoop } from "../utils/tips";
 
 let errorHappened = false;
 
@@ -15,12 +16,8 @@ export function errorStep(step: string) {
 		errorHappened = true;
 		initStep(i18next.t('INIT_ERROR'));
 		emitIPC('error', {message: step});
+		setTipLoop('errors');
 	}
-}
-
-// Display the tip in the space near Nanami
-export function techTip(tip: string) {
-	emitIPC('tip', {message: tip});
 }
 
 export function emitIPC(type: string, data: any) {

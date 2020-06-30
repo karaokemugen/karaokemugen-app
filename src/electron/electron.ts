@@ -23,8 +23,10 @@ import { addRepo,getRepo, getRepos } from '../services/repo';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { detectKMFileTypes } from '../utils/files';
 import { getState,setState } from '../utils/state';
-import {initAutoUpdate} from './electronAutoUpdate';
+import { initAutoUpdate } from './electronAutoUpdate';
 import { getMenu,initMenu } from './electronMenu';
+import { tip } from "../utils/tips";
+import { emitIPC } from "./electronLogger";
 
 export let win: Electron.BrowserWindow;
 
@@ -63,6 +65,9 @@ export async function startElectron() {
 			for (const path of eventData.files) {
 				await handleFile(path, eventData.username);
 			}
+		});
+		ipcMain.on('tip', (_event, _eventData) => {
+			emitIPC('techTip', tip());
 		});
 	});
 

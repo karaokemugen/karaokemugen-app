@@ -117,19 +117,32 @@ body {
 }
 .ip--nanami > .ip--protip {
 	float: right;
-	background-color: #1474b4;
-	padding: 1em;
 	margin-left: 0.5em;
+}
+.ip--protip > .title {
 	font-weight: bold;
-	border-radius: 0.25em;
+	padding: 0.5em 1em;
+	background-color: #0a4f7f;
+	border-top-left-radius: 1em;
+	border-top-right-radius: 1em;
+}
+.ip--protip > .content {
+	background-color: #0669ac;
+	margin: unset;
+	padding: 0.5em 1em;
+	border-bottom-left-radius: 1em;
+	border-bottom-right-radius: 1em;
 }
 
 .ip--protip a {
 	color: inherit;
 }
 
-.ip--nanami > .ip--protip.ip--error {
-	background-color: #b43414;
+.ip--nanami > .ip--protip.ip--error > .title {
+	background-color: #ba2a05;
+}
+.ip--nanami > .ip--protip.ip--error > .content {
+	background-color: #a32506;
 }
 
 .ip--button-logs {

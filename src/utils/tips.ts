@@ -1,46 +1,37 @@
 import i18n from 'i18next';
 import shuffle from 'lodash.shuffle';
 
-import { techTip } from '../electron/electronLogger';
 import { TipsAndTricks, TipType } from '../types/tips';
 
-let interval: NodeJS.Timeout;
 let tips: TipsAndTricks;
 let index = 0;
+let activeTipType: TipType = 'normal';
 
-function tipLoop(type: TipType) {
-	const tip = tips[type][index];
+export function tip() {
+	if (!tips) initTable();
+	const tip = tips[activeTipType][index];
 	const words = tip.split(' ').length;
-	techTip(tip);
-	index++;
-	// Restart from the beginning if it reaches the end
-	if (tips[type][index] === undefined) {
-		index = 0;
-	}
 	// Calculate the estimated time for reading
 	// Based from https://marketingland.com/estimated-reading-times-increase-engagement-79830:
 	// The average human reads 200 words in a minute <=> 3 words per seconds
-	const duration = Math.round(words/3) * 1000;
 	// Add 1.5 second to let the user start read
-	interval = setTimeout(tipLoop, duration + 1500, type);
+	const duration = (Math.round(words/3) * 1000) + 1500;
+	const ret = {tip: tips[activeTipType][index], duration, title: i18n.t(`TIPS.TITLES.${activeTipType.toUpperCase()}`)};
+	index++;
+	// Restart from the beginning if it reaches the end
+	if (tips[activeTipType][index] === undefined) {
+		index = 0;
+	}
+	return ret;
 }
 
 function initTable() {
-	if (!tips) {
-		tips = {
-			normal: shuffle(i18n.t('TIPS.NORMAL', {returnObjects: true})),
-			errors: shuffle(i18n.t('TIPS.ERRORS', {returnObjects: true}))
-		};
-	}
+	tips = {
+		normal: shuffle(i18n.t('TIPS.NORMAL', {returnObjects: true})),
+		errors: shuffle(i18n.t('TIPS.ERRORS', {returnObjects: true}))
+	};
 }
 
-export function startTipLoop(type: TipType = 'normal') {
-	initTable();
-	clearTimeout(interval); // Clear any existing timeout
-	index = 0; // Reset the index
-	tipLoop(type); // First tip loop
-}
-
-export function stopTipLoop() {
-	clearTimeout(interval);
+export function setTipLoop(type: TipType = 'normal') {
+	activeTipType = type;
 }
