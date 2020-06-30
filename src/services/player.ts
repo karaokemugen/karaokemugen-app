@@ -108,7 +108,7 @@ async function playCurrentSong(now: boolean) {
 				repo: kara.repo,
 				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
 			});
-			setState({currentlyPlayingKara: kara.kid});
+			setState({currentlyPlayingKara: kara.kid, randomPlaying: false});
 			addPlayedKara(kara.kid);
 			await setPLCVisible(kara.playlistcontent_id);
 			await updatePlaylistDuration(kara.playlist_id);
