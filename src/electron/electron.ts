@@ -263,15 +263,15 @@ async function checkRepositoryExists(repoName: string, useLocal = true): Promise
 	}
 }
 
-export async function applyMenu() {
-	await initMenu();
+export function applyMenu() {
+	initMenu();
 	const menu = Menu.buildFromTemplate(getMenu());
 	Menu.setApplicationMenu(menu);
 }
 
 async function initElectronWindow() {
 	await createWindow();
-	await applyMenu();
+	applyMenu();
 }
 
 async function createWindow() {
