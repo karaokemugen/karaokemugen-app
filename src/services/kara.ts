@@ -140,10 +140,8 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 			lang: lang,
 			admin: token.role === 'admin'
 		});
-		if (!res[0]) throw {code: 404};
 		return res[0];
 	} catch(err) {
-		if (err?.code === 404) throw err;
 		sentry.error(err);
 		throw err;
 	} finally {
