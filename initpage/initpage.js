@@ -58,7 +58,7 @@ ipcRenderer.on('initStep', (event, data) => {
 });
 ipcRenderer.on('log', (event, data) => {
 	const div = document.querySelector('.ip--logs');
-	div.innerHTML += '<li>' + data.message + '</li>';
+	div.innerHTML += '<li>' + (data.service ? '<b>[' + data.service + ']</b> ' : '') + data.message + (data.obj && Object.keys(data.obj).length > 0 ? ' (' + JSON.stringify(data.obj, null, 2) + ')' : '' ) + '</li>';
 });
 ipcRenderer.on('error', (event, data) => {
 	if (!buttonLogsStatus) clickButton();
