@@ -1,5 +1,4 @@
 import configure from '@jimp/custom';
-import plugins from '@jimp/plugins';
 import png from '@jimp/png';
 import jpeg from '@jimp/jpeg';
 import circle from '@jimp/plugin-circle';
@@ -9,7 +8,7 @@ import { replaceExt } from '../lib/utils/files';
 import sentry from '../utils/sentry';
 
 const j = configure({
-	plugins: [circle, plugins],
+	plugins: [circle],
 	types: [png, jpeg]
 });
 

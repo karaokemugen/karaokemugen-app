@@ -6,7 +6,7 @@ import { generateDB } from '../../dao/database';
 import { generateDatabase } from '../../lib/services/generation';
 import { getConfig } from '../../lib/utils/config';
 import { browseFs } from '../../lib/utils/files';
-import { readLog } from '../../lib/utils/logger';
+import {enableWSLogging, readLog} from '../../lib/utils/logger';
 import { getFeeds } from '../../services/proxyFeeds';
 import { updateSongsLeft } from '../../services/user';
 import { backupConfig,editSetting, getPublicConfig } from '../../utils/config';
@@ -250,9 +250,10 @@ export default function miscController(router: Router) {
 			res.json(sample(initializationCatchphrases));
 		});
 
-	router.route('/log')
+	router.route('/log/:level')
 	/**
-	 * @api {get} /log Get KM logs
+	 * @api {get} /log/:level Get KM logs
+	 * @apiParam {string} level
 	 * @apiName GetLogs
 	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
@@ -260,9 +261,11 @@ export default function miscController(router: Router) {
 	 * @apiPermission admin
 	 * @apiSuccess {object[]} The current day's log file.
 	 */
-		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
+		.get(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
-				res.status(200).json(await readLog());
+				// Align socket
+				enableWSLogging(req.params.level);
+				res.status(200).json(await readLog(req.params.level));
 			} catch(err) {
 				res.status(500).json(APIMessage('ERROR_READING_LOGS'));
 			}

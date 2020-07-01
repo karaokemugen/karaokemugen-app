@@ -148,7 +148,7 @@ export async function initEngine() {
 		if (conf.Online.Stats === true) initStats(false);
 		try {
 			initStep(i18n.t('INIT_LAST'), true);
-			enableWSLogging();
+			enableWSLogging(state.opt.debug ? 'debug' : 'info');
 			//Easter egg
 			const ready = Math.floor(Math.random() * Math.floor(10)) >= 9
 				? 'LADY'

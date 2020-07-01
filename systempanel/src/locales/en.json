@@ -540,5 +540,6 @@
 		"BLC_SET_IMPORTED": "Blacklist criterias set imported",
 		"BLC_COPIED": "Blacklist criterias copied",
 		"STOP_AFTER": "The karaoke will stop at the song end. To stop now, click again on the stop button."
-	}
+	},
+	"SHOW_DETAILS": "Show details"
 }
