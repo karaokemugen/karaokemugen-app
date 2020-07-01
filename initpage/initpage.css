@@ -35,7 +35,7 @@ body {
 	justify-content: center;
 	flex-direction: column;
 	height: 35vh;
-	width: 50vh;
+	max-width: 75vh;
 }
 
 .ip--logo {
@@ -165,8 +165,8 @@ body {
 	padding: .7em 1em;
 	margin: 1em;
 	max-height: 90vh;
-	width: 90%;
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 .ip--logs li {
 	padding: .3em 0 .3em 2em;
