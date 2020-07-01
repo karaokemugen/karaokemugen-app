@@ -301,7 +301,7 @@ class KaraLine extends Component<IProps, unknown> {
 										{this.karaTitle}
 										{kara.upvotes && this.props.scope === 'admin' ?
 											<div className="upvoteCount"
-												title={i18next.t('TOOLTIP_FREE')}>
+												title={i18next.t('UPVOTE_NUMBER')}>
 												<i className="fas fa-thumbs-up" />
 												{kara.upvotes}
 											</div> : null

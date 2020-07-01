@@ -1,6 +1,6 @@
 diff --git a/node_modules/node-mpv/index.d.ts b/node_modules/node-mpv/index.d.ts
 new file mode 100644
-index 0000000..e0b09ed
+index 0000000..d78ded5
 --- /dev/null
 +++ b/node_modules/node-mpv/index.d.ts
 @@ -0,0 +1,574 @@
@@ -20,7 +20,7 @@ index 0000000..e0b09ed
 +	// Don't open video display
 +	audio_only?: boolean
 +	// Auto-restart on a crash
-+	auto_restart?: true
++	auto_restart?: boolean
 +	// Time update for timeposition event
 +	time_update?: number
 +	// Path to mpv binary
@@ -579,7 +579,7 @@ index 0000000..e0b09ed
 +	hue(value: number): Promise<void>
 +}
 diff --git a/node_modules/node-mpv/lib/mpv/_startStop.js b/node_modules/node-mpv/lib/mpv/_startStop.js
-index a02a990..19df246 100644
+index a02a990..f00f980 100644
 --- a/node_modules/node-mpv/lib/mpv/_startStop.js
 +++ b/node_modules/node-mpv/lib/mpv/_startStop.js
 @@ -109,6 +109,12 @@ const startStop = {
@@ -630,7 +630,7 @@ index a02a990..19df246 100644
 +							// Check for our stimulus with idle-active
 +							if('data' in message && 'error' in message && message.error === 'success') {
 +								if (this.options.debug || this.options.verbose) console.log('[Node-MPV] stimulus received', message.data);
- 								observeSocket.destroy();
+ 								observeSocket.destroy();							
  								resolve();
  							}
 @@ -160,7 +180,13 @@ const startStop = {
