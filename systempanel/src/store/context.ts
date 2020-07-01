@@ -1,6 +1,7 @@
-import { createContext, Dispatch } from "react";
-import { AuthStore } from "./types/auth";
-import { SettingsStore } from "./types/settings";
+import { createContext, Dispatch } from 'react';
+
+import { AuthStore } from './types/auth';
+import { SettingsStore } from './types/settings';
 
 export interface GlobalContextInterface {
 	globalState: {

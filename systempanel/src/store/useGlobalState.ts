@@ -1,4 +1,5 @@
 import { useReducer } from 'react';
+
 import AuthReducer, { initialStateAuth } from './reducers/auth';
 import NavigationReducer from './reducers/navigation';
 import SettingsReducer, { initialStateConfig } from './reducers/settings';
@@ -23,8 +24,8 @@ const useGlobalState = () => {
 		auth: initialStateAuth,
 		navigation: {},
 		settings: initialStateConfig
-	})
+	});
 	return { globalState, globalDispatch };
-}
+};
 
 export default useGlobalState;

@@ -1,10 +1,11 @@
+import * as Sentry from '@sentry/browser';
 import Axios from 'axios';
 import { Dispatch } from 'react';
-import { SettingsSuccess, SettingsFailure, Settings } from '../types/settings';
-import { Version } from '../../../../src/types/state';
-import { Config } from '../../../../src/types/config';
-import * as Sentry from '@sentry/browser';
+
 import { User } from '../../../../src/lib/types/user';
+import { Config } from '../../../../src/types/config';
+import { Version } from '../../../../src/types/state';
+import { Settings,SettingsFailure, SettingsSuccess } from '../types/settings';
 
 export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsFailure>): Promise<void> {
 	try {
@@ -31,7 +32,7 @@ export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsF
 function setSentry(environment: string, version: Version, config: Config, user: User) {
 	if (config.Online?.ErrorTracking) {
 		Sentry.init({
-			dsn: "https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806",
+			dsn: 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806',
 			environment: environment || 'release',
 			release: version.number,
 			ignoreErrors: ['Network Error', 'Request failed with status code']

@@ -1,6 +1,6 @@
-import { Config } from "../../../../src/types/config";
-import { PublicState } from "../../../../src/types/state";
-import { User } from "../../../../src/lib/types/user";
+import { User } from '../../../../src/lib/types/user';
+import { Config } from '../../../../src/types/config';
+import { PublicState } from '../../../../src/types/state';
 
 // Action name
 export enum Settings {
