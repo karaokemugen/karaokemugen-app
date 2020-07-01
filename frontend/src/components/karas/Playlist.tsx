@@ -2,23 +2,23 @@ import 'react-virtualized/styles.css';
 
 import axios from 'axios';
 import i18next from 'i18next';
+import debounce from 'lodash.debounce';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
-import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange,InfiniteLoader, List, ListRowProps } from 'react-virtualized';
-import debounce from 'lodash.debounce';
+import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
 
 import { Token } from '../../../../src/lib/types/user';
 import { BLCSet } from '../../../../src/types/blacklist';
 import { Config } from '../../../../src/types/config';
-import { DBBlacklist,DBBLC } from '../../../../src/types/database/blacklist';
+import { DBBlacklist, DBBLC } from '../../../../src/types/database/blacklist';
 import { DBPL } from '../../../../src/types/database/playlist';
-import { PublicPlayerState } from "../../../../src/types/state";
+import { PublicPlayerState } from '../../../../src/types/state';
 import store from '../../store';
 import { KaraElement } from '../../types/kara';
 import { Tag } from '../../types/tag';
 import SuggestionModal from '../modals/SuggestionModal';
-import { buildKaraTitle,callModal, displayMessage, getSocket, is_touch_device, secondsTimeSpanToHMS } from '../tools';
+import { buildKaraTitle, callModal, displayMessage, getSocket, is_touch_device, secondsTimeSpanToHMS } from '../tools';
 import BlacklistCriterias from './BlacklistCriterias';
 import KaraDetail from './KaraDetail';
 import KaraLine from './KaraLine';
@@ -147,7 +147,14 @@ class Playlist extends Component<IProps, IState> {
 				this.changeIdPlaylist(idPlaylist);
 			}
 		});
-		getSocket().on('KIDUpdated', async (event: { kid: string, flag_inplaylist: boolean, username: string, requester: string, flag_upvoted: boolean }) => {
+		getSocket().on('KIDUpdated', async (event: {
+			kid: string,
+			flag_inplaylist: boolean,
+			username: string,
+			requester: string,
+			flag_upvoted: boolean,
+			my_public_plc_id: number
+		}) => {
 			if (this.state.idPlaylist === -1) {
 				const data = this.state.data as KaraList;
 				for (const kara of data.content) {
@@ -155,7 +162,7 @@ class Playlist extends Component<IProps, IState> {
 						if (event.flag_inplaylist === false || event.flag_inplaylist === true) {
 							kara.flag_inplaylist = event.flag_inplaylist;
 							if (event.flag_inplaylist === false) {
-								kara.flag_added_by_me = false;
+								kara.my_public_plc_id = [];
 							}
 						}
 						if (event.username === store.getLogInfos()?.username) {
@@ -164,7 +171,7 @@ class Playlist extends Component<IProps, IState> {
 							}
 						}
 						if (event.requester === store.getLogInfos()?.username) {
-							kara.flag_added_by_me = true;
+							kara.my_public_plc_id = [event.my_public_plc_id];
 						}
 					}
 				}
@@ -510,7 +517,7 @@ class Playlist extends Component<IProps, IState> {
 					indexPlaying = index;
 					store.setPosPlaying(kara.pos);
 					if (this.state.goToPlaying) this.setState({ scrollToIndex: index, _goToPlaying: true });
-					this.setState({playing: indexPlaying});
+					this.setState({ playing: indexPlaying });
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
 						this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
 					}
@@ -549,8 +556,8 @@ class Playlist extends Component<IProps, IState> {
 
 	updateCounters = (event: PublicPlayerState) => {
 		if (this.state.playlistInfo && this.state.playlistInfo.flag_current)
-			this.setState({songsBeforeJingle: event.songsBeforeJingle, songsBeforeSponsor: event.songsBeforeSponsor});
-		else this.setState({songsBeforeJingle: undefined, songsBeforeSponsor: undefined});
+			this.setState({ songsBeforeJingle: event.songsBeforeJingle, songsBeforeSponsor: event.songsBeforeSponsor });
+		else this.setState({ songsBeforeJingle: undefined, songsBeforeSponsor: undefined });
 	}
 
 	selectAllKaras = () => {
@@ -645,7 +652,7 @@ class Playlist extends Component<IProps, IState> {
 				kara.checked = false;
 			}
 		}
-		this.setState({data: karaList});
+		this.setState({ data: karaList });
 		this.playlistForceRefresh(true);
 	};
 
@@ -740,7 +747,7 @@ class Playlist extends Component<IProps, IState> {
 			return { _goToPlaying: false };
 		});
 	}
-	debouncedClear = debounce(this.debounceClear, 500, {maxWait: 1000});
+	debouncedClear = debounce(this.debounceClear, 500, { maxWait: 1000 });
 
 	clearScrollToIndex = (e: any) => {
 		if (this.state._goToPlaying) {
@@ -874,7 +881,7 @@ class Playlist extends Component<IProps, IState> {
 								<button
 									type="button"
 									title={i18next.t('GOTO_PLAYING')}
-									className={`btn btn-sm btn-action ${this.state.goToPlaying ? 'btn-active':''}`}
+									className={`btn btn-sm btn-action ${this.state.goToPlaying ? 'btn-active' : ''}`}
 									onClick={this.scrollToPlaying}
 									value="playing"
 								>
