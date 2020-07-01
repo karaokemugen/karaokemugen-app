@@ -94,6 +94,33 @@
 		flex-direction: row-reverse;
 	}
 
+	.list-group-item.marker {
+		border-bottom: 0.25em black solid;
+		border-bottom-right-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+
+	.marker-label {
+		background: black;
+		color: white;
+		padding: 0.2em;
+		position: absolute;
+		left: 50%;
+		transform: translate(-50%, -60%);
+		z-index: 999999999;
+		font-size: small;
+		font-weight: 600;
+	}
+
+	.marker-label.green {
+		background: forestgreen;
+		// color: black;
+	}
+
+	.list-group-item.marker.green {
+		border-bottom-color: forestgreen;
+	}
+
 	.panel-heading > div > div:nth-child(2) {
 		padding-left: 4px;
 	}

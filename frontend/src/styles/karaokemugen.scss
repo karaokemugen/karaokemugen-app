@@ -630,6 +630,9 @@ input[type=range]:focus::-ms-fill-upper {
     width: 22px;
     margin: -2px -1px 0px -1px;
 }
+.plFooter button.btn-active {
+	background-color: #37679a;
+}
 .plFooter button > i {
 	top: 0px;
 }

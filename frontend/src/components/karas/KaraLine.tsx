@@ -33,6 +33,8 @@ interface IProps {
 	showVideo: (file: string) => void;
 	checkKara: (id: number | string) => void;
 	deleteCriteria: (kara: DBBlacklist) => void;
+	jingle: boolean;
+	sponsor: boolean;
 }
 
 const pathAvatar = '/avatars/';
@@ -75,7 +77,7 @@ class KaraLine extends Component<IProps, unknown> {
 		}
 	};
 
-	addKara = async (event?: any, pos?: number) => {
+	addKara = async (_event?: any, pos?: number) => {
 		const logInfos = store.getLogInfos();
 		let url = '';
 		let data;
@@ -205,114 +207,125 @@ class KaraLine extends Component<IProps, unknown> {
 		const scope = this.props.scope;
 		const idPlaylist = this.props.idPlaylist;
 		return (
-			<div className={'list-group-item ' + (kara.flag_playing ? 'currentlyplaying ' : ' ') + (kara.flag_dejavu ? 'dejavu ' : ' ')
-				+ (this.props.index % 2 === 0 ? 'list-group-item-binaire' : '')}>
-				{scope === 'public' && logInfos && kara.username !== logInfos.username && kara.flag_visible === false ?
-					<div className="contentDiv">
-						<div style={{ height: '33px' }}>
-							{
-								(this.props.config.Playlist.MysterySongs.Labels as string[])[(this.props.config.Playlist.MysterySongs.Labels as string[]).length * Math.random() | 0]
-							}
-						</div>
-					</div> :
-					<React.Fragment>
-						<div className="actionDiv">
-							{((store.getLogInfos() && kara.username !== (store.getLogInfos() as Token).username)
-								&& !(is_touch_device() && scope === 'admin') || !is_touch_device())
-								&& this.props.config.Frontend.ShowAvatarsOnPlaylist && this.props.avatar_file ?
-								<img className={`img-circle ${is_touch_device() ? 'mobile' : ''}`}
-									src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
-							<div className="actionButtonsDiv">
-								{this.props.idPlaylistTo !== idPlaylist ?
-									<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={idPlaylist}
-										scope={this.props.scope} kara={kara}
-										addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} />
-									: null}
+			<>
+				<div className={`list-group-item ${kara.flag_playing ? 'currentlyplaying ' : ''} ${kara.flag_dejavu ? 'dejavu ' : ''}
+				${this.props.index % 2 === 0 ? 'list-group-item-binaire ':''} ${(this.props.jingle || this.props.sponsor) && scope === 'admin' ? 'marker ':''}
+				${this.props.sponsor && scope === 'admin' ? 'green':''}`}>
+					{scope === 'public' && logInfos && kara.username !== logInfos.username && kara.flag_visible === false ?
+						<div className="contentDiv">
+							<div style={{ height: '33px' }}>
+								{
+									(this.props.config.Playlist.MysterySongs.Labels as string[])[(this.props.config.Playlist.MysterySongs.Labels as string[]).length * Math.random() | 0]
+								}
 							</div>
-							{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
-						</div>
-						{scope === 'admin' && idPlaylist !== -2 && idPlaylist != -4 ?
-							<span className="checkboxKara" onClick={this.checkKara}>
+						</div> :
+						<React.Fragment>
+							<div className="actionDiv">
+								{((store.getLogInfos() && kara.username !== (store.getLogInfos() as Token).username)
+									&& !(is_touch_device() && scope === 'admin') || !is_touch_device())
+								&& this.props.config.Frontend.ShowAvatarsOnPlaylist && this.props.avatar_file ?
+									<img className={`img-circle ${is_touch_device() ? 'mobile' : ''}`}
+										 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
+								<div className="actionButtonsDiv">
+									{this.props.idPlaylistTo !== idPlaylist ?
+										<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={idPlaylist}
+														scope={this.props.scope} kara={kara}
+														addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} />
+										: null}
+								</div>
+								{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
+							</div>
+							{scope === 'admin' && idPlaylist !== -2 && idPlaylist != -4 ?
+								<span className="checkboxKara" onClick={this.checkKara}>
 								{kara.checked ? <i className="far fa-check-square"></i>
 									: <i className="far fa-square"></i>}
 							</span> : null}
-						<div className="infoDiv">
-							{scope === 'admin' ?
-								<button title={i18next.t(idPlaylist < 0 ? 'TOOLTIP_PLAYKARA_LIBRARY' : 'TOOLTIP_PLAYKARA')}
-									className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
-									<i className={`fas ${idPlaylist < 0 ? 'fa-play' : 'fa-play-circle'}`}></i>
-								</button> : null}
-							{scope === 'admin' && this.props.playlistInfo && idPlaylist > 0 && !kara.flag_visible
+							<div className="infoDiv">
+								{scope === 'admin' ?
+									<button title={i18next.t(idPlaylist < 0 ? 'TOOLTIP_PLAYKARA_LIBRARY' : 'TOOLTIP_PLAYKARA')}
+											className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
+										<i className={`fas ${idPlaylist < 0 ? 'fa-play' : 'fa-play-circle'}`}></i>
+									</button> : null}
+								{scope === 'admin' && this.props.playlistInfo && idPlaylist > 0 && !kara.flag_visible
 								&& (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ?
-								<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>
-									<i className="fas fa-eye-slash"></i>
-								</button> : null
-							}
-							{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username === logInfos?.username
+									<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>
+										<i className="fas fa-eye-slash"></i>
+									</button> : null
+								}
+								{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username === logInfos?.username
 								&& (idPlaylist == store.getState().publicPlaylistID) ?
-								<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
-									onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
-							{scope !== 'admin' && this.props.playlistInfo && this.props.playlistInfo.flag_public ?
-								<button className='upvoteKara btn btn-sm btn-action'
-									title={i18next.t('TOOLTIP_UPVOTE')}
-									disabled={this.props.kara.username === store.getLogInfos()?.username}
-									onClick={this.upvoteKara}>
-									<i className={`fas fa-thumbs-up ${kara.flag_upvoted ? 'currentUpvote' : ''} ${kara.upvotes > 0 ? 'upvotes' : ''}`} />
-									{kara.upvotes > 0 && kara.upvotes}
-								</button> : null}
-						</div>
-						{is_touch_device() ?
-							<div className="contentDiv contentDivMobile" onClick={this.toggleKaraDetail} tabIndex={1}>
-								<div className="disable-select contentDivMobileTop">
-									<div className="contentDivMobileFirstColumn">
-										<div>{this.karaLangs}</div>
-										<div>{this.karaSongTypes}</div>
-									</div>
-									<div>
-										<div className="contentDivMobileSerie">{this.karaSerieOrSingers}</div>
-										<div className="contentDivMobileTitle">{kara.title}</div>
-									</div>
-									{kara.upvotes && this.props.scope === 'admin' ?
-										<div className="upvoteCount"
-											title={i18next.t('TOOLTIP_FREE')}>
-											<i className="fas fa-thumbs-up" />
-											{kara.upvotes}
-										</div> : null
-									}
-								</div>
-								<div className="disable-select">
-									<div>
-										{this.karaFamilies}
-										{this.karaPlatforms}
-										{this.karaGenres}
-										{this.karaOrigins}
-										{this.karaMisc}
-									</div>
-								</div>
-							</div> :
-							<div className="contentDiv" onClick={this.toggleKaraDetail} tabIndex={1}>
-								<div className="disable-select karaTitle">
-									{this.karaTitle}
-									{kara.upvotes && this.props.scope === 'admin' ?
-										<div className="upvoteCount"
-											title={i18next.t('TOOLTIP_FREE')}>
-											<i className="fas fa-thumbs-up" />
-											{kara.upvotes}
-										</div> : null
-									}
-									<div className="tagConteneur">
-										{this.karaFamilies}
-										{this.karaPlatforms}
-										{this.karaGenres}
-										{this.karaOrigins}
-										{this.karaMisc}
-									</div>
-								</div>
+									<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
+											onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
+								{scope !== 'admin' && this.props.playlistInfo && this.props.playlistInfo.flag_public ?
+									<button className='upvoteKara btn btn-sm btn-action'
+											title={i18next.t('TOOLTIP_UPVOTE')}
+											disabled={this.props.kara.username === store.getLogInfos()?.username}
+											onClick={this.upvoteKara}>
+										<i className={`fas fa-thumbs-up ${kara.flag_upvoted ? 'currentUpvote' : ''} ${kara.upvotes > 0 ? 'upvotes' : ''}`} />
+										{kara.upvotes > 0 && kara.upvotes}
+									</button> : null}
 							</div>
-						}
-					</React.Fragment>
-				}
-			</div>);
+							{is_touch_device() ?
+								<div className="contentDiv contentDivMobile" onClick={this.toggleKaraDetail} tabIndex={1}>
+									<div className="disable-select contentDivMobileTop">
+										<div className="contentDivMobileFirstColumn">
+											<div>{this.karaLangs}</div>
+											<div>{this.karaSongTypes}</div>
+										</div>
+										<div>
+											<div className="contentDivMobileSerie">{this.karaSerieOrSingers}</div>
+											<div className="contentDivMobileTitle">{kara.title}</div>
+										</div>
+										{kara.upvotes && this.props.scope === 'admin' ?
+											<div className="upvoteCount"
+												 title={i18next.t('TOOLTIP_FREE')}>
+												<i className="fas fa-thumbs-up" />
+												{kara.upvotes}
+											</div> : null
+										}
+									</div>
+									<div className="disable-select">
+										<div>
+											{this.karaFamilies}
+											{this.karaPlatforms}
+											{this.karaGenres}
+											{this.karaOrigins}
+											{this.karaMisc}
+										</div>
+									</div>
+								</div> :
+								<div className="contentDiv" onClick={this.toggleKaraDetail} tabIndex={1}>
+									<div className="disable-select karaTitle">
+										{this.karaTitle}
+										{kara.upvotes && this.props.scope === 'admin' ?
+											<div className="upvoteCount"
+												 title={i18next.t('TOOLTIP_FREE')}>
+												<i className="fas fa-thumbs-up" />
+												{kara.upvotes}
+											</div> : null
+										}
+										<div className="tagConteneur">
+											{this.karaFamilies}
+											{this.karaPlatforms}
+											{this.karaGenres}
+											{this.karaOrigins}
+											{this.karaMisc}
+										</div>
+									</div>
+								</div>
+							}
+						</React.Fragment>
+					}
+				</div>
+				{(this.props.sponsor && this.props.jingle && scope === 'admin') ? <div className="marker-label green">
+					{i18next.t('JINGLE_SPONSOR')}
+				</div>:this.props.jingle && scope === 'admin' ? <div className="marker-label">
+					{i18next.t('JINGLE')}
+				</div>:this.props.sponsor && scope === 'admin' ? <div className="marker-label green">
+					{i18next.t('SPONSOR')}
+				</div>:''}
+			</>
+			);
 	}
 }
 
