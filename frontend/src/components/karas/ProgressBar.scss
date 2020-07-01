@@ -41,5 +41,16 @@
 		white-space: nowrap;
 		text-overflow: ellipsis;
 		overflow: hidden;
+		display: flex;
+	}
+
+	#karaInfo > .actualTime {
+		justify-content: start;
+		margin-left: 1em;
+	}
+
+	#karaInfo > .remainTime {
+		justify-content: end;
+		margin-right: 1em;
 	}
 }

@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import { PublicPlayerState } from '../../../../src/types/state';
 import store from '../../store';
-import { buildKaraTitle, getSocket } from '../tools';
+import { buildKaraTitle, getSocket, secondsTimeSpanToHMS } from '../tools';
 
 require('./ProgressBar.scss');
 
@@ -23,6 +23,7 @@ interface IState {
 	karaTitle?: string;
 	length: number;
 	width: string;
+	timePosition: number;
 }
 
 class ProgressBar extends Component<IProps, IState> {
@@ -34,7 +35,8 @@ class ProgressBar extends Component<IProps, IState> {
 			refreshTime: 1000,
 			karaInfoText: i18next.t('KARA_PAUSED_WAITING'),
 			length: -1,
-			width: '0'
+			width: '0',
+			timePosition: 0
 		};
 	}
 
@@ -89,7 +91,7 @@ class ProgressBar extends Component<IProps, IState> {
 				10000 * (data.timePosition + this.state.refreshTime / 1000) / this.state.length / 10000 + 'px';
 
 			if (!this.state.oldState || data.timePosition != this.state.oldState.timePosition && this.state.length != 0) {
-				this.setState({ width: newWidth });
+				this.setState({ width: newWidth, timePosition: data.timePosition });
 			}
 		}
 		if (!this.state.oldState || this.state.oldState.playerStatus != data.playerStatus) {
@@ -147,7 +149,9 @@ class ProgressBar extends Component<IProps, IState> {
 					onMouseDown={this.mouseDown} onMouseUp={() => this.setState({ mouseDown: false })}
 					onMouseMove={this.mouseMove} onMouseOut={this.mouseOut}
 				>
+					<div className="actualTime">{this.state.timePosition > 0 && this.state.length > 0 && secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
 					<div className="karaTitle">{this.state.karaInfoText}</div>
+					<div className="remainTime">{this.state.length > 0 && secondsTimeSpanToHMS(Math.round(this.state.length-this.state.timePosition), 'mm:ss')}</div>
 				</div>
 				<div id="progressBarColor" style={{ width: this.state.width }}></div>
 			</div>
