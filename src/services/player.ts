@@ -29,7 +29,6 @@ export async function playSingleSong(kid?: string) {
 		setState({singlePlay: true, currentSong: kara});
 		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
-		if (kara.title) kara.title = ` - ${kara.title}`;
 		// If series is empty, pick singer information instead
 		const series = getSeriesSingers(kara);
 
@@ -37,7 +36,7 @@ export async function playSingleSong(kid?: string) {
 		let songorder = `${kara.songorder}`;
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
 		// Construct mpv message to display.
-		const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+kara.title+'{\\i0}';
+		const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}';
 		await mpv.play({
 			media: kara.mediafile,
 			subfile: kara.subfile,
