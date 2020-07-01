@@ -220,7 +220,7 @@ class AdminHeader extends Component<IProps, IState> {
 						id="goTo"
 						data-namecommand="goTo"
 						defaultValue="0"
-						className="btn btn-dark buttonsNotMobile"
+						className="btn btn-danger-low buttonsNotMobile"
 						onClick={this.props.putPlayerCommando}
 					>
 						<i className="fas fa-undo-alt"></i>
