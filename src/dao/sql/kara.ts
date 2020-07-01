@@ -97,7 +97,7 @@ export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, gro
 	ELSE TRUE
   END) as flag_inplaylist,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
-  (CASE WHEN COUNT(pc_self.*) > 0 THEN TRUE ELSE FALSE END) as flag_added_by_me,
+  array_agg(DISTINCT pc_self.pk_id_plcontent) AS my_public_plc_id,
   count(ak.kid) OVER()::integer AS count
 FROM all_karas AS ak
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
