@@ -257,7 +257,7 @@ export async function playerEnding() {
 		}
 		// Jingles and sponsors are played inbetween songs so we need to load the next song
 		logger.info(`Songs before next jingle: ${conf.Playlist.Medias.Jingles.Interval - state.counterToJingle} / before next sponsor: ${conf.Playlist.Medias.Sponsors.Interval - state.counterToSponsor}`, {service: 'Player'});
-		if (state.counterToJingle >= conf.Playlist.Medias.Jingles.Interval && conf.Playlist.Medias.Jingles.Enabled) {
+		if (!state.singlePlay && state.counterToJingle >= conf.Playlist.Medias.Jingles.Interval && conf.Playlist.Medias.Jingles.Enabled) {
 			try {
 				setState({counterToJingle: 0});
 				await mpv.playMedia('Jingles');
@@ -286,10 +286,13 @@ export async function playerEnding() {
 			}
 			return;
 		} else {
-			state.counterToJingle++;
-			state.counterToSponsor++;
-			setState({counterToSponsor: state.counterToSponsor});
-			setState({counterToJingle: state.counterToJingle});
+			if (!state.singlePlay) {
+				state.counterToJingle++;
+				state.counterToSponsor++;
+				setState({counterToSponsor: state.counterToSponsor, counterToJingle: state.counterToJingle});
+			} else {
+				setState({singlePlay: false});
+			}
 			if (state.player.playerStatus !== 'stop') {
 				try {
 					await next();
