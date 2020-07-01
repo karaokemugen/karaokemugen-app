@@ -321,10 +321,13 @@
 		}
 	},
 	"JINGLE_TIME": "Instant jingle !",
+	"JINGLE": "Jingle",
 	"INTRO_TIME": "Intro de liste de lecture",
 	"OUTRO_TIME": "Fin de liste de lecture",
 	"ENCORES_TIME": "Encore! Encore!",
 	"SPONSOR_TIME": "LA PUB !",
+	"SPONSOR": "Sponsors",
+	"JINGLE_SPONSOR": "Jingle & Sponsors",
 	"QUOTA_TYPE": "Limiter l'ajout de chanson par les utilisateurs",
 	"QUOTA_TYPE_TOOLTIP": "Le quota permet d'éviter que les utilisateurs n'ajoutent trop de chansons à la fois",
 	"TIME_BY_USER": "Temps par utilisateur (secondes)",

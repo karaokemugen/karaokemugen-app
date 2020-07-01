@@ -7,6 +7,7 @@ import {emit} from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
 // Types
 import {PublicPlayerState,State, PublicState} from '../types/state';
+import {getConfig} from "../lib/utils/config";
 
 // Internal settings
 let state: State = {
@@ -45,6 +46,7 @@ let state: State = {
 
 /** Get public state (to send to webapp users) */
 export function getPlayerState(): PublicPlayerState {
+	const conf = getConfig();
 	return {
 		currentSong: state.currentSong,
 		currentlyPlaying: state.currentlyPlayingKara,
@@ -61,7 +63,9 @@ export function getPlayerState(): PublicPlayerState {
 		timePosition: state.player.timeposition,
 		volume: state.player.volume,
 		currentRequester: state.currentRequester,
-		defaultLocale: state.defaultLocale
+		defaultLocale: state.defaultLocale,
+		songsBeforeJingle: conf.Playlist?.Medias.Jingles.Enabled ? conf.Playlist?.Medias.Jingles.Interval - state.counterToJingle:undefined,
+		songsBeforeSponsor: conf.Playlist?.Medias.Sponsors.Enabled ? conf.Playlist?.Medias.Sponsors.Interval - state.counterToSponsor:undefined
 	};
 }
 

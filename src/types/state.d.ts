@@ -114,5 +114,7 @@ export interface PublicPlayerState {
 	subText: string,
 	showSubs: boolean,
 	volume: number,
-	defaultLocale: string
+	defaultLocale: string,
+	songsBeforeJingle: number,
+	songsBeforeSponsor: number
 }

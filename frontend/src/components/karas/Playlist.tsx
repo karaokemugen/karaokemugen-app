@@ -6,12 +6,14 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange,InfiniteLoader, List, ListRowProps } from 'react-virtualized';
+import debounce from 'lodash.debounce';
 
 import { Token } from '../../../../src/lib/types/user';
 import { BLCSet } from '../../../../src/types/blacklist';
 import { Config } from '../../../../src/types/config';
 import { DBBlacklist,DBBLC } from '../../../../src/types/database/blacklist';
 import { DBPL } from '../../../../src/types/database/playlist';
+import { PublicPlayerState } from "../../../../src/types/state";
 import store from '../../store';
 import { KaraElement } from '../../types/kara';
 import { Tag } from '../../types/tag';
@@ -59,6 +61,11 @@ interface IState {
 	playlistInfo?: DBPL;
 	bLSetList: BLCSet[];
 	checkedkaras: number;
+	playing?: number;
+	songsBeforeJingle?: number;
+	songsBeforeSponsor?: number;
+	goToPlaying?: boolean;
+	_goToPlaying?: boolean; // Avoid scroll event trigger
 }
 
 interface KaraList {
@@ -165,6 +172,7 @@ class Playlist extends Component<IProps, IState> {
 				this.playlistForceRefresh(true);
 			}
 		});
+		getSocket().on('playerStatus', this.updateCounters);
 
 		window.addEventListener('resize', this.refreshUiOnResize, true);
 	}
@@ -212,6 +220,10 @@ class Playlist extends Component<IProps, IState> {
 					showVideo={this.props.showVideo}
 					avatar_file={(this.state.data as KaraList).avatars[kara.username]}
 					deleteCriteria={this.deleteCriteria}
+					jingle={typeof this.state.songsBeforeJingle === 'number' && (value.index === this.state.playing +
+						this.state.songsBeforeJingle)}
+					sponsor={typeof this.state.songsBeforeSponsor === 'number' && (value.index === this.state.playing +
+						this.state.songsBeforeSponsor)}
 				/>
 			</li>;
 		} else {
@@ -421,7 +433,7 @@ class Playlist extends Component<IProps, IState> {
 			data.searchType = searchType;
 			data.data = this.state.data;
 			data.data.infos.from = 0;
-			data.scrollToIndex = 0;
+			// data.scrollToIndex = 0;
 			this.setState({ searchType: searchType });
 		} else if (stateData && stateData.infos && stateData.infos.from == 0) {
 			data.searchType = undefined;
@@ -447,14 +459,18 @@ class Playlist extends Component<IProps, IState> {
 		}
 		const response = await axios.get(url);
 		const karas: KaraList = response.data;
+		let indexPlaying = undefined;
 		if (this.state.idPlaylist > 0) {
+			let i = 0;
 			for (const kara of karas.content) {
 				if (kara.flag_playing) {
+					indexPlaying = i;
 					store.setPosPlaying(kara.pos);
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
 						this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
 					}
 				}
+				i++;
 			}
 		}
 		if (karas.infos && karas.infos.from > 0) {
@@ -477,21 +493,24 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			data = karas;
 		}
-		this.setState({ data: data, getPlaylistInProgress: false });
+		this.setState({ data: data, getPlaylistInProgress: false, playing: indexPlaying });
 		this.playlistForceRefresh(true);
 	};
 
 	playingUpdate = (data: { playlist_id: number, plc_id: number }) => {
 		if (this.state.idPlaylist === data.playlist_id && !this.state.stopUpdate) {
 			const playlistData = this.state.data as KaraList;
+			let indexPlaying;
 			playlistData?.content.forEach((kara, index) => {
 				if (kara.flag_playing) {
 					kara.flag_playing = false;
 					kara.flag_dejavu = true;
 				} else if (kara.playlistcontent_id === data.plc_id) {
 					kara.flag_playing = true;
+					indexPlaying = index;
 					store.setPosPlaying(kara.pos);
-					this.setState({ scrollToIndex: index });
+					if (this.state.goToPlaying) this.setState({ scrollToIndex: index, _goToPlaying: true });
+					this.setState({playing: indexPlaying});
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
 						this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
 					}
@@ -524,13 +543,15 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	scrollToPlaying = () => {
-		let indexPlaying;
-		(this.state.data as KaraList).content.forEach((element, index) => {
-			if (element.flag_playing) indexPlaying = index;
-		});
-		if (indexPlaying)
-			this.setState({ scrollToIndex: indexPlaying });
+		if (this.state.playing)
+			this.setState({ scrollToIndex: this.state.playing, goToPlaying: true, _goToPlaying: true });
 	};
+
+	updateCounters = (event: PublicPlayerState) => {
+		if (this.state.playlistInfo && this.state.playlistInfo.flag_current)
+			this.setState({songsBeforeJingle: event.songsBeforeJingle, songsBeforeSponsor: event.songsBeforeSponsor});
+		else this.setState({songsBeforeJingle: undefined, songsBeforeSponsor: undefined});
+	}
 
 	selectAllKaras = () => {
 		const data = this.state.data;
@@ -714,8 +735,19 @@ class Playlist extends Component<IProps, IState> {
 		}
 	}
 
-	clearScrollToIndex = () => {
-		this.setState({ scrollToIndex: -1 });
+	debounceClear = (e: any) => {
+		this.setState(() => {
+			return { _goToPlaying: false };
+		});
+	}
+	debouncedClear = debounce(this.debounceClear, 500, {maxWait: 1000});
+
+	clearScrollToIndex = (e: any) => {
+		if (this.state._goToPlaying) {
+			this.debouncedClear(e);
+		} else {
+			this.setState({ scrollToIndex: -1, goToPlaying: false, _goToPlaying: false });
+		}
 	}
 
 	stopUpdate = () => {
@@ -834,7 +866,7 @@ class Playlist extends Component<IProps, IState> {
 								type="button"
 								title={i18next.t('GOTO_TOP')}
 								className="btn btn-sm btn-action"
-								onClick={() => this.setState({ scrollToIndex: 0 })}
+								onClick={() => this.setState({ scrollToIndex: 0, goToPlaying: false, _goToPlaying: false })}
 							>
 								<i className="fas fa-chevron-up"></i>
 							</button>
@@ -842,7 +874,7 @@ class Playlist extends Component<IProps, IState> {
 								<button
 									type="button"
 									title={i18next.t('GOTO_PLAYING')}
-									className="btn btn-sm btn-action"
+									className={`btn btn-sm btn-action ${this.state.goToPlaying ? 'btn-active':''}`}
 									onClick={this.scrollToPlaying}
 									value="playing"
 								>
@@ -853,7 +885,7 @@ class Playlist extends Component<IProps, IState> {
 								type="button"
 								title={i18next.t('GOTO_BOTTOM')}
 								className="btn btn-sm btn-action"
-								onClick={() => this.setState({ scrollToIndex: (this.state.data as KaraList).infos.count - 1 })}
+								onClick={() => this.setState({ scrollToIndex: (this.state.data as KaraList).infos.count - 1, goToPlaying: false, _goToPlaying: false })}
 							>
 								<i className="fas fa-chevron-down"></i>
 							</button>
