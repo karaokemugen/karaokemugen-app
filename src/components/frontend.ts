@@ -28,6 +28,7 @@ import {configurePassport} from '../lib/utils/passport_manager';
 import { initWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
+import { sentryCSP } from '../utils/constants';
 
 /** Declare all routers for API types */
 function apiRouter() {
@@ -67,6 +68,7 @@ export function initFrontend(): number {
 				imgSrc: ['\'self\'', 'data:'],
 				connectSrc: ['\'self\'', 'https:'],
 				sandbox: ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-modals'],
+				reportUri: process.env.SENTRY_CSP || sentryCSP,
 				upgradeInsecureRequests: false,
 				workerSrc: false  // This is not set.
 			},
