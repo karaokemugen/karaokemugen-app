@@ -3,6 +3,7 @@ import {json,urlencoded} from 'body-parser';
 import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
+import csp from 'helmet-csp';
 import {createServer} from 'http';
 import passport from 'passport';
 import {resolve} from 'path';
@@ -57,6 +58,18 @@ export function initFrontend(): number {
 		const conf = getConfig();
 		const state = getState();
 		const app = express();
+		const cspMiddleware = csp({
+			// Specify directives as normal.
+			directives: {
+				defaultSrc: ['\'self\''],
+				scriptSrc: ['\'self\'', '\'unsafe-inline\''],
+				styleSrc: ['\'self\'', '\'unsafe-inline\''],
+				imgSrc: ['\'self\'', 'data:'],
+				sandbox: ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-modals'],
+				upgradeInsecureRequests: false,
+				workerSrc: false  // This is not set.
+			},
+		});
 		app.use(cors());
 		app.use(passport.initialize());
 		configurePassport();
@@ -79,8 +92,8 @@ export function initFrontend(): number {
 		//path for system control panel
 		// System is not served in demo mode.
 		if (!state.isDemo) {
-			app.use('/system', express.static(resolve(state.resourcePath, 'systempanel/build')));
-			app.get('/system/*', (_req, res) => {
+			app.use('/system', cspMiddleware, express.static(resolve(state.resourcePath, 'systempanel/build')));
+			app.get('/system/*', cspMiddleware, (_req, res) => {
 				res.sendFile(resolve(state.resourcePath, 'systempanel/build/index.html'));
 			});
 		}
@@ -95,7 +108,7 @@ export function initFrontend(): number {
 
 		//Frontend
 		app.use(express.static(resolve(state.resourcePath, 'frontend/build')));
-		app.get('/*', (_req, res) => {
+		app.get('/*', cspMiddleware, (_req, res) => {
 			res.sendFile(resolve(state.resourcePath, 'frontend/build/index.html'));
 		});
 
