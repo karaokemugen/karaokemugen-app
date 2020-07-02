@@ -54,28 +54,18 @@
 			}
 		}
 
-		@media (max-width: 1023px) {  
+		@media (max-width: 1120px) {  
 			.header-group.switchs {
 				display: none;
-			}
-			.btn {
-				min-width: 55px;
 			}
 		}
 
 		.header-group.controls {
 			flex:auto;
 			text-align: center;
-			@media (max-width:1100px) {
+			@media (max-width:830px) {
 				.btn {
-					font-size: 1em;
-					min-width: 50px;
-				}
-			}
-			@media (max-width:920px) {
-				flex-wrap: wrap;
-				> * {
-					width: 33.33%;
+					min-width: 60px;
 				}
 			}
 		}

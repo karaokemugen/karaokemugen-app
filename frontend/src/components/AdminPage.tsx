@@ -264,27 +264,6 @@ class AdminPage extends Component<IProps, IState> {
 						<ul>
 							<li>
 								<a
-									className="z-depth-3 btn-floating btn-large btn-danger"
-									style={{ backgroundColor: '#111' }}
-									data-namecommand="stopNow"
-									onClick={this.putPlayerCommando}
-								>
-									<i className="fas fa-stop"></i>
-								</a>
-							</li>
-							<li>
-								<a
-									className="z-depth-3 btn-floating btn-large"
-									style={{ backgroundColor: '#111' }}
-									data-namecommand="goTo"
-									defaultValue="0"
-									onClick={this.putPlayerCommando}
-								>
-									<i className="fas fa-backward"></i>
-								</a>
-							</li>
-							<li>
-								<a
 									className="z-depth-3 btn-floating btn-large"
 									style={{ backgroundColor: '#111' }}
 									data-namecommand={this.state.statusPlayer && this.state.statusPlayer.showSubs ? 'hideSubs' : 'showSubs'}

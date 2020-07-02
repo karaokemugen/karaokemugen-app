@@ -165,7 +165,7 @@ class AdminHeader extends Component<IProps, IState> {
 								title={i18next.t('STOP_NOW')}
 								id="stopNow"
 								data-namecommand="stopNow"
-								className="btn btn-danger buttonsNotMobile"
+								className="btn btn-danger"
 								onClick={this.props.putPlayerCommando}
 							>
 								<i className="fas fa-stop"></i>
@@ -220,7 +220,7 @@ class AdminHeader extends Component<IProps, IState> {
 						id="goTo"
 						data-namecommand="goTo"
 						defaultValue="0"
-						className="btn btn-danger-low buttonsNotMobile"
+						className="btn btn-danger-low"
 						onClick={this.props.putPlayerCommando}
 					>
 						<i className="fas fa-undo-alt"></i>
