@@ -196,7 +196,7 @@ class KaraLine extends Component<IProps, IState> {
 		return data.songtypes.map(e => e.short ? + e.short : e.name).sort().join(' ') + (data.songorder > 0 ? ' ' + data.songorder : '');
 	}
 
-	openKaraMenu(event:MouseEvent) {
+	openKaraMenu(event: MouseEvent) {
 		if (event?.currentTarget) {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
 			ReactDOM.render(<KaraMenuModal
@@ -209,14 +209,14 @@ class KaraLine extends Component<IProps, IState> {
 				transferKara={this.transferKara}
 				closeKaraMenu={this.closeKaraMenu}
 			/>, document.getElementById('modal'));
-			this.setState({karaMenu: true});
+			this.setState({ karaMenu: true });
 		}
 	}
 
 	closeKaraMenu = () => {
 		const element = document.getElementById('modal');
 		if (element) ReactDOM.unmountComponentAtNode(element);
-		this.setState({karaMenu: false});
+		this.setState({ karaMenu: false });
 	}
 
 	karaLangs = this.getLangs(this.props.kara);
@@ -256,10 +256,11 @@ class KaraLine extends Component<IProps, IState> {
 										: null}
 								</div>
 								{scope === 'admin' ?
-									<button title={i18next.t('KARA_MENU.KARA_COMMANDS')} onClick={(event) => {
-										this.state.karaMenu ? this.closeKaraMenu() :  this.openKaraMenu(event);
-									}}
-									className={'btn-sm btn-action showPlaylistCommands' + (this.state.karaMenu ? ' btn-primary' : '')}>
+									<button title={i18next.t('KARA_MENU.KARA_COMMANDS')}
+										onClick={(event) => {
+											this.state.karaMenu ? this.closeKaraMenu() : this.openKaraMenu(event);
+										}}
+										className={'btn-sm btn-action showPlaylistCommands karaLineButton' + (this.state.karaMenu ? ' btn-primary' : '')}>
 										<i className="fas fa-wrench"></i>
 									</button> : null
 								}
@@ -271,7 +272,7 @@ class KaraLine extends Component<IProps, IState> {
 										: <i className="far fa-square"></i>}
 								</span> : null}
 							<div className="infoDiv">
-								
+
 								{scope === 'admin' && this.props.playlistInfo && idPlaylist > 0 && !kara.flag_visible
 									&& (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ?
 									<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>

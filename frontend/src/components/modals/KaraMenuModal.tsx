@@ -32,9 +32,9 @@ class KaraMenuModal extends Component<IProps, IState> {
 	getKaraDetail = async () => {
 		const urlInfoKara = this.props.idPlaylist && this.props.idPlaylist > 0 ?
 			'/playlists/' + this.props.idPlaylist + '/karas/' + this.state.kara.playlistcontent_id :
-			'/karas/' +  this.state.kara.kid;
+			'/karas/' + this.state.kara.kid;
 		const response = await Axios.get(urlInfoKara);
-		this.setState({kara: response.data});
+		this.setState({ kara: response.data });
 	};
 
 	playKara = () => {
@@ -85,7 +85,12 @@ class KaraMenuModal extends Component<IProps, IState> {
 
 	render() {
 		return (
-			<ul className="dropdown-menu" style={{ position: 'absolute', zIndex: 9998, top: this.props.topKaraMenu, left: this.props.leftKaraMenu }}>
+			<ul className="dropdown-menu" style={{
+				position: 'absolute',
+				zIndex: 9998,
+				top: this.props.topKaraMenu,
+				left: window.outerWidth < (this.props.leftKaraMenu + 250) ? window.outerWidth - 250 : this.props.leftKaraMenu
+			}}>
 				<li>
 					<a href="#" onClick={this.playKara}>
 						<i className={`fas ${this.props.idPlaylist < 0 ? 'fa-play' : 'fa-play-circle'}`}></i>

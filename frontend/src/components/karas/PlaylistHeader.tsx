@@ -385,7 +385,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 									this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
 									this.props.selectAllKaras();
 								}}
-								className="btn btn-default"
+								className="btn btn-default karaLineButton"
 							>
 								{
 									this.state.selectAllKarasChecked
@@ -461,7 +461,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 										className="dropdown"
 									>
 										<button title={i18next.t('ADVANCED.PLAYLIST_COMMANDS')} onClick={this.togglePlaylistCommands}
-											className={'btn btn-default showPlaylistCommands' + (this.state.playlistCommands ? ' btn-primary' : '')}>
+											className={'btn btn-default showPlaylistCommands karaLineButton' + (this.state.playlistCommands ? ' btn-primary' : '')}>
 											<i className="fas fa-wrench"></i>
 										</button>
 										{this.state.playlistCommands ?
@@ -649,7 +649,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 						}
 						{this.props.scope === 'admin' && this.props.idPlaylist === -1 ?
 							<div className="searchMenuButtonContainer btn-group">
-								<button type="button" className={'searchMenuButton collapsed btn btn-default' + (this.props.searchMenuOpen ? ' searchMenuButtonOpen' : '')}
+								<button type="button" className={'searchMenuButton collapsed btn btn-default karaLineButton' + (this.props.searchMenuOpen ? ' searchMenuButtonOpen' : '')}
 									onClick={this.props.toggleSearchMenu}>
 									<i className="fas fa-filter"></i>
 								</button>
