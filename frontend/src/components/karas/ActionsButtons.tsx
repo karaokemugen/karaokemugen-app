@@ -55,7 +55,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 								<i className="fas fa-plus" />)
 						}
 					</button> : null}
-				{this.props.scope === 'admin' && this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
+				{this.props.scope === 'admin' && this.props.isHeader && this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
 					<button title={i18next.t('TOOLTIP_TRANSFERKARA')} className={classValue}
 						onContextMenu={this.onRightClickTransfer} onClick={this.props.transferKara}><i className="fas fa-exchange-alt"></i></button> : null
 				}

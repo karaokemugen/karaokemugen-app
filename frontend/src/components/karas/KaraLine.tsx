@@ -11,6 +11,7 @@ import { DBBlacklist } from '../../../../src/types/database/blacklist';
 import { DBPL } from '../../../../src/types/database/playlist';
 import store from '../../store';
 import { KaraElement } from '../../types/kara';
+import KaraMenuModal from '../modals/KaraMenuModal';
 import { buildKaraTitle, displayMessage, getSerieLanguage, getTagInLanguage, is_touch_device, secondsTimeSpanToHMS } from '../tools';
 import ActionsButtons from './ActionsButtons';
 import KaraDetail from './KaraDetail';
@@ -37,14 +38,24 @@ interface IProps {
 	sponsor: boolean;
 }
 
+interface IState {
+	karaMenu: boolean
+}
+
 const pathAvatar = '/avatars/';
-class KaraLine extends Component<IProps, unknown> {
+class KaraLine extends Component<IProps, IState> {
+
+	constructor(props: IProps) {
+		super(props);
+		this.state = {
+			karaMenu: false
+		};
+	}
 
 	toggleKaraDetail = () => {
 		ReactDOM.render(<KaraDetail kid={this.props.kara.kid} playlistcontentId={this.props.kara.playlistcontent_id} scope={this.props.scope}
 			idPlaylist={this.props.idPlaylist} mode='list'
-			publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
-			showVideo={this.props.showVideo} freeKara={this.freeKara}>
+			showVideo={this.props.showVideo}>
 		</KaraDetail>, document.getElementById('modal'));
 	};
 
@@ -68,14 +79,6 @@ class KaraLine extends Component<IProps, unknown> {
 			await axios.delete('/whitelist', { data: { kid: [this.props.kara.kid] } });
 		} else {
 			await axios.delete(`/playlists/${this.props.idPlaylist}/karas/`, { data: { plc_id: [this.props.kara.playlistcontent_id] } });
-		}
-	};
-
-	playKara = () => {
-		if (this.props.idPlaylist < 0) {
-			axios.post(`/karas/${this.props.kara.kid}/play`);
-		} else {
-			axios.put(`/playlists/${this.props.idPlaylist}/karas/${this.props.kara.playlistcontent_id}`, { flag_playing: true });
 		}
 	};
 
@@ -137,12 +140,6 @@ class KaraLine extends Component<IProps, unknown> {
 		this.deleteKara();
 	};
 
-	freeKara = () => {
-		if (this.props.scope === 'admin') {
-			axios.put('/playlists/' + this.props.idPlaylist + '/karas/' + this.props.kara.playlistcontent_id, { flag_free: true });
-		}
-	};
-
 	checkKara = () => {
 		if (this.props.idPlaylist >= 0) {
 			this.props.checkKara(this.props.kara.playlistcontent_id);
@@ -199,6 +196,29 @@ class KaraLine extends Component<IProps, unknown> {
 		return data.songtypes.map(e => e.short ? + e.short : e.name).sort().join(' ') + (data.songorder > 0 ? ' ' + data.songorder : '');
 	}
 
+	openKaraMenu(event:MouseEvent) {
+		if (event?.currentTarget) {
+			const element = (event.currentTarget as Element).getBoundingClientRect();
+			ReactDOM.render(<KaraMenuModal
+				kara={this.props.kara}
+				idPlaylist={this.props.idPlaylist}
+				idPlaylistTo={this.props.idPlaylistTo}
+				publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
+				topKaraMenu={element.bottom}
+				leftKaraMenu={element.left}
+				transferKara={this.transferKara}
+				closeKaraMenu={this.closeKaraMenu}
+			/>, document.getElementById('modal'));
+			this.setState({karaMenu: true});
+		}
+	}
+
+	closeKaraMenu = () => {
+		const element = document.getElementById('modal');
+		if (element) ReactDOM.unmountComponentAtNode(element);
+		this.setState({karaMenu: false});
+	}
+
 	karaLangs = this.getLangs(this.props.kara);
 	karaSerieOrSingers = this.getSerieOrSingers(this.props.kara);
 	karaSongTypes = this.getSongtypes(this.props.kara);
@@ -235,6 +255,14 @@ class KaraLine extends Component<IProps, unknown> {
 											addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} />
 										: null}
 								</div>
+								{scope === 'admin' ?
+									<button title={i18next.t('KARA_MENU.KARA_COMMANDS')} onClick={(event) => {
+										this.state.karaMenu ? this.closeKaraMenu() :  this.openKaraMenu(event);
+									}}
+									className={'btn-sm btn-action showPlaylistCommands' + (this.state.karaMenu ? ' btn-primary' : '')}>
+										<i className="fas fa-wrench"></i>
+									</button> : null
+								}
 								{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
 							</div>
 							{scope === 'admin' && idPlaylist !== -2 && idPlaylist != -4 ?
@@ -243,11 +271,7 @@ class KaraLine extends Component<IProps, unknown> {
 										: <i className="far fa-square"></i>}
 								</span> : null}
 							<div className="infoDiv">
-								{scope === 'admin' ?
-									<button title={i18next.t(idPlaylist < 0 ? 'TOOLTIP_PLAYKARA_LIBRARY' : 'TOOLTIP_PLAYKARA')}
-										className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
-										<i className={`fas ${idPlaylist < 0 ? 'fa-play' : 'fa-play-circle'}`}></i>
-									</button> : null}
+								
 								{scope === 'admin' && this.props.playlistInfo && idPlaylist > 0 && !kara.flag_visible
 									&& (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ?
 									<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>

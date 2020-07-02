@@ -15,8 +15,6 @@ interface IProps {
 	scope: string;
 	idPlaylist?: number;
 	playlistcontentId?: number;
-	publicOuCurrent?: boolean | undefined;
-	freeKara?: () => void;
 	showVideo?: (file: string) => void;
 }
 
@@ -24,7 +22,6 @@ interface IState {
 	kara?: DBPLCInfo;
 	showLyrics: boolean;
 	isFavorite: boolean;
-	isVisible: boolean;
 	lyrics?: Array<string>;
 }
 
@@ -35,8 +32,7 @@ class KaraDetail extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			showLyrics: false,
-			isFavorite: false,
-			isVisible: false
+			isFavorite: false
 		};
 		this.fullLyricsRef = React.createRef();
 		if (this.props.kid || this.props.idPlaylist) {
@@ -89,8 +85,7 @@ class KaraDetail extends Component<IProps, IState> {
 		const kara = response.data;
 		this.setState({
 			kara: kara,
-			isFavorite: kara.flag_favorites || this.props.idPlaylist === -5,
-			isVisible: kara.flag_visible
+			isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
 		});
 	};
 
@@ -149,14 +144,6 @@ class KaraDetail extends Component<IProps, IState> {
 		if (data.origins) tagNames = tagNames.concat(data.origins.map(e => this.getTagInLocale(e)));
 		if (data.misc) tagNames = tagNames.concat(data.misc.map(e => this.getTagInLocale(e)));
 		return tagNames.join(', ');
-	};
-
-	changeVisibilityKara = () => {
-		if (this.props.scope === 'admin') {
-			axios.put('/playlists/' + this.props.idPlaylist + '/karas/' + (this.state.kara as DBPLCInfo).playlistcontent_id,
-				{ flag_visible: !this.state.isVisible });
-			this.setState({ isVisible: !this.state.isVisible });
-		}
 	};
 
 	onClick = () => {
@@ -236,7 +223,7 @@ class KaraDetail extends Component<IProps, IState> {
 			const makeFavButton = (
 				<button
 					type="button"
-					title={i18next.t('TOOLTIP_FAV')}
+					title={this.state.isFavorite ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
 					onClick={this.makeFavorite}
 					className={(this.state.isFavorite ? 'currentFav' : '') + ' makeFav btn btn-action'}
 				>
@@ -316,34 +303,6 @@ class KaraDetail extends Component<IProps, IState> {
 											<i className="fas fa-video" />
 											<span>{!is_touch_device() && i18next.t('TOOLTIP_SHOWVIDEO_SHORT')}</span>
 										</button>
-										{this.props.scope === 'admin' && this.props.publicOuCurrent ? (
-											<button
-												type="button"
-												title={i18next.t('TOOLTIP_FREE')} onClick={this.props.freeKara}
-												className={'btn btn-action ' + (data.flag_free ? 'btn-primary' : '')}
-											>
-												<i className="fas fa-gift" />
-												<span>{!is_touch_device() && i18next.t('TOOLTIP_FREE_SHORT')}</span>
-											</button>
-										) : null}
-										{this.props.scope === 'admin' && this.props.publicOuCurrent ? (
-											<button
-												type="button"
-												title={this.state.isVisible ? i18next.t('TOOLTIP_VISIBLE_OFF') : i18next.t('TOOLTIP_VISIBLE_ON')}
-												onClick={this.changeVisibilityKara}
-												className={'btn btn-action ' + (this.state.isVisible ? '' : 'btn-primary')}
-											>
-												{this.state.isVisible ?
-													<React.Fragment>
-														<i className="fas fa-eye-slash" />
-														<span>{!is_touch_device() && i18next.t('TOOLTIP_VISIBLE_OFF_SHORT')}</span>
-													</React.Fragment> :
-													<React.Fragment>
-														<i className="fas fa-eye" />
-														<span>{!is_touch_device() && i18next.t('TOOLTIP_VISIBLE_ON_SHORT')}</span>
-													</React.Fragment>
-												}</button>
-										) : null}
 									</div>
 									<table>
 										<tbody>{htmlDetails}</tbody>

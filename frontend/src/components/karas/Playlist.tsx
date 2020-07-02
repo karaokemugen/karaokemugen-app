@@ -188,7 +188,7 @@ class Playlist extends Component<IProps, IState> {
 		await this.getIdPlaylist();
 		if (this.state.idPlaylist === -1 || this.props.playlistList
 			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
-			if (this.state.idPlaylist === -2 || this.state.idPlaylist === -4) await this.loadBLSet();
+			await this.loadBLSet();
 			if (this.props.scope === 'admin' || this.props.config.Frontend.Mode === 2 || this.state.idPlaylist === store.getState().currentPlaylistID) {
 				await this.getPlaylist();
 			}

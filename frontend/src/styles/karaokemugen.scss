@@ -161,8 +161,8 @@ select.form-control {
 	z-index: 52;
 	position: relative;
 }
-.makeFav.currentFav {
-    color: firebrick;
+.currentFav {
+    color: #F3C71E !important;
 }
 
 .upvotes {
@@ -214,10 +214,6 @@ select.form-control {
 .btn-action:hover {
 	background-color: #292929;
 	color: white;
-}
-
-.playKara:hover {
-	background-color: #286090;
 }
 
 .karaCard > div {
