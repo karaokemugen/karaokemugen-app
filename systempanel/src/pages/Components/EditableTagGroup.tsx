@@ -4,7 +4,8 @@ import Axios from 'axios';
 import i18next from 'i18next';
 import React from 'react';
 
-import { getTagInLocale } from '../../utils/kara';
+import GlobalContext from '../../store/context';
+import { getSerieLanguage,getTagInLocale } from '../../utils/kara';
 interface EditableTagGroupProps {
 	search: 'tag' | 'aliases',
 	onChange: any,
@@ -22,6 +23,8 @@ interface EditableTagGroupState {
 
 const timer: any[] = [];
 export default class EditableTagGroup extends React.Component<EditableTagGroupProps, EditableTagGroupState> {
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
 
 	input: any;
 
@@ -106,7 +109,11 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		timer[this.props.tagType] = setTimeout(() => {
 			this.getTags(val, this.props.tagType).then(tags => {
 				let result = (tags.data.content && tags.data.content.map(tag => {
-					return { value: tag.tid, text: getTagInLocale(tag), name: tag.name };
+					return {
+						value: tag.tid,
+						text: (this.props.tagType === 1 ? getSerieLanguage(this.context.globalState.settings.data, tag, 'eng') : getTagInLocale(tag)),
+						name: tag.name
+					};
 				})) || [];
 				result = this.sortByProp(result, 'text');
 				this.setState({ DS: result });
