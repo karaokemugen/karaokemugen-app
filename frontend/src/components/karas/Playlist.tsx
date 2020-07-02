@@ -470,7 +470,7 @@ class Playlist extends Component<IProps, IState> {
 		if (this.state.idPlaylist > 0) {
 			let i = 0;
 			for (const kara of karas.content) {
-				if (kara.flag_playing) {
+				if (kara?.flag_playing) {
 					indexPlaying = i;
 					store.setPosPlaying(kara.pos);
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
@@ -509,10 +509,10 @@ class Playlist extends Component<IProps, IState> {
 			const playlistData = this.state.data as KaraList;
 			let indexPlaying;
 			playlistData?.content.forEach((kara, index) => {
-				if (kara.flag_playing) {
+				if (kara?.flag_playing) {
 					kara.flag_playing = false;
 					kara.flag_dejavu = true;
-				} else if (kara.playlistcontent_id === data.plc_id) {
+				} else if (kara?.playlistcontent_id === data.plc_id) {
 					kara.flag_playing = true;
 					indexPlaying = index;
 					store.setPosPlaying(kara.pos);
