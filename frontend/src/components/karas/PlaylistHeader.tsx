@@ -119,7 +119,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	deletePlaylist = () => {
 		this.togglePlaylistCommands();
-		if (this.props.bLSet?.flag_current) {
+		if (this.props.idPlaylist === -4 && this.props.bLSet?.flag_current) {
 			displayMessage('warning', i18next.t('BLC.DELETE_CURRENT'));
 		} else if (this.props.playlistInfo?.flag_current && this.props.playlistInfo?.flag_public) {
 			displayMessage('warning', i18next.t('ADVANCED.DELETE_CURRENT_PUBLIC'));
