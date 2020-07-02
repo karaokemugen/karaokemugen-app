@@ -65,6 +65,7 @@ export function initFrontend(): number {
 				scriptSrc: ['\'self\'', '\'unsafe-inline\''],
 				styleSrc: ['\'self\'', '\'unsafe-inline\''],
 				imgSrc: ['\'self\'', 'data:'],
+				connectSrc: ['\'self\'', 'https:'],
 				sandbox: ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-modals'],
 				upgradeInsecureRequests: false,
 				workerSrc: false  // This is not set.
