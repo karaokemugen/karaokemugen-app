@@ -18,10 +18,10 @@ export function isElectron() {
 }
 
 export function parseJwt(token:string) {
-	let base64Url = token.split('.')[1];
-	let base64 = base64Url.replace('-', '+').replace('_', '/');
+	const base64Url = token.split('.')[1];
+	const base64 = base64Url.replace('-', '+').replace('_', '/');
 	return JSON.parse(window.atob(base64));
-};
+}
 
 if (isElectron()) {
 	addListener();
@@ -43,8 +43,8 @@ export function drop(event) {
 	const token = localStorage.getItem('kmToken');
 	const username = token
 		? parseJwt(token).username
-		: 'admin'
-	const { ipcRenderer } = window.require("electron");
+		: 'admin';
+	const { ipcRenderer } = window.require('electron');
 	ipcRenderer.send('droppedFiles', {
 		username: username,
 		files: Array.from(event.dataTransfer.files).map(file  => (file as any).path)
