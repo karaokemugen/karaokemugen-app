@@ -106,8 +106,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 					</li> : null
 				}
 				<li>
-					<a href="#" onClick={this.makeFavorite}
-						className={this.state.kara.flag_favorites ? 'currentFav' : ''}>
+					<a href="#" onClick={this.makeFavorite}>
 						<i className="fas fa-star" />
 						&nbsp;
 						{this.state.kara.flag_favorites ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
