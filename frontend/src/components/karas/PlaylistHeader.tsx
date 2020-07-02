@@ -264,6 +264,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 			axios.put(`/blacklist/set/${this.props.bLSet?.blc_set_id}/setCurrent`);
 		} else if (!(this.props.playlistInfo as DBPL).flag_current) {
 			axios.put(`/playlists/${this.props.idPlaylist}/setCurrent`);
+			const state = store.getState();
+			state.currentPlaylistID = this.props.idPlaylist;
+			store.setState(state);
 		}
 	};
 
@@ -271,6 +274,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 		this.togglePlaylistCommands();
 		if (!(this.props.playlistInfo as DBPL).flag_public) {
 			axios.put('/playlists/' + this.props.idPlaylist + '/setPublic');
+			const state = store.getState();
+			state.publicPlaylistID = this.props.idPlaylist;
+			store.setState(state);
 		}
 	};
 
