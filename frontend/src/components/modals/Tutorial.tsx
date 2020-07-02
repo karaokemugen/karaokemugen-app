@@ -78,7 +78,7 @@ class Tutorial extends Component<IProps, IState> {
 				},
 				{
 					placement: 'auto',
-					target: '.switchs',
+					target: '#switchValue',
 					content: i18nAsDiv('INTRO_ADMIN_MYSTERY'),
 				},
 				{
@@ -103,8 +103,9 @@ class Tutorial extends Component<IProps, IState> {
 					content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED'),
 				},
 				{
+					label: 'options_button',
 					placement: 'auto',
-					target: '#menuPC',
+					target: '#optionsButton',
 					content: i18nAsDiv('INTRO_ADMIN_SETTINGS'),
 					hideFooter: true,
 				},
@@ -385,15 +386,17 @@ class Tutorial extends Component<IProps, IState> {
 		}
 		if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as Array<string>).includes(type)) {
 			// Update state to advance the tour
-			if (this.state.steps[index + 1] && this.state.steps[index + 1].label === 'public_menu') {
-				(document.getElementById('menuMobile') as HTMLButtonElement).click();
-			} else if (this.state.steps[index + 1] && this.state.steps[index + 1].label === 'public_menu_pc') {
-				(document.getElementById('menuPC') as HTMLButtonElement).click();
-			}
-			if (this.state.steps[index].label === 'public_menu2') {
-				(document.getElementById('menuMobile') as HTMLButtonElement).click();
+			if (this.state.steps[index + 1]?.label === 'public_menu') {
+				document.getElementById('menuMobile')?.click();
+			} else if (this.state.steps[index + 1]?.label === 'public_menu_pc') {
+				document.getElementById('menuPC')?.click();
+			} else if (this.state.steps[index].label === 'public_menu2') {
+				document.getElementById('menuMobile')?.click();
 			} else if (this.state.steps[index].label === 'public_menu_pc') {
-				(document.getElementById('menuPC') as HTMLButtonElement).click();
+				document.getElementById('menuPC')?.click();
+			} else if (this.state.steps[index + 1].label === 'options_button') {
+				document.getElementById('menuMobile')?.click();
+				document.getElementById('menuPC')?.click();
 			}
 			this.setState({ stepIndex: index + (action === ACTIONS.PREV ? -1 : 1) });
 		}

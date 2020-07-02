@@ -111,7 +111,7 @@ class AdminHeader extends Component<IProps, IState> {
   					<i className="far fa-question-circle"></i>
 					</label>
 				</div>
-				<div className="header-group switchs">
+				<div id="switchValue" className="header-group switchs">
 					<RadioButton
 						title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}
 						buttons={[
@@ -302,7 +302,7 @@ class AdminHeader extends Component<IProps, IState> {
 					/>
 					{this.state.dropDownMenu ?
 						<ul className="dropdown-menu">
-							<li>
+							<li id="optionsButton">
 								<a
 									href="#"
 									onClick={() => {

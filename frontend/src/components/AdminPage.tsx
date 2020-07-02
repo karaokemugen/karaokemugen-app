@@ -321,7 +321,7 @@ class AdminPage extends Component<IProps, IState> {
 									<i className="fas fa-user" />
 								</a>
 							</li>
-							<li>
+							<li id="optionsButton">
 								<a
 									className="z-depth-3 btn-floating btn-large"
 									style={{ backgroundColor: '#111' }}
