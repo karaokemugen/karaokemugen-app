@@ -114,13 +114,13 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	const config = setConfig(newConfig);
 	setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch
-	try {
-		config.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo
-			? initTwitch()
-			: stopTwitch();
-	} catch(err) {
-		logger.warn('Could not start/stop Twitch chat bot', {service: 'Config', obj: err});
-	}
+	config.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo
+		? initTwitch().catch(err => {
+			logger.warn('Could not start Twitch chat bot', {service: 'Config', obj: err});
+		})
+		: stopTwitch().catch(err => {
+			logger.warn('Could not stop Twitch chat bot', {service: 'Config', obj: err});
+		});
 	// Toggling random song after end message
 	config.Playlist.RandomSongsAfterEndMessage && !state.isDemo
 		? initAddASongMessage()
@@ -200,25 +200,26 @@ export async function determineV6Prefix(ipv6: string): Promise<string> {
 	if (typeof ASNPrefixes[asn.asn] === 'number') {
 		const subnet = createCIDR(ipv6, ASNPrefixes[asn.asn]);
 		return subnet.toString();
-	}
-	// Traceroute way
-	const hop = await getFirstHop('kara.moe');
-	logger.debug(`Determined gateway: ${hop}`, {service: 'Network'});
-	const local = getState().osHost.v6;
-	let found = false;
-	let prefix = 56;
-	let subnet = createCIDR(local, prefix);
-	while (subnet.contains(hop)) {
-		subnet = createCIDR(local, ++prefix);
-		found = true;
-	}
-	if (found) {
-		subnet = createCIDR(local, --prefix);
-		logger.debug(`Determined IPv6 prefix: ${subnet.toString()}`, {service: 'Network'});
-		return subnet.toString();
 	} else {
-		logger.warn('Could not determine IPv6 prefix, disabling IPv6 capability on shortener.', {service: 'Network'});
-		throw new Error('Cannot find CIDR');
+		// Traceroute way
+		const hop = await getFirstHop('kara.moe');
+		logger.debug(`Determined gateway: ${hop}`, {service: 'Network'});
+		const local = getState().osHost.v6;
+		let found = false;
+		let prefix = 56;
+		let subnet = createCIDR(local, prefix);
+		while (subnet.contains(hop)) {
+			subnet = createCIDR(local, ++prefix);
+			found = true;
+		}
+		if (found) {
+			subnet = createCIDR(local, --prefix);
+			logger.debug(`Determined IPv6 prefix: ${subnet.toString()}`, {service: 'Network'});
+			return subnet.toString();
+		} else {
+			logger.warn('Could not determine IPv6 prefix, disabling IPv6 capability on shortener.', {service: 'Network'});
+			throw new Error('Cannot find CIDR');
+		}
 	}
 }
 
@@ -238,7 +239,13 @@ export function getPublicConfig(removeSystem = true) {
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.Database;
 	if (removeSystem) delete publicSettings.System;
-	publicSettings.Karaoke.StreamerMode.Twitch.OAuth = '*********';
+	else delete publicSettings.System.Binaries;
+	delete publicSettings.Karaoke.StreamerMode.Twitch.OAuth;
+	delete publicSettings.Gitlab.Token;
+	delete publicSettings.Gitlab.Host;
+	delete publicSettings.Online.Host;
+	delete publicSettings.Frontend.Port;
+	delete publicSettings.Frontend.AuthExpireTime;
 	return publicSettings;
 }
 
