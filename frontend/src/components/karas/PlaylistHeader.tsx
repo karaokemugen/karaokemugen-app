@@ -469,24 +469,24 @@ class PlaylistHeader extends Component<IProps, IState> {
 												{this.props.idPlaylist === -4 && this.props.bLSetList.length > 1 ?
 													<li>
 														<a href="#" onClick={this.copyBlcSet} title={i18next.t('ADVANCED.SHUFFLE')}>
-															<i className="fas fa-copy" />
+															<i className="fas fa-fw fa-copy" />
 															&nbsp;
 															{i18next.t('BLC.COPY')}
 														</a>
 													</li> : null
 												}
-												{this.props.idPlaylist > 0 ?
+												{this.props.idPlaylist >= 0 ?
 													<React.Fragment>
 														<li>
 															<a href="#" onClick={this.shuffle} title={i18next.t('ADVANCED.SHUFFLE')}>
-																<i className="fas fa-random" />
+																<i className="fas fa-fw fa-random" />
 																&nbsp;
 																{i18next.t('ADVANCED.SHUFFLE_SHORT')}
 															</a>
 														</li>
 														<li>
 															<a href="#" onClick={this.smartShuffle} title={i18next.t('ADVANCED.SMART_SHUFFLE')}>
-																<i className="fas fa-random smartShuffle" />
+																<i className="fas fa-fw fa-random smartShuffle" />
 																&nbsp;
 																{i18next.t('ADVANCED.SMART_SHUFFLE_SHORT')}
 															</a>
@@ -500,14 +500,14 @@ class PlaylistHeader extends Component<IProps, IState> {
 																this.togglePlaylistCommands();
 																this.props.addAllKaras();
 															}} className="danger-hover">
-																<i className="fas fa-share" />
+																<i className="fas fa-fw fa-share" />
 																&nbsp;
 																{i18next.t('ADVANCED.ADD_ALL')}
 															</a>
 														</li>
 														<li>
 															<a href="#" onClick={this.addRandomKaras}>
-																<i className="fas fa-dice" />
+																<i className="fas fa-fw fa-dice" />
 																&nbsp;
 																{i18next.t('ADVANCED.ADD_RANDOM')}
 															</a>
@@ -518,7 +518,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 												{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
 													<li>
 														<a href="#" onClick={this.deleteAllKaras} className="danger-hover">
-															<i className="fas fa-eraser" />
+															<i className="fas fa-fw fa-eraser" />
 															&nbsp;
 															{i18next.t('ADVANCED.EMPTY_LIST')}
 														</a>
@@ -528,8 +528,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 													<li>
 														<a href="#" onClick={this.setFlagVisible}>
 															{this.props.playlistInfo?.flag_visible ?
-																<i className="fas fa-eye-slash"></i> :
-																<i className="fas fa-eye"></i>
+																<i className="fas fa-fw fa-eye-slash"></i> :
+																<i className="fas fa-fw fa-eye"></i>
 															}
 															&nbsp;
 															{i18next.t(this.props.playlistInfo?.flag_visible ?
@@ -537,20 +537,20 @@ class PlaylistHeader extends Component<IProps, IState> {
 														</a>
 													</li> : null
 												}
-												{this.props.idPlaylist !== -4 && !this.props.playlistInfo?.flag_public ?
+												{this.props.idPlaylist >= 0 && !this.props.playlistInfo?.flag_public ?
 													<li>
 														<a href="#" onClick={this.setFlagPublic}>
-															<i className="fas fa-globe" />
+															<i className="fas fa-fw fa-globe" />
 															&nbsp;
 															{i18next.t('ADVANCED.PUBLIC')}
 														</a>
 													</li> : null
 												}
-												{!this.props.playlistInfo?.flag_current
+												{(this.props.idPlaylist >= 0 && !this.props.playlistInfo?.flag_current)
 													|| (this.props.idPlaylist === -4 && !this.props.bLSet?.flag_current) ?
 													<li>
 														<a href="#" onClick={this.setFlagCurrent}>
-															<i className="fas fa-play-circle" />
+															<i className="fas fa-fw fa-play-circle" />
 															&nbsp;
 															{i18next.t(this.props.idPlaylist === -4 ? 'BLC.CURRENT' : 'ADVANCED.CURRENT')}
 														</a>
@@ -560,7 +560,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 													<React.Fragment>
 														<li>
 															<a href="#" onClick={this.deletePlaylist} className="danger-hover">
-																<i className="fas fa-times" />
+																<i className="fas fa-fw fa-times" />
 																&nbsp;
 																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.DELETE' : 'ADVANCED.DELETE')}
 															</a>
@@ -570,25 +570,28 @@ class PlaylistHeader extends Component<IProps, IState> {
 																this.togglePlaylistCommands();
 																this.props.editNamePlaylist();
 															}}>
-																<i className="fas fa-pencil-alt" />
+																<i className="fas fa-fw fa-pencil-alt" />
 																&nbsp;
 																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EDIT' : 'ADVANCED.RENAME')}
 															</a>
 														</li>
 													</React.Fragment> : null
 												}
-												<li>
-													<a href="#" onClick={this.exportPlaylist}>
-														<i className="fas fa-upload" />
-														&nbsp;
-														{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EXPORT' :
-															(this.props.idPlaylist === -5 ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'))}
-													</a>
-												</li>
+												{
+													this.props.idPlaylist !== -1 ?
+														<li>
+															<a href="#" onClick={this.exportPlaylist}>
+																<i className="fas fa-fw fa-upload" />
+															&nbsp;
+																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EXPORT' :
+																	(this.props.idPlaylist === -5 ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'))}
+															</a>
+														</li>:''
+												}
 												<br />
 												<li>
 													<a href="#" onClick={this.addPlaylist}>
-														<i className="fas fa-plus" />
+														<i className="fas fa-fw fa-plus" />
 														&nbsp;
 														{i18next.t(this.props.idPlaylist === -4 ? 'BLC.ADD' : 'ADVANCED.ADD')}
 													</a>
@@ -596,7 +599,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 												{this.props.idPlaylist !== -4 ?
 													<li>
 														<a href="#" onClick={this.startFavMix}>
-															<i className="fas fa-bolt" />
+															<i className="fas fa-fw fa-bolt" />
 															&nbsp;
 															{i18next.t('ADVANCED.AUTOMIX')}
 														</a>
@@ -605,7 +608,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 												<li>
 													<a href="#" >
 														<label className="importFile" htmlFor={'import-file' + this.props.side}>
-															<i className="fas fa-download" />
+															<i className="fas fa-fw fa-download" />
 															{i18next.t(this.props.idPlaylist === -4 ? 'BLC.IMPORT' :
 																(this.props.idPlaylist === -5 ? 'FAVORITES_IMPORT' : 'ADVANCED.IMPORT'))}
 														</label>
