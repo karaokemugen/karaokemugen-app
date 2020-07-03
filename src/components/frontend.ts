@@ -63,7 +63,7 @@ export function initFrontend(): number {
 			// Specify directives as normal.
 			directives: {
 				defaultSrc: ['\'self\''],
-				scriptSrc: ['\'self\'', '\'unsafe-inline\''],
+				scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
 				styleSrc: ['\'self\'', '\'unsafe-inline\''],
 				imgSrc: ['\'self\'', 'data:'],
 				connectSrc: ['\'self\'', 'https:'],
