@@ -171,7 +171,8 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 			false,
 			kara.flag_visible
 		]));
-		await transaction({params: karas, sql: sqladdKaraToPlaylist});
+		const res = await transaction({params: karas, sql: sqladdKaraToPlaylist});
+		return res;
 	} else {
 		const kara = karaList[0];
 		const res = await db().query(sqladdKaraToPlaylist, [
