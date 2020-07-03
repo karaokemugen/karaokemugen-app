@@ -154,24 +154,26 @@ class Playlist extends Component<IProps, IState> {
 			requester: string,
 			flag_upvoted: boolean,
 			my_public_plc_id: number
-		}) => {
+		}[]) => {
 			if (this.state.idPlaylist === -1) {
 				const data = this.state.data as KaraList;
 				for (const kara of data.content) {
-					if (kara.kid === event.kid) {
-						if (event.flag_inplaylist === false || event.flag_inplaylist === true) {
-							kara.flag_inplaylist = event.flag_inplaylist;
-							if (event.flag_inplaylist === false) {
-								kara.my_public_plc_id = [];
+					for (const karaUpdated of event) {
+						if (kara.kid === karaUpdated.kid) {
+							if (karaUpdated.flag_inplaylist === false || karaUpdated.flag_inplaylist === true) {
+								kara.flag_inplaylist = karaUpdated.flag_inplaylist;
+								if (karaUpdated.flag_inplaylist === false) {
+									kara.my_public_plc_id = [];
+								}
 							}
-						}
-						if (event.username === store.getLogInfos()?.username) {
-							if (event.flag_upvoted === false || event.flag_upvoted === true) {
-								kara.flag_upvoted = event.flag_upvoted;
+							if (karaUpdated.username === store.getLogInfos()?.username) {
+								if (karaUpdated.flag_upvoted === false || karaUpdated.flag_upvoted === true) {
+									kara.flag_upvoted = karaUpdated.flag_upvoted;
+								}
 							}
-						}
-						if (event.requester === store.getLogInfos()?.username) {
-							kara.my_public_plc_id = [event.my_public_plc_id];
+							if (karaUpdated.requester === store.getLogInfos()?.username) {
+								kara.my_public_plc_id = [karaUpdated.my_public_plc_id];
+							}
 						}
 					}
 				}
