@@ -272,38 +272,38 @@ class WelcomePage extends Component<IProps, IState> {
 							{
 								this.props.config.App.FirstRun
 									? <article className="tile-tutorial">
-										<button type="button" onClick={() => window.open('/admin' + window.location.search)}>
+										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
 											<i className="fas fa-hand-point-right" /><span>{i18next.t('WLCM_GETSTARTED')}</span>
 										</button>
 									</article>
 									: <article className="tile-manage">
-										<button type="button" onClick={() => window.open('/admin' + window.location.search)}>
+										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
 											<i className="fas fa-list" /><span>{i18next.t('WLCM_KARAMANAGER')}</span>
 										</button>
 									</article>
 							}
 							<article className="tile-system">
-								<button type="button" onClick={() => window.open('/system')}>
+								<button type="button" onClick={() => window.location.assign('/system')}>
 									<i className="fas fa-cog" /><span>{i18next.t('WLCM_ADMINISTRATION')}</span>
 								</button>
 							</article>
 							<article className="tile-system">
-								<button type="button" onClick={() => window.open('/' + window.location.search)}>
+								<button type="button" onClick={() => window.location.assign('/' + window.location.search)}>
 									<i className="fas fa-user" /><span>{i18next.t('WLCM_PUBLIC')}</span>
 								</button>
 							</article>
 							<article className="tile-help">
-								<button type="button" onClick={() => window.open('https://mugen.karaokes.moe/docs/')}>
+								<button type="button" onClick={() => window.location.assign('https://mugen.karaokes.moe/docs/')}>
 									<i className="fas fa-question-circle" /><span>{i18next.t('WLCM_HELP')}</span>
 								</button>
 							</article>
 							<article className="tile-download">
-								<button type="button" onClick={() => window.open('/system/km/karas/download')}>
+								<button type="button" onClick={() => window.location.assign('/system/km/karas/download')}>
 									<i className="fas fa-download" /><span>{i18next.t('WLCM_DOWNLOAD')}</span>
 								</button>
 							</article>
 							<article className="tile-logs">
-								<button type="button" onClick={() => window.open('/system/km/log')}>
+								<button type="button" onClick={() => window.location.assign('/system/km/log')}>
 									<i className="fas fa-terminal" /><span>{i18next.t('WLCM_LOGS')}</span>
 								</button>
 							</article>
@@ -313,15 +313,15 @@ class WelcomePage extends Component<IProps, IState> {
 										<i className="fas fa-chart-line" />{i18next.t('WLCM_STATS')}
 									</label>
 									<ul>
-										<li onClick={() => window.open('/system/km/karas')}>
+										<li onClick={() => window.location.assign('/system/km/karas')}>
 											<strong>{i18next.t('WLCM_STATS_KARAS')}</strong>
 											<span>{this.state.stats?.karas}</span>
 										</li>
-										<li onClick={() => window.open('/system/km/tags?type=1')}>
+										<li onClick={() => window.location.assign('/system/km/tags?type=1')}>
 											<strong>{i18next.t('WLCM_STATS_SERIES')}</strong>
 											<span>{this.state.stats?.series}</span>
 										</li>
-										<li onClick={() => window.open('/system/km/tags')}>
+										<li onClick={() => window.location.assign('/system/km/tags')}>
 											<strong>{i18next.t('WLCM_STATS_TAGS')}</strong>
 											<span>{this.state.stats?.tags}</span>
 										</li>
@@ -330,14 +330,14 @@ class WelcomePage extends Component<IProps, IState> {
 							</article>
 							<article className="tile-repositories">
 								<blockquote>
-									<button type="button" onClick={() => window.open('/system/km/repositories')}>
+									<button type="button" onClick={() => window.location.assign('/system/km/repositories')}>
 										<i className="fas fa-network-wired" />{i18next.t('WLCM_REPOSITORY')}
 									</button>
 									<ul>
 										{this.state.repositories.map(repository => {
 											return (
 												<li key={repository.Name} className={repository.Enabled ? '' : 'disabled'}
-													onClick={() => window.open(`/system/km/repositories/${repository.Name}`)}>
+													onClick={() => window.location.assign(`/system/km/repositories/${repository.Name}`)}>
 													<i className={`fas ${repository.Online ? ' fa-globe' : 'fa-laptop'}`} />
 													<span>{repository.Name}</span>
 												</li>
