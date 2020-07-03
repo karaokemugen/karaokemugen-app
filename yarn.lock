@@ -165,7 +165,7 @@
     "@sentry/utils" "5.19.0"
     tslib "^1.9.3"
 
-"@sentry/cli@^1.54.0":
+"@sentry/cli@^1.55.0":
   version "1.55.0"
   resolved "https://registry.yarnpkg.com/@sentry/cli/-/cli-1.55.0.tgz#0da95cd9491e11da52b15796bded72480f69591b"
   integrity sha512-LOpM69Kvfaossq92wgP8cg3+0XBc9lg76udH4OdmpSZhtavS/qxWedBsnTicaT//7rQUNZBUnTPOpmCYnpGEIA==
@@ -198,10 +198,10 @@
     "@sentry/utils" "5.19.0"
     tslib "^1.9.3"
 
-"@sentry/electron@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@sentry/electron/-/electron-1.3.0.tgz#02bc5ab7d16e579cd048cdbaaed93b43584aef2d"
-  integrity sha512-9oNJg371A/Djk03KVBHj9BgqYCscKxzScYKlM4AYR+BxYQ3LLsZLLeD9Mkdc0hGnOszCRmO5jXRjBVYz1JkJcA==
+"@sentry/electron@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@sentry/electron/-/electron-1.3.1.tgz#94fee28fc623083aa351eda11868fe70f229502c"
+  integrity sha512-Ec13RFiJYoq6lRAgWPnVT0eXM+pQYAVPWb4gqT1c8QHHogCyZMDD0casbZxXP9uh9RiOeVMuQQWo5urfbgSQpg==
   dependencies:
     "@sentry/browser" "~5.13.2"
     "@sentry/core" "~5.13.2"
@@ -249,7 +249,7 @@
     "@sentry/types" "5.19.0"
     tslib "^1.9.3"
 
-"@sentry/node@^5.18.0":
+"@sentry/node@^5.19.0":
   version "5.19.0"
   resolved "https://registry.yarnpkg.com/@sentry/node/-/node-5.19.0.tgz#e02daf9804be47e1c5d8de456d545b4d66422cdb"
   integrity sha512-dqpH9ff+ropVpv0vJnNEOm601Gq/VFvdiN4Ge6JaKEVz+utx6JafEXjXsQqngxXp3xvJw6g0s6cw4HJ+Mx7dow==
@@ -706,7 +706,7 @@
   resolved "https://registry.yarnpkg.com/@types/yesql/-/yesql-3.2.2.tgz#5e211e7ea3b86a4929340f1c12f3e784d1d88318"
   integrity sha512-JXFOLN5HCwzv9XabQ8Iw6o/EeQATPipZRqz/niYlDWJ0wtRIXUDqSFIVCJ3qU4gOk6I+SBFOiO+nZRvcvudraQ==
 
-"@typescript-eslint/eslint-plugin@^3.4.0":
+"@typescript-eslint/eslint-plugin@^3.5.0":
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-3.5.0.tgz#e7736e0808b5fb947a5f9dd949ae6736a7226b84"
   integrity sha512-m4erZ8AkSjoIUOf8s4k2V1xdL2c1Vy0D3dN6/jC9d7+nEqjY3gxXCkgi3gW/GAxPaA4hV8biaCoTVdQmfAeTCQ==
@@ -729,7 +729,7 @@
     eslint-scope "^5.0.0"
     eslint-utils "^2.0.0"
 
-"@typescript-eslint/parser@^3.4.0":
+"@typescript-eslint/parser@^3.5.0":
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-3.5.0.tgz#9ff8c11877c48df24e10e19d7bf542ee0359500d"
   integrity sha512-sU07VbYB70WZHtgOjH/qfAp1+OwaWgrvD1Km1VXqRpcVxt971PMTU7gJtlrCje0M+Sdz7xKAbtiyIu+Y6QdnVA==
@@ -3115,7 +3115,7 @@ i18next-node-fs-backend@^2.1.3:
     js-yaml "3.13.1"
     json5 "2.0.0"
 
-i18next@^19.5.1:
+i18next@^19.5.3:
   version "19.5.3"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-19.5.3.tgz#1e8416072c1e1cd0c83afab430e94957a5165a74"
   integrity sha512-R7ie0TdTpBhybNa2eDhTkJKSCDe7pPsHx6/q0RTtHPFw1mrFp0PEtpUqOPy4KaIRwJc8n2N/phTp+HiOBP5Biw==
@@ -5404,7 +5404,7 @@ slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-slugify@^1.4.2:
+slugify@^1.4.4:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/slugify/-/slugify-1.4.4.tgz#2f032ffa52b1e1ca2a27737c1ce47baae3d0883a"
   integrity sha512-N2+9NJ8JzfRMh6PQLrBeDEnVDQZSytE/W4BTC4fNNPmO90Uu58uNwSlIJSs+lmPgWsaAF79WLhVPe5tuy7spjw==
@@ -6005,7 +6005,7 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.9.5:
+typescript@^3.9.6:
   version "3.9.6"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.6.tgz#8f3e0198a34c3ae17091b35571d3afd31999365a"
   integrity sha512-Pspx3oKAPJtjNwE92YS05HQoY7z2SFyOpHo9MqJor3BXAGNaPUs83CuVp9VISFkSjyRfiTpmKuAYGJB7S7hOxw==
@@ -6239,7 +6239,7 @@ which@^1.2.9:
   dependencies:
     isexe "^2.0.0"
 
-whoiser@^1.7.3:
+whoiser@^1.7.4:
   version "1.7.4"
   resolved "https://registry.yarnpkg.com/whoiser/-/whoiser-1.7.4.tgz#c4db687d50e90b5a8cac5d5468849c8d6f381f41"
   integrity sha512-Q3JxyGYdCSwGd6mZzu06t1y4weUKPO0lH6GtJ0hbieXJQBo43gbF/pgVvZVKDRUqr1QqxvSLP17/+x85dp+VDA==
@@ -6498,7 +6498,7 @@ yeast@0.1.2:
   resolved "https://registry.yarnpkg.com/yeast/-/yeast-0.1.2.tgz#008e06d8094320c372dbc2f8ed76a0ca6c8ac419"
   integrity sha1-AI4G2AlDIMNy28L47XagymyKxBk=
 
-yesql@^4.1.2:
+yesql@^4.1.3:
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/yesql/-/yesql-4.1.3.tgz#eb64c6e3b80c30960de0b464ae1a9780746388df"
   integrity sha512-AqKwYcyjWmjzNYNSah53siLLt3xTblCQcAMuw5E9TX8P4X/tRmBUFtryhjP1NwmwHEqiYHhIPGtWUdkqqPkVig==
