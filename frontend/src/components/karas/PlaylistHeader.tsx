@@ -4,7 +4,7 @@ import prettyBytes from 'pretty-bytes';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import { Token,User } from '../../../../src/lib/types/user';
+import { Token, User } from '../../../../src/lib/types/user';
 import { BLCSet } from '../../../../src/types/blacklist';
 import { Config } from '../../../../src/types/config';
 import { DBPL, DBPLC } from '../../../../src/types/database/playlist';
@@ -134,18 +134,18 @@ class PlaylistHeader extends Component<IProps, IState> {
 						this.props.bLSet?.name :
 						(this.props.playlistInfo as DBPL).name
 				}), '', (confirm: boolean) => {
-				if (confirm) {
-					const url = this.props.idPlaylist === -4 ?
-						`/blacklist/set/${this.props.bLSet?.blc_set_id}` :
-						`/playlists/${this.props.idPlaylist}`;
-					axios.delete(url);
-					if (this.props.idPlaylist === -4) {
-						this.props.changeIdPlaylist(-4);
-					} else {
-						this.props.changeIdPlaylist(store.getState().publicPlaylistID);
+					if (confirm) {
+						const url = this.props.idPlaylist === -4 ?
+							`/blacklist/set/${this.props.bLSet?.blc_set_id}` :
+							`/playlists/${this.props.idPlaylist}`;
+						axios.delete(url);
+						if (this.props.idPlaylist === -4) {
+							this.props.changeIdPlaylist(-4);
+						} else {
+							this.props.changeIdPlaylist(store.getState().publicPlaylistID);
+						}
 					}
-				}
-			});
+				});
 		}
 	};
 
@@ -586,7 +586,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EXPORT' :
 																	(this.props.idPlaylist === -5 ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'))}
 															</a>
-														</li>:''
+														</li> : ''
 												}
 												<br />
 												<li>
@@ -652,7 +652,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 						}
 						{this.props.scope === 'admin' && this.props.idPlaylist === -1 ?
 							<div className="searchMenuButtonContainer btn-group">
-								<button type="button" className={'searchMenuButton collapsed btn btn-default karaLineButton' + (this.props.searchMenuOpen ? ' searchMenuButtonOpen' : '')}
+								<button type="button" title={i18next.t('FILTERS')}
+									className={'searchMenuButton collapsed btn btn-default karaLineButton'
+										+ (this.props.searchMenuOpen ? ' searchMenuButtonOpen' : '')}
 									onClick={this.props.toggleSearchMenu}>
 									<i className="fas fa-filter"></i>
 								</button>

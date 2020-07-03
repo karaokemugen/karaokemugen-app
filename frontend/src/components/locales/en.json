@@ -112,6 +112,7 @@
 	"CLASSIC_MODE_TITLE_MODAL": "It's your turn to sing !",
 	"CLASSIC_MODE_TEXT_MODAL": "Click on the Play button to start your song.",
 	"MESSAGE": "Message",
+	"FILTERS": "Filters",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist commands",
 		"SHUFFLE": "Shuffle playlist",

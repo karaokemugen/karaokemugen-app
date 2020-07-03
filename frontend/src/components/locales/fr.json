@@ -102,6 +102,7 @@
 	"ENGINEFREEUPVOTESREQUIREDPERCENT_TOOLTIP": "Pourcentage par rapport au nombre d'utilisateurs connectés",
 	"FAVORITES_IMPORT": "Importer vos favoris",
 	"FAVORITES_EXPORT": "Exporter vos favoris",
+	"FILTERS": "Filtres",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Commandes de liste de lecture",
 		"SHUFFLE": "Mélanger la liste de lecture",

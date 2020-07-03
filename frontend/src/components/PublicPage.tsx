@@ -260,6 +260,7 @@ class PublicPage extends Component<IProps, IState> {
 									<KmAppHeaderDecorator mode="public">
 										<button
 											type="button"
+											title={i18next.t('FILTERS')}
 											className={
 												'searchMenuButton btn btn-sm btn-default' +
 												(this.state.searchMenuOpen
