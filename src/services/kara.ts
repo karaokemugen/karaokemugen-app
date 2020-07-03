@@ -277,7 +277,6 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 		const count = pl.length > 0 ? pl[0].count : 0;
 		const ret = formatKaraList(pl, params.from || 0, count);
 		profile('formatList');
-		profile('getKaras');
 		return ret;
 	} catch(err) {
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
