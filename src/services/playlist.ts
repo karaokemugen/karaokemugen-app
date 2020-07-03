@@ -590,7 +590,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		};
 		if (plc_id) ret.plc = await getPLCInfo(plc_id, true, requester);
 		if (+playlist_id === state.publicPlaylistID) {
-			karaList.forEach(k => emitWS('KIDUpdated', { kid: k.kid, flag_inplaylist: true, requester: requester, my_public_plc_id: plc_id}));
+			emitWS('KIDUpdated', { kid: karaList.map(k => k.kid), flag_inplaylist: true, requester: requester, my_public_plc_id: plc_id});
 		}
 		emitWS('playlistContentsUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
@@ -683,7 +683,7 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 			plcList.forEach(plc => notifyUserOfSongPlayTime(plc.playlistcontent_id, plc.username));
 		}
 		if (+playlist_id === state.publicPlaylistID) {
-			plcList.forEach(plc => emitWS('KIDUpdated', { kid: plc.kid, flag_inplaylist: true, requester: plc.username, my_public_plc_id: plc.playlistcontent_id }));
+			emitWS('KIDUpdated', { kid: plcList.map(plc => plc.kid), flag_inplaylist: true, requester: plc.username, my_public_plc_id: plc.playlistcontent_id });
 		}
 		emitWS('playlistContentsUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
@@ -725,7 +725,7 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 		updatePlaylistLastEditTime(playlist_id);
 		const pubPLID = getState().publicPlaylistID;
 		if (+playlist_id === pubPLID) {
-			kids.forEach(kid => emitWS('KIDUpdated', {kid: kid, flag_inplaylist: false}));
+			emitWS('KIDUpdated', {kid: kids, flag_inplaylist: false});
 		}
 		emitWS('playlistContentsUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
