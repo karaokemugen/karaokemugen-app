@@ -15,8 +15,8 @@ export function errorStep(step: string) {
 	if (win && !errorHappened) {
 		errorHappened = true;
 		initStep(i18next.t('INIT_ERROR'));
-		emitIPC('error', {message: step});
 		setTipLoop('errors');
+		emitIPC('error', {message: step});
 	}
 }
 

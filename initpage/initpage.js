@@ -68,6 +68,7 @@ ipcRenderer.on('error', (event, data) => {
 	nanamiSD.src = './public/nanami-surpris.png';
 	const tip = document.querySelector('.ip--protip');
 	tip.className = 'ip--protip ip--error';
+	askTip();
 });
 ipcRenderer.on('techTip', (event, data) => {
 	const tiptitle = document.querySelector('.ip--protip > .title');
