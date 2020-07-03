@@ -151,7 +151,7 @@ class ProgressBar extends Component<IProps, IState> {
 				>
 					<div className="actualTime">{this.state.timePosition > 0 && this.state.length > 0 && secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
 					<div className="karaTitle">{this.state.karaInfoText}</div>
-					<div className="remainTime">{this.state.length > 0 && secondsTimeSpanToHMS(Math.round(this.state.length-this.state.timePosition), 'mm:ss')}</div>
+					<div className="remainTime">{this.state.length > 0 && `-${secondsTimeSpanToHMS(Math.round(this.state.length-this.state.timePosition), 'mm:ss')}`}</div>
 				</div>
 				<div id="progressBarColor" style={{ width: this.state.width }}></div>
 			</div>
