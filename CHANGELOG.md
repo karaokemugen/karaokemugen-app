@@ -12,6 +12,20 @@ You can find more info in issue #675
 
 ### New features
 
+- Public/Private mode has been removed. From now on, playlists can have both current/public flags at once.
+  - To get the old "public" behavior, have two playlists, one with the current flag and the other with the public flag.
+  - To get the old "private" behavior, have one playlist with both current and public flags set.
+- Operator UI has been overhauled and simplified (#704).
+  - Less useless notifications
+  - The "stop" button now defaults to stop after the current song ends. Press it again to stop the karaoke now.
+  - Options have been moved to the K button
+  - Current time and time remaining for a song are displayed in the progress bar
+  - Jingles and sponsors now appear in the current playlist so the operator can tell when they're going to happen.
+  - Playlist and Karaoke options are now in contextual menus inside the wrench icon
+  - Filters can be reset
+  - Previous & next song buttons are now greyed out if you're at the beginning or end of playlist. Play is greyed out as well if nothing is in the current playlist
+  - Application settings have been moved out from the operator settings page. They're now in the system panel.
+  - Some options have been simplified or removed.
 - You can now play songs directly from the song library without having to add it to a playlist first (#697)
 - After a playlist ends, Karaoke Mugen can play random songs until someone adds a new song to the playlist (kind of like an attract mode) (#698)
 - Already present in 3.2.2 but this is an important change : A setup page has been added for those using Karaoke Mugen for the first time. It works as a setup wizard asking you questions about accounts and where to download your songs (#661)
@@ -20,7 +34,7 @@ You can find more info in issue #675
 - Series are now tags as well. This doesn't impact the end-user, but allowed us to clean more than 1500 lines of code since series and tags were treated separately but were basically the same kind of information related to a song. This should also speed up querying songs from the database (#629)
 - When you view a different playlist than the current one and hit the play button, a warning will appear to tell you the playlist you're viewing isn't the one that's going to be played. (#634)
 - Tips and tricks are displayed during the init phase to give you something to read (#674)
-- We now use [Sentry.io](https://sentry.io) to have errors reported to us automatically when they happen. (#676) Since this has privacy issues, this can be disabled. Just like for Stats Uploads, you will be asked if you want to allow that or not when updating.
+- We now use [Sentry.io](https://sentry.io) to have errors reported to us automatically when they happen. Since this has privacy issues, this can be disabled. Just like for Stats Uploads, you will be asked if you want to allow that or not when updating. (#676 #709)
 - Generation during init phase now has a progressbar (#693)
 - Karaoke groups are now better displayed on the download page so you can more easily find them and add them to your download queue directly (#646)
 - Playlists now has icons depending on their type in the selection list (#612)
@@ -45,6 +59,7 @@ You can find more info in issue #675
 - All system panel messages are now translated in French (and English of course) (#621)
 - Hardware acceleration is now enabled by dafault in auto-safe mode to allow hardware decoding of videos in the most standard cases. You can disable it in case it doesn't work right for you or force it enabled for all videos (not recommended) (#703)
 - A new option setting allows you to add extra arguments to mpv's command line, for advanced users only (#703)
+- The public interface now lets you easily vote for a song already present in the public playlist when you browse the main song list (#714 #713)
 
 ### Improvements
 
@@ -62,12 +77,17 @@ You can find more info in issue #675
 - Singers and series auto-complete is now a bit faster in system panel's karaoke creation tool (#662)
 - SQL code is better organized in the app's source code (#688)
 - When changing a repository's priority (moving it in the list) a timer will only validate your changes and regenerate your database after a bit (#687)
-- node-mpv (module to talk to the video player) has been updated and should be more stable and report errors better. (#684)
+- node-mpv (module to talk to the video player) has been updated and should be more stable and report errors better. The module piloting it has also been rewritten. (#684 #711)
 - Init phase has been a bit reworked when you display logs (#683)
 - Unit tests are now started at the end of the app's launch, speeding up continuous integration cycle (#633)
+- API error codes have been normalized. Karaoke Mugen can be a teapot now. (#716)
+- Logs are handled in a better way and are now more colorfun (#715)
 
 ### Fixes
 
+- Fixed database dead locks in some situations (#708)
+- Stopped publishing your IP too often for the URL shortener (#710)
+- Fixed long lyrics display in kara detail info (#712)
 - Creating a karaoke for repository A with a tag existing only in repository B now creates the tag in repository A too (#682)
 - Creating a karaoke with 3x or more the same tag (which didn't exist before) now works (#671)
 - The list of playlists is now properly refreshed on login (#654)
