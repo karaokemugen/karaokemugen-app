@@ -7,7 +7,7 @@ import { PublicPlayerState } from '../../../src/types/state';
 import store from '../store';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
-import { callModal,expand, getSocket } from './tools';
+import { callModal, expand, getSocket } from './tools';
 
 interface IProps {
 	config: Config;
@@ -243,21 +243,19 @@ class AdminHeader extends Component<IProps, IState> {
 				</button>
 
 				<button
-					title={i18next.t('SHOW_HIDE_SUBS')}
+					title={i18next.t(this.state.statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
 					id="showSubs"
-					data-namecommand={this.state.statusPlayer && this.state.statusPlayer.showSubs ? 'hideSubs' : 'showSubs'}
+					data-namecommand={this.state.statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
 					className="btn btn-dark subtitleButton buttonsNotMobile"
 					onClick={this.props.putPlayerCommando}
 				>
-					{this.state.statusPlayer && this.state.statusPlayer.showSubs ? (
+					{this.state.statusPlayer?.showSubs ?
+						<span className="fa-stack">
+							<i className="fas fa-closed-captioning fa-stack-1x"></i>
+							<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }}></i>
+						</span> :
 						<i className="fas fa-closed-captioning"></i>
-					) :
-						(
-							<span className="fa-stack">
-								<i className="fas fa-closed-captioning fa-stack-1x"></i>
-								<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }}></i>
-							</span>
-						)}
+					}
 				</button>
 				<button
 					type="button"
@@ -265,11 +263,11 @@ class AdminHeader extends Component<IProps, IState> {
 					className="btn btn-dark volumeButton"
 				>
 					<div id="mute"
-						data-namecommand={(volume === 0 || (this.state.statusPlayer && this.state.statusPlayer.mute)) ? 'unmute' : 'mute'}
+						data-namecommand={(volume === 0 || this.state.statusPlayer?.mute) ? 'unmute' : 'mute'}
 						onClick={this.props.putPlayerCommando}
 					>
 						{
-							volume === 0 || this.state.statusPlayer && this.state.statusPlayer.mute
+							volume === 0 || this.state.statusPlayer?.mute
 								? <i className="fas fa-volume-mute"></i>
 								: (
 									volume > 66

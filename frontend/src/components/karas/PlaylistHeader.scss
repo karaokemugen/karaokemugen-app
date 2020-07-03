@@ -106,6 +106,15 @@
 	border-style: solid;
 }
 
+.plDashboard .dropdown {
+	padding: 0px;
+	padding-right: 2px;
+
+	.showPlaylistCommands {
+		padding: 8px 6px 8px 10px;
+	}
+}
+
 .danger-hover:hover {
 	background-color: #793230 !important;
 	color: white !important;

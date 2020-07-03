@@ -45,7 +45,8 @@
 	"SHUTDOWN": "Arrêter Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Communication avec Karaoke Mugen perdue",
 	"MUTE_UNMUTE": "Rendre muet (ou pas)",
-	"SHOW_HIDE_SUBS": "Montrer/cacher les paroles à l'écran",
+	"SHOW_SUBS": "Montrer les paroles à l'écran",
+	"HIDE_SUBS": "Cacher les paroles à l'écran",
 	"OPTIONS": "Options",
 	"STOP_AFTER": "Arrêt après la chanson en cours",
 	"STOP_NOW": "Arrêt immédiat (C'est dangeureux !)",
@@ -465,7 +466,7 @@
 			"DOWNLOAD_THEM_SIZE": "(Taille du téléchargement : {{mediasize}})"
 		},
 		"PLAY_CURRENT_MODAL": "Attention, la liste de lecture courante '{{playlist}}' n'est pas affichée à l'écran. C'est cette dernière qui sera jouée. Êtes-vous sûr de vouloir lancer la lecture ?",
-		"KARA_DETAILS": "Détails d'une chanson"
+		"KARA_DETAILS": "Détails de la chanson"
 	},
 	"SETUP_PAGE": {
 		"TITLE": "Assistant de démarrage",
