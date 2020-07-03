@@ -37,15 +37,6 @@ class KaraMenuModal extends Component<IProps, IState> {
 		this.setState({ kara: response.data });
 	};
 
-	playKara = () => {
-		if (this.props.idPlaylist < 0) {
-			Axios.post(`/karas/${this.state.kara.kid}/play`);
-		} else {
-			Axios.put(`/playlists/${this.props.idPlaylist}/karas/${this.state.kara.playlistcontent_id}`, { flag_playing: true });
-		}
-		this.props.closeKaraMenu();
-	};
-
 	onRightClickTransfer = (e: any) => {
 		e.preventDefault();
 		e.stopPropagation();
@@ -91,13 +82,6 @@ class KaraMenuModal extends Component<IProps, IState> {
 				top: this.props.topKaraMenu,
 				left: window.outerWidth < (this.props.leftKaraMenu + 250) ? window.outerWidth - 250 : this.props.leftKaraMenu
 			}}>
-				<li>
-					<a href="#" onClick={this.playKara}>
-						<i className={`fas ${this.props.idPlaylist < 0 ? 'fa-play' : 'fa-play-circle'}`}></i>
-						&nbsp;
-						{i18next.t(this.props.idPlaylist < 0 ? 'KARA_MENU.PLAY_LIBRARY' : 'KARA_MENU.PLAY')}
-					</a>
-				</li>
 				{this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
 					<li>
 						<a href="#" onContextMenu={this.onRightClickTransfer} onClick={(event) => {
