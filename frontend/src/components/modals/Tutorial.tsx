@@ -365,7 +365,7 @@ class Tutorial extends Component<IProps, IState> {
 	};
 
 
-	handleJoyrideCallback = (data: { action: string, index: number, status: string, type: string }) => {
+	handleJoyrideCallback = async (data: { action: string, index: number, status: string, type: string }) => {
 		const { joyride }: any = this.props;
 		const { action, index, status, type } = data;
 		if (index === 3 || this.state.steps[index].label === 'publicFooter') {
@@ -379,7 +379,8 @@ class Tutorial extends Component<IProps, IState> {
 		}
 		if (([STATUS.FINISHED, STATUS.SKIPPED] as Array<string>).includes(status)) {
 			if (this.state.scope === 'admin') {
-				axios.put('/settings', { 'setting': JSON.stringify({ 'App': { 'FirstRun': false } }) });
+				await axios.put('/settings', { 'setting': JSON.stringify({ 'App': { 'FirstRun': false } }) }),
+				axios.post('/player/start');
 			} else {
 				localStorage.setItem('publicTuto', 'true');
 			}
@@ -390,11 +391,11 @@ class Tutorial extends Component<IProps, IState> {
 				document.getElementById('menuMobile')?.click();
 			} else if (this.state.steps[index + 1]?.label === 'public_menu_pc') {
 				document.getElementById('menuPC')?.click();
-			} else if (this.state.steps[index].label === 'public_menu2') {
+			} else if (this.state.steps[index]?.label === 'public_menu2') {
 				document.getElementById('menuMobile')?.click();
-			} else if (this.state.steps[index].label === 'public_menu_pc') {
+			} else if (this.state.steps[index]?.label === 'public_menu_pc') {
 				document.getElementById('menuPC')?.click();
-			} else if (this.state.steps[index + 1].label === 'options_button') {
+			} else if (this.state.steps[index + 1]?.label === 'options_button') {
 				document.getElementById('menuMobile')?.click();
 				document.getElementById('menuPC')?.click();
 			}
