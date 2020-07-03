@@ -6,6 +6,7 @@ import { Kara, KaraParams } from '../lib/types/kara';
 import {getConfig} from '../lib/utils/config';
 import {now} from '../lib/utils/date';
 import { DBKaraHistory } from '../types/database/kara';
+import { DBPLCAfterInsert } from '../types/database/playlist';
 import {PLC} from '../types/playlist';
 import { getState } from '../utils/state';
 import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraHistory, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
@@ -158,7 +159,7 @@ export async function selectAllKIDs(): Promise<string[]> {
 	return res.rows.map((k: Kara) => k.kid);
 }
 
-export async function addKaraToPlaylist(karaList: PLC[]): Promise<number> {
+export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInsert[]> {
 	if (karaList.length > 1) {
 		const karas: any[] = karaList.map(kara => ([
 			kara.playlist_id,
@@ -183,7 +184,7 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<number> {
 			false,
 			kara.flag_visible
 		]);
-		return res.rows[0].pk_id_plcontent;
+		return res.rows;
 	}
 }
 

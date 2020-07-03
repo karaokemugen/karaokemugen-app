@@ -7,7 +7,7 @@ import {now} from '../lib/utils/date';
 import { DBPL,DBPLC, DBPLCInfo, DBPLCKID, DBPLPos } from '../types/database/playlist';
 import {Playlist, PLC, PLCParams} from '../types/playlist';
 import {getState} from '../utils/state';
-import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByDate, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetCurrentPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlsetPublicPlaylist, sqlsetVisiblePlaylist, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlunsetVisiblePlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
+import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetCurrentPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlsetPublicPlaylist, sqlsetVisiblePlaylist, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlunsetVisiblePlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
 
 
 export function editPlaylist(pl: Playlist) {
@@ -68,14 +68,6 @@ export function updatePlaylistLastEditTime(id: number) {
 		playlist_id: id,
 		modified_at: new Date()
 	}));
-}
-
-export async function getPLCByDate(playlist_id: number, date: Date): Promise<number> {
-	const res = await db().query(yesql(sqlgetPLCByDate)({
-		playlist_id: playlist_id,
-		date_added: date
-	}));
-	return res.rows[0].playlistcontent_id;
 }
 
 export function shiftPosInPlaylist(id: number, pos: number, shift: number) {

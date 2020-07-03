@@ -11,6 +11,12 @@ export interface DBPLCKID {
 	singer: DBKaraTag[]
 }
 
+export interface DBPLCAfterInsert {
+	plc_id: number,
+	kid: string,
+	pos: number,
+	username: string
+}
 export interface DBPLCBase extends DBKara {
 	nickname: string,
 	flag_playing: boolean,

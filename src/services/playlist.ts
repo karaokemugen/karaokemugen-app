@@ -25,7 +25,6 @@ import {
 	getPlaylistInfo as getPLInfo,
 	getPlaylistKaraIDs,
 	getPlaylists as getPLs,
-	getPLCByDate,
 	getPLCByKIDAndUser,
 	getPLCInfo as getPLCInfoDB,
 	getPLCInfoMini as getPLCInfoMiniDB,
@@ -165,11 +164,6 @@ export async function setPlaying(plc_id: number, playlist_id: number) {
 		plc_id: plc_id,
 	});
 	updatePlaylistDuration(playlist_id);
-}
-
-/** Get PLC IDs by a particular date added */
-function getPLCIDByDate(playlist_id: number, date_added: Date) {
-	return getPLCByDate(playlist_id, date_added);
 }
 
 /** Trim playlist after a certain duration */
@@ -560,13 +554,13 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		}
 
 		// Adding song to playlist at long last!
-		let plc_id = await addKaraToPL(karaList);
+		const PLCsInserted = await addKaraToPL(karaList);
+
 		updatePlaylistLastEditTime(playlist_id);
 		// Checking if a flag_playing is present inside the playlist.
 		// If not, we'll have to set the karaoke we just added as the currently playing one. updatePlaylistDuration is done by setPlaying already.
-		if (!plContents.some((plc: PLC) => plc.flag_playing)) {
-			if (!plc_id) plc_id = await getPLCIDByDate(playlist_id, date_add);
-			await setPlaying(plc_id, playlist_id);
+		if (!plContents.find((plc: PLC) => plc.flag_playing)) {
+			await setPlaying(PLCsInserted[0].plc_id, playlist_id);
 		} else {
 			await updatePlaylistDuration(playlist_id);
 		}
@@ -588,9 +582,16 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			playlist_id: playlist_id,
 			plc: null
 		};
-		if (plc_id) ret.plc = await getPLCInfo(plc_id, true, requester);
+		ret.plc = await getPLCInfo(PLCsInserted[0].plc_id, true, requester);
 		if (+playlist_id === state.publicPlaylistID) {
-			emitWS('KIDUpdated', { kid: karaList.map(k => k.kid), flag_inplaylist: true, requester: requester, my_public_plc_id: plc_id});
+			emitWS('KIDUpdated', PLCsInserted.map(plc => {
+				return {
+					kid: plc.kid,
+					flag_inplaylist: true,
+					requester: plc.username,
+					my_public_plc_id: plc.plc_id
+				};
+			}));
 		}
 		emitWS('playlistContentsUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
@@ -683,7 +684,14 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 			plcList.forEach(plc => notifyUserOfSongPlayTime(plc.playlistcontent_id, plc.username));
 		}
 		if (+playlist_id === state.publicPlaylistID) {
-			emitWS('KIDUpdated', { kid: plcList.map(plc => plc.kid), flag_inplaylist: true, requester: plc.username, my_public_plc_id: plc.playlistcontent_id });
+			emitWS('KIDUpdated', plcList.map(plc => {
+				return {
+					kid: plc.kid,
+					flag_inplaylist: true,
+					requester: plc.username,
+					my_public_plc_id: plc.playlistcontent_id
+				};
+			}));
 		}
 		emitWS('playlistContentsUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
@@ -725,7 +733,12 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 		updatePlaylistLastEditTime(playlist_id);
 		const pubPLID = getState().publicPlaylistID;
 		if (+playlist_id === pubPLID) {
-			emitWS('KIDUpdated', {kid: kids, flag_inplaylist: false});
+			emitWS('KIDUpdated', kids.map(kid => {
+				return {
+					kid: kid,
+					flag_inplaylist: false
+				};
+			}));
 		}
 		emitWS('playlistContentsUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
