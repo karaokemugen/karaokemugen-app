@@ -561,7 +561,7 @@ export async function sendCommand(command: string, options: any): Promise<string
 }
 
 export function isPlayerRunning() {
-	return mpv.players.main.isRunning;
+	return mpv.isRunning();
 }
 
 export function initPlayer() {

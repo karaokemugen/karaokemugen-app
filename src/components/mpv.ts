@@ -454,6 +454,15 @@ class Players {
 		return backgroundFiles;
 	}
 
+	isRunning() {
+		for (const player in this.players) {
+			if (this.players[player].isRunning) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	async ensureRunning(onlyOn?: PlayerType, ignoreLock = false) {
 		try {
 			if (!ignoreLock) await waitForLockRelease();
