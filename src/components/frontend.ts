@@ -62,16 +62,19 @@ export function initFrontend(): number {
 		const cspMiddleware = csp({
 			// Specify directives as normal.
 			directives: {
-				defaultSrc: ['\'self\''],
+				defaultSrc: ['\'self\'', 'data:'],
 				scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
 				styleSrc: ['\'self\'', '\'unsafe-inline\''],
-				imgSrc: ['\'self\'', 'data:'],
 				connectSrc: ['\'self\'', 'https:'],
 				sandbox: ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-modals'],
 				reportUri: process.env.SENTRY_CSP || sentryCSP,
 				upgradeInsecureRequests: false,
 				workerSrc: false  // This is not set.
 			},
+
+			reportOnly: true,
+
+			disableAndroid: true
 		});
 		app.use(cors());
 		app.use(passport.initialize());
