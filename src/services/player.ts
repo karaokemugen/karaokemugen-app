@@ -560,6 +560,10 @@ export async function sendCommand(command: string, options: any): Promise<string
 	}
 }
 
+export function isPlayerRunning() {
+	return mpv.players.main.isRunning;
+}
+
 export function initPlayer() {
 	return mpv.initPlayerSystem();
 }

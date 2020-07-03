@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { check } from '../../lib/utils/validators';
 import { emitWS } from '../../lib/utils/ws';
-import { playerMessage, playPlayer, sendCommand } from '../../services/player';
+import { initPlayer,isPlayerRunning,playerMessage, playPlayer, sendCommand } from '../../services/player';
 import { getState } from '../../utils/state';
 import { APIMessage,errMessage } from '../common';
 import { requireAdmin, requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
@@ -140,6 +140,34 @@ export default function playerController(router: Router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.status(400).json(validationErrors);
+			}
+		});
+	router.route('/player/start')
+		/**
+	 * @api {post} /player/start Start up video player
+	 * @apiName PostPlayerStart
+	 * @apiVersion 4.0.0
+	 * @apiGroup Player
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * @apiErrorExample Error-Response:
+ 	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+ 	 * HTTP/1.1 409 Conflict
+ 	 */
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req: any, res: any) => {
+			try {
+				if (isPlayerRunning()) {
+					res.status(409);
+				} else {
+					await initPlayer();
+					res.status(200);
+				}
+				res.json();
+			} catch(err) {
+				res.status(500).json();
 			}
 		});
 }
