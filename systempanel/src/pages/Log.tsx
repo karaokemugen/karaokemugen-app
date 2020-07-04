@@ -29,12 +29,14 @@ class Log extends Component<unknown, LogState> {
 	componentDidMount() {
 		this.refresh();
 		const url = window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:1337` : window.location.origin;
-		const socket = openSocket(`${url}/${this.context.globalState.settings.data.state.wsLogNamespace}`);
-		socket.on('log', (log) => {
-			const logs = this.state.log;
-			logs.push(log);
-			this.setState({ log: logs });
-		});
+		if (this.context.globalState.settings.data.state) {
+			const socket = openSocket(`${url}/${this.context.globalState.settings.data.state.wsLogNamespace}`);
+			socket.on('log', (log) => {
+				const logs = this.state.log;
+				logs.push(log);
+				this.setState({ log: logs });
+			});
+		}
 	}
 
 	refresh = async () => {
