@@ -468,7 +468,6 @@ class Players {
 			if (!ignoreLock) await waitForLockRelease();
 			const loads = [];
 			if (onlyOn) {
-				console.log(this.players);
 				if (this.players[onlyOn]) {
 					if (!this.players[onlyOn].isRunning) {
 						logger.info(`Restarting ${onlyOn} player`, {service: 'Player'});
