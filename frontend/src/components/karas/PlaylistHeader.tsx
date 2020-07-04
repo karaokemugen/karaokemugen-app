@@ -163,22 +163,24 @@ class PlaylistHeader extends Component<IProps, IState> {
 			url = `/blacklist/set/${this.props.bLSet?.blc_set_id}/export`;
 		} else if (this.props.idPlaylist === -5) {
 			url = '/favorites/export';
-		} else {
+		} else if (this.props.idPlaylist > 0) {
 			url = `/playlists/${this.props.idPlaylist}/export`;
 		}
-		const response = await axios.get(url);
-		const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
-		const dlAnchorElem = document.getElementById('downloadAnchorElem');
-		if (dlAnchorElem) {
-			dlAnchorElem.setAttribute('href', dataStr);
-			if (this.props.idPlaylist === -4) {
-				dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.bLSet?.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmblc');
-			} else if (this.props.idPlaylist === -5) {
-				dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', (store.getLogInfos() as Token).username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
-			} else {
-				dlAnchorElem.setAttribute('download', ['KaraMugen', (this.props.playlistInfo as DBPL).name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+		if (url) {
+			const response = await axios.get(url);
+			const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response.data, null, 4));
+			const dlAnchorElem = document.getElementById('downloadAnchorElem');
+			if (dlAnchorElem) {
+				dlAnchorElem.setAttribute('href', dataStr);
+				if (this.props.idPlaylist === -4) {
+					dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.bLSet?.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmblc');
+				} else if (this.props.idPlaylist === -5) {
+					dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', (store.getLogInfos() as Token).username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
+				} else {
+					dlAnchorElem.setAttribute('download', ['KaraMugen', (this.props.playlistInfo as DBPL).name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+				}
+				dlAnchorElem.click();
 			}
-			dlAnchorElem.click();
 		}
 	};
 
