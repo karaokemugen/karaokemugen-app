@@ -1088,7 +1088,7 @@ export async function previousSong() {
 /** Move to next song */
 export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 	const conf = getConfig();
-	let playlist: any;
+	let playlist: DBPLC[];
 	try {
 		playlist = await getCurrentPlaylistContents();
 	} catch(err) {
@@ -1097,43 +1097,30 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 		throw error;
 	}
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
-	if (playlist.content.length === 0) throw 'Playlist is empty!';
-	if (playlist.index + 1 >= playlist.content.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
-		logger.debug('End of playlist.', {service: 'PLC'});
-		if (setPlayingSong) await setPlaying(0, playlist.id);
+	if (playlist.length === 0) throw 'Playlist is empty!';
+	let currentPos = playlist.findIndex(plc => plc.flag_playing);
+	if (currentPos + 1 >= playlist.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
+		logger.debug('End of playlist', {service: 'PLC'});
+		if (setPlayingSong) await setPlaying(0, getState().currentPlaylistID);
 		throw 'Current position is last song!';
 	} else {
 		// If we're here, it means either we're beyond the length of the playlist
 		// OR that RepeatPlaylist is set to 1.
 		// We test again if we're at the end of the playlist. If so we go back to first song.
-		if (conf.Playlist.EndOfPlaylistAction === 'repeat' && playlist.index + 1 >= playlist.content.length) playlist.index = -1;
-		const kara = playlist.content[playlist.index + 1];
+		if (conf.Playlist.EndOfPlaylistAction === 'repeat' && currentPos + 1 >= playlist.length) currentPos = -1;
+		const kara = playlist[currentPos + 1];
 		if (!kara) throw 'Karaoke received is empty!';
-		if (setPlayingSong) await setPlaying(kara.playlistcontent_id, playlist.id);
+		if (setPlayingSong) await setPlaying(kara.playlistcontent_id, getState().currentPlaylistID);
 		return kara;
 	}
 }
 
 /** Get current playlist contents */
-async function getCurrentPlaylistContents() {
+async function getCurrentPlaylistContents(): Promise<DBPLC[]> {
 	// Returns current playlist contents and where we're at.
 	const playlist_id = getState().currentPlaylistID;
 	const playlist = await getPlaylistContentsMini(playlist_id);
-	// Setting readpos to 0. If no flag_playing is found in current playlist
-	// Then karaoke will begin at the first element of the playlist (0)
-	let readpos = 0;
-	playlist.some((kara: PLC, index: number) => {
-		if (kara.flag_playing) {
-			readpos = index;
-			return true;
-		}
-		return false;
-	});
-	return {
-		id: playlist_id,
-		content: playlist,
-		index: readpos
-	};
+	return playlist;
 }
 
 export async function notificationNextSong(): Promise<void> {
@@ -1152,16 +1139,18 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		const playlist = await getCurrentPlaylistContents();
 		// Search for currently playing song
 		let updatePlayingKara = false;
-		if (!playlist.index) {
-			playlist.index = 0;
+		let currentPos = playlist.findIndex(plc => plc.flag_playing);
+		if (currentPos === -1) {
+			currentPos = 0;
 			updatePlayingKara = true;
 		}
-		const kara = playlist.content[playlist.index];
+		const kara = playlist[currentPos];
 		if (!kara) throw 'No karaoke found in playlist object';
 		// If there's no kara with a playing flag, we set the first one in the playlist
-		if (updatePlayingKara) await setPlaying(kara.playlistcontent_id,playlist.id);
+		const playlist_id = getState().currentPlaylistID;
+		if (updatePlayingKara) await setPlaying(kara.playlistcontent_id, playlist_id);
 		// Let's add details to our object so the player knows what to do with it.
-		kara.playlist_id = playlist.id;
+		kara.playlist_id = playlist_id;
 		let requester: string;
 		let avatarfile: string;
 		if (conf.Karaoke.Display.Nickname) {
@@ -1191,7 +1180,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		// Construct mpv message to display.
 		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 		currentSong.avatar = avatarfile;
-		currentSong.playlistLength = playlist.content.length;
+		currentSong.playlistLength = playlist.length;
 		return currentSong;
 	} catch(err) {
 		logger.error('Error selecting current song to play', {service: 'Playlist', obj: err});
