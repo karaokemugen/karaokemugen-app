@@ -42,12 +42,11 @@ class Modal extends Component<IProps, IState> {
 	};
 
 
-	keyObserverHandler = (e: any) => {
-		const keyCode = e.keyCode || e.which;
-		if (keyCode == '13') {
+	keyObserverHandler = (e: KeyboardEvent) => {
+		if (e.code === 'Enter') {
 			this.confirmModal();
 		}
-		if (keyCode == '27') {
+		if (e.code === 'Escape') {
 			this.abortModal();
 		}
 	}

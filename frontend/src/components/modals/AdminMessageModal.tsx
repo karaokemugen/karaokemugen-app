@@ -34,6 +34,24 @@ class AdminMessageModal extends Component<unknown, IState> {
 		if (element) ReactDOM.unmountComponentAtNode(element);
 	};
 
+	keyObserverHandler = (e: KeyboardEvent) => {
+		if (e.code === 'Enter') {
+			this.onClick();
+		}
+		if (e.code === 'Escape') {
+			const element = document.getElementById('modal');
+			if (element) ReactDOM.unmountComponentAtNode(element);
+		}
+	}
+
+	componentDidMount() {
+		document.addEventListener('keyup', this.keyObserverHandler);
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('keyup', this.keyObserverHandler);
+	}
+
 	render() {
 		return (
 			<div className="modal modalPage">
