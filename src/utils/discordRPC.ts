@@ -39,7 +39,6 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			instance: false,
 		});
 	} catch(err) {
-		sentry.error(err, 'Warning');
 		// Non-fatal
 	}
 }
