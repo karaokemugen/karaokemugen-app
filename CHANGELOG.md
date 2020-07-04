@@ -60,7 +60,7 @@ You can find more info in issue #675
 - Hardware acceleration is now enabled by dafault in auto-safe mode to allow hardware decoding of videos in the most standard cases. You can disable it in case it doesn't work right for you or force it enabled for all videos (not recommended) (#703)
 - A new option setting allows you to add extra arguments to mpv's command line, for advanced users only (#703)
 - The public interface now lets you easily vote for a song already present in the public playlist when you browse the main song list (#714 #713)
-- You can now use media keys on your keyboard if it has them (stop, previous, next, and play/pause) to control Karaoke Mugen (#718)
+- You can now use media keys on your keyboard if it has them (stop, previous, next, and play/pause) to control Karaoke Mugen (not on macOS due to a bug in Electron 9.x) (#718)
 
 ### Improvements
 
