@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Divider,Input, Layout, Table } from 'antd';
+import { Button, Divider, Input, Layout, Table } from 'antd';
 import Axios from 'axios';
 import i18next from 'i18next';
 import React, { Component } from 'react';
@@ -8,15 +8,15 @@ import { Link } from 'react-router-dom';
 import { DBKara } from '../../../../src/lib/types/database/kara';
 import { getAxiosInstance } from '../../axiosInterceptor';
 import GlobalContext from '../../store/context';
-import { getSerieLanguage,getTagInLocaleList } from '../../utils/kara';
+import { getSerieLanguage, getTagInLocaleList } from '../../utils/kara';
 
 interface KaraListState {
-	karas: DBKara[]
-	karas_removing: string[],
-	currentPage: number,
-	filter: string,
-	i18nTag: any[],
-	total_count: number
+	karas: DBKara[];
+	karasRemoving: string[];
+	currentPage: number;
+	filter: string;
+	i18nTag: any[];
+	totalCount: number;
 }
 
 class KaraList extends Component<unknown, KaraListState> {
@@ -27,11 +27,11 @@ class KaraList extends Component<unknown, KaraListState> {
 		super(props);
 		this.state = {
 			karas: [],
-			karas_removing: [],
+			karasRemoving: [],
 			currentPage: +localStorage.getItem('karaPage') || 1,
 			filter: localStorage.getItem('karaFilter') || '',
 			i18nTag: [],
-			total_count: 0
+			totalCount: 0
 		};
 	}
 
@@ -41,7 +41,7 @@ class KaraList extends Component<unknown, KaraListState> {
 
 	refresh = async () => {
 		const res = await Axios.get('/karas', { params: { filter: this.state.filter, from: (this.state.currentPage - 1) * 100, size: 100 } });
-		this.setState({ karas: res.data.content, i18nTag: res.data.i18n, total_count: res.data.infos.count });
+		this.setState({ karas: res.data.content, i18nTag: res.data.i18n, totalCount: res.data.infos.count });
 	}
 
 	async changePage(page) {
@@ -52,18 +52,19 @@ class KaraList extends Component<unknown, KaraListState> {
 
 	changeFilter(event) {
 		this.setState({ filter: event.target.value, currentPage: 1 });
+		localStorage.setItem('karaPage', '1');
 		localStorage.setItem('karaFilter', event.target.value);
 	}
 
 	deleteKara = async (kara) => {
-		const karas_removing = this.state.karas_removing;
-		karas_removing.push(kara.kid);
+		const karasRemoving = this.state.karasRemoving;
+		karasRemoving.push(kara.kid);
 		this.setState({
-			karas_removing: karas_removing
+			karasRemoving: karasRemoving
 		});
 		await getAxiosInstance().delete(`/karas/${kara.kid}`);
 		this.setState({
-			karas_removing: this.state.karas_removing.filter(value => value !== kara.kid),
+			karasRemoving: this.state.karasRemoving.filter(value => value !== kara.kid),
 			karas: this.state.karas.filter(value => value.kid !== kara.kid)
 		});
 	}
@@ -97,7 +98,7 @@ class KaraList extends Component<unknown, KaraListState> {
 									const from = range[0];
 									return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
 								},
-								total: this.state.total_count,
+								total: this.state.totalCount,
 								showQuickJumper: true,
 								onChange: page => this.changePage(page)
 							}}
@@ -144,7 +145,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		render: (text, record) => (<span>
 			<Link to={`/system/km/karas/${record.kid}`}><EditOutlined /></Link>
 			<Divider type="vertical" />
-			<Button type="primary" danger loading={this.state.karas_removing.indexOf(record.kid) >= 0}
+			<Button type="primary" danger loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
 				icon={<DeleteOutlined />} onClick={() => this.deleteKara(record)}></Button>
 		</span>)
 	}];

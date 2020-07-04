@@ -478,11 +478,15 @@ class Players {
 					return -1;
 				}
 			} else {
-				for (const player in this.players) {
-					if (!this.players[player].isRunning) {
-						logger.info(`Restarting ${player} player`, {service: 'Player'});
-						loads.push(this.players[player].recreate(null, true));
+				if (this.players) {
+					for (const player in this.players) {
+						if (!this.players[player].isRunning) {
+							logger.info(`Restarting ${player} player`, {service: 'Player'});
+							loads.push(this.players[player].recreate(null, true));
+						}
 					}
+				} else {
+					loads.push(this.initPlayerSystem());
 				}
 			}
 			await Promise.all(loads);

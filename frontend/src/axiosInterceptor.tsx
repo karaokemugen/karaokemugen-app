@@ -15,7 +15,7 @@ Axios.interceptors.response.use((response: AxiosResponse<{ code: string, data: a
 }, (err: AxiosError<{ code: string, data: any }>) => {
 	// Any status codes that falls outside the range of 2xx cause this function to trigger
 	// Do something with response error
-	if (err.response && typeof err.response.data.data !== 'object') {
+	if (err.response && err.response.data.code && typeof err.response.data.data !== 'object') {
 		displayMessage('error', i18next.t(`ERROR_CODES.${err.response.data.code}`, {data: err.response.data.data}));
 	}
 	return Promise.reject(err);
