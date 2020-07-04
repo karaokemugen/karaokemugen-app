@@ -1,12 +1,12 @@
 import Axios, { AxiosError, AxiosResponse } from 'axios';
-import { loading, errorMessage, infoMessage } from './store/actions/navigation';
 import i18next from 'i18next';
 import { useContext } from 'react';
-import GlobalContext from './store/context';
+
 import { socket } from './App';
+import { errorMessage, infoMessage,loading } from './store/actions/navigation';
+import GlobalContext from './store/context';
 
 Axios.defaults.baseURL = '/api';
-
 
 let instance;
 
@@ -14,7 +14,7 @@ function StartAxios() {
 	const globalDispatch = useContext(GlobalContext).globalDispatch;
 
 	socket.on('error', (err) => {
-		globalDispatch(errorMessage(i18next.t(`ERROR_CODES.${err.code}`, {repo: err.data.repo.Name, err: err.data.err})));
+		globalDispatch(errorMessage(i18next.t(`ERROR_CODES.${err.code}`, {repo: err.data?.repo.Name, err: err.data.err})));
 	});
 
 	Axios.interceptors.response.use((response: AxiosResponse<{ code: string, data: any }>) => {
@@ -59,7 +59,7 @@ function StartAxios() {
 		}
 		return Promise.reject(err);
 	});
-	return null
+	return null;
 }
 
 export function getAxiosInstance() {
