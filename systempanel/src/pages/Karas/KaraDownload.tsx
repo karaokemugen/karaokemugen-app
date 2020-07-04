@@ -439,7 +439,6 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 									return i18next.t('KARA.SHOWING', {from:from,to:to,total:total});
 								},
 								total: this.state.karas_online_count,
-								showSizeChanger: true,
 								showQuickJumper: true,
 							}}
 						/>

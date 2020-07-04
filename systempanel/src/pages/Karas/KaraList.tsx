@@ -1,13 +1,14 @@
-import React, {Component} from 'react';
-import { Button, Layout, Table, Input, Divider } from 'antd';
-import {Link} from 'react-router-dom';
-import {getTagInLocaleList, getSerieLanguage} from "../../utils/kara";
-import i18next from 'i18next';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, Divider,Input, Layout, Table } from 'antd';
 import Axios from 'axios';
+import i18next from 'i18next';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+
 import { DBKara } from '../../../../src/lib/types/database/kara';
 import { getAxiosInstance } from '../../axiosInterceptor';
 import GlobalContext from '../../store/context';
+import { getSerieLanguage,getTagInLocaleList } from '../../utils/kara';
 
 interface KaraListState {
 	karas: DBKara[]
@@ -18,10 +19,10 @@ interface KaraListState {
 	total_count: number
 }
 
-class KaraList extends Component<{}, KaraListState> {
+class KaraList extends Component<unknown, KaraListState> {
 	static contextType = GlobalContext
 	context: React.ContextType<typeof GlobalContext>
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -39,26 +40,26 @@ class KaraList extends Component<{}, KaraListState> {
 	}
 
 	refresh = async () => {
-		let res = await Axios.get('/karas', { params: { filter: this.state.filter, from: (this.state.currentPage-1)*100, size: 100}});
-		this.setState({karas: res.data.content, i18nTag: res.data.i18n, total_count: res.data.infos.count});
+		const res = await Axios.get('/karas', { params: { filter: this.state.filter, from: (this.state.currentPage - 1) * 100, size: 100 } });
+		this.setState({ karas: res.data.content, i18nTag: res.data.i18n, total_count: res.data.infos.count });
 	}
 
 	async changePage(page) {
-		await this.setState({currentPage: page});
-		localStorage.setItem('karaPage',page);
+		await this.setState({ currentPage: page });
+		localStorage.setItem('karaPage', page);
 		this.refresh();
 	}
 
 	changeFilter(event) {
-		this.setState({filter: event.target.value, currentPage: 1});
+		this.setState({ filter: event.target.value, currentPage: 1 });
 		localStorage.setItem('karaFilter', event.target.value);
 	}
 
-	 deleteKara = async (kara) => {
-		let karas_removing = this.state.karas_removing;
+	deleteKara = async (kara) => {
+		const karas_removing = this.state.karas_removing;
 		karas_removing.push(kara.kid);
 		this.setState({
-			karas_removing:karas_removing
+			karas_removing: karas_removing
 		});
 		await getAxiosInstance().delete(`/karas/${kara.kid}`);
 		this.setState({
@@ -90,14 +91,13 @@ class KaraList extends Component<{}, KaraListState> {
 								current: this.state.currentPage,
 								defaultPageSize: 100,
 								pageSize: 100,
-								pageSizeOptions: ['10','25','50','100','500'],
+								pageSizeOptions: ['10', '25', '50', '100', '500'],
 								showTotal: (total, range) => {
 									const to = range[1];
 									const from = range[0];
-									return i18next.t('KARA.SHOWING', {from:from,to:to,total:total});
+									return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
 								},
 								total: this.state.total_count,
-								showSizeChanger: true,
 								showQuickJumper: true,
 								onChange: page => this.changePage(page)
 							}}
@@ -117,9 +117,9 @@ class KaraList extends Component<{}, KaraListState> {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
 		dataIndex: 'series',
 		key: 'series',
-		render: (series, record:DBKara) => (series && series.length > 0) ?
-				series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ') 
-				: getTagInLocaleList(record.singers, this.state.i18nTag).join(', ')
+		render: (series, record: DBKara) => (series && series.length > 0) ?
+			series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ')
+			: getTagInLocaleList(record.singers, this.state.i18nTag).join(', ')
 	}, {
 		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
@@ -143,8 +143,8 @@ class KaraList extends Component<{}, KaraListState> {
 		key: 'action',
 		render: (text, record) => (<span>
 			<Link to={`/system/km/karas/${record.kid}`}><EditOutlined /></Link>
-			<Divider type="vertical"/>
-			<Button type="primary" danger loading={this.state.karas_removing.indexOf(record.kid)>=0} 
+			<Divider type="vertical" />
+			<Button type="primary" danger loading={this.state.karas_removing.indexOf(record.kid) >= 0}
 				icon={<DeleteOutlined />} onClick={() => this.deleteKara(record)}></Button>
 		</span>)
 	}];
