@@ -147,6 +147,18 @@ class Playlist extends Component<IProps, IState> {
 				this.changeIdPlaylist(idPlaylist);
 			}
 		});
+		getSocket().on('publicPlaylistEmptied', async () => {
+			if (this.state.idPlaylist === -1) {
+				const data = this.state.data as KaraList;
+				for (const kara of data.content) {
+					kara.my_public_plc_id = [];
+					kara.flag_inplaylist = false;
+					kara.flag_upvoted = false;
+				}
+				await this.setState({ data });
+				this.playlistForceRefresh(true);
+			}
+		});
 		getSocket().on('KIDUpdated', async (event: {
 			kid: string,
 			flag_inplaylist: boolean,
