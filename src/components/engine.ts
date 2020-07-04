@@ -11,6 +11,7 @@ import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
 import { applyMenu, handleFile, handleProtocol } from '../electron/electron';
 import { errorStep,initStep } from '../electron/electronLogger';
+import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import {closeDB, getSettings, saveSetting,vacuum} from '../lib/dao/database';
 import { generateDatabase as generateKaraBase } from '../lib/services/generation';
 //Utils
@@ -128,7 +129,7 @@ export async function initEngine() {
 		if (port !== conf.Frontend.Port) {
 			setConfig({Frontend: {Port: port}});
 			// Reinit menu since we switched ports.
-			if (app) await applyMenu();
+			if (app) applyMenu();
 		}
 		if (conf.Online.URL && !state.isDemo) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
@@ -141,7 +142,9 @@ export async function initEngine() {
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo) initTwitch();
 		initBlacklistSystem();
 		initPlaylistSystem();
-		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) initPlayer();
+		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) initPlayer().then(() => {
+			if (app) registerShortcuts();
+		});
 		testPlaylists();
 		initDownloader();
 		await initSession();
@@ -245,6 +248,7 @@ function mataNe(rc: string | number) {
 	if (!app) {
 		process.exit(+rc);
 	} else {
+		unregisterShortcuts();
 		app.exit();
 	}
 }

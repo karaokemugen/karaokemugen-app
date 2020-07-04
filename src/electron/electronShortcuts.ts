@@ -1,0 +1,30 @@
+import {globalShortcut} from 'electron';
+
+import { next, pausePlayer, playPlayer, prev, stopPlayer } from '../services/player';
+import { getState,setState } from '../utils/state';
+
+export function registerShortcuts() {
+	globalShortcut.register('MediaPlayPause', () => {
+		if (getState().player.playerStatus === 'play') {
+			pausePlayer();
+		} else {
+			playPlayer().catch(() => {});
+		}
+	});
+	globalShortcut.register('MediaNextTrack', () => {
+		setState({singlePlay: false, randomPlaying: false});
+		next().catch(() => {});
+	});
+	globalShortcut.register('MediaPreviousTrack', () => {
+		setState({singlePlay: false, randomPlaying: false});
+		prev().catch(() => {});
+	});
+	globalShortcut.register('MediaStop', () => {
+		setState({singlePlay: false, randomPlaying: false});
+		stopPlayer().catch(() => {});
+	});
+}
+
+export function unregisterShortcuts() {
+	globalShortcut.unregisterAll();
+}

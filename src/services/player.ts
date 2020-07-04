@@ -310,7 +310,7 @@ export async function playerEnding() {
 	}
 }
 
-async function prev() {
+export async function prev() {
 	logger.debug('Going to previous song', {service: 'Player'});
 	try {
 		await previousSong();
@@ -321,7 +321,7 @@ async function prev() {
 	}
 }
 
-async function next() {
+export async function next() {
 	logger.debug('Going to next song', {service: 'Player'});
 	try {
 		await nextSong();
@@ -386,8 +386,8 @@ export async function playPlayer(now?: boolean) {
 	profile('Play');
 	const state = getState();
 	if (state.player.playerStatus === 'stop' || now) {
+		setState({status: 'play', singlePlay: false, randomPlaying: false});
 		await playCurrentSong(now);
-		setState({status: 'play'});
 		mpv.stopAddASongMessage();
 	} else {
 		await mpv.resume();
@@ -395,8 +395,8 @@ export async function playPlayer(now?: boolean) {
 	profile('Play');
 }
 
-async function stopPlayer(now = true) {
-	if (now) {
+export async function stopPlayer(now = true) {
+	if (now || getState().stopping) {
 		logger.info('Karaoke stopping NOW', {service: 'Player'});
 		await mpv.stop();
 		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false, stopping: false});
@@ -423,7 +423,7 @@ export async function prepareClassicPauseScreen() {
 	}
 }
 
-async function pausePlayer() {
+export async function pausePlayer() {
 	await mpv.pause();
 	logger.info('Karaoke paused', {service: 'Player'});
 	setState({status: 'pause'});
@@ -504,7 +504,6 @@ export async function sendCommand(command: string, options: any): Promise<string
 	if (state.isDemo || state.isTest) throw 'Player management is disabled in demo or test modes';
 	try {
 		if (command === 'play') {
-			setState({singlePlay: false, randomPlaying: false});
 			await playPlayer();
 		} else if (command === 'stopNow') {
 			setState({singlePlay: false, randomPlaying: false});
