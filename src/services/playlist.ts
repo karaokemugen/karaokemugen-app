@@ -276,6 +276,8 @@ export async function emptyPlaylist(playlist_id: number): Promise<number> {
 			updatePlaylistDuration(playlist_id)
 		]);
 		updatePlaylistLastEditTime(playlist_id);
+		// If our playlist is the public one, the frontend should reset all buttons on the song library so it shows + for everything all over again.
+		if (playlist_id === getState().publicPlaylistID) emitWS('publicPlaylistEmptied', playlist_id);
 		emitWS('playlistContentsUpdated', playlist_id);
 		return playlist_id;
 	} catch(err) {
