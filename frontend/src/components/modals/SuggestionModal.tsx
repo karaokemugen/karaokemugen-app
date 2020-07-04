@@ -32,7 +32,7 @@ class SuggestionModal extends Component<unknown, IState> {
 	}
 
 	async componentDidMount() {
-		const response = await axios.get('/api/tags', { params: { type: 3 } });
+		const response = await axios.get('/tags', { params: { type: 3 } });
 		const songtypes = response.data.content.map((tag: DBKaraTag) => getTagInLanguage(tag, store.getNavigatorLanguage() as string, 'eng'));
 		this.setState({ songtypes: songtypes, songtype: songtypes[0] });
 	}
