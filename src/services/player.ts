@@ -508,9 +508,9 @@ export async function sendCommand(command: string, options: any): Promise<string
 		} else if (command === 'stopNow') {
 			setState({singlePlay: false, randomPlaying: false});
 			await stopPlayer(true);
-		} else if (command === 'pause') {
+		} else if (command === 'pause' && isPlayerRunning()) {
 			await pausePlayer();
-		} else if (command === 'stopAfter') {
+		} else if (command === 'stopAfter' && isPlayerRunning()) {
 			setState({singlePlay: false, randomPlaying: false});
 			await stopPlayer(false);
 			try {
@@ -519,36 +519,36 @@ export async function sendCommand(command: string, options: any): Promise<string
 				// Non-fatal, stopAfter can be triggered on the last song already.
 			}
 			return 'STOP_AFTER';
-		} else if (command === 'skip') {
+		} else if (command === 'skip' && isPlayerRunning()) {
 			setState({singlePlay: false, randomPlaying: false});
 			await next();
-		} else if (command === 'prev') {
+		} else if (command === 'prev' && isPlayerRunning()) {
 			setState({singlePlay: false, randomPlaying: false});
 			await prev();
-		} else if (command === 'toggleFullscreen') {
+		} else if (command === 'toggleFullscreen' && isPlayerRunning()) {
 			await toggleFullScreenPlayer();
-		} else if (command === 'toggleAlwaysOnTop') {
+		} else if (command === 'toggleAlwaysOnTop' && isPlayerRunning()) {
 			await toggleOnTopPlayer();
-		} else if (command === 'setPiPSize') {
+		} else if (command === 'setPiPSize' && isPlayerRunning()) {
 			if (isNaN(options)) throw 'Command setPiPSize must have a numeric option value';
 			await setPiPSizePlayer(options);
-		} else if (command === 'setHwDec') {
+		} else if (command === 'setHwDec' && isPlayerRunning()) {
 			await setHwDecPlayer(options);
-		} else if (command === 'mute') {
+		} else if (command === 'mute' && isPlayerRunning()) {
 			await mutePlayer();
-		} else if (command === 'unmute') {
+		} else if (command === 'unmute' && isPlayerRunning()) {
 			await unmutePlayer();
-		} else if (command === 'showSubs') {
+		} else if (command === 'showSubs' && isPlayerRunning()) {
 			await showSubsPlayer();
-		} else if (command === 'hideSubs') {
+		} else if (command === 'hideSubs' && isPlayerRunning()) {
 			await hideSubsPlayer();
-		} else if (command === 'seek') {
+		} else if (command === 'seek' && isPlayerRunning()) {
 			if (isNaN(options)) throw 'Command seek must have a numeric option value';
 			await seekPlayer(options);
-		} else if (command === 'goTo') {
+		} else if (command === 'goTo' && isPlayerRunning()) {
 			if (isNaN(options)) throw 'Command goTo must have a numeric option value';
 			await goToPlayer(options);
-		} else if (command === 'setVolume') {
+		} else if (command === 'setVolume' && isPlayerRunning()) {
 			if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
 			await setVolumePlayer(options);
 		} else {// Unknown commands are not possible, they're filtered by API's validation.
