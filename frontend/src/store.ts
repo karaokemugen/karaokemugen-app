@@ -137,21 +137,23 @@ class Store extends EventEmitter {
 	}
 
 	setLogInfos(data:{token: string, onlineToken:string}) {
-		logInfos = parseJwt(data.token) as Token;
-		localStorage.setItem('kmToken', data.token);
-		if (data.onlineToken) {
-			localStorage.setItem('kmOnlineToken', data.onlineToken);
-			logInfos.onlineToken = data.onlineToken;
-		} else if (!logInfos.username.includes('@')) {
-			logInfos.onlineToken = undefined;
-			localStorage.removeItem('kmOnlineToken');
+		if (data.token) {
+			logInfos = parseJwt(data.token) as Token;
+			localStorage.setItem('kmToken', data.token);
+			if (data.onlineToken) {
+				localStorage.setItem('kmOnlineToken', data.onlineToken);
+				logInfos.onlineToken = data.onlineToken;
+			} else if (!logInfos.username.includes('@')) {
+				logInfos.onlineToken = undefined;
+				localStorage.removeItem('kmOnlineToken');
+			}
+
+			logInfos.token = data.token;
+
+			axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
+			axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
+			store.emitChange('loginUpdated');
 		}
-
-		if (data.token) logInfos.token = data.token;
-
-		axios.defaults.headers.common['authorization'] = localStorage.getItem('kmToken');
-		axios.defaults.headers.common['onlineAuthorization'] = localStorage.getItem('kmOnlineToken');
-		store.emitChange('loginUpdated');
 	}
 
 	logOut() {
