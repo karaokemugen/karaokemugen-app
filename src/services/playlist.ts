@@ -136,9 +136,8 @@ export async function isUserAllowedToAddKara(playlist_id: number, user: User, du
 			return true;
 		}
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	}
 }
 
@@ -896,18 +895,18 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 		let flag_playingDetected = false;
 		for (const index in playlist.PlaylistContents) {
 			const kara = playlist.PlaylistContents[index];
+			const user = await findUserByName(kara.username);
+			if (!user) {
+				// If user isn't found locally, replacing it with admin user
+				playlist.PlaylistContents[index].username = kara.username = 'admin';
+				const admin = await findUserByName('admin');
+				playlist.PlaylistContents[index].nickname = admin.nickname;
+			}
 			if (kara.flag_playing === true) {
 				if (flag_playingDetected) throw {code: 400, msg: 'Playlist contains more than one currently playing marker'};
 				flag_playingDetected = true;
 				playingKara.kid = kara.kid;
 				playingKara.username = kara.username;
-			}
-			const user = await findUserByName(kara.username);
-			if (!user) {
-				// If user isn't found locally, replacing it with admin user
-				playlist.PlaylistContents[index].username = 'admin';
-				const admin: User = await findUserByName('admin');
-				playlist.PlaylistContents[index].nickname = admin.nickname;
 			}
 		}
 		// Validations done. First creating playlist.
@@ -939,7 +938,8 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 		};
 	} catch(err) {
 		logger.error('Import failed', {service: 'Playlist', obj: err});
-		sentry.error(new Error(err));
+		sentry.addErrorInfo('playlist', JSON.stringify(playlist, null, 2));
+		sentry.error(err);
 		throw err;
 	} finally {
 		task.end();
