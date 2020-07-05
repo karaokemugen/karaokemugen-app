@@ -115,7 +115,7 @@ export const requireAdmin = (req: any, res: any, next: any) => {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	token.role === 'admin'
 		? next()
-		: res.status(403).json(APIMessage('ERROR_CODES'));
+		: res.status(403).json(APIMessage('ADMIN_PLEASE'));
 };
 
 
