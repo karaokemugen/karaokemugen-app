@@ -278,8 +278,8 @@ export async function main() {
 		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 		publicConfig.App.JwtSecret = 'xxxxx';
 		publicConfig.App.InstanceID = 'xxxxx';
-		logger.debug('Loaded configuration', {service: 'Launcher', obj: JSON.stringify(publicConfig)});
-		logger.debug('Initial state', {service: 'Launcher', obj: JSON.stringify(state)});
+		logger.debug('Loaded configuration', {service: 'Launcher', obj: publicConfig});
+		logger.debug('Initial state', {service: 'Launcher', obj: state});
 
 		// Checking paths, create them if needed.
 		await checkPaths(getConfig());

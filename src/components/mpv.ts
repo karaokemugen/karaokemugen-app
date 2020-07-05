@@ -229,7 +229,7 @@ class Player {
 		if (!this.options.monitor) {
 			this.mpv.on('status', (status: mpvStatus) => {
 				if (status.property !== 'playtime-remaining' && status.property !== 'sub-text')
-					logger.debug(`mpv status: ${JSON.stringify(status)}`, {service: 'Player'});
+					logger.debug('mpv status', {service: 'Player', obj: status});
 				// If we're displaying an image, it means it's the pause inbetween songs
 				playerState[status.property] = status.value;
 				emitPlayerState();
@@ -518,7 +518,7 @@ class Players {
 			}
 			await Promise.all(loads);
 		} catch (err) {
-			logger.error(`mpvAPI (send): ${JSON.stringify(err)}`, {service: 'Player'});
+			logger.error('mpvAPI (send)', {service: 'Player', obj: err});
 			throw new Error(JSON.stringify(err));
 		}
 	}
