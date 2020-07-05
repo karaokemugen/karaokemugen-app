@@ -189,7 +189,7 @@ export async function initEngine() {
 			if (!state.isTest && !state.isDemo) initDiscordRPC();
 			if (state.args[0]?.startsWith('km://')) handleProtocol(state.args[0].substr(5).split('/'));
 		} catch(err) {
-			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: JSON.stringify(err)});
+			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: err});
 			sentry.error(err);
 			if (state.isTest) process.exit(1000);
 		} finally {
@@ -224,7 +224,7 @@ export async function exit(rc: string | number) {
 				logger.info('PostgreSQL has shutdown', {service: 'Engine'});
 				mataNe(rc);
 			} catch(err) {
-				logger.warn('PostgreSQL could not be stopped!', {service: 'Engine', obj: JSON.stringify(err)});
+				logger.warn('PostgreSQL could not be stopped!', {service: 'Engine', obj: err});
 				sentry.error(err);
 				mataNe(rc);
 			}
