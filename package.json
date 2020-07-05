@@ -12,7 +12,7 @@
     "startFrontend": "cd frontend && yarn dev",
     "buildFrontend": "cd frontend && yarn build",
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
-    "qstart": "electron i.",
+    "qstart": "electron .",
     "qstartNoElectron": "node dist/index.js",
     "test": "ts-node src/index.ts --test",
     "build": "npx rimraf \"dist\" && tsc --build",
