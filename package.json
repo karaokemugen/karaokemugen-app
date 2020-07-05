@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "4.0.8-next",
+  "version": "4.0.999999999-next",
   "description": "Karaoke playlist manager / player",
   "bin": {
     "karaokemugen": "./dist/index.js"
@@ -12,7 +12,7 @@
     "startFrontend": "cd frontend && yarn dev",
     "buildFrontend": "cd frontend && yarn build",
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
-    "qstart": "electron .",
+    "qstart": "electron i.",
     "qstartNoElectron": "node dist/index.js",
     "test": "ts-node src/index.ts --test",
     "build": "npx rimraf \"dist\" && tsc --build",
