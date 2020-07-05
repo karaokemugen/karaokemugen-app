@@ -74,6 +74,7 @@ build-react:
     - yarn ts-node util/sentryUpdateReleases.ts
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
+    - if: '$CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_BRANCH == "next"'
     - if: $CI_COMMIT_TAG
     - when: never
