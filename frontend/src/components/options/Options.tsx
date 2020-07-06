@@ -10,6 +10,7 @@ import PlayerOptions from './PlayerOptions';
 
 interface IProps {
 	config: Config;
+	close: () => void
 }
 
 interface IState {
@@ -34,6 +35,20 @@ class Options extends Component<IProps, IState> {
 		}
 		const data = expand(e.target.id, value);
 		axios.put('/settings', { setting: JSON.stringify(data) });
+	}
+
+	keyObserverHandler = (e: KeyboardEvent) => {
+		if (e.code === 'Escape') {
+			this.props.close();
+		}
+	}
+
+	componentDidMount() {
+		document.addEventListener('keyup', this.keyObserverHandler);
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('keyup', this.keyObserverHandler);
 	}
 
 	render() {
