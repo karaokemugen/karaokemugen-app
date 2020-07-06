@@ -26,9 +26,9 @@ import {getConfig, resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/co
 import logger from '../lib/utils/logger';
 import {configurePassport} from '../lib/utils/passport_manager';
 import { initWS } from '../lib/utils/ws';
+import { sentryCSP } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
-import { sentryCSP } from '../utils/constants';
 
 /** Declare all routers for API types */
 function apiRouter() {
@@ -105,11 +105,12 @@ export function initFrontend(): number {
 		}
 
 		//Path to video previews
+		//There's a single /medias path which will list all files in all folders. Pretty handy.
 		resolvedPathRepos('Medias').forEach(dir => app.use('/medias', express.static(dir)));
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 
-		//Sorry.
+		//HTTP standards are important.
 		app.use('/coffee', (_req, res) => res.status(418).json());
 
 		//Frontend
@@ -136,16 +137,13 @@ export function initFrontend(): number {
 			} catch(err) {
 				// Utter failure
 				logger.error('Webapp is NOT READY', {service: 'Webapp', obj: err});
-				const error = new Error(err);
-				sentry.error(error);
-				throw error;
+				throw err;
 			}
 		}
 		return port;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	}
 }
 
