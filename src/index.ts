@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import dotenv from 'dotenv';
-import {app, dialog} from 'electron';
+import {app} from 'electron';
 import {existsSync} from 'fs';
 import {mkdirpSync} from 'fs-extra';
 import i18n from 'i18next';
@@ -20,13 +20,13 @@ import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import {logo} from './logo';
 import { migrateOldFoldersToRepo } from './services/repo';
+// Types
+import {Config} from './types/config';
 import {parseCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
 import {createCircleAvatar} from './utils/imageProcessing';
 import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
-// Types
-import {Config} from './types/config';
 import {version} from './version';
 
 dotenv.config();
@@ -40,19 +40,6 @@ process.on('uncaughtException', (exception: any) => {
 		console.log('Uncaught exception:', exception);
 		if (logger) logger.error('', {service: 'UncaughtException', obj: exception});
 		sentry.error(exception);
-		if (typeof exception === 'string' || !exception.name) exception = {
-			name: 'Unknown error',
-			message: exception,
-			stack: 'unknown'
-		};
-		if (app) dialog.showMessageBox({
-			type: 'none',
-			title: 'Karaoke Mugen Error : Uncaught Exception',
-			message: `Name: ${exception.name}
-	Message: ${exception.message}
-	Stack: ${exception.stack}
-	`
-		});
 	}
 });
 
@@ -60,13 +47,6 @@ process.on('unhandledRejection', (error: Error) => {
 	console.log('Unhandled Rejection at:', error);
 	if (logger) logger.error('', {service: 'UnhandledRejection', obj: error});
 	sentry.error(error);
-	if (app) {
-		dialog.showMessageBox({
-			type: 'none',
-			title: 'Karaoke Mugen Error : Unhandled Rejection',
-			message: error.toString()
-		});
-	}
 });
 
 process.on('SIGINT', () => {
@@ -95,23 +75,10 @@ on('initError', async (err: Error) => {
 	await initError(err);
 });
 
-async function initError(err: any) {
+function initError(err: any) {
 	logger.error('Error during launch', {service: 'Launcher', obj: err});
 	console.log(err);
 	sentry.error(err);
-	if (typeof err === 'string' || !err.name) err = {
-		name: 'Unknown error',
-		message: err,
-		stack: 'unknown'
-	};
-	if (app) await dialog.showMessageBox({
-		type: 'none',
-		title: 'Karaoke Mugen Error : Uncaught Exception',
-		message: `Name: ${err?.name}
-Message: ${err?.message}
-Stack: ${err?.stack}
-`
-	});
 	exit(1);
 }
 

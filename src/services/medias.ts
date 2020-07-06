@@ -27,6 +27,7 @@ interface File {
 
 const currentMedias = {};
 
+// This is public but we need a user/pass for webdav
 const KMSite = {
 	url: 'http://mugen.karaokes.moe/medias/',
 	username: 'km',
@@ -36,11 +37,8 @@ const KMSite = {
 export async function buildAllMediasList() {
 	const medias = getConfig().Playlist.Medias;
 	for (const type of Object.keys(medias)){
-		try {
-			await buildMediasList(type as MediaType);
-		} catch(err) {
-			//Non fatal
-		}
+		await buildMediasList(type as MediaType).catch(() => {});
+		// Failure is non-fatal
 	}
 }
 
@@ -50,14 +48,11 @@ export async function updatePlaylistMedias() {
 		text: 'UPDATING_PLMEDIAS'
 	});
 	for (const type of Object.keys(updates)){
-		try {
-			task.update({
-				subtext: type
-			});
-			if (updates[type]) await updateMediasHTTP(type as MediaType, task);
-		} catch(err) {
-			//Non fatal
-		}
+		task.update({
+			subtext: type
+		});
+		if (updates[type]) await updateMediasHTTP(type as MediaType, task).catch(() => {});
+		// Failure is non-fatal
 	}
 	task.end();
 }

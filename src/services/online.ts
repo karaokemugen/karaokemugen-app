@@ -1,4 +1,4 @@
-import * as publicIP from 'public-ip';
+import publicIP from 'public-ip';
 
 import { getInstanceID } from '../lib/dao/database';
 import {getConfig} from '../lib/utils/config';
