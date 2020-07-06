@@ -893,9 +893,14 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 			playlist_id: null
 		};
 		let flag_playingDetected = false;
+		const users = new Map();
 		for (const index in playlist.PlaylistContents) {
 			const kara = playlist.PlaylistContents[index];
-			const user = await findUserByName(kara.username);
+			let user: User = users.get(kara.username);
+			if (!user) {
+				user = await findUserByName(kara.username);
+				users.set(user.login, user);
+			}
 			if (!user) {
 				// If user isn't found locally, replacing it with admin user
 				playlist.PlaylistContents[index].username = kara.username = 'admin';
