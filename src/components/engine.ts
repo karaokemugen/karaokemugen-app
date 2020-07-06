@@ -202,7 +202,6 @@ export async function exit(rc: string | number) {
 	if (shutdownInProgress) return;
 	logger.info('Shutdown in progress', {service: 'Engine'});
 	shutdownInProgress = true;
-	emit('exiting-app');
 	try {
 		if (getState().player?.playerStatus) {
 			await quitmpv();
@@ -289,13 +288,13 @@ async function preFlightCheck() {
 		errorStep(i18n.t('ERROR_GENERATION'));
 		throw err;
 	}
-	// Run this in the background
-	vacuum();
-	generateBlacklist();
 	const stats = await getStats();
 	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
 	logger.info(`Playlists    : ${stats.playlists}`);
 	logger.info(`Songs played : ${stats.played}`);
+	// Run this in the background
+	vacuum();
+	generateBlacklist();
 }
 
 async function runTests() {
