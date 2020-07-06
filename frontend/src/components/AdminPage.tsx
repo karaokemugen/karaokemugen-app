@@ -214,7 +214,10 @@ class AdminPage extends Component<IProps, IState> {
 								{
 									this.state.options ?
 										<div className="row " id="manage">
-											<Options config={this.props.config} />
+											<Options
+												config={this.props.config}
+												close={() => this.setState({ options: false })}
+											/>
 										</div>
 										: null
 								}
