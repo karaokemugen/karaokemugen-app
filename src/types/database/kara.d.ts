@@ -1,4 +1,4 @@
-import { DBKaraTag } from "../../lib/types/database/kara";
+import { DBKaraTag } from '../../lib/types/database/kara';
 
 export interface DBKaraHistory {
 	title: string,

@@ -13,6 +13,7 @@ import { refreshAll, vacuum } from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
 import { extractAssInfos } from '../lib/dao/karafile';
 import { DBKara } from '../lib/types/database/kara';
+import { DBTag } from '../lib/types/database/tag';
 import { DownloadBundle } from '../lib/types/downloads';
 import { CompareParam,KaraList, KaraParams } from '../lib/types/kara';
 import { repoStats } from '../lib/types/repo';
@@ -283,8 +284,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 	const currentDls = await getDownloads();
 	downloads = downloads.filter(dl => {
 		if (currentDls.find(cdl => dl.name === cdl.name &&
-			(cdl.status === 'DL_RUNNING' ||
-			cdl.status === 'DL_PLANNED')
+			(cdl.status === 'DL_RUNNING' || cdl.status === 'DL_PLANNED')
 		)
 		) return false;
 		return true;
@@ -367,9 +367,8 @@ export async function getAllRemoteKaras(repository: string, params: KaraParams, 
 		allKaras.forEach(l => merge(everything, l));
 		// To get total count we're going to remove all duplicated by repo to keep only one song from each repo.
 		// Each song has a count property which gives us th enumber of songs for that query, so by adding them we get our total maximum count.
-		// Remove the :any for k and k2 once KM Server has merged the lib
 		everything.infos.count = 0;
-		const everythingUnique = everything.content.filter((k: any, i, self) => self.findIndex((k2:any) => k2.repo === k.repo) === i);
+		const everythingUnique = everything.content.filter((k: DBKara, i, self) => self.findIndex((k2:DBKara) => k2.repository === k.repository) === i);
 		everythingUnique.forEach(k => everything.infos.count = +everything.infos.count + +k.count);
 		everything.infos.to = +params.from + +params.size;
 		everything.infos.totalMediaSize = totalMediaSize;
@@ -446,7 +445,7 @@ export async function getAllRemoteTags(repository: string, params: TagParams): P
 		// To get total count we're going to remove all duplicated by repo to keep only one tag from each repo.
 		// Each tag has a count property which gives us the number of tags for that query, so by adding them we get our total maximum count.
 		everything.infos.count = 0;
-		const everythingUnique = everything.content.filter((t: any, i, self) => self.findIndex((t2:any) => t2.repository === t.repo) === i);
+		const everythingUnique = everything.content.filter((t: DBTag, i, self) => self.findIndex((t2:DBTag) => t2.repository === t.repository) === i);
 		everythingUnique.forEach(t => everything.infos.count = +everything.infos.count + +t.count);
 		everything.infos.to = +params.from + +params.size;
 		return everything;
@@ -459,12 +458,10 @@ export async function getRemoteTags(repo: string, params: TagParams = {}): Promi
 }
 
 export async function updateAllBases() {
-	for (const repo of getConfig().System.Repositories) {
+	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
-			if (repo.Online && repo.Enabled) {
-				logger.info(`Updating base from repository ${repo.Name}`, {service: 'Update'});
-				await updateBase(repo.Name);
-			}
+			logger.info(`Updating base from repository ${repo.Name}`, {service: 'Update'});
+			await updateBase(repo.Name);
 		} catch(err) {
 			logger.warn(`Repository ${repo.Name} failed to update properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('BASES_SYNC_ERROR', {repo: repo.Name, err: err}));
@@ -542,12 +539,10 @@ async function getKaraInventory(repo: string) {
 }
 
 export async function downloadAllKaras() {
-	for (const repo of getConfig().System.Repositories) {
+	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
-			if (repo.Online) {
-				logger.info(`Downloading all songs from repository ${repo.Name}`, {service: 'Update'});
-				await downloadKaras(repo.Name);
-			}
+			logger.info(`Downloading all songs from repository ${repo.Name}`, {service: 'Update'});
+			await downloadKaras(repo.Name);
 		} catch(err) {
 			logger.warn(`Repository ${repo.Name} failed to download all songs properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('DOWNLOAD_SONGS_ERROR', {repo: repo.Name, err: err}));
@@ -654,12 +649,10 @@ function filterYearYounger(k: DBKara, value: string) {
 }
 
 export async function cleanAllKaras() {
-	for (const repo of getConfig().System.Repositories) {
+	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
-			if (repo.Online) {
-				logger.info(`Cleaning songs not in repository ${repo.Name} anymore`, {service: 'Update'});
-				await cleanKaras(repo.Name);
-			}
+			logger.info(`Cleaning songs not in repository ${repo.Name} anymore`, {service: 'Update'});
+			await cleanKaras(repo.Name);
 		} catch(err) {
 			logger.warn(`Repository ${repo.Name} failed to clean songs properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('CLEAN_SONGS_ERROR', {repo: repo.Name, err: err}));
@@ -705,17 +698,15 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 }
 
 export async function updateAllKaras() {
-	for (const repo of getConfig().System.Repositories) {
+	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
-			if (repo.Online) {
-				logger.info(`Updating all songs from repository ${repo.Name}`, {service: 'Update'});
-				await updateKaras(repo.Name);
-				await waitForUpdateQueueToFinish();
-				// Now checking tags and series if we're missing any
-				const tags = await getTagsInventory(repo.Name);
-				const updatedTags = await updateTags(repo.Name, tags.local, tags.remote);
-				if (updatedTags > 0) await refreshAll();
-			}
+			logger.info(`Updating all songs from repository ${repo.Name}`, {service: 'Update'});
+			await updateKaras(repo.Name);
+			await waitForUpdateQueueToFinish();
+			// Now checking tags and series if we're missing any
+			const tags = await getTagsInventory(repo.Name);
+			const updatedTags = await updateTags(repo.Name, tags.local, tags.remote);
+			if (updatedTags > 0) await refreshAll();
 		} catch(err) {
 			logger.warn(`Repository ${repo.Name} failed to update songs properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('SONGS_UPDATE_ERROR', {repo: repo.Name, err: err}));
@@ -959,12 +950,10 @@ async function removeFiles(files: string[], dir: string): Promise<void> {
 }
 
 export async function updateAllMedias() {
-	for (const repo of getConfig().System.Repositories) {
+	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
-			if (repo.Online) {
-				logger.info(`Updating medias from repository ${repo.Name}`, {service: 'Update'});
-				await updateMedias(repo.Name);
-			}
+			logger.info(`Updating medias from repository ${repo.Name}`, {service: 'Update'});
+			await updateMedias(repo.Name);
 		} catch(err) {
 			logger.warn(`Repository ${repo.Name} failed to update medias properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('UPDATING_MEDIAS_ERROR', {repo: repo.Name, err: err}));
@@ -1006,8 +995,9 @@ export async function downloadRandomSongs() {
 		return;
 	}
 	const conf = getConfig();
-	const onlineRepos = conf.System.Repositories.filter(r => r.Online);
+	const onlineRepos = conf.System.Repositories.filter(r => r.Online && r.Enabled);
 	try {
+		if (!onlineRepos[0]) throw 'Unable to download samples, no repository online and enabled available';
 		logger.info('Downloading samples...', {service: 'Samples'});
 		const karas = await getRemoteKaras(onlineRepos[0].Name, {});
 		// Downloading samples here, 3 japanese, 1 french, 1 english, 1 italian.
@@ -1086,6 +1076,7 @@ function filterSamples(k: DBKara, lang: string): boolean {
 		k.mediasize < maxSize;
 }
 
+/** Migration from 3.x to 4.x -- safely delete this in a few versions */
 export async function redownloadSongs() {
 	const karas = await getAllKaras();
 	const downloads = karas.content.map(k => {

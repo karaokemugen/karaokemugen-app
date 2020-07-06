@@ -214,7 +214,7 @@ export async function addBlacklistCriteria(type: number, value: any, set_id: num
 		updatedSetModifiedAt(set_id);
 		emitWS('blacklistUpdated');
 	} catch(err) {
-		logger.error('Error adding criteria', {service: 'Blacklist', obj: JSON.stringify(err)});
+		logger.error('Error adding criteria', {service: 'Blacklist', obj: err});
 		const error = new Error(err);
 		sentry.error(error);
 		throw err;
