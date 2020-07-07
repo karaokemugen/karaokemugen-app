@@ -119,6 +119,7 @@ class Mpv extends EventEmitter {
 						if (req_id === res.request_id) {
 							this.sockets[socket].removeListener('data', dataHandler);
 							resolve(res);
+							this.sockets[socket].removeListener('error', reject);
 						}
 					}
 				});

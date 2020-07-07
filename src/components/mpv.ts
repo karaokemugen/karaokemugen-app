@@ -620,7 +620,6 @@ class Players {
 		const conf = getConfig();
 		logger.debug('Play event triggered', {service: 'Player'});
 		playerState.playing = true;
-		this.clearText();
 		//Search for media file in the different PathMedias
 
 		let mediaFile: string;
@@ -695,10 +694,6 @@ class Players {
 				throw err;
 			});
 			logger.debug(`File ${mediaFile} loaded`, {service: 'Player'});
-			playerState.mediaType = 'song';
-			playerState._playing = true;
-			await this.exec({command: ['set_property', 'pause', false]});
-			playerState.playerStatus = 'play';
 			if (subFile) {
 				await this.exec({command: ['sub-add', subFile]}).catch(err => {
 					logger.error('Unable to load subtitles', {service: 'Player', obj: err});
@@ -710,6 +705,11 @@ class Players {
 			playerState.songNearEnd = false;
 			playerState.nextSongNotifSent = false;
 			playerState.playing = true;
+			playerState._playing = true;
+			this.clearText();
+			playerState.mediaType = 'song';
+			await this.exec({command: ['set_property', 'pause', false]});
+			playerState.playerStatus = 'play';
 			emitPlayerState();
 			setDiscordActivity('song', {
 				title: mediaData.currentSong.title,
