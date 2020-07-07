@@ -246,16 +246,14 @@ class AdminHeader extends Component<IProps, IState> {
 					title={i18next.t(this.state.statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
 					id="showSubs"
 					data-namecommand={this.state.statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
-					className="btn btn-dark subtitleButton buttonsNotMobile"
+					className={`btn btn-dark subtitleButton buttonsNotMobile ${this.state.statusPlayer?.showSubs ? 'showSubs':'hideSubs'}`}
 					onClick={this.props.putPlayerCommando}
 				>
-					{this.state.statusPlayer?.showSubs ?
-						<span className="fa-stack">
-							<i className="fas fa-closed-captioning fa-stack-1x"></i>
-							<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }}></i>
-						</span> :
-						<i className="fas fa-closed-captioning"></i>
-					}
+					<span className="fa-stack">
+						<i className="fas fa-closed-captioning fa-stack-1x"></i>
+						<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }}></i>
+					</span>
+					<i className="fas fa-closed-captioning"></i>
 				</button>
 				<button
 					type="button"
