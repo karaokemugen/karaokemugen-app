@@ -159,12 +159,14 @@ export async function importFavorites(favs: FavExport, username: string) {
 	if (favs.Favorites.some(f => !new RegExp(uuidRegexp).test(f.kid))) throw {code: 400, msg: 'One item in the favorites list is not a UUID'};
 	// Stripping favorites from unknown karaokes in our database to avoid importing them
 	try {
-		let favorites = favs.Favorites.map(f => f.kid);
-		const karasUnknown = await isAllKaras(favorites);
-		favorites = favorites.filter(f => !karasUnknown.includes(f));
-		const userFavorites = await getFavorites({username: username});
-		favorites = favorites.filter(f => !userFavorites.content.map(uf => uf.kid).includes(f));
-		if (favorites.length > 0) await addToFavorites(username, favorites, false);
+		const favorites = favs.Favorites.map(f => f.kid);
+		const [karasUnknown, userFavorites] = await Promise.all([
+			isAllKaras(favorites),
+			getFavorites({username: username})
+		]);
+		// Removing favorites already added
+		const favoritesToAdd = favorites.filter(f => !userFavorites.content.map(uf => uf.kid).includes(f));
+		if (favoritesToAdd.length > 0) await addToFavorites(username, favoritesToAdd, false);
 		emitWS('favoritesUpdated', username);
 		return { karasUnknown: karasUnknown };
 	} catch(err) {
