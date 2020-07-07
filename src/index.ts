@@ -110,7 +110,6 @@ const appPath = process.platform === 'darwin'
 
 // Ugly Windows fix
 
-
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
 
