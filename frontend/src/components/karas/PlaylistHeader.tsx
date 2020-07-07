@@ -213,7 +213,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					data.playlist = fr.result;
 					name = JSON.parse(fr.result as string).PlaylistInformation.name;
 				}
-				const response: { data: { code: string, data: { unknownKaras: Array<any>, playlist_id: number } } } = await axios.post(url, data);
+				const response: { data: { code: string, data: { unknownKaras: Array<DBPLC>, playlist_id: number } } } = await axios.post(url, data);
 				if (response.data.data?.unknownKaras && response.data.data.unknownKaras.length > 0) {
 					const mediasize = response.data.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 					callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
