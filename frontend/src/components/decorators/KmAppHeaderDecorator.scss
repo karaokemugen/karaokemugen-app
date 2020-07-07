@@ -86,6 +86,52 @@
 				width: 100%;
 			}
 		}
+
+		.subtitleButton {
+			> * {
+				display: none;
+			}
+		}
+
+		.subtitleButton.hideSubs > *:first-child {
+			display: inline-block;
+		}
+		.subtitleButton.hideSubs:hover {
+			> *:first-child {
+				display: none;
+			}
+			> *:last-child {
+				display: unset;
+			}
+		}
+		.subtitleButton.hideSubs:active {
+			> *:first-child {
+				display: inline-block;
+			}
+			> *:last-child {
+				display: none;
+			}
+		}
+
+		.subtitleButton.showSubs > *:last-child {
+			display: unset;
+		}
+		.subtitleButton.showSubs:hover {
+			> *:first-child {
+				display: inline-block;
+			}
+			> *:last-child {
+				display: none;
+			}
+		}
+		.subtitleButton.showSubs:active {
+			> *:first-child {
+				display: none;
+			}
+			> *:last-child {
+				display: unset;
+			}
+		}
 	}
 
 	&[data-mode="public"] {
